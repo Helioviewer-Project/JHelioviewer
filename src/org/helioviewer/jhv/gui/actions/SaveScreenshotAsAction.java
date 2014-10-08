@@ -36,13 +36,13 @@ public class SaveScreenshotAsAction extends AbstractAction {
 
     private boolean useCurrentOpenGlSize;
     private int imageWidth;
-    private int imageHeigth;
+    private int imageHeight;
     /**
      * Default constructor.
      */
     public SaveScreenshotAsAction() {
         super("Save Screenshot As...");
-        putValue(SHORT_DESCRIPTION, "Save Screenshot to Chosen Folder");
+        putValue(SHORT_DESCRIPTION, "Save screenshots to a file");
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.SHIFT_DOWN_MASK | Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
     }
 
@@ -84,7 +84,7 @@ public class SaveScreenshotAsAction extends AbstractAction {
             try {
             	ImageViewerGui.getSingletonInstance().getMainView().stop();
             	if (this.useCurrentOpenGlSize) ImageViewerGui.getSingletonInstance().getMainView().saveScreenshot(fileFilter.getDefaultExtension(), selectedFile);        	
-            	else ImageViewerGui.getSingletonInstance().getMainView().saveScreenshot(fileFilter.getDefaultExtension(), selectedFile, this.imageWidth, this.imageHeigth);
+            	else ImageViewerGui.getSingletonInstance().getMainView().saveScreenshot(fileFilter.getDefaultExtension(), selectedFile, this.imageWidth, this.imageHeight);
             	ImageViewerGui.getSingletonInstance().getMainView().start();
             } catch (IOException e1) {
                 e1.printStackTrace();
@@ -109,7 +109,7 @@ public class SaveScreenshotAsAction extends AbstractAction {
         try {
             val = settings.getProperty(SETTING_SCREENSHOT_IMG_HEIGHT);
             if (val != null && !(val.length() == 0)) {
-                this.imageHeigth = Integer.parseInt(val);
+                this.imageHeight = Integer.parseInt(val);
             }
         } catch (Throwable t) {
             Log.error(t);
@@ -123,5 +123,12 @@ public class SaveScreenshotAsAction extends AbstractAction {
         } catch (Throwable t) {
             Log.error(t);
         }
+        
+
+        if(imageWidth==0)
+          imageWidth=1280;
+
+        if(imageHeight==0)
+          imageHeight=720;
 	}
 }

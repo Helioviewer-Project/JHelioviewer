@@ -184,7 +184,7 @@ public class ExportMovieSettingsDialog extends JDialog implements
 		}
 		{
 			txtMovieImageWidth = new JFormattedTextField(formatter);
-			txtMovieImageWidth.setValue(640);
+			txtMovieImageWidth.setValue(1280);
 			txtMovieImageWidth.addPropertyChangeListener("value", this);
 			moviePanel.add(txtMovieImageWidth, "8, 8, fill, default");
 			txtMovieImageWidth.setColumns(10);
@@ -196,7 +196,7 @@ public class ExportMovieSettingsDialog extends JDialog implements
 		}
 		{
 			txtMovieImageHeight = new JFormattedTextField(formatter);
-			txtMovieImageHeight.setValue(480);
+			txtMovieImageHeight.setValue(720);
 			txtMovieImageHeight.addPropertyChangeListener("value", this);
 			moviePanel.add(txtMovieImageHeight, "8, 10, fill, default");
 			txtMovieImageHeight.setColumns(10);

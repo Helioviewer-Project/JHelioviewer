@@ -78,7 +78,7 @@ public class ExportMovieDialog_test implements ActionListener{
 	private long speed = 0;
 	private IMediaWriter writer;
 
-	private MovieFileFilter selectedOutputFormat = MovieFileFilter.ImplementedMovieFilter.MOV.getMovieFilter();
+	private MovieFileFilter selectedOutputFormat = MovieFileFilter.ImplementedMovieFilter.MP4.getMovieFilter();
 	
 	private String txtTargetFile;
 	private ProgressDialog progressDialog;
@@ -101,7 +101,7 @@ public class ExportMovieDialog_test implements ActionListener{
 
     private boolean useCurrentOpenGlSize;
     private int imageWidth;
-    private int imageHeigth;
+    private int imageHeight;
     private ExportMovieDialog_test exportMovieDialog;
     
 	public ExportMovieDialog_test() {
@@ -204,7 +204,7 @@ public class ExportMovieDialog_test implements ActionListener{
         try {
             val = settings.getProperty(SETTING_IMG_HEIGHT);
             if (val != null && !(val.length() == 0)) {
-                this.imageHeigth = Integer.parseInt(val);
+                this.imageHeight = Integer.parseInt(val);
             }
         } catch (Throwable t) {
             Log.error(t);
@@ -218,6 +218,15 @@ public class ExportMovieDialog_test implements ActionListener{
         } catch (Throwable t) {
             Log.error(t);
         }
+        
+        
+
+      //default settings if nothing was specified so far
+      if(imageWidth == 0)
+        imageWidth = 1280;
+
+      if(imageHeight == 0)
+        imageHeight = 720;
 	}
 	
 	
@@ -243,10 +252,10 @@ public class ExportMovieDialog_test implements ActionListener{
 			if (this.useCurrentOpenGlSize) {
 				Dimension dimension = this.mainComponentView.getCanavasSize();
 				this.imageWidth = dimension.width;
-				this.imageHeigth = dimension.height;
+				this.imageHeight = dimension.height;
 			}
 			writer.addVideoStream(0, 0, this.selectedOutputFormat.getCodec(),
-	                this.imageWidth, this.imageHeigth);
+	                this.imageWidth, this.imageHeight);
 		}
 
 		else if (this.selectedOutputFormat.isCompressedFile()){
@@ -327,7 +336,7 @@ public class ExportMovieDialog_test implements ActionListener{
 				else{
 				timedMovieView.setCurrentFrame(i, new ChangeEvent());
 				
-				BufferedImage bufferedImage = mainComponentView.getBufferedImage(imageWidth, imageHeigth);
+				BufferedImage bufferedImage = mainComponentView.getBufferedImage(imageWidth, imageHeight);
 				
 				progressDialog.updateProgressBar(i);
 				

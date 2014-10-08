@@ -502,13 +502,12 @@ public class GL3DComponentView extends AbstractComponentView implements
 
 				offscreenGL.glMatrixMode(GL2.GL_PROJECTION);
 				offscreenGL.glLoadIdentity();
-				offscreenGL.glPushMatrix();
-
 				offscreenGL.glViewport(0, 0, tileWidth, tileHeight);
 				offscreenGL.glFrustum(tileLeft, tileRight, tileBottom, tileTop,
 						clipNear, clipFar);
+				
 				offscreenGL.glMatrixMode(GL2.GL_MODELVIEW);
-				offscreenGL.glPushMatrix();
+				offscreenGL.glLoadIdentity();
 
 				// double factor =
 				int destX = tileWidth * x;
