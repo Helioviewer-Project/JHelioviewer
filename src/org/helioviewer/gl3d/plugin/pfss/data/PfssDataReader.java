@@ -3,7 +3,11 @@ package org.helioviewer.gl3d.plugin.pfss.data;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.Arrays;
+
+import com.jogamp.common.nio.Buffers;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.BinaryTableHDU;
@@ -29,7 +33,7 @@ public class PfssDataReader {
 			InputStream is = null;
 			try {
 				is = new ByteArrayInputStream(data.getData());
-				Fits fits = new Fits(is, true);
+				Fits fits = new Fits(is, false);
 				BasicHDU hdus[] = fits.read();
 				BinaryTableHDU bhdu = (BinaryTableHDU) hdus[1];
 				double b0 = ((double[]) bhdu.getColumn("B0"))[0];
@@ -39,8 +43,16 @@ public class PfssDataReader {
 				short[] ptph = ((short[][]) bhdu.getColumn("PTPH"))[0];
 				short[] ptth = ((short[][]) bhdu.getColumn("PTTH"))[0];
 
+				FloatBuffer vertices = Buffers.newDirectFloatBuffer(ptr.length * 3 + 3);;
+				IntBuffer indicesSunToOutside = Buffers.newDirectIntBuffer(ptr_nz_len.length * 2);
+				IntBuffer indicesSunToSun = Buffers.newDirectIntBuffer(ptr_nz_len.length * 2);
+				IntBuffer indicesOutsideToSun = Buffers.newDirectIntBuffer(ptr_nz_len.length * 2);
 				
-
+				for (int i = 0; i < ptr.length; i++)
+				{
+					
+				}
+				
 			} catch (FitsException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -55,8 +67,14 @@ public class PfssDataReader {
 	}
 	
 	
-	
 	private class Point {
+		float x;
+		float y;
+		float z;
 		
 	}
+	
+	private enum TYPE {
+		SUN_TO_OUTSIDE, SUN_TO_SUN, OUTSIDE_TO_SUN
+	};
 }
