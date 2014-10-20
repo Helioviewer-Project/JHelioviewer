@@ -14,13 +14,16 @@ import com.jogamp.common.nio.Buffers;
 /**
  * Represents a frame of PFSS Data
  * 
+ * it is possible that an instance of the PfssFrame does not yet contain the data. If this is the case, display() won't do anything.
+ * 
+ * this class is threadsafe
  * @author Jonas Schwammberger
  *
  */
 public class PfssFrame {
 	private volatile boolean isLoaded = false;
 	private volatile boolean isInit = false;
-	private final DateAndTimeRange date;
+	private final DateAndTimeRange range;
 	
 	private FloatBuffer vertices;
 	private IntBuffer indicesSunToOutside = null;
@@ -34,8 +37,7 @@ public class PfssFrame {
 	private int VBOIndicesOutsideToSun;
 	
 	public PfssFrame(DateAndTimeRange date) {
-		this.date = date;
-		
+		this.range = date;
 	}
 	
 	/**
@@ -58,52 +60,54 @@ public class PfssFrame {
 	
 	/**
 	 * Initializes data on the videocard
-	 * @param gl
+	 * @param gl2
 	 */
-	public void init(GL2 gl) {
-		if (!isInit && isLoaded && gl != null) {
+	public void init(GL gl) {
+		GL2 gl2 = gl.getGL2();
+		
+		if (!isInit && isLoaded && gl2 != null) {
 			buffers = new int[4];
-			gl.glGenBuffers(4, buffers, 0);
+			gl2.glGenBuffers(4, buffers, 0);
 
 			VBOVertices = buffers[0];
-			gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, VBOVertices);
-			gl.glBufferData(GL2.GL_ARRAY_BUFFER, vertices.limit()
+			gl2.glBindBuffer(GL2.GL_ARRAY_BUFFER, VBOVertices);
+			gl2.glBufferData(GL2.GL_ARRAY_BUFFER, vertices.limit()
 					* Buffers.SIZEOF_FLOAT, vertices, GL.GL_STATIC_DRAW);
-			gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
+			gl2.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
 
 			// color
 			if (indicesSunToSun != null && indicesSunToSun.limit() > 0) {
 				VBOIndicesSunToSun = buffers[1];
-				gl.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER,
+				gl2.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER,
 						VBOIndicesSunToSun);
-				gl.glBufferData(GL.GL_ELEMENT_ARRAY_BUFFER,
+				gl2.glBufferData(GL.GL_ELEMENT_ARRAY_BUFFER,
 						indicesSunToSun.limit() * Buffers.SIZEOF_INT,
 						indicesSunToSun, GL.GL_STATIC_DRAW);
-				gl.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, 0);
+				gl2.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, 0);
 			}
 
 			if (indicesSunToOutside != null
 					&& indicesSunToOutside.limit() > 0) {
 				VBOIndicesSunToOutside = buffers[2];
-				gl.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER,
+				gl2.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER,
 						VBOIndicesSunToOutside);
-				gl.glBufferData(
+				gl2.glBufferData(
 						GL.GL_ELEMENT_ARRAY_BUFFER,
 						indicesSunToOutside.limit() * Buffers.SIZEOF_INT,
 						indicesSunToOutside, GL.GL_STATIC_DRAW);
-				gl.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, 0);
+				gl2.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, 0);
 			}
 
 			if (indicesOutsideToSun != null
 					&& indicesOutsideToSun.limit() > 0) {
 				VBOIndicesOutsideToSun = buffers[3];
-				gl.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER,
+				gl2.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER,
 						VBOIndicesOutsideToSun);
-				gl.glBufferData(
+				gl2.glBufferData(
 						GL.GL_ELEMENT_ARRAY_BUFFER,
 						indicesOutsideToSun.limit() * Buffers.SIZEOF_INT,
 						indicesOutsideToSun, GL.GL_STATIC_DRAW);
-				gl.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, 0);
+				gl2.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, 0);
 			}
 
 			isInit = true;
@@ -122,9 +126,9 @@ public class PfssFrame {
 	}
 	
 	public void display(GL gl) {
+		GL2 gl2 = gl.getGL2();
+		
 		if(isInit) {
-			GL2 gl2 = gl.getGL2();
-			
 			gl2.glEnableClientState(GL2.GL_VERTEX_ARRAY);
 			gl2.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
 			gl2.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
@@ -168,6 +172,12 @@ public class PfssFrame {
 			gl2.glDisable(GL2.GL_BLEND);
 			gl2.glDepthMask(true);
 			gl2.glLineWidth(1f);
+		} else {
+			if(this.isLoaded)
+			{
+				this.init(gl);
+				this.display(gl);
+			}
 		}
 	}
 	
@@ -186,7 +196,7 @@ public class PfssFrame {
 		return isLoaded;
 	}
 	
-	public DateAndTimeRange getDate() {
-		return this.date;
+	public DateAndTimeRange getDateRange() {
+		return this.range;
 	}
 }

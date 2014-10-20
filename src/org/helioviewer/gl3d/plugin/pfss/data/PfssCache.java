@@ -47,7 +47,7 @@ public class PfssCache {
 		return null;
 	}
 
-	public PfssData getData() {
+	public PfssDataOld getData() {
 		if (pfssDatas.get(lastURL) != null)
 			return pfssDatas.get(lastURL).getData();
 		return null;

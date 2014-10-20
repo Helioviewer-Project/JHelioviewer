@@ -1,3 +1,4 @@
+
 package org.helioviewer.gl3d.plugin.pfss.data;
 
 import org.helioviewer.gl3d.plugin.pfss.data.dataStructure.PfssDayAndTime;

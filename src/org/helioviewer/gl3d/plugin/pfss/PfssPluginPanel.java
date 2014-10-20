@@ -43,6 +43,7 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 		LayersListener, ViewListener {
 
 	private static final long serialVersionUID = 1L;
+	private PfssPlugin3dRenderer renderer;
 	private PfssCache pfssCache = null;
 	private boolean showAgain = true;
 	private boolean retry = false;
@@ -57,12 +58,13 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 	 * Default constructor
 	 * 
 	 * */
-	public PfssPluginPanel(PfssCache pfssCache) {
+	public PfssPluginPanel(PfssCache pfssCache,PfssPlugin3dRenderer renderer) {
 		this.pfssCache = pfssCache;
 		// set up visual components
 		initVisualComponents();
 		// register as layers listener
 		LayersModel.getSingletonInstance().addLayersListener(this);
+		this.renderer = renderer;
 	}
 
 	/**
@@ -118,12 +120,12 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 	public void actionPerformed(ActionEvent act) {
 		if (act.getSource().equals(visibleButton)) {
 			if (pfssCache.isVisible()) {
-				pfssCache.setVisible(false);
+				renderer.setVisible(false);
 				visibleButton.setIcon(new ImageIcon(PfssPlugin
 						.getResourceUrl("/images/invisible_dm.png")));
 			} else {
 				this.showData();
-				pfssCache.setVisible(true);
+				renderer.setVisible(true);
 				visibleButton.setIcon(new ImageIcon(PfssPlugin
 						.getResourceUrl("/images/visible_dm.png")));
 			}
@@ -241,7 +243,7 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 						Log.error(message);
 						JCheckBox checkBox = new JCheckBox(
 								"Don't show this message again.");
-						if (this.pfssCache.isVisible()){
+						if (this.renderer.isVisible()){
 							checkBox.setEnabled(showAgain);
 							Object[] params = { message, checkBox };
 							int n = JOptionPane.showOptionDialog(this, params,
@@ -331,6 +333,6 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 	}
 
 	public static void main(String[] args) {
-		new PfssPluginPanel(null);
+		new PfssPluginPanel(null,null);
 	}
 }

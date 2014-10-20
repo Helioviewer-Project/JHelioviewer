@@ -17,7 +17,7 @@ import javax.media.opengl.GL;
  * @author Stefan Meier (stefan.meier@fhnw.ch)
  * */
 public class PfssFitsFile {
-	private PfssData data = null;
+	private PfssDataOld data = null;
 	private byte[] gzipFitsFile;
 	private boolean loaded = false;
 
@@ -65,9 +65,9 @@ public class PfssFitsFile {
 	 * 
 	 * @return PfssData -> prepared data for the visualization
 	 */
-	public PfssData getData() {
+	public PfssDataOld getData() {
 		if (data == null && loaded) {
-			this.data = new PfssData(gzipFitsFile);
+			this.data = new PfssDataOld(gzipFitsFile);
 		}
 		return data;
 	}

@@ -29,8 +29,9 @@ public class PfssPluginContainer extends OverlayContainer {
 	@Override
 	protected void installOverlayImpl(OverlayView overlayView,
 			OverlayControlComponentManager controlList) {
+		PfssPlugin3dRenderer renderer = new PfssPlugin3dRenderer(pfssCache);
 		pfssCache = new PfssCache();
-		pfssPluginPanel = new PfssPluginPanel(pfssCache);
+		pfssPluginPanel = new PfssPluginPanel(pfssCache,renderer);
 		OverlayPluginContainer overlayPluginContainer = new OverlayPluginContainer();
 		overlayPluginContainer
 				.setRenderer3d(new PfssPlugin3dRenderer(pfssCache));
