@@ -1,6 +1,7 @@
 package org.helioviewer.gl3d.plugin.pfss.data;
 
 import java.util.Date;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.media.opengl.GL2;
 
@@ -13,15 +14,16 @@ public class FrameManager {
 	private final PfssDataCreator loader;
 	private final PfssFrameCreator frameCreator;
 	private final PfssFrameInitializer initializer;
-	private final DateRangeManager manager;
+	private final FileManager manager;
 	
+	private final ConcurrentLinkedQueue<PfssFrame> destructionQueue = new ConcurrentLinkedQueue<>();
 	private PfssFrame[] preloadedqueue;
 	private int currentIndex;
 	private int lastIndex;
 	private int nextDateIndex;
 	
 	public FrameManager() {
-		manager = new DateRangeManager();
+		manager = new FileManager();
 		loader = new PfssDataCreator(manager);
 		initializer = new PfssFrameInitializer();
 		frameCreator = new PfssFrameCreator(initializer);
@@ -29,7 +31,7 @@ public class FrameManager {
 	
 	public PfssFrame getFrame(Date date) {
 		//still the same frame
-		if(preloadedqueue[currentIndex].getDateRange().isInRange(date))
+		if(preloadedqueue[currentIndex].getDateRange().isDateInRange(date))
 			return preloadedqueue[currentIndex];
 		
 		//advance to next
@@ -55,12 +57,13 @@ public class FrameManager {
 	}
 	
 	private void unload(int index) {
-		//handle destruction
+		destructionQueue.add(preloadedqueue[index]);
 	}
 	
 	private void loadFollowing(int index) {
 		int destinationIndex = (index+1) % preloadedqueue.length;
 		PfssData d = loader.getDataAsync(nextDateIndex);
+		nextDateIndex = ++nextDateIndex % manager.getNumberOfFiles();
 		preloadedqueue[destinationIndex] = frameCreator.createFrameAsync(d);
 	}
 	
@@ -82,6 +85,11 @@ public class FrameManager {
 	
 	public void preInitFrames(GL2 gl) {
 		initializer.init(gl);
+		
+		//destroy
+		PfssFrame f = null;
+		while((f = destructionQueue.poll()) != null)
+			f.clear(gl);
 	}
 	
 }

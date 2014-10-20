@@ -25,11 +25,10 @@ public class PfssData implements Runnable {
 	private final Lock lock = new ReentrantLock();
 	private final Condition loaded = lock.newCondition();
 	private final String url;
-	private final DateAndTimeRange range;
-	//daterange
+	private final FileDescriptor descriptor;
 	
-	public PfssData(DateAndTimeRange range, String url) {
-		this.range = range;
+	public PfssData(FileDescriptor descriptor, String url) {
+		this.descriptor = descriptor;
 		this.url = url;
 	}
 	
@@ -66,8 +65,8 @@ public class PfssData implements Runnable {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			loaded.signalAll();
 			lock.unlock();
-			loaded.signal();
 		}
 		
 	}
@@ -94,7 +93,7 @@ public class PfssData implements Runnable {
 		
 	}
 	
-	public DateAndTimeRange getDateRange() {
-		return this.range;
+	public FileDescriptor getDateRange() {
+		return this.descriptor;
 	}
 }

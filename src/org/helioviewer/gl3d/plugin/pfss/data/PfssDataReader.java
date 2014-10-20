@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -55,7 +56,7 @@ public class PfssDataReader implements Runnable {
 				// do nothing and exit this method
 			}
 		}
-		if (!data.isLoaded()) {
+		if (data.isLoaded()) {
 
 			InputStream is = null;
 			try {
@@ -91,11 +92,12 @@ public class PfssDataReader implements Runnable {
 					IntBuffer indexBuffer = getLineType(ptr, vertexIndex,
 							vertexIndex + lineSize - 1, indicesSunToOutside,
 							indicesSunToSun, indicesOutsideToSun);
-					vertexIndex++;
 
-					for (int j = vertexIndex; j < vertexIndex + lineSize; j++) {
-						Point current = new Point(vertexIndex, ptr[j], ptph[j],
-								ptth[j], l0, b0);
+					int maxSize = vertexIndex + lineSize;
+					vertexIndex++;
+					for (; vertexIndex < maxSize; vertexIndex++) {
+						Point current = new Point(vertexIndex, ptr[vertexIndex], ptph[vertexIndex],
+								ptth[vertexIndex], l0, b0);
 						this.addPoint(vertices, current);
 						addLineSegment(lastP, current, indexBuffer);
 						lastP = current;
@@ -188,5 +190,16 @@ public class PfssDataReader implements Runnable {
 	@Override
 	public void run() {
 		readData();
+	}
+	
+	public static void main(String[] args) {
+		String s = "file:///C:/dev/git/bachelor/tools/FITSFormatter/";
+		FileDescriptor f = new FileDescriptor(new Date(0), new Date(1), "fitsOut.fits");
+		PfssData d = new PfssData(f,s+"fitsOut.fits");
+		d.loadData();
+		PfssFrame frame = new PfssFrame(f);
+		PfssDataReader r = new PfssDataReader(d, frame, null);
+		r.readData();
+		
 	}
 }

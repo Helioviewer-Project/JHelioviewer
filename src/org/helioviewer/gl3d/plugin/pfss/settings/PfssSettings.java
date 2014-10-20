@@ -34,6 +34,8 @@ public class PfssSettings {
 	 */
 	public final static String INFOFILE_URL = "http://soleil.i4ds.ch/sol-win/";
 
+	public final static String FITS_POST_FIX ="pfss_field_data.fitz.gz";
+	
 	/**
 	 * Color of the line (from sunradius to outside)
 	 */

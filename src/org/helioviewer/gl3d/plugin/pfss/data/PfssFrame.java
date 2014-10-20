@@ -23,7 +23,7 @@ import com.jogamp.common.nio.Buffers;
 public class PfssFrame {
 	private volatile boolean isLoaded = false;
 	private volatile boolean isInit = false;
-	private final DateAndTimeRange range;
+	private final FileDescriptor descriptor;
 	
 	private FloatBuffer vertices;
 	private IntBuffer indicesSunToOutside = null;
@@ -36,8 +36,8 @@ public class PfssFrame {
 	private int VBOIndicesSunToSun;
 	private int VBOIndicesOutsideToSun;
 	
-	public PfssFrame(DateAndTimeRange date) {
-		this.range = date;
+	public PfssFrame(FileDescriptor descriptor) {
+		this.descriptor = descriptor;
 	}
 	
 	/**
@@ -196,7 +196,7 @@ public class PfssFrame {
 		return isLoaded;
 	}
 	
-	public DateAndTimeRange getDateRange() {
-		return this.range;
+	public FileDescriptor getDateRange() {
+		return this.descriptor;
 	}
 }
