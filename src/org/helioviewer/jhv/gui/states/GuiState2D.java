@@ -60,9 +60,9 @@ public class GuiState2D implements State {
         if (firstTime) {
 
             ViewchainFactory overviewFactory = new ViewchainFactory(true);
-            overviewComponentView = overviewFactory.createViewchainOverview(mainComponentView, overviewComponentView, false);
+            //overviewComponentView = overviewFactory.createViewchainOverview(mainComponentView, overviewComponentView, false);
         } else {
-            overviewComponentView.getAdapter(SynchronizeView.class).setObservedView(mainComponentView);
+            //overviewComponentView.getAdapter(SynchronizeView.class).setObservedView(mainComponentView);
         }
 
         ViewListenerDistributor.getSingletonInstance().setView(mainComponentView);

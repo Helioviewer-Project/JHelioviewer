@@ -15,9 +15,8 @@ import org.helioviewer.viewmodel.imagedata.ColorMask;
 import org.helioviewer.viewmodel.imagedata.ImageData;
 import org.helioviewer.viewmodel.imagedata.SingleChannelByte8ImageData;
 import org.helioviewer.viewmodel.imagedata.SingleChannelShortImageData;
+import org.helioviewer.viewmodel.metadata.MetaDataFactory;
 import org.helioviewer.viewmodel.metadata.MetaData;
-import org.helioviewer.viewmodel.metadata.MetaDataConstructor;
-import org.helioviewer.viewmodel.metadata.ObserverMetaData;
 import org.helioviewer.viewmodel.region.Region;
 import org.helioviewer.viewmodel.region.StaticRegion;
 import org.helioviewer.viewmodel.view.AbstractView;
@@ -95,8 +94,8 @@ public class JHVFITSView extends AbstractView implements ViewportView, RegionVie
      * Initializes global variables.
      */
     private void initFITSImageView() {
-
-        m = MetaDataConstructor.getMetaData(fits);
+    	m = MetaDataFactory.getMetaData(fits);
+        //m = MetaDataConstructor.getMetaData(fits);
 
         BufferedImage bi = fits.getImage(0, 0, fits.getPixelHeight(), fits.getPixelWidth());
 
@@ -246,13 +245,7 @@ public class JHVFITSView extends AbstractView implements ViewportView, RegionVie
      * {@inheritDoc}
      * */
     public String getName() {
-        if (m instanceof ObserverMetaData) {
-            ObserverMetaData observerMetaData = (ObserverMetaData) m;
-            return observerMetaData.getFullName();
-        } else {
-            String name = uri.getPath();
-            return name.substring(name.lastIndexOf('/') + 1, name.lastIndexOf('.'));
-        }
+        return m.getFullName();
     }
 
     /**

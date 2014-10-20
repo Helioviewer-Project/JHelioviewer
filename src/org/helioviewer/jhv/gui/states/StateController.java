@@ -23,13 +23,8 @@ public class StateController {
     
     
     private StateController() {
-        if (!GLInfo.glIsEnabled()) {
-            // throw new
-            // IllegalStateException("Cannot create GL3DViewchainFactory when OpenGL is not available!");
-            set2DState();
-        } else {
-            set3DState();
-        }
+        set3DState();
+        
     }
 
     public static StateController getInstance() {
@@ -56,11 +51,8 @@ public class StateController {
         return this.currentState;
     }
     
-    public State getState(ViewStateEnum viewState){
-    	if (ViewStateEnum.View2D == viewState)
-    		return ViewStateEnum.View2D.getState();
-    	else
-    		return ViewStateEnum.View3D.getState();
+    public State getState(){
+    	return ViewStateEnum.View3D.getState();
     }
 
     public void addStateChangeListener(StateChangeListener listener) {

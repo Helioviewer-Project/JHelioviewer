@@ -25,7 +25,7 @@ public class GL3DImageFragmentShaderProgram extends GLFragmentShaderProgram {
             program = program.replace("textureCoordinate", shaderBuilder.useStandardParameter("float4", "TEXCOORD0"));
 
             shaderBuilder.addMainFragment(program);
-            System.out.println("GL3D Image Fragment Shader:\n" + shaderBuilder.getCode());
+            //System.out.println("GL3D Image Fragment Shader:\n" + shaderBuilder.getCode());
         } catch (GLBuildShaderException e) {
             e.printStackTrace();
         }

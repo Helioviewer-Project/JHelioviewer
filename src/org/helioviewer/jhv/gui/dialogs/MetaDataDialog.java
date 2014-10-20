@@ -36,7 +36,6 @@ import javax.xml.transform.stream.StreamResult;
 import org.helioviewer.jhv.JHVDirectory;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.interfaces.ShowableDialog;
-import org.helioviewer.viewmodel.metadata.HelioviewerMetaData;
 import org.helioviewer.viewmodel.metadata.MetaData;
 import org.helioviewer.viewmodel.view.MetaDataView;
 import org.helioviewer.viewmodel.view.fitsview.JHVFITSView;
@@ -184,23 +183,17 @@ public class MetaDataDialog extends JDialog implements ActionListener, ShowableD
 
         MetaData metaData = metaDataView.getMetaData();
 
-        if (!(metaData instanceof HelioviewerMetaData)) {
-            metaDataOK = false;
-            resetData();
-            addDataItem("No metadata is available.");
-        } else {
-            HelioviewerMetaData m = (HelioviewerMetaData) metaData;
             metaDataOK = true;
             resetData();
             addDataItem("-------------------------------");
             addDataItem("       Basic Information       ");
             addDataItem("-------------------------------");
-            addDataItem("Observatory : " + m.getObservatory());
-            addDataItem("Instrument  : " + m.getInstrument());
-            addDataItem("Detector    : " + m.getDetector());
-            addDataItem("Measurement : " + m.getMeasurement());
-            addDataItem("Date        : " + m.getDateTime().getFormattedDate());
-            addDataItem("Time        : " + m.getDateTime().getFormattedTime());
+            addDataItem("Observatory : " + metaData.getObservatory());
+            addDataItem("Instrument  : " + metaData.getInstrument());
+            addDataItem("Detector    : " + metaData.getDetector());
+            addDataItem("Measurement : " + metaData.getMeasurement());
+            addDataItem("Date        : " + metaData.getDateTime().getFormattedDate());
+            addDataItem("Time        : " + metaData.getDateTime().getFormattedTime());
 
             String xmlText = null;
             if (metaDataView instanceof JHVJP2View) {
@@ -252,13 +245,13 @@ public class MetaDataDialog extends JDialog implements ActionListener, ShowableD
                     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH.mm.ss'Z'");
                     dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 
-                    outFileName = JHVDirectory.EXPORTS.getPath() + m.getFullName() + " " + dateFormat.format(m.getDateTime().getTime()) + ".fits.xml";
+                    outFileName = JHVDirectory.EXPORTS.getPath() + metaData.getFullName() + " " + dateFormat.format(metaData.getDateTime().getTime()) + ".fits.xml";
 
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-        }
+        
     }
 
     /**

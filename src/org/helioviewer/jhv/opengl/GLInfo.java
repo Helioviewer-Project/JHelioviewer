@@ -127,11 +127,8 @@ public class GLInfo {
     public static void setGlEnabled(boolean enabled) {
         boolean before = glActivated;
 
-        if (glUsable) {
-            glActivated = enabled;
-        } else {
-            glActivated = false;
-        }
+        glActivated = enabled;
+        
         J2KRenderGlobalOptions.setDoubleBufferingOption(glActivated);
 
         if (before != glActivated && (!glActivated || glInitiated)) {

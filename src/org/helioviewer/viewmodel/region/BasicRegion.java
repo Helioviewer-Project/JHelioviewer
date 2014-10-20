@@ -1,7 +1,6 @@
 package org.helioviewer.viewmodel.region;
 
 import org.helioviewer.base.math.Vector2dDouble;
-import org.helioviewer.viewmodel.metadata.ImageSizeMetaData;
 
 /**
  * Represents a region.

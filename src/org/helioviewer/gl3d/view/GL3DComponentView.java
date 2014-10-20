@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.Iterator;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.imageio.ImageIO;
@@ -32,10 +33,13 @@ import org.helioviewer.base.logging.Log;
 import org.helioviewer.base.math.Vector2dInt;
 import org.helioviewer.base.physics.Constants;
 import org.helioviewer.gl3d.camera.GL3DCamera;
+import org.helioviewer.gl3d.camera.GL3DCameraListener;
 import org.helioviewer.gl3d.model.image.GL3DImageLayer;
 import org.helioviewer.gl3d.model.image.GL3DImageLayers;
 import org.helioviewer.gl3d.scenegraph.GL3DState;
 import org.helioviewer.gl3d.scenegraph.GL3DState.VISUAL_TYPE;
+import org.helioviewer.jhv.layers.LayersListener;
+import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.viewmodel.changeevent.LayerChangedReason;
 import org.helioviewer.viewmodel.changeevent.LayerChangedReason.LayerChangeType;
@@ -46,6 +50,7 @@ import org.helioviewer.viewmodel.renderer.screen.GLScreenRenderGraphics;
 import org.helioviewer.viewmodel.renderer.screen.ScreenRenderer;
 import org.helioviewer.viewmodel.view.AbstractComponentView;
 import org.helioviewer.viewmodel.view.ComponentView;
+import org.helioviewer.viewmodel.view.LayeredView;
 import org.helioviewer.viewmodel.view.LinkedMovieManager;
 import org.helioviewer.viewmodel.view.MovieView;
 import org.helioviewer.viewmodel.view.RegionView;
@@ -53,7 +58,6 @@ import org.helioviewer.viewmodel.view.TimedMovieView;
 import org.helioviewer.viewmodel.view.View;
 import org.helioviewer.viewmodel.view.ViewHelper;
 import org.helioviewer.viewmodel.view.ViewportView;
-import org.helioviewer.viewmodel.view.opengl.GLSharedContext;
 import org.helioviewer.viewmodel.view.opengl.GLTextureHelper;
 import org.helioviewer.viewmodel.view.opengl.GLView;
 import org.helioviewer.viewmodel.view.opengl.shader.GLFragmentShaderView;
@@ -66,7 +70,6 @@ import org.helioviewer.viewmodel.viewport.StaticViewport;
 import org.helioviewer.viewmodel.viewport.Viewport;
 import org.helioviewer.viewmodel.viewportimagesize.ViewportImageSize;
 
-
 import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.GLPixelStorageModes;
 import com.jogamp.opengl.util.PMVMatrix;
@@ -78,16 +81,15 @@ import com.jogamp.opengl.util.awt.ImageUtil;
  * {@link GLCanvas}.
  * 
  * 
- * @author Simon Sp���rri (simon.spoerri@fhnw.ch)
+ * @author Simon Sp���������rri (simon.spoerri@fhnw.ch)
  * 
  */
 public class GL3DComponentView extends AbstractComponentView implements
-		GLEventListener, ComponentView {
+		GLEventListener, ComponentView, LayersListener, GL3DCameraListener {
 	public static final String SETTING_TILE_WIDTH = "gl.screenshot.tile.width";
 	public static final String SETTING_TILE_HEIGHT = "gl.screenshot.tile.height";
 
 	private GLCanvas canvas;
-	private FPSAnimator animator;
 
 	private Color backgroundColor = Color.BLACK;
 	private Color outsideViewportColor = Color.DARK_GRAY;
@@ -133,28 +135,47 @@ public class GL3DComponentView extends AbstractComponentView implements
 	private double height = 0.0;
 
 	public GL3DComponentView() {
-		this.canvas = new GLCanvas();
-		// this.canvas = new GLCanvas(null, null,
-		// GLSharedContext.getSharedContext(), null);
-		// Just for testing...
-		animator = new FPSAnimator(canvas, 10);
+		GLCapabilities cap = new GLCapabilities(GLProfile.getDefault());
+		try {
+			cap.setDepthBits(24);
+			this.canvas = new GLCanvas(cap);
+		} catch (Exception e) {
+			try {
+				Log.error("Unable to load 24-bit z-buffer, try 32-bit");
+				cap.setDepthBits(32);
+				this.canvas = new GLCanvas(cap);
+			} catch (Exception e2) {
+				Log.error("Unable to load 32-bit z-buffer, try 16-bit");
+				try {
+					cap.setDepthBits(16);
+					this.canvas = new GLCanvas(cap);
+				} catch (Exception e3) {
+					Log.error("Unable to load 16-bit z-buffer, use default");
+					this.canvas = new GLCanvas();
+				}
+			}
+		}
+    	LayersModel.getSingletonInstance().addLayersListener(this);
+    	
 		this.canvas.addGLEventListener(this);
 	}
 
 	public void deactivate() {
-		if (this.animator != null) {
+		/*if (this.animator != null) {
 			this.animator.stop();
 			if (getAdapter(GL3DView.class) != null) {
 				getAdapter(GL3DView.class).deactivate(GL3DState.get());
 			}
 		}
-		animationLock.lock();
+		animationLock.lock();*/
 	}
 
 	public void activate() {
+		/*
 		this.animator.start();
 		if (this.animationLock.isLocked())
 			animationLock.unlock();
+			*/
 	}
 
 	public GLCanvas getComponent() {
@@ -166,8 +187,9 @@ public class GL3DComponentView extends AbstractComponentView implements
 	}
 
 	public void init(GLAutoDrawable glAD) {
+    	this.getAdapter(GL3DCameraView.class).getCurrentCamera().addCameraListener(this);
+
 		Log.debug("GL3DComponentView.Init");
-		GLSharedContext.setSharedContext(glAD.getContext());
 		GL2 gl = glAD.getGL().getGL2();
 		GL3DState.create(gl);
 
@@ -366,6 +388,8 @@ public class GL3DComponentView extends AbstractComponentView implements
 			gl.glDisable(GL2.GL_DEPTH_TEST);
 			gl.glEnable(GL2.GL_TEXTURE_2D);
 			GLScreenRenderGraphics glRenderer = new GLScreenRenderGraphics(gl);
+			
+			//Iterator<> postRenderer = postRenderers
 			synchronized (postRenderers) {
 				for (ScreenRenderer r : postRenderers) {
 					r.render(glRenderer);
@@ -662,20 +686,68 @@ public class GL3DComponentView extends AbstractComponentView implements
 
 	@Override
 	public void stop() {
-		animator.stop();
 		defaultViewport = this.getAdapter(ViewportView.class).getViewport();
 
 	}
 
 	@Override
 	public void start() {
-		animator.start();
 		this.getAdapter(ViewportView.class).setViewport(defaultViewport,
 				new ChangeEvent());
 	}
 	
 	public void setActiveLayer(GL3DImageTextureView activeLayer){
 		this.activeLayer = activeLayer;
+	}
+
+	@Override
+	public void layerAdded(int idx) {
+		this.canvas.display();
+	}
+
+	@Override
+	public void layerRemoved(View oldView, int oldIdx) {
+		this.canvas.display();
+	}
+
+	@Override
+	public void layerChanged(int idx) {
+		this.canvas.display();
+	}
+
+	@Override
+	public void activeLayerChanged(int idx) {
+		this.canvas.display();
+	}
+
+	@Override
+	public void viewportGeometryChanged() {
+		this.canvas.display();
+	}
+
+	@Override
+	public void timestampChanged(int idx) {
+		this.canvas.display();
+	}
+
+	@Override
+	public void subImageDataChanged() {
+		this.canvas.display();
+	}
+
+	@Override
+	public void layerDownloaded(int idx) {
+		this.canvas.display();
+	}
+
+	@Override
+	public void cameraMoved(GL3DCamera camera) {
+		//this.canvas.display();
+	}
+
+	@Override
+	public void cameraMoving(GL3DCamera camera) {
+		this.canvas.display();		
 	}
 	
 }

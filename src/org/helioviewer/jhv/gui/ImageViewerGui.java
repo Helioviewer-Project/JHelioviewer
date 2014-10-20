@@ -47,10 +47,10 @@ import org.helioviewer.jhv.gui.components.statusplugins.QualityStatusPanel;
 import org.helioviewer.jhv.gui.components.statusplugins.RenderModeStatusPanel;
 import org.helioviewer.jhv.gui.components.statusplugins.ZoomStatusPanel;
 import org.helioviewer.jhv.gui.controller.ZoomController;
+import org.helioviewer.jhv.gui.states.GuiState3DWCS;
 import org.helioviewer.jhv.gui.states.State;
 import org.helioviewer.jhv.gui.states.StateController;
 import org.helioviewer.jhv.gui.states.StateController.StateChangeListener;
-import org.helioviewer.jhv.gui.states.ViewStateEnum;
 import org.helioviewer.jhv.internal_plugins.filter.SOHOLUTFilterPlugin.SOHOLUTPanel;
 import org.helioviewer.jhv.internal_plugins.filter.channelMixer.ChannelMixerPanel;
 import org.helioviewer.jhv.internal_plugins.filter.contrast.ContrastPanel;
@@ -63,7 +63,7 @@ import org.helioviewer.jhv.io.APIRequestManager;
 import org.helioviewer.jhv.io.CommandLineProcessor;
 import org.helioviewer.jhv.io.FileDownloader;
 import org.helioviewer.jhv.io.JHVRequest;
-import org.helioviewer.viewmodel.metadata.ImageSizeMetaData;
+import org.helioviewer.viewmodel.metadata.MetaData;
 import org.helioviewer.viewmodel.view.ComponentView;
 import org.helioviewer.viewmodel.view.FilterView;
 import org.helioviewer.viewmodel.view.ImageInfoView;
@@ -128,14 +128,6 @@ public class ImageViewerGui {
 	 * components.
 	 */
 	private ImageViewerGui() {
-		StateController.getInstance().addStateChangeListener(
-				new StateChangeListener() {
-					public void stateChanged(State newState, State oldState,
-							StateController stateController) {
-						activateState(newState, oldState);
-					}
-				});
-
 		mainFrame = createMainFrame();
 
 		menuBar = new MenuBar();
@@ -287,8 +279,7 @@ public class ImageViewerGui {
 	 * Initializes the main and overview view chain.
 	 */
 	public void createViewchains() {
-		this.activateState(StateController.getInstance().getCurrentState(),
-				null);
+		this.activateState(StateController.getInstance().getCurrentState(), null);
 		packAndShow(true);
 		mainFrame.validate();
 	}
@@ -341,15 +332,6 @@ public class ImageViewerGui {
 				.getMainComponentView();
 	}
 
-	/**
-	 * Returns instance of the overview ComponentView.
-	 * 
-	 * @return instance of the overview ComponentView.
-	 */
-	public ComponentView getOverviewView() {
-		return StateController.getInstance().getCurrentState()
-				.getOverviewComponentView();
-	}
 
 	/**
 	 * Returns the scrollpane containing the left content pane.
@@ -471,21 +453,14 @@ public class ImageViewerGui {
 
 	public void addTopToolBarPlugin(
 			PropertyChangeListener propertyChangeListener, JToggleButton button) {
-		StateController.getInstance().getState(ViewStateEnum.View2D)
-				.getTopToolBar().addToolbarPlugin(button);
-		StateController.getInstance().getState(ViewStateEnum.View3D)
+		StateController.getInstance().getState()
 				.getTopToolBar().addToolbarPlugin(button);
 
-		StateController.getInstance().getState(ViewStateEnum.View2D)
-				.getTopToolBar()
-				.addPropertyChangeListener(propertyChangeListener);
-		StateController.getInstance().getState(ViewStateEnum.View3D)
+		StateController.getInstance().getState()
 				.getTopToolBar()
 				.addPropertyChangeListener(propertyChangeListener);
 
-		StateController.getInstance().getState(ViewStateEnum.View2D)
-				.getTopToolBar().validate();
-		StateController.getInstance().getState(ViewStateEnum.View3D)
+		StateController.getInstance().getState()
 				.getTopToolBar().validate();
 	}
 
@@ -508,7 +483,6 @@ public class ImageViewerGui {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				TopToolBar toolBar = newState.getTopToolBar();
-				toolBar.updateStateButtons();
 				toolBar.setDisplayMode(null);
 				contentPanel.add(toolBar, BorderLayout.PAGE_START);
 			}
@@ -523,10 +497,12 @@ public class ImageViewerGui {
 
 		mainFrame.validate();
 
+		/*
 		if (newState.isOverviewPanelInteractionEnabled())
 			overviewImagePanel.enableInteraction();
 		else
 			overviewImagePanel.disableInteraction();
+		*/
 
 		newState.activate();
 		
@@ -537,9 +513,6 @@ public class ImageViewerGui {
 
 		if (getMainView() != null) {
 			getMainImagePanel().setView(getMainView());
-		}
-		if (getOverviewView() != null) {
-			overviewImagePanel.setView(getOverviewView());
 		}
 		mainFrame.validate();
 	}
@@ -605,7 +578,7 @@ public class ImageViewerGui {
 										.getAdapter(ImageInfoView.class))) {
 
 									// Set the correct image scale
-									ImageSizeMetaData imageSizeMetaData = (ImageSizeMetaData) imageInfoView
+									MetaData imageSizeMetaData = imageInfoView
 											.getAdapter(MetaDataView.class)
 											.getMetaData();
 									ZoomController zoomController = new ZoomController();

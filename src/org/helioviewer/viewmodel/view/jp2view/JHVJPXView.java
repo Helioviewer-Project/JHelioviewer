@@ -4,7 +4,6 @@ import org.helioviewer.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.viewmodel.changeevent.PlayStateChangedReason;
 import org.helioviewer.viewmodel.changeevent.TimestampChangedReason;
 import org.helioviewer.viewmodel.imagedata.ImageData;
-import org.helioviewer.viewmodel.metadata.ObserverMetaData;
 import org.helioviewer.viewmodel.view.CachedMovieView;
 import org.helioviewer.viewmodel.view.LinkedMovieManager;
 import org.helioviewer.viewmodel.view.TimedMovieView;
@@ -383,11 +382,9 @@ public class JHVJPXView extends JHVJP2View implements TimedMovieView, CachedMovi
 
         lastRenderedCompositionLayer = compositionLayer;
 
-        if (metaData instanceof ObserverMetaData) {
-            ObserverMetaData observerMetaData = (ObserverMetaData) metaData;
-            observerMetaData.updateDateTime(dateTimeCache.getDateTime(compositionLayer));
-            event.addReason(new TimestampChangedReason(this, observerMetaData.getDateTime()));
-        }
+        metaData.updateDateTime(dateTimeCache.getDateTime(compositionLayer));
+        event.addReason(new TimestampChangedReason(this, metaData.getDateTime()));
+        
         super.setSubimageData(newImageData, roi, 0);
     }
 

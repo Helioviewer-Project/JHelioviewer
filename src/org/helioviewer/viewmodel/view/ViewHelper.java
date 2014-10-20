@@ -57,12 +57,12 @@ public final class ViewHelper {
      *            Target viewport, which the region should fit in
      * @param r
      *            Source region, which has to be expanded
-     * @param m
+     * @param metaData
      *            Meta data of the image, to read maximal region
      * @return Expanded region
      * @see #contractRegionToViewportAspectRatio(Viewport, Region, MetaData)
      */
-    public static Region expandRegionToViewportAspectRatio(Viewport v, Region r, MetaData m) {
+    public static Region expandRegionToViewportAspectRatio(Viewport v, Region r, MetaData metaData) {
 
         if (v == null)
             return r;
@@ -70,7 +70,7 @@ public final class ViewHelper {
         double viewportRatio = v.getAspectRatio();
 
         if (Math.abs(r.getWidth() / r.getHeight() - viewportRatio) > JavaCompatibility.DOUBLE_MIN_NORMAL * 4) {
-            return cropRegionToImage(StaticRegion.createAdaptedRegion(r.getRectangle().expandToAspectRatioKeepingCenter(viewportRatio)), m);
+            return cropRegionToImage(StaticRegion.createAdaptedRegion(r.getRectangle().expandToAspectRatioKeepingCenter(viewportRatio)), metaData);
         } else {
             return r;
         }
@@ -303,18 +303,18 @@ public final class ViewHelper {
      * 
      * @param r
      *            Region to move and crop, if necessary
-     * @param m
+     * @param metaData
      *            Meta data defining the maximal region
      * @return Region located inside the maximal region
      */
-    public static Region cropRegionToImage(Region r, MetaData m) {
-        if (r == null || m == null) {
+    public static Region cropRegionToImage(Region r, MetaData metaData) {
+        if (r == null || metaData == null) {
             return r;
         }
 
         Vector2dDouble halfSize = r.getSize().scale(0.5);
         Vector2dDouble oldCenter = r.getLowerLeftCorner().add(halfSize);
-        Vector2dDouble newCenter = oldCenter.crop(m.getPhysicalLowerLeft(), m.getPhysicalUpperRight());
+        Vector2dDouble newCenter = oldCenter.crop(metaData.getPhysicalLowerLeft(), metaData.getPhysicalUpperRight());
 
         if (oldCenter.equals(newCenter)) {
             return r;
@@ -494,11 +494,7 @@ public final class ViewHelper {
         String[] parts = uri.toString().split("\\.");
         String ending = parts[parts.length - 1];
 
-        if (ending.equals("jpeg") || ending.equals("jpg") || ending.equals("JPEG") || ending.equals("JPG") || ending.equals("png") || ending.equals("PNG")) {
-
-            return new JHVSimpleImageView(uri);
-
-        } else if (ending.equals("fits") || ending.equals("FITS") || ending.equals("fts") || ending.equals("FTS")) {
+        if (ending.equals("fits") || ending.equals("FITS") || ending.equals("fts") || ending.equals("FTS")) {
 
             try {
                 return new JHVFITSView(uri);

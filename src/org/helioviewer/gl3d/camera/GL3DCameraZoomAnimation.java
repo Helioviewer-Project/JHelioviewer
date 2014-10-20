@@ -1,5 +1,7 @@
 package org.helioviewer.gl3d.camera;
 
+import org.helioviewer.jhv.gui.states.StateController;
+
 /**
  * This animation zooms the camera by a given amount. Zooming only affects the
  * z-component of the {@link GL3DCamera}'s translation.
@@ -39,7 +41,7 @@ public class GL3DCameraZoomAnimation implements GL3DCameraAnimation {
         long timeDelta = System.currentTimeMillis() - lastAnimationTime;
 
         this.timeLeft -= timeDelta;
-        System.out.println("timeLeft : " + timeLeft);
+        
         if (timeLeft <= 0) {
             camera.setZTranslation(targetDistance);
         } else {

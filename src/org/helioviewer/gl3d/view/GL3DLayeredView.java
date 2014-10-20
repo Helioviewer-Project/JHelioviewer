@@ -67,6 +67,7 @@ public class GL3DLayeredView extends GLLayeredView implements GL3DView, LayeredV
         }
 
 
+        
         // Call to GLLayeredView.addLayer
         super.addLayer(newLayer, newIndex);
     }

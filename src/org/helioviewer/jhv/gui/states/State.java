@@ -39,12 +39,6 @@ public interface State {
      */
     public ViewchainFactory getViewchainFactory();
 
-    /**
-     * To get the type of the state
-     * 
-     * @return ViewStateEnum type
-     */
-    public ViewStateEnum getType();
 
     public ComponentView getMainComponentView();
 

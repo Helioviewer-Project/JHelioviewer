@@ -11,10 +11,8 @@ import org.helioviewer.jhv.gui.components.QualitySpinner;
 import org.helioviewer.jhv.internal_plugins.selectedLayer.SelectedLayerPanel;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.opengl.GLInfo;
-import org.helioviewer.viewmodel.factory.BufferedImageViewFactory;
 import org.helioviewer.viewmodel.factory.GLViewFactory;
 import org.helioviewer.viewmodel.factory.ViewFactory;
-import org.helioviewer.viewmodel.metadata.HelioviewerMetaData;
 import org.helioviewer.viewmodel.metadata.MetaData;
 import org.helioviewer.viewmodel.view.ComponentView;
 import org.helioviewer.viewmodel.view.FilterView;
@@ -86,7 +84,7 @@ public class ViewchainFactory {
 		if (!useBufferedImageViewChain && GLInfo.glIsEnabled()) {
 			viewFactory = new GLViewFactory();
 		} else {
-			viewFactory = new BufferedImageViewFactory();
+			//viewFactory = new BufferedImageViewFactory();
 		}
 
 	}
@@ -158,20 +156,21 @@ public class ViewchainFactory {
 	 * @return the ComponentView of the new overview view chain or null if it
 	 *         could not be created.
 	 */
+	/*
 	public ComponentView createViewchainOverview(
 			ComponentView mainImagePanelView,
 			ComponentView currentOverviewImagePanelView, boolean keepSource) {
 		if (mainImagePanelView == null)
 			return null;
 
-		if (currentOverviewImagePanelView == null) {
-			return createNewViewchainOverview(mainImagePanelView);
+		//if (currentOverviewImagePanelView == null) {
+		//	return createNewViewchainOverview(mainImagePanelView);
 		} else {
 			return createViewchainFromExistingViewchain(
 					currentOverviewImagePanelView, mainImagePanelView,
 					keepSource);
 		}
-	}
+	}*/
 
 	/**
 	 * Adds a new ImageInfoView to the main view chain and creates the
@@ -214,13 +213,11 @@ public class ViewchainFactory {
 
 			// Get meta data
 			MetaData metaData = null;
-			HelioviewerMetaData hvMetaData = null;
+			
 			if (newLayer.getAdapter(MetaDataView.class) != null)
 				metaData = newLayer.getAdapter(MetaDataView.class)
 						.getMetaData();
-			if (metaData instanceof HelioviewerMetaData)
-				hvMetaData = (HelioviewerMetaData) metaData;
-
+			
 			// Create list which manages all filter tabs
 			FilterTabList tabList = new FilterTabList();
 
@@ -262,7 +259,7 @@ public class ViewchainFactory {
 			}
 
 			// Geometry
-			if (hvMetaData != null) {
+			if (metaData != null) {
 				HelioviewerGeometryView geometryView = viewFactory
 						.createNewView(HelioviewerGeometryView.class);
 				geometryView.setView(nextView);
@@ -424,6 +421,7 @@ public class ViewchainFactory {
 	 * @return a instance of a ComponentView which is the topmost view of the
 	 *         new chain.
 	 */
+	/*
 	protected ComponentView createNewViewchainOverview(
 			ComponentView mainImagePanelView) {
 		// Always use BufferedImageViewFactory
@@ -445,7 +443,7 @@ public class ViewchainFactory {
 
 		return componentView;
 	}
-
+	*/
 	/**
 	 * Builds up a new view chain on the basis of an existing one depending on
 	 * the selected mode.

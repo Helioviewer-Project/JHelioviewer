@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.AbstractList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.helioviewer.base.math.Vector2dInt;
 import org.helioviewer.viewmodel.renderer.screen.ScreenRenderer;
@@ -37,7 +38,7 @@ public interface ComponentView extends ModifiableInnerViewView, ViewListener{
      * Deactivate the Component View can be used to clean up the component view
      * when this view chain, i.e. this Component View is not in use anymore
      * 
-     * @Author Simon Sp�rri
+     * @Author Simon Sp���rri
      */
     public void deactivate();
 
@@ -45,7 +46,7 @@ public interface ComponentView extends ModifiableInnerViewView, ViewListener{
      * Activate is called before the component view will be the active component
      * view displayed on the GUI.
      * 
-     * @Author Simon Sp�rri
+     * @Author Simon Sp���rri
      */
     public void activate();
 
@@ -140,7 +141,7 @@ public interface ComponentView extends ModifiableInnerViewView, ViewListener{
      * @see #addPostRenderer(ScreenRenderer)
      * @see #removePostRenderer(ScreenRenderer)
      */
-    public AbstractList<ScreenRenderer> getAllPostRenderer();
+    public CopyOnWriteArrayList<ScreenRenderer> getAllPostRenderer();
 
 	public BufferedImage getBufferedImage(int imageWidth, int imageHeigth);
 	public BufferedImage getBufferedImage();

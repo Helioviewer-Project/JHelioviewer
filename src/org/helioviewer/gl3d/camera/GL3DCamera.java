@@ -16,6 +16,7 @@ import org.helioviewer.gl3d.scenegraph.math.GL3DMat4d;
 import org.helioviewer.gl3d.scenegraph.math.GL3DQuatd;
 import org.helioviewer.gl3d.scenegraph.math.GL3DVec3d;
 import org.helioviewer.gl3d.wcs.CoordinateSystem;
+import org.helioviewer.jhv.gui.states.StateController;
 
 /**
  * The GL3DCamera is resposible for the view space transformation. It sets up

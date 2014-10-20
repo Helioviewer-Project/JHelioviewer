@@ -124,7 +124,7 @@ public class Settings {
                 setProperty("jpip.cache.size", Double.toString(size));
             }
 
-            GL3DComponentView.setTileSize(Integer.parseInt(getProperty(GL3DComponentView.SETTING_TILE_WIDTH)), Integer.parseInt(getProperty(GL3DComponentView.SETTING_TILE_HEIGHT)));
+            //GL3DComponentView.setTileSize(Integer.parseInt(getProperty(GL3DComponentView.SETTING_TILE_WIDTH)), Integer.parseInt(getProperty(GL3DComponentView.SETTING_TILE_HEIGHT)));
 
             JHV_Kdu_cache.updateCacheDirectory(JHVDirectory.CACHE.getFile(), size);
         } catch (Exception ex) {

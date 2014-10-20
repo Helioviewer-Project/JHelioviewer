@@ -5,6 +5,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
@@ -67,7 +69,7 @@ public class SaveScreenshotAsAction extends AbstractAction {
             Log.error(t);
         }
         
-        fileChooser.setSelectedFile(new File(fileChooser.getCurrentDirectory() + "/" + SaveScreenshotAction.getDefaultFileName()));
+        fileChooser.setSelectedFile(new File(fileChooser.getCurrentDirectory() + "/" + this.getDefaultFileName()));
         int retVal = fileChooser.showSaveDialog(ImageViewerGui.getMainFrame());
 
         if (retVal == JFileChooser.APPROVE_OPTION) {
@@ -131,4 +133,19 @@ public class SaveScreenshotAsAction extends AbstractAction {
         if(imageHeight==0)
           imageHeight=720;
 	}
+    
+    /**
+     * Returns the default name for a screenshot. The name consists of
+     * "JHV_screenshot_created" plus the current system date and time.
+     * 
+     * @return Default name for a screenshot.
+     */
+    private String getDefaultFileName() {
+        String output = new String("JHV_screenshot_created_");
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
+        output += dateFormat.format(new Date());
+
+        return output;
+    }
 }

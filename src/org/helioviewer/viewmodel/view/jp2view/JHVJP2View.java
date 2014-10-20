@@ -15,10 +15,8 @@ import org.helioviewer.viewmodel.changeevent.SubImageDataChangedReason;
 import org.helioviewer.viewmodel.changeevent.TimestampChangedReason;
 import org.helioviewer.viewmodel.changeevent.ViewportChangedReason;
 import org.helioviewer.viewmodel.imagedata.ImageData;
+import org.helioviewer.viewmodel.metadata.MetaDataFactory;
 import org.helioviewer.viewmodel.metadata.MetaData;
-import org.helioviewer.viewmodel.metadata.MetaDataConstructor;
-import org.helioviewer.viewmodel.metadata.ObserverMetaData;
-import org.helioviewer.viewmodel.metadata.PixelBasedMetaData;
 import org.helioviewer.viewmodel.region.Region;
 import org.helioviewer.viewmodel.region.StaticRegion;
 import org.helioviewer.viewmodel.view.AbstractView;
@@ -67,6 +65,7 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
     protected Viewport viewport;
     protected Region region, lastRegion;
     protected ImageData imageData;
+    //protected MetaData metaData;
     protected MetaData metaData;
     protected CircularSubImageBuffer subImageBuffer = new CircularSubImageBuffer();
     protected volatile ChangeEvent event = new ChangeEvent();
@@ -133,19 +132,20 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
             abolish();
         }
 
-        metaData = MetaDataConstructor.getMetaData(newJP2Image);
+        //metaData = MetaDataConstructor.getMetaData(newJP2Image);
+        metaData = MetaDataFactory.getMetaData(newJP2Image);
+        
         if (region == null) {
-        	if (!(metaData instanceof PixelBasedMetaData)){
             region = StaticRegion.createAdaptedRegion(getMetaData().getPhysicalLowerLeft(), getMetaData().getPhysicalImageSize());
         }
-
+		
         if (viewport == null) {
             viewport = StaticViewport.createAdaptedViewport(100, 100);
         }
 
-        if (metaData instanceof ObserverMetaData) {
-            event.addReason(new TimestampChangedReason(this, ((ObserverMetaData) metaData).getDateTime()));
-        }
+        //if (metaData instanceof ObserverMetaData) {
+            event.addReason(new TimestampChangedReason(this, metaData.getDateTime()));
+        //}
 
         jp2Image = newJP2Image;
 
@@ -164,7 +164,7 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
         } catch (Exception e) {
             e.printStackTrace();
         }
-        }
+        //}
     }
 
     /**
@@ -368,13 +368,7 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
      * {@inheritDoc}
      */
     public String getName() {
-        if (metaData instanceof ObserverMetaData) {
-            ObserverMetaData observerMetaData = (ObserverMetaData) metaData;
-            return observerMetaData.getFullName();
-        } else {
-            String name = jp2Image.getURI().getPath();
-            return name.substring(name.lastIndexOf('/') + 1, name.lastIndexOf('.'));
-        }
+        return metaData.getFullName();
     }
 
     /**

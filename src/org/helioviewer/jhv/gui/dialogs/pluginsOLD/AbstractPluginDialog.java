@@ -244,8 +244,6 @@ public abstract class AbstractPluginDialog extends JDialog implements ShowableDi
             // save plug-in settings to XML file
             PluginManager.getSingeltonInstance().saveSettings();
 
-            // rebuild the view chains
-            recreateViewChains();
         }
         changed = false;
         // close dialog
@@ -259,80 +257,7 @@ public abstract class AbstractPluginDialog extends JDialog implements ShowableDi
     protected void beforeSaveAndClose() {
     }
 
-    /**
-     * Rebuilds the existing view chains and removes and adds corresponding
-     * parts from plug ins.
-     */
-    private void recreateViewChains() {
-
-        ViewchainFactory chainFactory = StateController.getInstance().getCurrentState().getViewchainFactory();
-
-        // Memorize all ImageInfoViews, remove all existing layers and add the
-        // memorized ImageInfoViews as new layers again. Activated and needed
-        // filters will be added to the corresponding sub chains.
-        LayeredView mainLayeredView = ImageViewerGui.getSingletonInstance().getMainView().getAdapter(LayeredView.class);
-        LinkedList<ImageInfoView> newImageInfoViews = new LinkedList<ImageInfoView>();
-        List<ImageInfoView> synchronizedInfoViews = new ArrayList<ImageInfoView>();
-        LayeredView synchronizedLayeredView = ImageViewerGui.getSingletonInstance().getOverviewView().getAdapter(LayeredView.class);
-
-        // detach synchronized view to prevent layers to be added and removed
-        // automatically in the synchronized view
-        SynchronizeView synchronizeView = ImageViewerGui.getSingletonInstance().getOverviewView().getAdapter(SynchronizeView.class);
-        synchronizeView.setObservedView(null);
-
-        while (mainLayeredView.getNumLayers() > 0) {
-            // detach image info views from synchronized view chain in order to
-            // reuse them
-            View curView = synchronizedLayeredView.getLayer(0);
-            View lastView = null;
-            while (curView != null && !(curView instanceof ImageInfoView) && curView instanceof ModifiableInnerViewView) {
-                lastView = curView;
-                curView = ((ModifiableInnerViewView) curView).getView();
-            }
-            if (curView != null && curView instanceof ImageInfoView) {
-                ImageInfoView imageInfoView = (ImageInfoView) curView;
-                synchronizedInfoViews.add(imageInfoView);
-                if (lastView != null && lastView instanceof ModifiableInnerViewView) {
-                    ((ModifiableInnerViewView) lastView).setView(null);
-                }
-            }
-            synchronizeView.removeLayer(mainLayeredView.getLayer(0).getAdapter(ImageInfoView.class), synchronizedLayeredView.getLayer(0));
-
-            // detach image info views from main view chain in order to reuse
-            // them
-            curView = mainLayeredView.getLayer(0);
-            lastView = null;
-            while (curView != null && !(curView instanceof ImageInfoView) && curView instanceof ModifiableInnerViewView) {
-                lastView = curView;
-                curView = ((ModifiableInnerViewView) curView).getView();
-            }
-            if (curView != null && curView instanceof ImageInfoView) {
-                ImageInfoView imageInfoView = (ImageInfoView) curView;
-                newImageInfoViews.add(imageInfoView);
-                if (lastView != null && lastView instanceof ModifiableInnerViewView) {
-                    ((ModifiableInnerViewView) lastView).setView(null);
-                }
-            }
-
-            // delete current layer
-            mainLayeredView.removeLayer(0);
-        }
-
-        // re-add layers in order to rebuild viewchain
-        int i = 0;
-        for (ImageInfoView imageView : newImageInfoViews) {
-            chainFactory.addLayerToViewchainMain(imageView, mainLayeredView);
-            synchronizeView.addLayer(mainLayeredView.getLayer(i), synchronizedInfoViews.get(i++));
-        }
-        ComponentView mainView = ImageViewerGui.getSingletonInstance().getMainView();
-        synchronizeView.setObservedView(mainView);
-
-        // Update all OverlayViews which are included in the view chain above
-        // the layered view
-        GLOverlayView overlayView = ImageViewerGui.getSingletonInstance().getMainView().getAdapter(GLOverlayView.class);
-        chainFactory.updateOverlayViewsInViewchainMain(overlayView);
-    }
-
+    
     /**
      * Adds a button to the activated list. The button will occur below the
      * list. The event the button will cause has to deal with the data of the

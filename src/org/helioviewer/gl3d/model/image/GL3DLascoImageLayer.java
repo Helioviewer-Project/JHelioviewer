@@ -10,9 +10,7 @@ import org.helioviewer.gl3d.shader.GL3DImageCoronaFragmentShaderProgram;
 import org.helioviewer.gl3d.shader.GL3DImageVertexShaderProgram;
 import org.helioviewer.gl3d.shader.GL3DShaderFactory;
 import org.helioviewer.gl3d.view.GL3DView;
-import org.helioviewer.viewmodel.metadata.HelioviewerMetaData;
-import org.helioviewer.viewmodel.metadata.HelioviewerOcculterMetaData;
-import org.helioviewer.viewmodel.metadata.HelioviewerPositionedMetaData;
+import org.helioviewer.viewmodel.metadata.MetaData;
 import org.helioviewer.viewmodel.view.opengl.shader.GLFragmentShaderProgram;
 import org.helioviewer.viewmodel.view.opengl.shader.GLVertexShaderProgram;
 
@@ -25,7 +23,6 @@ public class GL3DLascoImageLayer extends GL3DImageLayer {
     }
 
     protected void createImageMeshNodes(GL gl) {
-        HelioviewerOcculterMetaData hvMetaData = (HelioviewerOcculterMetaData) metaDataView.getMetaData();
         this.fragmentShader = new GL3DImageCoronaFragmentShaderProgram();        
         
         GLFragmentShaderProgram fragmentShader = GL3DShaderFactory.createFragmentShaderProgram(gl, this.fragmentShader);
@@ -43,7 +40,7 @@ public class GL3DLascoImageLayer extends GL3DImageLayer {
         double yOffset = (this.imageTextureView.metadata.getPhysicalUpperRight().getY()+this.imageTextureView.metadata.getPhysicalLowerLeft().getY())/(2.0*this.imageTextureView.metadata.getPhysicalImageHeight());
         vertex.setDefaultOffset(xOffset, yOffset);
 
-        HelioviewerMetaData metadata = (HelioviewerMetaData)this.imageTextureView.metadata;
+        MetaData metadata = this.imageTextureView.metadata;
         this.fragmentShader.setDefaultOffset(metadata.getSunPixelPosition().getX()/metadata.getResolution().getX()-xOffset, metadata.getSunPixelPosition().getY()/metadata.getResolution().getY()-yOffset);
 
         this.addNode(circle);

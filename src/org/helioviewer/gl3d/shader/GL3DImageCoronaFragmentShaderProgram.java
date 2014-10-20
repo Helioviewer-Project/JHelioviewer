@@ -20,7 +20,7 @@ public class GL3DImageCoronaFragmentShaderProgram extends GLFragmentShaderProgra
             program += "\tfloat2 texture;" + GLShaderBuilder.LINE_SEP;
             program += "\ttexture.x = textureCoordinate.z - offset.x;" + GLShaderBuilder.LINE_SEP;
             program += "\ttexture.y = textureCoordinate.w - offset.y;" + GLShaderBuilder.LINE_SEP;
-            program += "\toutput.a *= step(cutOffRadius*0.99, length(texture));" + GLShaderBuilder.LINE_SEP;
+            program += "\toutput.a *= step(cutOffRadius, length(texture));" + GLShaderBuilder.LINE_SEP;
             program += "\tif(output.a < 0.01) discard;" + GLShaderBuilder.LINE_SEP;
             shaderBuilder.addEnvParameter("float cutOffRadius");
             shaderBuilder.addEnvParameter("float alpha");

@@ -10,7 +10,6 @@ import org.helioviewer.viewmodel.changeevent.LayerChangedReason.LayerChangeType;
 import org.helioviewer.viewmodel.changeevent.RegionChangedReason;
 import org.helioviewer.viewmodel.changeevent.SubImageDataChangedReason;
 import org.helioviewer.viewmodel.changeevent.SynchronizedROIChangedReason;
-import org.helioviewer.viewmodel.factory.BufferedImageViewFactory;
 
 /**
  * Implementation of SynchronizeView for use in an overview view chain.
@@ -174,10 +173,10 @@ public class SynchronizeOverviewChainView extends AbstractSynchronizeChainView {
             return null;
 
         // initialize local variables
-        BufferedImageViewFactory viewFactory = new BufferedImageViewFactory();
+        //BufferedImageViewFactory viewFactory = new BufferedImageViewFactory();
         ModifiableInnerViewView first = null;
         ModifiableInnerViewView last = null;
-
+        /*
         // go through passed sub view chain
         while (view != sourceImageView) {
 
@@ -226,7 +225,7 @@ public class SynchronizeOverviewChainView extends AbstractSynchronizeChainView {
         if (observerImageView != null) {
             viewRelations.put(sourceImageView, observerImageView);
         }
-
+	*/
         // return
         return observerImageView;
     }

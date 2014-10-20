@@ -518,7 +518,7 @@ public class GLTextureHelper {
 
         int bitsPerPixel = source.getImageTransport().getNumBitsPerPixel();
         Buffer buffer;
-
+        System.out.println("bits per pixel : " + bitsPerPixel);
         switch (bitsPerPixel) {
         case 8:
             buffer = ByteBuffer.wrap(((Byte8ImageTransport) source.getImageTransport()).getByte8PixelData());
@@ -941,8 +941,10 @@ public class GLTextureHelper {
                 bpp=3;
                 break;
               case GL2.GL_RGBA:
+              case GL2.GL_BGRA:
                 bpp=4;
                 break;
+            	  
               default:
             	  throw new RuntimeException(""+inputFormat);
             }

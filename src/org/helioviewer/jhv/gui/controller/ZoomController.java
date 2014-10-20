@@ -6,7 +6,6 @@ import org.helioviewer.jhv.gui.components.BasicImagePanel;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.viewmodel.changeevent.ChangeEvent;
-import org.helioviewer.viewmodel.metadata.ImageSizeMetaData;
 import org.helioviewer.viewmodel.region.Region;
 import org.helioviewer.viewmodel.region.StaticRegion;
 import org.helioviewer.viewmodel.view.LayeredView;
@@ -163,7 +162,7 @@ public class ZoomController {
                 return 1.0;
             }
 
-            double unitsPerPixel = ((ImageSizeMetaData) metaDataView.getMetaData()).getUnitsPerPixel();
+            double unitsPerPixel = metaDataView.getMetaData().getUnitsPerPixel();
             ViewportImageSize vis = ViewHelper.calculateViewportImageSize(viewport, outerRegion);
             Viewport layerViewport = ViewHelper.calculateInnerViewport(region, outerRegion, vis);
             Vector2dInt actualSize = layerViewport.getSize();

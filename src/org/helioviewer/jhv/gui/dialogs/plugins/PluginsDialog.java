@@ -235,7 +235,7 @@ public class PluginsDialog extends JDialog implements ShowableDialog, ActionList
     private void closeDialog() {
         if (changesMade) {
             // rebuild the view chains
-            recreateViewChains();
+            //recreateViewChains();
 
             // save plug-in settings to XML file
             PluginManager.getSingeltonInstance().saveSettings();
@@ -245,34 +245,6 @@ public class PluginsDialog extends JDialog implements ShowableDialog, ActionList
         dispose();
     }
 
-    /**
-     * Rebuilds the existing view chains and removes and adds corresponding
-     * parts from plug ins.
-     */
-    private void recreateViewChains() {
-        ViewchainFactory chainFactory = new ViewchainFactory();
-        ViewFactory viewFactory = chainFactory.getUsedViewFactory();
-
-        // Memorize all ImageInfoViews, remove all existing layers and add the
-        // memorized ImageInfoViews as new layers again. Activated and needed
-        // filters will be added to the corresponding sub chains.
-        LayeredView mainLayeredView = ImageViewerGui.getSingletonInstance().getMainView().getAdapter(LayeredView.class);
-        LinkedList<ImageInfoView> newImageInfoViews = new LinkedList<ImageInfoView>();
-
-        while (mainLayeredView.getNumLayers() > 0) {
-            newImageInfoViews.add(viewFactory.createViewFromSource(mainLayeredView.getLayer(0).getAdapter(ImageInfoView.class), true));
-            mainLayeredView.removeLayer(0);
-        }
-
-        for (ImageInfoView imageView : newImageInfoViews) {
-            chainFactory.addLayerToViewchainMain(imageView, mainLayeredView);
-        }
-
-        // Update all OverlayViews which are included in the view chain above
-        // the layered view
-        GLOverlayView overlayView = ImageViewerGui.getSingletonInstance().getMainView().getAdapter(GLOverlayView.class);        
-        chainFactory.updateOverlayViewsInViewchainMain(overlayView);
-    }
 
     /**
      * Removes all entries from the plug-in list and adds all available plug-ins

@@ -1,26 +1,40 @@
-package org.helioviewer.viewmodel.metadata.ultimate;
+package org.helioviewer.viewmodel.metadata;
 
 import org.helioviewer.base.logging.Log;
 import org.helioviewer.base.math.MathUtils;
 import org.helioviewer.base.math.RectangleDouble;
 import org.helioviewer.base.math.Vector2dDouble;
+import org.helioviewer.base.math.Vector2dInt;
 import org.helioviewer.base.physics.Constants;
-import org.helioviewer.viewmodel.metadata.MetaDataContainer;
 import org.helioviewer.viewmodel.region.Region;
 import org.helioviewer.viewmodel.view.cache.HelioviewerDateTimeCache;
 
-public class MetaDataAIA extends UltimateMetaData{
+public class MetaDataEIT extends MetaData{
 
-	public MetaDataAIA(MetaDataContainer metaDataContainer) {
-		this.instrument = "AIA";
+	public MetaDataEIT(MetaDataContainer metaDataContainer) {
+        super(metaDataContainer);
+        
         measurement = metaDataContainer.get("WAVELNTH");
+        if (measurement == null) {
+            measurement = "" + metaDataContainer.tryGetInt("WAVELNTH");
+        }
         observatory = metaDataContainer.get("TELESCOP");
-        fullName = "AIA " + measurement;
+        if (!(instrument.equalsIgnoreCase("EIT"))){
+        	throw new MetaDataException("invalid instrument");
+        }
+        this.metaDataContainer = metaDataContainer;
+
+        fullName = "EIT " + measurement;
+        
         
         String observedDate = metaDataContainer.get("DATE_OBS");
         time = HelioviewerDateTimeCache.parseDateTime(observedDate);
 
-        
+        updatePixelParameters();
+
+        setPhysicalLowerLeftCorner(sunPixelPosition.scale(-meterPerPixel));
+        setPhysicalImageSize(new Vector2dDouble(pixelImageSize.getX() * meterPerPixel, pixelImageSize.getY() * meterPerPixel));
+
         double arcsecPerPixelX = metaDataContainer.tryGetDouble("CDELT1");
         double arcsecPerPixelY = metaDataContainer.tryGetDouble("CDELT2");
         if (Double.isNaN(arcsecPerPixelX)) {
@@ -43,9 +57,7 @@ public class MetaDataAIA extends UltimateMetaData{
         meterPerPixel = Constants.SunRadius / solarPixelRadius;
         setPhysicalLowerLeftCorner(sunPixelPosition.scale(-meterPerPixel));
         setPhysicalImageSize(new Vector2dDouble(pixelImageSize.getX() * meterPerPixel, pixelImageSize.getY() * meterPerPixel));
-
-        
-        
+                
         this.heeqX = metaDataContainer.tryGetDouble("HEQX_OBS");
         this.heeqY = metaDataContainer.tryGetDouble("HEQY_OBS");
         this.heeqZ = metaDataContainer.tryGetDouble("HEQZ_OBS");
@@ -65,6 +77,53 @@ public class MetaDataAIA extends UltimateMetaData{
         this.stonyhurstLongitude = metaDataContainer.tryGetDouble("HGLN_OBS");
         this.stonyhurstAvailable = this.stonyhurstLatitude != 0.0 || this.stonyhurstLongitude != 0.0;
    }
+
+	@Override
+	boolean updatePixelParameters() {
+		boolean changed = false;
+
+        if (pixelImageSize.getX() != metaDataContainer.getPixelWidth() || pixelImageSize.getY() != metaDataContainer.getPixelHeight()) {
+            pixelImageSize = new Vector2dInt(metaDataContainer.getPixelWidth(), metaDataContainer.getPixelHeight());
+            changed = true;
+        }
+
+        double newSolarPixelRadius = -1.0;
+        double allowedRelativeDifference = 0.01;
+
+        newSolarPixelRadius = metaDataContainer.tryGetDouble("SOLAR_R");
+
+        if (newSolarPixelRadius == 0) {
+            if (pixelImageSize.getX() == 1024) {
+                newSolarPixelRadius = 360;
+            } else if (pixelImageSize.getX() == 512) {
+                newSolarPixelRadius = 180;
+            }
+        }
+
+        if (newSolarPixelRadius > 0) {
+            double allowedAbsoluteDifference = newSolarPixelRadius * allowedRelativeDifference;
+            if (Math.abs(solarPixelRadius - newSolarPixelRadius) > allowedAbsoluteDifference) {
+                changed = true;
+            }
+
+            double sunX = metaDataContainer.tryGetDouble("CRPIX1");
+            double sunY = metaDataContainer.tryGetDouble("CRPIX2");
+
+            if (changed || Math.abs(sunPixelPosition.getX() - sunX) > allowedAbsoluteDifference || Math.abs(sunPixelPosition.getY() - sunY) > allowedAbsoluteDifference) {
+                sunPixelPosition = new Vector2dDouble(sunX, sunY);
+                changed = true;
+            }
+        }
+
+        if (changed) {
+            solarPixelRadius = newSolarPixelRadius;
+            meterPerPixel = Constants.SunRadius / solarPixelRadius;
+            setPhysicalLowerLeftCorner(sunPixelPosition.scale(-meterPerPixel));
+            setPhysicalImageSize(new Vector2dDouble(pixelImageSize.getX() * meterPerPixel, pixelImageSize.getY() * meterPerPixel));
+        }
+
+        return changed;
+	}
 	
 	
 

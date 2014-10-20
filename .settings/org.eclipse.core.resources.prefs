@@ -1,0 +1,14 @@
+eclipse.preferences.version=1
+encoding//src/org/helioviewer/gl3d/factory/GL3DViewFactory.java=UTF-8
+encoding//src/org/helioviewer/gl3d/model/image/GL3DImageCorona.java=UTF-8
+encoding//src/org/helioviewer/gl3d/model/image/GL3DImageLayer.java=UTF-8
+encoding//src/org/helioviewer/gl3d/model/image/GL3DImageLayerFactory.java=UTF-8
+encoding//src/org/helioviewer/gl3d/model/image/GL3DImageSphere.java=UTF-8
+encoding//src/org/helioviewer/gl3d/view/GL3DComponentView.java=UTF-8
+encoding//src/org/helioviewer/gl3d/view/GL3DCoordinateSystemView.java=UTF-8
+encoding//src/org/helioviewer/gl3d/view/GL3DImageRegionView.java=UTF-8
+encoding//src/org/helioviewer/gl3d/view/GL3DImageTextureView.java=UTF-8
+encoding//src/org/helioviewer/gl3d/view/GL3DLayeredView.java=UTF-8
+encoding//src/org/helioviewer/jhv/gui/ViewchainFactory.java=UTF-8
+encoding//src/org/helioviewer/jhv/gui/states/StateController.java=UTF-8
+encoding//src/org/helioviewer/viewmodel/view/ComponentView.java=UTF-8

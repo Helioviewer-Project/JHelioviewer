@@ -8,7 +8,6 @@ import org.helioviewer.viewmodel.renderer.screen.ScreenRenderer;
 import org.helioviewer.viewmodel.view.ComponentView;
 import org.helioviewer.viewmodel.view.FilterView;
 import org.helioviewer.viewmodel.view.ImageInfoView;
-import org.helioviewer.viewmodel.view.JHVSimpleImageView;
 import org.helioviewer.viewmodel.view.OverlayView;
 import org.helioviewer.viewmodel.view.ScalingView;
 import org.helioviewer.viewmodel.view.StandardFilterView;
@@ -138,11 +137,6 @@ public abstract class StandardViewFactory implements ViewFactory {
 
                 return (T) newFITS;
 
-            } else if (source instanceof JHVSimpleImageView) {
-                JHVSimpleImageView sourceSimple = (JHVSimpleImageView) source;
-                JHVSimpleImageView newSimple = new JHVSimpleImageView(sourceSimple.getSimpleImage(), sourceSimple.getUri());
-
-                return (T) newSimple;
             } else {
                 Log.error("Copying of this ImageInfoView type is not implemented yet!");
                 return null;

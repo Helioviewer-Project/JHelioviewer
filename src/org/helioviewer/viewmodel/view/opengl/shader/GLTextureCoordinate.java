@@ -53,7 +53,7 @@ public abstract class GLTextureCoordinate {
         this.length = length;
         this.identifier = identifier;
 
-        if (this.target >= currentValues.length || target < 0) {
+        if (currentValues != null && (this.target >= currentValues.length || target < 0)) {
             throw new IllegalArgumentException("Target refers to an invalid texture coordinate: GL_TEXTURE" + this.target + ".");
         }
 

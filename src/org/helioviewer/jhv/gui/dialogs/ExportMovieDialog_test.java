@@ -60,7 +60,6 @@ import org.helioviewer.viewmodel.view.View;
 import org.helioviewer.viewmodel.view.ViewListener;
 import org.helioviewer.viewmodel.view.jp2view.JHVJPXView.SpeedType;
 import org.helioviewer.viewmodel.view.jp2view.datetime.ImmutableDateTime;
-import org.helioviewer.viewmodel.view.opengl.GLComponentView;
 
 import com.sun.corba.se.spi.copyobject.CopierManager;
 import com.sun.xml.internal.ws.api.pipe.Codec;

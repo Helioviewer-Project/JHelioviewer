@@ -10,8 +10,7 @@ import org.helioviewer.gl3d.shader.GL3DImageFragmentShaderProgram;
 import org.helioviewer.gl3d.shader.GL3DImageVertexShaderProgram;
 import org.helioviewer.gl3d.shader.GL3DShaderFactory;
 import org.helioviewer.gl3d.view.GL3DView;
-import org.helioviewer.viewmodel.metadata.HelioviewerMetaData;
-import org.helioviewer.viewmodel.metadata.HelioviewerPositionedMetaData;
+import org.helioviewer.viewmodel.metadata.MetaData;
 import org.helioviewer.viewmodel.view.opengl.shader.GLFragmentShaderProgram;
 import org.helioviewer.viewmodel.view.opengl.shader.GLVertexShaderProgram;
 
@@ -41,7 +40,7 @@ public class GL3DMDIImageLayer extends GL3DImageLayer {
         
         if (this.fragmentShader != null){
         	this.fragmentShader.setCutOffRadius((Constants.SunRadius/this.imageTextureView.metadata.getPhysicalImageWidth()));
-            HelioviewerMetaData metadata = (HelioviewerMetaData)this.imageTextureView.metadata;
+            MetaData metadata = this.imageTextureView.metadata;
             this.fragmentShader.setDefaultOffset(metadata.getSunPixelPosition().getX()/metadata.getResolution().getX()-xOffset, metadata.getSunPixelPosition().getY()/metadata.getResolution().getY()-yOffset);
         }
         this.addNode(circle);

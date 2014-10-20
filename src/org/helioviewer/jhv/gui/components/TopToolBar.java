@@ -39,7 +39,6 @@ import org.helioviewer.jhv.gui.actions.ZoomInAction;
 import org.helioviewer.jhv.gui.actions.ZoomOutAction;
 import org.helioviewer.jhv.gui.states.State;
 import org.helioviewer.jhv.gui.states.StateController;
-import org.helioviewer.jhv.gui.states.ViewStateEnum;
 
 /**
  * Toolbar containing the most common actions.
@@ -254,28 +253,13 @@ public class TopToolBar extends JToolBar implements MouseListener {
         		
         }
         
-        updateStateButtons();
     }
 
-    public void updateStateButtons() {
-    	this.updateStateButtons(StateController.getInstance().getCurrentState());
-    	this.coronaVisibilityButton.setEnabled(StateController.getInstance().getCurrentState() == ViewStateEnum.View3D.getState());
-        this.rotateButton.setEnabled(StateController.getInstance().getCurrentState() == ViewStateEnum.View3D.getState());
-        resetCamera.setEnabled(StateController.getInstance().getCurrentState() == ViewStateEnum.View3D.getState());
-        this.zoomBoxButton.setEnabled(StateController.getInstance().getCurrentState() == ViewStateEnum.View2D.getState());
-    }
 
     public void updateStateButtons(State currentState) {
-        if (currentState.getType() == ViewStateEnum.View2D) {
-            view2d.setSelected(true);
-            view3d.setSelected(false);
-            Log.debug("TopToolBar: Setting 2D as selected");
-        } else if (currentState.getType() == ViewStateEnum.View3D) {
             view3d.setSelected(true);
             view2d.setSelected(false);
-            Log.debug("TopToolBar: Setting 3D as selected");
         }
-    }
 
     /**
      * Adds a given button to the toolbar.
@@ -325,12 +309,9 @@ public class TopToolBar extends JToolBar implements MouseListener {
         	Settings.getSingletonInstance().save();
         }
         SelectionMode selectionMode;
-        if (StateController.getInstance().getCurrentState() == ViewStateEnum.View3D.getState())
-        	selectionMode = SelectionMode.ROTATE;
-        
-        else 
-        	selectionMode = SelectionMode.PAN;
-        if (zoomBoxButton.isSelected()) {
+      	selectionMode = SelectionMode.ROTATE;
+
+      	if (zoomBoxButton.isSelected()) {
             selectionMode = SelectionMode.ZOOMBOX;
         }
 

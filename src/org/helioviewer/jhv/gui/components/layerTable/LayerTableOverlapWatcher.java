@@ -98,10 +98,7 @@ public class LayerTableOverlapWatcher implements LayersListener {
 
         }
 
-        // Show a message if no timing information is available
-        if (!LayersModel.getSingletonInstance().isTimed(idx)) {
-            Message.warnTitle("No Timing Information", "This movie contains no timing information.\nIt can thus not be played in sync with other movies.");
-        } else if (!isGoodOverlap) {
+        if (!isGoodOverlap) {
             Message.warnTitle("Movies Barely Overlap", "Some of the movies do not (or only partially) overlap.\nSome movies can thus not (or only partially) be played in sync.");
         }
     }

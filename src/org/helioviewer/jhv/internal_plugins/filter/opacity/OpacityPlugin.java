@@ -3,8 +3,7 @@ package org.helioviewer.jhv.internal_plugins.filter.opacity;
 import org.helioviewer.base.logging.Log;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.viewmodel.filter.Filter;
-import org.helioviewer.viewmodel.metadata.HelioviewerMetaData;
-import org.helioviewer.viewmodel.metadata.HelioviewerOcculterMetaData;
+import org.helioviewer.viewmodel.metadata.MetaData;
 import org.helioviewer.viewmodel.view.FilterView;
 import org.helioviewer.viewmodel.view.LayeredView;
 import org.helioviewer.viewmodel.view.MetaDataView;
@@ -42,13 +41,9 @@ public class OpacityPlugin extends SimpleFilterContainer {
      */
 
     protected boolean useFilter(FilterView view) {
-    	if (view.getAdapter(MetaDataView.class).getMetaData() instanceof HelioviewerOcculterMetaData) {
-            initialOpacity = 1.0f;
-            return true;
-        }
-        
+    	
     	try {
-        	HelioviewerMetaData currentMetaData = (HelioviewerMetaData) view.getAdapter(MetaDataView.class).getMetaData();
+        	MetaData currentMetaData = view.getAdapter(MetaDataView.class).getMetaData();
             if (currentMetaData.getDetector().startsWith("COR")){
             	initialOpacity = 1.0f;
             	return true;
@@ -71,10 +66,8 @@ public class OpacityPlugin extends SimpleFilterContainer {
             
         int layerCount = 1;
         for (int i = 0; i < layeredView.getNumLayers(); i++) {
-        	if (!(layeredView.getLayer(i).getAdapter(MetaDataView.class).getMetaData() instanceof HelioviewerOcculterMetaData)) {
-        		HelioviewerMetaData metaData = (HelioviewerMetaData) layeredView.getLayer(i).getAdapter(MetaDataView.class).getMetaData();
+        		MetaData metaData = layeredView.getLayer(i).getAdapter(MetaDataView.class).getMetaData();
             	if (!metaData.getDetector().startsWith("COR")) layerCount++;
-            }
         }
         
 		initialOpacity = 1.0f / layerCount;

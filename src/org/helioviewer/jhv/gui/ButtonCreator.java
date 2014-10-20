@@ -25,10 +25,6 @@ public class ButtonCreator {
      */
     public static JButton createButton(Icon icon, String tooltip, ActionListener actionListener) {
         JButton newButton = new JButton(icon);
-        // newButton.setBorder(BorderFactory.createEtchedBorder());
-        // newButton.setPreferredSize(new
-        // Dimension(newButton.getMinimumSize().width,
-        // newButton.getMinimumSize().height));
         newButton.setToolTipText(tooltip);
         newButton.addActionListener(actionListener);
         return newButton;
@@ -49,10 +45,6 @@ public class ButtonCreator {
      */
     public static JButton createTextButton(Icon icon, String text, String tooltip, ActionListener actionListener) {
         JButton newButton = new JButton(text, icon);
-        // newButton.setBorder(BorderFactory.createEtchedBorder());
-        // newButton.setPreferredSize(new
-        // Dimension(newButton.getMinimumSize().width,
-        // newButton.getMinimumSize().height));
         newButton.setToolTipText(tooltip);
         newButton.addActionListener(actionListener);
         return newButton;

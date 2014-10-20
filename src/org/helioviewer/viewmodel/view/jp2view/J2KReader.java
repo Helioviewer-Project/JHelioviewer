@@ -10,7 +10,6 @@ import org.helioviewer.base.message.Message;
 import org.helioviewer.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.viewmodel.changeevent.ReaderErrorReason;
 import org.helioviewer.viewmodel.changeevent.SubImageDataChangedReason;
-import org.helioviewer.viewmodel.metadata.HelioviewerMetaData;
 import org.helioviewer.viewmodel.view.CachedMovieView;
 import org.helioviewer.viewmodel.view.MovieView;
 import org.helioviewer.viewmodel.view.cache.ImageCacheStatus;
@@ -354,7 +353,7 @@ class J2KReader implements Runnable {
                                 strategy = CacheStrategy.CURRENTFRAMEONLY;
                             } else if (!((MovieView) parentViewRef).isMoviePlaying() && ((CachedMovieView) parentViewRef).getImageCacheStatus().getImageStatus(curLayer) != CacheStatus.COMPLETE) {
                                 strategy = CacheStrategy.CURRENTFRAMEFIRST;
-                            } else if (parentViewRef.getMetaData() instanceof HelioviewerMetaData && parentViewRef instanceof MovieView && ((MovieView) parentViewRef).getMaximumAccessibleFrameNumber() < num_layers - 1) {
+                            } else if (parentViewRef instanceof MovieView && ((MovieView) parentViewRef).getMaximumAccessibleFrameNumber() < num_layers - 1) {
                                 strategy = CacheStrategy.MISSINGFRAMESFIRST;
                             } else {
                                 strategy = CacheStrategy.ALLFRAMESEQUALLY;

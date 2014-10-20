@@ -4,8 +4,8 @@ import javax.media.opengl.GL2;
 
 import org.helioviewer.base.physics.Constants;
 import org.helioviewer.viewmodel.changeevent.ChangeEvent;
-import org.helioviewer.viewmodel.metadata.HelioviewerMetaData;
-import org.helioviewer.viewmodel.metadata.HelioviewerOcculterMetaData;
+import org.helioviewer.viewmodel.metadata.MetaDataLASCO_C2;
+import org.helioviewer.viewmodel.metadata.MetaDataLASCO_C3;
 import org.helioviewer.viewmodel.metadata.MetaData;
 import org.helioviewer.viewmodel.view.HelioviewerGeometryView;
 import org.helioviewer.viewmodel.view.MetaDataView;
@@ -59,9 +59,9 @@ public class GLHelioviewerGeometryView extends AbstractGLView implements Heliovi
         fragmentShader.bind(gl);
         this.checkGLErrors(gl, this+".afterShaderBinding");
         MetaData metaData = getAdapter(MetaDataView.class).getMetaData();
-        if (metaData instanceof HelioviewerOcculterMetaData) {
-            fragmentShader.setMaskRotation(gl, (float) ((HelioviewerOcculterMetaData) metaData).getMaskRotation());
-        }
+        
+        fragmentShader.setMaskRotation(gl, (float) metaData.getMaskRotation());
+        
         this.checkGLErrors(gl, this+".afterSetMaskRotation");
 
         renderChild(gl);
@@ -134,10 +134,9 @@ public class GLHelioviewerGeometryView extends AbstractGLView implements Heliovi
         	
             MetaData metaData = view.getAdapter(MetaDataView.class).getMetaData();
 
-            if (metaData instanceof HelioviewerOcculterMetaData) {
+            if (metaData instanceof MetaDataLASCO_C2 || metaData instanceof MetaDataLASCO_C3) {
                 // LASCO
 
-                HelioviewerOcculterMetaData hvMetaData = (HelioviewerOcculterMetaData) metaData;
 
                 try {
                     rotationParam = shaderBuilder.addTexCoordParameter(1);
@@ -149,21 +148,20 @@ public class GLHelioviewerGeometryView extends AbstractGLView implements Heliovi
                     program = program.replace("output", shaderBuilder.useOutputValue("float4", "COLOR"));
                     program = program.replace("physicalPosition", shaderBuilder.useStandardParameter("float4", "TEXCOORD0"));
                     program = program.replace("maskRotation", rotationParam.getIdentifier());
-                    program = program.replace("innerRadius", Double.toString(hvMetaData.getInnerPhysicalOcculterRadius() * roccInnerFactor).replace(',', '.'));
-                    program = program.replace("outerRadius", Double.toString(hvMetaData.getOuterPhysicalOcculterRadius() * roccOuterFactor).replace(',', '.'));
-                    program = program.replace("flatDist", Double.toString(hvMetaData.getPhysicalFlatOcculterSize()).replace(',', '.'));
-                   program = program.replace("occulterCenter", "float2("+ Double.toString(hvMetaData.getOcculterCenter().getX()).replace(",", ".") 
-                                                                            + ","+ Double.toString(hvMetaData.getOcculterCenter().getY()).replace(",", ".")  + ")");
+                    program = program.replace("innerRadius", Double.toString(metaData.getInnerPhysicalOcculterRadius() * roccInnerFactor).replace(',', '.'));
+                    program = program.replace("outerRadius", Double.toString(metaData.getOuterPhysicalOcculterRadius() * roccOuterFactor).replace(',', '.'));
+                    program = program.replace("flatDist", Double.toString(metaData.getPhysicalFlatOcculterSize()).replace(',', '.'));
+                   program = program.replace("occulterCenter", "float2("+ Double.toString(metaData.getOcculterCenter().getX()).replace(",", ".") 
+                                                                            + ","+ Double.toString(metaData.getOcculterCenter().getY()).replace(",", ".")  + ")");
                     shaderBuilder.addMainFragment(program);
                 } catch (GLBuildShaderException e) {
                     e.printStackTrace();
                 }
-            } else if (metaData instanceof HelioviewerMetaData) {
+            } else {
 
-                HelioviewerMetaData hvMetaData = (HelioviewerMetaData) metaData;
 
                 // MDI and HMI
-                if (hvMetaData.getInstrument().equalsIgnoreCase("MDI") || hvMetaData.getInstrument().equalsIgnoreCase("HMI")) {
+                if (metaData.getInstrument().equalsIgnoreCase("MDI") || metaData.getInstrument().equalsIgnoreCase("HMI")) {
 
                     try {
                         String program = "\tfloat geometryRadius = -length(physicalPosition.zw);" + GLShaderBuilder.LINE_SEP;

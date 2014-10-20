@@ -6,7 +6,7 @@ package org.helioviewer.gl3d.camera;
  * {@link GL3DCamera}. Make sure that isFinished returns true as soon as the
  * animation should stop.
  * 
- * @author Simon Spšrri (simon.spoerri@fhnw.ch)
+ * @author Simon Spï¿½rri (simon.spoerri@fhnw.ch)
  * 
  */
 public interface GL3DCameraAnimation {
@@ -36,4 +36,5 @@ public interface GL3DCameraAnimation {
      *            Animation that needs to be incorporated
      */
     public void updateWithAnimation(GL3DCameraAnimation animation);
+    
 }

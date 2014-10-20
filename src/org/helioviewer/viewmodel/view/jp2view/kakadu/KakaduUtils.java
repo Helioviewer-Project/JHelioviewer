@@ -1,4 +1,4 @@
-package org.helioviewer.viewmodel.view.jp2view.kakadu;
+	package org.helioviewer.viewmodel.view.jp2view.kakadu;
 
 import java.awt.Rectangle;
 import java.io.EOFException;

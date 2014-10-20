@@ -45,7 +45,6 @@ import org.helioviewer.viewmodel.changeevent.LayerChangedReason;
 import org.helioviewer.viewmodel.changeevent.LayerChangedReason.LayerChangeType;
 import org.helioviewer.viewmodel.changeevent.PlayStateChangedReason;
 import org.helioviewer.viewmodel.changeevent.SubImageDataChangedReason;
-import org.helioviewer.viewmodel.metadata.ObserverMetaData;
 import org.helioviewer.viewmodel.view.CachedMovieView;
 import org.helioviewer.viewmodel.view.MetaDataView;
 import org.helioviewer.viewmodel.view.MovieView;
@@ -179,7 +178,7 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
         timeSlider.setValue(movieView.getCurrentFrameNumber());
 
         SpeedUnit[] units;
-        if (view.getAdapter(MetaDataView.class) != null && view.getAdapter(MetaDataView.class).getMetaData() instanceof ObserverMetaData) {
+        if (view.getAdapter(MetaDataView.class) != null) {
             SpeedUnit[] newunits = { SpeedUnit.MINUTESPERSECOND, SpeedUnit.HOURSPERSECOND, SpeedUnit.DAYSPERSECOND, SpeedUnit.FRAMESPERSECOND };
             units = newunits;
 

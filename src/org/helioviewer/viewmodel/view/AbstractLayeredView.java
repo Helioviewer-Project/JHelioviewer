@@ -15,9 +15,7 @@ import org.helioviewer.viewmodel.changeevent.RegionChangedReason;
 import org.helioviewer.viewmodel.changeevent.RegionUpdatedReason;
 import org.helioviewer.viewmodel.changeevent.SubImageDataChangedReason;
 import org.helioviewer.viewmodel.changeevent.ViewChainChangedReason;
-import org.helioviewer.viewmodel.metadata.ImageSizeMetaData;
 import org.helioviewer.viewmodel.metadata.MetaData;
-import org.helioviewer.viewmodel.metadata.PixelBasedMetaData;
 import org.helioviewer.viewmodel.region.Region;
 import org.helioviewer.viewmodel.region.RegionAdapter;
 import org.helioviewer.viewmodel.region.StaticRegion;
@@ -174,14 +172,17 @@ public abstract class AbstractLayeredView extends AbstractView implements Layere
             if (layers.size() > 1) {
                 recalculateMetaData(false);
                 for (Layer layer : viewLookup.values()) {
-                    MetaData m = layer.metaDataView.getMetaData();
+                    /* PixelBasedMetaData aren't supported 
+                	MetaData m = layer.metaDataView.getMetaData();
                     if (m instanceof PixelBasedMetaData) {
                         PixelBasedMetaData p = (PixelBasedMetaData) m;
                         p.updatePhysicalRegion(metaData.getPhysicalRegion());
                     }
+                    */
                 }
             }
             recalculateMetaData();
+            
             region = metaData.getPhysicalRegion();
             if (viewport != null)
                 region = ViewHelper.expandRegionToViewportAspectRatio(viewport, region, metaData);
@@ -246,10 +247,11 @@ public abstract class AbstractLayeredView extends AbstractView implements Layere
         if (metaData != null) {
             for (Layer layer : viewLookup.values()) {
                 MetaData m = layer.metaDataView.getMetaData();
+                /* PixelbasedMetaData aren't supported 
                 if (m instanceof PixelBasedMetaData) {
                     PixelBasedMetaData p = (PixelBasedMetaData) m;
                     p.updatePhysicalRegion(metaData.getPhysicalRegion());
-                }
+                }*/
             }
         }
         recalculateMetaData();
@@ -430,6 +432,7 @@ public abstract class AbstractLayeredView extends AbstractView implements Layere
             try {
                 for (Layer layer : viewLookup.values()) {
                     MetaData m = layer.metaDataView.getMetaData();
+                    /* PixelBasedMetaData aren't supported
                     if (includePixelBasedImages || !(m instanceof PixelBasedMetaData)) {
 
                         Region layerRegion = ViewHelper.cropInnerRegionToOuterRegion(m.getPhysicalRegion(), region);
@@ -439,6 +442,7 @@ public abstract class AbstractLayeredView extends AbstractView implements Layere
                         changed |= layer.regionView.setRegion(layerRegion, event);
                         changed |= layer.viewportView.setViewport(layerViewport, event);
                     }
+                    */
                 }
             } finally {
                 layerLock.unlock();
@@ -488,32 +492,26 @@ public abstract class AbstractLayeredView extends AbstractView implements Layere
             return;
         }
 
-        RectangleDouble bounds = null;
         minimalRegionSize = 0.0f;
         layerLock.lock();
         try {
             for (Layer layer : viewLookup.values()) {
                 if (layer.metaDataView != null) {
-                    if (includePixelBasedImages || !(layer.metaDataView.getMetaData() instanceof PixelBasedMetaData)) {
+                    //if (includePixelBasedImages || !(layer.metaDataView.getMetaData() instanceof PixelBasedMetaData)) {
                         RectangleDouble metaDataRectangle = layer.metaDataView.getMetaData().getPhysicalRectangle();
-                        if (bounds == null) {
-                            bounds = metaDataRectangle;
-                        } else {
-                            bounds = bounds.getBoundingRectangle(metaDataRectangle);
-                        }
+                         metaData = layer.metaDataView.getMetaData();
 
-                        double unitsPerPixel = ((ImageSizeMetaData) layer.metaDataView.getMetaData()).getUnitsPerPixel();
+                        
+                        double unitsPerPixel = layer.metaDataView.getMetaData().getUnitsPerPixel();
                         if (unitsPerPixel > minimalRegionSize) {
                             minimalRegionSize = unitsPerPixel;
                         }
-                    }
+                    //}
                 }
             }
         } finally {
             layerLock.unlock();
         }
-        if (bounds != null)
-            metaData = new PixelBasedMetaData(bounds);
 
         minimalRegionSize *= 2.0f;
     }

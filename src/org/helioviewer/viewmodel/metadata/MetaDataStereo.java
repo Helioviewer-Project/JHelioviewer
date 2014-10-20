@@ -1,30 +1,40 @@
-package org.helioviewer.viewmodel.metadata.ultimate;
+package org.helioviewer.viewmodel.metadata;
 
 import org.helioviewer.base.logging.Log;
 import org.helioviewer.base.math.MathUtils;
 import org.helioviewer.base.math.RectangleDouble;
 import org.helioviewer.base.math.Vector2dDouble;
+import org.helioviewer.base.math.Vector2dInt;
 import org.helioviewer.base.physics.Constants;
-import org.helioviewer.viewmodel.metadata.MetaDataContainer;
 import org.helioviewer.viewmodel.region.Region;
 import org.helioviewer.viewmodel.view.cache.HelioviewerDateTimeCache;
 
-public class MetaDataStereo extends UltimateMetaData{
+public class MetaDataStereo extends MetaData{
 
-	public enum Type{
-		STEREO_A, STEREO_A_COR_1, STEREO_A_COR_2, STEREO_B, STEREO_B_COR_1, STEREO_B_COR_2 
-	}
 
 	public MetaDataStereo(MetaDataContainer metaDataContainer) {
-		this.instrument = "AIA";
+        super(metaDataContainer);
+        observatory = metaDataContainer.get("OBSRVTRY");
         measurement = metaDataContainer.get("WAVELNTH");
-        observatory = metaDataContainer.get("TELESCOP");
-        fullName = "AIA " + measurement;
+        if (measurement == null) {
+            measurement = "" + metaDataContainer.tryGetDouble("WAVELNTH");
+        }
+        if (!((observatory.equalsIgnoreCase("STEREO_A") || observatory.equalsIgnoreCase("STEREO_B") && detector.equalsIgnoreCase("EUVI")))){
+        	throw new MetaDataException("invalid instrument");
+        }
+        fullName = instrument + " " + detector;
+        this.metaDataContainer = metaDataContainer;
+        
+
         
         String observedDate = metaDataContainer.get("DATE_OBS");
         time = HelioviewerDateTimeCache.parseDateTime(observedDate);
 
-        
+        updatePixelParameters();
+
+        setPhysicalLowerLeftCorner(sunPixelPosition.scale(-meterPerPixel));
+        setPhysicalImageSize(new Vector2dDouble(pixelImageSize.getX() * meterPerPixel, pixelImageSize.getY() * meterPerPixel));
+
         double arcsecPerPixelX = metaDataContainer.tryGetDouble("CDELT1");
         double arcsecPerPixelY = metaDataContainer.tryGetDouble("CDELT2");
         if (Double.isNaN(arcsecPerPixelX)) {
@@ -69,6 +79,52 @@ public class MetaDataStereo extends UltimateMetaData{
         this.stonyhurstLongitude = metaDataContainer.tryGetDouble("HGLN_OBS");
         this.stonyhurstAvailable = this.stonyhurstLatitude != 0.0 || this.stonyhurstLongitude != 0.0;
    }
+
+	@Override
+	boolean updatePixelParameters() {
+		boolean changed = false;
+
+        if (pixelImageSize.getX() != metaDataContainer.getPixelWidth() || pixelImageSize.getY() != metaDataContainer.getPixelHeight()) {
+            pixelImageSize = new Vector2dInt(metaDataContainer.getPixelWidth(), metaDataContainer.getPixelHeight());
+            changed = true;
+        }
+
+        double newSolarPixelRadius = -1.0;
+        double allowedRelativeDifference = 0.01;
+
+        double solarRadiusArcSec = metaDataContainer.tryGetDouble("RSUN");
+        double arcSecPerPixel = metaDataContainer.tryGetDouble("CDELT1");
+        double arcSecPerPixel2 = metaDataContainer.tryGetDouble("CDELT2");
+        if (arcSecPerPixel != arcSecPerPixel2) {
+            Log.warn("HelioviewerMetaData: STEREO Meta Data inconsistent! Resolution not the same in x and y direction! (1: " + arcSecPerPixel + ", 2: " + arcSecPerPixel2 + ")");
+        }
+        double solarRadiusPixel = solarRadiusArcSec / arcSecPerPixel;
+        newSolarPixelRadius = solarRadiusPixel;
+
+        if (newSolarPixelRadius > 0) {
+            double allowedAbsoluteDifference = newSolarPixelRadius * allowedRelativeDifference;
+            if (Math.abs(solarPixelRadius - newSolarPixelRadius) > allowedAbsoluteDifference) {
+                changed = true;
+            }
+
+            double sunX = metaDataContainer.tryGetDouble("CRPIX1");
+            double sunY = metaDataContainer.tryGetDouble("CRPIX2");
+
+            if (changed || Math.abs(sunPixelPosition.getX() - sunX) > allowedAbsoluteDifference || Math.abs(sunPixelPosition.getY() - sunY) > allowedAbsoluteDifference) {
+                sunPixelPosition = new Vector2dDouble(sunX, sunY);
+                changed = true;
+            }
+        }
+
+        if (changed) {
+            solarPixelRadius = newSolarPixelRadius;
+            meterPerPixel = Constants.SunRadius / solarPixelRadius;
+            setPhysicalLowerLeftCorner(sunPixelPosition.scale(-meterPerPixel));
+            setPhysicalImageSize(new Vector2dDouble(pixelImageSize.getX() * meterPerPixel, pixelImageSize.getY() * meterPerPixel));
+        }
+
+        return changed;
+	}
 	
 	
 

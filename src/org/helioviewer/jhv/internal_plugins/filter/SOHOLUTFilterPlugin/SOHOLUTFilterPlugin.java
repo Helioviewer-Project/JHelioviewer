@@ -3,7 +3,6 @@ package org.helioviewer.jhv.internal_plugins.filter.SOHOLUTFilterPlugin;
 import org.helioviewer.base.logging.Log;
 import org.helioviewer.viewmodel.filter.Filter;
 import org.helioviewer.viewmodel.imageformat.SingleChannelImageFormat;
-import org.helioviewer.viewmodel.metadata.HelioviewerMetaData;
 import org.helioviewer.viewmodel.metadata.MetaData;
 import org.helioviewer.viewmodel.view.FilterView;
 import org.helioviewer.viewmodel.view.MetaDataView;
@@ -86,14 +85,12 @@ public class SOHOLUTFilterPlugin extends FilterContainer {
         MetaDataView metaDataView = filterView.getAdapter(MetaDataView.class);
         if (metaDataView != null) {
             MetaData metaData = metaDataView.getMetaData();
-            if (metaData != null && metaData instanceof HelioviewerMetaData) {
-                HelioviewerMetaData hvMetaData = (HelioviewerMetaData) metaData;
-                String colorKey = DefaultTable.getSingletonInstance().getColorTable(hvMetaData);
+            	String colorKey = DefaultTable.getSingletonInstance().getColorTable(metaData);
                 if (colorKey != null) {
                     Log.debug("Try to apply color table " + colorKey);
                     pane.setLutByName(colorKey);
                     return;
-                }
+                
             }
         }
 

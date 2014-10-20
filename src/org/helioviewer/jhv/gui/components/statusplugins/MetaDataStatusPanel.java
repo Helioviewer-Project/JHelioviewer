@@ -7,7 +7,6 @@ import javax.swing.JLabel;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.layers.LayersModel;
-import org.helioviewer.viewmodel.metadata.HelioviewerMetaData;
 import org.helioviewer.viewmodel.metadata.MetaData;
 import org.helioviewer.viewmodel.view.MetaDataView;
 import org.helioviewer.viewmodel.view.View;
@@ -66,10 +65,8 @@ public class MetaDataStatusPanel extends ViewStatusPanelPlugin {
                 if (metaDataView != null) {
                     MetaData m = metaDataView.getMetaData();
 
-                    if (m instanceof HelioviewerMetaData)
-                        setIcon(checkIcon);
-                    else
-                        setIcon(exIcon);
+                    setIcon(checkIcon);
+                    
                 }
 
                 validate();

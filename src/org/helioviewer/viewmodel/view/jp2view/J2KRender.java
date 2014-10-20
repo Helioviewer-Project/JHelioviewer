@@ -16,7 +16,6 @@ import org.helioviewer.viewmodel.imagedata.ARGBInt32ImageData;
 import org.helioviewer.viewmodel.imagedata.ColorMask;
 import org.helioviewer.viewmodel.imagedata.SingleChannelByte8ImageData;
 import org.helioviewer.viewmodel.metadata.MetaData;
-import org.helioviewer.viewmodel.metadata.NonConstantMetaData;
 import org.helioviewer.viewmodel.view.CachedMovieView;
 import org.helioviewer.viewmodel.view.LinkedMovieManager;
 import org.helioviewer.viewmodel.view.MovieView;
@@ -239,7 +238,7 @@ class J2KRender implements Runnable {
 
                 MetaData metaData = parentViewRef.getMetaData();
 
-                if (metaData instanceof NonConstantMetaData && ((NonConstantMetaData) metaData).checkForModifications()) {
+                if (metaData.checkForModifications()) {
 
                     parentViewRef.updateParameter();
                     currParams = parentViewRef.getImageViewParams();

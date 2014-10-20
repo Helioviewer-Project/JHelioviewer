@@ -43,9 +43,7 @@ import org.helioviewer.viewmodel.changeevent.ViewportChangedReason;
 import org.helioviewer.viewmodel.changeevent.LayerChangedReason.LayerChangeType;
 import org.helioviewer.viewmodel.io.APIResponse;
 import org.helioviewer.viewmodel.io.APIResponseDump;
-import org.helioviewer.viewmodel.metadata.HelioviewerMetaData;
 import org.helioviewer.viewmodel.metadata.MetaData;
-import org.helioviewer.viewmodel.metadata.ObserverMetaData;
 import org.helioviewer.viewmodel.region.Region;
 import org.helioviewer.viewmodel.region.StaticRegion;
 import org.helioviewer.viewmodel.view.ComponentView;
@@ -221,11 +219,8 @@ public class LayersModel implements ViewListener {
             return null;
         }
 
-        MetaData md = view.getAdapter(MetaDataView.class).getMetaData();
+        MetaData obsMetaData = view.getAdapter(MetaDataView.class).getMetaData();
 
-        if (md instanceof ObserverMetaData) {
-
-            ObserverMetaData obsMetaData = (ObserverMetaData) md;
 
             // get date and convert it to formatted string
             SimpleDateFormat dateFormat;
@@ -242,9 +237,6 @@ public class LayersModel implements ViewListener {
             // add time to name
             return String.format(Locale.ENGLISH, "%s %02d:%02d:%02d\n", dateFormat.format(date), obsMetaData.getDateTime().getField(Calendar.HOUR_OF_DAY), obsMetaData.getDateTime().getField(Calendar.MINUTE), obsMetaData.getDateTime().getField(Calendar.SECOND));
 
-        } else {
-            return "N/A";
-        }
     }
 
     /**
@@ -275,14 +267,7 @@ public class LayersModel implements ViewListener {
 
         MetaData md = view.getAdapter(MetaDataView.class).getMetaData();
 
-        if (md instanceof ObserverMetaData) {
-
-            ObserverMetaData obsMetaData = (ObserverMetaData) md;
-            return obsMetaData.getDateTime();
-
-        } else {
-            return null;
-        }
+        return md.getDateTime();
     }
 
     /**
@@ -330,15 +315,9 @@ public class LayersModel implements ViewListener {
 
         if (mdv != null) {
 
-            MetaData md = mdv.getMetaData();
+        	MetaData metaData = mdv.getMetaData();
 
-            if (md instanceof ObserverMetaData) {
-
-                ObserverMetaData omd = (ObserverMetaData) md;
-                result = omd.getDateTime();
-
-            }
-
+        	result = metaData.getDateTime();
         }
 
         return result;
@@ -662,11 +641,8 @@ public class LayersModel implements ViewListener {
         }
         ImageInfoView imageInfoView = view.getAdapter(ImageInfoView.class);
         if (imageInfoView != null) {
-        	if (imageInfoView.getMetadata() instanceof HelioviewerMetaData){
-	        	HelioviewerMetaData metaData = (HelioviewerMetaData) imageInfoView.getMetadata();
-	        	return metaData.getObservatory();
-        	}
-        	else return "";
+        	MetaData metaData = imageInfoView.getMetadata();
+        	return metaData.getObservatory();
         } else {
             return view.toString();
         }
@@ -882,7 +858,6 @@ public class LayersModel implements ViewListener {
 
         File downloadDestination = fileDownloader.getDefaultDownloadLocation(view.getAdapter(ImageInfoView.class).getUri());
         JHVJP2View mainView = view.getAdapter(JHVJP2View.class);
-        JHVJP2View overviewView = (JHVJP2View) ImageViewerGui.getSingletonInstance().getOverviewView().getAdapter(SynchronizeView.class).getCorrespondingView(mainView);
         try {
 
             if (!fileDownloader.get(source, downloadDestination, "Downloading " + view.getAdapter(ImageInfoView.class).getName())) {
@@ -898,7 +873,6 @@ public class LayersModel implements ViewListener {
             ImageViewerGui.getSingletonInstance().getMainImagePanel().setLoading(true);
             JP2Image localImage = new JP2Image(downloadDestination.toURI());
             mainView.setJP2Image(localImage);
-            overviewView.setJP2Image(localImage);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -980,9 +954,6 @@ public class LayersModel implements ViewListener {
         if (view == null) {
             return;
         }
-
-        if (!this.isTimed(view))
-            return;
 
         MovieView view2 = view.getAdapter(MovieView.class);
 
@@ -1075,16 +1046,6 @@ public class LayersModel implements ViewListener {
         return (view2 != null);
     }
 
-    /**
-     * Check whether the layer in question has timing information
-     * 
-     * @param idx
-     *            - index of the layer in question
-     * @return true if the layer in question has timing information
-     */
-    public boolean isTimed(int idx) {
-        return isTimed(this.getLayer(idx));
-    }
 
     /**
      * Check whether the layer in question has timing information
@@ -1101,7 +1062,7 @@ public class LayersModel implements ViewListener {
 
         if (metaDataView != null) {
             MetaData md = view.getAdapter(MetaDataView.class).getMetaData();
-            return (md instanceof ObserverMetaData);
+            return true;
         } else {
             return false;
         }

@@ -23,9 +23,9 @@ public interface MetaDataFilter extends Filter {
      * Usually, this function will be called by the
      * {@link org.helioviewer.viewmodel.view.FilterView}
      * 
-     * @param metaData
+     * @param ultimateMetaData
      *            Meta data of the image
      */
-    public void setMetaData(MetaData metaData);
+    public void setMetaData(MetaData ultimateMetaData);
 
 }

@@ -4,7 +4,6 @@ import org.helioviewer.gl3d.view.GL3DCameraView;
 import org.helioviewer.gl3d.view.GL3DComponentView;
 import org.helioviewer.gl3d.view.GL3DImageTextureView;
 import org.helioviewer.gl3d.view.GL3DLayeredView;
-import org.helioviewer.gl3d.view.GL3DOrthoView;
 import org.helioviewer.gl3d.view.GL3DSceneGraphView;
 import org.helioviewer.gl3d.view.GL3DView;
 import org.helioviewer.gl3d.view.GL3DViewportView;
@@ -35,8 +34,6 @@ public class GL3DViewFactory extends GLViewFactory {
             return (T) new GL3DSceneGraphView();
         } else if (pattern.isAssignableFrom(GL3DCameraView.class)) {
             return (T) new GL3DCameraView();
-        } else if (pattern.isAssignableFrom(GL3DOrthoView.class)) {
-            return (T) new GL3DOrthoView();
         } else if (pattern.isAssignableFrom(GL3DViewportView.class)) {
             return (T) new GL3DViewportView();
         } else if (pattern.isAssignableFrom(GL3DImageTextureView.class)) {
@@ -65,8 +62,6 @@ public class GL3DViewFactory extends GLViewFactory {
                 return (T) new GL3DSceneGraphView();
             } else if (source instanceof GL3DCameraView) {
                 return (T) new GL3DCameraView();
-            } else if (source instanceof GL3DOrthoView) {
-                return (T) new GL3DOrthoView();
             } else if (source instanceof GL3DViewportView) {
                 return (T) new GL3DViewportView();
             } else if (source instanceof GL3DImageTextureView) {
