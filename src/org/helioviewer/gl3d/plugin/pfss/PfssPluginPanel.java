@@ -119,7 +119,7 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 
 	public void actionPerformed(ActionEvent act) {
 		if (act.getSource().equals(visibleButton)) {
-			if (pfssCache.isVisible()) {
+			if (renderer.isVisible()) {
 				renderer.setVisible(false);
 				visibleButton.setIcon(new ImageIcon(PfssPlugin
 						.getResourceUrl("/images/invisible_dm.png")));

@@ -17,7 +17,7 @@ public class PfssCache {
 	private LinkedHashMap<String, PfssFitsFile> pfssDatas = new LinkedHashMap<String, PfssFitsFile>();
 	private HashMap<Integer, PfssYear> years;
 	private PfssDayAndTime lastEntry = null;
-	private boolean visible = false;
+	private boolean visible = true;
 	private boolean load = false;
 	private String lastURL = "";
 	private PfssFitsFile toDelete = null;
