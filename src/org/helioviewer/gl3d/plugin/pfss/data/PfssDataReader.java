@@ -39,7 +39,6 @@ public class PfssDataReader implements Runnable {
 
 	public void readData() {
 		// do decompression here
-
 		this.readFits();
 
 		// it can happen that the readFits() could not finish loading the frame.

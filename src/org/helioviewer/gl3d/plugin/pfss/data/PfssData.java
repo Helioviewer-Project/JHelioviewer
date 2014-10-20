@@ -16,6 +16,8 @@ import nom.tam.fits.Fits;
 
 /**
  * Represents the raw pfss data. This class is able to load it asynchronously
+ * 
+ * This class is threadsafe
  * @author Jonas Schwammberger
  *
  */

@@ -196,7 +196,7 @@ public class PfssFrame {
 		return isLoaded;
 	}
 	
-	public FileDescriptor getDateRange() {
+	public FileDescriptor getDescriptor() {
 		return this.descriptor;
 	}
 }

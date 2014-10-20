@@ -16,9 +16,9 @@ import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
  */
 public class PfssDataCreator {
 	private final ExecutorService pool = Executors.newCachedThreadPool();
-	private final FileManager manager;
+	private final FileDescriptorManager manager;
 	
-	public PfssDataCreator(FileManager manager) {
+	public PfssDataCreator(FileDescriptorManager manager) {
 		this.manager = manager;
 	}
 		
