@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.gui.actions;
+package org.helioviewer.gl3d.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -7,6 +7,8 @@ import javax.swing.AbstractAction;
 import javax.swing.KeyStroke;
 
 import org.helioviewer.base.math.Vector2dDouble;
+import org.helioviewer.gl3d.camera.GL3DCamera;
+import org.helioviewer.gl3d.camera.GL3DCameraPanAnimation;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.viewmodel.changeevent.ChangeEvent;
@@ -21,14 +23,14 @@ import org.helioviewer.viewmodel.view.View;
  * 
  * @author Markus Langenberg
  */
-public class CenterImageAction extends AbstractAction {
+public class GL3DCenterImageAction extends AbstractAction {
 
     private static final long serialVersionUID = 1L;
 
     /**
      * Default constructor.
      */
-    public CenterImageAction() {
+    public GL3DCenterImageAction() {
         super("Center Image");
         putValue(SHORT_DESCRIPTION, "Center the image");
         putValue(MNEMONIC_KEY, KeyEvent.VK_C);
@@ -39,26 +41,9 @@ public class CenterImageAction extends AbstractAction {
      * {@inheritDoc}
      */
     public void actionPerformed(ActionEvent e) {
-        View view = LayersModel.getSingletonInstance().getActiveView();
-
-        if (view != null) {
-
-            // ViewHelper.getViewAdapter(ImageViewerGui.getSingletonInstance().getImageSelectorPanel().getActiveImageInfoView(),
-            // MetaDataView.class);
-            MetaDataView baseView = view.getAdapter(MetaDataView.class);
-            if (baseView == null) {
-                return;
-            }
-
-            RegionView targetView = ImageViewerGui.getSingletonInstance().getMainView().getAdapter(RegionView.class);
-
-            Region baseRegion = baseView.getMetaData().getPhysicalRegion();
-            Region targetRegion = targetView.getRegion();
-
-            Vector2dDouble newLowerLeftCorner = baseRegion.getLowerLeftCorner().add(baseRegion.getSize().subtract(targetRegion.getSize()).scale(0.5));
-
-            targetView.setRegion(StaticRegion.createAdaptedRegion(newLowerLeftCorner, targetRegion.getSize()), new ChangeEvent());
-
+    	GL3DCamera camera = GL3DCameraSelectorModel.getInstance().getCurrentCamera();
+        if (camera != null) {
+            camera.addCameraAnimation(new GL3DCameraPanAnimation(camera.getTranslation().copy().negate()));
         }
 
     }

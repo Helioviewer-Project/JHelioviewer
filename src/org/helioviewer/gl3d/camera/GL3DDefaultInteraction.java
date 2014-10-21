@@ -4,6 +4,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
 import org.helioviewer.gl3d.view.GL3DSceneGraphView;
+import org.helioviewer.jhv.gui.states.StateController;
 import org.helioviewer.viewmodel.region.Region;
 import org.helioviewer.viewmodel.view.MetaDataView;
 
@@ -58,7 +59,6 @@ public abstract class GL3DDefaultInteraction extends GL3DInteraction {
     public void mouseWheelMoved(MouseWheelEvent e, GL3DCamera camera) {
     	
         double zoomDistance = -(e.getUnitsToScroll()) * camera.getDistanceToSunSurface() * GL3DDefaultInteraction.ZOOM_WHEEL_FACTOR;
-        System.out.println("zoomDistance --> " + zoomDistance);
         camera.addCameraAnimation(new GL3DCameraZoomAnimation(zoomDistance));
     }
 

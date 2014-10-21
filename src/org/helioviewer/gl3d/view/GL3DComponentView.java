@@ -2,6 +2,8 @@ package org.helioviewer.gl3d.view;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
@@ -11,6 +13,7 @@ import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.Iterator;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.imageio.ImageIO;
@@ -26,6 +29,7 @@ import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
 import javax.media.opengl.glu.GLU;
+import javax.swing.Timer;
 
 import jogamp.opengl.glu.mipmap.PixelStorageModes;
 
@@ -48,7 +52,7 @@ import org.helioviewer.viewmodel.changeevent.ViewChainChangedReason;
 import org.helioviewer.viewmodel.region.Region;
 import org.helioviewer.viewmodel.renderer.screen.GLScreenRenderGraphics;
 import org.helioviewer.viewmodel.renderer.screen.ScreenRenderer;
-import org.helioviewer.viewmodel.view.AbstractComponentView;
+import org.helioviewer.viewmodel.view.AbstractBasicView;
 import org.helioviewer.viewmodel.view.ComponentView;
 import org.helioviewer.viewmodel.view.LayeredView;
 import org.helioviewer.viewmodel.view.LinkedMovieManager;
@@ -57,6 +61,7 @@ import org.helioviewer.viewmodel.view.RegionView;
 import org.helioviewer.viewmodel.view.TimedMovieView;
 import org.helioviewer.viewmodel.view.View;
 import org.helioviewer.viewmodel.view.ViewHelper;
+import org.helioviewer.viewmodel.view.ViewListener;
 import org.helioviewer.viewmodel.view.ViewportView;
 import org.helioviewer.viewmodel.view.opengl.GLTextureHelper;
 import org.helioviewer.viewmodel.view.opengl.GLView;
@@ -84,10 +89,21 @@ import com.jogamp.opengl.util.awt.ImageUtil;
  * @author Simon Sp���������rri (simon.spoerri@fhnw.ch)
  * 
  */
-public class GL3DComponentView extends AbstractComponentView implements
-		GLEventListener, ComponentView, LayersListener, GL3DCameraListener {
+public class GL3DComponentView extends AbstractBasicView implements
+		GLEventListener, ComponentView, LayersListener, GL3DCameraListener,
+		ActionListener {
 	public static final String SETTING_TILE_WIDTH = "gl.screenshot.tile.width";
 	public static final String SETTING_TILE_HEIGHT = "gl.screenshot.tile.height";
+
+	private volatile Vector2dInt mainImagePanelSize;
+
+	private Timer postRenderTimer = new Timer(100, this);
+	private Timer animationTimer = new Timer(0, this);
+
+	private long animationTime = 0;
+	private boolean animationIsRunnig = false;
+	private long startedTime = 0;
+	private CopyOnWriteArrayList<ScreenRenderer> postRenderers = new CopyOnWriteArrayList<ScreenRenderer>();
 
 	private GLCanvas canvas;
 
@@ -106,7 +122,7 @@ public class GL3DComponentView extends AbstractComponentView implements
 	private ViewportView screenshotViewportView;
 
 	private GL3DImageTextureView activeLayer = null;
-	
+
 	private ReentrantLock animationLock = new ReentrantLock();
 
 	private Vector2dInt viewportSize;
@@ -124,7 +140,7 @@ public class GL3DComponentView extends AbstractComponentView implements
 	private TileRenderer tileRenderer;
 	private Viewport viewport;
 	private Viewport defaultViewport;
-	
+
 	private double zTranslation = 1;
 
 	private double clipNear = Constants.SunRadius / 10;
@@ -155,27 +171,25 @@ public class GL3DComponentView extends AbstractComponentView implements
 				}
 			}
 		}
-    	LayersModel.getSingletonInstance().addLayersListener(this);
-    	
+		LayersModel.getSingletonInstance().addLayersListener(this);
+
 		this.canvas.addGLEventListener(this);
 	}
 
 	public void deactivate() {
-		/*if (this.animator != null) {
-			this.animator.stop();
-			if (getAdapter(GL3DView.class) != null) {
-				getAdapter(GL3DView.class).deactivate(GL3DState.get());
-			}
-		}
-		animationLock.lock();*/
+		/*
+		 * if (this.animator != null) { this.animator.stop(); if
+		 * (getAdapter(GL3DView.class) != null) {
+		 * getAdapter(GL3DView.class).deactivate(GL3DState.get()); } }
+		 * animationLock.lock();
+		 */
 	}
 
 	public void activate() {
 		/*
-		this.animator.start();
-		if (this.animationLock.isLocked())
-			animationLock.unlock();
-			*/
+		 * this.animator.start(); if (this.animationLock.isLocked())
+		 * animationLock.unlock();
+		 */
 	}
 
 	public GLCanvas getComponent() {
@@ -187,7 +201,8 @@ public class GL3DComponentView extends AbstractComponentView implements
 	}
 
 	public void init(GLAutoDrawable glAD) {
-    	this.getAdapter(GL3DCameraView.class).getCurrentCamera().addCameraListener(this);
+		this.getAdapter(GL3DCameraView.class).getCurrentCamera()
+				.addCameraListener(this);
 
 		Log.debug("GL3DComponentView.Init");
 		GL2 gl = glAD.getGL().getGL2();
@@ -263,9 +278,17 @@ public class GL3DComponentView extends AbstractComponentView implements
 	}
 
 	public void display(GLAutoDrawable glAD) {
-		
+		long time = System.currentTimeMillis();
+		if (animationIsRunnig && animationTime-(time-startedTime) <= 0 && LinkedMovieManager.getActiveInstance() != null && !LinkedMovieManager.getActiveInstance().isPlaying()){
+			animationTimer.stop();
+			animationIsRunnig = false;
+		}
+		else {
+			animationTime -= (time - startedTime);
+			this.startedTime = time;
+		}
 		GL2 gl = glAD.getGL().getGL2();
-
+		
 		if (defaultViewport != null)
 			this.getAdapter(ViewportView.class).setViewport(defaultViewport,
 					new ChangeEvent());
@@ -293,7 +316,7 @@ public class GL3DComponentView extends AbstractComponentView implements
 
 		// Save Screenshot, if requested
 
-		//gl.getContext().makeCurrent();
+		gl.getContext().makeCurrent();
 		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);
 
 		gl.glClearColor(backgroundColor.getRed() / 255.0f,
@@ -363,7 +386,7 @@ public class GL3DComponentView extends AbstractComponentView implements
 		if (this.getView() instanceof GLView) {
 			((GLView) this.getView()).renderGL(gl, true);
 		}
-		
+
 		GL3DState.get().checkGLErrors("GL3DComponentView.afterRenderGL");
 
 		gl.glPopMatrix();
@@ -388,8 +411,8 @@ public class GL3DComponentView extends AbstractComponentView implements
 			gl.glDisable(GL2.GL_DEPTH_TEST);
 			gl.glEnable(GL2.GL_TEXTURE_2D);
 			GLScreenRenderGraphics glRenderer = new GLScreenRenderGraphics(gl);
-			
-			//Iterator<> postRenderer = postRenderers
+
+			// Iterator<> postRenderer = postRenderers
 			synchronized (postRenderers) {
 				for (ScreenRenderer r : postRenderers) {
 					r.render(glRenderer);
@@ -484,18 +507,19 @@ public class GL3DComponentView extends AbstractComponentView implements
 		capabilities.setOnscreen(false);
 		capabilities.setHardwareAccelerated(true);
 		capabilities.setFBO(true);
-		
+
 		GLDrawable offscreenDrawable = factory.createOffscreenDrawable(null,
 				capabilities, null, tileWidth, tileHeight);
-		
+
 		offscreenDrawable.setRealized(true);
 		GLContext offscreenContext = canvas.getContext();
-		//GLContext offscreenContext = offscreenDrawable.createContext(this.canvas.getContext());
+		// GLContext offscreenContext =
+		// offscreenDrawable.createContext(this.canvas.getContext());
 		offscreenDrawable.setRealized(true);
 		offscreenContext.makeCurrent();
 		GL2 offscreenGL = offscreenContext.getGL().getGL2();
-		//GL2 offscreenGL = canvas.getContext().getGL().getGL2();
-		
+		// GL2 offscreenGL = canvas.getContext().getGL().getGL2();
+
 		offscreenGL.glBindFramebuffer(GL2.GL_FRAMEBUFFER, frameBufferObject[0]);
 		generateNewRenderBuffers(offscreenGL);
 
@@ -522,14 +546,14 @@ public class GL3DComponentView extends AbstractComponentView implements
 				tileRight = left + (right - left) / xTiles * (x + 1);
 				tileBottom = bottom + (top - bottom) / yTiles * y;
 				tileTop = bottom + (top - bottom) / yTiles * (y + 1);
-				//offscreenGL.glFlush();
+				// offscreenGL.glFlush();
 
 				offscreenGL.glMatrixMode(GL2.GL_PROJECTION);
 				offscreenGL.glLoadIdentity();
 				offscreenGL.glViewport(0, 0, tileWidth, tileHeight);
 				offscreenGL.glFrustum(tileLeft, tileRight, tileBottom, tileTop,
 						clipNear, clipFar);
-				
+
 				offscreenGL.glMatrixMode(GL2.GL_MODELVIEW);
 				offscreenGL.glLoadIdentity();
 
@@ -565,15 +589,15 @@ public class GL3DComponentView extends AbstractComponentView implements
 
 		ImageUtil.flipImageVertically(screenshot);
 
-		 //offscreenContext.release();
+		// offscreenContext.release();
 		// saveBufferedImage = true;
 		// this.getAdapter(ViewportView.class).setViewport(defaultViewport, new
 		// ChangeEvent());
-		 this.canvas.display();
+		this.canvas.display();
 		viewport = null;
-		//if (screenshot == null){
-		//	screenshot = getBufferedImage(width, height);
-		//}
+		// if (screenshot == null){
+		// screenshot = getBufferedImage(width, height);
+		// }
 		return screenshot;
 	}
 
@@ -589,7 +613,8 @@ public class GL3DComponentView extends AbstractComponentView implements
 	}
 
 	public void updateMainImagePanelSize(Vector2dInt size) {
-		super.updateMainImagePanelSize(size);
+		mainImagePanelSize = size;
+
 		this.viewportSize = size;
 
 		// if(this.orthoView!=null) {
@@ -695,8 +720,8 @@ public class GL3DComponentView extends AbstractComponentView implements
 		this.getAdapter(ViewportView.class).setViewport(defaultViewport,
 				new ChangeEvent());
 	}
-	
-	public void setActiveLayer(GL3DImageTextureView activeLayer){
+
+	public void setActiveLayer(GL3DImageTextureView activeLayer) {
 		this.activeLayer = activeLayer;
 	}
 
@@ -727,7 +752,12 @@ public class GL3DComponentView extends AbstractComponentView implements
 
 	@Override
 	public void timestampChanged(int idx) {
-		this.canvas.display();
+		if (LinkedMovieManager.getActiveInstance().isPlaying() && !this.animationIsRunnig) {
+			this.animationTimer.start();
+			this.animationTimer.setInitialDelay(20);
+		} else if (!this.animationIsRunnig){
+			this.canvas.display();
+		}
 	}
 
 	@Override
@@ -742,12 +772,68 @@ public class GL3DComponentView extends AbstractComponentView implements
 
 	@Override
 	public void cameraMoved(GL3DCamera camera) {
-		//this.canvas.display();
+		// this.canvas.display();
 	}
 
 	@Override
 	public void cameraMoving(GL3DCamera camera) {
-		this.canvas.display();		
+		this.canvas.display();
 	}
-	
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void addPostRenderer(ScreenRenderer postRenderer) {
+		if (postRenderer != null) {
+			if (!containsPostRenderer(postRenderer)) {
+				postRenderers.add(postRenderer);
+				postRenderTimer.start();
+				if (postRenderer instanceof ViewListener) {
+					addViewListener((ViewListener) postRenderer);
+				}
+			}
+		}
+	}
+
+	private boolean containsPostRenderer(ScreenRenderer postrenderer) {
+		return postRenderers.contains(postrenderer);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void removePostRenderer(ScreenRenderer postRenderer) {
+		if (postRenderer != null) {
+			postRenderers.remove(postRenderer);
+			postRenderTimer.stop();
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public CopyOnWriteArrayList<ScreenRenderer> getAllPostRenderer() {
+		return postRenderers;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		this.canvas.display();
+	}
+
+	public void regristryAnimation(long time) {
+		if (time < 0) {
+			Log.error("Not correct time : " + time + ", must be higher then 0");
+		} else if (!animationIsRunnig) {
+			if (!LinkedMovieManager.getActiveInstance().isPlaying()) {
+				this.animationTimer.setDelay(0);
+			}
+			animationTime = time;
+			startedTime = System.currentTimeMillis();
+			animationTimer.start();
+		} else if (animationTime < time) {
+			animationTime = time;
+		}
+	}
+
 }

@@ -31,11 +31,12 @@ public class GL3DTrackballRotationInteraction extends GL3DDefaultInteraction {
     public void mouseDragged(MouseEvent e, GL3DCamera camera) {
         this.currentRotationEndPoint = getVectorFromSphere(e.getPoint(), camera);
         try {
+        	if (currentRotationStartPoint != null && currentRotationEndPoint != null){
             currentDragRotation = GL3DQuatd.calcRotation(currentRotationStartPoint, currentRotationEndPoint);
             if (currentDragRotation != null){
 	            camera.getRotation().rotate(currentDragRotation);
 	            this.camera.updateCameraTransformation(false);
-	        }
+	        }}
         } catch (IllegalArgumentException exc) {
             Log.warn("GL3DTrackballCamera.mouseDragged: Illegal Rotation ignored!", exc);
         }

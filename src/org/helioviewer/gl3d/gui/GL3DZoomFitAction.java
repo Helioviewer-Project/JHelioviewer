@@ -1,12 +1,17 @@
 package org.helioviewer.gl3d.gui;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+
+import javax.swing.AbstractAction;
+import javax.swing.KeyStroke;
 
 import org.helioviewer.base.logging.Log;
 import org.helioviewer.gl3d.camera.GL3DCamera;
 import org.helioviewer.gl3d.camera.GL3DCameraPanAnimation;
 import org.helioviewer.gl3d.camera.GL3DCameraZoomAnimation;
-import org.helioviewer.jhv.gui.actions.ZoomFitAction;
+import org.helioviewer.jhv.gui.IconBank;
+import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.viewmodel.region.Region;
 import org.helioviewer.viewmodel.view.MetaDataView;
@@ -17,15 +22,18 @@ import org.helioviewer.viewmodel.view.View;
  * the displayed viewport. For 3D this results in a change in the
  * {@link GL3DCamera}'s distance to the sun.
  * 
- * @author Simon Spšrri (simon.spoerri@fhnw.ch)
+ * @author Simon Spï¿½rri (simon.spoerri@fhnw.ch)
  * 
  */
-public class GL3DZoomFitAction extends ZoomFitAction {
+public class GL3DZoomFitAction extends AbstractAction {
 
     private static final long serialVersionUID = 1L;
 
     public GL3DZoomFitAction(boolean small) {
-        super(small);
+        super("Zoom to Fit", small ? IconBank.getIcon(JHVIcon.ZOOM_FIT_SMALL) : IconBank.getIcon(JHVIcon.ZOOM_FIT));
+        putValue(SHORT_DESCRIPTION, "Zoom to Fit");
+        putValue(MNEMONIC_KEY, KeyEvent.VK_F);
+        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_K, KeyEvent.ALT_MASK));
     }
 
     public void actionPerformed(ActionEvent e) {

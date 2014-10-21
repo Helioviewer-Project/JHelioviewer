@@ -2,6 +2,7 @@ package org.helioviewer.gl3d.camera;
 
 import org.helioviewer.gl3d.scenegraph.math.GL3DQuatd;
 import org.helioviewer.gl3d.scenegraph.math.GL3DVec3d;
+import org.helioviewer.jhv.gui.states.StateController;
 
 /**
  * This animation rotates the camera from a startpoint to an endpoint by using
@@ -31,7 +32,7 @@ public class GL3DCameraRotationAnimation implements GL3DCameraAnimation {
         this.timeLeft = duration;
         this.startTime = System.currentTimeMillis();
         this.lastAnimationTime = System.currentTimeMillis();
-        
+        StateController.getInstance().getCurrentState().getMainComponentView().regristryAnimation(duration);        
     }
 
     
@@ -61,17 +62,6 @@ public class GL3DCameraRotationAnimation implements GL3DCameraAnimation {
     		//this.duration += ani.duration;
     		this.endRotation = ani.endRotation.copy();
     	}
-        // TODO: Simon Sp�rri: implement Rotation Animation update
-        // throw new UnsupportedOperationException();
-        // if(animation instanceof GL3DCameraRotationAnimation) {
-        // GL3DCameraRotationAnimation ani =
-        // (GL3DCameraRotationAnimation)animation;
-        // this.timeLeft = Math.min(2000, this.timeLeft/5+ani.timeLeft);
-        // GL3DQuatd rotation = GL3DQuatd.calcRotation(this.endPoint,
-        // this.startPoint);
-        // this.targetRotation = .getRotation().copy().rotate(rotation);
-        // this.targetRotation.rotate(rotation);
-        // }
     }
 
     public boolean isFinished() {

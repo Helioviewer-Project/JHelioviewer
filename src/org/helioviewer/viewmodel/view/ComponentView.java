@@ -151,4 +151,7 @@ public interface ComponentView extends ModifiableInnerViewView, ViewListener{
 	public void stop();
 	public void start();
 
+	public void regristryAnimation(long time);
+	
+
 }

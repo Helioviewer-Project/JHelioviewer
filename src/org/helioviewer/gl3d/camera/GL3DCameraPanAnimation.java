@@ -1,12 +1,13 @@
 package org.helioviewer.gl3d.camera;
 
 import org.helioviewer.gl3d.scenegraph.math.GL3DVec3d;
+import org.helioviewer.jhv.gui.states.StateController;
 
 /**
  * This animations changes the camera's panning (x- and y-translation) by the
  * specified amount.
  * 
- * @author Simon Spšrri (simon.spoerri@fhnw.ch)
+ * @author Simon Spï¿½rri (simon.spoerri@fhnw.ch)
  * 
  */
 public class GL3DCameraPanAnimation implements GL3DCameraAnimation {
@@ -28,8 +29,9 @@ public class GL3DCameraPanAnimation implements GL3DCameraAnimation {
         this.distanceToMove = distanceToMove;
         this.timeLeft = duration;
         this.distanceDelta = GL3DVec3d.divide(distanceToMove, this.timeLeft);
-    }
-
+        StateController.getInstance().getCurrentState().getMainComponentView().regristryAnimation(duration);
+    }    
+    
     public void animate(GL3DCamera camera) {
         if (this.startTime < 0) {
             this.startTime = System.currentTimeMillis();

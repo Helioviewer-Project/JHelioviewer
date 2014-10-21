@@ -21,6 +21,7 @@ public class GL3DCameraZoomAnimation implements GL3DCameraAnimation {
 
     private double targetDistance;
 
+    
     public GL3DCameraZoomAnimation(double distanceToTravel) {
         this(distanceToTravel, GL3DCameraAnimation.DEFAULT_ANIMATION_TIME);
     }
@@ -29,7 +30,9 @@ public class GL3DCameraZoomAnimation implements GL3DCameraAnimation {
         this.distanceToTravel = distanceToTravel;
         this.timeLeft = duration;
         this.distanceDelta = distanceToTravel / this.timeLeft;
+        StateController.getInstance().getCurrentState().getMainComponentView().regristryAnimation(duration);
     }
+    
 
     public void animate(GL3DCamera camera) {
         if (this.startTime < 0) {
@@ -54,10 +57,11 @@ public class GL3DCameraZoomAnimation implements GL3DCameraAnimation {
 
         if (camera.getZTranslation() == this.targetDistance) {
             this.isFinished = true;
-            camera.updateCameraTransformation(true);
-        } else {
-            camera.updateCameraTransformation(false);
-        }
+//            camera.updateCameraTransformation(true);
+        } //else {
+         //   camera.updateCameraTransformation(false);
+        //}
+        camera.updateCameraTransformation();
         //camera.updateCameraTransformation(true);
         this.lastAnimationTime = System.currentTimeMillis();
     }

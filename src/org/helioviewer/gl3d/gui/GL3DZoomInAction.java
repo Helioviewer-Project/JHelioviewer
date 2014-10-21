@@ -1,24 +1,32 @@
 package org.helioviewer.gl3d.gui;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+
+import javax.swing.AbstractAction;
+import javax.swing.KeyStroke;
 
 import org.helioviewer.gl3d.camera.GL3DCamera;
 import org.helioviewer.gl3d.camera.GL3DCameraZoomAnimation;
-import org.helioviewer.jhv.gui.actions.ZoomInAction;
+import org.helioviewer.jhv.gui.IconBank;
+import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 
 /**
  * Action that zooms in, which reduces the distance of the {@link GL3DCamera} to
  * the sun.
  * 
- * @author Simon Spšrri (simon.spoerri@fhnw.ch)
+ * @author Simon Spï¿½rri (simon.spoerri@fhnw.ch)
  * 
  */
-public class GL3DZoomInAction extends ZoomInAction {
+public class GL3DZoomInAction extends AbstractAction {
 
     private static final long serialVersionUID = 1L;
 
     public GL3DZoomInAction(boolean small) {
-        super(small);
+        super("Zoom in", small ? IconBank.getIcon(JHVIcon.ZOOM_IN_SMALL) : IconBank.getIcon(JHVIcon.ZOOM_IN));
+        putValue(SHORT_DESCRIPTION, "Zoom in x2");
+        putValue(MNEMONIC_KEY, KeyEvent.VK_I);
+        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_I, KeyEvent.ALT_MASK));
     }
 
     public void actionPerformed(ActionEvent e) {

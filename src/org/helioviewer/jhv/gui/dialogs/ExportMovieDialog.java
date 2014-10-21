@@ -69,7 +69,7 @@ import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.IRational;
 
 
-public class ExportMovieDialog_test implements ActionListener{
+public class ExportMovieDialog implements ActionListener{
 	private String name = "test export...";
 	private TimedMovieView timedMovieView = null;
 	private ComponentView mainComponentView = null;
@@ -101,9 +101,9 @@ public class ExportMovieDialog_test implements ActionListener{
     private boolean useCurrentOpenGlSize;
     private int imageWidth;
     private int imageHeight;
-    private ExportMovieDialog_test exportMovieDialog;
+    private ExportMovieDialog exportMovieDialog;
     
-	public ExportMovieDialog_test() {
+	public ExportMovieDialog() {
 		exportMovieDialog = this;
 		if (openFileChooser() == JFileChooser.APPROVE_OPTION) {
 			this.loadSettings();
@@ -423,10 +423,10 @@ public class ExportMovieDialog_test implements ActionListener{
 		
 		private JProgressBar progressBar;
 		private JButton btnCancel;
-		private ExportMovieDialog_test exportMovieDialog;
+		private ExportMovieDialog exportMovieDialog;
 		private final JPanel contentPanel = new JPanel();
 		
-		public ProgressDialog(ExportMovieDialog_test exportMovieDialog) {
+		public ProgressDialog(ExportMovieDialog exportMovieDialog) {
 			setAlwaysOnTop(true);
 			this.exportMovieDialog = exportMovieDialog;
 			setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);

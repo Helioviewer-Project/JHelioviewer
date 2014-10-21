@@ -6,7 +6,11 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 
 import org.helioviewer.base.FileUtils;
-import org.helioviewer.jhv.gui.actions.CenterImageAction;
+import org.helioviewer.gl3d.gui.GL3DCenterImageAction;
+import org.helioviewer.gl3d.gui.GL3DZoom1to1Action;
+import org.helioviewer.gl3d.gui.GL3DZoomFitAction;
+import org.helioviewer.gl3d.gui.GL3DZoomInAction;
+import org.helioviewer.gl3d.gui.GL3DZoomOutAction;
 import org.helioviewer.jhv.gui.actions.CheckUpdateAction;
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 import org.helioviewer.jhv.gui.actions.ExportSettingsAction;
@@ -18,10 +22,6 @@ import org.helioviewer.jhv.gui.actions.SaveScreenshotAsAction;
 import org.helioviewer.jhv.gui.actions.SaveStateAction;
 import org.helioviewer.jhv.gui.actions.ShowDialogAction;
 import org.helioviewer.jhv.gui.actions.ToggleFullscreenAction;
-import org.helioviewer.jhv.gui.actions.Zoom1to1Action;
-import org.helioviewer.jhv.gui.actions.ZoomFitAction;
-import org.helioviewer.jhv.gui.actions.ZoomInAction;
-import org.helioviewer.jhv.gui.actions.ZoomOutAction;
 import org.helioviewer.jhv.gui.dialogs.AboutDialog;
 import org.helioviewer.jhv.gui.dialogs.HelpDialog;
 import org.helioviewer.jhv.gui.dialogs.OpenRemoteFileDialog;
@@ -83,13 +83,13 @@ public class MenuBar extends JMenuBar {
 
         JMenu viewMenu = new JMenu("View");
         viewMenu.setMnemonic(KeyEvent.VK_V);
-        viewMenu.add(new CenterImageAction());
+        viewMenu.add(new GL3DCenterImageAction());
         viewMenu.add(new ToggleFullscreenAction());
         viewMenu.addSeparator();
-        viewMenu.add(new ZoomInAction(true));
-        viewMenu.add(new ZoomOutAction(true));
-        viewMenu.add(new ZoomFitAction(true));
-        viewMenu.add(new Zoom1to1Action(true));
+        viewMenu.add(new GL3DZoomInAction(true));
+        viewMenu.add(new GL3DZoomOutAction(true));
+        viewMenu.add(new GL3DZoomFitAction(true));
+        viewMenu.add(new GL3DZoom1to1Action(true));
         add(viewMenu);
 
         JMenu movieMenu = new JMenu("Movie");

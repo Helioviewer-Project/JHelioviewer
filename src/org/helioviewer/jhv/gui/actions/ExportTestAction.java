@@ -16,7 +16,7 @@ import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.actions.filefilters.ExtensionFileFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.JPGFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.PNGFilter;
-import org.helioviewer.jhv.gui.dialogs.ExportMovieDialog_test;
+import org.helioviewer.jhv.gui.dialogs.ExportMovieDialog;
 import org.helioviewer.jhv.gui.dialogs.ExportMovieSettingsDialog;
 import org.helioviewer.jhv.gui.states.StateController;
 import org.helioviewer.viewmodel.view.LinkedMovieManager;
@@ -34,7 +34,7 @@ public class ExportTestAction extends AbstractAction{
 	     */
 	    public void actionPerformed(ActionEvent e) {
           if(LinkedMovieManager.getActiveInstance().getMasterMovie()!=null)
-            new ExportMovieDialog_test();
+            new ExportMovieDialog();
           else
             JOptionPane.showMessageDialog(StateController.getInstance().getCurrentState().getMainComponentView().getComponent(), "At least one active layer must be visible.\n\nPlease add a layer before exporting movies.", "Error", JOptionPane.ERROR_MESSAGE);
 	    }

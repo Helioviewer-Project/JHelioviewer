@@ -518,7 +518,7 @@ public class GLTextureHelper {
 
         int bitsPerPixel = source.getImageTransport().getNumBitsPerPixel();
         Buffer buffer;
-        System.out.println("bits per pixel : " + bitsPerPixel);
+        
         switch (bitsPerPixel) {
         case 8:
             buffer = ByteBuffer.wrap(((Byte8ImageTransport) source.getImageTransport()).getByte8PixelData());

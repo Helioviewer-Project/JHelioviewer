@@ -109,7 +109,7 @@ public class ImageViewerGui {
 	// private ControlPanelContainer moviePanelContainer;
 	// private ControlPanelContainer filterPanelContainer;
 
-	private OverviewImagePanel overviewImagePanel;
+	//private OverviewImagePanel overviewImagePanel;
 	private SideContentPane leftPane;
 	private RenderModeStatusPanel renderModeStatus;
 	private ImageSelectorPanel imageSelectorPanel;
@@ -348,6 +348,7 @@ public class ImageViewerGui {
 		} else {
 			leftPane = new SideContentPane();
 
+			/*
 			// create overview image panel instance
 			overviewImagePanel = new OverviewImagePanel();
 
@@ -362,7 +363,7 @@ public class ImageViewerGui {
 			overviewImagePanelContainer.add(overviewImagePanel);
 
 			leftPane.add("Overview", overviewImagePanelContainer, true);
-
+			*/
 			// Movie control
 			moviePanelContainer = new ControlPanelContainer();
 			this.moviePanel = new MoviePanel();
