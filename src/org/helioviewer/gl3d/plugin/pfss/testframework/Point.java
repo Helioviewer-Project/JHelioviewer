@@ -8,6 +8,12 @@ public class Point {
 	private float z;
 	private int index;
 
+	public Point(float x, float y, float z) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+	}
+	
 	public Point(int index, short ptr, short ptph, short ptth, double l0,
 			double b0) {
 		this.index = index;
@@ -36,5 +42,26 @@ public class Point {
 
 	public int getIndex() {
 		return index;
+	}
+	
+	public double distanceTo(Point p) {
+		return (getVector(this,p)).magnitude();
+	}
+	
+	public double magnitude() {
+		return Math.sqrt(x*x+y*y+z*z);
+	}
+	
+	
+	public static Point getVector(Point start, Point end) {
+		return new Point(end.x- start.x,end.y-start.y,end.z-start.z);
+	}
+	
+	
+	public static Point cross(Point p0, Point p1) {
+		float x = p0.y*p1.z-p0.z*p1.y;
+		float y = p0.z*p1.x- p0.x*p1.z;
+		float z = p0.x*p1.y-p0.y*p1.x;
+		return new Point(x,y,z);
 	}
 }
