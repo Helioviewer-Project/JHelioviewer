@@ -101,6 +101,7 @@ public class PfssDataReader implements Runnable {
 						addLineSegment(lastP, current, indexBuffer);
 						lastP = current;
 					}
+					//line has ended
 				}
 
 				vertices.flip();
