@@ -6,6 +6,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
+import org.helioviewer.gl3d.view.GL3DLayeredView;
 import org.helioviewer.jhv.gui.components.MoviePanel;
 import org.helioviewer.jhv.gui.components.QualitySpinner;
 import org.helioviewer.jhv.internal_plugins.selectedLayer.SelectedLayerPanel;
@@ -28,6 +29,8 @@ import org.helioviewer.viewmodel.view.SynchronizeView;
 import org.helioviewer.viewmodel.view.View;
 import org.helioviewer.viewmodel.view.ViewListener;
 import org.helioviewer.viewmodel.view.jp2view.JP2View;
+import org.helioviewer.viewmodel.view.opengl.GLFilterView;
+import org.helioviewer.viewmodel.view.opengl.GLHelioviewerGeometryView;
 import org.helioviewer.viewmodel.view.opengl.GLLayeredView;
 import org.helioviewer.viewmodel.view.opengl.GLOverlayView;
 import org.helioviewer.viewmodelplugin.controller.PluginManager;
@@ -81,25 +84,8 @@ public class ViewchainFactory {
 	 *            indicates if the software mode has to be used.
 	 */
 	public ViewchainFactory(boolean useBufferedImageViewChain) {
-		if (!useBufferedImageViewChain && GLInfo.glIsEnabled()) {
-			viewFactory = new GLViewFactory();
-		} else {
-			//viewFactory = new BufferedImageViewFactory();
-		}
+		viewFactory = new GLViewFactory();
 
-	}
-
-	public ViewchainFactory(ViewFactory viewFactory) {
-		this.viewFactory = viewFactory;
-	}
-
-	/**
-	 * This method returns the internal used view factory.
-	 * 
-	 * @return used view factory.
-	 */
-	public ViewFactory getUsedViewFactory() {
-		return viewFactory;
 	}
 
 	/**
@@ -123,12 +109,8 @@ public class ViewchainFactory {
 	 */
 	public ComponentView createViewchainMain(
 			ComponentView currentMainImagePanelView, boolean keepSource) {
-		if (currentMainImagePanelView == null) {
 			return createNewViewchainMain();
-		} else {
-			return createViewchainFromExistingViewchain(
-					currentMainImagePanelView, null, keepSource);
-		}
+		
 	}
 
 	/**
@@ -245,8 +227,7 @@ public class ViewchainFactory {
 			for (int i = filterContainerList.size() - 1; i >= 0; i--) {
 				FilterContainer container = filterContainerList.get(i);
 
-				FilterView filterView = viewFactory
-						.createNewView(FilterView.class);
+				GLFilterView filterView = new GLFilterView();
 				filterView.setView(nextView);
 
 				container.installFilter(filterView, tabList);
@@ -260,8 +241,7 @@ public class ViewchainFactory {
 
 			// Geometry
 			if (metaData != null) {
-				HelioviewerGeometryView geometryView = viewFactory
-						.createNewView(HelioviewerGeometryView.class);
+				GLHelioviewerGeometryView geometryView = new GLHelioviewerGeometryView();
 				geometryView.setView(nextView);
 				nextView = geometryView;
 			}
@@ -332,59 +312,7 @@ public class ViewchainFactory {
 		}
 	}
 
-	/**
-	 * Updates all enabled overlay views in a given view chain. The method
-	 * removes all existing from the view chain and after this it adds all
-	 * enabled overlays.
-	 * 
-	 * @param componentView
-	 *            the ComponentView instance of the view chain where to update
-	 *            the overlay views.
-	 */
-	public void updateOverlayViewsInViewchainMain(GLOverlayView overlayView) {
-		// /////////////
-		// Remove all existing overlays
-		// /////////////
-
-		// remove overlay control components from GUI
-		ImageViewerGui.getSingletonInstance().getLeftContentPane()
-				.remove(OverlayPanel.class);
-
-		// /////////////
-		// Add all enabled overlays to view chain
-		// /////////////
-
-		// add overlay view to view chain
-		// S. Meier, must be fixed, use just one overlayView with more then one
-		// overlaysPlugin
-		AbstractList<OverlayContainer> overlayContainerList = PluginManager
-				.getSingeltonInstance().getOverlayContainers(true);
-		OverlayControlComponentManager manager = new OverlayControlComponentManager();
-
-		// FIXME: Simon Sp�rri, check if this can be done more nicely
-		// View nextView = componentView.getView();
-
-		for (int i = overlayContainerList.size() - 1; i >= 0; i--) {
-			OverlayContainer container = overlayContainerList.get(i);
-			container.installOverlay(overlayView, manager);
-
-		}
-
-		// add overlay control components to view chain
-		for (OverlayControlComponent comp : manager.getAllControlComponents()) {
-			ImageViewerGui.getSingletonInstance().getLeftContentPane()
-					.add(comp.getTitle(), comp.getOverlayPanel(), false);
-		}
-	}
-
-	protected View getViewNextToOverlayView(ComponentView componentView) {
-		return componentView.getView();
-	}
-
-	protected ModifiableInnerViewView getViewBeforeToOverlayView(
-			ComponentView componentView) {
-		return componentView;
-	}
+	
 
 	/**
 	 * Creates a new main view chain with the minimal needed views.
@@ -394,7 +322,7 @@ public class ViewchainFactory {
 	 */
 	protected ComponentView createNewViewchainMain() {
 		// Layered View
-		LayeredView layeredView = viewFactory.createNewView(LayeredView.class);
+		GL3DLayeredView layeredView = new GL3DLayeredView();
 
 		// Solar Rotation Tracking View
 		StandardSolarRotationTrackingView trackingView = viewFactory
@@ -406,181 +334,6 @@ public class ViewchainFactory {
 				.createNewView(ComponentView.class);
 		componentView.setView(trackingView);
 
-		// add Overlays
-		// updateOverlayViewsInViewchainMain(componentView);
-
 		return componentView;
 	}
-
-	/**
-	 * Creates a new overview view chain with the minimum needed views.
-	 * 
-	 * @param mainImagePanelView
-	 *            the topmost view of the view chain which is the observed view
-	 *            chain.
-	 * @return a instance of a ComponentView which is the topmost view of the
-	 *         new chain.
-	 */
-	/*
-	protected ComponentView createNewViewchainOverview(
-			ComponentView mainImagePanelView) {
-		// Always use BufferedImageViewFactory
-		ViewFactory viewFactory = new BufferedImageViewFactory();
-
-		// Layered View
-		LayeredView layeredView = viewFactory.createNewView(LayeredView.class);
-
-		// Synchronize View
-		SynchronizeView synchronizeView = viewFactory
-				.createNewView(SynchronizeView.class);
-		synchronizeView.setView(layeredView);
-		synchronizeView.setObservedView(mainImagePanelView);
-
-		// Component View
-		ComponentView componentView = viewFactory
-				.createNewView(ComponentView.class);
-		componentView.setView(synchronizeView);
-
-		return componentView;
-	}
-	*/
-	/**
-	 * Builds up a new view chain on the basis of an existing one depending on
-	 * the selected mode.
-	 * 
-	 * The new view chain will have the the same structure as the original one.
-	 * 
-	 * @param sourceImagePanelView
-	 *            The topmost view of the original view chain.
-	 * @param mainImagePanelView
-	 *            The topmost view of the main view chain.
-	 * @return The topmost view of the new created view chain.
-	 */
-	public ComponentView createViewchainFromExistingViewchain(
-			ComponentView sourceImagePanelView,
-			ComponentView mainImagePanelView, boolean keepSource) {
-		reinsertSolarRotationTrackingView(sourceImagePanelView);
-		
-		ComponentView newView = viewFactory.createViewFromSource(
-				sourceImagePanelView, keepSource);
-		createViewchainFromExistingViewchain(sourceImagePanelView.getView(),
-				newView, mainImagePanelView, keepSource);
-		
-		LayeredView layeredView = sourceImagePanelView.getAdapter(LayeredView.class);
-		GLLayeredView newLayeredView = (GLLayeredView) newView.getAdapter(LayeredView.class);
-		for (int i = 0; i < layeredView.getNumLayers(); i++) {
-			if (!layeredView.isVisible(layeredView.getLayer(i))){
-				newLayeredView.toggleVisibility(newLayeredView.getLayer(i));
-			}
-		}
-
-		return newView;
-	}
-
-	private void reinsertSolarRotationTrackingView(
-			ComponentView sourceImagePanelView) {
-		ViewFactory viewFactory = getUsedViewFactory();
-		// find view before Layered View
-		ModifiableInnerViewView layeredViewPredecessor = sourceImagePanelView;
-
-		while (!(layeredViewPredecessor.getView() instanceof LayeredView)) {
-			if (layeredViewPredecessor.getView() instanceof ModifiableInnerViewView) {
-				layeredViewPredecessor = (ModifiableInnerViewView) layeredViewPredecessor
-						.getView();
-			} else {
-				return;
-			}
-		}
-		StandardSolarRotationTrackingView solarRotationView = viewFactory
-				.createNewView(StandardSolarRotationTrackingView.class);
-		solarRotationView.setView(layeredViewPredecessor.getView());
-		layeredViewPredecessor.setView(solarRotationView);
-	}
-
-	/**
-	 * Method goes recursively through a view chain and creates a new one with
-	 * the same structure.
-	 * 
-	 * @param sourceView
-	 *            current view of the view chain which has to be transfered to
-	 *            the new view chain.
-	 * @param targetView
-	 *            equivalent view in the new view chain to the source view.
-	 * @param mainImagePanelView
-	 *            topmost view of the main view chain.
-	 */
-	protected void createViewchainFromExistingViewchain(View sourceView,
-			View targetView, ComponentView mainImagePanelView,
-			boolean keepSource) {
-		View newView;
-		// if sourceView is an ImageInfoView (such as JHVJP2View), remove all
-		// ViewListeners from the
-		// old view chain and use the sourceView as input for the new view chain
-		if (sourceView instanceof ImageInfoView && !keepSource) {
-			AbstractList<ViewListener> listeners = sourceView
-					.getAllViewListener();
-			for (int i = listeners.size() - 1; i >= 0; i--) {
-				if (listeners.get(i) instanceof View) {
-					sourceView.removeViewListener(listeners.get(i));
-				}
-			}
-			newView = sourceView;
-			// otherwise create new view - if null, skip it
-		} else if (sourceView instanceof GLOverlayView) {
-			newView = new GLOverlayView();
-			((GLOverlayView) newView).setOverlays(((GLOverlayView) sourceView).getOverlays());
-		}
-		else {
-			newView = viewFactory.createViewFromSource(sourceView, keepSource);
-
-			if (newView == null) {
-				if (sourceView instanceof ModifiableInnerViewView) {
-					createViewchainFromExistingViewchain(
-							((ModifiableInnerViewView) sourceView).getView(),
-							targetView, mainImagePanelView, keepSource);
-				}
-				return;
-			}
-		}
-
-		// if newView is a SynchronizeView, connect it to the main view chain
-		// and copy the mapping
-		if (newView instanceof SynchronizeView) {
-			((SynchronizeView) newView).setObservedView(mainImagePanelView);
-			((SynchronizeView) newView)
-					.setViewMapping(((SynchronizeView) sourceView)
-							.getViewMapping());
-		}
-
-		// insert newView in new view chain
-		if (targetView instanceof ModifiableInnerViewView) {
-			((ModifiableInnerViewView) targetView).setView(newView);
-		} else if (targetView instanceof LayeredView) {
-
-			if (sourceView instanceof ModifiableInnerViewView) {
-				createViewchainFromExistingViewchain(
-						((ModifiableInnerViewView) sourceView).getView(),
-						newView, mainImagePanelView, keepSource);
-			}
-
-			((LayeredView) targetView).addLayer(newView);
-			return;
-		}
-
-		// go on with the next view
-		if (sourceView instanceof ModifiableInnerViewView) {
-			createViewchainFromExistingViewchain(
-					((ModifiableInnerViewView) sourceView).getView(), newView,
-					mainImagePanelView, keepSource);
-		} else if (sourceView instanceof LayeredView) {
-			LayeredView layeredView = (LayeredView) sourceView;
-			for (int i = 0; i < layeredView.getNumLayers(); i++) {
-				if (layeredView.getLayer(i) != null){
-					createViewchainFromExistingViewchain(layeredView.getLayer(i),
-							newView, mainImagePanelView, keepSource);
-				}
-			}
-		}
-	}
-
 }

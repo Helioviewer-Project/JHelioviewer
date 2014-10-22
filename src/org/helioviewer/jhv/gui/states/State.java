@@ -1,5 +1,6 @@
 package org.helioviewer.jhv.gui.states;
 
+import org.helioviewer.jhv.gui.GL3DViewchainFactory;
 import org.helioviewer.jhv.gui.ViewchainFactory;
 import org.helioviewer.jhv.gui.components.SideContentPane;
 import org.helioviewer.jhv.gui.components.TopToolBar;
@@ -26,7 +27,7 @@ public interface State {
      * 
      * @return viewchainFactory to use
      */
-    public ViewchainFactory getViewchainFactory();
+    public GL3DViewchainFactory getViewchainFactory();
 
 
     public ComponentView getMainComponentView();

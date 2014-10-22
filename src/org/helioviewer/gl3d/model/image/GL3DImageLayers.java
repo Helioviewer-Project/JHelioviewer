@@ -96,7 +96,7 @@ public class GL3DImageLayers extends GL3DGroup {
         
         
         for (GL3DImageLayer layer : layers) {
-        	if (layer.getImageSphere() != null && layer.getCircle() != null)
+        	if (layer.getImageTextureView().metadata.hasSphere()) 
                 layer.getCircle().draw(state);
         }
         
@@ -109,7 +109,7 @@ public class GL3DImageLayers extends GL3DGroup {
         state.gl.glBlendFunc(GL2.GL_ONE, GL2.GL_ONE_MINUS_SRC_ALPHA);
                 
         for (GL3DImageLayer layer : layers) {
-            if (layer.getImageSphere() != null)
+        	if (layer.getImageTextureView().metadata.hasSphere()) 
             	layer.getImageSphere().draw(state);
         }
         
@@ -120,7 +120,7 @@ public class GL3DImageLayers extends GL3DGroup {
         state.gl.glDepthMask(false);
         
         for (GL3DImageLayer layer : layers) {
-        	if (layer.getImageCorona() != null) 
+        	if (layer.getImageTextureView().metadata.hasCorona()) 
         		layer.getImageCorona().draw(state);    
         }
         

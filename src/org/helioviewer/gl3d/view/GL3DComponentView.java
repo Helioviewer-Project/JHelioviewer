@@ -327,11 +327,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glPushMatrix();
 		gl.glLoadIdentity();
-		System.out.println(v);
-		System.out.println(canvas.getWidth());
-		System.out.println(canvas.getHeight());
-		System.out.println(canvas.getSurfaceWidth());
-		System.out.println(canvas.getSurfaceHeight());
+		
 		double fH = Math.tan(this.fov / 360.0 * Math.PI) * clipNear;
 		double fW = fH * aspect;
 		gl.glViewport(0, 0, canvas.getSurfaceWidth(), canvas.getSurfaceHeight());

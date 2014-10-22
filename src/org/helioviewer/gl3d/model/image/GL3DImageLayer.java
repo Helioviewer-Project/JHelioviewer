@@ -265,20 +265,6 @@ public class GL3DImageLayer extends GL3DOrientedGroup implements GL3DCameraListe
     
     public GL3DVec4d getLayerDirection()
     {
-		// Convert layer orientation to heliocentric coordinate system
-		/*CoordinateVector orientation = coordinateSystemView.getOrientation();
-		CoordinateSystem targetSystem = new HeliocentricCartesianCoordinateSystem();
-		CoordinateConversion converter = orientation.getCoordinateSystem().getConversion(targetSystem);
-		orientation = converter.convert(orientation);
-		
-    	GL3DVec3d layerDirection = new GL3DVec3d(orientation.getValue(0), orientation.getValue(1), orientation.getValue(2));*/
-    	
-        //GL3DVec4d n = new GL3DVec4d(0, 0, 1, 1);
-        //n = modelView().multiply(n);
-       
-        //GL3DVec3d layerDirection = new GL3DVec3d(n.x, n.y, n.z);
-        
-        //layerDirection.normalize();
         return direction;
     }
     

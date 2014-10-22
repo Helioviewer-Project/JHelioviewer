@@ -17,6 +17,7 @@ import org.helioviewer.base.logging.Log;
 import org.helioviewer.base.message.Message;
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.Settings;
+import org.helioviewer.jhv.gui.GL3DViewchainFactory;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.ViewchainFactory;
 import org.helioviewer.jhv.gui.states.StateController;
@@ -274,7 +275,7 @@ public class APIRequestManager {
 
         ImageInfoView view = ViewHelper.loadView(uri);
         if (addToViewChain) {
-	    	ViewchainFactory factory = StateController.getInstance().getCurrentState().getViewchainFactory();
+	    	GL3DViewchainFactory factory = StateController.getInstance().getCurrentState().getViewchainFactory();
 	        factory.addLayerToViewchainMain(view, ImageViewerGui.getSingletonInstance().getMainView());
         }
         return view;
@@ -306,7 +307,7 @@ public class APIRequestManager {
 
         if (addToViewChain) {
             // ViewchainFactory factory = new ViewchainFactory();
-            ViewchainFactory factory = StateController.getInstance().getCurrentState().getViewchainFactory();
+            GL3DViewchainFactory factory = StateController.getInstance().getCurrentState().getViewchainFactory();
             // FIXME: Simon Spoerri, properly resolve State dependencies
             factory.addLayerToViewchainMain(view, ImageViewerGui.getSingletonInstance().getMainView());
         }
