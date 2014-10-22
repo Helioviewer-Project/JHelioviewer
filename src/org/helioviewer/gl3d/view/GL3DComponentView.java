@@ -586,7 +586,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 		// saveBufferedImage = true;
 		// this.getAdapter(ViewportView.class).setViewport(defaultViewport, new
 		// ChangeEvent());
-		this.canvas.display();
+		this.canvas.repaint();
 		viewport = null;
 		// if (screenshot == null){
 		// screenshot = getBufferedImage(width, height);
@@ -720,12 +720,12 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 	@Override
 	public void layerAdded(int idx) {
-		this.canvas.display();
+		this.canvas.repaint();
 	}
 
 	@Override
 	public void layerRemoved(View oldView, int oldIdx) {
-		this.canvas.display();
+		this.canvas.repaint();
 	}
 
 	@Override
@@ -734,7 +734,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 			this.animationTimer.start();
 			this.animationTimer.setInitialDelay(20);
 		} else if (!this.animationIsRunnig){
-			this.canvas.display();
+			this.canvas.repaint();
 		}
 	}
 
@@ -744,7 +744,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 			this.animationTimer.start();
 			this.animationTimer.setInitialDelay(20);
 		} else if (!this.animationIsRunnig){
-			this.canvas.display();
+			this.canvas.repaint();
 		}
 	}
 
@@ -754,7 +754,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 			this.animationTimer.start();
 			this.animationTimer.setInitialDelay(20);
 		} else if (!this.animationIsRunnig){
-			this.canvas.display();
+			this.canvas.repaint();
 		}
 	}
 
@@ -764,7 +764,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 			this.animationTimer.start();
 			this.animationTimer.setInitialDelay(20);
 		} else if (!this.animationIsRunnig){
-			this.canvas.display();
+			this.canvas.invalidate();
 		}
 	}
 
@@ -774,23 +774,23 @@ public class GL3DComponentView extends AbstractBasicView implements
 			this.animationTimer.start();
 			this.animationTimer.setInitialDelay(20);
 		} else if (!this.animationIsRunnig){
-			this.canvas.display();
+			this.canvas.repaint();
 		}
 	}
 
 	@Override
 	public void layerDownloaded(int idx) {
-		this.canvas.display();
+		this.canvas.repaint();
 	}
 
 	@Override
 	public void cameraMoved(GL3DCamera camera) {
-		// this.canvas.display();
+		// this.canvas.repaint();
 	}
 
 	@Override
 	public void cameraMoving(GL3DCamera camera) {
-		this.canvas.display();
+		this.canvas.repaint();
 	}
 
 	/**
@@ -831,7 +831,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		this.canvas.display();
+	  canvas.repaint();
 	}
 
 	public void regristryAnimation(long time) {
