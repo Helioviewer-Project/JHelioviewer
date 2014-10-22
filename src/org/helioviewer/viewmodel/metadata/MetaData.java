@@ -52,8 +52,8 @@ public abstract class MetaData extends Exception{
     protected boolean stonyhurstAvailable = false;
 
     
-    protected boolean hasCorona;
-    protected boolean hasSphere;
+    protected boolean hasCorona = false;
+    protected boolean hasSphere = false;
     
     
     /**
@@ -423,7 +423,6 @@ public abstract class MetaData extends Exception{
         boolean changed = updatePixelParameters();
 
         double currentMaskRotation = Math.toRadians(metaDataContainer.tryGetDouble("CROTA"));
-        System.out.println("currentMaskRotation : " + currentMaskRotation);
         if (changed || Math.abs(maskRotation - currentMaskRotation) > Math.toRadians(1)) {
             maskRotation = currentMaskRotation;
             changed = true;

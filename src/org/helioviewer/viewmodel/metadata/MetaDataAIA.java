@@ -19,6 +19,8 @@ public class MetaDataAIA extends MetaData{
         	throw new MetaDataException("invalid instrument");
         }
 
+        this.hasCorona = true;
+        this.hasSphere = true;
         this.metaDataContainer = metaDataContainer;
 
         this.instrument = "AIA";

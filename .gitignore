@@ -2,3 +2,4 @@ bin/
 *.class
 .metadata/
 /excelsior-osx/JHelioViewer
+/build/excelsior-osx/JHelioViewer-native/

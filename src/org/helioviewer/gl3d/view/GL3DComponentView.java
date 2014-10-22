@@ -117,7 +117,6 @@ public class GL3DComponentView extends AbstractBasicView implements
 	private GLTextureHelper textureHelper = new GLTextureHelper();
 	private GLShaderHelper shaderHelper = new GLShaderHelper();
 
-	// private GL3DOrthoView orthoView;
 	private ViewportView viewportView;
 	private ViewportView screenshotViewportView;
 
@@ -259,22 +258,13 @@ public class GL3DComponentView extends AbstractBasicView implements
 	}
 
 	public void reshape(GLAutoDrawable glAD, int x, int y, int width, int height) {
-		viewportSize = new Vector2dInt(width, height);
+		viewportSize = new Vector2dInt(canvas.getSurfaceWidth(), canvas.getSurfaceHeight());
 		// Log.debug("GL3DComponentView.Reshape");
 		GL gl = glAD.getGL();
 
 		gl.setSwapInterval(1);
 
 		updateViewport();
-		//
-		// gl.glViewport(0, 0, width, height);
-		// gl.glMatrixMode(GL.GL_PROJECTION);
-		// gl.glLoadIdentity();
-		//
-		// gl.glOrtho(0, width, 0, height, -1, 10000);
-		//
-		// gl.glMatrixMode(GL.GL_MODELVIEW);
-		// gl.glLoadIdentity();
 	}
 
 	public void display(GLAutoDrawable glAD) {
@@ -289,9 +279,13 @@ public class GL3DComponentView extends AbstractBasicView implements
 		}
 		GL2 gl = glAD.getGL().getGL2();
 		
-		if (defaultViewport != null)
-			this.getAdapter(ViewportView.class).setViewport(defaultViewport,
-					new ChangeEvent());
+		
+		Viewport newViewport = StaticViewport.createAdaptedViewport(canvas.getSurfaceWidth(), canvas.getSurfaceHeight());
+		this.getAdapter(ViewportView.class).setViewport(newViewport,
+				new ChangeEvent());
+		
+		if (defaultViewport != null){
+		}
 
 		int width = this.viewportSize.getX();
 		int height = this.viewportSize.getY();
@@ -333,10 +327,14 @@ public class GL3DComponentView extends AbstractBasicView implements
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glPushMatrix();
 		gl.glLoadIdentity();
-
+		System.out.println(v);
+		System.out.println(canvas.getWidth());
+		System.out.println(canvas.getHeight());
+		System.out.println(canvas.getSurfaceWidth());
+		System.out.println(canvas.getSurfaceHeight());
 		double fH = Math.tan(this.fov / 360.0 * Math.PI) * clipNear;
 		double fW = fH * aspect;
-		gl.glViewport(0, 0, v.getWidth(), v.getHeight());
+		gl.glViewport(0, 0, canvas.getSurfaceWidth(), canvas.getSurfaceHeight());
 
 		if (GL3DState.get().getState() == VISUAL_TYPE.MODE_3D)
 		gl.glFrustum(-fW, fW, -fH, fH, clipNear, clipFar);
@@ -400,7 +398,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 			gl.glMatrixMode(GL2.GL_PROJECTION);
 			gl.glLoadIdentity();
 
-			gl.glOrtho(0, width, 0, height, -1, 10000);
+			gl.glOrtho(0, canvas.getSurfaceWidth(), 0, canvas.getSurfaceHeight(), -1, 10000);
 
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
 			gl.glLoadIdentity();
@@ -413,10 +411,9 @@ public class GL3DComponentView extends AbstractBasicView implements
 			GLScreenRenderGraphics glRenderer = new GLScreenRenderGraphics(gl);
 
 			// Iterator<> postRenderer = postRenderers
-			synchronized (postRenderers) {
-				for (ScreenRenderer r : postRenderers) {
-					r.render(glRenderer);
-				}
+			for (ScreenRenderer r : postRenderers) {
+				r.setContainerSize(canvas.getSurfaceWidth(), canvas.getSurfaceHeight());
+				r.render(glRenderer);
 			}
 
 			gl.glDisable(GL2.GL_TEXTURE_2D);
@@ -706,7 +703,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 	}
 
 	public Dimension getCanavasSize() {
-		return new Dimension(canvas.getWidth(), canvas.getHeight());
+		return new Dimension(canvas.getSurfaceWidth(), canvas.getSurfaceHeight());
 	}
 
 	@Override
@@ -737,17 +734,32 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 	@Override
 	public void layerChanged(int idx) {
-		this.canvas.display();
+		if (LinkedMovieManager.getActiveInstance().isPlaying() && !this.animationIsRunnig) {
+			this.animationTimer.start();
+			this.animationTimer.setInitialDelay(20);
+		} else if (!this.animationIsRunnig){
+			this.canvas.display();
+		}
 	}
 
 	@Override
 	public void activeLayerChanged(int idx) {
-		this.canvas.display();
+		if (LinkedMovieManager.getActiveInstance().isPlaying() && !this.animationIsRunnig) {
+			this.animationTimer.start();
+			this.animationTimer.setInitialDelay(20);
+		} else if (!this.animationIsRunnig){
+			this.canvas.display();
+		}
 	}
 
 	@Override
 	public void viewportGeometryChanged() {
-		this.canvas.display();
+		if (LinkedMovieManager.getActiveInstance().isPlaying() && !this.animationIsRunnig) {
+			this.animationTimer.start();
+			this.animationTimer.setInitialDelay(20);
+		} else if (!this.animationIsRunnig){
+			this.canvas.display();
+		}
 	}
 
 	@Override
@@ -762,7 +774,12 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 	@Override
 	public void subImageDataChanged() {
-		this.canvas.display();
+		if (LinkedMovieManager.getActiveInstance().isPlaying() && !this.animationIsRunnig) {
+			this.animationTimer.start();
+			this.animationTimer.setInitialDelay(20);
+		} else if (!this.animationIsRunnig){
+			this.canvas.display();
+		}
 	}
 
 	@Override

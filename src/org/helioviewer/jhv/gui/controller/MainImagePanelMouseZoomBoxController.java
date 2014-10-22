@@ -176,5 +176,11 @@ public class MainImagePanelMouseZoomBoxController extends MainImagePanelMouseCon
                 g.drawRectangle(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
             }
         }
+
+		@Override
+		public void setContainerSize(int width, int height) {
+			// TODO Auto-generated method stub
+			
+		}
     }
 }

@@ -298,5 +298,11 @@ public class OverviewImagePanel extends BasicImagePanel {
                 g.drawOval(center.subtract(centerOvalRadius), centerOvalDiameter);
             }
         }
+
+		@Override
+		public void setContainerSize(int width, int height) {
+			// TODO Auto-generated method stub
+			
+		}
     }
 }

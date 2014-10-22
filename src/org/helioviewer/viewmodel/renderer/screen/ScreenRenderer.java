@@ -1,5 +1,7 @@
 package org.helioviewer.viewmodel.renderer.screen;
 
+import java.awt.Dimension;
+
 /**
  * Interface be enable a class to draw to the screen.
  * 
@@ -33,4 +35,6 @@ public interface ScreenRenderer {
      *            render object provided by caller
      */
     public void render(ScreenRenderGraphics g);
+    
+    public void setContainerSize(int width, int height);
 }

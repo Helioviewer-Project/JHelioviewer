@@ -29,11 +29,11 @@ public class MetaDataStereoA_COR1 extends MetaData{
             measurement = "" + metaDataContainer.tryGetDouble("WAVELNTH");
         }
         fullName = instrument + " " + detector;
-
+        
         if (!(observatory.equalsIgnoreCase("STEREO_A") && detector.equalsIgnoreCase("COR1"))){
         	throw new MetaDataException("invalid instrument");
         }
-
+        hasCorona = true;
         this.metaDataContainer = metaDataContainer;
         
         String observedDate = metaDataContainer.get("DATE_OBS");

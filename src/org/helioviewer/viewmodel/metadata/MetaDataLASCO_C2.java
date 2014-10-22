@@ -17,7 +17,9 @@ public class MetaDataLASCO_C2 extends MetaData{
         if (!(instrument.equalsIgnoreCase("LASCO") && detector.equalsIgnoreCase("C2"))){
         	throw new MetaDataException("invalid instrument");
         }
-		String measurement1 = metaDataContainer.get("FILTER");
+        hasCorona = true;
+
+        String measurement1 = metaDataContainer.get("FILTER");
         String measurement2 = metaDataContainer.get("POLAR");
         measurement = measurement1 + " " + measurement2;
 

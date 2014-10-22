@@ -21,6 +21,7 @@ public class MetaDataMDI extends MetaData{
         fullName = "MDI " + measurement.substring(3, 6);
         this.metaDataContainer = metaDataContainer;
         
+        hasSphere = true;
         
 
         

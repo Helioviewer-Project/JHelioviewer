@@ -18,6 +18,8 @@ public class MetaDataHMI extends MetaData{
         if (!(instrument.equalsIgnoreCase("HMI_FRONT2"))){
         	throw new MetaDataException("invalid instrument");
         }
+        hasSphere = true;
+
         instrument = "HMI";
         fullName = "HMI " + measurement.substring(0, 1) + measurement.substring(1, 3).toLowerCase();
         this.metaDataContainer = metaDataContainer;

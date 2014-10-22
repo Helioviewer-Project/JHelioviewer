@@ -31,9 +31,9 @@ public class StateController {
         return StateController.instance;
     }
 
-    public void set2DState() {
+    /*public void set2DState() {
         this.setState(ViewStateEnum.View2D.getState());
-    }
+    }*/
 
     public void set3DState() {
         this.setState(ViewStateEnum.View3D.getState());

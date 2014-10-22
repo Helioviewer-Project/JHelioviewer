@@ -8,7 +8,7 @@ package org.helioviewer.jhv.gui.states;
  */
 public enum ViewStateEnum {
 
-    View2D(new GuiState2D()),
+    //View2D(new GuiState2D()),
     View3D(new GuiState3DWCS());
 
     private final State state;

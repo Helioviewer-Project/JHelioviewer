@@ -3,6 +3,7 @@ package org.helioviewer.gl3d.view;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
@@ -16,7 +17,6 @@ import org.helioviewer.gl3d.model.GL3DArtificialObjects;
 import org.helioviewer.gl3d.model.GL3DFramebufferImage;
 import org.helioviewer.gl3d.model.GL3DHitReferenceShape;
 import org.helioviewer.gl3d.model.image.GL3DImageLayer;
-import org.helioviewer.gl3d.model.image.GL3DImageLayerFactory;
 import org.helioviewer.gl3d.model.image.GL3DImageLayers;
 import org.helioviewer.gl3d.model.image.GL3DImageMesh;
 import org.helioviewer.gl3d.scenegraph.GL3DDrawBits.Bit;
@@ -31,6 +31,7 @@ import org.helioviewer.gl3d.scenegraph.rt.GL3DRayTracer;
 import org.helioviewer.gl3d.scenegraph.visuals.GL3DArrow;
 import org.helioviewer.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.viewmodel.changeevent.LayerChangedReason;
+import org.helioviewer.viewmodel.metadata.MetaData;
 import org.helioviewer.viewmodel.region.Region;
 import org.helioviewer.viewmodel.view.LayeredView;
 import org.helioviewer.viewmodel.view.MetaDataView;
@@ -265,8 +266,8 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 
 		synchronized (this.layersToAdd) {
 			for (GL3DImageTextureView imageTextureView : this.layersToAdd) {
-				GL3DImageLayer imageLayer = GL3DImageLayerFactory
-						.createImageLayer(state, imageTextureView);
+				MetaData metaData = imageTextureView.getAdapter(MetaDataView.class).getMetaData();
+				GL3DImageLayer imageLayer = new GL3DImageLayer(metaData.getFullName(), imageTextureView);
 
 				((GL3DCameraView) getAdapter(GL3DCameraView.class))
 						.addCameraListener(imageLayer);

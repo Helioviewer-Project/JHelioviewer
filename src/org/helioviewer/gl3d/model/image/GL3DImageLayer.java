@@ -26,10 +26,13 @@ import org.helioviewer.gl3d.scenegraph.math.GL3DMat4d;
 import org.helioviewer.gl3d.scenegraph.math.GL3DQuatd;
 import org.helioviewer.gl3d.scenegraph.math.GL3DVec3d;
 import org.helioviewer.gl3d.scenegraph.math.GL3DVec4d;
+import org.helioviewer.gl3d.scenegraph.math.GL3DVec4f;
 import org.helioviewer.gl3d.scenegraph.rt.GL3DRay;
 import org.helioviewer.gl3d.scenegraph.rt.GL3DRayTracer;
 import org.helioviewer.gl3d.shader.GL3DImageCoronaFragmentShaderProgram;
 import org.helioviewer.gl3d.shader.GL3DImageFragmentShaderProgram;
+import org.helioviewer.gl3d.shader.GL3DImageVertexShaderProgram;
+import org.helioviewer.gl3d.shader.GL3DShaderFactory;
 import org.helioviewer.gl3d.view.GL3DCoordinateSystemView;
 import org.helioviewer.gl3d.view.GL3DImageTextureView;
 import org.helioviewer.gl3d.view.GL3DView;
@@ -45,6 +48,8 @@ import org.helioviewer.viewmodel.view.MetaDataView;
 import org.helioviewer.viewmodel.view.RegionView;
 import org.helioviewer.viewmodel.view.View;
 import org.helioviewer.viewmodel.view.opengl.GLFilterView;
+import org.helioviewer.viewmodel.view.opengl.shader.GLFragmentShaderProgram;
+import org.helioviewer.viewmodel.view.opengl.shader.GLVertexShaderProgram;
 
 /**
  * This is the scene graph equivalent of an image layer sub view chain attached
@@ -54,10 +59,14 @@ import org.helioviewer.viewmodel.view.opengl.GLFilterView;
  * @author Simon Sp���rri (simon.spoerri@fhnw.ch)
  * 
  */
-public abstract class GL3DImageLayer extends GL3DOrientedGroup implements GL3DCameraListener {
+public class GL3DImageLayer extends GL3DOrientedGroup implements GL3DCameraListener {
     private static int nextLayerId = 0;
     private final int layerId;
     private GL3DVec4d direction = new GL3DVec4d(0,0,1,0);
+    
+    private GL3DImageSphere sphere;
+    private GL3DImageCorona corona;
+    private GL3DCircle circle;
     
     public int getLayerId() {
         return layerId;
@@ -157,13 +166,53 @@ public abstract class GL3DImageLayer extends GL3DOrientedGroup implements GL3DCa
         }
     }
 
-    protected abstract void createImageMeshNodes(GL gl);
+  protected void createImageMeshNodes(GL gl) {
+    	
+    	GL3DImageVertexShaderProgram vertex = new GL3DImageVertexShaderProgram();
+        GLVertexShaderProgram   vertexShader   = GL3DShaderFactory.createVertexShaderProgram(gl, vertex);
+        this.imageTextureView.setVertexShader(vertex);
+        this.imageTextureView.metadata = this.metaDataView.getMetaData();
+        
+
+        double xOffset = (this.imageTextureView.metadata.getPhysicalUpperRight().getX()+this.imageTextureView.metadata.getPhysicalLowerLeft().getX())/(2.0*this.imageTextureView.metadata.getPhysicalImageWidth());
+        double yOffset = (this.imageTextureView.metadata.getPhysicalUpperRight().getY()+this.imageTextureView.metadata.getPhysicalLowerLeft().getY())/(2.0*this.imageTextureView.metadata.getPhysicalImageHeight());
+        vertex.setDefaultOffset((float)xOffset, (float)yOffset);
+
+        MetaData metadata = this.imageTextureView.metadata;
+
+        if (metadata.hasSphere()){
+    		this.sphereFragmentShader = new GL3DImageFragmentShaderProgram();
+    		GLFragmentShaderProgram sphereFragmentShader = GL3DShaderFactory.createFragmentShaderProgram(gl, this.sphereFragmentShader);
+            sphere = new GL3DImageSphere(imageTextureView, vertexShader, sphereFragmentShader, this);
+            circle = new GL3DCircle(Constants.SunRadius, new GL3DVec4f(0.5f, 0.5f, 0.5f, 1.0f), "Circle", this);
+            this.sphereFragmentShader.setCutOffRadius((float)(Constants.SunRadius/this.imageTextureView.metadata.getPhysicalImageWidth()));
+            this.addNode(circle);
+            this.addNode(sphere);
+    	}
+    	if (metadata.hasCorona()){
+    		this.fragmentShader = new GL3DImageCoronaFragmentShaderProgram();        
+    		GLFragmentShaderProgram coronaFragmentShader = GL3DShaderFactory.createFragmentShaderProgram(gl, fragmentShader);
+            corona = new GL3DImageCorona(imageTextureView, vertexShader, coronaFragmentShader, this);
+            this.fragmentShader.setCutOffRadius((float)(Constants.SunRadius/this.imageTextureView.metadata.getPhysicalImageWidth()));
+            this.fragmentShader.setDefaultOffset(metadata.getSunPixelPosition().getX()/metadata.getResolution().getX()-xOffset, metadata.getSunPixelPosition().getY()/metadata.getResolution().getY()-yOffset);
+            this.addNode(corona);
+    	}
+        
+        
+        this.gl = gl;
+    }
     
-    protected abstract GL3DImageMesh getImageCorona();
+  protected GL3DImageMesh getImageCorona() {
+      return this.corona;
+  }
 
-    protected abstract GL3DImageMesh getImageSphere();
+  protected GL3DImageMesh getImageSphere() {
+      return this.sphere;
+  }
 
-    protected abstract GL3DMesh getCircle();
+	protected GL3DMesh getCircle() {
+		return this.circle;
+	}
 
     public void shapeUpdate(GL3DState state) {
         super.shapeUpdate(state);

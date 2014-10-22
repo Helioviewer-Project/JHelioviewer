@@ -22,6 +22,9 @@ public class MetaDataStereo extends MetaData{
         if (!((observatory.equalsIgnoreCase("STEREO_A") || observatory.equalsIgnoreCase("STEREO_B") && detector.equalsIgnoreCase("EUVI")))){
         	throw new MetaDataException("invalid instrument");
         }
+        hasCorona = true;
+        hasSphere = true;
+        
         fullName = instrument + " " + detector;
         this.metaDataContainer = metaDataContainer;
         

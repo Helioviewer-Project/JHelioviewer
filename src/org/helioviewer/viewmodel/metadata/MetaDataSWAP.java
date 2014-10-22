@@ -21,6 +21,9 @@ public class MetaDataSWAP extends MetaData{
         if (!(instrument.contains("SWAP"))){
         	throw new MetaDataException("invalid instrument");
         }
+        hasSphere = true;
+        hasCorona = true;
+        
         this.metaDataContainer = metaDataContainer;
  
         String        observedDate = metaDataContainer.get("DATE-OBS");

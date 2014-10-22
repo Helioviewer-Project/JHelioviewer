@@ -33,6 +33,7 @@ public class MetaDataStereoB_COR2 extends MetaData{
         if (!(observatory.equalsIgnoreCase("STEREO_B") && detector.equalsIgnoreCase("COR2"))){
         	throw new MetaDataException("invalid instrument");
         }
+        hasCorona = true;
         this.metaDataContainer = metaDataContainer;
 
         String observedDate = metaDataContainer.get("DATE_OBS");

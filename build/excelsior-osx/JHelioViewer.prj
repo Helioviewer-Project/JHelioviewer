@@ -1,5 +1,7 @@
 %%Excelsior JET v10.0 project file
 
+-jpiiproject=/Users/binchu/Documents/FHNW/JHelioViewer/build/excelsior-osx/JHelioViewer.jpn
+
 -compilewithfixedheap-
 -genstackalloc+
 -genstacktrace+

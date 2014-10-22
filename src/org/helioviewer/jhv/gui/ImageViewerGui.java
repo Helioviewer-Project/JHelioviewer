@@ -479,7 +479,7 @@ public class ImageViewerGui {
 			this.mainImagePanel.removeAll();// (this.getMainView().getComponent());
 
 		}
-		newState.recreateViewChains(oldState);
+		newState.createViewChains();
 
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
