@@ -33,8 +33,12 @@ public class PfssSettings {
 	 * URL of the dataserver
 	 */
 	public final static String INFOFILE_URL = "http://soleil.i4ds.ch/sol-win/";
-
-	public final static String FITS_POST_FIX ="pfss_field_data.fitz.gz";
+	
+	/**
+	 * Deltas between the PFSS Files. Currently there is a file for every 6 hours
+	 */
+	public final static int FITS_FILE_D_HOUR = 6;
+	public final static int FITS_FILE_D_MINUTES = 0;
 	
 	/**
 	 * Color of the line (from sunradius to outside)

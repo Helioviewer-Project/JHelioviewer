@@ -5,13 +5,13 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 /**
- * Class Representing a range of time
+ * Class Describing a pfss fits file on the server
  * 
  * this class is immutable
  * @author Jonas Schwammberger
  *
  */
-public class FileDescriptor implements Comparable {
+public class FileDescriptor implements Comparable<Date> {
 	private final Calendar startCal;
 	private final Date startDate;
 	private final Date endDate;
@@ -37,29 +37,16 @@ public class FileDescriptor implements Comparable {
 		return startCal.get(Calendar.MONTH);
 	}
 	
-	public int getDay() {
-		return startCal.get(Calendar.DAY_OF_MONTH);
-	}
-	
-	public int getHour() {
-		return startCal.get(Calendar.HOUR_OF_DAY);
-	}
-	
 	public String getFileName() {
 		return this.fileName;
 	}
 
 	@Override
-	public int compareTo(Object o) {
-		if(o instanceof Date)
-		{
-			Date d = (Date)o;
-			if(this.isDateInRange(d))
-				return 0;
-			else
-				return this.startDate.compareTo(d);
-		}
-		return -1;
+	public int compareTo(Date o) {
+		if(this.isDateInRange(o))
+			return 0;
+		else
+			return this.startDate.compareTo(o);
 	}
 	
 	

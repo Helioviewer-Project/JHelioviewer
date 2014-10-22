@@ -1,5 +1,6 @@
 package org.helioviewer.gl3d.plugin.pfss.data;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -14,7 +15,7 @@ import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
  * @author Jonas Schwammberger
  */
 public class FrameManager {
-	private final PfssDataCreator loader;
+	private final PfssDataCreator dataCreator;
 	private final PfssFrameCreator frameCreator;
 	private final FileDescriptorManager manager;
 
@@ -28,12 +29,17 @@ public class FrameManager {
 
 	public FrameManager() {
 		manager = new FileDescriptorManager();
-		loader = new PfssDataCreator(manager);
+		dataCreator = new PfssDataCreator(manager);
 		initializer = new PfssFrameInitializer();
 		frameCreator = new PfssFrameCreator(initializer);
 		preloadQueue = new PfssFrame[PfssSettings.PRELOAD];
 	}
 
+	/**
+	 * Get Frame which represents the Date
+	 * @param date
+	 * @return
+	 */
 	public PfssFrame getFrame(Date date) {
 		// still the same frame
 		if (lastIndex == currentIndex)
@@ -76,7 +82,7 @@ public class FrameManager {
 	 * @param index
 	 */
 	private void loadFollowing(int index) {
-		PfssData d = loader.getDataAsync(nextDateIndex);
+		PfssData d = dataCreator.getDataAsync(nextDateIndex);
 		nextDateIndex = ++nextDateIndex % manager.getNumberOfFiles();
 		preloadQueue[index] = frameCreator.createFrameAsync(d);
 	}
@@ -89,12 +95,26 @@ public class FrameManager {
 		lastIndex = 0;
 	}
 
+	/**
+	 * Initializes de preloadQueue
+	 * @param d
+	 */
 	private void initPreloaded(Date d) {
-
+		currentIndex = 0;
+		lastIndex = preloadQueue.length;
+		int fileIndex = manager.getFileIndex(d);
+		
+		for(int i = 0; i < preloadQueue.length;i++) {
+			PfssData data = dataCreator.getDataAsync(fileIndex);
+			preloadQueue[i] = frameCreator.createFrameAsync(data);
+			
+			fileIndex = ++fileIndex % manager.getNumberOfFiles();
+		}
 	}
 
-	public void setDateRange(Date start, Date end) {
-
+	public void setDateRange(Date start, Date end) throws IOException {
+		manager.readFileDescriptors(start,end);
+		initPreloaded(start);
 	}
 
 	public void preInitFrames(GL2 gl) {
