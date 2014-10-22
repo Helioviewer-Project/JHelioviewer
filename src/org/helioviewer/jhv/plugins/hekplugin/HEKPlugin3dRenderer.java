@@ -1,4 +1,4 @@
-package org.helioviewer.gl3d.plugin.hekplugin;
+package org.helioviewer.jhv.plugins.hekplugin;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -8,7 +8,6 @@ import java.util.Vector;
 import org.helioviewer.base.math.SphericalCoord;
 import org.helioviewer.base.math.Vector3dDouble;
 import org.helioviewer.gl3d.scenegraph.GL3DState;
-import org.helioviewer.gl3d.view.GL3DImageTextureView;
 import org.helioviewer.gl3d.view.GL3DLayeredView;
 import org.helioviewer.gl3d.wcs.conversion.SphericalToSolarSphereConversion;
 import org.helioviewer.gl3d.wcs.impl.SolarSphereCoordinateSystem;
@@ -36,7 +35,6 @@ public class HEKPlugin3dRenderer extends PhysicalRenderer3d {
 	private SphericalCoordinateSystem sphericalCS = new SphericalCoordinateSystem();
     private SolarSphereCoordinateSystem solarSphereCS = new SolarSphereCoordinateSystem();
     private float scale = 1;
-    private double height = 1.5921619097090678E9;
     SphericalToSolarSphereConversion conversion = (SphericalToSolarSphereConversion) sphericalCS.getConversion(solarSphereCS);
 
 	/**

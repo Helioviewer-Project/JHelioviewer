@@ -1,7 +1,7 @@
-package org.helioviewer.gl3d.plugin.pfss.data;
+package org.helioviewer.jhv.plugins.pfssplugin.data;
 
-import org.helioviewer.gl3d.plugin.pfss.data.dataStructure.PfssDayAndTime;
-import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
+import org.helioviewer.jhv.plugins.pfssplugin.PfssSettings;
+import org.helioviewer.jhv.plugins.pfssplugin.data.dataStructure.PfssDayAndTime;
 
 /**
  * Runnable class to load the Pfss-data in a thread

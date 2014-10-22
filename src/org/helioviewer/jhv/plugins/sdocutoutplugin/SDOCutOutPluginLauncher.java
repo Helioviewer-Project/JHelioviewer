@@ -1,4 +1,4 @@
-package org.helioviewer.plugins.sdocutoutplugin;
+package org.helioviewer.jhv.plugins.sdocutoutplugin;
 
 import org.helioviewer.base.JavaCompatibility;
 import org.helioviewer.jhv.JavaHelioViewer;
@@ -15,7 +15,7 @@ public class SDOCutOutPluginLauncher {
     /**
      * Used for testing the plugin
      * 
-     * @see org.helioviewer.plugins.sdocutoutplugin.SDOCutOutPlugin3D#main(String[])
+     * @see org.helioviewer.jhv.plugins.sdocutoutplugin.SDOCutOutPlugin3D#main(String[])
      * @param args
      */
     public static void main(String[] args) {

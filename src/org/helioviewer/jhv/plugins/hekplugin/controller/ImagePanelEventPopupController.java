@@ -226,22 +226,20 @@ public class ImagePanelEventPopupController implements ImagePanelPlugin, MouseLi
         GL3DVec3d hitpoint = null;
         mouseOverHEKEvent = null;
         mouseOverPosition = null;
-        if (view instanceof GL3DComponentView && GL3DState.get().getActiveCamera() != null){
-        	state3D = true;
-        	
-        	GL3DComponentView gl3dview = (GL3DComponentView)view;
-        	GL3DSceneGraphView scenegraphview = (GL3DSceneGraphView)gl3dview.getView();
-        	GL3DRayTracer rayTracer = new GL3DRayTracer(scenegraphview.getHitReferenceShape(), GL3DState.get().getActiveCamera());
-        	GL3DRay ray = null;
-        	
-        	ray = rayTracer.cast(e.getX(), e.getY());
-			
-        	if (ray != null){
-        	if (ray.getHitPoint() != null){
-        		
-        		hitpoint = ray.getHitPoint();
-        	}}
-        }
+      	state3D = true;
+      	
+      	GL3DComponentView gl3dview = (GL3DComponentView)view;
+      	GL3DSceneGraphView scenegraphview = (GL3DSceneGraphView)gl3dview.getView();
+      	GL3DRayTracer rayTracer = new GL3DRayTracer(scenegraphview.getHitReferenceShape(), GL3DState.get().getActiveCamera());
+      	GL3DRay ray = null;
+      	
+      	ray = rayTracer.cast(e.getX(), e.getY());
+		
+      	if (ray != null){
+      	if (ray.getHitPoint() != null){
+      		
+      		hitpoint = ray.getHitPoint();
+      	}}
         
         if (currentDate != null) {
             Vector<HEKEvent> toDraw = HEKCache.getSingletonInstance().getModel().getActiveEvents(currentDate);

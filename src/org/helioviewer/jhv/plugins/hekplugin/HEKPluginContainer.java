@@ -3,11 +3,9 @@ package org.helioviewer.jhv.plugins.hekplugin;
 import java.util.Date;
 
 import org.helioviewer.base.math.Interval;
-import org.helioviewer.gl3d.plugin.hekplugin.HEKPlugin3dRenderer;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;
 import org.helioviewer.viewmodel.renderer.physical.PhysicalRenderer;
 import org.helioviewer.viewmodel.view.OverlayView;
-import org.helioviewer.viewmodel.view.opengl.GLOverlayView;
 import org.helioviewer.viewmodel.view.opengl.OverlayPluginContainer;
 import org.helioviewer.viewmodelplugin.overlay.OverlayContainer;
 import org.helioviewer.viewmodelplugin.overlay.OverlayControlComponent;

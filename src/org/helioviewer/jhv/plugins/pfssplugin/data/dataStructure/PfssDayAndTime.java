@@ -1,4 +1,4 @@
-package org.helioviewer.gl3d.plugin.pfss.data.dataStructure;
+package org.helioviewer.jhv.plugins.pfssplugin.data.dataStructure;
 
 /**
  * Bean for days and time

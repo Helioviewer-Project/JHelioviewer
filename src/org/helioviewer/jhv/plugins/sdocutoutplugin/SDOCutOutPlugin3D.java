@@ -1,12 +1,10 @@
-package org.helioviewer.plugins.sdocutoutplugin;
+package org.helioviewer.jhv.plugins.sdocutoutplugin;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.helioviewer.jhv.JavaHelioViewerLauncher;
-import org.helioviewer.plugins.sdocutoutplugin.settings.SDOCutOutSettings;
-import org.helioviewer.plugins.sdocutoutplugin.view.SDOCutOutToggleButton;
 import org.helioviewer.viewmodelplugin.interfaces.Plugin;
 
 public class SDOCutOutPlugin3D implements Plugin {
@@ -61,7 +59,7 @@ public class SDOCutOutPlugin3D implements Plugin {
     /**
      * Used for testing the plugin
      * 
-     * @see org.helioviewer.plugins.sdocutoutplugin.SDOCutOutPluginLauncher#main(String[])
+     * @see org.helioviewer.jhv.plugins.sdocutoutplugin.SDOCutOutPluginLauncher#main(String[])
      * @param args
      */
     public static void main(String[] args) {

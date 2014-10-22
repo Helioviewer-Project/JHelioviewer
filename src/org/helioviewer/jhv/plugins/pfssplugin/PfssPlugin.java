@@ -3,8 +3,7 @@ package org.helioviewer.jhv.plugins.pfssplugin;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import org.helioviewer.gl3d.plugin.pfss.PfssPluginContainer;
-import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
+
 import org.helioviewer.viewmodelplugin.controller.PluginManager;
 import org.helioviewer.viewmodelplugin.controller.PluginSettings;
 import org.helioviewer.viewmodelplugin.interfaces.Plugin;

@@ -1,4 +1,4 @@
-package org.helioviewer.gl3d.plugin.pfss.settings;
+package org.helioviewer.jhv.plugins.pfssplugin;
 
 import org.helioviewer.gl3d.scenegraph.math.GL3DVec3f;
 

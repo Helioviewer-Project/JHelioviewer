@@ -5,21 +5,16 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.IOException;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.util.Iterator;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.imageio.ImageIO;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
-import javax.media.opengl.GL4;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLContext;
@@ -28,18 +23,13 @@ import javax.media.opengl.GLDrawableFactory;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
-import javax.media.opengl.glu.GLU;
 import javax.swing.Timer;
-
-import jogamp.opengl.glu.mipmap.PixelStorageModes;
 
 import org.helioviewer.base.logging.Log;
 import org.helioviewer.base.math.Vector2dInt;
 import org.helioviewer.base.physics.Constants;
 import org.helioviewer.gl3d.camera.GL3DCamera;
 import org.helioviewer.gl3d.camera.GL3DCameraListener;
-import org.helioviewer.gl3d.model.image.GL3DImageLayer;
-import org.helioviewer.gl3d.model.image.GL3DImageLayers;
 import org.helioviewer.gl3d.scenegraph.GL3DState;
 import org.helioviewer.gl3d.scenegraph.GL3DState.VISUAL_TYPE;
 import org.helioviewer.jhv.layers.LayersListener;
@@ -47,20 +37,15 @@ import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.viewmodel.changeevent.LayerChangedReason;
 import org.helioviewer.viewmodel.changeevent.LayerChangedReason.LayerChangeType;
-import org.helioviewer.viewmodel.changeevent.TimestampChangedReason;
 import org.helioviewer.viewmodel.changeevent.ViewChainChangedReason;
 import org.helioviewer.viewmodel.region.Region;
 import org.helioviewer.viewmodel.renderer.screen.GLScreenRenderGraphics;
 import org.helioviewer.viewmodel.renderer.screen.ScreenRenderer;
 import org.helioviewer.viewmodel.view.AbstractBasicView;
 import org.helioviewer.viewmodel.view.ComponentView;
-import org.helioviewer.viewmodel.view.LayeredView;
 import org.helioviewer.viewmodel.view.LinkedMovieManager;
-import org.helioviewer.viewmodel.view.MovieView;
 import org.helioviewer.viewmodel.view.RegionView;
-import org.helioviewer.viewmodel.view.TimedMovieView;
 import org.helioviewer.viewmodel.view.View;
-import org.helioviewer.viewmodel.view.ViewHelper;
 import org.helioviewer.viewmodel.view.ViewListener;
 import org.helioviewer.viewmodel.view.ViewportView;
 import org.helioviewer.viewmodel.view.opengl.GLTextureHelper;
@@ -73,11 +58,7 @@ import org.helioviewer.viewmodel.view.opengl.shader.GLShaderHelper;
 import org.helioviewer.viewmodel.view.opengl.shader.GLVertexShaderView;
 import org.helioviewer.viewmodel.viewport.StaticViewport;
 import org.helioviewer.viewmodel.viewport.Viewport;
-import org.helioviewer.viewmodel.viewportimagesize.ViewportImageSize;
 
-import com.jogamp.opengl.util.FPSAnimator;
-import com.jogamp.opengl.util.GLPixelStorageModes;
-import com.jogamp.opengl.util.PMVMatrix;
 import com.jogamp.opengl.util.TileRenderer;
 import com.jogamp.opengl.util.awt.ImageUtil;
 
@@ -90,15 +71,27 @@ import com.jogamp.opengl.util.awt.ImageUtil;
  * 
  */
 public class GL3DComponentView extends AbstractBasicView implements
-		GLEventListener, ComponentView, LayersListener, GL3DCameraListener,
-		ActionListener {
+		GLEventListener, ComponentView, LayersListener, GL3DCameraListener {
 	public static final String SETTING_TILE_WIDTH = "gl.screenshot.tile.width";
 	public static final String SETTING_TILE_HEIGHT = "gl.screenshot.tile.height";
 
 	private volatile Vector2dInt mainImagePanelSize;
 
-	private Timer postRenderTimer = new Timer(100, this);
-	private Timer animationTimer = new Timer(0, this);
+	private Timer postRenderTimer = new Timer(100, new ActionListener(){
+	  @Override
+	  public void actionPerformed(ActionEvent e)
+	  {
+	    canvas.repaint();
+	  }
+	});
+	private Timer animationTimer = new Timer(0, new ActionListener()
+	{
+	  @Override
+	  public void actionPerformed(ActionEvent e)
+	  {
+	    canvas.repaint();
+	  }
+	});
 
 	private long animationTime = 0;
 	private boolean animationIsRunnig = false;
@@ -827,11 +820,6 @@ public class GL3DComponentView extends AbstractBasicView implements
 	 */
 	public CopyOnWriteArrayList<ScreenRenderer> getAllPostRenderer() {
 		return postRenderers;
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-	  canvas.repaint();
 	}
 
 	public void regristryAnimation(long time) {

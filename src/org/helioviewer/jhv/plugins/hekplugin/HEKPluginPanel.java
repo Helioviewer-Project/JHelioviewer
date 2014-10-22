@@ -59,9 +59,6 @@ public class HEKPluginPanel extends OverlayPanel implements ActionListener, HEKC
     private HEKCacheTreeModel treeModel;
     private HEKCacheLoadingModel loadingModel;
 
-	private Date start = null;
-	private Date end = null;
-
     /**
      * Default constructor
      * 

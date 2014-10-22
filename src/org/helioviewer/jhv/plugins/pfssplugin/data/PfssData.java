@@ -1,29 +1,28 @@
-package org.helioviewer.gl3d.plugin.pfss.data;
+package org.helioviewer.jhv.plugins.pfssplugin.data;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.Arrays;
-import javax.media.opengl.*;
 
-import org.helioviewer.base.physics.Constants;
-import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
-import org.helioviewer.gl3d.scenegraph.math.GL3DVec3f;
-
-import com.jogamp.common.nio.Buffers;
+import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
+
+import org.helioviewer.base.physics.Constants;
+import org.helioviewer.gl3d.scenegraph.math.GL3DVec3f;
+import org.helioviewer.jhv.plugins.pfssplugin.PfssSettings;
+
+import com.jogamp.common.nio.Buffers;
 
 /**
  * Loader of fitsfile & VBO generation & OpenGL visualization
@@ -396,5 +395,7 @@ public class PfssData {
 		
 		PfssData d = new PfssData(ray);
 		d.readFitsFile();
+		
+		in.close();
 	}
 }

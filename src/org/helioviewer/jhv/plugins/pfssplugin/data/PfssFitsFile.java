@@ -1,8 +1,6 @@
-package org.helioviewer.gl3d.plugin.pfss.data;
+package org.helioviewer.jhv.plugins.pfssplugin.data;
 
 import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;

@@ -619,6 +619,8 @@ public class HEKEvent implements IntervalComparison<Date> {
 
             result.add(stony);
         }
+        
+        s.close();
 
         return result;
     }

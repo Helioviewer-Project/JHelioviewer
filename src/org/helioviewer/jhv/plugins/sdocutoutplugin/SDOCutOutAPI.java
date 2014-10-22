@@ -1,4 +1,4 @@
-package org.helioviewer.plugins.sdocutoutplugin.settings;
+package org.helioviewer.jhv.plugins.sdocutoutplugin;
 
 public class SDOCutOutAPI {
 	

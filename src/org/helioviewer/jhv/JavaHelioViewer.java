@@ -1,17 +1,13 @@
 package org.helioviewer.jhv;
 
-import java.awt.EventQueue;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashSet;
 import java.util.Locale;
-import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 
@@ -26,6 +22,9 @@ import org.helioviewer.jhv.internal_plugins.InternalFilterPlugin;
 import org.helioviewer.jhv.io.CommandLineProcessor;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.opengl.GLInfo;
+import org.helioviewer.jhv.plugins.hekplugin.HEKPlugin3D;
+import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
+import org.helioviewer.jhv.plugins.sdocutoutplugin.SDOCutOutPlugin3D;
 import org.helioviewer.jhv.resourceloader.ResourceLoader;
 import org.helioviewer.jhv.resourceloader.SystemProperties;
 import org.helioviewer.viewmodel.view.jp2view.JP2Image;
@@ -59,28 +58,16 @@ public class JavaHelioViewer {
 
 		@Override
 		public boolean loadLibrary(String arg0, boolean arg1, ClassLoader arg2) {
-			// TODO Auto-generated method stub
 			return false;
 		}
 
 		@Override
 		public void loadLibrary(String arg0, String[] arg1, boolean arg2,
 				ClassLoader arg3) {
-			// TODO Auto-generated method stub
-			
 		}
-			
     }
 
     public static void main(String[] args) {
-        main(args, (Plugin[]) null);
-    }
-
-    public static void main(String[] args, Plugin builtinPlugin) {
-        main(args, new Plugin[] { builtinPlugin });
-    }
-
-    public static void main(String[] args, Plugin[] builtinPlugins) {
     	
         // Prints the usage message
         if (args.length == 1 && (args[0].equals("-h") || args[0].equals("--help"))) {
@@ -174,8 +161,6 @@ public class JavaHelioViewer {
 
         // Directories where to search for lib config files
         URI libs = JHVDirectory.LIBS.getFile().toURI();
-        URI defaultPlugins = JHVDirectory.PLUGINS.getFile().toURI();
-        URI defaultPluginsBackup = JHVDirectory.PLUGINS_LAST_CONFIG.getFile().toURI();
         URI libsBackup = JHVDirectory.LIBS_LAST_CONFIG.getFile().toURI();
         URI libsRemote = null;
         try {
@@ -246,9 +231,6 @@ public class JavaHelioViewer {
         splash.nextStep();
         splash.setProgressText("Loading OpenGL libraries...");
 
-        final URI finalLibs = libs;
-        final URI finalLibsRemote = libsRemote;
-        final URI finalLibsBackup = libsBackup;
         /*
         // Has to run in EventQueue due to bug in NVidia Driver 260.99
         try {
@@ -365,50 +347,14 @@ public class JavaHelioViewer {
         PluginManager.getSingeltonInstance().addInternalPlugin(internalPlugin.getClass().getClassLoader(), internalPlugin);
 
         
-        if (builtinPlugins != null) {
-            for (int i = 0; i < builtinPlugins.length; ++i) {
-            	PluginManager.getSingeltonInstance().addPlugin(builtinPlugins[i].getClass().getClassLoader(), builtinPlugins[i], null);
-            }
-        }
-
-        Set<String> deactivedPlugins = new HashSet<String>();
-
-        for (int i = 0; i < args.length - 1; ++i) {
-            if (args[i].equals("--deactivate-plugin")) {
-                deactivedPlugins.add(args[i + 1]);
-            }
-        }
-
-        Log.info("Download default plugins");
-        /*
-        if (null == ResourceLoader.getSingletonInstance().loadResource("sdo-cutout", libsRemote, defaultPlugins, defaultPlugins, defaultPluginsBackup, System.getProperties())) {
-            Log.error("Error fetching SDO-Cutout plugin. Maybe JHelioviewer version not recent enough. Try updating JHV to the newest version.");
-        } else {
-            Log.info("Successfully downloaded SDO-Cutout plugin.");
-        }
-
-        if (null == ResourceLoader.getSingletonInstance().loadResource("default-plugins", libsRemote, defaultPlugins, defaultPlugins, defaultPluginsBackup, System.getProperties())) {
-            Log.error("Error fetching default plugins");
-            Message.err("Error fetching default plugins", "Could not download default plugins. You can try to download them from their respective website.", false);
-        } else {
-            Log.info("Successfully downloaded default plugins.");
-        }
-		*/
-        try {
-            Log.info("Search for plugins in " + JHVDirectory.PLUGINS.getPath());
-            PluginManager.getSingeltonInstance().searchForPlugins(JHVDirectory.PLUGINS.getFile(), true, deactivedPlugins);
-        } catch (IOException e) {
-            String title = "An error occured while loading the plugin files. At least one plugin file is corrupt!";
-            String message = "The following files are affected:\n" + e.getMessage();
-            Log.error(title + " " + message, e);
-            Message.warn(title, message);
-        }
+        //TODO: reenable HEK & SDO Cutout plugins
+        for(Plugin plugin:new Plugin[]{new PfssPlugin(true) /*, new HEKPlugin3D(true), new SDOCutOutPlugin3D()*/})
+          	PluginManager.getSingeltonInstance().addPlugin(plugin.getClass().getClassLoader(), plugin, null);
 
         splash.setProgressText("Displaying main window...");
         splash.nextStep();
         // Create main view chain and display main window
         Log.info("Start main window");
         splash.initializeViewchain();
-
     }
 };

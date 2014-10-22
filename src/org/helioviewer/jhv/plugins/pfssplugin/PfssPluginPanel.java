@@ -1,4 +1,4 @@
-package org.helioviewer.gl3d.plugin.pfss;
+package org.helioviewer.jhv.plugins.pfssplugin;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -21,17 +21,14 @@ import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 
 import org.helioviewer.base.logging.Log;
-import org.helioviewer.gl3d.plugin.pfss.data.PfssCache;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
-import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
+import org.helioviewer.jhv.plugins.pfssplugin.data.PfssCache;
 import org.helioviewer.viewmodel.changeevent.ChangeEvent;
-import org.helioviewer.viewmodel.changeevent.SubImageDataChangedReason;
 import org.helioviewer.viewmodel.view.LinkedMovieManager;
 import org.helioviewer.viewmodel.view.TimedMovieView;
 import org.helioviewer.viewmodel.view.View;
 import org.helioviewer.viewmodel.view.ViewListener;
-import org.helioviewer.viewmodel.view.opengl.GLView;
 import org.helioviewer.viewmodelplugin.overlay.OverlayPanel;
 
 /**
@@ -63,14 +60,6 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 		initVisualComponents();
 		// register as layers listener
 		LayersModel.getSingletonInstance().addLayersListener(this);
-	}
-
-	/**
-	 * Force a redraw of the main window
-	 */
-	private void fireRedraw() {
-		LayersModel.getSingletonInstance().viewChanged(null,
-				new ChangeEvent(new SubImageDataChangedReason(null)));
 	}
 
 	/**

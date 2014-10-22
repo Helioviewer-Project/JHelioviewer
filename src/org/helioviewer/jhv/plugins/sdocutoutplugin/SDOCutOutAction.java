@@ -1,4 +1,4 @@
-package org.helioviewer.plugins.sdocutoutplugin;
+package org.helioviewer.jhv.plugins.sdocutoutplugin;
 
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -11,8 +11,6 @@ import javax.swing.JToggleButton;
 import org.helioviewer.base.message.Message;
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.layers.LayersModel;
-import org.helioviewer.plugins.sdocutoutplugin.controller.SDOCutOutController;
-import org.helioviewer.plugins.sdocutoutplugin.settings.SDOCutOutAPI;
 import org.helioviewer.viewmodel.metadata.MetaData;
 import org.helioviewer.viewmodel.view.MetaDataView;
 import org.helioviewer.viewmodel.view.RegionView;

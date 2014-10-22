@@ -1,4 +1,4 @@
-package org.helioviewer.plugins.sdocutoutplugin.controller;
+package org.helioviewer.jhv.plugins.sdocutoutplugin;
 
 import java.awt.Point;
 import java.text.FieldPosition;
