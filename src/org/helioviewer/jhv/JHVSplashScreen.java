@@ -92,6 +92,7 @@ public class JHVSplashScreen extends JFrame implements StatusTextListener {
 		setFocusable(false);
 		setResizable(false);
 		setUndecorated(true);
+		setType(java.awt.Window.Type.UTILITY);
 	}
 
 	/**

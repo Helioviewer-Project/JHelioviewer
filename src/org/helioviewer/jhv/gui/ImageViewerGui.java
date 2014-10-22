@@ -27,6 +27,7 @@ import javax.swing.SwingUtilities;
 
 import org.helioviewer.base.message.Message;
 import org.helioviewer.jhv.JHVSplashScreen;
+import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 import org.helioviewer.jhv.gui.components.ControlPanelContainer;
 import org.helioviewer.jhv.gui.components.ImageSelectorPanel;
@@ -319,6 +320,7 @@ public class ImageViewerGui {
 		frame.setMinimumSize(minSize);
 		frame.setPreferredSize(maxSize);
 		frame.setFont(new Font("SansSerif", Font.BOLD, 12));
+		frame.setIconImage(IconBank.getIcon(JHVIcon.HVLOGO_SMALL).getImage());
 		return frame;
 	}
 
