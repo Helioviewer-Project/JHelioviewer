@@ -1,14 +1,11 @@
 package org.helioviewer.gl3d.gui;
 
-import java.awt.Dimension;
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;
 import javax.swing.ListModel;
-import javax.swing.text.rtf.RTFEditorKit;
 
 import org.helioviewer.base.logging.Log;
 import org.helioviewer.gl3d.GL3DHelper;
@@ -16,29 +13,16 @@ import org.helioviewer.gl3d.camera.GL3DCamera;
 import org.helioviewer.gl3d.camera.GL3DCameraRotationAnimation;
 import org.helioviewer.gl3d.camera.GL3DSolarRotationTrackingTrackballCamera;
 import org.helioviewer.gl3d.camera.GL3DTrackballCamera;
-import org.helioviewer.gl3d.model.GL3DHitReferenceShape;
-import org.helioviewer.gl3d.model.image.GL3DImageLayer;
-import org.helioviewer.gl3d.model.image.GL3DImageLayers;
-import org.helioviewer.gl3d.scenegraph.GL3DNode;
 import org.helioviewer.gl3d.scenegraph.GL3DState;
 import org.helioviewer.gl3d.scenegraph.GL3DState.VISUAL_TYPE;
-import org.helioviewer.gl3d.scenegraph.math.GL3DMat4d;
 import org.helioviewer.gl3d.scenegraph.math.GL3DQuatd;
 import org.helioviewer.gl3d.scenegraph.math.GL3DVec3d;
-import org.helioviewer.gl3d.scenegraph.math.GL3DVec4d;
-import org.helioviewer.gl3d.scenegraph.rt.GL3DRay;
-import org.helioviewer.gl3d.scenegraph.rt.GL3DRayTracer;
 import org.helioviewer.gl3d.view.GL3DCameraView;
-import org.helioviewer.gl3d.view.GL3DComponentView;
 import org.helioviewer.gl3d.view.GL3DCoordinateSystemView;
-import org.helioviewer.gl3d.view.GL3DImageTextureView;
 import org.helioviewer.gl3d.view.GL3DSceneGraphView;
 import org.helioviewer.gl3d.wcs.CoordinateConversion;
 import org.helioviewer.gl3d.wcs.CoordinateVector;
 import org.helioviewer.jhv.gui.ImageViewerGui;
-import org.helioviewer.jhv.gui.states.GuiState3DWCS;
-import org.helioviewer.jhv.gui.states.State;
-import org.helioviewer.jhv.gui.states.StateController;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.viewmodel.view.ComponentView;
@@ -52,7 +36,7 @@ import org.helioviewer.viewmodel.view.View;
  * @author Simon Sp�rri (simon.spoerri@fhnw.ch)
  * 
  */
-public class GL3DCameraSelectorModel extends AbstractListModel implements ComboBoxModel, LayersListener {
+public class GL3DCameraSelectorModel extends AbstractListModel<Object> implements ComboBoxModel<Object>, LayersListener {
 	
 	
 	private static final long serialVersionUID = 1L;
@@ -68,7 +52,6 @@ public class GL3DCameraSelectorModel extends AbstractListModel implements ComboB
     private GL3DTrackballCamera trackballCamera;
 
     private GL3DSolarRotationTrackingTrackballCamera solarRotationCamera;
-    private GL3DSceneGraphView sceneGraphView;
     private VISUAL_TYPE visualType = VISUAL_TYPE.MODE_3D;
 
     public static GL3DCameraSelectorModel getInstance() {
@@ -101,8 +84,7 @@ public class GL3DCameraSelectorModel extends AbstractListModel implements ComboB
         // getMainView().getAdapter(GL3DSceneGraphView.class);
 
         if (sceneGraphView != null) {
-            this.sceneGraphView = sceneGraphView;
-        	trackballCamera = new GL3DTrackballCamera(sceneGraphView);
+            trackballCamera = new GL3DTrackballCamera(sceneGraphView);
             solarRotationCamera = new GL3DSolarRotationTrackingTrackballCamera(sceneGraphView);
             defaultCamera = solarRotationCamera;
             lastCamera = defaultCamera;
@@ -219,7 +201,6 @@ public class GL3DCameraSelectorModel extends AbstractListModel implements ComboB
 
 	@Override
 	public void activeLayerChanged(int idx) {
-		((GL3DComponentView)StateController.getInstance().getCurrentState().getMainComponentView()).setActiveLayer((GL3DImageTextureView)LayersModel.getSingletonInstance().getActiveView());
 		if (this.visualType == VISUAL_TYPE.MODE_2D){
 			this.rotateToCurrentLayer();
 		}

@@ -38,7 +38,6 @@ import org.helioviewer.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.viewmodel.changeevent.LayerChangedReason;
 import org.helioviewer.viewmodel.changeevent.LayerChangedReason.LayerChangeType;
 import org.helioviewer.viewmodel.changeevent.ViewChainChangedReason;
-import org.helioviewer.viewmodel.region.Region;
 import org.helioviewer.viewmodel.renderer.screen.GLScreenRenderGraphics;
 import org.helioviewer.viewmodel.renderer.screen.ScreenRenderer;
 import org.helioviewer.viewmodel.view.AbstractBasicView;
@@ -59,7 +58,6 @@ import org.helioviewer.viewmodel.view.opengl.shader.GLVertexShaderView;
 import org.helioviewer.viewmodel.viewport.StaticViewport;
 import org.helioviewer.viewmodel.viewport.Viewport;
 
-import com.jogamp.opengl.util.TileRenderer;
 import com.jogamp.opengl.util.awt.ImageUtil;
 
 /**
@@ -74,8 +72,6 @@ public class GL3DComponentView extends AbstractBasicView implements
 		GLEventListener, ComponentView, LayersListener, GL3DCameraListener {
 	public static final String SETTING_TILE_WIDTH = "gl.screenshot.tile.width";
 	public static final String SETTING_TILE_HEIGHT = "gl.screenshot.tile.height";
-
-	private volatile Vector2dInt mainImagePanelSize;
 
 	private Timer postRenderTimer = new Timer(100, new ActionListener(){
 	  @Override
@@ -94,14 +90,12 @@ public class GL3DComponentView extends AbstractBasicView implements
 	});
 
 	private long animationTime = 0;
-	private boolean animationIsRunnig = false;
 	private long startedTime = 0;
 	private CopyOnWriteArrayList<ScreenRenderer> postRenderers = new CopyOnWriteArrayList<ScreenRenderer>();
 
 	private GLCanvas canvas;
 
 	private Color backgroundColor = Color.BLACK;
-	private Color outsideViewportColor = Color.DARK_GRAY;
 
 	private boolean backGroundColorHasChanged = false;
 
@@ -111,9 +105,6 @@ public class GL3DComponentView extends AbstractBasicView implements
 	private GLShaderHelper shaderHelper = new GLShaderHelper();
 
 	private ViewportView viewportView;
-	private ViewportView screenshotViewportView;
-
-	private GL3DImageTextureView activeLayer = null;
 
 	private ReentrantLock animationLock = new ReentrantLock();
 
@@ -126,14 +117,8 @@ public class GL3DComponentView extends AbstractBasicView implements
 	private int tileWidth = 512;
 	private int tileHeight = 512;
 
-	private boolean saveBufferedImage = true;
 	private BufferedImage screenshot;
-	private ByteBuffer screenshotBuffer;
-	private TileRenderer tileRenderer;
-	private Viewport viewport;
 	private Viewport defaultViewport;
-
-	private double zTranslation = 1;
 
 	private double clipNear = Constants.SunRadius / 10;
 	private double clipFar = Constants.SunRadius * 1000;
@@ -262,9 +247,8 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 	public void display(GLAutoDrawable glAD) {
 		long time = System.currentTimeMillis();
-		if (animationIsRunnig && animationTime-(time-startedTime) <= 0 && LinkedMovieManager.getActiveInstance() != null && !LinkedMovieManager.getActiveInstance().isPlaying()){
+		if (animationTimer.isRunning() && animationTime-(time-startedTime) <= 0 && LinkedMovieManager.getActiveInstance() != null && !LinkedMovieManager.getActiveInstance().isPlaying()){
 			animationTimer.stop();
-			animationIsRunnig = false;
 		}
 		else {
 			animationTime -= (time - startedTime);
@@ -329,7 +313,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 		gl.glFrustum(-fW, fW, -fH, fH, clipNear, clipFar);
 		
 		else {
-			Region region = this.getAdapter(RegionView.class).getRegion();
+			this.getAdapter(RegionView.class).getRegion();
 			GL3DCamera camera = this.getAdapter(GL3DCameraView.class).getCurrentCamera();
 			double scaleFactor = camera.getZTranslation() / -1.0054167950116766E10 - 0.1;
 			gl.glOrtho(-1182667503.408581*scaleFactor, (1182667503.408581)*scaleFactor, -879625716.820895*scaleFactor, (879625716.820894)*scaleFactor, clipNear, clipFar);
@@ -359,7 +343,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 	private void displayBody(GL2 gl) {
 
-		int width = this.viewportSize.getX();
+		this.viewportSize.getX();
 		int height = this.viewportSize.getY();
 
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
@@ -511,7 +495,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 		screenshot = new BufferedImage(viewport.getWidth(),
 				viewport.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
-		screenshotBuffer = ByteBuffer.wrap(((DataBufferByte) screenshot
+		ByteBuffer.wrap(((DataBufferByte) screenshot
 				.getRaster().getDataBuffer()).getData());
 
 		offscreenGL.glViewport(0, 0, tileWidth, tileHeight);
@@ -599,8 +583,6 @@ public class GL3DComponentView extends AbstractBasicView implements
 	}
 
 	public void updateMainImagePanelSize(Vector2dInt size) {
-		mainImagePanelSize = size;
-
 		this.viewportSize = size;
 
 		// if(this.orthoView!=null) {
@@ -686,8 +668,6 @@ public class GL3DComponentView extends AbstractBasicView implements
 			screenshot.flush();
 			screenshot = null;
 		}
-		screenshotBuffer = null;
-		tileRenderer = null;
 
 	}
 
@@ -707,10 +687,6 @@ public class GL3DComponentView extends AbstractBasicView implements
 				new ChangeEvent());
 	}
 
-	public void setActiveLayer(GL3DImageTextureView activeLayer) {
-		this.activeLayer = activeLayer;
-	}
-
 	@Override
 	public void layerAdded(int idx) {
 		this.canvas.repaint();
@@ -723,52 +699,27 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 	@Override
 	public void layerChanged(int idx) {
-		if (LinkedMovieManager.getActiveInstance().isPlaying() && !this.animationIsRunnig) {
-			this.animationTimer.start();
-			this.animationTimer.setInitialDelay(20);
-		} else if (!this.animationIsRunnig){
-			this.canvas.repaint();
-		}
+    this.canvas.repaint();
 	}
 
 	@Override
 	public void activeLayerChanged(int idx) {
-		if (LinkedMovieManager.getActiveInstance().isPlaying() && !this.animationIsRunnig) {
-			this.animationTimer.start();
-			this.animationTimer.setInitialDelay(20);
-		} else if (!this.animationIsRunnig){
-			this.canvas.repaint();
-		}
+    this.canvas.repaint();
 	}
 
 	@Override
 	public void viewportGeometryChanged() {
-		if (LinkedMovieManager.getActiveInstance().isPlaying() && !this.animationIsRunnig) {
-			this.animationTimer.start();
-			this.animationTimer.setInitialDelay(20);
-		} else if (!this.animationIsRunnig){
-			this.canvas.repaint();
-		}
+		this.canvas.repaint();
 	}
 
 	@Override
 	public void timestampChanged(int idx) {
-		if (LinkedMovieManager.getActiveInstance().isPlaying() && !this.animationIsRunnig) {
-			this.animationTimer.start();
-			this.animationTimer.setInitialDelay(20);
-		} else if (!this.animationIsRunnig){
-			this.canvas.invalidate();
-		}
+		this.canvas.invalidate();
 	}
 
 	@Override
 	public void subImageDataChanged() {
-		if (LinkedMovieManager.getActiveInstance().isPlaying() && !this.animationIsRunnig) {
-			this.animationTimer.start();
-			this.animationTimer.setInitialDelay(20);
-		} else if (!this.animationIsRunnig){
-			this.canvas.repaint();
-		}
+	  this.canvas.repaint();
 	}
 
 	@Override
@@ -825,7 +776,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 	public void regristryAnimation(long time) {
 		if (time < 0) {
 			Log.error("Not correct time : " + time + ", must be higher then 0");
-		} else if (!animationIsRunnig) {
+		} else if (!animationTimer.isRunning()) {
 			if (!LinkedMovieManager.getActiveInstance().isPlaying()) {
 				this.animationTimer.setDelay(0);
 			}
