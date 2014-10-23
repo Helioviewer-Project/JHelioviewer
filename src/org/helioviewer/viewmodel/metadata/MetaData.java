@@ -1,8 +1,10 @@
 package org.helioviewer.viewmodel.metadata;
 
+import org.helioviewer.base.math.MathUtils;
 import org.helioviewer.base.math.RectangleDouble;
 import org.helioviewer.base.math.Vector2dDouble;
 import org.helioviewer.base.math.Vector2dInt;
+import org.helioviewer.base.physics.Constants;
 import org.helioviewer.viewmodel.region.Region;
 import org.helioviewer.viewmodel.region.StaticRegion;
 import org.helioviewer.viewmodel.view.jp2view.datetime.ImmutableDateTime;
@@ -54,6 +56,7 @@ public abstract class MetaData extends Exception{
     
     protected boolean hasCorona = false;
     protected boolean hasSphere = false;
+    protected boolean hasRotation = false;
     
     
     /**
@@ -321,6 +324,10 @@ public abstract class MetaData extends Exception{
 		// TODO Auto-generated method stub
 		return hasCorona;
 	}
+	
+	public boolean hasRotation(){
+		return hasRotation;
+	}
 
 	public double getHEEX() {
         return heeX;
@@ -433,6 +440,11 @@ public abstract class MetaData extends Exception{
 
 	public void updateDateTime(ImmutableDateTime newDateTime) {
         time = newDateTime;		
+	}
+
+	public double getRadiusSuninArcsec() {
+        double distanceToSun = metaDataContainer.tryGetDouble("DSUN_OBS");
+        return Math.atan(Constants.SunRadius / distanceToSun) * MathUtils.radeg * 3600;
 	}
 
 }

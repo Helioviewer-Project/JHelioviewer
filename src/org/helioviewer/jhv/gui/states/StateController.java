@@ -19,7 +19,7 @@ public class StateController {
 
     private CopyOnWriteArrayList<StateChangeListener> stateChangeListeners = new CopyOnWriteArrayList<StateChangeListener>();
 
-    private State currentState;
+    private GuiState3DWCS currentState;
     
     
     private StateController() {
@@ -31,15 +31,11 @@ public class StateController {
         return StateController.instance;
     }
 
-    /*public void set2DState() {
-        this.setState(ViewStateEnum.View2D.getState());
-    }*/
-
     public void set3DState() {
         this.setState(ViewStateEnum.View3D.getState());
     }
 
-    private void setState(State newState) {
+    private void setState(GuiState3DWCS newState) {
         State oldState = this.currentState;
         if (newState != oldState) {
             this.currentState = newState;
@@ -47,7 +43,7 @@ public class StateController {
         }
     }
 
-    public State getCurrentState() {
+    public GuiState3DWCS getCurrentState() {
         return this.currentState;
     }
     

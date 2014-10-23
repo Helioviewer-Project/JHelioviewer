@@ -11,13 +11,13 @@ public enum ViewStateEnum {
     //View2D(new GuiState2D()),
     View3D(new GuiState3DWCS());
 
-    private final State state;
+    private final GuiState3DWCS state;
 
-    ViewStateEnum(State state) {
+    ViewStateEnum(GuiState3DWCS state) {
         this.state = state;
     }
 
-    public State getState() {
+    public GuiState3DWCS getState() {
         return this.state;
     }
 }

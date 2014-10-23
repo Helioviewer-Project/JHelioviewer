@@ -21,6 +21,7 @@ public class MetaDataAIA extends MetaData{
 
         this.hasCorona = true;
         this.hasSphere = true;
+
         this.metaDataContainer = metaDataContainer;
 
         this.instrument = "AIA";

@@ -24,7 +24,8 @@ public class MetaDataStereo extends MetaData{
         }
         hasCorona = true;
         hasSphere = true;
-        
+        this.hasRotation = true;
+
         fullName = instrument + " " + detector;
         this.metaDataContainer = metaDataContainer;
         

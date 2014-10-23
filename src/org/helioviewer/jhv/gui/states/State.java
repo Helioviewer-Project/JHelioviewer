@@ -1,7 +1,5 @@
 package org.helioviewer.jhv.gui.states;
 
-import org.helioviewer.jhv.gui.GL3DViewchainFactory;
-import org.helioviewer.jhv.gui.ViewchainFactory;
 import org.helioviewer.jhv.gui.components.SideContentPane;
 import org.helioviewer.jhv.gui.components.TopToolBar;
 import org.helioviewer.jhv.gui.interfaces.ImagePanelInputController;
@@ -19,15 +17,7 @@ public interface State {
 
     public void removeStateSpecificComponents(SideContentPane sideContentPane);
 
-    public boolean createViewChains();
-
-    /**
-     * The ViewchainFactory is dependent on the state, as a different Viewchain
-     * is required for 3D and 2D Modes.
-     * 
-     * @return viewchainFactory to use
-     */
-    public GL3DViewchainFactory getViewchainFactory();
+    public void createViewChains();
 
 
     public ComponentView getMainComponentView();

@@ -4,7 +4,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import org.helioviewer.jhv.JavaHelioViewerLauncher;
 import org.helioviewer.viewmodelplugin.interfaces.Plugin;
 
 public class SDOCutOutPlugin3D implements Plugin {
@@ -63,7 +62,7 @@ public class SDOCutOutPlugin3D implements Plugin {
      * @param args
      */
     public static void main(String[] args) {
-        JavaHelioViewerLauncher.start(SDOCutOutPluginLauncher.class, args);
+        //JavaHelioViewerLauncher.start(SDOCutOutPluginLauncher.class, args);
     }
 
 	@Override

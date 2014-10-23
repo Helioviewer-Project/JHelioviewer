@@ -17,9 +17,7 @@ import org.helioviewer.base.logging.Log;
 import org.helioviewer.base.message.Message;
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.Settings;
-import org.helioviewer.jhv.gui.GL3DViewchainFactory;
 import org.helioviewer.jhv.gui.ImageViewerGui;
-import org.helioviewer.jhv.gui.ViewchainFactory;
 import org.helioviewer.jhv.gui.states.StateController;
 import org.helioviewer.viewmodel.io.APIResponse;
 import org.helioviewer.viewmodel.io.APIResponseDump;
@@ -275,8 +273,7 @@ public class APIRequestManager {
 
         ImageInfoView view = ViewHelper.loadView(uri);
         if (addToViewChain) {
-	    	GL3DViewchainFactory factory = StateController.getInstance().getCurrentState().getViewchainFactory();
-	        factory.addLayerToViewchainMain(view, ImageViewerGui.getSingletonInstance().getMainView());
+	        StateController.getInstance().getCurrentState().addLayerToViewchainMain(view, ImageViewerGui.getSingletonInstance().getMainView());
         }
         return view;
     }
@@ -306,10 +303,7 @@ public class APIRequestManager {
         ImageInfoView view = ViewHelper.loadView(uri, downloadURI);
 
         if (addToViewChain) {
-            // ViewchainFactory factory = new ViewchainFactory();
-            GL3DViewchainFactory factory = StateController.getInstance().getCurrentState().getViewchainFactory();
-            // FIXME: Simon Spoerri, properly resolve State dependencies
-            factory.addLayerToViewchainMain(view, ImageViewerGui.getSingletonInstance().getMainView());
+	        StateController.getInstance().getCurrentState().addLayerToViewchainMain(view, ImageViewerGui.getSingletonInstance().getMainView());
         }
         return view;
     }

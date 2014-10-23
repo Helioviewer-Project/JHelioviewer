@@ -34,6 +34,7 @@ public class MetaDataStereoB_COR1 extends MetaData{
         	throw new MetaDataException("invalid instrument");
         }
         hasCorona = true;
+        this.hasRotation = true;
         this.metaDataContainer = metaDataContainer;
 
         String observedDate = metaDataContainer.get("DATE_OBS");

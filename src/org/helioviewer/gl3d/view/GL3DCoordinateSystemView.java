@@ -63,7 +63,7 @@ public class GL3DCoordinateSystemView extends AbstractGL3DView implements GL3DVi
         this.coordinateSystem = getDefaultCoordinateSystem();
         this.orientation = getDefaultOrientation();
 
-        if (metaData instanceof MetaDataStereo || metaData instanceof MetaDataStereoA_COR1 || metaData instanceof MetaDataStereoA_COR2 || metaData instanceof MetaDataStereoB_COR1 || metaData instanceof MetaDataStereoB_COR2 )
+        if (metaData.hasRotation())
         {
                 // STEREO
                 Log.debug("GL3DCoordinateSystemView: Creating STEREO Image Layer!");
