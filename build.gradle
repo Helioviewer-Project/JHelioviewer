@@ -1,0 +1,41 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'macAppBundle'
+
+version = '1.0'
+sourceCompatibility = 1.7
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/'
+        }
+        resources {
+            srcDir 'resources/'
+        }
+    }
+}
+
+dependencies { 
+	compile fileTree(dir: 'lib', includes: ['*.jar']) 
+}
+
+macAppBundle {
+    mainClassName = "org.helioviewer.jhv.JavaHelioViewer"
+    icon = "build-resources/mac/JHV_icon.icns"
+    bundleJRE = true
+    javaProperties.put("apple.laf.useScreenMenuBar", "true")
+    bundleExtras.put("NSHighResolutionCapable", "true")
+    backgroundImage = "build-resources/mac/JHV_installer.png"
+    
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'edu.sc.seis.gradle:macappbundle:2.0.0'
+    }
+}

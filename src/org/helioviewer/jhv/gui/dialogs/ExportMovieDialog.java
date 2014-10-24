@@ -61,8 +61,6 @@ import org.helioviewer.viewmodel.view.ViewListener;
 import org.helioviewer.viewmodel.view.jp2view.JHVJPXView.SpeedType;
 import org.helioviewer.viewmodel.view.jp2view.datetime.ImmutableDateTime;
 
-import com.sun.corba.se.spi.copyobject.CopierManager;
-import com.sun.xml.internal.ws.api.pipe.Codec;
 import com.xuggle.mediatool.IMediaWriter;
 import com.xuggle.mediatool.ToolFactory;
 import com.xuggle.xuggler.ICodec;

@@ -85,8 +85,8 @@ public class JHVGlobals {
                 Attributes mainAttributes = manifest.getMainAttributes();
                 version = mainAttributes.getValue("version");
                 revision = mainAttributes.getValue("revision");
-                System.setProperty("jhv.version", version);
-                System.setProperty("jhv.revision", revision);
+                //System.setProperty("jhv.version", version);
+                //System.setProperty("jhv.revision", revision);
             } catch (IOException e) {
                 Log.error(">> JHVGlobals.determineVersionAndRevision() > Error while reading version and revision from manifest in jar file: " + jarFile.getName(), e);
             } finally {
