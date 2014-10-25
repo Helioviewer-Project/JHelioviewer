@@ -30,8 +30,6 @@ import org.helioviewer.viewmodel.view.jp2view.kakadu.JHV_KduException;
 import org.helioviewer.viewmodelplugin.controller.PluginManager;
 import org.helioviewer.viewmodelplugin.interfaces.Plugin;
 
-import com.jogamp.common.jvm.JNILibLoaderBase;
-
 /**
  * This class starts the applications.
  * 
