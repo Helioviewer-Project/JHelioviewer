@@ -227,13 +227,13 @@ public class TopToolBar extends JToolBar implements MouseListener {
         view2d.setIcon(IconBank.getIcon(JHVIcon.MODE_2D));
         view2d.setSelectedIcon(IconBank.getIcon(JHVIcon.MODE_2D_SELECTED));
         view2d.setText("2D");
-        view2d.setSelected(true);
         stateGroup.add(view2d);
 
         view3d = new JToggleButton(new View3DAction());
         view3d.setIcon(IconBank.getIcon(JHVIcon.MODE_3D));
         view3d.setSelectedIcon(IconBank.getIcon(JHVIcon.MODE_3D_SELECTED));
         view3d.setText("3D");
+        view3d.setSelected(true);
         stateGroup.add(view3d);
 
         addButton(view2d);
@@ -249,6 +249,7 @@ public class TopToolBar extends JToolBar implements MouseListener {
         		this.add(new JToggleButton(button.getIcon()));
         		
         }
+        set3DMode();
         
     }
 

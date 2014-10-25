@@ -13,14 +13,9 @@ import javax.swing.JProgressBar;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.helioviewer.base.logging.Log;
-import org.helioviewer.base.message.Message;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
-import org.helioviewer.jhv.gui.components.StatusPanel;
 import org.helioviewer.jhv.gui.components.StatusPanel.StatusTextListener;
-import org.helioviewer.jhv.opengl.GLInfo;
-import org.helioviewer.jhv.opengl.GLInitPanel;
 
 /**
  * Represents the splash screen which will be displayed when program is
@@ -92,7 +87,7 @@ public class JHVSplashScreen extends JFrame implements StatusTextListener {
 		setFocusable(false);
 		setResizable(false);
 		setUndecorated(true);
-		setType(java.awt.Window.Type.UTILITY);
+		//setType(java.awt.Window.Type.UTILITY);
 	}
 
 	/**
@@ -105,30 +100,6 @@ public class JHVSplashScreen extends JFrame implements StatusTextListener {
 
 		add(imagePanel, BorderLayout.CENTER);
 		add(progressBar, BorderLayout.SOUTH);
-	}
-
-	/**
-	 * Adds a OpenGL component to the form to get information about the OpenGL
-	 * version on the machine and creates the main view chain
-	 * */
-	public void initializeViewchain() {
-		imagePanel.setText("Starting OpenGL...");
-		nextStep();
-		StatusPanel.addStatusTextListener(this);
-
-		try {
-			add(new GLInitPanel(), BorderLayout.NORTH);
-		} catch (Throwable t) {
-			Log.error("Could not load OpenGL", t);
-		}
-
-		if (!GLInfo.glIsUsable()) {
-			Message.err(
-					"Could not initialize OpenGL",
-					"OpenGL could not be initialized properly during startup. JHelioviewer will start in Software Mode. For detailed information please read the log output. ",
-					false);
-		}
-		validate();
 	}
 
 	/**

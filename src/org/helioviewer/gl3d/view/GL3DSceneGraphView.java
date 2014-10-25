@@ -13,7 +13,6 @@ import org.helioviewer.gl3d.GL3DKeyController;
 import org.helioviewer.gl3d.GL3DKeyController.GL3DKeyListener;
 import org.helioviewer.gl3d.camera.GL3DCamera;
 import org.helioviewer.gl3d.camera.GL3DCameraZoomAnimation;
-import org.helioviewer.gl3d.model.GL3DArtificialObjects;
 import org.helioviewer.gl3d.model.GL3DFramebufferImage;
 import org.helioviewer.gl3d.model.GL3DHitReferenceShape;
 import org.helioviewer.gl3d.model.image.GL3DImageLayer;
@@ -339,7 +338,7 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 	private GL3DGroup createRoot() {
 		GL3DGroup root = new GL3DGroup("Scene Root");
 
-		artificialObjects = new GL3DArtificialObjects();
+		artificialObjects = new GL3DGroup("Artificial Objects");
 		root.addNode(artificialObjects);
 
 		this.imageLayers = new GL3DImageLayers();

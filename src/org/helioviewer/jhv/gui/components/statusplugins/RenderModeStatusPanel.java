@@ -19,33 +19,27 @@ import org.helioviewer.jhv.opengl.GLInfo;
  */
 public class RenderModeStatusPanel extends JLabel implements StatusPanelPlugin {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    /**
-     * Default constructor.
-     */
-    public RenderModeStatusPanel() {
-        setBorder(BorderFactory.createEtchedBorder());
-        setText("none");
-        validate();
-        setPreferredSize(null);
-    }
+	/**
+	 * Default constructor.
+	 */
+	public RenderModeStatusPanel() {
+		setBorder(BorderFactory.createEtchedBorder());
+		setText("none");
+		validate();
+		setPreferredSize(null);
+	}
 
-    /**
-     * Updates the status panel.
-     * 
-     * It reads the current render mode from
-     * {@link org.helioviewer.jhv.opengl.GLInfo}.
-     */
-    public void updateStatus() {
-        if (GLInfo.glIsEnabled()) {
-            setText("OpenGL " + GLInfo.getVersion());
-            validate();
-            setPreferredSize(null);
-        } else {
-            setText("Software");
-            validate();
-            setPreferredSize(null);
-        }
-    }
+	/**
+	 * Updates the status panel.
+	 * 
+	 * It reads the current render mode from
+	 * {@link org.helioviewer.jhv.opengl.GLInfo}.
+	 */
+	public void updateStatus() {
+		setText("OpenGL " + GLInfo.getVersion());
+		validate();
+		setPreferredSize(null);
+	}
 }

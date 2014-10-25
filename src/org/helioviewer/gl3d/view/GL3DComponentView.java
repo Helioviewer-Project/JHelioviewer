@@ -32,8 +32,10 @@ import org.helioviewer.gl3d.camera.GL3DCamera;
 import org.helioviewer.gl3d.camera.GL3DCameraListener;
 import org.helioviewer.gl3d.scenegraph.GL3DState;
 import org.helioviewer.gl3d.scenegraph.GL3DState.VISUAL_TYPE;
+import org.helioviewer.jhv.JHVDirectory;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
+import org.helioviewer.jhv.opengl.GLInfo;
 import org.helioviewer.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.viewmodel.changeevent.LayerChangedReason;
 import org.helioviewer.viewmodel.changeevent.LayerChangedReason.LayerChangeType;
@@ -178,12 +180,19 @@ public class GL3DComponentView extends AbstractBasicView implements
 	}
 
 	public void init(GLAutoDrawable glAD) {
-		this.getAdapter(GL3DCameraView.class).getCurrentCamera()
-				.addCameraListener(this);
-
+		
 		Log.debug("GL3DComponentView.Init");
 		GL2 gl = glAD.getGL().getGL2();
 		GL3DState.create(gl);
+
+		GLInfo.update(gl.getGL2());
+
+		GLShaderHelper.initHelper(gl.getGL2(), JHVDirectory.TEMP.getPath());
+		GLShaderBuilder.initShaderBuilder(gl);
+
+		this.getAdapter(GL3DCameraView.class).getCurrentCamera()
+				.addCameraListener(this);
+
 
 		frameBufferObject = new int[1];
 		gl.glGenFramebuffers(1, frameBufferObject, 0);

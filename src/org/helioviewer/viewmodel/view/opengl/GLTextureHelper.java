@@ -55,28 +55,6 @@ public class GLTextureHelper {
 
     private final static int[] formatMap = { GL2.GL_LUMINANCE4, GL2.GL_LUMINANCE4, GL2.GL_LUMINANCE4, GL2.GL_LUMINANCE4, GL2.GL_LUMINANCE8, GL2.GL_LUMINANCE8, GL2.GL_LUMINANCE8, GL2.GL_LUMINANCE8, GL2.GL_LUMINANCE12, GL2.GL_LUMINANCE12, GL2.GL_LUMINANCE12, GL2.GL_LUMINANCE12, GL2.GL_LUMINANCE16, GL2.GL_LUMINANCE16, GL2.GL_LUMINANCE16, GL2.GL_LUMINANCE16 };
 
-    /**
-     * Sets whether non power of two textures should be used.
-     * 
-     * If non power of two textures are deactivated, they are simulated by using
-     * parts of power of two textures. On some architectures, this is faster,
-     * some architectures do not even support non power of two textures. In any
-     * case, the memory use is higher for power of two textures.
-     * 
-     * @param nonPowerOfTwo
-     *            true for using non power of two textures, false otherwise.
-     * @see #textureNonPowerOfTwoAvailable()
-     */
-    public static void setTextureNonPowerOfTwo(boolean nonPowerOfTwo) {
-        if (nonPowerOfTwo != textureNonPowerOfTwo) {
-            if (nonPowerOfTwo)
-                textureImplementation = new NonPowerOfTwoTextureImplementation();
-            else
-                textureImplementation = new PowerOfTwoTextureImplementation();
-        }
-
-        textureNonPowerOfTwo = nonPowerOfTwo;
-    }
 
     /**
      * Returns whether non power of two textures are activated.
@@ -106,15 +84,8 @@ public class GLTextureHelper {
     public static void initHelper(GL2 gl) {
         Log.debug(">> GLTextureHelper.initHelper(GL) > Initialize helper functions");
         
-        if (textureImplementation == null) {
-            Log.debug(">> GLTextureHelper.initHelper(GL) > Use Non-Power-Of-Two-Textures: " + textureNonPowerOfTwoAvailable());
-
-            if (textureNonPowerOfTwoAvailable())
-                textureImplementation = new NonPowerOfTwoTextureImplementation();
-            else
-                textureImplementation = new PowerOfTwoTextureImplementation();
-        }
-
+        textureImplementation = new PowerOfTwoTextureImplementation();
+        
         int tmp[] = new int[1];
         gl.glGetIntegerv(GL2.GL_MAX_TEXTURE_SIZE, tmp, 0);
         maxTextureSize = tmp[0];
@@ -826,62 +797,6 @@ public class GLTextureHelper {
          *            area of the frame buffer to copy
          */
         public void copyFrameBufferToTexture(GL2 gl, int texture, Rectangle rect);
-    }
-
-    /**
-     * Implementation of Texture Loader for non power of two textures.
-     */
-    private static class NonPowerOfTwoTextureImplementation implements TextureImplementation {
-
-        /**
-         * {@inheritDoc}
-         */
-        public void genTexture1D(GL2 gl, int texID, int internalFormat, int width, int inputFormat, int inputType, Buffer buffer) {
-
-            gl.glBindTexture(GL2.GL_TEXTURE_1D, texID);
-
-            gl.glTexImage1D(GL2.GL_TEXTURE_1D, 0, internalFormat, width, 0, inputFormat, inputType, buffer);
-
-            gl.glTexParameteri(GL2.GL_TEXTURE_1D, GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_LINEAR);
-            gl.glTexParameteri(GL2.GL_TEXTURE_1D, GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_NEAREST);
-            gl.glTexParameteri(GL2.GL_TEXTURE_1D, GL2.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void genTexture2D(GL2 gl, int texID, int internalFormat, int width, int height, int inputFormat, int inputType, Buffer buffer) {
-
-            gl.glBindTexture(GL2.GL_TEXTURE_2D, texID);
-            gl.glTexImage2D(GL2.GL_TEXTURE_2D, 0, internalFormat, width, height, 0, inputFormat, inputType, buffer);
-
-            gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_LINEAR);
-            gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_NEAREST);
-            gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP);
-            gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void bindTexture(GL2 gl, int texture) {
-            gl.glBindTexture(GL.GL_TEXTURE_2D, texture);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void bindTexture(GL2 gl, int target, int texture) {
-            gl.glBindTexture(target, texture);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void copyFrameBufferToTexture(GL2 gl, int texture, Rectangle rect) {
-            gl.glCopyTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, rect.x, rect.y, rect.width, rect.height, 0);
-        }
-
     }
 
     /**

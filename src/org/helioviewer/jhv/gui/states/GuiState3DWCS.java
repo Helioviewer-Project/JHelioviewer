@@ -9,7 +9,6 @@ import javax.swing.JTabbedPane;
 import org.helioviewer.base.logging.Log;
 import org.helioviewer.gl3d.gui.GL3DCameraMouseController;
 import org.helioviewer.gl3d.gui.GL3DCameraSelectorModel;
-import org.helioviewer.gl3d.gui.GL3DTopToolBar;
 import org.helioviewer.gl3d.view.GL3DCameraView;
 import org.helioviewer.gl3d.view.GL3DComponentView;
 import org.helioviewer.gl3d.view.GL3DLayeredView;
@@ -32,7 +31,6 @@ import org.helioviewer.viewmodel.view.LayeredView;
 import org.helioviewer.viewmodel.view.MetaDataView;
 import org.helioviewer.viewmodel.view.MovieView;
 import org.helioviewer.viewmodel.view.SubimageDataView;
-import org.helioviewer.viewmodel.view.SynchronizeView;
 import org.helioviewer.viewmodel.view.View;
 import org.helioviewer.viewmodel.view.jp2view.JP2View;
 import org.helioviewer.viewmodel.view.opengl.GLFilterView;
@@ -79,9 +77,6 @@ public class GuiState3DWCS implements State {
         GL3DCameraSelectorModel.getInstance().activate(this.mainComponentView.getAdapter(GL3DSceneGraphView.class));
     }
 
-    public void deactivate() {
-        getMainComponentView().deactivate();
-    }
 
     public void createViewChains() {
         Log.info("Start creating view chains");
@@ -121,7 +116,7 @@ public class GuiState3DWCS implements State {
 
     public TopToolBar getTopToolBar() {
         if (topToolBar == null) {
-            topToolBar = new GL3DTopToolBar();
+            topToolBar = new TopToolBar();
         }
         return topToolBar;
     }

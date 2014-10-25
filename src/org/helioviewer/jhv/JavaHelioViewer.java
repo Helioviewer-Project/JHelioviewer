@@ -45,26 +45,6 @@ import com.jogamp.common.jvm.JNILibLoaderBase;
  */
 public class JavaHelioViewer {
 
-    static class JoglLoaderDummy implements JNILibLoaderBase.LoaderAction {
-
-        public boolean loadLibrary(String arg0, boolean arg1) {
-            return true;
-        }
-
-        public void loadLibrary(String arg0, String[] arg1, boolean arg2) {
-        }
-
-		@Override
-		public boolean loadLibrary(String arg0, boolean arg1, ClassLoader arg2) {
-			return false;
-		}
-
-		@Override
-		public void loadLibrary(String arg0, String[] arg1, boolean arg2,
-				ClassLoader arg3) {
-		}
-    }
-
     public static void main(String[] args) {
     	
         // Prints the usage message
@@ -229,29 +209,6 @@ public class JavaHelioViewer {
         splash.nextStep();
         splash.setProgressText("Loading OpenGL libraries...");
 
-        /*
-        // Has to run in EventQueue due to bug in NVidia Driver 260.99
-        try {
-            EventQueue.invokeAndWait(new Runnable() {
-
-                public void run() {
-                    Log.info("Try to load OpenGL libraries");
-
-                    if (null == ResourceLoader.getSingletonInstance().loadResource("jogl2", finalLibsRemote, finalLibs, finalLibs, finalLibsBackup, System.getProperties())) {
-                        Log.error("Could not load OpenGL libraries");
-                        Message.err("Error loading OpenGL libraries", "The OpenGL libraries could not be loaded. JHelioviewer will run in software mode.", false);
-                        GLInfo.glUnusable();
-                    } else {
-                        System.setProperty("jogamp.gluegen.UseTempJarCache", "false");
-                        JNILibLoaderBase.setLoadingAction(new JoglLoaderDummy());
-                        Log.info("Successfully loaded OpenGL libraries");
-                    }
-                }
-            });
-        } catch (Exception e1) {
-            e1.printStackTrace();
-        }
-	 	*/
         Log.info("Try to install CG Compiler");
         if (null == ResourceLoader.getSingletonInstance().loadResource("cgc", libsRemote, libs, libs, libsBackup, System.getProperties())) {
             Log.error("Could not install CG Compiler");
@@ -259,19 +216,6 @@ public class JavaHelioViewer {
             GLInfo.glUnusable();
         } else {
             Log.info("Successfully installed CG Compiler");
-        }
-
-        /* ----------Setup FFmpeg ----------- */
-
-        splash.nextStep();
-        splash.setProgressText("Initializing FFmpeg...");
-        // Load/download xuggler
-        Log.info("Install FFmpeg");
-        if (null == ResourceLoader.getSingletonInstance().loadResource("ffmpeg-2-1", libsRemote, libs, libs, libsBackup, System.getProperties())) {
-            Log.error("Error installing FFmpeg");
-            Message.err("Error installing FFmpeg", "Could not install FFmpeg excutable. Movie export will not work.", false);
-        } else {
-            Log.info("Successfully installed FFmpeg executable");
         }
 
         splash.nextStep();
@@ -285,9 +229,6 @@ public class JavaHelioViewer {
             Log.info("Successfully installed MP4Box tool");
         }
 
-        // This code updates the ImageViewer
-        Log.info("Initialize GUI");
-        ImageViewerGui.getSingletonInstance().updateComponents();
 
         // Check for updates in parallel, if newer version is available a small
         // message is displayed
@@ -353,6 +294,8 @@ public class JavaHelioViewer {
         splash.nextStep();
         // Create main view chain and display main window
         Log.info("Start main window");
-        splash.initializeViewchain();
+        //splash.initializeViewchain();
+		ImageViewerGui.getSingletonInstance().createViewchains();
+
     }
 };

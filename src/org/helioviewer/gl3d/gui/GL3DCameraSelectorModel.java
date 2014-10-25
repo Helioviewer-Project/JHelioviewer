@@ -36,7 +36,7 @@ import org.helioviewer.viewmodel.view.View;
  * @author Simon Sp�rri (simon.spoerri@fhnw.ch)
  * 
  */
-public class GL3DCameraSelectorModel extends AbstractListModel<Object> implements ComboBoxModel<Object>, LayersListener {
+public class GL3DCameraSelectorModel extends AbstractListModel implements ComboBoxModel, LayersListener {
 	
 	
 	private static final long serialVersionUID = 1L;

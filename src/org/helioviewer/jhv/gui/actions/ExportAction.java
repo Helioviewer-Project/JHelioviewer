@@ -21,9 +21,9 @@ import org.helioviewer.jhv.gui.dialogs.ExportMovieSettingsDialog;
 import org.helioviewer.jhv.gui.states.StateController;
 import org.helioviewer.viewmodel.view.LinkedMovieManager;
 
-public class ExportTestAction extends AbstractAction{
+public class ExportAction extends AbstractAction{
 	  
-	public ExportTestAction() {
+	public ExportAction() {
 	        super("Export movie ..");
 	        putValue(SHORT_DESCRIPTION, "Export a movie to a file");
 	        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_E, KeyEvent.SHIFT_DOWN_MASK | Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));

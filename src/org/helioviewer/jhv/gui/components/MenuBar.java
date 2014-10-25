@@ -14,7 +14,7 @@ import org.helioviewer.gl3d.gui.GL3DZoomOutAction;
 import org.helioviewer.jhv.gui.actions.CheckUpdateAction;
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 import org.helioviewer.jhv.gui.actions.ExportSettingsAction;
-import org.helioviewer.jhv.gui.actions.ExportTestAction;
+import org.helioviewer.jhv.gui.actions.ExportAction;
 import org.helioviewer.jhv.gui.actions.LoadStateAction;
 import org.helioviewer.jhv.gui.actions.OpenLocalFileAction;
 import org.helioviewer.jhv.gui.actions.OpenURLinBrowserAction;
@@ -71,7 +71,7 @@ public class MenuBar extends JMenuBar {
         //fileMenu.add(new ShowDialogAction("Export Movie...", ExportMovieDialog.class));
         
         //JMenu movieExport = new JMenu("Export Movie...");
-        fileMenu.add(new ExportTestAction());
+        fileMenu.add(new ExportAction());
         //fileMenu.add(movieExport);
         // VSO Export - DEACTIVATED FOR NOW
         // fileMenu.addSeparator();

@@ -35,7 +35,6 @@ import org.helioviewer.jhv.gui.components.MainContentPanel;
 import org.helioviewer.jhv.gui.components.MainImagePanel;
 import org.helioviewer.jhv.gui.components.MenuBar;
 import org.helioviewer.jhv.gui.components.MoviePanel;
-import org.helioviewer.jhv.gui.components.OverviewImagePanel;
 import org.helioviewer.jhv.gui.components.QualitySpinner;
 import org.helioviewer.jhv.gui.components.SideContentPane;
 import org.helioviewer.jhv.gui.components.StatusPanel;
@@ -75,6 +74,8 @@ import org.helioviewer.viewmodel.view.View;
 import org.helioviewer.viewmodel.view.opengl.GLLayeredView;
 import org.helioviewer.viewmodelplugin.filter.FilterTabPanelManager;
 
+import com.jogamp.opengl.swt.GLCanvas;
+
 /**
  * A class that sets up the graphical user interface.
  * 
@@ -91,9 +92,6 @@ public class ImageViewerGui {
 	/** The sole instance of this class. */
 	private static final ImageViewerGui singletonImageViewer = new ImageViewerGui();
 
-	// private ComponentView mainComponentView;
-	// private ComponentView overviewComponentView;
-
 	private static JFrame mainFrame;
 	private JPanel contentPanel;
 	private JSplitPane midSplitPane;
@@ -102,15 +100,6 @@ public class ImageViewerGui {
 	private MainContentPanel mainContentPanel;
 	protected MainImagePanel mainImagePanel;
 
-	// private GL3DTopToolBar topToolBar;
-	// private JPanel mainImagePanel;
-	// private OverviewImagePanel overviewImagePanel;
-	// private SideContentPane leftPane;
-	// private ImageSelectorPanel imageSelectorPanel;
-	// private ControlPanelContainer moviePanelContainer;
-	// private ControlPanelContainer filterPanelContainer;
-
-	//private OverviewImagePanel overviewImagePanel;
 	private SideContentPane leftPane;
 	private RenderModeStatusPanel renderModeStatus;
 	private ImageSelectorPanel imageSelectorPanel;
@@ -118,8 +107,6 @@ public class ImageViewerGui {
 	private ControlPanelContainer moviePanelContainer;
 	private ControlPanelContainer filterPanelContainer;
 	private JMenuBar menuBar;
-
-	// private SolarEventCatalogsPanel solarEventCatalogsPanel;
 
 	public static final int SIDE_PANEL_WIDTH = 320;
 	public static final int SIDE_PADDING = 10;
@@ -144,7 +131,6 @@ public class ImageViewerGui {
 	}
 
 	public void prepareGui() {
-		if (contentPanel == null) {
 			contentPanel = new JPanel(new BorderLayout());
 			mainFrame.setContentPane(contentPanel);
 
@@ -207,32 +193,6 @@ public class ImageViewerGui {
 			contentPanel.add(statusPanel, BorderLayout.PAGE_END);
 
 			renderModeStatus.updateStatus();
-		}
-
-		// ///////////////////////////////////////////////////////////////////////////////
-		// STATUS PANEL
-		// ///////////////////////////////////////////////////////////////////////////////
-		// ZoomStatusPanel zoomStatusPanel = new ZoomStatusPanel();
-		// QualityStatusPanel qualityStatusPanel = new QualityStatusPanel();
-		// FramerateStatusPanel framerateStatus = new FramerateStatusPanel();
-		// PositionStatusPanel positionStatusPanel = new
-		// PositionStatusPanel(mainImagePanel);
-		// MetaDataStatusPanel jhvXMLStatusPanel = new MetaDataStatusPanel();
-		// renderModeStatus = new RenderModeStatusPanel();
-		// JPIPStatusPanel jpipStatusPanel = new JPIPStatusPanel();
-		//
-		// StatusPanel statusPanel = new StatusPanel(SIDE_PANEL_WIDTH + 20, 5);
-		// statusPanel.addPlugin(zoomStatusPanel, StatusPanel.Alignment.LEFT);
-		// statusPanel.addPlugin(qualityStatusPanel,
-		// StatusPanel.Alignment.LEFT);
-		// statusPanel.addPlugin(framerateStatus, StatusPanel.Alignment.LEFT);
-		// statusPanel.addPlugin(renderModeStatus, StatusPanel.Alignment.RIGHT);
-		// statusPanel.addPlugin(jhvXMLStatusPanel,
-		// StatusPanel.Alignment.RIGHT);
-		// statusPanel.addPlugin(jpipStatusPanel, StatusPanel.Alignment.RIGHT);
-		// statusPanel.addPlugin(positionStatusPanel,
-		// StatusPanel.Alignment.RIGHT);
-		// contentPanel.add(statusPanel, BorderLayout.PAGE_END);
 	}
 
 	/**
@@ -272,17 +232,36 @@ public class ImageViewerGui {
 		thread.start();
 	}
 
-	/*
-	 * public boolean viewchainCreated() { return mainComponentView != null; }
-	 */
-
 	/**
 	 * Initializes the main and overview view chain.
 	 */
 	public void createViewchains() {
-		this.activateState(StateController.getInstance().getCurrentState(), null);
+		//this.activateState(StateController.getInstance().getCurrentState(), null);
+		GuiState3DWCS state = StateController.getInstance().getCurrentState();
+		
+		state.createViewChains();
+
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				TopToolBar toolBar = StateController.getInstance().getCurrentState().getTopToolBar();
+				toolBar.setDisplayMode(null);
+				contentPanel.add(toolBar, BorderLayout.PAGE_START);
+			}
+		});
+
+		state.addStateSpecificComponents(getLeftContentPane());
+		// prepare gui again
+		updateComponentPanels();
+		mainImagePanel.setInputController(state.getDefaultInputController());
+
+		mainFrame.validate();
+
+		state.activate();		
+
+		
 		packAndShow(true);
 		mainFrame.validate();
+		mainFrame.repaint();
 	}
 
 	/**
@@ -350,22 +329,6 @@ public class ImageViewerGui {
 		} else {
 			leftPane = new SideContentPane();
 
-			/*
-			// create overview image panel instance
-			overviewImagePanel = new OverviewImagePanel();
-
-			// set up the overview image panel
-			overviewImagePanel.setAutoscrolls(true);
-			overviewImagePanel.setPreferredSize(new Dimension(175, 175));
-			overviewImagePanel.setFocusable(false);
-
-			JPanel overviewImagePanelContainer = new JPanel();
-			overviewImagePanelContainer.setLayout(new BoxLayout(
-					overviewImagePanelContainer, BoxLayout.Y_AXIS));
-			overviewImagePanelContainer.add(overviewImagePanel);
-
-			leftPane.add("Overview", overviewImagePanelContainer, true);
-			*/
 			// Movie control
 			moviePanelContainer = new ControlPanelContainer();
 			this.moviePanel = new MoviePanel();
@@ -473,14 +436,7 @@ public class ImageViewerGui {
 	 * @param stateEnum
 	 */
 	private void activateState(final State newState, State oldState) {
-		if (oldState != null) {
-			this.moviePanel.setPlaying(false, true);
-			oldState.deactivate();
-			oldState.removeStateSpecificComponents(getLeftContentPane());
-			this.contentPanel.remove(oldState.getTopToolBar());
-			this.mainImagePanel.removeAll();// (this.getMainView().getComponent());
 
-		}
 		newState.createViewChains();
 
 		SwingUtilities.invokeLater(new Runnable() {
@@ -491,25 +447,14 @@ public class ImageViewerGui {
 			}
 		});
 
-		renderModeStatus.updateStatus();
 		newState.addStateSpecificComponents(getLeftContentPane());
 		// prepare gui again
 		updateComponentPanels();
 		mainImagePanel.setInputController(newState.getDefaultInputController());
-		newState.getMainComponentView().activate();
 
 		mainFrame.validate();
 
-		/*
-		if (newState.isOverviewPanelInteractionEnabled())
-			overviewImagePanel.enableInteraction();
-		else
-			overviewImagePanel.disableInteraction();
-		*/
-
-		newState.activate();
-		
-
+		newState.activate();		
 	}
 
 	private void updateComponentPanels() {
@@ -520,12 +465,6 @@ public class ImageViewerGui {
 		mainFrame.validate();
 	}
 
-	/*
-	 * public void changeState(ViewStateEnum stateEnum) {
-	 * if(stateEnum==this.currentState.getType()) {
-	 * Log.debug("No State Change required, already in requested Gui State");
-	 * return; } this.activateState(stateEnum); }
-	 */
 
 	/**
 	 * Loads the images which have to be displayed when the program starts.

@@ -9,6 +9,7 @@ import org.helioviewer.base.JavaCompatibility;
 import org.helioviewer.base.logging.Log;
 import org.helioviewer.base.math.Vector2dDouble;
 import org.helioviewer.base.math.Vector2dInt;
+import org.helioviewer.jhv.gui.states.StateController;
 import org.helioviewer.viewmodel.imagedata.ImageData;
 import org.helioviewer.viewmodel.metadata.MetaData;
 import org.helioviewer.viewmodel.region.Region;
@@ -189,7 +190,6 @@ public final class ViewHelper {
         double screenMeterPerPixel;
         double screenSubImageWidth;
         double screenSubImageHeight;
-
         // fit region of interest into viewport
         if ((double) v.getWidth() / (double) v.getHeight() > r.getWidth() / r.getHeight()) {
             screenMeterPerPixel = r.getHeight() / v.getHeight();

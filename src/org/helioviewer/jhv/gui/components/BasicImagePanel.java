@@ -184,7 +184,7 @@ public class BasicImagePanel extends JPanel implements ComponentListener, ViewLi
         metaDataView = ViewHelper.getViewAdapter(componentView, MetaDataView.class);
 
         if (componentView != null) {
-            renderedImageComponent = componentView.getComponent();
+        	renderedImageComponent = componentView.getComponent();
             add(renderedImageComponent);
 
             componentView.addViewListener(this);
