@@ -164,20 +164,16 @@ public class ZoomController {
 
 	public static double getZoom(View view, Region outerRegion,
 			Viewport viewport) {
-		JHVJP2View regionView = view.getAdapter(JHVJP2View.class);
+		RegionView regionView = view.getAdapter(RegionView.class);
 		MetaDataView metaDataView = view.getAdapter(MetaDataView.class);
 		if (regionView != null && metaDataView != null) {
 			double unitsPerPixel = view.getAdapter(MetaDataView.class)
 					.getMetaData().getUnitsPerPixel();
-			Region imageRegion = ((JHVJP2View) regionView).getNewestRegion();
-
-			Region region = StateController.getInstance().getCurrentState()
-					.getMainComponentView().getAdapter(RegionView.class)
-					.getRegion();
-
-			if (region != null && imageRegion != null) {
-				double zoom = (StateController.getInstance().getCurrentState()
-						.getMainComponentView().getCanavasSize().getWidth() * unitsPerPixel)
+			Region imageRegion = regionView.getRegion();
+			double imageSolution = StateController.getInstance().getCurrentState()
+					.getMainComponentView().getCanavasSize().getWidth() * unitsPerPixel;
+			if (imageRegion != null) {
+				double zoom = imageSolution
 						/ imageRegion.getWidth();
 
 				return zoom;

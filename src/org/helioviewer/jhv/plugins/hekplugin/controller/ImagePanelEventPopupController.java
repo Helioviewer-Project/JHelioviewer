@@ -230,6 +230,7 @@ public class ImagePanelEventPopupController implements ImagePanelPlugin, MouseLi
       	
       	GL3DComponentView gl3dview = (GL3DComponentView)view;
       	GL3DSceneGraphView scenegraphview = (GL3DSceneGraphView)gl3dview.getView();
+      	if (GL3DState.get() != null && GL3DState.get().getActiveCamera() != null){
       	GL3DRayTracer rayTracer = new GL3DRayTracer(scenegraphview.getHitReferenceShape(), GL3DState.get().getActiveCamera());
       	GL3DRay ray = null;
       	
@@ -277,6 +278,7 @@ public class ImagePanelEventPopupController implements ImagePanelPlugin, MouseLi
                 imagePanel.setCursor(lastCursor);
             }
         }
+      	}
     }
 
     /**

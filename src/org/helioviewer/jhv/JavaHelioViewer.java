@@ -22,7 +22,9 @@ import org.helioviewer.jhv.internal_plugins.InternalFilterPlugin;
 import org.helioviewer.jhv.io.CommandLineProcessor;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.opengl.GLInfo;
+import org.helioviewer.jhv.plugins.hekplugin.HEKPlugin3D;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
+import org.helioviewer.jhv.plugins.sdocutoutplugin.SDOCutOutPlugin3D;
 import org.helioviewer.jhv.resourceloader.ResourceLoader;
 import org.helioviewer.jhv.resourceloader.SystemProperties;
 import org.helioviewer.viewmodel.view.jp2view.JP2Image;
@@ -283,9 +285,7 @@ public class JavaHelioViewer {
         Plugin internalPlugin = new InternalFilterPlugin();
         PluginManager.getSingeltonInstance().addInternalPlugin(internalPlugin.getClass().getClassLoader(), internalPlugin);
 
-        
-        //TODO: reenable HEK & SDO Cutout plugins
-        for(Plugin plugin:new Plugin[]{new PfssPlugin(true) /*, new HEKPlugin3D(true), new SDOCutOutPlugin3D()*/})
+        for(Plugin plugin:new Plugin[]{new PfssPlugin(true) , new HEKPlugin3D(true), new SDOCutOutPlugin3D()})
           	PluginManager.getSingeltonInstance().addPlugin(plugin.getClass().getClassLoader(), plugin, null);
 
         splash.setProgressText("Displaying main window...");

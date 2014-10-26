@@ -40,13 +40,17 @@ import org.helioviewer.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.viewmodel.changeevent.LayerChangedReason;
 import org.helioviewer.viewmodel.changeevent.LayerChangedReason.LayerChangeType;
 import org.helioviewer.viewmodel.changeevent.ViewChainChangedReason;
+import org.helioviewer.viewmodel.metadata.MetaData;
+import org.helioviewer.viewmodel.region.Region;
 import org.helioviewer.viewmodel.renderer.screen.GLScreenRenderGraphics;
 import org.helioviewer.viewmodel.renderer.screen.ScreenRenderer;
 import org.helioviewer.viewmodel.view.AbstractBasicView;
 import org.helioviewer.viewmodel.view.ComponentView;
 import org.helioviewer.viewmodel.view.LinkedMovieManager;
+import org.helioviewer.viewmodel.view.MetaDataView;
 import org.helioviewer.viewmodel.view.RegionView;
 import org.helioviewer.viewmodel.view.View;
+import org.helioviewer.viewmodel.view.ViewHelper;
 import org.helioviewer.viewmodel.view.ViewListener;
 import org.helioviewer.viewmodel.view.ViewportView;
 import org.helioviewer.viewmodel.view.opengl.GLTextureHelper;
@@ -59,6 +63,7 @@ import org.helioviewer.viewmodel.view.opengl.shader.GLShaderHelper;
 import org.helioviewer.viewmodel.view.opengl.shader.GLVertexShaderView;
 import org.helioviewer.viewmodel.viewport.StaticViewport;
 import org.helioviewer.viewmodel.viewport.Viewport;
+import org.helioviewer.viewmodel.viewportimagesize.ViewportImageSize;
 
 import com.jogamp.opengl.util.awt.ImageUtil;
 
@@ -322,32 +327,23 @@ public class GL3DComponentView extends AbstractBasicView implements
 		gl.glFrustum(-fW, fW, -fH, fH, clipNear, clipFar);
 		
 		else {
-			this.getAdapter(RegionView.class).getRegion();
+			Region region = this.getAdapter(RegionView.class).getRegion();
+			MetaData metaData = null;
+			if (LayersModel.getSingletonInstance().getActiveView() != null){
+				metaData = LayersModel.getSingletonInstance().getActiveView().getAdapter(MetaDataView.class).getMetaData();
+				region = metaData.getPhysicalRegion();
+
+			}
 			GL3DCamera camera = this.getAdapter(GL3DCameraView.class).getCurrentCamera();
 			double scaleFactor = camera.getZTranslation() / -1.0054167950116766E10 - 0.1;
-			gl.glOrtho(-1182667503.408581*scaleFactor, (1182667503.408581)*scaleFactor, -879625716.820895*scaleFactor, (879625716.820894)*scaleFactor, clipNear, clipFar);
+			double top = region.getCornerX();
+			double bottom = region.getCornerX()+region.getWidth();
+	        gl.glOrtho(top*aspect*scaleFactor, bottom*aspect*scaleFactor, top*scaleFactor, bottom*scaleFactor, clipNear, clipFar);
 		}
 
-		// GLU glu = new GLU();
-		// glu.gluPerspective(this.fov, this.aspect, this.clipNear,
-		// this.clipFar);
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
-		// this.aspect = width / height;
-		// tileRenderer.trPerspective(this.fov, this.aspect, this.clipNear,
-		// this.clipFar);
-
-		// gl.glClearColor(outsideViewportColor.getRed() / 255.0f,
-		// outsideViewportColor.getGreen() / 255.0f,
-		// outsideViewportColor.getBlue() / 255.0f,
-		// outsideViewportColor.getAlpha() / 255.0f);
-
-		// ViewportImageSize viewportImageSize =
-		// ViewHelper.calculateViewportImageSize(view);
 
 		displayBody(gl);
-
-		//canvas.getContext().release();
-
 	}
 
 	private void displayBody(GL2 gl) {
