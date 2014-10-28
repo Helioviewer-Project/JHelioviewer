@@ -1,11 +1,12 @@
-package org.helioviewer.gl3d.plugin.pfss.data;
+package org.helioviewer.gl3d.plugin.pfss.olddata;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-import org.helioviewer.gl3d.plugin.pfss.data.dataStructure.PfssDayAndTime;
-import org.helioviewer.gl3d.plugin.pfss.data.dataStructure.PfssYear;
-import org.helioviewer.gl3d.plugin.pfss.data.PfssFitsFile;
+import org.helioviewer.gl3d.plugin.pfss.data.managers.PfssDataLoader;
+import org.helioviewer.gl3d.plugin.pfss.olddata.PfssFitsFile;
+import org.helioviewer.gl3d.plugin.pfss.olddata.dataStructure.PfssDayAndTime;
+import org.helioviewer.gl3d.plugin.pfss.olddata.dataStructure.PfssYear;
 import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
 /**
  * Datastructur to cache the Pfss-Data with preload function

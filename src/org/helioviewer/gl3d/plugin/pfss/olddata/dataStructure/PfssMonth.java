@@ -1,4 +1,4 @@
-package org.helioviewer.gl3d.plugin.pfss.data.dataStructure;
+package org.helioviewer.gl3d.plugin.pfss.olddata.dataStructure;
 
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;

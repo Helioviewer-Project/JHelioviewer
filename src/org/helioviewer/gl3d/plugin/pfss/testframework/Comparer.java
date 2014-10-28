@@ -2,6 +2,10 @@ package org.helioviewer.gl3d.plugin.pfss.testframework;
 
 import java.util.ArrayList;
 
+/**
+ * Comparer class to compare raw and lossy compressed data
+ * @author Jonas Schwammberger
+ */
 public class Comparer {
 
 	public ArrayList<ArrayList<Double>> compare(ArrayList<Line> raw, ArrayList<Line> compressed) {
@@ -40,6 +44,13 @@ public class Comparer {
 		return cross.magnitude()/lineVector.magnitude();
 	}
 	
+	/**
+	 * minimum heuristic. Should work for all sinus-like curves
+	 * @param raw
+	 * @param p
+	 * @param startIndex
+	 * @return
+	 */
 	private MinLine getMinimum(Line raw, Point p, int startIndex) {
 		MinLine min = new MinLine();
 		

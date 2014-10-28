@@ -1,4 +1,4 @@
-package org.helioviewer.gl3d.plugin.pfss.data;
+package org.helioviewer.gl3d.plugin.pfss.olddata;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;

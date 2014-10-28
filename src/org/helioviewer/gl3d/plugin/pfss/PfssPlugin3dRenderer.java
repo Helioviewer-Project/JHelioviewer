@@ -3,9 +3,9 @@ package org.helioviewer.gl3d.plugin.pfss;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
-import org.helioviewer.gl3d.plugin.pfss.data.PfssCache;
-import org.helioviewer.gl3d.plugin.pfss.data.PfssDataOld;
-import org.helioviewer.gl3d.plugin.pfss.data.PfssFitsFile;
+import org.helioviewer.gl3d.plugin.pfss.olddata.PfssCache;
+import org.helioviewer.gl3d.plugin.pfss.olddata.PfssDataOld;
+import org.helioviewer.gl3d.plugin.pfss.olddata.PfssFitsFile;
 import org.helioviewer.gl3d.scenegraph.GL3DState;
 import org.helioviewer.viewmodel.renderer.physical.PhysicalRenderGraphics;
 import org.helioviewer.viewmodel.renderer.physical.PhysicalRenderer3d;

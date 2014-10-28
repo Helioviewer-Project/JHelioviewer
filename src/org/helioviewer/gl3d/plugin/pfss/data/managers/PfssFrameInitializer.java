@@ -1,10 +1,12 @@
-package org.helioviewer.gl3d.plugin.pfss.data;
+package org.helioviewer.gl3d.plugin.pfss.data.managers;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.media.opengl.GL;
+
+import org.helioviewer.gl3d.plugin.pfss.data.PfssFrame;
 
 /**
  * Responsible for initializing a frame which was loaded into memory asynchronously.

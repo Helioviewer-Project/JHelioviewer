@@ -1,4 +1,4 @@
-package org.helioviewer.gl3d.plugin.pfss.data;
+package org.helioviewer.gl3d.plugin.pfss.data.managers;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -6,10 +6,12 @@ import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.helioviewer.gl3d.plugin.pfss.data.FileDescriptor;
+import org.helioviewer.gl3d.plugin.pfss.data.PfssData;
 import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
 
 /**
- * Responsible for creating PfssData objects. This Class will load PfssData objects asynchronously
+ * Responsible for creating PfssData objects. The PfssData objects will load asynchronously
  * 
  * @author Jonas Schwammberger
  *

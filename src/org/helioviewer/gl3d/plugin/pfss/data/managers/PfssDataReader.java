@@ -1,4 +1,4 @@
-package org.helioviewer.gl3d.plugin.pfss.data;
+package org.helioviewer.gl3d.plugin.pfss.data.managers;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -11,6 +11,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.helioviewer.base.physics.Constants;
+import org.helioviewer.gl3d.plugin.pfss.data.FileDescriptor;
+import org.helioviewer.gl3d.plugin.pfss.data.PfssData;
+import org.helioviewer.gl3d.plugin.pfss.data.PfssFrame;
 
 import com.jogamp.common.nio.Buffers;
 

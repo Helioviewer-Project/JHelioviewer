@@ -21,7 +21,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 
 import org.helioviewer.base.logging.Log;
-import org.helioviewer.gl3d.plugin.pfss.data.PfssCache;
+import org.helioviewer.gl3d.plugin.pfss.olddata.PfssCache;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;

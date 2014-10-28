@@ -1,4 +1,4 @@
-package org.helioviewer.gl3d.plugin.pfss.data;
+package org.helioviewer.gl3d.plugin.pfss.data.managers;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import org.helioviewer.gl3d.plugin.pfss.data.FileDescriptor;
 import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
 
 
