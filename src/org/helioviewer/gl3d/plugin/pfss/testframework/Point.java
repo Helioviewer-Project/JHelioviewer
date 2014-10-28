@@ -45,7 +45,7 @@ public class Point {
 	}
 	
 	public double distanceTo(Point p) {
-		return (getVector(this,p)).magnitude();
+		return getVector(this,p).magnitude();
 	}
 	
 	public double magnitude() {

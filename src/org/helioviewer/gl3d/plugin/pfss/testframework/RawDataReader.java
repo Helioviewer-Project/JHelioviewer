@@ -25,6 +25,10 @@ public class RawDataReader {
 		this.readFits(filePath);
 	}
 	
+	public ArrayList<Line> getLines() {
+		return lines;
+	}
+	
 	private void readFits(String filePath) {
 			InputStream is = null;
 			try {
