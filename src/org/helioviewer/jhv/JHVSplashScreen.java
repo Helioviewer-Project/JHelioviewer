@@ -89,9 +89,25 @@ public class JHVSplashScreen extends JFrame implements StatusTextListener {
 		setUndecorated(true);
     setIconImage(IconBank.getIcon(JHVIcon.HVLOGO_SMALL).getImage());
 
-    // Didn't work on with jdk 1.6
-    //if(System.getProperty("os.name").startsWith("Windows"))
-      //setType(java.awt.Window.Type.UTILITY);
+    if(isWindows())
+      setType(java.awt.Window.Type.UTILITY);
+	}
+	
+	private boolean isWindows()
+	{
+	  //should work, no matter what os/jdk release
+	  try
+	  {
+  	  String os=System.getProperty("os.name");
+  	  if(os==null)
+  	    return false;
+  	  
+  	  return os.startsWith("Windows");
+	  }
+	  catch(Exception _e)
+	  {
+	    return false;
+	  }
 	}
 
 	/**
