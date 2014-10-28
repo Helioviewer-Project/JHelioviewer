@@ -7,6 +7,10 @@ public class Point {
 	private float y;
 	private float z;
 	private int index;
+	
+	private short rawR;
+	private short rawPhi;
+	private short rawTheta;
 
 	public Point(float x, float y, float z) {
 		this.x = x;
@@ -21,6 +25,10 @@ public class Point {
 		double phi0 = ptph / 32768.0 * 2 * Math.PI;
 		double theta0 = ptth / 32768.0 * 2 * Math.PI;
 
+		this.rawR = ptr;
+		this.rawPhi = ptph;
+		this.rawTheta = ptth;
+		
 		phi0 -= l0 / 180.0 * Math.PI;
 		theta0 += b0 / 180.0 * Math.PI;
 		z = (float) (r0 * Math.sin(theta0) * Math.cos(phi0));
@@ -41,6 +49,20 @@ public class Point {
 		y = (float) (r0 * Math.cos(theta0));
 	}
 	
+	
+	
+	public short getRawR() {
+		return rawR;
+	}
+
+	public short getRawPhi() {
+		return rawPhi;
+	}
+
+	public short getRawTheta() {
+		return rawTheta;
+	}
+
 	public float getX() {
 		return x;
 	}
