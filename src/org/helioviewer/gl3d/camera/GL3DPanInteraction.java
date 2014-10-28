@@ -41,7 +41,9 @@ public class GL3DPanInteraction extends GL3DDefaultInteraction {
 	public void mousePressed(MouseEvent e, GL3DCamera camera) {
 		GL3DVec3d p = this.getHitPoint(e.getPoint());
 		if (p != null) {
-			this.z = camera.getZTranslation() + p.z;
+			this.z = camera.getZTranslation()
+					+ this.camera.getRotation().toMatrix().inverse()
+							.multiply(p).z;
 
 			Dimension canvasSize = StateController.getInstance()
 					.getCurrentState().getMainComponentView().getCanavasSize();
