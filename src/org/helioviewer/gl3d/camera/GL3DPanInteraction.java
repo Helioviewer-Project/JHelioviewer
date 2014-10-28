@@ -1,10 +1,14 @@
 package org.helioviewer.gl3d.camera;
 
+import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 
 import org.helioviewer.base.math.Vector2dDouble;
 import org.helioviewer.base.physics.Constants;
+import org.helioviewer.gl3d.scenegraph.math.GL3DVec3d;
+import org.helioviewer.gl3d.scenegraph.rt.GL3DRay;
+import org.helioviewer.gl3d.scenegraph.rt.GL3DRayTracer;
 import org.helioviewer.gl3d.view.GL3DSceneGraphView;
 import org.helioviewer.jhv.gui.states.StateController;
 import org.helioviewer.jhv.layers.LayersModel;
@@ -23,37 +27,83 @@ import org.helioviewer.viewmodel.viewport.Viewport;
  * 
  */
 public class GL3DPanInteraction extends GL3DDefaultInteraction {
-    private Point lastMousePoint;
-    private double meterPerPixel;
-    
-    protected GL3DPanInteraction(GL3DTrackballCamera camera, GL3DSceneGraphView sceneGraph) {
-        super(camera, sceneGraph);
-    }
-    
-    public void mousePressed(MouseEvent e, GL3DCamera camera) {
-        this.lastMousePoint = e.getPoint();
-        Region region = LayersModel.getSingletonInstance().getActiveView().getAdapter(RegionView.class).getRegion();
-        meterPerPixel = region.getHeight()/StateController.getInstance().getCurrentState().getMainComponentView().getCanavasSize().getWidth();
-    }
+	private double meterPerPixelWidth;
+	private double meterPerPixelHeight;
+	private double z;
+	private GL3DVec3d defaultTranslation;
+	private GL3DRayTracer rayTracer;
 
-    public void mouseDragged(MouseEvent e, GL3DCamera camera) {
-        int x = (e.getPoint().x - this.lastMousePoint.x);
-        int y = (e.getPoint().y - this.lastMousePoint.y);
-        if (sceneGraphView.getAdapter(RegionView.class).getRegion() != null) {
-            camera.translation.x += x * meterPerPixel;
-            camera.translation.y -= y * meterPerPixel;
-        } else {
-            camera.translation.x += x / 100.0 * Constants.SunRadius;
-            camera.translation.y -= y / 100.0 * Constants.SunRadius;
-        }
-        this.lastMousePoint = e.getPoint();
-        camera.updateCameraTransformation();
-        
-        camera.fireCameraMoving();
-    }
-    
-    @Override
-    public void mouseReleased(MouseEvent e, GL3DCamera camera) {
-    	camera.fireCameraMoved();
-    }
+	protected GL3DPanInteraction(GL3DTrackballCamera camera,
+			GL3DSceneGraphView sceneGraph) {
+		super(camera, sceneGraph);
+	}
+
+	public void mousePressed(MouseEvent e, GL3DCamera camera) {
+		GL3DVec3d p = this.getHitPoint(e.getPoint());
+		if (p != null) {
+			this.z = camera.getZTranslation() + p.z;
+
+			Dimension canvasSize = StateController.getInstance()
+					.getCurrentState().getMainComponentView().getCanavasSize();
+			double halfClipNearHeight = Math.tanh(Math.toRadians(camera
+					.getFOV() / 2)) * camera.getClipNear();
+			double halfClipNearWidth = halfClipNearHeight
+					/ canvasSize.getHeight() * canvasSize.getWidth();
+
+			meterPerPixelHeight = halfClipNearHeight * 2
+					/ (canvasSize.getHeight());
+			meterPerPixelWidth = halfClipNearWidth * 2
+					/ (canvasSize.getWidth());
+
+			double yMeterInNearPlane = (e.getY() - canvasSize.getHeight() / 2)
+					* meterPerPixelHeight;
+			double xMeterInNearPlane = (e.getX() - canvasSize.getWidth() / 2)
+					* meterPerPixelWidth;
+			double yAngle = Math.atan2(yMeterInNearPlane, camera.getClipNear());
+			double xAngle = Math.atan2(xMeterInNearPlane, camera.getClipNear());
+			double yPosition = Math.tanh(yAngle) * z;
+			double xPosition = Math.tanh(xAngle) * z;
+
+			this.defaultTranslation = camera.getTranslation().copy();
+			this.defaultTranslation.x += xPosition;
+			this.defaultTranslation.y -= yPosition;
+		}
+	}
+
+	public void mouseDragged(MouseEvent e, GL3DCamera camera) {
+		if (defaultTranslation != null) {
+			Dimension canvasSize = StateController.getInstance()
+					.getCurrentState().getMainComponentView().getCanavasSize();
+
+			double yMeterInNearPlane = (e.getY() - canvasSize.getHeight() / 2)
+					* meterPerPixelHeight;
+			double xMeterInNearPlane = (e.getX() - canvasSize.getWidth() / 2)
+					* meterPerPixelWidth;
+			double yAngle = Math.atan2(yMeterInNearPlane, camera.getClipNear());
+			double xAngle = Math.atan2(xMeterInNearPlane, camera.getClipNear());
+			double yPosition = Math.tanh(yAngle) * z;
+			double xPosition = Math.tanh(xAngle) * z;
+
+			camera.translation.x = defaultTranslation.x - xPosition;
+			camera.translation.y = defaultTranslation.y + yPosition;
+
+			camera.updateCameraTransformation();
+
+			camera.fireCameraMoving();
+		}
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e, GL3DCamera camera) {
+		camera.fireCameraMoved();
+	}
+
+	protected GL3DVec3d getHitPoint(Point p) {
+		this.rayTracer = new GL3DRayTracer(
+				sceneGraphView.getHitReferenceShape(), this.camera);
+		GL3DRay ray = this.rayTracer.cast(p.x, p.y);
+		GL3DVec3d hitPoint = ray.getHitPoint();
+		return hitPoint;
+	}
+
 }
