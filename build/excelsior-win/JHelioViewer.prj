@@ -1,0 +1,178 @@
+%%Excelsior JET v10.0 project file
+
+-compilewithfixedheap-
+-genstackalloc+
+-genstacktrace+
+-global+
+-gui+
+-ignoreclassduplication+
+-ignorememberabsence+
+-inline+
+-jetcpenablemanualsettings+
+-multiapp-
+-splashgetfrommanifest-
+
+-apptype=Plain
+-classabsence=HANDLE
+-compilerheap=1744830464
+-inlinelimit=100
+-inlinetolimit=500
+-jetcplastpage:=PageCompile
+-jetrt=Desktop
+-jetvmprop=-Djet.jit.disable.resolution -Djet.gc.heaplimit:0 -Djet.gc.ratio:50 -Djet.stack.trace
+-jpiiproject=C:\Users\de\Documents\EclipseWorkspace\JHelioViewer\build\excelsior-win\JHelioViewer.jpn
+-main=org/helioviewer/jhv/JavaHelioViewer
+-outputdir=.
+-outputname=JHelioviewer
+-saprofmode=ALWAYS
+-saproftimeout=10
+-stacklimit=900000
+-startupprofile=./JHelioViewer.startup
+
+
+
+
+!classpathentry ./../../bin
+  -pack=none
+  -protect=all
+  -optimize=all
+!end
+!classpathentry ./../../lib/bzip2.jar
+  -pack=noncompiled
+  -protect=nomatter
+  -optimize=autodetect
+!end
+!classpathentry ./../../lib/commons-cli-1.1.jar
+  -pack=noncompiled
+  -protect=nomatter
+  -optimize=autodetect
+!end
+!classpathentry ./../../lib/fits.jar
+  -pack=noncompiled
+  -protect=nomatter
+  -optimize=autodetect
+!end
+!classpathentry ./../../lib/forms-1.3.0.jar
+  -pack=noncompiled
+  -protect=nomatter
+  -optimize=autodetect
+!end
+!classpathentry ./../../lib/gluegen-rt-natives-linux-amd64.jar
+  -pack=noncompiled
+  -protect=nomatter
+  -optimize=autodetect
+!end
+!classpathentry ./../../lib/gluegen-rt-natives-linux-i586.jar
+  -pack=noncompiled
+  -protect=nomatter
+  -optimize=autodetect
+!end
+!classpathentry ./../../lib/gluegen-rt-natives-macosx-universal.jar
+  -pack=noncompiled
+  -protect=nomatter
+  -optimize=autodetect
+!end
+!classpathentry ./../../lib/gluegen-rt-natives-windows-amd64.jar
+  -pack=noncompiled
+  -protect=nomatter
+  -optimize=autodetect
+!end
+!classpathentry ./../../lib/gluegen-rt-natives-windows-i586.jar
+  -pack=noncompiled
+  -protect=nomatter
+  -optimize=autodetect
+!end
+!classpathentry ./../../lib/gluegen-rt.jar
+  -pack=noncompiled
+  -protect=nomatter
+  -optimize=autodetect
+!end
+!classpathentry ./../../lib/jgoodies-forms-1.8.0.jar
+  -pack=noncompiled
+  -protect=nomatter
+  -optimize=autodetect
+!end
+!classpathentry ./../../lib/jogl-all-natives-android-armv6.jar
+  -pack=noncompiled
+  -protect=nomatter
+  -optimize=autodetect
+!end
+!classpathentry ./../../lib/jogl-all-natives-linux-i586.jar
+  -pack=noncompiled
+  -protect=nomatter
+  -optimize=autodetect
+!end
+!classpathentry ./../../lib/jogl-all-natives-macosx-universal.jar
+  -pack=noncompiled
+  -protect=nomatter
+  -optimize=autodetect
+!end
+!classpathentry ./../../lib/jogl-all-natives-windows-amd64.jar
+  -pack=noncompiled
+  -protect=nomatter
+  -optimize=autodetect
+!end
+!classpathentry ./../../lib/jogl-all-natives-windows-i586.jar
+  -pack=noncompiled
+  -protect=nomatter
+  -optimize=autodetect
+!end
+!classpathentry ./../../lib/jogl.jar
+  -pack=noncompiled
+  -protect=nomatter
+  -optimize=autodetect
+!end
+!classpathentry ./../../lib/json.jar
+  -pack=noncompiled
+  -protect=nomatter
+  -optimize=autodetect
+!end
+!classpathentry ./../../lib/junit-4.8.2.jar
+  -pack=noncompiled
+  -protect=nomatter
+  -optimize=autodetect
+!end
+!classpathentry ./../../lib/kdu_jni.jar
+  -pack=noncompiled
+  -protect=nomatter
+  -optimize=autodetect
+!end
+!classpathentry ./../../lib/log4j-1.2.16.jar
+  -pack=noncompiled
+  -protect=nomatter
+  -optimize=autodetect
+!end
+!classpathentry ./../../lib/logback-classic-1.0.0.jar
+  -pack=noncompiled
+  -protect=nomatter
+  -optimize=autodetect
+!end
+!classpathentry ./../../lib/logback-core-1.0.0.jar
+  -pack=noncompiled
+  -protect=nomatter
+  -optimize=autodetect
+!end
+!classpathentry ./../../lib/slf4j-api-1.6.4.jar
+  -pack=noncompiled
+  -protect=nomatter
+  -optimize=autodetect
+!end
+!classpathentry ./../../lib/vecmath-1.3.1.jar
+  -pack=noncompiled
+  -protect=nomatter
+  -optimize=autodetect
+!end
+!classpathentry ./../../lib/xuggle-xuggler-5.4.jar
+  -pack=noncompiled
+  -protect=nomatter
+  -optimize=autodetect
+!end
+!classpathentry .
+  -pack=none
+  -protect=all
+  -optimize=all
+!end
+
+!module ./JHelioViewer.usg
+!module ../../resources/images/hvImage_64x64.ico
+
