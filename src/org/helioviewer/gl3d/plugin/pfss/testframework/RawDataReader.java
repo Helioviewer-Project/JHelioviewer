@@ -17,6 +17,7 @@ import org.helioviewer.base.physics.Constants;
 
 import com.jogamp.common.nio.Buffers;
 
+
 public class RawDataReader {
 	private ArrayList<Line> lines;
 	
@@ -30,9 +31,9 @@ public class RawDataReader {
 	}
 	
 	private void readFits(String filePath) {
-			InputStream is = null;
+
 			try {
-				Fits fits = new Fits(is, false);
+				Fits fits = new Fits(filePath, false);
 				BasicHDU hdus[] = fits.read();
 				BinaryTableHDU bhdu = (BinaryTableHDU) hdus[1];
 				double b0 = ((double[]) bhdu.getColumn("B0"))[0];
@@ -73,12 +74,7 @@ public class RawDataReader {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} finally {
-				try {
-					is.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+
 
 			}
 		

@@ -26,7 +26,8 @@ public class Comparer {
 				
 				Point a = rawCurrent.points.get(min.p0);
 				Point b = rawCurrent.points.get(min.p1);
-				errors.add(calcError(a,b,p));
+				double err = calcError(a,b,p);
+				errors.add(err*err);
 			}
 			result.add(errors);
 			
@@ -56,7 +57,7 @@ public class Comparer {
 		
 		double lastDistance = Double.MAX_VALUE;
 		for(int i = startIndex; i < raw.points.size();i++) {
-			double distance = p.distanceTo(raw.points.get(i));
+			double distance = p.getDistanceTo(raw.points.get(i));
 			if(distance < lastDistance) {
 				min.newD(distance, i);
 			}

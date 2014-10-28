@@ -19,6 +19,10 @@ private ArrayList<Line> lines;
 		this.readFits(filePath);
 	}
 	
+	public PerformanceData readLines() {
+		return null;
+	}
+	
 	public ArrayList<Line> getLines() {
 		return lines;
 	}

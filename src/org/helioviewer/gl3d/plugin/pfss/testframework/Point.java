@@ -57,7 +57,7 @@ public class Point {
 		return index;
 	}
 	
-	public double distanceTo(Point p) {
+	public double getDistanceTo(Point p) {
 		return getVector(this,p).magnitude();
 	}
 	
