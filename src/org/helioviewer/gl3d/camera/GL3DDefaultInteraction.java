@@ -5,6 +5,7 @@ import java.awt.event.MouseWheelEvent;
 
 import org.helioviewer.gl3d.view.GL3DSceneGraphView;
 import org.helioviewer.jhv.gui.states.StateController;
+import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.viewmodel.region.Region;
 import org.helioviewer.viewmodel.view.MetaDataView;
 
@@ -49,7 +50,7 @@ public abstract class GL3DDefaultInteraction extends GL3DInteraction {
             this.camera.getRotation().clear();
             camera.addCameraAnimation(new GL3DCameraZoomAnimation(distance, 500));
             camera.addCameraAnimation(new GL3DCameraPanAnimation(this.camera.getTranslation().copy().negate()));
-        } else {
+        } else if (LayersModel.getSingletonInstance().getActiveView() == null){
             camera.setZTranslation(-GL3DTrackballCamera.DEFAULT_CAMERA_DISTANCE);
             this.camera.getRotation().clear();
             this.camera.updateCameraTransformation();

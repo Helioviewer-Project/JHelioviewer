@@ -94,7 +94,7 @@ public abstract class GL3DCamera {
             }
         } else {
             Log.debug("GL3DCamera: No Preceding Camera, resetting Camera");
-            this.reset();
+            //this.reset();
         }
     }
 
