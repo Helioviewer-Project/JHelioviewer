@@ -50,7 +50,6 @@ import org.helioviewer.viewmodel.view.LinkedMovieManager;
 import org.helioviewer.viewmodel.view.MetaDataView;
 import org.helioviewer.viewmodel.view.RegionView;
 import org.helioviewer.viewmodel.view.View;
-import org.helioviewer.viewmodel.view.ViewHelper;
 import org.helioviewer.viewmodel.view.ViewListener;
 import org.helioviewer.viewmodel.view.ViewportView;
 import org.helioviewer.viewmodel.view.opengl.GLTextureHelper;
@@ -63,7 +62,6 @@ import org.helioviewer.viewmodel.view.opengl.shader.GLShaderHelper;
 import org.helioviewer.viewmodel.view.opengl.shader.GLVertexShaderView;
 import org.helioviewer.viewmodel.viewport.StaticViewport;
 import org.helioviewer.viewmodel.viewport.Viewport;
-import org.helioviewer.viewmodel.viewportimagesize.ViewportImageSize;
 
 import com.jogamp.opengl.util.awt.ImageUtil;
 

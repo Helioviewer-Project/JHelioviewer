@@ -2,11 +2,9 @@ package org.helioviewer.viewmodel.metadata;
 
 import org.helioviewer.base.logging.Log;
 import org.helioviewer.base.math.MathUtils;
-import org.helioviewer.base.math.RectangleDouble;
 import org.helioviewer.base.math.Vector2dDouble;
 import org.helioviewer.base.math.Vector2dInt;
 import org.helioviewer.base.physics.Constants;
-import org.helioviewer.viewmodel.region.Region;
 import org.helioviewer.viewmodel.view.cache.HelioviewerDateTimeCache;
 
 public class MetaDataMDI extends MetaData{

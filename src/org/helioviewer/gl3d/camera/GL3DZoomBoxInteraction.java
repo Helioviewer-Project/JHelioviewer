@@ -3,16 +3,13 @@ package org.helioviewer.gl3d.camera;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 
-import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
-import org.helioviewer.base.logging.Log;
 import org.helioviewer.gl3d.scenegraph.GL3DState;
 import org.helioviewer.gl3d.scenegraph.math.GL3DVec3d;
 import org.helioviewer.gl3d.scenegraph.rt.GL3DRay;
 import org.helioviewer.gl3d.scenegraph.rt.GL3DRayTracer;
 import org.helioviewer.gl3d.view.GL3DSceneGraphView;
-import org.helioviewer.gl3d.wcs.CoordinateVector;
 import org.helioviewer.gl3d.wcs.impl.SolarImageCoordinateSystem;
 
 /**
@@ -31,16 +28,14 @@ public class GL3DZoomBoxInteraction extends GL3DDefaultInteraction {
     private GL3DVec3d zoomBoxStartPoint;
     private GL3DVec3d zoomBoxEndPoint;
 
-    private SolarImageCoordinateSystem solarDiskCS;
-
     public GL3DZoomBoxInteraction(GL3DTrackballCamera camera, GL3DSceneGraphView sceneGraph) {
         super(camera, sceneGraph);
-        this.solarDiskCS = new SolarImageCoordinateSystem();
+        new SolarImageCoordinateSystem();
     }
 
     public void drawInteractionFeedback(GL3DState state, GL3DCamera camera) {
         if (this.isValidZoomBox()) {
-            double x0, x1, y0, y1, z0, z1;
+            double x0, x1, y0, y1;
             if (this.zoomBoxEndPoint.x > this.zoomBoxStartPoint.x) {
                 x0 = this.zoomBoxStartPoint.x;
                 x1 = this.zoomBoxEndPoint.x;
@@ -111,12 +106,6 @@ public class GL3DZoomBoxInteraction extends GL3DDefaultInteraction {
         distance = -distance - camera.getZTranslation();
 
         return new GL3DCameraZoomAnimation(distance, 700);
-    }
-
-    private boolean isCompletelyOnSphere() {
-        CoordinateVector startCoord = solarDiskCS.createCoordinateVector(this.zoomBoxStartPoint.x, this.zoomBoxStartPoint.y);
-        CoordinateVector endCoord = solarDiskCS.createCoordinateVector(this.zoomBoxEndPoint.x, this.zoomBoxEndPoint.y);
-        return (solarDiskCS.isInsideDisc(startCoord) && solarDiskCS.isInsideDisc(endCoord));
     }
 
     private boolean isValidZoomBox() {

@@ -2,8 +2,6 @@ package org.helioviewer.gl3d.model.image;
 
 import java.util.List;
 
-import javax.media.opengl.GL;
-
 import org.helioviewer.base.math.Vector2dInt;
 import org.helioviewer.base.physics.Constants;
 import org.helioviewer.gl3d.GL3DHelper;
@@ -18,9 +16,7 @@ import org.helioviewer.gl3d.wcs.CoordinateVector;
 import org.helioviewer.gl3d.wcs.conversion.SolarImageToSolarSphereConversion;
 import org.helioviewer.gl3d.wcs.impl.SolarImageCoordinateSystem;
 import org.helioviewer.gl3d.wcs.impl.SolarSphereCoordinateSystem;
-import org.helioviewer.gl3d.wcs.impl.TextureCoordinateSystem;
 import org.helioviewer.viewmodel.metadata.MetaData;
-import org.helioviewer.viewmodel.region.Region;
 import org.helioviewer.viewmodel.view.opengl.shader.GLFragmentShaderProgram;
 import org.helioviewer.viewmodel.view.opengl.shader.GLVertexShaderProgram;
 
@@ -35,7 +31,6 @@ public class GL3DImageSphere extends GL3DImageMesh
 {
   protected Vector2dInt mappingResolution=new Vector2dInt((int)Math.pow(2,6),(int)Math.pow(2,6));
 
-  private TextureCoordinateSystem textureCoordinateSystem;
   private SolarImageToSolarSphereConversion solarImageToSolarSphereConversion;
 
   private SolarImageCoordinateSystem solarImageCS=new SolarImageCoordinateSystem();
@@ -56,9 +51,6 @@ public class GL3DImageSphere extends GL3DImageMesh
   {
     if(this.capturedRegion!=null)
     {
-      Region region=this.capturedRegion;
-      textureCoordinateSystem=new TextureCoordinateSystem(textureScale,region);
-
       solarImageToSolarSphereConversion=(SolarImageToSolarSphereConversion)solarImageCS.getConversion(solarSphereCS);
       solarImageToSolarSphereConversion.setAutoAdjustToValidValue(true);
 

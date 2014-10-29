@@ -15,20 +15,7 @@ import java.awt.event.MouseWheelListener;
 import java.text.ParseException;
 import java.util.LinkedList;
 
-import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSeparator;
-import javax.swing.JSlider;
-import javax.swing.JSpinner;
-import javax.swing.KeyStroke;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicSliderUI;
 
@@ -140,8 +127,8 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
     private JButton nextFrameButton;
     private JButton advancedButton;
     private JSpinner speedSpinner;
-    private JComboBox speedUnitComboBox;
-    private JComboBox animationModeComboBox;
+    private JComboBox<SpeedUnit> speedUnitComboBox;
+    private JComboBox<?> animationModeComboBox;
 
     private JPanel modePanel;
     private JPanel speedPanel;
@@ -271,7 +258,7 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
         speedPanel.add(speedSpinner, BorderLayout.CENTER);
 
         SpeedUnit[] units = { SpeedUnit.FRAMESPERSECOND };
-        speedUnitComboBox = new JComboBox(units);
+        speedUnitComboBox = new JComboBox<SpeedUnit>(units);
 
         speedUnitComboBox.addActionListener(this);
         speedPanel.add(speedUnitComboBox, BorderLayout.EAST);
@@ -283,7 +270,7 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
         modePanel.add(new JLabel("Animation mode:"), BorderLayout.WEST);
 
         AnimationMode[] modi = { AnimationMode.LOOP, AnimationMode.STOP, AnimationMode.SWING };
-        animationModeComboBox = new JComboBox(modi);
+        animationModeComboBox = new JComboBox<Object>(modi);
         animationModeComboBox.setPreferredSize(speedUnitComboBox.getPreferredSize());
         animationModeComboBox.addActionListener(this);
         modePanel.add(animationModeComboBox, BorderLayout.EAST);

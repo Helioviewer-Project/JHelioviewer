@@ -1,10 +1,8 @@
 package org.helioviewer.gl3d.view;
 
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
 import org.helioviewer.base.logging.Log;

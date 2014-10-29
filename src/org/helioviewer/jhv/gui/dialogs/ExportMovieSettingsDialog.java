@@ -31,9 +31,14 @@ import com.jgoodies.forms.layout.RowSpec;
 
 public class ExportMovieSettingsDialog extends JDialog implements
 		ActionListener, ItemListener, PropertyChangeListener {
-	private final JPanel contentPanel = new JPanel();
+	/**
+   * 
+   */
+  private static final long serialVersionUID=7202899812438717165L;
 
-	private JComboBox movieAspectRatioSelection,
+  private final JPanel contentPanel = new JPanel();
+
+	private JComboBox<?> movieAspectRatioSelection,
 			screenshotAspectRatioSelection;
 	private JFormattedTextField txtMovieImageWidth, txtMovieImageHeight,
 			txtScreenshotImageWidth, txtScreenshotImageHeight;
@@ -49,13 +54,10 @@ public class ExportMovieSettingsDialog extends JDialog implements
 	private static final String SETTING_MOVIE_RATIO = "export.movie.aspect.ratio";
 	private static final String SETTING_MOVIE_IMG_WIDTH = "export.movie.image.width";
 	private static final String SETTING_MOVIE_IMG_HEIGHT = "export.movie.image.height";
-	private static final String SETTING_MOVIE_USE_CURRENT_OPENGL_SIZE = "export.movie.use.current.opengl.size";
-
 	private static final String SETTING_SCREENSHOT_RATIO = "export.screenshot.aspect.ratio";
 	private static final String SETTING_SCREENSHOT_IMG_WIDTH = "export.screenshot.image.width";
 	private static final String SETTING_SCREENSHOT_IMG_HEIGHT = "export.screenshot.image.height";
-	private static final String SETTING_SCREENSHOT_USE_CURRENT_OPENGL_SIZE = "export.screenshot.use.current.opengl.size";
-
+	
 	private static final AspectRatio[] movieAspectRatioPresets = {
 			new AspectRatio(1, 1), new AspectRatio(4, 3),
 			new AspectRatio(16, 9), new AspectRatio(16, 10),
@@ -168,7 +170,7 @@ public class ExportMovieSettingsDialog extends JDialog implements
 			moviePanel.add(lblAspectRation, "6, 6, right, default");
 		}
 		{
-			movieAspectRatioSelection = new JComboBox(movieAspectRatioPresets);
+			movieAspectRatioSelection = new JComboBox<Object>(movieAspectRatioPresets);
 			moviePanel.add(movieAspectRatioSelection, "8, 6, fill, default");
 			movieAspectRatioSelection.addItemListener(this);
 		}
@@ -246,7 +248,7 @@ public class ExportMovieSettingsDialog extends JDialog implements
 			screenshotPanel.add(lblAspectRation, "6, 6, right, default");
 		}
 		{
-			screenshotAspectRatioSelection = new JComboBox(
+			screenshotAspectRatioSelection = new JComboBox<Object>(
 					screenshotAspectRatioPresets);
 			screenshotPanel.add(screenshotAspectRatioSelection,
 					"8, 6, fill, default");

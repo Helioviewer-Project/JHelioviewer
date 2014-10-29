@@ -1,6 +1,5 @@
 package org.helioviewer.gl3d.view;
 
-import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
 import org.helioviewer.gl3d.scenegraph.GL3DState;

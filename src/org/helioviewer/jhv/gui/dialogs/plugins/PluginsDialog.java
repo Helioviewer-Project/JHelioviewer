@@ -10,34 +10,21 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.io.File;
-import java.io.IOException;
-import java.util.LinkedList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.filechooser.FileFilter;
 
-import org.helioviewer.base.FileUtils;
-import org.helioviewer.base.message.Message;
-import org.helioviewer.jhv.JHVDirectory;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.ImageViewerGui;
-import org.helioviewer.jhv.gui.dialogs.pluginsOLD.FilterPluginDialog;
-import org.helioviewer.jhv.gui.dialogs.pluginsOLD.OverlayPluginDialog;
 import org.helioviewer.jhv.gui.interfaces.ShowableDialog;
 import org.helioviewer.jhv.internal_plugins.InternalPlugin;
-import org.helioviewer.viewmodel.view.ImageInfoView;
-import org.helioviewer.viewmodel.view.LayeredView;
-import org.helioviewer.viewmodel.view.opengl.GLOverlayView;
 import org.helioviewer.viewmodelplugin.controller.PluginContainer;
 import org.helioviewer.viewmodelplugin.controller.PluginManager;
 
@@ -62,18 +49,13 @@ public class PluginsDialog extends JDialog implements ShowableDialog, ActionList
 
     private final JPanel contentPane = new JPanel();
 
-    private final JComboBox filterComboBox = new JComboBox(new String[] { "All", "Enabled", "Disabled" });
-    private final JButton addButton = new JButton("Add Plug-in", IconBank.getIcon(JHVIcon.ADD));
-    private final JButton downloadButton = new JButton("Download");
+    private final JComboBox<String> filterComboBox = new JComboBox<String>(new String[] { "All", "Enabled", "Disabled" });
 
     private final JLabel emptyLabel = new JLabel("No Plug-ins available", JLabel.CENTER);
     private final List pluginList = new List();
     private final JScrollPane emptyScrollPane = new JScrollPane(emptyLabel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     private final JPanel listContainerPane = new JPanel();
     private final CardLayout listLayout = new CardLayout();
-
-    private final JButton filterButton = new JButton("Filter");
-    private final JButton overlayButton = new JButton("Overlays");
 
     private final JButton okButton = new JButton("Ok", IconBank.getIcon(JHVIcon.CHECK));
 
@@ -144,12 +126,7 @@ public class PluginsDialog extends JDialog implements ShowableDialog, ActionList
         // ////////
         final JPanel installedButtonPane = new JPanel();
         installedButtonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-        installedButtonPane.add(addButton);
         // installedButtonPane(downloadButton); //TODO SP: add
-
-        addButton.setToolTipText("Add a new plug-in to JHelioviewer.");
-        addButton.addActionListener(this);
-        downloadButton.addActionListener(this);
 
         final JPanel installedPane = new JPanel();
         installedPane.setLayout(new BorderLayout());
@@ -162,19 +139,6 @@ public class PluginsDialog extends JDialog implements ShowableDialog, ActionList
         final JPanel managePane = new JPanel();
         managePane.setLayout(new FlowLayout(FlowLayout.LEFT));
         managePane.setBorder(BorderFactory.createTitledBorder(" Filter and Overlays "));
-        managePane.add(filterButton);
-        managePane.add(overlayButton);
-
-        final int width = Math.max(filterButton.getPreferredSize().width, overlayButton.getPreferredSize().width);
-        final int height = Math.max(filterButton.getPreferredSize().height, overlayButton.getPreferredSize().height);
-        filterButton.setPreferredSize(new Dimension(width, height));
-        overlayButton.setPreferredSize(new Dimension(width, height));
-
-        filterButton.setToolTipText("Opens an dialog where all available filter can be managed.");
-        overlayButton.setToolTipText("Opens an dialog where all available overlays can be managed.");
-
-        filterButton.addActionListener(this);
-        overlayButton.addActionListener(this);
 
         // center
         final JPanel centerPane = new JPanel();
@@ -220,9 +184,6 @@ public class PluginsDialog extends JDialog implements ShowableDialog, ActionList
 
             listLayout.show(listContainerPane, "empty");
         }
-
-        filterButton.setEnabled(PluginManager.getSingeltonInstance().getNumberOfFilter() > 0);
-        overlayButton.setEnabled(PluginManager.getSingeltonInstance().getNumberOfOverlays() > 0);
     }
 
     /**
@@ -270,62 +231,6 @@ public class PluginsDialog extends JDialog implements ShowableDialog, ActionList
         updateVisualComponents();
     }
 
-    /**
-     * This method allows the user to select a plug-in file which has to be
-     * loaded. The file will be copied to the plug-in directory of JHV and the
-     * plug-in will occur in the list of available plug-ins. If a file with the
-     * same name already exists in the plug-in directory the selected file will
-     * not be copied.
-     */
-    private void importPlugin() {
-        final JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setAcceptAllFileFilterUsed(false);
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-        fileChooser.addChoosableFileFilter(new JARFilter());
-        fileChooser.setMultiSelectionEnabled(false);
-
-        fileChooser.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent _e) {
-                if (_e.getActionCommand().equals(JFileChooser.APPROVE_SELECTION) && fileChooser.getSelectedFile().exists() && fileChooser.getSelectedFile().isFile()) {
-                    fileChooser.setVisible(false);
-
-                    final File dstFile = new File(JHVDirectory.PLUGINS.getPath() + fileChooser.getSelectedFile().getName());
-
-                    if (dstFile.exists()) {
-                        Message.err("An error occured while importing the plugin.", "A plugin with the same name already exists!", false);
-                        return;
-                    }
-
-                    try {
-                        FileUtils.copy(fileChooser.getSelectedFile(), dstFile);
-                    } catch (final IOException e) {
-                        Message.err("An error occured while importing the plugin.", "Copying the plugin file to the plugin directory failed!", false);
-                        return;
-                    }
-
-                    if (!PluginManager.getSingeltonInstance().loadPlugin(dstFile.toURI())) {
-                        Message.err("An error occured while loading the plugin.", "The plugin file is corrupt!", false);
-                        return;
-                    }
-
-                    updatePluginList();
-                    pluginList.fireItemChanged();
-                }
-            }
-        });
-
-        fileChooser.showOpenDialog(this);
-    }
-
-    /**
-     * 
-     * */
-    private void downloadPlugins() {
-        // TODO SP: show download dialog
-
-        updatePluginList();
-    }
-
     // ////////////////////////////////////////////////////////////////
     // Showable Dialog
     // ////////////////////////////////////////////////////////////////
@@ -355,14 +260,6 @@ public class PluginsDialog extends JDialog implements ShowableDialog, ActionList
     public void actionPerformed(final ActionEvent e) {
         if (e.getSource().equals(okButton)) {
             closeDialog();
-        } else if (e.getSource().equals(addButton)) {
-            importPlugin();
-        } else if (e.getSource().equals(downloadButton)) {
-            downloadPlugins();
-        } else if (e.getSource().equals(filterButton)) {
-            new FilterPluginDialog().showDialog();
-        } else if (e.getSource().equals(overlayButton)) {
-            new OverlayPluginDialog().showDialog();
         } else if (e.getSource().equals(filterComboBox)) {
             updatePluginList();
         }
@@ -439,41 +336,7 @@ public class PluginsDialog extends JDialog implements ShowableDialog, ActionList
     // JAR Filter
     // ////////////////////////////////////////////////////////////////
 
-    /**
-     * File Chooser Filter which allows JAR files only.
-     * */
-    private class JARFilter extends FileFilter {
-
-        private final String[] extensions = { "jar" };
-
-        /**
-         * {@inheritDoc}
-         */
-        public boolean accept(File f) {
-
-            if (f.isDirectory())
-                return true;
-
-            String testName = f.getName().toLowerCase();
-            for (String ext : extensions) {
-                if (testName.endsWith(ext))
-                    return true;
-            }
-
-            return false;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public String getDescription() {
-            return "JAR files (\".jar\")";
-        }
-    }
-
-	@Override
+    @Override
 	public void init() {
-		// TODO Auto-generated method stub
-		
 	}
 }

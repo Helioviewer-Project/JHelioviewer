@@ -1059,12 +1059,7 @@ public class LayersModel implements ViewListener {
         }
         MetaDataView metaDataView = view.getAdapter(MetaDataView.class);
 
-        if (metaDataView != null) {
-            MetaData md = view.getAdapter(MetaDataView.class).getMetaData();
-            return true;
-        } else {
-            return false;
-        }
+        return metaDataView != null;
     }
 
     /**

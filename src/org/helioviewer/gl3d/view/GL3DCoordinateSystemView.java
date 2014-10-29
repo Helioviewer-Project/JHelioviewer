@@ -3,7 +3,6 @@ package org.helioviewer.gl3d.view;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
 import org.helioviewer.base.logging.Log;
@@ -15,11 +14,6 @@ import org.helioviewer.gl3d.wcs.HEEQCoordinateSystem;
 import org.helioviewer.gl3d.wcs.HeliocentricCartesianCoordinateSystem;
 import org.helioviewer.gl3d.wcs.StonyhurstCoordinateSystem;
 import org.helioviewer.viewmodel.changeevent.ChangeEvent;
-import org.helioviewer.viewmodel.metadata.MetaDataStereo;
-import org.helioviewer.viewmodel.metadata.MetaDataStereoA_COR1;
-import org.helioviewer.viewmodel.metadata.MetaDataStereoA_COR2;
-import org.helioviewer.viewmodel.metadata.MetaDataStereoB_COR1;
-import org.helioviewer.viewmodel.metadata.MetaDataStereoB_COR2;
 import org.helioviewer.viewmodel.metadata.MetaData;
 import org.helioviewer.viewmodel.view.MetaDataView;
 import org.helioviewer.viewmodel.view.View;

@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.helioviewer.base.math.RectangleDouble;
 import org.helioviewer.base.math.Vector2dInt;
 import org.helioviewer.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.viewmodel.changeevent.LayerChangedReason;
@@ -169,18 +168,6 @@ public abstract class AbstractLayeredView extends AbstractView implements Layere
 
             viewLookup.put(newLayer, new Layer(newLayer));
 
-            if (layers.size() > 1) {
-                recalculateMetaData(false);
-                for (Layer layer : viewLookup.values()) {
-                    /* PixelBasedMetaData aren't supported 
-                	MetaData m = layer.metaDataView.getMetaData();
-                    if (m instanceof PixelBasedMetaData) {
-                        PixelBasedMetaData p = (PixelBasedMetaData) m;
-                        p.updatePhysicalRegion(metaData.getPhysicalRegion());
-                    }
-                    */
-                }
-            }
             recalculateMetaData();
             
             region = metaData.getPhysicalRegion();
@@ -243,17 +230,6 @@ public abstract class AbstractLayeredView extends AbstractView implements Layere
 
         ChangeEvent event = new ChangeEvent(new LayerChangedReason(this, LayerChangeType.LAYER_REMOVED, view, index));
 
-        recalculateMetaData(false);
-        if (metaData != null) {
-            for (Layer layer : viewLookup.values()) {
-                MetaData m = layer.metaDataView.getMetaData();
-                /* PixelbasedMetaData aren't supported 
-                if (m instanceof PixelBasedMetaData) {
-                    PixelBasedMetaData p = (PixelBasedMetaData) m;
-                    p.updatePhysicalRegion(metaData.getPhysicalRegion());
-                }*/
-            }
-        }
         recalculateMetaData();
         if (metaData != null) {
             Region bound = metaData.getPhysicalRegion();
@@ -428,25 +404,6 @@ public abstract class AbstractLayeredView extends AbstractView implements Layere
             ViewportImageSize oldViewportImageSize = viewportImageSize;
             viewportImageSize = ViewHelper.calculateViewportImageSize(viewport, region);
             changed |= viewportImageSize == null ? oldViewportImageSize == null : viewportImageSize.equals(oldViewportImageSize);
-            layerLock.lock();
-            try {
-                for (Layer layer : viewLookup.values()) {
-                    MetaData m = layer.metaDataView.getMetaData();
-                    /* PixelBasedMetaData aren't supported
-                    if (includePixelBasedImages || !(m instanceof PixelBasedMetaData)) {
-
-                        Region layerRegion = ViewHelper.cropInnerRegionToOuterRegion(m.getPhysicalRegion(), region);
-                        Viewport layerViewport = ViewHelper.calculateInnerViewport(layerRegion, region, viewportImageSize);
-                        layer.renderOffset = ViewHelper.calculateInnerViewportOffset(layerRegion, region, viewportImageSize);
-                        // Log.debug("AbstractLayeredView: RenderOffset:"+layer.renderOffset);
-                        changed |= layer.regionView.setRegion(layerRegion, event);
-                        changed |= layer.viewportView.setViewport(layerViewport, event);
-                    }
-                    */
-                }
-            } finally {
-                layerLock.unlock();
-            }
         }
         return changed;
     }
@@ -498,7 +455,6 @@ public abstract class AbstractLayeredView extends AbstractView implements Layere
             for (Layer layer : viewLookup.values()) {
                 if (layer.metaDataView != null) {
                     //if (includePixelBasedImages || !(layer.metaDataView.getMetaData() instanceof PixelBasedMetaData)) {
-                        RectangleDouble metaDataRectangle = layer.metaDataView.getMetaData().getPhysicalRectangle();
                          metaData = layer.metaDataView.getMetaData();
 
                         

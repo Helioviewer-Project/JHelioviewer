@@ -15,7 +15,6 @@ import java.net.URI;
 import java.net.URL;
 import java.util.AbstractList;
 
-import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
@@ -29,28 +28,15 @@ import org.helioviewer.base.message.Message;
 import org.helioviewer.jhv.JHVSplashScreen;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
-import org.helioviewer.jhv.gui.components.ControlPanelContainer;
-import org.helioviewer.jhv.gui.components.ImageSelectorPanel;
-import org.helioviewer.jhv.gui.components.MainContentPanel;
-import org.helioviewer.jhv.gui.components.MainImagePanel;
-import org.helioviewer.jhv.gui.components.MenuBar;
-import org.helioviewer.jhv.gui.components.MoviePanel;
-import org.helioviewer.jhv.gui.components.QualitySpinner;
-import org.helioviewer.jhv.gui.components.SideContentPane;
-import org.helioviewer.jhv.gui.components.StatusPanel;
-import org.helioviewer.jhv.gui.components.TopToolBar;
+import org.helioviewer.jhv.gui.components.*;
 import org.helioviewer.jhv.gui.components.statusplugins.FramerateStatusPanel;
 import org.helioviewer.jhv.gui.components.statusplugins.JPIPStatusPanel;
 import org.helioviewer.jhv.gui.components.statusplugins.MetaDataStatusPanel;
 import org.helioviewer.jhv.gui.components.statusplugins.PositionStatusPanel;
 import org.helioviewer.jhv.gui.components.statusplugins.QualityStatusPanel;
-import org.helioviewer.jhv.gui.components.statusplugins.RenderModeStatusPanel;
 import org.helioviewer.jhv.gui.components.statusplugins.ZoomStatusPanel;
 import org.helioviewer.jhv.gui.controller.ZoomController;
 import org.helioviewer.jhv.gui.states.GuiState3DWCS;
-import org.helioviewer.jhv.gui.states.State;
-import org.helioviewer.jhv.gui.states.StateController;
-import org.helioviewer.jhv.gui.states.StateController.StateChangeListener;
 import org.helioviewer.jhv.internal_plugins.filter.SOHOLUTFilterPlugin.SOHOLUTPanel;
 import org.helioviewer.jhv.internal_plugins.filter.channelMixer.ChannelMixerPanel;
 import org.helioviewer.jhv.internal_plugins.filter.contrast.ContrastPanel;
@@ -71,10 +57,7 @@ import org.helioviewer.viewmodel.view.LayeredView;
 import org.helioviewer.viewmodel.view.MetaDataView;
 import org.helioviewer.viewmodel.view.MovieView;
 import org.helioviewer.viewmodel.view.View;
-import org.helioviewer.viewmodel.view.opengl.GLLayeredView;
 import org.helioviewer.viewmodelplugin.filter.FilterTabPanelManager;
-
-import com.jogamp.opengl.swt.GLCanvas;
 
 /**
  * A class that sets up the graphical user interface.
@@ -101,7 +84,6 @@ public class ImageViewerGui {
 	protected MainImagePanel mainImagePanel;
 
 	private SideContentPane leftPane;
-	private RenderModeStatusPanel renderModeStatus;
 	private ImageSelectorPanel imageSelectorPanel;
 	private MoviePanel moviePanel;
 	private ControlPanelContainer moviePanelContainer;
@@ -174,7 +156,6 @@ public class ImageViewerGui {
 			positionStatusPanel = new PositionStatusPanel(getMainImagePanel());
 
 			MetaDataStatusPanel jhvXMLStatusPanel = new MetaDataStatusPanel();
-			renderModeStatus = new RenderModeStatusPanel();
 			JPIPStatusPanel jpipStatusPanel = new JPIPStatusPanel();
 
 			StatusPanel statusPanel = new StatusPanel(SIDE_PANEL_WIDTH + 20, 5);
@@ -182,8 +163,6 @@ public class ImageViewerGui {
 			statusPanel.addPlugin(qualityStatusPanel,
 					StatusPanel.Alignment.LEFT);
 			statusPanel.addPlugin(framerateStatus, StatusPanel.Alignment.LEFT);
-			statusPanel
-					.addPlugin(renderModeStatus, StatusPanel.Alignment.RIGHT);
 			statusPanel.addPlugin(jhvXMLStatusPanel,
 					StatusPanel.Alignment.RIGHT);
 			statusPanel.addPlugin(jpipStatusPanel, StatusPanel.Alignment.RIGHT);
@@ -191,8 +170,6 @@ public class ImageViewerGui {
 					StatusPanel.Alignment.RIGHT);
 
 			contentPanel.add(statusPanel, BorderLayout.PAGE_END);
-
-			renderModeStatus.updateStatus();
 	}
 
 	/**
@@ -236,14 +213,13 @@ public class ImageViewerGui {
 	 * Initializes the main and overview view chain.
 	 */
 	public void createViewchains() {
-		//this.activateState(StateController.getInstance().getCurrentState(), null);
-		GuiState3DWCS state = StateController.getInstance().getCurrentState();
+		GuiState3DWCS state = new GuiState3DWCS();
 		
 		state.createViewChains();
 
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				TopToolBar toolBar = StateController.getInstance().getCurrentState().getTopToolBar();
+				TopToolBar toolBar = new TopToolBar();
 				toolBar.setDisplayMode(null);
 				contentPanel.add(toolBar, BorderLayout.PAGE_START);
 			}
@@ -309,8 +285,7 @@ public class ImageViewerGui {
 	 * @return instance of the main ComponentView.
 	 */
 	public ComponentView getMainView() {
-		return StateController.getInstance().getCurrentState()
-				.getMainComponentView();
+		return new GuiState3DWCS().getMainComponentView();
 	}
 
 
@@ -414,47 +389,17 @@ public class ImageViewerGui {
 	}
 
 	public TopToolBar getTopToolBar() {
-		return StateController.getInstance().getCurrentState().getTopToolBar();
+		return new GuiState3DWCS().getTopToolBar();
 	}
 
 	public void addTopToolBarPlugin(
 			PropertyChangeListener propertyChangeListener, JToggleButton button) {
-		StateController.getInstance().getState()
-				.getTopToolBar().addToolbarPlugin(button);
+		new GuiState3DWCS().getTopToolBar().addToolbarPlugin(button);
 
-		StateController.getInstance().getState()
-				.getTopToolBar()
+		new GuiState3DWCS().getTopToolBar()
 				.addPropertyChangeListener(propertyChangeListener);
 
-		StateController.getInstance().getState()
-				.getTopToolBar().validate();
-	}
-
-	/**
-	 * Change the current state
-	 * 
-	 * @param stateEnum
-	 */
-	private void activateState(final State newState, State oldState) {
-
-		newState.createViewChains();
-
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				TopToolBar toolBar = newState.getTopToolBar();
-				toolBar.setDisplayMode(null);
-				contentPanel.add(toolBar, BorderLayout.PAGE_START);
-			}
-		});
-
-		newState.addStateSpecificComponents(getLeftContentPane());
-		// prepare gui again
-		updateComponentPanels();
-		mainImagePanel.setInputController(newState.getDefaultInputController());
-
-		mainFrame.validate();
-
-		newState.activate();		
+		new GuiState3DWCS().getTopToolBar().validate();
 	}
 
 	private void updateComponentPanels() {
@@ -705,7 +650,6 @@ public class ImageViewerGui {
 	 * e.g. reload data.
 	 */
 	public void updateComponents() {
-		renderModeStatus.updateStatus();
 	}
 
 	/**

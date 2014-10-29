@@ -4,7 +4,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
 import org.helioviewer.jhv.gui.ImageViewerGui;
-import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.viewmodel.view.View;
 
 /**
@@ -64,7 +63,6 @@ public abstract class MainImagePanelMouseController extends AbstractImagePanelMo
     public void mouseWheelMoved(MouseWheelEvent e) {
         if (zoomController != null) {
             zoomController.zoomSteps(getView(), (int) (-Math.max(1, e.getUnitsToScroll() / 3) * Math.signum(e.getUnitsToScroll())));
-            double zoom = ZoomController.getZoom(LayersModel.getSingletonInstance().getActiveView());
         }
     }
 }

@@ -2,9 +2,9 @@ package org.helioviewer.jhv.gui.controller;
 
 import org.helioviewer.base.math.Vector2dDouble;
 import org.helioviewer.base.math.Vector2dInt;
-import org.helioviewer.jhv.gui.components.BasicImagePanel;
-import org.helioviewer.jhv.gui.states.StateController;
 import org.helioviewer.jhv.gui.ImageViewerGui;
+import org.helioviewer.jhv.gui.components.BasicImagePanel;
+import org.helioviewer.jhv.gui.states.GuiState3DWCS;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.viewmodel.region.Region;
@@ -15,7 +15,6 @@ import org.helioviewer.viewmodel.view.RegionView;
 import org.helioviewer.viewmodel.view.View;
 import org.helioviewer.viewmodel.view.ViewHelper;
 import org.helioviewer.viewmodel.view.ViewportView;
-import org.helioviewer.viewmodel.view.jp2view.JHVJP2View;
 import org.helioviewer.viewmodel.viewport.Viewport;
 import org.helioviewer.viewmodel.viewportimagesize.ViewportImageSize;
 
@@ -170,7 +169,7 @@ public class ZoomController {
 			double unitsPerPixel = view.getAdapter(MetaDataView.class)
 					.getMetaData().getUnitsPerPixel();
 			Region imageRegion = regionView.getRegion();
-			double imageSolution = StateController.getInstance().getCurrentState()
+			double imageSolution = new GuiState3DWCS()
 					.getMainComponentView().getCanavasSize().getWidth() * unitsPerPixel;
 			if (imageRegion != null) {
 				double zoom = imageSolution

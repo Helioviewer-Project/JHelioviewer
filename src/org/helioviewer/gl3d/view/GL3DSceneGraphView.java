@@ -232,6 +232,10 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 			case LAYER_MOVED:
 				moveLayerToIndex(imageTextureView, reason.getLayerIndex());
 				break;
+      case LAYER_DOWNLOADED:
+        break;
+      default:
+        break;
 			}
 		} else {
 			Log.warn("GL3DSceneGraphView: Cannot handle Layer Change for Layers without a GL3DImageTextureView!");

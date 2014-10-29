@@ -4,20 +4,14 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.AbstractList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Set;
-import java.util.jar.JarFile;
-import java.util.jar.Manifest;
 
-import org.helioviewer.base.logging.Log;
 import org.helioviewer.viewmodelplugin.filter.FilterContainer;
 import org.helioviewer.viewmodelplugin.interfaces.Plugin;
 import org.helioviewer.viewmodelplugin.overlay.OverlayContainer;
@@ -78,76 +72,6 @@ public class PluginManager {
      */
     public void saveSettings() {
         pluginSettings.savePluginSettings();
-    }
-
-    /**
-     * Method searches for files which contains JHV plug-ins and loads the
-     * plug-in if applicable.
-     * 
-     * @param file
-     *            File object where to search in (usually it describes a
-     *            folder).
-     * @param recursively
-     *            Specifies if to search for plug-ins recursively in sub
-     *            folders.
-     * @param deactivatedPlugins
-     *            Set with file names of plugins which should be deactivated
-     * @throws IOException
-     *             This exception will be thrown if at least one plug-in could
-     *             not be loaded. The relevant plug-ins are named in the
-     *             exception message.
-     */
-    public void searchForPlugins(File file, boolean recursively, Set<String> deactivatedPlugins) throws IOException {
-
-        // search and load plug-ins
-        LinkedList<String> list = searchAndLoadPlugins(file, recursively, deactivatedPlugins);
-
-        // if there is at least one plug-in which could not be loaded throw an
-        // exception and add plug-in names to the message of the exception.
-        if (list.size() > 0) {
-            String message = "";
-
-            for (String item : list) {
-                message += item + "\n";
-            }
-
-            throw new IOException(message);
-        }
-    }
-
-    /**
-     * Method searches for files which contains JHV plug-ins and loads the
-     * plug-in if applicable.
-     * 
-     * @param file
-     *            File object where to search in (usually it describes a
-     *            folder).
-     * @param recursivly
-     *            Specifies if to search for plug-ins recursively in sub
-     *            folders.
-     * @param deactivedPlugins
-     *            Set with file names of plugins which should be deactivated
-     * @return list with file names where the plug-in could not be loaded.
-     */
-    private LinkedList<String> searchAndLoadPlugins(File file, boolean recursivly, Set<String> deactivedPlugins) {
-
-        LinkedList<String> result = new LinkedList<String>();
-        File[] files = file.listFiles();
-
-        for (File f : files) {
-            if (f.isDirectory()) {
-                result.addAll(searchAndLoadPlugins(f, recursivly, deactivedPlugins));
-            } else if (f.isFile() && f.getName().toLowerCase().endsWith(".jar") && !deactivedPlugins.contains(f.getName())) {
-
-                Log.debug("Found Plugin Jar File: " + f.toURI());
-
-                if (!loadPlugin(f.toURI())) {
-                    result.add(f.getPath());
-                }
-            }
-        }
-
-        return result;
     }
 
     /**
@@ -359,62 +283,6 @@ public class PluginManager {
      */
     public URL getResourceUrl(Plugin plugin, String resourcePath) {
         return plugins.get(plugin).getClassLoader().getResource(resourcePath);
-    }
-
-    /**
-     * Tries to open the given file and load the expected plug-in.
-     * 
-     * @param pluginLocation
-     *            Specifies the location of the file which contains the plug-in.
-     * @return true if the plug-in could be loaded successfully; false
-     *         otherwise.
-     */
-    public boolean loadPlugin(URI pluginLocation) {
-        URL[] urls = new URL[1];
-        try {
-            urls[0] = pluginLocation.toURL();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-
-        Log.info("PluginManager is trying to load the plugin located at " + pluginLocation);
-
-        File file = new File(pluginLocation);
-        try {
-            JarFile jarFile = new JarFile(file);
-            Manifest manifest = jarFile.getManifest();
-
-            String className = null;
-            if (manifest != null) {
-                className = manifest.getMainAttributes().getValue("Main-Class");
-                Log.debug("Found Manifest: Main-Class:" + className);
-            }
-
-            if (className == null) {
-                String name = file.getName().substring(0, file.getName().length() - 4);
-                className = "org.helioviewer.plugins." + name + "." + name;
-                Log.debug("No Manifest Information Found, Fallback: Main-Class:" + className);
-            }
-
-            URLClassLoader classLoader = new URLClassLoader(urls, Thread.currentThread().getContextClassLoader());
-            Log.info("PluginManager: Load plugin class :" + className);
-            Object o = classLoader.loadClass(className).newInstance();
-            
-            if (o instanceof Plugin) {
-                addPlugin(classLoader, (Plugin) o, pluginLocation);
-                return true;
-            }
-        } catch (InstantiationException e) {
-            Log.error(">> PluginManager.loadPlugin(" + pluginLocation + ") > Error loading plugin:", e);
-        } catch (IllegalAccessException e) {
-            Log.error(">> PluginManager.loadPlugin(" + pluginLocation + ") > Error loading plugin:", e);
-        } catch (ClassNotFoundException e) {
-            Log.error(">> PluginManager.loadPlugin(" + pluginLocation + ") > Error loading plugin:", e);
-        } catch (IOException e) {
-            Log.error(">> PluginManager.loadPlugin(" + pluginLocation + ") > Error loading plugin:", e);
-        }
-
-        return false;
     }
 
     /**

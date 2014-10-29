@@ -6,7 +6,6 @@ import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.AbstractList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.helioviewer.base.math.Vector2dInt;

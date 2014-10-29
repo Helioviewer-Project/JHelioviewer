@@ -16,26 +16,14 @@ import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
 import org.helioviewer.base.logging.Log;
-import org.helioviewer.gl3d.gui.GL3DResetCameraAction;
-import org.helioviewer.gl3d.gui.GL3DSetPanInteractionAction;
-import org.helioviewer.gl3d.gui.GL3DSetRotationInteractionAction;
-import org.helioviewer.gl3d.gui.GL3DSetZoomBoxInteractionAction;
-import org.helioviewer.gl3d.gui.GL3DToggleCoronaVisibilityAction;
-import org.helioviewer.gl3d.gui.GL3DToggleSolarRotationAction;
-import org.helioviewer.gl3d.gui.GL3DZoom1to1Action;
-import org.helioviewer.gl3d.gui.GL3DZoomFitAction;
-import org.helioviewer.gl3d.gui.GL3DZoomInAction;
-import org.helioviewer.gl3d.gui.GL3DZoomOutAction;
+import org.helioviewer.gl3d.gui.*;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
-import org.helioviewer.jhv.gui.actions.SetPanSelectionAction;
-import org.helioviewer.jhv.gui.actions.SetZoomBoxSelectionAction;
-import org.helioviewer.jhv.gui.actions.ToggleSolarRotationTrackingAction;
 import org.helioviewer.jhv.gui.actions.View2DAction;
 import org.helioviewer.jhv.gui.actions.View3DAction;
-import org.helioviewer.jhv.gui.states.State;
-import org.helioviewer.jhv.gui.states.StateController;
+
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * Toolbar containing the most common actions.
@@ -64,11 +52,9 @@ public class TopToolBar extends JToolBar implements MouseListener {
     private JToggleButton rotateButton;
     private JToggleButton zoomBoxButton;
 
-    private JToggleButton trackSolarRotationButton;
     private JToggleButton trackSolarRotationButton3D;
     private JToggleButton coronaVisibilityButton;
     private JButton zoomInButton, zoomOutButton, zoomFitButton, zoom1to1Button;
-    private ToggleSolarRotationTrackingAction toggleSolarRotationTrackingAction;
     private JButton resetCamera;
     protected JToggleButton view2d;
     protected JToggleButton view3d;
@@ -104,6 +90,10 @@ public class TopToolBar extends JToolBar implements MouseListener {
         case ZOOMBOX:
             zoomBoxButton.doClick();
             break;
+          case ROTATE:
+            throw new NotImplementedException();
+          default:
+            throw new NotImplementedException();
         }
     }
 
@@ -253,11 +243,6 @@ public class TopToolBar extends JToolBar implements MouseListener {
         
     }
 
-
-    public void updateStateButtons(State currentState) {
-            view3d.setSelected(true);
-            view2d.setSelected(false);
-        }
 
     /**
      * Adds a given button to the toolbar.

@@ -18,7 +18,7 @@ import org.helioviewer.base.message.Message;
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.gui.ImageViewerGui;
-import org.helioviewer.jhv.gui.states.StateController;
+import org.helioviewer.jhv.gui.states.GuiState3DWCS;
 import org.helioviewer.viewmodel.io.APIResponse;
 import org.helioviewer.viewmodel.io.APIResponseDump;
 import org.helioviewer.viewmodel.metadata.MetaData;
@@ -273,7 +273,7 @@ public class APIRequestManager {
 
         ImageInfoView view = ViewHelper.loadView(uri);
         if (addToViewChain) {
-	        StateController.getInstance().getCurrentState().addLayerToViewchainMain(view, ImageViewerGui.getSingletonInstance().getMainView());
+          new GuiState3DWCS().addLayerToViewchainMain(view, ImageViewerGui.getSingletonInstance().getMainView());
         }
         return view;
     }
@@ -303,7 +303,7 @@ public class APIRequestManager {
         ImageInfoView view = ViewHelper.loadView(uri, downloadURI);
 
         if (addToViewChain) {
-	        StateController.getInstance().getCurrentState().addLayerToViewchainMain(view, ImageViewerGui.getSingletonInstance().getMainView());
+          new GuiState3DWCS().addLayerToViewchainMain(view, ImageViewerGui.getSingletonInstance().getMainView());
         }
         return view;
     }

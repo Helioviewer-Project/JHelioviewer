@@ -43,7 +43,7 @@ public class ObservationDialog extends JDialog implements ActionListener, Showab
 
     private final JPanel contentPane = new JPanel();
     private final JPanel uiSelectionPane = new JPanel();
-    private final JComboBox uiSelectionComboBox = new JComboBox();
+    private final JComboBox<String> uiSelectionComboBox = new JComboBox<String>();
     private final JPanel buttonPane = new JPanel();
     private final JButton btnImages = new JButton("Add Layer");
     private final JButton btnClose = new JButton("Cancel");
@@ -256,7 +256,5 @@ public class ObservationDialog extends JDialog implements ActionListener, Showab
 
 	@Override
 	public void init() {
-		// TODO Auto-generated method stub
-		
 	}
 }

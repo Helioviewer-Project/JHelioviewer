@@ -9,9 +9,8 @@ import org.helioviewer.viewmodel.region.Region;
 import org.helioviewer.viewmodel.region.StaticRegion;
 import org.helioviewer.viewmodel.view.jp2view.datetime.ImmutableDateTime;
 
-public abstract class MetaData extends Exception{
-
-    private Vector2dDouble lowerLeftCorner;
+public abstract class MetaData {
+  private Vector2dDouble lowerLeftCorner;
     private Vector2dDouble sizeVector;
 
     protected MetaDataContainer metaDataContainer = null;

@@ -101,8 +101,6 @@ public class GL3DHitReferenceShape extends GL3DMesh {
         boolean isSphereHit = isSphereHit(ray);
         // boolean isSphereHit = isSphereHitInOS(ray);
         if (isSphereHit) {
-            // GL3DVec3d hitPoint = this.wmI.multiply(ray.getHitPoint()).;
-            GL3DVec3d hitPoint = ray.getHitPoint();
             GL3DVec3d projectionPlaneNormal = new GL3DVec3d(0, 0, 1);
             GL3DVec3d pointOnSphere = this.wmI.multiply(ray.getHitPoint());
             ray.setHitPointOS(pointOnSphere);

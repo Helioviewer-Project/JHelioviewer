@@ -4,7 +4,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
 import org.helioviewer.gl3d.view.GL3DSceneGraphView;
-import org.helioviewer.jhv.gui.states.StateController;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.viewmodel.region.Region;
 import org.helioviewer.viewmodel.view.MetaDataView;

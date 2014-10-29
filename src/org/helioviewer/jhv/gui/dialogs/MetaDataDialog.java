@@ -62,7 +62,7 @@ public class MetaDataDialog extends JDialog implements ActionListener, ShowableD
     private final JButton exportFitsButton = new JButton("Export FITS Header as XML");
 
     private Vector<String> infoList = new Vector<String>();
-    private JList listBox = new JList();
+    private JList<String> listBox = new JList<String>();
     private Document xmlDoc = null;
     private boolean metaDataOK;
     private String outFileName;
@@ -79,8 +79,8 @@ public class MetaDataDialog extends JDialog implements ActionListener, ShowableD
 
         listBox.setFont(new Font("Courier", Font.PLAIN, 12));
 
-        listBox.setCellRenderer(new ListCellRenderer() {
-            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        listBox.setCellRenderer(new ListCellRenderer<Object>() {
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 JTextArea textArea = new JTextArea(value.toString().trim());
                 textArea.setLineWrap(true);
                 textArea.setWrapStyleWord(true);

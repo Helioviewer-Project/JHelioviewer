@@ -14,7 +14,6 @@ import java.util.TimerTask;
 import org.helioviewer.base.math.Vector2dInt;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
-import org.helioviewer.jhv.gui.states.StateController;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.viewmodel.changeevent.LayerChangedReason;

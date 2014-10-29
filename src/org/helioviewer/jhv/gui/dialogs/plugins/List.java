@@ -25,8 +25,8 @@ public class List extends JScrollPane {
 
     private final LinkedList<ListEntryChangeListener> listeners = new LinkedList<ListEntryChangeListener>();
 
-    private final Color selectionBackgroundColor = new JList().getSelectionBackground();
-    private final Color selectionForegroundColor = new JList().getSelectionForeground();
+    private final Color selectionBackgroundColor = new JList<Object>().getSelectionBackground();
+    private final Color selectionForegroundColor = new JList<Object>().getSelectionForeground();
     private final HashMap<String, AbstractListEntry> entryMap = new HashMap<String, AbstractListEntry>();
 
     private final JPanel contentPane = new JPanel();

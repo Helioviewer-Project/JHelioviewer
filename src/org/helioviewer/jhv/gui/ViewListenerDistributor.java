@@ -1,8 +1,6 @@
 package org.helioviewer.jhv.gui;
 
-import java.util.AbstractList;
 import java.util.ConcurrentModificationException;
-import java.util.LinkedList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.helioviewer.base.logging.Log;

@@ -63,14 +63,14 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
 
     private JRadioButton loadDefaultMovieOnStartUp;
     private JRadioButton doNothingOnStartUp;
-    private JComboBox lafCombo;
+    private JComboBox<String> lafCombo;
     private JPanel paramsPanel;
     private JCheckBox limitMaxSize = new JCheckBox("Limit size");
     private JLabel occupiedSizeLabel = new JLabel();
     private JTextField maxCacheBox = new JTextField("0.0");
     private JLabel maxCacheBoxLabel = new JLabel(" Mbytes");
-    private JComboBox debugFileCombo = null;
-    private JComboBox debugConsoleCombo = null;
+    private JComboBox<?> debugFileCombo = null;
+    private JComboBox<?> debugConsoleCombo = null;
     private JTextField debugFileTextField = null;
     private DefaultsSelectionPanel defaultsPanel;
     private JTextField dateFormatField;
@@ -477,12 +477,12 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
         for (int i = 0; i < lafs.length; i++) {
             lafNames[i] = lafs[i].getName();
         }
-        lafCombo = new JComboBox(lafNames);
+        lafCombo = new JComboBox<String>(lafNames);
 
         final PreferencesDialog parent = this;
         lafCombo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                JComboBox source = (JComboBox) e.getSource();
+                JComboBox<?> source = (JComboBox<?>) e.getSource();
                 // UIManager.LookAndFeelInfo[] lafs =
                 // UIManager.getInstalledLookAndFeels();
                 UIManager.LookAndFeelInfo[] lafs = getAllowedLookAndFeels();
@@ -528,14 +528,14 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
         JPanel row4 = new JPanel(new FlowLayout(FlowLayout.LEADING));
         if (fileLoggingLevel != null) {
             row4.add(new JLabel("File log level:"));
-            debugFileCombo = new JComboBox(LogSettings.getSingletonInstance().LEVELS);
+            debugFileCombo = new JComboBox<Object>(LogSettings.getSingletonInstance().LEVELS);
             row4.add(debugFileCombo);
             debugFileCombo.setSelectedItem(fileLoggingLevel);
         }
 
         if (consoleLoggingLevel != null) {
             row4.add(new JLabel("Console log level:"));
-            debugConsoleCombo = new JComboBox(LogSettings.getSingletonInstance().LEVELS);
+            debugConsoleCombo = new JComboBox<Object>(LogSettings.getSingletonInstance().LEVELS);
             row4.add(debugConsoleCombo);
             debugConsoleCombo.setSelectedItem(consoleLoggingLevel);
         }
@@ -663,7 +663,5 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
 
 	@Override
 	public void init() {
-		// TODO Auto-generated method stub
-		
 	}
 }

@@ -22,12 +22,6 @@ import org.helioviewer.base.logging.Log;
  */
 public class JHVGlobals {
 
-    /** The maximum amount of memory the JVM will use for the heap. */
-    public static final long MAX_JVM_HEAP_SIZE = Runtime.getRuntime().maxMemory();
-
-    /** The the maximum amount of memory the BufferManager object will use. */
-    public static final long MAX_BUFFER_MANAGER_SIZE = (MAX_JVM_HEAP_SIZE * 8) / 10;
-
     public static final String GLibVersionTool = "glibc-version";
     public static final String ffmpeg = "ffmpeg";
     public static final String cgc = "cgc";
@@ -43,10 +37,6 @@ public class JHVGlobals {
     /** Constructor is private to prevent instantiation. */
     private JHVGlobals() {
 
-    }
-
-    public static void gc() {
-        System.gc();
     }
 
     /**

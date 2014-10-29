@@ -20,7 +20,6 @@ import org.helioviewer.jhv.gui.components.MoviePanel;
 import org.helioviewer.jhv.gui.components.QualitySpinner;
 import org.helioviewer.jhv.gui.components.SideContentPane;
 import org.helioviewer.jhv.gui.components.TopToolBar;
-import org.helioviewer.jhv.gui.components.statusplugins.RenderModeStatusPanel;
 import org.helioviewer.jhv.gui.interfaces.ImagePanelInputController;
 import org.helioviewer.jhv.internal_plugins.selectedLayer.SelectedLayerPanel;
 import org.helioviewer.jhv.layers.LayersModel;
@@ -40,26 +39,22 @@ import org.helioviewer.viewmodelplugin.controller.PluginManager;
 import org.helioviewer.viewmodelplugin.filter.FilterContainer;
 import org.helioviewer.viewmodelplugin.filter.FilterTab;
 import org.helioviewer.viewmodelplugin.filter.FilterTabDescriptor;
+import org.helioviewer.viewmodelplugin.filter.FilterTabDescriptor.Type;
 import org.helioviewer.viewmodelplugin.filter.FilterTabList;
 import org.helioviewer.viewmodelplugin.filter.FilterTabPanelManager;
-import org.helioviewer.viewmodelplugin.filter.FilterTabDescriptor.Type;
 import org.helioviewer.viewmodelplugin.overlay.OverlayContainer;
 import org.helioviewer.viewmodelplugin.overlay.OverlayControlComponent;
 import org.helioviewer.viewmodelplugin.overlay.OverlayControlComponentManager;
 import org.helioviewer.viewmodelplugin.overlay.OverlayPanel;
 
-public class GuiState3DWCS implements State {
+public class GuiState3DWCS {
 
     // private JPanel gl3dSettingsPanel;
-    protected TopToolBar topToolBar;
+    protected static TopToolBar topToolBar = new TopToolBar();
 
-    protected ComponentView mainComponentView;
-    protected ComponentView overviewComponentView;
+    protected static ComponentView mainComponentView;
+    protected static ComponentView overviewComponentView;
 
-    protected RenderModeStatusPanel renderModeStatus;
-
-
-    
     public GuiState3DWCS() {
         // Override the viewchainFactory with a specific 3D implementation
     }    
@@ -74,7 +69,7 @@ public class GuiState3DWCS implements State {
 
 
     public void activate() {
-        GL3DCameraSelectorModel.getInstance().activate(this.mainComponentView.getAdapter(GL3DSceneGraphView.class));
+        GL3DCameraSelectorModel.getInstance().activate(mainComponentView.getAdapter(GL3DSceneGraphView.class));
     }
 
 
@@ -110,14 +105,7 @@ public class GuiState3DWCS implements State {
     }
 
 
-    public ViewStateEnum getType() {
-        return ViewStateEnum.View3D;
-    }
-
     public TopToolBar getTopToolBar() {
-        if (topToolBar == null) {
-            topToolBar = new TopToolBar();
-        }
         return topToolBar;
     }
 
@@ -127,10 +115,6 @@ public class GuiState3DWCS implements State {
 
     public ComponentView getOverviewComponentView() {
         return overviewComponentView;
-    }
-
-    public RenderModeStatusPanel getRenderModeStatus() {
-        return renderModeStatus;
     }
 
     public ImagePanelInputController getDefaultInputController() {

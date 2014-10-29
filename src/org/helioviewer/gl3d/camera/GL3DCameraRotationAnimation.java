@@ -1,8 +1,7 @@
 package org.helioviewer.gl3d.camera;
 
 import org.helioviewer.gl3d.scenegraph.math.GL3DQuatd;
-import org.helioviewer.gl3d.scenegraph.math.GL3DVec3d;
-import org.helioviewer.jhv.gui.states.StateController;
+import org.helioviewer.jhv.gui.states.GuiState3DWCS;
 
 /**
  * This animation rotates the camera from a startpoint to an endpoint by using
@@ -14,7 +13,6 @@ import org.helioviewer.jhv.gui.states.StateController;
 public class GL3DCameraRotationAnimation implements GL3DCameraAnimation {
     private boolean isFinished = false;
 
-    private long startTime = -1;
     private long lastAnimationTime = -1;
     private long timeLeft = 0;
     private long duration = 0;
@@ -30,9 +28,9 @@ public class GL3DCameraRotationAnimation implements GL3DCameraAnimation {
     	this.endRotation = endRotation.copy();
     	this.duration = duration;
         this.timeLeft = duration;
-        this.startTime = System.currentTimeMillis();
+        System.currentTimeMillis();
         this.lastAnimationTime = System.currentTimeMillis();
-        StateController.getInstance().getCurrentState().getMainComponentView().regristryAnimation(duration);        
+        new GuiState3DWCS().getMainComponentView().regristryAnimation(duration);        
     }
 
     

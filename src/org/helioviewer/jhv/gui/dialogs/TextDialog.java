@@ -28,14 +28,24 @@ public class TextDialog extends JDialog implements ActionListener, ShowableDialo
         String text = "";
         String linebreak = System.getProperty("line.separator");
 
+        Scanner scanner=null;
         try {
-            Scanner scanner = new Scanner(new BufferedReader(new InputStreamReader(textFile.openStream())));
+            scanner = new Scanner(new BufferedReader(new InputStreamReader(textFile.openStream())));
 
             while (scanner.hasNext()) {
                 text += scanner.nextLine() + linebreak;
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        
+        if(scanner!=null)
+          try
+          {
+            scanner.close();
+          }
+        catch(Exception e)
+        {
         }
 
         init(text);
@@ -71,7 +81,5 @@ public class TextDialog extends JDialog implements ActionListener, ShowableDialo
 
 	@Override
 	public void init() {
-		// TODO Auto-generated method stub
-		
 	}
 }

@@ -44,7 +44,7 @@ public class SOHOLUTPanel extends FilterPanel implements ActionListener, FilterA
     /**
      * Shown combobox to choose
      */
-    private JComboBox combobox;
+    private JComboBox<String> combobox;
     /**
      * Shown invert button
      */
@@ -68,7 +68,7 @@ public class SOHOLUTPanel extends FilterPanel implements ActionListener, FilterA
 
         // Add add entry
         lutMap.put("<Load new GIMP gradient file>", null);
-        combobox = new JComboBox(lutMap.keySet().toArray());
+        combobox = new JComboBox<String>(lutMap.keySet().toArray(new String[0]));
         combobox.setToolTipText("Choose a color table");
         combobox.setPreferredSize(new Dimension(150, combobox.getPreferredSize().height));
         combobox.addActionListener(this);

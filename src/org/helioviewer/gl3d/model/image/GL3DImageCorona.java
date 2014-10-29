@@ -13,8 +13,6 @@ import org.helioviewer.gl3d.scenegraph.math.GL3DVec4d;
 import org.helioviewer.gl3d.view.GL3DImageTextureView;
 import org.helioviewer.gl3d.wcs.CoordinateConversion;
 import org.helioviewer.gl3d.wcs.CoordinateVector;
-import org.helioviewer.gl3d.wcs.conversion.SolarImageToTextureConversion;
-import org.helioviewer.gl3d.wcs.impl.SolarImageCoordinateSystem;
 import org.helioviewer.gl3d.wcs.impl.TextureCoordinateSystem;
 import org.helioviewer.viewmodel.metadata.MetaData;
 import org.helioviewer.viewmodel.region.Region;
@@ -29,9 +27,6 @@ import org.helioviewer.viewmodel.view.opengl.shader.GLVertexShaderProgram;
  */
 public class GL3DImageCorona extends GL3DImageMesh {
     protected Vector2dInt mappingResolution = new Vector2dInt(2, 2);
-    
-    private TextureCoordinateSystem textureCoordinateSystem;
-    private SolarImageToTextureConversion solarDisk2TextureConversion;
     
     Region lastRegion = null;
     private GL3DImageLayer layer = null;
@@ -51,9 +46,7 @@ public class GL3DImageCorona extends GL3DImageMesh {
     	if (region != null) {
     		MetaData metaData = this.layer.metaDataView.getMetaData();
     		
-    		SolarImageCoordinateSystem solarDiskCS = new SolarImageCoordinateSystem();
-            textureCoordinateSystem = new TextureCoordinateSystem(this.imageTextureView.getTextureScale(), region);
-            solarDisk2TextureConversion = (SolarImageToTextureConversion) solarDiskCS.getConversion(textureCoordinateSystem);
+            new TextureCoordinateSystem(this.imageTextureView.getTextureScale(), region);
             // Read Boundaries on Solar Disk
             CoordinateVector orientationVector = this.layer.getOrientation();
             CoordinateConversion toViewSpace = this.layer.getCoordinateSystem().getConversion(state.getActiveCamera().getViewSpaceCoordinateSystem());

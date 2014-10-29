@@ -12,7 +12,6 @@ import javax.swing.UIManager;
 
 import org.helioviewer.base.FileUtils;
 import org.helioviewer.base.logging.Log;
-import org.helioviewer.gl3d.view.GL3DComponentView;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.opengl.GLInfo;
 import org.helioviewer.viewmodel.view.jp2view.kakadu.JHV_Kdu_cache;

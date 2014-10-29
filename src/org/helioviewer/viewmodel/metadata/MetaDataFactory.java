@@ -7,16 +7,14 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
-import org.helioviewer.gl3d.scenegraph.GL3DState;
-import org.helioviewer.jhv.gui.states.StateController;
-
-import ch.qos.logback.core.db.dialect.MySQLDialect;
+import org.helioviewer.jhv.gui.states.GuiState3DWCS;
 
 public class MetaDataFactory {
 	
 	static final List<Class<MetaData>> ads = new ArrayList<Class<MetaData>>();
 	
-	static final Class[] metaDataClasses = new Class[]{
+	@SuppressWarnings("unchecked")
+  static final Class<MetaData>[] metaDataClasses = new Class[]{
 		MetaDataAIA.class,
 		MetaDataEIT.class,
 		MetaDataHMI.class,
@@ -67,7 +65,7 @@ public class MetaDataFactory {
 			return metaData;
 		}
 		
-		JOptionPane.showMessageDialog(StateController.getInstance().getCurrentState().getMainComponentView().getComponent(), "Not supported Metadata's");
+		JOptionPane.showMessageDialog(new GuiState3DWCS().getMainComponentView().getComponent(), "Not supported Metadata's");
 		return null;
 		
 	}

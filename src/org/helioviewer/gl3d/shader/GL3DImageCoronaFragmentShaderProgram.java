@@ -5,8 +5,6 @@ import org.helioviewer.viewmodel.view.opengl.shader.GLShaderBuilder;
 import org.helioviewer.viewmodel.view.opengl.shader.GLShaderBuilder.GLBuildShaderException;
 
 public class GL3DImageCoronaFragmentShaderProgram extends GLFragmentShaderProgram {
-
-	private int h;
     public GL3DImageCoronaFragmentShaderProgram() {
     }
 

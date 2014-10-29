@@ -15,25 +15,14 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JSpinner;
-import javax.swing.ListCellRenderer;
-import javax.swing.SpinnerNumberModel;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 import org.helioviewer.base.logging.Log;
 import org.helioviewer.base.message.Message;
-import org.helioviewer.basegui.components.TimeTextField;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.gui.ImageViewerGui;
+import org.helioviewer.jhv.gui.components.TimeTextField;
 import org.helioviewer.jhv.gui.components.calendar.JHVCalendarDatePicker;
 import org.helioviewer.jhv.gui.components.calendar.JHVCalendarEvent;
 import org.helioviewer.jhv.gui.components.calendar.JHVCalendarListener;
@@ -599,7 +588,7 @@ public class ImageDataPanel extends ObservationDialogPanel {
 
         private JLabel labelTimeStep = new JLabel("Time Step");
         private JSpinner spinnerCadence = new JSpinner();
-        private JComboBox comboUnit = new JComboBox(timeStepUnitStrings);
+        private JComboBox<String> comboUnit = new JComboBox<String>(timeStepUnitStrings);
 
         // //////////////////////////////////////////////////////////////////////////
         // Methods
@@ -707,15 +696,15 @@ public class ImageDataPanel extends ObservationDialogPanel {
         /**
          * Combobox to select observatory
          */
-        private JComboBox comboObservatory = new JComboBox(new String[] { "Loading..." });
+        private JComboBox<Object> comboObservatory = new JComboBox<Object>(new String[] { "Loading..." });
         /**
          * Combobox to select instruments
          */
-        private JComboBox comboInstrument = new JComboBox(new String[] { "Loading..." });
+        private JComboBox<Object> comboInstrument = new JComboBox<Object>(new String[] { "Loading..." });
         /**
          * Combobox to select detector and/or measurement
          */
-        private JComboBox comboDetectorMeasurement = new JComboBox(new String[] { "Loading..." });
+        private JComboBox<Object> comboDetectorMeasurement = new JComboBox<Object>(new String[] { "Loading..." });
 
         /**
          * Default constructor which will setup the components and add listener
@@ -735,7 +724,7 @@ public class ImageDataPanel extends ObservationDialogPanel {
             comboDetectorMeasurement.setEnabled(false);
 
             // Advanced rendering with tooltips for the items
-            final ListCellRenderer itemRenderer = new DefaultListCellRenderer() {
+            final ListCellRenderer<Object> itemRenderer = new DefaultListCellRenderer() {
                 /**
                  * 
                  */
@@ -748,7 +737,7 @@ public class ImageDataPanel extends ObservationDialogPanel {
                  *      java.lang.Object, int, boolean, boolean)
                  */
 
-                public Component getListCellRendererComponent(JList list, Object value, int arg2, boolean arg3, boolean arg4) {
+                public Component getListCellRendererComponent(JList<?> list, Object value, int arg2, boolean arg3, boolean arg4) {
                     JLabel result = (JLabel) super.getListCellRendererComponent(list, value, arg2, arg3, arg4);
                     if (value != null) {
                         if (value instanceof DataSources.Item) {
@@ -777,7 +766,7 @@ public class ImageDataPanel extends ObservationDialogPanel {
                     String obs = InstrumentsPanel.this.getObservatory();
                     String ins = InstrumentsPanel.this.getInstrument();
 
-                    Vector<ItemPair> values = new Vector<ItemPair>();
+                    Vector<Object> values = new Vector<Object>();
                     Item[] detectors = DataSources.getSingletonInstance().getDetectors(obs, ins);
 
                     for (Item detector : detectors) {
@@ -832,8 +821,8 @@ public class ImageDataPanel extends ObservationDialogPanel {
          * @param container
          *            combobox where to add the items.
          */
-        private void setComboBox(JComboBox container, Item[] items) {
-            container.setModel(new DefaultComboBoxModel(items));
+        private void setComboBox(JComboBox<Object> container, Item[] items) {
+            container.setModel(new DefaultComboBoxModel<Object>(items));
             container.setEnabled(true);
             for (int i = 0; i < items.length; i++) {
                 if (items[i].isDefaultItem()) {
@@ -855,10 +844,10 @@ public class ImageDataPanel extends ObservationDialogPanel {
          * @param container
          *            combobox where to add the items.
          */
-        private void setComboBox(JComboBox container, Vector<ItemPair> items) {
-            container.setModel(new DefaultComboBoxModel(items));
+        private void setComboBox(JComboBox<Object> container, Vector<Object> items) {
+            container.setModel(new DefaultComboBoxModel<Object>(items));
             for (int i = 0; i < items.size(); i++) {
-                if (items.get(i).isDefaultItem()) {
+                if (((ItemPair)items.get(i)).isDefaultItem()) {
                     container.setSelectedIndex(i);
                     return;
                 }

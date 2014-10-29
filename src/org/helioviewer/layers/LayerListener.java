@@ -1,9 +1,5 @@
 package org.helioviewer.layers;
 
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import org.helioviewer.viewmodel.changeevent.ChangeEvent;
-import org.helioviewer.viewmodel.view.View;
 
 public interface LayerListener {
 

@@ -3,72 +3,44 @@ package org.helioviewer.jhv.gui.dialogs;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Graphics;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.imageio.ImageIO;
-import javax.swing.Action;
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileFilter;
-import javax.swing.Timer;
-
-import jogamp.graph.font.typecast.ot.table.DirectoryEntry;
 
 import org.helioviewer.base.logging.Log;
-import org.helioviewer.gl3d.view.GL3DComponentView;
-import org.helioviewer.jhv.JHVDirectory;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.gui.ImageViewerGui;
-import org.helioviewer.jhv.gui.ViewListenerDistributor;
-import org.helioviewer.jhv.gui.components.calendar.JHVCalendarEvent;
-import org.helioviewer.jhv.gui.components.calendar.JHVCalendarListener;
 import org.helioviewer.viewmodel.changeevent.ChangeEvent;
-import org.helioviewer.viewmodel.changeevent.TimestampChangedReason;
 import org.helioviewer.viewmodel.view.ComponentView;
 import org.helioviewer.viewmodel.view.LinkedMovieManager;
-import org.helioviewer.viewmodel.view.MovieView;
-import org.helioviewer.viewmodel.view.MovieView.AnimationMode;
 import org.helioviewer.viewmodel.view.TimedMovieView;
-import org.helioviewer.viewmodel.view.View;
-import org.helioviewer.viewmodel.view.ViewListener;
 import org.helioviewer.viewmodel.view.jp2view.JHVJPXView.SpeedType;
-import org.helioviewer.viewmodel.view.jp2view.datetime.ImmutableDateTime;
 
 import com.xuggle.mediatool.IMediaWriter;
 import com.xuggle.mediatool.ToolFactory;
-import com.xuggle.xuggler.ICodec;
-import com.xuggle.xuggler.IRational;
 
 
 public class ExportMovieDialog implements ActionListener{
-	private String name = "test export...";
 	private TimedMovieView timedMovieView = null;
 	private ComponentView mainComponentView = null;
 	
@@ -419,7 +391,8 @@ public class ExportMovieDialog implements ActionListener{
 
 	public class ProgressDialog extends JDialog implements ActionListener{
 		
-		private JProgressBar progressBar;
+    private static final long serialVersionUID=-488930636247393662L;
+    private JProgressBar progressBar;
 		private JButton btnCancel;
 		private ExportMovieDialog exportMovieDialog;
 		private final JPanel contentPanel = new JPanel();
