@@ -10,9 +10,9 @@ import org.helioviewer.base.logging.Log;
 import org.helioviewer.gl3d.camera.GL3DCamera;
 import org.helioviewer.gl3d.camera.GL3DCameraPanAnimation;
 import org.helioviewer.gl3d.camera.GL3DCameraZoomAnimation;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
-import org.helioviewer.jhv.gui.states.GuiState3DWCS;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.viewmodel.region.Region;
 import org.helioviewer.viewmodel.view.MetaDataView;
@@ -51,14 +51,12 @@ public class GL3DZoom1to1Action extends AbstractAction {
 			JHVJP2View regionView = view.getAdapter(JHVJP2View.class);
 			Region imageRegion = ((JHVJP2View) regionView).getNewestRegion();
 
-			Region region = new GuiState3DWCS()
-					.getMainComponentView().getAdapter(RegionView.class)
+			Region region = GuiState3DWCS.mainComponentView.getAdapter(RegionView.class)
 					.getRegion();
 
 			if (region != null && imageRegion != null) {
 				double distance = camera.getZTranslation()
-						* (new GuiState3DWCS()
-								.getMainComponentView().getCanavasSize()
+						* (GuiState3DWCS.mainComponentView.getCanavasSize()
 								.getWidth() * unitsPerPixel)
 						/ imageRegion.getWidth();
 				distance = distance - camera.getZTranslation();

@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.gui.states;
+package org.helioviewer.jhv.gui;
 
 import java.util.AbstractList;
 
@@ -14,11 +14,8 @@ import org.helioviewer.gl3d.view.GL3DComponentView;
 import org.helioviewer.gl3d.view.GL3DLayeredView;
 import org.helioviewer.gl3d.view.GL3DSceneGraphView;
 import org.helioviewer.gl3d.view.GL3DViewportView;
-import org.helioviewer.jhv.gui.ImageViewerGui;
-import org.helioviewer.jhv.gui.ViewListenerDistributor;
 import org.helioviewer.jhv.gui.components.MoviePanel;
 import org.helioviewer.jhv.gui.components.QualitySpinner;
-import org.helioviewer.jhv.gui.components.SideContentPane;
 import org.helioviewer.jhv.gui.components.TopToolBar;
 import org.helioviewer.jhv.gui.interfaces.ImagePanelInputController;
 import org.helioviewer.jhv.internal_plugins.selectedLayer.SelectedLayerPanel;
@@ -48,25 +45,14 @@ import org.helioviewer.viewmodelplugin.overlay.OverlayControlComponentManager;
 import org.helioviewer.viewmodelplugin.overlay.OverlayPanel;
 
 public class GuiState3DWCS {
+    public static TopToolBar topToolBar = new TopToolBar();
 
-    // private JPanel gl3dSettingsPanel;
-    protected static TopToolBar topToolBar = new TopToolBar();
-
-    protected static ComponentView mainComponentView;
-    protected static ComponentView overviewComponentView;
+    public static ComponentView mainComponentView;
+    public static ComponentView overviewComponentView;
 
     public GuiState3DWCS() {
         // Override the viewchainFactory with a specific 3D implementation
     }    
-
-    public void addStateSpecificComponents(SideContentPane sideContentPane) {
-        GL3DCameraSelectorModel.getInstance();
-    }
-
-    public void removeStateSpecificComponents(SideContentPane sideContentPane) {
-        //this.modelPanel.destroy();
-    }
-
 
     public void activate() {
         GL3DCameraSelectorModel.getInstance().activate(mainComponentView.getAdapter(GL3DSceneGraphView.class));
@@ -101,21 +87,8 @@ public class GuiState3DWCS {
 
         ViewListenerDistributor.getSingletonInstance().setView(mainComponentView);
         // imageSelectorPanel.setLayeredView(mainComponentView.getAdapter(LayeredView.class));
-
     }
 
-
-    public TopToolBar getTopToolBar() {
-        return topToolBar;
-    }
-
-    public ComponentView getMainComponentView() {
-        return mainComponentView;
-    }
-
-    public ComponentView getOverviewComponentView() {
-        return overviewComponentView;
-    }
 
     public ImagePanelInputController getDefaultInputController() {
         return new GL3DCameraMouseController();

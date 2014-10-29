@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 import javax.swing.AbstractAction;
 import javax.swing.JToggleButton;
 
-import org.helioviewer.base.message.Message;
+import org.helioviewer.base.Message;
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.viewmodel.metadata.MetaData;

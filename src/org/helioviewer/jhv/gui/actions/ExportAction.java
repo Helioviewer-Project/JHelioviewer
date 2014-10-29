@@ -8,8 +8,8 @@ import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.dialogs.ExportMovieDialog;
-import org.helioviewer.jhv.gui.states.GuiState3DWCS;
 import org.helioviewer.viewmodel.view.LinkedMovieManager;
 
 public class ExportAction extends AbstractAction{
@@ -28,6 +28,6 @@ public class ExportAction extends AbstractAction{
           if(LinkedMovieManager.getActiveInstance().getMasterMovie()!=null)
             new ExportMovieDialog();
           else
-            JOptionPane.showMessageDialog(new GuiState3DWCS().getMainComponentView().getComponent(), "At least one active layer must be visible.\n\nPlease add a layer before exporting movies.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(GuiState3DWCS.mainComponentView.getComponent(), "At least one active layer must be visible.\n\nPlease add a layer before exporting movies.", "Error", JOptionPane.ERROR_MESSAGE);
 	    }
 }

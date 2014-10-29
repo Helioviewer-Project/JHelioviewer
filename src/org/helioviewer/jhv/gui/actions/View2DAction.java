@@ -6,7 +6,7 @@ import javax.swing.AbstractAction;
 
 import org.helioviewer.gl3d.gui.GL3DCameraSelectorModel;
 import org.helioviewer.gl3d.scenegraph.GL3DState;
-import org.helioviewer.jhv.gui.states.GuiState3DWCS;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 
 public class View2DAction extends AbstractAction {
 
@@ -25,7 +25,7 @@ public class View2DAction extends AbstractAction {
       GL3DState.get().set2DState();
       GL3DCameraSelectorModel.getInstance().set2DMode();
         GL3DCameraSelectorModel.getInstance().getSelectedItem().setCurrentInteraction(GL3DCameraSelectorModel.getInstance().getSelectedItem().getPanInteraction());
-        new GuiState3DWCS().getTopToolBar().set2DMode();
+        GuiState3DWCS.topToolBar.set2DMode();
       //StateController.getInstance().set2DState();
     }
 }

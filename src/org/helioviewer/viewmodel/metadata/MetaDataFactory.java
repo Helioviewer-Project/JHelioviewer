@@ -7,7 +7,7 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
-import org.helioviewer.jhv.gui.states.GuiState3DWCS;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 
 public class MetaDataFactory {
 	
@@ -65,7 +65,7 @@ public class MetaDataFactory {
 			return metaData;
 		}
 		
-		JOptionPane.showMessageDialog(new GuiState3DWCS().getMainComponentView().getComponent(), "Not supported Metadata's");
+		JOptionPane.showMessageDialog(GuiState3DWCS.mainComponentView.getComponent(), "Not supported Metadata's");
 		return null;
 		
 	}

@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import org.helioviewer.base.FileUtils;
+import org.helioviewer.base.Message;
 import org.helioviewer.base.logging.Log;
-import org.helioviewer.base.message.Message;
 import org.helioviewer.viewmodel.metadata.MetaData;
 import org.json.JSONArray;
 import org.json.JSONException;

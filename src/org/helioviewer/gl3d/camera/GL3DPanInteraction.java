@@ -8,7 +8,7 @@ import org.helioviewer.gl3d.scenegraph.math.GL3DVec3d;
 import org.helioviewer.gl3d.scenegraph.rt.GL3DRay;
 import org.helioviewer.gl3d.scenegraph.rt.GL3DRayTracer;
 import org.helioviewer.gl3d.view.GL3DSceneGraphView;
-import org.helioviewer.jhv.gui.states.GuiState3DWCS;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 
 /**
  * Standard panning interaction, moves the camera proportionally to the mouse
@@ -36,7 +36,7 @@ public class GL3DPanInteraction extends GL3DDefaultInteraction {
 					+ this.camera.getRotation().toMatrix().inverse()
 							.multiply(p).z;
 
-			Dimension canvasSize = new GuiState3DWCS().getMainComponentView().getCanavasSize();
+			Dimension canvasSize = GuiState3DWCS.mainComponentView.getCanavasSize();
 			double halfClipNearHeight = Math.tanh(Math.toRadians(camera
 					.getFOV() / 2)) * camera.getClipNear();
 			double halfClipNearWidth = halfClipNearHeight
@@ -64,7 +64,7 @@ public class GL3DPanInteraction extends GL3DDefaultInteraction {
 
 	public void mouseDragged(MouseEvent e, GL3DCamera camera) {
 		if (defaultTranslation != null) {
-			Dimension canvasSize = new GuiState3DWCS().getMainComponentView().getCanavasSize();
+			Dimension canvasSize = GuiState3DWCS.mainComponentView.getCanavasSize();
 
 			double yMeterInNearPlane = (e.getY() - canvasSize.getHeight() / 2)
 					* meterPerPixelHeight;

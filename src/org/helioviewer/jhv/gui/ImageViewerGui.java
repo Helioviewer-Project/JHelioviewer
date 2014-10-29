@@ -24,7 +24,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 
-import org.helioviewer.base.message.Message;
+import org.helioviewer.base.Message;
 import org.helioviewer.jhv.JHVSplashScreen;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
@@ -36,7 +36,6 @@ import org.helioviewer.jhv.gui.components.statusplugins.PositionStatusPanel;
 import org.helioviewer.jhv.gui.components.statusplugins.QualityStatusPanel;
 import org.helioviewer.jhv.gui.components.statusplugins.ZoomStatusPanel;
 import org.helioviewer.jhv.gui.controller.ZoomController;
-import org.helioviewer.jhv.gui.states.GuiState3DWCS;
 import org.helioviewer.jhv.internal_plugins.filter.SOHOLUTFilterPlugin.SOHOLUTPanel;
 import org.helioviewer.jhv.internal_plugins.filter.channelMixer.ChannelMixerPanel;
 import org.helioviewer.jhv.internal_plugins.filter.contrast.ContrastPanel;
@@ -225,7 +224,6 @@ public class ImageViewerGui {
 			}
 		});
 
-		state.addStateSpecificComponents(getLeftContentPane());
 		// prepare gui again
 		updateComponentPanels();
 		mainImagePanel.setInputController(state.getDefaultInputController());
@@ -285,7 +283,7 @@ public class ImageViewerGui {
 	 * @return instance of the main ComponentView.
 	 */
 	public ComponentView getMainView() {
-		return new GuiState3DWCS().getMainComponentView();
+		return GuiState3DWCS.mainComponentView;
 	}
 
 
@@ -389,17 +387,17 @@ public class ImageViewerGui {
 	}
 
 	public TopToolBar getTopToolBar() {
-		return new GuiState3DWCS().getTopToolBar();
+		return GuiState3DWCS.topToolBar;
 	}
 
 	public void addTopToolBarPlugin(
 			PropertyChangeListener propertyChangeListener, JToggleButton button) {
-		new GuiState3DWCS().getTopToolBar().addToolbarPlugin(button);
+		GuiState3DWCS.topToolBar.addToolbarPlugin(button);
 
-		new GuiState3DWCS().getTopToolBar()
+		GuiState3DWCS.topToolBar
 				.addPropertyChangeListener(propertyChangeListener);
 
-		new GuiState3DWCS().getTopToolBar().validate();
+		GuiState3DWCS.topToolBar.validate();
 	}
 
 	private void updateComponentPanels() {

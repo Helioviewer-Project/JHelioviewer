@@ -13,12 +13,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.helioviewer.base.DownloadStream;
+import org.helioviewer.base.Message;
 import org.helioviewer.base.logging.Log;
-import org.helioviewer.base.message.Message;
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.Settings;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.ImageViewerGui;
-import org.helioviewer.jhv.gui.states.GuiState3DWCS;
 import org.helioviewer.viewmodel.io.APIResponse;
 import org.helioviewer.viewmodel.io.APIResponseDump;
 import org.helioviewer.viewmodel.metadata.MetaData;

@@ -1,6 +1,6 @@
 package org.helioviewer.gl3d.camera;
 
-import org.helioviewer.jhv.gui.states.GuiState3DWCS;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 
 /**
  * This animation zooms the camera by a given amount. Zooming only affects the
@@ -30,7 +30,7 @@ public class GL3DCameraZoomAnimation implements GL3DCameraAnimation {
         this.distanceToTravel = distanceToTravel;
         this.timeLeft = duration;
         this.distanceDelta = distanceToTravel / this.timeLeft;
-        new GuiState3DWCS().getMainComponentView().regristryAnimation(duration);
+        GuiState3DWCS.mainComponentView.regristryAnimation(duration);
     }
     
 

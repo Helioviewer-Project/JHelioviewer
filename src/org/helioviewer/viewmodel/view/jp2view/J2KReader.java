@@ -4,9 +4,9 @@ import java.awt.Rectangle;
 import java.io.IOException;
 import java.net.SocketException;
 
+import org.helioviewer.base.Message;
 import org.helioviewer.base.logging.Log;
 import org.helioviewer.base.math.Interval;
-import org.helioviewer.base.message.Message;
 import org.helioviewer.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.viewmodel.changeevent.ReaderErrorReason;
 import org.helioviewer.viewmodel.changeevent.SubImageDataChangedReason;

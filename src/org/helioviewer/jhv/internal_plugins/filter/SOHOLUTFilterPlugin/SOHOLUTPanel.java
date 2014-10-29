@@ -16,8 +16,8 @@ import javax.swing.JLabel;
 import javax.swing.JToggleButton;
 import javax.swing.border.BevelBorder;
 
+import org.helioviewer.base.Message;
 import org.helioviewer.base.logging.Log;
-import org.helioviewer.base.message.Message;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.viewmodel.filter.Filter;

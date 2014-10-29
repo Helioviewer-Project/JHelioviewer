@@ -1,4 +1,4 @@
-package org.helioviewer.base.message;
+package org.helioviewer.base;
 
 import java.awt.EventQueue;
 

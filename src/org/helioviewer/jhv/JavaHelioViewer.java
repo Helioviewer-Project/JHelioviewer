@@ -13,9 +13,9 @@ import java.util.TimeZone;
 
 import javax.swing.UIManager;
 
+import org.helioviewer.base.Message;
 import org.helioviewer.base.logging.Log;
 import org.helioviewer.base.logging.LogSettings;
-import org.helioviewer.base.message.Message;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.components.layerTable.LayerTableOverlapWatcher;
 import org.helioviewer.jhv.internal_plugins.InternalFilterPlugin;

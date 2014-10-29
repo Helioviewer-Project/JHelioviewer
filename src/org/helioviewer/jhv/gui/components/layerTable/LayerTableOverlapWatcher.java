@@ -2,9 +2,9 @@ package org.helioviewer.jhv.gui.components.layerTable;
 
 import java.util.Date;
 
+import org.helioviewer.base.Message;
 import org.helioviewer.base.logging.Log;
 import org.helioviewer.base.math.Interval;
-import org.helioviewer.base.message.Message;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.viewmodel.view.View;

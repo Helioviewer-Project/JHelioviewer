@@ -1,7 +1,7 @@
 package org.helioviewer.gl3d.camera;
 
 import org.helioviewer.gl3d.scenegraph.math.GL3DQuatd;
-import org.helioviewer.jhv.gui.states.GuiState3DWCS;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 
 /**
  * This animation rotates the camera from a startpoint to an endpoint by using
@@ -30,7 +30,7 @@ public class GL3DCameraRotationAnimation implements GL3DCameraAnimation {
         this.timeLeft = duration;
         System.currentTimeMillis();
         this.lastAnimationTime = System.currentTimeMillis();
-        new GuiState3DWCS().getMainComponentView().regristryAnimation(duration);        
+        GuiState3DWCS.mainComponentView.regristryAnimation(duration);        
     }
 
     

@@ -14,7 +14,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
-import org.helioviewer.base.message.Message;
+import org.helioviewer.base.Message;
 import org.helioviewer.jhv.JHVDirectory;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.gui.ImageViewerGui;
