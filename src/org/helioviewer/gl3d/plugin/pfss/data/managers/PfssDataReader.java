@@ -23,7 +23,7 @@ import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 
 /**
- * Reads in Memory PfssData and writes PfssFrames
+ * Reads in Memory PfssData and writes PfssFrames. Supports running in an own thread
  * 
  * @author Jonas Schwammberger
  *

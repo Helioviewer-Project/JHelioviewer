@@ -56,6 +56,7 @@ public class PfssData implements Runnable {
 				offset += bytesRead;
 			}
 			isLoaded = true;
+			loaded.signalAll();
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -67,7 +68,6 @@ public class PfssData implements Runnable {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			loaded.signalAll();
 			lock.unlock();
 		}
 		

@@ -39,12 +39,12 @@ public class FileDescriptorManager {
 		int currentYear = currentCal.get(Calendar.YEAR);
 		int currentMonth = currentCal.get(Calendar.MONTH);
 		
-		descriptors = new ArrayList<>((endMonth-currentMonth)+1* 125); //heuristic: for each month, there are aboud 125 fits files.
+		descriptors = new ArrayList<>((endMonth-currentMonth)+1* 125); //heuristic: for each month, there are about 125 fits files.
 		
 		while(currentYear <= endYear && currentMonth <= endMonth) {
 			String m = (currentMonth) < 9 ? "0" + (currentMonth + 1)
 					: (currentMonth + 1) + "";
-			String url = PfssSettings.INFOFILE_URL + currentYear +"/"+m+"/list.txt";
+			String url = PfssSettings.SERVER_URL + currentYear +"/"+m+"/list.txt";
 			this.readDescription(url, from, to,currentYear,currentMonth);
 			
 			currentCal.add(Calendar.MONTH, 1);
@@ -100,5 +100,26 @@ public class FileDescriptorManager {
 	
 	public int getNumberOfFiles() {
 		return descriptors.size();
+	}
+	
+	public static void main(String[] args) {
+		FileDescriptorManager man = new FileDescriptorManager();
+		GregorianCalendar cal = new GregorianCalendar();
+		cal.set(2014, 02, 15, 6, 3);
+		Date start = cal.getTime();
+		cal.set(2014, 03, 30, 12, 3,59);
+		Date end = cal.getTime();
+		try {
+			man.readFileDescriptors(start, end);
+			System.out.println(man.getFileIndex(start));
+			System.out.println(man.getFileIndex(end));
+			cal.set(2014, 02, 15, 6, 5);
+			System.out.println(man.getFileIndex(cal.getTime()));
+			cal.set(2014, 02, 15, 12, 4);
+			System.out.println(man.getFileIndex(cal.getTime()));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

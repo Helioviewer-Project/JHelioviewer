@@ -17,7 +17,7 @@ import org.helioviewer.gl3d.plugin.pfss.testframework.Point;
  * @author Jonas Schwammberger
  *
  */
-public class UncompressedReader {
+public class ProcessedReader {
 	private ArrayList<Line> lines;
 	
 	public ArrayList<Line> getLines() {

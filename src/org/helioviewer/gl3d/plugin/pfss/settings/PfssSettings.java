@@ -32,7 +32,8 @@ public class PfssSettings {
 	/**
 	 * URL of the dataserver
 	 */
-	public final static String INFOFILE_URL = "http://soleil.i4ds.ch/sol-win/";
+	public final static String SERVER_URL = "http://soleil.i4ds.ch/sol-win/";
+
 	
 	/**
 	 * Deltas between the PFSS Files. Currently there is a file for every 6 hours

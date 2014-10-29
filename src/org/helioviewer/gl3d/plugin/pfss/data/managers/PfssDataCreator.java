@@ -32,7 +32,7 @@ public class PfssDataCreator {
 	}
 	
 	private static String createURL(FileDescriptor file) {
-		StringBuilder b = new StringBuilder(PfssSettings.INFOFILE_URL);
+		StringBuilder b = new StringBuilder(PfssSettings.SERVER_URL);
 		b.append(file.getYear());
 		b.append("/");
 		b.append(file.getMonth());
