@@ -24,7 +24,7 @@ public class DebugAnalyzer {
 			ArrayList<Line> compLines = comp.getLines();
 			ArrayList<Line> uncLines = unc.getLines();
 			
-			out.write("actual r;actual phi;actual theta;should r;should phi;should theta;dr;dPhi;dTheta\n");
+			//out.write("actual r;actual phi;actual theta;should r;should phi;should theta;dr;dPhi;dTheta\n");
 			double maxErrR=0;
 			double maxErrP=0;
 			double maxErrT=0;
@@ -47,11 +47,15 @@ public class DebugAnalyzer {
 					Math.max(maxErrP, errP);
 					Math.max(maxErrT, errT);
 					
+					//out.write( p1.getRawR()+";"+p1.getRawPhi()+";"+p1.getRawTheta()+";"+ p2.getRawR()+";"+p2.getRawPhi()+";"+p2.getRawTheta()+";"+errR+";"+errP+";"+errT);
 					varR += errR*errR;
 					varP += errP*errP;
 					varT += errT*errT;
 				}
 			}
+			varR = Math.sqrt(varR);
+			varP = Math.sqrt(varP);
+			varT = Math.sqrt(varT);
 			out.close();
 			
 		} catch (IOException e) {

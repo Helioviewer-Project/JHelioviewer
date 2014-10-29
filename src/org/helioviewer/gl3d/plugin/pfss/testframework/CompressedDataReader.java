@@ -11,7 +11,7 @@ import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 
 public class CompressedDataReader {
-private ArrayList<Line> lines;
+	private ArrayList<Line> lines;
 	
 	
 	public CompressedDataReader(String filePath) {
@@ -30,7 +30,6 @@ private ArrayList<Line> lines;
 	private void readFits(String filePath) {
 		InputStream is = null;
 		try {
-			
 			Fits fits = new Fits(is, false);
 			BasicHDU hdus[] = fits.read();
 			BinaryTableHDU bhdu = (BinaryTableHDU) hdus[1];
@@ -46,10 +45,8 @@ private ArrayList<Line> lines;
 
 			// loop through all lines
 			for (int i = 0; i < ptr_nz_len.length; i++) {
-				
 				int lineSize = ptr_nz_len[i];
 				ArrayList<Point> points = new ArrayList<>(lineSize);
-				
 				Point lastP = new Point(vertexIndex, ptr[vertexIndex],
 						ptph[vertexIndex], ptth[vertexIndex], l0, b0);
 				points.add(lastP);

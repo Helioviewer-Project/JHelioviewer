@@ -19,6 +19,5 @@ public class ResultAnalyzer {
 		
 		double standardDeviation = Math.sqrt(sumSquaredError);
 		
-		
 	}
 }

@@ -31,7 +31,6 @@ public class RawDataReader {
 	}
 	
 	private void readFits(String filePath) {
-
 			try {
 				Fits fits = new Fits(filePath, false);
 				BasicHDU hdus[] = fits.read();
