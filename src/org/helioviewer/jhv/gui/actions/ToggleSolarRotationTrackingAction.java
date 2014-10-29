@@ -4,7 +4,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-import org.helioviewer.jhv.gui.ImageViewerGui;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.viewmodel.view.StandardSolarRotationTrackingView;
 
 /**
@@ -27,7 +27,7 @@ public class ToggleSolarRotationTrackingAction extends AbstractAction {
      * {@inheritDoc}
      */
     public void actionPerformed(ActionEvent e) {
-    	standardSolarRotationTrackingView = ImageViewerGui.getSingletonInstance().getMainView().getAdapter(StandardSolarRotationTrackingView.class);
+    	standardSolarRotationTrackingView = GuiState3DWCS.mainComponentView.getAdapter(StandardSolarRotationTrackingView.class);
         standardSolarRotationTrackingView.toggleEnabled();
     }    
     

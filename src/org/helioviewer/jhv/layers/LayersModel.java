@@ -25,6 +25,7 @@ import org.helioviewer.base.Message;
 import org.helioviewer.base.logging.Log;
 import org.helioviewer.base.math.Interval;
 import org.helioviewer.jhv.Settings;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.ViewListenerDistributor;
 import org.helioviewer.jhv.gui.components.MoviePanel;
@@ -116,10 +117,7 @@ public class LayersModel implements ViewListener {
      * @return reference to the LayeredView object, null if an error occurs
      */
     public LayeredView getLayeredView() {
-        ImageViewerGui imageViewer = ImageViewerGui.getSingletonInstance();
-        if (imageViewer == null)
-            return null;
-        ComponentView mainView = imageViewer.getMainView();
+        ComponentView mainView = GuiState3DWCS.mainComponentView;
         if (mainView == null)
             return null;
         LayeredView layeredView = mainView.getAdapter(LayeredView.class);
@@ -1593,7 +1591,7 @@ public class LayersModel implements ViewListener {
             tab = tab + "\t";
 
             // store region
-            RegionView regionView = ImageViewerGui.getSingletonInstance().getMainView().getAdapter(RegionView.class);
+            RegionView regionView = GuiState3DWCS.mainComponentView.getAdapter(RegionView.class);
             Region region = regionView.getRegion();
             String regionStr = String.format(Locale.ENGLISH, "<region x=\"%.4f\" y=\"%.4f\" width=\"%.4f\" height=\"%.4f\"/>\n", region.getCornerX(), region.getCornerY(), region.getWidth(), region.getHeight());
             xml.append(tab).append(regionStr);

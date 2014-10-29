@@ -18,7 +18,6 @@ import org.helioviewer.base.logging.Log;
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
-import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.viewmodel.io.APIResponse;
 import org.helioviewer.viewmodel.io.APIResponseDump;
 import org.helioviewer.viewmodel.metadata.MetaData;
@@ -273,7 +272,7 @@ public class APIRequestManager {
 
         ImageInfoView view = ViewHelper.loadView(uri);
         if (addToViewChain) {
-          new GuiState3DWCS().addLayerToViewchainMain(view, ImageViewerGui.getSingletonInstance().getMainView());
+          new GuiState3DWCS().addLayerToViewchainMain(view, GuiState3DWCS.mainComponentView);
         }
         return view;
     }
@@ -303,7 +302,7 @@ public class APIRequestManager {
         ImageInfoView view = ViewHelper.loadView(uri, downloadURI);
 
         if (addToViewChain) {
-          new GuiState3DWCS().addLayerToViewchainMain(view, ImageViewerGui.getSingletonInstance().getMainView());
+          new GuiState3DWCS().addLayerToViewchainMain(view, GuiState3DWCS.mainComponentView);
         }
         return view;
     }

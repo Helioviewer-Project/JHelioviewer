@@ -21,6 +21,7 @@ import javax.swing.border.EmptyBorder;
 import org.helioviewer.base.Message;
 import org.helioviewer.base.logging.Log;
 import org.helioviewer.jhv.Settings;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.components.TimeTextField;
 import org.helioviewer.jhv.gui.components.calendar.JHVCalendarDatePicker;
@@ -114,7 +115,7 @@ public class ImageDataPanel extends ObservationDialogPanel {
 
                         if (Boolean.parseBoolean(Settings.getSingletonInstance().getProperty("startup.loadmovie"))) {
                             // wait until view chain is ready to go
-                            while (ImageViewerGui.getSingletonInstance() == null || ImageViewerGui.getSingletonInstance().getMainView() == null) {
+                            while (GuiState3DWCS.mainComponentView == null) {
                                 Thread.sleep(100);
                             }
 

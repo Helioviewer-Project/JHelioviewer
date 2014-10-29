@@ -1,7 +1,7 @@
 package org.helioviewer.jhv.internal_plugins.filter.opacity;
 
 import org.helioviewer.base.logging.Log;
-import org.helioviewer.jhv.gui.ImageViewerGui;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.viewmodel.filter.Filter;
 import org.helioviewer.viewmodel.metadata.MetaData;
 import org.helioviewer.viewmodel.view.FilterView;
@@ -52,12 +52,12 @@ public class OpacityPlugin extends SimpleFilterContainer {
 			Log.error("Metadata " + view.getAdapter(MetaDataView.class).getMetaData() + " can't be cast to org.helioviewer.viewmodel.metadata.HelioviewerMetaData");
 		}
         
-        if (ImageViewerGui.getSingletonInstance().getMainView() == null) {
+        if (GuiState3DWCS.mainComponentView == null) {
             initialOpacity = 1.0f;
             return true;
         }
 
-        LayeredView layeredView = ImageViewerGui.getSingletonInstance().getMainView().getAdapter(LayeredView.class);
+        LayeredView layeredView = GuiState3DWCS.mainComponentView.getAdapter(LayeredView.class);
         
         if (layeredView == null) {
             initialOpacity = 1.0f;

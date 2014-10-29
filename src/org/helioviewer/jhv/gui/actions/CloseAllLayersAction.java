@@ -6,7 +6,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;
 import javax.swing.KeyStroke;
 
-import org.helioviewer.jhv.gui.ImageViewerGui;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.viewmodel.view.LayeredView;
 
 /**
@@ -30,7 +30,7 @@ public class CloseAllLayersAction extends AbstractAction {
      * {@inheritDoc}
      */
     public void actionPerformed(ActionEvent e) {
-        LayeredView layeredView = ImageViewerGui.getSingletonInstance().getMainView().getAdapter(LayeredView.class);
+        LayeredView layeredView = GuiState3DWCS.mainComponentView.getAdapter(LayeredView.class);
 
         while (layeredView.getNumLayers() > 0) {
             layeredView.removeLayer(0);

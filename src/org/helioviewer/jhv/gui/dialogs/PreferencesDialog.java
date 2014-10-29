@@ -63,14 +63,14 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
 
     private JRadioButton loadDefaultMovieOnStartUp;
     private JRadioButton doNothingOnStartUp;
-    private JComboBox<String> lafCombo;
+    private JComboBox<Object> lafCombo;
     private JPanel paramsPanel;
     private JCheckBox limitMaxSize = new JCheckBox("Limit size");
     private JLabel occupiedSizeLabel = new JLabel();
     private JTextField maxCacheBox = new JTextField("0.0");
     private JLabel maxCacheBoxLabel = new JLabel(" Mbytes");
-    private JComboBox<?> debugFileCombo = null;
-    private JComboBox<?> debugConsoleCombo = null;
+    private JComboBox<Object> debugFileCombo = null;
+    private JComboBox<Object> debugConsoleCombo = null;
     private JTextField debugFileTextField = null;
     private DefaultsSelectionPanel defaultsPanel;
     private JTextField dateFormatField;
@@ -477,7 +477,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
         for (int i = 0; i < lafs.length; i++) {
             lafNames[i] = lafs[i].getName();
         }
-        lafCombo = new JComboBox<String>(lafNames);
+        lafCombo = new JComboBox<Object>(lafNames);
 
         final PreferencesDialog parent = this;
         lafCombo.addActionListener(new ActionListener() {

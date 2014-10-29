@@ -14,11 +14,10 @@ import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.layers.LayersModel;
+import org.helioviewer.viewmodel.metadata.MetaData;
 import org.helioviewer.viewmodel.region.Region;
 import org.helioviewer.viewmodel.view.MetaDataView;
-import org.helioviewer.viewmodel.view.RegionView;
 import org.helioviewer.viewmodel.view.View;
-import org.helioviewer.viewmodel.view.jp2view.JHVJP2View;
 
 /**
  * Action that zooms in or out to fit the currently displayed image layers to
@@ -46,21 +45,19 @@ public class GL3DZoom1to1Action extends AbstractAction {
 		GL3DCamera camera = GL3DCameraSelectorModel.getInstance()
 				.getCurrentCamera();
 		if (view != null) {
-			double unitsPerPixel = view.getAdapter(MetaDataView.class)
-					.getMetaData().getUnitsPerPixel();
-			JHVJP2View regionView = view.getAdapter(JHVJP2View.class);
-			Region imageRegion = ((JHVJP2View) regionView).getNewestRegion();
 
-			Region region = GuiState3DWCS.mainComponentView.getAdapter(RegionView.class)
-					.getRegion();
-
-			if (region != null && imageRegion != null) {
-				double distance = camera.getZTranslation()
-						* (GuiState3DWCS.mainComponentView.getCanavasSize()
-								.getWidth() * unitsPerPixel)
-						/ imageRegion.getWidth();
-				distance = distance - camera.getZTranslation();
-				Log.debug("GL3DZoom1to1Action: Distance = " + distance
+						MetaData metaData = view.getAdapter(MetaDataView.class)
+					.getMetaData();
+			double unitsPerPixel = metaData.getUnitsPerPixel();
+			Region region = metaData.getPhysicalRegion();
+            
+			if (region != null) {
+				double halfWidth = region.getWidth() / 2;
+	            double halfFOVRad = Math.toRadians(camera.getFOV() / 2.0);
+	            double distance = halfWidth * Math.sin(Math.PI / 2 - halfFOVRad) / Math.sin(halfFOVRad);
+	            distance = distance / region.getWidth() * (GuiState3DWCS.mainComponentView.getCanavasSize().getWidth() * unitsPerPixel);
+	            distance = -distance - camera.getZTranslation();
+	            Log.debug("GL3DZoom1to1Action: Distance = " + distance
 						+ " Existing Distance: " + camera.getZTranslation());
 				camera.addCameraAnimation(new GL3DCameraZoomAnimation(distance,
 						500));

@@ -12,9 +12,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.helioviewer.base.math.Vector2dInt;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
-import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.viewmodel.changeevent.LayerChangedReason;
 import org.helioviewer.viewmodel.renderer.screen.ScreenRenderGraphics;
@@ -97,7 +97,7 @@ public class MainImagePanel extends BasicImagePanel {
                 removePostRenderer(loadingPostRenderer);
                 loadingPostRenderer.stopAnimation();
 
-                LayeredView layeredView = ImageViewerGui.getSingletonInstance().getMainView().getAdapter(LayeredView.class);
+                LayeredView layeredView = GuiState3DWCS.mainComponentView.getAdapter(LayeredView.class);
                 if (layeredView.getNumberOfVisibleLayer() == 0) {
                     addPostRenderer(noImagePostRenderer);
                     noImagePostRendererSet = true;

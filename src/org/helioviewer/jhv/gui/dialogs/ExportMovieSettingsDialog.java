@@ -38,7 +38,7 @@ public class ExportMovieSettingsDialog extends JDialog implements
 
   private final JPanel contentPanel = new JPanel();
 
-	private JComboBox<?> movieAspectRatioSelection,
+	private JComboBox<Object> movieAspectRatioSelection,
 			screenshotAspectRatioSelection;
 	private JFormattedTextField txtMovieImageWidth, txtMovieImageHeight,
 			txtScreenshotImageWidth, txtScreenshotImageHeight;

@@ -30,6 +30,7 @@ import org.helioviewer.base.math.Vector2dInt;
 import org.helioviewer.base.physics.Constants;
 import org.helioviewer.gl3d.camera.GL3DCamera;
 import org.helioviewer.gl3d.camera.GL3DCameraListener;
+import org.helioviewer.gl3d.camera.GL3DTrackballCamera;
 import org.helioviewer.gl3d.scenegraph.GL3DState;
 import org.helioviewer.gl3d.scenegraph.GL3DState.VISUAL_TYPE;
 import org.helioviewer.jhv.JHVDirectory;
@@ -327,13 +328,18 @@ public class GL3DComponentView extends AbstractBasicView implements
 		else {
 			Region region = this.getAdapter(RegionView.class).getRegion();
 			MetaData metaData = null;
+			double distance = GL3DTrackballCamera.DEFAULT_CAMERA_DISTANCE;
+			GL3DCamera camera = this.getAdapter(GL3DCameraView.class).getCurrentCamera();
 			if (LayersModel.getSingletonInstance().getActiveView() != null){
 				metaData = LayersModel.getSingletonInstance().getActiveView().getAdapter(MetaDataView.class).getMetaData();
 				region = metaData.getPhysicalRegion();
 
-			}
-			GL3DCamera camera = this.getAdapter(GL3DCameraView.class).getCurrentCamera();
-			double scaleFactor = camera.getZTranslation() / -1.0054167950116766E10 - 0.1;
+				double halfWidth = region.getWidth() / 2;
+                double halfFOVRad = Math.toRadians(camera.getFOV() / 2.0);
+                distance = halfWidth * Math.sin(Math.PI / 2 - halfFOVRad) / Math.sin(halfFOVRad);
+
+			}			
+			double scaleFactor = -camera.getZTranslation() / distance;
 			double top = region.getCornerX();
 			double bottom = region.getCornerX()+region.getWidth();
 	        gl.glOrtho(top*aspect*scaleFactor, bottom*aspect*scaleFactor, top*scaleFactor, bottom*scaleFactor, clipNear, clipFar);
@@ -712,17 +718,17 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 	@Override
 	public void viewportGeometryChanged() {
-		this.canvas.repaint();
+		//this.canvas.repaint();
 	}
 
 	@Override
 	public void timestampChanged(int idx) {
-		this.canvas.invalidate();
+		this.canvas.repaint();
 	}
 
 	@Override
 	public void subImageDataChanged() {
-	  this.canvas.repaint();
+	  //this.canvas.repaint();
 	}
 
 	@Override

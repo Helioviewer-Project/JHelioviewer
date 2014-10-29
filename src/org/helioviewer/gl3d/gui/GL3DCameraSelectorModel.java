@@ -22,7 +22,7 @@ import org.helioviewer.gl3d.view.GL3DCoordinateSystemView;
 import org.helioviewer.gl3d.view.GL3DSceneGraphView;
 import org.helioviewer.gl3d.wcs.CoordinateConversion;
 import org.helioviewer.gl3d.wcs.CoordinateVector;
-import org.helioviewer.jhv.gui.ImageViewerGui;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.viewmodel.view.ComponentView;
@@ -133,10 +133,7 @@ public class GL3DCameraSelectorModel extends AbstractListModel<Object> implement
     }
 
     private ComponentView getMainView() {
-        ImageViewerGui imageViewer = ImageViewerGui.getSingletonInstance();
-        if (imageViewer == null)
-            return null;
-        return imageViewer.getMainView();
+    	return GuiState3DWCS.mainComponentView;
     }
 
     private GL3DCameraView getCameraView() {

@@ -120,7 +120,7 @@ public class GL3DImageLayers extends GL3DGroup {
         state.gl.glDepthMask(false);
         
         for (GL3DImageLayer layer : layers) {
-        	if (layer.getImageTextureView().metadata.hasCorona()) 
+        	if (layer.getImageTextureView().metadata.hasCorona())
         		layer.getImageCorona().draw(state);    
         }
         
@@ -203,4 +203,14 @@ public class GL3DImageLayers extends GL3DGroup {
     	
         return layers;    	
     }
+
+
+	public void markChildsAsChanged() {
+		GL3DNode node = this.getFirst();
+        for (; node!= null; node = node.getNext()){
+			if (node instanceof GL3DImageLayer)
+				node.markAsChanged();
+		}
+		
+	}
 }

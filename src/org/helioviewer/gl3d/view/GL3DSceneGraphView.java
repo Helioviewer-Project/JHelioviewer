@@ -24,6 +24,7 @@ import org.helioviewer.gl3d.scenegraph.GL3DModel;
 import org.helioviewer.gl3d.scenegraph.GL3DNode;
 import org.helioviewer.gl3d.scenegraph.GL3DShape;
 import org.helioviewer.gl3d.scenegraph.GL3DState;
+import org.helioviewer.gl3d.scenegraph.GL3DState.VISUAL_TYPE;
 import org.helioviewer.gl3d.scenegraph.math.GL3DVec3d;
 import org.helioviewer.gl3d.scenegraph.math.GL3DVec4f;
 import org.helioviewer.gl3d.scenegraph.rt.GL3DRayTracer;
@@ -113,7 +114,12 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 	}
 
 	public void render3D(GL3DState state) {
-
+		// set visible of arrows
+		if (GL3DState.get().getState() == VISUAL_TYPE.MODE_3D)
+			artificialObjects.getDrawBits().off(Bit.Hidden);
+		else
+			artificialObjects.getDrawBits().on(Bit.Hidden);
+		
 		GL2 gl = state.gl;
 
 		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
@@ -451,5 +457,9 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 
 	public GL3DImageLayers getLayers(){
 		return imageLayers;
+	}
+	
+	public void markLayersAsChanged(){
+		this.imageLayers.markChildsAsChanged();
 	}
 }

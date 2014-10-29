@@ -2,11 +2,13 @@ package org.helioviewer.jhv.gui.controller;
 
 import org.helioviewer.base.math.Vector2dDouble;
 import org.helioviewer.base.math.Vector2dInt;
+import org.helioviewer.gl3d.camera.GL3DCamera;
+import org.helioviewer.gl3d.gui.GL3DCameraSelectorModel;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
-import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.components.BasicImagePanel;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.viewmodel.changeevent.ChangeEvent;
+import org.helioviewer.viewmodel.metadata.MetaData;
 import org.helioviewer.viewmodel.region.Region;
 import org.helioviewer.viewmodel.region.StaticRegion;
 import org.helioviewer.viewmodel.view.LayeredView;
@@ -163,18 +165,23 @@ public class ZoomController {
 
 	public static double getZoom(View view, Region outerRegion,
 			Viewport viewport) {
-		RegionView regionView = view.getAdapter(RegionView.class);
-		MetaDataView metaDataView = view.getAdapter(MetaDataView.class);
-		if (regionView != null && metaDataView != null) {
-			double unitsPerPixel = view.getAdapter(MetaDataView.class)
-					.getMetaData().getUnitsPerPixel();
-			Region imageRegion = regionView.getRegion();
-			double imageSolution = GuiState3DWCS.mainComponentView.getCanavasSize().getWidth() * unitsPerPixel;
-			if (imageRegion != null) {
-				double zoom = imageSolution
-						/ imageRegion.getWidth();
 
-				return zoom;
+				View activeView = LayersModel.getSingletonInstance().getActiveView();
+		GL3DCamera camera = GL3DCameraSelectorModel.getInstance()
+				.getCurrentCamera();
+		if (activeView != null) {
+			MetaData metaData = activeView.getAdapter(MetaDataView.class)
+					.getMetaData();
+			double unitsPerPixel = metaData.getUnitsPerPixel();
+			Region region = metaData.getPhysicalRegion();
+            
+			if (region != null) {
+				double halfWidth = region.getWidth() / 2;
+	            double halfFOVRad = Math.toRadians(camera.getFOV() / 2.0);
+	            double distance = halfWidth * Math.sin(Math.PI / 2 - halfFOVRad) / Math.sin(halfFOVRad);
+	            distance = distance / region.getWidth() * GuiState3DWCS.mainComponentView.getCanavasSize().getWidth() * unitsPerPixel;
+	            
+	            return -distance / camera.getZTranslation();
 			}
 		}
 		return 1.0;
@@ -240,7 +247,7 @@ public class ZoomController {
 	public void zoomFit() {
 		zoomFit(LayersModel.getSingletonInstance().getActiveView()
 				.getAdapter(MetaDataView.class),
-				ImageViewerGui.getSingletonInstance().getMainView()
+				GuiState3DWCS.mainComponentView
 						.getAdapter(RegionView.class));
 	}
 

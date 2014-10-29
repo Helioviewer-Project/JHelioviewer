@@ -29,6 +29,7 @@ import javax.swing.filechooser.FileFilter;
 
 import org.helioviewer.base.logging.Log;
 import org.helioviewer.jhv.Settings;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.viewmodel.view.ComponentView;
@@ -200,7 +201,7 @@ public class ExportMovieDialog implements ActionListener{
 	
 	
 	private void initExportMovie(){
-		mainComponentView = (ComponentView)ImageViewerGui.getSingletonInstance().getMainView();
+		mainComponentView = GuiState3DWCS.mainComponentView;
 		//mainComponentView.stop();
 		timedMovieView = LinkedMovieManager.getActiveInstance().getMasterMovie();
 		started = true;

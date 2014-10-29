@@ -14,6 +14,7 @@ import javax.swing.KeyStroke;
 
 import org.helioviewer.base.logging.Log;
 import org.helioviewer.jhv.Settings;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.actions.filefilters.ExtensionFileFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.JPGFilter;
@@ -84,10 +85,10 @@ public class SaveScreenshotAsAction extends AbstractAction {
             }
 
             try {
-            	ImageViewerGui.getSingletonInstance().getMainView().stop();
-            	if (this.useCurrentOpenGlSize) ImageViewerGui.getSingletonInstance().getMainView().saveScreenshot(fileFilter.getDefaultExtension(), selectedFile);        	
-            	else ImageViewerGui.getSingletonInstance().getMainView().saveScreenshot(fileFilter.getDefaultExtension(), selectedFile, this.imageWidth, this.imageHeight);
-            	ImageViewerGui.getSingletonInstance().getMainView().start();
+            	GuiState3DWCS.mainComponentView.stop();
+            	if (this.useCurrentOpenGlSize) GuiState3DWCS.mainComponentView.saveScreenshot(fileFilter.getDefaultExtension(), selectedFile);        	
+            	else GuiState3DWCS.mainComponentView.saveScreenshot(fileFilter.getDefaultExtension(), selectedFile, this.imageWidth, this.imageHeight);
+            	GuiState3DWCS.mainComponentView.start();
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
