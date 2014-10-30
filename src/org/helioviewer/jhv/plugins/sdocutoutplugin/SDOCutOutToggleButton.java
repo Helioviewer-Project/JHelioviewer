@@ -1,4 +1,3 @@
-
 package org.helioviewer.jhv.plugins.sdocutoutplugin;
 
 import java.awt.Component;
@@ -15,62 +14,63 @@ import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.viewmodel.view.MetaDataView;
 import org.helioviewer.viewmodel.view.View;
 
-public class SDOCutOutToggleButton extends Component implements LayersListener, PropertyChangeListener {
-    
+public class SDOCutOutToggleButton extends Component implements LayersListener,
+		PropertyChangeListener {
+
 	private static final long serialVersionUID = 1L;
-	
+
 	private JToggleButton sdoCutOutButton;
-	
+
 	public SDOCutOutToggleButton() {
-		
+
 		installButton();
 	}
-	
+
 	private void initVisualComponents() {
-    	
-    	createButton();
-        
-        // register as layers listener
+
+		createButton();
+
+		// register as layers listener
 		LayersModel.getSingletonInstance().addLayersListener(this);
-    }
-	
+	}
+
 	private void createButton() {
 		sdoCutOutButton = new JToggleButton(new SDOCutOutAction());
-    	sdoCutOutButton.setSelected(false);
-    	sdoCutOutButton.setIcon(new ImageIcon(SDOCutOutPlugin3D.getResourceUrl(SDOCutOutSettings.ICON_FILENAME)));
-    	sdoCutOutButton.setToolTipText("Connect to SDO Cut-Out Service");
-        sdoCutOutButton.setEnabled(true);
+		sdoCutOutButton.setSelected(false);
+		sdoCutOutButton.setIcon(new ImageIcon(SDOCutOutPlugin3D
+				.getResourceUrl(SDOCutOutSettings.ICON_FILENAME)));
+		sdoCutOutButton.setToolTipText("Connect to SDO Cut-Out Service");
+		sdoCutOutButton.setEnabled(true);
 	}
-    
-    public void installButton() {
-    	initVisualComponents();
-      	ImageViewerGui.getSingletonInstance().addTopToolBarPlugin(this, sdoCutOutButton);
-    }
-    
-    public void removeButton() {
-    	Container parent = sdoCutOutButton.getParent();
-    	
-    	if (parent != null)
-    	{
-    		LayersModel.getSingletonInstance().removeLayersListener(this);
-    		parent.remove(sdoCutOutButton);
-    		parent.repaint();
-    	}
-    }
-    
-    @Override
+
+	public void installButton() {
+		initVisualComponents();
+		ImageViewerGui.getSingletonInstance().addTopToolBarPlugin(this,
+				sdoCutOutButton);
+	}
+
+	public void removeButton() {
+		Container parent = sdoCutOutButton.getParent();
+
+		if (parent != null) {
+			LayersModel.getSingletonInstance().removeLayersListener(this);
+			parent.remove(sdoCutOutButton);
+			parent.repaint();
+		}
+	}
+
+	@Override
 	public void activeLayerChanged(int idx) {
-    	if (idx>=0)
-    	{
-    		if (LayersModel.getSingletonInstance().getLayer(idx) != null)
-    		{
-    		  //FIXME: remove string comparison
-    		  sdoCutOutButton.setEnabled(LayersModel.getSingletonInstance().getLayer(idx).getAdapter(MetaDataView.class).getMetaData().getObservatory()
-    		      .contains("SDO"));
-    		}
-    		return;
-       	}
-    	sdoCutOutButton.setEnabled(false);
+		if (idx >= 0) {
+			if (LayersModel.getSingletonInstance().getLayer(idx) != null) {
+				// FIXME: remove string comparison
+				sdoCutOutButton.setEnabled(LayersModel.getSingletonInstance()
+						.getLayer(idx).getAdapter(MetaDataView.class)
+						.getMetaData().getObservatory().contains("SDO"));
+			}
+			return;
+		}
+		sdoCutOutButton.setEnabled(false);
 	}
 
 	@Override
@@ -78,7 +78,7 @@ public class SDOCutOutToggleButton extends Component implements LayersListener, 
 	}
 
 	@Override
-	public void layerChanged(int idx) {	
+	public void layerChanged(int idx) {
 	}
 
 	@Override
@@ -94,7 +94,7 @@ public class SDOCutOutToggleButton extends Component implements LayersListener, 
 	}
 
 	@Override
-	public void timestampChanged(int idx) {	
+	public void timestampChanged(int idx) {
 	}
 
 	@Override
@@ -103,7 +103,8 @@ public class SDOCutOutToggleButton extends Component implements LayersListener, 
 
 	@Override
 	/*
-	 * This method is called by the event firePropertyChange to add the plugin button in the TopToolBar
+	 * This method is called by the event firePropertyChange to add the plugin
+	 * button in the TopToolBar
 	 */
 	public void propertyChange(PropertyChangeEvent evt) {
 	}

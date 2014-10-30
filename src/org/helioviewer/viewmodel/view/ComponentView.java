@@ -1,7 +1,6 @@
 package org.helioviewer.viewmodel.view;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -9,8 +8,6 @@ import java.io.IOException;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.media.opengl.awt.GLCanvas;
-import javax.media.opengl.awt.GLJPanel;
-
 import org.helioviewer.base.math.Vector2dInt;
 import org.helioviewer.viewmodel.renderer.screen.ScreenRenderer;
 

@@ -4,8 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -58,7 +56,6 @@ public class TopToolBar extends JToolBar implements MouseListener {
     private JButton resetCamera;
     protected JToggleButton view2d;
     protected JToggleButton view3d;
-    protected CopyOnWriteArrayList<JToggleButton> pluginList = new CopyOnWriteArrayList<JToggleButton>();
     /**
      * Default constructor.
      */
@@ -230,15 +227,6 @@ public class TopToolBar extends JToolBar implements MouseListener {
         addButton(view3d);
         addSeparator();
         
-        for (JToggleButton button : this.pluginList){
-        	if (displayMode == DisplayMode.ICONANDTEXT)
-        		this.add(button);
-        	else if(displayMode == DisplayMode.TEXTONLY)
-        		this.add(new JToggleButton(button.getText()));
-        	else
-        		this.add(new JToggleButton(button.getIcon()));
-        		
-        }
         set3DMode();
         
     }
@@ -306,13 +294,14 @@ public class TopToolBar extends JToolBar implements MouseListener {
     }
     
     public void addToolbarPlugin(JToggleButton button){
-    	this.pluginList.add(button);
+    	if (displayMode == DisplayMode.ICONANDTEXT)
+    		this.add(button);
+    	else if(displayMode == DisplayMode.TEXTONLY)
+    		this.add(new JToggleButton(button.getText()));
+    	else
+    		this.add(new JToggleButton(button.getIcon()));
     }
     
-    public void removeToolbarPlugin(AbstractButton button){
-    	this.pluginList.remove(button);
-    }
-
     public void disableStateButton(){
     	this.view2d.setEnabled(false);
     	this.view3d.setEnabled(false);
@@ -339,6 +328,7 @@ public class TopToolBar extends JToolBar implements MouseListener {
             iconAndText.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     setDisplayMode(DisplayMode.ICONANDTEXT);
+                    repaint();
                 }
             });
             group.add(iconAndText);
@@ -348,6 +338,7 @@ public class TopToolBar extends JToolBar implements MouseListener {
             iconOnly.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     setDisplayMode(DisplayMode.ICONONLY);
+                    repaint();
                 }
             });
             group.add(iconOnly);
@@ -357,6 +348,7 @@ public class TopToolBar extends JToolBar implements MouseListener {
             textOnly.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     setDisplayMode(DisplayMode.TEXTONLY);
+                    repaint();
                 }
             });
             group.add(textOnly);

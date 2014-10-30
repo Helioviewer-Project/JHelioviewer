@@ -1,8 +1,6 @@
 package org.helioviewer.jhv.gui.components;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ComponentEvent;
@@ -15,7 +13,6 @@ import java.util.AbstractList;
 import java.util.LinkedList;
 
 import javax.media.opengl.awt.GLCanvas;
-import javax.media.opengl.awt.GLJPanel;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 

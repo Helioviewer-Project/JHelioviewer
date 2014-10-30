@@ -6,7 +6,6 @@ import javax.swing.BorderFactory;
 
 import org.helioviewer.gl3d.camera.GL3DCamera;
 import org.helioviewer.gl3d.camera.GL3DCameraListener;
-import org.helioviewer.gl3d.changeevent.CameraChangeChangedReason;
 import org.helioviewer.gl3d.gui.GL3DCameraSelectorModel;
 import org.helioviewer.jhv.gui.controller.ZoomController;
 import org.helioviewer.jhv.layers.LayersModel;

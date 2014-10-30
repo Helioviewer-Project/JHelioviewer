@@ -1,14 +1,9 @@
 package org.helioviewer.gl3d.camera;
 
 import java.util.Date;
-import java.util.GregorianCalendar;
-
 import org.helioviewer.base.logging.Log;
-import org.helioviewer.base.math.Vector2dDouble;
 import org.helioviewer.base.physics.Constants;
 import org.helioviewer.base.physics.DifferentialRotation;
-import org.helioviewer.base.physics.HeliocentricCartesianCoordinatesFromEarth;
-import org.helioviewer.base.physics.StonyhurstHeliographicCoordinates;
 import org.helioviewer.gl3d.scenegraph.GL3DState;
 import org.helioviewer.gl3d.scenegraph.GL3DState.VISUAL_TYPE;
 import org.helioviewer.gl3d.scenegraph.math.GL3DMat4d;
@@ -23,14 +18,9 @@ import org.helioviewer.gl3d.wcs.HeliocentricCartesianCoordinateSystem;
 import org.helioviewer.gl3d.wcs.conversion.SolarSphereToStonyhurstHeliographicConversion;
 import org.helioviewer.gl3d.wcs.impl.SolarSphereCoordinateSystem;
 import org.helioviewer.gl3d.wcs.impl.StonyhurstHeliographicCoordinateSystem;
-import org.helioviewer.jhv.gui.GuiState3DWCS;
-import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.viewmodel.changeevent.TimestampChangedReason;
-import org.helioviewer.viewmodel.region.Region;
-import org.helioviewer.viewmodel.region.StaticRegion;
 import org.helioviewer.viewmodel.view.LinkedMovieManager;
-import org.helioviewer.viewmodel.view.RegionView;
 import org.helioviewer.viewmodel.view.TimedMovieView;
 import org.helioviewer.viewmodel.view.View;
 import org.helioviewer.viewmodel.view.ViewListener;
@@ -48,15 +38,7 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener{
     public static final double DEFAULT_CAMERA_DISTANCE = 12 * Constants.SunRadius;
     private boolean track;
     private GL3DRay lastMouseRay;
-
-    // protected CoordinateSystem viewSpaceCoordinateSystem = new
-    // HEECoordinateSystem();
     protected CoordinateSystem viewSpaceCoordinateSystem = new HeliocentricCartesianCoordinateSystem();
-    // protected CoordinateSystem viewSpaceCoordinateSystem = new
-    // HEEQCoordinateSystem(new Date());
-    // protected CoordinateSystem viewSpaceCoordinateSystem = new
-    // SolarSphereCoordinateSystem();
-
     private GL3DTrackballRotationInteraction rotationInteraction;
     private GL3DPanInteraction panInteraction;
     private GL3DZoomBoxInteraction zoomBoxInteraction;
@@ -67,7 +49,6 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener{
 
 	private Date startDate = null;
 
-	private boolean solarTrackingState = false;
 	private CoordinateVector startPosition = null;
 
 	private Date currentDate = null;
@@ -77,9 +58,7 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener{
 	private SolarSphereCoordinateSystem solarSphereCoordinateSystem = new SolarSphereCoordinateSystem();
 	private SolarSphereToStonyhurstHeliographicConversion stonyhurstConversion = (SolarSphereToStonyhurstHeliographicConversion) solarSphereCoordinateSystem
 			.getConversion(stonyhurstCoordinateSystem);
-	private boolean startPositionIsInsideDisc;
 	private GL3DVec3d startPosition2D;
-	private GL3DVec3d defaultTranslation;
 	
     public GL3DTrackballCamera(GL3DSceneGraphView sceneGraphView) {
         this.sceneGraphView = sceneGraphView;
@@ -151,9 +130,6 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener{
 
 		GL3DVec3d position = positionRay.getHitPoint();
 		this.startPosition2D = position;
-		this.defaultTranslation = this.translation.copy();
-		this.defaultTranslation.x += startPosition2D.x;
-		this.defaultTranslation.y -= startPosition2D.y;
 		if (position != null) {
 			CoordinateVector solarSpherePosition = solarSphereCoordinateSystem
 					.createCoordinateVector(position.x, position.y, position.z);

@@ -396,6 +396,7 @@ public class ImageViewerGui {
 				.addPropertyChangeListener(propertyChangeListener);
 
 		GuiState3DWCS.topToolBar.validate();
+		GuiState3DWCS.topToolBar.repaint();
 	}
 
 	private void updateComponentPanels() {

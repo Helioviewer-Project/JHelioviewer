@@ -69,9 +69,9 @@ public class GL3DCameraSelectorModel extends AbstractListModel<Object> implement
 
         if (sceneGraphView != null) {
             trackballCamera = new GL3DTrackballCamera(sceneGraphView);
-            lastCamera = defaultCamera;
             cameras.add(trackballCamera);
             defaultCamera = trackballCamera;
+            lastCamera = defaultCamera;
             trackballCamera.setSceneGraphView(sceneGraphView);
 
             if (getCameraView() != null) {
