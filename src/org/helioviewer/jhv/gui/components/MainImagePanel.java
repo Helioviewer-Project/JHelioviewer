@@ -111,11 +111,7 @@ public class MainImagePanel extends BasicImagePanel {
      * {@inheritDoc}
      */
 
-    public synchronized void setView(ComponentView newView) {
-
-        if (renderedImageComponent != null)
-            for (MouseMotionListener l : mouseMotionListeners)
-                renderedImageComponent.removeMouseMotionListener(l);
+    public void setView(ComponentView newView) {
 
         super.setView(newView);
 

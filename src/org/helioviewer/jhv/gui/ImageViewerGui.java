@@ -105,9 +105,6 @@ public class ImageViewerGui {
 		mainFrame.setJMenuBar(menuBar);
 		mainFrame.setFocusable(true);
 
-		// Set the default state and call prepareGui
-		// activateState(ViewStateEnum.View2D);
-
 		prepareGui();
 	}
 
@@ -151,7 +148,6 @@ public class ImageViewerGui {
 			PositionStatusPanel positionStatusPanel = null;
 
 			// Position panel only needed in 2D View State
-			// if(this.currentState.getType().equals(ViewStateEnum.View2D))
 			positionStatusPanel = new PositionStatusPanel(getMainImagePanel());
 
 			MetaDataStatusPanel jhvXMLStatusPanel = new MetaDataStatusPanel();
@@ -215,23 +211,25 @@ public class ImageViewerGui {
 		GuiState3DWCS state = new GuiState3DWCS();
 		
 		state.createViewChains();
-
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				TopToolBar toolBar = new TopToolBar();
-				toolBar.setDisplayMode(null);
-				contentPanel.add(toolBar, BorderLayout.PAGE_START);
-			}
-		});
-
+		
+		TopToolBar toolBar = new TopToolBar();
+		toolBar.setDisplayMode(null);
+		contentPanel.add(toolBar, BorderLayout.PAGE_START);
+		
 		// prepare gui again
-		updateComponentPanels();
 		mainImagePanel.setInputController(state.getDefaultInputController());
 
 		mainFrame.validate();
 
 		state.activate();		
-
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				updateComponentPanels();
+				
+			}
+		});
 		
 		packAndShow(true);
 		mainFrame.validate();

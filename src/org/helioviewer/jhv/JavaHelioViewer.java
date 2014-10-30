@@ -21,7 +21,6 @@ import org.helioviewer.jhv.gui.components.layerTable.LayerTableOverlapWatcher;
 import org.helioviewer.jhv.internal_plugins.InternalFilterPlugin;
 import org.helioviewer.jhv.io.CommandLineProcessor;
 import org.helioviewer.jhv.layers.LayersModel;
-import org.helioviewer.jhv.opengl.GLInfo;
 import org.helioviewer.jhv.plugins.hekplugin.HEKPlugin3D;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
 import org.helioviewer.jhv.plugins.sdocutoutplugin.SDOCutOutPlugin3D;
@@ -213,7 +212,6 @@ public class JavaHelioViewer {
         if (null == ResourceLoader.getSingletonInstance().loadResource("cgc", libsRemote, libs, libs, libsBackup, System.getProperties())) {
             Log.error("Could not install CG Compiler");
             Message.err("Error installing CG Compiler", "The CG Compiler could not be installed. JHelioviewer will run in software mode.", false);
-            GLInfo.glUnusable();
         } else {
             Log.info("Successfully installed CG Compiler");
         }

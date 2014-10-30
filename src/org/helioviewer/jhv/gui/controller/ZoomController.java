@@ -166,7 +166,7 @@ public class ZoomController {
 	public static double getZoom(View view, Region outerRegion,
 			Viewport viewport) {
 
-				View activeView = LayersModel.getSingletonInstance().getActiveView();
+		View activeView = LayersModel.getSingletonInstance().getActiveView();
 		GL3DCamera camera = GL3DCameraSelectorModel.getInstance()
 				.getCurrentCamera();
 		if (activeView != null) {
@@ -174,14 +174,18 @@ public class ZoomController {
 					.getMetaData();
 			double unitsPerPixel = metaData.getUnitsPerPixel();
 			Region region = metaData.getPhysicalRegion();
-            
+
 			if (region != null) {
 				double halfWidth = region.getWidth() / 2;
-	            double halfFOVRad = Math.toRadians(camera.getFOV() / 2.0);
-	            double distance = halfWidth * Math.sin(Math.PI / 2 - halfFOVRad) / Math.sin(halfFOVRad);
-	            distance = distance / region.getWidth() * GuiState3DWCS.mainComponentView.getCanavasSize().getWidth() * unitsPerPixel;
-	            
-	            return -distance / camera.getZTranslation();
+				double halfFOVRad = Math.toRadians(camera.getFOV() / 2.0);
+				double distance = halfWidth
+						* Math.sin(Math.PI / 2 - halfFOVRad)
+						/ Math.sin(halfFOVRad);
+				distance = distance
+						/ region.getWidth()
+						* GuiState3DWCS.mainComponentView.getCanavasSize()
+								.getWidth() * unitsPerPixel;
+				return -distance / camera.getZTranslation();
 			}
 		}
 		return 1.0;
@@ -247,8 +251,7 @@ public class ZoomController {
 	public void zoomFit() {
 		zoomFit(LayersModel.getSingletonInstance().getActiveView()
 				.getAdapter(MetaDataView.class),
-				GuiState3DWCS.mainComponentView
-						.getAdapter(RegionView.class));
+				GuiState3DWCS.mainComponentView.getAdapter(RegionView.class));
 	}
 
 }

@@ -57,17 +57,8 @@ public class GL3DFramebufferImage extends GL3DMesh implements ViewListener {
         if (aEvent.reasonOccurred(ImageTextureRecapturedReason.class)) {
             ImageTextureRecapturedReason imageTextureRecapturedReason = aEvent.getLastChangedReasonByType(ImageTextureRecapturedReason.class);
             this.textureId = imageTextureRecapturedReason.getTextureId();
-            // this.textureScale =
-            // imageTextureRecapturedReason.getTextureScale();
             this.region = imageTextureRecapturedReason.getCapturedRegion();
-            // this.viewport =
-            // sender.getAdapter(ViewportView.class).getViewport();
-            // this.metaData =
-            // sender.getAdapter(MetaDataView.class).getMetaData();
             this.recreateMesh = true;
-            // this.textureScale =
-            // imageTextureRecapturedReason.getTextureScale();
-            // Log.debug("GL3DFramebufferImage: Recreating FrameBuffer, TextureScale="+imageTextureRecapturedReason.getTextureScale());
             markAsChanged();
         }
 
@@ -89,19 +80,6 @@ public class GL3DFramebufferImage extends GL3DMesh implements ViewListener {
             textCoords.add(new GL3DVec2d(1, 0));
             textCoords.add(new GL3DVec2d(1, 1));
             textCoords.add(new GL3DVec2d(0, 1));
-
-            // Region outerRegion =
-            // ViewHelper.expandRegionToViewportAspectRatio(viewport, region,
-            // metaData);
-            // Log.debug("GL3DFramebufferImage: Region      = "+region);
-            // Log.debug("GL3DFramebufferImage: OuterRegion = "+outerRegion);
-            // Log.debug("GL3DFramebufferImage: Viewport    = "+viewport);
-
-            // textCoords.add(new GL3DVec2d(0, 0));
-            // textCoords.add(new GL3DVec2d(this.textureScale.getX(), 0));
-            // textCoords.add(new GL3DVec2d(this.textureScale.getX(),
-            // this.textureScale.getY()));
-            // textCoords.add(new GL3DVec2d(0, this.textureScale.getY()));
 
             normals.add(new GL3DVec3d(0, 0, 1));
             normals.add(new GL3DVec3d(0, 0, 1));

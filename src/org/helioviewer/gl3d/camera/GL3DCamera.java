@@ -271,4 +271,6 @@ public abstract class GL3DCamera {
     }
 
     public abstract CoordinateSystem getViewSpaceCoordinateSystem();
-}
+
+	public abstract void setTrack(boolean selected);
+	}

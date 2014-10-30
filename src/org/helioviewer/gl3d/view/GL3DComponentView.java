@@ -23,6 +23,7 @@ import javax.media.opengl.GLDrawableFactory;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
+import javax.media.opengl.awt.GLJPanel;
 import javax.swing.Timer;
 
 import org.helioviewer.base.logging.Log;
@@ -36,7 +37,6 @@ import org.helioviewer.gl3d.scenegraph.GL3DState.VISUAL_TYPE;
 import org.helioviewer.jhv.JHVDirectory;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
-import org.helioviewer.jhv.opengl.GLInfo;
 import org.helioviewer.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.viewmodel.changeevent.LayerChangedReason;
 import org.helioviewer.viewmodel.changeevent.LayerChangedReason.LayerChangeType;
@@ -135,6 +135,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 	public GL3DComponentView() {
 		GLCapabilities cap = new GLCapabilities(GLProfile.getDefault());
+		
 		try {
 			cap.setDepthBits(24);
 			this.canvas = new GLCanvas(cap);
@@ -154,25 +155,10 @@ public class GL3DComponentView extends AbstractBasicView implements
 				}
 			}
 		}
-		LayersModel.getSingletonInstance().addLayersListener(this);
-
+		
 		this.canvas.addGLEventListener(this);
-	}
-
-	public void deactivate() {
-		/*
-		 * if (this.animator != null) { this.animator.stop(); if
-		 * (getAdapter(GL3DView.class) != null) {
-		 * getAdapter(GL3DView.class).deactivate(GL3DState.get()); } }
-		 * animationLock.lock();
-		 */
-	}
-
-	public void activate() {
-		/*
-		 * this.animator.start(); if (this.animationLock.isLocked())
-		 * animationLock.unlock();
-		 */
+		
+		LayersModel.getSingletonInstance().addLayersListener(this);
 	}
 
 	public GLCanvas getComponent() {
@@ -188,8 +174,6 @@ public class GL3DComponentView extends AbstractBasicView implements
 		Log.debug("GL3DComponentView.Init");
 		GL2 gl = glAD.getGL().getGL2();
 		GL3DState.create(gl);
-
-		GLInfo.update(gl.getGL2());
 
 		GLShaderHelper.initHelper(gl.getGL2(), JHVDirectory.TEMP.getPath());
 		GLShaderBuilder.initShaderBuilder(gl);
@@ -268,7 +252,8 @@ public class GL3DComponentView extends AbstractBasicView implements
 			this.startedTime = time;
 		}
 		GL2 gl = glAD.getGL().getGL2();
-		
+		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT); // clear color and depth buffers
+	    gl.glLoadIdentity();  // reset the model-view matrix
 		
 		Viewport newViewport = StaticViewport.createAdaptedViewport(canvas.getSurfaceWidth(), canvas.getSurfaceHeight());
 		this.getAdapter(ViewportView.class).setViewport(newViewport,
@@ -279,9 +264,8 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 		int width = this.viewportSize.getX();
 		int height = this.viewportSize.getY();
-
 		GL3DState.getUpdated(gl, width, height);
-
+		
 		if (backGroundColorHasChanged) {
 			gl.glClearColor(backgroundColor.getRed() / 255.0f,
 					backgroundColor.getGreen() / 255.0f,
@@ -295,19 +279,18 @@ public class GL3DComponentView extends AbstractBasicView implements
 		if (rebuildShadersRequest) {
 			rebuildShaders(gl);
 		}
-
+		
 		GL3DState.get().checkGLErrors("GL3DComponentView.afterRebuildShader");
 
 		// Save Screenshot, if requested
 
-		gl.getContext().makeCurrent();
 		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);
 
 		gl.glClearColor(backgroundColor.getRed() / 255.0f,
 				backgroundColor.getGreen() / 255.0f,
 				backgroundColor.getBlue() / 255.0f,
 				backgroundColor.getAlpha() / 255.0f);
-
+		
 		Viewport v = this.getAdapter(ViewportView.class).getViewport();
 
 		this.width = v.getWidth();
@@ -348,6 +331,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 
 		displayBody(gl);
+		
 	}
 
 	private void displayBody(GL2 gl) {
@@ -373,9 +357,6 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 		gl.glPushMatrix();
 		if (!this.postRenderers.isEmpty()) {
-
-			// gl.glViewport((int)(width*0.55), (int)(height*0.55),
-			// (int)(width*0.45), (int)(height*0.45));
 
 			gl.glMatrixMode(GL2.GL_PROJECTION);
 			gl.glLoadIdentity();
@@ -594,9 +575,6 @@ public class GL3DComponentView extends AbstractBasicView implements
 	public void updateMainImagePanelSize(Vector2dInt size) {
 		this.viewportSize = size;
 
-		// if(this.orthoView!=null) {
-		// this.orthoView.updateMainImagePanelSize(size);
-		// }
 		if (this.viewportView != null) {
 			Viewport viewport = StaticViewport.createAdaptedViewport(
 					Math.max(1, size.getX()), Math.max(1, size.getY()));

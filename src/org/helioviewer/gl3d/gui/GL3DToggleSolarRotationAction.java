@@ -3,9 +3,9 @@ package org.helioviewer.gl3d.gui;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
+import javax.swing.JToggleButton;
 
 import org.helioviewer.gl3d.camera.GL3DCamera;
-import org.helioviewer.gl3d.camera.GL3DSolarRotationTrackingTrackballCamera;
 
 /**
  * Action that enables the Solar Rotation Tracking, which ultimately changes the
@@ -27,11 +27,7 @@ public class GL3DToggleSolarRotationAction extends AbstractAction {
      * {@inheritDoc}
      */
     public void actionPerformed(ActionEvent e) {
-        if (GL3DCameraSelectorModel.getInstance().getCurrentCamera() instanceof GL3DSolarRotationTrackingTrackballCamera) {
-            GL3DCameraSelectorModel.getInstance().setCurrentCamera(GL3DCameraSelectorModel.getInstance().getTrackballCamera());
-        } else {
-            GL3DCameraSelectorModel.getInstance().setCurrentCamera(GL3DCameraSelectorModel.getInstance().getSolarRotationCamera());
-        }
+    	GL3DCameraSelectorModel.getInstance().getCurrentCamera().setTrack(((JToggleButton)e.getSource()).isSelected());
     }
 
 }

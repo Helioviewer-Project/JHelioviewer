@@ -8,6 +8,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import javax.media.opengl.awt.GLCanvas;
+import javax.media.opengl.awt.GLJPanel;
+
 import org.helioviewer.base.math.Vector2dInt;
 import org.helioviewer.viewmodel.renderer.screen.ScreenRenderer;
 
@@ -54,7 +57,7 @@ public interface ComponentView extends ModifiableInnerViewView, ViewListener{
      * 
      * @return Component which contains the final image
      */
-    public Component getComponent();
+    public GLCanvas getComponent();
 
     /**
      * Saves the current screen content to the given file in the given format.

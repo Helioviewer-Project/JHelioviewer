@@ -11,7 +11,6 @@ import org.helioviewer.base.logging.Log;
 import org.helioviewer.gl3d.GL3DHelper;
 import org.helioviewer.gl3d.camera.GL3DCamera;
 import org.helioviewer.gl3d.camera.GL3DCameraRotationAnimation;
-import org.helioviewer.gl3d.camera.GL3DSolarRotationTrackingTrackballCamera;
 import org.helioviewer.gl3d.camera.GL3DTrackballCamera;
 import org.helioviewer.gl3d.scenegraph.GL3DState;
 import org.helioviewer.gl3d.scenegraph.GL3DState.VISUAL_TYPE;
@@ -51,7 +50,6 @@ public class GL3DCameraSelectorModel extends AbstractListModel<Object> implement
 
     private GL3DTrackballCamera trackballCamera;
 
-    private GL3DSolarRotationTrackingTrackballCamera solarRotationCamera;
     private VISUAL_TYPE visualType = VISUAL_TYPE.MODE_3D;
 
     public static GL3DCameraSelectorModel getInstance() {
@@ -63,20 +61,6 @@ public class GL3DCameraSelectorModel extends AbstractListModel<Object> implement
 
     private GL3DCameraSelectorModel() {
     	LayersModel.getSingletonInstance().addLayersListener(this);
-        // StateController.getInstance().addStateChangeListener(new
-        // StateChangeListener() {
-        //
-        // public void stateChanged(State newState, State oldState,
-        // StateController stateController) {
-        // if(newState.getType()==ViewStateEnum.View3D) {
-        // //Needs to be checked, because if new State is 2D no CameraView is
-        // available.
-        //
-        // } else {
-        // Log.info("GL3DCameraSelectorModel: No camera change, no GL3DSceneGraphView available");
-        // }
-        // }
-        // });
     }
 
     public void activate(GL3DSceneGraphView sceneGraphView) {
@@ -85,14 +69,10 @@ public class GL3DCameraSelectorModel extends AbstractListModel<Object> implement
 
         if (sceneGraphView != null) {
             trackballCamera = new GL3DTrackballCamera(sceneGraphView);
-            solarRotationCamera = new GL3DSolarRotationTrackingTrackballCamera(sceneGraphView);
-            defaultCamera = solarRotationCamera;
             lastCamera = defaultCamera;
             cameras.add(trackballCamera);
-            cameras.add(solarRotationCamera);
             defaultCamera = trackballCamera;
             trackballCamera.setSceneGraphView(sceneGraphView);
-            solarRotationCamera.setSceneGraphView(sceneGraphView);
 
             if (getCameraView() != null) {
                 setCurrentCamera(lastCamera);
@@ -146,10 +126,6 @@ public class GL3DCameraSelectorModel extends AbstractListModel<Object> implement
 
     public GL3DTrackballCamera getTrackballCamera() {
         return trackballCamera;
-    }
-
-    public GL3DSolarRotationTrackingTrackballCamera getSolarRotationCamera() {
-        return solarRotationCamera;
     }
 
     public void set3DMode(){

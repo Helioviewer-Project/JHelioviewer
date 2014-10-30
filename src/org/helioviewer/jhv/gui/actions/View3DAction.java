@@ -8,7 +8,6 @@ import org.helioviewer.gl3d.gui.GL3DCameraSelectorModel;
 import org.helioviewer.gl3d.scenegraph.GL3DState;
 import org.helioviewer.gl3d.view.GL3DSceneGraphView;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
-import org.helioviewer.jhv.opengl.GLInfo;
 
 public class View3DAction extends AbstractAction {
 
@@ -18,7 +17,6 @@ public class View3DAction extends AbstractAction {
      * Default constructor.
      */
     public View3DAction() {
-        this.setEnabled(GLInfo.glIsEnabled() && GLInfo.glIsUsable());
     }
 
     /**

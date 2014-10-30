@@ -14,9 +14,7 @@ public class ExportSettingsAction extends AbstractAction{
 	private static final long serialVersionUID = 1L;
 
 	public ExportSettingsAction() {
-	        super("Export setting test...");
-	        //putValue(SHORT_DESCRIPTION, "Save Screenshot to Chosen Folder");
-	        //putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.SHIFT_DOWN_MASK | Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+	        super("Export setting...");
 	    }
 
 	    /**

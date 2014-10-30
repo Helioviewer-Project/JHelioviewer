@@ -2,6 +2,7 @@ package org.helioviewer.jhv.gui.components;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ComponentEvent;
@@ -13,6 +14,8 @@ import java.awt.event.MouseWheelListener;
 import java.util.AbstractList;
 import java.util.LinkedList;
 
+import javax.media.opengl.awt.GLCanvas;
+import javax.media.opengl.awt.GLJPanel;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
@@ -34,6 +37,7 @@ import org.helioviewer.viewmodel.view.ViewListener;
 import org.helioviewer.viewmodel.view.ViewportView;
 import org.helioviewer.viewmodel.viewport.StaticViewport;
 import org.helioviewer.viewmodel.viewport.Viewport;
+
 
 /**
  * This class represents a basic image component that is used to display the
@@ -59,7 +63,7 @@ public class BasicImagePanel extends JPanel implements ComponentListener, ViewLi
 
     protected AbstractList<ImagePanelPlugin> plugins;
 
-    protected Component renderedImageComponent;
+    protected GLCanvas renderedImageComponent;
 
     protected AbstractList<ScreenRenderer> postRenderers;
 
@@ -168,15 +172,6 @@ public class BasicImagePanel extends JPanel implements ComponentListener, ViewLi
      *            new component view.
      */
     public void setView(ComponentView newView) {
-        if (renderedImageComponent != null) {
-            componentView.removeViewListener(this);
-            renderedImageComponent.removeMouseListener(inputController);
-            renderedImageComponent.removeMouseMotionListener(inputController);
-            renderedImageComponent.removeMouseWheelListener(inputController);
-
-            remove(renderedImageComponent);
-        }
-
         componentView = newView;
 
         viewportView = ViewHelper.getViewAdapter(componentView, ViewportView.class);
