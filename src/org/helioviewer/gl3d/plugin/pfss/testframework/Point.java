@@ -49,8 +49,6 @@ public class Point {
 		y = (float) (r0 * Math.cos(theta0));
 	}
 	
-	
-	
 	public short getRawR() {
 		return rawR;
 	}

@@ -37,10 +37,10 @@ public class RawDataReader {
 				BinaryTableHDU bhdu = (BinaryTableHDU) hdus[1];
 				double b0 = ((double[]) bhdu.getColumn("B0"))[0];
 				double l0 = ((double[]) bhdu.getColumn("L0"))[0];
-				short[] ptr = ((short[][]) bhdu.getColumn("PTR"))[0];
+				float[] ptr = ((float[][]) bhdu.getColumn("PTR"))[0];
 				short[] ptr_nz_len = ((short[][]) bhdu.getColumn("PTR_NZ_LEN"))[0];
-				short[] ptph = ((short[][]) bhdu.getColumn("PTPH"))[0];
-				short[] ptth = ((short[][]) bhdu.getColumn("PTTH"))[0];
+				float[] ptph = ((float[][]) bhdu.getColumn("PTPH"))[0];
+				float[] ptth = ((float[][]) bhdu.getColumn("PTTH"))[0];
 
 				lines = new ArrayList<>(ptr_nz_len.length);
 
@@ -76,6 +76,11 @@ public class RawDataReader {
 
 
 			}
+		
+	}
+	
+	public static void main(String[] args) {
+		RawDataReader reader = new RawDataReader("C:/dev/git/bachelor/testdata/raw/2005-11-06_12-04-00.000_pfss_field_data.fits");
 		
 	}
 }

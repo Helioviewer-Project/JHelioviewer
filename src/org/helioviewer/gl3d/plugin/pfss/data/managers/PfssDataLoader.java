@@ -30,5 +30,4 @@ public class PfssDataLoader implements Runnable {
 		fitsFile.loadFile(url);
 
 	}
-
 }
