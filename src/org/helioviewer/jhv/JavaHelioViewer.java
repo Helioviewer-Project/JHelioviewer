@@ -283,7 +283,7 @@ public class JavaHelioViewer {
         Plugin internalPlugin = new InternalFilterPlugin();
         PluginManager.getSingeltonInstance().addInternalPlugin(internalPlugin.getClass().getClassLoader(), internalPlugin);
 
-        for(Plugin plugin:new Plugin[]{new PfssPlugin(true) , new HEKPlugin3D(true), new SDOCutOutPlugin3D()})
+        for(Plugin plugin:new Plugin[]{new PfssPlugin() , new HEKPlugin3D(), new SDOCutOutPlugin3D()})
           	PluginManager.getSingeltonInstance().addPlugin(plugin.getClass().getClassLoader(), plugin, null);
 
         splash.setProgressText("Displaying main window...");

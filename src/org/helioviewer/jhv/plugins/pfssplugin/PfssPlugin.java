@@ -15,9 +15,7 @@ import org.helioviewer.viewmodelplugin.overlay.OverlayPlugin;
  * */
 public class PfssPlugin extends OverlayPlugin implements Plugin {
 
-	private boolean builtin_mode = false;
-
-	/**
+  /**
 	 * Reference to the eventPlugin
 	 */
 	private PfssPluginContainer eventPlugin;
@@ -26,26 +24,13 @@ public class PfssPlugin extends OverlayPlugin implements Plugin {
 	 * Default constructor.
 	 */
 	public PfssPlugin() {
-		this(false);
-	}
-
-	/**
-	 * Constructor with debug flag. If debug flag is set, the plugin name shows
-	 * "Pfss Plugin Built-In Version"
-	 * 
-	 * @param builtin_mode
-	 *            - debug flag
-	 */
-	public PfssPlugin(boolean builtin_mode) {
-		this.builtin_mode = builtin_mode;
-
 		try {
 			this.pluginLocation = new URI(PfssSettings.PLUGIN_LOCATION);
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
 
-		eventPlugin = new PfssPluginContainer(builtin_mode);
+		eventPlugin = new PfssPluginContainer();
 		addOverlayContainer(eventPlugin);
 	}
 
@@ -81,8 +66,7 @@ public class PfssPlugin extends OverlayPlugin implements Plugin {
 	 * {@inheritDoc}
 	 */
 	public String getName() {
-		return "Pfss Overlay Plugin "
-				+ (builtin_mode ? "Built-In Version" : "");
+		return "Pfss Overlay Plugin";
 	}
 
 

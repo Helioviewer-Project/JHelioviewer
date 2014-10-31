@@ -17,10 +17,8 @@ public class PfssPluginContainer extends OverlayContainer {
 
 	private PfssCache pfssCache;
 	private PfssPluginPanel pfssPluginPanel;
-	private boolean builtin_mode = false;
 
-	public PfssPluginContainer(boolean builtin_mode) {
-		this.builtin_mode = builtin_mode;
+	public PfssPluginContainer() {
 	}
 
 	/**
@@ -51,13 +49,12 @@ public class PfssPluginContainer extends OverlayContainer {
 	 * {@inheritDoc}
 	 */
 	public String getName() {
-		return "PFSS " + (builtin_mode ? "Built-In Version" : "");
+		return "PFSS";
 	}
 
 
 	@Override
 	public Class<? extends PhysicalRenderer> getOverlayClass() {
-		// TODO Auto-generated method stub
 		return PfssPlugin3dRenderer.class;
 	}
 

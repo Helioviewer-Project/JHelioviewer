@@ -37,10 +37,8 @@ public class HEKPluginContainer extends OverlayContainer {
     // the architecture?
 
     private HEKPluginPanel hekPanel;
-    private boolean builtin_mode = false;
 
-    public HEKPluginContainer(boolean builtin_mode) {
-        this.builtin_mode = builtin_mode;
+    public HEKPluginContainer() {
     }
 
     /**
@@ -83,7 +81,7 @@ public class HEKPluginContainer extends OverlayContainer {
      * {@inheritDoc}
      */
     public String getName() {
-        return "HEK 3D Events " + (builtin_mode ? "Built-In Version" : "");
+        return "HEK Events";
     }
 
     /**

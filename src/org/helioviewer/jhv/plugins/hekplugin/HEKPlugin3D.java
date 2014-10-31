@@ -19,9 +19,6 @@ import org.helioviewer.viewmodelplugin.overlay.OverlayPlugin;
  * @author Malte Nuhn
  * */
 public class HEKPlugin3D extends OverlayPlugin implements Plugin {
-
-    private boolean builtin_mode = false;
-
     /**
      * Reference to the eventPlugin
      */
@@ -31,26 +28,13 @@ public class HEKPlugin3D extends OverlayPlugin implements Plugin {
      * Default constructor.
      */
     public HEKPlugin3D() {
-       this(false);
-    }
-
-    /**
-     * Constructor with debug flag. If debug flag is set, the plugin name shows
-     * "HEK Plugin Built-In Version"
-     * 
-     * @param builtin_mode
-     *            - debug flag
-     */
-    public HEKPlugin3D(boolean builtin_mode) {
-        this.builtin_mode = builtin_mode;
-
         try {
             this.pluginLocation = new URI(HEKSettings.PLUGIN_LOCATION);
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
 
-        eventPlugin = new HEKPluginContainer(builtin_mode);
+        eventPlugin = new HEKPluginContainer();
         addOverlayContainer(eventPlugin);
     }
 
@@ -83,7 +67,7 @@ public class HEKPlugin3D extends OverlayPlugin implements Plugin {
      * {@inheritDoc}
      */
     public String getName() {
-        return "HEK 3D Overlay Plugin " + (builtin_mode ? "Built-In Version" : "");
+        return "HEK Overlay Plugin";
     }
 
     /**
