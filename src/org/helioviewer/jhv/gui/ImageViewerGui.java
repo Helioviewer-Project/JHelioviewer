@@ -212,10 +212,6 @@ public class ImageViewerGui {
 		
 		state.createViewChains();
 		
-		TopToolBar toolBar = new TopToolBar();
-		toolBar.setDisplayMode(null);
-		contentPanel.add(toolBar, BorderLayout.PAGE_START);
-		
 		// prepare gui again
 		mainImagePanel.setInputController(state.getDefaultInputController());
 

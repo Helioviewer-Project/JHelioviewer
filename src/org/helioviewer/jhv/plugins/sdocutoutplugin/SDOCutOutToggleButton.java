@@ -2,11 +2,13 @@ package org.helioviewer.jhv.plugins.sdocutoutplugin;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JToggleButton;
+import javax.swing.SwingConstants;
 
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.layers.LayersListener;
@@ -41,6 +43,9 @@ public class SDOCutOutToggleButton extends Component implements LayersListener,
 				.getResourceUrl(SDOCutOutSettings.ICON_FILENAME)));
 		sdoCutOutButton.setToolTipText("Connect to SDO Cut-Out Service");
 		sdoCutOutButton.setEnabled(true);
+		sdoCutOutButton.setVerticalTextPosition(SwingConstants.BOTTOM);
+		sdoCutOutButton.setHorizontalAlignment(SwingConstants.CENTER);
+		sdoCutOutButton.setHorizontalTextPosition(SwingConstants.CENTER);
 	}
 
 	public void installButton() {

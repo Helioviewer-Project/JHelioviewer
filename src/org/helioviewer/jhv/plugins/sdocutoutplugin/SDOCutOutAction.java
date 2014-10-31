@@ -26,7 +26,7 @@ public class SDOCutOutAction extends AbstractAction {
      * Default constructor.
      */
     public SDOCutOutAction() {
-        super("SDO Cut-Outs");
+        super("SDO Cut-Out");
     }
     
     /**

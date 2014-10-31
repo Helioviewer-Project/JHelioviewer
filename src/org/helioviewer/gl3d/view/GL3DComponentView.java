@@ -309,6 +309,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 		
 		else {
 			Region region = this.getAdapter(RegionView.class).getRegion();
+			if (region != null){
 			MetaData metaData = null;
 			double distance = GL3DTrackballCamera.DEFAULT_CAMERA_DISTANCE;
 			GL3DCamera camera = this.getAdapter(GL3DCameraView.class).getCurrentCamera();
@@ -326,7 +327,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 			double bottom = region.getCornerX()+region.getWidth();
 	        gl.glOrtho(top*aspect*scaleFactor, bottom*aspect*scaleFactor, top*scaleFactor, bottom*scaleFactor, clipNear, clipFar);
 		}
-
+		}
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 
 		displayBody(gl);

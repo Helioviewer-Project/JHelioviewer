@@ -1,16 +1,23 @@
 package org.helioviewer.jhv.gui.components;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
+import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
+import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 
 import org.helioviewer.base.logging.Log;
@@ -199,8 +206,8 @@ public class TopToolBar extends JToolBar implements MouseListener {
         // coronaVisibilityButton =
         coronaVisibilityButton = new JToggleButton(new GL3DToggleCoronaVisibilityAction());
         coronaVisibilityButton.setSelected(false);
-        coronaVisibilityButton.setIcon(IconBank.getIcon(JHVIcon.LAYER_IMAGE));
-        coronaVisibilityButton.setSelectedIcon(IconBank.getIcon(JHVIcon.LAYER_IMAGE_OFF));
+        coronaVisibilityButton.setIcon(IconBank.getIcon(JHVIcon.LAYER_IMAGE_24x24));
+        coronaVisibilityButton.setSelectedIcon(IconBank.getIcon(JHVIcon.LAYER_IMAGE_OFF_24x24));
         coronaVisibilityButton.setToolTipText("Toggle Corona Visibility");
         addButton(coronaVisibilityButton);
         
@@ -294,7 +301,7 @@ public class TopToolBar extends JToolBar implements MouseListener {
         revalidate();
     }
     
-    public void addToolbarPlugin(JToggleButton button){
+    public void addToolbarPlugin(JToggleButton button){    	
     	if (displayMode == DisplayMode.ICONANDTEXT)
     		this.add(button);
     	else if(displayMode == DisplayMode.TEXTONLY)

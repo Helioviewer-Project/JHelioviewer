@@ -92,12 +92,9 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener{
 								.getValue(StonyhurstHeliographicCoordinateSystem.THETA);
 						double rotation = DifferentialRotation
 								.calculateRotationInRadians(theta, timediff);
-						System.out.println("startPosition : " + startPosition2D);
 						GL3DQuatd newRotation = GL3DQuatd.createRotation(currentRotation
 								- rotation, new GL3DVec3d(0, 1, 0));
 						GL3DVec3d newPosition = newRotation.toMatrix().multiply(startPosition2D);
-						System.out.println("newPosition   : " + newPosition);
-						System.out.println("translation   : " + translation);
 						if (GL3DState.get().getState() == VISUAL_TYPE.MODE_3D)
 						this.getRotation().rotate(
 								GL3DQuatd.createRotation(currentRotation
