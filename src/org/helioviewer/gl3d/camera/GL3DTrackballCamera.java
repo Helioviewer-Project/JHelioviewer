@@ -1,5 +1,6 @@
 package org.helioviewer.gl3d.camera;
 
+import java.awt.Dimension;
 import java.util.Date;
 import org.helioviewer.base.logging.Log;
 import org.helioviewer.base.physics.Constants;
@@ -18,6 +19,7 @@ import org.helioviewer.gl3d.wcs.HeliocentricCartesianCoordinateSystem;
 import org.helioviewer.gl3d.wcs.conversion.SolarSphereToStonyhurstHeliographicConversion;
 import org.helioviewer.gl3d.wcs.impl.SolarSphereCoordinateSystem;
 import org.helioviewer.gl3d.wcs.impl.StonyhurstHeliographicCoordinateSystem;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.viewmodel.changeevent.TimestampChangedReason;
 import org.helioviewer.viewmodel.view.LinkedMovieManager;
@@ -34,18 +36,18 @@ import org.helioviewer.viewmodel.view.jp2view.datetime.ImmutableDateTime;
  * @author Simon Sp�rri (simon.spoerri@fhnw.ch)
  * 
  */
-public class GL3DTrackballCamera extends GL3DCamera implements ViewListener{
-    public static final double DEFAULT_CAMERA_DISTANCE = 12 * Constants.SunRadius;
-    private boolean track;
-    private GL3DRay lastMouseRay;
-    protected CoordinateSystem viewSpaceCoordinateSystem = new HeliocentricCartesianCoordinateSystem();
-    private GL3DTrackballRotationInteraction rotationInteraction;
-    private GL3DPanInteraction panInteraction;
-    private GL3DZoomBoxInteraction zoomBoxInteraction;
+public class GL3DTrackballCamera extends GL3DCamera implements ViewListener {
+	public static final double DEFAULT_CAMERA_DISTANCE = 12 * Constants.SunRadius;
+	private boolean track;
+	private GL3DRay lastMouseRay;
+	protected CoordinateSystem viewSpaceCoordinateSystem = new HeliocentricCartesianCoordinateSystem();
+	private GL3DTrackballRotationInteraction rotationInteraction;
+	private GL3DPanInteraction panInteraction;
+	private GL3DZoomBoxInteraction zoomBoxInteraction;
 
-    protected GL3DSceneGraphView sceneGraphView;
+	protected GL3DSceneGraphView sceneGraphView;
 
-    protected GL3DInteraction currentInteraction;
+	protected GL3DInteraction currentInteraction;
 
 	private Date startDate = null;
 
@@ -59,15 +61,17 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener{
 	private SolarSphereToStonyhurstHeliographicConversion stonyhurstConversion = (SolarSphereToStonyhurstHeliographicConversion) solarSphereCoordinateSystem
 			.getConversion(stonyhurstCoordinateSystem);
 	private GL3DVec3d startPosition2D;
-	
-    public GL3DTrackballCamera(GL3DSceneGraphView sceneGraphView) {
-        this.sceneGraphView = sceneGraphView;
-        this.rotationInteraction = new GL3DTrackballRotationInteraction(this, sceneGraphView);
-        this.panInteraction = new GL3DPanInteraction(this, sceneGraphView);
-        this.zoomBoxInteraction = new GL3DZoomBoxInteraction(this, sceneGraphView);
 
-        this.currentInteraction = this.rotationInteraction;
-    }
+	public GL3DTrackballCamera(GL3DSceneGraphView sceneGraphView) {
+		this.sceneGraphView = sceneGraphView;
+		this.rotationInteraction = new GL3DTrackballRotationInteraction(this,
+				sceneGraphView);
+		this.panInteraction = new GL3DPanInteraction(this, sceneGraphView);
+		this.zoomBoxInteraction = new GL3DZoomBoxInteraction(this,
+				sceneGraphView);
+
+		this.currentInteraction = this.rotationInteraction;
+	}
 
 	public void activate(GL3DCamera precedingCamera) {
 		super.activate(precedingCamera);
@@ -82,38 +86,44 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener{
 					&& (timestampReason.getView() instanceof TimedMovieView)
 					&& LinkedMovieManager.getActiveInstance().isMaster(
 							(TimedMovieView) timestampReason.getView())) {
+				if (!LinkedMovieManager.getActiveInstance().isPlaying()) {
+					this.resetStartPosition();
+				}
+				currentDate = timestampReason.getNewDateTime().getTime();
+				if (startPosition != null) {
+					long timediff = (currentDate.getTime() - startDate
+							.getTime()) / 1000;
 
-					currentDate = timestampReason.getNewDateTime().getTime();
-					if (startPosition != null) {
-						long timediff = (currentDate.getTime() - startDate
-								.getTime()) / 1000;
+					double rotation = DifferentialRotation
+							.calculateRotationInRadians(0, timediff);
 
-						double theta = startPosition
-								.getValue(StonyhurstHeliographicCoordinateSystem.THETA);
-						double rotation = DifferentialRotation
-								.calculateRotationInRadians(theta, timediff);
-						GL3DQuatd newRotation = GL3DQuatd.createRotation(currentRotation
-								- rotation, new GL3DVec3d(0, 1, 0));
-						GL3DVec3d newPosition = newRotation.toMatrix().multiply(startPosition2D);
-						if (GL3DState.get().getState() == VISUAL_TYPE.MODE_3D)
+					GL3DQuatd newRotation = GL3DQuatd.createRotation(
+							currentRotation - rotation, new GL3DVec3d(0, 1, 0));
+					GL3DVec3d newPosition = newRotation.toMatrix().multiply(
+							startPosition2D);
+
+					GL3DVec3d tmp = GL3DVec3d.subtract(newPosition,
+							startPosition2D);
+					this.startPosition2D = newPosition;
+					if (GL3DState.get().getState() == VISUAL_TYPE.MODE_3D)
 						this.getRotation().rotate(
 								GL3DQuatd.createRotation(currentRotation
 										- rotation, new GL3DVec3d(0, 1, 0)));
-						else{
-							this.translation.x += newPosition.x - startPosition2D.x;
-							this.translation.y += newPosition.y - startPosition2D.y;
-						}
-						fireCameraMoved();
-						this.updateCameraTransformation();
-						this.currentRotation = rotation;
-					} else {
-						currentRotation = 0.0;
-						resetStartPosition();
-					}
 
-	
-				
-				
+					else {
+						this.translation.x += tmp.x;
+						this.translation.y -= tmp.y;
+
+					}
+					// fireCameraMoved();
+					this.updateCameraTransformation();
+					this.currentRotation = rotation;
+					this.startPosition2D = newPosition;
+				} else {
+					currentRotation = 0.0;
+					resetStartPosition();
+				}
+
 			}
 		}
 	}
@@ -123,10 +133,21 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener{
 
 		GL3DRayTracer positionTracer = new GL3DRayTracer(
 				sceneGraphView.getHitReferenceShape(), this);
-		GL3DRay positionRay = positionTracer.castCenter();
+		Dimension canvasSize = GuiState3DWCS.mainComponentView.getCanavasSize();
+		GL3DRay positionRay = positionTracer.cast((int) canvasSize.width / 2,
+				(int) canvasSize.height / 2);
 
 		GL3DVec3d position = positionRay.getHitPoint();
-		this.startPosition2D = position;
+		System.out.println("startPosition : " + position);
+		System.out.println("hitSun : " + positionRay.isOnSun);
+		double x = this.getTranslation().x;
+		double y = this.getTranslation().y;
+		double z = Math.sqrt(Constants.SunRadius * Constants.SunRadius - x * x
+				- y * y);
+
+		this.startPosition2D = new GL3DVec3d(x, y, z);
+		this.startPosition2D = this.getRotation().toMatrix()
+				.multiply(this.startPosition2D);
 		if (position != null) {
 			CoordinateVector solarSpherePosition = solarSphereCoordinateSystem
 					.createCoordinateVector(position.x, position.y, position.z);
@@ -160,63 +181,63 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener{
 		}
 		return idt.getTime();
 	}
-	
-    public void applyCamera(GL3DState state) {
-        // ((HEEQCoordinateSystem)this.viewSpaceCoordinateSystem).setObservationDate(state.getCurrentObservationDate());
-        super.applyCamera(state);
-    }
 
-    public void setSceneGraphView(GL3DSceneGraphView sceneGraphView) {
-        this.sceneGraphView = sceneGraphView;
-    }
+	public void applyCamera(GL3DState state) {
+		// ((HEEQCoordinateSystem)this.viewSpaceCoordinateSystem).setObservationDate(state.getCurrentObservationDate());
+		super.applyCamera(state);
+	}
 
-    public void reset() {
-        this.currentInteraction.reset(this);
-    }
+	public void setSceneGraphView(GL3DSceneGraphView sceneGraphView) {
+		this.sceneGraphView = sceneGraphView;
+	}
 
-    public double getDistanceToSunSurface() {
-        return -this.getCameraTransformation().translation().z;
-    }
+	public void reset() {
+		this.currentInteraction.reset(this);
+	}
 
-    public GL3DInteraction getPanInteraction() {
-        return this.panInteraction;
-    }
+	public double getDistanceToSunSurface() {
+		return -this.getCameraTransformation().translation().z;
+	}
 
-    public GL3DInteraction getRotateInteraction() {
-        return this.rotationInteraction;
-    }
+	public GL3DInteraction getPanInteraction() {
+		return this.panInteraction;
+	}
 
-    public GL3DInteraction getCurrentInteraction() {
-        return this.currentInteraction;
-    }
+	public GL3DInteraction getRotateInteraction() {
+		return this.rotationInteraction;
+	}
 
-    public void setCurrentInteraction(GL3DInteraction currentInteraction) {
-        this.currentInteraction = currentInteraction;
-    }
+	public GL3DInteraction getCurrentInteraction() {
+		return this.currentInteraction;
+	}
 
-    public GL3DInteraction getZoomInteraction() {
-        return this.zoomBoxInteraction;
-    }
+	public void setCurrentInteraction(GL3DInteraction currentInteraction) {
+		this.currentInteraction = currentInteraction;
+	}
 
-    public GL3DRay getLastMouseRay() {
-        return lastMouseRay;
-    }
+	public GL3DInteraction getZoomInteraction() {
+		return this.zoomBoxInteraction;
+	}
 
-    public CoordinateSystem getViewSpaceCoordinateSystem() {
-        return this.viewSpaceCoordinateSystem;
-    }
+	public GL3DRay getLastMouseRay() {
+		return lastMouseRay;
+	}
 
-    public GL3DMat4d getVM() {
-        GL3DMat4d c = this.getCameraTransformation().copy();
-        return c;
-    }
+	public CoordinateSystem getViewSpaceCoordinateSystem() {
+		return this.viewSpaceCoordinateSystem;
+	}
 
-    public String getName() {
-        return "Trackball";
-    }
+	public GL3DMat4d getVM() {
+		GL3DMat4d c = this.getCameraTransformation().copy();
+		return c;
+	}
+
+	public String getName() {
+		return "Trackball";
+	}
 
 	@Override
 	public void setTrack(boolean track) {
-		this.track = track;	
+		this.track = track;
 	}
 }

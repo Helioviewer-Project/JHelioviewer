@@ -313,7 +313,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 			MetaData metaData = null;
 			double distance = GL3DTrackballCamera.DEFAULT_CAMERA_DISTANCE;
 			GL3DCamera camera = this.getAdapter(GL3DCameraView.class).getCurrentCamera();
-			if (LayersModel.getSingletonInstance().getActiveView() != null){
+			if (LayersModel.getSingletonInstance().getActiveView() != null && camera != null){
 				metaData = LayersModel.getSingletonInstance().getActiveView().getAdapter(MetaDataView.class).getMetaData();
 				region = metaData.getPhysicalRegion();
 
@@ -321,11 +321,11 @@ public class GL3DComponentView extends AbstractBasicView implements
                 double halfFOVRad = Math.toRadians(camera.getFOV() / 2.0);
                 distance = halfWidth * Math.sin(Math.PI / 2 - halfFOVRad) / Math.sin(halfFOVRad);
 
-			}			
 			double scaleFactor = -camera.getZTranslation() / distance;
 			double top = region.getCornerX();
 			double bottom = region.getCornerX()+region.getWidth();
 	        gl.glOrtho(top*aspect*scaleFactor, bottom*aspect*scaleFactor, top*scaleFactor, bottom*scaleFactor, clipNear, clipFar);
+			}			
 		}
 		}
 		gl.glMatrixMode(GL2.GL_MODELVIEW);

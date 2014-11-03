@@ -13,10 +13,10 @@ public class DifferentialRotation {
         return calculateRotationInRadians(latitude, timeDifferenceInSeconds) * 180.0 / Math.PI;
     }
 
-    public static StonyhurstHeliographicCoordinates calculateNextPosition(StonyhurstHeliographicCoordinates currenPosition, double timeDifferenceInSeconds) {
-        double rotation = calculateRotationInDegree(currenPosition.theta, timeDifferenceInSeconds);
-        double newPhi = currenPosition.phi + rotation;
+    public static StonyhurstHeliographicCoordinates calculateNextPosition(StonyhurstHeliographicCoordinates currentPosition, double timeDifferenceInSeconds) {
+        double rotation = calculateRotationInDegree(currentPosition.theta, timeDifferenceInSeconds);
+        double newPhi = currentPosition.phi + rotation;
         newPhi = newPhi % 360.0;
-        return new StonyhurstHeliographicCoordinates(currenPosition.theta, newPhi, currenPosition.r);
+        return new StonyhurstHeliographicCoordinates(currentPosition.theta, newPhi, currentPosition.r);
     }
 }

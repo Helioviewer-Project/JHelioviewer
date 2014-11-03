@@ -10,6 +10,7 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.components.WheelSupport;
 import org.helioviewer.viewmodel.filter.Filter;
 import org.helioviewer.viewmodelplugin.filter.FilterAlignmentDetails;
@@ -86,6 +87,7 @@ public class ContrastPanel extends FilterPanel implements ChangeListener, MouseL
     public void stateChanged(ChangeEvent e) {
         filter.setContrast((float) contrastSlider.getValue() / sliderToContrastScale);
         contrastLabel.setText(Integer.toString(contrastSlider.getValue()));
+        GuiState3DWCS.mainComponentView.getComponent().repaint();
     }
 
     /**

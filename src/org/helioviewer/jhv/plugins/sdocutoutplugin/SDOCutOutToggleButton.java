@@ -2,7 +2,6 @@ package org.helioviewer.jhv.plugins.sdocutoutplugin;
 
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 

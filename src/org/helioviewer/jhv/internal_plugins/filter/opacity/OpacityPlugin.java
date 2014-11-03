@@ -42,16 +42,11 @@ public class OpacityPlugin extends SimpleFilterContainer {
 
     protected boolean useFilter(FilterView view) {
     	
-    	try {
         	MetaData currentMetaData = view.getAdapter(MetaDataView.class).getMetaData();
-            if (currentMetaData.getDetector().startsWith("COR")){
+            if (currentMetaData.hasCorona()){
             	initialOpacity = 1.0f;
             	return true;
             }
-		} catch (Exception e) {
-			Log.error("Metadata " + view.getAdapter(MetaDataView.class).getMetaData() + " can't be cast to org.helioviewer.viewmodel.metadata.HelioviewerMetaData");
-		}
-        
         if (GuiState3DWCS.mainComponentView == null) {
             initialOpacity = 1.0f;
             return true;
@@ -67,7 +62,7 @@ public class OpacityPlugin extends SimpleFilterContainer {
         int layerCount = 1;
         for (int i = 0; i < layeredView.getNumLayers(); i++) {
         		MetaData metaData = layeredView.getLayer(i).getAdapter(MetaDataView.class).getMetaData();
-            	if (!metaData.getDetector().startsWith("COR")) layerCount++;
+            	if (metaData.hasCorona()) layerCount++;
         }
         
 		initialOpacity = 1.0f / layerCount;

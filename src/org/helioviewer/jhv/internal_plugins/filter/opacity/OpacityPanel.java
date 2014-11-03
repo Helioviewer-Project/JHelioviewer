@@ -7,6 +7,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.components.WheelSupport;
 import org.helioviewer.viewmodel.filter.Filter;
 import org.helioviewer.viewmodelplugin.filter.FilterAlignmentDetails;
@@ -89,6 +90,7 @@ public class OpacityPanel extends FilterPanel implements ChangeListener, FilterA
         if (filter != null) {
             float value = ((SpinnerNumberModel) opacitySpinner.getModel()).getNumber().floatValue();
             filter.setOpacity(value);
+            GuiState3DWCS.mainComponentView.getComponent().repaint();
         }
     }
 

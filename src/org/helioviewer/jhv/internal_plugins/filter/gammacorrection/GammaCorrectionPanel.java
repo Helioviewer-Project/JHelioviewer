@@ -10,6 +10,7 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.components.WheelSupport;
 import org.helioviewer.viewmodel.filter.Filter;
 import org.helioviewer.viewmodelplugin.filter.FilterAlignmentDetails;
@@ -101,6 +102,7 @@ public class GammaCorrectionPanel extends FilterPanel implements ChangeListener,
             label = label.substring(0, 3);
         }
         gammaLabel.setText(label);
+        GuiState3DWCS.mainComponentView.getComponent().repaint();
     }
 
     /**

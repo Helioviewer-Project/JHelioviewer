@@ -174,7 +174,7 @@ public class GL3DCameraSelectorModel extends AbstractListModel<Object> implement
 
 	@Override
 	public void activeLayerChanged(int idx) {
-		if (this.visualType == VISUAL_TYPE.MODE_2D){
+		if (this.visualType == VISUAL_TYPE.MODE_2D && idx > 0){
 			this.rotateToCurrentLayer();
 		}
 	}

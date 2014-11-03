@@ -11,6 +11,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.viewmodel.filter.Filter;
 import org.helioviewer.viewmodel.imagedata.ColorMask;
 import org.helioviewer.viewmodelplugin.filter.FilterAlignmentDetails;
@@ -95,6 +96,7 @@ public class ChannelMixerPanel extends FilterPanel implements ItemListener, Filt
      */
     public void itemStateChanged(ItemEvent e) {
         filter.setColorMask(redCheckBox.isSelected(), greenCheckBox.isSelected(), blueCheckBox.isSelected());
+        GuiState3DWCS.mainComponentView.getComponent().repaint();
     }
 
     public int getDetails() {

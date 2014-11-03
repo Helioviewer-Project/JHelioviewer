@@ -8,6 +8,7 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.components.WheelSupport;
 import org.helioviewer.viewmodel.filter.Filter;
 import org.helioviewer.viewmodelplugin.filter.FilterAlignmentDetails;
@@ -83,6 +84,7 @@ public class SharpenPanel extends FilterPanel implements ChangeListener, FilterA
     public void stateChanged(ChangeEvent e) {
         filter.setWeighting((float) sharpeningSlider.getValue() / 10.0f);
         sharpeningLabel.setText(sharpeningSlider.getValue() + "%");
+        GuiState3DWCS.mainComponentView.getComponent().repaint();
     }
 
     public int getDetails() {
