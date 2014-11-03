@@ -13,6 +13,7 @@ import org.helioviewer.gl3d.view.GL3DSceneGraphView;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.viewmodel.region.Region;
+import org.helioviewer.viewmodel.view.MetaDataView;
 import org.helioviewer.viewmodel.view.RegionView;
 
 /**
@@ -76,15 +77,27 @@ public class GL3DPanInteraction extends GL3DDefaultInteraction {
 		}
 	}
 	
-	private void mousePressed2DFunction(MouseEvent e, GL3DCamera camera){
-		Region region = LayersModel.getSingletonInstance().getActiveView().getAdapter(RegionView.class).getRegion();
+	private void mousePressed2DFunction(MouseEvent e, GL3DCamera camera){		
+		if (LayersModel.getSingletonInstance().getActiveView() != null){
+		Region region = LayersModel.getSingletonInstance().getActiveView().getAdapter(MetaDataView.class).getMetaData().getPhysicalRegion();
+		double halfWidth = region.getWidth() / 2;
+		double halfFOVRad = Math.toRadians(camera.getFOV() / 2.0);
+		double distance = halfWidth * Math.sin(Math.PI / 2 - halfFOVRad)
+				/ Math.sin(halfFOVRad);
+		double scaleFactor = -camera.getZTranslation() / distance;
+		double aspect = camera.getAspect();
+
+		double width = region.getWidth() * scaleFactor * aspect;
+		double height = region.getHeight() * scaleFactor;
+
 		if (region != null){
-		Dimension canvasSize = GuiState3DWCS.mainComponentView.getCanavasSize();
-		this.meterPerPixelWidth = region.getWidth() / canvasSize.getWidth();
-		this.meterPerPixelHeight = region.getHeight() / canvasSize.getHeight();
+		Dimension canvasSize = GuiState3DWCS.mainComponentView.getComponent().getSize();
+		this.meterPerPixelWidth = width / canvasSize.getWidth();
+		this.meterPerPixelHeight = height / canvasSize.getHeight();
 		this.defaultTranslation = camera.getTranslation().copy();
 		this.defaultTranslation.x -= this.meterPerPixelWidth * e.getX();
 		this.defaultTranslation.y += this.meterPerPixelHeight * e.getY();
+		}
 		}
 	}
 	
