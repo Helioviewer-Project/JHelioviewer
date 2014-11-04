@@ -79,6 +79,9 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener {
 				}
 				currentDate = timestampReason.getNewDateTime().getTime();
 
+				if(startDate==null)
+				    this.startDate = getStartDate();
+				
 				long timediff = (currentDate.getTime() - startDate
 							.getTime()) / 1000;
 
