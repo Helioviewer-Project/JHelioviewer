@@ -45,7 +45,7 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
 public class JavaHelioViewer {
 
     public static void main(String[] args) {
-    	
+      
         // Prints the usage message
         if (args.length == 1 && (args[0].equals("-h") || args[0].equals("--help"))) {
             System.out.println(CommandLineProcessor.getUsageMessage());
@@ -146,29 +146,6 @@ public class JavaHelioViewer {
             Log.error("Invalid uri for remote library server");
         }
 
-        // Determine glibc version
-        if (System.getProperty("jhv.os").equals("linux")) {
-            splash.setProgressText("Determining glibc version...");
-            Log.info("Try to install glibc-version tool");
-            if (null == ResourceLoader.getSingletonInstance().loadResource("glibc-version", libsRemote, libs, libs, libsBackup, System.getProperties())) {
-                Log.error(">> JavaHelioViewer > Could not load glibc-version tool");
-                Message.err("Error loading glibc-version tool", "Error! The glibc-version tool could not be loaded. This may slow down the loading process and increase the network load.", false);
-            } else {
-                Log.info("Successfully installed glibc version tool");
-                try {
-                    if (SystemProperties.setGLibcVersion() != null) {
-                        Log.info("Successfully determined glibc version: " + System.getProperty("glibc.version"));
-                    } else {
-                        Log.error(">> JavaHelioViewer > Could not determine glibc version");
-                        Message.err("Error detecting glibc version", "Error! The glibc version could not be detected. This may slow down the loading process and increase the network load.", false);
-                    }
-                } catch (Throwable t) {
-                    Log.error(">> JavaHelioViewer > Could not determine glibc version", t);
-                    Message.err("Error detecting glibc version", "Error! The glibc version could not be detected. This may slow down the loading process and increase the network load.", false);
-                }
-            }
-        }
-
         /* ----------Setup kakadu ----------- */
         Log.debug("Instantiate Kakadu engine");
         KakaduEngine engine = new KakaduEngine();
@@ -217,16 +194,6 @@ public class JavaHelioViewer {
         }
 
         splash.nextStep();
-        splash.setProgressText("Initializing MP4Box...");
-        // Load/download mp4box
-        Log.info("Install MP4Box");
-        if (null == ResourceLoader.getSingletonInstance().loadResource("mp4box", libsRemote, libs, libs, libsBackup, System.getProperties())) {
-            Log.error("Error installing MP4Box");
-            Message.err("Error installing MP4Box", "Could not install MP4Box tool. Exported movies will not contain timestamps in subtitles.", false);
-        } else {
-            Log.info("Successfully installed MP4Box tool");
-        }
-
 
         // Check for updates in parallel, if newer version is available a small
         // message is displayed
@@ -284,14 +251,14 @@ public class JavaHelioViewer {
         PluginManager.getSingeltonInstance().addInternalPlugin(internalPlugin.getClass().getClassLoader(), internalPlugin);
 
         for(Plugin plugin:new Plugin[]{new PfssPlugin() , new HEKPlugin3D(), new SDOCutOutPlugin3D()})
-          	PluginManager.getSingeltonInstance().addPlugin(plugin.getClass().getClassLoader(), plugin, null);
+            PluginManager.getSingeltonInstance().addPlugin(plugin.getClass().getClassLoader(), plugin, null);
 
         splash.setProgressText("Displaying main window...");
         splash.nextStep();
         // Create main view chain and display main window
         Log.info("Start main window");
         //splash.initializeViewchain();
-		ImageViewerGui.getSingletonInstance().createViewchains();
+        ImageViewerGui.getSingletonInstance().createViewchains();
 
     }
-};
+}

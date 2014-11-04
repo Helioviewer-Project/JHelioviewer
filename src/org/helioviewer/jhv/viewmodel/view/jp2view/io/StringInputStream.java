@@ -1,5 +1,6 @@
 package org.helioviewer.jhv.viewmodel.view.jp2view.io;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -40,7 +41,7 @@ public class StringInputStream extends InputStream {
      *            A <code>InputStream</code> object as a base stream.
      */
     public StringInputStream(InputStream in) {
-        this.in = in;
+        this.in = new BufferedInputStream(in, 65536);
     }
 
     /**
