@@ -15,8 +15,8 @@
 -apptype=Plain
 -classabsence=HANDLE
 -compilerheap=1744830464
--inlinelimit=100
--inlinetolimit=500
+-inlinelimit=50
+-inlinetolimit=250
 -jetcplastpage:=PageCompile
 -jetrt=Desktop
 -jetvmprop=-Djet.jit.disable.resolution -Djet.gc.heaplimit:0 -Djet.gc.ratio:50 -Djet.stack.trace
