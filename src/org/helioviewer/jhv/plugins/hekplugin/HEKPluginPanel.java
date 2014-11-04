@@ -16,7 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 
-import org.helioviewer.base.math.Interval;
+import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;
@@ -29,10 +29,10 @@ import org.helioviewer.jhv.plugins.hekplugin.cache.HEKPath;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKStupidDownloader;
 import org.helioviewer.jhv.plugins.hekplugin.cache.gui.HEKCacheTreeView;
 import org.helioviewer.jhv.plugins.hekplugin.cache.gui.HEKCacheTreeViewContainer;
-import org.helioviewer.viewmodel.changeevent.ChangeEvent;
-import org.helioviewer.viewmodel.changeevent.SubImageDataChangedReason;
-import org.helioviewer.viewmodel.view.View;
-import org.helioviewer.viewmodelplugin.overlay.OverlayPanel;
+import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayPanel;
+import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
+import org.helioviewer.jhv.viewmodel.changeevent.SubImageDataChangedReason;
+import org.helioviewer.jhv.viewmodel.view.View;
 
 /**
  * Represents the UI components which manage the HEK event catalog.

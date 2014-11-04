@@ -24,8 +24,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 
-import org.helioviewer.base.Message;
 import org.helioviewer.jhv.JHVSplashScreen;
+import org.helioviewer.jhv.base.Message;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 import org.helioviewer.jhv.gui.components.*;
@@ -48,15 +48,15 @@ import org.helioviewer.jhv.io.APIRequestManager;
 import org.helioviewer.jhv.io.CommandLineProcessor;
 import org.helioviewer.jhv.io.FileDownloader;
 import org.helioviewer.jhv.io.JHVRequest;
-import org.helioviewer.viewmodel.metadata.MetaData;
-import org.helioviewer.viewmodel.view.ComponentView;
-import org.helioviewer.viewmodel.view.FilterView;
-import org.helioviewer.viewmodel.view.ImageInfoView;
-import org.helioviewer.viewmodel.view.LayeredView;
-import org.helioviewer.viewmodel.view.MetaDataView;
-import org.helioviewer.viewmodel.view.MovieView;
-import org.helioviewer.viewmodel.view.View;
-import org.helioviewer.viewmodelplugin.filter.FilterTabPanelManager;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTabPanelManager;
+import org.helioviewer.jhv.viewmodel.metadata.MetaData;
+import org.helioviewer.jhv.viewmodel.view.ComponentView;
+import org.helioviewer.jhv.viewmodel.view.FilterView;
+import org.helioviewer.jhv.viewmodel.view.ImageInfoView;
+import org.helioviewer.jhv.viewmodel.view.LayeredView;
+import org.helioviewer.jhv.viewmodel.view.MetaDataView;
+import org.helioviewer.jhv.viewmodel.view.MovieView;
+import org.helioviewer.jhv.viewmodel.view.View;
 
 /**
  * A class that sets up the graphical user interface.

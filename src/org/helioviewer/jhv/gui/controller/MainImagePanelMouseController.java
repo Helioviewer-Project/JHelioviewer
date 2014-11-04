@@ -4,7 +4,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
 import org.helioviewer.jhv.gui.ImageViewerGui;
-import org.helioviewer.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.View;
 
 /**
  * Abstract base class implementing ImagePanelInputController for the main image

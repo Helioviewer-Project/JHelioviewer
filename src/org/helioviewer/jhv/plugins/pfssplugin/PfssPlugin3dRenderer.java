@@ -3,14 +3,14 @@ package org.helioviewer.jhv.plugins.pfssplugin;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
-import org.helioviewer.gl3d.scenegraph.GL3DState;
+import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 import org.helioviewer.jhv.plugins.pfssplugin.data.PfssCache;
 import org.helioviewer.jhv.plugins.pfssplugin.data.PfssData;
 import org.helioviewer.jhv.plugins.pfssplugin.data.PfssFitsFile;
-import org.helioviewer.viewmodel.renderer.physical.PhysicalRenderGraphics;
-import org.helioviewer.viewmodel.renderer.physical.PhysicalRenderer3d;
-import org.helioviewer.viewmodel.view.LinkedMovieManager;
-import org.helioviewer.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.renderer.physical.PhysicalRenderGraphics;
+import org.helioviewer.jhv.viewmodel.renderer.physical.PhysicalRenderer3d;
+import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
+import org.helioviewer.jhv.viewmodel.view.View;
 
 /**
  * @author Stefan Meier (stefan.meier@fhnw.ch)

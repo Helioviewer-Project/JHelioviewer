@@ -1,15 +1,14 @@
 package org.helioviewer.jhv.internal_plugins.filter.opacity;
 
-import org.helioviewer.base.logging.Log;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
-import org.helioviewer.viewmodel.filter.Filter;
-import org.helioviewer.viewmodel.metadata.MetaData;
-import org.helioviewer.viewmodel.view.FilterView;
-import org.helioviewer.viewmodel.view.LayeredView;
-import org.helioviewer.viewmodel.view.MetaDataView;
-import org.helioviewer.viewmodelplugin.filter.FilterPanel;
-import org.helioviewer.viewmodelplugin.filter.FilterTabDescriptor;
-import org.helioviewer.viewmodelplugin.filter.SimpleFilterContainer;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterPanel;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTabDescriptor;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.SimpleFilterContainer;
+import org.helioviewer.jhv.viewmodel.filter.Filter;
+import org.helioviewer.jhv.viewmodel.metadata.MetaData;
+import org.helioviewer.jhv.viewmodel.view.FilterView;
+import org.helioviewer.jhv.viewmodel.view.LayeredView;
+import org.helioviewer.jhv.viewmodel.view.MetaDataView;
 
 /**
  * Plugin for changing the opacity of the image.

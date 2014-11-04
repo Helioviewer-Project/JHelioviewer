@@ -5,8 +5,8 @@ import java.awt.Dimension;
 import javax.swing.BorderFactory;
 
 import org.helioviewer.jhv.layers.LayersModel;
-import org.helioviewer.viewmodel.view.View;
-import org.helioviewer.viewmodel.view.jp2view.JP2View;
+import org.helioviewer.jhv.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JP2View;
 
 /**
  * Status panel for displaying quality layer currently used.

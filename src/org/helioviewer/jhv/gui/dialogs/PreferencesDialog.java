@@ -36,15 +36,15 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
 import org.apache.log4j.Level;
-import org.helioviewer.base.Message;
-import org.helioviewer.base.logging.LogSettings;
 import org.helioviewer.jhv.JHVDirectory;
 import org.helioviewer.jhv.Settings;
+import org.helioviewer.jhv.base.Message;
+import org.helioviewer.jhv.base.logging.LogSettings;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.interfaces.ShowableDialog;
-import org.helioviewer.viewmodel.view.jp2view.kakadu.JHV_Kdu_cache;
+import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_Kdu_cache;
 
 /**
  * Dialog that allows the user to change default preferences and settings.

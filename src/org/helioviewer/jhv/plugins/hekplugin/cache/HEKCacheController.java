@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
 
-import org.helioviewer.base.math.Interval;
+import org.helioviewer.jhv.base.math.Interval;
 
 public class HEKCacheController {
 

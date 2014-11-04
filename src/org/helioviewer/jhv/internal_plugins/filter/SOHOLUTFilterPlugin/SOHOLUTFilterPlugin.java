@@ -1,19 +1,19 @@
 package org.helioviewer.jhv.internal_plugins.filter.SOHOLUTFilterPlugin;
 
-import org.helioviewer.base.logging.Log;
-import org.helioviewer.viewmodel.filter.Filter;
-import org.helioviewer.viewmodel.imageformat.SingleChannelImageFormat;
-import org.helioviewer.viewmodel.metadata.MetaData;
-import org.helioviewer.viewmodel.view.FilterView;
-import org.helioviewer.viewmodel.view.MetaDataView;
-import org.helioviewer.viewmodel.view.SubimageDataView;
-import org.helioviewer.viewmodel.view.jp2view.JHVJP2View;
-import org.helioviewer.viewmodelplugin.filter.FilterContainer;
-import org.helioviewer.viewmodelplugin.filter.FilterTab;
-import org.helioviewer.viewmodelplugin.filter.FilterTabList;
-import org.helioviewer.viewmodelplugin.filter.FilterTabPanelManager;
-import org.helioviewer.viewmodelplugin.filter.FilterTabDescriptor.Type;
-import org.helioviewer.viewmodelplugin.filter.FilterTabPanelManager.Area;
+import org.helioviewer.jhv.base.logging.Log;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterContainer;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTab;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTabList;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTabPanelManager;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTabDescriptor.Type;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTabPanelManager.Area;
+import org.helioviewer.jhv.viewmodel.filter.Filter;
+import org.helioviewer.jhv.viewmodel.imageformat.SingleChannelImageFormat;
+import org.helioviewer.jhv.viewmodel.metadata.MetaData;
+import org.helioviewer.jhv.viewmodel.view.FilterView;
+import org.helioviewer.jhv.viewmodel.view.MetaDataView;
+import org.helioviewer.jhv.viewmodel.view.SubimageDataView;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJP2View;
 
 /**
  * Filter plugin for applying a color table to single channel images.

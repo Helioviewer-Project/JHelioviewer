@@ -2,13 +2,13 @@ package org.helioviewer.jhv.gui.components.layerTable;
 
 import java.util.Date;
 
-import org.helioviewer.base.Message;
-import org.helioviewer.base.logging.Log;
-import org.helioviewer.base.math.Interval;
+import org.helioviewer.jhv.base.Message;
+import org.helioviewer.jhv.base.logging.Log;
+import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
-import org.helioviewer.viewmodel.view.View;
-import org.helioviewer.viewmodel.view.jp2view.datetime.ImmutableDateTime;
+import org.helioviewer.jhv.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.jp2view.datetime.ImmutableDateTime;
 
 /**
  * This class performs checks if the added layers fit the rest of the already

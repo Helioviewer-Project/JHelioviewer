@@ -10,7 +10,7 @@ import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.components.layerTable.renderers.DescriptorIconRenderer;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.layers.LayersModel.LayerDescriptor;
-import org.helioviewer.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.View;
 
 /**
  * Action to hide the given layer.

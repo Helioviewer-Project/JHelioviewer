@@ -7,7 +7,7 @@ import javax.swing.AbstractAction;
 import javax.swing.KeyStroke;
 
 import org.helioviewer.jhv.gui.GuiState3DWCS;
-import org.helioviewer.viewmodel.view.LayeredView;
+import org.helioviewer.jhv.viewmodel.view.LayeredView;
 
 /**
  * Action to close all layers.

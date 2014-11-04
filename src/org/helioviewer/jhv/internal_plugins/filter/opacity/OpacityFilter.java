@@ -7,17 +7,17 @@ import java.awt.image.BufferedImage;
 import javax.media.opengl.GL2;
 import javax.media.opengl.glu.GLU;
 
-import org.helioviewer.base.logging.Log;
-import org.helioviewer.viewmodel.filter.AbstractFilter;
-import org.helioviewer.viewmodel.filter.GLFragmentShaderFilter;
-import org.helioviewer.viewmodel.filter.StandardFilter;
-import org.helioviewer.viewmodel.imagedata.ARGBInt32ImageData;
-import org.helioviewer.viewmodel.imagedata.ImageData;
-import org.helioviewer.viewmodel.imagedata.JavaBufferedImageData;
-import org.helioviewer.viewmodel.view.opengl.shader.GLFragmentShaderProgram;
-import org.helioviewer.viewmodel.view.opengl.shader.GLShaderBuilder;
-import org.helioviewer.viewmodel.view.opengl.shader.GLShaderBuilder.GLBuildShaderException;
-import org.helioviewer.viewmodel.view.opengl.shader.GLTextureCoordinate;
+import org.helioviewer.jhv.base.logging.Log;
+import org.helioviewer.jhv.viewmodel.filter.AbstractFilter;
+import org.helioviewer.jhv.viewmodel.filter.GLFragmentShaderFilter;
+import org.helioviewer.jhv.viewmodel.filter.StandardFilter;
+import org.helioviewer.jhv.viewmodel.imagedata.ARGBInt32ImageData;
+import org.helioviewer.jhv.viewmodel.imagedata.ImageData;
+import org.helioviewer.jhv.viewmodel.imagedata.JavaBufferedImageData;
+import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLFragmentShaderProgram;
+import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLShaderBuilder;
+import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLTextureCoordinate;
+import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLShaderBuilder.GLBuildShaderException;
 
 /**
  * Filter for changing the opacity of an image.

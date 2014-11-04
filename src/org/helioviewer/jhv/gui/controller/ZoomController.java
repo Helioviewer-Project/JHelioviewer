@@ -1,24 +1,24 @@
 package org.helioviewer.jhv.gui.controller;
 
-import org.helioviewer.base.math.Vector2dDouble;
-import org.helioviewer.base.math.Vector2dInt;
-import org.helioviewer.gl3d.camera.GL3DCamera;
-import org.helioviewer.gl3d.gui.GL3DCameraSelectorModel;
+import org.helioviewer.jhv.base.math.Vector2dDouble;
+import org.helioviewer.jhv.base.math.Vector2dInt;
+import org.helioviewer.jhv.gui.GL3DCameraSelectorModel;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.components.BasicImagePanel;
 import org.helioviewer.jhv.layers.LayersModel;
-import org.helioviewer.viewmodel.changeevent.ChangeEvent;
-import org.helioviewer.viewmodel.metadata.MetaData;
-import org.helioviewer.viewmodel.region.Region;
-import org.helioviewer.viewmodel.region.StaticRegion;
-import org.helioviewer.viewmodel.view.LayeredView;
-import org.helioviewer.viewmodel.view.MetaDataView;
-import org.helioviewer.viewmodel.view.RegionView;
-import org.helioviewer.viewmodel.view.View;
-import org.helioviewer.viewmodel.view.ViewHelper;
-import org.helioviewer.viewmodel.view.ViewportView;
-import org.helioviewer.viewmodel.viewport.Viewport;
-import org.helioviewer.viewmodel.viewportimagesize.ViewportImageSize;
+import org.helioviewer.jhv.opengl.camera.GL3DCamera;
+import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
+import org.helioviewer.jhv.viewmodel.metadata.MetaData;
+import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.region.StaticRegion;
+import org.helioviewer.jhv.viewmodel.view.LayeredView;
+import org.helioviewer.jhv.viewmodel.view.MetaDataView;
+import org.helioviewer.jhv.viewmodel.view.RegionView;
+import org.helioviewer.jhv.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.ViewHelper;
+import org.helioviewer.jhv.viewmodel.view.ViewportView;
+import org.helioviewer.jhv.viewmodel.viewport.Viewport;
+import org.helioviewer.jhv.viewmodel.viewportimagesize.ViewportImageSize;
 
 /**
  * Collection of several zooming functions.

@@ -2,19 +2,19 @@ package org.helioviewer.jhv.internal_plugins.filter.channelMixer;
 
 import javax.media.opengl.GL2;
 
-import org.helioviewer.viewmodel.filter.AbstractFilter;
-import org.helioviewer.viewmodel.filter.GLPostFilter;
-import org.helioviewer.viewmodel.filter.StandardFilter;
-import org.helioviewer.viewmodel.imagedata.ARGBInt32ImageData;
-import org.helioviewer.viewmodel.imagedata.ColorMask;
-import org.helioviewer.viewmodel.imagedata.ImageData;
-import org.helioviewer.viewmodel.imagedata.RGBInt24ImageData;
-import org.helioviewer.viewmodel.imagedata.SingleChannelByte8ImageData;
-import org.helioviewer.viewmodel.imagedata.SingleChannelShortImageData;
-import org.helioviewer.viewmodel.imageformat.SingleChannelImageFormat;
-import org.helioviewer.viewmodel.imagetransport.Byte8ImageTransport;
-import org.helioviewer.viewmodel.imagetransport.Int32ImageTransport;
-import org.helioviewer.viewmodel.imagetransport.Short16ImageTransport;
+import org.helioviewer.jhv.viewmodel.filter.AbstractFilter;
+import org.helioviewer.jhv.viewmodel.filter.GLPostFilter;
+import org.helioviewer.jhv.viewmodel.filter.StandardFilter;
+import org.helioviewer.jhv.viewmodel.imagedata.ARGBInt32ImageData;
+import org.helioviewer.jhv.viewmodel.imagedata.ColorMask;
+import org.helioviewer.jhv.viewmodel.imagedata.ImageData;
+import org.helioviewer.jhv.viewmodel.imagedata.RGBInt24ImageData;
+import org.helioviewer.jhv.viewmodel.imagedata.SingleChannelByte8ImageData;
+import org.helioviewer.jhv.viewmodel.imagedata.SingleChannelShortImageData;
+import org.helioviewer.jhv.viewmodel.imageformat.SingleChannelImageFormat;
+import org.helioviewer.jhv.viewmodel.imagetransport.Byte8ImageTransport;
+import org.helioviewer.jhv.viewmodel.imagetransport.Int32ImageTransport;
+import org.helioviewer.jhv.viewmodel.imagetransport.Short16ImageTransport;
 
 /**
  * Filter for modifying the color mask of an image.
@@ -27,7 +27,7 @@ import org.helioviewer.viewmodel.imagetransport.Short16ImageTransport;
  * 
  * <p>
  * To learn more about color masks, see
- * {@link org.helioviewer.viewmodel.imagedata.ColorMask}
+ * {@link org.helioviewer.jhv.viewmodel.imagedata.ColorMask}
  * 
  * @author Markus Langenberg
  */

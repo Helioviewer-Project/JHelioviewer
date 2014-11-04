@@ -2,14 +2,14 @@ package org.helioviewer.jhv.gui.controller;
 
 import java.awt.event.MouseEvent;
 
-import org.helioviewer.base.math.Vector2dInt;
+import org.helioviewer.jhv.base.math.Vector2dInt;
 import org.helioviewer.jhv.gui.components.BasicImagePanel;
 import org.helioviewer.jhv.gui.interfaces.ImagePanelInputController;
-import org.helioviewer.viewmodel.view.MetaDataView;
-import org.helioviewer.viewmodel.view.RegionView;
-import org.helioviewer.viewmodel.view.View;
-import org.helioviewer.viewmodel.view.ViewHelper;
-import org.helioviewer.viewmodel.view.ViewportView;
+import org.helioviewer.jhv.viewmodel.view.MetaDataView;
+import org.helioviewer.jhv.viewmodel.view.RegionView;
+import org.helioviewer.jhv.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.ViewHelper;
+import org.helioviewer.jhv.viewmodel.view.ViewportView;
 
 /**
  * Abstract base class implementing ImagePanelInputController.

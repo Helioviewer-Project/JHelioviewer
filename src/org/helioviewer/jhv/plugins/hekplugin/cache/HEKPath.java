@@ -3,7 +3,7 @@ package org.helioviewer.jhv.plugins.hekplugin.cache;
 import java.util.Comparator;
 import java.util.Vector;
 
-import org.helioviewer.base.logging.Log;
+import org.helioviewer.jhv.base.logging.Log;
 
 /**
  * Class used to categorize events

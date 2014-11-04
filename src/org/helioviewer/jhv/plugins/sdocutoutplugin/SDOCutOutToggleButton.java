@@ -12,8 +12,8 @@ import javax.swing.SwingConstants;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
-import org.helioviewer.viewmodel.view.MetaDataView;
-import org.helioviewer.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.MetaDataView;
+import org.helioviewer.jhv.viewmodel.view.View;
 
 public class SDOCutOutToggleButton extends Component implements LayersListener,
 		PropertyChangeListener {

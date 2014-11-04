@@ -10,8 +10,8 @@ import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 import javax.swing.KeyStroke;
 
-import org.helioviewer.base.Message;
 import org.helioviewer.jhv.Settings;
+import org.helioviewer.jhv.base.Message;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.actions.filefilters.AllSupportedImageTypesFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.FitsFilter;

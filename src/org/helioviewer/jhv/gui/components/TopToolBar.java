@@ -14,13 +14,22 @@ import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
-import org.helioviewer.base.logging.Log;
-import org.helioviewer.gl3d.gui.*;
 import org.helioviewer.jhv.Settings;
+import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.actions.View2DAction;
 import org.helioviewer.jhv.gui.actions.View3DAction;
+import org.helioviewer.jhv.gui.actions.gl3d.GL3DResetCameraAction;
+import org.helioviewer.jhv.gui.actions.gl3d.GL3DSetPanInteractionAction;
+import org.helioviewer.jhv.gui.actions.gl3d.GL3DSetRotationInteractionAction;
+import org.helioviewer.jhv.gui.actions.gl3d.GL3DSetZoomBoxInteractionAction;
+import org.helioviewer.jhv.gui.actions.gl3d.GL3DToggleCoronaVisibilityAction;
+import org.helioviewer.jhv.gui.actions.gl3d.GL3DToggleSolarRotationAction;
+import org.helioviewer.jhv.gui.actions.gl3d.GL3DZoom1to1Action;
+import org.helioviewer.jhv.gui.actions.gl3d.GL3DZoomFitAction;
+import org.helioviewer.jhv.gui.actions.gl3d.GL3DZoomInAction;
+import org.helioviewer.jhv.gui.actions.gl3d.GL3DZoomOutAction;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 

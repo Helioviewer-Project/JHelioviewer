@@ -21,10 +21,10 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.swing.JOptionPane;
 
-import org.helioviewer.base.Message;
-import org.helioviewer.base.logging.Log;
-import org.helioviewer.base.math.Interval;
 import org.helioviewer.jhv.Settings;
+import org.helioviewer.jhv.base.Message;
+import org.helioviewer.jhv.base.logging.Log;
+import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.ViewListenerDistributor;
@@ -32,37 +32,37 @@ import org.helioviewer.jhv.gui.components.MoviePanel;
 import org.helioviewer.jhv.gui.dialogs.MetaDataDialog;
 import org.helioviewer.jhv.io.APIRequestManager;
 import org.helioviewer.jhv.io.FileDownloader;
-import org.helioviewer.viewmodel.changeevent.ChangeEvent;
-import org.helioviewer.viewmodel.changeevent.ChangedReason;
-import org.helioviewer.viewmodel.changeevent.LayerChangedReason;
-import org.helioviewer.viewmodel.changeevent.NonConstantMetaDataChangedReason;
-import org.helioviewer.viewmodel.changeevent.RegionChangedReason;
-import org.helioviewer.viewmodel.changeevent.SubImageDataChangedReason;
-import org.helioviewer.viewmodel.changeevent.TimestampChangedReason;
-import org.helioviewer.viewmodel.changeevent.ViewChainChangedReason;
-import org.helioviewer.viewmodel.changeevent.ViewportChangedReason;
-import org.helioviewer.viewmodel.changeevent.LayerChangedReason.LayerChangeType;
-import org.helioviewer.viewmodel.io.APIResponse;
-import org.helioviewer.viewmodel.io.APIResponseDump;
-import org.helioviewer.viewmodel.metadata.MetaData;
-import org.helioviewer.viewmodel.region.Region;
-import org.helioviewer.viewmodel.region.StaticRegion;
-import org.helioviewer.viewmodel.view.ComponentView;
-import org.helioviewer.viewmodel.view.FilterView;
-import org.helioviewer.viewmodel.view.ImageInfoView;
-import org.helioviewer.viewmodel.view.LayeredView;
-import org.helioviewer.viewmodel.view.LinkedMovieManager;
-import org.helioviewer.viewmodel.view.MetaDataView;
-import org.helioviewer.viewmodel.view.MovieView;
-import org.helioviewer.viewmodel.view.RegionView;
-import org.helioviewer.viewmodel.view.TimedMovieView;
-import org.helioviewer.viewmodel.view.View;
-import org.helioviewer.viewmodel.view.ViewHelper;
-import org.helioviewer.viewmodel.view.ViewListener;
-import org.helioviewer.viewmodel.view.jp2view.JHVJP2View;
-import org.helioviewer.viewmodel.view.jp2view.JP2Image;
-import org.helioviewer.viewmodel.view.jp2view.datetime.ImmutableDateTime;
-import org.helioviewer.viewmodel.view.jp2view.kakadu.JHV_KduException;
+import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
+import org.helioviewer.jhv.viewmodel.changeevent.ChangedReason;
+import org.helioviewer.jhv.viewmodel.changeevent.LayerChangedReason;
+import org.helioviewer.jhv.viewmodel.changeevent.NonConstantMetaDataChangedReason;
+import org.helioviewer.jhv.viewmodel.changeevent.RegionChangedReason;
+import org.helioviewer.jhv.viewmodel.changeevent.SubImageDataChangedReason;
+import org.helioviewer.jhv.viewmodel.changeevent.TimestampChangedReason;
+import org.helioviewer.jhv.viewmodel.changeevent.ViewChainChangedReason;
+import org.helioviewer.jhv.viewmodel.changeevent.ViewportChangedReason;
+import org.helioviewer.jhv.viewmodel.changeevent.LayerChangedReason.LayerChangeType;
+import org.helioviewer.jhv.viewmodel.io.APIResponse;
+import org.helioviewer.jhv.viewmodel.io.APIResponseDump;
+import org.helioviewer.jhv.viewmodel.metadata.MetaData;
+import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.region.StaticRegion;
+import org.helioviewer.jhv.viewmodel.view.ComponentView;
+import org.helioviewer.jhv.viewmodel.view.FilterView;
+import org.helioviewer.jhv.viewmodel.view.ImageInfoView;
+import org.helioviewer.jhv.viewmodel.view.LayeredView;
+import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
+import org.helioviewer.jhv.viewmodel.view.MetaDataView;
+import org.helioviewer.jhv.viewmodel.view.MovieView;
+import org.helioviewer.jhv.viewmodel.view.RegionView;
+import org.helioviewer.jhv.viewmodel.view.TimedMovieView;
+import org.helioviewer.jhv.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.ViewHelper;
+import org.helioviewer.jhv.viewmodel.view.ViewListener;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJP2View;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JP2Image;
+import org.helioviewer.jhv.viewmodel.view.jp2view.datetime.ImmutableDateTime;
+import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -1569,7 +1569,7 @@ public class LayersModel implements ViewListener {
      * Return a XML representation of the current layers. This also includes the
      * filter state for each layer.
      * 
-     * @see org.helioviewer.viewmodel.filter.Filter#getState
+     * @see org.helioviewer.jhv.viewmodel.filter.Filter#getState
      * @param tab
      *            - String to be prepended to each line of the xml
      *            representation

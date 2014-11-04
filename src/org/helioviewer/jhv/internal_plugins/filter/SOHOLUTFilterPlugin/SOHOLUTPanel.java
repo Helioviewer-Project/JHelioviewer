@@ -16,15 +16,15 @@ import javax.swing.JLabel;
 import javax.swing.JToggleButton;
 import javax.swing.border.BevelBorder;
 
-import org.helioviewer.base.Message;
-import org.helioviewer.base.logging.Log;
+import org.helioviewer.jhv.base.Message;
+import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
-import org.helioviewer.viewmodel.filter.Filter;
-import org.helioviewer.viewmodelplugin.filter.FilterAlignmentDetails;
-import org.helioviewer.viewmodelplugin.filter.FilterPanel;
-import org.helioviewer.viewmodelplugin.filter.FilterTabPanelManager.Area;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterAlignmentDetails;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterPanel;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTabPanelManager.Area;
+import org.helioviewer.jhv.viewmodel.filter.Filter;
 
 /**
  * Panel containing a combobox for choosing the color table and button to add

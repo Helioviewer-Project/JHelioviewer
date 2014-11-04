@@ -5,7 +5,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 
 import org.helioviewer.jhv.gui.GuiState3DWCS;
-import org.helioviewer.viewmodel.view.StandardSolarRotationTrackingView;
+import org.helioviewer.jhv.viewmodel.view.StandardSolarRotationTrackingView;
 
 /**
  * Action to switch to focus mode.

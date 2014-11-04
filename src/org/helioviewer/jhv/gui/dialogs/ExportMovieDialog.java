@@ -27,15 +27,15 @@ import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileFilter;
 
-import org.helioviewer.base.logging.Log;
 import org.helioviewer.jhv.Settings;
+import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.ImageViewerGui;
-import org.helioviewer.viewmodel.changeevent.ChangeEvent;
-import org.helioviewer.viewmodel.view.ComponentView;
-import org.helioviewer.viewmodel.view.LinkedMovieManager;
-import org.helioviewer.viewmodel.view.TimedMovieView;
-import org.helioviewer.viewmodel.view.jp2view.JHVJPXView.SpeedType;
+import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
+import org.helioviewer.jhv.viewmodel.view.ComponentView;
+import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
+import org.helioviewer.jhv.viewmodel.view.TimedMovieView;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView.SpeedType;
 
 import com.xuggle.mediatool.IMediaWriter;
 import com.xuggle.mediatool.ToolFactory;

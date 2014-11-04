@@ -20,8 +20,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.NumberFormatter;
 
-import org.helioviewer.base.logging.Log;
 import org.helioviewer.jhv.Settings;
+import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 
 import com.jgoodies.forms.factories.FormFactory;

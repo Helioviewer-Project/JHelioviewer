@@ -8,10 +8,10 @@ import java.net.URLEncoder;
 import java.util.Date;
 import java.util.HashMap;
 
-import org.helioviewer.base.DownloadStream;
-import org.helioviewer.base.logging.Log;
-import org.helioviewer.base.math.Interval;
 import org.helioviewer.jhv.JHVGlobals;
+import org.helioviewer.jhv.base.DownloadStream;
+import org.helioviewer.jhv.base.logging.Log;
+import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKSettings;
 import org.json.JSONException;

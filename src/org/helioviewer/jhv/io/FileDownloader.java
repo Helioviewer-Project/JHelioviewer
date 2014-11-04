@@ -19,8 +19,8 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JWindow;
 
-import org.helioviewer.base.Message;
 import org.helioviewer.jhv.JHVDirectory;
+import org.helioviewer.jhv.base.Message;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 
 /**

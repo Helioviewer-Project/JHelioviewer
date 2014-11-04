@@ -26,20 +26,20 @@ import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.ViewListenerDistributor;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
-import org.helioviewer.viewmodel.changeevent.CacheStatusChangedReason;
-import org.helioviewer.viewmodel.changeevent.ChangeEvent;
-import org.helioviewer.viewmodel.changeevent.LayerChangedReason;
-import org.helioviewer.viewmodel.changeevent.LayerChangedReason.LayerChangeType;
-import org.helioviewer.viewmodel.changeevent.PlayStateChangedReason;
-import org.helioviewer.viewmodel.changeevent.SubImageDataChangedReason;
-import org.helioviewer.viewmodel.view.CachedMovieView;
-import org.helioviewer.viewmodel.view.MetaDataView;
-import org.helioviewer.viewmodel.view.MovieView;
-import org.helioviewer.viewmodel.view.MovieView.AnimationMode;
-import org.helioviewer.viewmodel.view.TimedMovieView;
-import org.helioviewer.viewmodel.view.View;
-import org.helioviewer.viewmodel.view.ViewListener;
-import org.helioviewer.viewmodel.view.jp2view.datetime.ImmutableDateTime;
+import org.helioviewer.jhv.viewmodel.changeevent.CacheStatusChangedReason;
+import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
+import org.helioviewer.jhv.viewmodel.changeevent.LayerChangedReason;
+import org.helioviewer.jhv.viewmodel.changeevent.PlayStateChangedReason;
+import org.helioviewer.jhv.viewmodel.changeevent.SubImageDataChangedReason;
+import org.helioviewer.jhv.viewmodel.changeevent.LayerChangedReason.LayerChangeType;
+import org.helioviewer.jhv.viewmodel.view.CachedMovieView;
+import org.helioviewer.jhv.viewmodel.view.MetaDataView;
+import org.helioviewer.jhv.viewmodel.view.MovieView;
+import org.helioviewer.jhv.viewmodel.view.TimedMovieView;
+import org.helioviewer.jhv.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.ViewListener;
+import org.helioviewer.jhv.viewmodel.view.MovieView.AnimationMode;
+import org.helioviewer.jhv.viewmodel.view.jp2view.datetime.ImmutableDateTime;
 
 /**
  * Panel containing the movie controls.
@@ -57,8 +57,8 @@ import org.helioviewer.viewmodel.view.jp2view.datetime.ImmutableDateTime;
  * 
  * <p>
  * For further information about image series, see
- * {@link org.helioviewer.viewmodel.view.MovieView} and
- * {@link org.helioviewer.viewmodel.view.TimedMovieView}.
+ * {@link org.helioviewer.jhv.viewmodel.view.MovieView} and
+ * {@link org.helioviewer.jhv.viewmodel.view.TimedMovieView}.
  * 
  * @author Markus Langenberg
  * @author Malte Nuhn

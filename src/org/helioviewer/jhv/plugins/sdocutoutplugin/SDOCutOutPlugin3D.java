@@ -4,7 +4,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import org.helioviewer.viewmodelplugin.interfaces.Plugin;
+import org.helioviewer.jhv.plugins.viewmodelplugin.interfaces.Plugin;
 
 public class SDOCutOutPlugin3D implements Plugin {
 

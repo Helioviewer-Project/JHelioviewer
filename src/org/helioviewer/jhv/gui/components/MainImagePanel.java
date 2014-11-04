@@ -11,18 +11,18 @@ import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.helioviewer.base.math.Vector2dInt;
+import org.helioviewer.jhv.base.math.Vector2dInt;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
-import org.helioviewer.viewmodel.changeevent.ChangeEvent;
-import org.helioviewer.viewmodel.changeevent.LayerChangedReason;
-import org.helioviewer.viewmodel.renderer.screen.ScreenRenderGraphics;
-import org.helioviewer.viewmodel.renderer.screen.ScreenRenderer;
-import org.helioviewer.viewmodel.view.ComponentView;
-import org.helioviewer.viewmodel.view.LayeredView;
-import org.helioviewer.viewmodel.view.View;
-import org.helioviewer.viewmodel.view.ViewHelper;
+import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
+import org.helioviewer.jhv.viewmodel.changeevent.LayerChangedReason;
+import org.helioviewer.jhv.viewmodel.renderer.screen.ScreenRenderGraphics;
+import org.helioviewer.jhv.viewmodel.renderer.screen.ScreenRenderer;
+import org.helioviewer.jhv.viewmodel.view.ComponentView;
+import org.helioviewer.jhv.viewmodel.view.LayeredView;
+import org.helioviewer.jhv.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.ViewHelper;
 
 /**
  * This class represents an image component that is used to display the image of

@@ -7,9 +7,9 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.helioviewer.base.math.Interval;
-import org.helioviewer.base.math.IntervalContainer;
-import org.helioviewer.base.math.IntervalStore;
+import org.helioviewer.jhv.base.math.Interval;
+import org.helioviewer.jhv.base.math.IntervalContainer;
+import org.helioviewer.jhv.base.math.IntervalStore;
 
 /**
  * Datastructure to store a different items.

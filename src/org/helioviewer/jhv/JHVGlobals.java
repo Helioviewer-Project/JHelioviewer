@@ -10,9 +10,10 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import javax.swing.JOptionPane;
+
 import org.apache.log4j.Level;
-import org.helioviewer.base.FileUtils;
-import org.helioviewer.base.logging.Log;
+import org.helioviewer.jhv.base.FileUtils;
+import org.helioviewer.jhv.base.logging.Log;
 
 /**
  * Intended to be a class for static functions and fields relevant to the

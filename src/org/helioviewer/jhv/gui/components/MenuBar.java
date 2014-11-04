@@ -5,12 +5,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 
-import org.helioviewer.base.FileUtils;
-import org.helioviewer.gl3d.gui.GL3DCenterImageAction;
-import org.helioviewer.gl3d.gui.GL3DZoom1to1Action;
-import org.helioviewer.gl3d.gui.GL3DZoomFitAction;
-import org.helioviewer.gl3d.gui.GL3DZoomInAction;
-import org.helioviewer.gl3d.gui.GL3DZoomOutAction;
+import org.helioviewer.jhv.base.FileUtils;
 import org.helioviewer.jhv.gui.actions.CheckUpdateAction;
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 import org.helioviewer.jhv.gui.actions.ExportSettingsAction;
@@ -22,11 +17,15 @@ import org.helioviewer.jhv.gui.actions.SaveScreenshotAsAction;
 import org.helioviewer.jhv.gui.actions.SaveStateAction;
 import org.helioviewer.jhv.gui.actions.ShowDialogAction;
 import org.helioviewer.jhv.gui.actions.ToggleFullscreenAction;
+import org.helioviewer.jhv.gui.actions.gl3d.GL3DCenterImageAction;
+import org.helioviewer.jhv.gui.actions.gl3d.GL3DZoom1to1Action;
+import org.helioviewer.jhv.gui.actions.gl3d.GL3DZoomFitAction;
+import org.helioviewer.jhv.gui.actions.gl3d.GL3DZoomInAction;
+import org.helioviewer.jhv.gui.actions.gl3d.GL3DZoomOutAction;
 import org.helioviewer.jhv.gui.dialogs.AboutDialog;
 import org.helioviewer.jhv.gui.dialogs.HelpDialog;
 import org.helioviewer.jhv.gui.dialogs.OpenRemoteFileDialog;
 import org.helioviewer.jhv.gui.dialogs.PreferencesDialog;
-import org.helioviewer.jhv.gui.dialogs.plugins.PluginsDialog;
 
 /**
  * Menu bar of the main window.
@@ -99,11 +98,7 @@ public class MenuBar extends JMenuBar {
         movieMenu.add(new MoviePanel.StaticNextFrameAction());
         add(movieMenu);
 
-        JMenu pluginsMenu = new JMenu("Plugins");
-        pluginsMenu.setMnemonic(KeyEvent.VK_I);
-        pluginsMenu.add(new ShowDialogAction("Manage Plug-ins...", PluginsDialog.class));
-        add(pluginsMenu);
-
+        
         JMenu optionsMenu = new JMenu("Options");
         optionsMenu.setMnemonic(KeyEvent.VK_O);
         optionsMenu.add(new ShowDialogAction("Preferences...", PreferencesDialog.class));

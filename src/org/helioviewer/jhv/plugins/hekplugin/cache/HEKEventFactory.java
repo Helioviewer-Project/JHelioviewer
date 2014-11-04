@@ -6,8 +6,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
 
-import org.helioviewer.base.logging.Log;
-import org.helioviewer.base.math.Interval;
+import org.helioviewer.jhv.base.logging.Log;
+import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKSettings;
 import org.json.JSONArray;
 import org.json.JSONException;

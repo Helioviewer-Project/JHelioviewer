@@ -17,7 +17,7 @@ import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheListener;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheLoadingModel;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKPath;
-import org.helioviewer.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.View;
 
 /**
  * GUI Component showing either the HEKCacheTreeView, or a notice that currently

@@ -6,18 +6,18 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.glu.GLU;
 
-import org.helioviewer.base.logging.Log;
-import org.helioviewer.viewmodel.filter.AbstractFilter;
-import org.helioviewer.viewmodel.filter.GLFragmentShaderFilter;
-import org.helioviewer.viewmodel.filter.StandardFilter;
-import org.helioviewer.viewmodel.imagedata.ARGBInt32ImageData;
-import org.helioviewer.viewmodel.imagedata.ImageData;
-import org.helioviewer.viewmodel.imageformat.SingleChannelImageFormat;
-import org.helioviewer.viewmodel.imagetransport.Byte8ImageTransport;
-import org.helioviewer.viewmodel.imagetransport.Short16ImageTransport;
-import org.helioviewer.viewmodel.view.opengl.GLTextureHelper;
-import org.helioviewer.viewmodel.view.opengl.shader.GLShaderBuilder;
-import org.helioviewer.viewmodel.view.opengl.shader.GLSingleChannelLookupFragmentShaderProgram;
+import org.helioviewer.jhv.base.logging.Log;
+import org.helioviewer.jhv.viewmodel.filter.AbstractFilter;
+import org.helioviewer.jhv.viewmodel.filter.GLFragmentShaderFilter;
+import org.helioviewer.jhv.viewmodel.filter.StandardFilter;
+import org.helioviewer.jhv.viewmodel.imagedata.ARGBInt32ImageData;
+import org.helioviewer.jhv.viewmodel.imagedata.ImageData;
+import org.helioviewer.jhv.viewmodel.imageformat.SingleChannelImageFormat;
+import org.helioviewer.jhv.viewmodel.imagetransport.Byte8ImageTransport;
+import org.helioviewer.jhv.viewmodel.imagetransport.Short16ImageTransport;
+import org.helioviewer.jhv.viewmodel.view.opengl.GLTextureHelper;
+import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLShaderBuilder;
+import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLSingleChannelLookupFragmentShaderProgram;
 
 /**
  * Filter for applying a color table to a single channel image.

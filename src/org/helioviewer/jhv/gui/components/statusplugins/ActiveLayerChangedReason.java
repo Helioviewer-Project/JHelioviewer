@@ -1,7 +1,7 @@
 package org.helioviewer.jhv.gui.components.statusplugins;
 
-import org.helioviewer.viewmodel.changeevent.ChangedReason;
-import org.helioviewer.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.changeevent.ChangedReason;
+import org.helioviewer.jhv.viewmodel.view.View;
 
 /**
  * Class represents a change reason when the 'pointer' to the layer currently

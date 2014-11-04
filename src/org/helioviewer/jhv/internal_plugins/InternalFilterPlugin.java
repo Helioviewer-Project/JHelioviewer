@@ -9,10 +9,10 @@ import org.helioviewer.jhv.internal_plugins.filter.contrast.ContrastPlugin;
 import org.helioviewer.jhv.internal_plugins.filter.gammacorrection.GammaCorrectionPlugin;
 import org.helioviewer.jhv.internal_plugins.filter.opacity.OpacityPlugin;
 import org.helioviewer.jhv.internal_plugins.filter.sharpen.SharpenPlugin;
-import org.helioviewer.viewmodelplugin.controller.PluginManager;
-import org.helioviewer.viewmodelplugin.controller.PluginSettings;
-import org.helioviewer.viewmodelplugin.filter.FilterContainer;
-import org.helioviewer.viewmodelplugin.filter.FilterPlugin;
+import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginManager;
+import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginSettings;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterContainer;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterPlugin;
 
 /**
  * This class acts as a default plug-in and contains all internal supplied

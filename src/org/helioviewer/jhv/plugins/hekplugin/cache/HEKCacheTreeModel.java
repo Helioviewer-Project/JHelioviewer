@@ -9,7 +9,7 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
-import org.helioviewer.base.math.Interval;
+import org.helioviewer.jhv.base.math.Interval;
 
 public class HEKCacheTreeModel implements TreeModel, HEKCacheListener {
 

@@ -5,20 +5,20 @@ import java.awt.Cursor;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 
-import org.helioviewer.base.math.Vector2dDouble;
-import org.helioviewer.base.math.Vector2dInt;
+import org.helioviewer.jhv.base.math.Vector2dDouble;
+import org.helioviewer.jhv.base.math.Vector2dInt;
 import org.helioviewer.jhv.gui.ImageViewerGui;
-import org.helioviewer.viewmodel.changeevent.ChangeEvent;
-import org.helioviewer.viewmodel.metadata.MetaData;
-import org.helioviewer.viewmodel.region.Region;
-import org.helioviewer.viewmodel.region.StaticRegion;
-import org.helioviewer.viewmodel.renderer.screen.ScreenRenderGraphics;
-import org.helioviewer.viewmodel.renderer.screen.ScreenRenderer;
-import org.helioviewer.viewmodel.view.ComponentView;
-import org.helioviewer.viewmodel.view.View;
-import org.helioviewer.viewmodel.view.ViewHelper;
-import org.helioviewer.viewmodel.viewport.Viewport;
-import org.helioviewer.viewmodel.viewportimagesize.ViewportImageSize;
+import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
+import org.helioviewer.jhv.viewmodel.metadata.MetaData;
+import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.region.StaticRegion;
+import org.helioviewer.jhv.viewmodel.renderer.screen.ScreenRenderGraphics;
+import org.helioviewer.jhv.viewmodel.renderer.screen.ScreenRenderer;
+import org.helioviewer.jhv.viewmodel.view.ComponentView;
+import org.helioviewer.jhv.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.ViewHelper;
+import org.helioviewer.jhv.viewmodel.viewport.Viewport;
+import org.helioviewer.jhv.viewmodel.viewportimagesize.ViewportImageSize;
 
 /**
  * Implementation of ImagePanelInputController for the main image panel using
@@ -163,7 +163,7 @@ public class MainImagePanelMouseZoomBoxController extends MainImagePanelMouseCon
      * 
      * <p>
      * For further informations about drawing into the image, see
-     * {@link org.helioviewer.viewmodel.renderer.screen.ScreenRenderer}.
+     * {@link org.helioviewer.jhv.viewmodel.renderer.screen.ScreenRenderer}.
      */
     private class Rubberband implements ScreenRenderer {
 

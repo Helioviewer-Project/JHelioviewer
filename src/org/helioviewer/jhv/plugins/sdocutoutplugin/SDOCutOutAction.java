@@ -8,15 +8,15 @@ import java.util.regex.Pattern;
 import javax.swing.AbstractAction;
 import javax.swing.JToggleButton;
 
-import org.helioviewer.base.Message;
 import org.helioviewer.jhv.JHVGlobals;
+import org.helioviewer.jhv.base.Message;
 import org.helioviewer.jhv.layers.LayersModel;
-import org.helioviewer.viewmodel.metadata.MetaData;
-import org.helioviewer.viewmodel.view.MetaDataView;
-import org.helioviewer.viewmodel.view.RegionView;
-import org.helioviewer.viewmodel.view.ViewHelper;
-import org.helioviewer.viewmodel.view.ViewportView;
-import org.helioviewer.viewmodel.viewportimagesize.ViewportImageSize;
+import org.helioviewer.jhv.viewmodel.metadata.MetaData;
+import org.helioviewer.jhv.viewmodel.view.MetaDataView;
+import org.helioviewer.jhv.viewmodel.view.RegionView;
+import org.helioviewer.jhv.viewmodel.view.ViewHelper;
+import org.helioviewer.jhv.viewmodel.view.ViewportView;
+import org.helioviewer.jhv.viewmodel.viewportimagesize.ViewportImageSize;
 
 public class SDOCutOutAction extends AbstractAction {
 	

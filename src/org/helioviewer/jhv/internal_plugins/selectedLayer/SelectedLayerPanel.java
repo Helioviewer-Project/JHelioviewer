@@ -6,9 +6,9 @@ import java.awt.Component;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.helioviewer.viewmodel.view.ImageInfoView;
-import org.helioviewer.viewmodel.view.View;
-import org.helioviewer.viewmodelplugin.filter.FilterAlignmentDetails;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterAlignmentDetails;
+import org.helioviewer.jhv.viewmodel.view.ImageInfoView;
+import org.helioviewer.jhv.viewmodel.view.View;
 
 /**
  * This panel (which is part of the compact-panel) shows the name of the

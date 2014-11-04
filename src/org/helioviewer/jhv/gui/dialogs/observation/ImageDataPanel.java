@@ -18,9 +18,9 @@ import java.util.Vector;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-import org.helioviewer.base.Message;
-import org.helioviewer.base.logging.Log;
 import org.helioviewer.jhv.Settings;
+import org.helioviewer.jhv.base.Message;
+import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.components.TimeTextField;

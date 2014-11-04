@@ -10,10 +10,10 @@ import java.util.Properties;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import org.helioviewer.base.FileUtils;
-import org.helioviewer.base.logging.Log;
+import org.helioviewer.jhv.base.FileUtils;
+import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.gui.ImageViewerGui;
-import org.helioviewer.viewmodel.view.jp2view.kakadu.JHV_Kdu_cache;
+import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_Kdu_cache;
 
 /**
  * A class that stores and reads default values in a settings file.

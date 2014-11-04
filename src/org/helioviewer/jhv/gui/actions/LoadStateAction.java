@@ -8,8 +8,8 @@ import java.net.URL;
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 
-import org.helioviewer.base.logging.Log;
 import org.helioviewer.jhv.JHVDirectory;
+import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.actions.filefilters.JHVStateFilter;
 import org.helioviewer.jhv.layers.LayersModel;

@@ -2,14 +2,14 @@ package org.helioviewer.jhv.plugins.hekplugin;
 
 import java.util.Date;
 
-import org.helioviewer.base.math.Interval;
+import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;
-import org.helioviewer.viewmodel.renderer.physical.PhysicalRenderer;
-import org.helioviewer.viewmodel.view.OverlayView;
-import org.helioviewer.viewmodel.view.opengl.OverlayPluginContainer;
-import org.helioviewer.viewmodelplugin.overlay.OverlayContainer;
-import org.helioviewer.viewmodelplugin.overlay.OverlayControlComponent;
-import org.helioviewer.viewmodelplugin.overlay.OverlayControlComponentManager;
+import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayContainer;
+import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayControlComponent;
+import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayControlComponentManager;
+import org.helioviewer.jhv.viewmodel.renderer.physical.PhysicalRenderer;
+import org.helioviewer.jhv.viewmodel.view.OverlayView;
+import org.helioviewer.jhv.viewmodel.view.opengl.OverlayPluginContainer;
 
 /**
  * Overlay plug-in to display different kinds of solar events retrieved from the

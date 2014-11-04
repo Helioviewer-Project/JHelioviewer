@@ -1,12 +1,12 @@
 package org.helioviewer.jhv.plugins.pfssplugin;
 
 import org.helioviewer.jhv.plugins.pfssplugin.data.PfssCache;
-import org.helioviewer.viewmodel.renderer.physical.PhysicalRenderer;
-import org.helioviewer.viewmodel.view.OverlayView;
-import org.helioviewer.viewmodel.view.opengl.OverlayPluginContainer;
-import org.helioviewer.viewmodelplugin.overlay.OverlayContainer;
-import org.helioviewer.viewmodelplugin.overlay.OverlayControlComponent;
-import org.helioviewer.viewmodelplugin.overlay.OverlayControlComponentManager;
+import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayContainer;
+import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayControlComponent;
+import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayControlComponentManager;
+import org.helioviewer.jhv.viewmodel.renderer.physical.PhysicalRenderer;
+import org.helioviewer.jhv.viewmodel.view.OverlayView;
+import org.helioviewer.jhv.viewmodel.view.opengl.OverlayPluginContainer;
 
 /**
  * Plugincontainer for Pfss

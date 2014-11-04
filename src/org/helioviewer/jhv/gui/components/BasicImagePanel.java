@@ -18,22 +18,22 @@ import javax.swing.JPanel;
 
 import org.helioviewer.jhv.gui.interfaces.ImagePanelInputController;
 import org.helioviewer.jhv.gui.interfaces.ImagePanelPlugin;
-import org.helioviewer.viewmodel.changeevent.ChangeEvent;
-import org.helioviewer.viewmodel.changeevent.RegionChangedReason;
-import org.helioviewer.viewmodel.changeevent.SubImageDataChangedReason;
-import org.helioviewer.viewmodel.changeevent.ViewChainChangedReason;
-import org.helioviewer.viewmodel.metadata.MetaData;
-import org.helioviewer.viewmodel.region.Region;
-import org.helioviewer.viewmodel.renderer.screen.ScreenRenderer;
-import org.helioviewer.viewmodel.view.ComponentView;
-import org.helioviewer.viewmodel.view.MetaDataView;
-import org.helioviewer.viewmodel.view.RegionView;
-import org.helioviewer.viewmodel.view.View;
-import org.helioviewer.viewmodel.view.ViewHelper;
-import org.helioviewer.viewmodel.view.ViewListener;
-import org.helioviewer.viewmodel.view.ViewportView;
-import org.helioviewer.viewmodel.viewport.StaticViewport;
-import org.helioviewer.viewmodel.viewport.Viewport;
+import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
+import org.helioviewer.jhv.viewmodel.changeevent.RegionChangedReason;
+import org.helioviewer.jhv.viewmodel.changeevent.SubImageDataChangedReason;
+import org.helioviewer.jhv.viewmodel.changeevent.ViewChainChangedReason;
+import org.helioviewer.jhv.viewmodel.metadata.MetaData;
+import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.renderer.screen.ScreenRenderer;
+import org.helioviewer.jhv.viewmodel.view.ComponentView;
+import org.helioviewer.jhv.viewmodel.view.MetaDataView;
+import org.helioviewer.jhv.viewmodel.view.RegionView;
+import org.helioviewer.jhv.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.ViewHelper;
+import org.helioviewer.jhv.viewmodel.view.ViewListener;
+import org.helioviewer.jhv.viewmodel.view.ViewportView;
+import org.helioviewer.jhv.viewmodel.viewport.StaticViewport;
+import org.helioviewer.jhv.viewmodel.viewport.Viewport;
 
 
 /**

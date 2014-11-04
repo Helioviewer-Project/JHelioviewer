@@ -8,9 +8,9 @@ import java.net.URL;
 
 import javax.swing.JOptionPane;
 
-import org.helioviewer.base.DownloadStream;
-import org.helioviewer.base.Message;
-import org.helioviewer.base.logging.Log;
+import org.helioviewer.jhv.base.DownloadStream;
+import org.helioviewer.jhv.base.Message;
+import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.gui.dialogs.NewVersionDialog;
 
 /**

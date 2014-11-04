@@ -9,10 +9,10 @@ import java.util.Vector;
 
 import javax.swing.event.TreeModelListener;
 
-import org.helioviewer.base.logging.Log;
-import org.helioviewer.base.math.Interval;
-import org.helioviewer.base.math.IntervalContainer;
-import org.helioviewer.base.math.IntervalStore;
+import org.helioviewer.jhv.base.logging.Log;
+import org.helioviewer.jhv.base.math.Interval;
+import org.helioviewer.jhv.base.math.IntervalContainer;
+import org.helioviewer.jhv.base.math.IntervalStore;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKSettings;
 
 /**

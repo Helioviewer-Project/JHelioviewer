@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
 
-import org.helioviewer.base.math.Interval;
+import org.helioviewer.jhv.base.math.Interval;
 
 public class HEKCacheLoadingModel {
 
@@ -30,7 +30,7 @@ public class HEKCacheLoadingModel {
      * @param belowHidden
      *            - if true, the path will be seen as loading if any of its
      *            children is loading. Even if p has been explicitly set to
-     *            "non-loading"! GEFH€RLICH! TODO
+     *            "non-loading"! GEFHï¿½RLICH! TODO
      * @return
      */
     public int getState(HEKPath p, boolean belowHidden) {

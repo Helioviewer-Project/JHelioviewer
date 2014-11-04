@@ -9,10 +9,10 @@ import javax.swing.event.ChangeListener;
 
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.components.WheelSupport;
-import org.helioviewer.viewmodel.filter.Filter;
-import org.helioviewer.viewmodelplugin.filter.FilterAlignmentDetails;
-import org.helioviewer.viewmodelplugin.filter.FilterPanel;
-import org.helioviewer.viewmodelplugin.filter.FilterTabPanelManager.Area;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterAlignmentDetails;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterPanel;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTabPanelManager.Area;
+import org.helioviewer.jhv.viewmodel.filter.Filter;
 
 /**
  * Panel containing a spinner for changing the opacity of the image.

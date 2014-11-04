@@ -22,8 +22,8 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-import org.helioviewer.base.logging.Log;
-import org.helioviewer.base.math.Interval;
+import org.helioviewer.jhv.base.logging.Log;
+import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.components.tristateCheckbox.TristateCheckBox;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;

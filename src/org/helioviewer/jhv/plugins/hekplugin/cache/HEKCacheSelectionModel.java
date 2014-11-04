@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.helioviewer.base.math.Interval;
+import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.gui.components.tristateCheckbox.TristateCheckBox;
 
 public class HEKCacheSelectionModel implements HEKCacheListener {

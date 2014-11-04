@@ -5,8 +5,8 @@ import java.net.MalformedURLException;
 
 import javax.swing.AbstractAction;
 
-import org.helioviewer.base.logging.Log;
 import org.helioviewer.jhv.JHVUpdate;
+import org.helioviewer.jhv.base.logging.Log;
 
 /**
  * Checks for updates action

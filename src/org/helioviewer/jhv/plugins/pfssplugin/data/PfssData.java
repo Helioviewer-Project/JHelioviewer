@@ -18,8 +18,8 @@ import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 
-import org.helioviewer.base.physics.Constants;
-import org.helioviewer.gl3d.scenegraph.math.GL3DVec3f;
+import org.helioviewer.jhv.base.physics.Constants;
+import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec3f;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssSettings;
 
 import com.jogamp.common.nio.Buffers;

@@ -2,20 +2,20 @@ package org.helioviewer.jhv.internal_plugins.filter.contrast;
 
 import javax.media.opengl.GL2;
 
-import org.helioviewer.viewmodel.filter.AbstractFilter;
-import org.helioviewer.viewmodel.filter.GLFragmentShaderFilter;
-import org.helioviewer.viewmodel.filter.StandardFilter;
-import org.helioviewer.viewmodel.imagedata.ARGBInt32ImageData;
-import org.helioviewer.viewmodel.imagedata.ImageData;
-import org.helioviewer.viewmodel.imagedata.SingleChannelByte8ImageData;
-import org.helioviewer.viewmodel.imagedata.SingleChannelShortImageData;
-import org.helioviewer.viewmodel.imagetransport.Byte8ImageTransport;
-import org.helioviewer.viewmodel.imagetransport.Int32ImageTransport;
-import org.helioviewer.viewmodel.imagetransport.Short16ImageTransport;
-import org.helioviewer.viewmodel.view.opengl.shader.GLFragmentShaderProgram;
-import org.helioviewer.viewmodel.view.opengl.shader.GLShaderBuilder;
-import org.helioviewer.viewmodel.view.opengl.shader.GLShaderBuilder.GLBuildShaderException;
-import org.helioviewer.viewmodel.view.opengl.shader.GLTextureCoordinate;
+import org.helioviewer.jhv.viewmodel.filter.AbstractFilter;
+import org.helioviewer.jhv.viewmodel.filter.GLFragmentShaderFilter;
+import org.helioviewer.jhv.viewmodel.filter.StandardFilter;
+import org.helioviewer.jhv.viewmodel.imagedata.ARGBInt32ImageData;
+import org.helioviewer.jhv.viewmodel.imagedata.ImageData;
+import org.helioviewer.jhv.viewmodel.imagedata.SingleChannelByte8ImageData;
+import org.helioviewer.jhv.viewmodel.imagedata.SingleChannelShortImageData;
+import org.helioviewer.jhv.viewmodel.imagetransport.Byte8ImageTransport;
+import org.helioviewer.jhv.viewmodel.imagetransport.Int32ImageTransport;
+import org.helioviewer.jhv.viewmodel.imagetransport.Short16ImageTransport;
+import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLFragmentShaderProgram;
+import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLShaderBuilder;
+import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLTextureCoordinate;
+import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLShaderBuilder.GLBuildShaderException;
 
 /**
  * Filter for enhancing the contrast of the image.

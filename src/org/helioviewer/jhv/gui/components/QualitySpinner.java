@@ -9,10 +9,10 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerListModel;
 import javax.swing.event.ChangeListener;
 
-import org.helioviewer.viewmodel.view.View;
-import org.helioviewer.viewmodel.view.ViewListener;
-import org.helioviewer.viewmodel.view.jp2view.JP2View;
-import org.helioviewer.viewmodelplugin.filter.FilterAlignmentDetails;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterAlignmentDetails;
+import org.helioviewer.jhv.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.ViewListener;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JP2View;
 
 /**
  * A class that is used to display a slider that updates the quality layers used
@@ -57,7 +57,7 @@ public class QualitySpinner extends JPanel implements ChangeListener, ViewListen
         }
     }
 
-    public void viewChanged(View sender, org.helioviewer.viewmodel.changeevent.ChangeEvent aEvent) {
+    public void viewChanged(View sender, org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent aEvent) {
         int level = jp2View.getCurrentNumQualityLayers();
 
         updateModel();

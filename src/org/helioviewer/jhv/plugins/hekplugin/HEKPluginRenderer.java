@@ -5,17 +5,17 @@ import java.awt.image.BufferedImage;
 import java.util.Date;
 import java.util.Vector;
 
-import org.helioviewer.base.math.SphericalCoord;
-import org.helioviewer.base.math.Vector2dDouble;
+import org.helioviewer.jhv.base.math.SphericalCoord;
+import org.helioviewer.jhv.base.math.Vector2dDouble;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKEvent;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKEvent.GenericTriangle;
 import org.helioviewer.jhv.plugins.hekplugin.math.HEKCoordinateTransform;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
-import org.helioviewer.viewmodel.renderer.physical.PhysicalRenderGraphics;
-import org.helioviewer.viewmodel.renderer.physical.PhysicalRenderer;
-import org.helioviewer.viewmodel.view.LinkedMovieManager;
-import org.helioviewer.viewmodel.view.TimedMovieView;
+import org.helioviewer.jhv.viewmodel.renderer.physical.PhysicalRenderGraphics;
+import org.helioviewer.jhv.viewmodel.renderer.physical.PhysicalRenderer;
+import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
+import org.helioviewer.jhv.viewmodel.view.TimedMovieView;
 
 /**
  * The solar event renderer provides a possibility to draw solar events with

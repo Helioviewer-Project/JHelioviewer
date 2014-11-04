@@ -12,19 +12,19 @@ import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.helioviewer.base.DownloadStream;
-import org.helioviewer.base.Message;
-import org.helioviewer.base.logging.Log;
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.Settings;
+import org.helioviewer.jhv.base.DownloadStream;
+import org.helioviewer.jhv.base.Message;
+import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
-import org.helioviewer.viewmodel.io.APIResponse;
-import org.helioviewer.viewmodel.io.APIResponseDump;
-import org.helioviewer.viewmodel.metadata.MetaData;
-import org.helioviewer.viewmodel.view.ImageInfoView;
-import org.helioviewer.viewmodel.view.MetaDataView;
-import org.helioviewer.viewmodel.view.ViewHelper;
-import org.helioviewer.viewmodel.view.jp2view.JHVJP2View;
+import org.helioviewer.jhv.viewmodel.io.APIResponse;
+import org.helioviewer.jhv.viewmodel.io.APIResponseDump;
+import org.helioviewer.jhv.viewmodel.metadata.MetaData;
+import org.helioviewer.jhv.viewmodel.view.ImageInfoView;
+import org.helioviewer.jhv.viewmodel.view.MetaDataView;
+import org.helioviewer.jhv.viewmodel.view.ViewHelper;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJP2View;
 
 /**
  * This class provides methods to download files from a server.

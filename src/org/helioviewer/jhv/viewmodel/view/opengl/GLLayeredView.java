@@ -1,0 +1,191 @@
+package org.helioviewer.jhv.viewmodel.view.opengl;
+
+import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
+
+import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
+import org.helioviewer.jhv.viewmodel.metadata.MetaData;
+import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.region.StaticRegion;
+import org.helioviewer.jhv.viewmodel.view.AbstractLayeredView;
+import org.helioviewer.jhv.viewmodel.view.SubimageDataView;
+import org.helioviewer.jhv.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.ViewHelper;
+import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLFragmentShaderView;
+import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLMinimalFragmentShaderProgram;
+import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLMinimalVertexShaderProgram;
+import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLShaderBuilder;
+import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLVertexShaderView;
+
+/**
+ * Implementation of LayeredView for rendering in OpenGL mode.
+ * 
+ * <p>
+ * This class manages different layers in OpenGL by branching the renderGL calls
+ * as well as the calls for building shaders.
+ * 
+ * <p>
+ * For further information about the role of the LayeredView within the view
+ * chain, see {@link org.helioviewer.jhv.viewmodel.view.LayeredView}
+ * 
+ * @author Markus Langenberg
+ * 
+ */
+public class GLLayeredView extends AbstractLayeredView implements GLFragmentShaderView, GLVertexShaderView {
+
+    private GLTextureHelper textureHelper = new GLTextureHelper();
+
+    /**
+     * {@inheritDoc}
+     */
+    public void addLayer(View newLayer, int newIndex) {
+        if (newLayer == null) {
+            return;
+        }
+        
+        if (!GLTextureHelper.textureNonPowerOfTwoAvailable() && newLayer.getAdapter(GLScalePowerOfTwoView.class) == null) {
+            GLScalePowerOfTwoView scaleView = new GLScalePowerOfTwoView();
+            scaleView.setView(newLayer);
+            newLayer = scaleView;
+        }
+        super.addLayer(newLayer, newIndex);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected boolean recalculateRegionsAndViewports(ChangeEvent event) {
+
+        boolean changed = false;
+
+        // check region and viewport
+        if (region == null && metaData != null)
+            region = StaticRegion.createAdaptedRegion(metaData.getPhysicalRectangle());
+
+        if (viewport != null && region != null) {
+            viewportImageSize = ViewHelper.calculateViewportImageSize(viewport, region);
+
+            for (Layer layer : viewLookup.values()) {
+                MetaData m = layer.metaDataView.getMetaData();
+
+                Region layerRegion = ViewHelper.cropInnerRegionToOuterRegion(m.getPhysicalRegion(), region);
+                changed |= layer.regionView.setRegion(layerRegion, event);
+                changed |= layer.viewportView.setViewport(ViewHelper.calculateInnerViewport(layerRegion, region, viewportImageSize), event);
+            }
+        }
+
+        return changed;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void renderGL(GL2 gl, boolean nextView) {
+
+        layerLock.lock();
+
+        try {
+            gl.glPushMatrix();
+
+            for (View v : layers) {
+                Layer layer = viewLookup.get(v);
+                if (layer != null){
+                	// If invisible, skip layer
+	                if (!layer.visibility) {
+	                    continue;
+	                }
+	
+	                gl.glColor3f(1.0f, 1.0f, 1.0f);
+	                // if layer is GLView, go on, otherwise render now
+	                if (v instanceof GLView) {
+	                    ((GLView) v).renderGL(gl, true);
+	                } else {
+	                    textureHelper.renderImageDataToScreen(gl, layer.regionView.getRegion(), v.getAdapter(SubimageDataView.class).getSubimageData());
+	                }
+                }
+            }
+
+            gl.glPopMatrix();
+
+        } finally {
+            layerLock.unlock();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * In this case, it does nothing, since for OpenGL views, the rendering
+     * takes place in {@link #renderGL(GL)}.
+     */
+
+    protected void redrawBufferImpl() {
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * <p>
+     * In this case, creates a new shader for every layer and initializes it
+     * with the least necessary commands.
+     */
+    public GLShaderBuilder buildFragmentShader(GLShaderBuilder shaderBuilder) {
+
+        layerLock.lock();
+
+        try {
+            for (View v : layers) {
+
+                GLFragmentShaderView fragmentView = v.getAdapter(GLFragmentShaderView.class);
+                if (fragmentView != null) {
+                    // create new shader builder
+                    GLShaderBuilder newShaderBuilder = new GLShaderBuilder(shaderBuilder.getGL(), GL2.GL_FRAGMENT_PROGRAM_ARB);
+
+                    // fill with standard values
+                    GLMinimalFragmentShaderProgram minimalProgram = new GLMinimalFragmentShaderProgram();
+                    minimalProgram.build(newShaderBuilder);
+
+                    // fill with other filters and compile
+                    fragmentView.buildFragmentShader(newShaderBuilder).compile();
+                }
+            }
+        } finally {
+            layerLock.unlock();
+        }
+
+        return shaderBuilder;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * <p>
+     * In this case, creates a new shader for every layer and initializes it
+     * with the least necessary commands.
+     */
+    public GLShaderBuilder buildVertexShader(GLShaderBuilder shaderBuilder) {
+
+        layerLock.lock();
+
+        try {
+            for (View v : layers) {
+                GLVertexShaderView vertexView = v.getAdapter(GLVertexShaderView.class);
+                if (vertexView != null) {
+                    // create new shader builder
+                    GLShaderBuilder newShaderBuilder = new GLShaderBuilder(shaderBuilder.getGL(), GL2.GL_VERTEX_PROGRAM_ARB);
+
+                    // fill with standard values
+                    GLMinimalVertexShaderProgram minimalProgram = new GLMinimalVertexShaderProgram();
+                    minimalProgram.build(newShaderBuilder);
+
+                    // fill with other filters and compile
+                    vertexView.buildVertexShader(newShaderBuilder).compile();
+                }
+            }
+        } finally {
+            layerLock.unlock();
+        }
+
+        return shaderBuilder;
+    }
+}

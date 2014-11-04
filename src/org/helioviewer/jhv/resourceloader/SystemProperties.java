@@ -5,9 +5,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import org.helioviewer.base.FileUtils;
-import org.helioviewer.base.logging.Log;
 import org.helioviewer.jhv.JHVGlobals;
+import org.helioviewer.jhv.base.FileUtils;
+import org.helioviewer.jhv.base.logging.Log;
 
 /**
  * Helper class to set platform dependent system properties for example in order

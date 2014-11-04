@@ -2,12 +2,12 @@ package org.helioviewer.jhv.plugins.hekplugin.math;
 
 import java.util.Date;
 
-import org.helioviewer.base.math.CartesianCoord;
-import org.helioviewer.base.math.MathUtils;
-import org.helioviewer.base.math.SphericalCoord;
-import org.helioviewer.base.math.Vector2dDouble;
-import org.helioviewer.base.math.Vector3dDouble;
-import org.helioviewer.base.physics.Constants;
+import org.helioviewer.jhv.base.math.CartesianCoord;
+import org.helioviewer.jhv.base.math.MathUtils;
+import org.helioviewer.jhv.base.math.SphericalCoord;
+import org.helioviewer.jhv.base.math.Vector2dDouble;
+import org.helioviewer.jhv.base.math.Vector3dDouble;
+import org.helioviewer.jhv.base.physics.Constants;
 
 /**
  * This class copes all coordinate transformations needed in JHV.

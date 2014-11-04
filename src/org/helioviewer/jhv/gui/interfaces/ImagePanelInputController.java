@@ -4,7 +4,7 @@ import java.awt.event.MouseWheelListener;
 
 import javax.swing.event.MouseInputListener;
 
-import org.helioviewer.base.math.Vector2dInt;
+import org.helioviewer.jhv.base.math.Vector2dInt;
 
 /**
  * Interface representing an input controller for an image panel.

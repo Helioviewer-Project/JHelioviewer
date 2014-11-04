@@ -1,7 +1,7 @@
 package org.helioviewer.jhv.gui.interfaces;
 
 import org.helioviewer.jhv.gui.components.BasicImagePanel;
-import org.helioviewer.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.View;
 
 /**
  * Interface representing a plugin for an image panel.

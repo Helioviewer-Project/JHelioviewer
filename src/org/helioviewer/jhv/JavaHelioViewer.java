@@ -13,9 +13,9 @@ import java.util.TimeZone;
 
 import javax.swing.UIManager;
 
-import org.helioviewer.base.Message;
-import org.helioviewer.base.logging.Log;
-import org.helioviewer.base.logging.LogSettings;
+import org.helioviewer.jhv.base.Message;
+import org.helioviewer.jhv.base.logging.Log;
+import org.helioviewer.jhv.base.logging.LogSettings;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.components.layerTable.LayerTableOverlapWatcher;
 import org.helioviewer.jhv.internal_plugins.InternalFilterPlugin;
@@ -24,12 +24,12 @@ import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.plugins.hekplugin.HEKPlugin3D;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
 import org.helioviewer.jhv.plugins.sdocutoutplugin.SDOCutOutPlugin3D;
+import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginManager;
+import org.helioviewer.jhv.plugins.viewmodelplugin.interfaces.Plugin;
 import org.helioviewer.jhv.resourceloader.ResourceLoader;
 import org.helioviewer.jhv.resourceloader.SystemProperties;
-import org.helioviewer.viewmodel.view.jp2view.JP2Image;
-import org.helioviewer.viewmodel.view.jp2view.kakadu.JHV_KduException;
-import org.helioviewer.viewmodelplugin.controller.PluginManager;
-import org.helioviewer.viewmodelplugin.interfaces.Plugin;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JP2Image;
+import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
 
 /**
  * This class starts the applications.

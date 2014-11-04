@@ -5,25 +5,25 @@ import java.awt.image.BufferedImage;
 import java.util.Date;
 import java.util.Vector;
 
-import org.helioviewer.base.math.SphericalCoord;
-import org.helioviewer.base.math.Vector3dDouble;
-import org.helioviewer.gl3d.scenegraph.GL3DState;
-import org.helioviewer.gl3d.view.GL3DLayeredView;
-import org.helioviewer.gl3d.wcs.conversion.SphericalToSolarSphereConversion;
-import org.helioviewer.gl3d.wcs.impl.SolarSphereCoordinateSystem;
-import org.helioviewer.gl3d.wcs.impl.SphericalCoordinateSystem;
+import org.helioviewer.jhv.base.math.SphericalCoord;
+import org.helioviewer.jhv.base.math.Vector3dDouble;
+import org.helioviewer.jhv.base.wcs.conversion.SphericalToSolarSphereConversion;
+import org.helioviewer.jhv.base.wcs.impl.SolarSphereCoordinateSystem;
+import org.helioviewer.jhv.base.wcs.impl.SphericalCoordinateSystem;
+import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKEvent;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKEvent.GenericTriangle;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
-import org.helioviewer.viewmodel.region.Region;
-import org.helioviewer.viewmodel.renderer.physical.PhysicalRenderGraphics;
-import org.helioviewer.viewmodel.renderer.physical.PhysicalRenderer3d;
-import org.helioviewer.viewmodel.view.LinkedMovieManager;
-import org.helioviewer.viewmodel.view.RegionView;
-import org.helioviewer.viewmodel.view.TimedMovieView;
-import org.helioviewer.viewmodel.view.View;
-import org.helioviewer.viewmodel.view.ViewHelper;
+import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.renderer.physical.PhysicalRenderGraphics;
+import org.helioviewer.jhv.viewmodel.renderer.physical.PhysicalRenderer3d;
+import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
+import org.helioviewer.jhv.viewmodel.view.RegionView;
+import org.helioviewer.jhv.viewmodel.view.TimedMovieView;
+import org.helioviewer.jhv.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.ViewHelper;
+import org.helioviewer.jhv.viewmodel.view.opengl.GL3DLayeredView;
 
 /**
  * The solar event renderer provides a possibility to draw solar events with

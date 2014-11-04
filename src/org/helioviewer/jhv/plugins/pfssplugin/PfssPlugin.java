@@ -4,11 +4,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import org.helioviewer.viewmodelplugin.controller.PluginManager;
-import org.helioviewer.viewmodelplugin.controller.PluginSettings;
-import org.helioviewer.viewmodelplugin.interfaces.Plugin;
-import org.helioviewer.viewmodelplugin.overlay.OverlayContainer;
-import org.helioviewer.viewmodelplugin.overlay.OverlayPlugin;
+import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginManager;
+import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginSettings;
+import org.helioviewer.jhv.plugins.viewmodelplugin.interfaces.Plugin;
+import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayContainer;
+import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayPlugin;
 
 /**
  * @author Stefan Meier (stefan.meier@fhnw.ch)

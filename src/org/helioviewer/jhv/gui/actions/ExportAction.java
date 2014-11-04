@@ -10,7 +10,7 @@ import javax.swing.KeyStroke;
 
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.dialogs.ExportMovieDialog;
-import org.helioviewer.viewmodel.view.LinkedMovieManager;
+import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
 
 public class ExportAction extends AbstractAction{
   private static final long serialVersionUID=-1780397745337916864L;
