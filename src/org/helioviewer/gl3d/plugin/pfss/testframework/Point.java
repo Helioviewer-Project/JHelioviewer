@@ -78,7 +78,8 @@ public class Point {
 	}
 	
 	public double getDistanceTo(Point p) {
-		return getVector(this,p).magnitude();
+		Point vec = getVector(this,p);
+		return vec.magnitude();
 	}
 	
 	public double magnitude() {
@@ -90,6 +91,9 @@ public class Point {
 		return new Point(end.x- start.x,end.y-start.y,end.z-start.z);
 	}
 	
+	public static double dot(Point p0, Point p1) {
+		return p0.x*p1.x+p0.y*p1.y+p0.z*p1.z;
+	}
 	
 	public static Point cross(Point p0, Point p1) {
 		float x = p0.y*p1.z-p0.z*p1.y;
