@@ -227,6 +227,7 @@ public class HEKPluginPanel extends OverlayPanel implements ActionListener, HEKC
 	                }
 	            }
 	        });
+	    	threadUpdate.setDaemon(true);
 	        threadUpdate.start();
 	    }
 	}

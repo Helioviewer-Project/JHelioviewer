@@ -1,9 +1,9 @@
 package org.helioviewer.jhv.opengl.scenegraph.visuals;
 
+import org.helioviewer.jhv.opengl.scenegraph.GL3DDrawBits.Bit;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DGroup;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DShape;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
-import org.helioviewer.jhv.opengl.scenegraph.GL3DDrawBits.Bit;
 import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec3d;
 import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec4f;
 

@@ -11,6 +11,7 @@ import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
 import org.helioviewer.jhv.opengl.scenegraph.math.GL3DMat3d;
 import org.helioviewer.jhv.opengl.scenegraph.math.GL3DMat4d;
+import org.helioviewer.jhv.viewmodel.view.opengl.GL3DComponentView;
 
 /**
  * The {@link GL3DState} is recreated every render pass by the

@@ -9,10 +9,10 @@ import javax.media.opengl.GL2;
 
 import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
+import org.helioviewer.jhv.opengl.scenegraph.GL3DDrawBits.Bit;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DGroup;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DNode;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
-import org.helioviewer.jhv.opengl.scenegraph.GL3DDrawBits.Bit;
 import org.helioviewer.jhv.opengl.scenegraph.math.GL3DMat4d;
 import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec3d;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DImageTextureView;

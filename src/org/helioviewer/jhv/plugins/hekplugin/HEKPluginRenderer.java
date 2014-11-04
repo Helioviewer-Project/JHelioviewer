@@ -15,7 +15,7 @@ import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
 import org.helioviewer.jhv.viewmodel.renderer.physical.PhysicalRenderGraphics;
 import org.helioviewer.jhv.viewmodel.renderer.physical.PhysicalRenderer;
 import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
-import org.helioviewer.jhv.viewmodel.view.TimedMovieView;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 
 /**
  * The solar event renderer provides a possibility to draw solar events with
@@ -120,7 +120,7 @@ public class HEKPluginRenderer implements PhysicalRenderer {
 	 * Draws all available and visible solar events with there associated icon.
 	 */
 	public void render(PhysicalRenderGraphics g) {
-		TimedMovieView masterView = LinkedMovieManager.getActiveInstance()
+		JHVJPXView masterView = LinkedMovieManager.getActiveInstance()
 				.getMasterMovie();
 		if (masterView != null && masterView.getCurrentFrameDateTime() != null) {
 			Date currentDate = masterView.getCurrentFrameDateTime().getTime();

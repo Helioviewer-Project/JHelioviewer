@@ -52,12 +52,6 @@ public class FixedSizedInputStream extends InputStream {
 
     /** @override */
     public int read(byte[] b) throws IOException {
-        if (remainingBytes > 0) {
-            int bytesRead = in.read(b, 0, remainingBytes < b.length ? remainingBytes : b.length);
-            remainingBytes -= bytesRead;
-            return bytesRead;
-        } else {
-            return -1;
-        }
+        return read(b,0,b.length);
     }
 }

@@ -29,9 +29,8 @@ import org.helioviewer.jhv.gui.dialogs.observation.ImageDataPanel;
 import org.helioviewer.jhv.gui.dialogs.observation.ObservationDialog;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
-import org.helioviewer.jhv.viewmodel.view.MovieView;
-import org.helioviewer.jhv.viewmodel.view.TimedMovieView;
 import org.helioviewer.jhv.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 import org.helioviewer.jhv.viewmodel.view.jp2view.datetime.ImmutableDateTime;
 
 /**
@@ -109,7 +108,7 @@ public class ImageSelectorPanel extends JPanel implements LayersListener {
              */
 
             if (activeView != null) {
-                MovieView tmv = activeView.getAdapter(TimedMovieView.class);
+                JHVJPXView tmv = activeView.getAdapter(JHVJPXView.class);
                 if (tmv != null && tmv.getMaximumAccessibleFrameNumber() == tmv.getMaximumFrameNumber()) {
                     final ImmutableDateTime start = LayersModel.getSingletonInstance().getStartDate(activeView);
                     final ImmutableDateTime end = LayersModel.getSingletonInstance().getEndDate(activeView);

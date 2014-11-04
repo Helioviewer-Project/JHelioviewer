@@ -1,5 +1,6 @@
 package org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -9,9 +10,9 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.io.ChunkedInputStream;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.FixedSizedInputStream;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.http.HTTPHeaderKey;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.http.HTTPRequest;
+import org.helioviewer.jhv.viewmodel.view.jp2view.io.http.HTTPRequest.Method;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.http.HTTPResponse;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.http.HTTPSocket;
-import org.helioviewer.jhv.viewmodel.view.jp2view.io.http.HTTPRequest.Method;
 
 /**
  * Assumes a persistent HTTP connection.
@@ -217,12 +218,12 @@ public class JPIPSocket extends HTTPSocket {
             String contentLengthString = res.getHeader("Content-Length") == null ? "" : res.getHeader("Content-Length").trim();
             try {
                 int contentLength = Integer.parseInt(contentLengthString);
-                input = new FixedSizedInputStream(getInputStream(), contentLength);
+                input = new FixedSizedInputStream(new BufferedInputStream(getInputStream(),65536), contentLength);
             } catch (Exception e) {
                 throw new IOException("Invalid Content-Length header: " + contentLengthString + "\n" + getResponseHeadersAsString(res));
             }
         } else if (transferEncoding.equals("chunked")) {
-            input = new ChunkedInputStream(getInputStream());
+            input = new ChunkedInputStream(new BufferedInputStream(getInputStream(),65536));
         } else {
             throw new IOException("Unsupported transfer encoding: " + transferEncoding + "\n" + getResponseHeadersAsString(res));
         }

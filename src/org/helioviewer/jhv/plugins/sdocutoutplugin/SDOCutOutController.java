@@ -13,9 +13,9 @@ import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.region.Region;
 import org.helioviewer.jhv.viewmodel.view.MetaDataView;
 import org.helioviewer.jhv.viewmodel.view.RegionView;
-import org.helioviewer.jhv.viewmodel.view.TimedMovieView;
 import org.helioviewer.jhv.viewmodel.view.ViewHelper;
 import org.helioviewer.jhv.viewmodel.view.ViewportView;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 import org.helioviewer.jhv.viewmodel.viewport.Viewport;
 import org.helioviewer.jhv.viewmodel.viewportimagesize.ViewportImageSize;
 
@@ -98,7 +98,7 @@ public class SDOCutOutController {
 	// Get cadence and cadence units of the active layer
 	public long getCadence(StringBuilder cadenceUnits)
 	{
-		TimedMovieView tmv=LayersModel.getSingletonInstance().getActiveView().getAdapter(TimedMovieView.class);
+		JHVJPXView tmv=LayersModel.getSingletonInstance().getActiveView().getAdapter(JHVJPXView.class);
 		
 		long difference;
 		long sum=0;

@@ -300,7 +300,7 @@ public class FileDownloader {
                 }
             }
         }, "DownloadFile");
-
+        downloadThread.setDaemon(true);
         downloadThread.start();
         while (downloadThread.isAlive()) {
             try {

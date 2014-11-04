@@ -6,8 +6,8 @@ import org.helioviewer.jhv.viewmodel.filter.GLFragmentShaderFilter;
 import org.helioviewer.jhv.viewmodel.filter.GLImageSizeFilter;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLFragmentShaderProgram;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLShaderBuilder;
-import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLTextureCoordinate;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLShaderBuilder.GLBuildShaderException;
+import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLTextureCoordinate;
 
 /**
  * Extension of SharpenFilter, also providing an OpenGL implementation.
@@ -59,7 +59,7 @@ public class SharpenGLFilter extends SharpenFilter implements GLFragmentShaderFi
 
                 String program = "\tfloat unsharpMaskingKernel[3][3] = {" + GLShaderBuilder.LINE_SEP
 
-                + "\t\t{1, 2, 1}," + GLShaderBuilder.LINE_SEP + "\t\t{2, 4, 2}," + GLShaderBuilder.LINE_SEP + "\t\t{1, 2, 1}" + GLShaderBuilder.LINE_SEP + "\t};" + GLShaderBuilder.LINE_SEP
+                + "\t\t{-1, -2, -1}," + GLShaderBuilder.LINE_SEP + "\t\t{-2, 12, -2}," + GLShaderBuilder.LINE_SEP + "\t\t{-1, -2, -1}" + GLShaderBuilder.LINE_SEP + "\t};" + GLShaderBuilder.LINE_SEP
 
                 + "\tfloat3 tmpConvolutionSum = float3(0, 0, 0);" + GLShaderBuilder.LINE_SEP
 
@@ -71,9 +71,9 @@ public class SharpenGLFilter extends SharpenFilter implements GLFragmentShaderFi
 
                 + "\t\t\t\t* unsharpMaskingKernel[i][j];" + GLShaderBuilder.LINE_SEP + "\t\t}" + GLShaderBuilder.LINE_SEP + "\t}" + GLShaderBuilder.LINE_SEP
 
-                + "\ttmpConvolutionSum = (1 + unsharpMaskingWeighting) * output.rgb" + GLShaderBuilder.LINE_SEP
+                + "\ttmpConvolutionSum = output.rgb + " + GLShaderBuilder.LINE_SEP
 
-                + "\t\t- unsharpMaskingWeighting * tmpConvolutionSum / 16.0f;" + GLShaderBuilder.LINE_SEP
+                + "\t\t unsharpMaskingWeighting * tmpConvolutionSum.rgb / 10.0f;" + GLShaderBuilder.LINE_SEP
 
                 + "\toutput.rgb = saturate(tmpConvolutionSum);";
 

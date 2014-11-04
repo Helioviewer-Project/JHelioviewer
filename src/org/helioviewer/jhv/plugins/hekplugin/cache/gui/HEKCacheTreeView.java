@@ -28,11 +28,11 @@ import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.components.tristateCheckbox.TristateCheckBox;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheController;
-import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheModel;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheExpansionModel;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheLoadingModel;
-import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheTreeModel;
+import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheModel;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheSelectionModel;
+import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheTreeModel;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKPath;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
 

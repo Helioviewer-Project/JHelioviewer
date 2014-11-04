@@ -113,6 +113,7 @@ public class JPIPStatusPanel extends ViewStatusPanelPlugin {
             setVisible(true);
 
             Thread closeThread = new Thread(this, "Close JPIP Popup");
+            closeThread.setDaemon(true);
             closeThread.start();
         }
 

@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import org.helioviewer.jhv.plugins.pfssplugin.PfssSettings;
-import org.helioviewer.jhv.plugins.pfssplugin.data.PfssFitsFile;
 import org.helioviewer.jhv.plugins.pfssplugin.data.dataStructure.PfssDayAndTime;
 import org.helioviewer.jhv.plugins.pfssplugin.data.dataStructure.PfssYear;
 /**
@@ -64,6 +63,7 @@ public class PfssCache {
 					PfssFitsFile tmpFits = new PfssFitsFile();
 					pfssDatas.put(tmp.getUrl(), tmpFits);
 					Thread t = new Thread(new PfssDataLoader(tmp, tmpFits));
+					t.setDaemon(true);
 					t.start();
 					tmp = tmp.getNext();
 				}
@@ -104,6 +104,7 @@ public class PfssCache {
 
 	private void loadFile(PfssDayAndTime dayAndTime, PfssFitsFile fits) {
 		Thread t = new Thread(new PfssDataLoader(dayAndTime, fits));
+		t.setDaemon(true);
 		t.start();
 	}
 

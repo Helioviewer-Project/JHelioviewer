@@ -38,8 +38,8 @@ import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState.VISUAL_TYPE;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.changeevent.LayerChangedReason;
-import org.helioviewer.jhv.viewmodel.changeevent.ViewChainChangedReason;
 import org.helioviewer.jhv.viewmodel.changeevent.LayerChangedReason.LayerChangeType;
+import org.helioviewer.jhv.viewmodel.changeevent.ViewChainChangedReason;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.region.Region;
 import org.helioviewer.jhv.viewmodel.renderer.screen.GLScreenRenderGraphics;
@@ -674,22 +674,22 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 	@Override
 	public void layerAdded(int idx) {
-		this.canvas.repaint();
+		this.canvas.repaint(15);
 	}
 
 	@Override
 	public void layerRemoved(View oldView, int oldIdx) {
-		this.canvas.repaint();
+		this.canvas.repaint(15);
 	}
 
 	@Override
 	public void layerChanged(int idx) {
-    this.canvas.repaint();
+    this.canvas.repaint(15);
 	}
 
 	@Override
 	public void activeLayerChanged(int idx) {
-    this.canvas.repaint();
+    this.canvas.repaint(15);
 	}
 
 	@Override
@@ -699,7 +699,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 	@Override
 	public void timestampChanged(int idx) {
-		this.canvas.repaint();
+		this.canvas.repaint(15);
 	}
 
 	@Override
@@ -709,7 +709,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 	@Override
 	public void layerDownloaded(int idx) {
-		this.canvas.repaint();
+		this.canvas.repaint(15);
 	}
 
 	@Override
@@ -719,7 +719,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 	@Override
 	public void cameraMoving(GL3DCamera camera) {
-		this.canvas.repaint();
+		this.canvas.repaint(15);
 	}
 
 	/**

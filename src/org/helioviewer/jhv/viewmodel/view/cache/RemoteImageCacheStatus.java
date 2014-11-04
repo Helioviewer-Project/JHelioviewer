@@ -3,9 +3,9 @@ package org.helioviewer.jhv.viewmodel.view.cache;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.helioviewer.jhv.viewmodel.changeevent.CacheStatusChangedReason;
-import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.changeevent.CacheStatusChangedReason.CacheType;
-import org.helioviewer.jhv.viewmodel.view.CachedMovieView;
+import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 
 /**
  * Implementation of JP2CacheStatus for remote movies.
@@ -15,7 +15,7 @@ import org.helioviewer.jhv.viewmodel.view.CachedMovieView;
  */
 public class RemoteImageCacheStatus implements ImageCacheStatus {
 
-    private CachedMovieView parent;
+    private JHVJPXView parent;
     private CacheStatus[] imageStatus;
     private int imagePartialUntil = -1;
     private int imageCompleteUntil = -1;
@@ -28,7 +28,7 @@ public class RemoteImageCacheStatus implements ImageCacheStatus {
      * @param _parent
      *            JP2Image, whose cache status is managed
      */
-    public RemoteImageCacheStatus(CachedMovieView _parent) {
+    public RemoteImageCacheStatus(JHVJPXView _parent) {
         parent = _parent;
         imageStatus = new CacheStatus[parent.getMaximumFrameNumber() + 1];
     }

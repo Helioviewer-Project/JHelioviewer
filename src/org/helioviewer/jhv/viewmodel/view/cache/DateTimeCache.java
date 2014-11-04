@@ -1,12 +1,12 @@
 package org.helioviewer.jhv.viewmodel.view.cache;
 
 import org.helioviewer.jhv.viewmodel.changeevent.CacheStatusChangedReason;
-import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.changeevent.CacheStatusChangedReason.CacheType;
+import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.io.APIResponse;
 import org.helioviewer.jhv.viewmodel.io.APIResponseDump;
-import org.helioviewer.jhv.viewmodel.view.CachedMovieView;
 import org.helioviewer.jhv.viewmodel.view.ImageInfoView;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 import org.helioviewer.jhv.viewmodel.view.jp2view.datetime.ImmutableDateTime;
 
 /**
@@ -20,7 +20,7 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.datetime.ImmutableDateTime;
  */
 public abstract class DateTimeCache {
 
-    protected CachedMovieView parent;
+    protected JHVJPXView parent;
 
     private ImmutableDateTime[] cache;
 
@@ -35,7 +35,7 @@ public abstract class DateTimeCache {
      * @param _parent
      *            parent view
      */
-    public DateTimeCache(CachedMovieView _parent) {
+    public DateTimeCache(JHVJPXView _parent) {
         parent = _parent;
         cache = new ImmutableDateTime[_parent.getMaximumFrameNumber() + 1];
 
@@ -93,6 +93,7 @@ public abstract class DateTimeCache {
                 parseAll();
             }
         }, "DateTime Parser");
+        parsingThread.setDaemon(true);
         parsingThread.start();
     }
 

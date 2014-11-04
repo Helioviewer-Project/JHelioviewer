@@ -16,8 +16,8 @@ import org.helioviewer.jhv.viewmodel.imagedata.ImageData;
 import org.helioviewer.jhv.viewmodel.imagedata.JavaBufferedImageData;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLFragmentShaderProgram;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLShaderBuilder;
-import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLTextureCoordinate;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLShaderBuilder.GLBuildShaderException;
+import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLTextureCoordinate;
 
 /**
  * Filter for changing the opacity of an image.
@@ -87,12 +87,7 @@ public class OpacityFilter extends AbstractFilter implements StandardFilter, GLF
         }
 
         opacity = newOpacity;
-        Thread t = new Thread(new Runnable() {
-            public void run() {
-                notifyAllListeners();
-            }
-        }, "NotifyFilterListenersThread");
-        t.start();
+        notifyAllListeners();
     }
 
     /**

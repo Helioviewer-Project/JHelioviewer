@@ -14,8 +14,8 @@ import org.helioviewer.jhv.viewmodel.imagetransport.Int32ImageTransport;
 import org.helioviewer.jhv.viewmodel.imagetransport.Short16ImageTransport;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLFragmentShaderProgram;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLShaderBuilder;
-import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLTextureCoordinate;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLShaderBuilder.GLBuildShaderException;
+import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLTextureCoordinate;
 
 /**
  * Filter for applying gamma correction.

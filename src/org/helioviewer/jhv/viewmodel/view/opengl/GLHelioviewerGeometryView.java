@@ -13,10 +13,10 @@ import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLFragmentShaderProgram;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLFragmentShaderView;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLShaderBuilder;
+import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLShaderBuilder.GLBuildShaderException;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLTextureCoordinate;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLVertexShaderProgram;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLVertexShaderView;
-import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLShaderBuilder.GLBuildShaderException;
 
 /**
  * Implementation of HelioviewGeometryView for rendering in OpenGL mode.

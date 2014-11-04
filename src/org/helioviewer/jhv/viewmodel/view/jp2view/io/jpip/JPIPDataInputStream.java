@@ -187,8 +187,18 @@ public class JPIPDataInputStream {
             // Assign larger array if needed.
             seg.data = seg.data.length < seg.length ? new byte[seg.length] : seg.data;
 
-            if (read(seg.data, 0, seg.length) != seg.length)
-                throw new EOFException("EOF reached before read " + seg.length + " bytes");
+            int offset = 0;
+            int len = seg.length;
+            
+            while(len!=0)
+            {
+                int read=read(seg.data, offset, len);
+                if(read==-1)
+                    throw new EOFException("Unexpected EOF");
+                
+                len-=read;
+                offset+=read;
+            }
         }
 
         return seg;

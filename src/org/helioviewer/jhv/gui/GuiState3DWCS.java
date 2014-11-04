@@ -18,9 +18,9 @@ import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginManager;
 import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterContainer;
 import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTab;
 import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTabDescriptor;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTabDescriptor.Type;
 import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTabList;
 import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTabPanelManager;
-import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTabDescriptor.Type;
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayContainer;
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayControlComponent;
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayControlComponentManager;
@@ -30,9 +30,9 @@ import org.helioviewer.jhv.viewmodel.view.ComponentView;
 import org.helioviewer.jhv.viewmodel.view.ImageInfoView;
 import org.helioviewer.jhv.viewmodel.view.LayeredView;
 import org.helioviewer.jhv.viewmodel.view.MetaDataView;
-import org.helioviewer.jhv.viewmodel.view.MovieView;
 import org.helioviewer.jhv.viewmodel.view.SubimageDataView;
 import org.helioviewer.jhv.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JP2View;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DCameraView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DComponentView;
@@ -276,8 +276,8 @@ public class GuiState3DWCS {
 					.getAdapter(ImageInfoView.class);
 
 			// If MoviewView, add MoviePanel
-			if (newLayer instanceof MovieView) {
-				MoviePanel moviePanel = new MoviePanel((MovieView) newLayer);
+			if (newLayer instanceof JHVJPXView) {
+				MoviePanel moviePanel = new MoviePanel((JHVJPXView) newLayer);
 				if (LayersModel.getSingletonInstance().isTimed(newLayer)) {
 					LayersModel.getSingletonInstance().setLink(newLayer, true);
 				}

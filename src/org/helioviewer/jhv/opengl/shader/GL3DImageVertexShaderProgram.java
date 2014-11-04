@@ -1,8 +1,8 @@
 package org.helioviewer.jhv.opengl.shader;
 
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLShaderBuilder;
-import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLVertexShaderProgram;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLShaderBuilder.GLBuildShaderException;
+import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLVertexShaderProgram;
 
 public class GL3DImageVertexShaderProgram extends GLVertexShaderProgram {
 

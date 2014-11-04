@@ -1,6 +1,6 @@
 package org.helioviewer.jhv.viewmodel.view.cache;
 
-import org.helioviewer.jhv.viewmodel.view.MovieView;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 
 /**
  * Implementation of JP2CacheStatus for local movies.
@@ -12,12 +12,12 @@ import org.helioviewer.jhv.viewmodel.view.MovieView;
  */
 public class LocalImageCacheStatus implements ImageCacheStatus {
 
-    private MovieView parent;
+    private JHVJPXView parent;
 
     /**
      * Default constructor.
      */
-    public LocalImageCacheStatus(MovieView _parent) {
+    public LocalImageCacheStatus(JHVJPXView _parent) {
         parent = _parent;
     }
 

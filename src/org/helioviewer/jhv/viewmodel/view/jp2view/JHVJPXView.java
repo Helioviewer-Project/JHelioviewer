@@ -4,9 +4,9 @@ import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.changeevent.PlayStateChangedReason;
 import org.helioviewer.jhv.viewmodel.changeevent.TimestampChangedReason;
 import org.helioviewer.jhv.viewmodel.imagedata.ImageData;
-import org.helioviewer.jhv.viewmodel.view.CachedMovieView;
+import org.helioviewer.jhv.viewmodel.view.AnimationMode;
 import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
-import org.helioviewer.jhv.viewmodel.view.TimedMovieView;
+import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.cache.DateTimeCache;
 import org.helioviewer.jhv.viewmodel.view.cache.HelioviewerDateTimeCache;
 import org.helioviewer.jhv.viewmodel.view.cache.ImageCacheStatus;
@@ -18,7 +18,7 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.image.JP2ImageParameter;
 import org.helioviewer.jhv.viewmodel.view.jp2view.image.SubImage;
 
 /**
- * Implementation of TimedMovieView for JPX files.
+ * Implementation of TimedJHVJPXView for JPX files.
  * 
  * <p>
  * This class is an extions of {@link JHVJP2View} for JPX-Files, providing
@@ -26,12 +26,12 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.image.SubImage;
  * 
  * <p>
  * For information about image series, see
- * {@link org.helioviewer.jhv.viewmodel.view.MovieView} and
- * {@link org.helioviewer.jhv.viewmodel.view.TimedMovieView}.
+ * {@link org.helioviewer.jhv.viewmodel.view.JHVJPXView} and
+ * {@link org.helioviewer.jhv.viewmodel.view.TimedJHVJPXView}.
  * 
  * @author Markus Langenberg
  */
-public class JHVJPXView extends JHVJP2View implements TimedMovieView, CachedMovieView {
+public class JHVJPXView extends JHVJP2View implements View {
 
     // Caching
     protected ImageCacheStatus imageCacheStatus;
@@ -444,15 +444,11 @@ public class JHVJPXView extends JHVJP2View implements TimedMovieView, CachedMovi
         return calculateParameter(getCurrentNumQualityLayers(), getCurrentFrameNumber());
     }
 
-	@Override
 	public int getDesiredSpeed() {
-		// TODO Auto-generated method stub
 		return render.getDesiredSpeed();
 	}
 
-	@Override
 	public SpeedType getSpeedType() {
-		// TODO Auto-generated method stub
 		return speedType;
 	}
 

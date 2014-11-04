@@ -3,7 +3,7 @@ package org.helioviewer.jhv.viewmodel.view.cache;
 import java.io.IOException;
 
 import org.helioviewer.jhv.viewmodel.metadata.MultiFrameMetaDataContainer;
-import org.helioviewer.jhv.viewmodel.view.CachedMovieView;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 import org.helioviewer.jhv.viewmodel.view.jp2view.datetime.ImmutableDateTime;
 
 /**
@@ -33,7 +33,7 @@ public class HelioviewerDateTimeCache extends DateTimeCache {
      * @param _source
      *            the multi frame meta data container
      */
-    public HelioviewerDateTimeCache(CachedMovieView _parent, MultiFrameMetaDataContainer _source) {
+    public HelioviewerDateTimeCache(JHVJPXView _parent, MultiFrameMetaDataContainer _source) {
         super(_parent);
 
         source = _source;

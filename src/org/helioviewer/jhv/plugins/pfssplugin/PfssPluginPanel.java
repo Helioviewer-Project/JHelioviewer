@@ -27,9 +27,9 @@ import org.helioviewer.jhv.plugins.pfssplugin.data.PfssCache;
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayPanel;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
-import org.helioviewer.jhv.viewmodel.view.TimedMovieView;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.ViewListener;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 
 /**
  * Panel of Pfss-Plugin
@@ -283,7 +283,7 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 
 	public void timestampChanged(int idx) {
 		// Not used anymore
-		TimedMovieView masterView = LinkedMovieManager.getActiveInstance()
+		JHVJPXView masterView = LinkedMovieManager.getActiveInstance()
 				.getMasterMovie();
 		if (masterView != null) {
 			Date date = masterView.getCurrentFrameDateTime().getTime();

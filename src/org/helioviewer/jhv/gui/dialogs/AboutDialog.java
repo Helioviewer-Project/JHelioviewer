@@ -7,24 +7,15 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JEditorPane;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.gui.IconBank;
-import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
+import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.interfaces.ShowableDialog;
 import org.helioviewer.jhv.internal_plugins.InternalPlugin;
 import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginContainer;

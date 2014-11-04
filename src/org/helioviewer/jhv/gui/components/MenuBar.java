@@ -6,17 +6,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 
 import org.helioviewer.jhv.base.FileUtils;
-import org.helioviewer.jhv.gui.actions.CheckUpdateAction;
-import org.helioviewer.jhv.gui.actions.ExitProgramAction;
-import org.helioviewer.jhv.gui.actions.ExportSettingsAction;
-import org.helioviewer.jhv.gui.actions.ExportAction;
-import org.helioviewer.jhv.gui.actions.LoadStateAction;
-import org.helioviewer.jhv.gui.actions.OpenLocalFileAction;
-import org.helioviewer.jhv.gui.actions.OpenURLinBrowserAction;
-import org.helioviewer.jhv.gui.actions.SaveScreenshotAsAction;
-import org.helioviewer.jhv.gui.actions.SaveStateAction;
-import org.helioviewer.jhv.gui.actions.ShowDialogAction;
-import org.helioviewer.jhv.gui.actions.ToggleFullscreenAction;
+import org.helioviewer.jhv.gui.actions.*;
 import org.helioviewer.jhv.gui.actions.gl3d.GL3DCenterImageAction;
 import org.helioviewer.jhv.gui.actions.gl3d.GL3DZoom1to1Action;
 import org.helioviewer.jhv.gui.actions.gl3d.GL3DZoomFitAction;

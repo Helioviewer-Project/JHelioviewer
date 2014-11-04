@@ -34,7 +34,7 @@ import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.view.ComponentView;
 import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
-import org.helioviewer.jhv.viewmodel.view.TimedMovieView;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView.SpeedType;
 
 import com.xuggle.mediatool.IMediaWriter;
@@ -42,7 +42,7 @@ import com.xuggle.mediatool.ToolFactory;
 
 
 public class ExportMovieDialog implements ActionListener{
-	private TimedMovieView timedMovieView = null;
+	private JHVJPXView timedJHVJPXView = null;
 	private ComponentView mainComponentView = null;
 	
 	private long speed = 0;
@@ -203,21 +203,21 @@ public class ExportMovieDialog implements ActionListener{
 	private void initExportMovie(){
 		mainComponentView = GuiState3DWCS.mainComponentView;
 		//mainComponentView.stop();
-		timedMovieView = LinkedMovieManager.getActiveInstance().getMasterMovie();
+		timedJHVJPXView = LinkedMovieManager.getActiveInstance().getMasterMovie();
 		started = true;
 		
 		if (this.selectedOutputFormat.isMovieFile()){
 			
 			writer = ToolFactory.makeWriter(directory + filename + this.selectedOutputFormat.getExtension());
 			
-			if (timedMovieView.getSpeedType() == SpeedType.RELATIV){
-				speed = 1000/timedMovieView.getDesiredSpeed();
+			if (timedJHVJPXView.getSpeedType() == SpeedType.RELATIV){
+				speed = 1000/timedJHVJPXView.getDesiredSpeed();
 			}
 			
 			else {
-				long min = timedMovieView.getFrameDateTime(0).getMillis();
-				long max = timedMovieView.getFrameDateTime(1).getMillis();
-				speed = (max - min) / timedMovieView.getDesiredSpeed() ;	
+				long min = timedJHVJPXView.getFrameDateTime(0).getMillis();
+				long max = timedJHVJPXView.getFrameDateTime(1).getMillis();
+				speed = (max - min) / timedJHVJPXView.getDesiredSpeed() ;	
 			}
 			if (this.useCurrentOpenGlSize) {
 				Dimension dimension = this.mainComponentView.getCanavasSize();
@@ -245,29 +245,29 @@ public class ExportMovieDialog implements ActionListener{
 		}
 		
 		
-		if (timedMovieView != null)
-			progressDialog.setMaximumOfProgressBar(timedMovieView.getMaximumFrameNumber());
+		if (timedJHVJPXView != null)
+			progressDialog.setMaximumOfProgressBar(timedJHVJPXView.getMaximumFrameNumber());
 	}
 	
 	
 	private void exportMovie(){
 		/*mainComponentView = (ComponentView)ImageViewerGui.getSingletonInstance().getMainView();
 		//mainComponentView.stop();
-		timedMovieView = LinkedMovieManager.getActiveInstance().getMasterMovie();
+		timedJHVJPXView = LinkedMovieManager.getActiveInstance().getMasterMovie();
 		started = true;
 		
 		if (this.selectedOutputFormat.isMovieFile()){
 			
 			writer = ToolFactory.makeWriter(directory + filename + this.selectedOutputFormat.getExtension());
 			
-			if (timedMovieView.getSpeedType() == SpeedType.RELATIV){
-				speed = 1000/timedMovieView.getDesiredSpeed();
+			if (timedJHVJPXView.getSpeedType() == SpeedType.RELATIV){
+				speed = 1000/timedJHVJPXView.getDesiredSpeed();
 			}
 			
 			else {
-				long min = timedMovieView.getFrameDateTime(0).getMillis();
-				long max = timedMovieView.getFrameDateTime(1).getMillis();
-				speed = (max - min) / timedMovieView.getDesiredSpeed() ;	
+				long min = timedJHVJPXView.getFrameDateTime(0).getMillis();
+				long max = timedJHVJPXView.getFrameDateTime(1).getMillis();
+				speed = (max - min) / timedJHVJPXView.getDesiredSpeed() ;	
 			}
 			if (this.useCurrentOpenGlSize) {
 				Dimension dimension = this.mainComponentView.getCanavasSize();
@@ -295,16 +295,16 @@ public class ExportMovieDialog implements ActionListener{
 		}
 		
 		
-		if (timedMovieView != null){
-			progressDialog.setMaximumOfProgressBar(timedMovieView.getMaximumFrameNumber());
+		if (timedJHVJPXView != null){
+			progressDialog.setMaximumOfProgressBar(timedJHVJPXView.getMaximumFrameNumber());
 
 		*/
-			//for (i = 0; i < timedMovieView.getMaximumFrameNumber(); i++){
+			//for (i = 0; i < timedJHVJPXView.getMaximumFrameNumber(); i++){
 				
 				//if (!started) break;
 		if (!started) stopExportMovie();
 				else{
-				timedMovieView.setCurrentFrame(i, new ChangeEvent());
+				timedJHVJPXView.setCurrentFrame(i, new ChangeEvent());
 				
 				BufferedImage bufferedImage = mainComponentView.getBufferedImage(imageWidth, imageHeight);
 				
@@ -335,7 +335,7 @@ public class ExportMovieDialog implements ActionListener{
 					}
 				}
 				i++;
-					if (i > timedMovieView.getMaximumFrameNumber()){
+					if (i > timedJHVJPXView.getMaximumFrameNumber()){
 					started = false;
 					stopExportMovie();
 				}
@@ -344,7 +344,7 @@ public class ExportMovieDialog implements ActionListener{
 			//}
 		
 				/*
-			this.timedMovieView.setCurrentFrame(0, new ChangeEvent());
+			this.timedJHVJPXView.setCurrentFrame(0, new ChangeEvent());
 			// export movie
 			if (selectedOutputFormat.isMovieFile()) writer.close();
 			else if (selectedOutputFormat.isCompressedFile()){
@@ -366,7 +366,7 @@ public class ExportMovieDialog implements ActionListener{
 	}
 	
 	public void stopExportMovie(){
-		this.timedMovieView.setCurrentFrame(0, new ChangeEvent());
+		this.timedJHVJPXView.setCurrentFrame(0, new ChangeEvent());
 		// export movie
 		if (selectedOutputFormat.isMovieFile()) writer.close();
 		else if (selectedOutputFormat.isCompressedFile()){

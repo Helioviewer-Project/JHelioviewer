@@ -55,8 +55,8 @@ import org.helioviewer.jhv.viewmodel.view.FilterView;
 import org.helioviewer.jhv.viewmodel.view.ImageInfoView;
 import org.helioviewer.jhv.viewmodel.view.LayeredView;
 import org.helioviewer.jhv.viewmodel.view.MetaDataView;
-import org.helioviewer.jhv.viewmodel.view.MovieView;
 import org.helioviewer.jhv.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 
 /**
  * A class that sets up the graphical user interface.
@@ -200,7 +200,7 @@ public class ImageViewerGui {
 
 			}
 		}, "LoadImagesOnStartUp");
-
+		thread.setDaemon(true);
 		thread.start();
 	}
 
@@ -472,13 +472,13 @@ public class ImageViewerGui {
 
 									// Lock movie
 									if (jhvRequest.linked) {
-										MovieView movieView = subView
-												.getAdapter(MovieView.class);
-										if (movieView != null
-												&& movieView
+										JHVJPXView JHVJPXView = subView
+												.getAdapter(JHVJPXView.class);
+										if (JHVJPXView != null
+												&& JHVJPXView
 														.getMaximumFrameNumber() > 0) {
 											MoviePanel moviePanel = MoviePanel
-													.getMoviePanel(movieView);
+													.getMoviePanel(JHVJPXView);
 											if (moviePanel == null)
 												throw new InvalidViewException();
 											moviePanel.setMovieLink(true);
@@ -555,10 +555,10 @@ public class ImageViewerGui {
 							// if view has been found
 							if (imageInfoView.equals(subView
 									.getAdapter(ImageInfoView.class))) {
-								MovieView movieView = subView
-										.getAdapter(MovieView.class);
+								JHVJPXView JHVJPXView = subView
+										.getAdapter(JHVJPXView.class);
 								MoviePanel moviePanel = MoviePanel
-										.getMoviePanel(movieView);
+										.getMoviePanel(JHVJPXView);
 								if (moviePanel == null)
 									throw new InvalidViewException();
 								moviePanel.setMovieLink(true);

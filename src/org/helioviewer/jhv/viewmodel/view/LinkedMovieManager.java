@@ -6,6 +6,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 import org.helioviewer.jhv.viewmodel.view.jp2view.datetime.ImmutableDateTime;
 
 /**
@@ -48,8 +49,8 @@ public class LinkedMovieManager {
 
     private static Vector<LinkedMovieManager> instances = new Vector<LinkedMovieManager>();
     private static int activeInstance = 0;
-    private LinkedList<TimedMovieView> linkedMovies = new LinkedList<TimedMovieView>();
-    private TimedMovieView masterView;
+    private LinkedList<JHVJPXView> linkedMovies = new LinkedList<JHVJPXView>();
+    private JHVJPXView masterView;
     private Semaphore updateSemaphore = new Semaphore(1);
     private Semaphore isPlayingSemaphore = new Semaphore(1);
     private ReentrantLock isPlayingLock = new ReentrantLock();
@@ -131,7 +132,7 @@ public class LinkedMovieManager {
     public static void deleteInstance(int instance) {
         if (instance != 0 && instance < instances.size() && instances.get(instance) != null) {
 
-            LinkedList<TimedMovieView> linkedMovies = instances.get(instance).linkedMovies;
+            LinkedList<JHVJPXView> linkedMovies = instances.get(instance).linkedMovies;
             while (!linkedMovies.isEmpty()) {
                 linkedMovies.element().unlinkMovie();
             }
@@ -147,12 +148,12 @@ public class LinkedMovieManager {
     /**
      * Adds the given movie view to the set of linked movies.
      * 
-     * @param movieView
+     * @param JHVJPXView
      *            View to add to the set of linked movies.
      */
-    public synchronized void linkMovie(TimedMovieView movieView) {
-        if (movieView.getMaximumFrameNumber() > 0 && !linkedMovies.contains(movieView)) {
-            linkedMovies.add(movieView);
+    public synchronized void linkMovie(JHVJPXView JHVJPXView) {
+        if (JHVJPXView.getMaximumFrameNumber() > 0 && !linkedMovies.contains(JHVJPXView)) {
+            linkedMovies.add(JHVJPXView);
 
             updateMaster();
         }
@@ -161,17 +162,17 @@ public class LinkedMovieManager {
     /**
      * Removes the given movie view from the set of linked movies.
      * 
-     * @param movieView
+     * @param JHVJPXView
      *            View to remove from the set of linked movies.
      */
-    public synchronized void unlinkMovie(TimedMovieView movieView) {
-        if (linkedMovies.contains(movieView)) {
-            linkedMovies.remove(movieView);
+    public synchronized void unlinkMovie(JHVJPXView JHVJPXView) {
+        if (linkedMovies.contains(JHVJPXView)) {
+            linkedMovies.remove(JHVJPXView);
 
             updateMaster();
 
             if (!linkedMovies.isEmpty()) {
-                movieView.pauseMovie();
+                JHVJPXView.pauseMovie();
             }
         }
     }
@@ -179,15 +180,15 @@ public class LinkedMovieManager {
     /**
      * Returns, whether the given view is the master view.
      * 
-     * @param movieView
+     * @param JHVJPXView
      *            View to test
      * @return True, if the given view is the master view, false otherwise.
      */
-    public boolean isMaster(TimedMovieView movieView) {
-        if (movieView == null) {
+    public boolean isMaster(JHVJPXView JHVJPXView) {
+        if (JHVJPXView == null) {
             return false;
         } else {
-            return (movieView == masterView);
+            return (JHVJPXView == masterView);
         }
     }
 
@@ -196,7 +197,7 @@ public class LinkedMovieManager {
      * 
      * @return current master movie
      */
-    public TimedMovieView getMasterMovie() {
+    public JHVJPXView getMasterMovie() {
         return masterView;
     }
 
@@ -246,7 +247,7 @@ public class LinkedMovieManager {
         if (updateSemaphore.tryAcquire()) {
 
             try {
-                for (TimedMovieView movie : linkedMovies) {
+                for (JHVJPXView movie : linkedMovies) {
                     movie.playMovie();
                 }
             } finally {
@@ -309,9 +310,9 @@ public class LinkedMovieManager {
             try {
                 ImmutableDateTime masterTime = masterView.getCurrentFrameDateTime();
 
-                for (TimedMovieView movieView : linkedMovies) {
-                    if (movieView != masterView) {
-                        movieView.setCurrentFrame(masterTime, new ChangeEvent(event));
+                for (JHVJPXView JHVJPXView : linkedMovies) {
+                    if (JHVJPXView != masterView) {
+                        JHVJPXView.setCurrentFrame(masterTime, new ChangeEvent(event));
                     }
                 }
             } finally {
@@ -343,8 +344,8 @@ public class LinkedMovieManager {
     public synchronized boolean setCurrentFrame(ImmutableDateTime dateTime, ChangeEvent event, boolean forceSignal) {
         if (updateSemaphore.tryAcquire()) {
             try {
-                for (TimedMovieView movieView : linkedMovies) {
-                    movieView.setCurrentFrame(dateTime, new ChangeEvent(event), forceSignal);
+                for (JHVJPXView JHVJPXView : linkedMovies) {
+                    JHVJPXView.setCurrentFrame(dateTime, new ChangeEvent(event), forceSignal);
                 }
             } finally {
                 updateSemaphore.release();
@@ -377,19 +378,19 @@ public class LinkedMovieManager {
         }
 
         long minimalInterval = Long.MAX_VALUE;
-        TimedMovieView minimalIntervalView = null;
+        JHVJPXView minimalIntervalView = null;
         int lastAvailableFrame = 0;
 
-        for (TimedMovieView movieView : linkedMovies) {
+        for (JHVJPXView JHVJPXView : linkedMovies) {
 
             lastAvailableFrame = 0;
 
             do {
 
-                if (movieView instanceof CachedMovieView) {
-                    lastAvailableFrame = ((CachedMovieView) movieView).getDateTimeCache().getMetaStatus();
+                if (JHVJPXView instanceof JHVJPXView) {
+                    lastAvailableFrame = ((JHVJPXView) JHVJPXView).getDateTimeCache().getMetaStatus();
                 } else {
-                    lastAvailableFrame = movieView.getMaximumFrameNumber();
+                    lastAvailableFrame = JHVJPXView.getMaximumFrameNumber();
                 }
 
                 if (lastAvailableFrame > 0) {
@@ -403,15 +404,15 @@ public class LinkedMovieManager {
                 }
             } while (true);
 
-            long interval = movieView.getFrameDateTime(lastAvailableFrame).getMillis() - movieView.getFrameDateTime(0).getMillis();
+            long interval = JHVJPXView.getFrameDateTime(lastAvailableFrame).getMillis() - JHVJPXView.getFrameDateTime(0).getMillis();
             interval /= (lastAvailableFrame + 1);
 
             if (interval < minimalInterval) {
                 minimalInterval = interval;
-                minimalIntervalView = movieView;
+                minimalIntervalView = JHVJPXView;
             }
 
-            movieView.pauseMovie();
+            JHVJPXView.pauseMovie();
         }
 
         masterView = minimalIntervalView;

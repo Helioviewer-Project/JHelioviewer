@@ -84,7 +84,7 @@ public class OpenLocalFileAction extends AbstractAction {
                         }
                     }
                 }, "OpenLocalFile");
-
+                thread.setDaemon(true);
                 thread.start();
             }
         }

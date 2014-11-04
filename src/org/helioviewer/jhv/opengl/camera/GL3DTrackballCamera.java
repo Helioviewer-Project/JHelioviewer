@@ -15,9 +15,9 @@ import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.changeevent.TimestampChangedReason;
 import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
-import org.helioviewer.jhv.viewmodel.view.TimedMovieView;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.ViewListener;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 import org.helioviewer.jhv.viewmodel.view.jp2view.datetime.ImmutableDateTime;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DSceneGraphView;
 
@@ -71,9 +71,9 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener {
 			TimestampChangedReason timestampReason = aEvent
 					.getLastChangedReasonByType(TimestampChangedReason.class);
 			if ((timestampReason != null)
-					&& (timestampReason.getView() instanceof TimedMovieView)
+					&& (timestampReason.getView() instanceof JHVJPXView)
 					&& LinkedMovieManager.getActiveInstance().isMaster(
-							(TimedMovieView) timestampReason.getView())) {
+							(JHVJPXView) timestampReason.getView())) {
 				if (!LinkedMovieManager.getActiveInstance().isPlaying()) {
 					this.resetStartPosition();
 				}
@@ -139,7 +139,7 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener {
 		if (LinkedMovieManager.getActiveInstance() == null) {
 			return null;
 		}
-		TimedMovieView masterView = LinkedMovieManager.getActiveInstance()
+		JHVJPXView masterView = LinkedMovieManager.getActiveInstance()
 				.getMasterMovie();
 		if (masterView == null) {
 			return null;

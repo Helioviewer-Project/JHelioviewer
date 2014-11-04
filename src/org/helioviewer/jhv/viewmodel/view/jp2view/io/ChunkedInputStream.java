@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.ProtocolException;
 
-import org.helioviewer.jhv.base.logging.Log;
-
 /**
  * 
  * The class <code>ChunkedInputStream</code> allows to decode HTTP chunked
@@ -23,14 +21,10 @@ public class ChunkedInputStream extends InputStream {
     /** The last chunk length */
     private int chunkLength = 0;
 
-    /** Indicates if there are more chunks */
-    private boolean moreChunks = true;
+    private boolean eof = false;
 
     /** The base input stream */
-    private StringInputStream in = null;
-
-    /** The total length in bytes of the read data */
-    private int totalLength = 0;
+    private InputStream in = null;
 
     /**
      * Constructs a new object with a <code>InputStream</code> base object.
@@ -39,14 +33,7 @@ public class ChunkedInputStream extends InputStream {
      *            A <code>InputStream</code> object as a base stream.
      */
     public ChunkedInputStream(InputStream in) {
-        this.in = new StringInputStream(in);
-    }
-
-    /**
-     * Returns the total length of the read data.
-     */
-    public int getTotalLength() {
-        return totalLength;
+        this.in = in;
     }
 
     /**
@@ -67,7 +54,7 @@ public class ChunkedInputStream extends InputStream {
      * 
      */
     private String readLine() throws IOException {
-        String res = in.readLine();
+        String res = LineReader.readLine(in);
         if (res != null)
             return res;
         else
@@ -82,39 +69,57 @@ public class ChunkedInputStream extends InputStream {
      * @return The next byte read, or -1 is there is no more data.
      * @throws java.io.IOException
      */
-    public int read() throws IOException {
-        if (!moreChunks)
-            return -1;
-
-        if (chunkLength > 0) {
-            int res = in.read();
-
-            if (--chunkLength == 0) {
-                if (readLine().length() > 0)
-                    throw new ProtocolException("An empty new line was expected after chunk");
+    public int read() throws IOException
+    {
+        for(;;)
+            switch(read(tmpRead,0,1))
+            {
+                case -1:
+                    return -1;
+                case 1:
+                    return tmpRead[0] & 0xff;
             }
-
-            return res;
-
-        } else {
-            String line = readLine();
-
-            try {
-                chunkLength = Integer.parseInt(line, 16);
-                totalLength += chunkLength;
-            } catch (NumberFormatException ex) {
-                Log.error(line);
-                throw new ProtocolException("Invalid chunk length format");
-            }
-
-            if (chunkLength <= 0) {
-                if (readLine().length() > 0)
-                    throw new ProtocolException("An empty new line was expected after chunk");
-
-                moreChunks = false;
-            }
-
-            return read();
+    }
+    byte[] tmpRead=new byte[1];
+    
+    
+    @Override
+    public int read(byte[] b,int off,int len) throws IOException
+    {
+        for(;;)
+        {
+          if (eof)
+              return -1;
+          
+          if (chunkLength > 0)
+          {
+              int read = in.read(b,off,Math.min(chunkLength,len));
+              if(read!=-1)
+              {   
+                chunkLength-=read;
+                
+                if (chunkLength == 0)
+                    if (readLine().length() > 0)
+                        throw new ProtocolException("An empty new line was expected after chunk");
+              }
+              
+              return read;
+          }
+          
+          if(chunkLength==0)
+          {
+              String line = readLine();
+              try
+              {
+                  chunkLength = Integer.parseInt(line, 16);
+                  if (chunkLength <= 0)
+                      eof = true;
+              }
+              catch (NumberFormatException ex)
+              {
+                  throw new ProtocolException("Invalid chunk length format.");
+              }
+          }
         }
     }
-};
+}

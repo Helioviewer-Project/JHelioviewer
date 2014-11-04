@@ -1,5 +1,6 @@
 package org.helioviewer.jhv.viewmodel.view.jp2view.io.http;
 
+import java.io.BufferedInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,7 +9,7 @@ import java.net.ProtocolException;
 import java.net.Socket;
 import java.net.URI;
 
-import org.helioviewer.jhv.viewmodel.view.jp2view.io.StringInputStream;
+import org.helioviewer.jhv.viewmodel.view.jp2view.io.LineReader;
 
 /**
  * 
@@ -130,67 +131,60 @@ public class HTTPSocket extends Socket {
     public HTTPMessage receive() throws IOException {
         int code;
         double ver;
-        String line;
-        String parts[];
 
-        InputStream input = getInputStream();
-        StringInputStream lineInput = new StringInputStream(input);
-        try {
-            line = lineInput.readLine();
-            if (line == null)
-                return null;
+        InputStream input = new BufferedInputStream(getInputStream(),65536);
+        String line = LineReader.readLine(input);
+        if (line == null)
+            return null;
 
-            parts = line.split(" ", 3);
+        String[] parts = line.split(" ", 3);
 
-            if (parts.length != 3)
-                throw new ProtocolException("Invalid HTTP message");
+        if (parts.length != 3)
+            throw new ProtocolException("Invalid HTTP message.");
+        
+        if (parts[0].startsWith("HTTP/")) {
 
-            if (parts[0].startsWith("HTTP/")) {
-
-                // Parses HTTP version
-                try {
-                    ver = Double.parseDouble(parts[0].substring(5));
-                } catch (NumberFormatException ex) {
-                    throw new ProtocolException("Invalid HTTP version format");
-                }
-
-                if ((ver < 1) || (ver > version))
-                    throw new ProtocolException("HTTP version not supported");
-
-                // Parses status code
-                try {
-                    code = Integer.parseInt(parts[1]);
-                } catch (NumberFormatException ex) {
-                    throw new ProtocolException("Invalid HTTP status code format");
-                }
-
-                // Instantiates new HTTPResponse
-                HTTPResponse res = new HTTPResponse(code, parts[2]);
-
-                // Parses HTTP headers
-                for (;;) {
-                    line = lineInput.readLine();
-
-                    if (line == null)
-                        throw new EOFException("End of stream reached before end of HTTP message");
-                    else if (line.length() <= 0)
-                        break;
-
-                    parts = line.split(": ", 2);
-
-                    if (parts.length != 2)
-                        throw new ProtocolException("Invalid HTTP header format");
-
-                    res.setHeader(parts[0], parts[1]);
-                }
-
-                return res;
-
-            } else {
-                throw new ProtocolException("Requests receiving not yet supported!");
+            // Parses HTTP version
+            try {
+                ver = Double.parseDouble(parts[0].substring(5));
+            } catch (NumberFormatException ex) {
+                throw new ProtocolException("Invalid HTTP version format");
             }
-        } finally {
-            lineInput.close();
+
+            if ((ver < 1) || (ver > version))
+                throw new ProtocolException("HTTP version not supported");
+
+            // Parses status code
+            try {
+                code = Integer.parseInt(parts[1]);
+            } catch (NumberFormatException ex) {
+                throw new ProtocolException("Invalid HTTP status code format");
+            }
+
+            // Instantiates new HTTPResponse
+            HTTPResponse res = new HTTPResponse(code, parts[2]);
+
+            // Parses HTTP headers
+            for (;;) {
+                line = LineReader.readLine(input);
+
+                if (line == null)
+                    throw new EOFException("End of stream reached before end of HTTP message");
+                else if (line.length() <= 0)
+                    break;
+
+                parts = line.split(": ", 2);
+
+                if (parts.length != 2)
+                    throw new ProtocolException("Invalid HTTP header format");
+
+                res.setHeader(parts[0], parts[1]);
+            }
+
+            return res;
+
+        } else {
+            throw new ProtocolException("Requests receiving not yet supported!");
         }
     }
 

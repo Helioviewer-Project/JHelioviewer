@@ -16,10 +16,8 @@ import org.helioviewer.jhv.viewmodel.imagedata.ARGBInt32ImageData;
 import org.helioviewer.jhv.viewmodel.imagedata.ColorMask;
 import org.helioviewer.jhv.viewmodel.imagedata.SingleChannelByte8ImageData;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.helioviewer.jhv.viewmodel.view.CachedMovieView;
+import org.helioviewer.jhv.viewmodel.view.AnimationMode;
 import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
-import org.helioviewer.jhv.viewmodel.view.MovieView;
-import org.helioviewer.jhv.viewmodel.view.MovieView.AnimationMode;
 import org.helioviewer.jhv.viewmodel.view.cache.DateTimeCache;
 import org.helioviewer.jhv.viewmodel.view.jp2view.image.JP2ImageParameter;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_Kdu_thread_env;
@@ -121,6 +119,7 @@ class J2KRender implements Runnable {
 
         myThread = new Thread(JHVJP2View.renderGroup, this, "J2KRender");
         stop = false;
+        myThread.setDaemon(true);
         myThread.start();
     }
 
@@ -347,9 +346,9 @@ class J2KRender implements Runnable {
                 tfrm = System.currentTimeMillis();
                 int curLayer = currParams.compositionLayer;
 
-                if (parentViewRef instanceof MovieView) {
+                if (parentViewRef instanceof JHVJPXView) {
 
-                    MovieView parent = (MovieView) parentViewRef;
+                    JHVJPXView parent = (JHVJPXView) parentViewRef;
 
                     if (parent.getMaximumAccessibleFrameNumber() < curLayer) {
                         try {
@@ -518,7 +517,7 @@ class J2KRender implements Runnable {
 
     private class AbsoluteFrameChooser implements FrameChooser {
 
-        private DateTimeCache dateTimeCache = ((CachedMovieView) parentViewRef).getDateTimeCache();
+        private DateTimeCache dateTimeCache = ((JHVJPXView) parentViewRef).getDateTimeCache();
 
         private long absoluteStartTime = dateTimeCache.getDateTime(currParams.compositionLayer).getMillis();
         private long systemStartTime = System.currentTimeMillis();

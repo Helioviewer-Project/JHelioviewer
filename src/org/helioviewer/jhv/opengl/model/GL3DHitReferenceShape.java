@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DAABBox;
+import org.helioviewer.jhv.opengl.scenegraph.GL3DDrawBits.Bit;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DMesh;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
-import org.helioviewer.jhv.opengl.scenegraph.GL3DDrawBits.Bit;
 import org.helioviewer.jhv.opengl.scenegraph.math.GL3DMat4d;
 import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec2d;
 import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec3d;

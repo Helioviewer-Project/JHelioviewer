@@ -1,10 +1,10 @@
 package org.helioviewer.jhv.base.math;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.Vector;
 
 import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 public class IntervalTest {
     public class TestEvent extends Interval<Integer> {

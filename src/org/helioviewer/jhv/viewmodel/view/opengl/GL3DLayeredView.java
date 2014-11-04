@@ -9,10 +9,10 @@ import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.view.LayeredView;
-import org.helioviewer.jhv.viewmodel.view.MovieView;
 import org.helioviewer.jhv.viewmodel.view.RegionView;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.ViewportView;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 
 /**
  * The GL3DLayeredView makes sure to add all required sub-views to a new layer.
@@ -82,9 +82,9 @@ public class GL3DLayeredView extends GLLayeredView implements GL3DView, LayeredV
     public void deactivate(GL3DState state) {
         for (int i = 0; i < getNumLayers(); i++) {
             if (getLayer(i).getAdapter(GL3DView.class) != null) {
-                MovieView movieView = getLayer(i).getAdapter(MovieView.class);
-                if (movieView != null) {
-                    movieView.pauseMovie();
+                JHVJPXView JHVJPXView = getLayer(i).getAdapter(JHVJPXView.class);
+                if (JHVJPXView != null) {
+                    JHVJPXView.pauseMovie();
                 }
                 getLayer(i).getAdapter(GL3DView.class).deactivate(state);
             }

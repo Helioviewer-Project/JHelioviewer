@@ -63,6 +63,7 @@ public class JHVUpdate implements Runnable {
      */
     public void check() {
         Thread t = new Thread(this, "JHV Update Checker");
+        t.setDaemon(true);
         t.start();
     }
 
@@ -71,6 +72,7 @@ public class JHVUpdate implements Runnable {
      */
     public void checkMenu() {
         Thread t = new Thread(this, "JHV Update Checker");
+        t.setDaemon(true);
         t.start();
     }
 

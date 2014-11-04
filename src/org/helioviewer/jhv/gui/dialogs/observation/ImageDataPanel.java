@@ -133,6 +133,7 @@ public class ImageDataPanel extends ObservationDialogPanel {
                 }
             }
         }, "ObservationSetup");
+        t.setDaemon(true);
         t.start();
     }
 
@@ -251,7 +252,7 @@ public class ImageDataPanel extends ObservationDialogPanel {
                 }
             }
         }, "LoadNewImage");
-
+        thread.setDaemon(true);
         thread.start();
     }
 
@@ -280,7 +281,7 @@ public class ImageDataPanel extends ObservationDialogPanel {
                 }
             }
         }, "LoadNewMovie");
-
+        thread.setDaemon(true);
         thread.start();
     }
 

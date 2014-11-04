@@ -20,9 +20,9 @@ import org.helioviewer.jhv.viewmodel.renderer.physical.PhysicalRenderGraphics;
 import org.helioviewer.jhv.viewmodel.renderer.physical.PhysicalRenderer3d;
 import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
 import org.helioviewer.jhv.viewmodel.view.RegionView;
-import org.helioviewer.jhv.viewmodel.view.TimedMovieView;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.ViewHelper;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DLayeredView;
 
 /**
@@ -137,7 +137,7 @@ public class HEKPlugin3dRenderer extends PhysicalRenderer3d {
 	 * Draws all available and visible solar events with there associated icon.
 	 */
 	public void render(PhysicalRenderGraphics g) {
-		TimedMovieView masterView = LinkedMovieManager.getActiveInstance()
+		JHVJPXView masterView = LinkedMovieManager.getActiveInstance()
 				.getMasterMovie();
 		if (masterView != null && masterView.getCurrentFrameDateTime() != null) {
 			Date currentDate = masterView.getCurrentFrameDateTime().getTime();

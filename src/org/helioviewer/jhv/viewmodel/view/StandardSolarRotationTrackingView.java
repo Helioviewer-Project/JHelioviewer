@@ -12,6 +12,7 @@ import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.changeevent.TimestampChangedReason;
 import org.helioviewer.jhv.viewmodel.region.Region;
 import org.helioviewer.jhv.viewmodel.region.StaticRegion;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 import org.helioviewer.jhv.viewmodel.view.jp2view.datetime.ImmutableDateTime;
 
 /**
@@ -85,7 +86,7 @@ public class StandardSolarRotationTrackingView extends AbstractBasicView impleme
         //synchronized (this) {
             TimestampChangedReason timestampReason = aEvent.getLastChangedReasonByType(TimestampChangedReason.class);
 
-            if ((timestampReason != null) && (timestampReason.getView() instanceof TimedMovieView) && LinkedMovieManager.getActiveInstance().isMaster((TimedMovieView) timestampReason.getView())) {
+            if ((timestampReason != null) && (timestampReason.getView() instanceof JHVJPXView) && LinkedMovieManager.getActiveInstance().isMaster((JHVJPXView) timestampReason.getView())) {
                 currentDate = timestampReason.getNewDateTime().getTime();
 
                 if (!enabled || !startPositionIsInsideDisc) {
@@ -174,7 +175,7 @@ public class StandardSolarRotationTrackingView extends AbstractBasicView impleme
         if (LinkedMovieManager.getActiveInstance() == null) {
             return;
         }
-        TimedMovieView masterView = LinkedMovieManager.getActiveInstance().getMasterMovie();
+        JHVJPXView masterView = LinkedMovieManager.getActiveInstance().getMasterMovie();
         if (masterView == null) {
             return;
         }
