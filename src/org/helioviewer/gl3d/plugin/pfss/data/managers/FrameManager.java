@@ -19,7 +19,7 @@ import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
 public class FrameManager {
 	private final PfssDataCreator dataCreator;
 	private final PfssFrameCreator frameCreator;
-	private final FileDescriptorManager manager;
+	private final FileDescriptorManager descriptorManager;
 
 	private final PfssFrameInitializer initializer;
 	private final ConcurrentLinkedQueue<PfssFrame> destructionQueue = new ConcurrentLinkedQueue<>();
@@ -30,8 +30,8 @@ public class FrameManager {
 	private int nextDateIndex;
 
 	public FrameManager() {
-		manager = new FileDescriptorManager();
-		dataCreator = new PfssDataCreator(manager);
+		descriptorManager = new FileDescriptorManager();
+		dataCreator = new PfssDataCreator(descriptorManager);
 		initializer = new PfssFrameInitializer();
 		frameCreator = new PfssFrameCreator(initializer);
 		preloadQueue = new PfssFrame[PfssSettings.PRELOAD];
@@ -85,7 +85,7 @@ public class FrameManager {
 	 */
 	private void loadFollowing(int index) {
 		PfssData d = dataCreator.getDataAsync(nextDateIndex);
-		nextDateIndex = ++nextDateIndex % manager.getNumberOfFiles();
+		nextDateIndex = ++nextDateIndex % descriptorManager.getNumberOfFiles();
 		preloadQueue[index] = frameCreator.createFrameAsync(d);
 	}
 
@@ -104,18 +104,18 @@ public class FrameManager {
 	private void initPreloaded(Date d) {
 		currentIndex = 0;
 		lastIndex = preloadQueue.length;
-		int fileIndex = manager.getFileIndex(d);
+		int fileIndex = descriptorManager.getFileIndex(d);
 		
 		for(int i = 0; i < preloadQueue.length;i++) {
 			PfssData data = dataCreator.getDataAsync(fileIndex);
 			preloadQueue[i] = frameCreator.createFrameAsync(data);
 			
-			fileIndex = ++fileIndex % manager.getNumberOfFiles();
+			fileIndex = ++fileIndex % descriptorManager.getNumberOfFiles();
 		}
 	}
 
 	public void setDateRange(Date start, Date end) throws IOException {
-		manager.readFileDescriptors(start,end);
+		descriptorManager.readFileDescriptors(start,end);
 		initPreloaded(start);
 	}
 

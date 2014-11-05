@@ -1,8 +1,13 @@
 package org.helioviewer.gl3d.plugin.pfss;
 
+import java.io.IOException;
+import java.util.Date;
+
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
+import org.helioviewer.gl3d.plugin.pfss.data.PfssFrame;
+import org.helioviewer.gl3d.plugin.pfss.data.managers.FrameManager;
 import org.helioviewer.gl3d.plugin.pfss.olddata.PfssCache;
 import org.helioviewer.gl3d.plugin.pfss.olddata.PfssDataOld;
 import org.helioviewer.gl3d.plugin.pfss.olddata.PfssFitsFile;
@@ -10,20 +15,21 @@ import org.helioviewer.gl3d.scenegraph.GL3DState;
 import org.helioviewer.viewmodel.renderer.physical.PhysicalRenderGraphics;
 import org.helioviewer.viewmodel.renderer.physical.PhysicalRenderer3d;
 import org.helioviewer.viewmodel.view.LinkedMovieManager;
+import org.helioviewer.viewmodel.view.TimedMovieView;
 import org.helioviewer.viewmodel.view.View;
 
 /**
  * @author Stefan Meier (stefan.meier@fhnw.ch)
  * */
 public class PfssPlugin3dRenderer extends PhysicalRenderer3d {
-	private PfssCache pfssCache = null;
+	private FrameManager manager;
 	private GL lastGl = null;
 	private boolean isVisible = false;
 	/**
 	 * Default constructor.
 	 */
-	public PfssPlugin3dRenderer(PfssCache pfssCache) {
-		this.pfssCache = pfssCache;
+	public PfssPlugin3dRenderer() {
+		this.manager = new FrameManager();
 	}
 
 	/**
@@ -32,24 +38,23 @@ public class PfssPlugin3dRenderer extends PhysicalRenderer3d {
 	 * Draws all available and visible solar events with there associated icon.
 	 */
 	public void render(PhysicalRenderGraphics g) {
+		
+		TimedMovieView masterView = LinkedMovieManager.getActiveInstance().getMasterMovie();;
+		//linkedMovieManager.getActiveInstance().isPlaying(), disable while playing because it isn't fluid to watch
 		if (!LinkedMovieManager.getActiveInstance().isPlaying() && this.isVisible) {
 			GL2 gl = g.getGL().getGL2();
-			PfssFitsFile fitsToClear = pfssCache.getFitsToDelete();
-			if (fitsToClear != null)
-				fitsToClear.clear(gl);
-			PfssDataOld pfssData = pfssCache.getData();
-
-			if (pfssData != null) {
-				if (lastGl != gl) isVisible = false;
-				pfssData.init(gl);
-				lastGl = gl;
-				if (pfssData.isInit()) {
-					pfssData.display(gl);
-				}
-				
-			}
-		GL3DState.get().checkGLErrors("PfssPlugin3dRenderer.afterRender");
+			
+			manager.preInitFrames(gl);
+			Date date = masterView.getCurrentFrameDateTime().getTime();
+			PfssFrame frame = manager.getFrame(date);
+			frame.display(gl);
+			
+			GL3DState.get().checkGLErrors("PfssPlugin3dRenderer.afterRender");
 		}
+	}
+	
+	public void setDisplayRange(Date start, Date end) throws IOException {
+		manager.setDateRange(start, end);
 	}
 
 	public void setVisible(boolean visible) {
