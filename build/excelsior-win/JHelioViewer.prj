@@ -32,137 +32,137 @@
 
 
 
-!classpathentry ./../../bin
+!classpathentry ../../bin
   -pack=none
   -protect=all
   -optimize=all
 !end
-!classpathentry ./../../lib/bzip2.jar
+!classpathentry ../../lib/bzip2.jar
   -pack=noncompiled
   -protect=nomatter
   -optimize=autodetect
 !end
-!classpathentry ./../../lib/commons-cli-1.1.jar
+!classpathentry ../../lib/commons-cli-1.1.jar
   -pack=noncompiled
   -protect=nomatter
   -optimize=autodetect
 !end
-!classpathentry ./../../lib/fits.jar
+!classpathentry ../../lib/fits.jar
   -pack=noncompiled
   -protect=nomatter
   -optimize=autodetect
 !end
-!classpathentry ./../../lib/forms-1.3.0.jar
+!classpathentry ../../lib/forms-1.3.0.jar
   -pack=noncompiled
   -protect=nomatter
   -optimize=autodetect
 !end
-!classpathentry ./../../lib/gluegen-rt-natives-linux-amd64.jar
+!classpathentry ../../lib/gluegen-rt-natives-linux-amd64.jar
   -pack=noncompiled
   -protect=nomatter
   -optimize=autodetect
 !end
-!classpathentry ./../../lib/gluegen-rt-natives-linux-i586.jar
+!classpathentry ../../lib/gluegen-rt-natives-linux-i586.jar
   -pack=noncompiled
   -protect=nomatter
   -optimize=autodetect
 !end
-!classpathentry ./../../lib/gluegen-rt-natives-macosx-universal.jar
+!classpathentry ../../lib/gluegen-rt-natives-macosx-universal.jar
   -pack=noncompiled
   -protect=nomatter
   -optimize=autodetect
 !end
-!classpathentry ./../../lib/gluegen-rt-natives-windows-amd64.jar
+!classpathentry ../../lib/gluegen-rt-natives-windows-amd64.jar
   -pack=noncompiled
   -protect=nomatter
   -optimize=autodetect
 !end
-!classpathentry ./../../lib/gluegen-rt-natives-windows-i586.jar
+!classpathentry ../../lib/gluegen-rt-natives-windows-i586.jar
   -pack=noncompiled
   -protect=nomatter
   -optimize=autodetect
 !end
-!classpathentry ./../../lib/gluegen-rt.jar
+!classpathentry ../../lib/gluegen-rt.jar
   -pack=noncompiled
   -protect=nomatter
   -optimize=autodetect
 !end
-!classpathentry ./../../lib/jgoodies-forms-1.8.0.jar
+!classpathentry ../../lib/jgoodies-forms-1.8.0.jar
   -pack=noncompiled
   -protect=nomatter
   -optimize=autodetect
 !end
-!classpathentry ./../../lib/jogl-all-natives-android-armv6.jar
+!classpathentry ../../lib/jogl-all-natives-android-armv6.jar
   -pack=noncompiled
   -protect=nomatter
   -optimize=autodetect
 !end
-!classpathentry ./../../lib/jogl-all-natives-linux-i586.jar
+!classpathentry ../../lib/jogl-all-natives-linux-i586.jar
   -pack=noncompiled
   -protect=nomatter
   -optimize=autodetect
 !end
-!classpathentry ./../../lib/jogl-all-natives-macosx-universal.jar
+!classpathentry ../../lib/jogl-all-natives-macosx-universal.jar
   -pack=noncompiled
   -protect=nomatter
   -optimize=autodetect
 !end
-!classpathentry ./../../lib/jogl-all-natives-windows-amd64.jar
+!classpathentry ../../lib/jogl-all-natives-windows-amd64.jar
   -pack=noncompiled
   -protect=nomatter
   -optimize=autodetect
 !end
-!classpathentry ./../../lib/jogl-all-natives-windows-i586.jar
+!classpathentry ../../lib/jogl-all-natives-windows-i586.jar
   -pack=noncompiled
   -protect=nomatter
   -optimize=autodetect
 !end
-!classpathentry ./../../lib/jogl.jar
+!classpathentry ../../lib/jogl.jar
   -pack=noncompiled
   -protect=nomatter
   -optimize=autodetect
 !end
-!classpathentry ./../../lib/json.jar
+!classpathentry ../../lib/json.jar
   -pack=noncompiled
   -protect=nomatter
   -optimize=autodetect
 !end
-!classpathentry ./../../lib/junit-4.8.2.jar
+!classpathentry ../../lib/junit-4.8.2.jar
   -pack=noncompiled
   -protect=nomatter
   -optimize=autodetect
 !end
-!classpathentry ./../../lib/kdu_jni.jar
+!classpathentry ../../lib/kdu_jni.jar
   -pack=noncompiled
   -protect=nomatter
   -optimize=autodetect
 !end
-!classpathentry ./../../lib/log4j-1.2.16.jar
+!classpathentry ../../lib/log4j-1.2.16.jar
   -pack=noncompiled
   -protect=nomatter
   -optimize=autodetect
 !end
-!classpathentry ./../../lib/logback-classic-1.0.0.jar
+!classpathentry ../../lib/logback-classic-1.0.0.jar
   -pack=noncompiled
   -protect=nomatter
   -optimize=autodetect
 !end
-!classpathentry ./../../lib/logback-core-1.0.0.jar
+!classpathentry ../../lib/logback-core-1.0.0.jar
   -pack=noncompiled
   -protect=nomatter
   -optimize=autodetect
 !end
-!classpathentry ./../../lib/slf4j-api-1.6.4.jar
+!classpathentry ../../lib/slf4j-api-1.6.4.jar
   -pack=noncompiled
   -protect=nomatter
   -optimize=autodetect
 !end
-!classpathentry ./../../lib/vecmath-1.3.1.jar
+!classpathentry ../../lib/vecmath-1.3.1.jar
   -pack=noncompiled
   -protect=nomatter
   -optimize=autodetect
 !end
-!classpathentry ./../../lib/xuggle-xuggler-5.4.jar
+!classpathentry ../../lib/xuggle-xuggler-5.4.jar
   -pack=noncompiled
   -protect=nomatter
   -optimize=autodetect
@@ -171,6 +171,11 @@
   -pack=none
   -protect=all
   -optimize=all
+!end
+!classpathentry ../../lib/poly2tri-core.jar
+  -pack=noncompiled
+  -protect=nomatter
+  -optimize=autodetect
 !end
 
 !module ./JHelioViewer.usg
