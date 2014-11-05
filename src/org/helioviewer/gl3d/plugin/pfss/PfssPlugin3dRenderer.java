@@ -47,7 +47,8 @@ public class PfssPlugin3dRenderer extends PhysicalRenderer3d {
 			manager.preInitFrames(gl);
 			Date date = masterView.getCurrentFrameDateTime().getTime();
 			PfssFrame frame = manager.getFrame(date);
-			frame.display(gl);
+			if(frame != null)
+				frame.display(gl);
 			
 			GL3DState.get().checkGLErrors("PfssPlugin3dRenderer.afterRender");
 		}

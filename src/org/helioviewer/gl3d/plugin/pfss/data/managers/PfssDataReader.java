@@ -59,7 +59,6 @@ public class PfssDataReader implements Runnable {
 			}
 		}
 		if (data.isLoaded()) {
-
 			InputStream is = null;
 			try {
 				is = new ByteArrayInputStream(data.getData());
@@ -90,7 +89,7 @@ public class PfssDataReader implements Runnable {
 					int lineSize = ptr_nz_len[i];
 					Point lastP = new Point(vertexIndex, ptr[vertexIndex],
 							ptph[vertexIndex], ptth[vertexIndex], l0, b0);
-					this.addPoint(vertices, lastP);
+					addPoint(vertices, lastP);
 					IntBuffer indexBuffer = getLineType(ptr, vertexIndex,
 							vertexIndex + lineSize - 1, indicesSunToOutside,
 							indicesSunToSun, indicesOutsideToSun);
@@ -100,7 +99,7 @@ public class PfssDataReader implements Runnable {
 					for (; vertexIndex < maxSize; vertexIndex++) {
 						Point current = new Point(vertexIndex, ptr[vertexIndex], ptph[vertexIndex],
 								ptth[vertexIndex], l0, b0);
-						this.addPoint(vertices, current);
+						addPoint(vertices, current);
 						addLineSegment(lastP, current, indexBuffer);
 						lastP = current;
 					}

@@ -40,13 +40,18 @@ public class FrameManager {
 	/**
 	 * Get Frame which represents the Date
 	 * @param date
-	 * @return
+	 * @return Frame or null if there is no frame for the requested date
 	 */
 	public PfssFrame getFrame(Date date) {
-		// still the same frame
+		// not initialized
 		if (lastIndex == currentIndex)
 			return null;
 		
+		//outside of loaded frames
+		if(!descriptorManager.isDateInRange(date))
+			return null;
+		
+		//still the same frame
 		if (preloadQueue[currentIndex].getDescriptor().isDateInRange(date))
 			return preloadQueue[currentIndex];
 
@@ -105,6 +110,7 @@ public class FrameManager {
 		currentIndex = 0;
 		lastIndex = preloadQueue.length;
 		int fileIndex = descriptorManager.getFileIndex(d);
+		fileIndex = fileIndex < 0 ? 0: fileIndex;
 		
 		for(int i = 0; i < preloadQueue.length;i++) {
 			PfssData data = dataCreator.getDataAsync(fileIndex);

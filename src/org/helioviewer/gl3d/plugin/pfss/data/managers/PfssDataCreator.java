@@ -35,10 +35,9 @@ public class PfssDataCreator {
 		StringBuilder b = new StringBuilder(PfssSettings.SERVER_URL);
 		b.append(file.getYear());
 		b.append("/");
-		b.append(file.getMonth());
-		if(file.getMonth() <= 9)
+		if(file.getMonth() < 9)
 			b.append("0");
-		b.append(file.getMonth());
+		b.append(file.getMonth()+1);
 		b.append("/");
 		
 		//filename

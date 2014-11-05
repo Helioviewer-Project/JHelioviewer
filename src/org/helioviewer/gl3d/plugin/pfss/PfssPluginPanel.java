@@ -255,9 +255,19 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 	}
 
 	public static void main(String[] args) {
+		GregorianCalendar cal = new GregorianCalendar();
+		cal.set(2013, 2, 15, 6, 3);
+		Date start = cal.getTime();
+		cal.set(2013, 3, 30, 12, 3,59);
+		Date end = cal.getTime();
 		PfssPlugin3dRenderer renderer= new PfssPlugin3dRenderer();
 		PfssPluginPanel p = new PfssPluginPanel(renderer);
 		
-		//renderer.setDisplayRange(, end);
+		try {
+			renderer.setDisplayRange(start, end);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

@@ -64,7 +64,7 @@ public class PfssFrame {
 	 */
 	public void init(GL gl) {
 		GL2 gl2 = gl.getGL2();
-		
+
 		if (!isInit && isLoaded && gl2 != null) {
 			buffers = new int[4];
 			gl2.glGenBuffers(4, buffers, 0);

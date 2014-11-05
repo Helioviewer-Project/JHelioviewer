@@ -17,9 +17,20 @@ import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
 
 public class FileDescriptorManager {
 	private ArrayList<FileDescriptor> descriptors;
+	private Date from;
+	private Date to;
 	
 	public FileDescriptorManager() {
 		
+	}
+	
+	/**
+	 * checks if Date is in Range of the FileDescriptor Manager
+	 * @param d
+	 * @return true if it is in range
+	 */
+	public boolean isDateInRange(Date d) {
+		return (from.before(d) & to.after(d)) |  from.equals(d) | to.equals(d);
 	}
 	
 	/**
@@ -28,6 +39,9 @@ public class FileDescriptorManager {
 	 * @param to date of last file description to read
 	 */
 	public void readFileDescriptors(Date from, Date to) throws IOException {
+		this.from = from;
+		this.to = to;
+		
 		Calendar currentCal = GregorianCalendar.getInstance();
 		Calendar endCal = GregorianCalendar.getInstance();
 		currentCal.setTime(from);
@@ -65,7 +79,7 @@ public class FileDescriptorManager {
 			while((line = in.readLine()) != null) {
 				int split = line.indexOf(' ');
 				dateString = line.substring(0,split);
-				fileName = line.substring(split+1, line.length()-1);
+				fileName = line.substring(split+1, line.length());
 				
 				//make dateString to date
 				int t = dateString.indexOf('T');
