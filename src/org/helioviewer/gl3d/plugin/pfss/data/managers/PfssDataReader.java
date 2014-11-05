@@ -14,6 +14,7 @@ import org.helioviewer.base.physics.Constants;
 import org.helioviewer.gl3d.plugin.pfss.data.FileDescriptor;
 import org.helioviewer.gl3d.plugin.pfss.data.PfssData;
 import org.helioviewer.gl3d.plugin.pfss.data.PfssFrame;
+import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
 
 import com.jogamp.common.nio.Buffers;
 
@@ -40,6 +41,9 @@ public class PfssDataReader implements Runnable {
 		this.initializer = initializer;
 	}
 
+	/**
+	 * Reads the Pfss Data and fills out the frame object
+	 */
 	public void readData() {
 		// do decompression here
 		this.readFits();
@@ -49,7 +53,175 @@ public class PfssDataReader implements Runnable {
 		if (frame.isLoaded())
 			initializer.addLoadedFrame(frame);
 	}
+	
+	
+	@Deprecated
+	private enum TYPE {
+		SUN_TO_OUTSIDE, SUN_TO_SUN, OUTSIDE_TO_SUN
+	};
+	
+	@Deprecated
+	private void readOldfits() {
+		InputStream is = null;
+		try {
+			is = new ByteArrayInputStream(data.getData());
+			Fits fits = new Fits(is, true);
+			BasicHDU hdus[] = fits.read();
+			BinaryTableHDU bhdu = (BinaryTableHDU) hdus[1];
+			double b0 = ((double[]) bhdu.getColumn("B0"))[0];
+			double l0 = ((double[]) bhdu.getColumn("L0"))[0];
+			short[] ptr = ((short[][]) bhdu.getColumn("PTR"))[0];
+			short[] ptr_nz_len = ((short[][]) bhdu.getColumn("PTR_NZ_LEN"))[0];
+			short[] ptph = ((short[][]) bhdu.getColumn("PTPH"))[0];
+			short[] ptth = ((short[][]) bhdu.getColumn("PTTH"))[0];
 
+			FloatBuffer vertices = Buffers
+					.newDirectFloatBuffer(ptr.length * 3 + 3);
+			IntBuffer indicesSunToOutside = Buffers
+					.newDirectIntBuffer(ptr.length * 2);
+			IntBuffer indicesSunToSun = Buffers
+					.newDirectIntBuffer(ptr.length * 2);
+			IntBuffer indicesOutsideToSun = Buffers
+					.newDirectIntBuffer(ptr.length * 2);
+			
+			
+				int lineEnd = ptr_nz_len[0] - 1;
+				int lineCounter = 1;
+				int counter = 0;
+				int lineStart = 0;
+
+				TYPE type = getType(ptr,lineStart, lineEnd);
+
+				IntBuffer currentBuffer = this.getLineType(ptr, lineStart, lineEnd, indicesSunToOutside, indicesSunToSun, indicesOutsideToSun);
+				double xStart = 0;
+				double yStart = 0;
+				double zStart = 0;
+				boolean lineStarted = false;
+				for (int i = 0; i < ptr.length; i += PfssSettings.LOD_STEPS) {
+
+					if (i > lineEnd && lineCounter < ptr_nz_len.length){
+						i = lineEnd;
+					}
+					boolean colinear = false;
+
+					double r0 = ptr[i] / 8192.0 * Constants.SunRadius;
+					double phi0 = ptph[i] / 32768.0 * 2 * Math.PI;
+					double theta0 = ptth[i] / 32768.0 * 2 * Math.PI;
+
+					phi0 -= l0 / 180.0 * Math.PI;
+					theta0 += b0 / 180.0 * Math.PI;
+					double z = r0 * Math.sin(theta0) * Math.cos(phi0);
+					double x = r0 * Math.sin(theta0) * Math.sin(phi0);
+					double y = r0 * Math.cos(theta0);
+
+					if (lineStarted) {
+						if (i + 1 < ptr.length) {
+							double r1 = ptr[i + 1] / 8192.0 * Constants.SunRadius;
+							double phi1 = ptph[i + 1] / 32768.0 * 2 * Math.PI;
+							double theta1 = ptth[i + 1] / 32768.0 * 2 * Math.PI;
+
+							phi1 -= l0 / 180.0 * Math.PI;
+							theta1 += b0 / 180.0 * Math.PI;
+
+							double zEnd = r1 * Math.sin(theta1) * Math.cos(phi1);
+							double xEnd = r1 * Math.sin(theta1) * Math.sin(phi1);
+							double yEnd = r1 * Math.cos(theta1);
+							double angle = this.calculateAngleBetween2Vecotrs(xEnd - x,
+									yEnd - y, zEnd - z, x - xStart, y - yStart, z
+											- zStart);
+							colinear = angle > PfssSettings.ANGLE_OF_LOD
+									&& i != lineEnd;
+						}
+					}
+
+					else {
+						lineStarted = true;
+						xStart = x;
+						yStart = y;
+						zStart = z;
+					}
+
+					if (!colinear) {
+						if (i != lineEnd) {
+							xStart = x; yStart = y; zStart = z;
+							this.addIndex(currentBuffer, counter);
+						}
+						counter = this.addVertex(vertices,(float) x, (float) y, (float) z,
+								counter);
+
+					}
+
+					if (i == lineEnd) {
+						lineStarted = false;
+						lineStart = lineEnd + 1;
+						if (lineCounter < ptr_nz_len.length) {
+							lineEnd += ptr_nz_len[lineCounter++];
+						}
+
+						type = getType(ptr,lineStart, lineEnd);
+						currentBuffer = this.getLineType(ptr, lineStart, lineEnd, indicesSunToOutside, indicesSunToSun, indicesOutsideToSun);
+					}
+
+				}
+				vertices.flip();
+				indicesSunToOutside.flip();
+				indicesOutsideToSun.flip();
+				indicesSunToSun.flip();
+				frame.setLoadedData(vertices, indicesSunToOutside,
+						indicesSunToSun, indicesOutsideToSun);
+			
+
+		} catch (FitsException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			try {
+				is.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	@Deprecated
+	private TYPE getType(short[] ptr ,int startLine, int lineEnd) {
+		if (ptr[startLine] > 8192 * 1.05)
+			return TYPE.OUTSIDE_TO_SUN;
+		else if (ptr[lineEnd] > 8192 * 1.05)
+			return TYPE.SUN_TO_OUTSIDE;
+		else
+			return TYPE.SUN_TO_SUN;
+	}
+	
+	@Deprecated
+	private double calculateAngleBetween2Vecotrs(double x1, double y1,
+			double z1, double x2, double y2, double z2) {
+		return (x1 * x2 + y1 * y2 + z1 * z2)
+				/ (Math.sqrt(x1 * x1 + y1 * y1 + z1 * z1) * Math.sqrt(x2 * x2
+						+ y2 * y2 + z2 * z2));
+	}
+	
+	@Deprecated
+	private void addIndex(IntBuffer buffer, int counter) {
+
+			buffer.put(counter);
+			buffer.put(counter + 1);
+		
+	}
+	
+	@Deprecated
+	private int addVertex(FloatBuffer vertices, float x, float y, float z, int counter) {
+		vertices.put(x);
+		vertices.put(y);
+		vertices.put(z);
+		return ++counter;
+	}
+
+	
+	/**
+	 * Reads the current fits file. The fits file has to be decompressed before
+	 */
 	private void readFits() {
 		if (!data.isLoaded()) {
 			try {

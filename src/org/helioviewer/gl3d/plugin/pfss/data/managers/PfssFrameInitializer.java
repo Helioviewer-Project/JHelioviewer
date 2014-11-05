@@ -11,6 +11,7 @@ import org.helioviewer.gl3d.plugin.pfss.data.PfssFrame;
 /**
  * Responsible for initializing a frame which was loaded into memory asynchronously.
  * this class is threadsafe
+ * 
  * @author Jonas Schwammberger
  *
  */

@@ -1,7 +1,6 @@
 
-package org.helioviewer.gl3d.plugin.pfss.data.managers;
+package org.helioviewer.gl3d.plugin.pfss.olddata;
 
-import org.helioviewer.gl3d.plugin.pfss.olddata.PfssFitsFile;
 import org.helioviewer.gl3d.plugin.pfss.olddata.dataStructure.PfssDayAndTime;
 import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
 
