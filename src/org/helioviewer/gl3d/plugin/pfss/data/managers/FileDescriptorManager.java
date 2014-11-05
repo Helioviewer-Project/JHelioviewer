@@ -17,8 +17,8 @@ import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
 
 public class FileDescriptorManager {
 	private ArrayList<FileDescriptor> descriptors;
-	private Date from;
-	private Date to;
+	private Date firstDate;
+	private Date endDate;
 	
 	public FileDescriptorManager() {
 		
@@ -30,7 +30,7 @@ public class FileDescriptorManager {
 	 * @return true if it is in range
 	 */
 	public boolean isDateInRange(Date d) {
-		return (from.before(d) & to.after(d)) |  from.equals(d) | to.equals(d);
+		return (firstDate.before(d) & endDate.after(d)) |  firstDate.equals(d) | endDate.equals(d);
 	}
 	
 	/**
@@ -39,8 +39,8 @@ public class FileDescriptorManager {
 	 * @param to date of last file description to read
 	 */
 	public void readFileDescriptors(Date from, Date to) throws IOException {
-		this.from = from;
-		this.to = to;
+		this.firstDate = null;
+		this.endDate = null;
 		
 		Calendar currentCal = GregorianCalendar.getInstance();
 		Calendar endCal = GregorianCalendar.getInstance();
@@ -68,7 +68,7 @@ public class FileDescriptorManager {
 	}
 	
     private void readDescription(String url,Date from, Date to,int currentYear, int currentMonth) throws IOException {
-		try {
+    	try {
 			URL u = new URL(url);
 			BufferedReader in = new BufferedReader(
 					new InputStreamReader(u.openStream()));
@@ -90,15 +90,21 @@ public class FileDescriptorManager {
 				cal.add(Calendar.HOUR, PfssSettings.FITS_FILE_D_HOUR);
 				cal.add(Calendar.MINUTE, PfssSettings.FITS_FILE_D_MINUTES);
 				cal.add(Calendar.MILLISECOND, -1);// so there is exactly one millisecond difference between this and the next file descriptor
-				if(startDate.after(from) && startDate.before(to))
-					descriptors.add(new FileDescriptor(startDate, cal.getTime(),fileName));
+				Date endTime = cal.getTime();
+				if((startDate.after(from) || startDate.equals(from)) && 
+						(startDate.before(to) || startDate.equals(to))) {
+					descriptors.add(new FileDescriptor(startDate, endTime, fileName));
+					if(this.firstDate == null) 
+						this.firstDate = startDate;
+					this.endDate = endTime;
+				}
 			}
 		} 
 		catch (MalformedURLException e) {
 			//programming error
 			e.printStackTrace();
 		} catch (IOException e) {
-			throw new IOException("Unable to find data for: "+currentYear +"/"+currentMonth+1,e);
+			throw new IOException("Unable to find data for: "+currentYear +"/"+(currentMonth+1),e);
 			//todo throw new exception explaining that resources are not available
 		}
 	}

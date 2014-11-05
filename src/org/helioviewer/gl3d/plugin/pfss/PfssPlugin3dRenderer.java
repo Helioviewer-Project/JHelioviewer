@@ -54,6 +54,14 @@ public class PfssPlugin3dRenderer extends PhysicalRenderer3d {
 		}
 	}
 	
+	public void render(Date d) {
+		manager.preInitFrames(null);
+		Date date = d;
+		PfssFrame frame = manager.getFrame(date);
+		if(frame != null)
+			frame.display(null);
+	}
+	
 	public void setDisplayRange(Date start, Date end) throws IOException {
 		manager.setDateRange(start, end);
 	}

@@ -63,9 +63,8 @@ public class PfssFrame {
 	 * @param gl2
 	 */
 	public void init(GL gl) {
-		GL2 gl2 = gl.getGL2();
-
-		if (!isInit && isLoaded && gl2 != null) {
+		if (!isInit && isLoaded && gl != null) {
+			GL2 gl2 = gl.getGL2();
 			buffers = new int[4];
 			gl2.glGenBuffers(4, buffers, 0);
 
@@ -119,16 +118,15 @@ public class PfssFrame {
 	 * @param gl
 	 */
 	public void clear(GL gl) {
-		if (isInit) {
+		if (isInit && gl != null) {
 			gl.glDeleteBuffers(4, buffers, 0);
 			isInit = false;
 		}
 	}
 	
 	public void display(GL gl) {
-		GL2 gl2 = gl.getGL2();
-		
-		if(isInit) {
+		if(isInit && gl != null) {
+			GL2 gl2 = gl.getGL2();
 			gl2.glEnableClientState(GL2.GL_VERTEX_ARRAY);
 			gl2.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
 			gl2.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
@@ -173,7 +171,7 @@ public class PfssFrame {
 			gl2.glDepthMask(true);
 			gl2.glLineWidth(1f);
 		} else {
-			if(this.isLoaded)
+			if(this.isLoaded && gl != null)
 			{
 				this.init(gl);
 				this.display(gl);

@@ -22,6 +22,7 @@ import javax.swing.JOptionPane;
 
 import org.helioviewer.base.logging.Log;
 import org.helioviewer.gl3d.plugin.pfss.olddata.PfssCache;
+import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
@@ -255,16 +256,24 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 	}
 
 	public static void main(String[] args) {
-		GregorianCalendar cal = new GregorianCalendar();
-		cal.set(2013, 2, 15, 6, 3);
+		GregorianCalendar cal = new GregorianCalendar(2014, 2, 1, 0, 4,0);
 		Date start = cal.getTime();
-		cal.set(2013, 3, 30, 12, 3,59);
+		cal.set(2014, 2, 3, 12, 4);
 		Date end = cal.getTime();
 		PfssPlugin3dRenderer renderer= new PfssPlugin3dRenderer();
 		PfssPluginPanel p = new PfssPluginPanel(renderer);
 		
 		try {
 			renderer.setDisplayRange(start, end);
+
+			cal = new GregorianCalendar(2014, 2, 1, 0, 4,0);
+			for(int i = 0; i < 11;i++){
+				renderer.render(cal.getTime());
+				cal.add(Calendar.HOUR, PfssSettings.FITS_FILE_D_HOUR);
+			}
+			cal = new GregorianCalendar(2014, 2, 1, 0, 4,0);
+			renderer.render(cal.getTime());
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
