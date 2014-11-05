@@ -90,16 +90,17 @@ public class FileDescriptorManager {
 				String[] date = dateString.substring(0,t).split("-");
 				String[] time = dateString.substring(t+1,dateString.length()-1).split(":");
 				Calendar cal = new GregorianCalendar(currentYear, currentMonth, Integer.parseInt(date[2]), Integer.parseInt(time[0]), Integer.parseInt(time[1]));
-				Date startDate = cal.getTime();
-				cal.add(Calendar.HOUR, PfssSettings.FITS_FILE_D_HOUR);
-				cal.add(Calendar.MINUTE, PfssSettings.FITS_FILE_D_MINUTES);
-				cal.add(Calendar.MILLISECOND, -1);// so there is exactly one millisecond difference between this and the next file descriptor
 				Date endTime = cal.getTime();
-				if((startDate.after(from) || startDate.equals(from)) && 
-						(startDate.before(to) || startDate.equals(to))) {
-					descriptors.add(new FileDescriptor(startDate, endTime, fileName));
-					if(this.firstDate == null) 
-						this.firstDate = startDate;
+				cal.add(Calendar.HOUR, -PfssSettings.FITS_FILE_D_HOUR);
+				cal.add(Calendar.MINUTE, -PfssSettings.FITS_FILE_D_MINUTES);
+				cal.add(Calendar.MILLISECOND, 1);// so there is exactly one millisecond difference between this and the next file descriptor
+				Date startTime = cal.getTime();
+					
+				if(!(endTime.before(from) || startTime.after(to))) {
+					descriptors.add(new FileDescriptor(startTime, endTime, fileName));
+					
+					if(this.firstDate == null) this.firstDate = startTime;
+					
 					this.endDate = endTime;
 				}
 			}
@@ -112,8 +113,7 @@ public class FileDescriptorManager {
 			//todo throw new exception explaining that resources are not available
 		}
 	}
-   
-	
+    
 	public int getFileIndex(Date d) {
 		return Collections.binarySearch(descriptors, d);
 	}

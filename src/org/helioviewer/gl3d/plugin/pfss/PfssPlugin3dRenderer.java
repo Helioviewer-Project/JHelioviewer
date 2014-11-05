@@ -40,7 +40,6 @@ public class PfssPlugin3dRenderer extends PhysicalRenderer3d {
 	public void render(PhysicalRenderGraphics g) {
 		
 		TimedMovieView masterView = LinkedMovieManager.getActiveInstance().getMasterMovie();;
-		//linkedMovieManager.getActiveInstance().isPlaying(), disable while playing because it isn't fluid to watch
 		if (this.isVisible) {
 			GL2 gl = g.getGL().getGL2();
 			

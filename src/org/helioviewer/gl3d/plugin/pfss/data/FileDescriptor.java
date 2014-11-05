@@ -12,7 +12,7 @@ import java.util.GregorianCalendar;
  *
  */
 public class FileDescriptor implements Comparable<Date> {
-	private final Calendar startCal;
+	private final Calendar endCal;
 	private final Date startDate;
 	private final Date endDate;
 	private final String fileName;
@@ -20,8 +20,8 @@ public class FileDescriptor implements Comparable<Date> {
 	public FileDescriptor(Date start, Date end, String fileName) {
 		this.startDate = (Date) start.clone();
 		this.endDate = (Date)end.clone();
-		this.startCal = GregorianCalendar.getInstance();
-		startCal.setTime(start);
+		this.endCal = GregorianCalendar.getInstance();
+		endCal.setTime(end);
 		this.fileName = fileName;
 	}
 	
@@ -30,11 +30,11 @@ public class FileDescriptor implements Comparable<Date> {
 	}
 	
 	public int getYear() {
-		return startCal.get(Calendar.YEAR);
+		return endCal.get(Calendar.YEAR);
 	}
 	
 	public int getMonth() {
-		return startCal.get(Calendar.MONTH);
+		return endCal.get(Calendar.MONTH);
 	}
 	
 	public String getFileName() {
@@ -46,7 +46,7 @@ public class FileDescriptor implements Comparable<Date> {
 		if(this.isDateInRange(o))
 			return 0;
 		else
-			return this.startDate.compareTo(o);
+			return this.endDate.compareTo(o);
 	}
 	
 	
