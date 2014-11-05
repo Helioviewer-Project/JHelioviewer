@@ -14,7 +14,11 @@ import java.util.GregorianCalendar;
 import org.helioviewer.gl3d.plugin.pfss.data.FileDescriptor;
 import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
 
-
+/**
+ * Manages loading and accessing of FileDescriptor Objects
+ * @author Jonas Schwammberger
+ *
+ */
 public class FileDescriptorManager {
 	private ArrayList<FileDescriptor> descriptors;
 	private Date firstDate;
