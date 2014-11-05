@@ -45,7 +45,18 @@ public class RawDataReader {
 				lines = new ArrayList<>(ptr_nz_len.length);
 
 				int vertexIndex = 0;
-
+				
+				float minP = Float.MAX_VALUE;
+				float maxP = 0;
+				float minT = Float.MAX_VALUE;
+				float maxT = 0;
+				for(int i = 0; i < ptph.length;i++) {
+					minP = Math.min(minP, ptph[i]);
+					maxP = Math.max(maxP, ptph[i]);
+					minT = Math.min(minT, ptth[i]);
+					maxT = Math.max(maxT, ptth[i]);
+				}
+				
 				// loop through all lines
 				for (int i = 0; i < ptr_nz_len.length; i++) {
 					
@@ -80,7 +91,7 @@ public class RawDataReader {
 	}
 	
 	public static void main(String[] args) {
-		RawDataReader reader = new RawDataReader("C:/dev/git/bachelor/testdata/raw/2005-11-06_12-04-00.000_pfss_field_data.fits");
+		RawDataReader reader = new RawDataReader("C:/dev/git/bachelor/testdata/raw/2014-06-10_12-04-00.000_pfss_field_data_flt.fits");
 		
 	}
 }

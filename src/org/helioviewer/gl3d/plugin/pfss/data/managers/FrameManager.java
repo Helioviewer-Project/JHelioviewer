@@ -98,7 +98,7 @@ public class FrameManager {
 	}
 
 	/**
-	 * Initializes de preloadQueue
+	 * Initializes the preloadQueue
 	 * @param d
 	 */
 	private void initPreloaded(Date d) {
