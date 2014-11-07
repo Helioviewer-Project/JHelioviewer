@@ -13,21 +13,20 @@ import org.helioviewer.jhv.base.math.CartesianCoord;
 import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.base.math.IntervalComparison;
 import org.helioviewer.jhv.base.math.SphericalCoord;
+import org.helioviewer.jhv.base.math.SphericalCoordinates;
 import org.helioviewer.jhv.base.math.Vector2dDouble;
 import org.helioviewer.jhv.base.math.Vector3dDouble;
 import org.helioviewer.jhv.base.math.VectorUtils;
 import org.helioviewer.jhv.base.physics.Astronomy;
 import org.helioviewer.jhv.base.physics.Constants;
+import org.helioviewer.jhv.base.triangulate.GeometryInfo;
+import org.helioviewer.jhv.base.triangulate.Triangle;
+import org.helioviewer.jhv.base.triangulate.Vec3;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.plugins.hekplugin.math.HEKCoordinateTransform;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.poly2tri.Poly2Tri;
-import org.poly2tri.geometry.polygon.Polygon;
-import org.poly2tri.geometry.polygon.PolygonPoint;
-import org.poly2tri.triangulation.TriangulationPoint;
-import org.poly2tri.triangulation.delaunay.DelaunayTriangle;
 
 /**
  * The class represents a solar event and manages all the associated
@@ -51,6 +50,12 @@ public class HEKEvent implements IntervalComparison<Date> {
         }
 
     }
+    
+    
+    
+    //Maximum number of points of the outline. If there are more points than this limit
+    //the points will be subsampled. (no smoothing)
+    static final int MAX_OUTLINE_POINTS=50;
 
     /**
      * Flag to indicate if the event is currently being displayed in any event popup
@@ -621,15 +626,32 @@ public class HEKEvent implements IntervalComparison<Date> {
         }
         
         s.close();
+        
+        
+        if(result.size()>MAX_OUTLINE_POINTS)
+        {
+            Vector<SphericalCoord> oldResult = result;
+            result = new Vector<SphericalCoord>(MAX_OUTLINE_POINTS);
+            for(int i=0;i<MAX_OUTLINE_POINTS-1;i++)
+                result.add(oldResult.get((int)(i/(double)MAX_OUTLINE_POINTS*(oldResult.size()-1))));
+            result.add(result.get(0));
+        }
 
         return result;
     }
 
-    public Vector<SphericalCoord> getStonyBound(Date now) {
-
+    private Date oldStonyBoundDate;
+    private Vector<SphericalCoord> oldStonyBound;
+    public Vector<SphericalCoord> getStonyBound(Date now)
+    {
+        if(now.equals(oldStonyBoundDate))
+            return oldStonyBound;
+        
         try {
             if (this.eventObject.has("hgs_boundcc") && !this.eventObject.getString("hgs_boundcc").equals("")) {
-                return this.toStonyPolyon(this.eventObject.getString("hgs_boundcc"), this.getStart());
+                oldStonyBound = this.toStonyPolyon(this.eventObject.getString("hgs_boundcc"), this.getStart());
+                oldStonyBoundDate = now;
+                return oldStonyBound;
             }
             // uncomment if we would like to draw rectangular bounds, too
             /*
@@ -715,24 +737,6 @@ public class HEKEvent implements IntervalComparison<Date> {
         }
     }
     
-    private boolean inTriangles(Vector2dDouble point, List<DelaunayTriangle> triangles) {
-        for (DelaunayTriangle triangle : triangles) {
-            TriangulationPoint A = triangle.points[0];
-            TriangulationPoint B = triangle.points[1];
-            TriangulationPoint C = triangle.points[2];
-
-            Vector2dDouble A2 = new Vector2dDouble(A.getX(), A.getY());
-            Vector2dDouble B2 = new Vector2dDouble(B.getX(), B.getY());
-            Vector2dDouble C2 = new Vector2dDouble(C.getX(), C.getY());
-
-            if (VectorUtils.pointInTriangle(A2, B2, C2, point)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     private void cacheTriangulation() {
         Date now = this.getStart();
 
@@ -752,20 +756,20 @@ public class HEKEvent implements IntervalComparison<Date> {
                 Vector3dDouble projectionPlaneVectorA = VectorUtils.inPlaneShift(projectionCenterCartesian, firstPointCartesian).normalize();
                 Vector3dDouble projectionPlaneVectorB = Vector3dDouble.cross(projectionPlaneVectorA, projectionCenterCartesian.normalize()).normalize();
 
+                // if first and last point are the same, remove the last one
+                if (outerBound.get(0).equals(outerBound.get(outerBound.size() - 1))) {
+                    outerBound.remove(outerBound.size() - 1);
+                }
+
                 // if we have less than three points, do nothing
                 if (outerBound.size() < 3) {
                     cacheValid = true;
                     return;
                 }
 
-                // if first and last point are the same, remove the last one
-                if (outerBound.get(0).equals(outerBound.get(outerBound.size() - 1))) {
-                    outerBound.remove(outerBound.size() - 1);
-                }
-
                 // Setup the Polygon Boundary (External Library)
-                Vector<PolygonPoint> simplePolygonPoints = new Vector<PolygonPoint>();
-
+                Vector<Vector2dDouble> simplePolygonPoints = new Vector<Vector2dDouble>();
+                
                 // needed to map back triangles
                 Vector<Vector3dDouble> outerBoundCartesian = new Vector<Vector3dDouble>();
 
@@ -774,40 +778,35 @@ public class HEKEvent implements IntervalComparison<Date> {
                     outerBoundCartesian.add(boundaryPointCartesian);
 
                     Vector2dDouble projected = VectorUtils.inPlaneCoord(projectionCenterCartesian, projectionPlaneVectorA, projectionPlaneVectorB, boundaryPointCartesian);
-                    simplePolygonPoints.add(new PolygonPoint(projected.getX(), projected.getY()));
+                    simplePolygonPoints.add(new Vector2dDouble(projected.getX(), projected.getY()));
                 }
-
+                
                 try {
-                    // finally triangulate
-                    Polygon simplePolygon = new Polygon(simplePolygonPoints);
-                    Polygon advancedPolygon = new Polygon(simplePolygonPoints);
-
-                    Poly2Tri.triangulate(simplePolygon);
-                    List<DelaunayTriangle> simplePolygonTriangles = simplePolygon.getTriangles();
-
+                    //simplePolygonPoints
+                    Vec3[] coordinates=new Vec3[simplePolygonPoints.size()];
+                    for(int i=0;i<coordinates.length;i++)
+                        coordinates[i]=new Vec3(simplePolygonPoints.get(i).getX()/Constants.SunRadius,simplePolygonPoints.get(i).getY()/Constants.SunRadius,0);
+                    
+                    GeometryInfo gi=new GeometryInfo();
+                    gi.setCoordinates(coordinates);
+                    gi.setStripCounts(new int[]{coordinates.length});
+                    gi.setContourCounts(new int[]{1});
+                    
                     // add sun border points
                     Vector<SphericalCoord> sunBorder = generateSunBorder();
 
                     // needed to map back triangles
                     Vector<Vector3dDouble> sunBorderCartesian = new Vector<Vector3dDouble>();
-
-                    for (SphericalCoord sunBoundaryPoint : sunBorder) {
+                    for (SphericalCoord sunBoundaryPoint : sunBorder)
+                    {
                         Vector3dDouble sunBoundaryPointCartesian = HEKEvent.convertToSceneCoordinates(sunBoundaryPoint, now);
                         sunBorderCartesian.add(sunBoundaryPointCartesian);
-
-                        Vector2dDouble projected = VectorUtils.inPlaneCoord(projectionCenterCartesian, projectionPlaneVectorA, projectionPlaneVectorB, sunBoundaryPointCartesian);
-                        // if this point is contained in any of the triangles,
-                        // add it as a steiner point
-                        if (this.inTriangles(projected, simplePolygonTriangles)) {
-                            advancedPolygon.addSteinerPoint(new PolygonPoint(projected.getX(), projected.getY()));
-                        }
                     }
-
-                    // triangulate advanced polygon
-                    Poly2Tri.triangulate(advancedPolygon);
-
-                    List<DelaunayTriangle> advancedPolygonTriangles = advancedPolygon.getTriangles();
-
+                    
+                    List<Triangle> advancedPolygonTriangles = gi.getGeometryArray();
+                    
+                    
+                    
                     // setup vector of triangles, after we know everything
                     // worked out
                     cachedTriangles = new Vector<GenericTriangle<SphericalCoord>>();
@@ -821,33 +820,28 @@ public class HEKEvent implements IntervalComparison<Date> {
                     lookupSpherical.addAll(outerBound);
                     lookupCartesian.addAll(outerBoundCartesian);
 
-                    for (DelaunayTriangle triangle : advancedPolygonTriangles) {
-                        TriangulationPoint A = triangle.points[0];
-                        TriangulationPoint B = triangle.points[1];
-                        TriangulationPoint C = triangle.points[2];
-
-                        Vector2dDouble A2 = new Vector2dDouble(A.getX(), A.getY());
-                        Vector2dDouble B2 = new Vector2dDouble(B.getX(), B.getY());
-                        Vector2dDouble C2 = new Vector2dDouble(C.getX(), C.getY());
+                    for (Triangle triangle : advancedPolygonTriangles) {
+                        Vector2dDouble A2 = new Vector2dDouble(triangle.x1*Constants.SunRadius, triangle.y1*Constants.SunRadius);
+                        Vector2dDouble B2 = new Vector2dDouble(triangle.x2*Constants.SunRadius, triangle.y2*Constants.SunRadius);
+                        Vector2dDouble C2 = new Vector2dDouble(triangle.x3*Constants.SunRadius, triangle.y3*Constants.SunRadius);
 
                         Vector3dDouble A3 = VectorUtils.projectBack(projectionCenterCartesian, projectionPlaneVectorA, projectionPlaneVectorB, A2).normalize().scale(Constants.SunRadius);
                         Vector3dDouble B3 = VectorUtils.projectBack(projectionCenterCartesian, projectionPlaneVectorA, projectionPlaneVectorB, B2).normalize().scale(Constants.SunRadius);
                         Vector3dDouble C3 = VectorUtils.projectBack(projectionCenterCartesian, projectionPlaneVectorA, projectionPlaneVectorB, C2).normalize().scale(Constants.SunRadius);
 
                         // skip (party) hidden triangles
-                        if (A3.getZ() < 0 || B3.getZ() < 0 || C3.getZ() < 0)
-                            continue;
+                        /*if (A3.getZ() < 0 || B3.getZ() < 0 || C3.getZ() < 0)
+                            continue;*/
 
                         SphericalCoord A4 = findClosest(A3, lookupCartesian, lookupSpherical);
                         SphericalCoord B4 = findClosest(B3, lookupCartesian, lookupSpherical);
                         SphericalCoord C4 = findClosest(C3, lookupCartesian, lookupSpherical);
-
-                        cachedTriangles.add(new GenericTriangle<SphericalCoord>(A4, B4, C4));
-
+                        
+                        cachedTriangles.add(new GenericTriangle<SphericalCoord>(A4, C4, B4));
                     }
 
                     // loop over generated polygons
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     Log.warn("Error during Triangulation");
                     Log.debug("Error during Triangulation", e);
                     cachedTriangles = null;
@@ -863,8 +857,8 @@ public class HEKEvent implements IntervalComparison<Date> {
     }
 
     private SphericalCoord findClosest(Vector3dDouble toFind, Vector<Vector3dDouble> lookupCartesian, Vector<SphericalCoord> lookupSpherical) {
-        double closest = Double.MAX_VALUE;
-        int closest_index = 0;
+        double closest = Double.POSITIVE_INFINITY;
+        int closest_index = -1;
 
         for (int i = 0; i < lookupCartesian.size(); i++) {
             double distance = toFind.subtract(lookupCartesian.get(i)).length();
@@ -873,9 +867,8 @@ public class HEKEvent implements IntervalComparison<Date> {
                 closest_index = i;
                 closest = distance;
             }
-
         }
-
+        
         return lookupSpherical.get(closest_index);
     }
 

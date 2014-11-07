@@ -16,7 +16,7 @@ public class ExportAction extends AbstractAction{
   private static final long serialVersionUID=-1780397745337916864L;
 
   public ExportAction() {
-	        super("Export movie ..");
+	        super("Save movie as...");
 	        putValue(SHORT_DESCRIPTION, "Export a movie to a file");
 	        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_E, KeyEvent.SHIFT_DOWN_MASK | Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 	    }

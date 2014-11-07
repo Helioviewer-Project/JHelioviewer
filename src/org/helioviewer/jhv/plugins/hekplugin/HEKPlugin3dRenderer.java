@@ -81,7 +81,7 @@ public class HEKPlugin3dRenderer extends PhysicalRenderer3d {
 			if (outerBound != null) {
 			{
 	      //sf: shifting depthrange won't work properly, since it's in linear space, instead of inverse linear.
-	      //--> large shifts far away, almost no shifts near camera. this is exactly the opposite of whate we want... :(
+	      //--> large shifts far away, almost no shifts near camera. this is exactly the opposite of what we want... :(
 	      /*GL gl=g.getGL();
 	      if(gl!=null)
 	      {

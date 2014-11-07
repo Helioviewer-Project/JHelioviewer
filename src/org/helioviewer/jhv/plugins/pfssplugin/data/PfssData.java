@@ -116,7 +116,7 @@ public class PfssData {
 
 	}
 
-	private double calculateAngleBetween2Vecotrs(double x1, double y1,
+	private double calculateAngleBetween2Vectors(double x1, double y1,
 			double z1, double x2, double y2, double z2) {
 		return (x1 * x2 + y1 * y2 + z1 * z2)
 				/ (Math.sqrt(x1 * x1 + y1 * y1 + z1 * z1) * Math.sqrt(x2 * x2
@@ -191,7 +191,7 @@ public class PfssData {
 					double zEnd = r1 * Math.sin(theta1) * Math.cos(phi1);
 					double xEnd = r1 * Math.sin(theta1) * Math.sin(phi1);
 					double yEnd = r1 * Math.cos(theta1);
-					double angle = this.calculateAngleBetween2Vecotrs(xEnd - x,
+					double angle = this.calculateAngleBetween2Vectors(xEnd - x,
 							yEnd - y, zEnd - z, x - xStart, y - yStart, z
 									- zStart);
 					colinear = angle > PfssSettings.ANGLE_OF_LOD
