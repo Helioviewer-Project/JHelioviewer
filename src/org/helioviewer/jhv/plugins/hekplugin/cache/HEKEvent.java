@@ -13,7 +13,6 @@ import org.helioviewer.jhv.base.math.CartesianCoord;
 import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.base.math.IntervalComparison;
 import org.helioviewer.jhv.base.math.SphericalCoord;
-import org.helioviewer.jhv.base.math.SphericalCoordinates;
 import org.helioviewer.jhv.base.math.Vector2dDouble;
 import org.helioviewer.jhv.base.math.Vector3dDouble;
 import org.helioviewer.jhv.base.math.VectorUtils;
@@ -830,8 +829,8 @@ public class HEKEvent implements IntervalComparison<Date> {
                         Vector3dDouble C3 = VectorUtils.projectBack(projectionCenterCartesian, projectionPlaneVectorA, projectionPlaneVectorB, C2).normalize().scale(Constants.SunRadius);
 
                         // skip (party) hidden triangles
-                        /*if (A3.getZ() < 0 || B3.getZ() < 0 || C3.getZ() < 0)
-                            continue;*/
+                        if (A3.getZ() < 0 || B3.getZ() < 0 || C3.getZ() < 0)
+                            continue;
 
                         SphericalCoord A4 = findClosest(A3, lookupCartesian, lookupSpherical);
                         SphericalCoord B4 = findClosest(B3, lookupCartesian, lookupSpherical);

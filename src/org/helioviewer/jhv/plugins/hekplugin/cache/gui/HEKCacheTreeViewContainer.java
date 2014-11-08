@@ -32,8 +32,8 @@ public class HEKCacheTreeViewContainer extends JPanel implements HEKCacheListene
 
     private static final long serialVersionUID = 1L;
 
-    private static final String loadingStructureMessage = "Requesting Available Event Types";
-    private static final String noInformationMessage = "No Event Information Available yet";
+    private static final String loadingStructureMessage = "Requesting events...";
+    private static final String noInformationMessage = "No events available yet";
 
     boolean wasLoaded = false;
 

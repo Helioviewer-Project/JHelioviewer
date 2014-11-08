@@ -5,6 +5,46 @@ import java.util.Calendar;
 import org.helioviewer.jhv.base.math.MathUtils;
 
 public class Astronomy {
+    
+    private static double calendarToJulianDay(Calendar _d)
+    {
+        int mo = _d.get(Calendar.MONTH) + 1;
+        int da = _d.get(Calendar.DAY_OF_MONTH);
+
+        int yr = _d.get(Calendar.YEAR);
+        int A = 0;
+        int B = 0;
+        int C = 0;
+        int D = 0;
+
+        if (mo <= 2)
+        {
+            yr--;
+            mo += 12;
+        }
+
+        if ((_d.get(Calendar.YEAR) > 1582) || ((_d.get(Calendar.YEAR) == 1582) && (_d.get(Calendar.MONTH) >= 10) && (da >= 15))) {
+            A = (int)(yr / 100.0);
+            B = 2 - A + (int)(A / 4.0);
+        } else {
+            B = 0;
+        }
+
+        double c1 = 365.25 * yr;
+        if (yr < 0) {
+            c1 = 365.25 * yr - 0.75;
+        }
+
+        C = (int)c1;
+        double d1 = 30.6001 * (mo + 1);
+        D = (int)d1;
+
+        return B + C + D + da
+                + _d.get(Calendar.HOUR) / 24.0
+                + _d.get(Calendar.MINUTE) / 1440.0
+                + _d.get(Calendar.SECOND) / 86400.0
+                + 1720994.5;
+    }
 
     // This method is based on the SolarSoft GET_SUN routine
     public static double getB0InRadians(Calendar time) {
@@ -12,9 +52,7 @@ public class Astronomy {
 
         Calendar itemx = item;
 
-        JulianDay jd = new JulianDay(itemx);
-
-        double t = (jd.getJDN() - 2415020) / 36525;
+        double t = (calendarToJulianDay(itemx) - 2415020) / 36525;
 
         double mnl = 279.69668 + 36000.76892 * t + 0.0003025 * t * t;
         mnl = MathUtils.mapTo0To360(mnl);
