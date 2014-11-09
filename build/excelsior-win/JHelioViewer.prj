@@ -172,11 +172,6 @@
   -protect=all
   -optimize=all
 !end
-!classpathentry ../../lib/poly2tri-core.jar
-  -pack=noncompiled
-  -protect=nomatter
-  -optimize=autodetect
-!end
 
 !module ./JHelioViewer.usg
 !module ../../resources/images/hvImage_64x64.ico
