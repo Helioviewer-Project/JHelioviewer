@@ -503,6 +503,7 @@ public final class ViewHelper {
 
         } else {
             try {
+                
                 JP2Image jp2Image = new JP2Image(uri, downloadURI);
 
                 if (jp2Image.isMultiFrame()) {

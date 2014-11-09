@@ -272,7 +272,7 @@ public class APIRequestManager {
 
         ImageInfoView view = ViewHelper.loadView(uri);
         if (addToViewChain) {
-          new GuiState3DWCS().addLayerToViewchainMain(view, GuiState3DWCS.mainComponentView);
+            GuiState3DWCS.addLayerToViewchainMain(view, GuiState3DWCS.mainComponentView);
         }
         return view;
     }
@@ -302,7 +302,7 @@ public class APIRequestManager {
         ImageInfoView view = ViewHelper.loadView(uri, downloadURI);
 
         if (addToViewChain) {
-          new GuiState3DWCS().addLayerToViewchainMain(view, GuiState3DWCS.mainComponentView);
+          GuiState3DWCS.addLayerToViewchainMain(view, GuiState3DWCS.mainComponentView);
         }
         return view;
     }

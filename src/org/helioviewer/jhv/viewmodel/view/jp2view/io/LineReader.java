@@ -33,25 +33,17 @@ public class LineReader
             return null;
         
         for(;;)
-        {
-            if (c == LF)
-                break;
-            
-            if (c == CR)
+            switch(c)
             {
-                if (_is.read() != LF)
-                    throw new IOException("Line breaks not according to standard");
-                
-                break;
+                case CR:
+                    if (_is.read() != LF)
+                        throw new IOException("Line breaks not according to standard");
+                case -1:
+                case LF:
+                    return res.toString();
+                default:
+                    res.append((char)c);
+                    c = _is.read();
             }
-            
-            res.append((char)c);
-            
-            c = _is.read();
-            if (c == -1)
-                break;
-        }
-        
-        return res.toString();
     }
 }

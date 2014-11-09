@@ -10,8 +10,6 @@ import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.gui.components.MoviePanel;
 import org.helioviewer.jhv.gui.components.QualitySpinner;
 import org.helioviewer.jhv.gui.components.TopToolBar;
-import org.helioviewer.jhv.gui.controller.GL3DCameraMouseController;
-import org.helioviewer.jhv.gui.interfaces.ImagePanelInputController;
 import org.helioviewer.jhv.internal_plugins.selectedLayer.SelectedLayerPanel;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginManager;
@@ -49,15 +47,11 @@ public class GuiState3DWCS {
     public static ComponentView mainComponentView;
     public static ComponentView overviewComponentView;
 
-    public GuiState3DWCS() {
-        // Override the viewchainFactory with a specific 3D implementation
-    }    
-
-    public void activate() {
+    private GuiState3DWCS()
+    {
     }
 
-
-    public void createViewChains() {
+    public static void createViewChains() {
         Log.info("Start creating view chains");
 
         // Layered View
@@ -90,14 +84,6 @@ public class GuiState3DWCS {
     }
 
 
-    public ImagePanelInputController getDefaultInputController() {
-        return new GL3DCameraMouseController();
-    }
-
-    public boolean isOverviewPanelInteractionEnabled() {
-        return false;
-    }
-    
     /**
 	 * Updates all enabled overlay views in a given view chain. The method
 	 * removes all existing from the view chain and after this it adds all
@@ -107,7 +93,7 @@ public class GuiState3DWCS {
 	 *            the ComponentView instance of the view chain where to update
 	 *            the overlay views.
 	 */
-	public void updateOverlayViewsInViewchainMain(GLOverlayView overlayView) {
+	public static void updateOverlayViewsInViewchainMain(GLOverlayView overlayView) {
 		// /////////////
 		// Remove all existing overlays
 		// /////////////
@@ -161,7 +147,7 @@ public class GuiState3DWCS {
 	 *            a view of the main view chain which is equal or over the
 	 *            LayeredView.
 	 */
-	public void addLayerToViewchainMain(ImageInfoView newLayer,
+	public static void addLayerToViewchainMain(ImageInfoView newLayer,
 			View attachToViewchain) {
 		if (newLayer == null || attachToViewchain == null)
 			return;

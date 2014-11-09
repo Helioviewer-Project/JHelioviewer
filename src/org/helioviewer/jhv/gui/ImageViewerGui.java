@@ -35,6 +35,7 @@ import org.helioviewer.jhv.gui.components.statusplugins.MetaDataStatusPanel;
 import org.helioviewer.jhv.gui.components.statusplugins.PositionStatusPanel;
 import org.helioviewer.jhv.gui.components.statusplugins.QualityStatusPanel;
 import org.helioviewer.jhv.gui.components.statusplugins.ZoomStatusPanel;
+import org.helioviewer.jhv.gui.controller.GL3DCameraMouseController;
 import org.helioviewer.jhv.gui.controller.ZoomController;
 import org.helioviewer.jhv.internal_plugins.filter.SOHOLUTFilterPlugin.SOHOLUTPanel;
 import org.helioviewer.jhv.internal_plugins.filter.channelMixer.ChannelMixerPanel;
@@ -208,16 +209,13 @@ public class ImageViewerGui {
 	 * Initializes the main and overview view chain.
 	 */
 	public void createViewchains() {
-		GuiState3DWCS state = new GuiState3DWCS();
-		
-		state.createViewChains();
+		GuiState3DWCS.createViewChains();
 		
 		// prepare gui again
-		mainImagePanel.setInputController(state.getDefaultInputController());
+		mainImagePanel.setInputController(new GL3DCameraMouseController());
 
 		mainFrame.validate();
 
-		state.activate();		
 		SwingUtilities.invokeLater(new Runnable() {
 			
 			@Override
