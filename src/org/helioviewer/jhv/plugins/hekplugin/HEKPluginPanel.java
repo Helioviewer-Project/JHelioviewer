@@ -17,6 +17,7 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 
 import org.helioviewer.jhv.base.math.Interval;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;
@@ -30,8 +31,6 @@ import org.helioviewer.jhv.plugins.hekplugin.cache.HEKStupidDownloader;
 import org.helioviewer.jhv.plugins.hekplugin.cache.gui.HEKCacheTreeView;
 import org.helioviewer.jhv.plugins.hekplugin.cache.gui.HEKCacheTreeViewContainer;
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayPanel;
-import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
-import org.helioviewer.jhv.viewmodel.changeevent.SubImageDataChangedReason;
 import org.helioviewer.jhv.viewmodel.view.View;
 
 /**
@@ -84,7 +83,7 @@ public class HEKPluginPanel extends OverlayPanel implements ActionListener, HEKC
      * Force a redraw of the main window
      */
     private void fireRedraw() {
-        LayersModel.getSingletonInstance().viewChanged(null, new ChangeEvent(new SubImageDataChangedReason(null)));
+    	GuiState3DWCS.mainComponentView.getComponent().repaint();
     }
 
     /**

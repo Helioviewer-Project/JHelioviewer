@@ -69,7 +69,6 @@ public class GL3DRayTracer {
         GL3DVec3d LR = new GL3DVec3d();
         GL3DVec3d LU = new GL3DVec3d();
         GL3DVec3d EYE = new GL3DVec3d();
-
         VM.readLookAt(EYE, LA, LU, LR);
         LA.normalize();
         LU.normalize();
@@ -84,7 +83,6 @@ public class GL3DRayTracer {
         // GL3DMat4d VM_Inv = VM.inverse();
         // dir = VM_Inv.mat3().multiply(dir);
         // EYE = VM_Inv.multiply(EYE);
-
         GL3DRay ray = GL3DRay.createPrimaryRay(EYE, dir);
         return ray;
     }

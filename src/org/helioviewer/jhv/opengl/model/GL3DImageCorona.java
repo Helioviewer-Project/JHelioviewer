@@ -53,7 +53,8 @@ public class GL3DImageCorona extends GL3DImageMesh {
             CoordinateConversion toViewSpace = this.layer.getCoordinateSystem().getConversion(state.getActiveCamera().getViewSpaceCoordinateSystem());
             GL3DVec3d orientation = GL3DHelper.toVec(toViewSpace.convert(orientationVector)).normalize();
 
-            /*
+            phiRotation = GL3DQuatd.calcRotation(orientation,new GL3DVec3d(0,0,1)).toMatrix().inverse();	        
+
             if (!(orientation.equals(new GL3DVec3d(0, 1, 0)))) {
                 GL3DVec3d orientationXZ = new GL3DVec3d(orientation.x, 0, orientation.z);
                 double phi = Math.acos(orientationXZ.z);
@@ -62,11 +63,9 @@ public class GL3DImageCorona extends GL3DImageMesh {
                 }
                 
                 phiRotation = GL3DMat4d.rotation(phi, new GL3DVec3d(0, 1, 0));
-                GL3DVec4d direction = new GL3DVec4d(phiRotation.m[8]*1, phiRotation.m[9]*1, phiRotation.m[10]*1, 0);
+                GL3DVec3d direction = new GL3DVec3d(phiRotation.m[8]*1, phiRotation.m[9]*1, phiRotation.m[10]*1);
                 this.layer.setLayerDirection(direction);
-            }*/
-            this.layer.setLayerDirection(orientation);
-            phiRotation = GL3DQuatd.calcRotation(orientation,new GL3DVec3d(0,0,1)).toMatrix().inverse();	        
+            }
             
             
             if (phiRotation != null){

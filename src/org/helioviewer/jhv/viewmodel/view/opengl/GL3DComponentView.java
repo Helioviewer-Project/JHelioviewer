@@ -287,7 +287,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 				backgroundColor.getGreen() / 255.0f,
 				backgroundColor.getBlue() / 255.0f,
 				backgroundColor.getAlpha() / 255.0f);
-		
+				
 		Viewport v = this.getAdapter(ViewportView.class).getViewport();
 
 		this.width = v.getWidth();

@@ -4,5 +4,6 @@ bin/
 /excelsior-osx/JHelioViewer
 /build/excelsior-osx/JHelioViewer-native/
 /build/
+.app
 *.cg
 *.asm

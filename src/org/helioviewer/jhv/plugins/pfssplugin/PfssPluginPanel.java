@@ -21,6 +21,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 
 import org.helioviewer.jhv.base.logging.Log;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.plugins.pfssplugin.data.PfssCache;
@@ -121,7 +122,7 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 		if (act.getSource().equals(reloadButton)) {
 			layerAdded(0);
 		}
-
+		GuiState3DWCS.mainComponentView.getComponent().repaint();
 	}
 
 	private void showData() {

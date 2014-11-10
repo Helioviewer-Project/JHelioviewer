@@ -36,7 +36,7 @@ public class GL3DCircle extends GL3DMesh {
         GL3DVec3d orientation = GL3DHelper.toVec(toViewSpace.convert(orientationVector)).normalize();
 
         phiRotation = GL3DQuatd.calcRotation(orientation,new GL3DVec3d(0,0,1)).toMatrix().inverse();	        
-        /*
+        
     	if (!(orientation.equals(new GL3DVec3d(0, 1, 0)))) {
             GL3DVec3d orientationXZ = new GL3DVec3d(orientation.x, 0, orientation.z);
             double phi = Math.acos(orientationXZ.z);
@@ -46,7 +46,7 @@ public class GL3DCircle extends GL3DMesh {
             
             phiRotation = GL3DMat4d.rotation(phi, new GL3DVec3d(0, 1, 0));
             
-        }*/
+        }
     	
     	for (double i = 0; i < 2*Math.PI; i += 0.1){
     		double x = Math.sin(i)*radius;

@@ -63,11 +63,6 @@ public class HEKPluginContainer extends OverlayContainer {
         overlayView.addOverlay(overlayPluginContainer);
         controlList.add(new OverlayControlComponent(hekPanel, getName()));
         hekPanel.reload();
-        /*
-        hekPanel = new HEKPluginPanel(HEKCache.getSingletonInstance());
-        overlayView.setRenderer(new HEKPluginRenderer());
-        controlList.add(new OverlayControlComponent(hekPanel, getName()));
-		*/
     }
 
     /**

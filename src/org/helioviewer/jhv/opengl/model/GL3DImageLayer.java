@@ -23,7 +23,6 @@ import org.helioviewer.jhv.opengl.scenegraph.GL3DMesh;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DNode;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DOrientedGroup;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
-import org.helioviewer.jhv.opengl.scenegraph.GL3DState.VISUAL_TYPE;
 import org.helioviewer.jhv.opengl.scenegraph.math.GL3DMat4d;
 import org.helioviewer.jhv.opengl.scenegraph.math.GL3DQuatd;
 import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec3d;
@@ -162,15 +161,15 @@ public class GL3DImageLayer extends GL3DOrientedGroup implements
 
 		this.doUpdateROI = true;
 		this.markAsChanged();
-		if (state.getState() == VISUAL_TYPE.MODE_3D) {
+		//if (state.getState() == VISUAL_TYPE.MODE_3D) {
 			GL3DQuatd phiRotation = GL3DQuatd.createRotation(2 * Math.PI - phi,
 					new GL3DVec3d(0, 1, 0));
 			state.getActiveCamera().getRotation().set(phiRotation);
 			state.getActiveCamera().updateCameraTransformation();
 			updateROI(state.getActiveCamera());
-		} else {
+		/*} else {
 			this.updateRegionIn2DMode(state.getActiveCamera());
-		}
+		}*/
 	}
 
 	private void updateRegionIn2DMode(GL3DCamera camera) {
@@ -268,11 +267,11 @@ public class GL3DImageLayer extends GL3DOrientedGroup implements
 	public void shapeUpdate(GL3DState state) {
 		super.shapeUpdate(state);
 		if (doUpdateROI) {
-			if (GL3DState.get().getState() == VISUAL_TYPE.MODE_3D) {
+			//if (GL3DState.get().getState() == VISUAL_TYPE.MODE_3D) {
 				this.updateROI(state.getActiveCamera());
-			} else {
+			/*} else {
 				this.updateRegionIn2DMode(state.getActiveCamera());
-			}
+			}*/
 			doUpdateROI = false;
 			this.accellerationShape.setUnchanged();
 		}

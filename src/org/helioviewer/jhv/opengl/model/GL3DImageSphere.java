@@ -61,7 +61,7 @@ public class GL3DImageSphere extends GL3DImageMesh
       GL3DVec3d orientation=GL3DHelper.toVec(toViewSpace.convert(orientationVector)).normalize();
       
       phiRotation = GL3DQuatd.calcRotation(orientation,new GL3DVec3d(0,0,1)).toMatrix();	        
-      /*
+      
       if(!(orientation.equals(new GL3DVec3d(0,1,0))))
       {
         GL3DVec3d orientationXZ=new GL3DVec3d(orientation.x,0,orientation.z);
@@ -73,9 +73,9 @@ public class GL3DImageSphere extends GL3DImageMesh
         }
         phiRotation=GL3DMat4d.rotation(phi,new GL3DVec3d(0,1,0));
       }
-		*/
-      int resolutionX=100;
-      int resolutionY=100;
+	
+      double resolutionX=100;
+      double resolutionY=100;
 
       for(int latNumber=0;latNumber<=resolutionX;latNumber++)
       {
@@ -105,8 +105,8 @@ public class GL3DImageSphere extends GL3DImageMesh
       {
         for(int longNumber=0;longNumber<resolutionY;longNumber++)
         {
-          int first=(latNumber*(resolutionY+1))+longNumber;
-          int second=first+resolutionY+1;
+          int first=(int)(latNumber*(resolutionY+1))+longNumber;
+          int second=(int)(first+resolutionY+1);
 
           tmpSolarSphereVec=positions.get(first);
           double z0=tmpSolarSphereVec.z;
