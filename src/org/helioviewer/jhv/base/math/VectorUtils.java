@@ -1,7 +1,5 @@
 package org.helioviewer.jhv.base.math;
 
-import org.helioviewer.jhv.base.JavaCompatibility;
-
 public class VectorUtils {
 
     /**
@@ -38,9 +36,9 @@ public class VectorUtils {
         double cw1 = clockwise(trianglePointB, trianglePointC, toCheck);
         double cw2 = clockwise(trianglePointC, trianglePointA, toCheck);
 
-        cw0 = Math.abs(cw0) < JavaCompatibility.DOUBLE_MIN_NORMAL ? 0 : cw0 < 0 ? -1 : 1;
-        cw1 = Math.abs(cw1) < JavaCompatibility.DOUBLE_MIN_NORMAL ? 0 : cw1 < 0 ? -1 : 1;
-        cw2 = Math.abs(cw2) < JavaCompatibility.DOUBLE_MIN_NORMAL ? 0 : cw2 < 0 ? -1 : 1;
+        cw0 = Math.abs(cw0) < Double.MIN_NORMAL ? 0 : cw0 < 0 ? -1 : 1;
+        cw1 = Math.abs(cw1) < Double.MIN_NORMAL ? 0 : cw1 < 0 ? -1 : 1;
+        cw2 = Math.abs(cw2) < Double.MIN_NORMAL ? 0 : cw2 < 0 ? -1 : 1;
 
         if (Math.abs(cw0 + cw1 + cw2) >= 2) {
             return true;

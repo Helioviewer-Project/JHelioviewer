@@ -46,11 +46,6 @@ public final class Vector2dDouble {
         y = (double) v.getY();
     }
 
-    public Vector2dDouble(final Vector2dLong v) {
-        x = (double) v.getX();
-        y = (double) v.getY();
-    }
-
     public double getX() {
         return x;
     }

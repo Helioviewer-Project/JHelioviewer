@@ -43,11 +43,6 @@ public final class Vector2dInt {
         y = v.y;
     }
 
-    public Vector2dInt(final Vector2dLong v) {
-        x = (int) v.getX();
-        y = (int) v.getY();
-    }
-
     public Vector2dInt(final Vector2dDouble v) {
         x = (int) Math.round(v.getX());
         y = (int) Math.round(v.getY());
