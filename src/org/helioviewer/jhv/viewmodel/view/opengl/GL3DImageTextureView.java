@@ -87,7 +87,7 @@ public class GL3DImageTextureView extends AbstractGL3DView implements GL3DView {
 	}
 
 	public void deactivate(GL3DState state) {
-		textureHelper.delTextureID(state.gl, this.textureId);
+		TEXTURE_HELPER.delTextureID(state.gl, this.textureId);
 		this.textureId = -1;
 	}
 

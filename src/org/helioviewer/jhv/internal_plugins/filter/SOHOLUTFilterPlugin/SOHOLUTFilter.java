@@ -225,7 +225,7 @@ public class SOHOLUTFilter extends AbstractFilter implements StandardFilter, GLF
         for (int i = 1; i < values.length - 1; i++) {
             tableString += " " + values[i];
         }
-        setLUT(LUT.getStandardList().get(tableString.replaceAll("ANGSTROM", Character.toString(LUT.angstrom))), Boolean.parseBoolean(invertString));
+        setLUT(LUT.getStandardList().get(tableString.replaceAll("ANGSTROM", Character.toString(LUT.ANGSTROM))), Boolean.parseBoolean(invertString));
         panel.setValue(lut, invertLUT);
     }
 
@@ -233,7 +233,7 @@ public class SOHOLUTFilter extends AbstractFilter implements StandardFilter, GLF
      * {@inheritDoc}
      */
     public String getState() {
-        return lut.getName().replaceAll(Character.toString(LUT.angstrom), "ANGSTROM") + " " + invertLUT;
+        return lut.getName().replaceAll(Character.toString(LUT.ANGSTROM), "ANGSTROM") + " " + invertLUT;
     }
     
     public boolean checkGLErrors(GL gl, String message) {

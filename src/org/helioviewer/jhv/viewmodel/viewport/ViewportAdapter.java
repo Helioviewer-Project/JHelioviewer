@@ -9,7 +9,7 @@ import org.helioviewer.jhv.base.math.Vector2dInt;
  * */
 public class ViewportAdapter implements Viewport {
 
-    private final BasicViewport viewport;
+    private final Viewport viewport;
 
     /**
      * Default constructor.
@@ -17,7 +17,7 @@ public class ViewportAdapter implements Viewport {
      * @param newViewport
      *            BasicViewport object which holds the viewport description.
      * */
-    public ViewportAdapter(final BasicViewport newViewport) {
+    public ViewportAdapter(final Viewport newViewport) {
         viewport = newViewport;
     }
 

@@ -1,5 +1,7 @@
 package org.helioviewer.jhv.viewmodel.viewport;
 
+import org.helioviewer.jhv.base.math.Vector2dInt;
+
 /**
  * Extension of {@link BasicViewport}, representing a region.
  * 
@@ -8,7 +10,14 @@ package org.helioviewer.jhv.viewmodel.viewport;
  * 
  * @author Ludwig Schmidt
  * */
-public interface Viewport extends BasicViewport {
+public interface Viewport {
+
+    /**
+     * Returns the size of the viewport.
+     * 
+     * @return size of the viewport represented by a Vector2dInt object.
+     * */
+    public Vector2dInt getSize();
 
     /**
      * Returns the width of the viewport.

@@ -45,7 +45,6 @@ public class GLTextureHelper {
 
     private static TextureImplementation textureImplementation = null;
     private static int texID = 0;
-    private static boolean textureNonPowerOfTwo = false;
     private static int maxTextureSize = 2048;
     
     private static GLTextureCoordinate mainTexCoord = new GLMainTextureCoordinate();
@@ -53,23 +52,8 @@ public class GLTextureHelper {
 
     private static HashMap<Integer, Vector2dDouble> allTextures = new HashMap<Integer, Vector2dDouble>();
 
-    private final static int[] formatMap = { GL2.GL_LUMINANCE4, GL2.GL_LUMINANCE4, GL2.GL_LUMINANCE4, GL2.GL_LUMINANCE4, GL2.GL_LUMINANCE8, GL2.GL_LUMINANCE8, GL2.GL_LUMINANCE8, GL2.GL_LUMINANCE8, GL2.GL_LUMINANCE12, GL2.GL_LUMINANCE12, GL2.GL_LUMINANCE12, GL2.GL_LUMINANCE12, GL2.GL_LUMINANCE16, GL2.GL_LUMINANCE16, GL2.GL_LUMINANCE16, GL2.GL_LUMINANCE16 };
+    private final static int[] FORMAT_MAP = { GL2.GL_LUMINANCE4, GL2.GL_LUMINANCE4, GL2.GL_LUMINANCE4, GL2.GL_LUMINANCE4, GL2.GL_LUMINANCE8, GL2.GL_LUMINANCE8, GL2.GL_LUMINANCE8, GL2.GL_LUMINANCE8, GL2.GL_LUMINANCE12, GL2.GL_LUMINANCE12, GL2.GL_LUMINANCE12, GL2.GL_LUMINANCE12, GL2.GL_LUMINANCE16, GL2.GL_LUMINANCE16, GL2.GL_LUMINANCE16, GL2.GL_LUMINANCE16 };
 
-
-    /**
-     * Returns whether non power of two textures are activated.
-     * 
-     * If non power of two textures are deactivated, they are simulated by using
-     * parts of power of two textures. On some architectures, this is faster,
-     * some architectures do not even support non power of two textures. In any
-     * case, the memory use is higher for power of two textures.
-     * 
-     * @return true if non power of two textures are activated, false otherwise.
-     * @see #setTextureNonPowerOfTwo(boolean)
-     */
-    public static boolean textureNonPowerOfTwoAvailable() {
-        return textureNonPowerOfTwo;
-    }
 
     /**
      * Initializes the helper.
@@ -581,7 +565,7 @@ public class GLTextureHelper {
     private int mapImageFormatToInternalGLFormat(ImageFormat imageFormat) {
 
         if (imageFormat instanceof SingleChannelImageFormat)
-            return formatMap[((SingleChannelImageFormat) imageFormat).getBitDepth() - 1];
+            return FORMAT_MAP[((SingleChannelImageFormat) imageFormat).getBitDepth() - 1];
         else if (imageFormat instanceof ARGB32ImageFormat || imageFormat instanceof RGB24ImageFormat)
             return GL2.GL_RGBA;
         else

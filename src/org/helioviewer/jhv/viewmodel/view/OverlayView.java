@@ -2,7 +2,7 @@ package org.helioviewer.jhv.viewmodel.view;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.helioviewer.jhv.viewmodel.renderer.physical.PhysicalRenderer;
+import org.helioviewer.jhv.viewmodel.renderer.physical.PhysicalRenderer3d;
 import org.helioviewer.jhv.viewmodel.view.opengl.OverlayPluginContainer;
 
 /**
@@ -36,16 +36,5 @@ public interface OverlayView extends ModifiableInnerViewView, ViewListener{
 	 *            New renderer to draw overlays.
 	 * @see #getRenderer
 	 */
-	public void setRenderer(PhysicalRenderer renderer);
-
-	/**
-	 * Returns the currently used renderer.
-	 * 
-	 * If there is currently no renderer present, return null.
-	 * 
-	 * @return renderer currently in use, null if there is none.
-	 * @see #setRenderer
-	 */
-
-
+	public void setRenderer(PhysicalRenderer3d renderer);
 }

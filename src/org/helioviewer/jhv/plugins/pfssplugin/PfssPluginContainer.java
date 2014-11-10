@@ -4,7 +4,7 @@ import org.helioviewer.jhv.plugins.pfssplugin.data.PfssCache;
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayContainer;
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayControlComponent;
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayControlComponentManager;
-import org.helioviewer.jhv.viewmodel.renderer.physical.PhysicalRenderer;
+import org.helioviewer.jhv.viewmodel.renderer.physical.PhysicalRenderer3d;
 import org.helioviewer.jhv.viewmodel.view.OverlayView;
 import org.helioviewer.jhv.viewmodel.view.opengl.OverlayPluginContainer;
 
@@ -54,7 +54,7 @@ public class PfssPluginContainer extends OverlayContainer {
 
 
 	@Override
-	public Class<? extends PhysicalRenderer> getOverlayClass() {
+	public Class<? extends PhysicalRenderer3d> getOverlayClass() {
 		return PfssPlugin3dRenderer.class;
 	}
 

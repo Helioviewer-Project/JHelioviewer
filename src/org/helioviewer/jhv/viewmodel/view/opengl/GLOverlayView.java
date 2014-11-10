@@ -9,7 +9,7 @@ import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.changeevent.RegionChangedReason;
 import org.helioviewer.jhv.viewmodel.changeevent.ViewChainChangedReason;
 import org.helioviewer.jhv.viewmodel.renderer.physical.GLPhysicalRenderGraphics;
-import org.helioviewer.jhv.viewmodel.renderer.physical.PhysicalRenderer;
+import org.helioviewer.jhv.viewmodel.renderer.physical.PhysicalRenderer3d;
 import org.helioviewer.jhv.viewmodel.view.LayeredView;
 import org.helioviewer.jhv.viewmodel.view.OverlayView;
 import org.helioviewer.jhv.viewmodel.view.View;
@@ -54,8 +54,8 @@ public class GLOverlayView extends AbstractGLView implements OverlayView{
 			Iterator<OverlayPluginContainer> iterator = this.overlays.iterator();
 			while(iterator.hasNext()){
 				OverlayPluginContainer overlay = iterator.next();
-				if (overlay.getRenderer() != null && (layeredView == null || layeredView.getNumLayers() > 0)){ 
-					overlay.getRenderer().render(glRenderGraphics);
+				if (overlay.getRenderer3d() != null && (layeredView == null || layeredView.getNumLayers() > 0)){ 
+					overlay.getRenderer3d().render(glRenderGraphics);
 				}
 			}
 
@@ -131,10 +131,9 @@ public class GLOverlayView extends AbstractGLView implements OverlayView{
 
 	@Override
 	// Just implemented for exist plugin, for new one, pls don't use this function
-	public void setRenderer(PhysicalRenderer renderer) {
+	public void setRenderer(PhysicalRenderer3d renderer) {
 		// TODO Auto-generated method stub
 		OverlayPluginContainer overlayPluginContainer = new OverlayPluginContainer();
-		overlayPluginContainer.setRenderer(renderer);
 		this.overlays.add(overlayPluginContainer);
 	}
 	

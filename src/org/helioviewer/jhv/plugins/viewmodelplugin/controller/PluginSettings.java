@@ -20,7 +20,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterContainer;
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayContainer;
 import org.helioviewer.jhv.viewmodel.filter.Filter;
-import org.helioviewer.jhv.viewmodel.renderer.physical.PhysicalRenderer;
+import org.helioviewer.jhv.viewmodel.renderer.physical.PhysicalRenderer3d;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -523,7 +523,7 @@ public class PluginSettings {
      * @return boolean value as it is in the XML document or the passed default
      *         value if no entry exists.
      */
-    public boolean isOverlayInPluginActivated(URI pluginLocation, Class<? extends PhysicalRenderer> overlayClass, boolean defaultValue) {
+    public boolean isOverlayInPluginActivated(URI pluginLocation, Class<? extends PhysicalRenderer3d> overlayClass, boolean defaultValue) {
 
         Node pluginNode = findNode(pluginsRootNode, NODES_PLUGINLOCATION, pluginLocation.getPath());
 
@@ -590,7 +590,7 @@ public class PluginSettings {
      * @return The position of the overlay or -1 if there is no entry for the
      *         given overlay.
      */
-    public int getOverlayPosition(URI pluginLocation, Class<? extends PhysicalRenderer> overlayClass) {
+    public int getOverlayPosition(URI pluginLocation, Class<? extends PhysicalRenderer3d> overlayClass) {
 
         Node pluginNode = findNode(pluginsRootNode, NODES_PLUGINLOCATION, pluginLocation.getPath());
 

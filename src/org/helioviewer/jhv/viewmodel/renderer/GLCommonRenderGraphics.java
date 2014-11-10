@@ -52,7 +52,7 @@ public class GLCommonRenderGraphics {
     public GLCommonRenderGraphics(GL2 _gl) {
         gl = _gl;
 
-        if (!GLTextureHelper.textureNonPowerOfTwoAvailable() && scalingShader == null) {
+        if (scalingShader == null) {
             scalingShader = new GLScalePowerOfTwoVertexShaderProgram();
             scalingShader.buildStandAlone(_gl);
         }
@@ -165,9 +165,6 @@ public class GLCommonRenderGraphics {
      * disabled.
      */
     public void bindScalingShader() {
-        if (GLTextureHelper.textureNonPowerOfTwoAvailable())
-            return;
-
         gl.glEnable(GL2.GL_VERTEX_PROGRAM_ARB);
         scalingShader.bind(gl);
     }

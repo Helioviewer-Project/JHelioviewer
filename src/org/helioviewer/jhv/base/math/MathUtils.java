@@ -22,7 +22,7 @@ public class MathUtils {
      *            the other side of the interval
      * @return the closest value within the interval
      */
-    public static int squeezeToInterval(int _val, int _side1, int _side2) {
+    public static int clip(int _val, int _side1, int _side2) {
         int temp = Math.max(_side1, _side2);
         _side1 = Math.min(_side1, _side2);
         _side2 = temp;

@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.plugins.hekplugin.math;
+package org.helioviewer.jhv.plugins.hekplugin;
 
 import java.util.Date;
 

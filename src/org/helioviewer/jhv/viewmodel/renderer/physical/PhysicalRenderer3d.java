@@ -22,7 +22,7 @@ import org.helioviewer.jhv.viewmodel.view.View;
  * @author Markus Langenberg
  * 
  */
-public abstract class PhysicalRenderer3d implements PhysicalRenderer{
+public abstract class PhysicalRenderer3d {
 
     /**
      * Callback function that will be called during rendering the image.

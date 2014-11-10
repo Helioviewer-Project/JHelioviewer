@@ -30,12 +30,6 @@ import org.helioviewer.jhv.gui.ClipBoardCopier;
  */
 public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler {
 
-    /**
-     * Default size of the error dialog.
-     */
-    private final static int default_width = 600;
-    private final static int default_height = 400;
-
     private static final JHVUncaughtExceptionHandler SINGLETON = new JHVUncaughtExceptionHandler();
 
     public static JHVUncaughtExceptionHandler getSingletonInstance() {
@@ -105,7 +99,7 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
             textArea.setText(text);
             textArea.setEditable(false);
             JScrollPane sp = new JScrollPane(textArea);
-            sp.setPreferredSize(new Dimension(default_width, default_height));
+            sp.setPreferredSize(new Dimension(600, 400));
 
             objects.add(new JSeparator());
             objects.add(sp);

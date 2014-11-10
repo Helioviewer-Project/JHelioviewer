@@ -7,7 +7,7 @@ import org.helioviewer.jhv.base.math.Vector2dInt;
  * 
  * @author Ludwig Schmidt
  * */
-public class StaticViewport implements BasicViewport {
+public class StaticViewport implements Viewport {
 
     private final Vector2dInt sizeVector;
 
@@ -68,5 +68,32 @@ public class StaticViewport implements BasicViewport {
 
     public String toString() {
         return "[Viewport: Size: " + sizeVector + "]";
+    }
+
+    @Override
+    public int getWidth()
+    {
+        return sizeVector.getX();
+    }
+
+    @Override
+    public int getHeight()
+    {
+        return sizeVector.getY();
+    }
+
+    @Override
+    public double getAspectRatio()
+    {
+        return sizeVector.getX()/(double)sizeVector.getY();
+    }
+
+    @Override
+    public boolean equals(Viewport _v)
+    {
+        if(!(_v instanceof StaticViewport))
+            return false;
+        
+        return ((StaticViewport)_v).sizeVector.equals(sizeVector);
     }
 }

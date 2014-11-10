@@ -17,7 +17,7 @@ import java.io.IOException;
  */
 public final class ClipBoardCopier implements ClipboardOwner {
 
-    private final static ClipBoardCopier clipboard = new ClipBoardCopier();
+    private final static ClipBoardCopier SINGLETON = new ClipBoardCopier();
 
     /**
      * Returns the only instance of this class.
@@ -25,7 +25,7 @@ public final class ClipBoardCopier implements ClipboardOwner {
      * @return the only instance of this class.
      * */
     public final static ClipBoardCopier getSingletonInstance() {
-        return clipboard;
+        return SINGLETON;
     }
 
     private ClipBoardCopier() {

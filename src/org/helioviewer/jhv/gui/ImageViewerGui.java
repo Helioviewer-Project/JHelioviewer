@@ -37,6 +37,7 @@ import org.helioviewer.jhv.gui.components.statusplugins.QualityStatusPanel;
 import org.helioviewer.jhv.gui.components.statusplugins.ZoomStatusPanel;
 import org.helioviewer.jhv.gui.controller.GL3DCameraMouseController;
 import org.helioviewer.jhv.gui.controller.ZoomController;
+import org.helioviewer.jhv.internal_plugins.SelectedLayerPanel;
 import org.helioviewer.jhv.internal_plugins.filter.SOHOLUTFilterPlugin.SOHOLUTPanel;
 import org.helioviewer.jhv.internal_plugins.filter.channelMixer.ChannelMixerPanel;
 import org.helioviewer.jhv.internal_plugins.filter.contrast.ContrastPanel;
@@ -44,7 +45,6 @@ import org.helioviewer.jhv.internal_plugins.filter.gammacorrection.GammaCorrecti
 import org.helioviewer.jhv.internal_plugins.filter.opacity.OpacityFilter;
 import org.helioviewer.jhv.internal_plugins.filter.opacity.OpacityPanel;
 import org.helioviewer.jhv.internal_plugins.filter.sharpen.SharpenPanel;
-import org.helioviewer.jhv.internal_plugins.selectedLayer.SelectedLayerPanel;
 import org.helioviewer.jhv.io.APIRequestManager;
 import org.helioviewer.jhv.io.CommandLineProcessor;
 import org.helioviewer.jhv.io.FileDownloader;

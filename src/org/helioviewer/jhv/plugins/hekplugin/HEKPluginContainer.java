@@ -7,7 +7,7 @@ import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayContainer;
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayControlComponent;
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayControlComponentManager;
-import org.helioviewer.jhv.viewmodel.renderer.physical.PhysicalRenderer;
+import org.helioviewer.jhv.viewmodel.renderer.physical.PhysicalRenderer3d;
 import org.helioviewer.jhv.viewmodel.view.OverlayView;
 import org.helioviewer.jhv.viewmodel.view.opengl.OverlayPluginContainer;
 
@@ -45,8 +45,8 @@ public class HEKPluginContainer extends OverlayContainer {
      * {@inheritDoc}
      */
     @Override
-    public Class<? extends PhysicalRenderer> getOverlayClass() {
-        return HEKPluginRenderer.class;
+    public Class<? extends PhysicalRenderer3d> getOverlayClass() {
+        return HEKPlugin3dRenderer.class;
     }
 
     /**
@@ -57,7 +57,6 @@ public class HEKPluginContainer extends OverlayContainer {
         
     	hekPanel = new HEKPluginPanel(HEKCache.getSingletonInstance());
         OverlayPluginContainer overlayPluginContainer = new OverlayPluginContainer();
-        overlayPluginContainer.setRenderer(new HEKPluginRenderer());
         overlayPluginContainer.setRenderer3d(new HEKPlugin3dRenderer());
         
         overlayView.addOverlay(overlayPluginContainer);

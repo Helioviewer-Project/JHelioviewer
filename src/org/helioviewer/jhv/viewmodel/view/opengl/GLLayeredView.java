@@ -31,7 +31,7 @@ import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLVertexShaderView;
  * @author Markus Langenberg
  * 
  */
-public class GLLayeredView extends AbstractLayeredView implements GLFragmentShaderView, GLVertexShaderView {
+public abstract class GLLayeredView extends AbstractLayeredView implements GLFragmentShaderView, GLVertexShaderView {
 
     private GLTextureHelper textureHelper = new GLTextureHelper();
 
@@ -43,7 +43,7 @@ public class GLLayeredView extends AbstractLayeredView implements GLFragmentShad
             return;
         }
         
-        if (!GLTextureHelper.textureNonPowerOfTwoAvailable() && newLayer.getAdapter(GLScalePowerOfTwoView.class) == null) {
+        if (newLayer.getAdapter(GLScalePowerOfTwoView.class) == null) {
             GLScalePowerOfTwoView scaleView = new GLScalePowerOfTwoView();
             scaleView.setView(newLayer);
             newLayer = scaleView;

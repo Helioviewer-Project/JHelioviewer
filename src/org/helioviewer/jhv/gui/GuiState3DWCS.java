@@ -10,7 +10,7 @@ import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.gui.components.MoviePanel;
 import org.helioviewer.jhv.gui.components.QualitySpinner;
 import org.helioviewer.jhv.gui.components.TopToolBar;
-import org.helioviewer.jhv.internal_plugins.selectedLayer.SelectedLayerPanel;
+import org.helioviewer.jhv.internal_plugins.SelectedLayerPanel;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginManager;
 import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterContainer;

@@ -4,7 +4,7 @@ import java.net.URI;
 
 import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginSettings;
 import org.helioviewer.jhv.plugins.viewmodelplugin.interfaces.Container;
-import org.helioviewer.jhv.viewmodel.renderer.physical.PhysicalRenderer;
+import org.helioviewer.jhv.viewmodel.renderer.physical.PhysicalRenderer3d;
 import org.helioviewer.jhv.viewmodel.view.OverlayView;
 
 /**
@@ -91,7 +91,7 @@ public abstract class OverlayContainer implements Container {
      * 
      * @return Class of the contained overlay.
      */
-    public abstract Class<? extends PhysicalRenderer> getOverlayClass();
+    public abstract Class<? extends PhysicalRenderer3d> getOverlayClass();
 
     /**
      * Returns the current order position of the overlay. The position is

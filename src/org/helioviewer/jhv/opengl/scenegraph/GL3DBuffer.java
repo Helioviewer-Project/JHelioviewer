@@ -25,8 +25,6 @@ import com.jogamp.common.nio.Buffers;
  * 
  */
 public class GL3DBuffer {
-    private final static int drawType = GL.GL_DYNAMIC_DRAW;
-
     protected int id;
     protected GL3DBufferType type;
     protected GL3DBufferAttribute attribute;
@@ -168,7 +166,7 @@ public class GL3DBuffer {
 
     private void bufferData(GL3DState state) {
         state.gl.glBindBuffer(this.type.id, this.id);
-        state.gl.glBufferData(this.type.id, this.data.capacity() * this.dataType.size, data, GL3DBuffer.drawType);
+        state.gl.glBufferData(this.type.id, this.data.capacity() * this.dataType.size, data, GL.GL_DYNAMIC_DRAW);
     }
 
     public void enable(GL3DState state) {

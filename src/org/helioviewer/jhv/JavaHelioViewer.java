@@ -26,8 +26,6 @@ import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
 import org.helioviewer.jhv.plugins.sdocutoutplugin.SDOCutOutPlugin3D;
 import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginManager;
 import org.helioviewer.jhv.plugins.viewmodelplugin.interfaces.Plugin;
-import org.helioviewer.jhv.resourceloader.ResourceLoader;
-import org.helioviewer.jhv.resourceloader.SystemProperties;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JP2Image;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
 
@@ -120,7 +118,7 @@ public class JavaHelioViewer {
         splash.nextStep();
         splash.setProgressText("Determining platform...");
 
-        SystemProperties.setPlatform();
+        setPlatform();
         Log.info("OS: " + System.getProperty("jhv.os") + " - arch: " + System.getProperty("jhv.arch") + " - java arch: " + System.getProperty("jhv.java.arch"));
 
         // Remove about menu on mac
@@ -260,5 +258,57 @@ public class JavaHelioViewer {
         //splash.initializeViewchain();
         ImageViewerGui.getSingletonInstance().createViewchains();
 
+    }
+
+    /**
+     * Reads the builtin Java properties to determine the platform and set
+     * simplified properties used by JHelioviewer.
+     */
+    private static void setPlatform()
+    {
+            String os = System.getProperty("os.name");
+            String arch = System.getProperty("os.arch");
+            String javaArch = System.getProperty("sun.arch.data.model");
+
+            System.setProperty("jhv.java.arch", javaArch);
+
+            if (os != null && arch != null) {
+                os = os.toLowerCase();
+                arch = arch.toLowerCase();
+                if (os.indexOf("windows") != -1) {
+                    System.setProperty("jhv.os", "windows");
+                    if (arch.indexOf("64") != -1)
+                        System.setProperty("jhv.arch", "x86-64");
+                    else if (arch.indexOf("86") != -1)
+                        System.setProperty("jhv.arch", "x86-32");
+                    else {
+                        Log.error(">> Platform > Could not determine platform. OS: " + os + " - arch: " + arch);
+                    }
+                } else if (os.indexOf("linux") != -1) {
+                    System.setProperty("jhv.os", "linux");
+                    if (arch.indexOf("64") != -1)
+                        System.setProperty("jhv.arch", "x86-64");
+                    else if (arch.indexOf("86") != -1)
+                        System.setProperty("jhv.arch", "x86-32");
+                    else {
+                        Log.error(">> Platform > Could not determine platform. OS: " + os + " - arch: " + arch);
+                    }
+                } else if (os.indexOf("mac os x") != -1) {
+                    System.setProperty("jhv.os", "mac");
+                    if (arch.indexOf("ppc") != -1)
+                        System.setProperty("jhv.arch", "ppc");
+                    else if (arch.indexOf("64") != -1)
+                        System.setProperty("jhv.arch", "x86-64");
+                    else if (arch.indexOf("86") != -1)
+                        System.setProperty("jhv.arch", "x86-32");
+                    else {
+                        Log.error(">> Platform > Could not determine platform. OS: " + os + " - arch: " + arch);
+                    }
+                } else {
+                    Log.error(">> Platform > Could not determine platform. OS: " + os + " - arch: " + arch);
+                }
+            } else {
+                Log.error(">> Platform > Could not determine platform. OS: " + os + " - arch: " + arch);
+            }
     }
 }

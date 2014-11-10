@@ -34,7 +34,7 @@ public class GL3DLayeredView extends GLLayeredView implements GL3DView, LayeredV
         // This code snippet is copied from the superclass, because the
         // imageTextureView should be the first
         // view in the layer sub-chain
-        if (!GLTextureHelper.textureNonPowerOfTwoAvailable() && newLayer.getAdapter(GLScalePowerOfTwoView.class) == null) {
+        if (newLayer.getAdapter(GLScalePowerOfTwoView.class) == null) {
             GLScalePowerOfTwoView scaleView = new GLScalePowerOfTwoView();
             scaleView.setView(newLayer);
             newLayer = scaleView;

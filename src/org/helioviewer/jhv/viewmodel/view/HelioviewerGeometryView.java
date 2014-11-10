@@ -29,20 +29,20 @@ public interface HelioviewerGeometryView extends ModifiableInnerViewView, ViewLi
     /**
      * Factor to use on the sun radius for MDI masks.
      */
-    public final static float discFactor = 0.997f;
+    public final static float DISC_FACTOR = 0.997f;
 
     /**
      * Factor to use on the inner radius for occulter masks.
      */
-    public final static float roccInnerFactor = 1.05f;
+    public final static float ROCC_INNER_FACTOR = 1.05f;
 
     /**
      * Factor to use on the outer radius for occulter masks.
      */
-    public final static float roccOuterFactor = 0.9625f;
+    public final static float ROCC_OUTER_FACTOR = 0.9625f;
 
     /**
      * Factor to determine the range for fading from the disc to the corona.
      */
-    public final static float discFadingFactor = 1.05f;
+    public final static float DISC_FADING_FACTOR = 1.05f;
 }

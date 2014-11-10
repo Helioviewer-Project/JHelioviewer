@@ -22,7 +22,7 @@ import org.helioviewer.jhv.base.triangulate.GeometryInfo;
 import org.helioviewer.jhv.base.triangulate.Triangle;
 import org.helioviewer.jhv.base.triangulate.Vec3;
 import org.helioviewer.jhv.gui.IconBank;
-import org.helioviewer.jhv.plugins.hekplugin.math.HEKCoordinateTransform;
+import org.helioviewer.jhv.plugins.hekplugin.HEKCoordinateTransform;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
 import org.json.JSONException;
 import org.json.JSONObject;

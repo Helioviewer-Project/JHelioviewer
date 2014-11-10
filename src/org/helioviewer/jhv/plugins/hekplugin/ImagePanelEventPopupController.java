@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.plugins.hekplugin.controller;
+package org.helioviewer.jhv.plugins.hekplugin;
 
 import java.awt.Cursor;
 import java.awt.Point;

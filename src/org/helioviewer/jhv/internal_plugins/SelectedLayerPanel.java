@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.internal_plugins.selectedLayer;
+package org.helioviewer.jhv.internal_plugins;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -20,7 +20,7 @@ import org.helioviewer.jhv.viewmodel.view.View;
 public class SelectedLayerPanel extends JPanel implements FilterAlignmentDetails {
 
     private static final long serialVersionUID = 1L;
-    private JTextField selectedLayerField = new JTextField("No Layer Selected");
+    private JTextField selectedLayerField = new JTextField("No layer selected");
 
     /**
      * Default Constructor
@@ -54,7 +54,7 @@ public class SelectedLayerPanel extends JPanel implements FilterAlignmentDetails
 
         } else {
 
-            selectedLayerField.setText("Unknown Layer");
+            selectedLayerField.setText("Unknown layer");
             selectedLayerField.setEnabled(false);
 
         }

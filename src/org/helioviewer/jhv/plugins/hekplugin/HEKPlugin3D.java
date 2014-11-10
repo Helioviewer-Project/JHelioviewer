@@ -7,7 +7,6 @@ import java.util.Date;
 
 import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.gui.ImageViewerGui;
-import org.helioviewer.jhv.plugins.hekplugin.controller.ImagePanelEventPopupController;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKSettings;
 import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginManager;
 import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginSettings;

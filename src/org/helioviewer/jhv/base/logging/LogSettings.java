@@ -75,7 +75,7 @@ public class LogSettings {
      * @param defaultLogSettingsPath
      *            Resource path to the default settings file
      * @param logSettingsPath
-     *            Path to the custom user log settings file
+     *            Path to the custom user log set tings file
      * @param logsDirectory
      *            Directory to which the log files are written
      * @param useExistingTimeStamp
