@@ -14,13 +14,7 @@ import java.util.Locale;
  * 
  */
 public final class Vector2dInt {
-
-    public static final Vector2dInt NULL_VECTOR = new Vector2dInt(0, 0);
-    public static final Vector2dInt MAX_VECTOR = new Vector2dInt(Integer.MAX_VALUE, Integer.MAX_VALUE);
-    public static final Vector2dInt MIN_VECTOR = new Vector2dInt(Integer.MIN_VALUE, Integer.MIN_VALUE);
-
     private final int x;
-
     private final int y;
 
     public Vector2dInt() {

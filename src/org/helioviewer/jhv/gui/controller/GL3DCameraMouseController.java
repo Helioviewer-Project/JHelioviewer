@@ -26,8 +26,8 @@ import org.helioviewer.jhv.viewmodel.view.opengl.GL3DCameraView;
  */
 public class GL3DCameraMouseController extends AbstractImagePanelMouseController implements KeyListener {
 
-    private static final Cursor closedHandCursor = Toolkit.getDefaultToolkit().createCustomCursor(IconBank.getIcon(JHVIcon.CLOSED_HAND).getImage(), new Point(9, 9), IconBank.getIcon(JHVIcon.CLOSED_HAND).toString());
-    private static final Cursor openHandCursor = Toolkit.getDefaultToolkit().createCustomCursor(IconBank.getIcon(JHVIcon.OPEN_HAND).getImage(), new Point(9, 9), IconBank.getIcon(JHVIcon.OPEN_HAND).toString());
+    private static final Cursor CURSOR_CLOSED_HAND = Toolkit.getDefaultToolkit().createCustomCursor(IconBank.getIcon(JHVIcon.CLOSED_HAND).getImage(), new Point(9, 9), IconBank.getIcon(JHVIcon.CLOSED_HAND).toString());
+    private static final Cursor CURSOR_OPEN_HAND = Toolkit.getDefaultToolkit().createCustomCursor(IconBank.getIcon(JHVIcon.OPEN_HAND).getImage(), new Point(9, 9), IconBank.getIcon(JHVIcon.OPEN_HAND).toString());
 
     private boolean buttonDown = false;
     private volatile long lastTime = System.currentTimeMillis();
@@ -53,7 +53,7 @@ public class GL3DCameraMouseController extends AbstractImagePanelMouseController
         if (imagePanel != null) {
             if (cameraView != null && cameraView.getCurrentCamera().getCurrentInteraction() == cameraView.getCurrentCamera().getZoomInteraction()) {
             } else {
-                imagePanel.setCursor(buttonDown ? closedHandCursor : openHandCursor);
+                imagePanel.setCursor(buttonDown ? CURSOR_CLOSED_HAND : CURSOR_OPEN_HAND);
             }
         }
     }
@@ -75,7 +75,7 @@ public class GL3DCameraMouseController extends AbstractImagePanelMouseController
         if (e.getButton() == MouseEvent.BUTTON1) {
             if (cameraView != null && cameraView.getCurrentCamera().getCurrentInteraction() == cameraView.getCurrentCamera().getZoomInteraction()) {
             } else {
-                imagePanel.setCursor(closedHandCursor);
+                imagePanel.setCursor(CURSOR_CLOSED_HAND);
             }
             buttonDown = true;
         }
@@ -90,7 +90,7 @@ public class GL3DCameraMouseController extends AbstractImagePanelMouseController
      */
     public void mouseReleased(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
-            imagePanel.setCursor(openHandCursor);
+            imagePanel.setCursor(CURSOR_OPEN_HAND);
             buttonDown = false;
         }
         GL3DCamera currentCamera = getCamera();

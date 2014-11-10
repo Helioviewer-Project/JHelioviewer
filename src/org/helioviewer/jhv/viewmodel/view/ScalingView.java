@@ -15,7 +15,7 @@ public interface ScalingView extends View {
      * Interpolation Mode
      */
     public enum InterpolationMode {
-        NEAREST_NEIGHBOR, BILINEAR, BICUBIC, LANCZOS
+        NEAREST_NEIGHBOR, BILINEAR, BICUBIC
     }
 
     /**

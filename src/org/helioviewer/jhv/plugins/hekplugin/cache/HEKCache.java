@@ -26,7 +26,7 @@ import org.helioviewer.jhv.base.math.IntervalStore;
  */
 public class HEKCache {
 
-    private static final HEKCache singletonInstance = new HEKCache();
+    private static final HEKCache SINGLETON = new HEKCache();
 
     private HashMap<HEKPath, IntervalStore<Date, HEKEvent>> tracks = new HashMap<HEKPath, IntervalStore<Date, HEKEvent>>();
 
@@ -52,7 +52,7 @@ public class HEKCache {
      * @return the only instance of this class.
      * */
     public static HEKCache getSingletonInstance() {
-        return singletonInstance;
+        return SINGLETON;
     }
 
     public ReentrantReadWriteLock getLock() {
@@ -100,19 +100,6 @@ public class HEKCache {
      */
     public IntervalStore<Date, HEKEvent> getTrack(HEKPath path) {
         return this.getTracks().get(path);
-    }
-
-    /**
-     * Store a single track using the given path
-     * 
-     * @param path
-     *            - path that specifies where the track is to be stored
-     * @param store
-     *            - intervalstore which is to be used
-     * @return - the selected track
-     */
-    public void setTrack(HEKPath path, IntervalStore<Date, HEKEvent> store) {
-        this.tracks.put(path, store);
     }
 
     /**

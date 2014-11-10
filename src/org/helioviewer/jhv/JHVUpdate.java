@@ -68,15 +68,6 @@ public class JHVUpdate implements Runnable {
     }
 
     /**
-     * Checks for update in a new thread, when called from the menu
-     */
-    public void checkMenu() {
-        Thread t = new Thread(this, "JHV Update Checker");
-        t.setDaemon(true);
-        t.start();
-    }
-
-    /**
      * Checks for update and show a dialog box
      */
     public void run() {

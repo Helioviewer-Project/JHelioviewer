@@ -8,7 +8,7 @@ import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.viewmodel.view.View;
-import org.helioviewer.jhv.viewmodel.view.jp2view.datetime.ImmutableDateTime;
+import org.helioviewer.jhv.viewmodel.view.jp2view.ImmutableDateTime;
 
 /**
  * This class performs checks if the added layers fit the rest of the already
@@ -27,7 +27,7 @@ public class LayerTableOverlapWatcher implements LayersListener {
      * 
      *      Value must be between 0.0 and 1.0
      */
-    public final static double smallestValidCoverageFraction = 0.7;
+    private final static double SMALLEST_VALID_COVERAGE_FRACTION = 0.7;
 
     /**
      * 
@@ -51,7 +51,7 @@ public class LayerTableOverlapWatcher implements LayersListener {
      * 
      * - The maximum coverage ratio is 1.0, the minimum is 0.0
      * 
-     * @see LayerTableOverlapWatcher#smallestValidCoverageFraction
+     * @see LayerTableOverlapWatcher#SMALLEST_VALID_COVERAGE_FRACTION
      * 
      *      In addition to this, a warning is shown if no timing information is
      *      available for the newly added layer.
@@ -88,7 +88,7 @@ public class LayerTableOverlapWatcher implements LayersListener {
                 long len = (intersection.getEnd().getTime() - intersection.getStart().getTime());
                 double fraction = (double) len / (double) full_len;
 
-                if (fraction < smallestValidCoverageFraction) {
+                if (fraction < SMALLEST_VALID_COVERAGE_FRACTION) {
                     isGoodOverlap = false;
                 }
 

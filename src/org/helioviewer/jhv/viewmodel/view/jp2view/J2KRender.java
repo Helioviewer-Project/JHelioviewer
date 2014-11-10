@@ -117,7 +117,7 @@ class J2KRender implements Runnable {
         if (myThread != null)
             stop();
 
-        myThread = new Thread(JHVJP2View.renderGroup, this, "J2KRender");
+        myThread = new Thread(JHVJP2View.THREAD_GROUP, this, "J2KRender");
         stop = false;
         myThread.setDaemon(true);
         myThread.start();
@@ -263,17 +263,13 @@ class J2KRender implements Runnable {
 
             if (parentImageRef.getNumComponents() < 3) {
                 currentByteBuffer = (currentByteBuffer + 1) % NUM_BUFFERS;
-                if (currParams.subImage.getNumPixels() != byteBuffer[currentByteBuffer].length || (!movieMode && !linkedMovieMode && !J2KRenderGlobalOptions.getDoubleBufferingOption())) {
+                if (currParams.subImage.getNumPixels() != byteBuffer[currentByteBuffer].length || (!movieMode && !linkedMovieMode && !false)) {
                     byteBuffer[currentByteBuffer] = new byte[currParams.subImage.getNumPixels()];
-                } else if (J2KRenderGlobalOptions.getDoubleBufferingOption()) {
-                    Arrays.fill(byteBuffer[currentByteBuffer], (byte) 0);
                 }
             } else {
                 currentIntBuffer = (currentIntBuffer + 1) % NUM_BUFFERS;
-                if (currParams.subImage.getNumPixels() != intBuffer[currentIntBuffer].length || (!movieMode && !linkedMovieMode && !J2KRenderGlobalOptions.getDoubleBufferingOption())) {
+                if (currParams.subImage.getNumPixels() != intBuffer[currentIntBuffer].length || (!movieMode && !linkedMovieMode && !false)) {
                     intBuffer[currentIntBuffer] = new int[currParams.subImage.getNumPixels()];
-                } else if (J2KRenderGlobalOptions.getDoubleBufferingOption()) {
-                    Arrays.fill(intBuffer[currentIntBuffer], 0);
                 }
             }
 

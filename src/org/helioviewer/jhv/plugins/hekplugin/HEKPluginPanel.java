@@ -181,12 +181,6 @@ public class HEKPluginPanel extends OverlayPanel implements ActionListener, HEKC
         this.add(cancelButton, c3);
     }
 
-    /**
-     * Updates components.
-     * */
-    public void updateComponents() {
-    }
-
     public void actionPerformed(ActionEvent act) {
 
         if (act.getSource().equals(cancelButton)) {
@@ -282,12 +276,6 @@ public class HEKPluginPanel extends OverlayPanel implements ActionListener, HEKC
 
     public void structureChanged(HEKPath path) {
         fireRedraw();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void regionChanged() {
     }
 
     /**

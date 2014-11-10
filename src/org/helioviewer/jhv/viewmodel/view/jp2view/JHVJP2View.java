@@ -87,7 +87,7 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
 
     // Renderer-ThreadGroup - This group is necessary to identify all renderer
     // threads
-    public static final ThreadGroup renderGroup = new ThreadGroup("J2KRenderGroup");
+    public static final ThreadGroup THREAD_GROUP = new ThreadGroup("J2KRenderGroup");
 
     /**
      * Default constructor.
@@ -392,10 +392,6 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
         return jp2Image.isRemote();
     }
 
-    public void refresh() {
-        readerSignal.signal();
-    }
-
     /**
      * Returns whether the reader is connected to a JPIP server or not.
      * 
@@ -628,15 +624,6 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
     }
 
     /**
-     * Returns the current internal region (before decoding).
-     * 
-     * @return current internal region
-     */
-    Region getRegionPrelook() {
-        return region;
-    }
-
-    /**
      * Sets the new image data for the given region.
      * 
      * <p>
@@ -724,8 +711,8 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
      */
     private class CircularSubImageBuffer {
 
-        private static final int bufferSize = 16;
-        private SubImageRegion[] buffer = new SubImageRegion[bufferSize];
+        private static final int BUFFER_SIZE = 16;
+        private SubImageRegion[] buffer = new SubImageRegion[BUFFER_SIZE];
         private int nextPos = 0;
 
         /**
@@ -739,7 +726,7 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
             newEntry.subImage = subImage;
             newEntry.region = subImageRegion;
 
-            buffer[(++nextPos) & (bufferSize - 1)] = newEntry;
+            buffer[(++nextPos) & (BUFFER_SIZE - 1)] = newEntry;
         }
 
         /**
@@ -752,8 +739,8 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
             int searchPos = nextPos;
             SubImageRegion searchEntry;
 
-            for (int i = 0; i < bufferSize; i++) {
-                searchEntry = buffer[(--searchPos) & (bufferSize - 1)];
+            for (int i = 0; i < BUFFER_SIZE; i++) {
+                searchEntry = buffer[(--searchPos) & (BUFFER_SIZE - 1)];
                 if (searchEntry != null && searchEntry.subImage == subImage) {
                     lastRegion = searchEntry.region;
                     return;

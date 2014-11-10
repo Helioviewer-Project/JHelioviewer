@@ -81,17 +81,6 @@ public class HEKPlugin3D extends OverlayPlugin implements Plugin {
         eventPlugin.setCurInterval(newInterval);
     }
 
-    /**
-     * Wrapper around HEKEventPlugins functions.
-     * 
-     * @see org.helioviewer.jhv.plugins.overlay.hek.plugin.HEKEventPlugin
-     * @see org.helioviewer.jhv.plugins.overlay.hek.plugin.HEKEventPlugin#getStructure
-     * @param newInterval
-     */
-    public void getStructure() {
-        eventPlugin.getStructure();
-    }
-
     public void setEnabled(boolean b) {
         eventPlugin.setEnabled(b);
     }

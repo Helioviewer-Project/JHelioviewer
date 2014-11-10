@@ -36,10 +36,10 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
     private final static int default_width = 600;
     private final static int default_height = 400;
 
-    private static final JHVUncaughtExceptionHandler handler = new JHVUncaughtExceptionHandler();
+    private static final JHVUncaughtExceptionHandler SINGLETON = new JHVUncaughtExceptionHandler();
 
     public static JHVUncaughtExceptionHandler getSingletonInstance() {
-        return handler;
+        return SINGLETON;
     }
 
     /**
@@ -62,7 +62,7 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
      * @param msg
      *            Object to display in the main area of the dialog.
      */
-    public static void showErrorDialog(final String title, final Object msg) {
+    private static void showErrorDialog(final String title, final Object msg) {
 
         Vector<Object> objects = new Vector<Object>();
         objects.add(new JLabel("Fatal error detected."));

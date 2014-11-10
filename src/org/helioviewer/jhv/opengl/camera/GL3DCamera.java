@@ -7,7 +7,6 @@ import java.util.Stack;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
-import javax.media.opengl.glu.GLU;
 
 import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.base.physics.Constants;
@@ -30,19 +29,15 @@ import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec3d;
  * 
  */
 public abstract class GL3DCamera {
-    protected GLU glu = new GLU();
+    public static final double MAX_DISTANCE = -Constants.SUN_MEAN_DISTANCE_TO_EARTH * 1.8;
+    public static final double MIN_DISTANCE = -Constants.SUN_RADIUS * 1.2;
 
-    public static final double MAX_DISTANCE = -Constants.SunMeanDistanceToEarth * 1.8;
-    public static final double MIN_DISTANCE = -Constants.SunRadius * 1.2;
-
-    private double clipNear = Constants.SunRadius / 10;
-    private double clipFar = Constants.SunRadius * 1000;
+    private double clipNear = Constants.SUN_RADIUS / 10;
+    private double clipFar = Constants.SUN_RADIUS * 1000;
     private double fov = 10;
     private double aspect = 0.0;
     private double width = 0.0;
     private double height = 0.0;
-    public int currentMouseX = 0;
-    public int currentMouseY = 0;
 
     private List<GL3DCameraListener> listeners = new ArrayList<GL3DCameraListener>();
 
@@ -158,12 +153,6 @@ public abstract class GL3DCamera {
         this.updateCameraTransformation(true);
     }
 
-    public void updateCameraTransformation(GL3DMat4d transformation) {
-    	this.cameraTransformation = transformation;
-    	fireCameraMoved();
-    }
-
-    
     /**
      * Updates the camera transformation by applying the rotation and
      * translation information.

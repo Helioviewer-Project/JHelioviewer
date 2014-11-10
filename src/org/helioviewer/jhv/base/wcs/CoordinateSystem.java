@@ -19,6 +19,4 @@ public interface CoordinateSystem {
     public CoordinateConversion getConversion(CoordinateSystem coordinateSystem);
 
     public void addListener(CoordinateSystemChangeListener listener);
-
-    public void fireCoordinateSystemChanged();
 }

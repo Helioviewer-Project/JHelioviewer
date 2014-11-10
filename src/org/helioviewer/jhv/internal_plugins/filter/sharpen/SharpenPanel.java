@@ -37,7 +37,7 @@ public class SharpenPanel extends FilterPanel implements ChangeListener, FilterA
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 
         title = new JLabel("Sharpen:");
-        title.setPreferredSize(new Dimension(FilterPanel.titleWidth, FilterPanel.height));
+        title.setPreferredSize(new Dimension(FilterPanel.TITLE_WIDTH, FilterPanel.HEIGHT));
         add(title);
 
         sharpeningSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 0);
@@ -50,7 +50,7 @@ public class SharpenPanel extends FilterPanel implements ChangeListener, FilterA
 
         sharpeningLabel = new JLabel("0%");
         sharpeningLabel.setHorizontalAlignment(JLabel.RIGHT);
-        sharpeningLabel.setPreferredSize(new Dimension(FilterPanel.valueWidth, FilterPanel.height));
+        sharpeningLabel.setPreferredSize(new Dimension(FilterPanel.VALUE_WIDTH, FilterPanel.HEIGHT));
         add(sharpeningLabel);
 
         setEnabled(false);

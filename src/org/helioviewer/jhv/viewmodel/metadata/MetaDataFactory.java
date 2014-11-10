@@ -2,19 +2,14 @@ package org.helioviewer.jhv.viewmodel.metadata;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.JOptionPane;
 
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 
 public class MetaDataFactory {
-	
-	static final List<Class<MetaData>> ads = new ArrayList<Class<MetaData>>();
-	
 	@SuppressWarnings("unchecked")
-  static final Class<MetaData>[] metaDataClasses = new Class[]{
+  static final Class<MetaData>[] META_DATA_CLASSES = new Class[]{
 		MetaDataAIA.class,
 		MetaDataEIT.class,
 		MetaDataHMI.class,
@@ -34,7 +29,7 @@ public class MetaDataFactory {
 		
 		MetaData metaData = null;
 		Object[] args = {metaDataContainer};
-		for (Class<MetaData> c : metaDataClasses){
+		for (Class<MetaData> c : META_DATA_CLASSES){
 			Constructor<MetaData> constructor;
 			try {
 				constructor = c.getDeclaredConstructor(MetaDataContainer.class);

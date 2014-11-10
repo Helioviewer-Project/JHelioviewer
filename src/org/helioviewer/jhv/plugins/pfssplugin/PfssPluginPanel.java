@@ -99,12 +99,6 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 		reloadButton.setToolTipText("reload PFSS data");
 	}
 
-	/**
-	 * Updates components.
-	 * */
-	public void updateComponents() {
-	}
-
 	public void actionPerformed(ActionEvent act) {
 		if (act.getSource().equals(visibleButton)) {
 			if (pfssCache.isVisible()) {
@@ -302,12 +296,6 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 	}
 
 	public void viewportGeometryChanged() {
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void regionChanged() {
 	}
 
 	/**

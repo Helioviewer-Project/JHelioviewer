@@ -30,7 +30,7 @@ public class HEKStupidDownloader {
     private Vector<HEKRequest> downloadRequests = new Vector<HEKRequest>();
 
     // the sole instance of this class
-    private static final HEKStupidDownloader singletonInstance = new HEKStupidDownloader();
+    private static final HEKStupidDownloader SINGLETON = new HEKStupidDownloader();
 
     /**
      * The private constructor to support the singleton pattern.
@@ -44,7 +44,7 @@ public class HEKStupidDownloader {
      * @return the only instance of this class.
      * */
     public static HEKStupidDownloader getSingletonInstance() {
-        return singletonInstance;
+        return SINGLETON;
     }
 
     /**

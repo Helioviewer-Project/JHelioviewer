@@ -27,12 +27,6 @@ public interface Filter {
     public boolean isMajorFilter();
 
     /**
-     * This method forces a refiltering of the image data the next time the
-     * image is rendered regardless if the internal state of the filter.
-     */
-    public void forceRefilter();
-
-    /**
      * Sets the filter state.
      * 
      * The format of the state is determined by the filter itself. It should

@@ -27,8 +27,6 @@ import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec3d;
  */
 public abstract class GLVertexShaderProgram {
 
-    protected static final int target = GL2.GL_VERTEX_PROGRAM_ARB;
-
     private static Stack<Integer> shaderStack = new Stack<Integer>();
     private static int shaderCurrentlyUsed = -1;
     private int shaderID;
@@ -124,11 +122,11 @@ public abstract class GLVertexShaderProgram {
         if (shader != shaderCurrentlyUsed) {
             shaderCurrentlyUsed = shader;
             // Log.debug("GLVertexShaderProgram.bind shader="+shader);
-            gl.glBindProgramARB(target, shader);
-            gl.glProgramLocalParameter4dARB(target, 0, xOffset, yOffset, xScale, yScale);
-            gl.glProgramLocalParameter4dARB(target, 1, xTextureScale, yTextureScale, 0, 0);
-            gl.glProgramLocalParameter4dARB(target, 2, defaultXOffset, defaultYOffset, 0, 0);
-            gl.glProgramLocalParameter4dARB(target, 3, rotation.x, rotation.y, rotation.z, 0);
+            gl.glBindProgramARB(GL2.GL_VERTEX_PROGRAM_ARB, shader);
+            gl.glProgramLocalParameter4dARB(GL2.GL_VERTEX_PROGRAM_ARB, 0, xOffset, yOffset, xScale, yScale);
+            gl.glProgramLocalParameter4dARB(GL2.GL_VERTEX_PROGRAM_ARB, 1, xTextureScale, yTextureScale, 0, 0);
+            gl.glProgramLocalParameter4dARB(GL2.GL_VERTEX_PROGRAM_ARB, 2, defaultXOffset, defaultYOffset, 0, 0);
+            gl.glProgramLocalParameter4dARB(GL2.GL_VERTEX_PROGRAM_ARB, 3, rotation.x, rotation.y, rotation.z, 0);
         }
     }
 

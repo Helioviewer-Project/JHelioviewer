@@ -53,9 +53,9 @@ public class ImagePanelEventPopupController implements ImagePanelPlugin, MouseLi
     // Definitions
     // ///////////////////////////////////////////////////////////////////////////
 
-    private static final Cursor helpCursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
-    private static final int xOffset = 12;
-    private static final int yOffset = 12;
+    private static final Cursor CURSOR_HELP = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
+    private static final int X_OFFSET = 12;
+    private static final int Y_OFFSET = 12;
 
     private View view;
     private ViewportView viewportView;
@@ -129,10 +129,10 @@ public class ImagePanelEventPopupController implements ImagePanelPlugin, MouseLi
     private Point calcWindowPosition(Point p) {
         int yCoord = 0;
         boolean yCoordInMiddle = false;
-        if (p.y + hekPopUp.getSize().height + yOffset < imagePanel.getSize().height) {
-            yCoord = p.y + imagePanel.getLocationOnScreen().y + yOffset;
+        if (p.y + hekPopUp.getSize().height + Y_OFFSET < imagePanel.getSize().height) {
+            yCoord = p.y + imagePanel.getLocationOnScreen().y + Y_OFFSET;
         } else {
-            yCoord = p.y + imagePanel.getLocationOnScreen().y - hekPopUp.getSize().height - yOffset;
+            yCoord = p.y + imagePanel.getLocationOnScreen().y - hekPopUp.getSize().height - Y_OFFSET;
             if (yCoord < imagePanel.getLocationOnScreen().y) {
                 yCoord = imagePanel.getLocationOnScreen().y + imagePanel.getSize().height - hekPopUp.getSize().height;
                 
@@ -145,10 +145,10 @@ public class ImagePanelEventPopupController implements ImagePanelPlugin, MouseLi
         }
 
         int xCoord = 0;
-        if (p.x + hekPopUp.getSize().width + xOffset < imagePanel.getSize().width) {
-            xCoord = p.x + imagePanel.getLocationOnScreen().x + xOffset;
+        if (p.x + hekPopUp.getSize().width + X_OFFSET < imagePanel.getSize().width) {
+            xCoord = p.x + imagePanel.getLocationOnScreen().x + X_OFFSET;
         } else {
-            xCoord = p.x + imagePanel.getLocationOnScreen().x - hekPopUp.getSize().width - xOffset;
+            xCoord = p.x + imagePanel.getLocationOnScreen().x - hekPopUp.getSize().width - X_OFFSET;
             if (xCoord < imagePanel.getLocationOnScreen().x && !yCoordInMiddle) {
                 xCoord = imagePanel.getLocationOnScreen().x + imagePanel.getSize().width - hekPopUp.getSize().width;
             }
@@ -177,7 +177,7 @@ public class ImagePanelEventPopupController implements ImagePanelPlugin, MouseLi
             hekPopUp.setLocation(windowPosition);
             hekPopUp.setVisible(true);
             hekPopUp.pack();
-            imagePanel.setCursor(helpCursor);
+            imagePanel.setCursor(CURSOR_HELP);
 
         }
 
@@ -273,7 +273,7 @@ public class ImagePanelEventPopupController implements ImagePanelPlugin, MouseLi
 
             if (lastHEKEvent == null && mouseOverHEKEvent != null) {
                 lastCursor = imagePanel.getCursor();
-                imagePanel.setCursor(helpCursor);
+                imagePanel.setCursor(CURSOR_HELP);
             } else if (lastHEKEvent != null && mouseOverHEKEvent == null) {
                 imagePanel.setCursor(lastCursor);
             }

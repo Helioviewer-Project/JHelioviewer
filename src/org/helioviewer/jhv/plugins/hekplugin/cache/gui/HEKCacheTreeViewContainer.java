@@ -10,7 +10,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import org.helioviewer.jhv.gui.components.tristateCheckbox.TristateCheckBox;
+import org.helioviewer.jhv.gui.components.TristateCheckBox;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;
@@ -32,12 +32,12 @@ public class HEKCacheTreeViewContainer extends JPanel implements HEKCacheListene
 
     private static final long serialVersionUID = 1L;
 
-    private static final String loadingStructureMessage = "Requesting events...";
-    private static final String noInformationMessage = "No events available yet";
+    private static final String MSG_REQUESTING_EVENTS = "Requesting events...";
+    private static final String MSG_NO_DATA_AVAILABLE = "No events available yet";
 
     boolean wasLoaded = false;
 
-    private JLabel emptyLabel = new JLabel(noInformationMessage, JLabel.CENTER);
+    private JLabel emptyLabel = new JLabel(MSG_NO_DATA_AVAILABLE, JLabel.CENTER);
 
     CardLayout cl = new CardLayout();
 
@@ -93,9 +93,9 @@ public class HEKCacheTreeViewContainer extends JPanel implements HEKCacheListene
         }
 
         if (rootLoading) {
-            setLoadingMessage(loadingStructureMessage);
+            setLoadingMessage(MSG_REQUESTING_EVENTS);
         } else if (!layersAvailable) {
-            setLoadingMessage(noInformationMessage);
+            setLoadingMessage(MSG_NO_DATA_AVAILABLE);
         }
 
         // setLoadingMessage("LayersAvailable: " + layersAvailable +

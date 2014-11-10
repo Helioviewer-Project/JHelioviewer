@@ -23,12 +23,10 @@ public class GL3DGroup extends GL3DShape {
     private int numberOfNodes;
     
     private List<GL3DPolyLine> nodesToAdd;
-    private List<GL3DPolyLine> nodesToDelete;
     
     public GL3DGroup(String name) {
     	super(name);
         this.nodesToAdd = new ArrayList<GL3DPolyLine>();
-    	this.nodesToDelete = new ArrayList<GL3DPolyLine>();
     }
     
     @Override
@@ -238,19 +236,6 @@ public class GL3DGroup extends GL3DShape {
 
         return node;
     }
-    public int indexOfChild(GL3DNode child) {
-        if(this.numberOfNodes==0) {
-            return -1;
-        }
-        
-        int index = -1;
-        GL3DNode node = this.first;
-        while(child!=node && node!=null) {
-            index++;
-            node = node.next;
-        }
-        return index;
-    }
     
     private static int modelCounter = 0;
     
@@ -316,12 +301,4 @@ public class GL3DGroup extends GL3DShape {
     public GL3DNode getFirst() {
         return first;
     }
-    
-    public void addNodeToAddList(GL3DPolyLine node) {
-    	nodesToAdd.add(node);
-    }
-    
-    public void addNodeToRemoveList(GL3DPolyLine node) {
-		nodesToDelete.add(node);
-	}
 }

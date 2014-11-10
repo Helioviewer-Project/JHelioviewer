@@ -118,12 +118,6 @@ public interface LayeredView extends View {
     public void removeLayer(View view);
 
     /**
-     * Removes all layers of the layered view. This method should be preferred
-     * over calling removeLayer(View) for every single layer.
-     */
-    public void removeAllLayers();
-
-    /**
      * Returns the position of the view within the stack of layers.
      * 
      * Zero indicates the most bottom view. If the given view is not a direct

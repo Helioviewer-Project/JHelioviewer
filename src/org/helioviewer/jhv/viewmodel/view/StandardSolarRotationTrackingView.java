@@ -12,8 +12,8 @@ import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.changeevent.TimestampChangedReason;
 import org.helioviewer.jhv.viewmodel.region.Region;
 import org.helioviewer.jhv.viewmodel.region.StaticRegion;
+import org.helioviewer.jhv.viewmodel.view.jp2view.ImmutableDateTime;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
-import org.helioviewer.jhv.viewmodel.view.jp2view.datetime.ImmutableDateTime;
 
 /**
  * Implementation of View to pan automatically according to the solar rotation.
@@ -42,16 +42,6 @@ public class StandardSolarRotationTrackingView extends AbstractBasicView impleme
      */
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-        if (enabled) {
-            resetStartPosition();
-        }
-    }
-
-    /**
-     * Toggles the solar rotatin tracking on or off
-     */
-    public void toggleEnabled() {
-        enabled = !enabled;
         if (enabled) {
             resetStartPosition();
         }
@@ -196,7 +186,7 @@ public class StandardSolarRotationTrackingView extends AbstractBasicView impleme
 
         Vector2dDouble center = newRegion.getLowerLeftCorner().add(newRegion.getSize().scale(0.5));
         // don't rotate anything if the center is not in the sun
-        startPositionIsInsideDisc = (center.lengthSq() <= Constants.SunRadius * Constants.SunRadius);
+        startPositionIsInsideDisc = (center.lengthSq() <= Constants.SUN_RADIUS * Constants.SUN_RADIUS);
         if (!startPositionIsInsideDisc) {
             return;
         }

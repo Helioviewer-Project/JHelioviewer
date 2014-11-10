@@ -16,8 +16,6 @@ public class GL3DTriangle {
     protected GL3DVec3d b;
     protected GL3DVec3d c;
 
-    protected GL3DVec3d center;
-
     public GL3DTriangle() {
 
     }
@@ -26,8 +24,6 @@ public class GL3DTriangle {
         this.a = a;
         this.b = b;
         this.c = c;
-
-        this.center = this.a.copy().add(c).add(b).divide(3);
     }
 
     private final static double EPSILON = 0.0001;

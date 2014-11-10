@@ -19,7 +19,6 @@ import org.apache.log4j.Level;
 import org.helioviewer.jhv.base.FileUtils;
 import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.viewmodel.renderer.GLCommonRenderGraphics;
-import org.helioviewer.jhv.viewmodel.view.opengl.GLSceneSaver;
 
 /**
  * Helper class to handle OpenGL shaders.
@@ -128,52 +127,9 @@ public class GLShaderHelper {
      */
     public void delAllShaderIDs(GL2 gl) {
         GLCommonRenderGraphics.clearShader();
-        GLSceneSaver.clearShader();
         for (int i = allShaders.size() - 1; i >= 0; i--) {
             delShaderID(gl, allShaders.get(i));
         }
-    }
-
-    /**
-     * Activates a shader.
-     * 
-     * @param gl
-     *            Valid reference to the current gl object
-     * @param target
-     *            Shader type, has to be GL_VERTEX_PROGRAM_ARB or
-     *            GL_FRAGMENT_PROGRAM_ARB
-     * @param shader
-     *            Shader id
-     */
-    public void bindShader(GL2 gl, int target, int shader) {
-        if (shader != shaderCurrentlyBound) {
-            shaderCurrentlyBound = shader;
-            gl.glBindProgramARB(target, shader);
-        }
-    }
-
-    /**
-     * Compiles a program and loads the result to a given shader.
-     * 
-     * <p>
-     * Note, that the only mechanism to display errors is the general check for
-     * OpenGL errors during the rendering process. If the given program contains
-     * errors, "invalid operation" should be displayed on the console. To verify
-     * the exact error, try calling the Cg stand- alone compiler from the
-     * console.
-     * 
-     * @param gl
-     *            Valid reference to the current gl object
-     * @param programType
-     *            Shader type, has to be GL_VERTEX_PROGRAM_ARB or
-     *            GL_FRAGMENT_PROGRAM_ARB
-     * @param source
-     *            Location of the source file.
-     * @param target
-     *            Shader id to put the compiled program
-     */
-    public void compileProgram(GL2 gl, int programType, URL source, int target) {
-        compileProgram(gl, programType, getContents(source), target);
     }
 
     /**

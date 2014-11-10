@@ -1,12 +1,7 @@
 package org.helioviewer.jhv.plugins.viewmodelplugin.controller;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.AbstractList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -66,54 +61,12 @@ public class PluginManager {
     }
 
     /**
-     * Saves the settings of all loaded plug-ins to a file. The file will be
-     * saved in the directory which was specified in
-     * {@link #loadSettings(String)}.
-     */
-    public void saveSettings() {
-        pluginSettings.savePluginSettings();
-    }
-
-    /**
      * Returns a list with all loaded plug-ins.
      * 
      * @return a list with all loaded plug-ins.
      */
     public PluginContainer[] getAllPlugins() {
         return this.plugins.values().toArray(new PluginContainer[0]);
-    }
-
-    /**
-     * 
-     * @param plugin
-     *            A loaded plugin
-     * @return The corresponding plugin container or null if the plugin was not
-     *         loaded
-     */
-    public PluginContainer getPluginContainer(Plugin plugin) {
-        return plugins.get(plugin);
-    }
-
-    /**
-     * Returns a list with all plug-ins which have the passed active status. If
-     * the active status is true all activated plug-ins will be returned
-     * otherwise all available and not activated plug-ins will be returned.
-     * 
-     * @param activated
-     *            Indicates if all available (false) or all activated (true)
-     *            plug-ins have to be returned.
-     * @return list with all plug-ins which have the passed active status.
-     */
-    public AbstractList<PluginContainer> getPlugins(boolean activated) {
-
-        AbstractList<PluginContainer> result = new LinkedList<PluginContainer>();
-
-        for (PluginContainer container : plugins.values()) {
-            if (container.isActive() == activated)
-                result.add(container);
-        }
-
-        return result;
     }
 
     /**
@@ -257,35 +210,6 @@ public class PluginManager {
     }
 
     /**
-     * Returns an input stream to a resource within a plugin jar file. \n The
-     * path must begin with a slash and contain all subfolders, e.g.:\n
-     * /images/sample_image.png
-     * 
-     * @param plugin
-     *            The plugin where the resources are stored
-     * @param resourcePath
-     *            The path to the resource
-     * @return An InputStream to the resource
-     */
-    public InputStream getResourceInputStream(Plugin plugin, String resourcePath) {
-        return plugins.get(plugin).getClassLoader().getResourceAsStream(resourcePath);
-    }
-
-    /**
-     * Returns an URL to a resource within a plugin jar.\n The path must begin
-     * with a slash and contain all subfolders, e.g.:\n /images/sample_image.png
-     * 
-     * @param plugin
-     *            The plugin where the resources are stored
-     * @param resourcePath
-     *            The path to the resource
-     * @return An URL to the resource
-     */
-    public URL getResourceUrl(Plugin plugin, String resourcePath) {
-        return plugins.get(plugin).getClassLoader().getResource(resourcePath);
-    }
-
-    /**
      * Adds an internal plug-in to the list of all loaded plug-ins. Internal
      * plug-ins are installed and activated by default.
      * 
@@ -334,35 +258,5 @@ public class PluginManager {
     public void removePluginContainer(PluginContainer container) {
         plugins.remove(container.getPlugin());
         pluginSettings.removePluginFromXML(container);
-    }
-
-    public boolean deletePlugin(final PluginContainer container, final File tempFile) {
-        // deactivate plug-in if it is still active
-        if (container.isActive()) {
-            container.setActive(false);
-            container.changeSettings();
-        }
-
-        // remove plug-in
-        PluginManager.getSingeltonInstance().removePluginContainer(container);
-
-        // delete corresponding JAR file
-        final File file = new File(container.getPluginLocation());
-
-        if (!file.delete()) {
-            // when JAR file cannot be deleted note file by using a temporary
-            // file
-            // in order to delete it when restarting JHV
-            try {
-                final FileWriter tempFileWriter = new FileWriter(tempFile, true);
-                tempFileWriter.write(container.getPluginLocation().getPath() + ";");
-                tempFileWriter.flush();
-                tempFileWriter.close();
-            } catch (final IOException e) {
-                return false;
-            }
-        }
-
-        return true;
     }
 }

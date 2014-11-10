@@ -25,7 +25,7 @@ import org.helioviewer.jhv.viewmodel.filter.Filter;
 public class ContrastPanel extends FilterPanel implements ChangeListener, MouseListener, FilterAlignmentDetails {
 
     private static final long serialVersionUID = 1L;
-    private static final float sliderToContrastScale = 25.0f;
+    private static final float SLIDER_TO_CONTRAST_SCALE = 25.0f;
 
     private JSlider contrastSlider;
     private JLabel title;
@@ -39,7 +39,7 @@ public class ContrastPanel extends FilterPanel implements ChangeListener, MouseL
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 
         title = new JLabel("Contrast:");
-        title.setPreferredSize(new Dimension(FilterPanel.titleWidth, FilterPanel.height));
+        title.setPreferredSize(new Dimension(FilterPanel.TITLE_WIDTH, FilterPanel.HEIGHT));
         add(title);
 
         contrastSlider = new JSlider(JSlider.HORIZONTAL, -100, 100, 0);
@@ -53,7 +53,7 @@ public class ContrastPanel extends FilterPanel implements ChangeListener, MouseL
 
         contrastLabel = new JLabel("0");
         contrastLabel.setHorizontalAlignment(JLabel.RIGHT);
-        contrastLabel.setPreferredSize(new Dimension(FilterPanel.valueWidth, FilterPanel.height));
+        contrastLabel.setPreferredSize(new Dimension(FilterPanel.VALUE_WIDTH, FilterPanel.HEIGHT));
         add(contrastLabel);
 
         setEnabled(false);
@@ -85,7 +85,7 @@ public class ContrastPanel extends FilterPanel implements ChangeListener, MouseL
      * Sets the gamma value of the image.
      */
     public void stateChanged(ChangeEvent e) {
-        filter.setContrast((float) contrastSlider.getValue() / sliderToContrastScale);
+        filter.setContrast((float) contrastSlider.getValue() / SLIDER_TO_CONTRAST_SCALE);
         contrastLabel.setText(Integer.toString(contrastSlider.getValue()));
         GuiState3DWCS.mainComponentView.getComponent().repaint();
     }
@@ -154,6 +154,6 @@ public class ContrastPanel extends FilterPanel implements ChangeListener, MouseL
      *            New gamma value, must be within [0.1, 10]
      */
     void setValue(float contrast) {
-        contrastSlider.setValue((int) (contrast * sliderToContrastScale));
+        contrastSlider.setValue((int) (contrast * SLIDER_TO_CONTRAST_SCALE));
     }
 }

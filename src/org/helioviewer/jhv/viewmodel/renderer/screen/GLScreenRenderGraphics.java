@@ -22,7 +22,7 @@ import org.helioviewer.jhv.viewmodel.renderer.GLCommonRenderGraphics;
  * */
 public class GLScreenRenderGraphics extends AbstractScreenRenderGraphics {
 
-    private static final int edgesPerOval = 32; // has to be power of two
+    private static final int POINTS_PER_OVAL = 32; // has to be power of two
     private static float[] sinOval;
 
     private GL2 gl;
@@ -44,9 +44,9 @@ public class GLScreenRenderGraphics extends AbstractScreenRenderGraphics {
         commonRenderGraphics = new GLCommonRenderGraphics(_gl);
 
         if (sinOval == null) {
-            sinOval = new float[edgesPerOval];
-            for (int i = 0; i < edgesPerOval; i++) {
-                sinOval[i] = (float) Math.sin(Math.PI * 2 * i / edgesPerOval);
+            sinOval = new float[POINTS_PER_OVAL];
+            for (int i = 0; i < POINTS_PER_OVAL; i++) {
+                sinOval[i] = (float) Math.sin(Math.PI * 2 * i / POINTS_PER_OVAL);
             }
         }
     }
@@ -135,8 +135,8 @@ public class GLScreenRenderGraphics extends AbstractScreenRenderGraphics {
 
         gl.glBegin(GL2.GL_LINE_LOOP);
 
-        for (int i = 0; i < edgesPerOval; i++) {
-            gl.glVertex2i(centerX + (int) (radiusX * sinOval[i]), centerY + (int) (radiusY * sinOval[(i + (edgesPerOval >> 2)) & (edgesPerOval - 1)]));
+        for (int i = 0; i < POINTS_PER_OVAL; i++) {
+            gl.glVertex2i(centerX + (int) (radiusX * sinOval[i]), centerY + (int) (radiusY * sinOval[(i + (POINTS_PER_OVAL >> 2)) & (POINTS_PER_OVAL - 1)]));
         }
 
         gl.glEnd();
@@ -166,8 +166,8 @@ public class GLScreenRenderGraphics extends AbstractScreenRenderGraphics {
 
             gl.glVertex2i(centerX, centerY);
 
-            for (int i = 0; i < edgesPerOval; i++) {
-                gl.glVertex2f(centerX + (radiusX * sinOval[i]), centerY + (radiusY * sinOval[(i + (edgesPerOval >> 2)) & (edgesPerOval - 1)]));
+            for (int i = 0; i < POINTS_PER_OVAL; i++) {
+                gl.glVertex2f(centerX + (radiusX * sinOval[i]), centerY + (radiusY * sinOval[(i + (POINTS_PER_OVAL >> 2)) & (POINTS_PER_OVAL - 1)]));
             }
 
             gl.glVertex2f(centerX, centerY + radiusY);
@@ -297,21 +297,8 @@ public class GLScreenRenderGraphics extends AbstractScreenRenderGraphics {
     }
 
 	@Override
-	public void drawImage3d(BufferedImage image, Integer x, Integer y, Integer z) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void drawImage3d(BufferedImage image, Integer x, Integer y,
 			Integer z, float scale) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void drawImage3d(BufferedImage image, Integer x, Integer y,
-			Integer z, Integer width, Integer height) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -324,31 +311,6 @@ public class GLScreenRenderGraphics extends AbstractScreenRenderGraphics {
 
 	@Override
 	public void drawLine3d(Integer x0, Integer y0, Integer z0, Integer x1,
-			Integer y1, Integer z1) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void drawLine3d(Vector3dDouble p0, Vector3dDouble p1) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void startDrawLines() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void stopDrawLines() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void drawLines3d(Integer x0, Integer y0, Integer z0, Integer x1,
 			Integer y1, Integer z1) {
 		// TODO Auto-generated method stub
 		

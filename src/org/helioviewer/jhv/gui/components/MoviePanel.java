@@ -36,8 +36,8 @@ import org.helioviewer.jhv.viewmodel.view.AnimationMode;
 import org.helioviewer.jhv.viewmodel.view.MetaDataView;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.ViewListener;
+import org.helioviewer.jhv.viewmodel.view.jp2view.ImmutableDateTime;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
-import org.helioviewer.jhv.viewmodel.view.jp2view.datetime.ImmutableDateTime;
 
 /**
  * Panel containing the movie controls.
@@ -135,10 +135,10 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
     private JHVJPXView view;
 
     // Icons
-    private static final Icon playIcon = IconBank.getIcon(JHVIcon.PLAY);
-    private static final Icon pauseIcon = IconBank.getIcon(JHVIcon.PAUSE);
-    private static final Icon openIcon = IconBank.getIcon(JHVIcon.SHOW_MORE);
-    private static final Icon closeIcon = IconBank.getIcon(JHVIcon.SHOW_LESS);
+    private static final Icon ICON_PLAY = IconBank.getIcon(JHVIcon.PLAY);
+    private static final Icon ICON_PAUSE = IconBank.getIcon(JHVIcon.PAUSE);
+    private static final Icon ICON_OPEN = IconBank.getIcon(JHVIcon.SHOW_MORE);
+    private static final Icon ICON_CLOSE = IconBank.getIcon(JHVIcon.SHOW_LESS);
 
     /**
      * Default constructor.
@@ -213,7 +213,7 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
         previousFrameButton = ButtonCreator.createButton(IconBank.getIcon(JHVIcon.BACK), "Step to Previous Frame", this);
         buttonPanel.add(previousFrameButton);
 
-        playPauseButton = ButtonCreator.createButton(playIcon, "Play movie", this);
+        playPauseButton = ButtonCreator.createButton(ICON_PLAY, "Play movie", this);
         buttonPanel.add(playPauseButton);
 
         nextFrameButton = ButtonCreator.createButton(IconBank.getIcon(JHVIcon.FORWARD), "Step to Next Frame", this);
@@ -295,7 +295,7 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
     public void setAdvanced(boolean advanced) {
         MoviePanel.isAdvanced = advanced;
 
-        advancedButton.setIcon(advanced ? closeIcon : openIcon);
+        advancedButton.setIcon(advanced ? ICON_CLOSE : ICON_OPEN);
         modePanel.setVisible(advanced);
         speedPanel.setVisible(advanced);
     }
@@ -354,14 +354,14 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
         isPlaying = playing;
 
         if (!isPlaying) {
-            playPauseButton.setIcon(playIcon);
+            playPauseButton.setIcon(ICON_PLAY);
             playPauseButton.setToolTipText("Play movie");
             if (!onlyGUI) {
                 view.pauseMovie();
                 timeSlider.setValue(view.getCurrentFrameNumber());
             }
         } else {
-            playPauseButton.setIcon(pauseIcon);
+            playPauseButton.setIcon(ICON_PAUSE);
             playPauseButton.setToolTipText("Pause movie");
             if (!onlyGUI) {
                 view.playMovie();
@@ -713,7 +713,7 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
          * Default constructor.
          */
         public StaticPlayPauseAction() {
-            super("Play movie", playIcon);
+            super("Play movie", ICON_PLAY);
             putValue(MNEMONIC_KEY, KeyEvent.VK_A);
             putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.ALT_MASK));
         }
@@ -908,9 +908,9 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
 
         private static final long serialVersionUID = 1L;
 
-        private static final Color notCachedColor = Color.LIGHT_GRAY;
-        private static final Color partialCachedColor = new Color(0x8080FF);
-        private static final Color completeCachedColor = new Color(0x4040FF);
+        private static final Color COLOR_NOT_CACHED = Color.LIGHT_GRAY;
+        private static final Color COLOR_PARTIALLY_CACHED = new Color(0x8080FF);
+        private static final Color COLOR_COMPLETELY_CACHED = new Color(0x4040FF);
 
         private int partialCachedUntil = 0;
         private int completeCachedUntil = 0;
@@ -1028,13 +1028,13 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
 
                 int completeCachedOffset = (int) ((float) (completeCachedUntil) / (getMaximum() - getMinimum()) * trackRect.width);
 
-                g.setColor(notCachedColor);
+                g.setColor(COLOR_NOT_CACHED);
                 g.fillRect(trackRect.x + partialCachedOffset, offset, trackRect.width - partialCachedOffset, height);
 
-                g.setColor(partialCachedColor);
+                g.setColor(COLOR_PARTIALLY_CACHED);
                 g.fillRect(trackRect.x + completeCachedOffset, offset, partialCachedOffset - completeCachedOffset, height);
 
-                g.setColor(completeCachedColor);
+                g.setColor(COLOR_COMPLETELY_CACHED);
                 g.fillRect(trackRect.x, offset, completeCachedOffset, height);
             }
 

@@ -8,7 +8,7 @@ package org.helioviewer.jhv.base.math;
  */
 public class MathUtils {
 
-    public static final double radeg = 180.0 / Math.PI;
+    public static final double RAD_TO_DEG = 180.0 / Math.PI;
 
     /**
      * Returns the integer, x, closest on the number line such that
@@ -32,24 +32,6 @@ public class MathUtils {
             return _side2;
         else
             return _val;
-    }
-
-    /**
-     * Returns a random integer from the interval. If the interval is 2->4 then
-     * there is a equal chance that the return would be 2,3, or 4.
-     * 
-     * @param _interval
-     *            the interval from which to draw the random number
-     * @return a random numbe wihtin the given interval
-     */
-    public static int randomInt(Interval<Integer> _interval) {
-        // calculate how many integers we might have
-        final int numIntegers = _interval.getEnd() - _interval.getStart() + 1;
-        int rand;
-        do {
-            rand = (int) (Math.random() * numIntegers);
-        } while (rand == numIntegers);
-        return rand + _interval.getStart();
     }
 
     /**

@@ -169,7 +169,7 @@ public class GLHelioviewerGeometryView extends AbstractGLView implements Heliovi
 
                         program = program.replace("output", shaderBuilder.useOutputValue("float4", "COLOR"));
                         program = program.replace("physicalPosition", shaderBuilder.useStandardParameter("float4", "TEXCOORD0"));
-                        program = program.replace("sunRadius", Double.toString(Constants.SunRadius * discFactor).replace(',', '.'));
+                        program = program.replace("sunRadius", Double.toString(Constants.SUN_RADIUS * discFactor).replace(',', '.'));
 
                         shaderBuilder.addMainFragment(program);
                     } catch (GLBuildShaderException e) {
@@ -186,8 +186,8 @@ public class GLHelioviewerGeometryView extends AbstractGLView implements Heliovi
 
                         program = program.replace("output", shaderBuilder.useOutputValue("float4", "COLOR"));
                         program = program.replace("physicalPosition", shaderBuilder.useStandardParameter("float4", "TEXCOORD0"));
-                        program = program.replace("sunRadius", Double.toString(Constants.SunRadius).replace(',', '.'));
-                        program = program.replace("fadedSunRadius", Double.toString(Constants.SunRadius * discFadingFactor).replace(',', '.'));
+                        program = program.replace("sunRadius", Double.toString(Constants.SUN_RADIUS).replace(',', '.'));
+                        program = program.replace("fadedSunRadius", Double.toString(Constants.SUN_RADIUS * discFadingFactor).replace(',', '.'));
 
                         shaderBuilder.addMainFragment(program);
                     } catch (GLBuildShaderException e) {

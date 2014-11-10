@@ -1,6 +1,8 @@
 package org.helioviewer.jhv.base.triangulate;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 
 class Triangulator
 {

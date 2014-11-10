@@ -6,8 +6,8 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
+import org.helioviewer.jhv.viewmodel.view.jp2view.ImmutableDateTime;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
-import org.helioviewer.jhv.viewmodel.view.jp2view.datetime.ImmutableDateTime;
 
 /**
  * Class managing all linked movies.
@@ -31,21 +31,6 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.datetime.ImmutableDateTime;
  * @author Markus Langenberg
  */
 public class LinkedMovieManager {
-
-    // public static class Instance {
-    // private static int nextID = 0;
-    // private int id;
-    //
-    // public Instance() {
-    // id = getNextID();
-    // }
-    //
-    // private static synchronized int getNextID() {
-    // return nextID++;
-    // }
-    // }
-    //
-    // public static final Instance DEFAULTINSTANCE = new Instance();
 
     private static Vector<LinkedMovieManager> instances = new Vector<LinkedMovieManager>();
     private static int activeInstance = 0;
@@ -92,56 +77,6 @@ public class LinkedMovieManager {
     public static void setActiveInstance(int instance) {
         if (instance < instances.size() && instances.get(instance) != null) {
             activeInstance = instance;
-        }
-    }
-
-    /**
-     * Creates a new instance and returns its id.
-     * 
-     * The active instance will not change.
-     * 
-     * @return Id of the new instance.
-     * @see #getActiveInstance()
-     * @see #setActiveInstance(int)
-     * @see #deleteInstance(int)
-     */
-    public static int createNewInstance() {
-        for (int i = 0; i < instances.size(); i++) {
-            if (instances.get(i) == null) {
-                instances.set(i, new LinkedMovieManager());
-                return i;
-            }
-        }
-
-        instances.add(new LinkedMovieManager());
-        return instances.size() - 1;
-    }
-
-    /**
-     * Deletes an existing instance.
-     * 
-     * If the deleted instance was the active instance, sets the active instance
-     * to the default instance (0).
-     * 
-     * @param instance
-     *            Id of instance to delete
-     * @see #getActiveInstance()
-     * @see #setActiveInstance(int)
-     * @see #createNewInstance()
-     */
-    public static void deleteInstance(int instance) {
-        if (instance != 0 && instance < instances.size() && instances.get(instance) != null) {
-
-            LinkedList<JHVJPXView> linkedMovies = instances.get(instance).linkedMovies;
-            while (!linkedMovies.isEmpty()) {
-                linkedMovies.element().unlinkMovie();
-            }
-
-            instances.set(instance, null);
-
-            if (activeInstance == instance) {
-                setActiveInstance(0);
-            }
         }
     }
 

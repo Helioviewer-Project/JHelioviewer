@@ -12,11 +12,6 @@ import java.util.Locale;
  */
 
 public final class Vector3dDouble {
-
-    public static final Vector3dDouble NULL_VECTOR = new Vector3dDouble(0, 0, 0);
-    public static final Vector3dDouble NEGATIVE_INFINITY_VECTOR = new Vector3dDouble(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY);
-    public static final Vector3dDouble POSITIVE_INFINITY_VECTOR = new Vector3dDouble(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
-
     private final double x;
     private final double y;
     private final double z;

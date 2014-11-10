@@ -3,8 +3,8 @@ package org.helioviewer.jhv.viewmodel.view.cache;
 import java.io.IOException;
 
 import org.helioviewer.jhv.viewmodel.metadata.MultiFrameMetaDataContainer;
+import org.helioviewer.jhv.viewmodel.view.jp2view.ImmutableDateTime;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
-import org.helioviewer.jhv.viewmodel.view.jp2view.datetime.ImmutableDateTime;
 
 /**
  * Implementation of JP2DateTimeCache for helioviewer images.

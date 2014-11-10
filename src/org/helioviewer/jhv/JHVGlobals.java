@@ -22,12 +22,7 @@ import org.helioviewer.jhv.base.logging.Log;
  * @author caplins
  */
 public class JHVGlobals {
-
-    public static final String GLibVersionTool = "glibc-version";
-    public static final String ffmpeg = "ffmpeg";
-    public static final String cgc = "cgc";
-
-    private static final String[] browsers = { "firefox", "opera", "konqueror", "epiphany", "seamonkey", "galeon", "kazehakase", "mozilla", "netscape" };
+    private static final String[] BROWSERS = { "firefox", "opera", "konqueror", "epiphany", "seamonkey", "galeon", "kazehakase", "mozilla", "netscape" };
 
     public static final String TEMP_FILENAME_DELETE_PLUGIN_FILES = "delete-plugins.tmp";
 
@@ -166,7 +161,7 @@ public class JHVGlobals {
                 } else { // assume Unix or Linux
                     Log.debug(functionCallEntry + " > Open URL assuming Unix");
                     boolean found = false;
-                    for (String browser : browsers) {
+                    for (String browser : BROWSERS) {
                         if (!found) {
                             Process p = Runtime.getRuntime().exec(new String[] { "which", browser });
                             FileUtils.logProcessOutput(p, "which", Level.DEBUG, true);
@@ -178,7 +173,7 @@ public class JHVGlobals {
                         }
                     }
                     if (!found) {
-                        throw new Exception(Arrays.toString(browsers));
+                        throw new Exception(Arrays.toString(BROWSERS));
                     }
                 }
             } catch (Exception e) {

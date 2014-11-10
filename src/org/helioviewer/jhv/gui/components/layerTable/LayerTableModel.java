@@ -24,7 +24,7 @@ public class LayerTableModel extends AbstractTableModel implements LayersListene
     public static final int COLUMN_BUTTON_REMOVE = 3;
 
     /** The sole instance of this class. */
-    private static final LayerTableModel layerTableModel = new LayerTableModel();
+    private static final LayerTableModel SINGLETON = new LayerTableModel();
 
     /**
      * Returns the only instance of this class.
@@ -32,7 +32,7 @@ public class LayerTableModel extends AbstractTableModel implements LayersListene
      * @return the only instance of this class.
      * */
     public static LayerTableModel getSingletonInstance() {
-        return layerTableModel;
+        return SINGLETON;
     }
 
     private LayerTableModel() {

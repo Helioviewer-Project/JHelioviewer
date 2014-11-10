@@ -45,7 +45,6 @@ public class GuiState3DWCS {
     public static TopToolBar topToolBar = new TopToolBar();
 
     public static ComponentView mainComponentView;
-    public static ComponentView overviewComponentView;
 
     private GuiState3DWCS()
     {

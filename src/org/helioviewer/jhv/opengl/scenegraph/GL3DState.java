@@ -9,7 +9,6 @@ import javax.media.opengl.glu.GLU;
 
 import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DMat3d;
 import org.helioviewer.jhv.opengl.scenegraph.math.GL3DMat4d;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DComponentView;
 
@@ -31,8 +30,6 @@ public class GL3DState {
     private Stack<GL3DMat4d> matrixStack;
 
     protected GL3DMat4d mvInverse;
-
-    protected GL3DMat3d normalMatrix;
 
     protected GL3DCamera activeCamera;
 
@@ -97,12 +94,10 @@ public class GL3DState {
     public void buildInverseAndNormalMatrix() {
         try {
             this.mvInverse = this.mv.inverse();
-            this.normalMatrix = this.mvInverse.mat3().transpose();
         } catch (IllegalArgumentException e) {
             // TODO: What to do when matrix cannot be inverted?
             Log.error("Cannot Invert ModelView Matrix! Singularity occurred!", e);
             this.mvInverse = GL3DMat4d.identity();
-            this.normalMatrix = new GL3DMat3d();
             this.mv = GL3DMat4d.identity();
         }
     }
@@ -138,10 +133,6 @@ public class GL3DState {
         } else {
             return false;
         }
-    }
-
-    public boolean checkGLErrors() {
-        return checkGLErrors(this.gl);
     }
 
     public boolean checkGLErrors(GL gl) {

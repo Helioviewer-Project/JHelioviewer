@@ -22,17 +22,11 @@ import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
 public class GL3DAABBox {
     GL3DVec3d minWS = new GL3DVec3d();
     GL3DVec3d maxWS = new GL3DVec3d();
-    GL3DVec3d centerWS = new GL3DVec3d();
-    double radiusWS = 0;
+    
 
     GL3DVec3d minOS = new GL3DVec3d();
     GL3DVec3d maxOS = new GL3DVec3d();
-    GL3DVec3d centerOS = new GL3DVec3d();
-    double radiusOS = 0;
-
-    // Transparent flags are set during shapeInit
-    boolean hasTransp = false;
-    boolean isVisible = true;
+    
 
     private GL3DBuffer vertexBuffer;
     private GL3DBuffer colorBuffer;
@@ -62,7 +56,6 @@ public class GL3DAABBox {
             this.minWS.setMin(corner);
             this.maxWS.setMax(corner);
         }
-        setCenterAndRadius();
     }
 
     public void fromWStoOS(GL3DVec3d minWS, GL3DVec3d maxWS, GL3DMat4d wmI) {
@@ -89,25 +82,10 @@ public class GL3DAABBox {
             this.minOS.setMin(corner);
             this.maxOS.setMax(corner);
         }
-        setCenterAndRadius();
-    }
-
-    public void setCenterAndRadius() {
-        this.centerWS = GL3DVec3d.add(this.minWS, this.maxWS).multiply(0.5);
-        GL3DVec3d ext = GL3DVec3d.subtract(this.maxWS, this.centerWS);
-        this.radiusWS = ext.length();
-
-        this.centerOS = GL3DVec3d.add(this.minOS, this.maxOS).multiply(0.5);
-        ext = GL3DVec3d.subtract(this.maxOS, this.centerOS);
-        this.radiusOS = ext.length();
     }
 
     public void drawOS(GL3DState state, GL3DVec4d color) {
         this.draw(state, minOS, maxOS, color);
-    }
-
-    protected void drawWS(GL3DState state, GL3DVec4d color) {
-        this.draw(state, minWS, maxWS, color);
     }
 
     private void draw(GL3DState state, GL3DVec3d minV, GL3DVec3d maxV, GL3DVec4d color) {
@@ -175,85 +153,6 @@ public class GL3DAABBox {
         this.vertexBuffer.disable(state);
         this.colorBuffer.disable(state);
         this.indexBuffer.disable(state);
-    }
-
-    public boolean isHitInOS(GL3DRay ray) {
-        GL3DVec3d[] params = { this.minOS, this.maxOS };
-        double tymin, tymax, tzmin, tzmax;
-        ray.setTmin((params[ray.getSignOS()[0]].x - ray.getOriginOS().x) * ray.getInvDirectionOS().x);
-        ray.setTmax((params[1 - ray.getSignOS()[0]].x - ray.getOriginOS().x) * ray.getInvDirectionOS().x);
-        tymin = (params[ray.getSignOS()[1]].y - ray.getOriginOS().y) * ray.getInvDirectionOS().y;
-        tymax = (params[1 - ray.getSignOS()[1]].y - ray.getOriginOS().y) * ray.getInvDirectionOS().y;
-
-        if ((ray.getTmin() > tymax) || (tymin > ray.getTmax()))
-            return false;
-        if (tymin > ray.getTmin())
-            ray.setTmin(tymin);
-        if (tymax < ray.getTmax())
-            ray.setTmax(tymax);
-
-        tzmin = (params[ray.getSignOS()[2]].z - ray.getOriginOS().z) * ray.getInvDirectionOS().z;
-        tzmax = (params[1 - ray.getSignOS()[2]].z - ray.getOriginOS().z) * ray.getInvDirectionOS().z;
-
-        if ((ray.getTmin() > tzmax) || (tzmin > ray.getTmax()))
-            return false;
-        if (tzmin > ray.getTmin())
-            ray.setTmin(tzmin);
-        if (tzmax < ray.getTmax())
-            ray.setTmax(tzmax);
-
-        return ((ray.getTmin() < ray.getLength()) && (ray.getTmax() > 0));
-    }
-
-    public boolean isHit(GL3DRay ray) {
-        double t0 = 0;
-        double t1 = Double.MAX_VALUE;
-
-        double invDir, tNear, tFar;
-
-        // X-Slab
-        invDir = 1 / ray.getDirection().x;
-        tNear = (minWS.x - ray.getOrigin().x) * invDir;
-        tFar = (maxWS.x - ray.getOrigin().x) * invDir;
-        if (tNear > tFar) {
-            double temp = tNear;
-            tNear = tFar;
-            tFar = temp;
-        }
-        t0 = tNear > t0 ? tNear : t0;
-        t1 = tFar > t1 ? tFar : t1;
-        if (t0 > t1)
-            return false;
-
-        // Y-Slab
-        invDir = 1 / ray.getDirection().y;
-        tNear = (minWS.y - ray.getOrigin().y) * invDir;
-        tFar = (maxWS.y - ray.getOrigin().y) * invDir;
-        if (tNear > tFar) {
-            double temp = tNear;
-            tNear = tFar;
-            tFar = temp;
-        }
-        t0 = tNear > t0 ? tNear : t0;
-        t1 = tFar > t1 ? tFar : t1;
-        if (t0 > t1)
-            return false;
-
-        // Z-Slab
-        invDir = 1 / ray.getDirection().z;
-        tNear = (minWS.z - ray.getOrigin().z) * invDir;
-        tFar = (maxWS.z - ray.getOrigin().z) * invDir;
-        if (tNear > tFar) {
-            double temp = tNear;
-            tNear = tFar;
-            tFar = temp;
-        }
-        t0 = tNear > t0 ? tNear : t0;
-        t1 = tFar > t1 ? tFar : t1;
-        if (t0 > t1)
-            return false;
-
-        return true;
     }
 
     public boolean isHitInWS(GL3DRay ray) {

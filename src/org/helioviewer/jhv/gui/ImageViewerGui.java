@@ -73,7 +73,7 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 public class ImageViewerGui {
 
 	/** The sole instance of this class. */
-	private static final ImageViewerGui singletonImageViewer = new ImageViewerGui();
+	private static final ImageViewerGui SINGLETON = new ImageViewerGui();
 
 	private static JFrame mainFrame;
 	private JPanel contentPanel;
@@ -91,7 +91,6 @@ public class ImageViewerGui {
 	private JMenuBar menuBar;
 
 	public static final int SIDE_PANEL_WIDTH = 320;
-	public static final int SIDE_PADDING = 10;
 
 	/**
 	 * The private constructor that creates and positions all the gui
@@ -615,7 +614,7 @@ public class ImageViewerGui {
 	 * @return the only instance of this class.
 	 * */
 	public static ImageViewerGui getSingletonInstance() {
-		return singletonImageViewer;
+		return SINGLETON;
 	}
 
 	/**
@@ -668,9 +667,5 @@ public class ImageViewerGui {
 
 	public final MainContentPanel getMainContentPanel() {
 		return mainContentPanel;
-	}
-
-	public boolean viewchainCreated() {
-		return getMainView() != null;
 	}
 }

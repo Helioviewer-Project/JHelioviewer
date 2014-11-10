@@ -56,7 +56,7 @@ public class ImageDataPanel extends ObservationDialogPanel {
     /**
      * Used format for the API of the data and time
      */
-    public static final SimpleDateFormat apiDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    public static final SimpleDateFormat API_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
     // //////////////////////////////////////////////////////////////////////////////
     // Methods
@@ -218,13 +218,6 @@ public class ImageDataPanel extends ObservationDialogPanel {
      * */
     public String getMeasurement() {
         return instrumentsPanel.getMeasurement();
-    }
-
-    /**
-     * Updates the visual behavior of the component.
-     */
-    public void updateComponent() {
-        timeSelectionPanel.updateDateFormat();
     }
 
     /**
@@ -462,10 +455,10 @@ public class ImageDataPanel extends ObservationDialogPanel {
             EventQueue.invokeAndWait(new Runnable() {
                 public void run() {
                     calendarEndDate.setDate(gregorianCalendar.getTime());
-                    textEndTime.setText(TimeTextField.formatter.format(gregorianCalendar.getTime()));
+                    textEndTime.setText(TimeTextField.FORMATTER.format(gregorianCalendar.getTime()));
                     gregorianCalendar.add(GregorianCalendar.DAY_OF_MONTH, -1);
                     calendarStartDate.setDate(gregorianCalendar.getTime());
-                    textStartTime.setText(TimeTextField.formatter.format(gregorianCalendar.getTime()));
+                    textStartTime.setText(TimeTextField.FORMATTER.format(gregorianCalendar.getTime()));
                 }
             });
         }
@@ -478,7 +471,7 @@ public class ImageDataPanel extends ObservationDialogPanel {
          */
         public void setEndDate(Date newEnd) {
             calendarEndDate.setDate(newEnd);
-            textEndTime.setText(TimeTextField.formatter.format(newEnd));
+            textEndTime.setText(TimeTextField.FORMATTER.format(newEnd));
         }
 
         /**
@@ -489,7 +482,7 @@ public class ImageDataPanel extends ObservationDialogPanel {
          */
         public void setStartDate(Date newStart) {
             calendarStartDate.setDate(newStart);
-            textStartTime.setText(TimeTextField.formatter.format(newStart));
+            textStartTime.setText(TimeTextField.FORMATTER.format(newStart));
         }
 
         /**

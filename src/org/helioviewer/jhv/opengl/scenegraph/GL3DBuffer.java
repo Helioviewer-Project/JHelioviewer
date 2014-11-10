@@ -88,17 +88,6 @@ public class GL3DBuffer {
         return new GL3DBuffer(state, GL3DBufferType.ARRAY, GL3DBufferAttribute.TEXTURE, buffer, 2);
     }
 
-    public static GL3DBuffer createPositionBuffer(GL3DState state, double[] vertices) {
-        DoubleBuffer buffer = DoubleBuffer.wrap(vertices);
-        return new GL3DBuffer(state, GL3DBufferType.ARRAY, GL3DBufferAttribute.VERTEX, buffer, 3);
-    }
-
-    public static GL3DBuffer createPositionBuffer(GL3DState state, float[] vertices) {
-        FloatBuffer buffer = FloatBuffer.wrap(vertices);
-
-        return new GL3DBuffer(state, GL3DBufferType.ARRAY, GL3DBufferAttribute.VERTEX, buffer, 3);
-    }
-
     public static GL3DBuffer createPositionBuffer(GL3DState state, List<GL3DVec3d> vertices) {
         DoubleBuffer buffer = DoubleBuffer.allocate(vertices.size() * 3);
         for (GL3DVec3d vertex : vertices) {
@@ -180,73 +169,6 @@ public class GL3DBuffer {
     private void bufferData(GL3DState state) {
         state.gl.glBindBuffer(this.type.id, this.id);
         state.gl.glBufferData(this.type.id, this.data.capacity() * this.dataType.size, data, GL3DBuffer.drawType);
-    }
-
-    public void rebufferIndexData(GL3DState state, List<Integer> indices) {
-        if (this.data.capacity() != indices.size() * this.elementSize) {
-            this.data = IntBuffer.allocate(indices.size() * this.elementSize);
-            this.numberOfElements = indices.size();
-        }
-        IntBuffer buffer = (IntBuffer) this.data;
-        buffer.clear();
-        for (Integer i : indices) {
-            buffer.put(i);
-        }
-
-        buffer.flip();
-        this.rebufferData(state, buffer);
-    }
-
-    public void rebufferNormalData(GL3DState state, List<GL3DVec3d> data) {
-        this.rebufferPositionData(state, data);
-    }
-
-    public void rebufferColorData(GL3DState state, List<GL3DVec4d> data) {
-        if (this.data.capacity() != data.size() * this.elementSize) {
-            this.data = DoubleBuffer.allocate(data.size() * this.elementSize);
-            this.numberOfElements = data.size();
-        }
-        DoubleBuffer buffer = (DoubleBuffer) this.data;
-        buffer.clear();
-        for (GL3DVec4d vertex : data) {
-            buffer.put(vertex.x);
-            buffer.put(vertex.y);
-            buffer.put(vertex.z);
-            buffer.put(vertex.w);
-        }
-        buffer.flip();
-        this.rebufferData(state, buffer);
-    }
-
-    public void rebufferPositionData(GL3DState state, List<GL3DVec3d> data) {
-        if (this.data.capacity() != data.size() * this.elementSize) {
-            this.data = DoubleBuffer.allocate(data.size() * this.elementSize);
-            this.numberOfElements = data.size();
-        }
-        DoubleBuffer buffer = (DoubleBuffer) this.data;
-        buffer.clear();
-        for (GL3DVec3d vertex : data) {
-            buffer.put(vertex.x);
-            buffer.put(vertex.y);
-            buffer.put(vertex.z);
-        }
-        buffer.flip();
-        this.rebufferData(state, buffer);
-    }
-
-    public void rebufferTexCoordData(GL3DState state, List<GL3DVec2d> data) {
-        if (this.data.capacity() != data.size() * this.elementSize) {
-            this.data = DoubleBuffer.allocate(data.size() * this.elementSize);
-            this.numberOfElements = data.size();
-        }
-        DoubleBuffer buffer = (DoubleBuffer) this.data;
-        buffer.clear();
-        for (GL3DVec2d vertex : data) {
-            buffer.put(vertex.x);
-            buffer.put(vertex.y);
-        }
-        buffer.flip();
-        this.rebufferData(state, buffer);
     }
 
     private void rebufferData(GL3DState state, Buffer data) {

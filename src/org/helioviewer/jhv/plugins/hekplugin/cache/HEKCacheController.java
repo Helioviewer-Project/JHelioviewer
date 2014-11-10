@@ -84,10 +84,6 @@ public class HEKCacheController {
         cache.getSelectionModel().setStates(state);
     }
 
-    public void fireStructureChanged(HEKPath selPath) {
-        cache.getModel().fireStructureChanged(selPath);
-    }
-
     public void fireEventsChanged(HEKPath selPath) {
         cache.getModel().fireEventsChanged(selPath);
     }

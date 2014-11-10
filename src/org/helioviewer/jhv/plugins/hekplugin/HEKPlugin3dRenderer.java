@@ -7,9 +7,6 @@ import java.util.Vector;
 
 import org.helioviewer.jhv.base.math.SphericalCoord;
 import org.helioviewer.jhv.base.math.Vector3dDouble;
-import org.helioviewer.jhv.base.wcs.conversion.SphericalToSolarSphereConversion;
-import org.helioviewer.jhv.base.wcs.impl.SolarSphereCoordinateSystem;
-import org.helioviewer.jhv.base.wcs.impl.SphericalCoordinateSystem;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKEvent;
@@ -32,10 +29,7 @@ import org.helioviewer.jhv.viewmodel.view.opengl.GL3DLayeredView;
  * @author Malte Nuhn
  */
 public class HEKPlugin3dRenderer extends PhysicalRenderer3d {
-	private SphericalCoordinateSystem sphericalCS = new SphericalCoordinateSystem();
-    private SolarSphereCoordinateSystem solarSphereCS = new SolarSphereCoordinateSystem();
     private float scale = 1;
-    SphericalToSolarSphereConversion conversion = (SphericalToSolarSphereConversion) sphericalCS.getConversion(solarSphereCS);
 
 	/**
 	 * Default constructor.

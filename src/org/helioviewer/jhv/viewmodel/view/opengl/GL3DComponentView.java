@@ -73,10 +73,8 @@ import com.jogamp.opengl.util.awt.ImageUtil;
  */
 public class GL3DComponentView extends AbstractBasicView implements
 		GLEventListener, ComponentView, LayersListener, GL3DCameraListener {
-	public static final String SETTING_TILE_WIDTH = "gl.screenshot.tile.width";
-	public static final String SETTING_TILE_HEIGHT = "gl.screenshot.tile.height";
 
-	private Timer postRenderTimer = new Timer(100, new ActionListener(){
+    private Timer postRenderTimer = new Timer(100, new ActionListener(){
 	  @Override
 	  public void actionPerformed(ActionEvent e)
 	  {
@@ -123,8 +121,8 @@ public class GL3DComponentView extends AbstractBasicView implements
 	private BufferedImage screenshot;
 	private Viewport defaultViewport;
 
-	private double clipNear = Constants.SunRadius / 10;
-	private double clipFar = Constants.SunRadius * 1000;
+	private double clipNear = Constants.SUN_RADIUS / 10;
+	private double clipFar = Constants.SUN_RADIUS * 1000;
 	private double fov = 10;
 	private double aspect = 0.0;
 	private double width = 0.0;
@@ -160,10 +158,6 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 	public GLCanvas getComponent() {
 		return this.canvas;
-	}
-
-	public void displayChanged(GLAutoDrawable arg0, boolean arg1, boolean arg2) {
-		Log.debug("GL3DComponentView.DisplayChanged");
 	}
 
 	public void init(GLAutoDrawable glAD) {
@@ -557,11 +551,6 @@ public class GL3DComponentView extends AbstractBasicView implements
 		// screenshot = getBufferedImage(width, height);
 		// }
 		return screenshot;
-	}
-
-	public static void setTileSize(int width, int height) {
-		// defaultTileWidth = width;
-		// defaultTileHeight = height;
 	}
 
 	public void setOffset(Vector2dInt offset) {

@@ -1,8 +1,6 @@
 package org.helioviewer.jhv.opengl.model;
 
 import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,8 +71,6 @@ public class GL3DImageLayer extends GL3DOrientedGroup implements
 	protected MetaDataView metaDataView;
 	protected RegionView regionView;
 	protected GL3DImageLayers layerGroup;
-	public double minZ = -Constants.SunRadius;
-	public double maxZ = Constants.SunRadius;
 
 	protected GL3DNode accellerationShape;
 
@@ -84,11 +80,8 @@ public class GL3DImageLayer extends GL3DOrientedGroup implements
 	private JPanel contentPane = new JPanel();
 	private JPanel contentPane1 = new JPanel();
 
-	private ArrayList<Point> points = new ArrayList<Point>();
-
 	private double lastViewAngle = 0.0;
 
-	protected GL gl;
 	protected GL3DImageCoronaFragmentShaderProgram fragmentShader = null;
 	protected GL3DImageFragmentShaderProgram sphereFragmentShader = null;
 
@@ -195,10 +188,10 @@ public class GL3DImageLayer extends GL3DOrientedGroup implements
 					.createFragmentShaderProgram(gl, this.sphereFragmentShader);
 			sphere = new GL3DImageSphere(imageTextureView, vertexShader,
 					sphereFragmentShader, this);
-			circle = new GL3DCircle(Constants.SunRadius, new GL3DVec4f(0.5f,
+			circle = new GL3DCircle(Constants.SUN_RADIUS, new GL3DVec4f(0.5f,
 					0.5f, 0.5f, 1.0f), "Circle", this);
 			this.sphereFragmentShader
-					.setCutOffRadius((float) (Constants.SunRadius / this.imageTextureView.metadata
+					.setCutOffRadius((float) (Constants.SUN_RADIUS / this.imageTextureView.metadata
 							.getPhysicalImageWidth()));
 			this.addNode(circle);
 			this.addNode(sphere);
@@ -210,7 +203,7 @@ public class GL3DImageLayer extends GL3DOrientedGroup implements
 			corona = new GL3DImageCorona(imageTextureView, vertexShader,
 					coronaFragmentShader, this);
 			this.fragmentShader
-					.setCutOffRadius((float) (Constants.SunRadius / this.imageTextureView.metadata
+					.setCutOffRadius((float) (Constants.SUN_RADIUS / this.imageTextureView.metadata
 							.getPhysicalImageWidth()));
 			this.fragmentShader.setDefaultOffset(metadata.getSunPixelPosition()
 					.getX() / metadata.getResolution().getX() - xOffset,
@@ -218,8 +211,6 @@ public class GL3DImageLayer extends GL3DOrientedGroup implements
 							/ metadata.getResolution().getY() - yOffset);
 			this.addNode(corona);
 		}
-
-		this.gl = gl;
 	}
 
 	protected GL3DImageMesh getImageCorona() {
@@ -253,13 +244,6 @@ public class GL3DImageLayer extends GL3DOrientedGroup implements
 
 	public double getLastViewAngle() {
 		return lastViewAngle;
-	}
-
-	public void paint(Graphics g) {
-
-		for (Point p : points) {
-			g.fillRect(p.x - 1, p.y - 1, 2, 2);
-		}
 	}
 
 	public void cameraMoving(GL3DCamera camera) {

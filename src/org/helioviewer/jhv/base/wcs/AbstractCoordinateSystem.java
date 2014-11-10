@@ -38,10 +38,4 @@ public abstract class AbstractCoordinateSystem implements CoordinateSystem {
     public void addListener(CoordinateSystemChangeListener listener) {
         this.listeners.add(listener);
     }
-
-    public void fireCoordinateSystemChanged() {
-        for (CoordinateSystemChangeListener listener : this.listeners) {
-            listener.coordinateSystemChanged(this);
-        }
-    }
 }

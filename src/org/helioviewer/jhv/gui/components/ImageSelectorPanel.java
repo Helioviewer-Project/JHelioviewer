@@ -30,8 +30,8 @@ import org.helioviewer.jhv.gui.dialogs.observation.ObservationDialog;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.jp2view.ImmutableDateTime;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
-import org.helioviewer.jhv.viewmodel.view.jp2view.datetime.ImmutableDateTime;
 
 /**
  * Panel for displaying all layers including the layer specific controls.
@@ -116,8 +116,8 @@ public class ImageSelectorPanel extends JPanel implements LayersListener {
                         try {
                             Date startDate = start.getTime();
                             Date endDate = end.getTime();
-                            Date obsStartDate = ImageDataPanel.apiDateFormat.parse(observationImagePane.getStartTime());
-                            Date obsEndDate = ImageDataPanel.apiDateFormat.parse(observationImagePane.getEndTime());
+                            Date obsStartDate = ImageDataPanel.API_DATE_FORMAT.parse(observationImagePane.getStartTime());
+                            Date obsEndDate = ImageDataPanel.API_DATE_FORMAT.parse(observationImagePane.getEndTime());
                             // only updates if its really necessary with a
                             // tolerance of an hour
                             final int tolerance = 60 * 60 * 1000;

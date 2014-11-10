@@ -3,7 +3,6 @@ package org.helioviewer.jhv.gui;
 import java.util.ConcurrentModificationException;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.changeevent.ViewChainChangedReason;
 import org.helioviewer.jhv.viewmodel.view.View;
@@ -122,27 +121,4 @@ public class ViewListenerDistributor implements ViewListener {
             e.printStackTrace();
         }
     }
-
-    class ViewChangedNotifier implements Runnable {
-        private boolean interrupted = false;
-
-        public void interrupt() {
-            interrupted = true;
-        }
-
-        public void run() {
-            synchronized (this) {
-                if (interrupted)
-                    return;
-                this.notify();
-                try {
-                    this.wait();
-                } catch (InterruptedException e) {
-                    Log.error("", e);
-                }
-            }
-        }
-
-    }
-
 }

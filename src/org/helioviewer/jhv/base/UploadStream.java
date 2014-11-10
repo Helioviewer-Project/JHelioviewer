@@ -50,7 +50,7 @@ public class UploadStream {
      * @throws IOException
      *             Error to get connection to save file
      */
-    public void connect() throws IOException {
+    private void connect() throws IOException {
         if (uri.getScheme().equals("file")) {
             File file = new File(uri);
             if (file.exists()) {

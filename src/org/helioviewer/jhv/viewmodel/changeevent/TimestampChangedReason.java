@@ -1,7 +1,7 @@
 package org.helioviewer.jhv.viewmodel.changeevent;
 
 import org.helioviewer.jhv.viewmodel.view.View;
-import org.helioviewer.jhv.viewmodel.view.jp2view.datetime.ImmutableDateTime;
+import org.helioviewer.jhv.viewmodel.view.jp2view.ImmutableDateTime;
 
 /**
  * Class represents a change reason when the timestamp of a layer has changed.

@@ -39,7 +39,6 @@ public class StatusPanel extends JPanel {
     private JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
     private static JLabel statusInfoLabel = new JLabel("");
-    private static LinkedList<StatusTextListener> statusTextListeners = new LinkedList<StatusTextListener>();
 
     public enum Alignment {
         LEFT, RIGHT
@@ -112,50 +111,6 @@ public class StatusPanel extends JPanel {
 
         leftPanel.remove((JLabel) oldPlugin);
         rightPanel.remove((JLabel) oldPlugin);
-    }
-
-    /**
-     * Sets the status text.
-     * 
-     * All StatusTextListener will be notified.
-     * 
-     * @param text
-     *            Status text
-     */
-    public static void setStatusInfoText(String text) {
-        statusInfoLabel.setText(text);
-
-        for (StatusTextListener listener : statusTextListeners) {
-            listener.statusTextChanged(text);
-        }
-    }
-
-    /**
-     * Adds a StatusTextListener.
-     * 
-     * The listener will be notified on every call of
-     * {@link #setStatusInfoText(String)}.
-     * 
-     * @param listener
-     *            The new listener
-     */
-    public static void addStatusTextListener(StatusTextListener listener) {
-        if (!statusTextListeners.contains(listener)) {
-            statusTextListeners.add(listener);
-        }
-    }
-
-    /**
-     * Removes a StatusTextListener.
-     * 
-     * The listener will not be notified any more on every call of
-     * {@link #setStatusInfoText(String)}.
-     * 
-     * @param listener
-     *            The listener to remove
-     */
-    public static void removeStatusTextListener(StatusTextListener listener) {
-        statusTextListeners.remove(listener);
     }
 
     /**

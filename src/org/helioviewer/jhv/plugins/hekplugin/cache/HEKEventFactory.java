@@ -23,7 +23,7 @@ import org.json.JSONObject;
 public class HEKEventFactory {
 
     // the sole instance of this class
-    private static final HEKEventFactory singletonInstance = new HEKEventFactory();
+    private static final HEKEventFactory SINGLETON = new HEKEventFactory();
 
     /**
      * The private constructor to support the singleton pattern.
@@ -37,7 +37,7 @@ public class HEKEventFactory {
      * @return the only instance of this class.
      * */
     public static HEKEventFactory getSingletonInstance() {
-        return singletonInstance;
+        return SINGLETON;
     }
 
     /**

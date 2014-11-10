@@ -654,10 +654,6 @@ public class JP2Image implements MultiFrameMetaDataContainer {
         cachePath = newCachePath;
     }
 
-    public static File getCachePath() {
-        return cachePath;
-    }
-
     /**
      * Increases the reference counter.
      * 

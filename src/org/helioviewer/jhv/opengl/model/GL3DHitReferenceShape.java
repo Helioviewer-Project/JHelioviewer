@@ -24,7 +24,7 @@ import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
  * 
  */
 public class GL3DHitReferenceShape extends GL3DMesh {
-    private static final double extremeValue = Constants.SunMeanDistanceToEarth * 10;
+    private static final double LARGE_VALUE = Constants.SUN_MEAN_DISTANCE_TO_EARTH * 10;
 
     private boolean allowBacksideHits;
     private double angle = 0.0;
@@ -50,10 +50,10 @@ public class GL3DHitReferenceShape extends GL3DMesh {
 
     public GL3DMeshPrimitive createMesh(GL3DState state, List<GL3DVec3d> positions, List<GL3DVec3d> normals, List<GL3DVec2d> textCoords, List<Integer> indices, List<GL3DVec4d> colors) {
     	this.phiRotation = GL3DMat4d.rotation(angle, new GL3DVec3d(0, 1, 0));
-        GL3DVec3d ll = createVertex(-extremeValue, -extremeValue, 0);
-        GL3DVec3d lr = createVertex(extremeValue, -extremeValue, 0);
-        GL3DVec3d tr = createVertex(extremeValue, extremeValue, 0);
-        GL3DVec3d tl = createVertex(-extremeValue, extremeValue, 0);
+        GL3DVec3d ll = createVertex(-LARGE_VALUE, -LARGE_VALUE, 0);
+        GL3DVec3d lr = createVertex(LARGE_VALUE, -LARGE_VALUE, 0);
+        GL3DVec3d tr = createVertex(LARGE_VALUE, LARGE_VALUE, 0);
+        GL3DVec3d tl = createVertex(-LARGE_VALUE, LARGE_VALUE, 0);
 
         positions.add(ll);// normals.add(new GL3DVec3d(0,0,1));//colors.add(new
                           // GL3DVec4d(0, 0, 1, 0.0));
@@ -134,7 +134,7 @@ public class GL3DHitReferenceShape extends GL3DMesh {
     	GL3DVec3d l = new GL3DVec3d(0, 0, 0).subtract(ray.getOrigin());
         double s = l.dot(ray.getDirection().copy().normalize());
         double l2 = l.length2();
-        double r2 = Constants.SunRadius2;
+        double r2 = Constants.SUN_RADIUS_SQ;
         if (s < 0 && l2 > r2) {
             return false;
         }
@@ -161,7 +161,7 @@ public class GL3DHitReferenceShape extends GL3DMesh {
     }
 
     public GL3DAABBox buildAABB() {
-        this.aabb.fromOStoWS(new GL3DVec3d(-extremeValue, -extremeValue, -extremeValue), new GL3DVec3d(extremeValue, extremeValue, extremeValue), this.wm);
+        this.aabb.fromOStoWS(new GL3DVec3d(-LARGE_VALUE, -LARGE_VALUE, -LARGE_VALUE), new GL3DVec3d(LARGE_VALUE, LARGE_VALUE, LARGE_VALUE), this.wm);
 
         return this.aabb;
     }

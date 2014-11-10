@@ -79,26 +79,4 @@ public class HEKCacheExpansionModel {
     public void expandToLevel(int level, boolean overwrite, boolean collapsebelow) {
         expandToLevel(cacheModel.getRoot(), level, overwrite, collapsebelow);
     }
-
-    /**
-     * Expand the tree in the first levels
-     * 
-     * @param level
-     *            - number of levels to expand
-     */
-    protected void expandToLevel(int level, boolean overwrite) {
-        expandToLevel(level, overwrite, false);
-    }
-
-    public HEKPath getFirstVisiblePath(HEKPath p) {
-
-        HEKPath visibleParent = p;
-
-        while (visibleParent.getDepth() > 0 && !getExpansionState(visibleParent)) {
-            visibleParent = visibleParent.getParent();
-        }
-
-        return visibleParent;
-    }
-
 }

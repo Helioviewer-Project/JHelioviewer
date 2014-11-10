@@ -58,11 +58,11 @@ public class ExportMovieSettingsDialog extends JDialog implements
 	private static final String SETTING_SCREENSHOT_IMG_WIDTH = "export.screenshot.image.width";
 	private static final String SETTING_SCREENSHOT_IMG_HEIGHT = "export.screenshot.image.height";
 	
-	private static final AspectRatio[] movieAspectRatioPresets = {
+	private static final AspectRatio[] MOVIE_ASPECT_RATIO_PRESETS = {
 			new AspectRatio(1, 1), new AspectRatio(4, 3),
 			new AspectRatio(16, 9), new AspectRatio(16, 10),
 			new AspectRatio(0, 0) };
-	private static final AspectRatio[] screenshotAspectRatioPresets = {
+	private static final AspectRatio[] IMAGE_ASPECT_RATIO_PRESETS = {
 			new AspectRatio(1, 1), new AspectRatio(4, 3),
 			new AspectRatio(16, 9), new AspectRatio(16, 10),
 			new AspectRatio(0, 0) };
@@ -170,7 +170,7 @@ public class ExportMovieSettingsDialog extends JDialog implements
 			moviePanel.add(lblAspectRation, "6, 6, right, default");
 		}
 		{
-			movieAspectRatioSelection = new JComboBox<Object>(movieAspectRatioPresets);
+			movieAspectRatioSelection = new JComboBox<Object>(MOVIE_ASPECT_RATIO_PRESETS);
 			moviePanel.add(movieAspectRatioSelection, "8, 6, fill, default");
 			movieAspectRatioSelection.addItemListener(this);
 		}
@@ -249,7 +249,7 @@ public class ExportMovieSettingsDialog extends JDialog implements
 		}
 		{
 			screenshotAspectRatioSelection = new JComboBox<Object>(
-					screenshotAspectRatioPresets);
+					IMAGE_ASPECT_RATIO_PRESETS);
 			screenshotPanel.add(screenshotAspectRatioSelection,
 					"8, 6, fill, default");
 			screenshotAspectRatioSelection.addItemListener(this);
@@ -310,11 +310,11 @@ public class ExportMovieSettingsDialog extends JDialog implements
 					width = Integer.parseInt(parts[0]);
 					height = Integer.parseInt(parts[1]);
 				}
-				for (int i = 0; i < movieAspectRatioPresets.length; ++i) {
-					if (movieAspectRatioPresets[i].width == width
-							&& movieAspectRatioPresets[i].height == height) {
+				for (int i = 0; i < MOVIE_ASPECT_RATIO_PRESETS.length; ++i) {
+					if (MOVIE_ASPECT_RATIO_PRESETS[i].width == width
+							&& MOVIE_ASPECT_RATIO_PRESETS[i].height == height) {
 						movieAspectRatioSelection
-								.setSelectedItem(movieAspectRatioPresets[i]);
+								.setSelectedItem(MOVIE_ASPECT_RATIO_PRESETS[i]);
 						break;
 					}
 				}
@@ -366,11 +366,11 @@ public class ExportMovieSettingsDialog extends JDialog implements
 					width = Integer.parseInt(parts[0]);
 					height = Integer.parseInt(parts[1]);
 				}
-				for (int i = 0; i < screenshotAspectRatioPresets.length; ++i) {
-					if (screenshotAspectRatioPresets[i].width == width
-							&& screenshotAspectRatioPresets[i].height == height) {
+				for (int i = 0; i < IMAGE_ASPECT_RATIO_PRESETS.length; ++i) {
+					if (IMAGE_ASPECT_RATIO_PRESETS[i].width == width
+							&& IMAGE_ASPECT_RATIO_PRESETS[i].height == height) {
 						screenshotAspectRatioSelection
-								.setSelectedItem(screenshotAspectRatioPresets[i]);
+								.setSelectedItem(IMAGE_ASPECT_RATIO_PRESETS[i]);
 						break;
 					}
 				}

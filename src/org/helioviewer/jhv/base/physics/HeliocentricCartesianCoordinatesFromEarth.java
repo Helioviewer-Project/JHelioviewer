@@ -37,7 +37,7 @@ public class HeliocentricCartesianCoordinatesFromEarth implements SolarCoordinat
     public HeliocentricCartesianCoordinatesFromEarth(Vector2dDouble physicalCoordinates, Calendar newObservationTime) {
         x = physicalCoordinates.getX();
         y = physicalCoordinates.getY();
-        z = Math.sqrt(Constants.SunRadius * Constants.SunRadius - x * x - y * y);
+        z = Math.sqrt(Constants.SUN_RADIUS * Constants.SUN_RADIUS - x * x - y * y);
         observationTime = newObservationTime;
     }
 

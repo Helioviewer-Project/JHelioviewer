@@ -32,8 +32,8 @@ public class JPIPStatusPanel extends ViewStatusPanelPlugin {
     private ConnectionStatus lastStatus = ConnectionStatus.CONNECTED;
     private StatusChangedWindow statusChangedWindow = new StatusChangedWindow();
 
-    private static final Icon connectedIcon = IconBank.getIcon(JHVIcon.CONNECTED);
-    private static final Icon disconnectedIcon = IconBank.getIcon(JHVIcon.DISCONNECTED);
+    private static final Icon ICON_CONNECTED = IconBank.getIcon(JHVIcon.CONNECTED);
+    private static final Icon ICON_DISCONNECTED = IconBank.getIcon(JHVIcon.DISCONNECTED);
 
     public static enum ConnectionStatus {
         CONNECTED, DISCONNECTED, LOCAL
@@ -47,7 +47,7 @@ public class JPIPStatusPanel extends ViewStatusPanelPlugin {
 
         setPreferredSize(new Dimension(55, 20));
         setText("JPIP:");
-        setIcon(disconnectedIcon);
+        setIcon(ICON_DISCONNECTED);
         setVerticalTextPosition(JLabel.CENTER);
         setHorizontalTextPosition(JLabel.LEFT);
 
@@ -56,10 +56,10 @@ public class JPIPStatusPanel extends ViewStatusPanelPlugin {
 
     public void updateStatus(ConnectionStatus connectionStatus) {
         if (connectionStatus == ConnectionStatus.CONNECTED) {
-            setIcon(connectedIcon);
+            setIcon(ICON_CONNECTED);
             setText("JPIP:");
         } else if (connectionStatus == ConnectionStatus.DISCONNECTED) {
-            setIcon(disconnectedIcon);
+            setIcon(ICON_DISCONNECTED);
             setText("JPIP:");
         } else {
             setText("Local");

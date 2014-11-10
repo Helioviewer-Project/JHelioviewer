@@ -50,8 +50,8 @@ public class HEKEventInformationDialog extends JDialog implements ActionListener
 
     private static final long serialVersionUID = 1L;
 
-    private static final Cursor defaultCursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);
-    private static final Cursor clickCursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
+    private static final Cursor CURSOR_DEFAULT = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);
+    private static final Cursor CURSOR_CLICK = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
 
     private boolean isAdvanced = false;
 
@@ -110,12 +110,12 @@ public class HEKEventInformationDialog extends JDialog implements ActionListener
     /**
      * Preloaded icon
      */
-    private static final Icon openIcon = IconBank.getIcon(JHVIcon.SHOW_MORE);
+    private static final Icon ICON_OPEN = IconBank.getIcon(JHVIcon.SHOW_MORE);
 
     /**
      * Preloaded icon
      */
-    private static final Icon closeIcon = IconBank.getIcon(JHVIcon.SHOW_LESS);
+    private static final Icon ICON_CLOSE = IconBank.getIcon(JHVIcon.SHOW_LESS);
 
     private void addLineToSummaryPanel(JPanel panel, int y, String fieldName, Component component) {
 
@@ -152,7 +152,7 @@ public class HEKEventInformationDialog extends JDialog implements ActionListener
         super();// ImageViewerGui.getMainFrame());
         this.setFocusable(false);
         this.setLayout(new GridBagLayout());
-        this.setCursor(clickCursor);
+        this.setCursor(CURSOR_CLICK);
         this.setMinimumSize(new Dimension(550, 50));
         this.addWindowListener(new WindowAdapter() {
             public void windowClosed(WindowEvent arg0) {
@@ -462,7 +462,7 @@ public class HEKEventInformationDialog extends JDialog implements ActionListener
      */
     private void setAdvanced(boolean advanced) {
         this.isAdvanced = advanced;
-        moreButton.setIcon(advanced ? closeIcon : openIcon);
+        moreButton.setIcon(advanced ? ICON_CLOSE : ICON_OPEN);
         moreButton.setText(advanced ? "Less" : "More");
         informationScroller.setVisible(advanced);
     }
@@ -523,9 +523,9 @@ public class HEKEventInformationDialog extends JDialog implements ActionListener
      */
     public void hyperlinkUpdate(HyperlinkEvent e) {
         if (e.getEventType() == HyperlinkEvent.EventType.ENTERED) {
-            setCursor(clickCursor);
+            setCursor(CURSOR_CLICK);
         } else if (e.getEventType() == HyperlinkEvent.EventType.EXITED) {
-            setCursor(defaultCursor);
+            setCursor(CURSOR_DEFAULT);
         } else {
             JHVGlobals.openURL(e.getURL().toString());
         }
@@ -541,14 +541,14 @@ public class HEKEventInformationDialog extends JDialog implements ActionListener
      * {@inheritDoc}
      */
     public void mouseEntered(MouseEvent e) {
-        setCursor(clickCursor);
+        setCursor(CURSOR_CLICK);
     }
 
     /**
      * {@inheritDoc}
      */
     public void mouseExited(MouseEvent e) {
-        setCursor(defaultCursor);
+        setCursor(CURSOR_DEFAULT);
     }
 
     /**

@@ -118,16 +118,4 @@ public class GL3DLayeredView extends GLLayeredView implements GL3DView, LayeredV
     
     protected void redrawBufferImpl() {
     }
-
-    public void renderGL(GL2 gl) {
-        for (int i = 0; i < this.getNumLayers(); i++) {	
-            View layerView = this.getLayer(i);
-            if (layerView instanceof GL3DView) {
-            	((GL3DView) layerView).renderGL(gl, true);
-            }
-        }
-    }
-
-	
-
 }

@@ -5,9 +5,6 @@ public class GL3DVec3f {
      * Predefined Vectors
      */
     public static final GL3DVec3f ZERO = new GL3DVec3f(0f, 0f, 0f);
-    public static final GL3DVec3f XAxis = new GL3DVec3f(1f, 0f, 0f);
-    public static final GL3DVec3f YAxis = new GL3DVec3f(0f, 1f, 0f);
-    public static final GL3DVec3f ZAxis = new GL3DVec3f(0f, 0f, 1f);
 
     /**
      * Coordinates

@@ -41,26 +41,26 @@ public class ChannelMixerPanel extends FilterPanel implements ItemListener, Filt
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 
         title = new JLabel("Channels:");
-        title.setPreferredSize(new Dimension(FilterPanel.titleWidth, FilterPanel.height));
+        title.setPreferredSize(new Dimension(FilterPanel.TITLE_WIDTH, FilterPanel.HEIGHT));
         add(title);
 
         JPanel boxPanel = new JPanel(new GridLayout(1, 3));
         // boxPanel.setLayout(new BoxLayout(boxPanel, BoxLayout.LINE_AXIS));
 
         redCheckBox = new JCheckBox("Red", true);
-        redCheckBox.setPreferredSize(new Dimension(redCheckBox.getPreferredSize().width, FilterPanel.height));
+        redCheckBox.setPreferredSize(new Dimension(redCheckBox.getPreferredSize().width, FilterPanel.HEIGHT));
         redCheckBox.setToolTipText("Unchecked to omit the red color channel when drawing this layer");
         redCheckBox.addItemListener(this);
         boxPanel.add(redCheckBox, BorderLayout.WEST);
 
         greenCheckBox = new JCheckBox("Green", true);
-        greenCheckBox.setPreferredSize(new Dimension(greenCheckBox.getPreferredSize().width, FilterPanel.height));
+        greenCheckBox.setPreferredSize(new Dimension(greenCheckBox.getPreferredSize().width, FilterPanel.HEIGHT));
         greenCheckBox.setToolTipText("Unchecked to omit the green color channel when drawing this layer");
         greenCheckBox.addItemListener(this);
         boxPanel.add(greenCheckBox, BorderLayout.CENTER);
 
         blueCheckBox = new JCheckBox("Blue", true);
-        blueCheckBox.setPreferredSize(new Dimension(blueCheckBox.getPreferredSize().width, FilterPanel.height));
+        blueCheckBox.setPreferredSize(new Dimension(blueCheckBox.getPreferredSize().width, FilterPanel.HEIGHT));
         blueCheckBox.setToolTipText("Unchecked to omit the blue color channel when drawing this layer");
         blueCheckBox.addItemListener(this);
         boxPanel.add(blueCheckBox, BorderLayout.EAST);

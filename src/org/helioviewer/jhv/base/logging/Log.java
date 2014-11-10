@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
  * 
  */
 public class Log {
-    private static final Logger log = LogSettings.getSingletonInstance().getRootLogger();
+    private static final Logger LOG = LogSettings.getSingletonInstance().getRootLogger();
 
     public static void log(Level logLevel, Object message, Throwable error) {
         if (logLevel.equals(Level.TRACE)) {
@@ -50,74 +50,74 @@ public class Log {
     }
 
     public static void fatal(Object obj, Throwable error) {
-        if (log.isEnabledFor(Level.FATAL)) {
-            log.fatal(obj, error);
+        if (LOG.isEnabledFor(Level.FATAL)) {
+            LOG.fatal(obj, error);
         }
     }
 
     public static void fatal(Object obj) {
-        if (log.isEnabledFor(Level.FATAL)) {
-            log.fatal(obj);
+        if (LOG.isEnabledFor(Level.FATAL)) {
+            LOG.fatal(obj);
         }
     }
 
     public static void error(Object obj, Throwable error) {
-        if (log.isEnabledFor(Level.ERROR)) {
-            log.error(obj, error);
+        if (LOG.isEnabledFor(Level.ERROR)) {
+            LOG.error(obj, error);
         }
     }
 
     public static void error(Object obj) {
-        if (log.isEnabledFor(Level.ERROR)) {
-            log.error(obj);
+        if (LOG.isEnabledFor(Level.ERROR)) {
+            LOG.error(obj);
         }
     }
 
     public static void warn(Object obj, Throwable error) {
-        if (log.isEnabledFor(Level.WARN)) {
-            log.warn(obj, error);
+        if (LOG.isEnabledFor(Level.WARN)) {
+            LOG.warn(obj, error);
         }
     }
 
     public static void warn(Object obj) {
-        if (log.isEnabledFor(Level.WARN)) {
-            log.warn(obj);
+        if (LOG.isEnabledFor(Level.WARN)) {
+            LOG.warn(obj);
         }
     }
 
     public static void info(Object obj, Throwable error) {
-        if (log.isEnabledFor(Level.INFO)) {
-            log.info(obj, error);
+        if (LOG.isEnabledFor(Level.INFO)) {
+            LOG.info(obj, error);
         }
     }
 
     public static void info(Object obj) {
-        if (log.isEnabledFor(Level.INFO)) {
-            log.info(obj);
+        if (LOG.isEnabledFor(Level.INFO)) {
+            LOG.info(obj);
         }
     }
 
     public static void debug(Object obj, Throwable error) {
-        if (log.isEnabledFor(Level.DEBUG)) {
-            log.debug(obj, error);
+        if (LOG.isEnabledFor(Level.DEBUG)) {
+            LOG.debug(obj, error);
         }
     }
 
     public static void debug(Object obj) {
-        if (log.isEnabledFor(Level.DEBUG)) {
-            log.debug(obj);
+        if (LOG.isEnabledFor(Level.DEBUG)) {
+            LOG.debug(obj);
         }
     }
 
     public static void trace(Object obj, Throwable error) {
-        if (log.isEnabledFor(Level.TRACE)) {
-            log.trace(obj, error);
+        if (LOG.isEnabledFor(Level.TRACE)) {
+            LOG.trace(obj, error);
         }
     }
 
     public static void trace(Object obj) {
-        if (log.isEnabledFor(Level.TRACE)) {
-            log.trace(obj);
+        if (LOG.isEnabledFor(Level.TRACE)) {
+            LOG.trace(obj);
         }
     }
 

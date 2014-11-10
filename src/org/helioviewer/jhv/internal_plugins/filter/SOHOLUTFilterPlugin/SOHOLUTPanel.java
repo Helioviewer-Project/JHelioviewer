@@ -36,7 +36,7 @@ public class SOHOLUTPanel extends FilterPanel implements ActionListener, FilterA
 
     private static final long serialVersionUID = 1L;
 
-    private static final Icon invertIcon = IconBank.getIcon(JHVIcon.INVERT);
+    private static final Icon ICON_INVERT = IconBank.getIcon(JHVIcon.INVERT);
 
     private SOHOLUTFilter filter;
     private Map<String, LUT> lutMap;
@@ -49,7 +49,7 @@ public class SOHOLUTPanel extends FilterPanel implements ActionListener, FilterA
     /**
      * Shown invert button
      */
-    private JToggleButton invertButton = new JToggleButton(invertIcon);
+    private JToggleButton invertButton = new JToggleButton(ICON_INVERT);
     /**
      * Shown label
      */
@@ -64,7 +64,7 @@ public class SOHOLUTPanel extends FilterPanel implements ActionListener, FilterA
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 
         title = new JLabel("Color:");
-        title.setPreferredSize(new Dimension(FilterPanel.titleWidth, FilterPanel.height));
+        title.setPreferredSize(new Dimension(FilterPanel.TITLE_WIDTH, FilterPanel.HEIGHT));
         add(title);
 
         // Add add entry
@@ -80,7 +80,7 @@ public class SOHOLUTPanel extends FilterPanel implements ActionListener, FilterA
 
         invertButton.setToolTipText("Invert color table");
         invertButton.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
-        invertButton.setPreferredSize(new Dimension(FilterPanel.valueWidth - 14, FilterPanel.height));
+        invertButton.setPreferredSize(new Dimension(FilterPanel.VALUE_WIDTH - 14, FilterPanel.HEIGHT));
         invertButton.addActionListener(this);
         add(invertButton);
 

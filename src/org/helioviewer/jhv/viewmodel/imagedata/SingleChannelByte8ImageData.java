@@ -20,7 +20,7 @@ import org.helioviewer.jhv.viewmodel.imagetransport.ImageTransport;
  */
 public class SingleChannelByte8ImageData extends AbstractImageData {
 
-    private static final ImageFormat format = new SingleChannelImageFormat(8);
+    private static final ImageFormat FORMAT = new SingleChannelImageFormat(8);
     private Byte8ImageTransport imageTransport;
 
     /**
@@ -109,7 +109,7 @@ public class SingleChannelByte8ImageData extends AbstractImageData {
      * {@inheritDoc}
      */
     public ImageFormat getImageFormat() {
-        return format;
+        return FORMAT;
     }
 
     /**

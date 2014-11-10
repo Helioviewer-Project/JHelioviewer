@@ -45,7 +45,7 @@ class J2KReader implements Runnable {
     }
 
     /** Whether IOExceptions should be shown on System.err or not */
-    private static final boolean verbose = false;
+    private static final boolean VERBOSE = false;
 
     /** The thread that this object runs on. */
     private volatile Thread myThread;
@@ -281,7 +281,7 @@ class J2KReader implements Runnable {
                         }
 
                     } catch (IOException e) {
-                        if (verbose) {
+                        if (VERBOSE) {
                             e.printStackTrace();
                         }
                         try {
@@ -581,7 +581,7 @@ class J2KReader implements Runnable {
                         }
 
                     } catch (IOException e) {
-                        if (verbose) {
+                        if (VERBOSE) {
                             Log.error(e.getMessage() + ": " + req.getMessageBody() + " " + req.getQuery());
                             e.printStackTrace();
                         }

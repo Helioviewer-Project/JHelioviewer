@@ -13,7 +13,6 @@ import org.helioviewer.jhv.viewmodel.view.cache.ImageCacheStatus;
 import org.helioviewer.jhv.viewmodel.view.cache.LocalImageCacheStatus;
 import org.helioviewer.jhv.viewmodel.view.cache.RemoteImageCacheStatus;
 import org.helioviewer.jhv.viewmodel.view.jp2view.J2KRender.RenderReasons;
-import org.helioviewer.jhv.viewmodel.view.jp2view.datetime.ImmutableDateTime;
 import org.helioviewer.jhv.viewmodel.view.jp2view.image.JP2ImageParameter;
 import org.helioviewer.jhv.viewmodel.view.jp2view.image.SubImage;
 
@@ -34,12 +33,11 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.image.SubImage;
 public class JHVJPXView extends JHVJP2View implements View {
 
     // Caching
-    protected ImageCacheStatus imageCacheStatus;
-    protected DateTimeCache dateTimeCache;
-    protected int lastRenderedCompositionLayer = -1;
-
+    private ImageCacheStatus imageCacheStatus;
+    private DateTimeCache dateTimeCache;
+    
     // Linking movies
-    protected LinkedMovieManager linkedMovieManager; // if the move is not
+    private LinkedMovieManager linkedMovieManager; // if the move is not
 
     private SpeedType speedType = SpeedType.RELATIV;
     
@@ -379,8 +377,6 @@ public class JHVJPXView extends JHVJP2View implements View {
      * {@inheritDoc}
      */
     void setSubimageData(ImageData newImageData, SubImage roi, int compositionLayer) {
-
-        lastRenderedCompositionLayer = compositionLayer;
 
         metaData.updateDateTime(dateTimeCache.getDateTime(compositionLayer));
         event.addReason(new TimestampChangedReason(this, metaData.getDateTime()));

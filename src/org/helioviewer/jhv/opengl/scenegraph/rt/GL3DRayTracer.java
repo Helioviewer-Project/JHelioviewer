@@ -37,14 +37,6 @@ public class GL3DRayTracer {
 		pixelSize = hw / camera.getWidth() * 2;
 	}
 
-	public synchronized GL3DRay castCenter() {
-		GL3DRay ray = createCenterRay(this.camera);
-
-		// isOutside flag set to true if the ray hit no object in the scene
-		ray.isOutside = !this.sceneRoot.hit(ray);
-		return ray;
-	}
-
 	public synchronized GL3DRay cast(int pixelX, int pixelY) {
 		GL3DRay ray = createPrimaryRay(this.camera, pixelX, pixelY);
 

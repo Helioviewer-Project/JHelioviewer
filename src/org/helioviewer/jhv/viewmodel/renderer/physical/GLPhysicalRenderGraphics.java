@@ -26,7 +26,7 @@ import org.helioviewer.jhv.viewmodel.view.View;
  * */
 public class GLPhysicalRenderGraphics extends AbstractPhysicalRenderGraphics {
 
-    private static final int edgesPerOval = 32; // has to be power of two
+    private static final int POINTS_PER_OVAL = 32; // has to be power of two
     private static double[] sinOval;
 
     private GL2 gl;
@@ -52,9 +52,9 @@ public class GLPhysicalRenderGraphics extends AbstractPhysicalRenderGraphics {
         commonRenderGraphics = new GLCommonRenderGraphics(_gl);
 
         if (sinOval == null) {
-            sinOval = new double[edgesPerOval];
-            for (int i = 0; i < edgesPerOval; i++) {
-                sinOval[i] = Math.sin(Math.PI * 2 * i / edgesPerOval);
+            sinOval = new double[POINTS_PER_OVAL];
+            for (int i = 0; i < POINTS_PER_OVAL; i++) {
+                sinOval[i] = Math.sin(Math.PI * 2 * i / POINTS_PER_OVAL);
             }
         }
     }
@@ -150,8 +150,8 @@ public class GLPhysicalRenderGraphics extends AbstractPhysicalRenderGraphics {
 
         gl.glBegin(GL2.GL_LINE_LOOP);
 
-        for (int i = 0; i < edgesPerOval; i++) {
-            gl.glVertex2d(x + (int) (radiusX * sinOval[i]), y + (int) (radiusY * sinOval[(i + (edgesPerOval >> 2)) & (edgesPerOval - 1)]));
+        for (int i = 0; i < POINTS_PER_OVAL; i++) {
+            gl.glVertex2d(x + (int) (radiusX * sinOval[i]), y + (int) (radiusY * sinOval[(i + (POINTS_PER_OVAL >> 2)) & (POINTS_PER_OVAL - 1)]));
         }
 
         gl.glEnd();
@@ -180,8 +180,8 @@ public class GLPhysicalRenderGraphics extends AbstractPhysicalRenderGraphics {
 
             gl.glVertex2d(x, y);
 
-            for (int i = 0; i < edgesPerOval; i++) {
-                gl.glVertex2d(x + (radiusX * sinOval[i]), y + (radiusY * sinOval[(i + (edgesPerOval >> 2)) & (edgesPerOval - 1)]));
+            for (int i = 0; i < POINTS_PER_OVAL; i++) {
+                gl.glVertex2d(x + (radiusX * sinOval[i]), y + (radiusY * sinOval[(i + (POINTS_PER_OVAL >> 2)) & (POINTS_PER_OVAL - 1)]));
             }
 
             gl.glVertex2d(x, y + radiusY);
@@ -351,12 +351,6 @@ public class GLPhysicalRenderGraphics extends AbstractPhysicalRenderGraphics {
     }
 
 	@Override
-	public void drawImage3d(BufferedImage image, Double x, Double y, Double z) {
-		// TODO Auto-generated method stub
-		drawImage3d(image, x, y, z, 1.0f);
-	}
-
-	@Override
 	public void drawImage3d(BufferedImage image, Double x, Double y, Double z,
 			float scale) {
 		Vector2dDouble imageSize = convertScreenToPhysical(image.getWidth(), image.getHeight());
@@ -364,9 +358,8 @@ public class GLPhysicalRenderGraphics extends AbstractPhysicalRenderGraphics {
 
 	}
 
-	@Override
-	public void drawImage3d(BufferedImage image, Double x, Double y, Double z,
-			Double width, Double height) {
+	private void drawImage3d(BufferedImage image, double x, double y, double z,
+	                         double width, double height) {
 		y = -y;
 		
         gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
@@ -485,29 +478,6 @@ public class GLPhysicalRenderGraphics extends AbstractPhysicalRenderGraphics {
 		
 	}
 
-	@Override
-	public void startDrawLines() {
-		gl.glDisable(GL.GL_TEXTURE_2D);
-        gl.glEnable(GL.GL_LINE_SMOOTH);
-        //gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-        gl.glBegin(GL.GL_LINES);
-	}
-
-	@Override
-	public void stopDrawLines() {
-        gl.glEnd();
-        gl.glDisable(GL.GL_LINE_SMOOTH);
-		
-	}
-
-	@Override
-	public void drawLines3d(Double x0, Double y0, Double z0, Double x1,
-			Double y1, Double z1) {
-        gl.glVertex3d(x0, y0, z0);
-        gl.glVertex3d(x1, y1, z1);
-		
-	}
-	
 	public GL getGL(){
 		return gl;
 	}

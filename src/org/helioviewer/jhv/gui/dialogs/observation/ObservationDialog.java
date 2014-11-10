@@ -37,7 +37,7 @@ public class ObservationDialog extends JDialog implements ActionListener, Showab
 
     private static final long serialVersionUID = 1L;
 
-    private static final ObservationDialog singletonInstace = new ObservationDialog();
+    private static final ObservationDialog SINGLETON = new ObservationDialog();
 
     private final HashMap<String, ObservationDialogPanel> uiMap = new HashMap<String, ObservationDialogPanel>();
 
@@ -67,7 +67,7 @@ public class ObservationDialog extends JDialog implements ActionListener, Showab
      * Returns the singleton instance of the dialog.
      * */
     public static ObservationDialog getSingletonInstance() {
-        return singletonInstace;
+        return SINGLETON;
     }
 
     /**

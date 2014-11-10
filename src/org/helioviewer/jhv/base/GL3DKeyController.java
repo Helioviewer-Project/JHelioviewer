@@ -17,7 +17,7 @@ import org.helioviewer.jhv.gui.controller.GL3DCameraMouseController;
  * 
  */
 public class GL3DKeyController extends KeyAdapter {
-    private static final GL3DKeyController instance = new GL3DKeyController();
+    private static final GL3DKeyController SINGLETON = new GL3DKeyController();
 
     private HashMap<Integer, List<GL3DKeyListener>> listenerMap = new HashMap<Integer, List<GL3DKeyListener>>();
 
@@ -25,7 +25,7 @@ public class GL3DKeyController extends KeyAdapter {
     }
 
     public static GL3DKeyController getInstance() {
-        return instance;
+        return SINGLETON;
     }
 
     public void keyPressed(KeyEvent e) {

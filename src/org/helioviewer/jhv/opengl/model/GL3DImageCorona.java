@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.helioviewer.jhv.base.GL3DHelper;
 import org.helioviewer.jhv.base.math.Vector2dDouble;
-import org.helioviewer.jhv.base.math.Vector2dInt;
 import org.helioviewer.jhv.base.wcs.CoordinateConversion;
 import org.helioviewer.jhv.base.wcs.CoordinateVector;
 import org.helioviewer.jhv.base.wcs.impl.TextureCoordinateSystem;
@@ -27,9 +26,6 @@ import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLVertexShaderProgram;
  * 
  */
 public class GL3DImageCorona extends GL3DImageMesh {
-    protected Vector2dInt mappingResolution = new Vector2dInt(2, 2);
-    
-    Region lastRegion = null;
     private GL3DImageLayer layer = null;
     GL3DMat4d phiRotation = null;
     

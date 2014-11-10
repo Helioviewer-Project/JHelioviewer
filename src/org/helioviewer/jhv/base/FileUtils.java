@@ -1,6 +1,12 @@
 package org.helioviewer.jhv.base;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -22,7 +28,7 @@ import org.helioviewer.jhv.base.logging.Log;
 public class FileUtils {
     private static Map<String, String> registeredExecutables = new HashMap<String, String>();
 
-    public static final byte[] HEX_CHAR_TABLE = { (byte) '0', (byte) '1', (byte) '2', (byte) '3', (byte) '4', (byte) '5', (byte) '6', (byte) '7', (byte) '8', (byte) '9', (byte) 'a', (byte) 'b', (byte) 'c', (byte) 'd', (byte) 'e', (byte) 'f' };
+    private static final byte[] HEX_CHAR_TABLE = { (byte) '0', (byte) '1', (byte) '2', (byte) '3', (byte) '4', (byte) '5', (byte) '6', (byte) '7', (byte) '8', (byte) '9', (byte) 'a', (byte) 'b', (byte) 'c', (byte) 'd', (byte) 'e', (byte) 'f' };
 
     /**
      * Return the current working directory
@@ -181,64 +187,6 @@ public class FileUtils {
         } else {
             registeredExecutables.put(identifier, path);
         }
-    }
-
-    /**
-     * Checks if an executable with the given identifier was registered.
-     * 
-     * @param identifier
-     *            Identifier of the executable
-     * @return true, if executable is registered
-     */
-    public static boolean isExecutableRegistered(String identifier) {
-        return registeredExecutables.containsKey(identifier);
-    }
-
-    /**
-     * Method copies a file from src to dst.
-     * 
-     * @param src
-     *            Source file
-     * @param dst
-     *            Destination file
-     * @throws IOException
-     */
-    public static void copy(File src, File dst) throws IOException {
-        Log.debug("Copy file " + src.getAbsolutePath() + " to " + dst.getAbsolutePath());
-        InputStream in = new FileInputStream(src);
-        OutputStream out = new FileOutputStream(dst);
-
-        // Transfer bytes from in to out
-        byte[] buf = new byte[1024];
-        int len;
-        while ((len = in.read(buf)) > 0) {
-            out.write(buf, 0, len);
-        }
-        in.close();
-        out.close();
-    }
-
-    /**
-     * Method saving a stream to dst.
-     * 
-     * @param in
-     *            Input stream, will be closed if finished
-     * @param dst
-     *            Destination file
-     * @throws IOException
-     */
-    public static void save(InputStream in, File dst) throws IOException {
-        Log.debug("Saving stream to " + dst.getAbsolutePath());
-        OutputStream out = new FileOutputStream(dst);
-
-        // Transfer bytes from in to out
-        byte[] buf = new byte[1024];
-        int len;
-        while ((len = in.read(buf)) > 0) {
-            out.write(buf, 0, len);
-        }
-        in.close();
-        out.close();
     }
 
     /**

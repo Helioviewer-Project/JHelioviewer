@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.helioviewer.jhv.base.math.Vector2dInt;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.changeevent.LayerChangedReason;
 import org.helioviewer.jhv.viewmodel.changeevent.LayerChangedReason.LayerChangeType;
@@ -73,7 +72,6 @@ public abstract class AbstractLayeredView extends AbstractView implements Layere
         public ViewportView viewportView;
         public MetaDataView metaDataView;
 
-        public Vector2dInt renderOffset;
         public boolean visibility = true;
 
         /**

@@ -50,7 +50,7 @@ public class SolarImageCoordinateSystem extends Cartesian2DCoordinateSystem {
     }
 
     public double getSolarRadius() {
-        return Constants.SunRadius;
+        return Constants.SUN_RADIUS;
     }
 
     public double getSolarRadiusSquare() {

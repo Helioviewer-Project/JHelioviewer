@@ -43,13 +43,6 @@ public class QualitySpinner extends JPanel implements ChangeListener, ViewListen
         }
     }
 
-    /** A method to restore the default setting */
-    public void setToDefault() {
-        if (jp2View != null) {
-            qualitySpinner.setValue(jp2View.getMaximumNumQualityLayers());
-        }
-    }
-
     public void stateChanged(javax.swing.event.ChangeEvent e) {
         if (jp2View != null) {
             int quality = ((QualityLevel) ((SpinnerListModel) qualitySpinner.getModel()).getValue()).getLevel();

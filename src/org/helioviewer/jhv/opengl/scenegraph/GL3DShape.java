@@ -2,7 +2,6 @@ package org.helioviewer.jhv.opengl.scenegraph;
 
 import org.helioviewer.jhv.base.wcs.CoordinateSystem;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DDrawBits.Bit;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DMat3d;
 import org.helioviewer.jhv.opengl.scenegraph.math.GL3DMat4d;
 import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec4d;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
@@ -22,12 +21,8 @@ public abstract class GL3DShape extends GL3DNode {
     // World Matrix
     protected GL3DMat4d wm;
     protected GL3DMat4d wmI;
-    protected GL3DMat3d wmN;
 
     protected GL3DAABBox aabb;
-
-    // The coordinate system in which this Shape is defined in
-    protected CoordinateSystem coordinateSystem;
 
     public GL3DShape(String name) {
         this(name, null);
@@ -35,7 +30,6 @@ public abstract class GL3DShape extends GL3DNode {
 
     public GL3DShape(String name, CoordinateSystem coordinateSystem) {
         super(name);
-        this.coordinateSystem = coordinateSystem;
 
         this.m = GL3DMat4d.identity();
         this.wm = GL3DMat4d.identity();
@@ -47,7 +41,6 @@ public abstract class GL3DShape extends GL3DNode {
         this.wm = state.multiplyMV(this.m);
         state.buildInverseAndNormalMatrix();
         this.wmI = new GL3DMat4d(state.getMVInverse());
-        this.wmN = new GL3DMat3d(state.normalMatrix);
         
         this.shapeInit(state);
         this.buildAABB();
@@ -65,7 +58,6 @@ public abstract class GL3DShape extends GL3DNode {
             this.wm = state.multiplyMV(this.m);
             state.buildInverseAndNormalMatrix();
             this.wmI = new GL3DMat4d(state.getMVInverse());
-            this.wmN = new GL3DMat3d(state.normalMatrix);
             this.shapeUpdate(state);
             this.setUnchanged();
             this.buildAABB();

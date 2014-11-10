@@ -16,7 +16,6 @@ import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 import org.helioviewer.jhv.opengl.scenegraph.math.GL3DMat4d;
 import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec3d;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DImageTextureView;
-import org.helioviewer.jhv.viewmodel.view.opengl.GLOverlayView;
 
 
 /**
@@ -28,13 +27,8 @@ import org.helioviewer.jhv.viewmodel.view.opengl.GLOverlayView;
  * 
  */
 public class GL3DImageLayers extends GL3DGroup {
-
     private HashMap<GL3DImageTextureView, GL3DImageLayer> imageLayerMap;
-
     private boolean coronaVisibility = true;
-
-	public GLOverlayView overlayView = null;
-    
 
     public GL3DImageLayers() {
         super("Images");

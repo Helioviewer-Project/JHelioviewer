@@ -21,7 +21,7 @@ import org.helioviewer.jhv.viewmodel.imagetransport.Int32ImageTransport;
  */
 public class RGBInt24ImageData extends AbstractImageData {
 
-    private static final ImageFormat format = new RGB24ImageFormat();
+    private static final ImageFormat FORMAT = new RGB24ImageFormat();
     private Int32ImageTransport imageTransport;
 
     /**
@@ -110,7 +110,7 @@ public class RGBInt24ImageData extends AbstractImageData {
      * {@inheritDoc}
      */
     public ImageFormat getImageFormat() {
-        return format;
+        return FORMAT;
     }
 
     /**

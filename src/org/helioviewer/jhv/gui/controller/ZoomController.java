@@ -34,7 +34,7 @@ public class ZoomController {
 
 	private volatile BasicImagePanel panel = null;
 
-	public static final double zoomFactorStep = Math.pow(2, 1.0 / (4.0));
+	public static final double ZOOM_STEP = Math.pow(2, 1.0 / (4.0));
 
 	/**
 	 * Sets the panel on which the zoom controller should operate. Can be used
@@ -48,22 +48,6 @@ public class ZoomController {
 	}
 
 	/**
-	 * Zooms in one step. A step mean scaling the current region of interest by
-	 * the square root of two
-	 */
-	public void zoomIn(View topmostView) {
-		zoom(topmostView, zoomFactorStep);
-	}
-
-	/**
-	 * Zooms out one step. A step mean scaling the current region of interest by
-	 * the square root of two
-	 */
-	public void zoomOut(View topmostView) {
-		zoom(topmostView, 1.0 / zoomFactorStep);
-	}
-
-	/**
 	 * Zooms in or out the desired number of steps. A step mean scaling the
 	 * current region of interest by the square root of two. To zoom in, steps
 	 * has to be greater than zero, to zoom out it has to be lesser than zero.
@@ -72,7 +56,7 @@ public class ZoomController {
 	 *            Number of steps to zoom, the sign defines the direction.
 	 */
 	public void zoomSteps(View topmostView, int steps) {
-		zoom(topmostView, Math.pow(zoomFactorStep, steps));
+		zoom(topmostView, Math.pow(ZOOM_STEP, steps));
 	}
 
 	/**
@@ -205,26 +189,6 @@ public class ZoomController {
 	}
 
 	/**
-	 * Zooms the image in such a way, that the active layer is displayed in its
-	 * native resolution.
-	 */
-	public void zoom1to1(View topmostView, View activeView) {
-		// View view = LayersModel.getSingletonInstance().getActiveView();
-		if (activeView != null && topmostView != null) {
-			zoom(topmostView, 1.0 / getZoom(activeView));
-		}
-	}
-
-	public void zoom1to1(View topmostView, View activeView, Viewport viewport) {
-		if (activeView != null && topmostView != null && viewport != null) {
-			zoom(topmostView,
-					1.0 / getZoom(activeView,
-							topmostView.getAdapter(RegionView.class)
-									.getRegion(), viewport));
-		}
-	}
-
-	/**
 	 * Zooms the image in such a way, that the whole region given by the
 	 * metaData fits exactly into the viewport.
 	 * 
@@ -243,15 +207,4 @@ public class ZoomController {
 			regionView.setRegion(region, new ChangeEvent());
 		}
 	}
-
-	/**
-	 * Convenience method. Fits the active layer of the main view chain into the
-	 * main viewport.
-	 */
-	public void zoomFit() {
-		zoomFit(LayersModel.getSingletonInstance().getActiveView()
-				.getAdapter(MetaDataView.class),
-				GuiState3DWCS.mainComponentView.getAdapter(RegionView.class));
-	}
-
 }

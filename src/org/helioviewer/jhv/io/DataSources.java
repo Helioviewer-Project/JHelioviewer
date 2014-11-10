@@ -160,7 +160,7 @@ public class DataSources {
     /**
      * singleton instance
      */
-    private static final DataSources singleton = new DataSources();
+    private static final DataSources SINGLETON = new DataSources();
 
     /**
      * Returns the only instance of this class and will be initialize on the
@@ -169,7 +169,7 @@ public class DataSources {
      * @return the only instance of this class.
      * */
     public static DataSources getSingletonInstance() {
-        return singleton;
+        return SINGLETON;
     }
 
     /**

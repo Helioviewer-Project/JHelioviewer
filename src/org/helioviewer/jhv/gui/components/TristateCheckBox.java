@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.gui.components.tristateCheckbox;
+package org.helioviewer.jhv.gui.components;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -50,7 +50,7 @@ public final class TristateCheckBox extends JCheckBox {
      * Note: Only even numbers are possible. Depending on the size of the full
      * checkbox, one pixel may be added to this size
      */
-    private static final int largeRectangleSize = 10;
+    private static final int LARGE_RECTANGLE_SIZE = 10;
 
     /**
      * Size of the (inner) additional rectangle (if the checkbox is in
@@ -60,19 +60,19 @@ public final class TristateCheckBox extends JCheckBox {
      * Note: Only even numbers are possible. Depending on the size of the full
      * checkbox, one pixel may be added to this size
      */
-    private static final int smallRectangleSize = 6;
+    private static final int SMALL_RECTANGLE_SIZE = 6;
 
     /**
      * This variable defines the opacity of the additionally drawn rectangle (if
      * the checkbox is in intermediate state)
      */
-    private static final float rectangleAlpha = 0.3f;
+    private static final float RECTANGLE_ALPHA = 0.3f;
 
     /**
      * Color of the additional rectangle (if the checkbox is in intermediate
      * state)
      */
-    private static final Color rectangleColor = Color.BLACK;
+    private static final Color RECTANGLE_COLOR = Color.BLACK;
 
     /**
      * If indeterminate is TRUE, the magic 'block' will be drawn
@@ -139,8 +139,8 @@ public final class TristateCheckBox extends JCheckBox {
 
             // use graphics2d to add a slightly transparent black box in the
             Graphics2D g2 = (Graphics2D) g;
-            g2.setComposite(makeComposite(rectangleAlpha));
-            g2.setColor(rectangleColor);
+            g2.setComposite(makeComposite(RECTANGLE_ALPHA));
+            g2.setColor(RECTANGLE_COLOR);
 
             // calculate the center of checkbox (with respect to having odd/even
             // number of pixels)
@@ -155,32 +155,32 @@ public final class TristateCheckBox extends JCheckBox {
             if (getWidth() % 2 == 0) {
                 // even number of pixels
                 xCenter = getWidth() / 2;
-                widthLarge = largeRectangleSize;
-                widthSmall = smallRectangleSize;
+                widthLarge = LARGE_RECTANGLE_SIZE;
+                widthSmall = SMALL_RECTANGLE_SIZE;
             } else {
                 // odd number of pixels
                 xCenter = (int) Math.floor(getWidth() / 2.0);
-                widthLarge = largeRectangleSize + 1;
-                widthSmall = smallRectangleSize + 1;
+                widthLarge = LARGE_RECTANGLE_SIZE + 1;
+                widthSmall = SMALL_RECTANGLE_SIZE + 1;
             }
 
             // calculations for y/height
             if (getHeight() % 2 == 0) {
                 // even number of pixels
                 yCenter = getHeight() / 2;
-                heightLarge = largeRectangleSize;
-                heightSmall = smallRectangleSize;
+                heightLarge = LARGE_RECTANGLE_SIZE;
+                heightSmall = SMALL_RECTANGLE_SIZE;
             } else {
                 // odd number of pixels
                 yCenter = (int) Math.floor(getHeight() / 2.0);
-                heightLarge = largeRectangleSize + 1;
-                heightSmall = smallRectangleSize + 1;
+                heightLarge = LARGE_RECTANGLE_SIZE + 1;
+                heightSmall = SMALL_RECTANGLE_SIZE + 1;
             }
 
             // since we already caluclated the appropriate center/width/height
             // we can just draw the rectangles now
-            g2.fillRect(xCenter - largeRectangleSize / 2, yCenter - largeRectangleSize / 2, widthLarge, heightLarge);
-            g2.fillRect(xCenter - smallRectangleSize / 2, yCenter - smallRectangleSize / 2, widthSmall, heightSmall);
+            g2.fillRect(xCenter - LARGE_RECTANGLE_SIZE / 2, yCenter - LARGE_RECTANGLE_SIZE / 2, widthLarge, heightLarge);
+            g2.fillRect(xCenter - SMALL_RECTANGLE_SIZE / 2, yCenter - SMALL_RECTANGLE_SIZE / 2, widthSmall, heightSmall);
         }
 
     }

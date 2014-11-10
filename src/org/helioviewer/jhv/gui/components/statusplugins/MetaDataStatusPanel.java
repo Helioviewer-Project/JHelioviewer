@@ -26,8 +26,8 @@ public class MetaDataStatusPanel extends ViewStatusPanelPlugin {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Icon checkIcon = IconBank.getIcon(JHVIcon.CHECK);
-    private static final Icon exIcon = IconBank.getIcon(JHVIcon.EX);
+    private static final Icon ICON_CHECK = IconBank.getIcon(JHVIcon.CHECK);
+    private static final Icon ICON_EX = IconBank.getIcon(JHVIcon.EX);
 
     /**
      * Default constructor.
@@ -36,7 +36,7 @@ public class MetaDataStatusPanel extends ViewStatusPanelPlugin {
         setBorder(BorderFactory.createEtchedBorder());
 
         setText("Meta:");
-        setIcon(exIcon);
+        setIcon(ICON_EX);
         setVerticalTextPosition(JLabel.CENTER);
         setHorizontalTextPosition(JLabel.LEFT);
         validate();
@@ -62,7 +62,7 @@ public class MetaDataStatusPanel extends ViewStatusPanelPlugin {
                 // it might be a good idea to push that functionality to
                 // LayersModel
                 if (metaDataView != null) {
-                    setIcon(checkIcon);
+                    setIcon(ICON_CHECK);
                     
                 }
 

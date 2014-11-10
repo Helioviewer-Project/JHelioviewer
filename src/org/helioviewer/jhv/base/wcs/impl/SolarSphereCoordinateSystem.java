@@ -31,6 +31,6 @@ public class SolarSphereCoordinateSystem extends Cartesian3DCoordinateSystem {
     }
 
     public double getSolarRadius() {
-        return Constants.SunRadius;
+        return Constants.SUN_RADIUS;
     }
 }

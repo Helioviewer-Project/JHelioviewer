@@ -5,21 +5,19 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.AbstractMap;
-import java.util.Date;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 import org.helioviewer.jhv.base.logging.Log;
-import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.plugins.hekplugin.HEKPlugin3D;
 
 public class HEKConstants {
 
     // the sole instance of this class
-    private static final HEKConstants singletonInstance = new HEKConstants();
+    private static final HEKConstants SINGLETON = new HEKConstants();
 
     public static final String ACRONYM_FALLBACK = "OT"; // other
     
@@ -36,8 +34,6 @@ public class HEKConstants {
     private AbstractMap<String, BufferedImage> largeBufImgs = new HashMap<String, BufferedImage>();
     private AbstractMap<String, BufferedImage> largeOverlayBufImgs = new HashMap<String, BufferedImage>();
     private AbstractMap<String, Color> colors = new HashMap<String, Color>();
-
-    public static final Interval<Date> DEFAULT_EMPTY_INTERVAL = new Interval<Date>(new Date(0), new Date(0));
 
     /**
      * Setup all other BufferedImages needed
@@ -237,7 +233,7 @@ public class HEKConstants {
      * @return the only instance of this class.
      * */
     public static HEKConstants getSingletonInstance() {
-        return singletonInstance;
+        return SINGLETON;
     }
 
     /**
@@ -281,34 +277,6 @@ public class HEKConstants {
         }
 
         return input;
-
-    }
-
-    /**
-     * Converts acronyms used in the HEK API into ImageIcons representing that
-     * acronym
-     * <p>
-     * This method is NOT case-sensitive.
-     * 
-     * @see org.helioviewer.jhv.plugins.overlay.hek.settings.HEKConstants#smallIcons
-     * @param input
-     * @return - null if the acronym is not known
-     */
-    public ImageIcon acronymToIcon(String input, boolean large) {
-
-        String type = input.toUpperCase();
-
-        if (large) {
-            if (this.largeIcons.containsKey(type)) {
-                return largeIcons.get(type);
-            }
-        } else {
-            if (this.smallIcons.containsKey(type)) {
-                return smallIcons.get(type);
-            }
-        }
-
-        return null;
 
     }
 

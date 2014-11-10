@@ -49,10 +49,10 @@ public class MetaDataEIT extends MetaData{
         }
         // distance to sun in meters
         double distanceToSun = metaDataContainer.tryGetDouble("DSUN_OBS");
-        double radiusSunInArcsec = Math.atan(Constants.SunRadius / distanceToSun) * MathUtils.radeg * 3600;
+        double radiusSunInArcsec = Math.atan(Constants.SUN_RADIUS / distanceToSun) * MathUtils.RAD_TO_DEG * 3600;
 
         solarPixelRadius = radiusSunInArcsec / arcsecPerPixelX;
-        meterPerPixel = Constants.SunRadius / solarPixelRadius;
+        meterPerPixel = Constants.SUN_RADIUS / solarPixelRadius;
         setPhysicalLowerLeftCorner(sunPixelPosition.scale(-meterPerPixel));
         setPhysicalImageSize(new Vector2dDouble(pixelImageSize.getX() * meterPerPixel, pixelImageSize.getY() * meterPerPixel));
                 
@@ -115,7 +115,7 @@ public class MetaDataEIT extends MetaData{
 
         if (changed) {
             solarPixelRadius = newSolarPixelRadius;
-            meterPerPixel = Constants.SunRadius / solarPixelRadius;
+            meterPerPixel = Constants.SUN_RADIUS / solarPixelRadius;
             setPhysicalLowerLeftCorner(sunPixelPosition.scale(-meterPerPixel));
             setPhysicalImageSize(new Vector2dDouble(pixelImageSize.getX() * meterPerPixel, pixelImageSize.getY() * meterPerPixel));
         }

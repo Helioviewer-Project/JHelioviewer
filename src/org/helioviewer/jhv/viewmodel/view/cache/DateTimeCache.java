@@ -6,8 +6,8 @@ import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.io.APIResponse;
 import org.helioviewer.jhv.viewmodel.io.APIResponseDump;
 import org.helioviewer.jhv.viewmodel.view.ImageInfoView;
+import org.helioviewer.jhv.viewmodel.view.jp2view.ImmutableDateTime;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
-import org.helioviewer.jhv.viewmodel.view.jp2view.datetime.ImmutableDateTime;
 
 /**
  * Cache to parse and buffer all timestamps from all images of an image series.

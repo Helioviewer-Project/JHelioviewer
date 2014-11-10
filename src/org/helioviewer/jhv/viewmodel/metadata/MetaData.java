@@ -7,7 +7,7 @@ import org.helioviewer.jhv.base.math.Vector2dInt;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.viewmodel.region.Region;
 import org.helioviewer.jhv.viewmodel.region.StaticRegion;
-import org.helioviewer.jhv.viewmodel.view.jp2view.datetime.ImmutableDateTime;
+import org.helioviewer.jhv.viewmodel.view.jp2view.ImmutableDateTime;
 
 public abstract class MetaData {
   private Vector2dDouble lowerLeftCorner;
@@ -443,7 +443,7 @@ public abstract class MetaData {
 
 	public double getRadiusSuninArcsec() {
         double distanceToSun = metaDataContainer.tryGetDouble("DSUN_OBS");
-        return Math.atan(Constants.SunRadius / distanceToSun) * MathUtils.radeg * 3600;
+        return Math.atan(Constants.SUN_RADIUS / distanceToSun) * MathUtils.RAD_TO_DEG * 3600;
 	}
 
 }

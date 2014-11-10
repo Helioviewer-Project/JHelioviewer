@@ -235,21 +235,6 @@ public class LogSettings {
     }
 
     /**
-     * Checks whether an appender is enabled
-     * 
-     * @param logger
-     *            identifier of the appender
-     * @return true, if the appender is enabled
-     */
-    public boolean getLoggingEnabled(String logger) {
-        Level level = getLoggingLevel(logger);
-        if (level == null) {
-            return false;
-        }
-        return !level.equals(Level.OFF);
-    }
-
-    /**
      * Returns the current log level of an appender
      * 
      * @param logger
@@ -287,21 +272,6 @@ public class LogSettings {
         rootLoggerSetting = minLevel.toString() + rootLoggerSetting.substring(rootLoggerSetting.indexOf(','));
         settings.setProperty("log4j.rootLogger", rootLoggerSetting);
         modified = true;
-    }
-
-    /**
-     * Checks whether an appender is enabled by default
-     * 
-     * @param logger
-     *            identifier of the appender
-     * @return true, if the appender is enabled by default
-     */
-    public boolean getDefaultLoggingEnabled(String logger) {
-        Level level = getDefaultLoggingLevel(logger);
-        if (level == null) {
-            return false;
-        }
-        return !level.equals(Level.OFF);
     }
 
     /**

@@ -39,10 +39,10 @@ import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.region.Region;
 import org.helioviewer.jhv.viewmodel.region.StaticRegion;
 import org.helioviewer.jhv.viewmodel.view.*;
+import org.helioviewer.jhv.viewmodel.view.jp2view.ImmutableDateTime;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJP2View;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JP2Image;
-import org.helioviewer.jhv.viewmodel.view.jp2view.datetime.ImmutableDateTime;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -68,7 +68,7 @@ public class LayersModel implements ViewListener
     private int activeLayer=-1;
 
     /** The sole instance of this class. */
-    private static final LayersModel layersModel=new LayersModel();
+    private static final LayersModel LAYERS_MODEL=new LayersModel();
 
     private AbstractList<LayersListener> layerListeners=new LinkedList<LayersListener>();
 
@@ -82,7 +82,7 @@ public class LayersModel implements ViewListener
      * */
     public static LayersModel getSingletonInstance()
     {
-        return layersModel;
+        return LAYERS_MODEL;
     }
 
     public LayersModel()
@@ -171,19 +171,6 @@ public class LayersModel implements ViewListener
         activeLayer=idx;
 
         this.fireActiveLayerChanged(idx);
-    }
-
-    /**
-     * Return a String containing the current timestamp of the given layer, return an empty string if no timing information is available
-     * 
-     * @param idx
-     *            - Index of the layer in question
-     * @return String representation of the timestamp, empty String if no timing information is available
-     */
-    public String getCurrentFrameTimestampString(int idx)
-    {
-        View view=this.getLayer(idx);
-        return getCurrentFrameTimestampString(view);
     }
 
     /**
@@ -570,26 +557,6 @@ public class LayersModel implements ViewListener
     }
 
     /**
-     * Change the visibility of the layer in question
-     * 
-     * @param idx
-     *            - index of the layer in question
-     * @param visible
-     *            - the new visibility state
-     */
-    public void setVisible(int idx,boolean visible)
-    {
-        LayeredView lv=getLayeredView();
-        if(lv!=null)
-        {
-            if(lv.isVisible(getLayer(idx))!=visible)
-            {
-                lv.toggleVisibility(getLayer(idx));
-            }
-        }
-    }
-
-    /**
      * Get the visibility of the layer in question
      * 
      * @param view
@@ -670,19 +637,6 @@ public class LayersModel implements ViewListener
         {
             return view.toString();
         }
-    }
-
-    /**
-     * Get the name of the layer in question
-     * 
-     * @param idx
-     *            - index of the layer in question
-     * @return name of the layer, the views default String representation if no name is available
-     */
-    public String getName(int idx)
-    {
-        View view=this.getLayer(idx);
-        return this.getName(view);
     }
 
     private void handleLayerChanges(View sender,ChangeEvent aEvent)
@@ -850,19 +804,6 @@ public class LayersModel implements ViewListener
     /**
      * Trigger downloading the layer in question
      * 
-     * @param idx
-     *            - index of the layer in question
-     */
-    public void downloadLayer(int idx)
-    {
-        View view=getLayeredView().getLayer(idx);
-        if(view!=null)
-            downloadLayer(view);
-    }
-
-    /**
-     * Trigger downloading the layer in question
-     * 
      * @param view
      *            - View that can be associated with the layer in question
      */
@@ -964,18 +905,6 @@ public class LayersModel implements ViewListener
     /**
      * Trigger showing a dialog displaying the meta data of the layer in question.
      * 
-     * @param idx
-     *            - index of the layer in question
-     */
-    public void showMetaInfo(int idx)
-    {
-        View view=getLayer(idx);
-        showMetaInfo(view);
-    }
-
-    /**
-     * Trigger showing a dialog displaying the meta data of the layer in question.
-     * 
      * @param view
      *            - View that can be associated with the layer in question
      * 
@@ -1049,34 +978,6 @@ public class LayersModel implements ViewListener
     }
 
     /**
-     * Set the link-state of the layer in question
-     * 
-     * @param idx
-     *            - index of the layer in question
-     * @param link
-     *            - true if the layer in question should be linked
-     */
-    public void setLink(int idx,boolean link)
-    {
-        View view=this.getLayer(idx);
-        this.setLink(view,link);
-    }
-
-    /**
-     * Set the play-state of the layer in question
-     * 
-     * @param idx
-     *            - index of the layer in question
-     * @param play
-     *            - true if the layer in question should play
-     */
-    public void setPlaying(int idx,boolean play)
-    {
-        View view=this.getLayer(idx);
-        this.setPlaying(view,play);
-    }
-
-    /**
      * Set the play-state of the layer in question
      * 
      * @param view
@@ -1104,20 +1005,6 @@ public class LayersModel implements ViewListener
                 timedJHVJPXView.pauseMovie();
             }
         }
-    }
-
-    /**
-     * Check whether the layer in question is a movie
-     * 
-     * @param idx
-     *            - index of the layer in question
-     * @return true if the layer in question is a movie
-     */
-    public boolean isMovie(int idx)
-    {
-        Log.debug(">> LayersModel.isMovie("+idx+")");
-        View view=this.getLayer(idx);
-        return isMovie(view);
     }
 
     /**
@@ -1206,19 +1093,6 @@ public class LayersModel implements ViewListener
 
         lv.moveView(view,level);
         this.setActiveLayer(invertIndex(level));
-    }
-
-    /**
-     * Check whether the layer in question is currently playing
-     * 
-     * @param idx
-     *            - index of the layer in question
-     * @return true if the layer in question is currently playing
-     */
-    public boolean isPlaying(int idx)
-    {
-        View view=getLayer(idx);
-        return isPlaying(view);
     }
 
     /**
@@ -1344,32 +1218,6 @@ public class LayersModel implements ViewListener
     }
 
     /**
-     * Check whether the layer in question is a Remote View
-     * 
-     * @param idx
-     *            - index of the layer in question
-     * @return true if the layer in question is a remote view
-     */
-    public boolean isRemote(int idx)
-    {
-        View view=getLayer(idx);
-        return isRemote(view);
-    }
-
-    /**
-     * Check whether the layer in question is connected to a JPIP server
-     * 
-     * @param idx
-     *            - index of the layer in question
-     * @return true if the layer is connected to a JPIP server
-     */
-    public boolean isConnectedToJPIP(int idx)
-    {
-        View view=getLayer(idx);
-        return isConnectedToJPIP(view);
-    }
-
-    /**
      * Check whether the layer in question is connected to a JPIP server
      * 
      * @param view
@@ -1423,13 +1271,13 @@ public class LayersModel implements ViewListener
             return ld;
         }
 
-        ld.isMovie=layersModel.isMovie(view);
-        ld.isMaster=layersModel.isMaster(view);
-        ld.isVisible=layersModel.isVisible(view);
-        ld.isTimed=layersModel.isTimed(view);
-        ld.title=layersModel.getName(view);
-        ld.observatory=layersModel.getObservatory(view);
-        ld.timestamp=layersModel.getCurrentFrameTimestampString(view);
+        ld.isMovie=LAYERS_MODEL.isMovie(view);
+        ld.isMaster=LAYERS_MODEL.isMaster(view);
+        ld.isVisible=LAYERS_MODEL.isVisible(view);
+        ld.isTimed=LAYERS_MODEL.isTimed(view);
+        ld.title=LAYERS_MODEL.getName(view);
+        ld.observatory=LAYERS_MODEL.getObservatory(view);
+        ld.timestamp=LAYERS_MODEL.getCurrentFrameTimestampString(view);
 
         return ld;
 

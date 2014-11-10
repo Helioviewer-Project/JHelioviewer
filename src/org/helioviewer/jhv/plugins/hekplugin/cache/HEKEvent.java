@@ -388,7 +388,7 @@ public class HEKEvent implements IntervalComparison<Date> {
         try {
             result.phi = this.getDouble("hgs_x");
             result.theta = this.getDouble("hgs_y");
-            result.r = Constants.SunRadius;
+            result.r = Constants.SUN_RADIUS;
 
             // rotate
             return HEKCoordinateTransform.StonyhurstRotateStonyhurst(result, timeDifferenceInSeconds);
@@ -537,7 +537,7 @@ public class HEKEvent implements IntervalComparison<Date> {
         double bzero = Astronomy.getB0InDegree(c);
         double phizero = 0.0; // do we have a value for this?
         SphericalCoord normalizedStony = new SphericalCoord(stony);
-        normalizedStony.r = Constants.SunRadius;
+        normalizedStony.r = Constants.SUN_RADIUS;
 
         CartesianCoord result = HEKCoordinateTransform.StonyhurstToHeliocentricCartesian(normalizedStony, bzero, phizero);
 
@@ -556,7 +556,7 @@ public class HEKEvent implements IntervalComparison<Date> {
         double bzero = Astronomy.getB0InDegree(c);
         double phizero = 0.0; // do we have a value for this?
         SphericalCoord normalizedStony = new SphericalCoord(stony);
-        normalizedStony.r = Constants.SunRadius * factor;
+        normalizedStony.r = Constants.SUN_RADIUS * factor;
 
         CartesianCoord result = HEKCoordinateTransform.StonyhurstToHeliocentricCartesian(normalizedStony, bzero, phizero);
 
@@ -619,7 +619,7 @@ public class HEKEvent implements IntervalComparison<Date> {
             }
             double secondCoordinate = s.nextDouble();
 
-            SphericalCoord stony = new SphericalCoord(secondCoordinate, firstCoordinate, Constants.SunRadius);
+            SphericalCoord stony = new SphericalCoord(secondCoordinate, firstCoordinate, Constants.SUN_RADIUS);
 
             result.add(stony);
         }
@@ -784,7 +784,7 @@ public class HEKEvent implements IntervalComparison<Date> {
                     //simplePolygonPoints
                     Vec3[] coordinates=new Vec3[simplePolygonPoints.size()];
                     for(int i=0;i<coordinates.length;i++)
-                        coordinates[i]=new Vec3(simplePolygonPoints.get(i).getX()/Constants.SunRadius,simplePolygonPoints.get(i).getY()/Constants.SunRadius,0);
+                        coordinates[i]=new Vec3(simplePolygonPoints.get(i).getX()/Constants.SUN_RADIUS,simplePolygonPoints.get(i).getY()/Constants.SUN_RADIUS,0);
                     
                     GeometryInfo gi=new GeometryInfo();
                     gi.setCoordinates(coordinates);
@@ -820,13 +820,13 @@ public class HEKEvent implements IntervalComparison<Date> {
                     lookupCartesian.addAll(outerBoundCartesian);
 
                     for (Triangle triangle : advancedPolygonTriangles) {
-                        Vector2dDouble A2 = new Vector2dDouble(triangle.x1*Constants.SunRadius, triangle.y1*Constants.SunRadius);
-                        Vector2dDouble B2 = new Vector2dDouble(triangle.x2*Constants.SunRadius, triangle.y2*Constants.SunRadius);
-                        Vector2dDouble C2 = new Vector2dDouble(triangle.x3*Constants.SunRadius, triangle.y3*Constants.SunRadius);
+                        Vector2dDouble A2 = new Vector2dDouble(triangle.x1*Constants.SUN_RADIUS, triangle.y1*Constants.SUN_RADIUS);
+                        Vector2dDouble B2 = new Vector2dDouble(triangle.x2*Constants.SUN_RADIUS, triangle.y2*Constants.SUN_RADIUS);
+                        Vector2dDouble C2 = new Vector2dDouble(triangle.x3*Constants.SUN_RADIUS, triangle.y3*Constants.SUN_RADIUS);
 
-                        Vector3dDouble A3 = VectorUtils.projectBack(projectionCenterCartesian, projectionPlaneVectorA, projectionPlaneVectorB, A2).normalize().scale(Constants.SunRadius);
-                        Vector3dDouble B3 = VectorUtils.projectBack(projectionCenterCartesian, projectionPlaneVectorA, projectionPlaneVectorB, B2).normalize().scale(Constants.SunRadius);
-                        Vector3dDouble C3 = VectorUtils.projectBack(projectionCenterCartesian, projectionPlaneVectorA, projectionPlaneVectorB, C2).normalize().scale(Constants.SunRadius);
+                        Vector3dDouble A3 = VectorUtils.projectBack(projectionCenterCartesian, projectionPlaneVectorA, projectionPlaneVectorB, A2).normalize().scale(Constants.SUN_RADIUS);
+                        Vector3dDouble B3 = VectorUtils.projectBack(projectionCenterCartesian, projectionPlaneVectorA, projectionPlaneVectorB, B2).normalize().scale(Constants.SUN_RADIUS);
+                        Vector3dDouble C3 = VectorUtils.projectBack(projectionCenterCartesian, projectionPlaneVectorA, projectionPlaneVectorB, C2).normalize().scale(Constants.SUN_RADIUS);
 
                         // skip (party) hidden triangles
                         if (A3.getZ() < 0 || B3.getZ() < 0 || C3.getZ() < 0)
@@ -896,10 +896,10 @@ public class HEKEvent implements IntervalComparison<Date> {
         Vector<SphericalCoord> borderPoints = new Vector<SphericalCoord>();
 
         for (double theta = 0.0; theta < 90; theta += 2) {
-            borderPoints.add(new SphericalCoord(theta, 89.8, Constants.SunRadius));
-            borderPoints.add(new SphericalCoord(theta, 90.0, Constants.SunRadius));
-            borderPoints.add(new SphericalCoord(theta, -89.8, Constants.SunRadius));
-            borderPoints.add(new SphericalCoord(theta, -90.0, Constants.SunRadius));
+            borderPoints.add(new SphericalCoord(theta, 89.8, Constants.SUN_RADIUS));
+            borderPoints.add(new SphericalCoord(theta, 90.0, Constants.SUN_RADIUS));
+            borderPoints.add(new SphericalCoord(theta, -89.8, Constants.SUN_RADIUS));
+            borderPoints.add(new SphericalCoord(theta, -90.0, Constants.SUN_RADIUS));
         }
 
         return borderPoints;

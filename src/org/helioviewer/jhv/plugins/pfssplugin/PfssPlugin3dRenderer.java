@@ -51,10 +51,6 @@ public class PfssPlugin3dRenderer extends PhysicalRenderer3d {
 		}
 	}
 
-	public void setVisible() {
-
-	}
-
 	public void viewChanged(View view) {
 
 	}

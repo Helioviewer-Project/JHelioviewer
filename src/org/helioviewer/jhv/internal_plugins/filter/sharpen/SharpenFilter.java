@@ -48,7 +48,7 @@ public class SharpenFilter extends AbstractFilter implements StandardFilter {
     // GENERAL //
     // /////////////////////////
 
-    protected static final int span = 2;
+    protected static final int SPAN = 2;
 
     protected float weighting = 0.0f;
 
@@ -176,7 +176,7 @@ public class SharpenFilter extends AbstractFilter implements StandardFilter {
      * @return Blurred single channel image
      */
     private int[] blur(int width, int height, int[] input) {
-        if (width < 2 * span || height < 2 * span) {
+        if (width < 2 * SPAN || height < 2 * SPAN) {
             return input;
         }
         if (convolveX == null || convolveX.length < width * height)
@@ -188,28 +188,28 @@ public class SharpenFilter extends AbstractFilter implements StandardFilter {
 
         // convolve borders in x direction
         for (int i = 0; i < height; i++) {
-            for (int j = 0; j < span; j++) {
+            for (int j = 0; j < SPAN; j++) {
                 tmpIndex = i * width + j;
 
-                convolveX[tmpIndex] = ((input[tmpIndex - j] + (input[tmpIndex] << 1) + input[tmpIndex + span]) >> 2);
+                convolveX[tmpIndex] = ((input[tmpIndex - j] + (input[tmpIndex] << 1) + input[tmpIndex + SPAN]) >> 2);
 
                 tmpIndex = (i + 1) * width - 1 - j;
-                convolveX[tmpIndex] = ((input[tmpIndex + j] + (input[tmpIndex] << 1) + input[tmpIndex - span]) >> 2);
+                convolveX[tmpIndex] = ((input[tmpIndex + j] + (input[tmpIndex] << 1) + input[tmpIndex - SPAN]) >> 2);
             }
         }
 
         // convolve inner region in x direction
         for (int i = 0; i < height; i++) {
-            for (int j = span; j < width - span; j++) {
+            for (int j = SPAN; j < width - SPAN; j++) {
                 tmpIndex = i * width + j;
-                convolveX[tmpIndex] = ((input[tmpIndex - span] + (input[tmpIndex] << 1) + input[tmpIndex + span]) >> 2);
+                convolveX[tmpIndex] = ((input[tmpIndex - SPAN] + (input[tmpIndex] << 1) + input[tmpIndex + SPAN]) >> 2);
             }
         }
 
-        int spanTimesWidth = span * width;
+        int spanTimesWidth = SPAN * width;
 
         // convolve borders in y direction
-        for (int i = 0; i < span; i++) {
+        for (int i = 0; i < SPAN; i++) {
             for (int j = 0; j < width; j++) {
                 tmpIndex = i * width + j;
                 convolveY[tmpIndex] = ((convolveX[tmpIndex - i * width] + (convolveX[tmpIndex] << 1) + convolveX[tmpIndex + spanTimesWidth]) >> 2);
@@ -220,7 +220,7 @@ public class SharpenFilter extends AbstractFilter implements StandardFilter {
         }
 
         // convolve inner region in y direction
-        for (int i = span; i < height - span; i++) {
+        for (int i = SPAN; i < height - SPAN; i++) {
             for (int j = 0; j < width; j++) {
                 tmpIndex = i * width + j;
                 convolveY[tmpIndex] = ((convolveX[tmpIndex - spanTimesWidth] + (convolveX[tmpIndex] << 1) + convolveX[tmpIndex + spanTimesWidth]) >> 2);

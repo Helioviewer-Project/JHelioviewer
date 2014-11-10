@@ -64,11 +64,4 @@ public interface MetaDataContainer {
      * @return height of the image in pixels
      */
     public int getPixelHeight();
-
-    /**
-     * Returns true if a key with the queried name exists in the meta data container
-     * @param key The key to look for
-     * @return True, if the key exists
-     */
-    public boolean containsKey(String key);
 }

@@ -256,7 +256,7 @@ public abstract class GL3DMesh extends GL3DShape {
             GL3DVec3d normal = this.normals.get(i);
 
             gl.glVertex3d(position.x, position.y, position.z);
-            gl.glVertex3d(position.x + normal.x * Constants.SunRadius / 10, position.y + normal.y * Constants.SunRadius / 10, position.z + normal.z * Constants.SunRadius / 10);
+            gl.glVertex3d(position.x + normal.x * Constants.SUN_RADIUS / 10, position.y + normal.y * Constants.SUN_RADIUS / 10, position.z + normal.z * Constants.SUN_RADIUS / 10);
         }
         gl.glEnd();
         gl.glEnable(GL2.GL_LIGHTING);

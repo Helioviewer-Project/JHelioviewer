@@ -208,15 +208,6 @@ public class FileDownloader {
         return result;
     }
 
-    public boolean get(URI source, File dest, JProgressBar progressBar) throws IOException {
-
-        // set up progress bar and progress label
-        this.progressBar = progressBar;
-        progressBar.setName("Downloading '" + source.getPath().substring(source.getPath().lastIndexOf("/") + 1) + "'...");
-        // download the file
-        return downloadFile(source, dest);
-    }
-
     /**
      * Gets the file from the source and writes it to the _dest file.
      * 

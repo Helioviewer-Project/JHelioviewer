@@ -35,20 +35,6 @@ public class GL3DDrawBits {
         return this.drawBits[bit.pos];
     }
 
-    public void allOff() {
-        setAll(false);
-    }
-
-    public void allOn() {
-        setAll(true);
-    }
-
-    private void setAll(boolean value) {
-        for (int i = 0; i < drawBits.length; i++) {
-            this.drawBits[i] = value;
-        }
-    }
-
     private void init() {
         this.drawBits = new boolean[Bit.values().length];
         for (int i = 0; i < drawBits.length; i++) {

@@ -55,36 +55,4 @@ public class JP2ImageParameter {
         JP2ImageParameter params = (JP2ImageParameter) o;
         return subImage.equals(params.subImage) && resolution.equals(params.resolution) && qualityLayers == params.qualityLayers && compositionLayer == params.compositionLayer;
     }
-
-    /** Simple static helper method... */
-    public static boolean isZoomDifferent(JP2ImageParameter _param1, JP2ImageParameter _param2) {
-        if (_param1 == null || _param2 == null)
-            return true;
-        else
-            return !_param1.resolution.equals(_param2.resolution);
-    }
-
-    /** Simple static helper method... */
-    public static boolean isQualityDifferent(JP2ImageParameter _param1, JP2ImageParameter _param2) {
-        if (_param1 == null || _param2 == null)
-            return true;
-        else
-            return _param1.qualityLayers != _param2.qualityLayers;
-    }
-
-    /** Simple static helper method... */
-    public static boolean isLayerDifferent(JP2ImageParameter _param1, JP2ImageParameter _param2) {
-        if (_param1 == null || _param2 == null)
-            return true;
-        else
-            return _param1.compositionLayer != _param2.compositionLayer;
-    }
-
-    /** Simple static helper method... */
-    public static boolean isROIDifferent(JP2ImageParameter _param1, JP2ImageParameter _param2) {
-        if (_param1 == null || _param2 == null)
-            return true;
-        else
-            return !_param1.subImage.equals(_param2.subImage);
-    }
-};
+}

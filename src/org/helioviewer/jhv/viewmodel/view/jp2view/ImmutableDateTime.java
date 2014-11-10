@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.viewmodel.view.jp2view.datetime;
+package org.helioviewer.jhv.viewmodel.view.jp2view;
 
 import java.text.DateFormat;
 import java.util.Calendar;
@@ -16,10 +16,10 @@ import java.util.TimeZone;
 public class ImmutableDateTime implements Comparable<ImmutableDateTime> {
 
     /** Default DateFormat used to format the date. */
-    protected static final DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM);
+    protected static final DateFormat DATE_FORMAT = DateFormat.getDateInstance(DateFormat.MEDIUM);
 
     /** Default DateFormat used to format the time. */
-    protected static final DateFormat timeFormat = DateFormat.getTimeInstance(DateFormat.MEDIUM);
+    protected static final DateFormat TIME_FORMAT = DateFormat.getTimeInstance(DateFormat.MEDIUM);
 
     /** Internal class that holds date/time information. */
     protected Calendar calendar;
@@ -36,8 +36,8 @@ public class ImmutableDateTime implements Comparable<ImmutableDateTime> {
             calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+00:00"));
             calendar.clear();
             calendar.set(_year, _month, _day, _hour, _minute, _second);
-            dateFormat.setTimeZone(TimeZone.getTimeZone("GMT+0000"));
-            timeFormat.setTimeZone(TimeZone.getTimeZone("GMT+0000"));
+            DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT+0000"));
+            TIME_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT+0000"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -52,8 +52,8 @@ public class ImmutableDateTime implements Comparable<ImmutableDateTime> {
             calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+00:00"));
             calendar.clear();
             calendar.setTimeInMillis(seconds * 1000);
-            dateFormat.setTimeZone(TimeZone.getTimeZone("GMT+0000"));
-            timeFormat.setTimeZone(TimeZone.getTimeZone("GMT+0000"));
+            DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT+0000"));
+            TIME_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT+0000"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -68,8 +68,8 @@ public class ImmutableDateTime implements Comparable<ImmutableDateTime> {
             calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+00:00"));
             calendar.clear();
             calendar.setTimeInMillis(original.getMillis());
-            dateFormat.setTimeZone(TimeZone.getTimeZone("GMT+0000"));
-            timeFormat.setTimeZone(TimeZone.getTimeZone("GMT+0000"));
+            DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT+0000"));
+            TIME_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT+0000"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -94,12 +94,12 @@ public class ImmutableDateTime implements Comparable<ImmutableDateTime> {
 
     /** Returns the internal Date formatted to a String appropriately. */
     public String getFormattedDate() {
-        return dateFormat.format(calendar.getTime());
+        return DATE_FORMAT.format(calendar.getTime());
     }
 
     /** Returns the internal Time formatted to a String appropriately. */
     public String getFormattedTime() {
-        return timeFormat.format(calendar.getTime());
+        return TIME_FORMAT.format(calendar.getTime());
     }
 
     public Date getTime() {

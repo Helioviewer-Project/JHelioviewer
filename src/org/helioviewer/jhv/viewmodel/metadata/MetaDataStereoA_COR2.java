@@ -59,23 +59,23 @@ public class MetaDataStereoA_COR2 extends MetaData{
         }
         // distance to sun in meters
         double distanceToSun = metaDataContainer.tryGetDouble("DSUN_OBS");
-        double radiusSunInArcsec = Math.atan(Constants.SunRadius / distanceToSun) * MathUtils.radeg * 3600;
+        double radiusSunInArcsec = Math.atan(Constants.SUN_RADIUS / distanceToSun) * MathUtils.RAD_TO_DEG * 3600;
 
         solarPixelRadius = radiusSunInArcsec / arcsecPerPixelX;
-        meterPerPixel = Constants.SunRadius / solarPixelRadius;
+        meterPerPixel = Constants.SUN_RADIUS / solarPixelRadius;
         setPhysicalLowerLeftCorner(sunPixelPosition.scale(-meterPerPixel));
         setPhysicalImageSize(new Vector2dDouble(pixelImageSize.getX() * meterPerPixel, pixelImageSize.getY() * meterPerPixel));
 
         
-        innerRadius = metaDataContainer.tryGetDouble("HV_ROCC_INNER") * Constants.SunRadius;
-        outerRadius = metaDataContainer.tryGetDouble("HV_ROCC_OUTER") * Constants.SunRadius;
+        innerRadius = metaDataContainer.tryGetDouble("HV_ROCC_INNER") * Constants.SUN_RADIUS;
+        outerRadius = metaDataContainer.tryGetDouble("HV_ROCC_OUTER") * Constants.SUN_RADIUS;
 
         if (innerRadius == 0.0 && detector != null) {
-            innerRadius = 2.4 * Constants.SunRadius;
-            outerRadius = 15.6 * Constants.SunRadius;
+            innerRadius = 2.4 * Constants.SUN_RADIUS;
+            outerRadius = 15.6 * Constants.SUN_RADIUS;
         }
 
-        flatDistance = 15.75 * Constants.SunRadius;
+        flatDistance = 15.75 * Constants.SUN_RADIUS;
         maskRotation = Math.toRadians(metaDataContainer.tryGetDouble("CROTA"));
 
         double centerX = 0, centerY = 0;
@@ -168,7 +168,7 @@ public class MetaDataStereoA_COR2 extends MetaData{
 
         if (changed) {
             solarPixelRadius = newSolarPixelRadius;
-            meterPerPixel = Constants.SunRadius / solarPixelRadius;
+            meterPerPixel = Constants.SUN_RADIUS / solarPixelRadius;
             setPhysicalLowerLeftCorner(sunPixelPosition.scale(-meterPerPixel));
             setPhysicalImageSize(new Vector2dDouble(pixelImageSize.getX() * meterPerPixel, pixelImageSize.getY() * meterPerPixel));
         }

@@ -7,7 +7,6 @@ import javax.media.opengl.GL2;
 
 import org.helioviewer.jhv.base.math.Vector2dDouble;
 import org.helioviewer.jhv.base.math.Vector2dInt;
-import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.opengl.model.GL3DImageMesh;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 import org.helioviewer.jhv.opengl.shader.GL3DImageVertexShaderProgram;
@@ -54,10 +53,6 @@ public class GL3DImageTextureView extends AbstractGL3DView implements GL3DView {
 	private GL3DImageVertexShaderProgram vertexShader = null;
 	public MetaData metadata = null;
 	
-	public double minZ = 0.0;
-	public double maxZ = Constants.SunRadius;
-	// private Vector2dInt renderOffset;
-
 	public void render3D(GL3DState state) {
 		GL2 gl = state.gl;
 		if (this.getView() != null) {

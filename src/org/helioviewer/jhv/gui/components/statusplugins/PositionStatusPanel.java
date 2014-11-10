@@ -99,7 +99,7 @@ public class PositionStatusPanel extends ViewStatusPanelPlugin implements MouseM
 
             Vector2dInt solarcenter = ViewHelper.convertImageToScreenDisplacement(regionView.getRegion().getUpperLeftCorner().negateX(), regionView.getRegion(), vis);
 
-            Vector2dDouble scaling = new Vector2dDouble(Constants.SunRadius, Constants.SunRadius);
+            Vector2dDouble scaling = new Vector2dDouble(Constants.SUN_RADIUS, Constants.SUN_RADIUS);
             Vector2dDouble solarRadius = new Vector2dDouble(ViewHelper.convertImageToScreenDisplacement(scaling, regionView.getRegion(), vis));
 
             Vector2dDouble pos = new Vector2dDouble(position.x - solarcenter.getX(), -position.y + solarcenter.getY()).invertedScale(solarRadius).scale(959.705);

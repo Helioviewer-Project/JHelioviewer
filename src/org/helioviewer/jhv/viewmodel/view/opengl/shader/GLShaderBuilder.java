@@ -362,42 +362,6 @@ public class GLShaderBuilder {
     }
 
     /**
-     * Adds a new generic vertex attribute to the parameter list. It returns the
-     * index, which has to be used by glVertexAttrib*ARB to access this
-     * parameter.
-     * 
-     * @param declaration
-     *            declaration of the new parameter, including type and name. for
-     *            example "float2 myParam".
-     * @return index to use with glVertexAttrib*ARB, to access correct
-     *         parameter.
-     * @throws GLBuildShaderException
-     *             if there is no free vertex attribute left
-     */
-    public int addVertexAttribute(String declaration) throws GLBuildShaderException {
-        if (nextVertexAttribute < maxVertexAttributes) {
-            parameterList.add(declaration.trim() + " : ATTR" + nextVertexAttribute);
-            return nextVertexAttribute++;
-        } else {
-            throw new GLBuildShaderException("Number of available vertex attributes exceeded (Max: " + maxVertexAttributes + ")");
-        }
-    }
-
-    /**
-     * Adds a new function to the program code. This function adds a single
-     * stand-alone function to the code, including return value, name,
-     * parameters and body. Make sure to add a code fragment to the main
-     * function by calling addMainFragment(), where the new function is called
-     * in some way.
-     * 
-     * @param code
-     *            new code fragment
-     */
-    public void addSingleFunction(String code) {
-        functions += code + LINE_SEP + LINE_SEP;
-    }
-
-    /**
      * Adds a new code fragment to the program code. Use the names returned by
      * useOutputValue and useStandardParameter or the ones assigned by yourself
      * calling a add*-method.
@@ -479,30 +443,6 @@ public class GLShaderBuilder {
         finalCode += LINE_SEP + mainBody + "\treturn OUT;" + LINE_SEP + '}';
 
         shaderHelper.compileProgram(gl, type, finalCode, shaderID);
-    }
-
-    /**
-     * Compiles the given shaders and creates a new shader builder to continue.
-     * 
-     * The new shader builder is initialized with a GLMinimalXShaderProgram.
-     * This function might be useful, if multiple shaders should be used on path
-     * path through the view chain.
-     * 
-     * @param shaderBuilder
-     * @return new shader builder
-     */
-    public static GLShaderBuilder compileAndCreateNew(GLShaderBuilder shaderBuilder) {
-        shaderBuilder.compile();
-        if (shaderBuilder.type == GL2.GL_FRAGMENT_PROGRAM_ARB) {
-            shaderBuilder = new GLShaderBuilder(shaderBuilder.getGL(), GL2.GL_FRAGMENT_PROGRAM_ARB);
-            GLMinimalFragmentShaderProgram minimalFragmentShaderProgram = new GLMinimalFragmentShaderProgram();
-            minimalFragmentShaderProgram.build(shaderBuilder);
-        } else {
-            shaderBuilder = new GLShaderBuilder(shaderBuilder.getGL(), GL2.GL_VERTEX_PROGRAM_ARB);
-            GLMinimalVertexShaderProgram minimalVertexShaderProgram = new GLMinimalVertexShaderProgram();
-            minimalVertexShaderProgram.build(shaderBuilder);
-        }
-        return shaderBuilder;
     }
 
     /**

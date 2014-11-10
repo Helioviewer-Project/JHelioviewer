@@ -192,20 +192,6 @@ public class JHV_Kdu_cache extends Kdu_cache {
     }
 
     /**
-     * Sets the read scope to the state that it needs to be in in order to pass
-     * this object around for further use.
-     * 
-     * @throws JHV_KduException
-     */
-    public void setInitialScope() throws JHV_KduException {
-        try {
-            Set_read_scope(JPIPDatabinClass.MAIN_HEADER_DATABIN.getKakaduClassID(), 0, 0);
-        } catch (KduException ex) {
-            throw new JHV_KduException("Internal Kakadu error: " + ex.getMessage());
-        }
-    }
-
-    /**
      * Adds a JPIPResponse to the cache object using the addDataSegment methods.
      * 
      * @param jRes

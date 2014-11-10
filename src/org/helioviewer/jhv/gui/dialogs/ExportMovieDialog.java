@@ -63,7 +63,7 @@ public class ExportMovieDialog implements ActionListener{
 	private FileOutputStream fileOutputStream;
 	private ZipOutputStream zipOutputStream;
 
-    public static final String SETTING_MOVIE_EXPORT_LAST_DIRECTORY = "export.movie.last.directory";
+    private static final String SETTING_MOVIE_EXPORT_LAST_DIRECTORY = "export.movie.last.directory";
 
     private static final String SETTING_IMG_WIDTH = "export.movie.image.width";
     private static final String SETTING_IMG_HEIGHT = "export.movie.image.height";

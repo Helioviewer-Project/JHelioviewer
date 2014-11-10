@@ -327,13 +327,6 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 		return this.root.getNumberOfChilds(GL3DModel.class);
 	}
 
-	public GL3DModel getModelAt(int index) {
-		if (this.root == null) {
-			return null;
-		}
-		return this.root.getModelAt(index);
-	}
-
 	public GL3DGroup getRoot() {
 		return this.root;
 	}
@@ -362,16 +355,16 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 				"Arrows indicating the viewspace axes");
 		artificialObjects.addNode(indicatorArrows);
 
-		GL3DShape north = new GL3DArrow("Northpole", Constants.SunRadius / 16,
-				Constants.SunRadius, Constants.SunRadius / 2, 32,
+		GL3DShape north = new GL3DArrow("Northpole", Constants.SUN_RADIUS / 16,
+				Constants.SUN_RADIUS, Constants.SUN_RADIUS / 2, 32,
 				new GL3DVec4f(1.0f, 0.2f, 0.1f, 1.0f));
-		north.modelView().rotate(-Math.PI / 2, GL3DVec3d.XAxis);
+		north.modelView().rotate(-Math.PI / 2, GL3DVec3d.XAXIS);
 		indicatorArrows.addNode(north);
 
-		GL3DShape south = new GL3DArrow("Southpole", Constants.SunRadius / 16,
-				Constants.SunRadius, Constants.SunRadius / 2, 32,
+		GL3DShape south = new GL3DArrow("Southpole", Constants.SUN_RADIUS / 16,
+				Constants.SUN_RADIUS, Constants.SUN_RADIUS / 2, 32,
 				new GL3DVec4f(0.1f, 0.2f, 1.0f, 1.0f));
-		south.modelView().rotate(Math.PI / 2, GL3DVec3d.XAxis);
+		south.modelView().rotate(Math.PI / 2, GL3DVec3d.XAXIS);
 		indicatorArrows.addNode(south);
 
 		GL3DModel sunModel = new GL3DModel("Sun",
@@ -410,7 +403,6 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 
 	public void setGLOverlayView(GLOverlayView overlayView) {
 		this.overlayView = overlayView;
-		this.imageLayers.overlayView = overlayView;
 	}
 
 	private void printNode(GL3DNode node, int level) {

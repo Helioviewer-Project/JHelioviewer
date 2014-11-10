@@ -17,8 +17,8 @@ import org.helioviewer.jhv.viewmodel.changeevent.TimestampChangedReason;
 import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.ViewListener;
+import org.helioviewer.jhv.viewmodel.view.jp2view.ImmutableDateTime;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
-import org.helioviewer.jhv.viewmodel.view.jp2view.datetime.ImmutableDateTime;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DSceneGraphView;
 
 /**
@@ -30,7 +30,7 @@ import org.helioviewer.jhv.viewmodel.view.opengl.GL3DSceneGraphView;
  * 
  */
 public class GL3DTrackballCamera extends GL3DCamera implements ViewListener {
-	public static final double DEFAULT_CAMERA_DISTANCE = 12 * Constants.SunRadius;
+	public static final double DEFAULT_CAMERA_DISTANCE = 12 * Constants.SUN_RADIUS;
 	private boolean track;
 	private GL3DRay lastMouseRay;
 	protected CoordinateSystem viewSpaceCoordinateSystem = new HeliocentricCartesianCoordinateSystem();
@@ -123,8 +123,8 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener {
 
 		double x = this.getTranslation().x;
 		double y = this.getTranslation().y;
-		if (x*x + y*y < Constants.SunRadius * Constants.SunRadius){
-		double z = Math.sqrt(Constants.SunRadius * Constants.SunRadius - x * x
+		if (x*x + y*y < Constants.SUN_RADIUS * Constants.SUN_RADIUS){
+		double z = Math.sqrt(Constants.SUN_RADIUS * Constants.SUN_RADIUS - x * x
 				- y * y);
 		this.outside = false;
 		this.startPosition2D = new GL3DVec3d(x, y, z);

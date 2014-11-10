@@ -154,7 +154,7 @@ public class SaveStateAction extends AbstractAction {
      * 
      * @return Default name for a screenshot.
      */
-    static String getDefaultFileName() {
+    private static String getDefaultFileName() {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
 

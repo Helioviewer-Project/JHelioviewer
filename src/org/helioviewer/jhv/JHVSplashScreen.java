@@ -38,9 +38,9 @@ public class JHVSplashScreen extends JFrame implements StatusTextListener {
 
 	private static final long serialVersionUID = 1L;
 
-	private static final Dimension splashScreenSize = new Dimension(400, 215);
+	private static final Dimension SPLASH_SCREEN_SIZE = new Dimension(400, 215);
 
-	private static JHVSplashScreen instance = new JHVSplashScreen();
+	private static final JHVSplashScreen SINGLETON = new JHVSplashScreen();
 
 	private SplashImagePanel imagePanel = new SplashImagePanel();
 	private JProgressBar progressBar = new JProgressBar(0, 100);
@@ -73,7 +73,7 @@ public class JHVSplashScreen extends JFrame implements StatusTextListener {
 	 * @return the only instance of this class.
 	 * */
 	public static JHVSplashScreen getSingletonInstance() {
-		return instance;
+		return SINGLETON;
 	}
 
 	/**
@@ -81,7 +81,7 @@ public class JHVSplashScreen extends JFrame implements StatusTextListener {
 	 * */
 	private void initFrame() {
 		setTitle("ESA JHelioviewer");
-		setSize(splashScreenSize);
+		setSize(SPLASH_SCREEN_SIZE);
 		setLocationRelativeTo(null);
 		setLayout(new BorderLayout());
 		setFocusable(false);

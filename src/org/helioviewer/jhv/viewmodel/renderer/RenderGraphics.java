@@ -89,19 +89,6 @@ public interface RenderGraphics<BaseType extends Number, VectorType> {
     public void drawRectangle(BaseType x, BaseType y, BaseType width, BaseType height);
 
     /**
-     * Draws a rectangle.
-     * 
-     * Color and line width of the rectangle can be changed by calling
-     * {@link #setColor(Color)} and {@link #setLineWidth(float)} in advance.
-     * 
-     * @param position
-     *            coordinate of reference point
-     * @param size
-     *            size of the rectangle
-     */
-    public void drawRectangle(VectorType position, VectorType size);
-
-    /**
      * Fills a rectangle.
      * 
      * The color of the rectangle can be changed by calling
@@ -117,19 +104,6 @@ public interface RenderGraphics<BaseType extends Number, VectorType> {
      *            height of the rectangle
      */
     public void fillRectangle(BaseType x, BaseType y, BaseType width, BaseType height);
-
-    /**
-     * Fills a rectangle.
-     * 
-     * The color of the rectangle can be changed by calling
-     * {@link #setColor(Color)} in advance.
-     * 
-     * @param position
-     *            coordinate of the reference point
-     * @param size
-     *            size of the rectangle
-     */
-    public void fillRectangle(VectorType position, VectorType size);
 
     /**
      * Draws an oval.
@@ -149,19 +123,6 @@ public interface RenderGraphics<BaseType extends Number, VectorType> {
     public void drawOval(BaseType x, BaseType y, BaseType width, BaseType height);
 
     /**
-     * Draws an oval.
-     * 
-     * Color and line width of the oval can be changed by calling
-     * {@link #setColor(Color)} and {@link #setLineWidth(float)} in advance.
-     * 
-     * @param position
-     *            coordinate of the reference point
-     * @param size
-     *            size of the oval
-     */
-    public void drawOval(VectorType position, VectorType size);
-
-    /**
      * Fills an oval.
      * 
      * The color of the oval can be changed by calling {@link #setColor(Color)}
@@ -177,58 +138,6 @@ public interface RenderGraphics<BaseType extends Number, VectorType> {
      *            height of the oval
      */
     public void fillOval(BaseType x, BaseType y, BaseType width, BaseType height);
-
-    /**
-     * Fills an oval.
-     * 
-     * The color of the oval can be changed by calling {@link #setColor(Color)}
-     * in advance.
-     * 
-     * @param position
-     *            coordinate of the reference point
-     * @param size
-     *            size of the oval
-     */
-    public void fillOval(VectorType position, VectorType size);
-
-    /**
-     * Draws a polygon.
-     * 
-     * Color and line width of the polygon can be changed by calling
-     * {@link #setColor(Color)} and {@link #setLineWidth(float)} in advance.
-     * 
-     * @param xCoords
-     *            Array of the x-coordinates.
-     * @param yCoords
-     *            Array of the y-coordinates.
-     */
-    public void drawPolygon(BaseType[] xCoords, BaseType[] yCoords);
-
-    /**
-     * Draws a polygon.
-     * 
-     * Color and line width of the polygon can be changed by calling
-     * {@link #setColor(Color)} and {@link #setLineWidth(float)} in advance.
-     * 
-     * @param points
-     *            Array of the coordinates.
-     */
-    public void drawPolygon(VectorType[] points);
-
-    /**
-     * Fills an polygon.
-     * 
-     * The polygon has to be convex.
-     * 
-     * The color of the polygon can be changed by calling
-     * {@link #setColor(Color)} in advance.
-     * 
-     * @param xCoords
-     *            Array of the x-coordinates.
-     * @param yCoords
-     *            Array of the y-coordinates.
-     */
-    public void fillPolygon(BaseType[] xCoords, BaseType[] yCoords);
 
     /**
      * Fills an polygon.
@@ -256,16 +165,6 @@ public interface RenderGraphics<BaseType extends Number, VectorType> {
     public void drawImage(BufferedImage image, BaseType x, BaseType y);
 
     /**
-     * Draws an unscaled image.
-     * 
-     * @param image
-     *            BufferedImage to draw
-     * @param position
-     *            coordinate of the reference point
-     */
-    public void drawImage(BufferedImage image, VectorType position);
-
-    /**
      * Draws an scaled image.
      * 
      * @param image
@@ -279,17 +178,7 @@ public interface RenderGraphics<BaseType extends Number, VectorType> {
      */
     public void drawImage(BufferedImage image, BaseType x, BaseType y, float scale);
 
-    /**
-     * Draws a scaled image.
-     * 
-     * @param image
-     *            BufferedImage to draw
-     * @param position
-     *            coordinate of the reference point
-     * @param scale
-     *            scale factor used for the image size
-     */
-    public void drawImage(BufferedImage image, VectorType position, float scale);
+    
 
     /**
      * Draws an scaled image.
@@ -312,32 +201,6 @@ public interface RenderGraphics<BaseType extends Number, VectorType> {
      * 
      * @param image
      *            BufferedImage to draw
-     * @param position
-     *            coordinate of the reference point
-     * @param size
-     *            size of the rectangle the image is drawn to
-     */
-    public void drawImage(BufferedImage image, VectorType position, VectorType size);
-
-    /**
-     * Draws an unscaled image.
-     * 
-     * @param image
-     *            BufferedImage to draw
-     * @param x
-     *            x-coordinate of the reference point
-     * @param y
-     *            y-coordinate of the reference point
-     * @param z
-     *            z-coordinate of the reference point
-     */
-    public void drawImage3d(BufferedImage image, BaseType x, BaseType y, BaseType z);
-
-    /**
-     * Draws an scaled image.
-     * 
-     * @param image
-     *            BufferedImage to draw
      * @param x
      *            x-coordinate of the reference point
      * @param y
@@ -348,24 +211,6 @@ public interface RenderGraphics<BaseType extends Number, VectorType> {
      *            scale factor used for the image size
      */
     public void drawImage3d(BufferedImage image, BaseType x, BaseType y, BaseType z, float scale);
-
-    /**
-     * Draws an scaled image.
-     * 
-     * @param image
-     *            BufferedImage to draw
-     * @param x
-     *            x-coordinate of the reference point
-     * @param y
-     *            y-coordinate of the reference point
-     * @param z
-     *            z-coordinate of the reference point
-     * @param width
-     *            width of the rectangle the image is drawn to
-     * @param height
-     *            height of the rectangle the image is drawn to
-     */
-    public void drawImage3d(BufferedImage image, BaseType x, BaseType y, BaseType z, BaseType width, BaseType height);
     
     /**
      * Draws a text.
@@ -378,24 +223,10 @@ public interface RenderGraphics<BaseType extends Number, VectorType> {
      *            y-coordinate of the reference point
      */
     public void drawText(String text, BaseType x, BaseType y);
-
-    /**
-     * Draws a text.
-     * 
-     * @param text
-     *            Text to draw
-     * @param position
-     *            coordinate of the reference point
-     */
-    public void drawText(String text, VectorType position);
     
     public void fillPolygon(Vector3dDouble[] points);
 
     public void drawLine3d(BaseType x0, BaseType y0, BaseType z0, BaseType x1, BaseType y1, BaseType z1);
-    public void drawLine3d(Vector3dDouble p0, Vector3dDouble p1);
-    public void startDrawLines();
-    public void stopDrawLines();
-    public void drawLines3d(BaseType x0,  BaseType y0, BaseType z0, BaseType x1, BaseType y1, BaseType z1);
     
     public GL getGL();
 }

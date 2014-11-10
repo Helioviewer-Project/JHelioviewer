@@ -169,7 +169,7 @@ public class PfssData {
 			}
 			boolean colinear = false;
 
-			double r0 = ptr[i] / 8192.0 * Constants.SunRadius;
+			double r0 = ptr[i] / 8192.0 * Constants.SUN_RADIUS;
 			double phi0 = ptph[i] / 32768.0 * 2 * Math.PI;
 			double theta0 = ptth[i] / 32768.0 * 2 * Math.PI;
 
@@ -181,7 +181,7 @@ public class PfssData {
 
 			if (lineStarted) {
 				if (i + 1 < ptr.length) {
-					double r1 = ptr[i + 1] / 8192.0 * Constants.SunRadius;
+					double r1 = ptr[i + 1] / 8192.0 * Constants.SUN_RADIUS;
 					double phi1 = ptph[i + 1] / 32768.0 * 2 * Math.PI;
 					double theta1 = ptth[i + 1] / 32768.0 * 2 * Math.PI;
 

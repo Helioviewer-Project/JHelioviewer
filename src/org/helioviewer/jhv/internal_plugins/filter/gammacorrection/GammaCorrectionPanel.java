@@ -44,7 +44,7 @@ public class GammaCorrectionPanel extends FilterPanel implements ChangeListener,
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 
         title = new JLabel("Gamma:");
-        title.setPreferredSize(new Dimension(FilterPanel.titleWidth, FilterPanel.height));
+        title.setPreferredSize(new Dimension(FilterPanel.TITLE_WIDTH, FilterPanel.HEIGHT));
         add(title);
 
         gammaSlider = new JSlider(JSlider.HORIZONTAL, -100, 100, 0);
@@ -58,7 +58,7 @@ public class GammaCorrectionPanel extends FilterPanel implements ChangeListener,
 
         gammaLabel = new JLabel("1.0");
         gammaLabel.setHorizontalAlignment(JLabel.RIGHT);
-        gammaLabel.setPreferredSize(new Dimension(FilterPanel.valueWidth, FilterPanel.height));
+        gammaLabel.setPreferredSize(new Dimension(FilterPanel.VALUE_WIDTH, FilterPanel.HEIGHT));
         add(gammaLabel);
 
         setEnabled(false);

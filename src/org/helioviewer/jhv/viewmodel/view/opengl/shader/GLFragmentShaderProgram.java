@@ -25,8 +25,6 @@ import javax.media.opengl.GL2;
  */
 public abstract class GLFragmentShaderProgram {
 
-    protected static final int target = GL2.GL_FRAGMENT_PROGRAM_ARB;
-
     private static Stack<Integer> shaderStack = new Stack<Integer>();
     private static int shaderCurrentlyUsed = -1;
     private int shaderID;
@@ -120,10 +118,10 @@ public abstract class GLFragmentShaderProgram {
     private static void bind(GL2 gl, int shader, double alpha, double cutOffRadius, double xOffset, double yOffset) {
         if (shader != shaderCurrentlyUsed) {
             shaderCurrentlyUsed = shader;
-            gl.glBindProgramARB(target, shader);
-            gl.glProgramLocalParameter4dARB(target, 1, alpha, 0.0f, 0.0f, 0.0f);
-            gl.glProgramLocalParameter4dARB(target, 0, cutOffRadius, 0.0f, 0.0f, 0.0f);
-            gl.glProgramLocalParameter4dARB(target, 2, xOffset, yOffset, 0.0f, 0.0f);
+            gl.glBindProgramARB(GL2.GL_FRAGMENT_PROGRAM_ARB, shader);
+            gl.glProgramLocalParameter4dARB(GL2.GL_FRAGMENT_PROGRAM_ARB, 1, alpha, 0.0f, 0.0f, 0.0f);
+            gl.glProgramLocalParameter4dARB(GL2.GL_FRAGMENT_PROGRAM_ARB, 0, cutOffRadius, 0.0f, 0.0f, 0.0f);
+            gl.glProgramLocalParameter4dARB(GL2.GL_FRAGMENT_PROGRAM_ARB, 2, xOffset, yOffset, 0.0f, 0.0f);
         }
     }
 

@@ -118,8 +118,8 @@ public class HEKCoordinateTransform {
 
         SphericalCoord result = new SphericalCoord();
         result.r = Math.sqrt(swapped.x * swapped.x + swapped.y * swapped.y + swapped.z * swapped.z);
-        result.theta = Math.atan(swapped.z / Math.sqrt(swapped.x * swapped.x + swapped.y * swapped.y)) * MathUtils.radeg;
-        result.phi = Math.atan2(swapped.y, swapped.x) * MathUtils.radeg;
+        result.theta = Math.atan(swapped.z / Math.sqrt(swapped.x * swapped.x + swapped.y * swapped.y)) * MathUtils.RAD_TO_DEG;
+        result.phi = Math.atan2(swapped.y, swapped.x) * MathUtils.RAD_TO_DEG;
         return result;
     }
 
@@ -144,9 +144,9 @@ public class HEKCoordinateTransform {
     public static CartesianCoord StonyhurstToHeliocentricCartesian(SphericalCoord stony, double bzero, double phizero) {
 
         CartesianCoord result = new CartesianCoord();
-        result.x = stony.r * Math.cos(stony.theta / MathUtils.radeg) * Math.sin((stony.phi - phizero) / MathUtils.radeg);
-        result.y = stony.r * (Math.sin(stony.theta / MathUtils.radeg) * Math.cos(bzero / MathUtils.radeg) - Math.cos(stony.theta / MathUtils.radeg) * Math.cos((stony.phi - phizero) / MathUtils.radeg) * Math.sin(bzero / MathUtils.radeg));
-        result.z = stony.r * (Math.sin(stony.theta / MathUtils.radeg) * Math.sin(bzero / MathUtils.radeg) + Math.cos(stony.theta / MathUtils.radeg) * Math.cos((stony.phi - phizero) / MathUtils.radeg) * Math.cos(bzero / MathUtils.radeg));
+        result.x = stony.r * Math.cos(stony.theta / MathUtils.RAD_TO_DEG) * Math.sin((stony.phi - phizero) / MathUtils.RAD_TO_DEG);
+        result.y = stony.r * (Math.sin(stony.theta / MathUtils.RAD_TO_DEG) * Math.cos(bzero / MathUtils.RAD_TO_DEG) - Math.cos(stony.theta / MathUtils.RAD_TO_DEG) * Math.cos((stony.phi - phizero) / MathUtils.RAD_TO_DEG) * Math.sin(bzero / MathUtils.RAD_TO_DEG));
+        result.z = stony.r * (Math.sin(stony.theta / MathUtils.RAD_TO_DEG) * Math.sin(bzero / MathUtils.RAD_TO_DEG) + Math.cos(stony.theta / MathUtils.RAD_TO_DEG) * Math.cos((stony.phi - phizero) / MathUtils.RAD_TO_DEG) * Math.cos(bzero / MathUtils.RAD_TO_DEG));
         return result;
     }
 
@@ -198,9 +198,9 @@ public class HEKCoordinateTransform {
 
     public static CartesianCoord HelioProjectiveCartesianToHelioCentricCartesian(double thetax, double thetay) {
         CartesianCoord result = new CartesianCoord();
-        result.x = Constants.SunMeanDistanceToEarth * Math.cos(thetay / MathUtils.radeg) * Math.sin(thetax / MathUtils.radeg) / Constants.SunRadius;
-        result.y = Constants.SunMeanDistanceToEarth * Math.sin(thetay / MathUtils.radeg) / Constants.SunRadius;
-        result.z = 1 - Math.cos(thetay / MathUtils.radeg) * Math.cos(thetax / MathUtils.radeg);
+        result.x = Constants.SUN_MEAN_DISTANCE_TO_EARTH * Math.cos(thetay / MathUtils.RAD_TO_DEG) * Math.sin(thetax / MathUtils.RAD_TO_DEG) / Constants.SUN_RADIUS;
+        result.y = Constants.SUN_MEAN_DISTANCE_TO_EARTH * Math.sin(thetay / MathUtils.RAD_TO_DEG) / Constants.SUN_RADIUS;
+        result.z = 1 - Math.cos(thetay / MathUtils.RAD_TO_DEG) * Math.cos(thetax / MathUtils.RAD_TO_DEG);
         return result;
     }
 
@@ -222,7 +222,7 @@ public class HEKCoordinateTransform {
 
     // UTC-HPR-TOPO [Helioprojective];
     public static Vector2dDouble convertHelioprojective(double theta1, double theta2) {
-        return new Vector2dDouble(Math.sin(theta1 / MathUtils.radeg) * 1000, Math.sin(theta2 / MathUtils.radeg));
+        return new Vector2dDouble(Math.sin(theta1 / MathUtils.RAD_TO_DEG) * 1000, Math.sin(theta2 / MathUtils.RAD_TO_DEG));
     }
 
     // UTC-HCR-TOPO[Heliocentric radial]

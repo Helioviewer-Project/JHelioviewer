@@ -25,11 +25,11 @@ public class TimeTextField extends JTextField {
     /**
      * Default value used to set
      */
-    private static final String defaultTime = "00:00:00";
+    private static final String DEFAULT_TIME = "00:00:00";
     /**
      * Used time formatter
      */
-    public static final SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+    public static final SimpleDateFormat FORMATTER = new SimpleDateFormat("HH:mm:ss");
     /**
      * 
      */
@@ -39,7 +39,7 @@ public class TimeTextField extends JTextField {
      * Creates a new time text field
      */
     public TimeTextField() {
-        super(defaultTime);
+        super(DEFAULT_TIME);
         addFocusListener(new FocusListener() {
             /**
              * Nothing to do
@@ -67,9 +67,9 @@ public class TimeTextField extends JTextField {
      */
     public String getFormattedInput() {
         try {
-            return formatter.format(formatter.parse(getText()));
+            return FORMATTER.format(FORMATTER.parse(getText()));
         } catch (ParseException e) {
-            return defaultTime;
+            return DEFAULT_TIME;
         }
     }
 
@@ -80,10 +80,10 @@ public class TimeTextField extends JTextField {
      */
     public Date getValue() {
         try {
-            return formatter.parse(getText());
+            return FORMATTER.parse(getText());
         } catch (ParseException e) {
             try {
-                return formatter.parse(defaultTime);
+                return FORMATTER.parse(DEFAULT_TIME);
             } catch (ParseException e1) {
                 // The default time should always parseable
                 return null;
@@ -105,6 +105,6 @@ public class TimeTextField extends JTextField {
      *            new time to set
      */
     public void setValue(Date time) {
-        setText(formatter.format(time));
+        setText(FORMATTER.format(time));
     }
 }

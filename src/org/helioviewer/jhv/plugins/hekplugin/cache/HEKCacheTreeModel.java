@@ -1,15 +1,12 @@
 package org.helioviewer.jhv.plugins.hekplugin.cache;
 
 import java.awt.EventQueue;
-import java.util.Date;
 import java.util.Vector;
 
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
-
-import org.helioviewer.jhv.base.math.Interval;
 
 public class HEKCacheTreeModel implements TreeModel, HEKCacheListener {
 
@@ -24,8 +21,6 @@ public class HEKCacheTreeModel implements TreeModel, HEKCacheListener {
     }
 
     private Vector<TreeModelListener> treeModelListeners = new Vector<TreeModelListener>();
-
-    Interval<Date> curInterval;
 
     /**
      * @inheritDoc

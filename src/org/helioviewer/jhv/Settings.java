@@ -28,7 +28,7 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_Kdu_cache;
  */
 public class Settings {
     /** The sole instance of this class. */
-    private static final Settings singletonInstance = new Settings();
+    private static final Settings SINGLETON = new Settings();
 
     /** The properties object */
     private Properties defaultProperties = new Properties();
@@ -50,7 +50,7 @@ public class Settings {
     /**
      * Method loads the settings from a user file or the default settings file
      * */
-    public void load(boolean verbose) {
+    private void load(boolean verbose) {
         try {
             defaultProperties.clear();
             userProperties.clear();
@@ -163,7 +163,7 @@ public class Settings {
      * @return the only instance of this class.
      * */
     public static Settings getSingletonInstance() {
-        return singletonInstance;
+        return SINGLETON;
     }
 
     /**

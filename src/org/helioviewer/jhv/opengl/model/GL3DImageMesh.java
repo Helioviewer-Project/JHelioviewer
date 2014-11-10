@@ -2,7 +2,6 @@ package org.helioviewer.jhv.opengl.model;
 
 import javax.media.opengl.GL;
 
-import org.helioviewer.jhv.base.math.Vector2dDouble;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DMesh;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec4f;
@@ -34,7 +33,6 @@ public abstract class GL3DImageMesh extends GL3DMesh {
     protected GLFragmentShaderProgram fragmentShaderProgram;
 
     protected Region capturedRegion;
-    protected Vector2dDouble textureScale;
 
     private boolean reshapeRequested = false;
     
@@ -52,7 +50,6 @@ public abstract class GL3DImageMesh extends GL3DMesh {
                 if (reason != null) {
                     reshapeRequested = true;
                     capturedRegion = reason.getCapturedRegion();
-                    textureScale = reason.getTextureScale();
                     markAsChanged();
                     // Log.debug("GL3DImageMesh.reshape: "+getName()+" Reason="+reason+", Event="+aEvent);
                 }
@@ -111,9 +108,4 @@ public abstract class GL3DImageMesh extends GL3DMesh {
     public GL3DImageTextureView getImageTextureView() {
         return imageTextureView;
     }
-    
-    
-    protected GLVertexShaderProgram getVertexShader() { return vertexShaderProgram; }
-    
-    protected GLFragmentShaderProgram getFragmentShader() { return fragmentShaderProgram; }
 }

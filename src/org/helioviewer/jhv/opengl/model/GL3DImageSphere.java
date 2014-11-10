@@ -3,7 +3,6 @@ package org.helioviewer.jhv.opengl.model;
 import java.util.List;
 
 import org.helioviewer.jhv.base.GL3DHelper;
-import org.helioviewer.jhv.base.math.Vector2dInt;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.base.wcs.CoordinateConversion;
 import org.helioviewer.jhv.base.wcs.CoordinateVector;
@@ -30,8 +29,6 @@ import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLVertexShaderProgram;
  */
 public class GL3DImageSphere extends GL3DImageMesh
 {
-  protected Vector2dInt mappingResolution=new Vector2dInt((int)Math.pow(2,6),(int)Math.pow(2,6));
-
   private SolarImageToSolarSphereConversion solarImageToSolarSphereConversion;
 
   private SolarImageCoordinateSystem solarImageCS=new SolarImageCoordinateSystem();
@@ -93,9 +90,9 @@ public class GL3DImageSphere extends GL3DImageMesh
           double y=cosTheta;
           double z=sinPhi*sinTheta;
 
-          positions.add(new GL3DVec3d(Constants.SunRadius*x,Constants.SunRadius*y,Constants.SunRadius*z));
+          positions.add(new GL3DVec3d(Constants.SUN_RADIUS*x,Constants.SUN_RADIUS*y,Constants.SUN_RADIUS*z));
 
-          createVertex(solarSphereCS.createCoordinateVector(Constants.SunRadius*x,Constants.SunRadius*y,Constants.SunRadius*z),normals,textCoords,colors);
+          createVertex(solarSphereCS.createCoordinateVector(Constants.SUN_RADIUS*x,Constants.SUN_RADIUS*y,Constants.SUN_RADIUS*z),normals,textCoords,colors);
 
         }
       }
