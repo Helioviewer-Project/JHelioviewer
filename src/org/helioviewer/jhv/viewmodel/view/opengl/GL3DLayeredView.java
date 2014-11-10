@@ -3,8 +3,6 @@ package org.helioviewer.jhv.viewmodel.view.opengl;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import javax.media.opengl.GL2;
-
 import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;

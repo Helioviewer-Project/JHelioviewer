@@ -56,7 +56,6 @@ public class GLShaderBuilder {
 
     private int nextTexUnit = 1;
     private int nextConstantRegister = 0;
-    private int nextVertexAttribute = 0;
     private static int highestTexCoordEverUsed = 0;
 
     private GL2 gl;

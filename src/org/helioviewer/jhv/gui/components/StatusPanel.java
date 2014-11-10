@@ -3,7 +3,6 @@ package org.helioviewer.jhv.gui.components;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.util.LinkedList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;

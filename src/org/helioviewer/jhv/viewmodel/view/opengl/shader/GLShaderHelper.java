@@ -6,8 +6,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.nio.CharBuffer;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,7 +38,6 @@ public class GLShaderHelper {
     private static int maxTextureIndirections = 0;
 
     private static LinkedList<Integer> allShaders = new LinkedList<Integer>();
-    private static int shaderCurrentlyBound = 0;
 
     /**
      * Initializes the helper.
@@ -196,36 +193,6 @@ public class GLShaderHelper {
         CharBuffer programBuffer = CharBuffer.wrap(compiledProgram);
         gl.glProgramStringARB(programType, GL2.GL_PROGRAM_FORMAT_ASCII_ARB, compiledProgram.length(), programBuffer.toString());
         
-    }
-
-    /**
-     * Reads the contents of a file and puts them to a String.
-     * 
-     * @param aFile
-     *            Location of the file to read
-     * @return contents of the file
-     */
-    private String getContents(URL aFile) {
-
-        StringBuilder contents = new StringBuilder();
-
-        try {
-            BufferedReader input = new BufferedReader(new InputStreamReader(aFile.openStream()));
-            try {
-                String line = null; // not declared within while loop
-
-                while ((line = input.readLine()) != null) {
-                    contents.append(line);
-                    contents.append(System.getProperty("line.separator"));
-                }
-            } finally {
-                input.close();
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-
-        return contents.toString();
     }
 
     /**

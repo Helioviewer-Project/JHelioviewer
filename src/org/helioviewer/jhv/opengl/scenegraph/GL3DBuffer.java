@@ -171,17 +171,6 @@ public class GL3DBuffer {
         state.gl.glBufferData(this.type.id, this.data.capacity() * this.dataType.size, data, GL3DBuffer.drawType);
     }
 
-    private void rebufferData(GL3DState state, Buffer data) {
-        this.data = data;
-
-        state.gl.glBindBuffer(this.type.id, this.id);
-        // this.bufferData(state);
-        // state.gl.glBufferData(this.type.id, this.data.capacity() *
-        // this.dataType.size, data, GL3DBuffer.drawType);
-        // state.gl.glBufferSubData(this.type.id, 0, this.data.capacity() *
-        // this.dataType.size, data);
-    }
-
     public void enable(GL3DState state) {
         if (this.isInUse) {
             // Index Buffer does not need to be enabled

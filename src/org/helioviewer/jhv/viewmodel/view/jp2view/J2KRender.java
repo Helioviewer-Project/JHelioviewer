@@ -1,7 +1,5 @@
 package org.helioviewer.jhv.viewmodel.view.jp2view;
 
-import java.util.Arrays;
-
 import kdu_jni.KduException;
 import kdu_jni.Kdu_compositor_buf;
 import kdu_jni.Kdu_coords;
