@@ -90,8 +90,19 @@ public class JHVUpdate implements Runnable {
         Log.trace("Start checking for updates");
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(new DownloadStream(updateURL, JHVGlobals.getStdConnectTimeout(), JHVGlobals.getStdReadTimeout()).getInput()));
-            double version = Double.parseDouble(in.readLine());
-            
+            String[] versionParts = in.readLine().split("\\.");
+            double version = -1;
+            switch(versionParts.length)
+            {
+                case 1:
+                    version = Double.parseDouble(versionParts[0]);
+                    break;
+                case 2:
+                default:
+                    version = Double.parseDouble(versionParts[0]+"."+versionParts[1]);
+                    break;
+            }
+                
             if (version>JHVGlobals.VERSION) {
                 String message = in.readLine();
                 Log.info("Found newer version " + version);
