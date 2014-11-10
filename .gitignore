@@ -1,9 +1,7 @@
 bin/
 *.class
 .metadata/
-/excelsior-osx/JHelioViewer
-/build/excelsior-osx/JHelioViewer-native/
-/build/
+excelsior-win/
 .app
 *.cg
 *.asm
