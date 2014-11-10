@@ -79,7 +79,7 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener {
 				}
 				currentDate = timestampReason.getNewDateTime().getTime();
 
-				if(startDate==null && startPosition2D != null)
+				if(startDate==null)
 				    this.startDate = getStartDate();
 				
 				long timediff = (currentDate.getTime() - startDate
@@ -208,5 +208,6 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener {
 	@Override
 	public void setTrack(boolean track) {
 		this.track = track;
+		this.resetStartPosition();
 	}
 }

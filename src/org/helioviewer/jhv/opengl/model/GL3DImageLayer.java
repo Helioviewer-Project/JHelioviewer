@@ -161,41 +161,11 @@ public class GL3DImageLayer extends GL3DOrientedGroup implements
 
 		this.doUpdateROI = true;
 		this.markAsChanged();
-		//if (state.getState() == VISUAL_TYPE.MODE_3D) {
-			GL3DQuatd phiRotation = GL3DQuatd.createRotation(2 * Math.PI - phi,
-					new GL3DVec3d(0, 1, 0));
-			state.getActiveCamera().getRotation().set(phiRotation);
-			state.getActiveCamera().updateCameraTransformation();
-			updateROI(state.getActiveCamera());
-		/*} else {
-			this.updateRegionIn2DMode(state.getActiveCamera());
-		}*/
-	}
-
-	private void updateRegionIn2DMode(GL3DCamera camera) {
-		Region region = this.imageTextureView.metadata.getPhysicalRegion();
-
-		double halfWidth = region.getWidth() / 2;
-		double halfFOVRad = Math.toRadians(camera.getFOV() / 2.0);
-		double distance = halfWidth * Math.sin(Math.PI / 2 - halfFOVRad)
-				/ Math.sin(halfFOVRad);
-		double scaleFactor = -camera.getZTranslation() / distance;
-		double aspect = camera.getAspect();
-
-		double xCorner = region.getCornerX() * aspect * scaleFactor
-				- camera.getTranslation().x;
-		xCorner = xCorner < region.getCornerX() ? region.getCornerX() : xCorner;
-		double yCorner = region.getCornerX() * scaleFactor
-				- camera.getTranslation().y;
-		yCorner = yCorner < region.getCornerY() ? region.getCornerY() : yCorner;
-		double width = region.getWidth() * scaleFactor * aspect;
-		width = width > region.getWidth() ? region.getWidth() : width;
-		double height = region.getHeight() * scaleFactor;
-		height = height > region.getHeight() ? region.getHeight() : height;
-		Region newRegion = StaticRegion.createAdaptedRegion(xCorner, yCorner,
-				width, height);
-		this.regionView.setRegion(newRegion, new ChangeEvent());
-
+		GL3DQuatd phiRotation = GL3DQuatd.createRotation(2 * Math.PI - phi,
+				new GL3DVec3d(0, 1, 0));
+		state.getActiveCamera().getRotation().set(phiRotation);
+		state.getActiveCamera().updateCameraTransformation();
+		updateROI(state.getActiveCamera());
 	}
 
 	protected void createImageMeshNodes(GL gl) {
@@ -267,11 +237,7 @@ public class GL3DImageLayer extends GL3DOrientedGroup implements
 	public void shapeUpdate(GL3DState state) {
 		super.shapeUpdate(state);
 		if (doUpdateROI) {
-			//if (GL3DState.get().getState() == VISUAL_TYPE.MODE_3D) {
-				this.updateROI(state.getActiveCamera());
-			/*} else {
-				this.updateRegionIn2DMode(state.getActiveCamera());
-			}*/
+			this.updateROI(state.getActiveCamera());
 			doUpdateROI = false;
 			this.accellerationShape.setUnchanged();
 		}
