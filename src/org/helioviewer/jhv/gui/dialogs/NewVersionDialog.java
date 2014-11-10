@@ -89,7 +89,7 @@ public class NewVersionDialog extends JDialog implements ActionListener, Showabl
      * @param verbose
      *            If false show suspension buttons
      */
-    public void init(String newVersion, String message) {
+    public void init(double newVersion, String message) {
         this.setTitle("JHelioviewer " + newVersion + " is now available");
         messagePane.setText(message);
     }

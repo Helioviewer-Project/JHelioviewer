@@ -84,9 +84,6 @@ public class JavaHelioViewer {
         // Save the log settings. Must be done AFTER the directories are created
         LogSettings.getSingletonInstance().update();
 
-        // Read the version and revision from the JAR metafile
-        JHVGlobals.determineVersionAndRevision();
-
         Log.info("Initializing JHelioviewer");
         // display the splash screen
         Log.debug("Create splash screen");

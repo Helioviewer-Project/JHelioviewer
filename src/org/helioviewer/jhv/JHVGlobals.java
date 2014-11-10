@@ -1,13 +1,8 @@
 package org.helioviewer.jhv;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Method;
-import java.net.URISyntaxException;
 import java.util.Arrays;
-import java.util.jar.Attributes;
-import java.util.jar.JarFile;
-import java.util.jar.Manifest;
 
 import javax.swing.JOptionPane;
 
@@ -26,9 +21,7 @@ public class JHVGlobals {
 
     public static final String TEMP_FILENAME_DELETE_PLUGIN_FILES = "delete-plugins.tmp";
 
-    private static String version = null;
-
-    private static String revision = null;
+    public static final double VERSION = 2.3;
 
     /** Constructor is private to prevent instantiation. */
     private JHVGlobals() {
@@ -47,68 +40,6 @@ public class JHVGlobals {
      */
     public static int getStdConnectTimeout() {
         return Integer.parseInt(Settings.getSingletonInstance().getProperty("connection.connect.timeout"));
-    }
-
-    /**
-     * This function must be called prior to the first call to getJhvVersion and
-     * getJhvRevision
-     */
-    public static void determineVersionAndRevision() {
-        File jarPath;
-        try {
-            jarPath = new File(JHVGlobals.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-            Log.info(">> JHVGlobals.determineVersionAndRevision() > Look for jar file: " + jarPath.getAbsolutePath());
-        } catch (URISyntaxException e1) {
-            Log.error(">> JHVGlobals.determineVersionAndRevision() > Could not open code source location: " + JHVGlobals.class.getProtectionDomain().getCodeSource().getLocation().toString());
-            Log.warn(">> JHVGlobals.determineVersionAndRevision() > Set version and revision to null.");
-            return;
-        }
-        JarFile jarFile = null;
-        if (jarPath.isFile()) {
-            try {
-                jarFile = new JarFile(jarPath);
-                Manifest manifest = jarFile.getManifest();
-                Attributes mainAttributes = manifest.getMainAttributes();
-                version = mainAttributes.getValue("version");
-                revision = mainAttributes.getValue("revision");
-                //System.setProperty("jhv.version", version);
-                //System.setProperty("jhv.revision", revision);
-            } catch (IOException e) {
-                Log.error(">> JHVGlobals.determineVersionAndRevision() > Error while reading version and revision from manifest in jar file: " + jarFile.getName(), e);
-            } finally {
-                if (jarFile != null) {
-                    try {
-                        jarFile.close();
-                    } catch (IOException e) {
-                        Log.error(">> JHVGlobals.determineVersionAndRevision() > Error while closing stream to jar file: " + jarFile.getName(), e);
-                    }
-                }
-            }
-        } else {
-            Log.warn(">> JHVGlobals.determineVersionAndRevision() > Classes are not within a jar file. Set version and revision to null.");
-        }
-    }
-
-    /**
-     * Returns the version of JHelioviewer as found in the manifest file of the
-     * jar archive
-     * 
-     * @return the version or null if the classes are not within a jar archive
-     *         or the manifest does not contain the version
-     */
-    public static String getJhvVersion() {
-        return version;
-    }
-
-    /**
-     * Returns the revision of JHelioviewer as found in the manifest file of the
-     * jar archive
-     * 
-     * @return the revision or null if the classes are not within a jar archive
-     *         or the manifest does not contain the revision
-     */
-    public static String getJhvRevision() {
-        return revision;
     }
 
     /**

@@ -133,8 +133,7 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
         }
 
         String msg = "Uncaught Exception detected.\n\nConfiguration:\n";
-        msg += "JHelioviewer - Version: " + JHVGlobals.getJhvVersion() + "\n";
-        msg += "JHelioviewer - Revision: " + JHVGlobals.getJhvRevision() + "\n";
+        msg += "JHelioviewer - Version: " + JHVGlobals.VERSION + "\n";
         msg += "Java Virtual Machine - Name: " + System.getProperty("java.vm.name") + "\n";
         msg += "Java Virtual Machine - Vendor: " + System.getProperty("java.vm.vendor") + "\n";
         msg += "Java Virtual Machine - Version: " + System.getProperty("java.vm.version") + "\n";

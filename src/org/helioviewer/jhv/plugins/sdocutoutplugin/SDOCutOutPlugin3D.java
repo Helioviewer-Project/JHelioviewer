@@ -52,7 +52,7 @@ public class SDOCutOutPlugin3D implements Plugin {
     }
 
     public String getAboutLicenseText() {
-    	return "This plugin uses no additional libraries.";
+    	return null;
     }
 
     /**

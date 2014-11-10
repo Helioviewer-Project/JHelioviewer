@@ -1,7 +1,6 @@
 package org.helioviewer.jhv;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -88,22 +87,12 @@ public class JHVUpdate implements Runnable {
                 Settings.getSingletonInstance().setProperty("update.check.next", Integer.toString(0));
             }
         }
-        Log.trace("Start cheching for updates");
-        String runningVersion = JHVGlobals.getJhvVersion();
-        if (runningVersion == null) {
-            Log.error("Could not retrieve version information");
-            if (verbose) {
-                Message.warn("Unknown running version", "Version information is not included");
-            }
-            return;
-        }
+        Log.trace("Start checking for updates");
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(new DownloadStream(updateURL, JHVGlobals.getStdConnectTimeout(), JHVGlobals.getStdReadTimeout()).getInput()));
-            String version = in.readLine();
-            if (version == null || version.equals("")) {
-                throw new IOException("JHVUpdate: Empty version string");
-            }
-            if (version.compareTo(runningVersion) > 0) {
+            double version = Double.parseDouble(in.readLine());
+            
+            if (version>JHVGlobals.VERSION) {
                 String message = in.readLine();
                 Log.info("Found newer version " + version);
                 d.init(version, message);
@@ -115,10 +104,10 @@ public class JHVUpdate implements Runnable {
             } else {
                 Log.info("Running the newest version of JHelioviewer");
                 if (verbose)
-                    JOptionPane.showMessageDialog(null, "You are running the latest JHelioviewer version (" + runningVersion + ")");
+                    JOptionPane.showMessageDialog(null, "You are running the latest JHelioviewer version (" + JHVGlobals.VERSION + ")");
             }
             in.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             Log.error("Error retrieving update server", e);
             if (verbose)
                 Message.warn("Update check error", "While checking for a newer version got " + e.getLocalizedMessage());

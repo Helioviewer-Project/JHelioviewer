@@ -24,6 +24,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 
+import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.JHVSplashScreen;
 import org.helioviewer.jhv.base.Message;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
@@ -235,7 +236,7 @@ public class ImageViewerGui {
 	 * @return the created and initialized main frame.
 	 */
 	private JFrame createMainFrame() {
-		JFrame frame = new JFrame("ESA JHelioviewer v2");
+		JFrame frame = new JFrame("ESA JHelioviewer "+JHVGlobals.VERSION);
 
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		frame.addWindowListener(new WindowAdapter() {
