@@ -528,28 +528,6 @@ class J2KReader implements Runnable {
 
                                     if (metaStatus >= Math.min((current_step + 1) * JPIPConstants.MAX_REQ_LAYERS, layers.getEnd())) {
 
-                                        // if(metaStatus < num_layers-1) {
-                                        // float loadPerSecond =
-                                        // (float)metaStatus /
-                                        // (System.currentTimeMillis() - time) *
-                                        // 1000.0f;
-                                        // int remainingFrames = num_layers -
-                                        // metaStatus;
-                                        // float remainingTime = remainingFrames
-                                        // / loadPerSecond;
-                                        // float playTime = (num_layers -
-                                        // currParams.compositionLayer) / 20.0f;
-                                        // System.out.println(remainingTime +
-                                        // " " + playTime);
-                                        // if(playTime >= remainingTime) {
-                                        // ((CachedJHVJPXView)
-                                        // parentViewRef).playMovie();
-                                        // } else {
-                                        // ((CachedJHVJPXView)
-                                        // parentViewRef).pauseMovie();
-                                        // }
-                                        // }
-
                                         current_step++;
                                     }
                                     break;

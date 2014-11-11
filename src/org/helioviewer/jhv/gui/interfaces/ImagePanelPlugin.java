@@ -2,6 +2,7 @@ package org.helioviewer.jhv.gui.interfaces;
 
 import org.helioviewer.jhv.gui.components.BasicImagePanel;
 import org.helioviewer.jhv.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.opengl.GL3DComponentView;
 
 /**
  * Interface representing a plugin for an image panel.
@@ -65,5 +66,4 @@ public interface ImagePanelPlugin {
      * function provides space for clean up work to do.
      */
     public void detach();
-
 }

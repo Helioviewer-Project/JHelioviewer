@@ -209,8 +209,6 @@ public class GL3DComponentView extends AbstractBasicView implements
 		GL gl = glAD.getGL();
 
 		gl.setSwapInterval(1);
-
-		updateViewport();
 	}
 
 	public void display(GLAutoDrawable glAD) {
@@ -519,22 +517,9 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 		ImageUtil.flipImageVertically(screenshot);
 
-		// offscreenContext.release();
-		// saveBufferedImage = true;
-		// this.getAdapter(ViewportView.class).setViewport(defaultViewport, new
-		// ChangeEvent());
 		this.canvas.repaint();
 		viewport = null;
-		// if (screenshot == null){
-		// screenshot = getBufferedImage(width, height);
-		// }
 		return screenshot;
-	}
-
-	public void setOffset(Vector2dInt offset) {
-		// if(this.orthoView!=null) {
-		// orthoView.setOffset(offset);
-		// }
 	}
 
 	public void updateMainImagePanelSize(Vector2dInt size) {
@@ -551,10 +536,6 @@ public class GL3DComponentView extends AbstractBasicView implements
 			ChangeEvent changeEvent) {
 		// this.orthoView = getAdapter(GL3DOrthoView.class);
 		this.viewportView = getAdapter(ViewportView.class);
-	}
-
-	private void updateViewport() {
-		// this.orthoView.updateMainImagePanelSize(mainImagePanelSize);
 	}
 
 	public void viewChanged(View sender, ChangeEvent aEvent) {
