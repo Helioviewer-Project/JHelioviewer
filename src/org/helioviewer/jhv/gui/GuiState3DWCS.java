@@ -24,7 +24,6 @@ import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayControlCompone
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayControlComponentManager;
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayPanel;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.helioviewer.jhv.viewmodel.view.ComponentView;
 import org.helioviewer.jhv.viewmodel.view.ImageInfoView;
 import org.helioviewer.jhv.viewmodel.view.LayeredView;
 import org.helioviewer.jhv.viewmodel.view.MetaDataView;
@@ -44,7 +43,7 @@ import org.helioviewer.jhv.viewmodel.view.opengl.GLOverlayView;
 public class GuiState3DWCS {
     public static TopToolBar topToolBar = new TopToolBar();
 
-    public static ComponentView mainComponentView;
+    public static GL3DComponentView mainComponentView;
 
     private GuiState3DWCS()
     {

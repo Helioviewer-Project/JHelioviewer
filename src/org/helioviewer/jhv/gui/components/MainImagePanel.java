@@ -19,10 +19,10 @@ import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.changeevent.LayerChangedReason;
 import org.helioviewer.jhv.viewmodel.renderer.screen.ScreenRenderGraphics;
 import org.helioviewer.jhv.viewmodel.renderer.screen.ScreenRenderer;
-import org.helioviewer.jhv.viewmodel.view.ComponentView;
 import org.helioviewer.jhv.viewmodel.view.LayeredView;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.ViewHelper;
+import org.helioviewer.jhv.viewmodel.view.opengl.GL3DComponentView;
 
 /**
  * This class represents an image component that is used to display the image of
@@ -111,7 +111,7 @@ public class MainImagePanel extends BasicImagePanel {
      * {@inheritDoc}
      */
 
-    public void setView(ComponentView newView) {
+    public void setView(GL3DComponentView newView) {
 
         super.setView(newView);
 

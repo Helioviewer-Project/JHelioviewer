@@ -20,9 +20,9 @@ import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState.VISUAL_TYPE;
 import org.helioviewer.jhv.opengl.scenegraph.math.GL3DQuatd;
 import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec3d;
-import org.helioviewer.jhv.viewmodel.view.ComponentView;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DCameraView;
+import org.helioviewer.jhv.viewmodel.view.opengl.GL3DComponentView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DCoordinateSystemView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DSceneGraphView;
 
@@ -111,12 +111,12 @@ public class GL3DCameraSelectorModel extends AbstractListModel<Object> implement
         }
     }
 
-    private ComponentView getMainView() {
+    private GL3DComponentView getMainView() {
     	return GuiState3DWCS.mainComponentView;
     }
 
     private GL3DCameraView getCameraView() {
-        ComponentView mainView = getMainView();
+        GL3DComponentView mainView = getMainView();
         if (mainView != null) {
             return mainView.getAdapter(GL3DCameraView.class);
         }

@@ -25,13 +25,13 @@ import org.helioviewer.jhv.viewmodel.changeevent.ViewChainChangedReason;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.region.Region;
 import org.helioviewer.jhv.viewmodel.renderer.screen.ScreenRenderer;
-import org.helioviewer.jhv.viewmodel.view.ComponentView;
 import org.helioviewer.jhv.viewmodel.view.MetaDataView;
 import org.helioviewer.jhv.viewmodel.view.RegionView;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.ViewHelper;
 import org.helioviewer.jhv.viewmodel.view.ViewListener;
 import org.helioviewer.jhv.viewmodel.view.ViewportView;
+import org.helioviewer.jhv.viewmodel.view.opengl.GL3DComponentView;
 import org.helioviewer.jhv.viewmodel.viewport.StaticViewport;
 import org.helioviewer.jhv.viewmodel.viewport.Viewport;
 
@@ -51,7 +51,7 @@ public class BasicImagePanel extends JPanel implements ComponentListener, ViewLi
 
     private static final long serialVersionUID = 1L;
 
-    protected ComponentView componentView;
+    protected GL3DComponentView componentView;
     protected ViewportView viewportView;
     protected RegionView regionView;
     protected MetaDataView metaDataView;
@@ -157,7 +157,7 @@ public class BasicImagePanel extends JPanel implements ComponentListener, ViewLi
      * 
      * @return associated component view.
      */
-    public ComponentView getView() {
+    public GL3DComponentView getView() {
         return componentView;
     }
 
@@ -168,7 +168,7 @@ public class BasicImagePanel extends JPanel implements ComponentListener, ViewLi
      * @param newView
      *            new component view.
      */
-    public void setView(ComponentView newView) {
+    public void setView(GL3DComponentView newView) {
         componentView = newView;
 
         viewportView = ViewHelper.getViewAdapter(componentView, ViewportView.class);

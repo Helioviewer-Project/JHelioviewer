@@ -32,10 +32,10 @@ import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
-import org.helioviewer.jhv.viewmodel.view.ComponentView;
 import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView.SpeedType;
+import org.helioviewer.jhv.viewmodel.view.opengl.GL3DComponentView;
 
 import com.xuggle.mediatool.IMediaWriter;
 import com.xuggle.mediatool.ToolFactory;
@@ -43,7 +43,7 @@ import com.xuggle.mediatool.ToolFactory;
 
 public class ExportMovieDialog implements ActionListener{
 	private JHVJPXView timedJHVJPXView = null;
-	private ComponentView mainComponentView = null;
+	private GL3DComponentView mainComponentView = null;
 	
 	private long speed = 0;
 	private IMediaWriter writer;

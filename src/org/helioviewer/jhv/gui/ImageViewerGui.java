@@ -52,13 +52,13 @@ import org.helioviewer.jhv.io.FileDownloader;
 import org.helioviewer.jhv.io.JHVRequest;
 import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTabPanelManager;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.helioviewer.jhv.viewmodel.view.ComponentView;
 import org.helioviewer.jhv.viewmodel.view.FilterView;
 import org.helioviewer.jhv.viewmodel.view.ImageInfoView;
 import org.helioviewer.jhv.viewmodel.view.LayeredView;
 import org.helioviewer.jhv.viewmodel.view.MetaDataView;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
+import org.helioviewer.jhv.viewmodel.view.opengl.GL3DComponentView;
 
 /**
  * A class that sets up the graphical user interface.
@@ -274,7 +274,7 @@ public class ImageViewerGui {
 	 * 
 	 * @return instance of the main ComponentView.
 	 */
-	public ComponentView getMainView() {
+	public GL3DComponentView getMainView() {
 		return GuiState3DWCS.mainComponentView;
 	}
 

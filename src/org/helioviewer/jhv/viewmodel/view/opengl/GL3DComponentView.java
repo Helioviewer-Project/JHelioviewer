@@ -45,7 +45,6 @@ import org.helioviewer.jhv.viewmodel.region.Region;
 import org.helioviewer.jhv.viewmodel.renderer.screen.GLScreenRenderGraphics;
 import org.helioviewer.jhv.viewmodel.renderer.screen.ScreenRenderer;
 import org.helioviewer.jhv.viewmodel.view.AbstractBasicView;
-import org.helioviewer.jhv.viewmodel.view.ComponentView;
 import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
 import org.helioviewer.jhv.viewmodel.view.MetaDataView;
 import org.helioviewer.jhv.viewmodel.view.RegionView;
@@ -72,7 +71,7 @@ import com.jogamp.opengl.util.awt.ImageUtil;
  * 
  */
 public class GL3DComponentView extends AbstractBasicView implements
-		GLEventListener, ComponentView, LayersListener, GL3DCameraListener {
+		GLEventListener, LayersListener, GL3DCameraListener {
 
     private Timer postRenderTimer = new Timer(100, new ActionListener(){
 	  @Override
@@ -118,7 +117,6 @@ public class GL3DComponentView extends AbstractBasicView implements
 	private int tileWidth = 512;
 	private int tileHeight = 512;
 
-	private BufferedImage screenshot;
 	private Viewport defaultViewport;
 
 	private double clipNear = Constants.SUN_RADIUS / 10;
@@ -179,48 +177,30 @@ public class GL3DComponentView extends AbstractBasicView implements
 		generateNewRenderBuffers(gl);
 		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);
 
-		// GLTextureCoordinate.init(gl);
 		textureHelper.delAllTextures(gl);
 		GLTextureHelper.initHelper(gl);
 
 		shaderHelper.delAllShaderIDs(gl);
-		// gl.glEnable(GL.GL_LINE_SMOOTH);
 		gl.glHint(GL2.GL_LINE_SMOOTH_HINT, GL2.GL_NICEST);
-		// gl.glShadeModel(GL.GL_FLAT);
 		gl.glShadeModel(GL2.GL_SMOOTH);
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-		// gl.glEnable(GL.GL_TEXTURE_1D);
-		// gl.glEnable(GL.GL_TEXTURE_2D);gl.glEnable(GL.GL_TEXTURE_2D);
 		gl.glTexEnvi(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE, GL2.GL_BLEND);
-		// gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE,
-		// GL.GL_REPLACE);
 		gl.glEnable(GL2.GL_BLEND);
 		gl.glEnable(GL2.GL_POINT_SMOOTH);
 		gl.glEnable(GL2.GL_COLOR_MATERIAL);
 
 		gl.glEnable(GL2.GL_LIGHTING);
 		gl.glEnable(GL2.GL_NORMALIZE);
-		// gl.glEnable(GL.GL_CULL_FACE);
 		gl.glCullFace(GL2.GL_BACK);
 		gl.glFrontFace(GL2.GL_CCW);
 		gl.glEnable(GL2.GL_DEPTH_TEST);
-		// gl.glDepthFunc(GL.GL_LESS);
 		gl.glDepthFunc(GL2.GL_LEQUAL);
 
-		// gl.glLightfv(GL.GL_LIGHT0, GL.GL_AMBIENT, new float[] { 0.2f, 0.2f,
-		// 0.2f }, 0);
-		// gl.glLightfv(GL.GL_LIGHT0, GL.GL_DIFFUSE, new float[] { 0.6f, 0.6f,
-		// 0.6f }, 0);
-		// gl.glLightfv(GL.GL_LIGHT0, GL.GL_SPECULAR, new float[] { 0.2f, 0.2f,
-		// 0.2f }, 0);
-		// gl.glLightfv(GL.GL_LIGHT0, GL.GL_POSITION, new float[] { 0, 0,
-		// (float) Constants.SunMeanDistanceToEarth }, 0);
 		gl.glEnable(GL2.GL_LIGHT0);
 
 		viewportSize = new Vector2dInt(0, 0);
 		this.rebuildShadersRequest = true;
-		// gl.glColor3f(1.0f, 1.0f, 0.0f);
 	}
 
 	public void reshape(GLAutoDrawable glAD, int x, int y, int width, int height) {
@@ -413,7 +393,6 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 	public void saveScreenshot(String imageFormat, File outputFile, int width,
 			int height) {
-		// this.animator.stop();
 		try {
 			ImageIO.write(this.getBufferedImage(width, height), imageFormat,
 					outputFile);
@@ -421,7 +400,6 @@ public class GL3DComponentView extends AbstractBasicView implements
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		// this.animator.start();
 	}
 
 	public void setBackgroundColor(Color background) {
@@ -475,7 +453,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 		offscreenGL.glBindFramebuffer(GL2.GL_FRAMEBUFFER, frameBufferObject[0]);
 		generateNewRenderBuffers(offscreenGL);
 
-		screenshot = new BufferedImage(viewport.getWidth(),
+		BufferedImage screenshot = new BufferedImage(viewport.getWidth(),
 				viewport.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
 		ByteBuffer.wrap(((DataBufferByte) screenshot
 				.getRaster().getDataBuffer()).getData());
@@ -638,24 +616,17 @@ public class GL3DComponentView extends AbstractBasicView implements
 		gl.glDeleteRenderbuffers(1, renderBufferDepth, 0);
 		gl.glDeleteRenderbuffers(1, renderBufferColor, 0);
 
-		if (screenshot != null) {
-			screenshot.flush();
-			screenshot = null;
-		}
-
 	}
 
 	public Dimension getCanavasSize() {
 		return new Dimension(canvas.getSurfaceWidth(), canvas.getSurfaceHeight());
 	}
 
-	@Override
 	public void stop() {
 		defaultViewport = this.getAdapter(ViewportView.class).getViewport();
 
 	}
 
-	@Override
 	public void start() {
 		this.getAdapter(ViewportView.class).setViewport(defaultViewport,
 				new ChangeEvent());

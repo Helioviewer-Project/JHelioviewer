@@ -44,6 +44,7 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJP2View;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JP2Image;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
+import org.helioviewer.jhv.viewmodel.view.opengl.GL3DComponentView;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -97,7 +98,7 @@ public class LayersModel implements ViewListener
      */
     public LayeredView getLayeredView()
     {
-        ComponentView mainView=GuiState3DWCS.mainComponentView;
+        GL3DComponentView mainView=GuiState3DWCS.mainComponentView;
         if(mainView==null)
             return null;
         LayeredView layeredView=mainView.getAdapter(LayeredView.class);
