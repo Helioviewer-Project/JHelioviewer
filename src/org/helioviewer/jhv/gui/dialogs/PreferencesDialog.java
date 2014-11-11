@@ -9,11 +9,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.util.LinkedList;
-import java.util.List;
 
 import javax.swing.*;
-import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
@@ -46,7 +43,6 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
 
     private JRadioButton loadDefaultMovieOnStartUp;
     private JRadioButton doNothingOnStartUp;
-    private JComboBox<Object> lafCombo;
     private JPanel paramsPanel;
     private JCheckBox limitMaxSize = new JCheckBox("Limit size");
     private JLabel occupiedSizeLabel = new JLabel();
@@ -59,15 +55,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
     private JTextField dateFormatField;
     private JButton dateFormatInfo;
 
-    private Settings settings = Settings.getSingletonInstance();
-
     private DateFormatInfoDialog dialog = new DateFormatInfoDialog();
-
-    /*
-     * This array will contain look and feels that are not allowed when using
-     * JHV
-     */
-    private String[] disallowedLafs = { "CDE/Motif" };
 
     /**
      * The private constructor that sets the fields and the dialog.
@@ -132,7 +120,6 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
 
         cancelBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                setLookAndFeelCombo(settings.getProperty("display.laf"));
                 dispose();
             }
         });
@@ -146,18 +133,14 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
                     maxCacheBox.setText("0.0");
                     dateFormatField.setText(defaultDateFormat);
 
-                    LogSettings logSettings = LogSettings.getSingletonInstance();
-
                     if (debugFileCombo != null) {
-                        debugFileCombo.setSelectedItem(logSettings.getDefaultLoggingLevel("file"));
-                        debugFileTextField.setText(Integer.toString(logSettings.getDefaultMaxiumLogFileAge("file")));
+                        debugFileCombo.setSelectedItem(LogSettings.getDefaultLoggingLevel("file"));
+                        debugFileTextField.setText(Integer.toString(LogSettings.getDefaultMaxiumLogFileAge("file")));
                     }
 
                     if (debugConsoleCombo != null) {
-                        debugConsoleCombo.setSelectedItem(logSettings.getDefaultLoggingLevel("console"));
+                        debugConsoleCombo.setSelectedItem(LogSettings.getDefaultLoggingLevel("console"));
                     }
-
-                    setLookAndFeelCombo(UIManager.getSystemLookAndFeelClassName());
                 }
             }
         });
@@ -220,49 +203,6 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
     }
 
     /**
-     * Method that returns allowed look and feels for JHV
-     * 
-     * @return Array containing allowed look and feels
-     */
-    private UIManager.LookAndFeelInfo[] getAllowedLookAndFeels() {
-
-        UIManager.LookAndFeelInfo[] lafs = UIManager.getInstalledLookAndFeels();
-
-        // erase disallowed look and feels:
-        List<LookAndFeelInfo> result = new LinkedList<LookAndFeelInfo>();
-        for (int i = 0; i < this.disallowedLafs.length; i++) {
-            for (UIManager.LookAndFeelInfo item : lafs) {
-                if (!disallowedLafs[i].equals(item.getName())) {
-                    result.add(item);
-                }
-            }
-        }
-
-        return result.toArray(new UIManager.LookAndFeelInfo[0]);
-    }
-
-    /**
-     * Updates the look and feel combobox.
-     * 
-     * @param lafClassName
-     *            Entry to select
-     */
-    private void setLookAndFeelCombo(String lafClassName) {
-        // UIManager.LookAndFeelInfo[] lafs =
-        // UIManager.getInstalledLookAndFeels();
-        UIManager.LookAndFeelInfo[] lafs = getAllowedLookAndFeels();
-
-        for (int i = 0; i < lafs.length; i++) {
-            if (lafs[i].getClassName().equals(lafClassName)) {
-                lafCombo.setSelectedIndex(i);
-                break;
-            }
-        }
-
-        Settings.getSingletonInstance().setLookAndFeelEverywhere(lafClassName);
-    }
-
-    /**
      * Loads the settings.
      * 
      * Reads the informations from {@link org.helioviewer.jhv.Settings} and sets
@@ -274,29 +214,24 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
         // settings.load();
 
         // Start up
-        loadDefaultMovieOnStartUp.setSelected(Boolean.parseBoolean(settings.getProperty("startup.loadmovie")));
-        doNothingOnStartUp.setSelected(!Boolean.parseBoolean(settings.getProperty("startup.loadmovie")));
+        loadDefaultMovieOnStartUp.setSelected(Boolean.parseBoolean(Settings.getProperty("startup.loadmovie")));
+        doNothingOnStartUp.setSelected(!Boolean.parseBoolean(Settings.getProperty("startup.loadmovie")));
 
         // The current cache size
         occupiedSizeLabel.setText(getCacheSizeText());
 
-        // Look and feel
-        setLookAndFeelCombo(settings.getProperty("display.laf"));
-
         // Debug options
-        LogSettings logSettings = LogSettings.getSingletonInstance();
-
         if (debugFileCombo != null) {
-            debugFileCombo.setSelectedItem(logSettings.getLoggingLevel("file"));
-            debugFileTextField.setText(Integer.toString(logSettings.getMaxiumLogFileAge("file")));
+            debugFileCombo.setSelectedItem(LogSettings.getLoggingLevel("file"));
+            debugFileTextField.setText(Integer.toString(LogSettings.getMaxiumLogFileAge("file")));
         }
 
         if (debugConsoleCombo != null) {
-            debugConsoleCombo.setSelectedItem(logSettings.getLoggingLevel("console"));
+            debugConsoleCombo.setSelectedItem(LogSettings.getLoggingLevel("console"));
         }
 
         // Default date format
-        String fmt = settings.getProperty("default.date.format");
+        String fmt = Settings.getProperty("default.date.format");
 
         if (fmt == null)
             dateFormatField.setText(defaultDateFormat);
@@ -307,7 +242,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
         defaultsPanel.loadSettings();
 
         // Maximum JPIP cache size
-        maxCacheBox.setText(settings.getProperty("jpip.cache.size"));
+        maxCacheBox.setText(Settings.getProperty("jpip.cache.size"));
 
         try {
             limitMaxSize.setSelected(Double.parseDouble(maxCacheBox.getText()) > 0);
@@ -328,42 +263,35 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
     private void saveSettings() {
 
         // Start up
-        settings.setProperty("startup.loadmovie", Boolean.toString(loadDefaultMovieOnStartUp.isSelected()));
-
-        // Look and feel
-        UIManager.LookAndFeelInfo[] lafs = getAllowedLookAndFeels();
-        settings.setProperty("display.laf", lafs[lafCombo.getSelectedIndex()].getClassName());
+        Settings.setProperty("startup.loadmovie", Boolean.toString(loadDefaultMovieOnStartUp.isSelected()));
 
         // Debug options
-        LogSettings logSettings = LogSettings.getSingletonInstance();
-
         if (debugFileCombo != null) {
             Level level = (Level) debugFileCombo.getSelectedItem();
-            logSettings.setLoggingLevel("file", level);
-            logSettings.setMaxiumLogFileAge(LogSettings.getSingletonInstance().FILE_LOGGER, Integer.parseInt(debugFileTextField.getText()));
+            LogSettings.setLoggingLevel("file", level);
+            LogSettings.setMaxiumLogFileAge(LogSettings.FILE_LOGGER, Integer.parseInt(debugFileTextField.getText()));
         }
 
         if (debugConsoleCombo != null) {
             Level level = (Level) debugConsoleCombo.getSelectedItem();
-            logSettings.setLoggingLevel("console", level);
+            LogSettings.setLoggingLevel("console", level);
         }
 
         // Default date format
-        settings.setProperty("default.date.format", dateFormatField.getText());
+        Settings.setProperty("default.date.format", dateFormatField.getText());
 
         // Default values
         defaultsPanel.saveSettings();
 
         // Maximum JPIP cache size
         if (limitMaxSize.isSelected())
-            settings.setProperty("jpip.cache.size", maxCacheBox.getText());
+            Settings.setProperty("jpip.cache.size", maxCacheBox.getText());
         else
-            settings.setProperty("jpip.cache.size", "0.0");
+            Settings.setProperty("jpip.cache.size", "0.0");
 
         // Update and save settings
-        settings.update();
-        settings.save();
-        LogSettings.getSingletonInstance().update();
+        Settings.apply();
+        LogSettings.update();
     }
 
     /**
@@ -454,33 +382,6 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
         row0.add(doNothingOnStartUp);
         paramsPanel.add(row0);
 
-        UIManager.LookAndFeelInfo[] lafs = getAllowedLookAndFeels();
-
-        String[] lafNames = new String[lafs.length];
-        for (int i = 0; i < lafs.length; i++) {
-            lafNames[i] = lafs[i].getName();
-        }
-        lafCombo = new JComboBox<Object>(lafNames);
-
-        final PreferencesDialog parent = this;
-        lafCombo.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                JComboBox<?> source = (JComboBox<?>) e.getSource();
-                // UIManager.LookAndFeelInfo[] lafs =
-                // UIManager.getInstalledLookAndFeels();
-                UIManager.LookAndFeelInfo[] lafs = getAllowedLookAndFeels();
-                UIManager.LookAndFeelInfo selectedLaf = lafs[source.getSelectedIndex()];
-
-                Settings.getSingletonInstance().setLookAndFeelEverywhere(selectedLaf.getClassName());
-                SwingUtilities.updateComponentTreeUI(parent);
-            }
-        });
-
-        JPanel row1 = new JPanel(new FlowLayout(FlowLayout.LEADING));
-        row1.add(new JLabel("Look and Feel:  "));
-        row1.add(lafCombo);
-        paramsPanel.add(row1);
-
         dateFormatField = new JTextField();
         dateFormatField.setPreferredSize(new Dimension(150, 23));
 
@@ -504,21 +405,20 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
         row2.add(dateFormatInfo);
         paramsPanel.add(row2);
 
-        LogSettings logSettings = LogSettings.getSingletonInstance();
-        Level fileLoggingLevel = logSettings.getLoggingLevel(LogSettings.getSingletonInstance().FILE_LOGGER);
-        Level consoleLoggingLevel = logSettings.getLoggingLevel(LogSettings.getSingletonInstance().CONSOLE_LOGGER);
+        Level fileLoggingLevel = LogSettings.getLoggingLevel(LogSettings.FILE_LOGGER);
+        Level consoleLoggingLevel = LogSettings.getLoggingLevel(LogSettings.CONSOLE_LOGGER);
 
         JPanel row4 = new JPanel(new FlowLayout(FlowLayout.LEADING));
         if (fileLoggingLevel != null) {
             row4.add(new JLabel("File log level:"));
-            debugFileCombo = new JComboBox<Object>(LogSettings.getSingletonInstance().LEVELS);
+            debugFileCombo = new JComboBox<Object>(LogSettings.LEVELS);
             row4.add(debugFileCombo);
             debugFileCombo.setSelectedItem(fileLoggingLevel);
         }
 
         if (consoleLoggingLevel != null) {
             row4.add(new JLabel("Console log level:"));
-            debugConsoleCombo = new JComboBox<Object>(LogSettings.getSingletonInstance().LEVELS);
+            debugConsoleCombo = new JComboBox<Object>(LogSettings.LEVELS);
             row4.add(debugConsoleCombo);
             debugConsoleCombo.setSelectedItem(consoleLoggingLevel);
         }
@@ -531,7 +431,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
         if (fileLoggingLevel != null) {
             row5.add(new JLabel("Delete log files after "));
             debugFileTextField = new JTextField(3);
-            debugFileTextField.setText(Integer.toString(logSettings.getMaxiumLogFileAge(LogSettings.getSingletonInstance().FILE_LOGGER)));
+            debugFileTextField.setText(Integer.toString(LogSettings.getMaxiumLogFileAge(LogSettings.FILE_LOGGER)));
             row5.add(debugFileTextField);
             row5.add(new JLabel("days (enter 0 to keep all files)"));
             paramsPanel.add(row5);
@@ -571,9 +471,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
             super(new BorderLayout());
             setPreferredSize(new Dimension(150, 180));
 
-            Settings settings = Settings.getSingletonInstance();
-            
-            tableData = new Object[][] { { "Default save directory", settings.getProperty("default.save.path") }, { "Default local path", settings.getProperty("default.local.path") }, { "Default remote path", settings.getProperty("default.remote.path") } };
+            tableData = new Object[][] { { "Default save directory", Settings.getProperty("default.save.path") }, { "Default local path", Settings.getProperty("default.local.path") }, { "Default remote path", Settings.getProperty("default.remote.path") } };
 
             table = new JTable(new DefaultTableModel(tableData, new String[] { "Description", "Value" }) {
                 private static final long serialVersionUID = 1L;
@@ -616,22 +514,18 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
 
             TableModel model = table.getModel();
 
-            Settings settings = Settings.getSingletonInstance();
-
-            model.setValueAt(settings.getProperty("default.save.path"), 0, 1);
-            model.setValueAt(settings.getProperty("default.local.path"), 1, 1);
-            model.setValueAt(settings.getProperty("default.remote.path"), 2, 1);
+            model.setValueAt(Settings.getProperty("default.save.path"), 0, 1);
+            model.setValueAt(Settings.getProperty("default.local.path"), 1, 1);
+            model.setValueAt(Settings.getProperty("default.remote.path"), 2, 1);
         }
 
         public void saveSettings() {
 
             TableModel model = table.getModel();
 
-            Settings settings = Settings.getSingletonInstance();
-
-            settings.setProperty("default.save.path", model.getValueAt(0, 1).toString());
-            settings.setProperty("default.local.path", model.getValueAt(1, 1).toString());
-            settings.setProperty("default.remote.path", model.getValueAt(2, 1).toString());
+            Settings.setProperty("default.save.path", model.getValueAt(0, 1).toString());
+            Settings.setProperty("default.local.path", model.getValueAt(1, 1).toString());
+            Settings.setProperty("default.remote.path", model.getValueAt(2, 1).toString());
         }
 
         public void resetSettings() {

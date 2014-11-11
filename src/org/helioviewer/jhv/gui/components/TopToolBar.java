@@ -65,7 +65,7 @@ public class TopToolBar extends JToolBar implements MouseListener {
         setFloatable(false);
 
         try {
-            displayMode = DisplayMode.valueOf(Settings.getSingletonInstance().getProperty("display.toolbar").toUpperCase());
+            displayMode = DisplayMode.valueOf(Settings.getProperty("display.toolbar").toUpperCase());
         } catch (Exception e) {
             Log.error("Error when reading the display mode of the toolbar", e);
             displayMode = DisplayMode.ICONANDTEXT;
@@ -278,8 +278,7 @@ public class TopToolBar extends JToolBar implements MouseListener {
         DisplayMode oldDisplayMode = displayMode;
         if (mode != null){
         	displayMode = mode;
-        	Settings.getSingletonInstance().setProperty("display.toolbar", mode.toString().toLowerCase());
-        	Settings.getSingletonInstance().save();
+        	Settings.setProperty("display.toolbar", mode.toString().toLowerCase());
         }
         SelectionMode selectionMode;
       	selectionMode = SelectionMode.ROTATE;

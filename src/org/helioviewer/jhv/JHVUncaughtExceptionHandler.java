@@ -148,14 +148,14 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
         msg += "Stacktrace:\n";
         msg += stackTrace;
 
-        if (LogSettings.getSingletonInstance() != null) {
+        try
+        {
             Log.fatal("Runtime exception", e);
 
             msg += "\nLog:\n";
-            LogSettings.getSingletonInstance().getCurrentLogFile();
 
             try {
-                BufferedReader input = new BufferedReader(new FileReader(LogSettings.getSingletonInstance().getCurrentLogFile()));
+                BufferedReader input = new BufferedReader(new FileReader(LogSettings.getCurrentLogFile()));
                 try {
                     String line = null; // not declared within while loop
 
@@ -168,7 +168,9 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
-        } else {
+        }
+        catch(Exception e2)
+        {
             System.err.println("Runtime exception");
             System.err.println(stackTrace);
         }

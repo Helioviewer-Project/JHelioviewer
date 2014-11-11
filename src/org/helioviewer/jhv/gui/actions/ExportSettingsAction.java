@@ -14,7 +14,7 @@ public class ExportSettingsAction extends AbstractAction{
 	private static final long serialVersionUID = 1L;
 
 	public ExportSettingsAction() {
-	        super("Export setting...");
+	        super("Screenshots and movies...");
 	    }
 
 	    /**

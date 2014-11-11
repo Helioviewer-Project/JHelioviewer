@@ -195,7 +195,7 @@ public class LayersModel implements ViewListener
         SimpleDateFormat dateFormat;
         try
         {
-            dateFormat=new SimpleDateFormat(Settings.getSingletonInstance().getProperty("default.date.format"));
+            dateFormat=new SimpleDateFormat(Settings.getProperty("default.date.format"));
         }
         catch(IllegalArgumentException e1)
         {
@@ -1802,7 +1802,7 @@ public class LayersModel implements ViewListener
 
                 // If scheme is jpip, check if source was API call and file
                 // still exists
-                if(directURI.getScheme().equalsIgnoreCase("jpip")&&(layerSetting.downloadURI.contains(Settings.getSingletonInstance().getProperty("API.jp2series.path"))||layerSetting.downloadURI.contains(Settings.getSingletonInstance().getProperty("API.jp2images.path"))))
+                if(directURI.getScheme().equalsIgnoreCase("jpip")&&(layerSetting.downloadURI.contains(Settings.getProperty("API.jp2series.path"))||layerSetting.downloadURI.contains(Settings.getProperty("API.jp2images.path"))))
                 {
 
                     Log.info(">> LayersModel.StateParser.setupLayer() > Check if API-generated file \""+layerSetting.directURI+"\" still exists... ");

@@ -47,7 +47,7 @@ public class OpenLocalFileAction extends AbstractAction {
      * {@inheritDoc}
      */
     public void actionPerformed(ActionEvent e) {
-        final JFileChooser fileChooser = new JFileChooser(Settings.getSingletonInstance().getProperty("default.local.path"));
+        final JFileChooser fileChooser = new JFileChooser(Settings.getProperty("default.local.path"));
         fileChooser.setAcceptAllFileFilterUsed(false);
         fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         fileChooser.addChoosableFileFilter(new JP2Filter());
@@ -65,8 +65,7 @@ public class OpenLocalFileAction extends AbstractAction {
             if (selectedFile.exists() && selectedFile.isFile()) {
 
                 // remember the current directory for future
-                Settings.getSingletonInstance().setProperty("default.local.path", fileChooser.getSelectedFile().getParent());
-                Settings.getSingletonInstance().save();
+                Settings.setProperty("default.local.path", fileChooser.getSelectedFile().getParent());
 
                 ImageViewerGui.getSingletonInstance().getMainImagePanel().setLoading(true);
 

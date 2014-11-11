@@ -106,7 +106,7 @@ public class APIRequestManager {
      * @throws IOException
      */
     private static ImageInfoView loadImage(boolean addToViewChain, String observatory, String instrument, String detector, String measurement, String startTime) throws MalformedURLException, IOException {
-        String fileRequest = Settings.getSingletonInstance().getProperty("API.jp2images.path") + "?action=getJP2Image&observatory=" + observatory + "&instrument=" + instrument + "&detector=" + detector + "&measurement=" + measurement + "&date=" + startTime + "&json=true";
+        String fileRequest = Settings.getProperty("API.jp2images.path") + "?action=getJP2Image&observatory=" + observatory + "&instrument=" + instrument + "&detector=" + detector + "&measurement=" + measurement + "&date=" + startTime + "&json=true";
         String jpipRequest = fileRequest + "&jpip=true";
 
         // get URL from server where file with image series is located
@@ -153,7 +153,7 @@ public class APIRequestManager {
      * @throws IOException
      */
     private static ImageInfoView loadImageSeries(boolean addToViewChain, String observatory, String instrument, String detector, String measurement, String startTime, String endTime, String cadence) throws MalformedURLException, IOException {
-        String fileRequest = Settings.getSingletonInstance().getProperty("API.jp2series.path") + "?action=getJPX&observatory=" + observatory + "&instrument=" + instrument + "&detector=" + detector + "&measurement=" + measurement + "&startTime=" + startTime + "&endTime=" + endTime;
+        String fileRequest = Settings.getProperty("API.jp2series.path") + "?action=getJPX&observatory=" + observatory + "&instrument=" + instrument + "&detector=" + detector + "&measurement=" + measurement + "&startTime=" + startTime + "&endTime=" + endTime;
         if (cadence != null) {
             fileRequest += "&cadence=" + cadence;
         }

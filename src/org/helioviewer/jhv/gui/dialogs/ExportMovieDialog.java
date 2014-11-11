@@ -78,9 +78,7 @@ public class ExportMovieDialog implements ActionListener{
 		exportMovieDialog = this;
 		if (openFileChooser() == JFileChooser.APPROVE_OPTION) {
 			this.loadSettings();
-		    Settings settings = Settings.getSingletonInstance();
-	        settings.setProperty(SETTING_MOVIE_EXPORT_LAST_DIRECTORY, directory);
-	        settings.save();
+		    Settings.setProperty(SETTING_MOVIE_EXPORT_LAST_DIRECTORY, directory);
 	        ImageViewerGui.getMainFrame().setEnabled(false);
 			
 	        
@@ -110,10 +108,9 @@ public class ExportMovieDialog implements ActionListener{
         fileChooser.setMultiSelectionEnabled(false);
         fileChooser.setAcceptAllFileFilterUsed(false);
         
-        Settings settings = Settings.getSingletonInstance();
         String val;
         try {
-            val = settings.getProperty(SETTING_MOVIE_EXPORT_LAST_DIRECTORY);
+            val = Settings.getProperty(SETTING_MOVIE_EXPORT_LAST_DIRECTORY);
             if (val != null && !(val.length() == 0)) {
                 fileChooser.setCurrentDirectory(new File(val));
             }
@@ -158,11 +155,10 @@ public class ExportMovieDialog implements ActionListener{
 	
 	
 	private void loadSettings(){
-		Settings settings = Settings.getSingletonInstance();
         String val;  
         
         try {
-            val = settings.getProperty(SETTING_USE_CURRENT_OPENGL_SIZE);
+            val = Settings.getProperty(SETTING_USE_CURRENT_OPENGL_SIZE);
             if (val != null && !(val.length() == 0)) {
                 useCurrentOpenGlSize = Boolean.parseBoolean(val);
             }
@@ -172,7 +168,7 @@ public class ExportMovieDialog implements ActionListener{
 
         
         try {
-            val = settings.getProperty(SETTING_IMG_HEIGHT);
+            val = Settings.getProperty(SETTING_IMG_HEIGHT);
             if (val != null && !(val.length() == 0)) {
                 this.imageHeight = Integer.parseInt(val);
             }
@@ -181,7 +177,7 @@ public class ExportMovieDialog implements ActionListener{
         }
         
         try {
-            val = settings.getProperty(SETTING_IMG_WIDTH);
+            val = Settings.getProperty(SETTING_IMG_WIDTH);
             if (val != null && !(val.length() == 0)) {
             	this.imageWidth = Integer.parseInt(val);
             }

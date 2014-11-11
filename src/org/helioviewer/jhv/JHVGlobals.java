@@ -32,14 +32,14 @@ public class JHVGlobals {
      * @return standard read timeout
      */
     public static int getStdReadTimeout() {
-        return Integer.parseInt(Settings.getSingletonInstance().getProperty("connection.read.timeout"));
+        return Integer.parseInt(Settings.getProperty("connection.read.timeout"));
     }
 
     /**
      * @return standard connect timeout
      */
     public static int getStdConnectTimeout() {
-        return Integer.parseInt(Settings.getSingletonInstance().getProperty("connection.connect.timeout"));
+        return Integer.parseInt(Settings.getProperty("connection.connect.timeout"));
     }
 
     /**

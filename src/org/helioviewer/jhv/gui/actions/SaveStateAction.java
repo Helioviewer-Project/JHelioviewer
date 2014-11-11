@@ -109,7 +109,7 @@ public class SaveStateAction extends AbstractAction {
      *         error occured
      */
     private File chooseFile() {
-        JFileChooser fileChooser = new JFileChooser(Settings.getSingletonInstance().getProperty("default.local.path"));
+        JFileChooser fileChooser = new JFileChooser(Settings.getProperty("default.local.path"));
         fileChooser.setFileHidingEnabled(false);
         fileChooser.setCurrentDirectory(JHVDirectory.STATES.getFile());
         fileChooser.setMultiSelectionEnabled(false);

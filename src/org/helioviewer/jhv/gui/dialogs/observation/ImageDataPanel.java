@@ -113,7 +113,7 @@ public class ImageDataPanel extends ObservationDialogPanel {
                     if (instrumentsPanel.validSelection()) {
                         timeSelectionPanel.setupTime();
 
-                        if (Boolean.parseBoolean(Settings.getSingletonInstance().getProperty("startup.loadmovie"))) {
+                        if (Boolean.parseBoolean(Settings.getProperty("startup.loadmovie"))) {
                             // wait until view chain is ready to go
                             while (GuiState3DWCS.mainComponentView == null) {
                                 Thread.sleep(100);
@@ -379,7 +379,7 @@ public class ImageDataPanel extends ObservationDialogPanel {
 
             // create end date picker
             calendarEndDate = new JHVCalendarDatePicker();
-            calendarEndDate.setDateFormat(Settings.getSingletonInstance().getProperty("default.date.format"));
+            calendarEndDate.setDateFormat(Settings.getProperty("default.date.format"));
             calendarEndDate.addJHVCalendarListener(this);
             calendarEndDate.setToolTipText("Date in UTC ending the observation.\nIf its equal the start a single image closest to the time will be added.");
 
@@ -389,7 +389,7 @@ public class ImageDataPanel extends ObservationDialogPanel {
 
             // create start date picker
             calendarStartDate = new JHVCalendarDatePicker();
-            calendarStartDate.setDateFormat(Settings.getSingletonInstance().getProperty("default.date.format"));
+            calendarStartDate.setDateFormat(Settings.getProperty("default.date.format"));
             calendarStartDate.addJHVCalendarListener(this);
             calendarStartDate.setToolTipText("Date in UTC starting the observation");
 
@@ -489,7 +489,7 @@ public class ImageDataPanel extends ObservationDialogPanel {
          * Updates the date format to the calendar components.
          */
         public void updateDateFormat() {
-            String pattern = Settings.getSingletonInstance().getProperty("default.date.format");
+            String pattern = Settings.getProperty("default.date.format");
 
             calendarStartDate.setDateFormat(pattern);
             calendarEndDate.setDateFormat(pattern);

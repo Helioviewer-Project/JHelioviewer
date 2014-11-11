@@ -43,12 +43,20 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
 public class JavaHelioViewer {
 
     public static void main(String[] args) {
-      
         // Prints the usage message
         if (args.length == 1 && (args[0].equals("-h") || args[0].equals("--help"))) {
             System.out.println(CommandLineProcessor.getUsageMessage());
             return;
         }
+        
+        try
+        {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        }
+        catch(Exception e2)
+        {
+        }
+        
         // Uncaught runtime errors are displayed in a dialog box in addition
         JHVUncaughtExceptionHandler.setupHandlerForThread();
 
@@ -82,7 +90,7 @@ public class JavaHelioViewer {
         JHVGlobals.createDirs();
 
         // Save the log settings. Must be done AFTER the directories are created
-        LogSettings.getSingletonInstance().update();
+        LogSettings.update();
 
         Log.info("Initializing JHelioviewer");
         // display the splash screen
@@ -101,16 +109,8 @@ public class JavaHelioViewer {
         splash.setProgressText("Loading settings...");
         splash.nextStep();
         Log.info("Load settings");
-        Settings.getSingletonInstance().load();
-
-        // If the user has not specified any desired look and feel yet, the
-        // system default theme will be used
-        if (Settings.getSingletonInstance().getProperty("display.laf") == null || Settings.getSingletonInstance().getProperty("display.laf").length() <= 0) {
-            Log.info("Use default look and feel");
-            Settings.getSingletonInstance().setProperty("display.laf", UIManager.getSystemLookAndFeelClassName());
-        }
-        Settings.getSingletonInstance().save();
-
+        Settings.load();
+        
         // Set the platform system properties
         splash.nextStep();
         splash.setProgressText("Determining platform...");
@@ -136,7 +136,7 @@ public class JavaHelioViewer {
         URI libsBackup = JHVDirectory.LIBS_LAST_CONFIG.getFile().toURI();
         URI libsRemote = null;
         try {
-            libsRemote = new URI(Settings.getSingletonInstance().getProperty("default.remote.lib.path"));
+            libsRemote = new URI(Settings.getProperty("default.remote.lib.path"));
         } catch (URISyntaxException e1) {
             Log.error("Invalid uri for remote library server");
         }
@@ -173,7 +173,7 @@ public class JavaHelioViewer {
         JP2Image.setCachePath(JHVDirectory.CACHE.getFile());
 
         Log.info("Update settings");
-        Settings.getSingletonInstance().update();
+        Settings.apply();
 
         /* ----------Setup OpenGL ----------- */
 

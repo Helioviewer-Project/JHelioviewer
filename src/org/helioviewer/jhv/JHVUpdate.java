@@ -72,11 +72,10 @@ public class JHVUpdate implements Runnable {
     public void run() {
         if (!verbose) {
             try {
-                int n = Integer.parseInt(Settings.getSingletonInstance().getProperty("update.check.next"));
+                int n = Integer.parseInt(Settings.getProperty("update.check.next"));
                 if (n > 0) {
                     n -= 1;
-                    Settings.getSingletonInstance().setProperty("update.check.next", Integer.toString(n));
-                    Settings.getSingletonInstance().save();
+                    Settings.setProperty("update.check.next", Integer.toString(n));
                 }
                 if (n != 0) {
                     Log.info("Update check suspended for this startup");
@@ -84,7 +83,7 @@ public class JHVUpdate implements Runnable {
                 }
             } catch (NumberFormatException e) {
                 Log.error("Invalid update setting", e);
-                Settings.getSingletonInstance().setProperty("update.check.next", Integer.toString(0));
+                Settings.setProperty("update.check.next", Integer.toString(0));
             }
         }
         Log.trace("Start checking for updates");
@@ -109,8 +108,7 @@ public class JHVUpdate implements Runnable {
                 d.init(version, message);
                 d.showDialog();
                 if (!verbose) {
-                    Settings.getSingletonInstance().setProperty("update.check.next", Integer.toString(d.getNextCheck()));
-                    Settings.getSingletonInstance().save();
+                    Settings.setProperty("update.check.next", Integer.toString(d.getNextCheck()));
                 }
             } else {
                 Log.info("Running the newest version of JHelioviewer");

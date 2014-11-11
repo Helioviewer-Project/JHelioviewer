@@ -68,7 +68,7 @@ public class OpenRemoteFileDialog extends JDialog implements ShowableDialog, Act
 
         try {
             if (treeModel == null) {
-                treeModel = new DynamicModel(Settings.getSingletonInstance().getProperty("/"));
+                treeModel = new DynamicModel(Settings.getProperty("/"));
             }
         } catch (Exception e1) {
             e1.printStackTrace();
@@ -170,7 +170,7 @@ public class OpenRemoteFileDialog extends JDialog implements ShowableDialog, Act
         } catch (Exception e) {
             e.printStackTrace();
         }
-        inputAddress.setText(Settings.getSingletonInstance().getProperty("default.remote.path"));
+        inputAddress.setText(Settings.getProperty("default.remote.path"));
 
     }
 
@@ -252,7 +252,7 @@ public class OpenRemoteFileDialog extends JDialog implements ShowableDialog, Act
             secondLabel.setText("Remote Image Path:");
             imageAddress.setText("");
             buttonShow.setText(" Advanced Options");
-            inputAddress.setText(Settings.getSingletonInstance().getProperty("default.remote.path"));
+            inputAddress.setText(Settings.getProperty("default.remote.path"));
             inputAddress.setEnabled(true);
             inputAddress.setEnabled(true);
             scrollPane.setVisible(false);
@@ -263,8 +263,8 @@ public class OpenRemoteFileDialog extends JDialog implements ShowableDialog, Act
             connectPanel.setVisible(true);
             secondLabel.setText("Concurrent HTTP Server:   ");
 
-            imageAddress.setText(Settings.getSingletonInstance().getProperty("default.httpRemote.path"));
-            inputAddress.setText(Settings.getSingletonInstance().getProperty("default.remote.path"));
+            imageAddress.setText(Settings.getProperty("default.httpRemote.path"));
+            inputAddress.setText(Settings.getProperty("default.remote.path"));
             buttonShow.setText(" Basic Options");
             scrollPane.setVisible(true);
             inputAddress.setEnabled(true);
@@ -330,12 +330,11 @@ public class OpenRemoteFileDialog extends JDialog implements ShowableDialog, Act
 
             tree.getParent().setSize(tree.getParent().getPreferredSize());
 
-            Settings.getSingletonInstance().setProperty("default.httpRemote.path", imageAddress.getText());
+            Settings.setProperty("default.httpRemote.path", imageAddress.getText());
 
-            Settings.getSingletonInstance().setProperty("default.remote.path", inputAddress.getText());
+            Settings.setProperty("default.remote.path", inputAddress.getText());
 
-            Settings.getSingletonInstance().update();
-            Settings.getSingletonInstance().save();
+            Settings.apply();
             tree.getParent().getParent().repaint();
         } catch (BadLocationException i) {
 
@@ -359,7 +358,7 @@ public class OpenRemoteFileDialog extends JDialog implements ShowableDialog, Act
             }
         }
 
-        String srv = Settings.getSingletonInstance().getProperty("default.httpRemote.path");
+        String srv = Settings.getProperty("default.httpRemote.path");
 
         srv = srv.trim();
 
@@ -425,7 +424,7 @@ public class OpenRemoteFileDialog extends JDialog implements ShowableDialog, Act
 
         String srv = inputAddress.getText();
         if (advancedOptions) {
-            srv = Settings.getSingletonInstance().getProperty("default.remote.path");
+            srv = Settings.getProperty("default.remote.path");
         }
         srv = srv.trim();
 
@@ -447,7 +446,7 @@ public class OpenRemoteFileDialog extends JDialog implements ShowableDialog, Act
         final String httpPath;
 
         if (advancedOptions) {
-            httpPath = Settings.getSingletonInstance().getProperty("default.httpRemote.path") + img;
+            httpPath = Settings.getProperty("default.httpRemote.path") + img;
         } else {
             httpPath = srv + img;
         }
@@ -464,7 +463,7 @@ public class OpenRemoteFileDialog extends JDialog implements ShowableDialog, Act
                         APIRequestManager.newLoad(uri, new URI(httpPath), true);
 
                         if (advancedOptions == false) {
-                            Settings.getSingletonInstance().setProperty("default.remote.path", inputAddress.getText());
+                            Settings.setProperty("default.remote.path", inputAddress.getText());
                         }
                     } catch (IOException e) {
 

@@ -26,47 +26,33 @@ import org.helioviewer.jhv.base.FileUtils;
  * 
  */
 public class LogSettings {
-    private Logger logger = Logger.getRootLogger();
-
-    private static LogSettings instance;
+    private static Logger logger = Logger.getRootLogger();
 
     /**
      * Path to the custom user log settings.
      */
-    private final String logSettingsPath;
+    private static String logSettingsPath;
 
     /**
      * Log levels sorted from ALL to OFF
      */
-    public final Level[] LEVELS = { Level.ALL, Level.TRACE, Level.DEBUG, Level.INFO, Level.WARN, Level.ERROR, Level.FATAL, Level.OFF };
+    public static final Level[] LEVELS = { Level.ALL, Level.TRACE, Level.DEBUG, Level.INFO, Level.WARN, Level.ERROR, Level.FATAL, Level.OFF };
 
     /**
      * Identifier for the file appender
      */
-    public final String FILE_LOGGER = "file";
+    public static final String FILE_LOGGER = "file";
 
     /**
      * Identifier for the console appender
      */
-    public final String CONSOLE_LOGGER = "console";
+    public static final String CONSOLE_LOGGER = "console";
 
-    private Properties defaultSettings;
+    private static Properties defaultSettings;
 
-    private Properties settings;
+    private static Properties settings;
 
-    private boolean modified;
-
-    /**
-     * Returns the only instance of this class.
-     * 
-     * @return the only instance of this class.
-     * */
-    public static LogSettings getSingletonInstance() {
-        if (instance == null) {
-            throw new NullPointerException("Logger not initialized");
-        }
-        return instance;
-    }
+    private static boolean modified;
 
     /**
      * Initializes the root logger. Must be called at least once before using
@@ -83,7 +69,7 @@ public class LogSettings {
      *            time
      */
     public static void init(String defaultLogSettingsPath, String logSettingsPath, String logsDirectory, boolean useExistingTimeStamp) {
-        instance = new LogSettings(defaultLogSettingsPath, logSettingsPath, logsDirectory, useExistingTimeStamp);
+        new LogSettings(defaultLogSettingsPath, logSettingsPath, logsDirectory, useExistingTimeStamp);
 
     }
 
@@ -92,7 +78,7 @@ public class LogSettings {
      * 
      * @return root logger
      */
-    public Logger getRootLogger() {
+    public static Logger getRootLogger() {
         return logger;
     }
 
@@ -110,7 +96,7 @@ public class LogSettings {
      *            time
      */
     private LogSettings(String defaultLogSettingsPath, String logSettingsPath, String logsDirectory, boolean useExistingTimeStamp) {
-        this.logSettingsPath = logSettingsPath;
+        LogSettings.logSettingsPath = logSettingsPath;
 
         // Use default log4j settings as a basis
         BasicConfigurator.configure();
@@ -209,7 +195,7 @@ public class LogSettings {
     /**
      * Checks if settings were changed and performs an update if necessary
      */
-    public void update() {
+    public static void update() {
         if (modified && (settings != null)) {
             Log.debug(">> LogSettings.update() > Log settings modified. Update changes.");
             PropertyConfigurator.configure(settings);
@@ -241,7 +227,7 @@ public class LogSettings {
      *            identifier of the appender
      * @return the log level of the appender
      */
-    public Level getLoggingLevel(String logger) {
+    public static Level getLoggingLevel(String logger) {
         if (settings == null) {
             return null;
         }
@@ -257,7 +243,7 @@ public class LogSettings {
      * @param level
      *            the new log level
      */
-    public void setLoggingLevel(String logger, Level level) {
+    public static void setLoggingLevel(String logger, Level level) {
         Log.info("Set " + logger + " logging level to " + level);
         settings.setProperty("log4j.appender." + logger + ".threshold", level.toString());
 
@@ -281,7 +267,7 @@ public class LogSettings {
      *            identifier of the appender
      * @return the log level of the appender
      */
-    public Level getDefaultLoggingLevel(String logger) {
+    public static Level getDefaultLoggingLevel(String logger) {
         if (defaultSettings == null) {
             return null;
         }
@@ -295,7 +281,7 @@ public class LogSettings {
      * 
      * @return Number of days to keep log files
      */
-    public int getMaxiumLogFileAge(String logger) {
+    public static int getMaxiumLogFileAge(String logger) {
         if (settings == null) {
             return -1;
         }
@@ -308,7 +294,7 @@ public class LogSettings {
      * 
      * @return Default number of days to keep log files
      */
-    public int getDefaultMaxiumLogFileAge(String logger) {
+    public static int getDefaultMaxiumLogFileAge(String logger) {
         if (defaultSettings == null) {
             return -1;
         }
@@ -322,7 +308,7 @@ public class LogSettings {
      * @param days
      *            Number of days to keep log files before thay are deleted
      */
-    public void setMaxiumLogFileAge(String logger, int days) {
+    public static void setMaxiumLogFileAge(String logger, int days) {
         settings.setProperty("log4j.appender." + logger + ".Days", Integer.toString(days));
     }
 
@@ -333,7 +319,7 @@ public class LogSettings {
      * 
      * @return name of the current log file
      */
-    public String getCurrentLogFile() {
+    public static String getCurrentLogFile() {
         Appender appender = logger.getAppender("file");
         if (appender instanceof FileAppender) {
             return ((FileAppender) appender).getFile();

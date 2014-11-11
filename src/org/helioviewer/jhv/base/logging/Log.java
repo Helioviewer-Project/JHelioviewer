@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
  * 
  */
 public class Log {
-    private static final Logger LOG = LogSettings.getSingletonInstance().getRootLogger();
+    private static final Logger LOG = LogSettings.getRootLogger();
 
     public static void log(Level logLevel, Object message, Throwable error) {
         if (logLevel.equals(Level.TRACE)) {

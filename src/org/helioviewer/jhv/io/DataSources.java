@@ -186,8 +186,7 @@ public class DataSources {
      * Use singleton
      */
     private DataSources() {
-    	Settings settingsInstance = Settings.getSingletonInstance();
-    	String prop = settingsInstance.getProperty("supported.data.sources");
+    	String prop = Settings.getProperty("supported.data.sources");
     	
     	if(prop != null) {
 	        String supportedObservatories[] = prop.split(" ");
@@ -200,7 +199,7 @@ public class DataSources {
         
         while (true) {
             try {
-                String queryString = Settings.getSingletonInstance().getProperty("API.dataSources.path");
+                String queryString = Settings.getProperty("API.dataSources.path");
                 URL query = new URL(queryString);
                 DownloadStream ds = new DownloadStream(query, JHVGlobals.getStdConnectTimeout(), JHVGlobals.getStdReadTimeout());
                 Reader reader = new BufferedReader(new InputStreamReader(ds.getInput(), "UTF-8"));

@@ -75,7 +75,7 @@ public class ExportMovieSettingsDialog extends JDialog implements
 	 * Create the dialog.
 	 */
 	public ExportMovieSettingsDialog() {
-		super(ImageViewerGui.getMainFrame(), "Movie export settings", true);
+		super(ImageViewerGui.getMainFrame(), "Screenshot and movie settings", true);
 		this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		this.initGui();
 		this.loadMovieSettings();
@@ -83,7 +83,7 @@ public class ExportMovieSettingsDialog extends JDialog implements
 	}
 
 	private void initGui() {
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 500, 300);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -289,7 +289,6 @@ public class ExportMovieSettingsDialog extends JDialog implements
 	}
 
 	private void loadMovieSettings() {
-		Settings settings = Settings.getSingletonInstance();
 		String val;
 		/*
 		 * try { val =
@@ -300,7 +299,7 @@ public class ExportMovieSettingsDialog extends JDialog implements
 		 */
 
 		try {
-			val = settings.getProperty(SETTING_MOVIE_RATIO);
+			val = Settings.getProperty(SETTING_MOVIE_RATIO);
 			if (val != null && !(val.length() == 0)) {
 				int width, height;
 				if (val.equals("Custom")) {
@@ -324,7 +323,7 @@ public class ExportMovieSettingsDialog extends JDialog implements
 		}
 
 		try {
-			val = settings.getProperty(SETTING_MOVIE_IMG_HEIGHT);
+			val = Settings.getProperty(SETTING_MOVIE_IMG_HEIGHT);
 			if (val != null && !(val.length() == 0)) {
 				txtMovieImageHeight.setValue(Math.round(Float.parseFloat(val)));
 			}
@@ -333,7 +332,7 @@ public class ExportMovieSettingsDialog extends JDialog implements
 		}
 
 		try {
-			val = settings.getProperty(SETTING_MOVIE_IMG_WIDTH);
+			val = Settings.getProperty(SETTING_MOVIE_IMG_WIDTH);
 			if (val != null && !(val.length() == 0)) {
 				txtMovieImageWidth.setValue(Math.round(Float.parseFloat(val)));
 			}
@@ -344,7 +343,6 @@ public class ExportMovieSettingsDialog extends JDialog implements
 	}
 
 	private void loadScreenshotSettings() {
-		Settings settings = Settings.getSingletonInstance();
 		String val;
 		/*
 		 * try { val =
@@ -356,7 +354,7 @@ public class ExportMovieSettingsDialog extends JDialog implements
 		 */
 
 		try {
-			val = settings.getProperty(SETTING_SCREENSHOT_RATIO);
+			val = Settings.getProperty(SETTING_SCREENSHOT_RATIO);
 			if (val != null && !(val.length() == 0)) {
 				int width, height;
 				if (val.equals("Custom")) {
@@ -380,7 +378,7 @@ public class ExportMovieSettingsDialog extends JDialog implements
 		}
 
 		try {
-			val = settings.getProperty(SETTING_SCREENSHOT_IMG_HEIGHT);
+			val = Settings.getProperty(SETTING_SCREENSHOT_IMG_HEIGHT);
 			if (val != null && !(val.length() == 0)) {
 				txtScreenshotImageHeight.setValue(Math.round(Float
 						.parseFloat(val)));
@@ -390,7 +388,7 @@ public class ExportMovieSettingsDialog extends JDialog implements
 		}
 
 		try {
-			val = settings.getProperty(SETTING_SCREENSHOT_IMG_WIDTH);
+			val = Settings.getProperty(SETTING_SCREENSHOT_IMG_WIDTH);
 			if (val != null && !(val.length() == 0)) {
 				txtScreenshotImageWidth.setValue(Math.round(Float
 						.parseFloat(val)));
@@ -402,25 +400,22 @@ public class ExportMovieSettingsDialog extends JDialog implements
 	}
 
 	private void saveSettings() {
-		Settings settings = Settings.getSingletonInstance();
 		// settings.setProperty(SETTING_MOVIE_USE_CURRENT_OPENGL_SIZE,
 		// Boolean.toString(movieUseCurrentOpenglSize.isSelected()));
-		settings.setProperty(SETTING_MOVIE_RATIO, movieAspectRatioSelection
+		Settings.setProperty(SETTING_MOVIE_RATIO, movieAspectRatioSelection
 				.getSelectedItem().toString());
-		settings.setProperty(SETTING_MOVIE_IMG_WIDTH, txtMovieImageWidth
+		Settings.setProperty(SETTING_MOVIE_IMG_WIDTH, txtMovieImageWidth
 				.getValue().toString());
-		settings.setProperty(SETTING_MOVIE_IMG_HEIGHT, txtMovieImageHeight
+		Settings.setProperty(SETTING_MOVIE_IMG_HEIGHT, txtMovieImageHeight
 				.getValue().toString());
 		// settings.setProperty(SETTING_SCREENSHOT_USE_CURRENT_OPENGL_SIZE,
 		// Boolean.toString(screenshotUseCurrentOpenglSize.isSelected()));
-		settings.setProperty(SETTING_SCREENSHOT_RATIO,
+		Settings.setProperty(SETTING_SCREENSHOT_RATIO,
 				screenshotAspectRatioSelection.getSelectedItem().toString());
-		settings.setProperty(SETTING_SCREENSHOT_IMG_WIDTH,
+		Settings.setProperty(SETTING_SCREENSHOT_IMG_WIDTH,
 				txtScreenshotImageWidth.getValue().toString());
-		settings.setProperty(SETTING_SCREENSHOT_IMG_HEIGHT,
+		Settings.setProperty(SETTING_SCREENSHOT_IMG_HEIGHT,
 				txtScreenshotImageHeight.getValue().toString());
-		settings.save();
-
 	}
 
 	/**

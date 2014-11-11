@@ -59,10 +59,9 @@ public class SaveScreenshotAsAction extends AbstractAction {
         fileChooser.addChoosableFileFilter(new JPGFilter());
         fileChooser.addChoosableFileFilter(new PNGFilter());
 
-        Settings settings = Settings.getSingletonInstance();
         String val;
         try {
-            val = settings.getProperty(SETTING_SCREENSHOT_EXPORT_LAST_DIRECTORY);
+            val = Settings.getProperty(SETTING_SCREENSHOT_EXPORT_LAST_DIRECTORY);
             if (val != null && !(val.length() == 0)) {
                 fileChooser.setCurrentDirectory(new File(val));
             }
@@ -74,9 +73,8 @@ public class SaveScreenshotAsAction extends AbstractAction {
         int retVal = fileChooser.showSaveDialog(ImageViewerGui.getMainFrame());
 
         if (retVal == JFileChooser.APPROVE_OPTION) {
-        	settings.setProperty(SETTING_SCREENSHOT_EXPORT_LAST_DIRECTORY, fileChooser.getCurrentDirectory().getPath() + "/");
-        	settings.save();
-            File selectedFile = fileChooser.getSelectedFile();
+        	Settings.setProperty(SETTING_SCREENSHOT_EXPORT_LAST_DIRECTORY, fileChooser.getCurrentDirectory().getPath() + "/");
+        	File selectedFile = fileChooser.getSelectedFile();
 
             ExtensionFileFilter fileFilter = (ExtensionFileFilter) fileChooser.getFileFilter();
 
@@ -96,11 +94,10 @@ public class SaveScreenshotAsAction extends AbstractAction {
     }
     
     private void loadSettings(){
-		Settings settings = Settings.getSingletonInstance();
         String val;  
         
         try {
-            val = settings.getProperty(SETTING_SCREENSHOT_USE_CURRENT_OPENGL_SIZE);
+            val = Settings.getProperty(SETTING_SCREENSHOT_USE_CURRENT_OPENGL_SIZE);
             if (val != null && !(val.length() == 0)) {
                 useCurrentOpenGlSize = Boolean.parseBoolean(val);
             }
@@ -110,7 +107,7 @@ public class SaveScreenshotAsAction extends AbstractAction {
 
         
         try {
-            val = settings.getProperty(SETTING_SCREENSHOT_IMG_HEIGHT);
+            val = Settings.getProperty(SETTING_SCREENSHOT_IMG_HEIGHT);
             if (val != null && !(val.length() == 0)) {
                 this.imageHeight = Integer.parseInt(val);
             }
@@ -119,7 +116,7 @@ public class SaveScreenshotAsAction extends AbstractAction {
         }
         
         try {
-            val = settings.getProperty(SETTING_SCREENSHOT_IMG_WIDTH);
+            val = Settings.getProperty(SETTING_SCREENSHOT_IMG_WIDTH);
             if (val != null && !(val.length() == 0)) {
             	this.imageWidth = Integer.parseInt(val);
             }
