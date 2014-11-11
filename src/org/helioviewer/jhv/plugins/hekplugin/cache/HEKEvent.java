@@ -400,65 +400,6 @@ public class HEKEvent implements IntervalComparison<Date> {
         // if nothing worked, just return null
         return null;
 
-        /*
-         * THE CODE AT THE BOTTOM IS SLOWLY WORKING TOWARDS TRANSFORMING FROM
-         * ALL POSSIBLE COORDINATE SYSTEMS PROVIDED... BUT IT IS NOT YET READY,
-         * SO LETS USE THE HEK API FOR THIS...
-         */
-
-        /*
-         * try {
-         * 
-         * String coordSys = this.getString("Event_CoordSys");
-         * System.out.println(coordSys); if (coordSys.equals("UTC-HGS-TOPO")) {
-         * double theta = this.getDouble("event_coord2"); double phi =
-         * this.getDouble("event_coord1"); double timediff = (now.getTime() -
-         * getStart().getTime())/1000.0;
-         * 
-         * SphericalCoord stony = new
-         * SphericalCoord(theta,phi,Constants.SunRadius); SphericalCoord rotated
-         * =
-         * HEKCoordinateTransform.getSingletonInstance().StonyhurstRotateStonyhurst
-         * (stony, timediff); return rotated; } else if
-         * (coordSys.equals("UTC-HGC-TOPO")) { double theta =
-         * this.getDouble("event_coord2"); double phi =
-         * this.getDouble("event_coord1"); double timediff = (now.getTime() -
-         * getStart().getTime())/1000.0;
-         * 
-         * SphericalCoord carrington = new
-         * SphericalCoord(theta,phi,Constants.SunRadius); SphericalCoord stony =
-         * HEKCoordinateTransform
-         * .getSingletonInstance().CarringtonToStonyhurst(carrington,
-         * this.getStart()); SphericalCoord rotated =
-         * HEKCoordinateTransform.getSingletonInstance
-         * ().StonyhurstRotateStonyhurst(stony, timediff); return rotated; }
-         * else if (coordSys.equals("UTC-HPC-TOPO")) { double thetax =
-         * this.getDouble("event_coord1"); double thetay =
-         * this.getDouble("event_coord2"); double timediff = (now.getTime() -
-         * getStart().getTime())/1000.0; System.out.println(thetax + " - " +
-         * thetay); CartesianCoord heliocentricCart =
-         * HEKCoordinateTransform.getSingletonInstance
-         * ().HelioProjectiveCartesianToHelioCentricCartesian(thetax,thetay);
-         * System.out.println(heliocentricCart + "!!"); SphericalCoord stony =
-         * HEKCoordinateTransform
-         * .getSingletonInstance().CartesianToSpherical(heliocentricCart);
-         * SphericalCoord rotated =
-         * HEKCoordinateTransform.getSingletonInstance()
-         * .StonyhurstRotateStonyhurst(stony, 0);
-         * 
-         * System.out.println("----------------");
-         * System.out.println(this.getDouble("hgs_y") + " vs " + rotated.theta);
-         * System.out.println(this.getDouble("hgs_x") + " vs " + rotated.phi);
-         * 
-         * rotated.phi = this.getDouble("hgs_x"); rotated.theta =
-         * this.getDouble("hgs_y"); rotated.r = Constants.SunRadius;
-         * 
-         * return rotated;
-         * 
-         * }
-         * 
-         * } catch (HEKEventException e) { e.printStackTrace(); } return null;
-         */
     }
 
     /**
