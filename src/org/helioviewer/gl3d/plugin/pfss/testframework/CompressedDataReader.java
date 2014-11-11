@@ -12,15 +12,22 @@ import nom.tam.fits.FitsException;
 
 public class CompressedDataReader {
 	private ArrayList<Line> lines;
+	private String filePath;
 	
 	
 	public CompressedDataReader(String filePath) {
 		
-		this.readFits(filePath);
+		this.filePath = filePath;
 	}
 	
-	public PerformanceData readLines() {
-		return null;
+	public PerformanceData readFile() {
+		PerformanceData perf = new PerformanceData();
+		
+		perf.start = System.currentTimeMillis();
+		readFits(filePath);
+		perf.end = System.currentTimeMillis();
+		
+		return perf;
 	}
 	
 	public ArrayList<Line> getLines() {

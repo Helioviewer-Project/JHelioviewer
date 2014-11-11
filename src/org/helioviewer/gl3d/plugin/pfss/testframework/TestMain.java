@@ -17,6 +17,13 @@ public class TestMain {
 		File[] compressedFiles = compressedFolder.listFiles();
 		
 		ArrayList<ArrayList<ArrayList<Double>>> allErrors = new ArrayList<>(rawFiles.length);
+		ArrayList<PerformanceData> performance = new ArrayList<>(rawFiles.length);
+		
+		//warm up hotspot compiler
+		for(int i = 0; i < rawFiles.length/2;i++) {
+			CompressedDataReader compressed = new CompressedDataReader(compressedFiles[i].getAbsolutePath());
+			compressed.readFile();
+		}
 		
 		Comparer comp = new Comparer();
 		for(int i = 0; i < rawFiles.length;i++) {
@@ -25,37 +32,14 @@ public class TestMain {
 			System.out.println();
 			RawDataReader raw = new RawDataReader(rawFiles[i].getAbsolutePath());
 			CompressedDataReader compressed = new CompressedDataReader(compressedFiles[i].getAbsolutePath());
+			performance.add(compressed.readFile());
 			
 			ArrayList<ArrayList<Double>> errors = comp.compare(raw.getLines(), compressed.getLines());
 			allErrors.add(errors);
 		}
 		
-
-		double max = 0;
-		int maxK = 0;
-		int maxI = 0;
-		int maxJ = 0;
-		for(int k = 0; k < allErrors.size();k++){
-			ArrayList<ArrayList<Double>> errors = allErrors.get(k);
-			for(int i = 0; i < errors.size();i++) {
-				int size = errors.get(i).size();
-				ArrayList<Double> errorLines = errors.get(i);
-				for(int j = 0; j < size;j++) {
-					if(max < errorLines.get(j)) {
-						max =  errorLines.get(j);
-						maxK = k;
-						maxI = i;
-						maxJ = j;
-					}
-					
-				}
-			}
-		}
-		
-		System.out.println(max);
-		System.out.println(maxK);
-		System.out.println(maxI);
-		System.out.println(maxJ);
+		ResultAnalyzer.analyzeError(allErrors);
+		ResultAnalyzer.analyzePerformance(performance);
 	}
 
 }

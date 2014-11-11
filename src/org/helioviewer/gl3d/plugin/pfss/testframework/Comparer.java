@@ -13,9 +13,6 @@ public class Comparer {
 	
 		for(int i = 0; i < compressed.size();i++) 
 		{
-			if(i == 1103)
-				System.out.println("bla");
-			
 			Line compressedCurrent = compressed.get(i);
 			Line rawCurrent = raw.get(i);
 			
@@ -23,8 +20,7 @@ public class Comparer {
 			
 			int startIndex = 0;
 			for(int j = 0; j < compressedCurrent.points.size();j++) {
-				if(j == 975)
-					System.out.println("blu");
+
 				Point p = compressedCurrent.points.get(j);
 				MinLine min = getMinimum(rawCurrent,p,startIndex);
 				startIndex = min.p1;
