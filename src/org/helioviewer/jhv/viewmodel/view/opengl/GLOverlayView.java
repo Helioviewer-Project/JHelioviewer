@@ -45,7 +45,6 @@ public class GLOverlayView extends AbstractGLView implements OverlayView{
 	 * {@inheritDoc}
 	 */
 	public void renderGL(GL2 gl, boolean nextView) {
-		// just for 2d
 		renderChild(gl);
 		
 		if (nextView) {
