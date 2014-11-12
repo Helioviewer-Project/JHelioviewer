@@ -366,7 +366,6 @@ class J2KRender implements Runnable {
 
                 int width = currParams.subImage.width;
                 int height = currParams.subImage.height;
-
                 if (parentImageRef.getNumComponents() < 3) {
 
                     if (currParams.subImage.getNumPixels() == byteBuffer[currentByteBuffer].length) {

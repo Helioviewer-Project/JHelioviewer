@@ -131,11 +131,6 @@ public class JHVFITSView extends AbstractView implements ViewportView, RegionVie
 
         BufferedImage bi = fits.getImage(imagePostion.getX(), imagePostion.getY(), (int) imageHeight, (int) imageWidth);
 
-        /*
-         * mageData.getSubimage(imagePostion.getX(), imagePostion.getY(), (int)
-         * imageWidth, (int) imageHeight);
-         */
-
         if (bi.getColorModel().getPixelSize() <= 8) {
             subImageData = new SingleChannelByte8ImageData(bi, new ColorMask());
         } else if (bi.getColorModel().getPixelSize() <= 16) {
@@ -228,7 +223,7 @@ public class JHVFITSView extends AbstractView implements ViewportView, RegionVie
     /**
      * {@inheritDoc}
      * */
-    public ImageData getSubimageData() {
+    public ImageData getImageData() {
         return subImageData;
     }
 

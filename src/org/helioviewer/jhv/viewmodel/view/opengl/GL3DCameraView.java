@@ -145,7 +145,7 @@ public class GL3DCameraView extends AbstractGL3DView implements GL3DView,
 			TEXTURE_HELPER.renderImageDataToScreen(gl,
 					view.getAdapter(RegionView.class).getRegion(), view
 							.getAdapter(SubimageDataView.class)
-							.getSubimageData());
+							.getImageData());
 		}
 	}
 }

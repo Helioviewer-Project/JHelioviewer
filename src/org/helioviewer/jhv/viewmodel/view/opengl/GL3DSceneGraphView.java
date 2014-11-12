@@ -70,11 +70,8 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 
 	public GL3DSceneGraphView() {
 		this.root = createRoot();
-		// this.root = createTestRoot();
-
 		printScenegraph();
 
-		
 		GL3DKeyController.getInstance().addListener(new GL3DKeyListener() {
 			public void keyHit(KeyEvent e) {
 				toggleCoronaVisibility();
@@ -91,7 +88,7 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 			artificialObjects.getDrawBits().off(Bit.Hidden);
 		else
 			artificialObjects.getDrawBits().on(Bit.Hidden);
-		
+
 		GL2 gl = state.gl;
 
 		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
@@ -103,14 +100,15 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 		if (this.getView() != null) {
 			state.pushMV();
 			this.renderChild(gl);
-			GL3DState.get().checkGLErrors("GL3DSceneGraph.afterRenderChild");			
+			GL3DState.get().checkGLErrors("GL3DSceneGraph.afterRenderChild");
 			this.addLayersToSceneGraph(state);
 			this.removeLayersFromSceneGraph(state);
 
 			state.popMV();
 		}
-		
-		GL3DState.get().checkGLErrors("GL3DSceneGraph.afterApplyLayersToSceneGraph");
+
+		GL3DState.get().checkGLErrors(
+				"GL3DSceneGraph.afterApplyLayersToSceneGraph");
 
 		if (state.getActiveCamera() == null) {
 			Log.warn("GL3DSceneGraph: Camera not ready, aborting renderpass");
@@ -134,7 +132,7 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 		if (overlayView != null)
 			overlayView.preRender3D(state.gl);
 		GL3DState.get().checkGLErrors("GL3DSceneGraph.afterPreRender3D");
-		
+
 		this.root.draw(state);
 
 		if (overlayView != null)
@@ -210,10 +208,10 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 			case LAYER_MOVED:
 				moveLayerToIndex(imageTextureView, reason.getLayerIndex());
 				break;
-      case LAYER_DOWNLOADED:
-        break;
-      default:
-        break;
+			case LAYER_DOWNLOADED:
+				break;
+			default:
+				break;
 			}
 		} else {
 			Log.warn("GL3DSceneGraphView: Cannot handle Layer Change for Layers without a GL3DImageTextureView!");
@@ -247,8 +245,10 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 
 		synchronized (this.layersToAdd) {
 			for (GL3DImageTextureView imageTextureView : this.layersToAdd) {
-				MetaData metaData = imageTextureView.getAdapter(MetaDataView.class).getMetaData();
-				GL3DImageLayer imageLayer = new GL3DImageLayer(metaData.getFullName(), imageTextureView);
+				MetaData metaData = imageTextureView.getAdapter(
+						MetaDataView.class).getMetaData();
+				GL3DImageLayer imageLayer = new GL3DImageLayer(
+						metaData.getFullName(), imageTextureView);
 
 				((GL3DCameraView) getAdapter(GL3DCameraView.class))
 						.addCameraListener(imageLayer);
@@ -415,15 +415,15 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 			TEXTURE_HELPER.renderImageDataToScreen(gl,
 					view.getAdapter(RegionView.class).getRegion(), view
 							.getAdapter(SubimageDataView.class)
-							.getSubimageData());
+							.getImageData());
 		}
 	}
 
-	public GL3DImageLayers getLayers(){
+	public GL3DImageLayers getLayers() {
 		return imageLayers;
 	}
-	
-	public void markLayersAsChanged(){
+
+	public void markLayersAsChanged() {
 		this.imageLayers.markChildsAsChanged();
 	}
 }

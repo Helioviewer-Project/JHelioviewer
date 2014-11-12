@@ -1,6 +1,5 @@
 package org.helioviewer.jhv.viewmodel.view;
 
-import java.awt.RenderingHints;
 import java.io.IOException;
 import java.net.URI;
 import java.util.AbstractList;
@@ -12,7 +11,6 @@ import org.helioviewer.jhv.viewmodel.imagedata.ImageData;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.region.Region;
 import org.helioviewer.jhv.viewmodel.region.StaticRegion;
-import org.helioviewer.jhv.viewmodel.view.ScalingView.InterpolationMode;
 import org.helioviewer.jhv.viewmodel.view.fitsview.JHVFITSView;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJP2View;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
@@ -156,12 +154,12 @@ public final class ViewHelper {
         if (dataView == null) {
             return null;
 
-        } else if (dataView.getSubimageData() == null) {
+        } else if (dataView.getImageData() == null) {
             return null;
-        } else if (!c.isInstance(dataView.getSubimageData())) {
+        } else if (!c.isInstance(dataView.getImageData())) {
             return null;
         } else {
-            return (T) dataView.getSubimageData();
+            return (T) dataView.getImageData();
         }
     }
 
@@ -379,27 +377,7 @@ public final class ViewHelper {
     public static Vector2dInt calculateInnerViewportOffset(Region innerRegion, Region outerRegion, ViewportImageSize outerViewportImageSize) {
         return ViewHelper.convertImageToScreenDisplacement(innerRegion.getUpperLeftCorner().subtract(outerRegion.getUpperLeftCorner()), outerRegion, outerViewportImageSize).negateY();
     }
-
-    /**
-     * Converts the internal values for different interpolation modes into java
-     * rendering hints.
-     * 
-     * @param interpolationMode
-     *            Interpolation mode to convert
-     * @return equivalent java rendering hint
-     */
-    public static Object ConvertScaleInterpolationModeToRenderingHint(InterpolationMode interpolationMode) {
-        switch (interpolationMode) {
-        case NEAREST_NEIGHBOR:
-            return RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR;
-        case BILINEAR:
-            return RenderingHints.VALUE_INTERPOLATION_BILINEAR;
-        case BICUBIC:
-            return RenderingHints.VALUE_INTERPOLATION_BICUBIC;
-        default:
-            return null;
-        }
-    }
+   
 
     /**
      * Loads a new image located at the given URI.

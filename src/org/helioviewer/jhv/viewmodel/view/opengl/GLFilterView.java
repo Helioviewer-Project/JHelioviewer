@@ -96,7 +96,7 @@ public class GLFilterView extends StandardFilterView implements
 					this.checkGLErrors(gl, view + ".beforeSubimageData");
 					textureHelper.renderImageDataToScreen(gl,
 							regionView.getRegion(),
-							subimageDataView.getSubimageData());
+							subimageDataView.getImageData());
 					this.checkGLErrors(gl, view + ".afterSubimageData");
 				}
 				
@@ -111,19 +111,19 @@ public class GLFilterView extends StandardFilterView implements
 
 		} else {
 			textureHelper.renderImageDataToScreen(gl, regionView.getRegion(),
-					getSubimageData());
+					getImageData());
 		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public ImageData getSubimageData() {
+	public ImageData getImageData() {
 		if (!filteredDataIsUpToDate) {
 			refilter();
 		}
 
-		return super.getSubimageData();
+		return super.getImageData();
 	}
 
 	/**

@@ -121,7 +121,6 @@ public abstract class GLTextureCoordinate {
         if (length != 2) {
             throw new IllegalArgumentException("Calling this function is not valid for GLTextureCoordinate with lenght " + length + ".");
         }
-        //System.out.println("target : " + target);
         currentValues[target][offset] = value1;
         currentValues[target][offset + 1] = value2;
         gl.glMultiTexCoord4fv(target + GL2.GL_TEXTURE0, currentValues[target], 0);

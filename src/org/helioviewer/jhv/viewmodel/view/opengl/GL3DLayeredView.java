@@ -260,7 +260,7 @@ public class GL3DLayeredView extends AbstractView implements LayeredView, Region
 	                if (v instanceof GLView) {
 	                    ((GLView) v).renderGL(gl, true);
 	                } else {
-	                    textureHelper.renderImageDataToScreen(gl, layer.regionView.getRegion(), v.getAdapter(SubimageDataView.class).getSubimageData());
+	                    textureHelper.renderImageDataToScreen(gl, layer.regionView.getRegion(), v.getAdapter(SubimageDataView.class).getImageData());
 	                }
                 }
             }

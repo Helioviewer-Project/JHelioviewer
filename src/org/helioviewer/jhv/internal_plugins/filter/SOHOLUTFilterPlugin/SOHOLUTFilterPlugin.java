@@ -51,7 +51,7 @@ public class SOHOLUTFilterPlugin extends FilterContainer {
 
     protected void installFilterImpl(FilterView filterView, FilterTabList tabList) {
         // Only applicable for SingeChannelFormat
-        if (!(filterView.getAdapter(SubimageDataView.class).getSubimageData().getImageFormat() instanceof SingleChannelImageFormat))
+        if (!(filterView.getAdapter(SubimageDataView.class).getImageData().getImageFormat() instanceof SingleChannelImageFormat))
             return;
 
         SOHOLUTFilter filter = new SOHOLUTFilter();

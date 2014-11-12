@@ -24,6 +24,8 @@ import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayContainer;
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayControlComponent;
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayControlComponentManager;
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayPanel;
+import org.helioviewer.jhv.viewmodel.imagedata.ImageData;
+import org.helioviewer.jhv.viewmodel.imagetransport.Byte8ImageTransport;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.view.ImageInfoView;
 import org.helioviewer.jhv.viewmodel.view.LayeredView;
@@ -159,7 +161,7 @@ public class GuiState3DWCS {
 		synchronized (layeredView) {
 			// wait until image is loaded
 			while (newLayer.getAdapter(SubimageDataView.class)
-					.getSubimageData() == null) {
+					.getImageData() == null) {
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
@@ -167,7 +169,7 @@ public class GuiState3DWCS {
 				}
 
 			}
-
+			
 			// Get meta data
 			MetaData metaData = null;
 
