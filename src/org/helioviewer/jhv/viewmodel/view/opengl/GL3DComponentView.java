@@ -25,7 +25,6 @@ import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
 import javax.swing.Timer;
 
-import org.helioviewer.jhv.JHVDirectory;
 import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.base.math.Vector2dInt;
 import org.helioviewer.jhv.base.physics.Constants;
@@ -158,13 +157,20 @@ public class GL3DComponentView extends AbstractBasicView implements
 		return this.canvas;
 	}
 
-	public void init(GLAutoDrawable glAD) {
-		
+	public void init(GLAutoDrawable glAD)
+	{
 		Log.debug("GL3DComponentView.Init");
 		GL2 gl = glAD.getGL().getGL2();
 		GL3DState.create(gl);
 
-		GLShaderHelper.initHelper(gl.getGL2(), JHVDirectory.TEMP.getPath());
+		try
+		{
+		    GLShaderHelper.initHelper(gl.getGL2());
+		}
+		catch(IOException _ioe)
+		{
+		    throw new RuntimeException(_ioe);
+		}
 		GLShaderBuilder.initShaderBuilder(gl);
 
 		this.getAdapter(GL3DCameraView.class).getCurrentCamera()

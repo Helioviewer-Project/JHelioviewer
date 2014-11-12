@@ -1,14 +1,10 @@
 package org.helioviewer.jhv;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Locale;
-import java.util.StringTokenizer;
 import java.util.TimeZone;
 
 import javax.swing.UIManager;
@@ -76,7 +72,7 @@ public class JavaHelioViewer {
         Locale.setDefault(Locale.US);
 
         // init log
-        LogSettings.init("/settings/log4j.initial.properties", JHVDirectory.SETTINGS.getPath() + "log4j.properties", JHVDirectory.LOGS.getPath(), CommandLineProcessor.isOptionSet("--use-existing-log-time-stamp"));
+        LogSettings.init("/settings/log4j.initial.properties", JHVDirectory.LOGS.getPath(), CommandLineProcessor.isOptionSet("--use-existing-log-time-stamp"));
 
         // Information log message
         String argString = "";
@@ -209,37 +205,9 @@ public class JavaHelioViewer {
         splash.setProgressText("Loading Plugins...");
         splash.nextStep();
 
-        // check if plug-ins have to be deleted
-        final File tmpFile = new File(JHVDirectory.PLUGINS.getPath() + JHVGlobals.TEMP_FILENAME_DELETE_PLUGIN_FILES);
-
-        if (tmpFile.exists()) {
-            try {
-                final BufferedReader in = new BufferedReader(new FileReader(tmpFile));
-
-                String line = null;
-                String content = "";
-
-                while ((line = in.readLine()) != null) {
-                    content += line;
-                }
-
-                in.close();
-
-                final StringTokenizer st = new StringTokenizer(content, ";");
-
-                while (st.hasMoreElements()) {
-                    final File delFile = new File(st.nextToken());
-                    delFile.delete();
-                }
-
-                tmpFile.delete();
-            } catch (final Exception e) {
-            }
-        }
-
         // Load Plug ins at the very last point
         Log.info("Load plugin settings");
-        PluginManager.getSingeltonInstance().loadSettings(JHVDirectory.PLUGINS.getPath());
+        PluginManager.getSingeltonInstance().loadSettings(JHVDirectory.HOME.getPath());
 
         Log.info("Add internal plugin: " + "FilterPlugin");
         Plugin internalPlugin = new InternalFilterPlugin();

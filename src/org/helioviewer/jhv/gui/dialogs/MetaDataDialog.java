@@ -33,7 +33,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.helioviewer.jhv.JHVDirectory;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.interfaces.ShowableDialog;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
@@ -245,7 +244,7 @@ public class MetaDataDialog extends JDialog implements ActionListener, ShowableD
                     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH.mm.ss'Z'");
                     dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 
-                    outFileName = JHVDirectory.EXPORTS.getPath() + metaData.getFullName() + " " + dateFormat.format(metaData.getDateTime().getTime()) + ".fits.xml";
+                    outFileName = metaData.getFullName() + " " + dateFormat.format(metaData.getDateTime().getTime()) + ".fits.xml";
 
                 } catch (Exception e) {
                     e.printStackTrace();

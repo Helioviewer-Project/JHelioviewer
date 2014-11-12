@@ -3,13 +3,11 @@ package org.helioviewer.jhv.gui.actions;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.io.File;
 
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
-import org.helioviewer.jhv.JHVDirectory;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.viewmodel.view.LayeredView;
@@ -44,22 +42,6 @@ public class ExitProgramAction extends AbstractAction {
                     return;
                 }
             }
-        }
-
-        // Delete all layers, to free resources
-        if (GuiState3DWCS.mainComponentView != null) {
-            LayeredView layeredView = GuiState3DWCS.mainComponentView.getAdapter(LayeredView.class);
-
-            while (layeredView.getNumLayers() > 0) {
-                layeredView.removeLayer(0);
-            }
-        }
-
-        // Delete all files in JHV/temp
-        File[] tempFiles = JHVDirectory.TEMP.getFile().listFiles();
-
-        for (File tempFile : tempFiles) {
-            tempFile.delete();
         }
 
         System.exit(0);

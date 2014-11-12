@@ -16,7 +16,7 @@ public enum JHVDirectory {
         private final String path = System.getProperty("user.home");
 
         public String getPath() {
-            return path + FILE_SEP + "JHelioviewer" + FILE_SEP;
+            return path + File.separator + "JHelioviewer" + File.separator;
         }
 
         public File getFile() {
@@ -26,7 +26,7 @@ public enum JHVDirectory {
     /** The image cache directory. */
     CACHE {
         public String getPath() {
-            return HOME.getPath() + "Cache" + FILE_SEP;
+            return HOME.getPath() + "Cache" + File.separator;
         }
 
         public File getFile() {
@@ -36,7 +36,7 @@ public enum JHVDirectory {
     /** The shared library directory. */
     LIBS {
         public String getPath() {
-            return HOME.getPath() + "Libs" + FILE_SEP;
+            return HOME.getPath() + "Libs" + File.separator;
         }
 
         public File getFile() {
@@ -46,7 +46,7 @@ public enum JHVDirectory {
     /** The shared library directory. */
     LIBS_LAST_CONFIG {
         public String getPath() {
-            return HOME.getPath() + "Libs" + FILE_SEP + "LastConfig" + FILE_SEP;
+            return HOME.getPath() + "Libs" + File.separator + "LastConfig" + File.separator;
         }
 
         public File getFile() {
@@ -56,17 +56,7 @@ public enum JHVDirectory {
     /** The JHV state directory. */
     STATES {
         public String getPath() {
-            return HOME.getPath() + "States" + FILE_SEP;
-        }
-
-        public File getFile() {
-            return new File(getPath());
-        }
-    },
-    /** The exports directory (movies, screenshots, meta data). */
-    EXPORTS {
-        public String getPath() {
-            return HOME.getPath() + "Exports" + FILE_SEP;
+            return HOME.getPath() + "States" + File.separator;
         }
 
         public File getFile() {
@@ -76,17 +66,7 @@ public enum JHVDirectory {
     /** The log directory. */
     LOGS {
         public String getPath() {
-            return HOME.getPath() + "Logs" + FILE_SEP;
-        }
-
-        public File getFile() {
-            return new File(getPath());
-        }
-    },
-    /** The log settings directory. */
-    SETTINGS {
-        public String getPath() {
-            return HOME.getPath() + "Settings" + FILE_SEP;
+            return HOME.getPath() + "Logs" + File.separator;
         }
 
         public File getFile() {
@@ -96,27 +76,7 @@ public enum JHVDirectory {
     /** The remote files directory. */
     REMOTEFILES {
         public String getPath() {
-            return HOME.getPath() + "Downloads" + FILE_SEP;
-        }
-
-        public File getFile() {
-            return new File(getPath());
-        }
-    },
-    /** The plugins directory. */
-    PLUGINS {
-        public String getPath() {
-            return HOME.getPath() + "Plugins3D" + FILE_SEP;
-        }
-
-        public File getFile() {
-            return new File(getPath());
-        }
-    },
-    /** The plugins directory. */
-    PLUGINS_LAST_CONFIG {
-        public String getPath() {
-            return HOME.getPath() + "Plugins3D" + FILE_SEP + "LastConfig" + FILE_SEP;
+            return HOME.getPath() + "Downloads" + File.separator;
         }
 
         public File getFile() {
@@ -126,43 +86,14 @@ public enum JHVDirectory {
     /** Directory of automatically loaded GIMP gradient files. */
     COLOR_PLUGINS {
         public String getPath() {
-            return HOME.getPath() + "Colortables" + FILE_SEP;
-        }
-
-        public File getFile() {
-            return new File(getPath());
-        }
-    },
-    /** temp directory for the Cg-compiler */
-    TEMP {
-        public String getPath() {
-            return HOME.getPath() + "Temp" + FILE_SEP;
-        }
-
-        public File getFile() {
-            return new File(getPath());
-        }
-    },
-    /** The remote files directory. */
-    VSO_DOWNLOAD {
-        public String getPath() {
-            return HOME.getPath() + "VSOData" + FILE_SEP;
+            return HOME.getPath() + "Colortables" + File.separator;
         }
 
         public File getFile() {
             return new File(getPath());
         }
     };
-    /**
-     * The system dependent file separator.
-     * <p>
-     * 
-     * @see File#separator
-     * @see File#separatorChar
-     **/
-    @Deprecated
-    public static final String FILE_SEP = System.getProperty("file.separator");
-
+    
     /** A String representation of the path of the directory. */
     abstract public String getPath();
 

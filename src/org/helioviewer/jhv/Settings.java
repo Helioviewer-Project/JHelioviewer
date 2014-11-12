@@ -30,9 +30,6 @@ public class Settings
             defaultPropStream.close();
             Log.debug(">> Settings.load() > Load default system settings: " + defaultProperties.toString());
 
-            if (getProperty("default.save.path") == null) {
-                setProperty("default.save.path", JHVDirectory.EXPORTS.getPath());
-            }
             if (getProperty("default.local.path") == null) {
                 setProperty("default.local.path", JHVDirectory.HOME.getPath());
             }

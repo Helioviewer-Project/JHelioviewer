@@ -7,6 +7,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.CharBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -33,11 +36,12 @@ import org.helioviewer.jhv.viewmodel.renderer.GLCommonRenderGraphics;
  */
 public class GLShaderHelper {
 
-    private static String tmpPath;
-
     private static int maxTextureIndirections = 0;
 
     private static LinkedList<Integer> allShaders = new LinkedList<Integer>();
+    
+    private static File tmpAsm;
+    private static File tmpCg;
 
     /**
      * Initializes the helper.
@@ -47,11 +51,22 @@ public class GLShaderHelper {
      * @param _tmpPath
      *            Location where to put temporary files.
      */
-    public static void initHelper(GL2 gl, String _tmpPath) {
+    public static void initHelper(GL2 gl) throws IOException {
         Log.debug(">> GLShaderHelper.initHelper(GL gl, String _tmpPath) > Initialize helper functions");
-        tmpPath = _tmpPath;
+        
+        Path tmpDir=Files.createTempDirectory("jhv-cg");
+        tmpDir.toFile().deleteOnExit();
+        
+        tmpCg = new File(tmpDir.toFile(), "tmp.cg");
+        tmpAsm = new File(tmpDir.toFile(), "tmp.asm");
+        if (tmpAsm.exists()) {
+            tmpAsm.delete();
+        }
+        tmpAsm.deleteOnExit();
+        tmpCg.deleteOnExit();
 
-        Log.debug(">> GLShaderHelper.initHelper(GL gl, String _tmpPath) > temp path: " + tmpPath);
+
+        Log.debug(">> GLShaderHelper.initHelper(GL gl, String _tmpPath) > temp path: " + tmpDir.toString());
         int tmp[] = new int[1];
         gl.glGetProgramivARB(GL2.GL_FRAGMENT_PROGRAM_ARB, GL2.GL_MAX_PROGRAM_TEX_INDIRECTIONS_ARB, tmp, 0);
         maxTextureIndirections = tmp[0];
@@ -149,24 +164,16 @@ public class GLShaderHelper {
      * @param target
      *            Shader id to put the compiled program
      */
-    public void compileProgram(GL2 gl, int programType, String source, int target) {
-        File tmpOut = new File(tmpPath + "tmp.cg");
-        File tmpIn = new File(tmpPath + "tmp.asm");
-        if (tmpIn.exists()) {
-            tmpIn.delete();
-        }
-        tmpIn.deleteOnExit();
-        tmpOut.deleteOnExit();
-
-        putContents(tmpOut, source);
+    public synchronized void compileProgram(GL2 gl, int programType, String source, int target) {
+        putContents(tmpCg, source);
 
         String profile = programType == GL2.GL_FRAGMENT_PROGRAM_ARB ? "arbfp1" : "arbvp1";
-        List<String> args = new LinkedList<String>();
+        List<String> args = new ArrayList<String>();
         args.add("-profile");
         args.add(profile);
         args.add("-o");
-        args.add(tmpPath + "tmp.asm");
-        args.add(tmpPath + "tmp.cg");
+        args.add(tmpAsm.getPath());
+        args.add(tmpCg.getPath());
         
         try {
             Process p = FileUtils.invokeExecutable("cgc", args);
@@ -177,22 +184,20 @@ public class GLShaderHelper {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        tmpIn = new File(tmpPath + "tmp.asm");
 
-        if (!tmpIn.exists()) {
+        if (!tmpAsm.exists()) {
             Log.error("Error while compiling shader program:");
             Log.error(source);
             return;
         }
         // Log.debug("GLShaderHelper.compile Source: "+source);
         
-        String compiledProgram = getContents(tmpIn);
+        String compiledProgram = getContents(tmpAsm);
         // Log.debug("GLShaderHelper.compile Compiled Code: "+compiledProgram);
         gl.glBindProgramARB(programType, target);
         
         CharBuffer programBuffer = CharBuffer.wrap(compiledProgram);
         gl.glProgramStringARB(programType, GL2.GL_PROGRAM_FORMAT_ASCII_ARB, compiledProgram.length(), programBuffer.toString());
-        
     }
 
     /**
