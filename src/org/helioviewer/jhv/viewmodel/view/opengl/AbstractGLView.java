@@ -52,7 +52,7 @@ public abstract class AbstractGLView extends AbstractBasicView implements GLView
         	((GLView) view).renderGL(gl, true);
         	this.checkGLErrors(gl,view+".afterRenderGL");            
         } else {
-            TEXTURE_HELPER.renderImageDataToScreen(gl, view.getAdapter(RegionView.class).getRegion(), view.getAdapter(SubimageDataView.class).getSubimageData());
+            TEXTURE_HELPER.renderImageDataToScreen(gl, view.getAdapter(RegionView.class).getRegion(), view.getAdapter(SubimageDataView.class).getImageData());
         }
     }
 

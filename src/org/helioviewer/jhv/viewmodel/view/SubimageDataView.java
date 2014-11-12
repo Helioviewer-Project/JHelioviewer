@@ -23,6 +23,6 @@ public interface SubimageDataView extends View {
      * 
      * @return produced image data
      */
-    public ImageData getSubimageData();
+    public ImageData getImageData();
 
 }

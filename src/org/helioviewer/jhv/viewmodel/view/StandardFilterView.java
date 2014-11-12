@@ -75,11 +75,11 @@ public class StandardFilterView extends AbstractBasicView implements FilterView,
     /**
      * {@inheritDoc}
      */
-    public ImageData getSubimageData() {
+    public ImageData getImageData() {
         if (filter instanceof StandardFilter && filteredData != null) {
             return filteredData;
         } else if (subimageDataView != null) {
-            return subimageDataView.getSubimageData();
+            return subimageDataView.getImageData();
         } else
             return null;
     }
@@ -110,9 +110,9 @@ public class StandardFilterView extends AbstractBasicView implements FilterView,
 
             if (subimageDataView != null) {
                 if (filter instanceof StandardFilter) {
-                    filteredData = ((StandardFilter) filter).apply(subimageDataView.getSubimageData());
+                    filteredData = ((StandardFilter) filter).apply(subimageDataView.getImageData());
                 } else {
-                    filteredData = subimageDataView.getSubimageData();
+                    filteredData = subimageDataView.getImageData();
                 }
             }
         } else {

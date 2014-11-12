@@ -63,7 +63,7 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
 
     // Member related to the view chain
     protected Viewport viewport;
-    protected Region region, lastRegion;
+    protected Region region, lastDecodedRegion;
     protected ImageData imageData;
     //protected MetaData metaData;
     protected MetaData metaData;
@@ -291,7 +291,7 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
     /**
      * {@inheritDoc}
      */
-    public ImageData getSubimageData() {
+    public ImageData getImageData() {
         return imageData;
     }
 
@@ -329,7 +329,7 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
      * {@inheritDoc}
      */
     public Region getRegion() {
-        Region result = lastRegion;
+        Region result = lastDecodedRegion;
         return result;
     }
 
@@ -516,7 +516,6 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
         Vector2dInt imagePostion = ViewHelper.calculateInnerViewportOffset(r, metaData.getPhysicalRegion(), new ViewportImageSizeAdapter(new StaticViewportImageSize(res.getResolutionBounds().width, res.getResolutionBounds().height)));
 
         SubImage subImage = new SubImage(imagePostion.getX(), imagePostion.getY(), imageWidth, imageHeight);
-
         subImageBuffer.putSubImage(subImage, r);
 
         return new JP2ImageParameter(subImage, res, numQualityLayers, frameNumber);
@@ -587,12 +586,8 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
      * @return true, if the parameters actually has changed, false otherwise
      */
     protected boolean setImageViewParams(JP2ImageParameter newParams, boolean reload) {
-
-        if (imageViewParams.equals(newParams)) {
-            return false;
-        }
-
-        if (newParams.subImage.width == 0 || newParams.subImage.height == 0) {
+    	
+    	if (newParams.subImage.width == 0 || newParams.subImage.height == 0) {
             if (imageData == null) {
                 return false;
             }
@@ -640,12 +635,12 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
      */
     void setSubimageData(ImageData newImageData, SubImage roi, int compositionLayer) {
         imageData = newImageData;
-        Region lastRegionSaved = lastRegion;
+        Region lastRegionSaved = lastDecodedRegion;
         subImageBuffer.setLastRegion(roi);
-        this.event.addReason(new RegionUpdatedReason(this, lastRegion));
+        this.event.addReason(new RegionUpdatedReason(this, lastDecodedRegion));
 
-        if (!lastRegion.equals(lastRegionSaved)) {
-            this.event.addReason(new RegionChangedReason(this, lastRegion));
+        if (!lastDecodedRegion.equals(lastRegionSaved)) {
+            this.event.addReason(new RegionChangedReason(this, lastDecodedRegion));
         }
 
         event.addReason(new SubImageDataChangedReason(this));
@@ -723,6 +718,7 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
          */
         public void putSubImage(SubImage subImage, Region subImageRegion) {
             SubImageRegion newEntry = new SubImageRegion();
+            
             newEntry.subImage = subImage;
             newEntry.region = subImageRegion;
 
@@ -740,9 +736,9 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
             SubImageRegion searchEntry;
 
             for (int i = 0; i < BUFFER_SIZE; i++) {
-                searchEntry = buffer[(--searchPos) & (BUFFER_SIZE - 1)];
+                searchEntry = buffer[(searchPos--) & (BUFFER_SIZE - 1)];
                 if (searchEntry != null && searchEntry.subImage == subImage) {
-                    lastRegion = searchEntry.region;
+                    lastDecodedRegion = searchEntry.region;
                     return;
                 }
             }
