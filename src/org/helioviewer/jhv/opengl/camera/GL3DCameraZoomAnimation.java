@@ -57,12 +57,8 @@ public class GL3DCameraZoomAnimation implements GL3DCameraAnimation {
 
         if (camera.getZTranslation() == this.targetDistance) {
             this.isFinished = true;
-//            camera.updateCameraTransformation(true);
-        } //else {
-         //   camera.updateCameraTransformation(false);
-        //}
+        }
         camera.updateCameraTransformation();
-        //camera.updateCameraTransformation(true);
         this.lastAnimationTime = System.currentTimeMillis();
     }
 

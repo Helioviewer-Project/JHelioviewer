@@ -184,7 +184,7 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener {
 		this.currentInteraction = currentInteraction;
 	}
 
-	public GL3DInteraction getZoomInteraction() {
+	public GL3DInteraction getZoomBoxInteraction() {
 		return this.zoomBoxInteraction;
 	}
 
@@ -209,5 +209,10 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener {
 	public void setTrack(boolean track) {
 		this.track = track;
 		this.resetStartPosition();
+	}
+
+	@Override
+	public boolean isTrack() {
+		return track;
 	}
 }

@@ -51,7 +51,7 @@ public class GL3DCameraMouseController extends AbstractImagePanelMouseController
      */
     public void mouseEntered(MouseEvent e) {
         if (imagePanel != null) {
-            if (cameraView != null && cameraView.getCurrentCamera().getCurrentInteraction() == cameraView.getCurrentCamera().getZoomInteraction()) {
+            if (cameraView != null && cameraView.getCurrentCamera().getCurrentInteraction() == cameraView.getCurrentCamera().getZoomBoxInteraction()) {
             } else {
                 imagePanel.setCursor(buttonDown ? CURSOR_CLOSED_HAND : CURSOR_OPEN_HAND);
             }
@@ -73,7 +73,7 @@ public class GL3DCameraMouseController extends AbstractImagePanelMouseController
      */
     public void mousePressed(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
-            if (cameraView != null && cameraView.getCurrentCamera().getCurrentInteraction() == cameraView.getCurrentCamera().getZoomInteraction()) {
+            if (cameraView != null && cameraView.getCurrentCamera().getCurrentInteraction() == cameraView.getCurrentCamera().getZoomBoxInteraction()) {
             } else {
                 imagePanel.setCursor(CURSOR_CLOSED_HAND);
             }

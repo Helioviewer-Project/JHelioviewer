@@ -83,8 +83,8 @@ public abstract class GL3DCamera {
                 this.setCurrentInteraction(this.getRotateInteraction());
             } else if (precedingCamera.getCurrentInteraction().equals(precedingCamera.getPanInteraction())) {
                 this.setCurrentInteraction(this.getPanInteraction());
-            } else if (precedingCamera.getCurrentInteraction().equals(precedingCamera.getZoomInteraction())) {
-                this.setCurrentInteraction(this.getZoomInteraction());
+            } else if (precedingCamera.getCurrentInteraction().equals(precedingCamera.getZoomBoxInteraction())) {
+                this.setCurrentInteraction(this.getZoomBoxInteraction());
             }
         } else {
             Log.debug("GL3DCamera: No Preceding Camera, resetting Camera");
@@ -199,7 +199,7 @@ public abstract class GL3DCamera {
 
     public abstract GL3DInteraction getRotateInteraction();
 
-    public abstract GL3DInteraction getZoomInteraction();
+    public abstract GL3DInteraction getZoomBoxInteraction();
 
     public abstract String getName();
 
@@ -262,4 +262,5 @@ public abstract class GL3DCamera {
     public abstract CoordinateSystem getViewSpaceCoordinateSystem();
 
 	public abstract void setTrack(boolean selected);
+	public abstract boolean isTrack();
 	}

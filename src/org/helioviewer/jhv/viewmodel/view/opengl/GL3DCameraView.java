@@ -9,9 +9,11 @@ import javax.media.opengl.GL2;
 import org.helioviewer.jhv.base.GL3DKeyController;
 import org.helioviewer.jhv.base.GL3DKeyController.GL3DKeyListener;
 import org.helioviewer.jhv.base.logging.Log;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
 import org.helioviewer.jhv.opengl.camera.GL3DCameraListener;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
+import org.helioviewer.jhv.opengl.scenegraph.GL3DState.VISUAL_TYPE;
 import org.helioviewer.jhv.viewmodel.changeevent.CameraChangeChangedReason;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.view.RegionView;
@@ -36,23 +38,37 @@ public class GL3DCameraView extends AbstractGL3DView implements GL3DView,
 	public GL3DCameraView() {
 		// Register short keys for changing the interaction
 		GL3DKeyController.getInstance().addListener(new GL3DKeyListener() {
-
 			public void keyHit(KeyEvent e) {
+				if (!e.isAltDown()){
 				camera.setCurrentInteraction(camera.getPanInteraction());
+				GuiState3DWCS.topToolBar.selectPan();
+				}
 			}
 		}, KeyEvent.VK_P);
 		GL3DKeyController.getInstance().addListener(new GL3DKeyListener() {
-
 			public void keyHit(KeyEvent e) {
+				if (!e.isAltDown() && GL3DState.get().getState() == VISUAL_TYPE.MODE_3D){
 				camera.setCurrentInteraction(camera.getRotateInteraction());
+				GuiState3DWCS.topToolBar.selectRotation();
+				}
 			}
 		}, KeyEvent.VK_R);
 		GL3DKeyController.getInstance().addListener(new GL3DKeyListener() {
-
 			public void keyHit(KeyEvent e) {
-				camera.setCurrentInteraction(camera.getZoomInteraction());
+				if (!e.isAltDown() && GL3DState.get().getState() == VISUAL_TYPE.MODE_2D){
+				camera.setCurrentInteraction(camera.getZoomBoxInteraction());
+				GuiState3DWCS.topToolBar.selectZoomBox();
+				}
 			}
 		}, KeyEvent.VK_Z);
+		GL3DKeyController.getInstance().addListener(new GL3DKeyListener() {
+			public void keyHit(KeyEvent e) {
+				if (!e.isAltDown()){
+					camera.setTrack(!camera.isTrack());
+					GuiState3DWCS.topToolBar.setTrack(camera.isTrack());
+				}
+			}
+		}, KeyEvent.VK_T);
 
 		// Center Image when pressing alt+c
 		GL3DKeyController.getInstance().addListener(new GL3DKeyListener() {

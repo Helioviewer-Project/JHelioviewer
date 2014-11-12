@@ -31,7 +31,6 @@ import org.helioviewer.jhv.opengl.shader.GL3DImageCoronaFragmentShaderProgram;
 import org.helioviewer.jhv.opengl.shader.GL3DImageFragmentShaderProgram;
 import org.helioviewer.jhv.opengl.shader.GL3DImageVertexShaderProgram;
 import org.helioviewer.jhv.opengl.shader.GL3DShaderFactory;
-import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.region.Region;
 import org.helioviewer.jhv.viewmodel.region.StaticRegion;
@@ -415,7 +414,7 @@ public class GL3DImageLayer extends GL3DOrientedGroup implements
 			Region newRegion = StaticRegion.createAdaptedRegion(minPhysicalX,
 					minPhysicalY, regionWidth, regionHeight);
 			// Log.debug("GL3DImageLayer: '"+getName()+" set its region");
-			this.regionView.setRegion(newRegion, new ChangeEvent());
+			this.regionView.setRegion(newRegion, null);
 		} else if (Double.isInfinite(regionHeight)
 				|| Double.isInfinite(regionWidth)) {
 

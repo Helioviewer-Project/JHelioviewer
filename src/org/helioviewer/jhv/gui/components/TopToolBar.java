@@ -374,5 +374,25 @@ public class TopToolBar extends JToolBar implements MouseListener {
 		this.zoomBoxButton.setEnabled(false);
 	}
 
+	public void toogleCoronaButton() {
+		coronaVisibilityButton.setSelected(!coronaVisibilityButton.isSelected());
+	}
+
+	public void selectZoomBox() {
+		this.zoomBoxButton.setSelected(true);
+	}
+
+	public void selectRotation() {
+		this.rotateButton.setSelected(true);
+	}
+
+	public void selectPan() {
+		this.panButton.setSelected(true);
+	}
+
+	public void setTrack(boolean track) {
+		this.trackSolarRotationButton3D.setSelected(track);
+	}
+
     
 }

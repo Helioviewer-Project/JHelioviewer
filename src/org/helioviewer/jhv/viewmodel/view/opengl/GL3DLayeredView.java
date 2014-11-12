@@ -140,12 +140,6 @@ public class GL3DLayeredView extends AbstractView implements LayeredView, Region
             newLayer = imageToTextureView;
         }
 
-        if (newLayer.getAdapter(GLScalePowerOfTwoView.class) == null) {
-            GLScalePowerOfTwoView scaleView = new GLScalePowerOfTwoView();
-            scaleView.setView(newLayer);
-            newLayer = scaleView;
-        }
-
         LinkedMovieManager.getActiveInstance().pauseLinkedMovies();
 
         ChangeEvent changeEvent = new ChangeEvent(new LayerChangedReason(this, LayerChangeType.LAYER_ADDED, newLayer));
