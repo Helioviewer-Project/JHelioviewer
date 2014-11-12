@@ -249,14 +249,13 @@ public class GLScreenRenderGraphics extends AbstractScreenRenderGraphics {
      * change.
      */
     public void drawImage(BufferedImage image, Integer x, Integer y, Integer width, Integer height) {
-
         commonRenderGraphics.bindScalingShader();
         commonRenderGraphics.bindImage(image);
 
         gl.glColor3f(1.0f, 1.0f, 1.0f);
 
         gl.glBegin(GL2.GL_QUADS);
-
+        
         commonRenderGraphics.setTexCoord(0.0f, 0.0f);
         gl.glVertex2i(x, y);
         commonRenderGraphics.setTexCoord(0.0f, 1.0f);

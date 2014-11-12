@@ -115,7 +115,6 @@ public class JHVSplashScreen extends JFrame implements StatusTextListener {
 		progressBar.setValue(0);
 		progressBar.setPreferredSize(new Dimension(progressBar.getWidth(), 20));
 		imagePanel.setText("");
-
 		add(imagePanel, BorderLayout.CENTER);
 		add(progressBar, BorderLayout.SOUTH);
 	}

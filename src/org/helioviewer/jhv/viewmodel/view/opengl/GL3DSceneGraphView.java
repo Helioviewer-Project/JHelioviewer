@@ -11,6 +11,7 @@ import org.helioviewer.jhv.base.GL3DKeyController;
 import org.helioviewer.jhv.base.GL3DKeyController.GL3DKeyListener;
 import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.base.physics.Constants;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
 import org.helioviewer.jhv.opengl.camera.GL3DCameraZoomAnimation;
 import org.helioviewer.jhv.opengl.model.GL3DFramebufferImage;
@@ -73,39 +74,12 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 
 		printScenegraph();
 
-		/*GL3DKeyController.getInstance().addListener(new GL3DKeyListener() {
-			public void keyHit(KeyEvent e) {
-				root.getDrawBits().toggle(Bit.BoundingBox);
-				Log.debug("Toggling BoundingBox");
-			}
-		}, KeyEvent.VK_B);
-		GL3DKeyController.getInstance().addListener(new GL3DKeyListener() {
-			public void keyHit(KeyEvent e) {
-				root.getDrawBits().toggle(Bit.Wireframe);
-				Log.debug("Toggling Wireframe");
-			}
-		}, KeyEvent.VK_W);
-		GL3DKeyController.getInstance().addListener(new GL3DKeyListener() {
-			public void keyHit(KeyEvent e) {
-				root.getDrawBits().toggle(Bit.Normals);
-				Log.debug("Toggling Normals");
-			}
-		}, KeyEvent.VK_N);
-		GL3DKeyController.getInstance().addListener(new GL3DKeyListener() {
-			public void keyHit(KeyEvent e) {
-				framebuffer.getDrawBits().toggle(Bit.Hidden);
-				Log.debug("Toggling Framebuffer");
-			}
-		}, KeyEvent.VK_F);
-		GL3DKeyController.getInstance().addListener(new GL3DKeyListener() {
-			public void keyHit(KeyEvent e) {
-				imageLayers.getDrawBits().toggle(Bit.Hidden);
-				Log.debug("Toggling Images");
-			}
-		}, KeyEvent.VK_I);*/
+		
 		GL3DKeyController.getInstance().addListener(new GL3DKeyListener() {
 			public void keyHit(KeyEvent e) {
 				toggleCoronaVisibility();
+				GuiState3DWCS.mainComponentView.getComponent().repaint();
+				GuiState3DWCS.topToolBar.toogleCoronaButton();
 				Log.debug("Toggling Corona Visibility");
 			}
 		}, KeyEvent.VK_X);

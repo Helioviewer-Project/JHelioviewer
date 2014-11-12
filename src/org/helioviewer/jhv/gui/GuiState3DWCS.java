@@ -8,6 +8,7 @@ import javax.swing.JTabbedPane;
 
 import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.gui.components.MoviePanel;
+import org.helioviewer.jhv.gui.components.OverViewPanel;
 import org.helioviewer.jhv.gui.components.QualitySpinner;
 import org.helioviewer.jhv.gui.components.TopToolBar;
 import org.helioviewer.jhv.internal_plugins.SelectedLayerPanel;
@@ -44,7 +45,8 @@ public class GuiState3DWCS {
     public static TopToolBar topToolBar = new TopToolBar();
 
     public static GL3DComponentView mainComponentView;
-
+    public static OverViewPanel overViewPanel = new OverViewPanel();
+    
     private GuiState3DWCS()
     {
     }

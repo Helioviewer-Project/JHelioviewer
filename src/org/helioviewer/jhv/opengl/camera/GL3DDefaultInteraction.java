@@ -57,7 +57,6 @@ public abstract class GL3DDefaultInteraction extends GL3DInteraction {
     }
 
     public void mouseWheelMoved(MouseWheelEvent e, GL3DCamera camera) {
-    	
         double zoomDistance = -(e.getUnitsToScroll()) * camera.getDistanceToSunSurface() * GL3DDefaultInteraction.ZOOM_WHEEL_FACTOR;
         camera.addCameraAnimation(new GL3DCameraZoomAnimation(zoomDistance));
     }

@@ -37,7 +37,6 @@ import org.helioviewer.jhv.gui.components.statusplugins.PositionStatusPanel;
 import org.helioviewer.jhv.gui.components.statusplugins.QualityStatusPanel;
 import org.helioviewer.jhv.gui.components.statusplugins.ZoomStatusPanel;
 import org.helioviewer.jhv.gui.controller.GL3DCameraMouseController;
-import org.helioviewer.jhv.gui.controller.ZoomController;
 import org.helioviewer.jhv.internal_plugins.SelectedLayerPanel;
 import org.helioviewer.jhv.internal_plugins.filter.SOHOLUTFilterPlugin.SOHOLUTPanel;
 import org.helioviewer.jhv.internal_plugins.filter.channelMixer.ChannelMixerPanel;
@@ -51,11 +50,9 @@ import org.helioviewer.jhv.io.CommandLineProcessor;
 import org.helioviewer.jhv.io.FileDownloader;
 import org.helioviewer.jhv.io.JHVRequest;
 import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTabPanelManager;
-import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.view.FilterView;
 import org.helioviewer.jhv.viewmodel.view.ImageInfoView;
 import org.helioviewer.jhv.viewmodel.view.LayeredView;
-import org.helioviewer.jhv.viewmodel.view.MetaDataView;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DComponentView;
@@ -298,7 +295,8 @@ public class ImageViewerGui {
 			moviePanelContainer = new ControlPanelContainer();
 			this.moviePanel = new MoviePanel();
 			moviePanelContainer.setDefaultPanel(moviePanel);
-
+			
+			leftPane.add("Overview", GuiState3DWCS.overViewPanel, true);
 			leftPane.add("Movie Controls", moviePanelContainer, true);
 
 			// Layer control
@@ -454,19 +452,6 @@ public class ImageViewerGui {
 								// if view has been found
 								if (imageInfoView.equals(subView
 										.getAdapter(ImageInfoView.class))) {
-
-									// Set the correct image scale
-									MetaData imageSizeMetaData = imageInfoView
-											.getAdapter(MetaDataView.class)
-											.getMetaData();
-									ZoomController zoomController = new ZoomController();
-									zoomController
-											.zoom(ImageViewerGui
-													.getSingletonInstance()
-													.getMainView(),
-													imageSizeMetaData
-															.getUnitsPerPixel()
-															/ (jhvRequest.imageScale * 1000.0));
 
 									// Lock movie
 									if (jhvRequest.linked) {
