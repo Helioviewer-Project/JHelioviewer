@@ -38,7 +38,7 @@ public class ExportMovieSettingsDialog extends JDialog implements
 
   private final JPanel contentPanel = new JPanel();
 
-	private JComboBox<Object> movieAspectRatioSelection,
+	private JComboBox<AspectRatio> movieAspectRatioSelection,
 			screenshotAspectRatioSelection;
 	private JFormattedTextField txtMovieImageWidth, txtMovieImageHeight,
 			txtScreenshotImageWidth, txtScreenshotImageHeight;
@@ -51,10 +51,8 @@ public class ExportMovieSettingsDialog extends JDialog implements
 
 	private boolean hasChanged = false;
 
-	private static final String SETTING_MOVIE_RATIO = "export.movie.aspect.ratio";
 	private static final String SETTING_MOVIE_IMG_WIDTH = "export.movie.image.width";
 	private static final String SETTING_MOVIE_IMG_HEIGHT = "export.movie.image.height";
-	private static final String SETTING_SCREENSHOT_RATIO = "export.screenshot.aspect.ratio";
 	private static final String SETTING_SCREENSHOT_IMG_WIDTH = "export.screenshot.image.width";
 	private static final String SETTING_SCREENSHOT_IMG_HEIGHT = "export.screenshot.image.height";
 	
@@ -166,11 +164,11 @@ public class ExportMovieSettingsDialog extends JDialog implements
 			// movieUseCurrentOpenglSize.addItemListener(this);
 		}
 		{
-			JLabel lblAspectRation = new JLabel("Aspect Ratio");
+			JLabel lblAspectRation = new JLabel("Aspect ratio");
 			moviePanel.add(lblAspectRation, "6, 6, right, default");
 		}
 		{
-			movieAspectRatioSelection = new JComboBox<Object>(MOVIE_ASPECT_RATIO_PRESETS);
+			movieAspectRatioSelection = new JComboBox<AspectRatio>(MOVIE_ASPECT_RATIO_PRESETS);
 			moviePanel.add(movieAspectRatioSelection, "8, 6, fill, default");
 			movieAspectRatioSelection.addItemListener(this);
 		}
@@ -181,7 +179,7 @@ public class ExportMovieSettingsDialog extends JDialog implements
 		formatter.setMinimum(1);
 		formatter.setMaximum(2048);
 		{
-			JLabel lblImageWidth = new JLabel("Image Width");
+			JLabel lblImageWidth = new JLabel("Image width");
 			moviePanel.add(lblImageWidth, "6, 8, right, default");
 		}
 		{
@@ -193,7 +191,7 @@ public class ExportMovieSettingsDialog extends JDialog implements
 			txtMovieImageWidth.setToolTipText("value between 1 to 2048");
 		}
 		{
-			JLabel lblImageHeight = new JLabel("Image Height");
+			JLabel lblImageHeight = new JLabel("Image height");
 			moviePanel.add(lblImageHeight, "6, 10, right, default");
 		}
 		{
@@ -244,11 +242,11 @@ public class ExportMovieSettingsDialog extends JDialog implements
 			// screenshotUseCurrentOpenglSize.addItemListener(this);
 		}
 		{
-			JLabel lblAspectRation = new JLabel("Aspect Ratio");
+			JLabel lblAspectRation = new JLabel("Aspect ratio");
 			screenshotPanel.add(lblAspectRation, "6, 6, right, default");
 		}
 		{
-			screenshotAspectRatioSelection = new JComboBox<Object>(
+			screenshotAspectRatioSelection = new JComboBox<AspectRatio>(
 					IMAGE_ASPECT_RATIO_PRESETS);
 			screenshotPanel.add(screenshotAspectRatioSelection,
 					"8, 6, fill, default");
@@ -261,7 +259,7 @@ public class ExportMovieSettingsDialog extends JDialog implements
 		formatter.setMinimum(1);
 		formatter.setMaximum(2048);
 		{
-			JLabel lblImageWidth = new JLabel("Image Width");
+			JLabel lblImageWidth = new JLabel("Image width");
 			screenshotPanel.add(lblImageWidth, "6, 8, right, default");
 		}
 		{
@@ -273,7 +271,7 @@ public class ExportMovieSettingsDialog extends JDialog implements
 			txtScreenshotImageWidth.setToolTipText("value between 1 to 2048");
 		}
 		{
-			JLabel lblImageHeight = new JLabel("Image Height");
+			JLabel lblImageHeight = new JLabel("Image height");
 			screenshotPanel.add(lblImageHeight, "6, 10, right, default");
 		}
 		{
@@ -290,128 +288,97 @@ public class ExportMovieSettingsDialog extends JDialog implements
 
 	private void loadMovieSettings() {
 		String val;
-		/*
-		 * try { val =
-		 * settings.getProperty(SETTING_MOVIE_USE_CURRENT_OPENGL_SIZE); if (val
-		 * != null && !(val.length() == 0)) {
-		 * movieUseCurrentOpenglSize.setSelected(Boolean.parseBoolean(val)); } }
-		 * catch (Throwable t) { Log.error(t); }
-		 */
+        try {
+            val = Settings.getProperty(SETTING_MOVIE_IMG_HEIGHT);
+            if (val != null && !(val.length() == 0)) {
+                txtMovieImageHeight.setValue(Math.round(Float.parseFloat(val)));
+            }
+        } catch (Throwable t) {
+            Log.error(t);
+        }
 
-		try {
-			val = Settings.getProperty(SETTING_MOVIE_RATIO);
-			if (val != null && !(val.length() == 0)) {
-				int width, height;
-				if (val.equals("Custom")) {
-					width = height = 0;
-				} else {
-					String[] parts = val.split(" : ");
-					width = Integer.parseInt(parts[0]);
-					height = Integer.parseInt(parts[1]);
-				}
-				for (int i = 0; i < MOVIE_ASPECT_RATIO_PRESETS.length; ++i) {
-					if (MOVIE_ASPECT_RATIO_PRESETS[i].width == width
-							&& MOVIE_ASPECT_RATIO_PRESETS[i].height == height) {
-						movieAspectRatioSelection
-								.setSelectedItem(MOVIE_ASPECT_RATIO_PRESETS[i]);
-						break;
-					}
-				}
-			}
-		} catch (Throwable t) {
-			Log.error(t);
-		}
+        try {
+            val = Settings.getProperty(SETTING_MOVIE_IMG_WIDTH);
+            if (val != null && !(val.length() == 0)) {
+                txtMovieImageWidth.setValue(Math.round(Float.parseFloat(val)));
+            }
+        } catch (Throwable t) {
+            Log.error(t);
+        }
 
-		try {
-			val = Settings.getProperty(SETTING_MOVIE_IMG_HEIGHT);
-			if (val != null && !(val.length() == 0)) {
-				txtMovieImageHeight.setValue(Math.round(Float.parseFloat(val)));
-			}
-		} catch (Throwable t) {
-			Log.error(t);
-		}
-
-		try {
-			val = Settings.getProperty(SETTING_MOVIE_IMG_WIDTH);
-			if (val != null && !(val.length() == 0)) {
-				txtMovieImageWidth.setValue(Math.round(Float.parseFloat(val)));
-			}
-		} catch (Throwable t) {
-			Log.error(t);
-		}
-
+        float ar=16/9f;
+        try
+        {
+            int width=Integer.parseInt(txtMovieImageWidth.getText());
+            int height=Integer.parseInt(txtMovieImageHeight.getText());
+            ar=width/(float)height;
+        }
+        catch(Exception _e)
+        {
+        }
+        
+        movieAspectRatioSelection.setSelectedItem(MOVIE_ASPECT_RATIO_PRESETS[MOVIE_ASPECT_RATIO_PRESETS.length-1]);
+        for(AspectRatio asp:MOVIE_ASPECT_RATIO_PRESETS)
+        {
+            if (Math.abs(asp.width / (float)asp.height - ar) < 0.01) {
+                movieAspectRatioSelection.setSelectedItem(asp);
+                break;
+            }
+        }
 	}
 
 	private void loadScreenshotSettings() {
-		String val;
-		/*
-		 * try { val =
-		 * settings.getProperty(SETTING_SCREENSHOT_USE_CURRENT_OPENGL_SIZE); if
-		 * (val != null && !(val.length() == 0)) {
-		 * screenshotUseCurrentOpenglSize
-		 * .setSelected(Boolean.parseBoolean(val)); } } catch (Throwable t) {
-		 * Log.error(t); }
-		 */
+        String val;
+        try {
+            val = Settings.getProperty(SETTING_SCREENSHOT_IMG_HEIGHT);
+            if (val != null && !(val.length() == 0)) {
+                txtScreenshotImageHeight.setValue(Math.round(Float
+                        .parseFloat(val)));
+            }
+        } catch (Throwable t) {
+            Log.error(t);
+        }
 
-		try {
-			val = Settings.getProperty(SETTING_SCREENSHOT_RATIO);
-			if (val != null && !(val.length() == 0)) {
-				int width, height;
-				if (val.equals("Custom")) {
-					width = height = 0;
-				} else {
-					String[] parts = val.split(" : ");
-					width = Integer.parseInt(parts[0]);
-					height = Integer.parseInt(parts[1]);
-				}
-				for (int i = 0; i < IMAGE_ASPECT_RATIO_PRESETS.length; ++i) {
-					if (IMAGE_ASPECT_RATIO_PRESETS[i].width == width
-							&& IMAGE_ASPECT_RATIO_PRESETS[i].height == height) {
-						screenshotAspectRatioSelection
-								.setSelectedItem(IMAGE_ASPECT_RATIO_PRESETS[i]);
-						break;
-					}
-				}
-			}
-		} catch (Throwable t) {
-			Log.error(t);
-		}
-
-		try {
-			val = Settings.getProperty(SETTING_SCREENSHOT_IMG_HEIGHT);
-			if (val != null && !(val.length() == 0)) {
-				txtScreenshotImageHeight.setValue(Math.round(Float
-						.parseFloat(val)));
-			}
-		} catch (Throwable t) {
-			Log.error(t);
-		}
-
-		try {
-			val = Settings.getProperty(SETTING_SCREENSHOT_IMG_WIDTH);
-			if (val != null && !(val.length() == 0)) {
-				txtScreenshotImageWidth.setValue(Math.round(Float
-						.parseFloat(val)));
-			}
-		} catch (Throwable t) {
-			Log.error(t);
-		}
-
+        try {
+            val = Settings.getProperty(SETTING_SCREENSHOT_IMG_WIDTH);
+            if (val != null && !(val.length() == 0)) {
+                txtScreenshotImageWidth.setValue(Math.round(Float
+                        .parseFloat(val)));
+            }
+        } catch (Throwable t) {
+            Log.error(t);
+        }
+        
+	    float ar=16/9f;
+	    try
+	    {
+		    int width=Integer.parseInt(txtScreenshotImageWidth.getText());
+		    int height=Integer.parseInt(txtScreenshotImageHeight.getText());
+		    ar=width/(float)height;
+	    }
+	    catch(Exception _e)
+	    {
+	    }
+	    
+	    screenshotAspectRatioSelection.setSelectedItem(IMAGE_ASPECT_RATIO_PRESETS[IMAGE_ASPECT_RATIO_PRESETS.length-1]);
+	    for(AspectRatio asp:IMAGE_ASPECT_RATIO_PRESETS)
+        {
+            if (Math.abs(asp.width / (float)asp.height - ar) < 0.01) {
+                screenshotAspectRatioSelection.setSelectedItem(asp);
+                break;
+            }
+        }
 	}
 
 	private void saveSettings() {
 		// settings.setProperty(SETTING_MOVIE_USE_CURRENT_OPENGL_SIZE,
 		// Boolean.toString(movieUseCurrentOpenglSize.isSelected()));
-		Settings.setProperty(SETTING_MOVIE_RATIO, movieAspectRatioSelection
-				.getSelectedItem().toString());
 		Settings.setProperty(SETTING_MOVIE_IMG_WIDTH, txtMovieImageWidth
 				.getValue().toString());
 		Settings.setProperty(SETTING_MOVIE_IMG_HEIGHT, txtMovieImageHeight
 				.getValue().toString());
 		// settings.setProperty(SETTING_SCREENSHOT_USE_CURRENT_OPENGL_SIZE,
 		// Boolean.toString(screenshotUseCurrentOpenglSize.isSelected()));
-		Settings.setProperty(SETTING_SCREENSHOT_RATIO,
-				screenshotAspectRatioSelection.getSelectedItem().toString());
 		Settings.setProperty(SETTING_SCREENSHOT_IMG_WIDTH,
 				txtScreenshotImageWidth.getValue().toString());
 		Settings.setProperty(SETTING_SCREENSHOT_IMG_HEIGHT,
