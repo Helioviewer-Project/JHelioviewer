@@ -13,8 +13,13 @@ public class TestMain {
 		File rawFolder = new File(TestSettings.rawFolder);
 		File compressedFolder = new File(TestSettings.compressedFolder);
 		
-		File[] rawFiles = rawFolder.listFiles();
-		File[] compressedFiles = compressedFolder.listFiles();
+		//File[] rawFiles = rawFolder.listFiles();
+		//File[] compressedFiles = compressedFolder.listFiles();
+		File[] rawFiles = new File[1];
+		rawFiles[0] = new File("C:/dev/git/bachelor/test/testdata/raw/2005-11-06_12-04-00.000_pfss_field_data_flt.fits");
+		
+		File[] compressedFiles = new File[1];
+		compressedFiles[0] = new File("C:/dev/git/bachelor/test/testdata/without_subsampling/2005-11-06_12-04-00.000_pfss_field_data.fits");
 		
 		ArrayList<ArrayList<ArrayList<Double>>> allErrors = new ArrayList<>(rawFiles.length);
 		ArrayList<PerformanceData> performance = new ArrayList<>(rawFiles.length);

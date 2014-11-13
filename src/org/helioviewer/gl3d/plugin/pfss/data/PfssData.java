@@ -15,7 +15,7 @@ import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.Fits;
 
 /**
- * Represents the raw pfss data. This class is able to load it asynchronously
+ * Represents the raw pfss data. This class is able to download the data asynchronously
  * 
  * This class is threadsafe
  * @author Jonas Schwammberger
@@ -29,11 +29,19 @@ public class PfssData implements Runnable {
 	private final String url;
 	private final FileDescriptor descriptor;
 	
+	/**
+	 * 
+	 * @param descriptor File Descriptor representing the file on the server
+	 * @param url file url to load
+	 */
 	public PfssData(FileDescriptor descriptor, String url) {
 		this.descriptor = descriptor;
 		this.url = url;
 	}
 	
+	/**
+	 * Load the data into memory. this method signals all who are waiting on the condition "loaded"
+	 */
 	public void loadData() {
 		InputStream in = null;
 		lock.lock();
@@ -70,13 +78,20 @@ public class PfssData implements Runnable {
 			}
 			lock.unlock();
 		}
-		
 	}
 	
+	/**
+	 * 
+	 * @return true if data has finished loading into memory
+	 */
 	public boolean isLoaded() {
 		return isLoaded;
 	}
 	
+	/**
+	 * Wait for Data to load.
+	 * @throws InterruptedException
+	 */
 	public void awaitLoaded() throws InterruptedException{
 		lock.lock();
 		try{
@@ -85,6 +100,11 @@ public class PfssData implements Runnable {
 			lock.unlock();
 		}
 	}
+	
+	/**
+	 * Check if it is loaded completely before accessing this method.
+	 * @return the loaded data 
+	 */
 	public byte[] getData() {
 		return rawData;
 	}

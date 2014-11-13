@@ -11,7 +11,7 @@ import org.helioviewer.viewmodelplugin.overlay.OverlayControlComponentManager;
 /**
  * Plugincontainer for Pfss
  * 
- * @author Stefan Meier
+ * @author Stefan Meier, Jonas Schwammberger
  */
 public class PfssPluginContainer extends OverlayContainer {
 	private PfssPluginPanel pfssPluginPanel;

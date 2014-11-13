@@ -2,6 +2,7 @@ package org.helioviewer.gl3d.plugin.pfss.data;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.Date;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
@@ -124,7 +125,13 @@ public class PfssFrame {
 		}
 	}
 	
-	public void display(GL gl) {
+	/**
+	 * Displays the Fieldlines at the exact time
+	 * 
+	 * @param gl
+	 * @param time
+	 */
+	public void display(GL gl, Date time) {
 		if(isInit && gl != null) {
 			GL2 gl2 = gl.getGL2();
 			gl2.glEnableClientState(GL2.GL_VERTEX_ARRAY);
@@ -174,7 +181,7 @@ public class PfssFrame {
 			if(this.isLoaded && gl != null)
 			{
 				this.init(gl);
-				this.display(gl);
+				this.display(gl, time);
 			}
 		}
 	}

@@ -19,7 +19,7 @@ import org.helioviewer.viewmodel.view.TimedMovieView;
 import org.helioviewer.viewmodel.view.View;
 
 /**
- * @author Stefan Meier (stefan.meier@fhnw.ch)
+ * @author Stefan Meier (stefan.meier@fhnw.ch), Jonas Schwammberger (jonas.schwammberger@fhnw.ch)
  * */
 public class PfssPlugin3dRenderer extends PhysicalRenderer3d {
 	private FrameManager manager;
@@ -47,20 +47,27 @@ public class PfssPlugin3dRenderer extends PhysicalRenderer3d {
 			Date date = masterView.getCurrentFrameDateTime().getTime();
 			PfssFrame frame = manager.getFrame(date);
 			if(frame != null)
-				frame.display(gl);
+				frame.display(gl, date);
 			
 			GL3DState.get().checkGLErrors("PfssPlugin3dRenderer.afterRender");
 		}
 	}
 	
+	@Deprecated
 	public void render(Date d) {
 		manager.preInitFrames(null);
 		Date date = d;
 		PfssFrame frame = manager.getFrame(date);
 		if(frame != null)
-			frame.display(null);
+			frame.display(null,null);
 	}
 	
+	/**
+	 * sets the dates which the renderer should display
+	 * @param start first date inclusive
+	 * @param end last date inclusive
+	 * @throws IOException if the dates are not present+
+	 */
 	public void setDisplayRange(Date start, Date end) throws IOException {
 		manager.setDateRange(start, end);
 	}

@@ -27,7 +27,7 @@ public class PfssFrameCreator {
 	 */
 	public PfssFrame createFrameAsync(PfssData data) {
 		PfssFrame frame = new PfssFrame(data.getDateRange());
-		PfssDataReader r = new PfssDataReader(data,frame,initializer);
+		PfssDataToFrameConverter r = new PfssDataToFrameConverter(data,frame,initializer);
 		pool.execute(r);
 		return frame;
 	}

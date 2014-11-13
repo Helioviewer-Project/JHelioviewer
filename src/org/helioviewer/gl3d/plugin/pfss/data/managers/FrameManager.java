@@ -73,12 +73,21 @@ public class FrameManager {
 		return preloadQueue[currentIndex];
 	}
 
+	/**
+	 * True if the requested Date is in Range of the next file in the preload queue
+	 * @param d
+	 * @return
+	 */
 	private boolean isNext(Date d) {
 		int nextIndex = (currentIndex+1) % preloadQueue.length;
 		PfssFrame f = preloadQueue[nextIndex];
 		return f.getDescriptor().isDateInRange(d);
 	}
 
+	/**
+	 * Queue an obsolete frame in for destruction
+	 * @param index
+	 */
 	private void unload(int index) {
 		destructionQueue.add(preloadQueue[index]);
 	}
@@ -124,11 +133,21 @@ public class FrameManager {
 		}
 	}
 
+	/**
+	 * sets what date range the manager should handle 
+	 * @param start start date inclusive
+	 * @param end end date inclusive
+	 * @throws IOException if the requested dates could not be found
+	 */
 	public void setDateRange(Date start, Date end) throws IOException {
 		descriptorManager.readFileDescriptors(start,end);
 		initPreloaded(start);
 	}
 
+	/**
+	 * gives the manager a chance to initialize or destroy the frames before they are needed.
+	 * @param gl OpenGL object
+	 */
 	public void preInitFrames(GL2 gl) {
 		initializer.init(gl);
 

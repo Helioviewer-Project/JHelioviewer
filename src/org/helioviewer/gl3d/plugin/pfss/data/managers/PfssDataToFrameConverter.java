@@ -24,17 +24,17 @@ import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 
 /**
- * Reads in Memory PfssData and writes PfssFrames. Supports running in an own thread
+ * Reads in Memory PfssData and writes PfssFrames. Supports running in its own thread for asynchronous loading
  * 
  * @author Jonas Schwammberger
  *
  */
-public class PfssDataReader implements Runnable {
+public class PfssDataToFrameConverter implements Runnable {
 	private final PfssData data;
 	private final PfssFrame frame;
 	private final PfssFrameInitializer initializer;
 
-	public PfssDataReader(PfssData data, PfssFrame frame,
+	public PfssDataToFrameConverter(PfssData data, PfssFrame frame,
 			PfssFrameInitializer initializer) {
 		this.data = data;
 		this.frame = frame;
@@ -349,6 +349,11 @@ public class PfssDataReader implements Runnable {
 			return sts;
 	}
 
+	/**
+	 * Helper class. It represents a point of the fieldline before it is loaded into the buffers
+	 * @author Jonas Schwammberger
+	 *
+	 */
 	private class Point {
 		float x;
 		float y;
@@ -382,7 +387,7 @@ public class PfssDataReader implements Runnable {
 		PfssData d = new PfssData(f,s+"fitsOut.fits");
 		d.loadData();
 		PfssFrame frame = new PfssFrame(f);
-		PfssDataReader r = new PfssDataReader(d, frame, null);
+		PfssDataToFrameConverter r = new PfssDataToFrameConverter(d, frame, null);
 		r.readData();
 		
 	}
