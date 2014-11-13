@@ -114,10 +114,20 @@ public class FileDescriptorManager {
 		}
 	}
     
+    /**
+     * Returns the index of the FileDescriptor which contains the date
+     * @param d
+     * @return index or -1 if it could not be found
+     */
 	public int getFileIndex(Date d) {
 		return Collections.binarySearch(descriptors, d);
 	}
 	
+	/**
+	 * Returns the Descriptor at Index
+	 * @param index
+	 * @return
+	 */
 	public FileDescriptor getFileDescriptor(int index) {
 		return descriptors.get(index);
 	}

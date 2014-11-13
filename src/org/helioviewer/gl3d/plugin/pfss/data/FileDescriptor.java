@@ -25,6 +25,11 @@ public class FileDescriptor implements Comparable<Date> {
 		this.fileName = fileName;
 	}
 	
+	/**
+	 * 
+	 * @param d
+	 * @return true if date is after or equals the startdate and before or equals enddate
+	 */
 	public boolean isDateInRange(Date d) {
 		return (startDate.before(d) & endDate.after(d)) |  startDate.equals(d) | endDate.equals(d);
 	}
