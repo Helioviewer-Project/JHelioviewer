@@ -2,11 +2,11 @@ package org.helioviewer.jhv.opengl.scenegraph.visuals;
 
 import java.util.List;
 
+import org.helioviewer.jhv.base.math.GL3DVec2d;
+import org.helioviewer.jhv.base.math.GL3DVec3d;
+import org.helioviewer.jhv.base.math.GL3DVec4d;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DMesh;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec2d;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec3d;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec4d;
 
 public class GL3DRectangle extends GL3DMesh {
     private double width;

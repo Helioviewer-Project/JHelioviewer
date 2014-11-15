@@ -5,3 +5,4 @@ excelsior-win/
 .app
 *.cg
 *.asm
+/bin

@@ -57,8 +57,9 @@ public class LogSettings {
      * @param useExistingTimeStamp
      *            If true, use timestamp from setting file instead of current
      *            time
+     * @throws IOException 
      */
-    public static void init(String defaultLogSettingsPath, String logsDirectory, boolean useExistingTimeStamp) {
+    public static void init(String defaultLogSettingsPath, String logsDirectory, boolean useExistingTimeStamp) throws IOException {
         new LogSettings(defaultLogSettingsPath, logsDirectory, useExistingTimeStamp);
 
     }
@@ -75,35 +76,37 @@ public class LogSettings {
      * @param useExistingTimeStamp
      *            If true, use timestamp from setting file instead of current
      *            time
+     * @throws IOException 
      */
-    private LogSettings(String defaultLogSettingsPath, String logsDirectory, boolean useExistingTimeStamp) {
+    private LogSettings(String defaultLogSettingsPath, String logsDirectory, boolean useExistingTimeStamp) throws IOException {
         // Use default log4j settings as a basis
         BasicConfigurator.configure();
 
         // Default settings file
-        InputStream defaultSettingsInputStream = FileUtils.getResourceInputStream(defaultLogSettingsPath);
-
-        // Try to open default settings and to read the default values into a
-        // Properties object
-        defaultSettings = new Properties();
-        try {
-            if (defaultSettingsInputStream == null) {
-            } else {
-                defaultSettings.load(defaultSettingsInputStream);
-                // Set file path
-                defaultSettings.setProperty("log4j.appender." + FILE_LOGGER + ".Directory", logsDirectory);
+        try(InputStream defaultSettingsInputStream = FileUtils.getResourceInputStream(defaultLogSettingsPath))
+        {
+            // Try to open default settings and to read the default values into a
+            // Properties object
+            defaultSettings = new Properties();
+            try {
+                if (defaultSettingsInputStream == null) {
+                } else {
+                    defaultSettings.load(defaultSettingsInputStream);
+                    // Set file path
+                    defaultSettings.setProperty("log4j.appender." + FILE_LOGGER + ".Directory", logsDirectory);
+                }
+            } catch (IOException e) {
             }
-        } catch (IOException e) {
+    
+            // Configure settings
+            SimpleDateFormat formatter = new SimpleDateFormat(get("log4j.appender." + FILE_LOGGER + ".Pattern"));
+            formatter.setTimeZone(TimeZone.getTimeZone(System.getProperty("user.timezone")));
+            if (!useExistingTimeStamp || get("log4j.appender." + FILE_LOGGER + ".TimeStamp") == null) {
+                set("log4j.appender." + FILE_LOGGER + ".TimeStamp", formatter.format(new Date()));
+            }
+            
+            applySettings();
         }
-
-        // Configure settings
-        SimpleDateFormat formatter = new SimpleDateFormat(get("log4j.appender." + FILE_LOGGER + ".Pattern"));
-        formatter.setTimeZone(TimeZone.getTimeZone(System.getProperty("user.timezone")));
-        if (!useExistingTimeStamp || get("log4j.appender." + FILE_LOGGER + ".TimeStamp") == null) {
-            set("log4j.appender." + FILE_LOGGER + ".TimeStamp", formatter.format(new Date()));
-        }
-        
-        applySettings();
     }
 
     private static void applySettings()

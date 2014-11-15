@@ -10,21 +10,22 @@ import javax.swing.JPanel;
 
 import org.helioviewer.jhv.base.GL3DHelper;
 import org.helioviewer.jhv.base.logging.Log;
+import org.helioviewer.jhv.base.math.GL3DMat4d;
+import org.helioviewer.jhv.base.math.GL3DQuatd;
+import org.helioviewer.jhv.base.math.GL3DVec3d;
+import org.helioviewer.jhv.base.math.GL3DVec4d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.base.wcs.CoordinateConversion;
 import org.helioviewer.jhv.base.wcs.CoordinateSystem;
+import org.helioviewer.jhv.base.wcs.CoordinateSystemChangeListener;
 import org.helioviewer.jhv.base.wcs.CoordinateVector;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
 import org.helioviewer.jhv.opengl.camera.GL3DCameraListener;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DDrawBits.Bit;
+import org.helioviewer.jhv.opengl.scenegraph.GL3DGroup;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DMesh;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DNode;
-import org.helioviewer.jhv.opengl.scenegraph.GL3DOrientedGroup;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DMat4d;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DQuatd;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec3d;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec4f;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRayTracer;
 import org.helioviewer.jhv.opengl.shader.GL3DImageCoronaFragmentShaderProgram;
@@ -50,8 +51,7 @@ import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLVertexShaderProgram;
  * @author Simon Sp���rri (simon.spoerri@fhnw.ch)
  * 
  */
-public class GL3DImageLayer extends GL3DOrientedGroup implements
-		GL3DCameraListener {
+public class GL3DImageLayer extends GL3DGroup implements CoordinateSystemChangeListener, GL3DCameraListener {
 	private static int nextLayerId = 0;
 	private final int layerId;
 	private GL3DVec3d direction = new GL3DVec3d(0, 0, 1);
@@ -84,6 +84,54 @@ public class GL3DImageLayer extends GL3DOrientedGroup implements
 	protected GL3DImageCoronaFragmentShaderProgram fragmentShader = null;
 	protected GL3DImageFragmentShaderProgram sphereFragmentShader = null;
 
+    public void coordinateSystemChanged(CoordinateSystem coordinateSystem) {
+        this.markAsChanged();
+        // Log.debug("GL3DCoordinateSystemGroup: CoordinateSystemChanged, marking as changed");
+    }
+
+    public void updateMatrix(GL3DState state) {
+        // Log.debug("GL3DCoordinateSystemGroup: '"+this.getName()+"' updateMatrix");
+        this.updateOrientation(state);
+        super.updateMatrix(state);
+    }
+
+    private void updateOrientation(GL3DState state) {
+        // Transform Orientation to Viewspace
+        CoordinateVector orientationVector = getOrientation();
+        CoordinateConversion toViewSpace = getCoordinateSystem().getConversion(state.activeCamera.getViewSpaceCoordinateSystem());
+        
+        GL3DVec3d orientation = GL3DHelper.toVec(toViewSpace.convert(orientationVector)).normalize();
+        
+        // Log.debug("GL3DOrientedGroup '"+getName()+"': Transformed Orientation from "+orientationVector
+        // +" to "+orientation+" {"+getCoordinateSystem().getClass().getSimpleName()+" -> "+state.getActiveCamera().getViewSpaceCoordinateSystem().getClass().getSimpleName()+"}");
+
+        // Only rotate x and y axis, because images already cater for solar
+        // north being at the top.
+        this.mv.set(GL3DMat4d.identity());
+        
+        
+        if (!orientation.equals(new GL3DVec3d(0, 0, 1))) {
+            GL3DVec3d orientationXY = new GL3DVec3d(orientation.x, orientation.y, 0);
+            double theta = Math.asin(orientationXY.y);
+            GL3DMat4d thetaRotation = GL3DMat4d.rotation(theta, new GL3DVec3d(1, 0, 0));
+            // Log.debug("GL3DOrientedGroup: Rotating Theta "+theta);
+            this.mv.multiply(thetaRotation);
+        }
+        
+        //if (!(orientation.equals(new GL3DVec3d(0, 1, 0)))) {
+            GL3DVec3d orientationXZ = new GL3DVec3d(orientation.x, 0, orientation.z);
+            double phi = Math.acos(orientationXZ.z);
+            if (orientationXZ.x < 0) {
+                phi = 0 - phi;
+            }
+            phi += 0.7;
+            // Log.debug("GL3DOrientedGroup: Rotating Phi "+phi);
+            GL3DMat4d phiRotation = GL3DMat4d.rotation(phi, new GL3DVec3d(0, 1, 0));
+            this.mv.multiply(phiRotation);
+        //}
+        
+    }
+    
 	public GL3DImageLayer(String name, GL3DView mainLayerView) {
 		super(name);
 		frame.setContentPane(contentPane);
@@ -134,7 +182,7 @@ public class GL3DImageLayer extends GL3DOrientedGroup implements
 		CoordinateVector orientationVector = this.getOrientation();
 		CoordinateConversion toViewSpace = this.getCoordinateSystem()
 				.getConversion(
-						state.getActiveCamera().getViewSpaceCoordinateSystem());
+						state.activeCamera.getViewSpaceCoordinateSystem());
 		GL3DVec3d orientation = GL3DHelper.toVec(
 				toViewSpace.convert(orientationVector)).normalize();
 		double phi = 0.0;
@@ -149,15 +197,16 @@ public class GL3DImageLayer extends GL3DOrientedGroup implements
 		this.accellerationShape = new GL3DHitReferenceShape(true, phi);
 		this.addNode(this.accellerationShape);
 
-		super.shapeInit(state);
+        getCoordinateSystem().addListener(this);
+        super.shapeInit(state);
 
 		this.doUpdateROI = true;
 		this.markAsChanged();
 		GL3DQuatd phiRotation = GL3DQuatd.createRotation(2 * Math.PI - phi,
 				new GL3DVec3d(0, 1, 0));
-		state.getActiveCamera().getRotation().set(phiRotation);
-		state.getActiveCamera().updateCameraTransformation();
-		updateROI(state.getActiveCamera());
+		state.activeCamera.getRotation().set(phiRotation);
+		state.activeCamera.updateCameraTransformation();
+		updateROI(state.activeCamera);
 	}
 
 	protected void createImageMeshNodes(GL gl) {
@@ -169,12 +218,12 @@ public class GL3DImageLayer extends GL3DOrientedGroup implements
 		this.imageTextureView.metadata = this.metaDataView.getMetaData();
 
 		double xOffset = (this.imageTextureView.metadata
-				.getPhysicalUpperRight().getX() + this.imageTextureView.metadata
-				.getPhysicalLowerLeft().getX())
+        .getPhysicalUpperRight().x + this.imageTextureView.metadata
+                .getPhysicalLowerLeft().x)
 				/ (2.0 * this.imageTextureView.metadata.getPhysicalImageWidth());
 		double yOffset = (this.imageTextureView.metadata
-				.getPhysicalUpperRight().getY() + this.imageTextureView.metadata
-				.getPhysicalLowerLeft().getY())
+        .getPhysicalUpperRight().y + this.imageTextureView.metadata
+                .getPhysicalLowerLeft().y)
 				/ (2.0 * this.imageTextureView.metadata
 						.getPhysicalImageHeight());
 		vertex.setDefaultOffset((float) xOffset, (float) yOffset);
@@ -187,7 +236,7 @@ public class GL3DImageLayer extends GL3DOrientedGroup implements
 					.createFragmentShaderProgram(gl, this.sphereFragmentShader);
 			sphere = new GL3DImageSphere(imageTextureView, vertexShader,
 					sphereFragmentShader, this);
-			circle = new GL3DCircle(Constants.SUN_RADIUS, new GL3DVec4f(0.5f,
+			circle = new GL3DCircle(Constants.SUN_RADIUS, new GL3DVec4d(0.5f,
 					0.5f, 0.5f, 1.0f), "Circle", this);
 			this.sphereFragmentShader
 					.setCutOffRadius((float) (Constants.SUN_RADIUS / this.imageTextureView.metadata
@@ -204,9 +253,8 @@ public class GL3DImageLayer extends GL3DOrientedGroup implements
 			this.fragmentShader
 					.setCutOffRadius((float) (Constants.SUN_RADIUS / this.imageTextureView.metadata
 							.getPhysicalImageWidth()));
-			this.fragmentShader.setDefaultOffset(metadata.getSunPixelPosition()
-					.getX() / metadata.getResolution().getX() - xOffset,
-					metadata.getSunPixelPosition().getY()
+			this.fragmentShader.setDefaultOffset(metadata.getSunPixelPosition().x / metadata.getResolution().getX() - xOffset,
+					metadata.getSunPixelPosition().y
 							/ metadata.getResolution().getY() - yOffset);
 			this.addNode(corona);
 		}
@@ -227,7 +275,7 @@ public class GL3DImageLayer extends GL3DOrientedGroup implements
 	public void shapeUpdate(GL3DState state) {
 		super.shapeUpdate(state);
 		if (doUpdateROI) {
-			this.updateROI(state.getActiveCamera());
+			this.updateROI(state.activeCamera);
 			doUpdateROI = false;
 			this.accellerationShape.setUnchanged();
 		}
@@ -340,10 +388,9 @@ public class GL3DImageLayer extends GL3DOrientedGroup implements
 			GL3DVec3d hitPoint = ray.getHitPoint();
 			if (hitPoint != null) {
 				hitPoint = this.wmI.multiply(hitPoint);
-				double coordx = (hitPoint.x - metaData.getPhysicalLowerLeft()
-						.getX()) / metaData.getPhysicalImageWidth();
+				double coordx = (hitPoint.x - metaData.getPhysicalLowerLeft().x) / metaData.getPhysicalImageWidth();
 				double coordy = ((1 - hitPoint.y) - metaData
-						.getPhysicalLowerLeft().getY())
+                .getPhysicalLowerLeft().y)
 						/ metaData.getPhysicalImageHeight();
 
 				JPanel panel = new JPanel();
@@ -361,9 +408,9 @@ public class GL3DImageLayer extends GL3DOrientedGroup implements
 						* hitPoint.y + phiRotation.m[10] * hitPoint.z
 						+ phiRotation.m[14];
 
-				coordx = (x - metaData.getPhysicalLowerLeft().getX())
+				coordx = (x - metaData.getPhysicalLowerLeft().x)
 						/ metaData.getPhysicalImageWidth();
-				coordy = ((1 - y) - metaData.getPhysicalLowerLeft().getY())
+				coordy = ((1 - y) - metaData.getPhysicalLowerLeft().y)
 						/ metaData.getPhysicalImageHeight();
 
 				JPanel panel1 = new JPanel();
@@ -385,27 +432,23 @@ public class GL3DImageLayer extends GL3DOrientedGroup implements
 		// frame1.repaint();
 
 		// Restrict maximal region to physically available region
-		minPhysicalX = Math.max(minPhysicalX, metaData.getPhysicalLowerLeft()
-				.getX());
-		minPhysicalY = Math.max(minPhysicalY, metaData.getPhysicalLowerLeft()
-				.getY());
-		maxPhysicalX = Math.min(maxPhysicalX, metaData.getPhysicalUpperRight()
-				.getX());
-		maxPhysicalY = Math.min(maxPhysicalY, metaData.getPhysicalUpperRight()
-				.getY());
+		minPhysicalX = Math.max(minPhysicalX, metaData.getPhysicalLowerLeft().x);
+		minPhysicalY = Math.max(minPhysicalY, metaData.getPhysicalLowerLeft().y);
+		maxPhysicalX = Math.min(maxPhysicalX, metaData.getPhysicalUpperRight().x);
+		maxPhysicalY = Math.min(maxPhysicalY, metaData.getPhysicalUpperRight().y);
 
 		minPhysicalX -= Math.abs(minPhysicalX) * 0.1;
 		minPhysicalY -= Math.abs(minPhysicalY) * 0.1;
 		maxPhysicalX += Math.abs(maxPhysicalX) * 0.1;
 		maxPhysicalY += Math.abs(maxPhysicalY) * 0.1;
-		if (minPhysicalX < metaData.getPhysicalLowerLeft().getX())
-			minPhysicalX = metaData.getPhysicalLowerLeft().getX();
-		if (minPhysicalY < metaData.getPhysicalLowerLeft().getY())
-			minPhysicalY = metaData.getPhysicalLowerLeft().getY();
-		if (maxPhysicalX > metaData.getPhysicalUpperRight().getX())
-			maxPhysicalX = metaData.getPhysicalUpperRight().getX();
-		if (maxPhysicalY > metaData.getPhysicalUpperRight().getY())
-			maxPhysicalY = metaData.getPhysicalUpperRight().getY();
+		if (minPhysicalX < metaData.getPhysicalLowerLeft().x)
+			minPhysicalX = metaData.getPhysicalLowerLeft().x;
+		if (minPhysicalY < metaData.getPhysicalLowerLeft().y)
+			minPhysicalY = metaData.getPhysicalLowerLeft().y;
+		if (maxPhysicalX > metaData.getPhysicalUpperRight().x)
+			maxPhysicalX = metaData.getPhysicalUpperRight().x;
+		if (maxPhysicalY > metaData.getPhysicalUpperRight().y)
+			maxPhysicalY = metaData.getPhysicalUpperRight().y;
 
 		double regionWidth = maxPhysicalX - minPhysicalX;
 		double regionHeight = maxPhysicalY - minPhysicalY;
@@ -431,7 +474,7 @@ public class GL3DImageLayer extends GL3DOrientedGroup implements
 		GL3DNode node = this.first;
 		while (node != null) {
 			if (node instanceof GL3DImageCorona) {
-				node.getDrawBits().set(Bit.Hidden, !visible);
+				node.drawBits.set(Bit.Hidden, !visible);
 			}
 
 			node = node.getNext();

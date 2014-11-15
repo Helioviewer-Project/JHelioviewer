@@ -7,8 +7,6 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Vector;
 
-import javax.swing.event.TreeModelListener;
-
 import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.base.math.IntervalContainer;
@@ -44,15 +42,6 @@ public class HEKCacheModel {
 
         // is this a wise initialization?
         this.curInterval = new Interval<Date>(new Date(), new Date());
-    }
-
-    /**
-     * To which cache does this model belong?
-     * 
-     * @return HEKCache
-     */
-    public HEKCache getCache() {
-        return cache;
     }
 
     /**
@@ -600,7 +589,7 @@ public class HEKCacheModel {
         }
     }
 
-    public synchronized void removeHEKCacheListener(TreeModelListener listener) {
+    public synchronized void removeHEKCacheListener(HEKCacheListener listener) {
         // cache.lockWrite();
         try {
             cacheModelListeners.remove(listener);

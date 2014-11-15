@@ -1,7 +1,7 @@
 package org.helioviewer.jhv.opengl.camera;
 
+import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec3d;
 
 /**
  * This animations changes the camera's panning (x- and y-translation) by the

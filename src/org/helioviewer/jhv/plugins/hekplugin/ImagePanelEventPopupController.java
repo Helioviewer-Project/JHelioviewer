@@ -8,14 +8,14 @@ import java.awt.event.MouseMotionListener;
 import java.util.Date;
 import java.util.Vector;
 
+import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.math.SphericalCoord;
-import org.helioviewer.jhv.base.math.Vector3dDouble;
+import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.components.BasicImagePanel;
 import org.helioviewer.jhv.gui.interfaces.ImagePanelPlugin;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec3d;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRayTracer;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;
@@ -218,10 +218,9 @@ public class ImagePanelEventPopupController implements ImagePanelPlugin,
 		GL3DSceneGraphView scenegraphview = (GL3DSceneGraphView) gl3dview
 				.getView();
 		if (GL3DState.get() != null
-				&& GL3DState.get().getActiveCamera() != null) {
+				&& GL3DState.get().activeCamera != null) {
 			GL3DRayTracer rayTracer = new GL3DRayTracer(
-					scenegraphview.getHitReferenceShape(), GL3DState.get()
-							.getActiveCamera());
+					scenegraphview.getHitReferenceShape(), GL3DState.get().activeCamera);
 			GL3DRay ray = null;
 			double x = e.getX() / GuiState3DWCS.mainComponentView.getComponent().getSize().getWidth() * GuiState3DWCS.mainComponentView.getCanavasSize().getWidth();
 			double y = e.getY() / GuiState3DWCS.mainComponentView.getComponent().getSize().getHeight() * GuiState3DWCS.mainComponentView.getCanavasSize().getHeight();
@@ -240,13 +239,13 @@ public class ImagePanelEventPopupController implements ImagePanelPlugin,
 
 				for (HEKEvent evt : toDraw) {
 					SphericalCoord stony = evt.getStony(currentDate);
-					Vector3dDouble coords = HEKEvent.convertToSceneCoordinates(
+					Vector3d coords = HEKEvent.convertToSceneCoordinates(
 							stony, currentDate);
 					
 					if (hitpoint != null) {
-						double deltaX = Math.abs(hitpoint.x - coords.getX());
-						double deltaY = Math.abs(hitpoint.y + coords.getY());
-						double deltaZ = Math.abs(hitpoint.z - coords.getZ());
+						double deltaX = Math.abs(hitpoint.x - coords.x);
+						double deltaY = Math.abs(hitpoint.y + coords.y);
+						double deltaZ = Math.abs(hitpoint.z - coords.z);
 						if (deltaX < 10000000 && deltaZ < 10000000
 								&& deltaY < 10000000) {
 							mouseOverHEKEvent = evt;

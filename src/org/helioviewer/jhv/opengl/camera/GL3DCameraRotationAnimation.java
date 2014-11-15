@@ -1,7 +1,7 @@
 package org.helioviewer.jhv.opengl.camera;
 
+import org.helioviewer.jhv.base.math.GL3DQuatd;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DQuatd;
 
 /**
  * This animation rotates the camera from a startpoint to an endpoint by using

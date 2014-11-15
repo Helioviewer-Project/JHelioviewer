@@ -10,10 +10,10 @@ public class CartesianCoord {
 
     }
 
-    public CartesianCoord(Vector3dDouble vector) {
-        x = vector.getX();
-        y = vector.getY();
-        z = vector.getZ();
+    public CartesianCoord(Vector3d vector) {
+        x = vector.x;
+        y = vector.y;
+        z = vector.z;
     }
 
     public String toString() {

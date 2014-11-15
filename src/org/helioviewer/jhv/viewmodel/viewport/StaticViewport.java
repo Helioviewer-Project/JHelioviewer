@@ -1,6 +1,6 @@
 package org.helioviewer.jhv.viewmodel.viewport;
 
-import org.helioviewer.jhv.base.math.Vector2dInt;
+import org.helioviewer.jhv.base.math.Vector2i;
 
 /**
  * Implementation of {@link BasicViewport}.
@@ -9,7 +9,7 @@ import org.helioviewer.jhv.base.math.Vector2dInt;
  * */
 public class StaticViewport implements Viewport {
 
-    private final Vector2dInt sizeVector;
+    private final Vector2i sizeVector;
 
     /**
      * Constructor where to pass the viewport information as int values.
@@ -20,7 +20,7 @@ public class StaticViewport implements Viewport {
      *            height of the viewport.
      * */
     public StaticViewport(final int newViewportWidth, final int newViewportHeight) {
-        sizeVector = new Vector2dInt(newViewportWidth, newViewportHeight);
+        sizeVector = new Vector2i(newViewportWidth, newViewportHeight);
     }
 
     /**
@@ -30,7 +30,7 @@ public class StaticViewport implements Viewport {
      *            Vector2dDouble object which describes the size of the
      *            viewport.
      * */
-    public StaticViewport(final Vector2dInt newSizeVector) {
+    public StaticViewport(final Vector2i newSizeVector) {
         sizeVector = newSizeVector;
     }
 
@@ -55,14 +55,14 @@ public class StaticViewport implements Viewport {
      *            Vector2dDouble object which describes the size of the
      *            viewport.
      * */
-    public static Viewport createAdaptedViewport(final Vector2dInt newSizeVector) {
+    public static Viewport createAdaptedViewport(final Vector2i newSizeVector) {
         return new ViewportAdapter(new StaticViewport(newSizeVector));
     }
 
     /**
      * {@inheritDoc}
      * */
-    public Vector2dInt getSize() {
+    public Vector2i getSize() {
         return sizeVector;
     }
 

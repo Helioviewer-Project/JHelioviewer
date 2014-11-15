@@ -1,6 +1,6 @@
 package org.helioviewer.jhv.plugins.pfssplugin;
 
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec3f;
+import org.helioviewer.jhv.base.math.GL3DVec3d;
 
 /**
  * Important settings
@@ -37,17 +37,17 @@ public class PfssSettings {
 	/**
 	 * Color of the line (from sunradius to outside)
 	 */
-	public final static GL3DVec3f SUN_OUT_LINE_COLOR = new GL3DVec3f(0f, 1f, 0f);
+	public final static GL3DVec3d SUN_OUT_LINE_COLOR = new GL3DVec3d(0f, 1f, 0f);
 
 	/**
 	 * Color of the line (from outside to sunradius)
 	 */
-	public final static GL3DVec3f OUT_SUN_LINE_COLOR = new GL3DVec3f(1f, 0f, 1f);
+	public final static GL3DVec3d OUT_SUN_LINE_COLOR = new GL3DVec3d(1f, 0f, 1f);
 
 	/**
 	 * Color of the line (from sunradius to sunradius)
 	 */
-	public final static GL3DVec3f SUN_SUN_LINE_COLOR = new GL3DVec3f(1f, 1f, 1f);
+	public final static GL3DVec3d SUN_SUN_LINE_COLOR = new GL3DVec3d(1f, 1f, 1f);
 
 	/**
 	 * Alpha-value of lines

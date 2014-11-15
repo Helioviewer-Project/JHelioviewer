@@ -11,14 +11,13 @@ import org.helioviewer.jhv.base.math.CartesianCoord;
 import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.base.math.IntervalComparison;
 import org.helioviewer.jhv.base.math.SphericalCoord;
-import org.helioviewer.jhv.base.math.Vector2dDouble;
-import org.helioviewer.jhv.base.math.Vector3dDouble;
+import org.helioviewer.jhv.base.math.Vector2d;
+import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.math.VectorUtils;
 import org.helioviewer.jhv.base.physics.Astronomy;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.base.triangulate.GeometryInfo;
 import org.helioviewer.jhv.base.triangulate.Triangle;
-import org.helioviewer.jhv.base.triangulate.Vec3;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.plugins.hekplugin.HEKCoordinateTransform;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
@@ -426,7 +425,7 @@ public class HEKEvent implements IntervalComparison<Date> {
      *            tracking the event)
      * @return
      */
-    public Vector2dDouble getScreenCoordinates(Date now) {
+    public Vector2d getScreenCoordinates(Date now) {
         SphericalCoord stony = this.getStony(now);
         return convertToScreenCoordinates(stony, now);
     }
@@ -440,10 +439,10 @@ public class HEKEvent implements IntervalComparison<Date> {
      *            - time for which the transformation should be done
      * @return converted screen coordinates, (0.0,0.0) if an error occurs
      */
-    public static Vector2dDouble convertToScreenCoordinates(SphericalCoord stony, Date now) {
+    public static Vector2d convertToScreenCoordinates(SphericalCoord stony, Date now) {
 
         if (stony == null)
-            return new Vector2dDouble(0, 0);
+            return new Vector2d(0, 0);
 
         GregorianCalendar c = new GregorianCalendar();
         c.setTime(now);
@@ -453,7 +452,7 @@ public class HEKEvent implements IntervalComparison<Date> {
 
         // TODO: Malte Nuhn - Why does the sign of the y-coordinate need to be
         // flipped? However, it works like this
-        return new Vector2dDouble(result.x, -result.y);
+        return new Vector2d(result.x, -result.y);
     }
 
     /**
@@ -469,10 +468,10 @@ public class HEKEvent implements IntervalComparison<Date> {
     
     private static Date lastDate;
     private static double lastBZero;
-    public static Vector3dDouble convertToSceneCoordinates(SphericalCoord stony, Date now) {
+    public static Vector3d convertToSceneCoordinates(SphericalCoord stony, Date now) {
 
         if (stony == null)
-            return new Vector3dDouble(0, 0, 0);
+            return new Vector3d(0, 0, 0);
 
         double bzero;
         if(lastDate==null || !now.equals(lastDate))
@@ -495,13 +494,13 @@ public class HEKEvent implements IntervalComparison<Date> {
 
         // TODO: Malte Nuhn - Why does the sign of the y-coordinate need to be
         // flipped? However, it works like this
-        return new Vector3dDouble(result.x, -result.y, result.z);
+        return new Vector3d(result.x, -result.y, result.z);
     }
 
-    public static Vector3dDouble convertToSceneCoordinates(SphericalCoord stony, Date now, double factor) {
+    public static Vector3d convertToSceneCoordinates(SphericalCoord stony, Date now, double factor) {
 
         if (stony == null)
-            return new Vector3dDouble(0, 0, 0);
+            return new Vector3d(0, 0, 0);
 
         GregorianCalendar c = new GregorianCalendar();
         c.setTime(now);
@@ -514,7 +513,7 @@ public class HEKEvent implements IntervalComparison<Date> {
 
         // TODO: Malte Nuhn - Why does the sign of the y-coordinate need to be
         // flipped? However, it works like this
-        return new Vector3dDouble(result.x, -result.y, result.z);
+        return new Vector3d(result.x, -result.y, result.z);
     }
 
     /**
@@ -623,7 +622,7 @@ public class HEKEvent implements IntervalComparison<Date> {
      * @param now
      * @return
      */
-    public Vector<GenericTriangle<Vector3dDouble>> getTriangulation3D(Date now) {
+    public Vector<GenericTriangle<Vector3d>> getTriangulation3D(Date now) {
 
 
         if (!cacheValid) {
@@ -632,15 +631,15 @@ public class HEKEvent implements IntervalComparison<Date> {
 
         if (cachedTriangles != null) {
 
-            Vector<GenericTriangle<Vector3dDouble>> result = new Vector<GenericTriangle<Vector3dDouble>>();
+            Vector<GenericTriangle<Vector3d>> result = new Vector<GenericTriangle<Vector3d>>();
 
             for (GenericTriangle<SphericalCoord> triangle : cachedTriangles) {
             	
-            	Vector3dDouble A = HEKEvent.convertToSceneCoordinates(triangle.A, now);
-            	Vector3dDouble B = HEKEvent.convertToSceneCoordinates(triangle.B, now);
-            	Vector3dDouble C = HEKEvent.convertToSceneCoordinates(triangle.C, now);
+            	Vector3d A = HEKEvent.convertToSceneCoordinates(triangle.A, now);
+            	Vector3d B = HEKEvent.convertToSceneCoordinates(triangle.B, now);
+            	Vector3d C = HEKEvent.convertToSceneCoordinates(triangle.C, now);
 				
-                result.add(new GenericTriangle<Vector3dDouble>(A, B, C));
+                result.add(new GenericTriangle<Vector3d>(A, B, C));
             }
             return result;
         } else {
@@ -648,7 +647,7 @@ public class HEKEvent implements IntervalComparison<Date> {
         }
     }
 
-    public Vector<GenericTriangle<Vector2dDouble>> getTriangulation(Date now) {
+    public Vector<GenericTriangle<Vector2d>> getTriangulation(Date now) {
 
         int timeDifferenceInSeconds = (int) ((now.getTime() - this.getStart().getTime()) / 1000);
 
@@ -658,7 +657,7 @@ public class HEKEvent implements IntervalComparison<Date> {
 
         if (cachedTriangles != null) {
 
-            Vector<GenericTriangle<Vector2dDouble>> result = new Vector<GenericTriangle<Vector2dDouble>>();
+            Vector<GenericTriangle<Vector2d>> result = new Vector<GenericTriangle<Vector2d>>();
 
             for (GenericTriangle<SphericalCoord> triangle : cachedTriangles) {
 
@@ -672,11 +671,11 @@ public class HEKEvent implements IntervalComparison<Date> {
                 // 90 || Math.abs(rotatedC.phi) > 90)
                 // continue;
 
-                Vector2dDouble A = HEKEvent.convertToScreenCoordinates(rotatedA, now);
-                Vector2dDouble B = HEKEvent.convertToScreenCoordinates(rotatedB, now);
-                Vector2dDouble C = HEKEvent.convertToScreenCoordinates(rotatedC, now);
+                Vector2d A = HEKEvent.convertToScreenCoordinates(rotatedA, now);
+                Vector2d B = HEKEvent.convertToScreenCoordinates(rotatedB, now);
+                Vector2d C = HEKEvent.convertToScreenCoordinates(rotatedC, now);
 
-                result.add(new GenericTriangle<Vector2dDouble>(A, B, C));
+                result.add(new GenericTriangle<Vector2d>(A, B, C));
             }
             return result;
         } else {
@@ -696,12 +695,12 @@ public class HEKEvent implements IntervalComparison<Date> {
             if (outerBound != null) {
 
                 // needed to define the plane projection
-                Vector3dDouble projectionCenterCartesian = HEKEvent.convertToSceneCoordinates(projectionCenter, now);
+                Vector3d projectionCenterCartesian = HEKEvent.convertToSceneCoordinates(projectionCenter, now);
 
                 SphericalCoord firstPoint = outerBound.get(0);
-                Vector3dDouble firstPointCartesian = HEKEvent.convertToSceneCoordinates(firstPoint, now);
-                Vector3dDouble projectionPlaneVectorA = VectorUtils.inPlaneShift(projectionCenterCartesian, firstPointCartesian).normalize();
-                Vector3dDouble projectionPlaneVectorB = Vector3dDouble.cross(projectionPlaneVectorA, projectionCenterCartesian.normalize()).normalize();
+                Vector3d firstPointCartesian = HEKEvent.convertToSceneCoordinates(firstPoint, now);
+                Vector3d projectionPlaneVectorA = VectorUtils.inPlaneShift(projectionCenterCartesian, firstPointCartesian).normalize();
+                Vector3d projectionPlaneVectorB = Vector3d.cross(projectionPlaneVectorA, projectionCenterCartesian.normalize()).normalize();
 
                 // if first and last point are the same, remove the last one
                 if (outerBound.get(0).equals(outerBound.get(outerBound.size() - 1))) {
@@ -715,24 +714,24 @@ public class HEKEvent implements IntervalComparison<Date> {
                 }
 
                 // Setup the Polygon Boundary (External Library)
-                Vector<Vector2dDouble> simplePolygonPoints = new Vector<Vector2dDouble>();
+                Vector<Vector2d> simplePolygonPoints = new Vector<Vector2d>();
                 
                 // needed to map back triangles
-                Vector<Vector3dDouble> outerBoundCartesian = new Vector<Vector3dDouble>();
+                Vector<Vector3d> outerBoundCartesian = new Vector<Vector3d>();
 
                 for (SphericalCoord boundaryPoint : outerBound) {
-                    Vector3dDouble boundaryPointCartesian = HEKEvent.convertToSceneCoordinates(boundaryPoint, now);
+                    Vector3d boundaryPointCartesian = HEKEvent.convertToSceneCoordinates(boundaryPoint, now);
                     outerBoundCartesian.add(boundaryPointCartesian);
 
-                    Vector2dDouble projected = VectorUtils.inPlaneCoord(projectionCenterCartesian, projectionPlaneVectorA, projectionPlaneVectorB, boundaryPointCartesian);
-                    simplePolygonPoints.add(new Vector2dDouble(projected.getX(), projected.getY()));
+                    Vector2d projected = VectorUtils.inPlaneCoord(projectionCenterCartesian, projectionPlaneVectorA, projectionPlaneVectorB, boundaryPointCartesian);
+                    simplePolygonPoints.add(new Vector2d(projected.x, projected.y));
                 }
                 
                 try {
                     //simplePolygonPoints
-                    Vec3[] coordinates=new Vec3[simplePolygonPoints.size()];
+                    Vector3d[] coordinates=new Vector3d[simplePolygonPoints.size()];
                     for(int i=0;i<coordinates.length;i++)
-                        coordinates[i]=new Vec3(simplePolygonPoints.get(i).getX()/Constants.SUN_RADIUS,simplePolygonPoints.get(i).getY()/Constants.SUN_RADIUS,0);
+                        coordinates[i]=new Vector3d(simplePolygonPoints.get(i).x/Constants.SUN_RADIUS,simplePolygonPoints.get(i).y/Constants.SUN_RADIUS,0);
                     
                     GeometryInfo gi=new GeometryInfo();
                     gi.setCoordinates(coordinates);
@@ -743,10 +742,10 @@ public class HEKEvent implements IntervalComparison<Date> {
                     Vector<SphericalCoord> sunBorder = generateSunBorder();
 
                     // needed to map back triangles
-                    Vector<Vector3dDouble> sunBorderCartesian = new Vector<Vector3dDouble>();
+                    Vector<Vector3d> sunBorderCartesian = new Vector<Vector3d>();
                     for (SphericalCoord sunBoundaryPoint : sunBorder)
                     {
-                        Vector3dDouble sunBoundaryPointCartesian = HEKEvent.convertToSceneCoordinates(sunBoundaryPoint, now);
+                        Vector3d sunBoundaryPointCartesian = HEKEvent.convertToSceneCoordinates(sunBoundaryPoint, now);
                         sunBorderCartesian.add(sunBoundaryPointCartesian);
                     }
                     
@@ -759,7 +758,7 @@ public class HEKEvent implements IntervalComparison<Date> {
                     cachedTriangles = new Vector<GenericTriangle<SphericalCoord>>();
 
                     Vector<SphericalCoord> lookupSpherical = new Vector<SphericalCoord>();
-                    Vector<Vector3dDouble> lookupCartesian = new Vector<Vector3dDouble>();
+                    Vector<Vector3d> lookupCartesian = new Vector<Vector3d>();
 
                     lookupSpherical.addAll(sunBorder);
                     lookupCartesian.addAll(sunBorderCartesian);
@@ -768,16 +767,16 @@ public class HEKEvent implements IntervalComparison<Date> {
                     lookupCartesian.addAll(outerBoundCartesian);
 
                     for (Triangle triangle : advancedPolygonTriangles) {
-                        Vector2dDouble A2 = new Vector2dDouble(triangle.x1*Constants.SUN_RADIUS, triangle.y1*Constants.SUN_RADIUS);
-                        Vector2dDouble B2 = new Vector2dDouble(triangle.x2*Constants.SUN_RADIUS, triangle.y2*Constants.SUN_RADIUS);
-                        Vector2dDouble C2 = new Vector2dDouble(triangle.x3*Constants.SUN_RADIUS, triangle.y3*Constants.SUN_RADIUS);
+                        Vector2d A2 = new Vector2d(triangle.x1*Constants.SUN_RADIUS, triangle.y1*Constants.SUN_RADIUS);
+                        Vector2d B2 = new Vector2d(triangle.x2*Constants.SUN_RADIUS, triangle.y2*Constants.SUN_RADIUS);
+                        Vector2d C2 = new Vector2d(triangle.x3*Constants.SUN_RADIUS, triangle.y3*Constants.SUN_RADIUS);
 
-                        Vector3dDouble A3 = VectorUtils.projectBack(projectionCenterCartesian, projectionPlaneVectorA, projectionPlaneVectorB, A2).normalize().scale(Constants.SUN_RADIUS);
-                        Vector3dDouble B3 = VectorUtils.projectBack(projectionCenterCartesian, projectionPlaneVectorA, projectionPlaneVectorB, B2).normalize().scale(Constants.SUN_RADIUS);
-                        Vector3dDouble C3 = VectorUtils.projectBack(projectionCenterCartesian, projectionPlaneVectorA, projectionPlaneVectorB, C2).normalize().scale(Constants.SUN_RADIUS);
+                        Vector3d A3 = VectorUtils.projectBack(projectionCenterCartesian, projectionPlaneVectorA, projectionPlaneVectorB, A2).normalize().scale(Constants.SUN_RADIUS);
+                        Vector3d B3 = VectorUtils.projectBack(projectionCenterCartesian, projectionPlaneVectorA, projectionPlaneVectorB, B2).normalize().scale(Constants.SUN_RADIUS);
+                        Vector3d C3 = VectorUtils.projectBack(projectionCenterCartesian, projectionPlaneVectorA, projectionPlaneVectorB, C2).normalize().scale(Constants.SUN_RADIUS);
 
                         // skip (party) hidden triangles
-                        if (A3.getZ() < 0 || B3.getZ() < 0 || C3.getZ() < 0)
+                        if (A3.z < 0 || B3.z < 0 || C3.z < 0)
                             continue;
 
                         SphericalCoord A4 = findClosest(A3, lookupCartesian, lookupSpherical);
@@ -803,7 +802,7 @@ public class HEKEvent implements IntervalComparison<Date> {
 
     }
 
-    private SphericalCoord findClosest(Vector3dDouble toFind, Vector<Vector3dDouble> lookupCartesian, Vector<SphericalCoord> lookupSpherical) {
+    private SphericalCoord findClosest(Vector3d toFind, Vector<Vector3d> lookupCartesian, Vector<SphericalCoord> lookupSpherical) {
         double closest = Double.POSITIVE_INFINITY;
         int closest_index = -1;
 

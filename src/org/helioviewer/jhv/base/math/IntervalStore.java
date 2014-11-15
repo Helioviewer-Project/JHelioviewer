@@ -299,7 +299,17 @@ public class IntervalStore<TimeFormat extends Comparable<TimeFormat>, ItemFormat
      * @param other
      * @return true if both sets of intervals are equal
      */
-    public boolean equals(IntervalStore<TimeFormat, ItemFormat> other) {
+    public boolean equals(Object o)
+    {
+        if(o==null)
+            return false;
+        
+        if(!(o instanceof IntervalStore<?, ?>))
+            return false;
+        
+        @SuppressWarnings("unchecked")
+        IntervalStore<TimeFormat, ItemFormat> other = (IntervalStore<TimeFormat, ItemFormat>)o;
+        
         if (this.data.size() != other.data.size())
             return false;
         for (int i = 0; i < this.data.size(); i++) {

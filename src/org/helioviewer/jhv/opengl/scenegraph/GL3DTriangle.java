@@ -1,6 +1,6 @@
 package org.helioviewer.jhv.opengl.scenegraph;
 
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec3d;
+import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
 
 /**

@@ -1,7 +1,7 @@
 package org.helioviewer.jhv.viewmodel.region;
 
 import org.helioviewer.jhv.base.math.RectangleDouble;
-import org.helioviewer.jhv.base.math.Vector2dDouble;
+import org.helioviewer.jhv.base.math.Vector2d;
 
 /**
  * Implementation of {@link BasicRegion}.
@@ -10,8 +10,8 @@ import org.helioviewer.jhv.base.math.Vector2dDouble;
  * */
 public class StaticRegion implements BasicRegion {
 
-    private final Vector2dDouble lowerLeftCorner;
-    private final Vector2dDouble sizeVector;
+    private final Vector2d lowerLeftCorner;
+    private final Vector2d sizeVector;
 
     /**
      * Constructor where to pass the information as double values.
@@ -26,8 +26,8 @@ public class StaticRegion implements BasicRegion {
      *            height of the region.
      * */
     public StaticRegion(final double newLowerLeftX, final double newLowerLeftY, final double newWidth, final double newHeight) {
-        lowerLeftCorner = new Vector2dDouble(newLowerLeftX, newLowerLeftY);
-        sizeVector = new Vector2dDouble(newWidth, newHeight);
+        lowerLeftCorner = new Vector2d(newLowerLeftX, newLowerLeftY);
+        sizeVector = new Vector2d(newWidth, newHeight);
     }
 
     /**
@@ -42,9 +42,9 @@ public class StaticRegion implements BasicRegion {
      * @param newHeight
      *            height of the region.
      * */
-    public StaticRegion(final Vector2dDouble newLowerLeftCorner, final double newWidth, final double newHeight) {
+    public StaticRegion(final Vector2d newLowerLeftCorner, final double newWidth, final double newHeight) {
         lowerLeftCorner = newLowerLeftCorner;
-        sizeVector = new Vector2dDouble(newWidth, newHeight);
+        sizeVector = new Vector2d(newWidth, newHeight);
     }
 
     /**
@@ -58,8 +58,8 @@ public class StaticRegion implements BasicRegion {
      * @param newSizeVector
      *            Vector2dDouble object which describes the size of the region.
      * */
-    public StaticRegion(final double newLowerLeftX, final double newLowerLeftY, final Vector2dDouble newSizeVector) {
-        lowerLeftCorner = new Vector2dDouble(newLowerLeftX, newLowerLeftY);
+    public StaticRegion(final double newLowerLeftX, final double newLowerLeftY, final Vector2d newSizeVector) {
+        lowerLeftCorner = new Vector2d(newLowerLeftX, newLowerLeftY);
         sizeVector = newSizeVector;
     }
 
@@ -73,7 +73,7 @@ public class StaticRegion implements BasicRegion {
      * @param newSizeVector
      *            Vector2dDouble object which describes the size of the region.
      * */
-    public StaticRegion(final Vector2dDouble newLowerLeftCorner, final Vector2dDouble newSizeVector) {
+    public StaticRegion(final Vector2d newLowerLeftCorner, final Vector2d newSizeVector) {
         lowerLeftCorner = newLowerLeftCorner;
         sizeVector = newSizeVector;
     }
@@ -93,14 +93,14 @@ public class StaticRegion implements BasicRegion {
     /**
      * {@inheritDoc}
      * */
-    public Vector2dDouble getLowerLeftCorner() {
+    public Vector2d getLowerLeftCorner() {
         return lowerLeftCorner;
     }
 
     /**
      * {@inheritDoc}
      * */
-    public Vector2dDouble getSize() {
+    public Vector2d getSize() {
         return sizeVector;
     }
 
@@ -114,7 +114,7 @@ public class StaticRegion implements BasicRegion {
      *            Vector2dDouble object which describes the size of the region.
      * @return a new RegionAdapter object.
      * */
-    public static Region createAdaptedRegion(final Vector2dDouble newLowerLeftCorner, final Vector2dDouble newSizeVector) {
+    public static Region createAdaptedRegion(final Vector2d newLowerLeftCorner, final Vector2d newSizeVector) {
         return new RegionAdapter(new StaticRegion(newLowerLeftCorner, newSizeVector));
     }
 
@@ -146,7 +146,7 @@ public class StaticRegion implements BasicRegion {
      *            Vector2dDouble object which describes the size of the region.
      * @return a new RegionAdapter object.
      * */
-    public static Region createAdaptedRegion(final double newLowerLeftX, final double newLowerLeftY, final Vector2dDouble newSizeVector) {
+    public static Region createAdaptedRegion(final double newLowerLeftX, final double newLowerLeftY, final Vector2d newSizeVector) {
         return new RegionAdapter(new StaticRegion(newLowerLeftX, newLowerLeftY, newSizeVector));
     }
 
@@ -162,7 +162,7 @@ public class StaticRegion implements BasicRegion {
      *            height of the region.
      * @return a new RegionAdapter object.
      * */
-    public static Region createAdaptedRegion(final Vector2dDouble newLowerLeftCorner, final double newWidth, final double newHeight) {
+    public static Region createAdaptedRegion(final Vector2d newLowerLeftCorner, final double newWidth, final double newHeight) {
         return new RegionAdapter(new StaticRegion(newLowerLeftCorner, newWidth, newHeight));
     }
 

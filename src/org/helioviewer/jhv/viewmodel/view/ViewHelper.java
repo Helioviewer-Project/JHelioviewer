@@ -5,8 +5,8 @@ import java.net.URI;
 import java.util.AbstractList;
 
 import org.helioviewer.jhv.base.logging.Log;
-import org.helioviewer.jhv.base.math.Vector2dDouble;
-import org.helioviewer.jhv.base.math.Vector2dInt;
+import org.helioviewer.jhv.base.math.Vector2d;
+import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.viewmodel.imagedata.ImageData;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.region.Region;
@@ -237,7 +237,7 @@ public final class ViewHelper {
      *            ViewportImageSize of the image within the current viewport
      * @return Displacement in image coordinates
      */
-    public static Vector2dDouble convertScreenToImageDisplacement(Vector2dInt screenDisplacement, Region r, ViewportImageSize v) {
+    public static Vector2d convertScreenToImageDisplacement(Vector2i screenDisplacement, Region r, ViewportImageSize v) {
         return convertScreenToImageDisplacement(screenDisplacement.getX(), screenDisplacement.getY(), r, v);
     }
 
@@ -254,8 +254,8 @@ public final class ViewHelper {
      *            ViewportImageSize of the image within the current viewport
      * @return Displacement in image coordinates
      */
-    public static Vector2dDouble convertScreenToImageDisplacement(int screenDisplacementX, int screenDisplacementY, Region r, ViewportImageSize v) {
-        return new Vector2dDouble(r.getWidth() / ((double) v.getWidth()) * screenDisplacementX, -r.getHeight() / ((double) v.getHeight()) * screenDisplacementY);
+    public static Vector2d convertScreenToImageDisplacement(int screenDisplacementX, int screenDisplacementY, Region r, ViewportImageSize v) {
+        return new Vector2d(r.getWidth() / ((double) v.getWidth()) * screenDisplacementX, -r.getHeight() / ((double) v.getHeight()) * screenDisplacementY);
     }
 
     /**
@@ -269,8 +269,8 @@ public final class ViewHelper {
      *            ViewportImageSize of the image within the current viewport
      * @return Displacement in screen coordinates
      */
-    public static Vector2dInt convertImageToScreenDisplacement(Vector2dDouble imageDisplacement, Region r, ViewportImageSize v) {
-        return convertImageToScreenDisplacement(imageDisplacement.getX(), imageDisplacement.getY(), r, v);
+    public static Vector2i convertImageToScreenDisplacement(Vector2d imageDisplacement, Region r, ViewportImageSize v) {
+        return convertImageToScreenDisplacement(imageDisplacement.x, imageDisplacement.y, r, v);
     }
 
     /**
@@ -286,8 +286,8 @@ public final class ViewHelper {
      *            ViewportImageSize of the image within the current viewport
      * @return Displacement in screen coordinates
      */
-    public static Vector2dInt convertImageToScreenDisplacement(double imageDisplacementX, double imageDisplacementY, Region r, ViewportImageSize v) {
-        return new Vector2dInt((int) Math.round(imageDisplacementX / r.getWidth() * v.getWidth()), (int) Math.round(imageDisplacementY / r.getHeight() * v.getHeight()));
+    public static Vector2i convertImageToScreenDisplacement(double imageDisplacementX, double imageDisplacementY, Region r, ViewportImageSize v) {
+        return new Vector2i((int) Math.round(imageDisplacementX / r.getWidth() * v.getWidth()), (int) Math.round(imageDisplacementY / r.getHeight() * v.getHeight()));
     }
 
     /**
@@ -308,9 +308,9 @@ public final class ViewHelper {
             return r;
         }
 
-        Vector2dDouble halfSize = r.getSize().scale(0.5);
-        Vector2dDouble oldCenter = r.getLowerLeftCorner().add(halfSize);
-        Vector2dDouble newCenter = oldCenter.crop(metaData.getPhysicalLowerLeft(), metaData.getPhysicalUpperRight());
+        Vector2d halfSize = r.getSize().scale(0.5);
+        Vector2d oldCenter = r.getLowerLeftCorner().add(halfSize);
+        Vector2d newCenter = oldCenter.crop(metaData.getPhysicalLowerLeft(), metaData.getPhysicalUpperRight());
 
         if (oldCenter.equals(newCenter)) {
             return r;
@@ -374,7 +374,7 @@ public final class ViewHelper {
      *         viewport image size
      * @see #calculateInnerViewport
      */
-    public static Vector2dInt calculateInnerViewportOffset(Region innerRegion, Region outerRegion, ViewportImageSize outerViewportImageSize) {
+    public static Vector2i calculateInnerViewportOffset(Region innerRegion, Region outerRegion, ViewportImageSize outerViewportImageSize) {
         return ViewHelper.convertImageToScreenDisplacement(innerRegion.getUpperLeftCorner().subtract(outerRegion.getUpperLeftCorner()), outerRegion, outerViewportImageSize).negateY();
     }
    

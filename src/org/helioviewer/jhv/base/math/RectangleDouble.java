@@ -2,71 +2,71 @@ package org.helioviewer.jhv.base.math;
 
 public final class RectangleDouble {
 
-    private final Vector2dDouble corner;
-    private final Vector2dDouble size;
+    private final Vector2d corner;
+    private final Vector2d size;
 
     public RectangleDouble(final double newX, final double newY, final double newWidth, final double newHeight) {
-        corner = new Vector2dDouble(newX, newY);
-        size = new Vector2dDouble(newWidth, newHeight);
+        corner = new Vector2d(newX, newY);
+        size = new Vector2d(newWidth, newHeight);
     }
 
-    public RectangleDouble(final double newX, final double newY, final Vector2dDouble newSize) {
-        corner = new Vector2dDouble(newX, newY);
+    public RectangleDouble(final double newX, final double newY, final Vector2d newSize) {
+        corner = new Vector2d(newX, newY);
         size = newSize;
     }
 
-    public RectangleDouble(final Vector2dDouble newCorner, final double newWidth, final double newHeight) {
+    public RectangleDouble(final Vector2d newCorner, final double newWidth, final double newHeight) {
         corner = newCorner;
-        size = new Vector2dDouble(newHeight, newWidth);
+        size = new Vector2d(newHeight, newWidth);
     }
 
-    public RectangleDouble(final Vector2dDouble newCorner, final Vector2dDouble newSize) {
+    public RectangleDouble(final Vector2d newCorner, final Vector2d newSize) {
         corner = newCorner;
         size = newSize;
     }
 
     public double getX() {
-        return corner.getX();
+        return corner.x;
     }
 
     public double getY() {
-        return corner.getY();
+        return corner.y;
     }
 
     public double getWidth() {
-        return size.getX();
+        return size.x;
     }
 
     public double getHeight() {
-        return size.getY();
+        return size.y;
     }
 
-    public Vector2dDouble getLowerLeftCorner() {
+    public Vector2d getLowerLeftCorner() {
         return corner;
     }
 
-    public Vector2dDouble getLowerRightCorner() {
+    public Vector2d getLowerRightCorner() {
         return corner.add(size.getXVector());
     }
 
-    public Vector2dDouble getUpperLeftCorner() {
+    public Vector2d getUpperLeftCorner() {
         return corner.add(size.getYVector());
     }
 
-    public Vector2dDouble getUpperRightCorner() {
+    public Vector2d getUpperRightCorner() {
         return corner.add(size);
     }
 
-    public Vector2dDouble getSize() {
+    public Vector2d getSize() {
         return size;
     }
 
     public double area() {
-        return size.getX() * size.getY();
+        return size.x * size.y;
     }
 
     public double aspectRatio() {
-        return size.getX() / size.getY();
+        return size.x / size.y;
     }
 
     public boolean isInsideOuterRectangle(final RectangleDouble outer) {
@@ -78,8 +78,8 @@ public final class RectangleDouble {
     }
 
     public RectangleDouble cropToOuterRectangle(final RectangleDouble outer) {
-        Vector2dDouble newCorner = corner.crop(outer.getLowerLeftCorner(), outer.getUpperRightCorner());
-        Vector2dDouble newUpperRight = getUpperRightCorner().crop(outer.getLowerLeftCorner(), outer.getUpperRightCorner());
+        Vector2d newCorner = corner.crop(outer.getLowerLeftCorner(), outer.getUpperRightCorner());
+        Vector2d newUpperRight = getUpperRightCorner().crop(outer.getLowerLeftCorner(), outer.getUpperRightCorner());
         return new RectangleDouble(newCorner, newUpperRight.subtract(newCorner));
     }
 
@@ -88,9 +88,9 @@ public final class RectangleDouble {
     }
 
     public RectangleDouble moveAndCropToOuterRectangle(final RectangleDouble outer) {
-        Vector2dDouble newSize = size.crop(Vector2dDouble.NULL_VECTOR, outer.size);
-        Vector2dDouble croppedCorner = corner.crop(outer.getLowerLeftCorner(), outer.getUpperRightCorner());
-        Vector2dDouble newCorner = croppedCorner.subtract(croppedCorner.add(newSize).subtract(outer.getUpperRightCorner()).crop(Vector2dDouble.NULL_VECTOR, Vector2dDouble.POSITIVE_INFINITY_VECTOR));
+        Vector2d newSize = size.crop(Vector2d.NULL_VECTOR, outer.size);
+        Vector2d croppedCorner = corner.crop(outer.getLowerLeftCorner(), outer.getUpperRightCorner());
+        Vector2d newCorner = croppedCorner.subtract(croppedCorner.add(newSize).subtract(outer.getUpperRightCorner()).crop(Vector2d.NULL_VECTOR, Vector2d.POSITIVE_INFINITY_VECTOR));
         return new RectangleDouble(newCorner, newSize);
     }
 
@@ -99,13 +99,13 @@ public final class RectangleDouble {
     }
 
     public RectangleDouble expandToAspectRatioKeepingCenter(final double newAspectRatio) {
-        Vector2dDouble newSize;
-        if (size.getX() / size.getY() < newAspectRatio) {
-            newSize = new Vector2dDouble(newAspectRatio * size.getY(), size.getY());
+        Vector2d newSize;
+        if (size.x / size.y < newAspectRatio) {
+            newSize = new Vector2d(newAspectRatio * size.y, size.y);
         } else {
-            newSize = new Vector2dDouble(size.getX(), size.getX() / newAspectRatio);
+            newSize = new Vector2d(size.x, size.x / newAspectRatio);
         }
-        Vector2dDouble newCorner = corner.add((size.subtract(newSize).scale(0.5)));
+        Vector2d newCorner = corner.add((size.subtract(newSize).scale(0.5)));
         return new RectangleDouble(newCorner, newSize);
     }
 
@@ -114,13 +114,13 @@ public final class RectangleDouble {
     }
 
     public RectangleDouble contractToAspectRatioKeepingCenter(final double newAspectRatio) {
-        Vector2dDouble newSize;
-        if (size.getX() / size.getY() < newAspectRatio) {
-            newSize = new Vector2dDouble(size.getX(), size.getX() / newAspectRatio);
+        Vector2d newSize;
+        if (size.x / size.y < newAspectRatio) {
+            newSize = new Vector2d(size.x, size.x / newAspectRatio);
         } else {
-            newSize = new Vector2dDouble(newAspectRatio * size.getY(), size.getY());
+            newSize = new Vector2d(newAspectRatio * size.y, size.y);
         }
-        Vector2dDouble newCorner = corner.add((size.subtract(newSize).scale(0.5)));
+        Vector2d newCorner = corner.add((size.subtract(newSize).scale(0.5)));
         return new RectangleDouble(newCorner, newSize);
     }
 
@@ -129,8 +129,8 @@ public final class RectangleDouble {
     }
 
     public RectangleDouble getBoundingRectangle(final RectangleDouble r) {
-        Vector2dDouble newLowerLeftCorner = corner.componentMin(r.getLowerLeftCorner());
-        Vector2dDouble newUpperRightCorner = getUpperRightCorner().componentMax(r.getUpperRightCorner());
+        Vector2d newLowerLeftCorner = corner.componentMin(r.getLowerLeftCorner());
+        Vector2d newUpperRightCorner = getUpperRightCorner().componentMax(r.getUpperRightCorner());
         return new RectangleDouble(newLowerLeftCorner, newUpperRightCorner.subtract(newLowerLeftCorner));
     }
 

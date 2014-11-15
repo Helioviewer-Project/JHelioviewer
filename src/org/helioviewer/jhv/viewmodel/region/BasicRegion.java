@@ -1,6 +1,6 @@
 package org.helioviewer.jhv.viewmodel.region;
 
-import org.helioviewer.jhv.base.math.Vector2dDouble;
+import org.helioviewer.jhv.base.math.Vector2d;
 
 /**
  * Represents a region.
@@ -23,13 +23,13 @@ public interface BasicRegion {
      * @return a Vector2dDouble object which points to the lower left corner of
      *         the region.
      * */
-    public Vector2dDouble getLowerLeftCorner();
+    public Vector2d getLowerLeftCorner();
 
     /**
      * Returns the size of the region.
      * 
      * @return aVector2dDouble object which describes the size of the region.
      * */
-    public Vector2dDouble getSize();
+    public Vector2d getSize();
 
 }

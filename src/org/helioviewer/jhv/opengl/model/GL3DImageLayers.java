@@ -8,13 +8,13 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
 import org.helioviewer.jhv.base.logging.Log;
+import org.helioviewer.jhv.base.math.GL3DMat4d;
+import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DDrawBits.Bit;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DGroup;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DNode;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DMat4d;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec3d;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DImageTextureView;
 
 
@@ -133,7 +133,7 @@ public class GL3DImageLayers extends GL3DGroup {
     
     
     private void updateImageLayerPriorities(GL3DState state) {
-        GL3DCamera activeCamera = state.getActiveCamera();
+        GL3DCamera activeCamera = state.activeCamera;
         GL3DMat4d VM = activeCamera.getVM();
         GL3DVec3d LA = new GL3DVec3d();
         GL3DVec3d LR = new GL3DVec3d();
@@ -172,7 +172,7 @@ public class GL3DImageLayers extends GL3DGroup {
     public void removeLayer(GL3DState state, GL3DImageTextureView view) {
         GL3DImageLayer layer = getImageLayerForView(view);
         layer.delete(state);
-        Log.debug("GL3DImageLayers: Removed Layer " + layer.getName());
+        Log.debug("GL3DImageLayers: Removed Layer " + layer.name);
         this.imageLayerMap.remove(view);
         
     }

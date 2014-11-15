@@ -4,8 +4,8 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 
 import org.helioviewer.jhv.base.logging.Log;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DQuatd;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec3d;
+import org.helioviewer.jhv.base.math.GL3DQuatd;
+import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRayTracer;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DSceneGraphView;

@@ -5,8 +5,8 @@ import java.awt.Rectangle;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
-import org.helioviewer.jhv.base.math.Vector2dDouble;
-import org.helioviewer.jhv.base.math.Vector2dInt;
+import org.helioviewer.jhv.base.math.Vector2d;
+import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.opengl.model.GL3DImageMesh;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 import org.helioviewer.jhv.opengl.shader.GL3DImageVertexShaderProgram;
@@ -42,7 +42,7 @@ public class GL3DImageTextureView extends AbstractGL3DView implements GL3DView {
 
 	private int textureId = -1;
 
-	private Vector2dDouble textureScale = null;
+	private Vector2d textureScale = null;
 
 	private Region capturedRegion = null;
 
@@ -105,7 +105,7 @@ public class GL3DImageTextureView extends AbstractGL3DView implements GL3DView {
 
 		Region region = getAdapter(RegionView.class).getRegion();
 		Viewport viewport = getAdapter(ViewportView.class).getViewport();
-		Vector2dInt renderOffset = getAdapter(GL3DImageRegionView.class)
+		Vector2i renderOffset = getAdapter(GL3DImageRegionView.class)
 				.getRenderOffset();
 		if (viewport == null || region == null) {
 			regionChanged = false;
@@ -123,14 +123,14 @@ public class GL3DImageTextureView extends AbstractGL3DView implements GL3DView {
 			th.copyFrameBufferToTexture(gl, textureId, captureRectangle);
 			this.textureScale = th.getTextureScale(textureId);
 		
-			double xOffset = (region.getLowerLeftCorner().getX() - this.metadata.getPhysicalLowerLeft().getX())/this.metadata.getPhysicalImageWidth();
-			double yOffset = (region.getLowerLeftCorner().getY() - this.metadata.getPhysicalLowerLeft().getY())/this.metadata.getPhysicalImageHeight();
+			double xOffset = (region.getLowerLeftCorner().x - this.metadata.getPhysicalLowerLeft().x)/this.metadata.getPhysicalImageWidth();
+			double yOffset = (region.getLowerLeftCorner().y - this.metadata.getPhysicalLowerLeft().y)/this.metadata.getPhysicalImageHeight();
 			double xScale = (this.metadata.getPhysicalImageWidth()/region.getWidth());
 			double yScale = (this.metadata.getPhysicalImageHeight()/region.getHeight());
 			
 			if (vertexShader != null) {
 				this.vertexShader.changeRect(xOffset, yOffset, Math.abs(xScale), Math.abs(yScale));
-				this.vertexShader.changeTextureScale(this.textureScale.getX(), this.textureScale.getY());
+				this.vertexShader.changeTextureScale(this.textureScale.x, this.textureScale.y);
 			}
 		}
 
@@ -168,7 +168,7 @@ public class GL3DImageTextureView extends AbstractGL3DView implements GL3DView {
 		});
 	}
 
-	public Vector2dDouble getTextureScale() {
+	public Vector2d getTextureScale() {
 		return textureScale;
 	}
 

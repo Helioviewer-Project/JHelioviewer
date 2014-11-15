@@ -8,8 +8,8 @@ import java.util.Formatter;
 
 import javax.swing.BorderFactory;
 
-import org.helioviewer.jhv.base.math.Vector2dDouble;
-import org.helioviewer.jhv.base.math.Vector2dInt;
+import org.helioviewer.jhv.base.math.Vector2d;
+import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.gui.components.BasicImagePanel;
 import org.helioviewer.jhv.gui.interfaces.ImagePanelPlugin;
@@ -95,20 +95,20 @@ public class PositionStatusPanel extends ViewStatusPanelPlugin implements MouseM
 
         // Helioviewer images have there physical lower left corner in a
         // negative area; real pixel based image at 0
-        if (m.getPhysicalLowerLeft().getX() < 0) {
+        if (m.getPhysicalLowerLeft().x < 0) {
 
-            Vector2dInt solarcenter = ViewHelper.convertImageToScreenDisplacement(regionView.getRegion().getUpperLeftCorner().negateX(), regionView.getRegion(), vis);
+            Vector2i solarcenter = ViewHelper.convertImageToScreenDisplacement(regionView.getRegion().getUpperLeftCorner().negateX(), regionView.getRegion(), vis);
 
-            Vector2dDouble scaling = new Vector2dDouble(Constants.SUN_RADIUS, Constants.SUN_RADIUS);
-            Vector2dDouble solarRadius = new Vector2dDouble(ViewHelper.convertImageToScreenDisplacement(scaling, regionView.getRegion(), vis));
+            Vector2d scaling = new Vector2d(Constants.SUN_RADIUS, Constants.SUN_RADIUS);
+            Vector2d solarRadius = new Vector2d(ViewHelper.convertImageToScreenDisplacement(scaling, regionView.getRegion(), vis));
 
-            Vector2dDouble pos = new Vector2dDouble(position.x - solarcenter.getX(), -position.y + solarcenter.getY()).invertedScale(solarRadius).scale(959.705);
+            Vector2d pos = new Vector2d(position.x - solarcenter.getX(), -position.y + solarcenter.getY()).invertedScale(solarRadius).scale(959.705);
 
             Formatter fmt = new Formatter();
-            String xStr = fmt.format(" %5d", (int) Math.round(pos.getX())).toString();
+            String xStr = fmt.format(" %5d", (int) Math.round(pos.x)).toString();
             fmt.close();
             fmt = new Formatter();
-            String yStr = fmt.format(" %5d", (int) Math.round(pos.getY())).toString();
+            String yStr = fmt.format(" %5d", (int) Math.round(pos.y)).toString();
             fmt.close();
             setText("(x, y) = " + "(" + xStr + PRIME + PRIME + "," + yStr + PRIME + PRIME + ")");
         } else {

@@ -1,7 +1,7 @@
 package org.helioviewer.jhv.viewmodel.region;
 
 import org.helioviewer.jhv.base.math.RectangleDouble;
-import org.helioviewer.jhv.base.math.Vector2dDouble;
+import org.helioviewer.jhv.base.math.Vector2d;
 
 /**
  * Implementation of {@link Region}.
@@ -26,41 +26,41 @@ public class RegionAdapter implements Region {
      * {@inheritDoc}
      * */
     public double getCornerX() {
-        return region.getLowerLeftCorner().getX();
+        return region.getLowerLeftCorner().x;
     }
 
     /**
      * {@inheritDoc}
      * */
     public double getCornerY() {
-        return region.getLowerLeftCorner().getY();
+        return region.getLowerLeftCorner().y;
     }
 
     /**
      * {@inheritDoc}
      * */
     public double getHeight() {
-        return region.getSize().getY();
+        return region.getSize().y;
     }
 
     /**
      * {@inheritDoc}
      * */
     public double getWidth() {
-        return region.getSize().getX();
+        return region.getSize().x;
     }
 
     /**
      * {@inheritDoc}
      * */
-    public Vector2dDouble getLowerLeftCorner() {
+    public Vector2d getLowerLeftCorner() {
         return region.getLowerLeftCorner();
     }
 
     /**
      * {@inheritDoc}
      * */
-    public Vector2dDouble getSize() {
+    public Vector2d getSize() {
         return region.getSize();
     }
 
@@ -74,21 +74,21 @@ public class RegionAdapter implements Region {
     /**
      * {@inheritDoc}
      * */
-    public Vector2dDouble getLowerRightCorner() {
+    public Vector2d getLowerRightCorner() {
         return region.getLowerLeftCorner().add(region.getSize().getXVector());
     }
 
     /**
      * {@inheritDoc}
      * */
-    public Vector2dDouble getUpperLeftCorner() {
+    public Vector2d getUpperLeftCorner() {
         return region.getLowerLeftCorner().add(region.getSize().getYVector());
     }
 
     /**
      * {@inheritDoc}
      * */
-    public Vector2dDouble getUpperRightCorner() {
+    public Vector2d getUpperRightCorner() {
         return region.getLowerLeftCorner().add(region.getSize());
     }
 

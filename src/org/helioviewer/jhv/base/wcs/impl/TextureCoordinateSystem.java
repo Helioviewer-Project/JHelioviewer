@@ -1,6 +1,6 @@
 package org.helioviewer.jhv.base.wcs.impl;
 
-import org.helioviewer.jhv.base.math.Vector2dDouble;
+import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.wcs.Cartesian2DCoordinateSystem;
 import org.helioviewer.jhv.base.wcs.CoordinateConversion;
 import org.helioviewer.jhv.base.wcs.CoordinateSystem;
@@ -18,9 +18,9 @@ import org.helioviewer.jhv.viewmodel.region.Region;
  */
 public class TextureCoordinateSystem extends Cartesian2DCoordinateSystem {
     private Region region;
-    private Vector2dDouble textureScale;
+    private Vector2d textureScale;
 
-    public TextureCoordinateSystem(Vector2dDouble textureScale, Region region) {
+    public TextureCoordinateSystem(Vector2d textureScale, Region region) {
         super(new GenericCoordinateDimension(Unit.Pixel, "Texture XCoordinate", 0, 1.0), new GenericCoordinateDimension(Unit.Pixel, "Texture YCoordinate", 0, 1.0));
 
         this.region = region;
@@ -36,10 +36,10 @@ public class TextureCoordinateSystem extends Cartesian2DCoordinateSystem {
     }
 
     public double getTextureScaleX() {
-        return this.textureScale.getX();
+        return this.textureScale.x;
     }
 
     public double getTextureScaleY() {
-        return this.textureScale.getY();
+        return this.textureScale.y;
     }
 }

@@ -9,6 +9,8 @@ import javax.swing.ListModel;
 
 import org.helioviewer.jhv.base.GL3DHelper;
 import org.helioviewer.jhv.base.logging.Log;
+import org.helioviewer.jhv.base.math.GL3DQuatd;
+import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.wcs.CoordinateConversion;
 import org.helioviewer.jhv.base.wcs.CoordinateVector;
 import org.helioviewer.jhv.layers.LayersListener;
@@ -18,8 +20,6 @@ import org.helioviewer.jhv.opengl.camera.GL3DCameraRotationAnimation;
 import org.helioviewer.jhv.opengl.camera.GL3DTrackballCamera;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState.VISUAL_TYPE;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DQuatd;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec3d;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DCameraView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DComponentView;
@@ -143,7 +143,7 @@ public class GL3DCameraSelectorModel extends AbstractListModel<Object> implement
 		GL3DCoordinateSystemView layer = view.getAdapter(GL3DCoordinateSystemView.class);
 		GL3DState state = GL3DState.get();
 		CoordinateVector orientationVector = layer.getOrientation();
-        CoordinateConversion toViewSpace = layer.getCoordinateSystem().getConversion(state.getActiveCamera().getViewSpaceCoordinateSystem());
+        CoordinateConversion toViewSpace = layer.getCoordinateSystem().getConversion(state.activeCamera.getViewSpaceCoordinateSystem());
         GL3DVec3d orientation = GL3DHelper.toVec(toViewSpace.convert(orientationVector)).normalize();
         
         GL3DQuatd phiRotation = GL3DQuatd.calcRotation(orientation,new GL3DVec3d(0,0,1));	        

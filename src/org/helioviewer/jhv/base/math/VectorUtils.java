@@ -14,8 +14,8 @@ public class VectorUtils {
      * 
      * @return number representing the turn-direction of the three points
      */
-    public static double clockwise(Vector2dDouble a, Vector2dDouble b, Vector2dDouble c) {
-        return (c.getX() - a.getX()) * (b.getY() - a.getY()) - (b.getX() - a.getX()) * (c.getY() - a.getY());
+    public static double clockwise(Vector2d a, Vector2d b, Vector2d c) {
+        return (c.x - a.x) * (b.y - a.y) - (b.x - a.x) * (c.y - a.y);
     }
 
     /**
@@ -31,7 +31,7 @@ public class VectorUtils {
      *            - point in question
      * @return true if the point is located inside the triangle
      */
-    public static boolean pointInTriangle(Vector2dDouble trianglePointA, Vector2dDouble trianglePointB, Vector2dDouble trianglePointC, Vector2dDouble toCheck) {
+    public static boolean pointInTriangle(Vector2d trianglePointA, Vector2d trianglePointB, Vector2d trianglePointC, Vector2d toCheck) {
         double cw0 = clockwise(trianglePointA, trianglePointB, toCheck);
         double cw1 = clockwise(trianglePointB, trianglePointC, toCheck);
         double cw2 = clockwise(trianglePointC, trianglePointA, toCheck);
@@ -61,8 +61,8 @@ public class VectorUtils {
      *            - point to be projected into the plane
      * @return
      */
-    public static Vector3dDouble projectBack(Vector3dDouble planeCenter, Vector3dDouble planeVectorA, Vector3dDouble planeVectorB, Vector2dDouble toProject) {
-        Vector3dDouble inPlane = planeCenter.add(planeVectorA.scale(toProject.getX())).add(planeVectorB.scale(toProject.getY()));
+    public static Vector3d projectBack(Vector3d planeCenter, Vector3d planeVectorA, Vector3d planeVectorB, Vector2d toProject) {
+        Vector3d inPlane = planeCenter.add(planeVectorA.scale(toProject.x)).add(planeVectorB.scale(toProject.y));
         return inPlane;
     }
 
@@ -79,11 +79,11 @@ public class VectorUtils {
      *            - point to be projected into the plane
      * @return
      */
-    public static Vector2dDouble inPlaneCoord(Vector3dDouble planeCenter, Vector3dDouble planeVectorA, Vector3dDouble planeVectorB, Vector3dDouble toProject) {
-        Vector3dDouble inPlane = projectToPlane(planeCenter, toProject);
-        double x = Vector3dDouble.dot(planeVectorA, inPlane);
-        double y = Vector3dDouble.dot(planeVectorB, inPlane);
-        return new Vector2dDouble(x, y);
+    public static Vector2d inPlaneCoord(Vector3d planeCenter, Vector3d planeVectorA, Vector3d planeVectorB, Vector3d toProject) {
+        Vector3d inPlane = projectToPlane(planeCenter, toProject);
+        double x = Vector3d.dot(planeVectorA, inPlane);
+        double y = Vector3d.dot(planeVectorB, inPlane);
+        return new Vector2d(x, y);
     }
 
     /**
@@ -97,9 +97,9 @@ public class VectorUtils {
      * 
      * @return the projection of the targetPoint
      */
-    public static Vector3dDouble inPlaneShift(Vector3dDouble planeCenter, Vector3dDouble toProject) {
-        Vector3dDouble normal = planeCenter.normalize();
-        Vector3dDouble inPlaneShift = toProject.subtract(normal.scale(Vector3dDouble.dot(normal, toProject)));
+    public static Vector3d inPlaneShift(Vector3d planeCenter, Vector3d toProject) {
+        Vector3d normal = planeCenter.normalize();
+        Vector3d inPlaneShift = toProject.subtract(normal.scale(Vector3d.dot(normal, toProject)));
         return inPlaneShift;
     }
 
@@ -111,10 +111,10 @@ public class VectorUtils {
      * @param toProject
      * @return
      */
-    public static Vector3dDouble projectToPlane(Vector3dDouble planeCenter, Vector3dDouble toProject) {
-        Vector3dDouble normal = planeCenter.normalize();
-        Vector3dDouble inPlaneShift = toProject.subtract(normal.scale(Vector3dDouble.dot(normal, toProject)));
-        Vector3dDouble projection = planeCenter.add(inPlaneShift);
+    public static Vector3d projectToPlane(Vector3d planeCenter, Vector3d toProject) {
+        Vector3d normal = planeCenter.normalize();
+        Vector3d inPlaneShift = toProject.subtract(normal.scale(Vector3d.dot(normal, toProject)));
+        Vector3d projection = planeCenter.add(inPlaneShift);
         return projection;
     }
 

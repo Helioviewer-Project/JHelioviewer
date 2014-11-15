@@ -1,5 +1,7 @@
 package org.helioviewer.jhv.opengl.scenegraph;
 
+import java.util.BitSet;
+
 /**
  * The draw bits store attributes within the scene graph. Every node has its
  * draw bits object. An attribute applies to the node and all of its child
@@ -9,10 +11,14 @@ package org.helioviewer.jhv.opengl.scenegraph;
  * 
  */
 public class GL3DDrawBits {
-    private boolean[] drawBits;
+    BitSet drawBits;
 
     public GL3DDrawBits() {
-        this.init();
+        this.drawBits = new BitSet();
+        for (Bit b : Bit.values()) {
+            if(b.value)
+                on(b);
+        }
     }
 
     public void toggle(Bit bit) {
@@ -28,26 +34,14 @@ public class GL3DDrawBits {
     }
 
     public void set(Bit bit, boolean value) {
-        this.drawBits[bit.pos] = value;
+        if(value)
+            drawBits.set(bit.pos);
+        else
+            drawBits.clear(bit.pos);
     }
 
     public boolean get(Bit bit) {
-        return this.drawBits[bit.pos];
-    }
-
-    private void init() {
-        this.drawBits = new boolean[Bit.values().length];
-        for (int i = 0; i < drawBits.length; i++) {
-            this.drawBits[i] = find(i).value;
-        }
-    }
-
-    private Bit find(int pos) {
-        for (Bit b : Bit.values()) {
-            if (b.pos == pos)
-                return b;
-        }
-        return null;
+        return drawBits.get(bit.pos);
     }
 
     public enum Bit {

@@ -2,16 +2,16 @@ package org.helioviewer.jhv.viewmodel.metadata;
 
 import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.base.math.RectangleDouble;
-import org.helioviewer.jhv.base.math.Vector2dDouble;
-import org.helioviewer.jhv.base.math.Vector2dInt;
+import org.helioviewer.jhv.base.math.Vector2d;
+import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.viewmodel.region.Region;
 import org.helioviewer.jhv.viewmodel.region.StaticRegion;
 import org.helioviewer.jhv.viewmodel.view.jp2view.ImmutableDateTime;
 
 public abstract class MetaData {
-  private Vector2dDouble lowerLeftCorner;
-    private Vector2dDouble sizeVector;
+  private Vector2d lowerLeftCorner;
+    private Vector2d sizeVector;
 
     protected MetaDataContainer metaDataContainer = null;
     protected String instrument = "";
@@ -19,9 +19,9 @@ public abstract class MetaData {
     protected String measurement = " ";
     protected String observatory = " ";
     protected String fullName = "";
-    protected Vector2dInt pixelImageSize = new Vector2dInt();
+    protected Vector2i pixelImageSize = new Vector2i();
     protected double solarPixelRadius = -1;
-    protected Vector2dDouble sunPixelPosition = new Vector2dDouble();
+    protected Vector2d sunPixelPosition = new Vector2d();
 
     protected double meterPerPixel;
     protected ImmutableDateTime time;
@@ -30,7 +30,7 @@ public abstract class MetaData {
     protected double outerRadius;
     protected double flatDistance;
     protected double maskRotation;
-    protected Vector2dDouble occulterCenter;
+    protected Vector2d occulterCenter;
     
     
     protected double heeqX;
@@ -88,7 +88,7 @@ public abstract class MetaData {
      * @param newSizeVector
      *            Physical size of the corresponding image
      */
-    public MetaData(Vector2dDouble newLowerLeftCorner, Vector2dDouble newSizeVector) {
+    public MetaData(Vector2d newLowerLeftCorner, Vector2d newSizeVector) {
         lowerLeftCorner = newLowerLeftCorner;
         sizeVector = newSizeVector;
     }
@@ -106,8 +106,8 @@ public abstract class MetaData {
      *            Physical height of the corresponding image
      */
     public MetaData(double newLowerLeftCornerX, double newLowerLeftCornerY, double newWidth, double newHeight) {
-        lowerLeftCorner = new Vector2dDouble(newLowerLeftCornerX, newLowerLeftCornerY);
-        sizeVector = new Vector2dDouble(newWidth, newHeight);
+        lowerLeftCorner = new Vector2d(newLowerLeftCornerX, newLowerLeftCornerY);
+        sizeVector = new Vector2d(newWidth, newHeight);
     }
 
     /**
@@ -120,9 +120,9 @@ public abstract class MetaData {
      * @param newHeight
      *            Physical height of the corresponding image
      */
-    public MetaData(Vector2dDouble newLowerLeftCorner, double newWidth, double newHeight) {
+    public MetaData(Vector2d newLowerLeftCorner, double newWidth, double newHeight) {
         lowerLeftCorner = newLowerLeftCorner;
-        sizeVector = new Vector2dDouble(newWidth, newHeight);
+        sizeVector = new Vector2d(newWidth, newHeight);
     }
 
     /**
@@ -135,8 +135,8 @@ public abstract class MetaData {
      * @param newSizeVector
      *            Physical size of the corresponding image
      */
-    public MetaData(double newLowerLeftCornerX, double newLowerLeftCornerY, Vector2dDouble newSizeVector) {
-        lowerLeftCorner = new Vector2dDouble(newLowerLeftCornerX, newLowerLeftCornerY);
+    public MetaData(double newLowerLeftCornerX, double newLowerLeftCornerY, Vector2d newSizeVector) {
+        lowerLeftCorner = new Vector2d(newLowerLeftCornerX, newLowerLeftCornerY);
         sizeVector = newSizeVector;
     }
 
@@ -158,21 +158,21 @@ public abstract class MetaData {
      *            Object to copy
      */
     public MetaData(MetaData original) {
-        lowerLeftCorner = new Vector2dDouble(original.lowerLeftCorner);
-        sizeVector = new Vector2dDouble(original.sizeVector);
+        lowerLeftCorner = new Vector2d(original.lowerLeftCorner);
+        sizeVector = new Vector2d(original.sizeVector);
     }
 
     /**
      * {@inheritDoc}
      */
-    public synchronized Vector2dDouble getPhysicalImageSize() {
+    public synchronized Vector2d getPhysicalImageSize() {
         return sizeVector;
     }
 
     /**
      * {@inheritDoc}
      */
-    public synchronized Vector2dDouble getPhysicalLowerLeft() {
+    public synchronized Vector2d getPhysicalLowerLeft() {
         return lowerLeftCorner;
     }
 
@@ -180,34 +180,34 @@ public abstract class MetaData {
      * {@inheritDoc}
      */
     public synchronized double getPhysicalImageHeight() {
-        return sizeVector.getY();
+        return sizeVector.y;
     }
 
     /**
      * {@inheritDoc}
      */
     public synchronized double getPhysicalImageWidth() {
-        return sizeVector.getX();
+        return sizeVector.x;
     }
 
     /**
      * {@inheritDoc}
      */
-    public synchronized Vector2dDouble getPhysicalLowerRight() {
+    public synchronized Vector2d getPhysicalLowerRight() {
         return lowerLeftCorner.add(sizeVector.getXVector());
     }
 
     /**
      * {@inheritDoc}
      */
-    public synchronized Vector2dDouble getPhysicalUpperLeft() {
+    public synchronized Vector2d getPhysicalUpperLeft() {
         return lowerLeftCorner.add(sizeVector.getYVector());
     }
 
     /**
      * {@inheritDoc}
      */
-    public synchronized Vector2dDouble getPhysicalUpperRight() {
+    public synchronized Vector2d getPhysicalUpperRight() {
         return lowerLeftCorner.add(sizeVector);
     }
 
@@ -231,7 +231,7 @@ public abstract class MetaData {
      * @param newImageSize
      *            Physical size of the corresponding image
      */
-    protected synchronized void setPhysicalImageSize(Vector2dDouble newImageSize) {
+    protected synchronized void setPhysicalImageSize(Vector2d newImageSize) {
         sizeVector = newImageSize;
     }
 
@@ -241,7 +241,7 @@ public abstract class MetaData {
      * @param newlLowerLeftCorner
      *            Physical lower left corner the corresponding image
      */
-    protected synchronized void setPhysicalLowerLeftCorner(Vector2dDouble newlLowerLeftCorner) {
+    protected synchronized void setPhysicalLowerLeftCorner(Vector2d newlLowerLeftCorner) {
         lowerLeftCorner = newlLowerLeftCorner;
     }
     
@@ -287,14 +287,14 @@ public abstract class MetaData {
     /**
      * {@inheritDoc}
      */
-    public Vector2dDouble getSunPixelPosition() {
+    public Vector2d getSunPixelPosition() {
         return sunPixelPosition;
     }
 
     /**
      * {@inheritDoc}
      */
-    public Vector2dInt getResolution() {
+    public Vector2i getResolution() {
         return pixelImageSize;
     }
 
@@ -416,7 +416,7 @@ public abstract class MetaData {
         return maskRotation;
     }
 
-    public Vector2dDouble getOcculterCenter() {
+    public Vector2d getOcculterCenter() {
         return occulterCenter;
     }
 

@@ -1,12 +1,8 @@
 package org.helioviewer.jhv.opengl.scenegraph;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DDrawBits.Bit;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec3d;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
-import org.helioviewer.jhv.opengl.scenegraph.visuals.GL3DPolyLine;
 
 /**
  * A {@link GL3DGroup} allows introducing a hierarchy within the scene graph. A group
@@ -22,11 +18,8 @@ public class GL3DGroup extends GL3DShape {
     
     private int numberOfNodes;
     
-    private List<GL3DPolyLine> nodesToAdd;
-    
     public GL3DGroup(String name) {
     	super(name);
-        this.nodesToAdd = new ArrayList<GL3DPolyLine>();
     }
     
     @Override
@@ -45,21 +38,9 @@ public class GL3DGroup extends GL3DShape {
     public void shapeDraw(GL3DState state) {
         GL3DNode node = this.first;
         while(node!=null) {
-        	if (node.parent != null) {
-				if (node.parent.getName() == "HEK" && nodesToAdd.size() > 0) {
-					node.delete(state);
-				}
-			}
-        	
             node.draw(state);
             node = node.next;
         }        	
-
-    	for (GL3DNode toAdd : nodesToAdd) {
-			addNode(toAdd);
-		}
-
-        nodesToAdd.clear();
     }
     
     @Override

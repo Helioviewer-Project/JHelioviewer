@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.helioviewer.jhv.base.math.Vector3d;
+
 public class GeometryInfo
 {
-    private Vec3 coordinates[]=null;
+    private Vector3d coordinates[]=null;
     private int coordinateIndices[]=null;
     private int stripCounts[]=null;
     private int contourCounts[]=null;
@@ -16,12 +18,12 @@ public class GeometryInfo
     {
     }
 
-    public void setCoordinates(Vec3 _coordinates[])
+    public void setCoordinates(Vector3d _coordinates[])
     {
         coordinates=_coordinates;
     }
 
-    public Vec3[] getCoordinates()
+    public Vector3d[] getCoordinates()
     {
         return coordinates;
     }
@@ -87,7 +89,7 @@ public class GeometryInfo
 
         if(coordinateIndices!=null)
         {
-            Vec3[] unindexedCoordinates=new Vec3[coordinateIndices.length];
+            Vector3d[] unindexedCoordinates=new Vector3d[coordinateIndices.length];
             for(int i=0;i<coordinateIndices.length;i++)
                 unindexedCoordinates[i]=coordinates[coordinateIndices[i]];
             coordinates=unindexedCoordinates;

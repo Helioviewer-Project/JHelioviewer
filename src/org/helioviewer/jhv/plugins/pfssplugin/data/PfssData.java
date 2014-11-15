@@ -18,8 +18,8 @@ import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 
+import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.physics.Constants;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec3f;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssSettings;
 
 import com.jogamp.common.nio.Buffers;
@@ -332,21 +332,21 @@ public class PfssData {
 		gl2.glDepthMask(false);
 		gl2.glBindBuffer(GL2.GL_ARRAY_BUFFER, VBOVertices);
 		gl2.glVertexPointer(3, GL2.GL_FLOAT, 0, 0);
-		GL3DVec3f color;
+		GL3DVec3d color;
 
 		gl2.glLineWidth(PfssSettings.LINE_WIDTH);
 		// gl.glPrimitiveRestartIndexNV(0);
 
 		if (indicesSunToSun != null && indicesSunToSun.limit() > 0) {
 			color = PfssSettings.SUN_SUN_LINE_COLOR;
-			gl2.glColor4f(color.x, color.y, color.z, PfssSettings.LINE_ALPHA);
+			gl2.glColor4d(color.x, color.y, color.z, PfssSettings.LINE_ALPHA);
 			gl2.glBindBuffer(GL2.GL_ELEMENT_ARRAY_BUFFER, VBOIndicesSunToSun);
 			gl2.glDrawElements(GL2.GL_LINES, indicesSunToSun.limit(),
 					GL2.GL_UNSIGNED_INT, 0);
 		}
 		if (indicesSunToOutside != null && indicesSunToOutside.limit() > 0) {
 			color = PfssSettings.SUN_OUT_LINE_COLOR;
-			gl2.glColor4f(color.x, color.y, color.z, PfssSettings.LINE_ALPHA);
+			gl2.glColor4d(color.x, color.y, color.z, PfssSettings.LINE_ALPHA);
 			gl2.glBindBuffer(GL2.GL_ELEMENT_ARRAY_BUFFER, VBOIndicesSunToOutside);
 			gl2.glDrawElements(GL2.GL_LINES, indicesSunToOutside.limit(),
 					GL2.GL_UNSIGNED_INT, 0);
@@ -354,7 +354,7 @@ public class PfssData {
 
 		if (indicesOutsideToSun != null && indicesOutsideToSun.limit() > 0) {
 			color = PfssSettings.OUT_SUN_LINE_COLOR;
-			gl2.glColor4f(color.x, color.y, color.z, PfssSettings.LINE_ALPHA);
+			gl2.glColor4d(color.x, color.y, color.z, PfssSettings.LINE_ALPHA);
 			gl2.glBindBuffer(GL2.GL_ELEMENT_ARRAY_BUFFER, VBOIndicesOutsideToSun);
 			gl2.glDrawElements(GL2.GL_LINES, indicesOutsideToSun.limit(),
 					GL2.GL_UNSIGNED_INT, 0);

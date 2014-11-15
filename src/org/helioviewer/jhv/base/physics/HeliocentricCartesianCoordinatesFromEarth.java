@@ -3,7 +3,7 @@ package org.helioviewer.jhv.base.physics;
 import java.util.Calendar;
 import java.util.Locale;
 
-import org.helioviewer.jhv.base.math.Vector2dDouble;
+import org.helioviewer.jhv.base.math.Vector2d;
 
 public class HeliocentricCartesianCoordinatesFromEarth implements SolarCoordinates {
 
@@ -34,9 +34,9 @@ public class HeliocentricCartesianCoordinatesFromEarth implements SolarCoordinat
     }
 
     // constructor for points on the solar disk as seen on images
-    public HeliocentricCartesianCoordinatesFromEarth(Vector2dDouble physicalCoordinates, Calendar newObservationTime) {
-        x = physicalCoordinates.getX();
-        y = physicalCoordinates.getY();
+    public HeliocentricCartesianCoordinatesFromEarth(Vector2d physicalCoordinates, Calendar newObservationTime) {
+        x = physicalCoordinates.x;
+        y = physicalCoordinates.y;
         z = Math.sqrt(Constants.SUN_RADIUS * Constants.SUN_RADIUS - x * x - y * y);
         observationTime = newObservationTime;
     }
@@ -58,8 +58,8 @@ public class HeliocentricCartesianCoordinatesFromEarth implements SolarCoordinat
         return new HeliocentricEarthEquatorialCoordinates(heeqX, heeqY, heeqZ);
     }
 
-    public Vector2dDouble getCartesianCoordinatesOnDisc() {
-        return new Vector2dDouble(x, y);
+    public Vector2d getCartesianCoordinatesOnDisc() {
+        return new Vector2d(x, y);
     }
 
     public String toString() {

@@ -3,16 +3,15 @@ package org.helioviewer.jhv.opengl.model;
 import java.util.List;
 
 import org.helioviewer.jhv.base.GL3DHelper;
+import org.helioviewer.jhv.base.math.GL3DMat4d;
+import org.helioviewer.jhv.base.math.GL3DQuatd;
+import org.helioviewer.jhv.base.math.GL3DVec2d;
+import org.helioviewer.jhv.base.math.GL3DVec3d;
+import org.helioviewer.jhv.base.math.GL3DVec4d;
 import org.helioviewer.jhv.base.wcs.CoordinateConversion;
 import org.helioviewer.jhv.base.wcs.CoordinateVector;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DMesh;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DMat4d;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DQuatd;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec2d;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec3d;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec4d;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec4f;
 
 public class GL3DCircle extends GL3DMesh {
     private double radius;
@@ -20,7 +19,7 @@ public class GL3DCircle extends GL3DMesh {
     private GL3DImageLayer layer;
     private GL3DMat4d phiRotation = null;
     
-    public GL3DCircle(double radius, GL3DVec4f color, String name, GL3DImageLayer layer) {
+    public GL3DCircle(double radius, GL3DVec4d color, String name, GL3DImageLayer layer) {
         super(name);
         this.radius = radius*0.999;
         this.color = new GL3DVec4d((double) color.x, (double) color.y, (double) color.z, (double) color.w);
@@ -31,7 +30,7 @@ public class GL3DCircle extends GL3DMesh {
     	int counter = 0;
     	
     	CoordinateVector orientationVector = this.layer.getOrientation();
-        CoordinateConversion toViewSpace = this.layer.getCoordinateSystem().getConversion(state.getActiveCamera().getViewSpaceCoordinateSystem());
+        CoordinateConversion toViewSpace = this.layer.getCoordinateSystem().getConversion(state.activeCamera.getViewSpaceCoordinateSystem());
 
         GL3DVec3d orientation = GL3DHelper.toVec(toViewSpace.convert(orientationVector)).normalize();
 

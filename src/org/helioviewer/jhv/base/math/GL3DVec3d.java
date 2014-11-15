@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.opengl.scenegraph.math;
+package org.helioviewer.jhv.base.math;
 
 public class GL3DVec3d implements Cloneable {
     /**
@@ -37,7 +37,7 @@ public class GL3DVec3d implements Cloneable {
     }
 
     public GL3DVec3d() {
-        this(GL3DVec3d.ZERO);
+        this(0,0,0);
     }
 
     public GL3DVec3d(double[] coordinates) {

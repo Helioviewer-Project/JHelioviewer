@@ -1,6 +1,6 @@
 package org.helioviewer.jhv.viewmodel.viewportimagesize;
 
-import org.helioviewer.jhv.base.math.Vector2dInt;
+import org.helioviewer.jhv.base.math.Vector2i;
 
 /**
  * Implementation of {@link ViewportImageSize}.
@@ -39,7 +39,7 @@ public class ViewportImageSizeAdapter implements ViewportImageSize {
     /**
      * {@inheritDoc}
      * */
-    public Vector2dInt getSizeVector() {
+    public Vector2i getSizeVector() {
         return viewportImageSize.getSizeVector();
     }
 

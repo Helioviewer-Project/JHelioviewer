@@ -87,7 +87,7 @@ public class GL3DCameraView extends AbstractGL3DView implements GL3DView,
 		GL2 gl = state.gl;
 
 		if (this.camera != null) {
-			state.setActiveChamera(this.camera);
+			state.activeCamera = this.camera;
 			GL3DState.get().checkGLErrors("GL3DCameraView.afterRender3D");
 			if (this.getView() != null) {
 				this.renderChild(gl);

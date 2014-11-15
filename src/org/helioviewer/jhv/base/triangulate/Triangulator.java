@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import org.helioviewer.jhv.base.math.Vector2d;
+import org.helioviewer.jhv.base.math.Vector3d;
+
 class Triangulator
 {
     static private class HeapNode
@@ -80,7 +83,7 @@ class Triangulator
     private int faces[]=null;
     private int loops[]=null;
     private int chains[]=null;
-    Vec2 points[]=null;
+    Vector2d points[]=null;
     private ArrayList<Triangle> triangles=new ArrayList<Triangle>();
     private ListNode list[]=null;
 
@@ -95,7 +98,7 @@ class Triangulator
     private int numChains=0;
     private int maxNumChains=0;
 
-    private ArrayList<Vec2> pUnsorted=new ArrayList<Vec2>();
+    private ArrayList<Vector2d> pUnsorted=new ArrayList<Vector2d>();
 
     private int loopMin,loopMax;
     private PntNode vtxList[]=null;
@@ -118,7 +121,7 @@ class Triangulator
 
     private int stripCounts[]=null;
     private int vertexIndices[]=null;
-    private Vec3 vertices[]=null;
+    private Vector3d vertices[]=null;
 
     private boolean ccwLoop=true;
     private boolean earsRandom=true;
@@ -946,9 +949,9 @@ class Triangulator
         for(i=0;i<triRef.numPoints;++i)
             triRef.pUnsorted.add(triRef.points[i]);
 
-        Arrays.sort(triRef.points,0,triRef.numPoints,new Comparator<Vec2>()
+        Arrays.sort(triRef.points,0,triRef.numPoints,new Comparator<Vector2d>()
         {
-            public int compare(Vec2 _a,Vec2 _b)
+            public int compare(Vector2d _a,Vector2d _b)
             {
                 return pComp(_a,_b);
             }
@@ -986,7 +989,7 @@ class Triangulator
         return removed;
     }
 
-    private static int findPInd(Vec2 sorted[],int numPts,Vec2 pnt)
+    private static int findPInd(Vector2d sorted[],int numPts,Vector2d pnt)
     {
         for(int i=0;i<numPts;i++)
             if((pnt.x==sorted[i].x)&&(pnt.y==sorted[i].y))
@@ -994,7 +997,7 @@ class Triangulator
         return -1;
     }
 
-    private static int pComp(Vec2 a,Vec2 b)
+    private static int pComp(Vector2d a,Vector2d b)
     {
         if(a.x<b.x)
             return -1;
@@ -1011,14 +1014,14 @@ class Triangulator
         }
     }
 
-    private static double angle(Triangulator triRef,Vec2 p,Vec2 p1,Vec2 p2)
+    private static double angle(Triangulator triRef,Vector2d p,Vector2d p1,Vector2d p2)
     {
         int sign=signEps(det2D(p2,p,p1),triRef.epsilon);
         if(sign==0)
             return 0.0;
 
-        Vec2 v1=new Vec2();
-        Vec2 v2=new Vec2();
+        Vector2d v1=new Vector2d();
+        Vector2d v2=new Vector2d();
         vectorSub2D(p1,p,v1);
         vectorSub2D(p2,p,v2);
 
@@ -1188,7 +1191,7 @@ class Triangulator
         return false;
     }
 
-    private static int windingNumber(Triangulator triRef,int ind,Vec2 p)
+    private static int windingNumber(Triangulator triRef,int ind,Vector2d p)
     {
         double angle;
         int ind2;
@@ -1214,7 +1217,7 @@ class Triangulator
 
     private static boolean foundSplit(Triangulator triRef,int ind5,int i5,int ind,int ind1,int i1,int i3,int i4,int[] ind2,int[] i2)
     {
-        Vec2 center;
+        Vector2d center;
         int numDist=0;
         int j,i6,i7;
         int ind6,ind7;
@@ -1260,10 +1263,7 @@ class Triangulator
                         bb=new BBox(triRef,i1,i2[0]);
                         if(!noHashEdgeIntersectionExists(triRef,bb,-1,-1,ind1,-1))
                         {
-                            center=new Vec2();
-                            vectorAdd2D(triRef.points[i1],triRef.points[i2[0]],center);
-                            center.x*=0.5f;
-                            center.y*=0.5f;
+                            center=vectorAdd2D(triRef.points[i1],triRef.points[i2[0]]).scale(0.5);
                             if(windingNumber(triRef,ind,center)==1)
                                 return true;
                         }
@@ -1275,7 +1275,7 @@ class Triangulator
         return false;
     }
 
-    private static double baseLength(Vec2 u,Vec2 v)
+    private static double baseLength(Vector2d u,Vector2d v)
     {
         double x,y;
         x=v.x-u.x;
@@ -1283,7 +1283,7 @@ class Triangulator
         return Math.abs(x)+Math.abs(y);
     }
 
-    private static double det2D(Vec2 _u,Vec2 _v,Vec2 _w)
+    private static double det2D(Vector2d _u,Vector2d _v,Vector2d _w)
     {
         return((_u.x-_v.x)*(_v.y-_w.y)+(_v.y-_u.y)*(_v.x-_w.x));
     }
@@ -1301,7 +1301,7 @@ class Triangulator
     private static double stableDet2D(Triangulator triRef,int i,int j,int k)
     {
         double det;
-        Vec2 numericsHP,numericsHQ,numericsHR;
+        Vector2d numericsHP,numericsHQ,numericsHR;
 
         if((i==j)||(i==k)||(j==k))
             det=0.0;
@@ -1401,7 +1401,7 @@ class Triangulator
     {
         double numericsHDot;
         int numericsHOri1;
-        Vec2 numericsHP,numericsHQ;
+        Vector2d numericsHP,numericsHQ;
 
         if(i==j)
             return 1;
@@ -1414,8 +1414,8 @@ class Triangulator
         else if(numericsHOri1<0)
             return -1;
 
-        numericsHP=new Vec2();
-        numericsHQ=new Vec2();
+        numericsHP=new Vector2d();
+        numericsHQ=new Vector2d();
         vectorSub2D(triRef.points[i],triRef.points[j],numericsHP);
         vectorSub2D(triRef.points[k],triRef.points[j],numericsHQ);
         numericsHDot=dotProduct2D(numericsHP,numericsHQ);
@@ -1435,10 +1435,9 @@ class Triangulator
         return false;
     }
 
-    private static void vectorSub2D(Vec2 p,Vec2 q,Vec2 r)
+    private static Vector2d vectorSub2D(Vector2d p,Vector2d q,Vector2d r)
     {
-        r.x=p.x-q.x;
-        r.y=p.y-q.y;
+        return p.subtract(q);
     }
 
     private static boolean vtxInTriangle(Triangulator triRef,int i1,int i2,int i3,int i4,int[] type)
@@ -1518,7 +1517,7 @@ class Triangulator
     private static double getRatio(Triangulator triRef,int i,int j,int k)
     {
         double area,a,b,c,base,ratio;
-        Vec2 p,q,r;
+        Vector2d p,q,r;
 
         p=triRef.points[i];
         q=triRef.points[j];
@@ -1571,7 +1570,7 @@ class Triangulator
     private static int recSpikeAngle(Triangulator triRef,int i1,int i2,int i3,int ind1,int ind3)
     {
         int ori,ori1,ori2,i0,ii1,ii2;
-        Vec2 pq,pr;
+        Vector2d pq,pr;
         double dot;
 
         if(ind1==ind3)
@@ -1659,9 +1658,9 @@ class Triangulator
             }
             else
             {
-                pq=new Vec2();
+                pq=new Vector2d();
                 vectorSub2D(triRef.points[i1],triRef.points[i2],pq);
-                pr=new Vec2();
+                pr=new Vector2d();
                 vectorSub2D(triRef.points[i3],triRef.points[i2],pr);
                 dot=dotProduct2D(pq,pr);
                 if(dot<0.0)
@@ -1678,15 +1677,14 @@ class Triangulator
         }
     }
 
-    private static double dotProduct2D(Vec2 u,Vec2 v)
+    private static double dotProduct2D(Vector2d u,Vector2d v)
     {
         return((u.x*v.x)+(u.y*v.y));
     }
 
-    private static void vectorAdd2D(Vec2 p,Vec2 q,Vec2 r)
+    private static Vector2d vectorAdd2D(Vector2d p,Vector2d q)
     {
-        r.x=p.x+q.x;
-        r.y=p.y+q.y;
+        return p.add(q);
     }
 
     private static void handleSplit(Triangulator triRef,int ind1,int i1,int ind3,int i3)
@@ -1979,7 +1977,6 @@ class Triangulator
                 dumpOnHeap(triRef,ratio[0],ind3,index2[0],index4[0]);
 
         ind0=triRef.list[ind1].prev;
-        i0=triRef.list[ind0].index;
         ind4=triRef.list[ind3].next;
         if(ind0==ind4)
         {
@@ -2078,7 +2075,7 @@ class Triangulator
         int ind0,ind2,ind3,ind4;
         int i1,i2,i3,i4;
 
-        Vec3 pq,pr,nr;
+        Vector3d pq,pr,nr;
 
         double x,y,z;
         int ori2,ori4;
@@ -2107,49 +2104,33 @@ class Triangulator
             triRef.initPnts(5);
             i1=triRef.list[ind1].index;
 
-            pq=new Vec3();
-            pr=new Vec3();
-            nr=new Vec3();
-
-            vectorSub(triRef.vertices[i1],triRef.vertices[i2],pq);
-            vectorSub(triRef.vertices[i3],triRef.vertices[i2],pr);
-            vectorProduct(pq,pr,nr);
+            pq=vectorSub(triRef.vertices[i1],triRef.vertices[i2]);
+            pr=vectorSub(triRef.vertices[i3],triRef.vertices[i2]);
+            nr=vectorProduct(pq,pr);
 
             x=Math.abs(nr.x);
             y=Math.abs(nr.y);
             z=Math.abs(nr.z);
             if((z>=x)&&(z>=y))
             {
-                triRef.points[1].x=triRef.vertices[i1].x;
-                triRef.points[1].y=triRef.vertices[i1].y;
-                triRef.points[2].x=triRef.vertices[i2].x;
-                triRef.points[2].y=triRef.vertices[i2].y;
-                triRef.points[3].x=triRef.vertices[i3].x;
-                triRef.points[3].y=triRef.vertices[i3].y;
-                triRef.points[4].x=triRef.vertices[i4].x;
-                triRef.points[4].y=triRef.vertices[i4].y;
+                triRef.points[1]=new Vector2d(triRef.vertices[i1].x,triRef.vertices[i1].y);
+                triRef.points[2]=new Vector2d(triRef.vertices[i2].x,triRef.vertices[i2].y);
+                triRef.points[3]=new Vector2d(triRef.vertices[i3].x,triRef.vertices[i3].y);
+                triRef.points[4]=new Vector2d(triRef.vertices[i4].x,triRef.vertices[i4].y);
             }
             else if((x>=y)&&(x>=z))
             {
-                triRef.points[1].x=triRef.vertices[i1].z;
-                triRef.points[1].y=triRef.vertices[i1].y;
-                triRef.points[2].x=triRef.vertices[i2].z;
-                triRef.points[2].y=triRef.vertices[i2].y;
-                triRef.points[3].x=triRef.vertices[i3].z;
-                triRef.points[3].y=triRef.vertices[i3].y;
-                triRef.points[4].x=triRef.vertices[i4].z;
-                triRef.points[4].y=triRef.vertices[i4].y;
+                triRef.points[1]=new Vector2d(triRef.vertices[i1].z,triRef.vertices[i1].y);
+                triRef.points[2]=new Vector2d(triRef.vertices[i2].z,triRef.vertices[i2].y);
+                triRef.points[3]=new Vector2d(triRef.vertices[i3].z,triRef.vertices[i3].y);
+                triRef.points[4]=new Vector2d(triRef.vertices[i4].z,triRef.vertices[i4].y);
             }
             else
             {
-                triRef.points[1].x=triRef.vertices[i1].x;
-                triRef.points[1].y=triRef.vertices[i1].z;
-                triRef.points[2].x=triRef.vertices[i2].x;
-                triRef.points[2].y=triRef.vertices[i2].z;
-                triRef.points[3].x=triRef.vertices[i3].x;
-                triRef.points[3].y=triRef.vertices[i3].z;
-                triRef.points[4].x=triRef.vertices[i4].x;
-                triRef.points[4].y=triRef.vertices[i4].z;
+                triRef.points[1]=new Vector2d(triRef.vertices[i1].x,triRef.vertices[i1].z);
+                triRef.points[2]=new Vector2d(triRef.vertices[i2].x,triRef.vertices[i2].z);
+                triRef.points[3]=new Vector2d(triRef.vertices[i3].x,triRef.vertices[i3].z);
+                triRef.points[4]=new Vector2d(triRef.vertices[i4].x,triRef.vertices[i4].z);
             }
             triRef.numPoints=5;
 
@@ -2420,11 +2401,11 @@ class Triangulator
         if(maxNumPoints<number)
         {
             maxNumPoints=number;
-            points=new Vec2[maxNumPoints];
+            points=new Vector2d[maxNumPoints];
         }
 
         for(int i=0;i<number;i++)
-            points[i]=new Vec2(0.0f,0.0f);
+            points[i]=new Vector2d(0.0f,0.0f);
 
         numPoints=0;
     }
@@ -2434,13 +2415,13 @@ class Triangulator
         if(numPoints>=maxNumPoints)
         {
             maxNumPoints+=INC_POINT_BK;
-            Vec2 old[]=points;
-            points=new Vec2[maxNumPoints];
+            Vector2d old[]=points;
+            points=new Vector2d[maxNumPoints];
             if(old!=null)
                 System.arraycopy(old,0,points,0,old.length);
         }
 
-        points[numPoints]=new Vec2(x,y);
+        points[numPoints]=new Vector2d(x,y);
         numPoints++;
 
         return numPoints-1;
@@ -2448,12 +2429,12 @@ class Triangulator
 
     private static void projectFace(Triangulator triRef,int loopMin,int loopMax)
     {
-        Vec3 normal,nr;
+        Vector3d normal,nr;
         int i,j;
         double d;
 
-        normal=new Vec3();
-        nr=new Vec3();
+        normal=new Vector3d();
+        nr=new Vector3d();
 
         determineNormal(triRef,triRef.loops[loopMin],normal);
         j=loopMin+1;
@@ -2465,35 +2446,29 @@ class Triangulator
                 if(dotProduct(normal,nr)<0.0)
                     nr.negate();
 
-                vectorAdd(normal,nr,normal);
+                normal=vectorAdd(normal,nr);
             }
             d=lengthL2(normal);
             if(!((d)<=Triangulator.ZERO))
-                divScalar(d,normal);
+                normal=divScalar(d,normal);
             else
-            {
-                normal.x=0;
-                normal.y=0;
-                normal.z=1;
-            }
+                normal=new Vector3d(0,0,1);
         }
 
         projectPoints(triRef,loopMin,loopMax,normal);
     }
 
-    private static double dotProduct(Vec3 _u,Vec3 _v)
+    private static double dotProduct(Vector3d _u,Vector3d _v)
     {
         return((_u.x*_v.x)+(_u.y*_v.y)+(_u.z*_v.z));
     }
 
-    private static void divScalar(double scalar,Vec3 u)
+    private static Vector3d divScalar(double scalar,Vector3d u)
     {
-        u.x/=scalar;
-        u.y/=scalar;
-        u.z/=scalar;
+        return u.scale(1/scalar);
     }
 
-    private static void determineNormal(Triangulator triRef,int ind,Vec3 normal)
+    private static void determineNormal(Triangulator triRef,int ind,Vector3d normal)
     {
         int ind1=ind;
         int i1=triRef.list[ind1].index;
@@ -2501,42 +2476,32 @@ class Triangulator
         int i0=triRef.list[ind0].index;
         int ind2=triRef.list[ind1].next;
         int i2=triRef.list[ind2].index;
-        Vec3 pq=new Vec3();
-        vectorSub(triRef.vertices[i0],triRef.vertices[i1],pq);
-        Vec3 pr=new Vec3();
-        vectorSub(triRef.vertices[i2],triRef.vertices[i1],pr);
-        Vec3 nr=new Vec3();
-        vectorProduct(pq,pr,nr);
+        Vector3d pq=vectorSub(triRef.vertices[i0],triRef.vertices[i1]);
+        Vector3d pr=vectorSub(triRef.vertices[i2],triRef.vertices[i1]);
+        Vector3d nr=vectorProduct(pq,pr);
         double d=lengthL2(nr);
         if(!((d)<=Triangulator.ZERO))
-        {
-            divScalar(d,nr);
-            normal.set(nr);
-        }
+            normal=divScalar(d,nr);
         else
-        {
-            normal.x=0;
-            normal.y=0;
-            normal.z=0;
-        }
+            normal=new Vector3d(0,0,0);
 
-        pq.set(pr);
+        pq=pr;
         ind1=ind2;
         ind2=triRef.list[ind1].next;
         i2=triRef.list[ind2].index;
         while(ind1!=ind)
         {
-            vectorSub(triRef.vertices[i2],triRef.vertices[i1],pr);
-            vectorProduct(pq,pr,nr);
+            pr=vectorSub(triRef.vertices[i2],triRef.vertices[i1]);
+            nr=vectorProduct(pq,pr);
             d=lengthL2(nr);
             if(!((d)<=Triangulator.ZERO))
             {
-                divScalar(d,nr);
+                nr=divScalar(d,nr);
                 if(dotProduct(normal,nr)<0.0)
-                    nr.negate();
-                vectorAdd(normal,nr,normal);
+                    nr=nr.negate();
+                normal=vectorAdd(normal,nr);
             }
-            pq.set(pr);
+            pq=pr;
             ind1=ind2;
             ind2=triRef.list[ind1].next;
             i2=triRef.list[ind2].index;
@@ -2544,33 +2509,27 @@ class Triangulator
 
         d=lengthL2(normal);
         if(!((d)<=Triangulator.ZERO))
-            divScalar(d,normal);
+            normal=divScalar(d,normal);
         else
-        {
-            normal.x=normal.y=0.0f;
-            normal.z=1.0f;
-        }
+            normal=new Vector3d(0,0,1);
     }
 
-    private static void vectorProduct(Vec3 _p,Vec3 _q,Vec3 _r)
+    private static Vector3d vectorProduct(Vector3d _p,Vector3d _q)
     {
-        _r.x=_p.y*_q.z-_q.y*_p.z;
-        _r.y=_q.x*_p.z-_p.x*_q.z;
-        _r.z=_p.x*_q.y-_q.x*_p.y;
+        return new Vector3d(
+                _p.y*_q.z-_q.y*_p.z,
+                _q.x*_p.z-_p.x*_q.z,
+                _p.x*_q.y-_q.x*_p.y);
     }
 
-    private static void vectorAdd(Vec3 _p,Vec3 _q,Vec3 _r)
+    private static Vector3d vectorAdd(Vector3d _p,Vector3d _q)
     {
-        _r.x=_p.x+_q.x;
-        _r.y=_p.y+_q.y;
-        _r.z=_p.z+_q.z;
+        return _p.add(_q);
     }
 
-    private static void vectorSub(Vec3 _p,Vec3 _q,Vec3 _r)
+    private static Vector3d vectorSub(Vector3d _p,Vector3d _q)
     {
-        _r.x=_p.x-_q.x;
-        _r.y=_p.y-_q.y;
-        _r.z=_p.z-_q.z;
+        return _p.subtract(_q);
     }
 
     private static int signEps(double _x,double _eps)
@@ -2584,30 +2543,22 @@ class Triangulator
         return 0;
     }
 
-    private static void projectPoints(Triangulator triRef,int i1,int i2,Vec3 n3)
+    private static void projectPoints(Triangulator triRef,int i1,int i2,Vector3d n3)
     {
-        Vec3 vtx=new Vec3();
-        Vec3 n1=new Vec3();
-        Vec3 n2=new Vec3();
+        Vector3d vtx=new Vector3d();
+        Vector3d n1=new Vector3d();
+        Vector3d n2=new Vector3d();
 
         if((Math.abs(n3.x)>0.1)||(Math.abs(n3.y)>0.1))
-        {
-            n1.x=-n3.y;
-            n1.y=n3.x;
-            n1.z=0;
-        }
+            n1=new Vector3d(-n3.y,n3.x,0);
         else
-        {
-            n1.x=n3.z;
-            n1.z=-n3.x;
-            n1.y=0;
-        }
+            n1=new Vector3d(n3.z,-n3.x,0);
 
         double d=lengthL2(n1);
-        divScalar(d,n1);
-        vectorProduct(n1,n3,n2);
+        n1=divScalar(d,n1);
+        n2=vectorProduct(n1,n3);
         d=lengthL2(n2);
-        divScalar(d,n2);
+        n2=divScalar(d,n2);
 
         Matrix4f matrix=new Matrix4f();
         matrix.m00=n1.x;
@@ -2633,14 +2584,14 @@ class Triangulator
             int ind=triRef.loops[i];
             int ind1=ind;
             int j1=triRef.list[ind1].index;
-            matrix.transform(triRef.vertices[j1],vtx);
+            vtx=matrix.transform(triRef.vertices[j1]);
             j1=triRef.storePoint(vtx.x,vtx.y);
             triRef.list[ind1].index=j1;
             ind1=triRef.list[ind1].next;
             j1=triRef.list[ind1].index;
             while(ind1!=ind)
             {
-                matrix.transform(triRef.vertices[j1],vtx);
+                vtx=matrix.transform(triRef.vertices[j1]);
                 j1=triRef.storePoint(vtx.x,vtx.y);
                 triRef.list[ind1].index=j1;
                 ind1=triRef.list[ind1].next;
@@ -2649,7 +2600,7 @@ class Triangulator
         }
     }
 
-    private static double lengthL2(Vec3 u)
+    private static double lengthL2(Vector3d u)
     {
         return Math.sqrt((u.x*u.x)+(u.y*u.y)+(u.z*u.z));
     }

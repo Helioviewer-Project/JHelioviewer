@@ -6,7 +6,7 @@ import java.net.URI;
 import kdu_jni.Jp2_palette;
 import kdu_jni.KduException;
 
-import org.helioviewer.jhv.base.math.Vector2dInt;
+import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangedReason;
 import org.helioviewer.jhv.viewmodel.changeevent.RegionChangedReason;
@@ -513,7 +513,7 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
         int imageWidth = (int) Math.round(r.getWidth() / imageMeterPerPixel);
         int imageHeight = (int) Math.round(r.getHeight() / imageMeterPerPixel);
 
-        Vector2dInt imagePostion = ViewHelper.calculateInnerViewportOffset(r, metaData.getPhysicalRegion(), new ViewportImageSizeAdapter(new StaticViewportImageSize(res.getResolutionBounds().width, res.getResolutionBounds().height)));
+        Vector2i imagePostion = ViewHelper.calculateInnerViewportOffset(r, metaData.getPhysicalRegion(), new ViewportImageSizeAdapter(new StaticViewportImageSize(res.getResolutionBounds().width, res.getResolutionBounds().height)));
 
         SubImage subImage = new SubImage(imagePostion.getX(), imagePostion.getY(), imageWidth, imageHeight);
         subImageBuffer.putSubImage(subImage, r);

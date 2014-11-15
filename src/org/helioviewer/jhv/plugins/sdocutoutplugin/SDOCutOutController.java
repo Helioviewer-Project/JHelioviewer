@@ -5,8 +5,8 @@ import java.text.FieldPosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.helioviewer.jhv.base.math.Vector2dDouble;
-import org.helioviewer.jhv.base.math.Vector2dInt;
+import org.helioviewer.jhv.base.math.Vector2d;
+import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
@@ -68,16 +68,16 @@ public class SDOCutOutController {
 
 	    // Helioviewer images have there physical lower left corner in a
 	    // negative area; real pixel based image at 0
-	    if (metaData.getPhysicalLowerLeft().getX() < 0) {
+	    if (metaData.getPhysicalLowerLeft().x < 0) {
 
-	    	Vector2dInt solarcenter = ViewHelper.convertImageToScreenDisplacement(regionView.getRegion().getUpperLeftCorner().negateX(), regionView.getRegion(), vis);
+	    	Vector2i solarcenter = ViewHelper.convertImageToScreenDisplacement(regionView.getRegion().getUpperLeftCorner().negateX(), regionView.getRegion(), vis);
 
-	    	Vector2dDouble scaling = new Vector2dDouble(Constants.SUN_RADIUS, Constants.SUN_RADIUS);
-	        Vector2dDouble solarRadius = new Vector2dDouble(ViewHelper.convertImageToScreenDisplacement(scaling, regionView.getRegion(), vis));
+	    	Vector2d scaling = new Vector2d(Constants.SUN_RADIUS, Constants.SUN_RADIUS);
+	        Vector2d solarRadius = new Vector2d(ViewHelper.convertImageToScreenDisplacement(scaling, regionView.getRegion(), vis));
 
-	        Vector2dDouble pos = new Vector2dDouble(position.x - solarcenter.getX(), -position.y + solarcenter.getY()).invertedScale(solarRadius).scale(959.705);
+	        Vector2d pos = new Vector2d(position.x - solarcenter.getX(), -position.y + solarcenter.getY()).invertedScale(solarRadius).scale(959.705);
 	        
-	        point = new Point((int)Math.round(pos.getX()), (int)Math.round(pos.getY()));
+	        point = new Point((int)Math.round(pos.x), (int)Math.round(pos.y));
         } else {
 
         	// computes pixel position for simple images (e.g. jpg and png)

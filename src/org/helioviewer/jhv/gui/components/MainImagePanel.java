@@ -11,7 +11,7 @@ import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.helioviewer.jhv.base.math.Vector2dInt;
+import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
@@ -120,7 +120,7 @@ public class MainImagePanel extends BasicImagePanel {
             if (renderedImageComponent != null)
                 for (MouseMotionListener l : mouseMotionListeners)
                     renderedImageComponent.addMouseMotionListener(l);
-            getView().updateMainImagePanelSize(new Vector2dInt(getWidth(), getHeight()));
+            getView().updateMainImagePanelSize(new Vector2i(getWidth(), getHeight()));
             LayeredView layeredView = ViewHelper.getViewAdapter(newView, LayeredView.class);
             if (layeredView != null) {
                 if (layeredView.getNumLayers() > 0 || loadingTasks > 0) {
@@ -204,7 +204,7 @@ public class MainImagePanel extends BasicImagePanel {
         loadingPostRenderer.setContainerSize(getWidth(), getHeight());
         synchronized (this) {
             if (getView() != null) {
-                getView().updateMainImagePanelSize(new Vector2dInt(getWidth(), getHeight()));
+                getView().updateMainImagePanelSize(new Vector2i(getWidth(), getHeight()));
             }
         }
         repaint();

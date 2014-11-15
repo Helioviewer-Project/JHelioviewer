@@ -8,12 +8,12 @@ import java.util.Vector;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
+import org.helioviewer.jhv.base.math.GL3DMat4d;
+import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.math.SphericalCoord;
-import org.helioviewer.jhv.base.math.Vector2dDouble;
-import org.helioviewer.jhv.base.math.Vector3dDouble;
+import org.helioviewer.jhv.base.math.Vector2d;
+import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DMat4d;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec3d;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKEvent;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKEvent.GenericTriangle;
@@ -63,7 +63,7 @@ public class HEKPlugin3dRenderer extends PhysicalRenderer3d
             String type=evt.getString("event_type");
             Color eventColor=HEKConstants.getSingletonInstance().acronymToColor(type,128);
 
-            Vector<HEKEvent.GenericTriangle<Vector3dDouble>> triangles=evt.getTriangulation3D(now);
+            Vector<HEKEvent.GenericTriangle<Vector3d>> triangles=evt.getTriangulation3D(now);
 
             if(triangles!=null)
             {
@@ -73,11 +73,11 @@ public class HEKPlugin3dRenderer extends PhysicalRenderer3d
                 g.gl.glBlendFunc(GL2.GL_SRC_ALPHA,GL2.GL_ONE_MINUS_SRC_ALPHA);
 
                 g.gl.glBegin(GL2.GL_TRIANGLES);
-                for(GenericTriangle<Vector3dDouble> triangle:triangles)
+                for(GenericTriangle<Vector3d> triangle:triangles)
                 {
-                    g.gl.glVertex3d(triangle.A.getX(),-triangle.A.getY(),triangle.A.getZ());
-                    g.gl.glVertex3d(triangle.B.getX(),-triangle.B.getY(),triangle.B.getZ());
-                    g.gl.glVertex3d(triangle.C.getX(),-triangle.C.getY(),triangle.C.getZ());
+                    g.gl.glVertex3d(triangle.A.x,-triangle.A.y,triangle.A.z);
+                    g.gl.glVertex3d(triangle.B.x,-triangle.B.y,triangle.B.z);
+                    g.gl.glVertex3d(triangle.C.x,-triangle.C.y,triangle.C.z);
                 }
                 g.gl.glEnd();
             }
@@ -100,8 +100,8 @@ public class HEKPlugin3dRenderer extends PhysicalRenderer3d
                 g.gl.glBegin(GL.GL_LINE_LOOP);
                 for(SphericalCoord boundaryPoint:outerBound)
                 {
-                    Vector3dDouble boundaryPoint3d=HEKEvent.convertToSceneCoordinates(boundaryPoint,now,1.005);
-                    g.gl.glVertex3d(boundaryPoint3d.getX(),-boundaryPoint3d.getY(),boundaryPoint3d.getZ());
+                    Vector3d boundaryPoint3d=HEKEvent.convertToSceneCoordinates(boundaryPoint,now,1.005);
+                    g.gl.glVertex3d(boundaryPoint3d.x,-boundaryPoint3d.y,boundaryPoint3d.z);
                 }
                 g.gl.glEnd();
 
@@ -133,19 +133,19 @@ public class HEKPlugin3dRenderer extends PhysicalRenderer3d
             if(icon!=null)
             {
                 SphericalCoord stony=evt.getStony(now);
-                Vector3dDouble coords=HEKEvent.convertToSceneCoordinates(stony,now);
-                double x=coords.getX();
-                double y=coords.getY();
-                double z=coords.getZ();
-                Vector2dDouble imageSize=
+                Vector3d coords=HEKEvent.convertToSceneCoordinates(stony,now);
+                double x=coords.x;
+                double y=coords.y;
+                double z=coords.z;
+                Vector2d imageSize=
                         ViewHelper.convertScreenToImageDisplacement(icon.getWidth(),icon.getHeight(),g.regionView.getRegion(),ViewHelper.calculateViewportImageSize(g.viewportView.getViewport(),g.regionView.getRegion()));
                 y=-y;
 
                 g.commonRenderGraphics.bindImage(icon);
                 g.gl.glTexParameteri(GL.GL_TEXTURE_2D,GL.GL_TEXTURE_MAG_FILTER,GL.GL_LINEAR);
 
-                double width2=imageSize.getX()*scale/2.0;
-                double height2=imageSize.getY()*scale/2.0;
+                double width2=imageSize.x*scale/2.0;
+                double height2=imageSize.y*scale/2.0;
 
                 GL3DVec3d sourceDir=new GL3DVec3d(0,0,1);
                 GL3DVec3d targetDir=new GL3DVec3d(x,y,z);

@@ -9,12 +9,12 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
 import org.helioviewer.jhv.base.logging.Log;
+import org.helioviewer.jhv.base.math.GL3DMat4d;
+import org.helioviewer.jhv.base.math.GL3DQuatd;
+import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.base.wcs.CoordinateSystem;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DMat4d;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DQuatd;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec3d;
 
 /**
  * The GL3DCamera is resposible for the view space transformation. It sets up

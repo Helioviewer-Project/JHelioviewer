@@ -1,5 +1,6 @@
 package org.helioviewer.jhv;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -72,7 +73,14 @@ public class JavaHelioViewer {
         Locale.setDefault(Locale.US);
 
         // init log
-        LogSettings.init("/settings/log4j.initial.properties", JHVDirectory.LOGS.getPath(), CommandLineProcessor.isOptionSet("--use-existing-log-time-stamp"));
+        try
+        {
+            LogSettings.init("/settings/log4j.initial.properties", JHVDirectory.LOGS.getPath(), CommandLineProcessor.isOptionSet("--use-existing-log-time-stamp"));
+        }
+        catch(IOException _ioe)
+        {
+            _ioe.printStackTrace();
+        }
 
         // Information log message
         String argString = "";

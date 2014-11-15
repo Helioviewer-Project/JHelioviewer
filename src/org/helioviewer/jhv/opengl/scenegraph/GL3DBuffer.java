@@ -9,9 +9,9 @@ import java.util.List;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec2d;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec3d;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec4d;
+import org.helioviewer.jhv.base.math.GL3DVec2d;
+import org.helioviewer.jhv.base.math.GL3DVec3d;
+import org.helioviewer.jhv.base.math.GL3DVec4d;
 
 import com.jogamp.common.nio.Buffers;
 

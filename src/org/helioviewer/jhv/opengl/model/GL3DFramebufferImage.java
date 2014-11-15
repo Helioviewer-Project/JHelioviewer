@@ -2,12 +2,11 @@ package org.helioviewer.jhv.opengl.model;
 
 import java.util.List;
 
+import org.helioviewer.jhv.base.math.GL3DVec2d;
+import org.helioviewer.jhv.base.math.GL3DVec3d;
+import org.helioviewer.jhv.base.math.GL3DVec4d;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DMesh;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec2d;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec3d;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec4d;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec4f;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.changeevent.ImageTextureRecapturedReason;
 import org.helioviewer.jhv.viewmodel.region.Region;
@@ -34,7 +33,7 @@ public class GL3DFramebufferImage extends GL3DMesh implements ViewListener {
     // private Vector2dDouble textureScale;
 
     public GL3DFramebufferImage() {
-        super("Framebuffer", new GL3DVec4f(1, 1, 1, 1), new GL3DVec4f(0, 0, 0, 0));
+        super("Framebuffer", new GL3DVec4d(1, 1, 1, 1), new GL3DVec4d(0, 0, 0, 0));
     }
 
     public void shapeDraw(GL3DState state) {
@@ -69,8 +68,8 @@ public class GL3DFramebufferImage extends GL3DMesh implements ViewListener {
         if (region != null) {
         	double blx = region.getCornerX();
             double bly = region.getCornerY();
-            double tr_x = region.getUpperRightCorner().getX();
-            double tr_y = region.getUpperRightCorner().getY();
+            double tr_x = region.getUpperRightCorner().x;
+            double tr_y = region.getUpperRightCorner().y;
             positions.add(new GL3DVec3d(blx, bly, 0));
             positions.add(new GL3DVec3d(tr_x, bly, 0));
             positions.add(new GL3DVec3d(tr_x, tr_y, 0));

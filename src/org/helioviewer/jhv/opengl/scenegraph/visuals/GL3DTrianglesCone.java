@@ -4,12 +4,11 @@ import java.util.List;
 
 import javax.media.opengl.GL2;
 
+import org.helioviewer.jhv.base.math.GL3DVec2d;
+import org.helioviewer.jhv.base.math.GL3DVec3d;
+import org.helioviewer.jhv.base.math.GL3DVec4d;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DMesh;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec2d;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec3d;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec4d;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec4f;
 
 /**
  * Visual representation of a cone, but not made up of a triangle fan but of
@@ -27,12 +26,12 @@ public class GL3DTrianglesCone extends GL3DMesh {
 
     private GL3DVec4d color;
 
-    public GL3DTrianglesCone(double radius, double height, int detail, GL3DVec4f color) {
+    public GL3DTrianglesCone(double radius, double height, int detail, GL3DVec4d color) {
         this("Cone", radius, height, detail, color);
     }
 
-    public GL3DTrianglesCone(String name, double radius, double height, int detail, GL3DVec4f color) {
-        super(name, new GL3DVec4f(1, 1, 1, 1));
+    public GL3DTrianglesCone(String name, double radius, double height, int detail, GL3DVec4d color) {
+        super(name, new GL3DVec4d(1, 1, 1, 1));
         this.color = new GL3DVec4d(color.x, color.y, color.z, color.w);
         this.radius = radius;
         this.detail = detail;

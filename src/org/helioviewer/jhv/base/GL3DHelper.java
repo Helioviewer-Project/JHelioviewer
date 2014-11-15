@@ -1,8 +1,8 @@
 package org.helioviewer.jhv.base;
 
+import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.wcs.CoordinateVector;
 import org.helioviewer.jhv.base.wcs.IllegalCoordinateVectorException;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec3d;
 
 /**
  * Helper class to convert WCS CoordinateVectors to mathematically used

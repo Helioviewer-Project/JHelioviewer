@@ -2,8 +2,8 @@ package org.helioviewer.jhv.viewmodel.metadata;
 
 import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.base.math.MathUtils;
-import org.helioviewer.jhv.base.math.Vector2dDouble;
-import org.helioviewer.jhv.base.math.Vector2dInt;
+import org.helioviewer.jhv.base.math.Vector2d;
+import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.viewmodel.view.cache.HelioviewerDateTimeCache;
 
@@ -29,7 +29,7 @@ public class MetaDataMDI extends MetaData{
         updatePixelParameters();
 
         setPhysicalLowerLeftCorner(sunPixelPosition.scale(-meterPerPixel));
-        setPhysicalImageSize(new Vector2dDouble(pixelImageSize.getX() * meterPerPixel, pixelImageSize.getY() * meterPerPixel));
+        setPhysicalImageSize(new Vector2d(pixelImageSize.getX() * meterPerPixel, pixelImageSize.getY() * meterPerPixel));
 
         double arcsecPerPixelX = metaDataContainer.tryGetDouble("CDELT1");
         double arcsecPerPixelY = metaDataContainer.tryGetDouble("CDELT2");
@@ -52,7 +52,7 @@ public class MetaDataMDI extends MetaData{
         solarPixelRadius = radiusSunInArcsec / arcsecPerPixelX;
         meterPerPixel = Constants.SUN_RADIUS / solarPixelRadius;
         setPhysicalLowerLeftCorner(sunPixelPosition.scale(-meterPerPixel));
-        setPhysicalImageSize(new Vector2dDouble(pixelImageSize.getX() * meterPerPixel, pixelImageSize.getY() * meterPerPixel));
+        setPhysicalImageSize(new Vector2d(pixelImageSize.getX() * meterPerPixel, pixelImageSize.getY() * meterPerPixel));
 
         
         
@@ -81,7 +81,7 @@ public class MetaDataMDI extends MetaData{
 		boolean changed = false;
 
         if (pixelImageSize.getX() != metaDataContainer.getPixelWidth() || pixelImageSize.getY() != metaDataContainer.getPixelHeight()) {
-            pixelImageSize = new Vector2dInt(metaDataContainer.getPixelWidth(), metaDataContainer.getPixelHeight());
+            pixelImageSize = new Vector2i(metaDataContainer.getPixelWidth(), metaDataContainer.getPixelHeight());
             changed = true;
         }
 
@@ -99,8 +99,8 @@ public class MetaDataMDI extends MetaData{
             double sunX = metaDataContainer.tryGetDouble("CRPIX1");
             double sunY = metaDataContainer.tryGetDouble("CRPIX2");
 
-            if (changed || Math.abs(sunPixelPosition.getX() - sunX) > allowedAbsoluteDifference || Math.abs(sunPixelPosition.getY() - sunY) > allowedAbsoluteDifference) {
-                sunPixelPosition = new Vector2dDouble(sunX, sunY);
+            if (changed || Math.abs(sunPixelPosition.x - sunX) > allowedAbsoluteDifference || Math.abs(sunPixelPosition.y - sunY) > allowedAbsoluteDifference) {
+                sunPixelPosition = new Vector2d(sunX, sunY);
                 changed = true;
             }
         }
@@ -109,7 +109,7 @@ public class MetaDataMDI extends MetaData{
             solarPixelRadius = newSolarPixelRadius;
             meterPerPixel = Constants.SUN_RADIUS / solarPixelRadius;
             setPhysicalLowerLeftCorner(sunPixelPosition.scale(-meterPerPixel));
-            setPhysicalImageSize(new Vector2dDouble(pixelImageSize.getX() * meterPerPixel, pixelImageSize.getY() * meterPerPixel));
+            setPhysicalImageSize(new Vector2d(pixelImageSize.getX() * meterPerPixel, pixelImageSize.getY() * meterPerPixel));
         }
 
         return changed;

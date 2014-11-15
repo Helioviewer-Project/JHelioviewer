@@ -7,12 +7,11 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
+import org.helioviewer.jhv.base.math.GL3DVec2d;
+import org.helioviewer.jhv.base.math.GL3DVec3d;
+import org.helioviewer.jhv.base.math.GL3DVec4d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DDrawBits.Bit;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec2d;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec3d;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec4d;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec4f;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
 
 /**
@@ -49,19 +48,19 @@ public abstract class GL3DMesh extends GL3DShape {
     private ReentrantLock meshLock = new ReentrantLock();
 
     public GL3DMesh(String name) {
-        this(name, new GL3DVec4f(1, 1, 1, 1));
+        this(name, new GL3DVec4d(1, 1, 1, 1));
     }
 
-    public GL3DMesh(String name, GL3DVec4f diffuseMaterial) {
-        this(name, diffuseMaterial, new GL3DVec4f(0.1f, 0.1f, 0.1f, 1.0f));
+    public GL3DMesh(String name, GL3DVec4d diffuseMaterial) {
+        this(name, diffuseMaterial, new GL3DVec4d(0.1f, 0.1f, 0.1f, 1.0f));
 
     }
 
-    public GL3DMesh(String name, GL3DVec4f diffuseMaterial, GL3DVec4f specularMaterial) {
+    public GL3DMesh(String name, GL3DVec4d diffuseMaterial, GL3DVec4d specularMaterial) {
         super(name);
 
-        this.diffuseMaterial = new float[] { diffuseMaterial.x, diffuseMaterial.y, diffuseMaterial.z, diffuseMaterial.w };
-        this.specularMaterial = new float[] { specularMaterial.x, specularMaterial.y, specularMaterial.z, specularMaterial.w };
+        this.diffuseMaterial = new float[] { (float)diffuseMaterial.x, (float)diffuseMaterial.y, (float)diffuseMaterial.z, (float)diffuseMaterial.w };
+        this.specularMaterial = new float[] { (float)specularMaterial.x, (float)specularMaterial.y, (float)specularMaterial.z, (float)specularMaterial.w };
     }
 
     public void setMaterialAlpha(float alpha) {
@@ -167,14 +166,14 @@ public abstract class GL3DMesh extends GL3DShape {
             // GL3DState.get().checkGLErrors("GL3DImageMesh.beforeDrawCall "+getName());
             state.gl.getGL2().glDrawElements(primitive.id, this.indexVBO.numberOfElements, this.indexVBO.dataType.id, 0);
             // state.gl.glFinish();
-            GL3DState.get().checkGLErrors("GL3DImageMesh.afterDrawCall " + getName() + " IndexVBO: " + this.indexVBO.id);
+            GL3DState.get().checkGLErrors("GL3DImageMesh.afterDrawCall " + this.name + " IndexVBO: " + this.indexVBO.id);
             this.positionVBO.disable(state);
             this.colorVBO.disable(state);
             this.normalVBO.disable(state);
             this.texcoordVBO.disable(state);
             this.indexVBO.disable(state);
 
-            GL3DState.get().checkGLErrors("GL3DImageMesh.afterDisableVBOs " + getName());
+            GL3DState.get().checkGLErrors("GL3DImageMesh.afterDisableVBOs " + this.name);
         }
 
         if (isDrawBitOn(Bit.Normals)) {

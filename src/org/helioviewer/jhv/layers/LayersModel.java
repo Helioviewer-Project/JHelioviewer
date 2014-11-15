@@ -218,7 +218,7 @@ public class LayersModel implements ViewListener
                 new GregorianCalendar(obsMetaData.getDateTime().getField(Calendar.YEAR),obsMetaData.getDateTime().getField(Calendar.MONTH),obsMetaData.getDateTime().getField(Calendar.DAY_OF_MONTH)).getTime();
 
         // add time to name
-        return String.format(Locale.ENGLISH,"%s %02d:%02d:%02d\n",dateFormat.format(date),obsMetaData.getDateTime().getField(Calendar.HOUR_OF_DAY),obsMetaData.getDateTime().getField(Calendar.MINUTE),obsMetaData.getDateTime().getField(Calendar.SECOND));
+        return String.format(Locale.ENGLISH,"%s %02d:%02d:%02d%n",dateFormat.format(date),obsMetaData.getDateTime().getField(Calendar.HOUR_OF_DAY),obsMetaData.getDateTime().getField(Calendar.MINUTE),obsMetaData.getDateTime().getField(Calendar.SECOND));
 
     }
 
@@ -1476,7 +1476,7 @@ public class LayersModel implements ViewListener
         RegionView regionView=GuiState3DWCS.mainComponentView.getAdapter(RegionView.class);
         Region region=regionView.getRegion();
         String regionStr=
-                String.format(Locale.ENGLISH,"<region x=\"%.4f\" y=\"%.4f\" width=\"%.4f\" height=\"%.4f\"/>\n",region.getCornerX(),region.getCornerY(),region.getWidth(),region.getHeight());
+                String.format(Locale.ENGLISH,"<region x=\"%.4f\" y=\"%.4f\" width=\"%.4f\" height=\"%.4f\"/>%n",region.getCornerX(),region.getCornerY(),region.getWidth(),region.getHeight());
         xml.append(tab).append(regionStr);
 
         // store layers

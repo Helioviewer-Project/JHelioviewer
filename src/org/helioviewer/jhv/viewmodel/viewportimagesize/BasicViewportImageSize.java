@@ -1,6 +1,6 @@
 package org.helioviewer.jhv.viewmodel.viewportimagesize;
 
-import org.helioviewer.jhv.base.math.Vector2dInt;
+import org.helioviewer.jhv.base.math.Vector2i;
 
 /**
  * Represents the size of the image in the viewport.
@@ -23,6 +23,6 @@ public interface BasicViewportImageSize {
      * @return a Vector2dInt object which describes the size of the image inside
      *         the viewport.
      * */
-    public Vector2dInt getSizeVector();
+    public Vector2i getSizeVector();
 
 }

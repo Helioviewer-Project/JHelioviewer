@@ -8,8 +8,8 @@ import javax.media.opengl.GL2;
 import javax.media.opengl.glu.GLU;
 
 import org.helioviewer.jhv.base.logging.Log;
+import org.helioviewer.jhv.base.math.GL3DMat4d;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DMat4d;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DComponentView;
 
 /**
@@ -31,12 +31,12 @@ public class GL3DState {
 
     protected GL3DMat4d mvInverse;
 
-    protected GL3DCamera activeCamera;
+    public GL3DCamera activeCamera;
 
     protected int viewportWidth;
     protected int viewportHeight;
 
-    private Date currentObservationDate;
+    public Date currentObservationDate;
     
     public enum VISUAL_TYPE {
 		MODE_2D, MODE_3D
@@ -106,10 +106,6 @@ public class GL3DState {
         return new GL3DMat4d(this.mvInverse);
     }
 
-    public GL3DMat4d getMV() {
-        return new GL3DMat4d(this.mv);
-    }
-
     public boolean checkGLErrors(String message) {
         if (gl == null) {
             Log.warn("OpenGL not yet Initialised!");
@@ -160,14 +156,6 @@ public class GL3DState {
         }
     }
 
-    public void setActiveChamera(GL3DCamera camera) {
-        this.activeCamera = camera;
-    }
-
-    public GL3DCamera getActiveCamera() {
-        return activeCamera;
-    }
-
     public int getViewportHeight() {
         return viewportHeight;
     }
@@ -176,14 +164,6 @@ public class GL3DState {
         return viewportWidth;
     }
 
-    public Date getCurrentObservationDate() {
-        return currentObservationDate;
-    }
-
-    public void setCurrentObservationDate(Date currentObservationDate) {
-        this.currentObservationDate = currentObservationDate;
-    }
-    
     public void set2DState(){
     	this.stateType = VISUAL_TYPE.MODE_2D;
     }

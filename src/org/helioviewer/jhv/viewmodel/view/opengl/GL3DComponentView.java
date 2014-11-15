@@ -26,7 +26,7 @@ import javax.media.opengl.awt.GLCanvas;
 import javax.swing.Timer;
 
 import org.helioviewer.jhv.base.logging.Log;
-import org.helioviewer.jhv.base.math.Vector2dInt;
+import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
@@ -107,7 +107,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 	private ReentrantLock animationLock = new ReentrantLock();
 
-	private Vector2dInt viewportSize;
+	private Vector2i viewportSize;
 	private int[] frameBufferObject;
 	private int[] renderBufferDepth;
 	private int[] renderBufferColor;
@@ -205,12 +205,12 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 		gl.glEnable(GL2.GL_LIGHT0);
 
-		viewportSize = new Vector2dInt(0, 0);
+		viewportSize = new Vector2i(0, 0);
 		this.rebuildShadersRequest = true;
 	}
 
 	public void reshape(GLAutoDrawable glAD, int x, int y, int width, int height) {
-		viewportSize = new Vector2dInt(canvas.getSurfaceWidth(), canvas.getSurfaceHeight());
+		viewportSize = new Vector2i(canvas.getSurfaceWidth(), canvas.getSurfaceHeight());
 		// Log.debug("GL3DComponentView.Reshape");
 		GL gl = glAD.getGL();
 
@@ -528,7 +528,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 		return screenshot;
 	}
 
-	public void updateMainImagePanelSize(Vector2dInt size) {
+	public void updateMainImagePanelSize(Vector2i size) {
 		this.viewportSize = size;
 
 		if (this.viewportView != null) {

@@ -18,7 +18,7 @@ import javax.media.opengl.GL2;
 import javax.media.opengl.glu.GLU;
 
 import org.helioviewer.jhv.base.logging.Log;
-import org.helioviewer.jhv.base.math.Vector2dDouble;
+import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.viewmodel.imagedata.ColorMask;
 import org.helioviewer.jhv.viewmodel.imagedata.ImageData;
 import org.helioviewer.jhv.viewmodel.imageformat.ARGB32ImageFormat;
@@ -50,7 +50,7 @@ public class GLTextureHelper {
     private static GLTextureCoordinate mainTexCoord = new GLMainTextureCoordinate();
     private static GLTextureCoordinate scaleTexCoord = new GLScaleTextureCoordinate();
 
-    private static HashMap<Integer, Vector2dDouble> allTextures = new HashMap<Integer, Vector2dDouble>();
+    private static HashMap<Integer, Vector2d> allTextures = new HashMap<Integer, Vector2d>();
 
     private final static int[] FORMAT_MAP = { GL2.GL_LUMINANCE4, GL2.GL_LUMINANCE4, GL2.GL_LUMINANCE4, GL2.GL_LUMINANCE4, GL2.GL_LUMINANCE8, GL2.GL_LUMINANCE8, GL2.GL_LUMINANCE8, GL2.GL_LUMINANCE8, GL2.GL_LUMINANCE12, GL2.GL_LUMINANCE12, GL2.GL_LUMINANCE12, GL2.GL_LUMINANCE12, GL2.GL_LUMINANCE16, GL2.GL_LUMINANCE16, GL2.GL_LUMINANCE16, GL2.GL_LUMINANCE16 };
 
@@ -83,7 +83,7 @@ public class GLTextureHelper {
         scaleTexCoord.setValue(gl, 1.0f, 1.0f);
     }
 
-    public Vector2dDouble getTextureScale(int texId) {
+    public Vector2d getTextureScale(int texId) {
         if (allTextures.containsKey(texId)) {
             return allTextures.get(texId);
         }
@@ -303,17 +303,17 @@ public class GLTextureHelper {
      *            Position and size to draw the texture
      */
     public void renderTextureToScreen(GL2 gl, Region region) {
-    	Vector2dDouble lowerleftCorner = region.getLowerLeftCorner();
-        Vector2dDouble size = region.getSize();
+    	Vector2d lowerleftCorner = region.getLowerLeftCorner();
+        Vector2d size = region.getSize();
         
-        if (size.getX() <= 0 || size.getY() <= 0) {
+        if (size.x <= 0 || size.y <= 0) {
             return;
         }
 
-        float x0 = (float) lowerleftCorner.getX();
-        float y0 = (float) lowerleftCorner.getY();
-        float x1 = x0 + (float) size.getX();
-        float y1 = y0 + (float) size.getY();
+        float x0 = (float) lowerleftCorner.x;
+        float y0 = (float) lowerleftCorner.y;
+        float x1 = x0 + (float) size.x;
+        float y1 = y0 + (float) size.y;
         renderTextureToScreen(gl, x0, y0, x1, y1);
     }
 
@@ -411,8 +411,8 @@ public class GLTextureHelper {
                 gl.glColorMask(colorMask.showRed(), colorMask.showGreen(), colorMask.showBlue(), true);
             }
 
-            Vector2dDouble lowerleftCorner = region.getLowerLeftCorner();
-            Vector2dDouble size = region.getSize();
+            Vector2d lowerleftCorner = region.getLowerLeftCorner();
+            Vector2d size = region.getSize();
 
             for (int x = 0; x < source.getWidth(); x += maxTextureSize) {
                 for (int y = 0; y < source.getHeight(); y += maxTextureSize) {
@@ -421,9 +421,9 @@ public class GLTextureHelper {
                     int height = Math.min(source.getHeight() - y, maxTextureSize);
                     moveImageDataToGLTexture(gl, source, x, y, width, height, texID);
 
-                    float x0 = (float) lowerleftCorner.getX() + (float) size.getX() * x / source.getWidth();
-                    float y1 = (float) lowerleftCorner.getY() + (float) size.getY() * (source.getHeight() - y) / source.getHeight();
-                    renderTextureToScreen(gl, x0, y1 - ((float) size.getY()) * (height + 1.5f) / source.getHeight(), x0 + ((float) size.getX()) * (width + 1.5f) / source.getWidth(), y1);
+                    float x0 = (float) lowerleftCorner.x + (float) size.x * x / source.getWidth();
+                    float y1 = (float) lowerleftCorner.y + (float) size.y * (source.getHeight() - y) / source.getHeight();
+                    renderTextureToScreen(gl, x0, y1 - ((float) size.y) * (height + 1.5f) / source.getHeight(), x0 + ((float) size.x) * (width + 1.5f) / source.getWidth(), y1);
                 }
             }
 
@@ -814,7 +814,7 @@ public class GLTextureHelper {
             float scaleX = (float) width / width2;
 
             scaleTexCoord.setValue(gl, scaleX, 1.0f);
-            allTextures.put(texID, new Vector2dDouble(scaleX, 1.0));
+            allTextures.put(texID, new Vector2d(scaleX, 1.0));
         }
 
         /**
@@ -885,7 +885,7 @@ public class GLTextureHelper {
             float scaleX = (float) width / width2;
             float scaleY = (float) height / height2;
             scaleTexCoord.setValue(gl, scaleX, scaleY);
-            allTextures.put(texID, new Vector2dDouble(scaleX, scaleY));
+            allTextures.put(texID, new Vector2d(scaleX, scaleY));
         }
 
         /**
@@ -909,9 +909,9 @@ public class GLTextureHelper {
         public void bindTexture(GL2 gl, int target, int texture) {
             gl.glBindTexture(target, texture);
 
-            Vector2dDouble scaleVector = allTextures.get(texture);
+            Vector2d scaleVector = allTextures.get(texture);
             if (scaleVector != null) {
-                scaleTexCoord.setValue(gl, (float) scaleVector.getX(), (float) scaleVector.getY());
+                scaleTexCoord.setValue(gl, (float) scaleVector.x, (float) scaleVector.y);
             }
         }
 

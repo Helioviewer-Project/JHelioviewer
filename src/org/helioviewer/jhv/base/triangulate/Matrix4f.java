@@ -1,5 +1,7 @@
 package org.helioviewer.jhv.base.triangulate;
 
+import org.helioviewer.jhv.base.math.Vector3d;
+
 class Matrix4f
 {
     double m00;
@@ -39,12 +41,11 @@ class Matrix4f
         m33=0.0f;
     }
 
-    public final void transform(Vec3 point,Vec3 pointOut)
+    public final Vector3d transform(Vector3d point)
     {
-        double x=m00*point.x+m01*point.y+m02*point.z+m03;
-        double y=m10*point.x+m11*point.y+m12*point.z+m13;
-        pointOut.z=m20*point.x+m21*point.y+m22*point.z+m23;
-        pointOut.x=x;
-        pointOut.y=y;
+        return new Vector3d(
+                m00*point.x+m01*point.y+m02*point.z+m03,
+                m10*point.x+m11*point.y+m12*point.z+m13,
+                m20*point.x+m21*point.y+m22*point.z+m23);
     }
 }

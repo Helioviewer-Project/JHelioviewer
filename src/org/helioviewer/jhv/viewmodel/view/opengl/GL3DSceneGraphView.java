@@ -10,6 +10,8 @@ import javax.media.opengl.GL2;
 import org.helioviewer.jhv.base.GL3DKeyController;
 import org.helioviewer.jhv.base.GL3DKeyController.GL3DKeyListener;
 import org.helioviewer.jhv.base.logging.Log;
+import org.helioviewer.jhv.base.math.GL3DVec3d;
+import org.helioviewer.jhv.base.math.GL3DVec4d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
@@ -26,8 +28,6 @@ import org.helioviewer.jhv.opengl.scenegraph.GL3DNode;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DShape;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState.VISUAL_TYPE;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec3d;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec4f;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRayTracer;
 import org.helioviewer.jhv.opengl.scenegraph.visuals.GL3DArrow;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
@@ -85,9 +85,9 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 	public void render3D(GL3DState state) {
 		// set visible of arrows
 		if (GL3DState.get().getState() == VISUAL_TYPE.MODE_3D)
-			artificialObjects.getDrawBits().off(Bit.Hidden);
+			artificialObjects.drawBits.off(Bit.Hidden);
 		else
-			artificialObjects.getDrawBits().on(Bit.Hidden);
+			artificialObjects.drawBits.on(Bit.Hidden);
 
 		GL2 gl = state.gl;
 
@@ -110,7 +110,7 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 		GL3DState.get().checkGLErrors(
 				"GL3DSceneGraph.afterApplyLayersToSceneGraph");
 
-		if (state.getActiveCamera() == null) {
+		if (state.activeCamera == null) {
 			Log.warn("GL3DSceneGraph: Camera not ready, aborting renderpass");
 			return;
 		}
@@ -125,8 +125,8 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 		GL3DState.get().checkGLErrors("GL3DSceneGraph.afterRootUpdate");
 
 		state.pushMV();
-		state.getActiveCamera().applyPerspective(state);
-		state.getActiveCamera().applyCamera(state);
+		state.activeCamera.applyPerspective(state);
+		state.activeCamera.applyCamera(state);
 		GL3DState.get().checkGLErrors("GL3DSceneGraph.afterApplyCamera");
 
 		if (overlayView != null)
@@ -140,10 +140,10 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 		GL3DState.get().checkGLErrors("GL3DSceneGraph.afterPostRender3D");
 
 		// Draw the camera or its interaction feedbacks
-		state.getActiveCamera().drawCamera(state);
+		state.activeCamera.drawCamera(state);
 
 		// Resume Previous Projection
-		state.getActiveCamera().resumePerspective(state);
+		state.activeCamera.resumePerspective(state);
 
 		state.popMV();
 
@@ -225,7 +225,7 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 
 	private void toggleLayerVisibility(GL3DImageTextureView view) {
 		GL3DNode node = this.imageLayers.getImageLayerForView(view);
-		node.getDrawBits().toggle(Bit.Hidden);
+		node.drawBits.toggle(Bit.Hidden);
 	}
 
 	private void removeLayersFromSceneGraph(GL3DState state) {
@@ -241,7 +241,7 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 	}
 
 	private void addLayersToSceneGraph(GL3DState state) {
-		GL3DCamera camera = state.getActiveCamera();
+		GL3DCamera camera = state.activeCamera;
 
 		synchronized (this.layersToAdd) {
 			for (GL3DImageTextureView imageTextureView : this.layersToAdd) {
@@ -309,36 +309,34 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 		this.hitReferenceShape = new GL3DHitReferenceShape(true);
 		root.addNode(this.hitReferenceShape);
 
-		GL3DGroup indicatorArrows = new GL3DModel("Arrows",
-				"Arrows indicating the viewspace axes");
+		GL3DGroup indicatorArrows = new GL3DModel("Arrows");
 		artificialObjects.addNode(indicatorArrows);
 
 		GL3DShape north = new GL3DArrow("Northpole", Constants.SUN_RADIUS / 16,
 				Constants.SUN_RADIUS, Constants.SUN_RADIUS / 2, 32,
-				new GL3DVec4f(1.0f, 0.2f, 0.1f, 1.0f));
+				new GL3DVec4d(1.0f, 0.2f, 0.1f, 1.0f));
 		north.modelView().rotate(-Math.PI / 2, GL3DVec3d.XAXIS);
 		indicatorArrows.addNode(north);
 
 		GL3DShape south = new GL3DArrow("Southpole", Constants.SUN_RADIUS / 16,
 				Constants.SUN_RADIUS, Constants.SUN_RADIUS / 2, 32,
-				new GL3DVec4f(0.1f, 0.2f, 1.0f, 1.0f));
+				new GL3DVec4d(0.1f, 0.2f, 1.0f, 1.0f));
 		south.modelView().rotate(Math.PI / 2, GL3DVec3d.XAXIS);
 		indicatorArrows.addNode(south);
 
-		GL3DModel sunModel = new GL3DModel("Sun",
-				"Spherical Grid depicting the Sun");
+		GL3DModel sunModel = new GL3DModel("Sun");
 		artificialObjects.addNode(sunModel);
 		// Create the sungrid
 		// this.sun = new GL3DSphere("Sun-grid", Constants.SunRadius, 200, 200,
-		// new GL3DVec4f(1.0f, 0.0f, 0.0f, 0.0f));
+		// new GL3DVec4d(1.0f, 0.0f, 0.0f, 0.0f));
 		// this.sun = new GL3DSunGrid(Constants.SunRadius,200,200, new
-		// GL3DVec4f(0.8f, 0.8f, 0, 0.0f));
+		// GL3DVec4d(0.8f, 0.8f, 0, 0.0f));
 
 		// sunModel.addNode(this.sun);
 
 		framebuffer = new GL3DFramebufferImage();
 		artificialObjects.addNode(framebuffer);
-		framebuffer.getDrawBits().on(Bit.Hidden);
+		framebuffer.drawBits.on(Bit.Hidden);
 
 		return root;
 	}
@@ -372,7 +370,7 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 			return;
 		}
 
-		System.out.println(node.getClass().getName() + " (" + node.getName()
+		System.out.println(node.getClass().getName() + " (" + node.name
 				+ ")");
 
 		/*

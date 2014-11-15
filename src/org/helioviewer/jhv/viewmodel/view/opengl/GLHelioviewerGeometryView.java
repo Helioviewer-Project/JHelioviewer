@@ -151,8 +151,8 @@ public class GLHelioviewerGeometryView extends AbstractGLView implements Heliovi
                     program = program.replace("innerRadius", Double.toString(metaData.getInnerPhysicalOcculterRadius() * ROCC_INNER_FACTOR).replace(',', '.'));
                     program = program.replace("outerRadius", Double.toString(metaData.getOuterPhysicalOcculterRadius() * ROCC_OUTER_FACTOR).replace(',', '.'));
                     program = program.replace("flatDist", Double.toString(metaData.getPhysicalFlatOcculterSize()).replace(',', '.'));
-                   program = program.replace("occulterCenter", "float2("+ Double.toString(metaData.getOcculterCenter().getX()).replace(",", ".") 
-                                                                            + ","+ Double.toString(metaData.getOcculterCenter().getY()).replace(",", ".")  + ")");
+                   program = program.replace("occulterCenter", "float2("+ Double.toString(metaData.getOcculterCenter().x).replace(",", ".") 
+                                                                            + ","+ Double.toString(metaData.getOcculterCenter().y).replace(",", ".")  + ")");
                     shaderBuilder.addMainFragment(program);
                 } catch (GLBuildShaderException e) {
                     e.printStackTrace();

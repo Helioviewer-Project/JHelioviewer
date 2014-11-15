@@ -116,12 +116,16 @@ public class ImmutableDateTime implements Comparable<ImmutableDateTime> {
     }
 
     /** Overridden equals method */
-    public boolean equals(ImmutableDateTime _dt) {
+    @Override
+    public boolean equals(Object _dt) {
 
         if (_dt == null)
             return false;
 
-        return compareTo(_dt) == 0;
+        if(!(_dt instanceof ImmutableDateTime))
+            return false;
+        
+        return compareTo((ImmutableDateTime)_dt) == 0;
     }
 
     /** Overridden hashCode method */

@@ -96,8 +96,8 @@ public class ExportMovieDialog implements ActionListener{
 	}
 
 	private int openFileChooser(){
-		//txtTargetFile = new String(JHVDirectory.EXPORTS.getPath() + "JHV_movie_created_");
-		txtTargetFile = new String();
+		//txtTargetFile = JHVDirectory.EXPORTS.getPath() + "JHV_movie_created_";
+		txtTargetFile = "";
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
         txtTargetFile += dateFormat.format(new Date());
         txtTargetFile += selectedOutputFormat.getExtension();

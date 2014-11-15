@@ -1,6 +1,6 @@
 package org.helioviewer.jhv.viewmodel.viewportimagesize;
 
-import org.helioviewer.jhv.base.math.Vector2dInt;
+import org.helioviewer.jhv.base.math.Vector2i;
 
 /**
  * Implementation of {@link BasicViewportImageSize}.
@@ -9,7 +9,7 @@ import org.helioviewer.jhv.base.math.Vector2dInt;
  * */
 public class StaticViewportImageSize implements BasicViewportImageSize {
 
-    private Vector2dInt sizeVector;
+    private Vector2i sizeVector;
 
     /**
      * Constructor where to pass the image size information inside the viewport
@@ -21,7 +21,7 @@ public class StaticViewportImageSize implements BasicViewportImageSize {
      *            height of the image inside the viewport.
      * */
     public StaticViewportImageSize(final int newWidth, final int newHeight) {
-        sizeVector = new Vector2dInt(newWidth, newHeight);
+        sizeVector = new Vector2i(newWidth, newHeight);
     }
 
     /**
@@ -31,14 +31,14 @@ public class StaticViewportImageSize implements BasicViewportImageSize {
      *            Vector2dDouble object which describes the size of the image
      *            inside the viewport.
      * */
-    public StaticViewportImageSize(final Vector2dInt newSizeVector) {
+    public StaticViewportImageSize(final Vector2i newSizeVector) {
         sizeVector = newSizeVector;
     }
 
     /**
      * {@inheritDoc}
      * */
-    public Vector2dInt getSizeVector() {
+    public Vector2i getSizeVector() {
         return sizeVector;
     }
 
@@ -63,7 +63,7 @@ public class StaticViewportImageSize implements BasicViewportImageSize {
      *            Vector2dDouble object which describes the size of the image
      *            inside the viewport.
      * */
-    public static ViewportImageSize createAdaptedViewportImageSize(final Vector2dInt newSizeVector) {
+    public static ViewportImageSize createAdaptedViewportImageSize(final Vector2i newSizeVector) {
         return new ViewportImageSizeAdapter(new StaticViewportImageSize(newSizeVector));
     }
 

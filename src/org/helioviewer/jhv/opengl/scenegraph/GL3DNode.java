@@ -11,7 +11,7 @@ import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
  * 
  */
 public abstract class GL3DNode {
-    private String name;
+    public final String name;
 
     protected GL3DNode next;
     protected GL3DNode previous;
@@ -25,11 +25,10 @@ public abstract class GL3DNode {
     // Flag wheter this node has already been initialised
     protected boolean isInitialised;
 
-    private GL3DDrawBits drawBits;
+    public final GL3DDrawBits drawBits = new GL3DDrawBits();
 
     public GL3DNode(String name) {
         this.name = name;
-        this.drawBits = new GL3DDrawBits();
     }
 
     public abstract void init(GL3DState state);
@@ -43,10 +42,6 @@ public abstract class GL3DNode {
     public abstract void delete(GL3DState state);
 
     public String toString() {
-        return this.name;
-    }
-
-    public String getName() {
         return this.name;
     }
 
@@ -73,10 +68,6 @@ public abstract class GL3DNode {
 
     public void setUnchanged() {
         this.hasChanged = false;
-    }
-
-    public GL3DDrawBits getDrawBits() {
-        return this.drawBits;
     }
 
     public boolean isDrawBitOn(Bit bit) {

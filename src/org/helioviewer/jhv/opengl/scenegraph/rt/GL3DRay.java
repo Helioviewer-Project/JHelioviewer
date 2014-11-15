@@ -3,9 +3,9 @@ package org.helioviewer.jhv.opengl.scenegraph.rt;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
+import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DShape;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec3d;
 
 /**
  * A {@link GL3DRay} is used for detecting hit points within the scene graph and

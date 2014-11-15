@@ -10,11 +10,8 @@ import org.helioviewer.jhv.opengl.scenegraph.GL3DDrawBits.Bit;
  * 
  */
 public class GL3DModel extends GL3DGroup {
-    private String description;
-
-    public GL3DModel(String name, String description) {
+    public GL3DModel(String name) {
         super(name);
-        this.description = description;
     }
 
     public boolean isActive() {
@@ -22,10 +19,6 @@ public class GL3DModel extends GL3DGroup {
     }
 
     public void setActive(boolean value) {
-        this.getDrawBits().set(Bit.Hidden, !value);
-    }
-
-    public String getDescription() {
-        return this.description;
+        this.drawBits.set(Bit.Hidden, !value);
     }
 }

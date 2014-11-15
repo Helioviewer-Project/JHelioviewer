@@ -1,11 +1,6 @@
-package org.helioviewer.jhv.opengl.scenegraph.math;
+package org.helioviewer.jhv.base.math;
 
 public class GL3DVec2d implements Cloneable {
-    /**
-     * Predefined Vectors
-     */
-    public static final GL3DVec2d ZERO = new GL3DVec2d(0f, 0f);
-
     /**
      * Coordinates
      */
@@ -25,7 +20,7 @@ public class GL3DVec2d implements Cloneable {
     }
 
     public GL3DVec2d() {
-        this(GL3DVec2d.ZERO);
+        this(0,0);
     }
 
     public GL3DVec2d(double[] coordinates) {

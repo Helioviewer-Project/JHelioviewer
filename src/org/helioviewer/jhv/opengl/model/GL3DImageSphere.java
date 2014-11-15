@@ -3,6 +3,11 @@ package org.helioviewer.jhv.opengl.model;
 import java.util.List;
 
 import org.helioviewer.jhv.base.GL3DHelper;
+import org.helioviewer.jhv.base.math.GL3DMat4d;
+import org.helioviewer.jhv.base.math.GL3DQuatd;
+import org.helioviewer.jhv.base.math.GL3DVec2d;
+import org.helioviewer.jhv.base.math.GL3DVec3d;
+import org.helioviewer.jhv.base.math.GL3DVec4d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.base.wcs.CoordinateConversion;
 import org.helioviewer.jhv.base.wcs.CoordinateVector;
@@ -10,11 +15,6 @@ import org.helioviewer.jhv.base.wcs.conversion.SolarImageToSolarSphereConversion
 import org.helioviewer.jhv.base.wcs.impl.SolarImageCoordinateSystem;
 import org.helioviewer.jhv.base.wcs.impl.SolarSphereCoordinateSystem;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DMat4d;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DQuatd;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec2d;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec3d;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec4d;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DImageTextureView;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLFragmentShaderProgram;
@@ -53,7 +53,7 @@ public class GL3DImageSphere extends GL3DImageMesh
       solarImageToSolarSphereConversion.setAutoAdjustToValidValue(true);
 
       CoordinateVector orientationVector=this.layer.getOrientation();
-      CoordinateConversion toViewSpace=this.layer.getCoordinateSystem().getConversion(state.getActiveCamera().getViewSpaceCoordinateSystem());
+      CoordinateConversion toViewSpace=this.layer.getCoordinateSystem().getConversion(state.activeCamera.getViewSpaceCoordinateSystem());
 
       GL3DVec3d orientation=GL3DHelper.toVec(toViewSpace.convert(orientationVector)).normalize();
       
@@ -164,8 +164,8 @@ public class GL3DImageSphere extends GL3DImageMesh
     double cy=x*phiRotation.m[1]+y*phiRotation.m[5]+z*phiRotation.m[9]+phiRotation.m[13];
     MetaData metaData=this.layer.metaDataView.getMetaData();
 
-    double tx=(cx-metaData.getPhysicalLowerLeft().getX())/(metaData.getPhysicalImageWidth());
-    double ty=(cy-metaData.getPhysicalLowerLeft().getY())/(metaData.getPhysicalImageHeight());
+    double tx=(cx-metaData.getPhysicalLowerLeft().x)/(metaData.getPhysicalImageWidth());
+    double ty=(cy-metaData.getPhysicalLowerLeft().y)/(metaData.getPhysicalImageHeight());
 
     texCoords.add(new GL3DVec2d(tx,ty));
 

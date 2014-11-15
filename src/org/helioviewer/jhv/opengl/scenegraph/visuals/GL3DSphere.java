@@ -2,12 +2,11 @@ package org.helioviewer.jhv.opengl.scenegraph.visuals;
 
 import java.util.List;
 
+import org.helioviewer.jhv.base.math.GL3DVec2d;
+import org.helioviewer.jhv.base.math.GL3DVec3d;
+import org.helioviewer.jhv.base.math.GL3DVec4d;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DMesh;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec2d;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec3d;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec4d;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec4f;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
 
 public class GL3DSphere extends GL3DMesh {
@@ -18,11 +17,11 @@ public class GL3DSphere extends GL3DMesh {
     private GL3DVec3d center;
     private GL3DVec3d centerOS = new GL3DVec3d(0, 0, 0);
 
-    public GL3DSphere(double radius, int resolutionX, int resolutionY, GL3DVec4f color) {
+    public GL3DSphere(double radius, int resolutionX, int resolutionY, GL3DVec4d color) {
         this("Sphere", radius, resolutionX, resolutionY, color);
     }
 
-    public GL3DSphere(String name, double radius, int resolutionX, int resolutionY, GL3DVec4f color) {
+    public GL3DSphere(String name, double radius, int resolutionX, int resolutionY, GL3DVec4d color) {
         super(name, color);
         this.radius = radius;
         this.resolutionX = resolutionX;

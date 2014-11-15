@@ -1,7 +1,7 @@
 package org.helioviewer.jhv.viewmodel.region;
 
 import org.helioviewer.jhv.base.math.RectangleDouble;
-import org.helioviewer.jhv.base.math.Vector2dDouble;
+import org.helioviewer.jhv.base.math.Vector2d;
 
 /**
  * Extension of {@link BasicRegion}, representing a region.
@@ -54,7 +54,7 @@ public interface Region extends BasicRegion {
      * @return a Vector2dDouble object which points to the upper left corner of
      *         the region.
      * */
-    public Vector2dDouble getUpperLeftCorner();
+    public Vector2d getUpperLeftCorner();
 
     /**
      * Returns the position of the lower right corner of the region.
@@ -62,7 +62,7 @@ public interface Region extends BasicRegion {
      * @return a Vector2dDouble object which points to the lower right corner of
      *         the region.
      * */
-    public Vector2dDouble getLowerRightCorner();
+    public Vector2d getLowerRightCorner();
 
     /**
      * Returns the position of the upper right corner of the region.
@@ -70,7 +70,7 @@ public interface Region extends BasicRegion {
      * @return a Vector2dDouble object which points to the upper right corner of
      *         the region.
      * */
-    public Vector2dDouble getUpperRightCorner();
+    public Vector2d getUpperRightCorner();
 
     /**
      * {@inheritDoc}

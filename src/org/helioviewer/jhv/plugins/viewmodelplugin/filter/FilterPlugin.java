@@ -83,7 +83,7 @@ public abstract class FilterPlugin implements Plugin {
      * returns an empty string.
      */
     public String getState() {
-        return new String();
+        return "";
     }
 
     /**

@@ -11,7 +11,7 @@ import java.util.HashMap;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
-import org.helioviewer.jhv.base.math.Vector2dInt;
+import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.viewmodel.view.opengl.GLTextureHelper;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLScalePowerOfTwoVertexShaderProgram;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLTextureCoordinate;
@@ -80,13 +80,13 @@ public class GLCommonRenderGraphics {
      * 
      * @return Display size of the given string with the given font
      */
-    public Vector2dInt getStringDisplaySize(String string, Font font) {
+    public Vector2i getStringDisplaySize(String string, Font font) {
         if (font != null)
             stringSizeGraphics.setFont(font);
 
         FontMetrics metrics = stringSizeGraphics.getFontMetrics();
 
-        return new Vector2dInt(metrics.stringWidth(string), metrics.getHeight());
+        return new Vector2i(metrics.stringWidth(string), metrics.getHeight());
     }
 
     /**

@@ -5,7 +5,7 @@ import java.util.Stack;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec3d;
+import org.helioviewer.jhv.base.math.GL3DVec3d;
 
 /**
  * Abstract class to build customized vertex shaders.

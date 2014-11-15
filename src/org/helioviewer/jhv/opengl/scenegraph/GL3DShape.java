@@ -1,9 +1,9 @@
 package org.helioviewer.jhv.opengl.scenegraph;
 
+import org.helioviewer.jhv.base.math.GL3DMat4d;
+import org.helioviewer.jhv.base.math.GL3DVec4d;
 import org.helioviewer.jhv.base.wcs.CoordinateSystem;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DDrawBits.Bit;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DMat4d;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec4d;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
 
 /**
@@ -16,7 +16,7 @@ import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
  */
 public abstract class GL3DShape extends GL3DNode {
     // Model Matrix
-    protected GL3DMat4d m;
+    protected GL3DMat4d mv;
 
     // World Matrix
     protected GL3DMat4d wm;
@@ -31,14 +31,14 @@ public abstract class GL3DShape extends GL3DNode {
     public GL3DShape(String name, CoordinateSystem coordinateSystem) {
         super(name);
 
-        this.m = GL3DMat4d.identity();
+        this.mv = GL3DMat4d.identity();
         this.wm = GL3DMat4d.identity();
         this.aabb = new GL3DAABBox();
     }
 
     public void init(GL3DState state) {
         state.pushMV();
-        this.wm = state.multiplyMV(this.m);
+        this.wm = state.multiplyMV(this.mv);
         state.buildInverseAndNormalMatrix();
         this.wmI = new GL3DMat4d(state.getMVInverse());
         
@@ -55,7 +55,7 @@ public abstract class GL3DShape extends GL3DNode {
 		if (this.hasChanged()) {
             state.pushMV();
             //this.updateMatrix(state);
-            this.wm = state.multiplyMV(this.m);
+            this.wm = state.multiplyMV(this.mv);
             state.buildInverseAndNormalMatrix();
             this.wmI = new GL3DMat4d(state.getMVInverse());
             this.shapeUpdate(state);
@@ -73,7 +73,7 @@ public abstract class GL3DShape extends GL3DNode {
     	if (!isDrawBitOn(Bit.Hidden)) {
             // Log.debug("GL3DShape: Drawing '"+getName()+"'");
             state.pushMV();
-            state.multiplyMV(this.m);
+            state.multiplyMV(this.mv);
             state.buildInverseAndNormalMatrix();
             // this.wmI = new GL3DMat4d(state.getMVInverse());
             // this.wmN = new GL3DMat3d(state.normalMatrix);
@@ -142,7 +142,7 @@ public abstract class GL3DShape extends GL3DNode {
     public abstract void shapeUpdate(GL3DState state);
 
     public GL3DMat4d modelView() {
-        return this.m;
+        return this.mv;
     }
 
     public GL3DAABBox getAABBox() {

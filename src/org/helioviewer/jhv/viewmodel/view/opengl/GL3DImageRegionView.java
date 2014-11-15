@@ -3,7 +3,7 @@ package org.helioviewer.jhv.viewmodel.view.opengl;
 import javax.media.opengl.GL2;
 
 import org.helioviewer.jhv.base.logging.Log;
-import org.helioviewer.jhv.base.math.Vector2dInt;
+import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.changeevent.RegionChangedReason;
@@ -33,7 +33,7 @@ public class GL3DImageRegionView extends AbstractGL3DView implements GL3DView, R
     private ViewportView viewportView;
     private MetaDataView metaDataView;
 
-    private Vector2dInt renderOffset;
+    private Vector2i renderOffset;
 
     private Viewport maximalViewport;
     private Viewport innerViewport;
@@ -122,7 +122,7 @@ public class GL3DImageRegionView extends AbstractGL3DView implements GL3DView, R
         this.innerViewport = StaticViewport.createAdaptedViewport(requiredViewportSize.getSizeVector());
         // Log.debug("GL3DImageRegionView: Inner Viewport: "+innerViewport);
 
-        this.renderOffset = new Vector2dInt(0, 0);
+        this.renderOffset = new Vector2i(0, 0);
         // Log.debug("GL3DImageRegionView: Offset: "+renderOffset);
         this.actualImageRegion = region;
 
@@ -149,7 +149,7 @@ public class GL3DImageRegionView extends AbstractGL3DView implements GL3DView, R
         return this.innerViewport;
     }
 
-    public Vector2dInt getRenderOffset() {
+    public Vector2i getRenderOffset() {
         return renderOffset;
     }
 }

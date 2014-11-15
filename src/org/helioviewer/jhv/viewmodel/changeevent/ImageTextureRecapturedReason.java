@@ -1,6 +1,6 @@
 package org.helioviewer.jhv.viewmodel.changeevent;
 
-import org.helioviewer.jhv.base.math.Vector2dDouble;
+import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.viewmodel.region.Region;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DImageTextureView;
@@ -15,13 +15,13 @@ public class ImageTextureRecapturedReason implements ChangedReason {
 
     private View sender;
 
-    private Vector2dDouble textureScale;
+    private Vector2d textureScale;
 
     private Integer textureId;
 
     private Region capturedRegion;
 
-    public ImageTextureRecapturedReason(View sender, Integer textureId, Vector2dDouble textureScale, Region capturedRegion) {
+    public ImageTextureRecapturedReason(View sender, Integer textureId, Vector2d textureScale, Region capturedRegion) {
         this.sender = sender;
         this.textureId = textureId;
         this.textureScale = textureScale;
@@ -32,7 +32,7 @@ public class ImageTextureRecapturedReason implements ChangedReason {
         return sender;
     }
 
-    public Vector2dDouble getTextureScale() {
+    public Vector2d getTextureScale() {
         return this.textureScale;
     }
 

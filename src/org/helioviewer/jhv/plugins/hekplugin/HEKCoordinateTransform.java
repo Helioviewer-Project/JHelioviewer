@@ -5,8 +5,8 @@ import java.util.Date;
 import org.helioviewer.jhv.base.math.CartesianCoord;
 import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.base.math.SphericalCoord;
-import org.helioviewer.jhv.base.math.Vector2dDouble;
-import org.helioviewer.jhv.base.math.Vector3dDouble;
+import org.helioviewer.jhv.base.math.Vector2d;
+import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 
 /**
@@ -105,7 +105,7 @@ public class HEKCoordinateTransform {
 
     }
 
-    public static SphericalCoord CartesianToSpherical(Vector3dDouble cart) {
+    public static SphericalCoord CartesianToSpherical(Vector3d cart) {
         return CartesianToSpherical(new CartesianCoord(cart));
     }
 
@@ -221,14 +221,14 @@ public class HEKCoordinateTransform {
     }
 
     // UTC-HPR-TOPO [Helioprojective];
-    public static Vector2dDouble convertHelioprojective(double theta1, double theta2) {
-        return new Vector2dDouble(Math.sin(theta1 / MathUtils.RAD_TO_DEG) * 1000, Math.sin(theta2 / MathUtils.RAD_TO_DEG));
+    public static Vector2d convertHelioprojective(double theta1, double theta2) {
+        return new Vector2d(Math.sin(theta1 / MathUtils.RAD_TO_DEG) * 1000, Math.sin(theta2 / MathUtils.RAD_TO_DEG));
     }
 
     // UTC-HCR-TOPO[Heliocentric radial]
-    public static Vector2dDouble fromRadial(double rho, double phi) {
+    public static Vector2d fromRadial(double rho, double phi) {
         // umwandeln in
-        return new Vector2dDouble(0, 0);
+        return new Vector2d(0, 0);
     }
 
     public static boolean isVisibleHelioprojective(double theta1, double theta2) {

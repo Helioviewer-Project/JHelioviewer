@@ -5,10 +5,10 @@ import java.util.List;
 
 import javax.media.opengl.GL2;
 
+import org.helioviewer.jhv.base.math.GL3DMat4d;
+import org.helioviewer.jhv.base.math.GL3DVec3d;
+import org.helioviewer.jhv.base.math.GL3DVec4d;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DMesh.GL3DMeshPrimitive;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DMat4d;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec3d;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec4d;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
 
 /**

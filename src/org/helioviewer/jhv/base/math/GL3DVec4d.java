@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.opengl.scenegraph.math;
+package org.helioviewer.jhv.base.math;
 
 public class GL3DVec4d implements Cloneable {
     /**

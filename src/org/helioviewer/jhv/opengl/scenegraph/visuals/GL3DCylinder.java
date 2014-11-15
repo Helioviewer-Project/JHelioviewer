@@ -2,12 +2,11 @@ package org.helioviewer.jhv.opengl.scenegraph.visuals;
 
 import java.util.List;
 
+import org.helioviewer.jhv.base.math.GL3DVec2d;
+import org.helioviewer.jhv.base.math.GL3DVec3d;
+import org.helioviewer.jhv.base.math.GL3DVec4d;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DMesh;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec2d;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec3d;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec4d;
-import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec4f;
 
 public class GL3DCylinder extends GL3DMesh {
 
@@ -17,12 +16,12 @@ public class GL3DCylinder extends GL3DMesh {
 
     private GL3DVec4d color;
 
-    public GL3DCylinder(double radius, double height, int detail, GL3DVec4f color) {
+    public GL3DCylinder(double radius, double height, int detail, GL3DVec4d color) {
         this("Cylinder", radius, height, detail, color);
     }
 
-    public GL3DCylinder(String name, double radius, double height, int detail, GL3DVec4f color) {
-        super(name, new GL3DVec4f(1, 1, 1, 1));
+    public GL3DCylinder(String name, double radius, double height, int detail, GL3DVec4d color) {
+        super(name, new GL3DVec4d(1, 1, 1, 1));
         this.color = new GL3DVec4d(color.x, color.y, color.z, color.w);
         this.radius = radius;
         this.detail = detail;
