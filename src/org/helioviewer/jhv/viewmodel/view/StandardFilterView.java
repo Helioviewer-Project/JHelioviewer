@@ -5,11 +5,12 @@ import org.helioviewer.jhv.viewmodel.changeevent.FilterChangedReason;
 import org.helioviewer.jhv.viewmodel.changeevent.RegionChangedReason;
 import org.helioviewer.jhv.viewmodel.changeevent.SubImageDataChangedReason;
 import org.helioviewer.jhv.viewmodel.changeevent.ViewChainChangedReason;
-import org.helioviewer.jhv.viewmodel.filter.AbstractFilter;
 import org.helioviewer.jhv.viewmodel.filter.Filter;
 import org.helioviewer.jhv.viewmodel.filter.FilterListener;
 import org.helioviewer.jhv.viewmodel.filter.MetaDataFilter;
+import org.helioviewer.jhv.viewmodel.filter.ObservableFilter;
 import org.helioviewer.jhv.viewmodel.filter.RegionFilter;
+import org.helioviewer.jhv.viewmodel.filter.StandardFilter;
 import org.helioviewer.jhv.viewmodel.imagedata.ImageData;
 
 /**
@@ -50,14 +51,14 @@ public class StandardFilterView extends AbstractBasicView implements FilterView,
      * {@inheritDoc}
      */
     public void setFilter(Filter f) {
-        if (filter != null && (filter instanceof AbstractFilter)) {
-            ((AbstractFilter) filter).removeFilterListener(this);
+        if (filter != null && (filter instanceof ObservableFilter)) {
+            ((ObservableFilter) filter).removeFilterListener(this);
         }
 
         filter = f;
 
-        if (filter != null && (filter instanceof AbstractFilter)) {
-            ((AbstractFilter) filter).addFilterListener(this);
+        if (filter != null && (filter instanceof ObservableFilter)) {
+            ((ObservableFilter) filter).addFilterListener(this);
         }
 
         refilter();
@@ -75,7 +76,9 @@ public class StandardFilterView extends AbstractBasicView implements FilterView,
      * {@inheritDoc}
      */
     public ImageData getImageData() {
-        if (subimageDataView != null) {
+        if (filter instanceof StandardFilter && filteredData != null) {
+            return filteredData;
+        } else if (subimageDataView != null) {
             return subimageDataView.getImageData();
         } else
             return null;
@@ -106,7 +109,11 @@ public class StandardFilterView extends AbstractBasicView implements FilterView,
             refilterPrepare();
 
             if (subimageDataView != null) {
-                filteredData = subimageDataView.getImageData();
+                if (filter instanceof StandardFilter) {
+                    filteredData = ((StandardFilter) filter).apply(subimageDataView.getImageData());
+                } else {
+                    filteredData = subimageDataView.getImageData();
+                }
             }
         } else {
             filteredData = null;

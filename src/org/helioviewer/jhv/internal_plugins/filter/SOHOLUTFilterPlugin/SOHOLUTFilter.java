@@ -9,6 +9,7 @@ import javax.media.opengl.glu.GLU;
 import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.viewmodel.filter.AbstractFilter;
 import org.helioviewer.jhv.viewmodel.filter.GLFragmentShaderFilter;
+import org.helioviewer.jhv.viewmodel.filter.StandardFilter;
 import org.helioviewer.jhv.viewmodel.imagedata.ARGBInt32ImageData;
 import org.helioviewer.jhv.viewmodel.imagedata.ImageData;
 import org.helioviewer.jhv.viewmodel.imageformat.SingleChannelImageFormat;
@@ -32,7 +33,7 @@ import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLSingleChannelLookupFra
  * 
  * @author Helge Dietert
  */
-public class SOHOLUTFilter extends AbstractFilter implements GLFragmentShaderFilter {
+public class SOHOLUTFilter extends AbstractFilter implements StandardFilter, GLFragmentShaderFilter {
     // /////////////////////////
     // GENERAL //
     // /////////////////////////

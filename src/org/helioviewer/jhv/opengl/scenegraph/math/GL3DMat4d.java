@@ -1,6 +1,6 @@
 package org.helioviewer.jhv.opengl.scenegraph.math;
 
-public class GL3DMat4d implements Cloneable {
+public class GL3DMat4d {
     /**
      * 0 4 8 12 1 5 9 13 2 6 10 14 3 7 11 15
      */
@@ -303,8 +303,9 @@ public class GL3DMat4d implements Cloneable {
 
     public void lightAt(GL3DVec3d pos, GL3DVec3d dirAt, GL3DVec3d dirUp) {
         GL3DVec3d VX = new GL3DVec3d();
-        GL3DVec3d VY;
+        GL3DVec3d VY = new GL3DVec3d();
         GL3DVec3d VZ;
+        // GL3DVec3d VT = new GL3DVec3d();
 
         GL3DMat3d xz = new GL3DMat3d(0f, 0f, 1f, 0f, 0f, 0f, -1f, 0f, 0f);
 

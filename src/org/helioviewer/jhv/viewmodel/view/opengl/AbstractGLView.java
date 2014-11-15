@@ -25,7 +25,7 @@ import org.helioviewer.jhv.viewmodel.view.ViewListener;
  * @author Markus Langenberg
  * 
  */
-public abstract class AbstractGLView extends AbstractBasicView implements ModifiableInnerViewView, ViewListener {
+public abstract class AbstractGLView extends AbstractBasicView implements GLView, ModifiableInnerViewView, ViewListener {
 
     protected final static GLTextureHelper TEXTURE_HELPER = new GLTextureHelper();
 
@@ -48,7 +48,12 @@ public abstract class AbstractGLView extends AbstractBasicView implements Modifi
      *            Valid reference to the current gl object
      */
     protected void renderChild(GL2 gl) {
-        TEXTURE_HELPER.renderImageDataToScreen(gl, view.getAdapter(RegionView.class).getRegion(), view.getAdapter(SubimageDataView.class).getImageData());
+        if (view instanceof GLView) {
+        	((GLView) view).renderGL(gl, true);
+        	this.checkGLErrors(gl,view+".afterRenderGL");            
+        } else {
+            TEXTURE_HELPER.renderImageDataToScreen(gl, view.getAdapter(RegionView.class).getRegion(), view.getAdapter(SubimageDataView.class).getImageData());
+        }
     }
 
 	public boolean checkGLErrors(GL2 gl, String message) {

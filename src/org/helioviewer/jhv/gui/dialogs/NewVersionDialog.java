@@ -33,7 +33,7 @@ public class NewVersionDialog extends JDialog implements ActionListener, Showabl
     /**
      * Suspended startups when clicked remindMeLater
      */
-    private static final int SUSPENDED_STARTS = 5;
+    private final int suspendedStarts = 5;
 
     private JEditorPane messagePane;
 
@@ -67,7 +67,7 @@ public class NewVersionDialog extends JDialog implements ActionListener, Showabl
             laterButton.addActionListener(this);
             laterButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent arg) {
-                    nextCheck = SUSPENDED_STARTS;
+                    nextCheck = suspendedStarts;
                 }
             });
         }

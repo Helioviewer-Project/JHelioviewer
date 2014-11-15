@@ -1908,7 +1908,7 @@ public class LayersModel implements ViewListener
             // First clear all Layers
             Log.info(">> LayersModel.StateParser.setupLayers() > Removing previously existing layers");
             int removedLayers=0;
-            while(LayersModel.getSingletonInstance().getNumLayers()>0 && removedLayers<1000)
+            while(LayersModel.getSingletonInstance().getNumLayers()>0||removedLayers>1000)
             {
                 LayersModel.getSingletonInstance().removeLayer(0);
                 removedLayers++;

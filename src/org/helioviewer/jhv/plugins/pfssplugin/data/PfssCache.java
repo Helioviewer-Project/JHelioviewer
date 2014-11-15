@@ -86,7 +86,7 @@ public class PfssCache {
 			if (tmp != null) {
 				PfssFitsFile fits = pfssDatas.get(tmp.getUrl());
 
-				if (!lastURL.equals(tmp.getUrl())) {
+				if (lastURL != tmp.getUrl()) {
 					toDelete = pfssDatas.get(lastURL);
 				}
 

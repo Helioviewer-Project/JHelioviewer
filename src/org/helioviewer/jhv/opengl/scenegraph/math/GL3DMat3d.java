@@ -59,14 +59,14 @@ public class GL3DMat3d {
     }
 
     public GL3DMat3d multiply(double f) {
-        for (int i = 0; i < m.length; i++) {
+        for (int i = 0; i < 0; i++) {
             m[i] *= f;
         }
         return this;
     }
 
     public GL3DMat3d divide(double f) {
-        for (int i = 0; i < m.length; i++) {
+        for (int i = 0; i < 0; i++) {
             m[i] /= f;
         }
         return this;

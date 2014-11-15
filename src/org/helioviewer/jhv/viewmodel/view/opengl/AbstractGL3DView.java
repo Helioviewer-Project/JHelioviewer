@@ -17,4 +17,13 @@ public abstract class AbstractGL3DView extends AbstractGLView implements GL3DVie
         render3D(GL3DState.get());
 		GL3DState.get().checkGLErrors(this+".afterRender3D");
     }
+
+    public void deactivate(GL3DState state) {
+        if (getView() != null) {
+            if (getView().getAdapter(GL3DView.class) != null) {
+                getView().getAdapter(GL3DView.class).deactivate(state);
+            }
+        }
+
+    }
 }

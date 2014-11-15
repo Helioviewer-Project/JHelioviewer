@@ -1,11 +1,19 @@
 package org.helioviewer.jhv.internal_plugins.filter.opacity;
 
+import java.awt.AlphaComposite;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+
 import javax.media.opengl.GL2;
 import javax.media.opengl.glu.GLU;
 
 import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.viewmodel.filter.AbstractFilter;
 import org.helioviewer.jhv.viewmodel.filter.GLFragmentShaderFilter;
+import org.helioviewer.jhv.viewmodel.filter.StandardFilter;
+import org.helioviewer.jhv.viewmodel.imagedata.ARGBInt32ImageData;
+import org.helioviewer.jhv.viewmodel.imagedata.ImageData;
+import org.helioviewer.jhv.viewmodel.imagedata.JavaBufferedImageData;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLFragmentShaderProgram;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLShaderBuilder;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLShaderBuilder.GLBuildShaderException;
@@ -25,7 +33,7 @@ import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLTextureCoordinate;
  * @author Markus Langenberg
  * 
  */
-public class OpacityFilter extends AbstractFilter implements GLFragmentShaderFilter {
+public class OpacityFilter extends AbstractFilter implements StandardFilter, GLFragmentShaderFilter {
 
     // ////////////////////////////////////////////////////////////////
     // Definitions
@@ -83,6 +91,33 @@ public class OpacityFilter extends AbstractFilter implements GLFragmentShaderFil
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public ImageData apply(ImageData data) {
+        if (data == null) {
+            return null;
+        }
+
+        if (opacity > 0.999f)
+            return data;
+
+        if (data instanceof JavaBufferedImageData) {
+            BufferedImage source = ((JavaBufferedImageData) data).getBufferedImage();
+            BufferedImage target = new BufferedImage(source.getWidth(), source.getHeight(), BufferedImage.TYPE_INT_ARGB);
+
+            Graphics2D g = target.createGraphics();
+            g.setComposite(AlphaComposite.Clear);
+            g.fillRect(0, 0, data.getWidth(), data.getHeight());
+            g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC, opacity));
+            g.drawImage(source, 0, 0, null);
+            g.dispose();
+
+            return new ARGBInt32ImageData(data, target);
+        }
+        return null;
+    }
+
+    /**
      * Fragment shader setting the opacity.
      */
     private class OpacityShader extends GLFragmentShaderProgram {
@@ -134,6 +169,13 @@ public class OpacityFilter extends AbstractFilter implements GLFragmentShaderFil
         this.checkGLErrors(gl, this+"afterBinding");
         shader.setAlpha(gl, opacity);
         this.checkGLErrors(gl, this+"afterSetAlpha");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void forceRefilter() {
+
     }
 
     /**

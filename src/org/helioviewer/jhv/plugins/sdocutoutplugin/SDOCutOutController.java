@@ -63,6 +63,10 @@ public class SDOCutOutController {
 		       	
     	Point point;
 	    
+	    if (region == null || viewport == null || metaData == null) {
+	    	point = new Point(position);
+	    }
+
 	    // get viewport image size
 	    ViewportImageSize vis = ViewHelper.calculateViewportImageSize(viewport, region);
 

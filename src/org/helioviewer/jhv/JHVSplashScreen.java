@@ -91,7 +91,7 @@ public class JHVSplashScreen extends JFrame implements StatusTextListener {
       setType(java.awt.Window.Type.UTILITY);
 	}
 	
-	/*private boolean isWindows()
+	private boolean isWindows()
 	{
 	  //should work, no matter what os/jdk release
 	  try
@@ -106,7 +106,7 @@ public class JHVSplashScreen extends JFrame implements StatusTextListener {
 	  {
 	    return false;
 	  }
-	}*/
+	}
 
 	/**
 	 * Initializes all visual components on the controller.

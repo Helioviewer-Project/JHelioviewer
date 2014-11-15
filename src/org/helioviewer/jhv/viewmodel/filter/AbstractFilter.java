@@ -3,7 +3,7 @@ package org.helioviewer.jhv.viewmodel.filter;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 
-public abstract class AbstractFilter implements Filter {
+public abstract class AbstractFilter implements ObservableFilter {
 	private CopyOnWriteArrayList<FilterListener> listeners = new CopyOnWriteArrayList<FilterListener>();
 
     /**

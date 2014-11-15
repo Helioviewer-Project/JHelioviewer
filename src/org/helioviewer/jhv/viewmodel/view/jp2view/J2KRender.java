@@ -152,6 +152,7 @@ class J2KRender implements Runnable {
 
         if (movieMode) {
             myThread.interrupt();
+            System.gc();
         }
 
         movieMode = val;
@@ -456,6 +457,7 @@ class J2KRender implements Runnable {
 
         public int getNextCandidate(int lastCandidate) {
             if (++lastCandidate > layers.getEnd()) {
+                System.gc();
                 resetStartTime(layers.getStart());
                 return layers.getStart();
             }

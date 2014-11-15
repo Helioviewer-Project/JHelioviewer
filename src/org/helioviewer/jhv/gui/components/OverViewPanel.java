@@ -6,9 +6,8 @@ import java.awt.Dimension;
 import javax.swing.JPanel;
 
 public class OverViewPanel extends JPanel{
-    private static final long serialVersionUID=1L;
-
-    public OverViewPanel() {
+	
+	public OverViewPanel() {
 		this.setPreferredSize(new Dimension(200, 200));
 		this.setBackground(Color.BLACK);
 	}

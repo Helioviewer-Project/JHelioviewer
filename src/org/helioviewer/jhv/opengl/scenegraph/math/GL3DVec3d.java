@@ -1,6 +1,6 @@
 package org.helioviewer.jhv.opengl.scenegraph.math;
 
-public class GL3DVec3d implements Cloneable {
+public class GL3DVec3d {
     /**
      * Predefined Vectors
      */

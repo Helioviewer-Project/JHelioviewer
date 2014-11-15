@@ -123,11 +123,9 @@ public abstract class GL3DShape extends GL3DNode {
     }
 
     public void delete(GL3DState state) {
-        if (parent != null)
-        {
+        if (parent != null && (parent instanceof GL3DGroup)) {
             ((GL3DGroup) parent).removeNode(this);
         }
-        
         parent = null;
         shapeDelete(state);
     }

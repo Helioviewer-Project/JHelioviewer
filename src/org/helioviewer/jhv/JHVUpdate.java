@@ -41,7 +41,8 @@ public class JHVUpdate implements Runnable {
      * Also it determines whether the properties update.check.* are used to
      * suspend the checks.
      */
-    private boolean verbose=false;
+    private boolean verbose;
+
 
     private NewVersionDialog d = new NewVersionDialog(verbose);
 
