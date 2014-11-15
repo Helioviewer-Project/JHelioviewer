@@ -33,7 +33,7 @@ public interface ScreenRenderer {
      * @param g
      *            render object provided by caller
      */
-    public void render(ScreenRenderGraphics g);
+    public void render(GLScreenRenderGraphics g);
     
     public void setContainerSize(int width, int height);
 }

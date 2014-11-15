@@ -7,7 +7,7 @@ import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 import org.helioviewer.jhv.plugins.pfssplugin.data.PfssCache;
 import org.helioviewer.jhv.plugins.pfssplugin.data.PfssData;
 import org.helioviewer.jhv.plugins.pfssplugin.data.PfssFitsFile;
-import org.helioviewer.jhv.viewmodel.renderer.physical.PhysicalRenderGraphics;
+import org.helioviewer.jhv.viewmodel.renderer.physical.GLPhysicalRenderGraphics;
 import org.helioviewer.jhv.viewmodel.renderer.physical.PhysicalRenderer3d;
 import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
 import org.helioviewer.jhv.viewmodel.view.View;
@@ -30,9 +30,9 @@ public class PfssPlugin3dRenderer extends PhysicalRenderer3d {
 	 * 
 	 * Draws all available and visible solar events with there associated icon.
 	 */
-	public void render(PhysicalRenderGraphics g) {
+	public void render(GLPhysicalRenderGraphics g) {
 		if (!LinkedMovieManager.getActiveInstance().isPlaying() && pfssCache.isVisible()) {
-			GL2 gl = g.getGL().getGL2();
+			GL2 gl = g.gl.getGL2();
 			PfssFitsFile fitsToClear = pfssCache.getFitsToDelete();
 			if (fitsToClear != null)
 				fitsToClear.clear(gl);

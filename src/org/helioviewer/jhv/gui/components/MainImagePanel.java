@@ -17,7 +17,7 @@ import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.changeevent.LayerChangedReason;
-import org.helioviewer.jhv.viewmodel.renderer.screen.ScreenRenderGraphics;
+import org.helioviewer.jhv.viewmodel.renderer.screen.GLScreenRenderGraphics;
 import org.helioviewer.jhv.viewmodel.renderer.screen.ScreenRenderer;
 import org.helioviewer.jhv.viewmodel.view.LayeredView;
 import org.helioviewer.jhv.viewmodel.view.View;
@@ -250,9 +250,9 @@ public class MainImagePanel extends BasicImagePanel {
          * 
          * Draws the no image loaded image.
          */
-        public void render(ScreenRenderGraphics g) {
+        public void render(GLScreenRenderGraphics g) {
             if (image != null) {
-                g.drawImage(image, (size.width - image.getWidth()) / 2, (size.height - image.getHeight()) / 2);
+                g.drawImage(image, (size.width - image.getWidth()) / 2, (size.height - image.getHeight()) / 2, image.getWidth(), image.getHeight());
             }
         }
     }
@@ -393,16 +393,17 @@ public class MainImagePanel extends BasicImagePanel {
          * 
          * Draws the loading image and its animation.
          */
-        public void render(ScreenRenderGraphics g) {
+        public void render(GLScreenRenderGraphics g) {
             if (image != null) {
-                g.drawImage(image, position.x, position.y);
+                g.drawImage(image, position.x, position.y, image.getWidth(), image.getHeight());
             }
 
             int centerX = position.x - radiusPearl + offsetX;
             int centerY = position.y - radiusPearl + offsetY;
 
             for (int i = 0; i < numPearls; i++) {
-                g.setColor(pearlColors[i]);
+                Color color=pearlColors[i];
+                g.gl.glColor4ub((byte) color.getRed(), (byte) color.getGreen(), (byte) color.getBlue(), (byte) color.getAlpha());
                 g.fillOval(centerX + (int) (radiusTrack * sinPositions[(i - currentPearlPos) & (numPearlPositions - 1)]), centerY + (int) (radiusTrack * sinPositions[(i - currentPearlPos + (numPearlPositions >> 2)) & (numPearlPositions - 1)]), radiusPearl * 2, radiusPearl * 2);
             }
         }
@@ -475,7 +476,7 @@ public class MainImagePanel extends BasicImagePanel {
         /**
          * {@inheritDoc}
          */
-        public void render(ScreenRenderGraphics g) {
+        public void render(GLScreenRenderGraphics g) {
             currentRenderer.render(g);
         }
 

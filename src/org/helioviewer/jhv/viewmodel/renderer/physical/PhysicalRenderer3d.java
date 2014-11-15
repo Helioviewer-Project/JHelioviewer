@@ -34,7 +34,7 @@ public abstract class PhysicalRenderer3d {
      * @param g
      *            render object provided by caller
      */
-    public void render(PhysicalRenderGraphics g){
+    public void render(GLPhysicalRenderGraphics g){
     	
     }
     

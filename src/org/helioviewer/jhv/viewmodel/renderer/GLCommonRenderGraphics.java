@@ -31,7 +31,7 @@ public class GLCommonRenderGraphics {
     private static GLScalePowerOfTwoVertexShaderProgram scalingShader;
     private static GLTextureCoordinate texCoord = new GLTextureHelper.GLMainTextureCoordinate();
 
-    private GL2 gl;
+    public GL2 gl;
     private static GLTextureHelper textureHelper = new GLTextureHelper();
     private static HashMap<BufferedImage, Integer> mapImageToTexture = new HashMap<BufferedImage, Integer>();
     private static HashMap<StringFontPair, Integer> mapStringToTexture = new HashMap<StringFontPair, Integer>();
@@ -167,15 +167,6 @@ public class GLCommonRenderGraphics {
     public void bindScalingShader() {
         gl.glEnable(GL2.GL_VERTEX_PROGRAM_ARB);
         scalingShader.bind(gl);
-    }
-
-    /**
-     * Unbinds the scaling shader.
-     * 
-     * This is the corresponding call to {@link #bindScalingShader()}.
-     */
-    public void unbindScalingShader() {
-        gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
     }
 
     /**
