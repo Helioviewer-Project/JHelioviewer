@@ -230,8 +230,8 @@ public class LUT {
             // From the resources
             String ggrFiles[] = { "AIA94", "AIA131", "AIA171", "AIA193", "AIA211", "AIA304", "AIA335", "AIA1600", "AIA1700", "AIA4500" };
             for (String file : ggrFiles) {
-                try {
-                    LUT l = readGimpGradientStream(FileUtils.getResourceInputStream("/ggr/" + file + ".ggr"));
+                try(InputStream is = FileUtils.getResourceInputStream("/ggr/" + file + ".ggr")) {
+                    LUT l = readGimpGradientStream(is);
                     standardList.put(l.getName(), l);
                 } catch (FileNotFoundException e) {
                     Log.warn("Could not restore gimp gradient file " + file, e);

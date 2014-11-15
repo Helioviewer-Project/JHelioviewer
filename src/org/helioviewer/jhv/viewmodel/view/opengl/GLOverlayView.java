@@ -9,7 +9,6 @@ import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.changeevent.RegionChangedReason;
 import org.helioviewer.jhv.viewmodel.changeevent.ViewChainChangedReason;
 import org.helioviewer.jhv.viewmodel.renderer.physical.GLPhysicalRenderGraphics;
-import org.helioviewer.jhv.viewmodel.renderer.physical.PhysicalRenderer3d;
 import org.helioviewer.jhv.viewmodel.view.LayeredView;
 import org.helioviewer.jhv.viewmodel.view.OverlayView;
 import org.helioviewer.jhv.viewmodel.view.View;
@@ -130,7 +129,7 @@ public class GLOverlayView extends AbstractGLView implements OverlayView{
 
 	@Override
 	// Just implemented for exist plugin, for new one, pls don't use this function
-	public void setRenderer(PhysicalRenderer3d renderer) {
+	public void setRenderer(GLPhysicalRenderGraphics renderer) {
 		// TODO Auto-generated method stub
 		OverlayPluginContainer overlayPluginContainer = new OverlayPluginContainer();
 		this.overlays.add(overlayPluginContainer);

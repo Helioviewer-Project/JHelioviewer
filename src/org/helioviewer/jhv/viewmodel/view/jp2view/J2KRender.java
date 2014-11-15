@@ -152,7 +152,6 @@ class J2KRender implements Runnable {
 
         if (movieMode) {
             myThread.interrupt();
-            System.gc();
         }
 
         movieMode = val;

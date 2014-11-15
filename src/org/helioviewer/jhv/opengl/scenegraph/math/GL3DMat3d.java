@@ -1,6 +1,6 @@
 package org.helioviewer.jhv.opengl.scenegraph.math;
 
-public class GL3DMat3d {
+public class GL3DMat3d implements Cloneable {
     private double[] m = new double[9];/*
                                         * / 0 3 6 \ | 1 4 7 | \ 2 5 8 /
                                         */
@@ -59,14 +59,14 @@ public class GL3DMat3d {
     }
 
     public GL3DMat3d multiply(double f) {
-        for (int i = 0; i < 0; i++) {
+        for (int i = 0; i < m.length; i++) {
             m[i] *= f;
         }
         return this;
     }
 
     public GL3DMat3d divide(double f) {
-        for (int i = 0; i < 0; i++) {
+        for (int i = 0; i < m.length; i++) {
             m[i] /= f;
         }
         return this;

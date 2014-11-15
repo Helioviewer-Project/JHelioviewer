@@ -294,22 +294,6 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 		}
 	}
 
-	public int getNumberOfModels() {
-		if (this.root == null) {
-			return 0;
-		}
-		return this.root.getNumberOfChilds(GL3DModel.class);
-	}
-
-	public GL3DGroup getRoot() {
-		return this.root;
-	}
-
-	public void deactivate(GL3DState state) {
-		super.deactivate(state);
-		this.getRoot().delete(state);
-	}
-
 	private GL3DGroup createRoot() {
 		GL3DGroup root = new GL3DGroup("Scene Root");
 

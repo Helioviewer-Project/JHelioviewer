@@ -124,23 +124,21 @@ public abstract class DateTimeCache {
 
         nextDateToParse = 0;
 
-        if (parent instanceof ImageInfoView) {
-            APIResponse apiResponse = APIResponseDump.getSingletonInstance().getResponse(((ImageInfoView) parent).getUri());
+        APIResponse apiResponse = APIResponseDump.getSingletonInstance().getResponse(((ImageInfoView) parent).getUri());
 
-            if (apiResponse != null) {
-                String rawFrames = apiResponse.getString("frames").replaceAll("\\[|\\]", "");
+        if (apiResponse != null) {
+            String rawFrames = apiResponse.getString("frames").replaceAll("\\[|\\]", "");
 
-                if (rawFrames != null) {
-                    String[] frames = rawFrames.split(",");
+            if (rawFrames != null) {
+                String[] frames = rawFrames.split(",");
 
-                    if (frames.length - 1 == parent.getMaximumFrameNumber()) {
-                        do {
-                            cache[nextDateToParse] = new ImmutableDateTime(Integer.parseInt(frames[nextDateToParse]));
-                            fireChangeEventIfNecessary();
-                            nextDateToParse++;
+                if (frames.length - 1 == parent.getMaximumFrameNumber()) {
+                    do {
+                        cache[nextDateToParse] = new ImmutableDateTime(Integer.parseInt(frames[nextDateToParse]));
+                        fireChangeEventIfNecessary();
+                        nextDateToParse++;
 
-                        } while (!stopParsing && nextDateToParse <= parent.getMaximumFrameNumber());
-                    }
+                    } while (!stopParsing && nextDateToParse <= parent.getMaximumFrameNumber());
                 }
             }
         }

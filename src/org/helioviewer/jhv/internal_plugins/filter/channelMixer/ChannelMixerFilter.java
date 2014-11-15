@@ -4,17 +4,7 @@ import javax.media.opengl.GL2;
 
 import org.helioviewer.jhv.viewmodel.filter.AbstractFilter;
 import org.helioviewer.jhv.viewmodel.filter.GLPostFilter;
-import org.helioviewer.jhv.viewmodel.filter.StandardFilter;
-import org.helioviewer.jhv.viewmodel.imagedata.ARGBInt32ImageData;
 import org.helioviewer.jhv.viewmodel.imagedata.ColorMask;
-import org.helioviewer.jhv.viewmodel.imagedata.ImageData;
-import org.helioviewer.jhv.viewmodel.imagedata.RGBInt24ImageData;
-import org.helioviewer.jhv.viewmodel.imagedata.SingleChannelByte8ImageData;
-import org.helioviewer.jhv.viewmodel.imagedata.SingleChannelShortImageData;
-import org.helioviewer.jhv.viewmodel.imageformat.SingleChannelImageFormat;
-import org.helioviewer.jhv.viewmodel.imagetransport.Byte8ImageTransport;
-import org.helioviewer.jhv.viewmodel.imagetransport.Int32ImageTransport;
-import org.helioviewer.jhv.viewmodel.imagetransport.Short16ImageTransport;
 
 /**
  * Filter for modifying the color mask of an image.
@@ -31,11 +21,10 @@ import org.helioviewer.jhv.viewmodel.imagetransport.Short16ImageTransport;
  * 
  * @author Markus Langenberg
  */
-public class ChannelMixerFilter extends AbstractFilter implements StandardFilter, GLPostFilter {
+public class ChannelMixerFilter extends AbstractFilter implements GLPostFilter {
 
     private ColorMask colorMask = new ColorMask();
     private ChannelMixerPanel panel;
-    private boolean forceRefilter = false;
 
     /**
      * Sets the corresponding channel mixer panel.
@@ -71,31 +60,6 @@ public class ChannelMixerFilter extends AbstractFilter implements StandardFilter
 
     /**
      * {@inheritDoc}
-     */
-    public ImageData apply(ImageData data) {
-
-        if (data == null) {
-            return null;
-        }
-
-        if (data.getColorMask() == colorMask && !forceRefilter) {
-            return data;
-        }
-
-        if (data instanceof SingleChannelByte8ImageData)
-            return new SingleChannelByte8ImageData(data.getWidth(), data.getHeight(), ((Byte8ImageTransport) data.getImageTransport()).getByte8PixelData(), colorMask);
-        else if (data instanceof ARGBInt32ImageData)
-            return new ARGBInt32ImageData(data.getWidth(), data.getHeight(), ((Int32ImageTransport) data.getImageTransport()).getInt32PixelData(), colorMask);
-        else if (data instanceof RGBInt24ImageData)
-            return new RGBInt24ImageData(data.getWidth(), data.getHeight(), ((Int32ImageTransport) data.getImageTransport()).getInt32PixelData(), colorMask);
-        else if (data instanceof SingleChannelShortImageData)
-            return new SingleChannelShortImageData(data.getWidth(), data.getHeight(), ((SingleChannelImageFormat) data.getImageFormat()).getBitDepth(), ((Short16ImageTransport) data.getImageTransport()).getShort16PixelData(), colorMask);
-
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
      * 
      * <p>
      * In this case, sets the color mask by calling the corresponding
@@ -123,13 +87,6 @@ public class ChannelMixerFilter extends AbstractFilter implements StandardFilter
      */
     public boolean isMajorFilter() {
         return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void forceRefilter() {
-        forceRefilter = true;
     }
 
     /**

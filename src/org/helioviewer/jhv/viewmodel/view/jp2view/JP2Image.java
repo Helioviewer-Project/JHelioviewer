@@ -8,6 +8,7 @@ import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -48,7 +49,7 @@ public class JP2Image implements MultiFrameMetaDataContainer {
     /** An array of the file extensions this class currently supports */
     public static final String[] SUPPORTED_EXTENSIONS = { ".JP2", ".JPX" };
 
-    private static int numJP2Images = 0;
+    private static AtomicInteger numJP2Images = new AtomicInteger();
 
     /** This is the URI that uniquely identifies the image. */
     private URI uri;
@@ -149,7 +150,7 @@ public class JP2Image implements MultiFrameMetaDataContainer {
      * @throws JHV_KduException
      */
     public JP2Image(URI newUri, URI downloadURI) throws IOException, JHV_KduException {
-        numJP2Images++;
+        numJP2Images.incrementAndGet();
 
         uri = newUri;
         this.downloadURI = downloadURI;
@@ -681,7 +682,7 @@ public class JP2Image implements MultiFrameMetaDataContainer {
             throw new IllegalStateException("JP2Image abolished more than once: " + uri);
         }
 
-        numJP2Images--;
+        numJP2Images.decrementAndGet();
 
         APIResponseDump.getSingletonInstance().removeResponse(uri);
 
@@ -812,6 +813,6 @@ public class JP2Image implements MultiFrameMetaDataContainer {
      * @return Number of JP2Image instances currently in use
      */
     static int numJP2ImagesInUse() {
-        return numJP2Images;
+        return numJP2Images.get();
     }
 }

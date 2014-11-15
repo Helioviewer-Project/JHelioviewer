@@ -300,7 +300,7 @@ public class HEKEvent implements IntervalComparison<Date> {
      * @see org.helioviewer.jhv.base.math.Interval#containsInclusive
      */
     public boolean containsInclusive(Interval<Date> other) {
-        return this.containsInclusive(other);
+        return duration.containsInclusive(other);
     }
 
     /**

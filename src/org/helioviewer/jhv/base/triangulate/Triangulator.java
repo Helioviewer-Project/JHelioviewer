@@ -1981,7 +1981,6 @@ class Triangulator
         ind0=triRef.list[ind1].prev;
         i0=triRef.list[ind0].index;
         ind4=triRef.list[ind3].next;
-        i4=triRef.list[ind4].index;
         if(ind0==ind4)
         {
             triRef.storeTriangle(ind1,ind3,ind4);
@@ -2097,7 +2096,6 @@ class Triangulator
         i3=triRef.list[ind3].index;
         if(ind0==ind3)
         {
-            i1=triRef.list[ind1].index;
             triRef.storeTriangle(ind1,ind2,ind3);
             return true;
         }

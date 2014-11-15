@@ -2,6 +2,7 @@ package org.helioviewer.jhv.plugins.hekplugin.cache;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.Vector;
 
 import org.helioviewer.jhv.base.math.Interval;
@@ -63,9 +64,9 @@ public class HEKCacheLoadingModel {
 
         HashMap<HEKPath, Vector<Interval<Date>>> result = new HashMap<HEKPath, Vector<Interval<Date>>>();
 
-        for (HEKPath path : needed.keySet()) {
-            if (getState(path, false) == state) {
-                result.put(path, needed.get(path));
+        for (Entry<HEKPath,Vector<Interval<Date>>> e : needed.entrySet()) {
+            if (getState(e.getKey(), false) == state) {
+                result.put(e.getKey(), e.getValue());
             }
 
         }

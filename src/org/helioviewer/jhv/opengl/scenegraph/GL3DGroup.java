@@ -237,44 +237,6 @@ public class GL3DGroup extends GL3DShape {
         return node;
     }
     
-    private static int modelCounter = 0;
-    
-    public synchronized GL3DModel getModelAt(int index) {
-        modelCounter = index;
-        GL3DNode node = this.first;
-        while(node!=null) {
-            if(GL3DModel.class.isAssignableFrom(node.getClass())) {
-                if(modelCounter==0) {
-                    return (GL3DModel)node;
-                }
-                modelCounter--;
-            }
-            if(node instanceof GL3DGroup) {
-                GL3DModel model = ((GL3DGroup)node).getModelAt(modelCounter);
-                if(model!=null) {
-                    return model;
-                }
-            }
-            node = node.next;
-        }
-        return null;
-    }
-    
-    public int getNumberOfChilds(Class<? extends GL3DNode> typeOfChild) {
-        int numberOfChilds = 0;
-        GL3DNode node = this.first;
-        while(node!=null) {
-            if(typeOfChild.isAssignableFrom(node.getClass())) {
-                numberOfChilds++;
-            }
-            if(node instanceof GL3DGroup) {
-                numberOfChilds+= ((GL3DGroup)node).getNumberOfChilds(typeOfChild);
-            }
-            node = node.next;
-        }
-        return numberOfChilds;
-    }
-    
     public GL3DAABBox buildAABB() {
         GL3DNode current = this.first;
         this.aabb = new GL3DAABBox();

@@ -1,6 +1,6 @@
 package org.helioviewer.jhv.opengl.scenegraph.math;
 
-public class GL3DQuatd {
+public class GL3DQuatd implements Cloneable {
     public static final double EPSILON = 0.000001;
 
     protected double a;
