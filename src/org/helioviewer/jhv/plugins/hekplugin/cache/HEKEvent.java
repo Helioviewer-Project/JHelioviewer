@@ -4,8 +4,6 @@ import java.awt.image.BufferedImage;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Locale;
-import java.util.Scanner;
 import java.util.Vector;
 
 import org.helioviewer.jhv.base.logging.Log;
@@ -54,7 +52,7 @@ public class HEKEvent implements IntervalComparison<Date> {
     
     //Maximum number of points of the outline. If there are more points than this limit
     //the points will be subsampled. (no smoothing)
-    static final int MAX_OUTLINE_POINTS=50;
+    static final int MAX_OUTLINE_POINTS=256;
 
     /**
      * Flag to indicate if the event is currently being displayed in any event popup
@@ -468,14 +466,27 @@ public class HEKEvent implements IntervalComparison<Date> {
      *            - time for which the transformation should be done
      * @return converted screen coordinates, (0.0,0.0) if an error occurs
      */
+    
+    private static Date lastDate;
+    private static double lastBZero;
     public static Vector3dDouble convertToSceneCoordinates(SphericalCoord stony, Date now) {
 
         if (stony == null)
             return new Vector3dDouble(0, 0, 0);
 
-        GregorianCalendar c = new GregorianCalendar();
-        c.setTime(now);
-        double bzero = Astronomy.getB0InDegree(c);
+        double bzero;
+        if(lastDate==null || !now.equals(lastDate))
+        {
+            GregorianCalendar c = new GregorianCalendar();
+            c.setTime(now);
+            lastBZero = bzero = Astronomy.getB0InDegree(c);
+            lastDate=now;
+        }
+        else
+        {
+            bzero=lastBZero;
+        }
+        
         double phizero = 0.0; // do we have a value for this?
         SphericalCoord normalizedStony = new SphericalCoord(stony);
         normalizedStony.r = Constants.SUN_RADIUS;
@@ -548,25 +559,21 @@ public class HEKEvent implements IntervalComparison<Date> {
         poly = poly.substring(9);
         poly = poly.substring(0, poly.length() - 2);
 
-        Scanner s = new Scanner(poly);
-        s.useLocale(Locale.ENGLISH);
-        s.useDelimiter("[ ,]");
-
-        while (s.hasNextDouble()) {
-            double firstCoordinate = s.nextDouble();
-            if (!s.hasNextDouble()) {
-                Log.fatal("Inconsistent polygon string...");
-                break;
+        String[] parts=poly.split("[ ,]");
+        for(int i=0;i<parts.length-1;i+=2)
+        {
+            try
+            {
+                double firstCoordinate=Double.parseDouble(parts[i]);
+                double secondCoordinate=Double.parseDouble(parts[i+1]);
+                SphericalCoord stony = new SphericalCoord(secondCoordinate, firstCoordinate, Constants.SUN_RADIUS);
+                result.add(stony);
             }
-            double secondCoordinate = s.nextDouble();
-
-            SphericalCoord stony = new SphericalCoord(secondCoordinate, firstCoordinate, Constants.SUN_RADIUS);
-
-            result.add(stony);
+            catch(NumberFormatException _nfe)
+            {
+                Log.fatal("Inconsistent polygon string...");
+            }
         }
-        
-        s.close();
-        
         
         if(result.size()>MAX_OUTLINE_POINTS)
         {
