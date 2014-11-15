@@ -155,7 +155,7 @@ public class GLScreenRenderGraphics extends AbstractScreenRenderGraphics {
         int centerX = x + radiusX;
         int centerY = y + radiusY;
 
-        if (width == height) {
+        if (width.equals(height)) {
             gl.glPointSize(width);
 
             gl.glBegin(GL2.GL_POINTS);

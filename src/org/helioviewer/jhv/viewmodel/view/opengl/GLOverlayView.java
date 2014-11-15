@@ -128,7 +128,6 @@ public class GLOverlayView extends AbstractGLView implements OverlayView{
 		
 	}
 
-	@Override
 	// Just implemented for exist plugin, for new one, pls don't use this function
 	public void setRenderer(PhysicalRenderer3d renderer) {
 		// TODO Auto-generated method stub
