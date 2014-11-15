@@ -12,18 +12,28 @@ import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.changeevent.LayerChangedReason;
-import org.helioviewer.jhv.viewmodel.changeevent.LayerChangedReason.LayerChangeType;
 import org.helioviewer.jhv.viewmodel.changeevent.NonConstantMetaDataChangedReason;
 import org.helioviewer.jhv.viewmodel.changeevent.RegionChangedReason;
 import org.helioviewer.jhv.viewmodel.changeevent.RegionUpdatedReason;
 import org.helioviewer.jhv.viewmodel.changeevent.SubImageDataChangedReason;
 import org.helioviewer.jhv.viewmodel.changeevent.ViewChainChangedReason;
+import org.helioviewer.jhv.viewmodel.changeevent.LayerChangedReason.LayerChangeType;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.region.Region;
 import org.helioviewer.jhv.viewmodel.region.RegionAdapter;
 import org.helioviewer.jhv.viewmodel.region.StaticRegion;
-import org.helioviewer.jhv.viewmodel.view.*;
+import org.helioviewer.jhv.viewmodel.view.AbstractView;
+import org.helioviewer.jhv.viewmodel.view.LayeredView;
+import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
+import org.helioviewer.jhv.viewmodel.view.MetaDataView;
+import org.helioviewer.jhv.viewmodel.view.RegionView;
+import org.helioviewer.jhv.viewmodel.view.SubimageDataView;
+import org.helioviewer.jhv.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.ViewHelper;
+import org.helioviewer.jhv.viewmodel.view.ViewListener;
+import org.helioviewer.jhv.viewmodel.view.ViewportView;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJP2View;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLFragmentShaderView;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLMinimalFragmentShaderProgram;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLMinimalVertexShaderProgram;
@@ -161,6 +171,18 @@ public class GL3DLayeredView extends AbstractView implements LayeredView, Region
             }
         }
         renderLock.unlock();
+    }
+
+    public void deactivate(GL3DState state) {
+        for (int i = 0; i < getNumLayers(); i++) {
+            if (getLayer(i).getAdapter(GL3DView.class) != null) {
+                JHVJPXView JHVJPXView = getLayer(i).getAdapter(JHVJPXView.class);
+                if (JHVJPXView != null) {
+                    JHVJPXView.pauseMovie();
+                }
+                getLayer(i).getAdapter(GL3DView.class).deactivate(state);
+            }
+        }
     }
 
     /**

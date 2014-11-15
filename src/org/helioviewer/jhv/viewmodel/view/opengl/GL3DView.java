@@ -12,4 +12,6 @@ import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
  */
 public interface GL3DView extends GLView {
     public void render3D(GL3DState state);
+
+    public void deactivate(GL3DState state);
 }

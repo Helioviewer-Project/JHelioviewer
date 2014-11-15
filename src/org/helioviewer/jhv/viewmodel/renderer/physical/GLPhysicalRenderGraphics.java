@@ -27,14 +27,7 @@ import org.helioviewer.jhv.viewmodel.view.View;
 public class GLPhysicalRenderGraphics extends AbstractPhysicalRenderGraphics {
 
     private static final int POINTS_PER_OVAL = 32; // has to be power of two
-    private static final double[] SIN_TABLE=new double[POINTS_PER_OVAL];
-    
-    static
-    {
-        for (int i = 0; i < POINTS_PER_OVAL; i++) {
-            SIN_TABLE[i] = Math.sin(Math.PI * 2 * i / POINTS_PER_OVAL);
-        }
-    }
+    private static double[] sinOval;
 
     private GL2 gl;
     private GLCommonRenderGraphics commonRenderGraphics;
@@ -57,6 +50,13 @@ public class GLPhysicalRenderGraphics extends AbstractPhysicalRenderGraphics {
     	super(view);
     	gl = _gl;
         commonRenderGraphics = new GLCommonRenderGraphics(_gl);
+
+        if (sinOval == null) {
+            sinOval = new double[POINTS_PER_OVAL];
+            for (int i = 0; i < POINTS_PER_OVAL; i++) {
+                sinOval[i] = Math.sin(Math.PI * 2 * i / POINTS_PER_OVAL);
+            }
+        }
     }
 
     /**
@@ -151,7 +151,7 @@ public class GLPhysicalRenderGraphics extends AbstractPhysicalRenderGraphics {
         gl.glBegin(GL2.GL_LINE_LOOP);
 
         for (int i = 0; i < POINTS_PER_OVAL; i++) {
-            gl.glVertex2d(x + (int) (radiusX * SIN_TABLE[i]), y + (int) (radiusY * SIN_TABLE[(i + (POINTS_PER_OVAL >> 2)) & (POINTS_PER_OVAL - 1)]));
+            gl.glVertex2d(x + (int) (radiusX * sinOval[i]), y + (int) (radiusY * sinOval[(i + (POINTS_PER_OVAL >> 2)) & (POINTS_PER_OVAL - 1)]));
         }
 
         gl.glEnd();
@@ -169,7 +169,7 @@ public class GLPhysicalRenderGraphics extends AbstractPhysicalRenderGraphics {
         double radiusX = width * 0.5;
         double radiusY = height * 0.5;
 
-        if (width.equals(height)) {
+        if (width == height) {
             gl.glPointSize(width.floatValue());
 
             gl.glBegin(GL2.GL_POINTS);
@@ -181,7 +181,7 @@ public class GLPhysicalRenderGraphics extends AbstractPhysicalRenderGraphics {
             gl.glVertex2d(x, y);
 
             for (int i = 0; i < POINTS_PER_OVAL; i++) {
-                gl.glVertex2d(x + (radiusX * SIN_TABLE[i]), y + (radiusY * SIN_TABLE[(i + (POINTS_PER_OVAL >> 2)) & (POINTS_PER_OVAL - 1)]));
+                gl.glVertex2d(x + (radiusX * sinOval[i]), y + (radiusY * sinOval[(i + (POINTS_PER_OVAL >> 2)) & (POINTS_PER_OVAL - 1)]));
             }
 
             gl.glVertex2d(x, y + radiusY);
