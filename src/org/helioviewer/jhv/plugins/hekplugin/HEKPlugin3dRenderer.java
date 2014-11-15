@@ -8,7 +8,7 @@ import java.util.Vector;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
-import org.helioviewer.jhv.base.math.GL3DMat4d;
+import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.math.SphericalCoord;
 import org.helioviewer.jhv.base.math.Vector2d;
@@ -152,7 +152,7 @@ public class HEKPlugin3dRenderer extends PhysicalRenderer3d
 
                 double angle=Math.acos(sourceDir.dot(targetDir)/(sourceDir.length()*targetDir.length()));
                 GL3DVec3d axis=sourceDir.cross(targetDir);
-                GL3DMat4d r=GL3DMat4d.rotation(angle,axis.normalize());
+                Matrix4d r=Matrix4d.rotation(angle,axis.normalize());
                 r.setTranslation(x,y,z);
 
                 GL3DVec3d p0=new GL3DVec3d(-width2,-height2,0);

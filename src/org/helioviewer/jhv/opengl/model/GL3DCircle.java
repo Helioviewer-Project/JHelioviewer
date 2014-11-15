@@ -3,8 +3,8 @@ package org.helioviewer.jhv.opengl.model;
 import java.util.List;
 
 import org.helioviewer.jhv.base.GL3DHelper;
-import org.helioviewer.jhv.base.math.GL3DMat4d;
-import org.helioviewer.jhv.base.math.GL3DQuatd;
+import org.helioviewer.jhv.base.math.Matrix4d;
+import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.GL3DVec2d;
 import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.math.GL3DVec4d;
@@ -17,7 +17,7 @@ public class GL3DCircle extends GL3DMesh {
     private double radius;
     private GL3DVec4d color;
     private GL3DImageLayer layer;
-    private GL3DMat4d phiRotation = null;
+    private Matrix4d phiRotation = null;
     
     public GL3DCircle(double radius, GL3DVec4d color, String name, GL3DImageLayer layer) {
         super(name);
@@ -34,7 +34,7 @@ public class GL3DCircle extends GL3DMesh {
 
         GL3DVec3d orientation = GL3DHelper.toVec(toViewSpace.convert(orientationVector)).normalize();
 
-        phiRotation = GL3DQuatd.calcRotation(orientation,new GL3DVec3d(0,0,1)).toMatrix().inverse();	        
+        phiRotation = Quaternion3d.calcRotation(orientation,new GL3DVec3d(0,0,1)).toMatrix().inverse();	        
         
     	if (!(orientation.equals(new GL3DVec3d(0, 1, 0)))) {
             GL3DVec3d orientationXZ = new GL3DVec3d(orientation.x, 0, orientation.z);
@@ -43,7 +43,7 @@ public class GL3DCircle extends GL3DMesh {
                 phi = 0 - phi;
             }
             
-            phiRotation = GL3DMat4d.rotation(phi, new GL3DVec3d(0, 1, 0));
+            phiRotation = Matrix4d.rotation(phi, new GL3DVec3d(0, 1, 0));
             
         }
     	

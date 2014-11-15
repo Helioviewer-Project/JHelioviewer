@@ -1,9 +1,9 @@
 package org.helioviewer.jhv.base.wcs;
 
-import org.helioviewer.jhv.base.math.GL3DMat4d;
+import org.helioviewer.jhv.base.math.Matrix4d;
 
 public class IdentityMatrixConversion implements MatrixCoordinateConversion {
-    private static GL3DMat4d identity = GL3DMat4d.identity();
+    private static Matrix4d identity = Matrix4d.identity();
 
     private CoordinateSystem source;
     private CoordinateSystem target;
@@ -25,7 +25,7 @@ public class IdentityMatrixConversion implements MatrixCoordinateConversion {
         return vector;
     }
 
-    public GL3DMat4d getConversionMatrix() {
+    public Matrix4d getConversionMatrix() {
         return identity;
     }
 }

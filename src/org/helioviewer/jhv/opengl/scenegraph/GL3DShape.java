@@ -1,6 +1,6 @@
 package org.helioviewer.jhv.opengl.scenegraph;
 
-import org.helioviewer.jhv.base.math.GL3DMat4d;
+import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.GL3DVec4d;
 import org.helioviewer.jhv.base.wcs.CoordinateSystem;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DDrawBits.Bit;
@@ -16,11 +16,11 @@ import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
  */
 public abstract class GL3DShape extends GL3DNode {
     // Model Matrix
-    protected GL3DMat4d mv;
+    protected Matrix4d mv;
 
     // World Matrix
-    protected GL3DMat4d wm;
-    protected GL3DMat4d wmI;
+    protected Matrix4d wm;
+    protected Matrix4d wmI;
 
     protected GL3DAABBox aabb;
 
@@ -31,8 +31,8 @@ public abstract class GL3DShape extends GL3DNode {
     public GL3DShape(String name, CoordinateSystem coordinateSystem) {
         super(name);
 
-        this.mv = GL3DMat4d.identity();
-        this.wm = GL3DMat4d.identity();
+        this.mv = Matrix4d.identity();
+        this.wm = Matrix4d.identity();
         this.aabb = new GL3DAABBox();
     }
 
@@ -40,7 +40,7 @@ public abstract class GL3DShape extends GL3DNode {
         state.pushMV();
         this.wm = state.multiplyMV(this.mv);
         state.buildInverseAndNormalMatrix();
-        this.wmI = new GL3DMat4d(state.getMVInverse());
+        this.wmI = new Matrix4d(state.getMVInverse());
         
         this.shapeInit(state);
         this.buildAABB();
@@ -57,7 +57,7 @@ public abstract class GL3DShape extends GL3DNode {
             //this.updateMatrix(state);
             this.wm = state.multiplyMV(this.mv);
             state.buildInverseAndNormalMatrix();
-            this.wmI = new GL3DMat4d(state.getMVInverse());
+            this.wmI = new Matrix4d(state.getMVInverse());
             this.shapeUpdate(state);
             this.setUnchanged();
             this.buildAABB();
@@ -141,7 +141,7 @@ public abstract class GL3DShape extends GL3DNode {
 
     public abstract void shapeUpdate(GL3DState state);
 
-    public GL3DMat4d modelView() {
+    public Matrix4d modelView() {
         return this.mv;
     }
 

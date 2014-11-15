@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.media.opengl.GL2;
 
-import org.helioviewer.jhv.base.math.GL3DMat4d;
+import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.math.GL3DVec4d;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DMesh.GL3DMeshPrimitive;
@@ -32,7 +32,7 @@ public class GL3DAABBox {
     private GL3DBuffer colorBuffer;
     private GL3DBuffer indexBuffer;
 
-    public void fromOStoWS(GL3DVec3d minOS, GL3DVec3d maxOS, GL3DMat4d wm) {
+    public void fromOStoWS(GL3DVec3d minOS, GL3DVec3d maxOS, Matrix4d wm) {
         this.minWS.set(new GL3DVec3d(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE));
         this.maxWS.set(new GL3DVec3d(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE));
         this.minOS.set(minOS);
@@ -58,7 +58,7 @@ public class GL3DAABBox {
         }
     }
 
-    public void fromWStoOS(GL3DVec3d minWS, GL3DVec3d maxWS, GL3DMat4d wmI) {
+    public void fromWStoOS(GL3DVec3d minWS, GL3DVec3d maxWS, Matrix4d wmI) {
         this.minOS.set(new GL3DVec3d(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE));
         this.maxOS.set(new GL3DVec3d(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE));
         this.minWS.set(minWS);

@@ -9,8 +9,8 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
 import org.helioviewer.jhv.base.logging.Log;
-import org.helioviewer.jhv.base.math.GL3DMat4d;
-import org.helioviewer.jhv.base.math.GL3DQuatd;
+import org.helioviewer.jhv.base.math.Matrix4d;
+import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.base.wcs.CoordinateSystem;
@@ -43,9 +43,9 @@ public abstract class GL3DCamera {
 
     // This is the resulting cameraTransformation. All interactions should
     // modify this matrix
-    private GL3DMat4d cameraTransformation;
+    private Matrix4d cameraTransformation;
 
-    private GL3DQuatd rotation;
+    private Quaternion3d rotation;
     protected GL3DVec3d translation;
 
     private Stack<GL3DCameraAnimation> cameraAnimations = new Stack<GL3DCameraAnimation>();
@@ -57,8 +57,8 @@ public abstract class GL3DCamera {
     }
 
     public GL3DCamera() {
-        this.cameraTransformation = GL3DMat4d.identity();
-        this.rotation = GL3DQuatd.createRotation(0.0, new GL3DVec3d(0, 1, 0));
+        this.cameraTransformation = Matrix4d.identity();
+        this.rotation = Quaternion3d.createRotation(0.0, new GL3DVec3d(0, 1, 0));
         this.translation = new GL3DVec3d();
     }
 
@@ -109,7 +109,7 @@ public abstract class GL3DCamera {
         return this.translation;
     }
 
-    public GL3DMat4d getCameraTransformation() {
+    public Matrix4d getCameraTransformation() {
         return this.cameraTransformation;
     }
 
@@ -117,7 +117,7 @@ public abstract class GL3DCamera {
         return getTranslation().z;
     }
 
-    public GL3DQuatd getRotation() {
+    public Quaternion3d getRotation() {
         return this.rotation;
     }
 
@@ -158,7 +158,7 @@ public abstract class GL3DCamera {
      * translation information.
      */
     public void updateCameraTransformation(boolean fireEvent) {
-        cameraTransformation = GL3DMat4d.identity();
+        cameraTransformation = Matrix4d.identity();
         cameraTransformation.translate(this.translation);
         cameraTransformation.multiply(this.rotation.toMatrix());
 
@@ -191,7 +191,7 @@ public abstract class GL3DCamera {
         this.cameraAnimations.add(animation);
     }
 
-    public abstract GL3DMat4d getVM();
+    public abstract Matrix4d getVM();
 
     public abstract double getDistanceToSunSurface();
 

@@ -4,7 +4,7 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 
 import org.helioviewer.jhv.base.logging.Log;
-import org.helioviewer.jhv.base.math.GL3DQuatd;
+import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRayTracer;
@@ -22,7 +22,7 @@ import org.helioviewer.jhv.viewmodel.view.opengl.GL3DSceneGraphView;
 public class GL3DTrackballRotationInteraction extends GL3DDefaultInteraction {
     private GL3DVec3d currentRotationStartPoint;
     private GL3DVec3d currentRotationEndPoint;
-    private volatile GL3DQuatd currentDragRotation;
+    private volatile Quaternion3d currentDragRotation;
 
     protected GL3DTrackballRotationInteraction(GL3DTrackballCamera camera, GL3DSceneGraphView sceneGraph) {
         super(camera, sceneGraph);
@@ -32,7 +32,7 @@ public class GL3DTrackballRotationInteraction extends GL3DDefaultInteraction {
         this.currentRotationEndPoint = getVectorFromSphere(e.getPoint(), camera);
         try {
         	if (currentRotationStartPoint != null && currentRotationEndPoint != null){
-            currentDragRotation = GL3DQuatd.calcRotation(currentRotationStartPoint, currentRotationEndPoint);
+            currentDragRotation = Quaternion3d.calcRotation(currentRotationStartPoint, currentRotationEndPoint);
             if (currentDragRotation != null){
 	            camera.getRotation().rotate(currentDragRotation);
 	            this.camera.updateCameraTransformation(false);

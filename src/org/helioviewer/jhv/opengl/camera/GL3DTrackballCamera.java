@@ -2,8 +2,8 @@ package org.helioviewer.jhv.opengl.camera;
 
 import java.util.Date;
 
-import org.helioviewer.jhv.base.math.GL3DMat4d;
-import org.helioviewer.jhv.base.math.GL3DQuatd;
+import org.helioviewer.jhv.base.math.Matrix4d;
+import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.base.physics.DifferentialRotation;
@@ -86,7 +86,7 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener {
 					double rotation = DifferentialRotation
 							.calculateRotationInRadians(0, timediff);
 
-					GL3DQuatd newRotation = GL3DQuatd.createRotation(
+					Quaternion3d newRotation = Quaternion3d.createRotation(
 							currentRotation - rotation, new GL3DVec3d(0, 1, 0));
 					GL3DVec3d newPosition = newRotation.toMatrix().multiply(
 							startPosition2D);
@@ -96,7 +96,7 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener {
 					this.startPosition2D = newPosition;
 					if (GL3DState.get().getState() == VISUAL_TYPE.MODE_3D)
 						this.getRotation().rotate(
-								GL3DQuatd.createRotation(currentRotation
+								Quaternion3d.createRotation(currentRotation
 										- rotation, new GL3DVec3d(0, 1, 0)));
 
 					else if (!outside){
@@ -190,8 +190,8 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener {
 		return this.viewSpaceCoordinateSystem;
 	}
 
-	public GL3DMat4d getVM() {
-		GL3DMat4d c = this.getCameraTransformation().copy();
+	public Matrix4d getVM() {
+		Matrix4d c = this.getCameraTransformation().copy();
 		return c;
 	}
 

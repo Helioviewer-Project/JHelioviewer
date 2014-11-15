@@ -3,8 +3,8 @@ package org.helioviewer.jhv.opengl.model;
 import java.util.List;
 
 import org.helioviewer.jhv.base.GL3DHelper;
-import org.helioviewer.jhv.base.math.GL3DMat4d;
-import org.helioviewer.jhv.base.math.GL3DQuatd;
+import org.helioviewer.jhv.base.math.Matrix4d;
+import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.GL3DVec2d;
 import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.math.GL3DVec4d;
@@ -27,7 +27,7 @@ import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLVertexShaderProgram;
  */
 public class GL3DImageCorona extends GL3DImageMesh {
     private GL3DImageLayer layer = null;
-    GL3DMat4d phiRotation = null;
+    Matrix4d phiRotation = null;
     
     public GL3DImageCorona(String name, GL3DImageTextureView imageTextureView, GLVertexShaderProgram vertexShaderProgram, GLFragmentShaderProgram fragmentShaderProgram, GL3DImageLayer imageLayer) {
         super(name, imageTextureView, vertexShaderProgram, fragmentShaderProgram);
@@ -49,7 +49,7 @@ public class GL3DImageCorona extends GL3DImageMesh {
             CoordinateConversion toViewSpace = this.layer.getCoordinateSystem().getConversion(state.activeCamera.getViewSpaceCoordinateSystem());
             GL3DVec3d orientation = GL3DHelper.toVec(toViewSpace.convert(orientationVector)).normalize();
 
-            phiRotation = GL3DQuatd.calcRotation(orientation,new GL3DVec3d(0,0,1)).toMatrix().inverse();	        
+            phiRotation = Quaternion3d.calcRotation(orientation,new GL3DVec3d(0,0,1)).toMatrix().inverse();	        
 
             if (!(orientation.equals(new GL3DVec3d(0, 1, 0)))) {
                 GL3DVec3d orientationXZ = new GL3DVec3d(orientation.x, 0, orientation.z);
@@ -58,7 +58,7 @@ public class GL3DImageCorona extends GL3DImageMesh {
                     phi = 0 - phi;
                 }
                 
-                phiRotation = GL3DMat4d.rotation(phi, new GL3DVec3d(0, 1, 0));
+                phiRotation = Matrix4d.rotation(phi, new GL3DVec3d(0, 1, 0));
                 GL3DVec3d direction = new GL3DVec3d(phiRotation.m[8]*1, phiRotation.m[9]*1, phiRotation.m[10]*1);
                 this.layer.setLayerDirection(direction);
             }

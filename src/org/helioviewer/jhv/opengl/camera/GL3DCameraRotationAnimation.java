@@ -1,11 +1,11 @@
 package org.helioviewer.jhv.opengl.camera;
 
-import org.helioviewer.jhv.base.math.GL3DQuatd;
+import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 
 /**
  * This animation rotates the camera from a startpoint to an endpoint by using
- * the {@link GL3DQuatd}'s slerp interpolation.
+ * the {@link Quaternion3d}'s slerp interpolation.
  * 
  * @author Simon Sp�rri (simon.spoerri@fhnw.ch)
  * 
@@ -17,14 +17,14 @@ public class GL3DCameraRotationAnimation implements GL3DCameraAnimation {
     private long timeLeft = 0;
     private long duration = 0;
 
-    private GL3DQuatd endRotation;
+    private Quaternion3d endRotation;
     
     
-    public GL3DCameraRotationAnimation(GL3DQuatd endRotation){
+    public GL3DCameraRotationAnimation(Quaternion3d endRotation){
     	this(endRotation, GL3DCameraAnimation.DEFAULT_ANIMATION_TIME);
     }
     
-    public GL3DCameraRotationAnimation(GL3DQuatd endRotation, long duration){
+    public GL3DCameraRotationAnimation(Quaternion3d endRotation, long duration){
     	this.endRotation = endRotation.copy();
     	this.duration = duration;
         this.timeLeft = duration;

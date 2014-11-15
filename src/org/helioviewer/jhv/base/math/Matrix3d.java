@@ -1,23 +1,23 @@
 package org.helioviewer.jhv.base.math;
 
-public class GL3DMat3d {
+public class Matrix3d {
     private double[] m = new double[9];/*
                                         * / 0 3 6 \ | 1 4 7 | \ 2 5 8 /
                                         */
 
-    public GL3DMat3d() {
+    public Matrix3d() {
         this.identity();
     }
 
-    public GL3DMat3d(double M0, double M3, double M6, double M1, double M4, double M7, double M2, double M5, double M8) {
+    public Matrix3d(double M0, double M3, double M6, double M1, double M4, double M7, double M2, double M5, double M8) {
         this.set(M0, M3, M6, M1, M4, M7, M2, M5, M8);
     }
 
-    public GL3DMat3d(GL3DMat3d A) {
+    public Matrix3d(Matrix3d A) {
         this.set(A);
     }
 
-    public GL3DMat3d set(double M0, double M3, double M6, double M1, double M4, double M7, double M2, double M5, double M8) {
+    public Matrix3d set(double M0, double M3, double M6, double M1, double M4, double M7, double M2, double M5, double M8) {
         m[0] = M0;
         m[3] = M3;
         m[6] = M6;
@@ -30,16 +30,16 @@ public class GL3DMat3d {
         return this;
     }
 
-    public GL3DMat3d identity() {
+    public Matrix3d identity() {
         set(1f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 1f);
         return this;
     }
 
-    public GL3DMat3d set(GL3DMat3d A) {
+    public Matrix3d set(Matrix3d A) {
         return this.set(A.m[0], A.m[3], A.m[6], A.m[1], A.m[4], A.m[7], A.m[2], A.m[5], A.m[8]);
     }
 
-    public GL3DMat3d multiply(GL3DMat3d A) {
+    public Matrix3d multiply(Matrix3d A) {
         set(m[0] * A.m[0] + m[3] * A.m[1] + m[6] * A.m[2], // ROW 1
                 m[0] * A.m[3] + m[3] * A.m[4] + m[6] * A.m[5], m[0] * A.m[6] + m[3] * A.m[7] + m[6] * A.m[8], m[1] * A.m[0] + m[4] * A.m[1] + m[7] * A.m[2], // ROW
                                                                                                                                                              // 2
@@ -58,14 +58,14 @@ public class GL3DMat3d {
         return vec;
     }
 
-    public GL3DMat3d multiply(double f) {
+    public Matrix3d multiply(double f) {
         for (int i = 0; i < m.length; i++) {
             m[i] *= f;
         }
         return this;
     }
 
-    public GL3DMat3d divide(double f) {
+    public Matrix3d divide(double f) {
         for (int i = 0; i < m.length; i++) {
             m[i] /= f;
         }
@@ -78,11 +78,11 @@ public class GL3DMat3d {
         m[14] = z;
     }
 
-    public GL3DMat3d rotation(double degAng, GL3DVec3d axis) {
+    public Matrix3d rotation(double degAng, GL3DVec3d axis) {
         return this.rotation(degAng, axis.x, axis.y, axis.z);
     }
 
-    public GL3DMat3d rotation(double degAng, double axisx, double axisy, double axisz) {
+    public Matrix3d rotation(double degAng, double axisx, double axisy, double axisz) {
         double radAng = degAng * (double) Math.PI / 180;
 
         double ca = (double) Math.cos(radAng);
@@ -146,7 +146,7 @@ public class GL3DMat3d {
         return this;
     }
 
-    public GL3DMat3d transpose() {
+    public Matrix3d transpose() {
         swap(1, 3);
         swap(2, 6);
         swap(5, 7);
@@ -167,14 +167,14 @@ public class GL3DMat3d {
         set(inverse());
     }
 
-    public GL3DMat3d inverse() {
+    public Matrix3d inverse() {
         double d = this.det();
 
         if (Math.abs(d) <= 0.0000000001f) {
             throw new IllegalStateException("Matrix is singular. Inversion impossible.");
         }
 
-        GL3DMat3d i = new GL3DMat3d();
+        Matrix3d i = new Matrix3d();
         i.m[0] = m[4] * m[8] - m[7] * m[5];
         i.m[1] = m[7] * m[2] - m[1] * m[8];
         i.m[2] = m[1] * m[5] - m[4] * m[2];
@@ -189,7 +189,7 @@ public class GL3DMat3d {
         return i;
     }
 
-    public GL3DMat3d scale(double sx, double sy, double sz) {
+    public Matrix3d scale(double sx, double sy, double sz) {
         m[0] = sx;
         m[3] = 0;
         m[6] = 0;
@@ -202,11 +202,11 @@ public class GL3DMat3d {
         return this;
     }
 
-    public GL3DMat3d scale(double s) {
+    public Matrix3d scale(double s) {
         return this.scale(s, s, s);
     }
 
-    public GL3DMat3d scale(GL3DVec3d vs) {
+    public Matrix3d scale(GL3DVec3d vs) {
         return this.scale(vs.x, vs.y, vs.z);
     }
 

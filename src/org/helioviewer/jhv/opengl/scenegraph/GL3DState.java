@@ -8,7 +8,7 @@ import javax.media.opengl.GL2;
 import javax.media.opengl.glu.GLU;
 
 import org.helioviewer.jhv.base.logging.Log;
-import org.helioviewer.jhv.base.math.GL3DMat4d;
+import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DComponentView;
 
@@ -26,10 +26,10 @@ public class GL3DState {
 
     public GL2 gl;
 
-    protected GL3DMat4d mv;
-    private Stack<GL3DMat4d> matrixStack;
+    protected Matrix4d mv;
+    private Stack<Matrix4d> matrixStack;
 
-    protected GL3DMat4d mvInverse;
+    protected Matrix4d mvInverse;
 
     public GL3DCamera activeCamera;
 
@@ -62,13 +62,13 @@ public class GL3DState {
 
     private GL3DState(GL2 gl) {
         this.gl = gl;
-        this.mv = GL3DMat4d.identity();
-        this.matrixStack = new Stack<GL3DMat4d>();
+        this.mv = Matrix4d.identity();
+        this.matrixStack = new Stack<Matrix4d>();
     }
 
     public void pushMV() {
         gl.glPushMatrix();
-        this.matrixStack.push(new GL3DMat4d(this.mv));
+        this.matrixStack.push(new Matrix4d(this.mv));
         // Log.debug("GL3DState.pushMV: "+this.matrixStack.size());
     }
 
@@ -79,13 +79,13 @@ public class GL3DState {
     }
 
     public void loadIdentity() {
-        this.mv = GL3DMat4d.identity();
-        this.mvInverse = GL3DMat4d.identity();
-        this.matrixStack.push(new GL3DMat4d(this.mv));
+        this.mv = Matrix4d.identity();
+        this.mvInverse = Matrix4d.identity();
+        this.matrixStack.push(new Matrix4d(this.mv));
         this.gl.glLoadIdentity();
     }
 
-    public GL3DMat4d multiplyMV(GL3DMat4d m) {
+    public Matrix4d multiplyMV(Matrix4d m) {
         this.mv.multiply(m);
         gl.glMultMatrixd(m.m, 0);
         return mv;
@@ -97,13 +97,13 @@ public class GL3DState {
         } catch (IllegalArgumentException e) {
             // TODO: What to do when matrix cannot be inverted?
             Log.error("Cannot Invert ModelView Matrix! Singularity occurred!", e);
-            this.mvInverse = GL3DMat4d.identity();
-            this.mv = GL3DMat4d.identity();
+            this.mvInverse = Matrix4d.identity();
+            this.mv = Matrix4d.identity();
         }
     }
 
-    public GL3DMat4d getMVInverse() {
-        return new GL3DMat4d(this.mvInverse);
+    public Matrix4d getMVInverse() {
+        return new Matrix4d(this.mvInverse);
     }
 
     public boolean checkGLErrors(String message) {

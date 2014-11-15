@@ -10,8 +10,8 @@ import javax.swing.JPanel;
 
 import org.helioviewer.jhv.base.GL3DHelper;
 import org.helioviewer.jhv.base.logging.Log;
-import org.helioviewer.jhv.base.math.GL3DMat4d;
-import org.helioviewer.jhv.base.math.GL3DQuatd;
+import org.helioviewer.jhv.base.math.Matrix4d;
+import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.math.GL3DVec4d;
 import org.helioviewer.jhv.base.physics.Constants;
@@ -107,13 +107,13 @@ public class GL3DImageLayer extends GL3DGroup implements CoordinateSystemChangeL
 
         // Only rotate x and y axis, because images already cater for solar
         // north being at the top.
-        this.mv.set(GL3DMat4d.identity());
+        this.mv.set(Matrix4d.identity());
         
         
         if (!orientation.equals(new GL3DVec3d(0, 0, 1))) {
             GL3DVec3d orientationXY = new GL3DVec3d(orientation.x, orientation.y, 0);
             double theta = Math.asin(orientationXY.y);
-            GL3DMat4d thetaRotation = GL3DMat4d.rotation(theta, new GL3DVec3d(1, 0, 0));
+            Matrix4d thetaRotation = Matrix4d.rotation(theta, new GL3DVec3d(1, 0, 0));
             // Log.debug("GL3DOrientedGroup: Rotating Theta "+theta);
             this.mv.multiply(thetaRotation);
         }
@@ -126,7 +126,7 @@ public class GL3DImageLayer extends GL3DGroup implements CoordinateSystemChangeL
             }
             phi += 0.7;
             // Log.debug("GL3DOrientedGroup: Rotating Phi "+phi);
-            GL3DMat4d phiRotation = GL3DMat4d.rotation(phi, new GL3DVec3d(0, 1, 0));
+            Matrix4d phiRotation = Matrix4d.rotation(phi, new GL3DVec3d(0, 1, 0));
             this.mv.multiply(phiRotation);
         //}
         
@@ -202,7 +202,7 @@ public class GL3DImageLayer extends GL3DGroup implements CoordinateSystemChangeL
 
 		this.doUpdateROI = true;
 		this.markAsChanged();
-		GL3DQuatd phiRotation = GL3DQuatd.createRotation(2 * Math.PI - phi,
+		Quaternion3d phiRotation = Quaternion3d.createRotation(2 * Math.PI - phi,
 				new GL3DVec3d(0, 1, 0));
 		state.activeCamera.getRotation().set(phiRotation);
 		state.activeCamera.updateCameraTransformation();
@@ -294,7 +294,7 @@ public class GL3DImageLayer extends GL3DGroup implements CoordinateSystemChangeL
 	}
 
 	public void cameraMoving(GL3DCamera camera) {
-		GL3DMat4d camTrans = camera.getRotation().toMatrix().inverse();
+		Matrix4d camTrans = camera.getRotation().toMatrix().inverse();
 		GL3DVec3d camDirection = new GL3DVec3d(0, 0, 1);
 		camDirection = camTrans.multiply(camDirection);
 		camDirection.normalize();
@@ -371,7 +371,7 @@ public class GL3DImageLayer extends GL3DGroup implements CoordinateSystemChangeL
 		GL3DVec3d orientation = GL3DHelper.toVec(
 				toViewSpace.convert(orientationVector)).normalize();
 
-		GL3DMat4d phiRotation = null;
+		Matrix4d phiRotation = null;
 
 		if (!(orientation.equals(new GL3DVec3d(0, 1, 0)))) {
 			GL3DVec3d orientationXZ = new GL3DVec3d(orientation.x, 0,
@@ -381,7 +381,7 @@ public class GL3DImageLayer extends GL3DGroup implements CoordinateSystemChangeL
 				phi = 0 - phi;
 			}
 			phi = 2 * Math.PI - phi;
-			phiRotation = GL3DMat4d.rotation(phi, new GL3DVec3d(0, 1, 0));
+			phiRotation = Matrix4d.rotation(phi, new GL3DVec3d(0, 1, 0));
 		}
 
 		for (GL3DRay ray : regionTestRays) {

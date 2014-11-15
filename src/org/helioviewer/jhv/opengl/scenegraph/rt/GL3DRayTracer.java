@@ -2,7 +2,7 @@ package org.helioviewer.jhv.opengl.scenegraph.rt;
 
 import java.awt.Dimension;
 
-import org.helioviewer.jhv.base.math.GL3DMat4d;
+import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
@@ -48,7 +48,7 @@ public class GL3DRayTracer {
 	private GL3DRay createPrimaryRay(GL3DCamera camera, int x, int y) {
 		GL3DRay ray;
 		if (GL3DState.get().getState() == VISUAL_TYPE.MODE_3D) {
-			GL3DMat4d VM = camera.getVM();
+			Matrix4d VM = camera.getVM();
 			GL3DVec3d LA = new GL3DVec3d();
 			GL3DVec3d LR = new GL3DVec3d();
 			GL3DVec3d LU = new GL3DVec3d();

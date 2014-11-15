@@ -2,7 +2,7 @@ package org.helioviewer.jhv.opengl.model;
 
 import java.util.List;
 
-import org.helioviewer.jhv.base.math.GL3DMat4d;
+import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.GL3DVec2d;
 import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.math.GL3DVec4d;
@@ -28,7 +28,7 @@ public class GL3DHitReferenceShape extends GL3DMesh {
 
     private boolean allowBacksideHits;
     private double angle = 0.0;
-    private GL3DMat4d phiRotation;
+    private Matrix4d phiRotation;
     public GL3DHitReferenceShape() {
         this(false);
     }
@@ -49,7 +49,7 @@ public class GL3DHitReferenceShape extends GL3DMesh {
     }
 
     public GL3DMeshPrimitive createMesh(GL3DState state, List<GL3DVec3d> positions, List<GL3DVec3d> normals, List<GL3DVec2d> textCoords, List<Integer> indices, List<GL3DVec4d> colors) {
-    	this.phiRotation = GL3DMat4d.rotation(angle, new GL3DVec3d(0, 1, 0));
+    	this.phiRotation = Matrix4d.rotation(angle, new GL3DVec3d(0, 1, 0));
         GL3DVec3d ll = createVertex(-LARGE_VALUE, -LARGE_VALUE, 0);
         GL3DVec3d lr = createVertex(LARGE_VALUE, -LARGE_VALUE, 0);
         GL3DVec3d tr = createVertex(LARGE_VALUE, LARGE_VALUE, 0);

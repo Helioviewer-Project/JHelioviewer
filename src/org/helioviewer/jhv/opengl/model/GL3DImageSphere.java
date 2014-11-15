@@ -3,8 +3,8 @@ package org.helioviewer.jhv.opengl.model;
 import java.util.List;
 
 import org.helioviewer.jhv.base.GL3DHelper;
-import org.helioviewer.jhv.base.math.GL3DMat4d;
-import org.helioviewer.jhv.base.math.GL3DQuatd;
+import org.helioviewer.jhv.base.math.Matrix4d;
+import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.GL3DVec2d;
 import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.math.GL3DVec4d;
@@ -36,7 +36,7 @@ public class GL3DImageSphere extends GL3DImageMesh
 
   private GL3DImageLayer layer;
 
-  private GL3DMat4d phiRotation=null;
+  private Matrix4d phiRotation=null;
 
   public GL3DImageSphere(GL3DImageTextureView imageTextureView,GLVertexShaderProgram vertexShaderProgram,GLFragmentShaderProgram fragmentShaderProgram,GL3DImageLayer imageLayer)
   {
@@ -57,7 +57,7 @@ public class GL3DImageSphere extends GL3DImageMesh
 
       GL3DVec3d orientation=GL3DHelper.toVec(toViewSpace.convert(orientationVector)).normalize();
       
-      phiRotation = GL3DQuatd.calcRotation(orientation,new GL3DVec3d(0,0,1)).toMatrix();	        
+      phiRotation = Quaternion3d.calcRotation(orientation,new GL3DVec3d(0,0,1)).toMatrix();	        
       
       if(!(orientation.equals(new GL3DVec3d(0,1,0))))
       {
@@ -68,7 +68,7 @@ public class GL3DImageSphere extends GL3DImageMesh
         {
           phi=0-phi;
         }
-        phiRotation=GL3DMat4d.rotation(phi,new GL3DVec3d(0,1,0));
+        phiRotation=Matrix4d.rotation(phi,new GL3DVec3d(0,1,0));
       }
 	
       double resolutionX=100;
