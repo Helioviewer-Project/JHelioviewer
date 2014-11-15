@@ -2,7 +2,7 @@ package org.helioviewer.jhv.plugins.hekplugin.cache;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -84,14 +84,13 @@ public class HEKStupidDownloader {
      */
     public void requestEvents(final HEKCacheController cacheController, HashMap<HEKPath, Vector<Interval<Date>>> request) {
 
-        Iterator<HEKPath> keyIterator = request.keySet().iterator();
-        while (keyIterator.hasNext()) {
-
-            HEKPath key = keyIterator.next();
+        for(Entry<HEKPath,Vector<Interval<Date>>> cur:request.entrySet())
+        {
+            HEKPath key = cur.getKey();
 
             cacheController.setState(key, HEKCacheLoadingModel.PATH_QUEUED);
 
-            for (Interval<Date> curInterval : request.get(key)) {
+            for (Interval<Date> curInterval : cur.getValue()) {
                 HEKRequestThread hekRequest = new HEKRequestThread(cacheController, key, curInterval);
                 downloadRequests.add(hekRequest);
                 threadExecutor.execute(hekRequest);

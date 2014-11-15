@@ -561,10 +561,10 @@ public class HEKCacheModel {
         // parse all events
         HashMap<HEKPath, Vector<HEKEvent>> toAdd = new HashMap<HEKPath, Vector<HEKEvent>>();
 
-        for (HEKPath eventPath : eventsToFeed.keySet()) {
-            HEKEvent event = eventsToFeed.get(eventPath);
-            HEKPath trackPath = eventPath.getParent();
-            eventPath.setVirtual(false);
+        for (Entry<HEKPath,HEKEvent> eventPath : eventsToFeed.entrySet()) {
+            HEKEvent event = eventPath.getValue();
+            HEKPath trackPath = eventPath.getKey().getParent();
+            eventPath.getKey().setVirtual(false);
 
             // if we do not yet have that track, create it
             if (!toAdd.containsKey(trackPath)) {

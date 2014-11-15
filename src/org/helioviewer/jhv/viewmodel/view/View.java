@@ -2,6 +2,8 @@ package org.helioviewer.jhv.viewmodel.view;
 
 import java.util.AbstractList;
 
+import javax.swing.text.ComponentView;
+
 /**
  * Basic interface for every view.
  * 

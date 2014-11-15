@@ -152,7 +152,7 @@ public class JPIPDataInputStream {
 
         } else {
             seg.isEOR = false;
-            seg.binID &= (long) ~(0x70 << ((vbasLength - 1) * 7));
+            seg.binID &= (long) ~(0x70L << ((vbasLength - 1) * 7));
 
             seg.isFinal = ((vbasFstByte & 0x10) != 0);
 

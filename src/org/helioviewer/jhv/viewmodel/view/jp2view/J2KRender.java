@@ -73,7 +73,7 @@ class J2KRender implements Runnable {
     private int currentByteBuffer = 0;
 
     /** Maximum of samples to process per rendering iteration */
-    private final int MAX_RENDER_SAMPLES = 50000;
+    private static final int MAX_RENDER_SAMPLES = 50000;
 
     /** Maximum rendering iterations per layer allowed */
     // Is now calculated automatically as num_pix / MAX_RENDER_SAMPLES

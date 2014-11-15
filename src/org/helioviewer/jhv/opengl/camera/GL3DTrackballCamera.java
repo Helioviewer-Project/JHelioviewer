@@ -11,7 +11,6 @@ import org.helioviewer.jhv.opengl.scenegraph.GL3DState.VISUAL_TYPE;
 import org.helioviewer.jhv.opengl.scenegraph.math.GL3DMat4d;
 import org.helioviewer.jhv.opengl.scenegraph.math.GL3DQuatd;
 import org.helioviewer.jhv.opengl.scenegraph.math.GL3DVec3d;
-import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.changeevent.TimestampChangedReason;
 import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
@@ -32,7 +31,6 @@ import org.helioviewer.jhv.viewmodel.view.opengl.GL3DSceneGraphView;
 public class GL3DTrackballCamera extends GL3DCamera implements ViewListener {
 	public static final double DEFAULT_CAMERA_DISTANCE = 12 * Constants.SUN_RADIUS;
 	private boolean track;
-	private GL3DRay lastMouseRay;
 	protected CoordinateSystem viewSpaceCoordinateSystem = new HeliocentricCartesianCoordinateSystem();
 	private GL3DTrackballRotationInteraction rotationInteraction;
 	private GL3DPanInteraction panInteraction;
@@ -186,10 +184,6 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener {
 
 	public GL3DInteraction getZoomBoxInteraction() {
 		return this.zoomBoxInteraction;
-	}
-
-	public GL3DRay getLastMouseRay() {
-		return lastMouseRay;
 	}
 
 	public CoordinateSystem getViewSpaceCoordinateSystem() {

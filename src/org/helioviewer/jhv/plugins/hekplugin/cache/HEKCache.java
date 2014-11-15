@@ -3,6 +3,7 @@ package org.helioviewer.jhv.plugins.hekplugin.cache;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -159,22 +160,18 @@ public class HEKCache {
     public HashMap<HEKPath, Vector<Interval<Date>>> needed(HashMap<HEKPath, Vector<Interval<Date>>> request) {
         HashMap<HEKPath, Vector<Interval<Date>>> result = new HashMap<HEKPath, Vector<Interval<Date>>>();
 
-        Iterator<HEKPath> requestKeyIterator = request.keySet().iterator();
-        while (requestKeyIterator.hasNext()) {
-            HEKPath requestKey = requestKeyIterator.next();
-
-            // TODO: Malte Nuhn - create method for this case
-            if (!this.getTracks().containsKey(requestKey)) {
-                this.tracks.put(requestKey, new IntervalStore<Date, HEKEvent>());
+        for(Entry<HEKPath,Vector<Interval<Date>>> cur:request.entrySet())
+        {
+            if (!this.getTracks().containsKey(cur.getKey())) {
+                this.tracks.put(cur.getKey(), new IntervalStore<Date, HEKEvent>());
             }
 
-            Vector<Interval<Date>> requestIntervals = request.get(requestKey);
-            Vector<Interval<Date>> neededIntervals = this.getTracks().get(requestKey).needed(requestIntervals);
+            Vector<Interval<Date>> requestIntervals = cur.getValue();
+            Vector<Interval<Date>> neededIntervals = this.getTracks().get(cur.getKey()).needed(requestIntervals);
 
             if (neededIntervals.size() > 0) {
-                result.put(requestKey, neededIntervals);
+                result.put(cur.getKey(), neededIntervals);
             }
-
         }
 
         return result;
@@ -194,15 +191,8 @@ public class HEKCache {
      */
     public void addMultiple(HashMap<HEKPath, Vector<HEKEvent>> toAdd, Interval<Date> curInterval) {
 
-        Iterator<HEKPath> keyIterator = toAdd.keySet().iterator();
-
-        while (keyIterator.hasNext()) {
-
-            HEKPath key = keyIterator.next();
-            // Log.info("Adding " + key + " > " + toAdd.get(key));
-            addToTrack(key, curInterval, toAdd.get(key));
-
-        }
+        for(Entry<HEKPath,Vector<HEKEvent>> cur:toAdd.entrySet())
+            addToTrack(cur.getKey(), curInterval, cur.getValue());
     }
 
     /**

@@ -76,7 +76,6 @@ public class HEKCacheLoadingModel {
 
     public void setState(HEKPath p, int state) {
         loadingState.put(p, state);
-        // TODO: Move to Controller
         cache.getModel().fireCacheStateChanged();
     }
 

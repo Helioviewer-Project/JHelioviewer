@@ -1,5 +1,7 @@
 package org.helioviewer.jhv.viewmodel.view;
 
+import javax.swing.text.ComponentView;
+
 /**
  * View representing an inner knot of the view chain.
  * 

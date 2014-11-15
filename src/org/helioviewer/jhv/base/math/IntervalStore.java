@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Vector;
 
@@ -54,16 +55,8 @@ public class IntervalStore<TimeFormat extends Comparable<TimeFormat>, ItemFormat
      *            - intervals to be added/merged
      */
     public void add(HashMap<Interval<TimeFormat>, IntervalContainer<TimeFormat, ItemFormat>> data) {
-
-        Iterator<Interval<TimeFormat>> iter = data.keySet().iterator();
-
-        while (iter.hasNext()) {
-
-            Interval<TimeFormat> curInterval = iter.next();
-            this.add(curInterval, data.get(curInterval));
-
-        }
-
+        for(Entry<Interval<TimeFormat>,IntervalContainer<TimeFormat,ItemFormat>> iter : data.entrySet())
+            this.add(iter.getKey(), iter.getValue());
     }
 
     /**
