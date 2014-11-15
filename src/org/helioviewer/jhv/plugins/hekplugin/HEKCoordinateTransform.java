@@ -206,7 +206,7 @@ public class HEKCoordinateTransform {
 
     public static boolean isVisibleCarrington(double theta, double phi, Date date, Date now) {
         // phi is in carrington coordinates
-        double days = (date.getTime() - 788918400000l) / (1000.0 * 3600.0 * 24.0);
+        /*double days = (date.getTime() - 788918400000l) / (1000.0 * 3600.0 * 24.0);
         phi = phi + 349.03 - (360.0 * days / 27.2753);
 
         while (phi < 0) {
@@ -214,7 +214,7 @@ public class HEKCoordinateTransform {
         }
 
         phi -= 180;
-
+*/
         // return isVisibleStonyhurst(theta,phi,date,now);
 
         return true;

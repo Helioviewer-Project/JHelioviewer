@@ -201,7 +201,7 @@ public class GLShaderBuilder {
     public String useOutputValue(String type, String value, String init) throws GLBuildShaderException {
         value = value.toUpperCase();
 
-        if (init != null && init.trim() != "") {
+        if (init != null && !"".equals(init.trim())) {
             if (outputInit.containsKey(value)) {
                 if (!outputInit.get(value).equalsIgnoreCase(init)) {
                     throw new GLBuildShaderException("Conflict between output initial values for " + value + ": " + init + " vs. " + outputInit.get(value));

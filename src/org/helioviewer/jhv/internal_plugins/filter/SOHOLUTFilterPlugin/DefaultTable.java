@@ -46,8 +46,7 @@ public class DefaultTable {
      * Used as singleton
      */
     private DefaultTable() {
-        try {
-            BufferedReader in = new BufferedReader(new InputStreamReader(FileUtils.getResourceInputStream("/settings/colors.js"), "UTF-8"));
+        try(BufferedReader in = new BufferedReader(new InputStreamReader(FileUtils.getResourceInputStream("/settings/colors.js"), "UTF-8"))) {
             colorRules = new JSONArray(new JSONTokener(in));
         } catch (IOException e) {
             Log.warn("Error reading the configuration for the default color tables", e);

@@ -49,7 +49,7 @@ public class PositionStatusPanel extends ViewStatusPanelPlugin implements MouseM
     private BasicImagePanel imagePanel;
     private Point lastPosition;
 
-    private final char PRIME = '\u2032';
+    private static final char PRIME = '\u2032';
 
     /**
      * Default constructor.

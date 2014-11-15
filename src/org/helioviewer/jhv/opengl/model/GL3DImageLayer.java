@@ -401,7 +401,7 @@ public class GL3DImageLayer extends GL3DOrientedGroup implements
 		if (minPhysicalX < metaData.getPhysicalLowerLeft().getX())
 			minPhysicalX = metaData.getPhysicalLowerLeft().getX();
 		if (minPhysicalY < metaData.getPhysicalLowerLeft().getY())
-			minPhysicalY = metaData.getPhysicalLowerLeft().getX();
+			minPhysicalY = metaData.getPhysicalLowerLeft().getY();
 		if (maxPhysicalX > metaData.getPhysicalUpperRight().getX())
 			maxPhysicalX = metaData.getPhysicalUpperRight().getX();
 		if (maxPhysicalY > metaData.getPhysicalUpperRight().getY())
