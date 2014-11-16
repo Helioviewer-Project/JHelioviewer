@@ -243,7 +243,7 @@ public class ImagePanelEventPopupController implements ImagePanelPlugin,
 					
 					if (hitpoint != null) {
 						double deltaX = Math.abs(hitpoint.x - coords.x);
-						double deltaY = Math.abs(hitpoint.y + coords.y);
+						double deltaY = Math.abs(hitpoint.y - coords.y);
 						double deltaZ = Math.abs(hitpoint.z - coords.z);
 						if (deltaX < 10000000 && deltaZ < 10000000
 								&& deltaY < 10000000) {

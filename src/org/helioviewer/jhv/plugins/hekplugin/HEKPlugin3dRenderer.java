@@ -75,9 +75,9 @@ public class HEKPlugin3dRenderer extends PhysicalRenderer3d
                 g.gl.glBegin(GL2.GL_TRIANGLES);
                 for(GenericTriangle<Vector3d> triangle:triangles)
                 {
-                    g.gl.glVertex3d(triangle.A.x,-triangle.A.y,triangle.A.z);
-                    g.gl.glVertex3d(triangle.B.x,-triangle.B.y,triangle.B.z);
-                    g.gl.glVertex3d(triangle.C.x,-triangle.C.y,triangle.C.z);
+                    g.gl.glVertex3d(triangle.A.x,triangle.A.y,triangle.A.z);
+                    g.gl.glVertex3d(triangle.B.x,triangle.B.y,triangle.B.z);
+                    g.gl.glVertex3d(triangle.C.x,triangle.C.y,triangle.C.z);
                 }
                 g.gl.glEnd();
                 //g.gl.glDisable(GL2.GL_POLYGON_OFFSET_FILL);
@@ -102,8 +102,8 @@ public class HEKPlugin3dRenderer extends PhysicalRenderer3d
                 g.gl.glBegin(GL.GL_LINE_LOOP);
                 for(SphericalCoord boundaryPoint:outerBound)
                 {
-                    Vector3d boundaryPoint3d=HEKEvent.convertToSceneCoordinates(boundaryPoint,now,1.005);
-                    g.gl.glVertex3d(boundaryPoint3d.x,-boundaryPoint3d.y,boundaryPoint3d.z);
+                    Vector3d boundaryPoint3d=HEKEvent.convertToSceneCoordinates(boundaryPoint,now).scale(1.005);
+                    g.gl.glVertex3d(boundaryPoint3d.x,boundaryPoint3d.y,boundaryPoint3d.z);
                 }
                 g.gl.glEnd();
 
@@ -141,7 +141,6 @@ public class HEKPlugin3dRenderer extends PhysicalRenderer3d
                 double z=coords.z;
                 Vector2d imageSize=
                         ViewHelper.convertScreenToImageDisplacement(icon.getWidth(),icon.getHeight(),g.regionView.getRegion(),ViewHelper.calculateViewportImageSize(g.viewportView.getViewport(),g.regionView.getRegion()));
-                y=-y;
 
                 g.commonRenderGraphics.bindImage(icon);
                 g.gl.glTexParameteri(GL.GL_TEXTURE_2D,GL.GL_TEXTURE_MAG_FILTER,GL.GL_LINEAR);

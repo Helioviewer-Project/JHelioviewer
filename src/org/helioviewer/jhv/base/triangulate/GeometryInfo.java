@@ -98,7 +98,10 @@ public class GeometryInfo
 
         List<Triangle> res=new ArrayList<Triangle>();
         for(int i=0;i<coordinates.length;i+=3)
-            res.add(new Triangle(coordinates[i+0].x,coordinates[i+0].y,coordinates[i+1].x,coordinates[i+1].y,coordinates[i+2].x,coordinates[i+2].y));
+            res.add(new Triangle(
+                    coordinates[i+0].x,coordinates[i+0].y,coordinates[i+0].z,
+                    coordinates[i+1].x,coordinates[i+1].y,coordinates[i+1].z,
+                    coordinates[i+2].x,coordinates[i+2].y,coordinates[i+2].z));
         return res;
     }
 }

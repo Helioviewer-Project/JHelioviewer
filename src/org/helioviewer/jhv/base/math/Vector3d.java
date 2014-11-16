@@ -170,6 +170,9 @@ public final class Vector3d {
 
     public Vector3d normalize() {
         double length = this.length();
+        if(Math.abs(length-1)<0.00001)
+            return this;
+        
         return new Vector3d(x / length, y / length, z / length);
     }
 

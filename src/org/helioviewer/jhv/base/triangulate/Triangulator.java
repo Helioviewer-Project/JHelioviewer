@@ -10,7 +10,7 @@ import org.helioviewer.jhv.base.math.Vector3d;
 
 class Triangulator
 {
-    static private class HeapNode
+    private class HeapNode
     {
         int index,prev,next;
         double ratio;
@@ -24,7 +24,7 @@ class Triangulator
         }
     }
 
-    static private class PntNode
+    private class PntNode
     {
         int pnt;
         int next;
@@ -36,7 +36,7 @@ class Triangulator
         }
     }
 
-    static private class ListNode
+    private class ListNode
     {
         int index;
         int prev;
@@ -54,19 +54,19 @@ class Triangulator
         }
     }
 
-    static private class Distance
+    private class Distance
     {
         int ind;
         double dist;
     }
 
-    static private class Left
+    private class Left
     {
         int ind;
         int index;
     }
 
-    static private class Triangle
+    private class Triangle
     {
         int a;
         int b;
@@ -131,11 +131,11 @@ class Triangulator
     private int identCntr;
     private double epsilon=1.0e-12;
 
-    private static final double ZERO=1.0e-8;
-    private static final int INC_LIST_BK=100;
-    private static final int INC_LOOP_BK=20;
-    private static final int INC_POINT_BK=100;
-    private static final int INC_DIST_BK=50;
+    private final static double ZERO=1.0e-8;
+    private final static int INC_LIST_BK=100;
+    private final static int INC_LOOP_BK=20;
+    private final static int INC_POINT_BK=100;
+    private final static int INC_DIST_BK=50;
 
     public Triangulator()
     {
@@ -237,7 +237,7 @@ class Triangulator
 
             if(faces[j]>1)
                 proceed=true;
-            else if(simpleFace(this,loops[i1]))
+            else if(simpleFace(loops[i1]))
                 proceed=false;
             else
                 proceed=true;
@@ -247,39 +247,39 @@ class Triangulator
                 for(int lpIndex=0;lpIndex<faces[j];lpIndex++)
                     preProcessList(i1+lpIndex);
 
-                projectFace(this,i1,i2);
-                cleanPolyhedralFace(this,i1,i2);
+                projectFace(i1,i2);
+                cleanPolyhedralFace(i1,i2);
                 if(faces[j]==1)
-                    determineOrientation(this,loops[i1]);
+                    determineOrientation(loops[i1]);
                 else
-                    adjustOrientation(this,i1,i2);
+                    adjustOrientation(i1,i2);
 
                 if(faces[j]>1)
-                    prepareNoHashEdges(this,i1,i2);
+                    prepareNoHashEdges(i1,i2);
 
                 for(i=i1;i<i2;++i)
-                    classifyAngles(this,loops[i]);
+                    classifyAngles(loops[i]);
 
                 if(faces[j]>1)
-                    constructBridges(this,i1,i2);
+                    constructBridges(i1,i2);
 
                 firstNode=loops[i1];
-                prepareNoHashPnts(this,i1);
-                classifyEars(this,loops[i1]);
+                prepareNoHashPnts(i1);
+                classifyEars(loops[i1]);
                 done[0]=false;
 
                 while(!done[0])
                 {
-                    if(!clipEar(this,done))
+                    if(!clipEar(done))
                     {
                         if(reset)
                         {
                             ind=firstNode;
 
                             loops[i1]=ind;
-                            if(desperate(this,ind,i1,done))
+                            if(desperate(ind,i1,done))
                             {
-                                if(!letsHope(this,ind))
+                                if(!letsHope(ind))
                                     return;
                             }
                             else
@@ -289,7 +289,7 @@ class Triangulator
                         {
                             ind=firstNode;
 
-                            classifyEars(this,ind);
+                            classifyEars(ind);
                             reset=true;
                         }
                     }
@@ -303,8 +303,8 @@ class Triangulator
                         {
                             firstNode=ind;
                             loops[i1]=ind;
-                            prepareNoHashPnts(this,i1);
-                            classifyEars(this,ind);
+                            prepareNoHashPnts(i1);
+                            classifyEars(ind);
                             reset=false;
                             done[0]=false;
                         }
@@ -329,7 +329,7 @@ class Triangulator
         gInfo.setCoordinateIndices(newVertexIndices);
     }
 
-    private static void constructBridges(Triangulator triRef,int loopMin,int loopMax)
+    private void constructBridges(int loopMin,int loopMax)
     {
         int i,numDist,numLeftMost;
 
@@ -343,25 +343,25 @@ class Triangulator
 
         numLeftMost=loopMax-loopMin-1;
 
-        if(numLeftMost>triRef.maxNumLeftMost)
+        if(numLeftMost>maxNumLeftMost)
         {
-            triRef.maxNumLeftMost=numLeftMost;
-            triRef.leftMost=new Left[numLeftMost];
+            maxNumLeftMost=numLeftMost;
+            leftMost=new Left[numLeftMost];
         }
 
-        findLeftMostVertex(triRef,triRef.loops[loopMin],ind0,i0);
+        findLeftMostVertex(loops[loopMin],ind0,i0);
         int j=0;
         for(i=loopMin+1;i<loopMax;++i)
         {
-            findLeftMostVertex(triRef,triRef.loops[i],indTmp,iTmp);
-            triRef.leftMost[j]=new Left();
-            triRef.leftMost[j].ind=indTmp[0];
-            triRef.leftMost[j].index=iTmp[0];
+            findLeftMostVertex(loops[i],indTmp,iTmp);
+            leftMost[j]=new Left();
+            leftMost[j].ind=indTmp[0];
+            leftMost[j].index=iTmp[0];
 
             j++;
         }
 
-        Arrays.sort(triRef.leftMost,0,numLeftMost,new Comparator<Left>()
+        Arrays.sort(leftMost,0,numLeftMost,new Comparator<Left>()
         {
             public int compare(Left _a,Left _b)
             {
@@ -369,23 +369,23 @@ class Triangulator
             }
         });
 
-        numDist=triRef.numPoints+2*triRef.numLoops;
-        triRef.maxNumDist=numDist;
-        triRef.distances=new Distance[numDist];
-        for(int k=0;k<triRef.maxNumDist;k++)
-            triRef.distances[k]=new Distance();
+        numDist=numPoints+2*numLoops;
+        maxNumDist=numDist;
+        distances=new Distance[numDist];
+        for(int k=0;k<maxNumDist;k++)
+            distances[k]=new Distance();
 
         for(j=0;j<numLeftMost;++j)
         {
-            findBridge(triRef,ind0[0],i0[0],triRef.leftMost[j].index,ind1,i1);
-            if(i1[0]==triRef.leftMost[j].index)
-                simpleBridge(triRef,ind1[0],triRef.leftMost[j].ind);
+            findBridge(ind0[0],i0[0],leftMost[j].index,ind1,i1);
+            if(i1[0]==leftMost[j].index)
+                simpleBridge(ind1[0],leftMost[j].ind);
             else
-                insertBridge(triRef,ind1[0],i1[0],triRef.leftMost[j].ind,triRef.leftMost[j].index);
+                insertBridge(ind1[0],i1[0],leftMost[j].ind,leftMost[j].index);
         }
     }
 
-    private static boolean findBridge(Triangulator triRef,int ind,int i,int start,int[] ind1,int[] i1)
+    private boolean findBridge(int ind,int i,int start,int[] ind1,int[] i1)
     {
         int i0,i2,j,numDist=0;
         int ind0,ind2;
@@ -397,44 +397,44 @@ class Triangulator
         i1[0]=i;
         if(i1[0]==start)
             return true;
-        if(numDist>=triRef.maxNumDist)
+        if(numDist>=maxNumDist)
         {
-            triRef.maxNumDist+=Triangulator.INC_DIST_BK;
-            old=triRef.distances;
-            triRef.distances=new Distance[triRef.maxNumDist];
-            System.arraycopy(old,0,triRef.distances,0,old.length);
-            for(int k=old.length;k<triRef.maxNumDist;k++)
-                triRef.distances[k]=new Distance();
+            maxNumDist+=Triangulator.INC_DIST_BK;
+            old=distances;
+            distances=new Distance[maxNumDist];
+            System.arraycopy(old,0,distances,0,old.length);
+            for(int k=old.length;k<maxNumDist;k++)
+                distances[k]=new Distance();
         }
 
-        triRef.distances[numDist].dist=baseLength(triRef.points[start],triRef.points[i1[0]]);
-        triRef.distances[numDist].ind=ind1[0];
+        distances[numDist].dist=baseLength(points[start],points[i1[0]]);
+        distances[numDist].ind=ind1[0];
         ++numDist;
 
-        ind1[0]=triRef.list[ind1[0]].next;
-        i1[0]=triRef.list[ind1[0]].index;
+        ind1[0]=list[ind1[0]].next;
+        i1[0]=list[ind1[0]].index;
         while(ind1[0]!=ind)
         {
             if(i1[0]==start)
                 return true;
-            if(numDist>=triRef.maxNumDist)
+            if(numDist>=maxNumDist)
             {
-                triRef.maxNumDist+=Triangulator.INC_DIST_BK;
-                old=triRef.distances;
-                triRef.distances=new Distance[triRef.maxNumDist];
-                System.arraycopy(old,0,triRef.distances,0,old.length);
-                for(int k=old.length;k<triRef.maxNumDist;k++)
-                    triRef.distances[k]=new Distance();
+                maxNumDist+=Triangulator.INC_DIST_BK;
+                old=distances;
+                distances=new Distance[maxNumDist];
+                System.arraycopy(old,0,distances,0,old.length);
+                for(int k=old.length;k<maxNumDist;k++)
+                    distances[k]=new Distance();
             }
 
-            triRef.distances[numDist].dist=baseLength(triRef.points[start],triRef.points[i1[0]]);
-            triRef.distances[numDist].ind=ind1[0];
+            distances[numDist].dist=baseLength(points[start],points[i1[0]]);
+            distances[numDist].ind=ind1[0];
             ++numDist;
-            ind1[0]=triRef.list[ind1[0]].next;
-            i1[0]=triRef.list[ind1[0]].index;
+            ind1[0]=list[ind1[0]].next;
+            i1[0]=list[ind1[0]].index;
         }
 
-        Arrays.sort(triRef.distances,0,numDist,new Comparator<Distance>()
+        Arrays.sort(distances,0,numDist,new Comparator<Distance>()
         {
             public int compare(Distance _a,Distance _b)
             {
@@ -444,21 +444,21 @@ class Triangulator
 
         for(j=0;j<numDist;++j)
         {
-            ind1[0]=triRef.distances[j].ind;
-            i1[0]=triRef.list[ind1[0]].index;
+            ind1[0]=distances[j].ind;
+            i1[0]=list[ind1[0]].index;
             if(i1[0]<=start)
             {
-                ind0=triRef.list[ind1[0]].prev;
-                i0=triRef.list[ind0].index;
-                ind2=triRef.list[ind1[0]].next;
-                i2=triRef.list[ind2].index;
-                convex=triRef.list[ind1[0]].convex>0;
+                ind0=list[ind1[0]].prev;
+                i0=list[ind0].index;
+                ind2=list[ind1[0]].next;
+                i2=list[ind2].index;
+                convex=list[ind1[0]].convex>0;
 
-                coneOk=isInCone(triRef,i0,i1[0],i2,start,convex);
+                coneOk=isInCone(i0,i1[0],i2,start,convex);
                 if(coneOk)
                 {
-                    bb=new BBox(triRef,i1[0],start);
-                    if(!noHashEdgeIntersectionExists(triRef,bb,-1,-1,ind1[0],-1))
+                    bb=new BBox(this,i1[0],start);
+                    if(!noHashEdgeIntersectionExists(bb,-1,-1,ind1[0],-1))
                         return true;
                 }
             }
@@ -466,14 +466,14 @@ class Triangulator
 
         for(j=0;j<numDist;++j)
         {
-            ind1[0]=triRef.distances[j].ind;
-            i1[0]=triRef.list[ind1[0]].index;
-            ind0=triRef.list[ind1[0]].prev;
-            i0=triRef.list[ind0].index;
-            ind2=triRef.list[ind1[0]].next;
-            i2=triRef.list[ind2].index;
-            bb=new BBox(triRef,i1[0],start);
-            if(!noHashEdgeIntersectionExists(triRef,bb,-1,-1,ind1[0],-1))
+            ind1[0]=distances[j].ind;
+            i1[0]=list[ind1[0]].index;
+            ind0=list[ind1[0]].prev;
+            i0=list[ind0].index;
+            ind2=list[ind1[0]].next;
+            i2=list[ind2].index;
+            bb=new BBox(this,i1[0],start);
+            if(!noHashEdgeIntersectionExists(bb,-1,-1,ind1[0],-1))
                 return true;
         }
 
@@ -483,28 +483,27 @@ class Triangulator
         return false;
     }
 
-    private static void prepareNoHashEdges(Triangulator triRef,int currLoopMin,int currLoopMax)
+    private void prepareNoHashEdges(int currLoopMin,int currLoopMax)
     {
-        triRef.loopMin=currLoopMin;
-        triRef.loopMax=currLoopMax;
-        return;
+        loopMin=currLoopMin;
+        loopMax=currLoopMax;
     }
 
-    private static boolean checkArea(Triangulator triRef,int ind4,int ind5)
+    private boolean checkArea(int ind4,int ind5)
     {
         int ind1,ind2;
         int i0,i1,i2;
         double area=0.0,area1=0,area2=0.0;
 
-        i0=triRef.list[ind4].index;
-        ind1=triRef.list[ind4].next;
-        i1=triRef.list[ind1].index;
+        i0=list[ind4].index;
+        ind1=list[ind4].next;
+        i1=list[ind1].index;
 
         while(ind1!=ind5)
         {
-            ind2=triRef.list[ind1].next;
-            i2=triRef.list[ind2].index;
-            area=stableDet2D(triRef,i0,i1,i2);
+            ind2=list[ind1].next;
+            i2=list[ind2].index;
+            area=stableDet2D(i0,i1,i2);
             area1+=area;
             ind1=ind2;
             i1=i2;
@@ -513,13 +512,13 @@ class Triangulator
         if((area1<=Triangulator.ZERO))
             return false;
 
-        ind1=triRef.list[ind5].next;
-        i1=triRef.list[ind1].index;
+        ind1=list[ind5].next;
+        i1=list[ind1].index;
         while(ind1!=ind4)
         {
-            ind2=triRef.list[ind1].next;
-            i2=triRef.list[ind2].index;
-            area=stableDet2D(triRef,i0,i1,i2);
+            ind2=list[ind1].next;
+            i2=list[ind2].index;
+            area=stableDet2D(i0,i1,i2);
             area2+=area;
             ind1=ind2;
             i1=i2;
@@ -528,7 +527,7 @@ class Triangulator
         return !(area2<=Triangulator.ZERO);
     }
 
-    private static boolean checkBottleNeck(Triangulator triRef,int i1,int i2,int i3,int ind4)
+    private boolean checkBottleNeck(int i1,int i2,int i3,int ind4)
     {
         int ind5;
         int i4,i5;
@@ -536,11 +535,11 @@ class Triangulator
 
         i4=i1;
 
-        ind5=triRef.list[ind4].prev;
-        i5=triRef.list[ind5].index;
+        ind5=list[ind4].prev;
+        i5=list[ind5].index;
         if((i5!=i2)&&(i5!=i3))
         {
-            flag=pntInTriangle(triRef,i1,i2,i3,i5);
+            flag=pntInTriangle(i1,i2,i3,i5);
             if(flag)
                 return true;
         }
@@ -548,26 +547,26 @@ class Triangulator
         if(i2<=i3)
         {
             if(i4<=i5)
-                flag=segIntersect(triRef,i2,i3,i4,i5,-1);
+                flag=segIntersect(i2,i3,i4,i5,-1);
             else
-                flag=segIntersect(triRef,i2,i3,i5,i4,-1);
+                flag=segIntersect(i2,i3,i5,i4,-1);
         }
         else
         {
             if(i4<=i5)
-                flag=segIntersect(triRef,i3,i2,i4,i5,-1);
+                flag=segIntersect(i3,i2,i4,i5,-1);
             else
-                flag=segIntersect(triRef,i3,i2,i5,i4,-1);
+                flag=segIntersect(i3,i2,i5,i4,-1);
         }
         if(flag)
             return true;
 
-        ind5=triRef.list[ind4].next;
-        i5=triRef.list[ind5].index;
+        ind5=list[ind4].next;
+        i5=list[ind5].index;
 
         if((i5!=i2)&&(i5!=i3))
         {
-            flag=pntInTriangle(triRef,i1,i2,i3,i5);
+            flag=pntInTriangle(i1,i2,i3,i5);
             if(flag)
                 return true;
         }
@@ -575,117 +574,117 @@ class Triangulator
         if(i2<=i3)
         {
             if(i4<=i5)
-                flag=segIntersect(triRef,i2,i3,i4,i5,-1);
+                flag=segIntersect(i2,i3,i4,i5,-1);
             else
-                flag=segIntersect(triRef,i2,i3,i5,i4,-1);
+                flag=segIntersect(i2,i3,i5,i4,-1);
         }
         else
         {
             if(i4<=i5)
-                flag=segIntersect(triRef,i3,i2,i4,i5,-1);
+                flag=segIntersect(i3,i2,i4,i5,-1);
             else
-                flag=segIntersect(triRef,i3,i2,i5,i4,-1);
+                flag=segIntersect(i3,i2,i5,i4,-1);
         }
 
         if(flag)
             return true;
 
-        ind5=triRef.list[ind4].next;
-        i5=triRef.list[ind5].index;
+        ind5=list[ind4].next;
+        i5=list[ind5].index;
         while(ind5!=ind4)
         {
             if(i4==i5)
-                if(checkArea(triRef,ind4,ind5))
+                if(checkArea(ind4,ind5))
                     return true;
 
-            ind5=triRef.list[ind5].next;
-            i5=triRef.list[ind5].index;
+            ind5=list[ind5].next;
+            i5=list[ind5].index;
         }
 
         return false;
     }
 
-    private static boolean noHashEdgeIntersectionExists(Triangulator triRef,BBox bb,int i1,int i2,int ind5,int i5)
+    private boolean noHashEdgeIntersectionExists(BBox bb,int i1,int i2,int ind5,int i5)
     {
         int ind,ind2;
         int i,i3,i4;
         BBox bb1;
 
-        triRef.identCntr=0;
+        identCntr=0;
 
-        for(i=triRef.loopMin;i<triRef.loopMax;++i)
+        for(i=loopMin;i<loopMax;++i)
         {
-            ind=triRef.loops[i];
+            ind=loops[i];
             ind2=ind;
-            i3=triRef.list[ind2].index;
+            i3=list[ind2].index;
 
             do
             {
-                ind2=triRef.list[ind2].next;
-                i4=triRef.list[ind2].index;
-                bb1=new BBox(triRef,i3,i4);
+                ind2=list[ind2].next;
+                i4=list[ind2].index;
+                bb1=new BBox(this,i3,i4);
                 if(bb.BBoxOverlap(bb1))
-                    if(segIntersect(triRef,bb.imin,bb.imax,bb1.imin,bb1.imax,i5))
+                    if(segIntersect(bb.imin,bb.imax,bb1.imin,bb1.imax,i5))
                         return true;
 
                 i3=i4;
             } while(ind2!=ind);
         }
 
-        if(triRef.identCntr>=4)
-            return checkBottleNeck(triRef,i5,i1,i2,ind5);
+        if(identCntr>=4)
+            return checkBottleNeck(i5,i1,i2,ind5);
 
         return false;
     }
 
-    private static void storeHeapData(Triangulator triRef,int index,double ratio,int ind,int prev,int next)
+    private void storeHeapData(int index,double ratio,int ind,int prev,int next)
     {
-        triRef.heap[index]=new HeapNode();
-        triRef.heap[index].ratio=ratio;
-        triRef.heap[index].index=ind;
-        triRef.heap[index].prev=prev;
-        triRef.heap[index].next=next;
+        heap[index]=new HeapNode();
+        heap[index].ratio=ratio;
+        heap[index].index=ind;
+        heap[index].prev=prev;
+        heap[index].next=next;
     }
 
-    private static void dumpOnHeap(Triangulator triRef,double ratio,int ind,int prev,int next)
+    private void dumpOnHeap(double ratio,int ind,int prev,int next)
     {
         int index;
-        if(triRef.numHeap>=triRef.maxNumHeap)
+        if(numHeap>=maxNumHeap)
         {
-            HeapNode old[]=triRef.heap;
-            triRef.maxNumHeap=triRef.maxNumHeap+triRef.numPoints;
-            triRef.heap=new HeapNode[triRef.maxNumHeap];
-            System.arraycopy(old,0,triRef.heap,0,old.length);
+            HeapNode old[]=heap;
+            maxNumHeap=maxNumHeap+numPoints;
+            heap=new HeapNode[maxNumHeap];
+            System.arraycopy(old,0,heap,0,old.length);
         }
 
         if(ratio==0.0)
         {
-            if(triRef.numZero<triRef.numHeap)
-                if(triRef.heap[triRef.numHeap]==null)
-                    storeHeapData(triRef,triRef.numHeap,triRef.heap[triRef.numZero].ratio,triRef.heap[triRef.numZero].index,triRef.heap[triRef.numZero].prev,triRef.heap[triRef.numZero].next);
+            if(numZero<numHeap)
+                if(heap[numHeap]==null)
+                    storeHeapData(numHeap,heap[numZero].ratio,heap[numZero].index,heap[numZero].prev,heap[numZero].next);
                 else
-                    triRef.heap[triRef.numHeap].set(triRef.heap[triRef.numZero]);
+                    heap[numHeap].set(heap[numZero]);
 
-            index=triRef.numZero;
-            triRef.numZero++;
+            index=numZero;
+            numZero++;
         }
         else
-            index=triRef.numHeap;
+            index=numHeap;
 
-        storeHeapData(triRef,index,ratio,ind,prev,next);
-        triRef.numHeap++;
+        storeHeapData(index,ratio,ind,prev,next);
+        numHeap++;
     }
 
-    private static void findLeftMostVertex(Triangulator triRef,int ind,int[] leftInd,int[] leftI)
+    private void findLeftMostVertex(int ind,int[] leftInd,int[] leftI)
     {
         int ind1,i1;
 
         ind1=ind;
-        i1=triRef.list[ind1].index;
+        i1=list[ind1].index;
         leftInd[0]=ind1;
         leftI[0]=i1;
-        ind1=triRef.list[ind1].next;
-        i1=triRef.list[ind1].index;
+        ind1=list[ind1].next;
+        i1=list[ind1].index;
         while(ind1!=ind)
         {
             if(i1<leftI[0])
@@ -695,90 +694,90 @@ class Triangulator
             }
             else if(i1==leftI[0])
             {
-                if(triRef.list[ind1].convex<0)
+                if(list[ind1].convex<0)
                 {
                     leftInd[0]=ind1;
                     leftI[0]=i1;
                 }
             }
-            ind1=triRef.list[ind1].next;
-            i1=triRef.list[ind1].index;
+            ind1=list[ind1].next;
+            i1=list[ind1].index;
         }
 
     }
 
-    private static void simpleBridge(Triangulator triRef,int ind1,int ind2)
+    private void simpleBridge(int ind1,int ind2)
     {
         int prev,next;
         int i1,i2,prv,nxt;
         int angle;
 
-        triRef.rotateLinks(ind1,ind2);
+        rotateLinks(ind1,ind2);
 
-        i1=triRef.list[ind1].index;
-        next=triRef.list[ind1].next;
-        nxt=triRef.list[next].index;
-        prev=triRef.list[ind1].prev;
-        prv=triRef.list[prev].index;
-        angle=isConvexAngle(triRef,prv,i1,nxt,ind1);
-        triRef.list[ind1].convex=angle;
+        i1=list[ind1].index;
+        next=list[ind1].next;
+        nxt=list[next].index;
+        prev=list[ind1].prev;
+        prv=list[prev].index;
+        angle=isConvexAngle(prv,i1,nxt,ind1);
+        list[ind1].convex=angle;
 
-        i2=triRef.list[ind2].index;
-        next=triRef.list[ind2].next;
-        nxt=triRef.list[next].index;
-        prev=triRef.list[ind2].prev;
-        prv=triRef.list[prev].index;
-        angle=isConvexAngle(triRef,prv,i2,nxt,ind2);
-        triRef.list[ind2].convex=angle;
+        i2=list[ind2].index;
+        next=list[ind2].next;
+        nxt=list[next].index;
+        prev=list[ind2].prev;
+        prv=list[prev].index;
+        angle=isConvexAngle(prv,i2,nxt,ind2);
+        list[ind2].convex=angle;
     }
 
-    private static void insertBridge(Triangulator triRef,int ind1,int i1,int ind3,int i3)
+    private void insertBridge(int ind1,int i1,int ind3,int i3)
     {
         int ind2,ind4,prev,next;
         int prv,nxt,angle;
 
-        ind2=triRef.makeNode(i1);
-        triRef.insertAfter(ind1,ind2);
+        ind2=makeNode(i1);
+        insertAfter(ind1,ind2);
 
-        triRef.list[ind2].vcntIndex=triRef.list[ind1].vcntIndex;
+        list[ind2].vcntIndex=list[ind1].vcntIndex;
 
-        ind4=triRef.makeNode(i3);
-        triRef.insertAfter(ind3,ind4);
+        ind4=makeNode(i3);
+        insertAfter(ind3,ind4);
 
-        triRef.list[ind4].vcntIndex=triRef.list[ind3].vcntIndex;
+        list[ind4].vcntIndex=list[ind3].vcntIndex;
 
-        triRef.splitSplice(ind1,ind2,ind3,ind4);
+        splitSplice(ind1,ind2,ind3,ind4);
 
-        next=triRef.list[ind1].next;
-        nxt=triRef.list[next].index;
-        prev=triRef.list[ind1].prev;
-        prv=triRef.list[prev].index;
-        angle=isConvexAngle(triRef,prv,i1,nxt,ind1);
-        triRef.list[ind1].convex=angle;
+        next=list[ind1].next;
+        nxt=list[next].index;
+        prev=list[ind1].prev;
+        prv=list[prev].index;
+        angle=isConvexAngle(prv,i1,nxt,ind1);
+        list[ind1].convex=angle;
 
-        next=triRef.list[ind2].next;
-        nxt=triRef.list[next].index;
-        prev=triRef.list[ind2].prev;
-        prv=triRef.list[prev].index;
-        angle=isConvexAngle(triRef,prv,i1,nxt,ind2);
-        triRef.list[ind2].convex=angle;
+        next=list[ind2].next;
+        nxt=list[next].index;
+        prev=list[ind2].prev;
+        prv=list[prev].index;
+        angle=isConvexAngle(prv,i1,nxt,ind2);
+        list[ind2].convex=angle;
 
-        next=triRef.list[ind3].next;
-        nxt=triRef.list[next].index;
-        prev=triRef.list[ind3].prev;
-        prv=triRef.list[prev].index;
-        angle=isConvexAngle(triRef,prv,i3,nxt,ind3);
-        triRef.list[ind3].convex=angle;
+        next=list[ind3].next;
+        nxt=list[next].index;
+        prev=list[ind3].prev;
+        prv=list[prev].index;
+        angle=isConvexAngle(prv,i3,nxt,ind3);
+        list[ind3].convex=angle;
 
-        next=triRef.list[ind4].next;
-        nxt=triRef.list[next].index;
-        prev=triRef.list[ind4].prev;
-        prv=triRef.list[prev].index;
-        angle=isConvexAngle(triRef,prv,i3,nxt,ind4);
-        triRef.list[ind4].convex=angle;
+        next=list[ind4].next;
+        nxt=list[next].index;
+        prev=list[ind4].prev;
+        prv=list[prev].index;
+        angle=isConvexAngle(prv,i3,nxt,ind4);
+        list[ind4].convex=angle;
     }
 
-    private static int l_comp(Left a,Left b)
+    private int l_comp(Left a,Left b)
     {
         if(a.index<b.index)
             return -1;
@@ -788,7 +787,7 @@ class Triangulator
             return 0;
     }
 
-    private static int d_comp(Distance a,Distance b)
+    private int d_comp(Distance a,Distance b)
     {
         if(a.dist<b.dist)
             return -1;
@@ -798,31 +797,31 @@ class Triangulator
             return 0;
     }
 
-    private static boolean handleDegeneracies(Triangulator triRef,int i1,int ind1,int i2,int i3,int i4,int ind4)
+    private boolean handleDegeneracies(int i1,int ind1,int i2,int i3,int i4,int ind4)
     {
         int i0,i5;
         int type[]=new int[1];
         int ind0,ind2,ind5;
         double area=0.0,area1=0,area2=0.0;
 
-        ind5=triRef.list[ind4].prev;
-        i5=triRef.list[ind5].index;
+        ind5=list[ind4].prev;
+        i5=list[ind5].index;
 
         if((i5!=i2)&&(i5!=i3))
         {
-            if(vtxInTriangle(triRef,i1,i2,i3,i5,type)&&(type[0]==0))
+            if(vtxInTriangle(i1,i2,i3,i5,type)&&(type[0]==0))
                 return true;
 
             if(i2<=i3)
             {
                 if(i4<=i5)
                 {
-                    if(segIntersect(triRef,i2,i3,i4,i5,-1))
+                    if(segIntersect(i2,i3,i4,i5,-1))
                         return true;
                 }
                 else
                 {
-                    if(segIntersect(triRef,i2,i3,i5,i4,-1))
+                    if(segIntersect(i2,i3,i5,i4,-1))
                         return true;
                 }
             }
@@ -830,33 +829,33 @@ class Triangulator
             {
                 if(i4<=i5)
                 {
-                    if(segIntersect(triRef,i3,i2,i4,i5,-1))
+                    if(segIntersect(i3,i2,i4,i5,-1))
                         return true;
                 }
                 else
                 {
-                    if(segIntersect(triRef,i3,i2,i5,i4,-1))
+                    if(segIntersect(i3,i2,i5,i4,-1))
                         return true;
                 }
             }
         }
 
-        ind5=triRef.list[ind4].next;
-        i5=triRef.list[ind5].index;
+        ind5=list[ind4].next;
+        i5=list[ind5].index;
         if((i5!=i2)&&(i5!=i3))
         {
-            if(vtxInTriangle(triRef,i1,i2,i3,i5,type)&&(type[0]==0))
+            if(vtxInTriangle(i1,i2,i3,i5,type)&&(type[0]==0))
                 return true;
             if(i2<=i3)
             {
                 if(i4<=i5)
                 {
-                    if(segIntersect(triRef,i2,i3,i4,i5,-1))
+                    if(segIntersect(i2,i3,i4,i5,-1))
                         return true;
                 }
                 else
                 {
-                    if(segIntersect(triRef,i2,i3,i5,i4,-1))
+                    if(segIntersect(i2,i3,i5,i4,-1))
                         return true;
                 }
             }
@@ -864,12 +863,12 @@ class Triangulator
             {
                 if(i4<=i5)
                 {
-                    if(segIntersect(triRef,i3,i2,i4,i5,-1))
+                    if(segIntersect(i3,i2,i4,i5,-1))
                         return true;
                 }
                 else
                 {
-                    if(segIntersect(triRef,i3,i2,i5,i4,-1))
+                    if(segIntersect(i3,i2,i5,i4,-1))
                         return true;
                 }
             }
@@ -877,25 +876,25 @@ class Triangulator
 
         i0=i1;
         ind0=ind1;
-        ind1=triRef.list[ind1].next;
-        i1=triRef.list[ind1].index;
+        ind1=list[ind1].next;
+        i1=list[ind1].index;
         while(ind1!=ind4)
         {
-            ind2=triRef.list[ind1].next;
-            i2=triRef.list[ind2].index;
-            area=stableDet2D(triRef,i0,i1,i2);
+            ind2=list[ind1].next;
+            i2=list[ind2].index;
+            area=stableDet2D(i0,i1,i2);
             area1+=area;
             ind1=ind2;
             i1=i2;
         }
 
-        ind1=triRef.list[ind0].prev;
-        i1=triRef.list[ind1].index;
+        ind1=list[ind0].prev;
+        i1=list[ind1].index;
         while(ind1!=ind4)
         {
-            ind2=triRef.list[ind1].prev;
-            i2=triRef.list[ind2].index;
-            area=stableDet2D(triRef,i0,i1,i2);
+            ind2=list[ind1].prev;
+            i2=list[ind2].index;
+            area=stableDet2D(i0,i1,i2);
             area2+=area;
             ind1=ind2;
             i1=i2;
@@ -909,7 +908,7 @@ class Triangulator
         return true;
     }
 
-    private static boolean desperate(Triangulator triRef,int ind,int i,boolean[] splitted)
+    private boolean desperate(int ind,int i,boolean[] splitted)
     {
         int[] i1=new int[1];
         int[] i2=new int[1];
@@ -922,17 +921,17 @@ class Triangulator
 
         splitted[0]=false;
 
-        if(existsCrossOver(triRef,ind,ind1,i1,ind2,i2,ind3,i3,ind4,i4))
+        if(existsCrossOver(ind,ind1,i1,ind2,i2,ind3,i3,ind4,i4))
         {
-            handleCrossOver(triRef,ind1[0],i1[0],ind2[0],i2[0],ind3[0],i3[0],ind4[0],i4[0]);
+            handleCrossOver(ind1[0],i1[0],ind2[0],i2[0],ind3[0],i3[0],ind4[0],i4[0]);
             return false;
         }
 
-        prepareNoHashEdges(triRef,i,i+1);
+        prepareNoHashEdges(i,i+1);
 
-        if(existsSplit(triRef,ind,ind1,i1,ind2,i2))
+        if(existsSplit(ind,ind1,i1,ind2,i2))
         {
-            handleSplit(triRef,ind1[0],i1[0],ind2[0],i2[0]);
+            handleSplit(ind1[0],i1[0],ind2[0],i2[0]);
             splitted[0]=true;
             return false;
         }
@@ -940,17 +939,17 @@ class Triangulator
         return true;
     }
 
-    private static int cleanPolyhedralFace(Triangulator triRef,int i1,int i2)
+    private int cleanPolyhedralFace(int i1,int i2)
     {
         int removed;
         int i,j,numSorted,index;
         int ind1,ind2;
 
-        triRef.pUnsorted.clear();
-        for(i=0;i<triRef.numPoints;++i)
-            triRef.pUnsorted.add(triRef.points[i]);
+        pUnsorted.clear();
+        for(i=0;i<numPoints;++i)
+            pUnsorted.add(points[i]);
 
-        Arrays.sort(triRef.points,0,triRef.numPoints,new Comparator<Vector2d>()
+        Arrays.sort(points,0,numPoints,new Comparator<Vector2d>()
         {
             public int compare(Vector2d _a,Vector2d _b)
             {
@@ -959,38 +958,38 @@ class Triangulator
         });
 
         i=0;
-        for(j=1;j<triRef.numPoints;++j)
-            if(pComp(triRef.points[i],triRef.points[j])!=0)
+        for(j=1;j<numPoints;++j)
+            if(pComp(points[i],points[j])!=0)
             {
                 i++;
-                triRef.points[i]=triRef.points[j];
+                points[i]=points[j];
             }
 
         numSorted=i+1;
-        removed=triRef.numPoints-numSorted;
+        removed=numPoints-numSorted;
 
         for(i=i1;i<i2;++i)
         {
-            ind1=triRef.loops[i];
-            ind2=triRef.list[ind1].next;
-            index=triRef.list[ind2].index;
+            ind1=loops[i];
+            ind2=list[ind1].next;
+            index=list[ind2].index;
             while(ind2!=ind1)
             {
-                j=findPInd(triRef.points,numSorted,triRef.pUnsorted.get(index));
-                triRef.list[ind2].index=j;
-                ind2=triRef.list[ind2].next;
-                index=triRef.list[ind2].index;
+                j=findPInd(points,numSorted,pUnsorted.get(index));
+                list[ind2].index=j;
+                ind2=list[ind2].next;
+                index=list[ind2].index;
             }
-            j=findPInd(triRef.points,numSorted,triRef.pUnsorted.get(index));
-            triRef.list[ind2].index=j;
+            j=findPInd(points,numSorted,pUnsorted.get(index));
+            list[ind2].index=j;
         }
 
-        triRef.numPoints=numSorted;
+        numPoints=numSorted;
 
         return removed;
     }
 
-    private static int findPInd(Vector2d sorted[],int numPts,Vector2d pnt)
+    private int findPInd(Vector2d sorted[],int numPts,Vector2d pnt)
     {
         for(int i=0;i<numPts;i++)
             if((pnt.x==sorted[i].x)&&(pnt.y==sorted[i].y))
@@ -998,7 +997,7 @@ class Triangulator
         return -1;
     }
 
-    private static int pComp(Vector2d a,Vector2d b)
+    private int pComp(Vector2d a,Vector2d b)
     {
         if(a.x<b.x)
             return -1;
@@ -1015,16 +1014,14 @@ class Triangulator
         }
     }
 
-    private static double angle(Triangulator triRef,Vector2d p,Vector2d p1,Vector2d p2)
+    private double angle(Vector2d p,Vector2d p1,Vector2d p2)
     {
-        int sign=signEps(det2D(p2,p,p1),triRef.epsilon);
+        int sign=signEps(det2D(p2,p,p1),epsilon);
         if(sign==0)
             return 0.0;
 
-        Vector2d v1=new Vector2d();
-        Vector2d v2=new Vector2d();
-        vectorSub2D(p1,p,v1);
-        vectorSub2D(p2,p,v2);
+        Vector2d v1=p1.subtract(p);
+        Vector2d v2=p2.subtract(p);
 
         double angle1=Math.atan2(v1.y,v1.x);
         double angle2=Math.atan2(v2.y,v2.x);
@@ -1046,26 +1043,26 @@ class Triangulator
         return -Math.abs(angle);
     }
 
-    private static boolean existsCrossOver(Triangulator triRef,int ind,int[] ind1,int[] i1,int[] ind2,int[] i2,int[] ind3,int[] i3,int[] ind4,int[] i4)
+    private boolean existsCrossOver(int ind,int[] ind1,int[] i1,int[] ind2,int[] i2,int[] ind3,int[] i3,int[] ind4,int[] i4)
     {
         BBox bb1,bb2;
 
         ind1[0]=ind;
-        i1[0]=triRef.list[ind1[0]].index;
-        ind2[0]=triRef.list[ind1[0]].next;
-        i2[0]=triRef.list[ind2[0]].index;
-        ind3[0]=triRef.list[ind2[0]].next;
-        i3[0]=triRef.list[ind3[0]].index;
-        ind4[0]=triRef.list[ind3[0]].next;
-        i4[0]=triRef.list[ind4[0]].index;
+        i1[0]=list[ind1[0]].index;
+        ind2[0]=list[ind1[0]].next;
+        i2[0]=list[ind2[0]].index;
+        ind3[0]=list[ind2[0]].next;
+        i3[0]=list[ind3[0]].index;
+        ind4[0]=list[ind3[0]].next;
+        i4[0]=list[ind4[0]].index;
 
         do
         {
-            bb1=new BBox(triRef,i1[0],i2[0]);
-            bb2=new BBox(triRef,i3[0],i4[0]);
+            bb1=new BBox(this,i1[0],i2[0]);
+            bb2=new BBox(this,i3[0],i4[0]);
             if(bb1.BBoxOverlap(bb2))
             {
-                if(segIntersect(triRef,bb1.imin,bb1.imax,bb2.imin,bb2.imax,-1))
+                if(segIntersect(bb1.imin,bb1.imax,bb2.imin,bb2.imax,-1))
                     return true;
             }
             ind1[0]=ind2[0];
@@ -1074,30 +1071,30 @@ class Triangulator
             i2[0]=i3[0];
             ind3[0]=ind4[0];
             i3[0]=i4[0];
-            ind4[0]=triRef.list[ind3[0]].next;
-            i4[0]=triRef.list[ind4[0]].index;
+            ind4[0]=list[ind3[0]].next;
+            i4[0]=list[ind4[0]].index;
 
         } while(ind1[0]!=ind);
 
         return false;
     }
 
-    private static void handleCrossOver(Triangulator triRef,int ind1,int i1,int ind2,int i2,int ind3,int i3,int ind4,int i4)
+    private void handleCrossOver(int ind1,int i1,int ind2,int i2,int ind3,int i3,int ind4,int i4)
     {
         double ratio1,ratio4;
         boolean first;
         int angle1,angle4;
 
-        angle1=triRef.list[ind1].convex;
-        angle4=triRef.list[ind4].convex;
+        angle1=list[ind1].convex;
+        angle4=list[ind4].convex;
         if(angle1<angle4)
             first=true;
         else if(angle1>angle4)
             first=false;
-        else if(triRef.earsSorted)
+        else if(earsSorted)
         {
-            ratio1=getRatio(triRef,i3,i4,i1);
-            ratio4=getRatio(triRef,i1,i2,i4);
+            ratio1=getRatio(i3,i4,i1);
+            ratio4=getRatio(i1,i2,i4);
             if(ratio4<ratio1)
                 first=false;
             else
@@ -1108,106 +1105,106 @@ class Triangulator
 
         if(first)
         {
-            triRef.deleteLinks(ind2);
-            triRef.storeTriangle(ind1,ind2,ind3);
-            triRef.list[ind3].convex=1;
-            dumpOnHeap(triRef,0.0,ind3,ind1,ind4);
+            deleteLinks(ind2);
+            storeTriangle(ind1,ind2,ind3);
+            list[ind3].convex=1;
+            dumpOnHeap(0.0,ind3,ind1,ind4);
         }
         else
         {
-            triRef.deleteLinks(ind3);
-            triRef.storeTriangle(ind2,ind3,ind4);
-            triRef.list[ind2].convex=1;
-            dumpOnHeap(triRef,0.0,ind2,ind1,ind4);
+            deleteLinks(ind3);
+            storeTriangle(ind2,ind3,ind4);
+            list[ind2].convex=1;
+            dumpOnHeap(0.0,ind2,ind1,ind4);
         }
     }
 
-    private static boolean letsHope(Triangulator triRef,int ind)
+    private boolean letsHope(int ind)
     {
         int ind0,ind1,ind2;
         ind1=ind;
 
         do
         {
-            if(triRef.list[ind1].convex>0)
+            if(list[ind1].convex>0)
             {
-                ind0=triRef.list[ind1].prev;
-                ind2=triRef.list[ind1].next;
-                dumpOnHeap(triRef,0.0,ind1,ind0,ind2);
+                ind0=list[ind1].prev;
+                ind2=list[ind1].next;
+                dumpOnHeap(0.0,ind1,ind0,ind2);
                 return true;
             }
-            ind1=triRef.list[ind1].next;
+            ind1=list[ind1].next;
         } while(ind1!=ind);
 
-        triRef.list[ind].convex=1;
-        ind0=triRef.list[ind].prev;
-        ind2=triRef.list[ind].next;
-        dumpOnHeap(triRef,0.0,ind,ind0,ind2);
+        list[ind].convex=1;
+        ind0=list[ind].prev;
+        ind2=list[ind].next;
+        dumpOnHeap(0.0,ind,ind0,ind2);
         return true;
     }
 
-    private static boolean existsSplit(Triangulator triRef,int ind,int[] ind1,int[] i1,int[] ind2,int[] i2)
+    private boolean existsSplit(int ind,int[] ind1,int[] i1,int[] ind2,int[] i2)
     {
         int ind3,ind4,ind5;
         int i3,i4,i5;
 
-        if(triRef.numPoints>triRef.maxNumDist)
+        if(numPoints>maxNumDist)
         {
-            triRef.maxNumDist=triRef.numPoints;
-            triRef.distances=new Distance[triRef.maxNumDist];
-            for(int k=0;k<triRef.maxNumDist;k++)
-                triRef.distances[k]=new Distance();
+            maxNumDist=numPoints;
+            distances=new Distance[maxNumDist];
+            for(int k=0;k<maxNumDist;k++)
+                distances[k]=new Distance();
         }
         ind1[0]=ind;
-        i1[0]=triRef.list[ind1[0]].index;
-        ind4=triRef.list[ind1[0]].next;
-        i4=triRef.list[ind4].index;
-        ind5=triRef.list[ind4].next;
-        i5=triRef.list[ind5].index;
-        ind3=triRef.list[ind1[0]].prev;
-        i3=triRef.list[ind3].index;
-        if(foundSplit(triRef,ind5,i5,ind3,ind1[0],i1[0],i3,i4,ind2,i2))
+        i1[0]=list[ind1[0]].index;
+        ind4=list[ind1[0]].next;
+        i4=list[ind4].index;
+        ind5=list[ind4].next;
+        i5=list[ind5].index;
+        ind3=list[ind1[0]].prev;
+        i3=list[ind3].index;
+        if(foundSplit(ind5,i5,ind3,ind1[0],i1[0],i3,i4,ind2,i2))
             return true;
         i3=i1[0];
         ind1[0]=ind4;
         i1[0]=i4;
         ind4=ind5;
         i4=i5;
-        ind5=triRef.list[ind4].next;
-        i5=triRef.list[ind5].index;
+        ind5=list[ind4].next;
+        i5=list[ind5].index;
 
         while(ind5!=ind)
         {
-            if(foundSplit(triRef,ind5,i5,ind,ind1[0],i1[0],i3,i4,ind2,i2))
+            if(foundSplit(ind5,i5,ind,ind1[0],i1[0],i3,i4,ind2,i2))
                 return true;
             i3=i1[0];
             ind1[0]=ind4;
             i1[0]=i4;
             ind4=ind5;
             i4=i5;
-            ind5=triRef.list[ind4].next;
-            i5=triRef.list[ind5].index;
+            ind5=list[ind4].next;
+            i5=list[ind5].index;
         }
 
         return false;
     }
 
-    private static int windingNumber(Triangulator triRef,int ind,Vector2d p)
+    private int windingNumber(int ind,Vector2d p)
     {
         double angle;
         int ind2;
         int i1,i2,number;
 
-        i1=triRef.list[ind].index;
-        ind2=triRef.list[ind].next;
-        i2=triRef.list[ind2].index;
-        angle=angle(triRef,p,triRef.points[i1],triRef.points[i2]);
+        i1=list[ind].index;
+        ind2=list[ind].next;
+        i2=list[ind2].index;
+        angle=angle(p,points[i1],points[i2]);
         while(ind2!=ind)
         {
             i1=i2;
-            ind2=triRef.list[ind2].next;
-            i2=triRef.list[ind2].index;
-            angle+=angle(triRef,p,triRef.points[i1],triRef.points[i2]);
+            ind2=list[ind2].next;
+            i2=list[ind2].index;
+            angle+=angle(p,points[i1],points[i2]);
         }
 
         angle+=Math.PI;
@@ -1216,7 +1213,7 @@ class Triangulator
         return number;
     }
 
-    private static boolean foundSplit(Triangulator triRef,int ind5,int i5,int ind,int ind1,int i1,int i3,int i4,int[] ind2,int[] i2)
+    private boolean foundSplit(int ind5,int i5,int ind,int ind1,int i1,int i3,int i4,int[] ind2,int[] i2)
     {
         Vector2d center;
         int numDist=0;
@@ -1227,14 +1224,14 @@ class Triangulator
 
         do
         {
-            triRef.distances[numDist].dist=baseLength(triRef.points[i1],triRef.points[i5]);
-            triRef.distances[numDist].ind=ind5;
+            distances[numDist].dist=baseLength(points[i1],points[i5]);
+            distances[numDist].ind=ind5;
             ++numDist;
-            ind5=triRef.list[ind5].next;
-            i5=triRef.list[ind5].index;
+            ind5=list[ind5].next;
+            i5=list[ind5].index;
         } while(ind5!=ind);
 
-        Arrays.sort(triRef.distances,0,numDist,new Comparator<Distance>()
+        Arrays.sort(distances,0,numDist,new Comparator<Distance>()
         {
             public int compare(Distance _a,Distance _b)
             {
@@ -1244,28 +1241,28 @@ class Triangulator
 
         for(j=0;j<numDist;++j)
         {
-            ind2[0]=triRef.distances[j].ind;
-            i2[0]=triRef.list[ind2[0]].index;
+            ind2[0]=distances[j].ind;
+            i2[0]=list[ind2[0]].index;
             if(i1!=i2[0])
             {
-                ind6=triRef.list[ind2[0]].prev;
-                i6=triRef.list[ind6].index;
-                ind7=triRef.list[ind2[0]].next;
-                i7=triRef.list[ind7].index;
+                ind6=list[ind2[0]].prev;
+                i6=list[ind6].index;
+                ind7=list[ind2[0]].next;
+                i7=list[ind7].index;
 
-                convex=triRef.list[ind2[0]].convex>0;
-                coneOk=isInCone(triRef,i6,i2[0],i7,i1,convex);
+                convex=list[ind2[0]].convex>0;
+                coneOk=isInCone(i6,i2[0],i7,i1,convex);
                 if(coneOk)
                 {
-                    convex=triRef.list[ind1].convex>0;
-                    coneOk=isInCone(triRef,i3,i1,i4,i2[0],convex);
+                    convex=list[ind1].convex>0;
+                    coneOk=isInCone(i3,i1,i4,i2[0],convex);
                     if(coneOk)
                     {
-                        bb=new BBox(triRef,i1,i2[0]);
-                        if(!noHashEdgeIntersectionExists(triRef,bb,-1,-1,ind1,-1))
+                        bb=new BBox(this,i1,i2[0]);
+                        if(!noHashEdgeIntersectionExists(bb,-1,-1,ind1,-1))
                         {
-                            center=vectorAdd2D(triRef.points[i1],triRef.points[i2[0]]).scale(0.5);
-                            if(windingNumber(triRef,ind,center)==1)
+                            center=points[i1].add(points[i2[0]]).scale(0.5);
+                            if(windingNumber(ind,center)==1)
                                 return true;
                         }
                     }
@@ -1276,7 +1273,7 @@ class Triangulator
         return false;
     }
 
-    private static double baseLength(Vector2d u,Vector2d v)
+    private double baseLength(Vector2d u,Vector2d v)
     {
         double x,y;
         x=v.x-u.x;
@@ -1284,75 +1281,70 @@ class Triangulator
         return Math.abs(x)+Math.abs(y);
     }
 
-    private static double det2D(Vector2d _u,Vector2d _v,Vector2d _w)
+    private double det2D(Vector2d _u,Vector2d _v,Vector2d _w)
     {
         return((_u.x-_v.x)*(_v.y-_w.y)+(_v.y-_u.y)*(_v.x-_w.x));
     }
 
-    private static boolean inBetween(int i1,int i2,int i3)
+    private boolean inBetween(int i1,int i2,int i3)
     {
         return((i1<=i3)&&(i3<=i2));
     }
 
-    private static boolean strictlyInBetween(int i1,int i2,int i3)
+    private boolean strictlyInBetween(int i1,int i2,int i3)
     {
         return((i1<i3)&&(i3<i2));
     }
 
-    private static double stableDet2D(Triangulator triRef,int i,int j,int k)
+    private double stableDet2D(int i,int j,int k)
     {
-        double det;
-        Vector2d numericsHP,numericsHQ,numericsHR;
-
         if((i==j)||(i==k)||(j==k))
-            det=0.0;
+            return 0.0;
         else
         {
-            numericsHP=triRef.points[i];
-            numericsHQ=triRef.points[j];
-            numericsHR=triRef.points[k];
+            Vector2d numericsHP=points[i];
+            Vector2d numericsHQ=points[j];
+            Vector2d numericsHR=points[k];
 
             if(i<j)
             {
                 if(j<k)
-                    det=det2D(numericsHP,numericsHQ,numericsHR);
+                    return det2D(numericsHP,numericsHQ,numericsHR);
                 else if(i<k)
-                    det=-det2D(numericsHP,numericsHR,numericsHQ);
+                    return -det2D(numericsHP,numericsHR,numericsHQ);
                 else
-                    det=det2D(numericsHR,numericsHP,numericsHQ);
+                    return det2D(numericsHR,numericsHP,numericsHQ);
             }
             else
             {
                 if(i<k)
-                    det=-det2D(numericsHQ,numericsHP,numericsHR);
+                    return -det2D(numericsHQ,numericsHP,numericsHR);
                 else if(j<k)
-                    det=det2D(numericsHQ,numericsHR,numericsHP);
+                    return det2D(numericsHQ,numericsHR,numericsHP);
                 else
-                    det=-det2D(numericsHR,numericsHQ,numericsHP);
+                    return -det2D(numericsHR,numericsHQ,numericsHP);
             }
         }
-
-        return det;
     }
 
-    private static int orientation(Triangulator triRef,int i,int j,int k)
+    private int orientation(int i,int j,int k)
     {
-        double numericsHDet=stableDet2D(triRef,i,j,k);
-        if((numericsHDet<-triRef.epsilon))
+        double numericsHDet=stableDet2D(i,j,k);
+        if((numericsHDet<-epsilon))
             return -1;
-        else if(!((numericsHDet)<=triRef.epsilon))
+        else if(!((numericsHDet)<=epsilon))
             return 1;
         else
             return 0;
     }
 
-    private static boolean isInCone(Triangulator triRef,int i,int j,int k,int l,boolean convex)
+    private boolean isInCone(int i,int j,int k,int l,boolean convex)
     {
         if(convex)
         {
             if(i!=j)
             {
-                int numericsHOri=orientation(triRef,i,j,l);
+                int numericsHOri=orientation(i,j,l);
                 if(numericsHOri<0)
                     return false;
                 else if(numericsHOri==0)
@@ -1371,7 +1363,7 @@ class Triangulator
             }
             if(j!=k)
             {
-                int numericsHOri=orientation(triRef,j,k,l);
+                int numericsHOri=orientation(j,k,l);
                 if(numericsHOri<0)
                     return false;
                 else if(numericsHOri==0)
@@ -1391,14 +1383,14 @@ class Triangulator
         }
         else
         {
-            if(orientation(triRef,i,j,l)<=0)
-                if(orientation(triRef,j,k,l)<0)
+            if(orientation(i,j,l)<=0)
+                if(orientation(j,k,l)<0)
                     return false;
         }
         return true;
     }
 
-    private static int isConvexAngle(Triangulator triRef,int i,int j,int k,int ind)
+    private int isConvexAngle(int i,int j,int k,int ind)
     {
         double numericsHDot;
         int numericsHOri1;
@@ -1409,46 +1401,39 @@ class Triangulator
         else if(j==k)
             return -1;
 
-        numericsHOri1=orientation(triRef,i,j,k);
+        numericsHOri1=orientation(i,j,k);
         if(numericsHOri1>0)
             return 1;
         else if(numericsHOri1<0)
             return -1;
 
-        numericsHP=new Vector2d();
-        numericsHQ=new Vector2d();
-        vectorSub2D(triRef.points[i],triRef.points[j],numericsHP);
-        vectorSub2D(triRef.points[k],triRef.points[j],numericsHQ);
-        numericsHDot=dotProduct2D(numericsHP,numericsHQ);
+        numericsHP=points[i].subtract(points[j]);
+        numericsHQ=points[k].subtract(points[j]);
+        numericsHDot=numericsHP.dot(numericsHQ);
         if(numericsHDot<0.0)
             return 0;
         else
-            return spikeAngle(triRef,i,j,k,ind);
+            return recSpikeAngle(i,j,k,list[ind].prev,list[ind].next);
     }
 
-    private static boolean pntInTriangle(Triangulator triRef,int i1,int i2,int i3,int i4)
+    private boolean pntInTriangle(int i1,int i2,int i3,int i4)
     {
-        if(orientation(triRef,i2,i3,i4)>=0)
-            if(orientation(triRef,i1,i2,i4)>=0)
-                if(orientation(triRef,i3,i1,i4)>=0)
+        if(orientation(i2,i3,i4)>=0)
+            if(orientation(i1,i2,i4)>=0)
+                if(orientation(i3,i1,i4)>=0)
                     return true;
 
         return false;
     }
 
-    private static Vector2d vectorSub2D(Vector2d p,Vector2d q,Vector2d r)
+    private boolean vtxInTriangle(int i1,int i2,int i3,int i4,int[] type)
     {
-        return p.subtract(q);
-    }
-
-    private static boolean vtxInTriangle(Triangulator triRef,int i1,int i2,int i3,int i4,int[] type)
-    {
-        if(orientation(triRef,i2,i3,i4)>=0)
+        if(orientation(i2,i3,i4)>=0)
         {
-            int numericsHOri1=orientation(triRef,i1,i2,i4);
+            int numericsHOri1=orientation(i1,i2,i4);
             if(numericsHOri1>0)
             {
-                numericsHOri1=orientation(triRef,i3,i1,i4);
+                numericsHOri1=orientation(i3,i1,i4);
                 if(numericsHOri1>0)
                 {
                     type[0]=0;
@@ -1462,7 +1447,7 @@ class Triangulator
             }
             else if(numericsHOri1==0)
             {
-                numericsHOri1=orientation(triRef,i3,i1,i4);
+                numericsHOri1=orientation(i3,i1,i4);
                 if(numericsHOri1>0)
                 {
                     type[0]=2;
@@ -1478,7 +1463,7 @@ class Triangulator
         return false;
     }
 
-    private static boolean segIntersect(Triangulator triRef,int i1,int i2,int i3,int i4,int i5)
+    private boolean segIntersect(int i1,int i2,int i3,int i4,int i5)
     {
         int ori1,ori2,ori3,ori4;
 
@@ -1488,10 +1473,10 @@ class Triangulator
             return true;
 
         if((i3==i5)||(i4==i5))
-            triRef.identCntr++;
+            identCntr++;
 
-        ori3=orientation(triRef,i1,i2,i3);
-        ori4=orientation(triRef,i1,i2,i4);
+        ori3=orientation(i1,i2,i3);
+        ori4=orientation(i1,i2,i4);
         if(((ori3==1)&&(ori4==1))||((ori3==-1)&&(ori4==-1)))
             return false;
 
@@ -1510,19 +1495,19 @@ class Triangulator
         else if(ori4==0)
             return strictlyInBetween(i1,i2,i4);
 
-        ori1=orientation(triRef,i3,i4,i1);
-        ori2=orientation(triRef,i3,i4,i2);
+        ori1=orientation(i3,i4,i1);
+        ori2=orientation(i3,i4,i2);
         return !(((ori1<=0)&&(ori2<=0))||((ori1>=0)&&(ori2>=0)));
     }
 
-    private static double getRatio(Triangulator triRef,int i,int j,int k)
+    private double getRatio(int i,int j,int k)
     {
         double area,a,b,c,base,ratio;
         Vector2d p,q,r;
 
-        p=triRef.points[i];
-        q=triRef.points[j];
-        r=triRef.points[k];
+        p=points[i];
+        q=points[j];
+        r=points[k];
 
         a=baseLength(p,q);
         b=baseLength(p,r);
@@ -1537,10 +1522,10 @@ class Triangulator
         if((10.0*a)<Math.min(b,c))
             return 0.1;
 
-        area=stableDet2D(triRef,i,j,k);
-        if((area<-triRef.epsilon))
+        area=stableDet2D(i,j,k);
+        if((area<-epsilon))
             area=-area;
-        else if(!(!((area)<=triRef.epsilon)))
+        else if(!(!((area)<=epsilon)))
         {
             if(base>a)
                 return 0.1;
@@ -1559,16 +1544,7 @@ class Triangulator
         return ratio;
     }
 
-    private static int spikeAngle(Triangulator triRef,int i,int j,int k,int ind)
-    {
-        int ind2=ind;
-        int ind1=triRef.list[ind2].prev;
-        int ind3=triRef.list[ind2].next;
-
-        return recSpikeAngle(triRef,i,j,k,ind1,ind3);
-    }
-
-    private static int recSpikeAngle(Triangulator triRef,int i1,int i2,int i3,int ind1,int ind3)
+    private int recSpikeAngle(int i1,int i2,int i3,int ind1,int ind3)
     {
         int ori,ori1,ori2,i0,ii1,ii2;
         Vector2d pq,pr;
@@ -1592,55 +1568,55 @@ class Triangulator
             if(inBetween(ii1,ii2,i3))
             {
                 i2=i3;
-                ind3=triRef.list[ind3].next;
-                i3=triRef.list[ind3].index;
+                ind3=list[ind3].next;
+                i3=list[ind3].index;
 
                 if(ind1==ind3)
                     return 2;
-                ori=orientation(triRef,i1,i2,i3);
+                ori=orientation(i1,i2,i3);
                 if(ori>0)
                     return 2;
                 else if(ori<0)
                     return -2;
                 else
-                    return recSpikeAngle(triRef,i1,i2,i3,ind1,ind3);
+                    return recSpikeAngle(i1,i2,i3,ind1,ind3);
             }
             else
             {
                 i2=i1;
-                ind1=triRef.list[ind1].prev;
-                i1=triRef.list[ind1].index;
+                ind1=list[ind1].prev;
+                i1=list[ind1].index;
                 if(ind1==ind3)
                     return 2;
-                ori=orientation(triRef,i1,i2,i3);
+                ori=orientation(i1,i2,i3);
                 if(ori>0)
                     return 2;
                 else if(ori<0)
                     return -2;
                 else
-                    return recSpikeAngle(triRef,i1,i2,i3,ind1,ind3);
+                    return recSpikeAngle(i1,i2,i3,ind1,ind3);
             }
         }
         else
         {
             i0=i2;
             i2=i1;
-            ind1=triRef.list[ind1].prev;
-            i1=triRef.list[ind1].index;
+            ind1=list[ind1].prev;
+            i1=list[ind1].index;
 
             if(ind1==ind3)
                 return 2;
-            ind3=triRef.list[ind3].next;
-            i3=triRef.list[ind3].index;
+            ind3=list[ind3].next;
+            i3=list[ind3].index;
             if(ind1==ind3)
                 return 2;
-            ori=orientation(triRef,i1,i2,i3);
+            ori=orientation(i1,i2,i3);
             if(ori>0)
             {
-                ori1=orientation(triRef,i1,i2,i0);
+                ori1=orientation(i1,i2,i0);
                 if(ori1>0)
                 {
-                    ori2=orientation(triRef,i2,i3,i0);
+                    ori2=orientation(i2,i3,i0);
                     if(ori2>0)
                         return -2;
                 }
@@ -1648,10 +1624,10 @@ class Triangulator
             }
             else if(ori<0)
             {
-                ori1=orientation(triRef,i2,i1,i0);
+                ori1=orientation(i2,i1,i0);
                 if(ori1>0)
                 {
-                    ori2=orientation(triRef,i3,i2,i0);
+                    ori2=orientation(i3,i2,i0);
                     if(ori2>0)
                         return 2;
                 }
@@ -1659,120 +1635,108 @@ class Triangulator
             }
             else
             {
-                pq=new Vector2d();
-                vectorSub2D(triRef.points[i1],triRef.points[i2],pq);
-                pr=new Vector2d();
-                vectorSub2D(triRef.points[i3],triRef.points[i2],pr);
-                dot=dotProduct2D(pq,pr);
+                pq=points[i1].subtract(points[i2]);
+                pr=points[i3].subtract(points[i2]);
+                dot=pq.dot(pr);
                 if(dot<0.0)
                 {
-                    ori=orientation(triRef,i2,i1,i0);
+                    ori=orientation(i2,i1,i0);
                     if(ori>0)
                         return 2;
                     else
                         return -2;
                 }
                 else
-                    return recSpikeAngle(triRef,i1,i2,i3,ind1,ind3);
+                    return recSpikeAngle(i1,i2,i3,ind1,ind3);
             }
         }
     }
 
-    private static double dotProduct2D(Vector2d u,Vector2d v)
+    private void handleSplit(int ind1,int i1,int ind3,int i3)
     {
-        return((u.x*v.x)+(u.y*v.y));
+        int ind2=makeNode(i1);
+        insertAfter(ind1,ind2);
+
+        list[ind2].vcntIndex=list[ind1].vcntIndex;
+
+        int ind4=makeNode(i3);
+        insertAfter(ind3,ind4);
+
+        list[ind4].vcntIndex=list[ind3].vcntIndex;
+
+        splitSplice(ind1,ind2,ind3,ind4);
+
+        storeChain(ind1);
+        storeChain(ind3);
+
+        int next=list[ind1].next;
+        int nxt=list[next].index;
+        int prev=list[ind1].prev;
+        int prv=list[prev].index;
+        int angle=isConvexAngle(prv,i1,nxt,ind1);
+        list[ind1].convex=angle;
+
+        next=list[ind2].next;
+        nxt=list[next].index;
+        prev=list[ind2].prev;
+        prv=list[prev].index;
+        angle=isConvexAngle(prv,i1,nxt,ind2);
+        list[ind2].convex=angle;
+
+        next=list[ind3].next;
+        nxt=list[next].index;
+        prev=list[ind3].prev;
+        prv=list[prev].index;
+        angle=isConvexAngle(prv,i3,nxt,ind3);
+        list[ind3].convex=angle;
+
+        next=list[ind4].next;
+        nxt=list[next].index;
+        prev=list[ind4].prev;
+        prv=list[prev].index;
+        angle=isConvexAngle(prv,i3,nxt,ind4);
+        list[ind4].convex=angle;
     }
 
-    private static Vector2d vectorAdd2D(Vector2d p,Vector2d q)
-    {
-        return p.add(q);
-    }
-
-    private static void handleSplit(Triangulator triRef,int ind1,int i1,int ind3,int i3)
-    {
-        int ind2=triRef.makeNode(i1);
-        triRef.insertAfter(ind1,ind2);
-
-        triRef.list[ind2].vcntIndex=triRef.list[ind1].vcntIndex;
-
-        int ind4=triRef.makeNode(i3);
-        triRef.insertAfter(ind3,ind4);
-
-        triRef.list[ind4].vcntIndex=triRef.list[ind3].vcntIndex;
-
-        triRef.splitSplice(ind1,ind2,ind3,ind4);
-
-        triRef.storeChain(ind1);
-        triRef.storeChain(ind3);
-
-        int next=triRef.list[ind1].next;
-        int nxt=triRef.list[next].index;
-        int prev=triRef.list[ind1].prev;
-        int prv=triRef.list[prev].index;
-        int angle=isConvexAngle(triRef,prv,i1,nxt,ind1);
-        triRef.list[ind1].convex=angle;
-
-        next=triRef.list[ind2].next;
-        nxt=triRef.list[next].index;
-        prev=triRef.list[ind2].prev;
-        prv=triRef.list[prev].index;
-        angle=isConvexAngle(triRef,prv,i1,nxt,ind2);
-        triRef.list[ind2].convex=angle;
-
-        next=triRef.list[ind3].next;
-        nxt=triRef.list[next].index;
-        prev=triRef.list[ind3].prev;
-        prv=triRef.list[prev].index;
-        angle=isConvexAngle(triRef,prv,i3,nxt,ind3);
-        triRef.list[ind3].convex=angle;
-
-        next=triRef.list[ind4].next;
-        nxt=triRef.list[next].index;
-        prev=triRef.list[ind4].prev;
-        prv=triRef.list[prev].index;
-        angle=isConvexAngle(triRef,prv,i3,nxt,ind4);
-        triRef.list[ind4].convex=angle;
-    }
-
-    private static void classifyAngles(Triangulator triRef,int ind)
+    private void classifyAngles(int ind)
     {
         int ind0,ind1,ind2;
         int i0,i1,i2;
         int angle;
 
         ind1=ind;
-        i1=triRef.list[ind1].index;
-        ind0=triRef.list[ind1].prev;
-        i0=triRef.list[ind0].index;
+        i1=list[ind1].index;
+        ind0=list[ind1].prev;
+        i0=list[ind0].index;
 
         do
         {
-            ind2=triRef.list[ind1].next;
-            i2=triRef.list[ind2].index;
-            angle=isConvexAngle(triRef,i0,i1,i2,ind1);
-            triRef.list[ind1].convex=angle;
+            ind2=list[ind1].next;
+            i2=list[ind2].index;
+            angle=isConvexAngle(i0,i1,i2,ind1);
+            list[ind1].convex=angle;
             i0=i1;
             i1=i2;
             ind1=ind2;
         } while(ind1!=ind);
     }
 
-    private static boolean isEar(Triangulator triRef,int ind2,int[] ind1,int[] ind3,double[] ratio)
+    private boolean isEar(int ind2,int[] ind1,int[] ind3,double[] ratio)
     {
         BBox bb;
         boolean convex,coneOk;
 
-        int i2=triRef.list[ind2].index;
-        ind3[0]=triRef.list[ind2].next;
-        int i3=triRef.list[ind3[0]].index;
-        int ind4=triRef.list[ind3[0]].next;
-        int i4=triRef.list[ind4].index;
-        ind1[0]=triRef.list[ind2].prev;
-        int i1=triRef.list[ind1[0]].index;
-        int ind0=triRef.list[ind1[0]].prev;
-        int i0=triRef.list[ind0].index;
+        int i2=list[ind2].index;
+        ind3[0]=list[ind2].next;
+        int i3=list[ind3[0]].index;
+        int ind4=list[ind3[0]].next;
+        int i4=list[ind4].index;
+        ind1[0]=list[ind2].prev;
+        int i1=list[ind1[0]].index;
+        int ind0=list[ind1[0]].prev;
+        int i0=list[ind0].index;
 
-        if((i1==i3)||(i1==i2)||(i2==i3)||(triRef.list[ind2].convex==2))
+        if((i1==i3)||(i1==i2)||(i2==i3)||(list[ind2].convex==2))
         {
             ratio[0]=0.0;
             return true;
@@ -1780,7 +1744,7 @@ class Triangulator
 
         if(i0==i3)
         {
-            if((triRef.list[ind0].convex<0)||(triRef.list[ind3[0]].convex<0))
+            if((list[ind0].convex<0)||(list[ind3[0]].convex<0))
             {
                 ratio[0]=0.0;
                 return true;
@@ -1791,7 +1755,7 @@ class Triangulator
 
         if(i1==i4)
         {
-            if((triRef.list[ind1[0]].convex<0)||(triRef.list[ind4].convex<0))
+            if((list[ind1[0]].convex<0)||(list[ind4].convex<0))
             {
                 ratio[0]=0.0;
                 return true;
@@ -1800,21 +1764,21 @@ class Triangulator
                 return false;
         }
 
-        convex=triRef.list[ind1[0]].convex>0;
-        coneOk=isInCone(triRef,i0,i1,i2,i3,convex);
+        convex=list[ind1[0]].convex>0;
+        coneOk=isInCone(i0,i1,i2,i3,convex);
 
         if(!coneOk)
             return false;
-        convex=triRef.list[ind3[0]].convex>0;
-        coneOk=isInCone(triRef,i2,i3,i4,i1,convex);
+        convex=list[ind3[0]].convex>0;
+        coneOk=isInCone(i2,i3,i4,i1,convex);
 
         if(coneOk)
         {
-            bb=new BBox(triRef,i1,i3);
-            if(!noHashIntersectionExists(triRef,i2,ind2,i3,i1,bb))
+            bb=new BBox(this,i1,i3);
+            if(!noHashIntersectionExists(i2,ind2,i3,i1,bb))
             {
-                if(triRef.earsSorted)
-                    ratio[0]=getRatio(triRef,i1,i3,i2);
+                if(earsSorted)
+                    ratio[0]=getRatio(i1,i3,i2);
                 else
                     ratio[0]=1.0;
                 return true;
@@ -1824,7 +1788,7 @@ class Triangulator
         return false;
     }
 
-    private static boolean noHashIntersectionExists(Triangulator triRef,int i1,int ind1,int i2,int i3,BBox bb)
+    private boolean noHashIntersectionExists(int i1,int ind1,int i2,int i3,BBox bb)
     {
         int indVtx,ind5;
         int indPnt;
@@ -1832,84 +1796,84 @@ class Triangulator
         int type[]=new int[1];
         double y;
 
-        if(triRef.numReflex<=0)
+        if(numReflex<=0)
             return false;
 
         if(i1<bb.imin)
             bb.imin=i1;
         else if(i1>bb.imax)
             bb.imax=i1;
-        y=triRef.points[i1].y;
+        y=points[i1].y;
         if(y<bb.ymin)
             bb.ymin=y;
         else if(y>bb.ymax)
             bb.ymax=y;
 
-        indPnt=triRef.reflexVertices;
+        indPnt=reflexVertices;
         do
         {
-            indVtx=triRef.vtxList[indPnt].pnt;
-            i4=triRef.list[indVtx].index;
+            indVtx=vtxList[indPnt].pnt;
+            i4=list[indVtx].index;
 
-            if(bb.pntInBBox(triRef,i4))
+            if(bb.pntInBBox(this,i4))
             {
-                ind5=triRef.list[indVtx].next;
+                ind5=list[indVtx].next;
                 if((indVtx!=ind1)&&(indVtx!=ind5))
                 {
                     if(i4==i1)
                     {
-                        if(handleDegeneracies(triRef,i1,ind1,i2,i3,i4,indVtx))
+                        if(handleDegeneracies(i1,ind1,i2,i3,i4,indVtx))
                             return true;
                     }
                     else if((i4!=i2)&&(i4!=i3))
                     {
-                        if(vtxInTriangle(triRef,i1,i2,i3,i4,type))
+                        if(vtxInTriangle(i1,i2,i3,i4,type))
                             return true;
                     }
                 }
             }
-            indPnt=triRef.vtxList[indPnt].next;
+            indPnt=vtxList[indPnt].next;
 
         } while(indPnt!=-1);
 
         return false;
     }
 
-    private static void deleteFromList(Triangulator triRef,int i)
+    private void deleteFromList(int i)
     {
-        if(triRef.numReflex==0)
+        if(numReflex==0)
             return;
 
-        int indPnt=triRef.reflexVertices;
-        int indVtx=triRef.vtxList[indPnt].pnt;
+        int indPnt=reflexVertices;
+        int indVtx=vtxList[indPnt].pnt;
 
         if(indVtx==i)
         {
-            triRef.reflexVertices=triRef.vtxList[indPnt].next;
-            triRef.numReflex--;
+            reflexVertices=vtxList[indPnt].next;
+            numReflex--;
         }
         else
         {
-            int indPnt1=triRef.vtxList[indPnt].next;
+            int indPnt1=vtxList[indPnt].next;
             while(indPnt1!=-1)
             {
-                indVtx=triRef.vtxList[indPnt1].pnt;
+                indVtx=vtxList[indPnt1].pnt;
                 if(indVtx==i)
                 {
-                    triRef.vtxList[indPnt].next=triRef.vtxList[indPnt1].next;
+                    vtxList[indPnt].next=vtxList[indPnt1].next;
                     indPnt1=-1;
-                    triRef.numReflex--;
+                    numReflex--;
                 }
                 else
                 {
                     indPnt=indPnt1;
-                    indPnt1=triRef.vtxList[indPnt].next;
+                    indPnt1=vtxList[indPnt].next;
                 }
             }
         }
     }
 
-    private static boolean clipEar(Triangulator triRef,boolean[] done)
+    private boolean clipEar(boolean[] done)
     {
         int ind0,ind1,ind3,ind4;
         int i0,i1,i3,i4;
@@ -1925,63 +1889,63 @@ class Triangulator
 
         do
         {
-            if(!deleteFromHeap(triRef,ind2,index1,index3))
+            if(!deleteFromHeap(ind2,index1,index3))
                 return false;
 
-            ind1=triRef.list[ind2[0]].prev;
-            i1=triRef.list[ind1].index;
-            ind3=triRef.list[ind2[0]].next;
-            i3=triRef.list[ind3].index;
+            ind1=list[ind2[0]].prev;
+            i1=list[ind1].index;
+            ind3=list[ind2[0]].next;
+            i3=list[ind3].index;
         } while((index1[0]!=ind1)||(index3[0]!=ind3));
 
-        triRef.deleteLinks(ind2[0]);
-        triRef.storeTriangle(ind1,ind2[0],ind3);
+        deleteLinks(ind2[0]);
+        storeTriangle(ind1,ind2[0],ind3);
 
-        ind0=triRef.list[ind1].prev;
-        i0=triRef.list[ind0].index;
+        ind0=list[ind1].prev;
+        i0=list[ind0].index;
         if(ind0==ind3)
         {
             done[0]=true;
             return true;
         }
-        angle1=isConvexAngle(triRef,i0,i1,i3,ind1);
+        angle1=isConvexAngle(i0,i1,i3,ind1);
 
-        ind4=triRef.list[ind3].next;
-        i4=triRef.list[ind4].index;
+        ind4=list[ind3].next;
+        i4=list[ind4].index;
 
-        angle3=isConvexAngle(triRef,i1,i3,i4,ind3);
+        angle3=isConvexAngle(i1,i3,i4,ind3);
 
         if(i1!=i3)
         {
-            if((angle1>=0)&&(triRef.list[ind1].convex<0))
-                deleteFromList(triRef,ind1);
-            if((angle3>=0)&&(triRef.list[ind3].convex<0))
-                deleteFromList(triRef,ind3);
+            if((angle1>=0)&&(list[ind1].convex<0))
+                deleteFromList(ind1);
+            if((angle3>=0)&&(list[ind3].convex<0))
+                deleteFromList(ind3);
         }
         else
         {
-            if((angle1>=0)&&(triRef.list[ind1].convex<0))
-                deleteFromList(triRef,ind1);
-            else if((angle3>=0)&&(triRef.list[ind3].convex<0))
-                deleteFromList(triRef,ind3);
+            if((angle1>=0)&&(list[ind1].convex<0))
+                deleteFromList(ind1);
+            else if((angle3>=0)&&(list[ind3].convex<0))
+                deleteFromList(ind3);
         }
 
-        triRef.list[ind1].convex=angle1;
-        triRef.list[ind3].convex=angle3;
+        list[ind1].convex=angle1;
+        list[ind3].convex=angle3;
 
         if(angle1>0)
-            if(isEar(triRef,ind1,index0,index2,ratio))
-                dumpOnHeap(triRef,ratio[0],ind1,index0[0],index2[0]);
+            if(isEar(ind1,index0,index2,ratio))
+                dumpOnHeap(ratio[0],ind1,index0[0],index2[0]);
 
         if(angle3>0)
-            if(isEar(triRef,ind3,index2,index4,ratio))
-                dumpOnHeap(triRef,ratio[0],ind3,index2[0],index4[0]);
+            if(isEar(ind3,index2,index4,ratio))
+                dumpOnHeap(ratio[0],ind3,index2[0],index4[0]);
 
-        ind0=triRef.list[ind1].prev;
-        ind4=triRef.list[ind3].next;
+        ind0=list[ind1].prev;
+        ind4=list[ind3].next;
         if(ind0==ind4)
         {
-            triRef.storeTriangle(ind1,ind3,ind4);
+            storeTriangle(ind1,ind3,ind4);
             done[0]=true;
         }
         else
@@ -1990,63 +1954,63 @@ class Triangulator
         return true;
     }
 
-    private static boolean deleteFromHeap(Triangulator triRef,int[] ind,int[] prev,int[] next)
+    private boolean deleteFromHeap(int[] ind,int[] prev,int[] next)
     {
         double rnd;
         int rndInd;
 
-        if(triRef.numZero>0)
+        if(numZero>0)
         {
-            triRef.numZero--;
-            triRef.numHeap--;
+            numZero--;
+            numHeap--;
 
-            ind[0]=triRef.heap[triRef.numZero].index;
-            prev[0]=triRef.heap[triRef.numZero].prev;
-            next[0]=triRef.heap[triRef.numZero].next;
-            if(triRef.numZero<triRef.numHeap)
-                triRef.heap[triRef.numZero].set(triRef.heap[triRef.numHeap]);
+            ind[0]=heap[numZero].index;
+            prev[0]=heap[numZero].prev;
+            next[0]=heap[numZero].next;
+            if(numZero<numHeap)
+                heap[numZero].set(heap[numHeap]);
 
             return true;
         }
-        else if(triRef.earsRandom)
+        else if(earsRandom)
         {
-            if(triRef.numHeap<=0)
+            if(numHeap<=0)
             {
-                triRef.numHeap=0;
+                numHeap=0;
                 return false;
             }
             rnd=Math.random();
-            rndInd=(int)(rnd*triRef.numHeap);
-            triRef.numHeap--;
-            if(rndInd>triRef.numHeap)
-                rndInd=triRef.numHeap;
+            rndInd=(int)(rnd*numHeap);
+            numHeap--;
+            if(rndInd>numHeap)
+                rndInd=numHeap;
 
-            ind[0]=triRef.heap[rndInd].index;
-            prev[0]=triRef.heap[rndInd].prev;
-            next[0]=triRef.heap[rndInd].next;
-            if(rndInd<triRef.numHeap)
-                triRef.heap[rndInd].set(triRef.heap[triRef.numHeap]);
+            ind[0]=heap[rndInd].index;
+            prev[0]=heap[rndInd].prev;
+            next[0]=heap[rndInd].next;
+            if(rndInd<numHeap)
+                heap[rndInd].set(heap[numHeap]);
 
             return true;
         }
         else
         {
-            if(triRef.numHeap<=0)
+            if(numHeap<=0)
             {
-                triRef.numHeap=0;
+                numHeap=0;
                 return false;
             }
 
-            triRef.numHeap--;
-            ind[0]=triRef.heap[triRef.numHeap].index;
-            prev[0]=triRef.heap[triRef.numHeap].prev;
-            next[0]=triRef.heap[triRef.numHeap].next;
+            numHeap--;
+            ind[0]=heap[numHeap].index;
+            prev[0]=heap[numHeap].prev;
+            next[0]=heap[numHeap].next;
 
             return true;
         }
     }
 
-    private static void classifyEars(Triangulator triRef,int ind)
+    private void classifyEars(int ind)
     {
         int ind1;
         int[] ind0,ind2;
@@ -2056,22 +2020,22 @@ class Triangulator
         ind2=new int[1];
         ratio=new double[1];
 
-        triRef.maxNumHeap=triRef.numPoints;
-        triRef.heap=new HeapNode[triRef.maxNumHeap];
-        triRef.numHeap=0;
-        triRef.numZero=0;
+        maxNumHeap=numPoints;
+        heap=new HeapNode[maxNumHeap];
+        numHeap=0;
+        numZero=0;
 
         ind1=ind;
         do
         {
-            if((triRef.list[ind1].convex>0)&&isEar(triRef,ind1,ind0,ind2,ratio))
-                dumpOnHeap(triRef,ratio[0],ind1,ind0[0],ind2[0]);
+            if((list[ind1].convex>0)&&isEar(ind1,ind0,ind2,ratio))
+                dumpOnHeap(ratio[0],ind1,ind0[0],ind2[0]);
 
-            ind1=triRef.list[ind1].next;
+            ind1=list[ind1].next;
         } while(ind1!=ind);
     }
 
-    private static boolean simpleFace(Triangulator triRef,int ind1)
+    private boolean simpleFace(int ind1)
     {
         int ind0,ind2,ind3,ind4;
         int i1,i2,i3,i4;
@@ -2081,32 +2045,32 @@ class Triangulator
         double x,y,z;
         int ori2,ori4;
 
-        ind0=triRef.list[ind1].prev;
+        ind0=list[ind1].prev;
         if(ind0==ind1)
             return true;
 
-        ind2=triRef.list[ind1].next;
-        i2=triRef.list[ind2].index;
+        ind2=list[ind1].next;
+        i2=list[ind2].index;
         if(ind0==ind2)
             return true;
 
-        ind3=triRef.list[ind2].next;
-        i3=triRef.list[ind3].index;
+        ind3=list[ind2].next;
+        i3=list[ind3].index;
         if(ind0==ind3)
         {
-            triRef.storeTriangle(ind1,ind2,ind3);
+            storeTriangle(ind1,ind2,ind3);
             return true;
         }
 
-        ind4=triRef.list[ind3].next;
-        i4=triRef.list[ind4].index;
+        ind4=list[ind3].next;
+        i4=list[ind4].index;
         if(ind0==ind4)
         {
-            triRef.initPnts(5);
-            i1=triRef.list[ind1].index;
+            initPnts(5);
+            i1=list[ind1].index;
 
-            pq=triRef.vertices[i1].subtract(triRef.vertices[i2]);
-            pr=triRef.vertices[i3].subtract(triRef.vertices[i2]);
+            pq=vertices[i1].subtract(vertices[i2]);
+            pr=vertices[i3].subtract(vertices[i2]);
             nr=pq.cross(pr);
 
             x=Math.abs(nr.x);
@@ -2114,39 +2078,39 @@ class Triangulator
             z=Math.abs(nr.z);
             if((z>=x)&&(z>=y))
             {
-                triRef.points[1]=new Vector2d(triRef.vertices[i1].x,triRef.vertices[i1].y);
-                triRef.points[2]=new Vector2d(triRef.vertices[i2].x,triRef.vertices[i2].y);
-                triRef.points[3]=new Vector2d(triRef.vertices[i3].x,triRef.vertices[i3].y);
-                triRef.points[4]=new Vector2d(triRef.vertices[i4].x,triRef.vertices[i4].y);
+                points[1]=new Vector2d(vertices[i1].x,vertices[i1].y);
+                points[2]=new Vector2d(vertices[i2].x,vertices[i2].y);
+                points[3]=new Vector2d(vertices[i3].x,vertices[i3].y);
+                points[4]=new Vector2d(vertices[i4].x,vertices[i4].y);
             }
             else if((x>=y)&&(x>=z))
             {
-                triRef.points[1]=new Vector2d(triRef.vertices[i1].z,triRef.vertices[i1].y);
-                triRef.points[2]=new Vector2d(triRef.vertices[i2].z,triRef.vertices[i2].y);
-                triRef.points[3]=new Vector2d(triRef.vertices[i3].z,triRef.vertices[i3].y);
-                triRef.points[4]=new Vector2d(triRef.vertices[i4].z,triRef.vertices[i4].y);
+                points[1]=new Vector2d(vertices[i1].z,vertices[i1].y);
+                points[2]=new Vector2d(vertices[i2].z,vertices[i2].y);
+                points[3]=new Vector2d(vertices[i3].z,vertices[i3].y);
+                points[4]=new Vector2d(vertices[i4].z,vertices[i4].y);
             }
             else
             {
-                triRef.points[1]=new Vector2d(triRef.vertices[i1].x,triRef.vertices[i1].z);
-                triRef.points[2]=new Vector2d(triRef.vertices[i2].x,triRef.vertices[i2].z);
-                triRef.points[3]=new Vector2d(triRef.vertices[i3].x,triRef.vertices[i3].z);
-                triRef.points[4]=new Vector2d(triRef.vertices[i4].x,triRef.vertices[i4].z);
+                points[1]=new Vector2d(vertices[i1].x,vertices[i1].z);
+                points[2]=new Vector2d(vertices[i2].x,vertices[i2].z);
+                points[3]=new Vector2d(vertices[i3].x,vertices[i3].z);
+                points[4]=new Vector2d(vertices[i4].x,vertices[i4].z);
             }
-            triRef.numPoints=5;
+            numPoints=5;
 
-            ori2=orientation(triRef,1,2,3);
-            ori4=orientation(triRef,1,3,4);
+            ori2=orientation(1,2,3);
+            ori4=orientation(1,3,4);
 
             if(((ori2>0)&&(ori4>0))||((ori2<0)&&(ori4<0)))
             {
-                triRef.storeTriangle(ind1,ind2,ind3);
-                triRef.storeTriangle(ind1,ind3,ind4);
+                storeTriangle(ind1,ind2,ind3);
+                storeTriangle(ind1,ind3,ind4);
             }
             else
             {
-                triRef.storeTriangle(ind2,ind3,ind4);
-                triRef.storeTriangle(ind2,ind4,ind1);
+                storeTriangle(ind2,ind3,ind4);
+                storeTriangle(ind2,ind4,ind1);
             }
             return true;
         }
@@ -2206,20 +2170,20 @@ class Triangulator
         }
     }
 
-    private static void prepareNoHashPnts(Triangulator triRef,int currLoopMin)
+    private void prepareNoHashPnts(int currLoopMin)
     {
-        triRef.numVtxList=0;
-        triRef.reflexVertices=-1;
+        numVtxList=0;
+        reflexVertices=-1;
 
-        int ind=triRef.loops[currLoopMin];
+        int ind=loops[currLoopMin];
         int ind1=ind;
-        triRef.numReflex=0;
+        numReflex=0;
         do
         {
-            if(triRef.list[ind1].convex<0)
-                insertAfterVtx(triRef,ind1);
+            if(list[ind1].convex<0)
+                insertAfterVtx(ind1);
 
-            ind1=triRef.list[ind1].next;
+            ind1=list[ind1].next;
         } while(ind1!=ind);
     }
 
@@ -2294,27 +2258,27 @@ class Triangulator
         return ind;
     }
 
-    private static void insertAfterVtx(Triangulator triRef,int iVtx)
+    private void insertAfterVtx(int iVtx)
     {
         int size;
 
-        if(triRef.vtxList==null)
+        if(vtxList==null)
         {
-            size=Math.max(triRef.numVtxList+1,100);
-            triRef.vtxList=new PntNode[size];
+            size=Math.max(numVtxList+1,100);
+            vtxList=new PntNode[size];
         }
-        else if(triRef.numVtxList>=triRef.vtxList.length)
+        else if(numVtxList>=vtxList.length)
         {
-            size=Math.max(triRef.numVtxList+1,triRef.vtxList.length+100);
-            PntNode old[]=triRef.vtxList;
-            triRef.vtxList=new PntNode[size];
-            System.arraycopy(old,0,triRef.vtxList,0,old.length);
+            size=Math.max(numVtxList+1,vtxList.length+100);
+            PntNode old[]=vtxList;
+            vtxList=new PntNode[size];
+            System.arraycopy(old,0,vtxList,0,old.length);
         }
 
-        triRef.vtxList[triRef.numVtxList]=new PntNode(iVtx,triRef.reflexVertices);
-        triRef.reflexVertices=triRef.numVtxList;
-        triRef.numVtxList++;
-        triRef.numReflex++;
+        vtxList[numVtxList]=new PntNode(iVtx,reflexVertices);
+        reflexVertices=numVtxList;
+        numVtxList++;
+        numReflex++;
     }
 
     private int makeLoopHeader()
@@ -2428,7 +2392,7 @@ class Triangulator
         return numPoints-1;
     }
 
-    private static void projectFace(Triangulator triRef,int loopMin,int loopMax)
+    private void projectFace(int loopMin,int loopMax)
     {
         Vector3d normal,nr;
         int i,j;
@@ -2437,13 +2401,13 @@ class Triangulator
         normal=new Vector3d();
         nr=new Vector3d();
 
-        determineNormal(triRef,triRef.loops[loopMin],normal);
+        normal=determineNormal(loops[loopMin]);
         j=loopMin+1;
         if(j<loopMax)
         {
             for(i=j;i<loopMax;++i)
             {
-                determineNormal(triRef,triRef.loops[i],nr);
+                nr=determineNormal(loops[i]);
                 if(normal.dot(nr)<0.0)
                     nr.negate();
 
@@ -2456,19 +2420,21 @@ class Triangulator
                 normal=new Vector3d(0,0,1);
         }
 
-        projectPoints(triRef,loopMin,loopMax,normal);
+        projectPoints(loopMin,loopMax,normal);
     }
 
-    private static void determineNormal(Triangulator triRef,int ind,Vector3d normal)
+    private Vector3d determineNormal(int ind)
     {
+        Vector3d normal;
+        
         int ind1=ind;
-        int i1=triRef.list[ind1].index;
-        int ind0=triRef.list[ind1].prev;
-        int i0=triRef.list[ind0].index;
-        int ind2=triRef.list[ind1].next;
-        int i2=triRef.list[ind2].index;
-        Vector3d pq=triRef.vertices[i0].subtract(triRef.vertices[i1]);
-        Vector3d pr=triRef.vertices[i2].subtract(triRef.vertices[i1]);
+        int i1=list[ind1].index;
+        int ind0=list[ind1].prev;
+        int i0=list[ind0].index;
+        int ind2=list[ind1].next;
+        int i2=list[ind2].index;
+        Vector3d pq=vertices[i0].subtract(vertices[i1]);
+        Vector3d pr=vertices[i2].subtract(vertices[i1]);
         Vector3d nr=pq.cross(pr);
         double d=nr.length();
         if(!((d)<=Triangulator.ZERO))
@@ -2478,11 +2444,11 @@ class Triangulator
 
         pq=pr;
         ind1=ind2;
-        ind2=triRef.list[ind1].next;
-        i2=triRef.list[ind2].index;
+        ind2=list[ind1].next;
+        i2=list[ind2].index;
         while(ind1!=ind)
         {
-            pr=triRef.vertices[i2].subtract(triRef.vertices[i1]);
+            pr=vertices[i2].subtract(vertices[i1]);
             nr=pq.cross(pr);
             d=nr.length();
             if(!((d)<=Triangulator.ZERO))
@@ -2494,8 +2460,8 @@ class Triangulator
             }
             pq=pr;
             ind1=ind2;
-            ind2=triRef.list[ind1].next;
-            i2=triRef.list[ind2].index;
+            ind2=list[ind1].next;
+            i2=list[ind2].index;
         }
 
         d=normal.length();
@@ -2503,9 +2469,11 @@ class Triangulator
             normal=normal.scale(1/d);
         else
             normal=new Vector3d(0,0,1);
+        
+        return normal;
     }
 
-    private static int signEps(double _x,double _eps)
+    private int signEps(double _x,double _eps)
     {
         if(_x>_eps)
             return 1;
@@ -2516,7 +2484,7 @@ class Triangulator
         return 0;
     }
 
-    private static void projectPoints(Triangulator triRef,int i1,int i2,Vector3d n3)
+    private void projectPoints(int i1,int i2,Vector3d n3)
     {
         Vector3d vtx=new Vector3d();
         Vector3d n1=new Vector3d();
@@ -2548,91 +2516,91 @@ class Triangulator
         matrix.m[11]=0;
         matrix.m[15]=1;
         
-        triRef.initPnts(20);
+        initPnts(20);
         for(int i=i1;i<i2;++i)
         {
-            int ind=triRef.loops[i];
+            int ind=loops[i];
             int ind1=ind;
-            int j1=triRef.list[ind1].index;
-            vtx=matrix.multiply(triRef.vertices[j1]);
-            j1=triRef.storePoint(vtx.x,vtx.y);
-            triRef.list[ind1].index=j1;
-            ind1=triRef.list[ind1].next;
-            j1=triRef.list[ind1].index;
+            int j1=list[ind1].index;
+            vtx=matrix.multiply(vertices[j1]);
+            j1=storePoint(vtx.x,vtx.y);
+            list[ind1].index=j1;
+            ind1=list[ind1].next;
+            j1=list[ind1].index;
             while(ind1!=ind)
             {
-                vtx=matrix.multiply(triRef.vertices[j1]);
-                j1=triRef.storePoint(vtx.x,vtx.y);
-                triRef.list[ind1].index=j1;
-                ind1=triRef.list[ind1].next;
-                j1=triRef.list[ind1].index;
+                vtx=matrix.multiply(vertices[j1]);
+                j1=storePoint(vtx.x,vtx.y);
+                list[ind1].index=j1;
+                ind1=list[ind1].next;
+                j1=list[ind1].index;
             }
         }
     }
 
-    private static void adjustOrientation(Triangulator triRef,int i1,int i2)
+    private void adjustOrientation(int i1,int i2)
     {
-        if(triRef.numLoops>=triRef.maxNumPolyArea)
+        if(numLoops>=maxNumPolyArea)
         {
-            triRef.maxNumPolyArea=triRef.numLoops;
-            double old[]=triRef.polyArea;
-            triRef.polyArea=new double[triRef.maxNumPolyArea];
+            maxNumPolyArea=numLoops;
+            double old[]=polyArea;
+            polyArea=new double[maxNumPolyArea];
             if(old!=null)
-                System.arraycopy(old,0,triRef.polyArea,0,old.length);
+                System.arraycopy(old,0,polyArea,0,old.length);
         }
 
         for(int i=i1;i<i2;++i)
         {
-            int ind=triRef.loops[i];
-            triRef.polyArea[i]=polygonArea(triRef,ind);
+            int ind=loops[i];
+            polyArea[i]=polygonArea(ind);
         }
 
-        double area=Math.abs(triRef.polyArea[i1]);
+        double area=Math.abs(polyArea[i1]);
         int outer=i1;
         for(int i=i1+1;i<i2;++i)
-            if(area<Math.abs(triRef.polyArea[i]))
+            if(area<Math.abs(polyArea[i]))
             {
-                area=Math.abs(triRef.polyArea[i]);
+                area=Math.abs(polyArea[i]);
                 outer=i;
             }
 
         if(outer!=i1)
         {
-            int ind=triRef.loops[i1];
-            triRef.loops[i1]=triRef.loops[outer];
-            triRef.loops[outer]=ind;
+            int ind=loops[i1];
+            loops[i1]=loops[outer];
+            loops[outer]=ind;
 
-            area=triRef.polyArea[i1];
-            triRef.polyArea[i1]=triRef.polyArea[outer];
-            triRef.polyArea[outer]=area;
+            area=polyArea[i1];
+            polyArea[i1]=polyArea[outer];
+            polyArea[outer]=area;
         }
 
-        if(triRef.polyArea[i1]<0.0)
-            triRef.swapLinks(triRef.loops[i1]);
+        if(polyArea[i1]<0.0)
+            swapLinks(loops[i1]);
 
         for(int i=i1+1;i<i2;++i)
-            if(triRef.polyArea[i]>0.0)
-                triRef.swapLinks(triRef.loops[i]);
+            if(polyArea[i]>0.0)
+                swapLinks(loops[i]);
     }
 
-    private static double polygonArea(Triangulator triRef,int ind)
+    private double polygonArea(int ind)
     {
         int hook=0;
         double area1=0;
 
         int ind1=ind;
-        int i1=triRef.list[ind1].index;
-        int ind2=triRef.list[ind1].next;
-        int i2=triRef.list[ind2].index;
-        double area=stableDet2D(triRef,hook,i1,i2);
+        int i1=list[ind1].index;
+        int ind2=list[ind1].next;
+        int i2=list[ind2].index;
+        double area=stableDet2D(hook,i1,i2);
 
         ind1=ind2;
         i1=i2;
         while(ind1!=ind)
         {
-            ind2=triRef.list[ind1].next;
-            i2=triRef.list[ind2].index;
-            area1=stableDet2D(triRef,hook,i1,i2);
+            ind2=list[ind1].next;
+            i2=list[ind2].index;
+            area1=stableDet2D(hook,i1,i2);
             area+=area1;
             ind1=ind2;
             i1=i2;
@@ -2641,12 +2609,12 @@ class Triangulator
         return area;
     }
 
-    private static void determineOrientation(Triangulator triRef,int ind)
+    private void determineOrientation(int ind)
     {
-        if(polygonArea(triRef,ind)<0.0)
+        if(polygonArea(ind)<0.0)
         {
-            triRef.swapLinks(ind);
-            triRef.ccwLoop=false;
+            swapLinks(ind);
+            ccwLoop=false;
         }
     }
 }

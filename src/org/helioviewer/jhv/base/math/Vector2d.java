@@ -156,10 +156,10 @@ public final class Vector2d {
         return new Vector2d(v.x / length, v.y / length);
     }
 
-    public static double dot(final Vector2d v1, final Vector2d v2) {
-        return v1.x * v2.x + v1.y * v2.y;
+    public double dot(final Vector2d v) {
+        return x * v.x + y * v.y;
     }
-
+    
     public static double angle(final Vector2d v1, final Vector2d v2) {
         return Math.acos((v1.x * v2.x + v1.y * v2.y) / ((Math.sqrt(v1.x * v1.x + v1.y * v1.y)) * (Math.sqrt(v2.x * v2.x + v2.y * v2.y))));
     }
@@ -267,5 +267,10 @@ public final class Vector2d {
      */
     private static double clockwise(Vector2d a, Vector2d b, Vector2d c) {
         return (c.x - a.x) * (b.y - a.y) - (b.x - a.x) * (c.y - a.y);
+    }
+
+    public double cross(Vector2d v1)
+    {
+        return this.x * v1.y - this.y * v1.x;
     }
 }
