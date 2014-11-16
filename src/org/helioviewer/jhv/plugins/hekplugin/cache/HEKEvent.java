@@ -491,28 +491,7 @@ public class HEKEvent implements IntervalComparison<Date> {
 
         CartesianCoord result = HEKCoordinateTransform.StonyhurstToHeliocentricCartesian(normalizedStony, bzero, phizero);
 
-        // TODO: Malte Nuhn - Why does the sign of the y-coordinate need to be
-        // flipped? However, it works like this
-        return new Vector3d(result.x, -result.y, result.z);
-    }
-
-    public static Vector3d convertToSceneCoordinates(SphericalCoord stony, Date now, double factor) {
-
-        if (stony == null)
-            return new Vector3d(0, 0, 0);
-
-        GregorianCalendar c = new GregorianCalendar();
-        c.setTime(now);
-        double bzero = Astronomy.getB0InDegree(c);
-        double phizero = 0.0; // do we have a value for this?
-        SphericalCoord normalizedStony = new SphericalCoord(stony);
-        normalizedStony.r = Constants.SUN_RADIUS * factor;
-
-        CartesianCoord result = HEKCoordinateTransform.StonyhurstToHeliocentricCartesian(normalizedStony, bzero, phizero);
-
-        // TODO: Malte Nuhn - Why does the sign of the y-coordinate need to be
-        // flipped? However, it works like this
-        return new Vector3d(result.x, -result.y, result.z);
+        return new Vector3d(result.x, result.y, result.z);
     }
 
     /**
@@ -688,18 +667,9 @@ public class HEKEvent implements IntervalComparison<Date> {
         if (now != null) {
 
             // the central point of the event
-            SphericalCoord projectionCenter = this.getStony(now);
             Vector<SphericalCoord> outerBound = this.getStonyBound(now);
 
             if (outerBound != null) {
-
-                // needed to define the plane projection
-                Vector3d projectionCenterCartesian = HEKEvent.convertToSceneCoordinates(projectionCenter, now);
-
-                SphericalCoord firstPoint = outerBound.get(0);
-                Vector3d firstPointCartesian = HEKEvent.convertToSceneCoordinates(firstPoint, now);
-                Vector3d projectionPlaneVectorA = firstPointCartesian.inPlaneShift(projectionCenterCartesian).normalize();
-                Vector3d projectionPlaneVectorB = projectionPlaneVectorA.cross(projectionCenterCartesian.normalize()).normalize();
 
                 // if first and last point are the same, remove the last one
                 if (outerBound.get(0).equals(outerBound.get(outerBound.size() - 1))) {
@@ -712,79 +682,37 @@ public class HEKEvent implements IntervalComparison<Date> {
                     return;
                 }
 
-                // Setup the Polygon Boundary (External Library)
-                Vector<Vector2d> simplePolygonPoints = new Vector<Vector2d>();
-                
-                // needed to map back triangles
-                Vector<Vector3d> outerBoundCartesian = new Vector<Vector3d>();
-
-                for (SphericalCoord boundaryPoint : outerBound) {
-                    Vector3d boundaryPointCartesian = HEKEvent.convertToSceneCoordinates(boundaryPoint, now);
-                    outerBoundCartesian.add(boundaryPointCartesian);
-
-                    Vector2d projected = boundaryPointCartesian.inPlaneCoord(projectionCenterCartesian,projectionPlaneVectorA,projectionPlaneVectorB);
-                    simplePolygonPoints.add(projected);
-                }
                 
                 try {
-                    //simplePolygonPoints
-                    Vector3d[] coordinates=new Vector3d[simplePolygonPoints.size()];
+                    Vector3d[] coordinates=new Vector3d[outerBound.size()];
                     for(int i=0;i<coordinates.length;i++)
-                        coordinates[i]=new Vector3d(simplePolygonPoints.get(i).x,simplePolygonPoints.get(i).y,0);
+                        coordinates[i]=HEKEvent.convertToSceneCoordinates(outerBound.get(i), now).normalize();
                     
                     GeometryInfo gi=new GeometryInfo();
                     gi.setCoordinates(coordinates);
                     gi.setStripCounts(new int[]{coordinates.length});
                     gi.setContourCounts(new int[]{1});
                     
-                    // add sun border points
-                    Vector<SphericalCoord> sunBorder = generateSunBorder();
-
-                    // needed to map back triangles
-                    Vector<Vector3d> sunBorderCartesian = new Vector<Vector3d>();
-                    for (SphericalCoord sunBoundaryPoint : sunBorder)
-                    {
-                        Vector3d sunBoundaryPointCartesian = HEKEvent.convertToSceneCoordinates(sunBoundaryPoint, now);
-                        sunBorderCartesian.add(sunBoundaryPointCartesian);
-                    }
-                    
                     List<Triangle> advancedPolygonTriangles = gi.getGeometryArray();
                     
-                    
-                    
-                    // setup vector of triangles, after we know everything
-                    // worked out
                     cachedTriangles = new Vector<GenericTriangle<SphericalCoord>>();
 
-                    Vector<SphericalCoord> lookupSpherical = new Vector<SphericalCoord>();
-                    Vector<Vector3d> lookupCartesian = new Vector<Vector3d>();
-
-                    lookupSpherical.addAll(sunBorder);
-                    lookupCartesian.addAll(sunBorderCartesian);
-
-                    lookupSpherical.addAll(outerBound);
-                    lookupCartesian.addAll(outerBoundCartesian);
-
-                    for (Triangle triangle : advancedPolygonTriangles) {
-                        Vector2d A2 = new Vector2d(triangle.x1, triangle.y1);
-                        Vector2d B2 = new Vector2d(triangle.x2, triangle.y2);
-                        Vector2d C2 = new Vector2d(triangle.x3, triangle.y3);
-
-                        Vector3d A3 = A2.projectBack(projectionCenterCartesian,projectionPlaneVectorA,projectionPlaneVectorB).normalize().scale(Constants.SUN_RADIUS);
-                        Vector3d B3 = B2.projectBack(projectionCenterCartesian,projectionPlaneVectorA,projectionPlaneVectorB).normalize().scale(Constants.SUN_RADIUS);
-                        Vector3d C3 = C2.projectBack(projectionCenterCartesian,projectionPlaneVectorA,projectionPlaneVectorB).normalize().scale(Constants.SUN_RADIUS);
-
-                        // skip (party) hidden triangles
-                        if (A3.z < 0 || B3.z < 0 || C3.z < 0)
-                            continue;
-
-                        SphericalCoord A4 = findClosest(A3, lookupCartesian, lookupSpherical);
-                        SphericalCoord B4 = findClosest(B3, lookupCartesian, lookupSpherical);
-                        SphericalCoord C4 = findClosest(C3, lookupCartesian, lookupSpherical);
+                    for (Triangle tri : advancedPolygonTriangles) {
+                        Vector3d A2 = new Vector3d(tri.y1, tri.x1, Math.sqrt(1-tri.x1*tri.x1-tri.y1*tri.y1));
+                        Vector3d B2 = new Vector3d(tri.y2, tri.x2, Math.sqrt(1-tri.x2*tri.x2-tri.y2*tri.y2));
+                        Vector3d C2 = new Vector3d(tri.y3, tri.x3, Math.sqrt(1-tri.x3*tri.x3-tri.y3*tri.y3));
+                        
+                        Vector3d A3 = A2.scale(Constants.SUN_RADIUS);
+                        Vector3d B3 = B2.scale(Constants.SUN_RADIUS);
+                        Vector3d C3 = C2.scale(Constants.SUN_RADIUS);
+                        
+                        SphericalCoord A4 = HEKCoordinateTransform.CartesianToSpherical(A3);
+                        SphericalCoord B4 = HEKCoordinateTransform.CartesianToSpherical(B3);
+                        SphericalCoord C4 = HEKCoordinateTransform.CartesianToSpherical(C3);
                         
                         cachedTriangles.add(new GenericTriangle<SphericalCoord>(A4, C4, B4));
                     }
-
+                    
                     // loop over generated polygons
                 } catch (Throwable e) {
                     Log.warn("Error during Triangulation");
@@ -799,22 +727,6 @@ public class HEKEvent implements IntervalComparison<Date> {
 
         cacheValid = true;
 
-    }
-
-    private SphericalCoord findClosest(Vector3d toFind, Vector<Vector3d> lookupCartesian, Vector<SphericalCoord> lookupSpherical) {
-        double closest = Double.POSITIVE_INFINITY;
-        int closest_index = -1;
-
-        for (int i = 0; i < lookupCartesian.size(); i++) {
-            double distance = toFind.subtract(lookupCartesian.get(i)).length();
-
-            if (distance < closest) {
-                closest_index = i;
-                closest = distance;
-            }
-        }
-        
-        return lookupSpherical.get(closest_index);
     }
 
     public BufferedImage getIcon(boolean large) {
@@ -836,19 +748,6 @@ public class HEKEvent implements IntervalComparison<Date> {
         }
 
         return toDraw;
-    }
-
-    private Vector<SphericalCoord> generateSunBorder() {
-        Vector<SphericalCoord> borderPoints = new Vector<SphericalCoord>();
-
-        for (double theta = 0.0; theta < 90; theta += 2) {
-            borderPoints.add(new SphericalCoord(theta, 89.8, Constants.SUN_RADIUS));
-            borderPoints.add(new SphericalCoord(theta, 90.0, Constants.SUN_RADIUS));
-            borderPoints.add(new SphericalCoord(theta, -89.8, Constants.SUN_RADIUS));
-            borderPoints.add(new SphericalCoord(theta, -90.0, Constants.SUN_RADIUS));
-        }
-
-        return borderPoints;
     }
 
     public void prepareCache() {
