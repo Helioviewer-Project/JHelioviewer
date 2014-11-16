@@ -3,7 +3,7 @@ package org.helioviewer.jhv.opengl.scenegraph.rt;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
-import org.helioviewer.jhv.base.math.GL3DVec3d;
+import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DShape;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 
@@ -16,20 +16,20 @@ import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
  * 
  */
 public class GL3DRay {
-    private GL3DVec3d origin;
-    private GL3DVec3d direction;
-    private GL3DVec3d originOS;
-    private GL3DVec3d directionOS;
+    private Vector3d origin;
+    private Vector3d direction;
+    private Vector3d originOS;
+    private Vector3d directionOS;
     private double length;
 
     private GL3DShape originShape;
 
-    private GL3DVec3d hitPoint;
-    private GL3DVec3d hitPointOS;
-    private GL3DVec3d hitNormal;
+    private Vector3d hitPoint;
+    private Vector3d hitPointOS;
+    private Vector3d hitNormal;
 
-    private GL3DVec3d invDirection;
-    private GL3DVec3d invDirectionOS;
+    private Vector3d invDirection;
+    private Vector3d invDirectionOS;
     private int[] sign = new int[3];
     private int[] signOS = new int[3];
     private double tmin;
@@ -39,7 +39,7 @@ public class GL3DRay {
 
     public boolean isOnSun = false;
 
-    public static GL3DRay createPrimaryRay(GL3DVec3d origin, GL3DVec3d dir) {
+    public static GL3DRay createPrimaryRay(Vector3d origin, Vector3d dir) {
         GL3DRay ray = new GL3DRay();
         ray.origin = origin;
         dir=dir.normalize();
@@ -56,18 +56,18 @@ public class GL3DRay {
     private GL3DRay() {
     }
 
-    public void setDirOS(GL3DVec3d dir) {
+    public void setDirOS(Vector3d dir) {
         this.directionOS = dir;
-        invDirectionOS = new GL3DVec3d(dir.x == 0 ? 0 : 1 / dir.x, dir.y == 0 ? 0 : 1 / dir.y, dir.z == 0 ? 0 : 1 / dir.z);
+        invDirectionOS = new Vector3d(dir.x == 0 ? 0 : 1 / dir.x, dir.y == 0 ? 0 : 1 / dir.y, dir.z == 0 ? 0 : 1 / dir.z);
         signOS[0] = invDirectionOS.x < 0 ? 1 : 0;
         signOS[1] = invDirectionOS.y < 0 ? 1 : 0;
         signOS[2] = invDirectionOS.z < 0 ? 1 : 0;
     }
 
-    public void setDir(GL3DVec3d dir) {
+    public void setDir(Vector3d dir) {
         this.direction = dir;
-        invDirection = new GL3DVec3d(dir.x == 0 ? 0 : 1 / dir.x, dir.y == 0 ? 0 : 1 / dir.y, dir.z == 0 ? 0 : 1 / dir.z);
-        invDirection = new GL3DVec3d(1 / dir.x, 1 / dir.y, 1 / dir.z);
+        invDirection = new Vector3d(dir.x == 0 ? 0 : 1 / dir.x, dir.y == 0 ? 0 : 1 / dir.y, dir.z == 0 ? 0 : 1 / dir.z);
+        invDirection = new Vector3d(1 / dir.x, 1 / dir.y, 1 / dir.z);
         sign[0] = invDirection.x < 0 ? 1 : 0;
         sign[1] = invDirection.y < 0 ? 1 : 0;
         sign[2] = invDirection.z < 0 ? 1 : 0;
@@ -104,25 +104,25 @@ public class GL3DRay {
         gl.glEnd();
         state.popMV();
 
-        // Log.debug("GL3DRay: DRAW IN WS: Origin: "+this.origin+" Destination: "+GL3DVec3d.add(this.origin,
+        // Log.debug("GL3DRay: DRAW IN WS: Origin: "+this.origin+" Destination: "+Vector3d.add(this.origin,
         // this.direction.copy().multiply(length)));
         gl.glEnable(GL2.GL_LIGHTING);
         gl.glEnable(GL2.GL_TEXTURE_2D);
     }
 
-    public GL3DVec3d getOrigin() {
+    public Vector3d getOrigin() {
         return origin;
     }
 
-    public GL3DVec3d getDirection() {
+    public Vector3d getDirection() {
         return direction;
     }
 
-    public GL3DVec3d getOriginOS() {
+    public Vector3d getOriginOS() {
         return originOS;
     }
 
-    public GL3DVec3d getDirectionOS() {
+    public Vector3d getDirectionOS() {
         return directionOS;
     }
 
@@ -142,27 +142,27 @@ public class GL3DRay {
         this.originShape = originShape;
     }
 
-    public GL3DVec3d getHitPoint() {
+    public Vector3d getHitPoint() {
         return hitPoint;
     }
 
-    public void setHitPoint(GL3DVec3d hitPoint) {
+    public void setHitPoint(Vector3d hitPoint) {
         this.hitPoint = hitPoint;
     }
 
-    public GL3DVec3d getHitNormal() {
+    public Vector3d getHitNormal() {
         return hitNormal;
     }
 
-    public void setHitNormal(GL3DVec3d hitNormal) {
+    public void setHitNormal(Vector3d hitNormal) {
         this.hitNormal = hitNormal;
     }
 
-    public GL3DVec3d getInvDirection() {
+    public Vector3d getInvDirection() {
         return invDirection;
     }
 
-    public GL3DVec3d getInvDirectionOS() {
+    public Vector3d getInvDirectionOS() {
         return invDirectionOS;
     }
 
@@ -198,19 +198,19 @@ public class GL3DRay {
         this.isOutside = isOutside;
     }
 
-    public void setOriginOS(GL3DVec3d originOS) {
+    public void setOriginOS(Vector3d originOS) {
         this.originOS = originOS;
     }
 
-    public void setDirectionOS(GL3DVec3d directionOS) {
+    public void setDirectionOS(Vector3d directionOS) {
         this.directionOS = directionOS;
     }
 
-    public GL3DVec3d getHitPointOS() {
+    public Vector3d getHitPointOS() {
         return hitPointOS;
     }
 
-    public void setHitPointOS(GL3DVec3d hitPointOS) {
+    public void setHitPointOS(Vector3d hitPointOS) {
         this.hitPointOS = hitPointOS;
     }
 }

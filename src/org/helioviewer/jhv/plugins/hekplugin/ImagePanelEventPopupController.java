@@ -8,7 +8,6 @@ import java.awt.event.MouseMotionListener;
 import java.util.Date;
 import java.util.Vector;
 
-import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.math.SphericalCoord;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
@@ -210,7 +209,7 @@ public class ImagePanelEventPopupController implements ImagePanelPlugin,
 				.getMasterMovie();
 		Date currentDate = masterView.getCurrentFrameDateTime().getTime();
 
-		GL3DVec3d hitpoint = null;
+		Vector3d hitpoint = null;
 		mouseOverHEKEvent = null;
 		mouseOverPosition = null;
 

@@ -2,8 +2,8 @@ package org.helioviewer.jhv.opengl.model;
 
 import java.util.List;
 
-import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.math.Vector2d;
+import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.math.Vector4d;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DMesh;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
@@ -63,27 +63,27 @@ public class GL3DFramebufferImage extends GL3DMesh implements ViewListener {
 
     }
 
-    public GL3DMeshPrimitive createMesh(GL3DState state, List<GL3DVec3d> positions, List<GL3DVec3d> normals, List<Vector2d> textCoords, List<Integer> indices, List<Vector4d> colors) {
+    public GL3DMeshPrimitive createMesh(GL3DState state, List<Vector3d> positions, List<Vector3d> normals, List<Vector2d> textCoords, List<Integer> indices, List<Vector4d> colors) {
         // Log.debug("GL3DFramebufferImage: Create Mesh!");
         if (region != null) {
         	double blx = region.getCornerX();
             double bly = region.getCornerY();
             double tr_x = region.getUpperRightCorner().x;
             double tr_y = region.getUpperRightCorner().y;
-            positions.add(new GL3DVec3d(blx, bly, 0));
-            positions.add(new GL3DVec3d(tr_x, bly, 0));
-            positions.add(new GL3DVec3d(tr_x, tr_y, 0));
-            positions.add(new GL3DVec3d(blx, tr_y, 0));
+            positions.add(new Vector3d(blx, bly, 0));
+            positions.add(new Vector3d(tr_x, bly, 0));
+            positions.add(new Vector3d(tr_x, tr_y, 0));
+            positions.add(new Vector3d(blx, tr_y, 0));
 
             textCoords.add(new Vector2d(0, 0));
             textCoords.add(new Vector2d(1, 0));
             textCoords.add(new Vector2d(1, 1));
             textCoords.add(new Vector2d(0, 1));
 
-            normals.add(new GL3DVec3d(0, 0, 1));
-            normals.add(new GL3DVec3d(0, 0, 1));
-            normals.add(new GL3DVec3d(0, 0, 1));
-            normals.add(new GL3DVec3d(0, 0, 1));
+            normals.add(new Vector3d(0, 0, 1));
+            normals.add(new Vector3d(0, 0, 1));
+            normals.add(new Vector3d(0, 0, 1));
+            normals.add(new Vector3d(0, 0, 1));
 
             indices.add(0);
             indices.add(1);

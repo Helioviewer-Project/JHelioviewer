@@ -2,9 +2,9 @@ package org.helioviewer.jhv.opengl.model;
 
 import java.util.List;
 
-import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.Vector2d;
+import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.math.Vector4d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DAABBox;
@@ -48,20 +48,20 @@ public class GL3DHitReferenceShape extends GL3DMesh {
         return;
     }
 
-    public GL3DMeshPrimitive createMesh(GL3DState state, List<GL3DVec3d> positions, List<GL3DVec3d> normals, List<Vector2d> textCoords, List<Integer> indices, List<Vector4d> colors) {
-    	this.phiRotation = Matrix4d.rotation(angle, new GL3DVec3d(0, 1, 0));
-        GL3DVec3d ll = createVertex(-LARGE_VALUE, -LARGE_VALUE, 0);
-        GL3DVec3d lr = createVertex(LARGE_VALUE, -LARGE_VALUE, 0);
-        GL3DVec3d tr = createVertex(LARGE_VALUE, LARGE_VALUE, 0);
-        GL3DVec3d tl = createVertex(-LARGE_VALUE, LARGE_VALUE, 0);
+    public GL3DMeshPrimitive createMesh(GL3DState state, List<Vector3d> positions, List<Vector3d> normals, List<Vector2d> textCoords, List<Integer> indices, List<Vector4d> colors) {
+    	this.phiRotation = Matrix4d.rotation(angle, new Vector3d(0, 1, 0));
+        Vector3d ll = createVertex(-LARGE_VALUE, -LARGE_VALUE, 0);
+        Vector3d lr = createVertex(LARGE_VALUE, -LARGE_VALUE, 0);
+        Vector3d tr = createVertex(LARGE_VALUE, LARGE_VALUE, 0);
+        Vector3d tl = createVertex(-LARGE_VALUE, LARGE_VALUE, 0);
 
-        positions.add(ll);// normals.add(new GL3DVec3d(0,0,1));//colors.add(new
+        positions.add(ll);// normals.add(new Vector3d(0,0,1));//colors.add(new
                           // GL3DVec4d(0, 0, 1, 0.0));
-        positions.add(lr);// normals.add(new GL3DVec3d(0,0,1));//colors.add(new
+        positions.add(lr);// normals.add(new Vector3d(0,0,1));//colors.add(new
                           // GL3DVec4d(0, 0, 1, 0.0));
-        positions.add(tr);// normals.add(new GL3DVec3d(0,0,1));//colors.add(new
+        positions.add(tr);// normals.add(new Vector3d(0,0,1));//colors.add(new
                           // GL3DVec4d(0, 0, 1, 0.0));
-        positions.add(tl);// normals.add(new GL3DVec3d(0,0,1));//colors.add(new
+        positions.add(tl);// normals.add(new Vector3d(0,0,1));//colors.add(new
                           // GL3DVec4d(0, 0, 1, 0.0));
 
         indices.add(0);
@@ -75,11 +75,11 @@ public class GL3DHitReferenceShape extends GL3DMesh {
         return GL3DMeshPrimitive.TRIANGLES;
     }
 
-    private GL3DVec3d createVertex(double x, double y, double z){
+    private Vector3d createVertex(double x, double y, double z){
     	double cx = x * phiRotation.m[0] + y * phiRotation.m[4] + z * phiRotation.m[8] + phiRotation.m[12];
         double cy = x * phiRotation.m[1] + y * phiRotation.m[5] + z * phiRotation.m[9] + phiRotation.m[13];
         double cz = x * phiRotation.m[2] + y * phiRotation.m[6] + z * phiRotation.m[10] + phiRotation.m[14];
-       return new GL3DVec3d(cx, cy, cz);
+       return new Vector3d(cx, cy, cz);
     }
     
     public boolean hit(GL3DRay ray) {
@@ -100,8 +100,8 @@ public class GL3DHitReferenceShape extends GL3DMesh {
         boolean isSphereHit = isSphereHit(ray);
         // boolean isSphereHit = isSphereHitInOS(ray);
         if (isSphereHit) {
-            GL3DVec3d projectionPlaneNormal = new GL3DVec3d(0, 0, 1);
-            GL3DVec3d pointOnSphere = this.wmI.multiply(ray.getHitPoint());
+            Vector3d projectionPlaneNormal = new Vector3d(0, 0, 1);
+            Vector3d pointOnSphere = this.wmI.multiply(ray.getHitPoint());
             ray.setHitPointOS(pointOnSphere);
             double cos = pointOnSphere.normalize().dot(projectionPlaneNormal);
 
@@ -131,9 +131,9 @@ public class GL3DHitReferenceShape extends GL3DMesh {
     }
 
     private boolean isSphereHit(GL3DRay ray) {
-    	GL3DVec3d l = ray.getOrigin().multiply(-1);
+    	Vector3d l = ray.getOrigin().scale((double)-1);
         double s = l.dot(ray.getDirection().normalize());
-        double l2 = l.length2();
+        double l2 = l.lengthSq();
         double r2 = Constants.SUN_RADIUS_SQ;
         if (s < 0 && l2 > r2) {
             return false;
@@ -153,7 +153,7 @@ public class GL3DHitReferenceShape extends GL3DMesh {
             t = s + q;
         }
         ray.setLength(t);
-        ray.setHitPoint(ray.getOrigin().add(ray.getDirection().normalize().multiply(t)));
+        ray.setHitPoint(ray.getOrigin().add(ray.getDirection().normalize().scale(t)));
         ray.isOutside = false;
         ray.setOriginShape(this);
         // Log.debug("GL3DShape.shapeHit: Hit at Distance: "+t+" HitPoint: "+ray.getHitPoint());
@@ -161,7 +161,7 @@ public class GL3DHitReferenceShape extends GL3DMesh {
     }
 
     public GL3DAABBox buildAABB() {
-        this.aabb.fromOStoWS(new GL3DVec3d(-LARGE_VALUE, -LARGE_VALUE, -LARGE_VALUE), new GL3DVec3d(LARGE_VALUE, LARGE_VALUE, LARGE_VALUE), this.wm);
+        this.aabb.fromOStoWS(new Vector3d(-LARGE_VALUE, -LARGE_VALUE, -LARGE_VALUE), new Vector3d(LARGE_VALUE, LARGE_VALUE, LARGE_VALUE), this.wm);
 
         return this.aabb;
     }

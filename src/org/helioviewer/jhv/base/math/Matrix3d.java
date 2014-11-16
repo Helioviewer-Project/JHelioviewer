@@ -50,8 +50,8 @@ public class Matrix3d {
     }
 
     // -----------------------------------------------------------------------------
-    public GL3DVec3d multiply(GL3DVec3d v) {
-        GL3DVec3d vec = new GL3DVec3d(
+    public Vector3d multiply(Vector3d v) {
+        Vector3d vec = new Vector3d(
                 m[0] * v.x + m[3] * v.y + m[6] * v.z,
                 m[1] * v.x + m[4] * v.y + m[7] * v.z,
                 m[2] * v.x + m[5] * v.y + m[8] * v.z);
@@ -78,7 +78,7 @@ public class Matrix3d {
         m[14] = z;
     }
 
-    public Matrix3d rotation(double degAng, GL3DVec3d axis) {
+    public Matrix3d rotation(double degAng, Vector3d axis) {
         return this.rotation(degAng, axis.x, axis.y, axis.z);
     }
 
@@ -206,7 +206,7 @@ public class Matrix3d {
         return this.scale(s, s, s);
     }
 
-    public Matrix3d scale(GL3DVec3d vs) {
+    public Matrix3d scale(Vector3d vs) {
         return this.scale(vs.x, vs.y, vs.z);
     }
 

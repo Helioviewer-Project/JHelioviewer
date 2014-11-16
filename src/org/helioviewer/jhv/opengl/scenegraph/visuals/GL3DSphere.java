@@ -2,8 +2,8 @@ package org.helioviewer.jhv.opengl.scenegraph.visuals;
 
 import java.util.List;
 
-import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.math.Vector2d;
+import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.math.Vector4d;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DMesh;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
@@ -14,8 +14,8 @@ public class GL3DSphere extends GL3DMesh {
     private int resolutionY;
     private double radius;
 
-    private GL3DVec3d center;
-    private GL3DVec3d centerOS = new GL3DVec3d(0, 0, 0);
+    private Vector3d center;
+    private Vector3d centerOS = new Vector3d(0, 0, 0);
 
     public GL3DSphere(double radius, int resolutionX, int resolutionY, Vector4d color) {
         this("Sphere", radius, resolutionX, resolutionY, color);
@@ -28,7 +28,7 @@ public class GL3DSphere extends GL3DMesh {
         this.resolutionY = resolutionY;
     }
 
-    public GL3DMeshPrimitive createMesh(GL3DState state, List<GL3DVec3d> positions, List<GL3DVec3d> normals, List<Vector2d> textCoords, List<Integer> indices, List<Vector4d> colors) {
+    public GL3DMeshPrimitive createMesh(GL3DState state, List<Vector3d> positions, List<Vector3d> normals, List<Vector2d> textCoords, List<Integer> indices, List<Vector4d> colors) {
 
         for (int latNumber = 0; latNumber <= this.resolutionX; latNumber++) {
             double theta = latNumber * Math.PI / resolutionX;
@@ -44,8 +44,8 @@ public class GL3DSphere extends GL3DMesh {
                 double y = cosTheta;
                 double z = sinPhi * sinTheta;
 
-                positions.add(new GL3DVec3d(radius * x, radius * y, radius * z));
-                normals.add(new GL3DVec3d(x, y, z));
+                positions.add(new Vector3d(radius * x, radius * y, radius * z));
+                normals.add(new Vector3d(x, y, z));
             }
         }
 
@@ -77,9 +77,9 @@ public class GL3DSphere extends GL3DMesh {
     }
 
     public boolean shapeHit(GL3DRay ray) {
-        GL3DVec3d l = this.center.subtract(ray.getOrigin());
+        Vector3d l = this.center.subtract(ray.getOrigin());
         double s = l.dot(ray.getDirection().normalize());
-        double l2 = l.length2();
+        double l2 = l.lengthSq();
         double r2 = this.radius * this.radius;
         if (s < 0 && l2 > r2) {
             return false;
@@ -99,7 +99,7 @@ public class GL3DSphere extends GL3DMesh {
             t = s + q;
         }
         ray.setLength(t);
-        ray.setHitPoint(ray.getOrigin().add(ray.getDirection().normalize().multiply(t)));
+        ray.setHitPoint(ray.getOrigin().add(ray.getDirection().normalize().scale(t)));
         // ray.setHitPoint(this.wmI.multiply(ray.getHitPoint()));
         ray.isOutside = false;
         ray.setOriginShape(this);
@@ -107,7 +107,7 @@ public class GL3DSphere extends GL3DMesh {
         return true;
     }
 
-    public GL3DVec3d getCenter() {
+    public Vector3d getCenter() {
         return center;
     }
 }

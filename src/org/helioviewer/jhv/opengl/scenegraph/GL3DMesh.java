@@ -7,8 +7,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
-import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.math.Vector2d;
+import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.math.Vector4d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DDrawBits.Bit;
@@ -33,8 +33,8 @@ public abstract class GL3DMesh extends GL3DShape {
 
     private GL3DMeshPrimitive primitive;
 
-    private List<GL3DVec3d> positions;
-    private List<GL3DVec3d> normals;
+    private List<Vector3d> positions;
+    private List<Vector3d> normals;
     private List<Vector4d> colors;
     private List<Vector2d> textCoords;
     private List<Integer> indices;
@@ -71,8 +71,8 @@ public abstract class GL3DMesh extends GL3DShape {
     public void shapeInit(GL3DState state) {
         meshLock.lock();
 
-        positions = new ArrayList<GL3DVec3d>();
-        normals = new ArrayList<GL3DVec3d>();
+        positions = new ArrayList<Vector3d>();
+        normals = new ArrayList<Vector3d>();
         colors = new ArrayList<Vector4d>();
         textCoords = new ArrayList<Vector2d>();
         indices = new ArrayList<Integer>();
@@ -198,7 +198,7 @@ public abstract class GL3DMesh extends GL3DShape {
                 	
                     gl2.glBegin(GL2.GL_LINE_LOOP);
                 int index = this.indices.get(i);
-                GL3DVec3d position = this.positions.get(index);
+                Vector3d position = this.positions.get(index);
                 gl2.glVertex3d(position.x, position.y, position.z);
                 if ((i) % 4 == 3)
                     gl2.glEnd();
@@ -210,7 +210,7 @@ public abstract class GL3DMesh extends GL3DShape {
                 if (i % 3 == 0)
                     gl2.glBegin(GL2.GL_LINE_LOOP);
                 int index = this.indices.get(i);
-                GL3DVec3d position = this.positions.get(index);
+                Vector3d position = this.positions.get(index);
                 gl2.glVertex3d(position.x, position.y, position.z);
                 if ((i) % 3 == 2)
                     gl2.glEnd();
@@ -218,10 +218,10 @@ public abstract class GL3DMesh extends GL3DShape {
         } else if (primitive == GL3DMeshPrimitive.LINES) {
             gl2.glBegin(GL.GL_LINES);
 
-            GL3DVec3d lastPosition = null;
+            Vector3d lastPosition = null;
             for (int i = 0; i < this.indices.size(); i++) {
                 int index = this.indices.get(i);
-                GL3DVec3d position = this.positions.get(index);
+                Vector3d position = this.positions.get(index);
                 if (lastPosition != null) {
                     gl2.glVertex3d(lastPosition.x, lastPosition.y, lastPosition.z);
                     gl2.glVertex3d(position.x, position.y, position.z);
@@ -234,7 +234,7 @@ public abstract class GL3DMesh extends GL3DShape {
 
             for (int i = 0; i < this.indices.size(); i++) {
                 int index = this.indices.get(i);
-                GL3DVec3d position = this.positions.get(index);
+                Vector3d position = this.positions.get(index);
                 gl2.glVertex3d(position.x, position.y, position.z);
             }
             gl2.glEnd();
@@ -251,8 +251,8 @@ public abstract class GL3DMesh extends GL3DShape {
         gl.glDisable(GL2.GL_TEXTURE_2D);
         gl.glBegin(GL2.GL_LINES);
         for (int i = 0; i < this.normals.size(); i++) {
-            GL3DVec3d position = this.positions.get(i);
-            GL3DVec3d normal = this.normals.get(i);
+            Vector3d position = this.positions.get(i);
+            Vector3d normal = this.normals.get(i);
 
             gl.glVertex3d(position.x, position.y, position.z);
             gl.glVertex3d(position.x + normal.x * Constants.SUN_RADIUS / 10, position.y + normal.y * Constants.SUN_RADIUS / 10, position.z + normal.z * Constants.SUN_RADIUS / 10);
@@ -271,7 +271,7 @@ public abstract class GL3DMesh extends GL3DShape {
         for (GL3DTriangle t : this.triangles) {
             if (t.intersects(ray)) {
             	ray.setOriginShape(this);
-                ray.setHitPoint(ray.getOrigin().add(ray.getDirection().multiply(ray.getLength())));
+                ray.setHitPoint(ray.getOrigin().add(ray.getDirection().scale(ray.getLength())));
                 // Log.debug("GL3DMesh.shapeHit: Ray intersects with Mesh " +
                 // this);
                 return true;
@@ -310,36 +310,36 @@ public abstract class GL3DMesh extends GL3DShape {
 
         if (this.primitive == GL3DMeshPrimitive.TRIANGLES) {
             for (int i = 0; i < this.indices.size(); i += 3) {
-                GL3DVec3d a = this.positions.get(this.indices.get(i));
-                GL3DVec3d b = this.positions.get(this.indices.get(i + 1));
-                GL3DVec3d c = this.positions.get(this.indices.get(i + 2));
+                Vector3d a = this.positions.get(this.indices.get(i));
+                Vector3d b = this.positions.get(this.indices.get(i + 1));
+                Vector3d c = this.positions.get(this.indices.get(i + 2));
                 triangles.add(new GL3DTriangle(a, b, c));
             }
         } else if (this.primitive == GL3DMeshPrimitive.QUADS) {
             for (int i = 0; i < this.indices.size(); i += 4) {
-                GL3DVec3d a = this.positions.get(this.indices.get(i));
-                GL3DVec3d b = this.positions.get(this.indices.get(i + 1));
-                GL3DVec3d c = this.positions.get(this.indices.get(i + 2));
-                GL3DVec3d d = this.positions.get(this.indices.get(i + 3));
+                Vector3d a = this.positions.get(this.indices.get(i));
+                Vector3d b = this.positions.get(this.indices.get(i + 1));
+                Vector3d c = this.positions.get(this.indices.get(i + 2));
+                Vector3d d = this.positions.get(this.indices.get(i + 3));
                 triangles.add(new GL3DTriangle(a, b, c));
                 triangles.add(new GL3DTriangle(a, c, d));
             }
         } else if (this.primitive == GL3DMeshPrimitive.TRIANGLE_FAN) {
-            GL3DVec3d a = this.positions.get(this.indices.get(0));
-            GL3DVec3d first = this.positions.get(this.indices.get(1));
+            Vector3d a = this.positions.get(this.indices.get(0));
+            Vector3d first = this.positions.get(this.indices.get(1));
 
             for (int i = 2; i < this.indices.size(); i++) {
-                GL3DVec3d next = this.positions.get(this.indices.get(i));
+                Vector3d next = this.positions.get(this.indices.get(i));
 
                 triangles.add(new GL3DTriangle(a, first, next));
                 first = next;
             }
         } else if (this.primitive == GL3DMeshPrimitive.TRIANGLE_STRIP) {
-            GL3DVec3d first = this.positions.get(this.indices.get(0));
-            GL3DVec3d second = this.positions.get(this.indices.get(1));
+            Vector3d first = this.positions.get(this.indices.get(0));
+            Vector3d second = this.positions.get(this.indices.get(1));
 
             for (int i = 2; i < this.indices.size(); i++) {
-                GL3DVec3d third = this.positions.get(this.indices.get(i));
+                Vector3d third = this.positions.get(this.indices.get(i));
 
                 triangles.add(new GL3DTriangle(first, second, third));
                 first = second;
@@ -351,8 +351,8 @@ public abstract class GL3DMesh extends GL3DShape {
     }
 
     public GL3DAABBox buildAABB() {
-        GL3DVec3d minOS = new GL3DVec3d();
-        GL3DVec3d maxOS = new GL3DVec3d();
+        Vector3d minOS = new Vector3d();
+        Vector3d maxOS = new Vector3d();
 
         if (!isDrawBitOn(Bit.Hidden))
         {
@@ -363,7 +363,7 @@ public abstract class GL3DMesh extends GL3DShape {
             double maxY=Double.NEGATIVE_INFINITY;
             double maxZ=Double.NEGATIVE_INFINITY;
             
-            for (GL3DVec3d p : this.positions)
+            for (Vector3d p : this.positions)
             {
                 if(p.x<minX) minX=p.x;
                 if(p.y<minY) minY=p.y;
@@ -373,8 +373,8 @@ public abstract class GL3DMesh extends GL3DShape {
                 if(p.z>maxZ) maxZ=p.z;
             }
             
-            minOS=new GL3DVec3d(minX,minY,minZ);
-            maxOS=new GL3DVec3d(maxX,maxY,maxZ);
+            minOS=new Vector3d(minX,minY,minZ);
+            maxOS=new Vector3d(maxX,maxY,maxZ);
         }
 
         // minOS.subtract(0.01);
@@ -385,7 +385,7 @@ public abstract class GL3DMesh extends GL3DShape {
         return this.aabb;
     }
 
-    public abstract GL3DMeshPrimitive createMesh(GL3DState state, List<GL3DVec3d> positions, List<GL3DVec3d> normals, List<Vector2d> textCoords, List<Integer> indices, List<Vector4d> colors);
+    public abstract GL3DMeshPrimitive createMesh(GL3DState state, List<Vector3d> positions, List<Vector3d> normals, List<Vector2d> textCoords, List<Integer> indices, List<Vector4d> colors);
 
     public enum GL3DMeshPrimitive {
         TRIANGLES(GL2.GL_TRIANGLES), TRIANGLE_STRIP(GL2.GL_TRIANGLE_STRIP), TRIANGLE_FAN(GL2.GL_TRIANGLE_FAN), POINTS(GL2.GL_POINTS), QUADS(GL2.GL_QUADS), LINES(GL2.GL_LINES), LINE_LOOP(GL2.GL_LINE_LOOP), LINE_STRIP(GL2.GL_LINE_STRIP);

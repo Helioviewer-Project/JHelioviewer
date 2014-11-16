@@ -2,10 +2,10 @@ package org.helioviewer.jhv.opengl.model;
 
 import java.util.List;
 
-import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.Vector2d;
+import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.math.Vector4d;
 import org.helioviewer.jhv.base.wcs.CoordinateConversion;
 import org.helioviewer.jhv.base.wcs.CoordinateVector;
@@ -25,24 +25,24 @@ public class GL3DCircle extends GL3DMesh {
         this.layer = layer;
     }
 
-    public GL3DMeshPrimitive createMesh(GL3DState state, List<GL3DVec3d> positions, List<GL3DVec3d> normals, List<Vector2d> textCoords, List<Integer> indices, List<Vector4d> colors) {
+    public GL3DMeshPrimitive createMesh(GL3DState state, List<Vector3d> positions, List<Vector3d> normals, List<Vector2d> textCoords, List<Integer> indices, List<Vector4d> colors) {
     	int counter = 0;
     	
     	CoordinateVector orientationVector = this.layer.getOrientation();
         CoordinateConversion toViewSpace = this.layer.getCoordinateSystem().getConversion(state.activeCamera.getViewSpaceCoordinateSystem());
 
-        GL3DVec3d orientation = toViewSpace.convert(orientationVector).toVector3d().normalize();
+        Vector3d orientation = toViewSpace.convert(orientationVector).toVector3d().normalize();
 
-        phiRotation = Quaternion3d.calcRotation(orientation,new GL3DVec3d(0,0,1)).toMatrix().inverse();	        
+        phiRotation = Quaternion3d.calcRotation(orientation,new Vector3d(0,0,1)).toMatrix().inverse();	        
         
-    	if (!(orientation.equals(new GL3DVec3d(0, 1, 0)))) {
-            GL3DVec3d orientationXZ = new GL3DVec3d(orientation.x, 0, orientation.z);
+    	if (!(orientation.equals(new Vector3d(0, 1, 0)))) {
+            Vector3d orientationXZ = new Vector3d(orientation.x, 0, orientation.z);
             double phi = Math.acos(orientationXZ.z);
             if (orientationXZ.x < 0) {
                 phi = 0 - phi;
             }
             
-            phiRotation = Matrix4d.rotation(phi, new GL3DVec3d(0, 1, 0));
+            phiRotation = Matrix4d.rotation(phi, new Vector3d(0, 1, 0));
             
         }
     	
@@ -58,9 +58,9 @@ public class GL3DCircle extends GL3DMesh {
     	    double vy = phiRotation.m[9] * (-1) + phiRotation.m[13];
     	    double vz = phiRotation.m[10] * (-1) + phiRotation.m[14];
     	    
-    		positions.add(new GL3DVec3d(cx,cy,cz));
+    		positions.add(new Vector3d(cx,cy,cz));
         	indices.add(counter++);
-        	normals.add(new GL3DVec3d(vx,vy,vz));
+        	normals.add(new Vector3d(vx,vy,vz));
         	colors.add(color);
 
     	}

@@ -41,7 +41,7 @@ class Matrix4f
         m33=0.0f;
     }
 
-    public final Vector3d transform(Vector3d point)
+    public final Vector3d multiply(Vector3d point)
     {
         return new Vector3d(
                 m00*point.x+m01*point.y+m02*point.z+m03,

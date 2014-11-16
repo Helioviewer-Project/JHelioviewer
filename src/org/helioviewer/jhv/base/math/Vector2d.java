@@ -210,4 +210,62 @@ public final class Vector2d {
     public String toString() {
         return String.format(Locale.ENGLISH, "(%f,%f)", x, y);
     }
+
+    /**
+     * Project the given 2d in-plane coordinates back to the 3d space
+     * 
+     * @param planeCenter
+     *            - define the center of the plane
+     * @param planeVectorA
+     *            - first in-plane direction vector
+     * @param planeVectorB
+     *            - second in-plane direction vector
+     * @return
+     */
+    public Vector3d projectBack(Vector3d planeCenter, Vector3d planeVectorA, Vector3d planeVectorB) {
+        return planeCenter.add(planeVectorA.scale(x)).add(planeVectorB.scale(y));
+    }
+
+    /**
+     * Check if a given point lies inside the given triangle
+     * 
+     * @param trianglePointA
+     *            - first triangle point
+     * @param trianglePointB
+     *            - second triangle point
+     * @param trianglePointC
+     *            - third triangle point
+     * @return true if the point is located inside the triangle
+     */
+    public boolean isInTriangle(Vector2d trianglePointA, Vector2d trianglePointB, Vector2d trianglePointC) {
+        double cw0 = clockwise(trianglePointA, trianglePointB, this);
+        double cw1 = clockwise(trianglePointB, trianglePointC, this);
+        double cw2 = clockwise(trianglePointC, trianglePointA, this);
+    
+        cw0 = Math.abs(cw0) < Double.MIN_NORMAL ? 0 : cw0 < 0 ? -1 : 1;
+        cw1 = Math.abs(cw1) < Double.MIN_NORMAL ? 0 : cw1 < 0 ? -1 : 1;
+        cw2 = Math.abs(cw2) < Double.MIN_NORMAL ? 0 : cw2 < 0 ? -1 : 1;
+    
+        if (Math.abs(cw0 + cw1 + cw2) >= 2) {
+            return true;
+        } else {
+            return Math.abs(cw0) + Math.abs(cw1) + Math.abs(cw2) <= 1;
+        }
+    }
+
+    /**
+     * Helper routine needed for testing if a point is inside a triangle
+     * 
+     * @param a
+     *            - first point
+     * @param b
+     *            - second point
+     * @param c
+     *            - third point
+     * 
+     * @return number representing the turn-direction of the three points
+     */
+    private static double clockwise(Vector2d a, Vector2d b, Vector2d c) {
+        return (c.x - a.x) * (b.y - a.y) - (b.x - a.x) * (c.y - a.y);
+    }
 }

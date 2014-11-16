@@ -18,7 +18,7 @@ import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 
-import org.helioviewer.jhv.base.math.GL3DVec3d;
+import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssSettings;
 
@@ -332,7 +332,7 @@ public class PfssData {
 		gl2.glDepthMask(false);
 		gl2.glBindBuffer(GL2.GL_ARRAY_BUFFER, VBOVertices);
 		gl2.glVertexPointer(3, GL2.GL_FLOAT, 0, 0);
-		GL3DVec3d color;
+		Vector3d color;
 
 		gl2.glLineWidth(PfssSettings.LINE_WIDTH);
 		// gl.glPrimitiveRestartIndexNV(0);

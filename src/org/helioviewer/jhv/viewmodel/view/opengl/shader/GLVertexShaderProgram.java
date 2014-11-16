@@ -5,7 +5,7 @@ import java.util.Stack;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
-import org.helioviewer.jhv.base.math.GL3DVec3d;
+import org.helioviewer.jhv.base.math.Vector3d;
 
 /**
  * Abstract class to build customized vertex shaders.
@@ -38,7 +38,7 @@ public abstract class GLVertexShaderProgram {
     protected double yTextureScale = 1;
     protected double defaultXOffset = 0;
     protected double defaultYOffset = 0;
-    protected GL3DVec3d rotation = new GL3DVec3d(0, 0, 1);
+    protected Vector3d rotation = new Vector3d(0, 0, 1);
     /**
      * Build the shader.
      * 
@@ -108,7 +108,7 @@ public abstract class GLVertexShaderProgram {
     public static void popShader(GL2 gl) {
         Integer restoreShaderObject = shaderStack.pop();
         int restoreShader = restoreShaderObject == 0 ? 0 : restoreShaderObject.intValue();
-        bind(gl, restoreShader, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, new GL3DVec3d(0, 0, 1));
+        bind(gl, restoreShader, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, new Vector3d(0, 0, 1));
         // Log.debug("GL3DVertexShaderProgram:  popShader, current="+shaderCurrentlyUsed);
     }
 
@@ -118,7 +118,7 @@ public abstract class GLVertexShaderProgram {
      * @param gl
      *            Valid reference to the current gl object
      */
-    private static void bind(GL2 gl, int shader, double xOffset, double yOffset, double xScale, double yScale, double xTextureScale, double yTextureScale, double defaultXOffset, double defaultYOffset, GL3DVec3d rotation) {
+    private static void bind(GL2 gl, int shader, double xOffset, double yOffset, double xScale, double yScale, double xTextureScale, double yTextureScale, double defaultXOffset, double defaultYOffset, Vector3d rotation) {
         if (shader != shaderCurrentlyUsed) {
             shaderCurrentlyUsed = shader;
             // Log.debug("GLVertexShaderProgram.bind shader="+shader);

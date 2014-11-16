@@ -5,8 +5,8 @@ import java.util.List;
 
 import javax.media.opengl.GL2;
 
-import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.math.Matrix4d;
+import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.math.Vector4d;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DMesh.GL3DMeshPrimitive;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
@@ -20,63 +20,63 @@ import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
  * 
  */
 public class GL3DAABBox {
-    GL3DVec3d minWS = new GL3DVec3d();
-    GL3DVec3d maxWS = new GL3DVec3d();
+    Vector3d minWS = new Vector3d();
+    Vector3d maxWS = new Vector3d();
     
 
-    GL3DVec3d minOS = new GL3DVec3d();
-    GL3DVec3d maxOS = new GL3DVec3d();
+    Vector3d minOS = new Vector3d();
+    Vector3d maxOS = new Vector3d();
     
 
     private GL3DBuffer vertexBuffer;
     private GL3DBuffer colorBuffer;
     private GL3DBuffer indexBuffer;
 
-    public void fromOStoWS(GL3DVec3d minOS, GL3DVec3d maxOS, Matrix4d wm) {
-        this.minWS=new GL3DVec3d(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
-        this.maxWS=new GL3DVec3d(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE);
+    public void fromOStoWS(Vector3d minOS, Vector3d maxOS, Matrix4d wm) {
+        this.minWS=new Vector3d(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+        this.maxWS=new Vector3d(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE);
         this.minOS=minOS;
         this.maxOS=maxOS;
 
-        GL3DVec3d[] corners = new GL3DVec3d[8];
-        corners[0] = new GL3DVec3d(minOS);
-        corners[1] = new GL3DVec3d(maxOS.x, minOS.y, minOS.z);
-        corners[2] = new GL3DVec3d(maxOS.x, minOS.y, maxOS.z);
-        corners[3] = new GL3DVec3d(minOS.x, minOS.y, maxOS.z);
-        corners[4] = new GL3DVec3d(maxOS.x, maxOS.y, minOS.z);
-        corners[5] = new GL3DVec3d(minOS.x, maxOS.y, minOS.z);
-        corners[6] = new GL3DVec3d(minOS.x, maxOS.y, maxOS.z);
-        corners[7] = new GL3DVec3d(maxOS);
+        Vector3d[] corners = new Vector3d[8];
+        corners[0] = new Vector3d(minOS);
+        corners[1] = new Vector3d(maxOS.x, minOS.y, minOS.z);
+        corners[2] = new Vector3d(maxOS.x, minOS.y, maxOS.z);
+        corners[3] = new Vector3d(minOS.x, minOS.y, maxOS.z);
+        corners[4] = new Vector3d(maxOS.x, maxOS.y, minOS.z);
+        corners[5] = new Vector3d(minOS.x, maxOS.y, minOS.z);
+        corners[6] = new Vector3d(minOS.x, maxOS.y, maxOS.z);
+        corners[7] = new Vector3d(maxOS);
 
         for(int i=0;i<corners.length;i++)
             corners[i] = wm.multiply(corners[i]);
 
-        for (GL3DVec3d corner : corners) {
+        for (Vector3d corner : corners) {
             this.minWS = this.minWS.setMin(corner);
             this.maxWS = this.maxWS.setMax(corner);
         }
     }
 
-    public void fromWStoOS(GL3DVec3d minWS, GL3DVec3d maxWS, Matrix4d wmI) {
-        this.minOS=new GL3DVec3d(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
-        this.maxOS=new GL3DVec3d(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY);
+    public void fromWStoOS(Vector3d minWS, Vector3d maxWS, Matrix4d wmI) {
+        this.minOS=new Vector3d(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
+        this.maxOS=new Vector3d(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY);
         this.minWS=minWS;
         this.maxWS=maxWS;
 
-        GL3DVec3d[] corners = new GL3DVec3d[8];
-        corners[0] = new GL3DVec3d(minWS);
-        corners[1] = new GL3DVec3d(maxWS.x, minWS.y, minWS.z);
-        corners[2] = new GL3DVec3d(maxWS.x, minWS.y, maxWS.z);
-        corners[3] = new GL3DVec3d(minWS.x, minWS.y, maxWS.z);
-        corners[4] = new GL3DVec3d(maxWS.x, maxWS.y, minWS.z);
-        corners[5] = new GL3DVec3d(minWS.x, maxWS.y, minWS.z);
-        corners[6] = new GL3DVec3d(minWS.x, maxWS.y, maxWS.z);
-        corners[7] = new GL3DVec3d(maxWS);
+        Vector3d[] corners = new Vector3d[8];
+        corners[0] = new Vector3d(minWS);
+        corners[1] = new Vector3d(maxWS.x, minWS.y, minWS.z);
+        corners[2] = new Vector3d(maxWS.x, minWS.y, maxWS.z);
+        corners[3] = new Vector3d(minWS.x, minWS.y, maxWS.z);
+        corners[4] = new Vector3d(maxWS.x, maxWS.y, minWS.z);
+        corners[5] = new Vector3d(minWS.x, maxWS.y, minWS.z);
+        corners[6] = new Vector3d(minWS.x, maxWS.y, maxWS.z);
+        corners[7] = new Vector3d(maxWS);
 
         for(int i=0;i<corners.length;i++)
             corners[i]=wmI.multiply(corners[i]);
 
-        for (GL3DVec3d corner : corners) {
+        for (Vector3d corner : corners) {
             this.minOS = this.minOS.setMin(corner);
             this.maxOS = this.maxOS.setMax(corner);
         }
@@ -86,19 +86,19 @@ public class GL3DAABBox {
         this.draw(state, minOS, maxOS, color);
     }
 
-    private void draw(GL3DState state, GL3DVec3d minV, GL3DVec3d maxV, Vector4d color) {
+    private void draw(GL3DState state, Vector3d minV, Vector3d maxV, Vector4d color) {
         if (this.indexBuffer == null) {
 
-            GL3DVec3d[] corners = new GL3DVec3d[8];
-            corners[0] = new GL3DVec3d(minV);
-            corners[1] = new GL3DVec3d(maxV.x, minV.y, minV.z);
-            corners[2] = new GL3DVec3d(maxV.x, minV.y, maxV.z);
-            corners[3] = new GL3DVec3d(minV.x, minV.y, maxV.z);
+            Vector3d[] corners = new Vector3d[8];
+            corners[0] = new Vector3d(minV);
+            corners[1] = new Vector3d(maxV.x, minV.y, minV.z);
+            corners[2] = new Vector3d(maxV.x, minV.y, maxV.z);
+            corners[3] = new Vector3d(minV.x, minV.y, maxV.z);
 
-            corners[4] = new GL3DVec3d(minV.x, maxV.y, minV.z);
-            corners[5] = new GL3DVec3d(maxV.x, maxV.y, minV.z);
-            corners[6] = new GL3DVec3d(maxV.x, maxV.y, maxV.z);
-            corners[7] = new GL3DVec3d(minV.x, maxV.y, maxV.z);
+            corners[4] = new Vector3d(minV.x, maxV.y, minV.z);
+            corners[5] = new Vector3d(maxV.x, maxV.y, minV.z);
+            corners[6] = new Vector3d(maxV.x, maxV.y, maxV.z);
+            corners[7] = new Vector3d(minV.x, maxV.y, maxV.z);
 
             int[] lines = new int[24];
             lines[0] = 0;
@@ -154,7 +154,7 @@ public class GL3DAABBox {
     }
 
     public boolean isHitInWS(GL3DRay ray) {
-        GL3DVec3d[] params = { this.minWS, this.maxWS };
+        Vector3d[] params = { this.minWS, this.maxWS };
         double tymin, tymax, tzmin, tzmax;
         ray.setTmin((params[ray.getSign()[0]].x - ray.getOrigin().x) * ray.getInvDirection().x);
         ray.setTmax((params[1 - ray.getSign()[0]].x - ray.getOrigin().x) * ray.getInvDirection().x);

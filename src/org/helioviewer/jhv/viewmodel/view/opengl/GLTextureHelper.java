@@ -1,12 +1,10 @@
 package org.helioviewer.jhv.viewmodel.view.opengl;
 
+import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
 import java.awt.image.DataBufferInt;
-import java.awt.image.DataBufferShort;
-import java.awt.image.DataBufferUShort;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -43,7 +41,7 @@ import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLTextureCoordinate;
  */
 public class GLTextureHelper {
 
-    private static TextureImplementation textureImplementation = null;
+    private static PowerOfTwoTextureImplementation textureImplementation = null;
     private static int texID = 0;
     private static int maxTextureSize = 2048;
     
@@ -120,7 +118,7 @@ public class GLTextureHelper {
      * @see #bindTexture(GL, int, int)
      */
     public synchronized void bindTexture(GL2 gl, int texture) {
-        textureImplementation.bindTexture(gl, texture);
+        textureImplementation.bindTexture(gl, GL.GL_TEXTURE_2D, texture);
     }
 
     /**
@@ -517,40 +515,40 @@ public class GLTextureHelper {
      *            Valid texture id
      * @see #moveImageDataToGLTexture(GL, ImageData, int)
      */
-    public void moveBufferedImageToGLTexture(GL2 gl, BufferedImage source, int target) {
-
-        if (source == null)
+    public void moveBufferedImageToGLTexture(GL2 gl, BufferedImage _source, int target) {
+        if (_source == null)
             return;
-
-        DataBuffer rawBuffer = source.getRaster().getDataBuffer();
-        Buffer buffer;
-
-        switch (rawBuffer.getDataType()) {
-        case DataBuffer.TYPE_BYTE:
-            buffer = ByteBuffer.wrap(((DataBufferByte) rawBuffer).getData());
-            break;
-        case DataBuffer.TYPE_USHORT:
-            buffer = ShortBuffer.wrap(((DataBufferUShort) rawBuffer).getData());
-            break;
-        case DataBuffer.TYPE_SHORT:
-            buffer = ShortBuffer.wrap(((DataBufferShort) rawBuffer).getData());
-            break;
-        case DataBuffer.TYPE_INT:
-            buffer = IntBuffer.wrap(((DataBufferInt) rawBuffer).getData());
-            break;
-        default:
-            buffer = null;
+        
+        BufferedImage source=_source;
+        
+        if(source.getType()!=BufferedImage.TYPE_INT_ARGB)
+        {
+            source = new BufferedImage(_source.getWidth(), _source.getHeight(), BufferedImage.TYPE_INT_ARGB);
+            Graphics g=source.getGraphics();
+            
+            while(!g.drawImage(_source, 0, 0, null))
+                try
+                {
+                    Thread.sleep(1);
+                }
+                catch(InterruptedException e1)
+                {
+                }
+            g.dispose();
         }
+        
+        DataBuffer rawBuffer = source.getRaster().getDataBuffer();
+        Buffer buffer = IntBuffer.wrap(((DataBufferInt) rawBuffer).getData());
 
         gl.glPixelStorei(GL2.GL_UNPACK_SKIP_PIXELS, 0);
         gl.glPixelStorei(GL2.GL_UNPACK_SKIP_ROWS, 0);
         gl.glPixelStorei(GL2.GL_UNPACK_ROW_LENGTH, 0);
-        gl.glPixelStorei(GL2.GL_UNPACK_ALIGNMENT, mapDataBufferTypeToGLAlign(rawBuffer.getDataType()));
+        gl.glPixelStorei(GL2.GL_UNPACK_ALIGNMENT, 1);
 
         if (source.getHeight() == 1) {
-            textureImplementation.genTexture1D(gl, target, mapTypeToInternalGLFormat(source.getType()), source.getWidth(), mapTypeToInputGLFormat(source.getType()), mapDataBufferTypeToGLType(rawBuffer.getDataType()), buffer);
+            textureImplementation.genTexture1D(gl, target, GL.GL_BGRA, source.getWidth(), GL.GL_BGRA, GL2.GL_UNSIGNED_BYTE, buffer);
         } else {
-            textureImplementation.genTexture2D(gl, target, mapTypeToInternalGLFormat(source.getType()), source.getWidth(), source.getHeight(), mapTypeToInputGLFormat(source.getType()), mapDataBufferTypeToGLType(rawBuffer.getDataType()), buffer);
+            textureImplementation.genTexture2D(gl, target, GL.GL_BGRA, source.getWidth(), source.getHeight(), GL.GL_BGRA, GL2.GL_UNSIGNED_BYTE, buffer);
         }
     }
 
@@ -591,38 +589,6 @@ public class GLTextureHelper {
     }
 
     /**
-     * Internal function to map BufferedImage image formats to OpenGL image
-     * formats, used for saving the texture.
-     * 
-     * @param type
-     *            BufferedImage internal image format
-     * @return OpenGL memory image format
-     */
-    private int mapTypeToInternalGLFormat(int type) {
-        if (type == BufferedImage.TYPE_BYTE_GRAY || type == BufferedImage.TYPE_BYTE_INDEXED)
-            return GL2.GL_LUMINANCE;
-        else
-            return GL2.GL_RGBA;
-    }
-
-    /**
-     * Internal function to map BufferedImage image formats to OpenGL image
-     * formats, used for transferring the texture.
-     * 
-     * @param type
-     *            BufferedImage internal image format
-     * @return OpenGL input image format
-     */
-    private int mapTypeToInputGLFormat(int type) {
-        if (type == BufferedImage.TYPE_BYTE_GRAY || type == BufferedImage.TYPE_BYTE_INDEXED)
-            return GL2.GL_LUMINANCE;
-        else if (type == BufferedImage.TYPE_4BYTE_ABGR || type == BufferedImage.TYPE_INT_BGR)
-            return GL2.GL_BGRA;
-        else
-            return GL2.GL_RGBA;
-    }
-
-    /**
      * Internal function to map the number of bits per pixel to OpenGL types,
      * used for transferring the texture.
      * 
@@ -643,145 +609,6 @@ public class GLTextureHelper {
         }
     }
 
-    /**
-     * Internal function to map the type of the a DataBuffer to OpenGL types,
-     * used for transferring the texture.
-     * 
-     * @param dataBufferType
-     *            DataBuffer type of the input data
-     * @return OpenGL type to use
-     */
-    private int mapDataBufferTypeToGLType(int dataBufferType) {
-        switch (dataBufferType) {
-        case DataBuffer.TYPE_BYTE:
-            return GL2.GL_UNSIGNED_BYTE;
-        case DataBuffer.TYPE_SHORT:
-            return GL2.GL_SHORT;
-        case DataBuffer.TYPE_USHORT:
-            return GL2.GL_UNSIGNED_SHORT;
-        case DataBuffer.TYPE_INT:
-            return GL2.GL_UNSIGNED_INT_8_8_8_8_REV;
-        default:
-            return 0;
-        }
-    }
-
-    /**
-     * Internal function to map the type of the a DataBuffer to OpenGL aligns,
-     * used for reading input data.
-     * 
-     * @param dataBufferType
-     *            DataBuffer type of the input data
-     * @return OpenGL type to use
-     */
-    private int mapDataBufferTypeToGLAlign(int dataBufferType) {
-        switch (dataBufferType) {
-        case DataBuffer.TYPE_BYTE:
-            return 1;
-        case DataBuffer.TYPE_SHORT:
-            return 2;
-        case DataBuffer.TYPE_USHORT:
-            return 2;
-        case DataBuffer.TYPE_INT:
-            return 4;
-        default:
-            return 0;
-        }
-    }
-
-    /**
-     * Private interface to perform the actual transfer of input data to the
-     * graphics card and bind textures
-     * 
-     * <p>
-     * This interface has been introduced for not having to check every render
-     * cycle, whether non power of two textures are activated or not. There is
-     * one implementation per type: {@link NonPowerOfTwoTextureImplementation}
-     * and {@link PowerOfTwoTextureImplementation}.
-     * 
-     */
-    private static interface TextureImplementation {
-
-        /**
-         * Copies image data to an one-dimensional texture to the graphics
-         * memory.
-         * 
-         * @param gl
-         *            Valid reference to the current gl object
-         * @param texID
-         *            Target texture id
-         * @param internalFormat
-         *            OpenGL format used for saving the data
-         * @param width
-         *            Width of the image
-         * @param inputFormat
-         *            OpenGL format used for transferring the data
-         * @param inputType
-         *            OpenGL type used for reading the data
-         * @param buffer
-         *            Source data
-         */
-        public void genTexture1D(GL2 gl, int texID, int internalFormat, int width, int inputFormat, int inputType, Buffer buffer);
-
-        /**
-         * Copies image data to a two-dimensional texture to the graphics
-         * memory.
-         * 
-         * @param gl
-         *            Valid reference to the current gl object
-         * @param texID
-         *            Target texture id
-         * @param internalFormat
-         *            OpenGL format used for saving the data
-         * @param width
-         *            Width of the image
-         * @param height
-         *            Height of the image
-         * @param inputFormat
-         *            OpenGL format used for transferring the data
-         * @param inputType
-         *            OpenGL type used for reading the data
-         * @param buffer
-         *            Source data
-         */
-        public void genTexture2D(GL2 gl, int texID, int internalFormat, int width, int height, int inputFormat, int inputType, Buffer buffer);
-
-        /**
-         * Binds a 2D texture.
-         * 
-         * @param gl
-         *            Valid reference to the current gl object
-         * @param texture
-         *            texture id to bind
-         * @see #bindTexture(GL, int, int)
-         */
-        public void bindTexture(GL2 gl, int texture);
-
-        /**
-         * Binds a texture.
-         * 
-         * @param gl
-         *            Valid reference to the current gl object
-         * @param target
-         *            texture type, such as GL_TEXTURE_2D
-         * @param texture
-         *            texture id to bind
-         * @see #bindTexture(GL, int, int)
-         */
-        public void bindTexture(GL2 gl, int target, int texture);
-
-        /**
-         * Copies the current frame buffer to a texture.
-         * 
-         * @param gl
-         *            Valid reference to the current gl object
-         * @param texture
-         *            target texture
-         * @param rect
-         *            area of the frame buffer to copy
-         */
-        public void copyFrameBufferToTexture(GL2 gl, int texture, Rectangle rect);
-    }
 
     /**
      * Texture implementation for power of two textures. After copying the
@@ -790,7 +617,7 @@ public class GLTextureHelper {
      * {@link org.helioviewer.jhv.viewmodel.view.opengl.shader.GLScalePowerOfTwoVertexShaderProgram}
      * .
      */
-    private static class PowerOfTwoTextureImplementation implements TextureImplementation {
+    private static class PowerOfTwoTextureImplementation {
 
         /**
          * {@inheritDoc}
@@ -859,7 +686,9 @@ public class GLTextureHelper {
               case GL2.GL_UNSIGNED_SHORT_5_5_5_1:
                 bpp*=2;
                 break;
+              case GL2.GL_UNSIGNED_INT_8_8_8_8:
               case GL2.GL_UNSIGNED_INT_8_8_8_8_REV:
+              case GL2.GL_INT:
             	  bpp*=4;
             	  break;
               default:
@@ -886,17 +715,6 @@ public class GLTextureHelper {
             float scaleY = (float) height / height2;
             scaleTexCoord.setValue(gl, scaleX, scaleY);
             allTextures.put(texID, new Vector2d(scaleX, scaleY));
-        }
-
-        /**
-         * {@inheritDoc}
-         * 
-         * In this case, this function will also load the texture scaling to the
-         * texture coordinate GL_TEXTURE1, which will be used by
-         * {@link org.helioviewer.jhv.viewmodel.view.opengl.shader.GLScalePowerOfTwoVertexShaderProgram}
-         */
-        public void bindTexture(GL2 gl, int texture) {
-            bindTexture(gl, GL.GL_TEXTURE_2D, texture);
         }
 
         /**

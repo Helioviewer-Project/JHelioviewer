@@ -8,7 +8,6 @@ import java.util.Vector;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
-import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.SphericalCoord;
 import org.helioviewer.jhv.base.math.Vector2d;
@@ -56,10 +55,8 @@ public class HEKPlugin3dRenderer extends PhysicalRenderer3d
      */
     public void drawPolygon(GLPhysicalRenderGraphics g,HEKEvent evt,Date now)
     {
-
         if(evt!=null&&evt.isVisible(now))
         {
-
             String type=evt.getString("event_type");
             Color eventColor=HEKConstants.getSingletonInstance().acronymToColor(type,128);
 
@@ -69,9 +66,12 @@ public class HEKPlugin3dRenderer extends PhysicalRenderer3d
             {
                 g.gl.glColor4ub((byte)eventColor.getRed(),(byte)eventColor.getGreen(),(byte)eventColor.getBlue(),(byte)eventColor.getAlpha());
 
+                g.gl.glEnable(GL2.GL_CULL_FACE);
                 g.gl.glDisable(GL2.GL_DEPTH_TEST);
                 g.gl.glBlendFunc(GL2.GL_SRC_ALPHA,GL2.GL_ONE_MINUS_SRC_ALPHA);
 
+                //g.gl.glEnable(GL2.GL_POLYGON_OFFSET_FILL);
+                //g.gl.glPolygonOffset(-10,-300);
                 g.gl.glBegin(GL2.GL_TRIANGLES);
                 for(GenericTriangle<Vector3d> triangle:triangles)
                 {
@@ -80,6 +80,7 @@ public class HEKPlugin3dRenderer extends PhysicalRenderer3d
                     g.gl.glVertex3d(triangle.C.x,-triangle.C.y,triangle.C.z);
                 }
                 g.gl.glEnd();
+                //g.gl.glDisable(GL2.GL_POLYGON_OFFSET_FILL);
             }
 
             // draw bounds
@@ -96,6 +97,7 @@ public class HEKPlugin3dRenderer extends PhysicalRenderer3d
                  */
 
                 g.gl.glBlendFunc(GL2.GL_SRC_ALPHA,GL2.GL_ONE_MINUS_SRC_ALPHA);
+                g.gl.glEnable(GL2.GL_DEPTH_TEST);
 
                 g.gl.glBegin(GL.GL_LINE_LOOP);
                 for(SphericalCoord boundaryPoint:outerBound)
@@ -147,18 +149,18 @@ public class HEKPlugin3dRenderer extends PhysicalRenderer3d
                 double width2=imageSize.x*scale/2.0;
                 double height2=imageSize.y*scale/2.0;
 
-                GL3DVec3d sourceDir=new GL3DVec3d(0,0,1);
-                GL3DVec3d targetDir=new GL3DVec3d(x,y,z);
+                Vector3d sourceDir=new Vector3d(0,0,1);
+                Vector3d targetDir=new Vector3d(x,y,z);
 
                 double angle=Math.acos(sourceDir.dot(targetDir)/(sourceDir.length()*targetDir.length()));
-                GL3DVec3d axis=sourceDir.cross(targetDir);
+                Vector3d axis=sourceDir.cross(targetDir);
                 Matrix4d r=Matrix4d.rotation(angle,axis.normalize());
                 r.setTranslation(x,y,z);
 
-                GL3DVec3d p0=new GL3DVec3d(-width2,-height2,0);
-                GL3DVec3d p1=new GL3DVec3d(-width2,height2,0);
-                GL3DVec3d p2=new GL3DVec3d(width2,height2,0);
-                GL3DVec3d p3=new GL3DVec3d(width2,-height2,0);
+                Vector3d p0=new Vector3d(-width2,-height2,0);
+                Vector3d p1=new Vector3d(-width2,height2,0);
+                Vector3d p2=new Vector3d(width2,height2,0);
+                Vector3d p3=new Vector3d(width2,-height2,0);
                 p0=r.multiply(p0);
                 p1=r.multiply(p1);
                 p2=r.multiply(p2);
@@ -204,9 +206,7 @@ public class HEKPlugin3dRenderer extends PhysicalRenderer3d
                 g.gl.glEnable(GL2.GL_BLEND);
 
                 for(HEKEvent evt:toDraw)
-                {
                     drawPolygon(g,evt,currentDate);
-                }
 
                 g.gl.glDisable(GL2.GL_BLEND);
                 g.gl.glEnable(GL2.GL_DEPTH_TEST);
@@ -224,18 +224,13 @@ public class HEKPlugin3dRenderer extends PhysicalRenderer3d
                 g.gl.glColor3f(1.0f,1.0f,1.0f);
 
                 for(HEKEvent evt:toDraw)
-                {
                     drawIcon(g,evt,currentDate);
-                }
 
                 g.gl.glDisable(GL2.GL_TEXTURE_2D);
                 g.gl.glEnable(GL2.GL_LIGHTING);
                 g.gl.glDisable(GL2.GL_BLEND);
                 g.gl.glEnable(GL2.GL_DEPTH_TEST);
                 g.gl.glDisable(GL2.GL_CULL_FACE);
-                g.gl.glEnable(GL2.GL_BLEND);
-                g.gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
-                g.gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
             }
             GL3DState.get().checkGLErrors("HEKPlugin3dRenderer.afterRender");
         }

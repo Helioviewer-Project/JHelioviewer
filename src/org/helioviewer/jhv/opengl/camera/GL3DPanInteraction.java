@@ -4,7 +4,7 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 
-import org.helioviewer.jhv.base.math.GL3DVec3d;
+import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
@@ -26,7 +26,7 @@ public class GL3DPanInteraction extends GL3DDefaultInteraction {
 	private double meterPerPixelWidth;
 	private double meterPerPixelHeight;
 	private double z;
-	private GL3DVec3d defaultTranslation;
+	private Vector3d defaultTranslation;
 	private GL3DRayTracer rayTracer;
 
 	protected GL3DPanInteraction(GL3DTrackballCamera camera,
@@ -44,7 +44,7 @@ public class GL3DPanInteraction extends GL3DDefaultInteraction {
 	}
 
 	private void mousePressed3DFunction(MouseEvent e, GL3DCamera camera){
-		GL3DVec3d p = this.getHitPoint(e.getPoint());
+		Vector3d p = this.getHitPoint(e.getPoint());
 		if (p != null) {
 			this.z = camera.getZTranslation()
 					+ this.camera.getRotation().toMatrix().inverse()
@@ -71,7 +71,7 @@ public class GL3DPanInteraction extends GL3DDefaultInteraction {
 			double xPosition = Math.tanh(xAngle) * z;
 
 			this.defaultTranslation = camera.getTranslation();
-			this.defaultTranslation = new GL3DVec3d(
+			this.defaultTranslation = new Vector3d(
 			        this.defaultTranslation.x + xPosition,
 			        this.defaultTranslation.y - yPosition,
 			        this.defaultTranslation.z);
@@ -96,7 +96,7 @@ public class GL3DPanInteraction extends GL3DDefaultInteraction {
 		this.meterPerPixelWidth = width / canvasSize.getWidth();
 		this.meterPerPixelHeight = height / canvasSize.getHeight();
 		this.defaultTranslation = camera.getTranslation();
-		this.defaultTranslation = new GL3DVec3d(
+		this.defaultTranslation = new Vector3d(
 		        this.defaultTranslation.x - this.meterPerPixelWidth * e.getX(),
 		        this.defaultTranslation.y + this.meterPerPixelHeight * e.getY(),
 		        this.defaultTranslation.z);
@@ -123,7 +123,7 @@ public class GL3DPanInteraction extends GL3DDefaultInteraction {
 			double yPosition = Math.tanh(yAngle) * z;
 			double xPosition = Math.tanh(xAngle) * z;
 
-			camera.translation = new GL3DVec3d(
+			camera.translation = new Vector3d(
 			        defaultTranslation.x - xPosition,
 			        defaultTranslation.y + yPosition,
 			        camera.translation.z);
@@ -136,7 +136,7 @@ public class GL3DPanInteraction extends GL3DDefaultInteraction {
 	
 	private void mouseDragged2DFunction(MouseEvent e, GL3DCamera camera){
 		if (defaultTranslation != null){
-		    camera.translation = new GL3DVec3d(
+		    camera.translation = new Vector3d(
 		            this.defaultTranslation.x + this.meterPerPixelWidth * e.getX(),
 		            this.defaultTranslation.y - this.meterPerPixelHeight * e.getY(),
 		            camera.translation.z);
@@ -149,11 +149,11 @@ public class GL3DPanInteraction extends GL3DDefaultInteraction {
 		camera.fireCameraMoved();
 	}
 
-	protected GL3DVec3d getHitPoint(Point p) {
+	protected Vector3d getHitPoint(Point p) {
 		this.rayTracer = new GL3DRayTracer(
 				sceneGraphView.getHitReferenceShape(), this.camera);
 		GL3DRay ray = this.rayTracer.cast(p.x, p.y);
-		GL3DVec3d hitPoint = ray.getHitPoint();
+		Vector3d hitPoint = ray.getHitPoint();
 		return hitPoint;
 	}
 

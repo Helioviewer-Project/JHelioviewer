@@ -2,8 +2,8 @@ package org.helioviewer.jhv.opengl.scenegraph.visuals;
 
 import java.util.List;
 
-import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.math.Vector2d;
+import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.math.Vector4d;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DMesh;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
@@ -32,10 +32,10 @@ public class GL3DCone extends GL3DMesh {
         }
     }
 
-    public GL3DMeshPrimitive createMesh(GL3DState state, List<GL3DVec3d> positions, List<GL3DVec3d> normals, List<Vector2d> textCoords, List<Integer> indices, List<Vector4d> colors) {
-        positions.add(new GL3DVec3d(0, 0, this.height));
+    public GL3DMeshPrimitive createMesh(GL3DState state, List<Vector3d> positions, List<Vector3d> normals, List<Vector2d> textCoords, List<Integer> indices, List<Vector4d> colors) {
+        positions.add(new Vector3d(0, 0, this.height));
         indices.add(0);
-        normals.add(new GL3DVec3d(0, 0, 1));
+        normals.add(new Vector3d(0, 0, 1));
         colors.add(this.color);
 
         double dPhi = 2 * Math.PI / this.detail;
@@ -50,8 +50,8 @@ public class GL3DCone extends GL3DMesh {
             double y = ny * radius;
             double z = 0;
 
-            positions.add(new GL3DVec3d(x, y, z));
-            normals.add(new GL3DVec3d(nx, ny, nz));
+            positions.add(new Vector3d(x, y, z));
+            normals.add(new Vector3d(nx, ny, nz));
             colors.add(this.color);
             indices.add(i + 1);
         }

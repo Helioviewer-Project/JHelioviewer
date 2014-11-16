@@ -4,8 +4,8 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 
 import org.helioviewer.jhv.base.logging.Log;
-import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.math.Quaternion3d;
+import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRayTracer;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DSceneGraphView;
@@ -20,8 +20,8 @@ import org.helioviewer.jhv.viewmodel.view.opengl.GL3DSceneGraphView;
  * 
  */
 public class GL3DTrackballRotationInteraction extends GL3DDefaultInteraction {
-    private GL3DVec3d currentRotationStartPoint;
-    private GL3DVec3d currentRotationEndPoint;
+    private Vector3d currentRotationStartPoint;
+    private Vector3d currentRotationEndPoint;
     private volatile Quaternion3d currentDragRotation;
 
     protected GL3DTrackballRotationInteraction(GL3DTrackballCamera camera, GL3DSceneGraphView sceneGraph) {
@@ -59,11 +59,11 @@ public class GL3DTrackballRotationInteraction extends GL3DDefaultInteraction {
         this.currentRotationStartPoint = getVectorFromSphere(e.getPoint(), camera);
     }
 
-    protected GL3DVec3d getVectorFromSphere(Point p, GL3DCamera camera) {
+    protected Vector3d getVectorFromSphere(Point p, GL3DCamera camera) {
         GL3DRayTracer sunTracer = new GL3DRayTracer(sceneGraphView.getHitReferenceShape(), camera);
         GL3DRay ray = sunTracer.cast(p.x, p.y);
 
-        GL3DVec3d hitPoint;
+        Vector3d hitPoint;
 
         if (ray.isOnSun) {
             // Log.debug("GL3DTrackballRotationInteraction: Ray is Inside!");
@@ -74,7 +74,7 @@ public class GL3DTrackballRotationInteraction extends GL3DDefaultInteraction {
             double x = (p.x - camera.getWidth() / 2) / camera.getWidth();
             // Transform the Point so it lies on the plane that is aligned to
             // the viewspace (not the sphere)
-            hitPoint = camera.getRotation().toMatrix().inverse().multiply(new GL3DVec3d(x, y, 0).normalize());
+            hitPoint = camera.getRotation().toMatrix().inverse().multiply(new Vector3d(x, y, 0).normalize());
         }
         return hitPoint;
     }

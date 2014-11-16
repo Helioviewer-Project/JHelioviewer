@@ -1,6 +1,6 @@
 package org.helioviewer.jhv.opengl.scenegraph;
 
-import org.helioviewer.jhv.base.math.GL3DVec3d;
+import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
 
 /**
@@ -12,15 +12,15 @@ import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
  * 
  */
 public class GL3DTriangle {
-    protected GL3DVec3d a;
-    protected GL3DVec3d b;
-    protected GL3DVec3d c;
+    protected Vector3d a;
+    protected Vector3d b;
+    protected Vector3d c;
 
     public GL3DTriangle() {
 
     }
 
-    public GL3DTriangle(GL3DVec3d a, GL3DVec3d b, GL3DVec3d c) {
+    public GL3DTriangle(Vector3d a, Vector3d b, Vector3d c) {
         this.a = a;
         this.b = b;
         this.c = c;
@@ -29,8 +29,8 @@ public class GL3DTriangle {
     private final static double EPSILON = 0.0001;
 
     public boolean intersects(GL3DRay ray) {
-        GL3DVec3d e1, e2; // edge 1 and 2
-        GL3DVec3d AO, K, Q;
+        Vector3d e1, e2; // edge 1 and 2
+        Vector3d AO, K, Q;
 
         // find vectors for two edges sharing the triangle vertex A
         e1 = this.b.subtract(this.a);

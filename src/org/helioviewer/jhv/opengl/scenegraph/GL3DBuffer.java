@@ -9,8 +9,8 @@ import java.util.List;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
-import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.math.Vector2d;
+import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.math.Vector4d;
 
 import com.jogamp.common.nio.Buffers;
@@ -86,9 +86,9 @@ public class GL3DBuffer {
         return new GL3DBuffer(state, GL3DBufferType.ARRAY, GL3DBufferAttribute.TEXTURE, buffer, 2);
     }
 
-    public static GL3DBuffer createPositionBuffer(GL3DState state, List<GL3DVec3d> vertices) {
+    public static GL3DBuffer createPositionBuffer(GL3DState state, List<Vector3d> vertices) {
         DoubleBuffer buffer = DoubleBuffer.allocate(vertices.size() * 3);
-        for (GL3DVec3d vertex : vertices) {
+        for (Vector3d vertex : vertices) {
             buffer.put(vertex.x);
             buffer.put(vertex.y);
             buffer.put(vertex.z);
@@ -98,9 +98,9 @@ public class GL3DBuffer {
         return new GL3DBuffer(state, GL3DBufferType.ARRAY, GL3DBufferAttribute.VERTEX, buffer, 3);
     }
 
-    public static GL3DBuffer createPositionBuffer(GL3DState state, GL3DVec3d[] vertices) {
+    public static GL3DBuffer createPositionBuffer(GL3DState state, Vector3d[] vertices) {
         DoubleBuffer buffer = DoubleBuffer.allocate(vertices.length * 3);
-        for (GL3DVec3d vertex : vertices) {
+        for (Vector3d vertex : vertices) {
             buffer.put(vertex.x);
             buffer.put(vertex.y);
             buffer.put(vertex.z);
@@ -110,9 +110,9 @@ public class GL3DBuffer {
         return new GL3DBuffer(state, GL3DBufferType.ARRAY, GL3DBufferAttribute.VERTEX, buffer, 3);
     }
 
-    public static GL3DBuffer createNormalBuffer(GL3DState state, List<GL3DVec3d> normals) {
+    public static GL3DBuffer createNormalBuffer(GL3DState state, List<Vector3d> normals) {
         DoubleBuffer buffer = DoubleBuffer.allocate(normals.size() * 3);
-        for (GL3DVec3d normal : normals) {
+        for (Vector3d normal : normals) {
             buffer.put(normal.x);
             buffer.put(normal.y);
             buffer.put(normal.z);

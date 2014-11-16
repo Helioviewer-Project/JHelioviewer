@@ -9,9 +9,9 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
 import org.helioviewer.jhv.base.logging.Log;
-import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.Quaternion3d;
+import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.base.wcs.CoordinateSystem;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
@@ -46,7 +46,7 @@ public abstract class GL3DCamera {
     private Matrix4d cameraTransformation;
 
     private Quaternion3d rotation;
-    protected GL3DVec3d translation;
+    protected Vector3d translation;
 
     private Stack<GL3DCameraAnimation> cameraAnimations = new Stack<GL3DCameraAnimation>();
 
@@ -58,8 +58,8 @@ public abstract class GL3DCamera {
 
     public GL3DCamera() {
         this.cameraTransformation = Matrix4d.identity();
-        this.rotation = Quaternion3d.createRotation(0.0, new GL3DVec3d(0, 1, 0));
-        this.translation = new GL3DVec3d();
+        this.rotation = Quaternion3d.createRotation(0.0, new Vector3d(0, 1, 0));
+        this.translation = new Vector3d();
     }
 
     public abstract void reset();
@@ -93,7 +93,7 @@ public abstract class GL3DCamera {
     }
 
     protected void setZTranslation(double z) {
-        this.translation = new GL3DVec3d(
+        this.translation = new Vector3d(
                 this.translation.x,
                 this.translation.y,
                 Math.min(MIN_DISTANCE, Math.max(MAX_DISTANCE, z)));
@@ -104,10 +104,10 @@ public abstract class GL3DCamera {
     }
 
     public void setPanning(double x, double y) {
-        this.translation = new GL3DVec3d(x,y,this.translation.z);
+        this.translation = new Vector3d(x,y,this.translation.z);
     }
 
-    public GL3DVec3d getTranslation() {
+    public Vector3d getTranslation() {
         return this.translation;
     }
 

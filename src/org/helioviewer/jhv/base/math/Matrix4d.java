@@ -116,18 +116,19 @@ public class Matrix4d {
         return this;
     }
 
-    public GL3DVec3d multiply(GL3DVec3d v) {
+    public Vector3d multiply(Vector3d v)
+    {
         double W = m[3] * v.x + m[7] * v.y + m[11] * v.z + m[15];
-        return new GL3DVec3d((m[0] * v.x + m[4] * v.y + m[8] * v.z + m[12]) / W, (m[1] * v.x + m[5] * v.y + m[9] * v.z + m[13]) / W, (m[2] * v.x + m[6] * v.y + m[10] * v.z + m[14]) / W);
+        return new Vector3d((m[0] * v.x + m[4] * v.y + m[8] * v.z + m[12]) / W, (m[1] * v.x + m[5] * v.y + m[9] * v.z + m[13]) / W, (m[2] * v.x + m[6] * v.y + m[10] * v.z + m[14]) / W);
     }
 
-    public Vector4d multiply(Vector4d v) {
-        Vector4d newV = new Vector4d(m[0] * v.x + m[4] * v.y + m[8] * v.z + m[12] * v.w, m[1] * v.x + m[5] * v.y + m[9] * v.z + m[13] * v.w, m[2] * v.x + m[6] * v.y + m[10] * v.z + m[14] * v.w, m[3] * v.x + m[7] * v.y + m[11] * v.z + m[15] * v.w);
-        return newV;
+    public Vector4d multiply(Vector4d v)
+    {
+        return new Vector4d(m[0] * v.x + m[4] * v.y + m[8] * v.z + m[12] * v.w, m[1] * v.x + m[5] * v.y + m[9] * v.z + m[13] * v.w, m[2] * v.x + m[6] * v.y + m[10] * v.z + m[14] * v.w, m[3] * v.x + m[7] * v.y + m[11] * v.z + m[15] * v.w);
     }
 
-    public GL3DVec3d translation() {
-        return new GL3DVec3d(m[12], m[13], m[14]);
+    public Vector3d translation() {
+        return new Vector3d(m[12], m[13], m[14]);
     }
 
     public void setTranslation(double x, double y, double z) {
@@ -244,15 +245,15 @@ public class Matrix4d {
     // return I;
     // }
 
-    public Matrix4d translate(GL3DVec3d t) {
+    public Matrix4d translate(Vector3d t) {
         return this.multiply(Matrix4d.translation(t));
     }
 
     public Matrix4d translate(double x, double y, double z) {
-        return this.multiply(Matrix4d.translation(new GL3DVec3d(x, y, z)));
+        return this.multiply(Matrix4d.translation(new Vector3d(x, y, z)));
     }
 
-    public Matrix4d rotate(double angle, GL3DVec3d axis) {
+    public Matrix4d rotate(double angle, Vector3d axis) {
         return this.rotate(angle, axis.x, axis.y, axis.z);
     }
 
@@ -260,7 +261,7 @@ public class Matrix4d {
         return this.multiply(Matrix4d.rotation(angle, axisx, axisy, axisz));
     }
 
-    public Matrix4d scale(GL3DVec3d s) {
+    public Matrix4d scale(Vector3d s) {
         return this.scale(s.x, s.y, s.z);
     }
 
@@ -283,23 +284,23 @@ public class Matrix4d {
         return this;
     }
 
-    public void posAtUp(GL3DVec3d pos) {
-        this.posAtUp(pos, new GL3DVec3d(), new GL3DVec3d());
+    public void posAtUp(Vector3d pos) {
+        this.posAtUp(pos, new Vector3d(), new Vector3d());
     }
 
-    public void posAtUp(GL3DVec3d pos, GL3DVec3d dirAt, GL3DVec3d dirUp) {
+    public void posAtUp(Vector3d pos, Vector3d dirAt, Vector3d dirUp) {
         lightAt(pos, dirAt, dirUp);
     }
 
-    public void lightAt(GL3DVec3d pos, GL3DVec3d dirAt, GL3DVec3d dirUp) {
-        GL3DVec3d VX;
-        GL3DVec3d VY;
-        GL3DVec3d VZ;
+    public void lightAt(Vector3d pos, Vector3d dirAt, Vector3d dirUp) {
+        Vector3d VX;
+        Vector3d VY;
+        Vector3d VZ;
 
         Matrix3d xz = new Matrix3d(0f, 0f, 1f, 0f, 0f, 0f, -1f, 0f, 0f);
 
         VZ = pos.subtract(dirAt);
-        if (dirUp.isApproxEqual(GL3DVec3d.ZERO, 0f)) {
+        if (dirUp.isApproxEqual(Vector3d.ZERO, 0f)) {
             VX = xz.multiply(VZ).normalize();
             VY = VZ.cross(VX).normalize();
         } else {
@@ -310,7 +311,7 @@ public class Matrix4d {
         set(VX.x, VY.x, VZ.x, pos.x, VX.y, VY.y, VZ.y, pos.y, VX.z, VY.z, VZ.z, pos.z, 0f, 0f, 0f, 1f);
     }
 
-    public static Matrix4d translation(GL3DVec3d t) {
+    public static Matrix4d translation(Vector3d t) {
         Matrix4d tr = Matrix4d.identity();
         tr.set(12, t.x);
         tr.set(13, t.y);
@@ -330,7 +331,7 @@ public class Matrix4d {
         return Matrix4d.rotation(q.getAngle(), q.getRotationAxis());
     }
 
-    public static Matrix4d rotation(double angle, GL3DVec3d axis) {
+    public static Matrix4d rotation(double angle, Vector3d axis) {
         return Matrix4d.rotation(angle, axis.x, axis.y, axis.z);
     }
 

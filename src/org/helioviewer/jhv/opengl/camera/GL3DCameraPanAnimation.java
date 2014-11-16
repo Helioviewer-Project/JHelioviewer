@@ -1,6 +1,6 @@
 package org.helioviewer.jhv.opengl.camera;
 
-import org.helioviewer.jhv.base.math.GL3DVec3d;
+import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 
 /**
@@ -17,18 +17,18 @@ public class GL3DCameraPanAnimation implements GL3DCameraAnimation {
     private long lastAnimationTime = -1;
     private long timeLeft = 0;
 
-    private GL3DVec3d distanceToMove;
-    private GL3DVec3d distanceDelta;
-    private GL3DVec3d targetTranslation;
+    private Vector3d distanceToMove;
+    private Vector3d distanceDelta;
+    private Vector3d targetTranslation;
 
-    public GL3DCameraPanAnimation(GL3DVec3d distanceToMove) {
+    public GL3DCameraPanAnimation(Vector3d distanceToMove) {
         this(distanceToMove, GL3DCameraAnimation.DEFAULT_ANIMATION_TIME);
     }
 
-    public GL3DCameraPanAnimation(GL3DVec3d distanceToMove, long duration) {
+    public GL3DCameraPanAnimation(Vector3d distanceToMove, long duration) {
         this.distanceToMove = distanceToMove;
         this.timeLeft = duration;
-        this.distanceDelta = distanceToMove.divide((double)this.timeLeft);
+        this.distanceDelta = distanceToMove.scale(1/(double)this.timeLeft);
         GuiState3DWCS.mainComponentView.regristryAnimation(duration);
     }    
     
@@ -48,7 +48,7 @@ public class GL3DCameraPanAnimation implements GL3DCameraAnimation {
             this.isFinished = true;
             camera.updateCameraTransformation(true);
         } else {
-            GL3DVec3d translation = this.distanceDelta.multiply(timeDelta);
+            Vector3d translation = this.distanceDelta.scale((double)timeDelta);
             camera.addPanning(translation.x, translation.y);
             camera.updateCameraTransformation(false);
         }
@@ -61,7 +61,7 @@ public class GL3DCameraPanAnimation implements GL3DCameraAnimation {
             GL3DCameraPanAnimation ani = (GL3DCameraPanAnimation) animation;
             this.timeLeft = Math.min(2000, this.timeLeft / 5 + ani.timeLeft);
             this.distanceToMove = this.distanceToMove.add(ani.distanceToMove);
-            this.distanceDelta = distanceToMove.divide((double)this.timeLeft);
+            this.distanceDelta = distanceToMove.scale(1/(double)this.timeLeft);
         }
     }
 

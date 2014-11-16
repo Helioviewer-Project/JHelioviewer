@@ -2,10 +2,10 @@ package org.helioviewer.jhv.opengl.model;
 
 import java.util.List;
 
-import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.Vector2d;
+import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.math.Vector4d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.base.wcs.CoordinateConversion;
@@ -44,7 +44,7 @@ public class GL3DImageSphere extends GL3DImageMesh
 
   }
 
-  public GL3DMeshPrimitive createMesh(GL3DState state,List<GL3DVec3d> positions,List<GL3DVec3d> normals,List<Vector2d> textCoords,List<Integer> indices,List<Vector4d> colors)
+  public GL3DMeshPrimitive createMesh(GL3DState state,List<Vector3d> positions,List<Vector3d> normals,List<Vector2d> textCoords,List<Integer> indices,List<Vector4d> colors)
   {
     if(this.capturedRegion!=null)
     {
@@ -54,20 +54,20 @@ public class GL3DImageSphere extends GL3DImageMesh
       CoordinateVector orientationVector=this.layer.getOrientation();
       CoordinateConversion toViewSpace=this.layer.getCoordinateSystem().getConversion(state.activeCamera.getViewSpaceCoordinateSystem());
 
-      GL3DVec3d orientation=toViewSpace.convert(orientationVector).toVector3d().normalize();
+      Vector3d orientation=toViewSpace.convert(orientationVector).toVector3d().normalize();
       
-      phiRotation = Quaternion3d.calcRotation(orientation,new GL3DVec3d(0,0,1)).toMatrix();	        
+      phiRotation = Quaternion3d.calcRotation(orientation,new Vector3d(0,0,1)).toMatrix();	        
       
-      if(!(orientation.equals(new GL3DVec3d(0,1,0))))
+      if(!(orientation.equals(new Vector3d(0,1,0))))
       {
-        GL3DVec3d orientationXZ=new GL3DVec3d(orientation.x,0,orientation.z);
+        Vector3d orientationXZ=new Vector3d(orientation.x,0,orientation.z);
         double phi=0-Math.acos(orientationXZ.z);
 
         if(orientationXZ.x<0)
         {
           phi=0-phi;
         }
-        phiRotation=Matrix4d.rotation(phi,new GL3DVec3d(0,1,0));
+        phiRotation=Matrix4d.rotation(phi,new Vector3d(0,1,0));
       }
 	
       double resolutionX=100;
@@ -89,14 +89,14 @@ public class GL3DImageSphere extends GL3DImageMesh
           double y=cosTheta;
           double z=sinPhi*sinTheta;
 
-          positions.add(new GL3DVec3d(Constants.SUN_RADIUS*x,Constants.SUN_RADIUS*y,Constants.SUN_RADIUS*z));
+          positions.add(new Vector3d(Constants.SUN_RADIUS*x,Constants.SUN_RADIUS*y,Constants.SUN_RADIUS*z));
 
           createVertex(solarSphereCS.createCoordinateVector(Constants.SUN_RADIUS*x,Constants.SUN_RADIUS*y,Constants.SUN_RADIUS*z),normals,textCoords,colors);
 
         }
       }
 
-      GL3DVec3d tmpSolarSphereVec;
+      Vector3d tmpSolarSphereVec;
       for(int latNumber=0;latNumber<resolutionX;latNumber++)
       {
         for(int longNumber=0;longNumber<resolutionY;longNumber++)
@@ -150,13 +150,13 @@ public class GL3DImageSphere extends GL3DImageMesh
     return GL3DMeshPrimitive.TRIANGLES;
   }
 
-  private GL3DVec3d createVertex(CoordinateVector solarSphereCoordinate,List<GL3DVec3d> normals,List<Vector2d> texCoords,List<Vector4d> colors)
+  private Vector3d createVertex(CoordinateVector solarSphereCoordinate,List<Vector3d> normals,List<Vector2d> texCoords,List<Vector4d> colors)
   {
     double x=solarSphereCoordinate.getValue(SolarSphereCoordinateSystem.X_COORDINATE);
     double y=solarSphereCoordinate.getValue(SolarSphereCoordinateSystem.Y_COORDINATE);
     double z=solarSphereCoordinate.getValue(SolarSphereCoordinateSystem.Z_COORDINATE);
 
-    GL3DVec3d position=new GL3DVec3d(x,y,z);
+    Vector3d position=new Vector3d(x,y,z);
     colors.add(new Vector4d(0,0,0,1.0));
 
     double cx=x*phiRotation.m[0]+y*phiRotation.m[4]+z*phiRotation.m[8]+phiRotation.m[12];

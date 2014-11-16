@@ -2,8 +2,8 @@ package org.helioviewer.jhv.opengl.scenegraph.rt;
 
 import java.awt.Dimension;
 
-import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.math.Matrix4d;
+import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DNode;
@@ -52,23 +52,22 @@ public class GL3DRayTracer {
 			Matrix4d invRot = new Matrix4d(VM);
             invRot.setTranslation(0, 0, 0); // remove the translation
             invRot.transpose(); // transpose it to get inverse rot.
-            GL3DVec3d EYE=invRot.multiply(VM.translation().negate()); // setMatrix eye
-            GL3DVec3d LR=new GL3DVec3d(VM.m[0], VM.m[4], VM.m[8]); // normalized look right vector
-            GL3DVec3d LU=new GL3DVec3d(VM.m[1], VM.m[5], VM.m[9]); // normalized look up vector
-            GL3DVec3d LA=new GL3DVec3d(-VM.m[2], -VM.m[6], -VM.m[10]); // normalized look at vector
+            Vector3d EYE=invRot.multiply(VM.translation().negate()); // setMatrix eye
+            Vector3d LR=new Vector3d(VM.m[0], VM.m[4], VM.m[8]); // normalized look right vector
+            Vector3d LU=new Vector3d(VM.m[1], VM.m[5], VM.m[9]); // normalized look up vector
+            Vector3d LA=new Vector3d(-VM.m[2], -VM.m[6], -VM.m[10]); // normalized look at vector
 			LA=LA.normalize();
 			LU=LU.normalize();
 			LR=LR.normalize();
-			GL3DVec3d C = LA.multiply(camera.getClipNear());
-			GL3DVec3d TL = C.subtract(LR.multiply(hw)).add(
-					LU.multiply(hh));
-			GL3DVec3d dir = TL.add(
-					LR.multiply(x).subtract(LU.multiply(y))
-							.multiply(pixelSize));
+			Vector3d C = LA.scale(camera.getClipNear());
+			Vector3d TL = C.subtract(LR.scale(hw)).add(
+					LU.scale(hh));
+			Vector3d dir = TL.add(
+					LR.scale((double)x).subtract(LU.scale((double)y)).scale(pixelSize));
 			ray = GL3DRay.createPrimaryRay(EYE, dir);
 		} else {
-			GL3DVec3d dir = new GL3DVec3d(0, 0, -1.0);
-			GL3DVec3d eye = new GL3DVec3d(camera.getTranslation()
+			Vector3d dir = new Vector3d(0, 0, -1.0);
+			Vector3d eye = new Vector3d(camera.getTranslation()
 					.negate());
 			double height = camera.getZTranslation()
 					* Math.tanh(Math.toRadians(camera.getFOV()));
@@ -76,7 +75,7 @@ public class GL3DRayTracer {
 					.getCanavasSize();
 			double unitPerPixel = height / dimension.getHeight();
 			
-			eye = new GL3DVec3d(
+			eye = new Vector3d(
 			        eye.x + unitPerPixel * (x - dimension.getWidth() / 2.0),
 			        eye.y + unitPerPixel * (y - dimension.getHeight() / 2.0),
 			        eye.z);

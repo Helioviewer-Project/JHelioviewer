@@ -13,7 +13,6 @@ import org.helioviewer.jhv.base.math.IntervalComparison;
 import org.helioviewer.jhv.base.math.SphericalCoord;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector3d;
-import org.helioviewer.jhv.base.math.VectorUtils;
 import org.helioviewer.jhv.base.physics.Astronomy;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.base.triangulate.GeometryInfo;
@@ -51,7 +50,7 @@ public class HEKEvent implements IntervalComparison<Date> {
     
     //Maximum number of points of the outline. If there are more points than this limit
     //the points will be subsampled. (no smoothing)
-    static final int MAX_OUTLINE_POINTS=256;
+    static final int MAX_OUTLINE_POINTS=64;
 
     /**
      * Flag to indicate if the event is currently being displayed in any event popup
@@ -699,8 +698,8 @@ public class HEKEvent implements IntervalComparison<Date> {
 
                 SphericalCoord firstPoint = outerBound.get(0);
                 Vector3d firstPointCartesian = HEKEvent.convertToSceneCoordinates(firstPoint, now);
-                Vector3d projectionPlaneVectorA = VectorUtils.inPlaneShift(projectionCenterCartesian, firstPointCartesian).normalize();
-                Vector3d projectionPlaneVectorB = Vector3d.cross(projectionPlaneVectorA, projectionCenterCartesian.normalize()).normalize();
+                Vector3d projectionPlaneVectorA = firstPointCartesian.inPlaneShift(projectionCenterCartesian).normalize();
+                Vector3d projectionPlaneVectorB = projectionPlaneVectorA.cross(projectionCenterCartesian.normalize()).normalize();
 
                 // if first and last point are the same, remove the last one
                 if (outerBound.get(0).equals(outerBound.get(outerBound.size() - 1))) {
@@ -723,15 +722,15 @@ public class HEKEvent implements IntervalComparison<Date> {
                     Vector3d boundaryPointCartesian = HEKEvent.convertToSceneCoordinates(boundaryPoint, now);
                     outerBoundCartesian.add(boundaryPointCartesian);
 
-                    Vector2d projected = VectorUtils.inPlaneCoord(projectionCenterCartesian, projectionPlaneVectorA, projectionPlaneVectorB, boundaryPointCartesian);
-                    simplePolygonPoints.add(new Vector2d(projected.x, projected.y));
+                    Vector2d projected = boundaryPointCartesian.inPlaneCoord(projectionCenterCartesian,projectionPlaneVectorA,projectionPlaneVectorB);
+                    simplePolygonPoints.add(projected);
                 }
                 
                 try {
                     //simplePolygonPoints
                     Vector3d[] coordinates=new Vector3d[simplePolygonPoints.size()];
                     for(int i=0;i<coordinates.length;i++)
-                        coordinates[i]=new Vector3d(simplePolygonPoints.get(i).x/Constants.SUN_RADIUS,simplePolygonPoints.get(i).y/Constants.SUN_RADIUS,0);
+                        coordinates[i]=new Vector3d(simplePolygonPoints.get(i).x,simplePolygonPoints.get(i).y,0);
                     
                     GeometryInfo gi=new GeometryInfo();
                     gi.setCoordinates(coordinates);
@@ -767,13 +766,13 @@ public class HEKEvent implements IntervalComparison<Date> {
                     lookupCartesian.addAll(outerBoundCartesian);
 
                     for (Triangle triangle : advancedPolygonTriangles) {
-                        Vector2d A2 = new Vector2d(triangle.x1*Constants.SUN_RADIUS, triangle.y1*Constants.SUN_RADIUS);
-                        Vector2d B2 = new Vector2d(triangle.x2*Constants.SUN_RADIUS, triangle.y2*Constants.SUN_RADIUS);
-                        Vector2d C2 = new Vector2d(triangle.x3*Constants.SUN_RADIUS, triangle.y3*Constants.SUN_RADIUS);
+                        Vector2d A2 = new Vector2d(triangle.x1, triangle.y1);
+                        Vector2d B2 = new Vector2d(triangle.x2, triangle.y2);
+                        Vector2d C2 = new Vector2d(triangle.x3, triangle.y3);
 
-                        Vector3d A3 = VectorUtils.projectBack(projectionCenterCartesian, projectionPlaneVectorA, projectionPlaneVectorB, A2).normalize().scale(Constants.SUN_RADIUS);
-                        Vector3d B3 = VectorUtils.projectBack(projectionCenterCartesian, projectionPlaneVectorA, projectionPlaneVectorB, B2).normalize().scale(Constants.SUN_RADIUS);
-                        Vector3d C3 = VectorUtils.projectBack(projectionCenterCartesian, projectionPlaneVectorA, projectionPlaneVectorB, C2).normalize().scale(Constants.SUN_RADIUS);
+                        Vector3d A3 = A2.projectBack(projectionCenterCartesian,projectionPlaneVectorA,projectionPlaneVectorB).normalize().scale(Constants.SUN_RADIUS);
+                        Vector3d B3 = B2.projectBack(projectionCenterCartesian,projectionPlaneVectorA,projectionPlaneVectorB).normalize().scale(Constants.SUN_RADIUS);
+                        Vector3d C3 = C2.projectBack(projectionCenterCartesian,projectionPlaneVectorA,projectionPlaneVectorB).normalize().scale(Constants.SUN_RADIUS);
 
                         // skip (party) hidden triangles
                         if (A3.z < 0 || B3.z < 0 || C3.z < 0)

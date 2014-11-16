@@ -1,6 +1,6 @@
 package org.helioviewer.jhv.base.wcs;
 
-import org.helioviewer.jhv.base.math.GL3DVec3d;
+import org.helioviewer.jhv.base.math.Vector3d;
 
 /**
  * A {@link CoordinateVector} describes a point within its
@@ -22,12 +22,12 @@ public class CoordinateVector {
         this.coordinates = value;
     }
     
-    public GL3DVec3d toVector3d()
+    public Vector3d toVector3d()
     {
         if (getCoordinateSystem().getDimensions() != 3)
-            throw new IllegalCoordinateVectorException("Cannot Create GL3DVec3d from CoordinateVector with " + getCoordinateSystem().getDimensions() + " dimensions");
+            throw new IllegalCoordinateVectorException("Cannot Create Vector3d from CoordinateVector with " + getCoordinateSystem().getDimensions() + " dimensions");
 
-        return new GL3DVec3d(
+        return new Vector3d(
                 getValue(0),
                 getValue(1),
                 getValue(2));

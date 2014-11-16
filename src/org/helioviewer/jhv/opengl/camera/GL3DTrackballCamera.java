@@ -2,9 +2,9 @@ package org.helioviewer.jhv.opengl.camera;
 
 import java.util.Date;
 
-import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.Quaternion3d;
+import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.base.physics.DifferentialRotation;
 import org.helioviewer.jhv.base.wcs.CoordinateSystem;
@@ -45,7 +45,7 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener {
 	private Date currentDate = null;
 	private double currentRotation = 0.0;
 
-	private GL3DVec3d startPosition2D;
+	private Vector3d startPosition2D;
 	private boolean outside;
 
 	public GL3DTrackballCamera(GL3DSceneGraphView sceneGraphView) {
@@ -87,19 +87,19 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener {
 							.calculateRotationInRadians(0, timediff);
 
 					Quaternion3d newRotation = Quaternion3d.createRotation(
-							currentRotation - rotation, new GL3DVec3d(0, 1, 0));
-					GL3DVec3d newPosition = newRotation.toMatrix().multiply(
+							currentRotation - rotation, new Vector3d(0, 1, 0));
+					Vector3d newPosition = newRotation.toMatrix().multiply(
 							startPosition2D);
 
-					GL3DVec3d tmp = newPosition.subtract(startPosition2D);
+					Vector3d tmp = newPosition.subtract(startPosition2D);
 					this.startPosition2D = newPosition;
 					if (GL3DState.get().getState() == VISUAL_TYPE.MODE_3D)
 						this.getRotation().rotate(
 								Quaternion3d.createRotation(currentRotation
-										- rotation, new GL3DVec3d(0, 1, 0)));
+										- rotation, new Vector3d(0, 1, 0)));
 
 					else if (!outside){
-					    this.translation=new GL3DVec3d(
+					    this.translation=new Vector3d(
 					            this.translation.x + tmp.x,
 					            this.translation.y - tmp.y,
 					            this.translation.z);
@@ -126,7 +126,7 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener {
 		double z = Math.sqrt(Constants.SUN_RADIUS * Constants.SUN_RADIUS - x * x
 				- y * y);
 		this.outside = false;
-		this.startPosition2D = new GL3DVec3d(x, y, z);
+		this.startPosition2D = new Vector3d(x, y, z);
 		this.startPosition2D = this.getRotation().toMatrix()
 				.multiply(this.startPosition2D);
 		}

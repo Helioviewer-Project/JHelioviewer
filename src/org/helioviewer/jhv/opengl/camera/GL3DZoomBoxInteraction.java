@@ -5,7 +5,7 @@ import java.awt.event.MouseEvent;
 
 import javax.media.opengl.GL2;
 
-import org.helioviewer.jhv.base.math.GL3DVec3d;
+import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.wcs.impl.SolarImageCoordinateSystem;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
@@ -25,8 +25,8 @@ import org.helioviewer.jhv.viewmodel.view.opengl.GL3DSceneGraphView;
  */
 public class GL3DZoomBoxInteraction extends GL3DDefaultInteraction {
     private GL3DRayTracer rayTracer;
-    private GL3DVec3d zoomBoxStartPoint;
-    private GL3DVec3d zoomBoxEndPoint;
+    private Vector3d zoomBoxStartPoint;
+    private Vector3d zoomBoxEndPoint;
 
     public GL3DZoomBoxInteraction(GL3DTrackballCamera camera, GL3DSceneGraphView sceneGraph) {
         super(camera, sceneGraph);
@@ -94,7 +94,7 @@ public class GL3DZoomBoxInteraction extends GL3DDefaultInteraction {
     }
 
     private GL3DCameraPanAnimation createPanAnimation(long x, long y) {
-        GL3DVec3d distanceToMove = new GL3DVec3d((x - camera.translation.x), (y - camera.translation.y), 0);
+        Vector3d distanceToMove = new Vector3d((x - camera.translation.x), (y - camera.translation.y), 0);
         // Log.debug("GL3DZoomBoxInteraction: Panning "+distanceToMove);
         return new GL3DCameraPanAnimation(distanceToMove);
     }
@@ -112,10 +112,10 @@ public class GL3DZoomBoxInteraction extends GL3DDefaultInteraction {
         return this.zoomBoxEndPoint != null && this.zoomBoxStartPoint != null;
     }
 
-    protected GL3DVec3d getHitPoint(Point p) {
+    protected Vector3d getHitPoint(Point p) {
         this.rayTracer = new GL3DRayTracer(sceneGraphView.getHitReferenceShape(), this.camera);
         GL3DRay ray = this.rayTracer.cast(p.x, p.y);
-        GL3DVec3d hitPoint = ray.getHitPoint();
+        Vector3d hitPoint = ray.getHitPoint();
         return hitPoint;
     }
 }

@@ -12,6 +12,8 @@ import java.util.Locale;
  */
 
 public final class Vector3d {
+    public static final Vector3d ZERO = new Vector3d(0, 0, 0);
+
     public final double x;
     public final double y;
     public final double z;
@@ -65,7 +67,7 @@ public final class Vector3d {
     public Vector3d scale(final double d) {
         return new Vector3d(x * d, y * d, z * d);
     }
-
+    
     public Vector3d scale(final Vector3d v) {
         return new Vector3d(x * v.x, y * v.y, z * v.z);
     }
@@ -76,6 +78,10 @@ public final class Vector3d {
 
     public static Vector3d scale(final Vector3d v, final double d) {
         return new Vector3d(v.x * d, v.y * d, v.z * d);
+    }
+    
+    public boolean isApproxEqual(Vector3d vec, double tolerance) {
+        return Math.abs(this.x - vec.x) <= tolerance && Math.abs(this.y - vec.y) <= tolerance && Math.abs(this.z - vec.z) <= tolerance;
     }
 
     public Vector3d negate() {
@@ -141,6 +147,26 @@ public final class Vector3d {
     public double lengthSq() {
         return x * x + y * y + z * z;
     }
+    
+    public Vector3d setMax(Vector3d vector) {
+        if(this.x>=vector.x && this.y >= vector.y && this.z>=vector.z)
+            return this;
+        
+        return new Vector3d(
+                this.x > vector.x ? this.x : vector.x,
+                this.y > vector.y ? this.y : vector.y,
+                this.z > vector.z ? this.z : vector.z);
+    }
+
+    public Vector3d setMin(Vector3d vector) {
+        if(this.x<=vector.x && this.y <= vector.y && this.z<=vector.z)
+            return this;
+        
+        return new Vector3d(
+                this.x < vector.x ? this.x : vector.x,
+                this.y < vector.y ? this.y : vector.y,
+                this.z < vector.z ? this.z : vector.z);
+    }
 
     public Vector3d normalize() {
         double length = this.length();
@@ -152,18 +178,19 @@ public final class Vector3d {
         return new Vector3d(v.x / length, v.y / length, v.z / length);
     }
 
-    public static double dot(final Vector3d v1, final Vector3d v2) {
-        return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+    public double dot(final Vector3d v) {
+        return v.x*x+v.y*y+v.z*z;
     }
-
-    public static Vector3d cross(final Vector3d v1, final Vector3d v2) {
-        double x1 = v1.y * v2.z - v1.z * v2.y;
-        double x2 = v1.z * v2.x - v1.x * v2.z;
-        double x3 = v1.x * v2.y - v1.y * v2.x;
-
+    
+    public Vector3d cross(final Vector3d v1)
+    {
+        double x1 = this.y * v1.z - this.z * v1.y;
+        double x2 = this.z * v1.x - this.x * v1.z;
+        double x3 = this.x * v1.y - this.y * v1.x;
+        
         return new Vector3d(x1, x2, x3);
     }
-
+    
     public Vector3d absolute() {
         return new Vector3d(Math.abs(x), Math.abs(y), Math.abs(z));
     }
@@ -178,7 +205,7 @@ public final class Vector3d {
         }
         Vector3d v = (Vector3d) o;
 
-        return Double.compare(x, v.x) == 0 && Double.compare(y, v.y) == 0 && Double.compare(z, v.z) == 0;
+        return x==v.x && y==v.y && z==v.z;
     }
 
     public boolean epsilonEquals(final Vector3d v, final double epsilon) {
@@ -194,5 +221,51 @@ public final class Vector3d {
 
     public String toString() {
         return String.format(Locale.ENGLISH, "(%.2f,%.2f,%.2f)", x, y, z);
+    }
+
+    /**
+     * Get the (projected) in-plane coordinates of the given point
+     * 
+     * @param planeCenter
+     *            - define the center of the plane
+     * @param planeVectorA
+     *            - first in-plane direction vector
+     * @param planeVectorB
+     *            - second in-plane direction vector
+     * @return
+     */
+    public Vector2d inPlaneCoord(Vector3d planeCenter, Vector3d planeVectorA, Vector3d planeVectorB)
+    {
+        Vector3d inPlane = this.projectToPlane(planeCenter);
+        double x = planeVectorA.dot(inPlane);
+        double y = planeVectorB.dot(inPlane);
+        return new Vector2d(x, y);
+    }
+    
+    /**
+     * Calculate the in-plane-vector of the given point to the plane with origin
+     * planeCenter and normal norm(planeCenter)
+     * 
+     * @param planeCenter
+     *            - the plane's normal vector
+     * 
+     * @return the projection of the targetPoint
+     */
+    public Vector3d inPlaneShift(Vector3d planeCenter) {
+        Vector3d normal = planeCenter.normalize();
+        return this.subtract(normal.scale(normal.dot(this)));
+    }
+
+    /**
+     * Calculate the projection of the given point to the plane with origin
+     * planeCenter and normal norm(planeCenter)
+     * 
+     * @param planeCenter
+     * @return
+     */
+    public Vector3d projectToPlane(Vector3d planeCenter) {
+        Vector3d normal = planeCenter.normalize();
+        Vector3d inPlaneShift = this.subtract(normal.scale(normal.dot(this)));
+        return planeCenter.add(inPlaneShift);
     }
 }

@@ -1,6 +1,6 @@
 package org.helioviewer.jhv.opengl.scenegraph;
 
-import org.helioviewer.jhv.base.math.GL3DVec3d;
+import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DDrawBits.Bit;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
 
@@ -221,8 +221,8 @@ public class GL3DGroup extends GL3DShape {
     public GL3DAABBox buildAABB() {
         GL3DNode current = this.first;
         this.aabb = new GL3DAABBox();
-        aabb.minWS = new GL3DVec3d(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
-        aabb.maxWS = new GL3DVec3d(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE);
+        aabb.minWS = new Vector3d(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+        aabb.maxWS = new Vector3d(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE);
         while(current!=null) {
             this.aabb.merge(current.buildAABB());
             current = current.next;

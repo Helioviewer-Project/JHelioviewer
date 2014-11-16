@@ -9,9 +9,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import org.helioviewer.jhv.base.logging.Log;
-import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.Quaternion3d;
+import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.math.Vector4d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.base.wcs.CoordinateConversion;
@@ -53,7 +53,7 @@ import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLVertexShaderProgram;
 public class GL3DImageLayer extends GL3DGroup implements CoordinateSystemChangeListener, GL3DCameraListener {
 	private static int nextLayerId = 0;
 	private final int layerId;
-	private GL3DVec3d direction = new GL3DVec3d(0, 0, 1);
+	private Vector3d direction = new Vector3d(0, 0, 1);
 
 	private GL3DImageSphere sphere;
 	private GL3DImageCorona corona;
@@ -99,7 +99,7 @@ public class GL3DImageLayer extends GL3DGroup implements CoordinateSystemChangeL
         CoordinateVector orientationVector = getOrientation();
         CoordinateConversion toViewSpace = getCoordinateSystem().getConversion(state.activeCamera.getViewSpaceCoordinateSystem());
         
-        GL3DVec3d orientation = toViewSpace.convert(orientationVector).toVector3d().normalize();
+        Vector3d orientation = toViewSpace.convert(orientationVector).toVector3d().normalize();
         
         // Log.debug("GL3DOrientedGroup '"+getName()+"': Transformed Orientation from "+orientationVector
         // +" to "+orientation+" {"+getCoordinateSystem().getClass().getSimpleName()+" -> "+state.getActiveCamera().getViewSpaceCoordinateSystem().getClass().getSimpleName()+"}");
@@ -109,23 +109,23 @@ public class GL3DImageLayer extends GL3DGroup implements CoordinateSystemChangeL
         this.mv.set(Matrix4d.identity());
         
         
-        if (!orientation.equals(new GL3DVec3d(0, 0, 1))) {
-            GL3DVec3d orientationXY = new GL3DVec3d(orientation.x, orientation.y, 0);
+        if (!orientation.equals(new Vector3d(0, 0, 1))) {
+            Vector3d orientationXY = new Vector3d(orientation.x, orientation.y, 0);
             double theta = Math.asin(orientationXY.y);
-            Matrix4d thetaRotation = Matrix4d.rotation(theta, new GL3DVec3d(1, 0, 0));
+            Matrix4d thetaRotation = Matrix4d.rotation(theta, new Vector3d(1, 0, 0));
             // Log.debug("GL3DOrientedGroup: Rotating Theta "+theta);
             this.mv.multiply(thetaRotation);
         }
         
-        //if (!(orientation.equals(new GL3DVec3d(0, 1, 0)))) {
-            GL3DVec3d orientationXZ = new GL3DVec3d(orientation.x, 0, orientation.z);
+        //if (!(orientation.equals(new Vector3d(0, 1, 0)))) {
+            Vector3d orientationXZ = new Vector3d(orientation.x, 0, orientation.z);
             double phi = Math.acos(orientationXZ.z);
             if (orientationXZ.x < 0) {
                 phi = 0 - phi;
             }
             phi += 0.7;
             // Log.debug("GL3DOrientedGroup: Rotating Phi "+phi);
-            Matrix4d phiRotation = Matrix4d.rotation(phi, new GL3DVec3d(0, 1, 0));
+            Matrix4d phiRotation = Matrix4d.rotation(phi, new Vector3d(0, 1, 0));
             this.mv.multiply(phiRotation);
         //}
         
@@ -182,10 +182,10 @@ public class GL3DImageLayer extends GL3DGroup implements CoordinateSystemChangeL
 		CoordinateConversion toViewSpace = this.getCoordinateSystem()
 				.getConversion(
 						state.activeCamera.getViewSpaceCoordinateSystem());
-		GL3DVec3d orientation = toViewSpace.convert(orientationVector).toVector3d().normalize();
+		Vector3d orientation = toViewSpace.convert(orientationVector).toVector3d().normalize();
 		double phi = 0.0;
-		if (!(orientation.equals(new GL3DVec3d(0, 1, 0)))) {
-			GL3DVec3d orientationXZ = new GL3DVec3d(orientation.x, 0,
+		if (!(orientation.equals(new Vector3d(0, 1, 0)))) {
+			Vector3d orientationXZ = new Vector3d(orientation.x, 0,
 					orientation.z);
 			phi = Math.acos(orientationXZ.z);
 			if (orientationXZ.x < 0) {
@@ -201,7 +201,7 @@ public class GL3DImageLayer extends GL3DGroup implements CoordinateSystemChangeL
 		this.doUpdateROI = true;
 		this.markAsChanged();
 		Quaternion3d phiRotation = Quaternion3d.createRotation(2 * Math.PI - phi,
-				new GL3DVec3d(0, 1, 0));
+				new Vector3d(0, 1, 0));
 		state.activeCamera.getRotation().set(phiRotation);
 		state.activeCamera.updateCameraTransformation();
 		updateROI(state.activeCamera);
@@ -293,7 +293,7 @@ public class GL3DImageLayer extends GL3DGroup implements CoordinateSystemChangeL
 
 	public void cameraMoving(GL3DCamera camera) {
 		Matrix4d camTrans = camera.getRotation().toMatrix().inverse();
-		GL3DVec3d camDirection = new GL3DVec3d(0, 0, 1);
+		Vector3d camDirection = new Vector3d(0, 0, 1);
 		camDirection = camTrans.multiply(camDirection).normalize();
 
 		double angle = (Math.acos(camDirection.dot(direction)) / Math.PI * 180.0);
@@ -307,11 +307,11 @@ public class GL3DImageLayer extends GL3DGroup implements CoordinateSystemChangeL
 		}
 	}
 
-	public GL3DVec3d getLayerDirection() {
+	public Vector3d getLayerDirection() {
 		return direction;
 	}
 
-	public void setLayerDirection(GL3DVec3d direction) {
+	public void setLayerDirection(Vector3d direction) {
 		this.direction = direction;
 	}
 
@@ -365,23 +365,23 @@ public class GL3DImageLayer extends GL3DGroup implements CoordinateSystemChangeL
 		CoordinateConversion toViewSpace = this.getCoordinateSystem()
 				.getConversion(activeCamera.getViewSpaceCoordinateSystem());
 
-		GL3DVec3d orientation = toViewSpace.convert(orientationVector).toVector3d().normalize();
+		Vector3d orientation = toViewSpace.convert(orientationVector).toVector3d().normalize();
 
 		Matrix4d phiRotation = null;
 
-		if (!(orientation.equals(new GL3DVec3d(0, 1, 0)))) {
-			GL3DVec3d orientationXZ = new GL3DVec3d(orientation.x, 0,
+		if (!(orientation.equals(new Vector3d(0, 1, 0)))) {
+			Vector3d orientationXZ = new Vector3d(orientation.x, 0,
 					orientation.z);
 			double phi = Math.acos(orientationXZ.z);
 			if (orientationXZ.x < 0) {
 				phi = 0 - phi;
 			}
 			phi = 2 * Math.PI - phi;
-			phiRotation = Matrix4d.rotation(phi, new GL3DVec3d(0, 1, 0));
+			phiRotation = Matrix4d.rotation(phi, new Vector3d(0, 1, 0));
 		}
 
 		for (GL3DRay ray : regionTestRays) {
-			GL3DVec3d hitPoint = ray.getHitPoint();
+			Vector3d hitPoint = ray.getHitPoint();
 			if (hitPoint != null) {
 				hitPoint = this.wmI.multiply(hitPoint);
 				double coordx = (hitPoint.x - metaData.getPhysicalLowerLeft().x) / metaData.getPhysicalImageWidth();

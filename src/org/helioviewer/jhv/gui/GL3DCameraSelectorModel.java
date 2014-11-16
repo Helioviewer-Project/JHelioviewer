@@ -8,8 +8,8 @@ import javax.swing.ComboBoxModel;
 import javax.swing.ListModel;
 
 import org.helioviewer.jhv.base.logging.Log;
-import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.math.Quaternion3d;
+import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.wcs.CoordinateConversion;
 import org.helioviewer.jhv.base.wcs.CoordinateVector;
 import org.helioviewer.jhv.layers.LayersListener;
@@ -143,9 +143,9 @@ public class GL3DCameraSelectorModel extends AbstractListModel<Object> implement
 		GL3DState state = GL3DState.get();
 		CoordinateVector orientationVector = layer.getOrientation();
         CoordinateConversion toViewSpace = layer.getCoordinateSystem().getConversion(state.activeCamera.getViewSpaceCoordinateSystem());
-        GL3DVec3d orientation = toViewSpace.convert(orientationVector).toVector3d().normalize();
+        Vector3d orientation = toViewSpace.convert(orientationVector).toVector3d().normalize();
         
-        Quaternion3d phiRotation = Quaternion3d.calcRotation(orientation,new GL3DVec3d(0,0,1));	        
+        Quaternion3d phiRotation = Quaternion3d.calcRotation(orientation,new Vector3d(0,0,1));	        
         Quaternion3d targetRotation = phiRotation;
         this.getCurrentCamera().addCameraAnimation(new GL3DCameraRotationAnimation(targetRotation, 700));
     }
