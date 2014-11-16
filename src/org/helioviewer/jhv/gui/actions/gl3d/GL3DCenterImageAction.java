@@ -35,7 +35,7 @@ public class GL3DCenterImageAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
     	GL3DCamera camera = GL3DCameraSelectorModel.getInstance().getCurrentCamera();
         if (camera != null) {
-            camera.addCameraAnimation(new GL3DCameraPanAnimation(camera.getTranslation().copy().negate()));
+            camera.addCameraAnimation(new GL3DCameraPanAnimation(camera.getTranslation().negate()));
         }
 
     }

@@ -1,5 +1,7 @@
 package org.helioviewer.jhv.base.wcs;
 
+import org.helioviewer.jhv.base.math.GL3DVec3d;
+
 /**
  * A {@link CoordinateVector} describes a point within its
  * {@link CoordinateSystem} by providing values in each dimension of its
@@ -11,44 +13,32 @@ package org.helioviewer.jhv.base.wcs;
  * 
  */
 public class CoordinateVector {
-    private double[] coordinates;
+    private final double[] coordinates;
 
     private CoordinateSystem coordinateSystem;
 
     protected CoordinateVector(CoordinateSystem coordinateSystem, double... value) {
         this.coordinateSystem = coordinateSystem;
         this.coordinates = value;
-        if (!consistencyCheck()) {
-            // Log.warn("CoordinateVector is inconsistent with bounds for CoordianteSystem "+this.coordinateSystem+" with values "+this.toString());
-            // throw new
-            // IllegalArgumentException("CoordinateVector cannot be built for CoordianteSystem "+this.coordinateSystem+" with values "+this.toString());
-        }
     }
+    
+    public GL3DVec3d toVector3d()
+    {
+        if (getCoordinateSystem().getDimensions() != 3)
+            throw new IllegalCoordinateVectorException("Cannot Create GL3DVec3d from CoordinateVector with " + getCoordinateSystem().getDimensions() + " dimensions");
 
-    private boolean consistencyCheck() {
-        for (int i = 0; i < this.coordinates.length; i++) {
-            double v = this.coordinates[i];
-            if (v < this.coordinateSystem.getDimension(i).getMinValue() || v > this.coordinateSystem.getDimension(i).getMaxValue()) {
-                return false;
-            }
-        }
-        return true;
+        return new GL3DVec3d(
+                getValue(0),
+                getValue(1),
+                getValue(2));
     }
 
     public CoordinateSystem getCoordinateSystem() {
         return this.coordinateSystem;
     }
 
-    public double[] getValues() {
-        return this.coordinates;
-    }
-
     public double getValue(int dimension) {
         return this.coordinates[dimension];
-    }
-
-    public void setValue(int dimension, double value) {
-        this.coordinates[dimension] = value;
     }
 
     public String toString() {

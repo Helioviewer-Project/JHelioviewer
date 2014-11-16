@@ -85,20 +85,20 @@ public class Quaternion3d {
     //
 
     public Quaternion3d add(Quaternion3d q) {
-        this.u.add(q.u);
+        this.u = this.u.add(q.u);
         this.a += q.a;
         return this;
     }
 
     public Quaternion3d subtract(Quaternion3d q) {
-        this.u.subtract(q.u);
+        this.u = this.u.subtract(q.u);
         this.a -= q.a;
         return this;
     }
 
     public Quaternion3d scale(double s) {
         this.a *= s;
-        this.u.multiply(s);
+        this.u = this.u.multiply(s);
         return this;
     }
 
@@ -106,9 +106,10 @@ public class Quaternion3d {
         Quaternion3d q1 = this.copy();
 
         this.a = q1.a * q2.a - q1.u.x * q2.u.x - q1.u.y * q2.u.y - q1.u.z * q2.u.z;
-        this.u.x = q1.a * q2.u.x + q1.u.x * q2.a + q1.u.y * q2.u.z - q1.u.z * q2.u.y;
-        this.u.y = q1.a * q2.u.y + q1.u.y * q2.a + q1.u.z * q2.u.x - q1.u.x * q2.u.z;
-        this.u.z = q1.a * q2.u.z + q1.u.z * q2.a + q1.u.x * q2.u.y - q1.u.y * q2.u.x;
+        this.u = new GL3DVec3d(
+                q1.a * q2.u.x + q1.u.x * q2.a + q1.u.y * q2.u.z - q1.u.z * q2.u.y,
+                q1.a * q2.u.y + q1.u.y * q2.a + q1.u.z * q2.u.x - q1.u.x * q2.u.z,
+                q1.a * q2.u.z + q1.u.z * q2.a + q1.u.x * q2.u.y - q1.u.y * q2.u.x);
        	this.normalize();
     }
 
@@ -161,14 +162,14 @@ public class Quaternion3d {
     }
 
     public static Quaternion3d calcRotation(GL3DVec3d startPoint, GL3DVec3d endPoint){
-    	GL3DVec3d rotationAxis = GL3DVec3d.cross(startPoint, endPoint);
-        double rotationAngle = Math.atan2(rotationAxis.length(), GL3DVec3d.dot(startPoint, endPoint));
+    	GL3DVec3d rotationAxis = startPoint.cross(endPoint);
+        double rotationAngle = Math.atan2(rotationAxis.length(), startPoint.dot(endPoint));
 
-        return Quaternion3d.createRotation(rotationAngle, rotationAxis.copy());
+        return Quaternion3d.createRotation(rotationAngle, rotationAxis);
     }
 
     public Quaternion3d copy() {
-        return new Quaternion3d(this.a, this.u.copy());
+        return new Quaternion3d(this.a, this.u);
     }
     
     public Quaternion3d inverse(){
@@ -182,9 +183,7 @@ public class Quaternion3d {
     }
     
     public void conjugate(){
-    	u.x = -u.x;
-    	u.y = -u.y;
-    	u.z = -u.z;
+        u=new GL3DVec3d(-u.x,-u.y,-u.z);
     }
 
     public String toString() {

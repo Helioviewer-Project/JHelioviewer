@@ -49,7 +49,7 @@ public class GL3DZoomFitAction extends AbstractAction {
                 distance = -distance - camera.getZTranslation();
                 Log.debug("GL3DZoomFitAction: Distance = " + distance + " Existing Distance: " + camera.getZTranslation());
                 camera.addCameraAnimation(new GL3DCameraZoomAnimation(distance, 500));
-                camera.addCameraAnimation(new GL3DCameraPanAnimation(camera.getTranslation().copy().negate()));
+                camera.addCameraAnimation(new GL3DCameraPanAnimation(camera.getTranslation().negate()));
             }
         }
     }

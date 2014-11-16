@@ -4,8 +4,8 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 
 import org.helioviewer.jhv.base.logging.Log;
-import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.GL3DVec3d;
+import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRayTracer;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DSceneGraphView;
@@ -67,8 +67,7 @@ public class GL3DTrackballRotationInteraction extends GL3DDefaultInteraction {
 
         if (ray.isOnSun) {
             // Log.debug("GL3DTrackballRotationInteraction: Ray is Inside!");
-            hitPoint = ray.getHitPoint();
-            hitPoint = hitPoint.normalize();
+            hitPoint = ray.getHitPoint().normalize();
         } else {
             // Log.debug("GL3DTrackballRotationInteraction: Ray is Outside!");
             double y = (camera.getHeight() / 2 - p.y) / camera.getHeight();

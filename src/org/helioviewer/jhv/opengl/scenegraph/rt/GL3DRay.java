@@ -42,7 +42,7 @@ public class GL3DRay {
     public static GL3DRay createPrimaryRay(GL3DVec3d origin, GL3DVec3d dir) {
         GL3DRay ray = new GL3DRay();
         ray.origin = origin;
-        dir.normalize();
+        dir=dir.normalize();
         ray.setDir(dir);
         ray.length = Double.MAX_VALUE;
         ray.isOutside = true;

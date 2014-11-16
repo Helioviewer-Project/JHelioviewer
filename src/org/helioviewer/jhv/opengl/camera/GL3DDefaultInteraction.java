@@ -48,7 +48,7 @@ public abstract class GL3DDefaultInteraction extends GL3DInteraction {
             // Log.debug("GL3DZoomFitAction: Distance = "+distance+" Existing Distance: "+camera.getZTranslation());
             this.camera.getRotation().clear();
             camera.addCameraAnimation(new GL3DCameraZoomAnimation(distance, 500));
-            camera.addCameraAnimation(new GL3DCameraPanAnimation(this.camera.getTranslation().copy().negate()));
+            camera.addCameraAnimation(new GL3DCameraPanAnimation(this.camera.getTranslation().negate()));
         } else if (LayersModel.getSingletonInstance().getActiveView() == null){
             camera.setZTranslation(-GL3DTrackballCamera.DEFAULT_CAMERA_DISTANCE);
             this.camera.getRotation().clear();

@@ -2,9 +2,9 @@ package org.helioviewer.jhv.opengl.camera;
 
 import java.util.Date;
 
+import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.Quaternion3d;
-import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.base.physics.DifferentialRotation;
 import org.helioviewer.jhv.base.wcs.CoordinateSystem;
@@ -91,8 +91,7 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener {
 					GL3DVec3d newPosition = newRotation.toMatrix().multiply(
 							startPosition2D);
 
-					GL3DVec3d tmp = GL3DVec3d.subtract(newPosition,
-							startPosition2D);
+					GL3DVec3d tmp = newPosition.subtract(startPosition2D);
 					this.startPosition2D = newPosition;
 					if (GL3DState.get().getState() == VISUAL_TYPE.MODE_3D)
 						this.getRotation().rotate(
@@ -100,8 +99,10 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener {
 										- rotation, new GL3DVec3d(0, 1, 0)));
 
 					else if (!outside){
-						this.translation.x += tmp.x;
-						this.translation.y -= tmp.y;
+					    this.translation=new GL3DVec3d(
+					            this.translation.x + tmp.x,
+					            this.translation.y - tmp.y,
+					            this.translation.z);
 
 					}
 					// fireCameraMoved();

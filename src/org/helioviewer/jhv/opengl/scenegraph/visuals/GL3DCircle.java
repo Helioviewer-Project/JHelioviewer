@@ -2,9 +2,9 @@ package org.helioviewer.jhv.opengl.scenegraph.visuals;
 
 import java.util.List;
 
-import org.helioviewer.jhv.base.math.GL3DVec2d;
 import org.helioviewer.jhv.base.math.GL3DVec3d;
-import org.helioviewer.jhv.base.math.GL3DVec4d;
+import org.helioviewer.jhv.base.math.Vector2d;
+import org.helioviewer.jhv.base.math.Vector4d;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DMesh;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 
@@ -12,15 +12,15 @@ public class GL3DCircle extends GL3DMesh {
     private static final int POINTS = 128;
 
     private double radius;
-    private GL3DVec4d color;
+    private Vector4d color;
 
-    public GL3DCircle(double radius, GL3DVec4d color, String name) {
+    public GL3DCircle(double radius, Vector4d color, String name) {
         super(name, color);
         this.radius = radius;
-        this.color = new GL3DVec4d((double) color.x, (double) color.y, (double) color.z, (double) color.w);
+        this.color = new Vector4d((double) color.x, (double) color.y, (double) color.z, (double) color.w);
     }
 
-    public GL3DMeshPrimitive createMesh(GL3DState state, List<GL3DVec3d> positions, List<GL3DVec3d> normals, List<GL3DVec2d> textCoords, List<Integer> indices, List<GL3DVec4d> colors) {
+    public GL3DMeshPrimitive createMesh(GL3DState state, List<GL3DVec3d> positions, List<GL3DVec3d> normals, List<Vector2d> textCoords, List<Integer> indices, List<Vector4d> colors) {
         double dPhi = Math.PI * 2 / POINTS;
         // Around Y-Axis
         for (int i = 0; i < POINTS; i++) {

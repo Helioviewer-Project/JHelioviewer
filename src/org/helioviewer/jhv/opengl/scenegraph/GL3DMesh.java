@@ -7,9 +7,9 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
-import org.helioviewer.jhv.base.math.GL3DVec2d;
 import org.helioviewer.jhv.base.math.GL3DVec3d;
-import org.helioviewer.jhv.base.math.GL3DVec4d;
+import org.helioviewer.jhv.base.math.Vector2d;
+import org.helioviewer.jhv.base.math.Vector4d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DDrawBits.Bit;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
@@ -35,8 +35,8 @@ public abstract class GL3DMesh extends GL3DShape {
 
     private List<GL3DVec3d> positions;
     private List<GL3DVec3d> normals;
-    private List<GL3DVec4d> colors;
-    private List<GL3DVec2d> textCoords;
+    private List<Vector4d> colors;
+    private List<Vector2d> textCoords;
     private List<Integer> indices;
 
     private List<GL3DTriangle> triangles;
@@ -48,15 +48,15 @@ public abstract class GL3DMesh extends GL3DShape {
     private ReentrantLock meshLock = new ReentrantLock();
 
     public GL3DMesh(String name) {
-        this(name, new GL3DVec4d(1, 1, 1, 1));
+        this(name, new Vector4d(1, 1, 1, 1));
     }
 
-    public GL3DMesh(String name, GL3DVec4d diffuseMaterial) {
-        this(name, diffuseMaterial, new GL3DVec4d(0.1f, 0.1f, 0.1f, 1.0f));
+    public GL3DMesh(String name, Vector4d diffuseMaterial) {
+        this(name, diffuseMaterial, new Vector4d(0.1f, 0.1f, 0.1f, 1.0f));
 
     }
 
-    public GL3DMesh(String name, GL3DVec4d diffuseMaterial, GL3DVec4d specularMaterial) {
+    public GL3DMesh(String name, Vector4d diffuseMaterial, Vector4d specularMaterial) {
         super(name);
 
         this.diffuseMaterial = new float[] { (float)diffuseMaterial.x, (float)diffuseMaterial.y, (float)diffuseMaterial.z, (float)diffuseMaterial.w };
@@ -73,8 +73,8 @@ public abstract class GL3DMesh extends GL3DShape {
 
         positions = new ArrayList<GL3DVec3d>();
         normals = new ArrayList<GL3DVec3d>();
-        colors = new ArrayList<GL3DVec4d>();
-        textCoords = new ArrayList<GL3DVec2d>();
+        colors = new ArrayList<Vector4d>();
+        textCoords = new ArrayList<Vector2d>();
         indices = new ArrayList<Integer>();
 
         this.primitive = this.createMesh(state, positions, normals, textCoords, indices, colors);
@@ -271,7 +271,7 @@ public abstract class GL3DMesh extends GL3DShape {
         for (GL3DTriangle t : this.triangles) {
             if (t.intersects(ray)) {
             	ray.setOriginShape(this);
-                ray.setHitPoint(ray.getOrigin().copy().add(ray.getDirection().copy().multiply(ray.getLength())));
+                ray.setHitPoint(ray.getOrigin().add(ray.getDirection().multiply(ray.getLength())));
                 // Log.debug("GL3DMesh.shapeHit: Ray intersects with Mesh " +
                 // this);
                 return true;
@@ -354,9 +354,29 @@ public abstract class GL3DMesh extends GL3DShape {
         GL3DVec3d minOS = new GL3DVec3d();
         GL3DVec3d maxOS = new GL3DVec3d();
 
-        if (!isDrawBitOn(Bit.Hidden)) {
-            calcMinMax(minOS, maxOS);
+        if (!isDrawBitOn(Bit.Hidden))
+        {
+            double minX=Double.POSITIVE_INFINITY;
+            double minY=Double.POSITIVE_INFINITY;
+            double minZ=Double.POSITIVE_INFINITY;
+            double maxX=Double.NEGATIVE_INFINITY;
+            double maxY=Double.NEGATIVE_INFINITY;
+            double maxZ=Double.NEGATIVE_INFINITY;
+            
+            for (GL3DVec3d p : this.positions)
+            {
+                if(p.x<minX) minX=p.x;
+                if(p.y<minY) minY=p.y;
+                if(p.z<minZ) minZ=p.z;
+                if(p.x>maxX) maxX=p.x;
+                if(p.y>maxY) maxY=p.y;
+                if(p.z>maxZ) maxZ=p.z;
+            }
+            
+            minOS=new GL3DVec3d(minX,minY,minZ);
+            maxOS=new GL3DVec3d(maxX,maxY,maxZ);
         }
+
         // minOS.subtract(0.01);
         // maxOS.add(0.01);
 
@@ -365,17 +385,7 @@ public abstract class GL3DMesh extends GL3DShape {
         return this.aabb;
     }
 
-    private void calcMinMax(GL3DVec3d minV, GL3DVec3d maxV) {
-        minV.set(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
-        maxV.set(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE);
-
-        for (GL3DVec3d p : this.positions) {
-            minV.setMin(p);
-            maxV.setMax(p);
-        }
-    }
-
-    public abstract GL3DMeshPrimitive createMesh(GL3DState state, List<GL3DVec3d> positions, List<GL3DVec3d> normals, List<GL3DVec2d> textCoords, List<Integer> indices, List<GL3DVec4d> colors);
+    public abstract GL3DMeshPrimitive createMesh(GL3DState state, List<GL3DVec3d> positions, List<GL3DVec3d> normals, List<Vector2d> textCoords, List<Integer> indices, List<Vector4d> colors);
 
     public enum GL3DMeshPrimitive {
         TRIANGLES(GL2.GL_TRIANGLES), TRIANGLE_STRIP(GL2.GL_TRIANGLE_STRIP), TRIANGLE_FAN(GL2.GL_TRIANGLE_FAN), POINTS(GL2.GL_POINTS), QUADS(GL2.GL_QUADS), LINES(GL2.GL_LINES), LINE_LOOP(GL2.GL_LINE_LOOP), LINE_STRIP(GL2.GL_LINE_STRIP);

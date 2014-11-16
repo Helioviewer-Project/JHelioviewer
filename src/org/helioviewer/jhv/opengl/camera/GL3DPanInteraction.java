@@ -70,9 +70,11 @@ public class GL3DPanInteraction extends GL3DDefaultInteraction {
 			double yPosition = Math.tanh(yAngle) * z;
 			double xPosition = Math.tanh(xAngle) * z;
 
-			this.defaultTranslation = camera.getTranslation().copy();
-			this.defaultTranslation.x += xPosition;
-			this.defaultTranslation.y -= yPosition;
+			this.defaultTranslation = camera.getTranslation();
+			this.defaultTranslation = new GL3DVec3d(
+			        this.defaultTranslation.x + xPosition,
+			        this.defaultTranslation.y - yPosition,
+			        this.defaultTranslation.z);
 		}
 	}
 	
@@ -93,9 +95,11 @@ public class GL3DPanInteraction extends GL3DDefaultInteraction {
 		Dimension canvasSize = GuiState3DWCS.mainComponentView.getComponent().getSize();
 		this.meterPerPixelWidth = width / canvasSize.getWidth();
 		this.meterPerPixelHeight = height / canvasSize.getHeight();
-		this.defaultTranslation = camera.getTranslation().copy();
-		this.defaultTranslation.x -= this.meterPerPixelWidth * e.getX();
-		this.defaultTranslation.y += this.meterPerPixelHeight * e.getY();
+		this.defaultTranslation = camera.getTranslation();
+		this.defaultTranslation = new GL3DVec3d(
+		        this.defaultTranslation.x - this.meterPerPixelWidth * e.getX(),
+		        this.defaultTranslation.y + this.meterPerPixelHeight * e.getY(),
+		        this.defaultTranslation.z);
 		}
 		}
 	}
@@ -119,8 +123,10 @@ public class GL3DPanInteraction extends GL3DDefaultInteraction {
 			double yPosition = Math.tanh(yAngle) * z;
 			double xPosition = Math.tanh(xAngle) * z;
 
-			camera.translation.x = defaultTranslation.x - xPosition;
-			camera.translation.y = defaultTranslation.y + yPosition;
+			camera.translation = new GL3DVec3d(
+			        defaultTranslation.x - xPosition,
+			        defaultTranslation.y + yPosition,
+			        camera.translation.z);
 
 			camera.updateCameraTransformation();
 
@@ -130,8 +136,10 @@ public class GL3DPanInteraction extends GL3DDefaultInteraction {
 	
 	private void mouseDragged2DFunction(MouseEvent e, GL3DCamera camera){
 		if (defaultTranslation != null){
-			camera.translation.x= this.defaultTranslation.x + this.meterPerPixelWidth * e.getX();
-			camera.translation.y = this.defaultTranslation.y - this.meterPerPixelHeight * e.getY();
+		    camera.translation = new GL3DVec3d(
+		            this.defaultTranslation.x + this.meterPerPixelWidth * e.getX(),
+		            this.defaultTranslation.y - this.meterPerPixelHeight * e.getY(),
+		            camera.translation.z);
 			camera.updateCameraTransformation();
 			camera.fireCameraMoving();
 		}

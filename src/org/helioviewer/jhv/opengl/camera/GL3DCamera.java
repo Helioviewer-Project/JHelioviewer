@@ -9,9 +9,9 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
 import org.helioviewer.jhv.base.logging.Log;
+import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.Quaternion3d;
-import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.base.wcs.CoordinateSystem;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
@@ -73,7 +73,7 @@ public abstract class GL3DCamera {
     public void activate(GL3DCamera precedingCamera) {
         if (precedingCamera != null) {
             this.rotation = precedingCamera.getRotation().copy();
-            this.translation = precedingCamera.translation.copy();
+            this.translation = precedingCamera.translation;
             this.width = precedingCamera.width;
             this.height = precedingCamera.height;
             this.updateCameraTransformation();
@@ -93,7 +93,10 @@ public abstract class GL3DCamera {
     }
 
     protected void setZTranslation(double z) {
-        this.translation.z = Math.min(MIN_DISTANCE, Math.max(MAX_DISTANCE, z));
+        this.translation = new GL3DVec3d(
+                this.translation.x,
+                this.translation.y,
+                Math.min(MIN_DISTANCE, Math.max(MAX_DISTANCE, z)));
     }
 
     protected void addPanning(double x, double y) {
@@ -101,8 +104,7 @@ public abstract class GL3DCamera {
     }
 
     public void setPanning(double x, double y) {
-        this.translation.x = x;
-        this.translation.y = y;
+        this.translation = new GL3DVec3d(x,y,this.translation.z);
     }
 
     public GL3DVec3d getTranslation() {

@@ -33,11 +33,11 @@ public class GL3DTriangle {
         GL3DVec3d AO, K, Q;
 
         // find vectors for two edges sharing the triangle vertex A
-        e1 = GL3DVec3d.subtract(this.b, this.a);
-        e2 = GL3DVec3d.subtract(this.c, this.a);
+        e1 = this.b.subtract(this.a);
+        e2 = this.c.subtract(this.a);
 
         // begin calculating determinant - also used to calculate U parameter
-        K = GL3DVec3d.cross(ray.getDirectionOS(), e2);
+        K = ray.getDirectionOS().cross(e2);
 
         // if determinant is near zero, ray lies in plane of triangle
         final double det = e1.dot(K);
@@ -50,7 +50,7 @@ public class GL3DTriangle {
         inv_det = 1.0f / det;
 
         // calculate distance from A to ray origin
-        AO = GL3DVec3d.subtract(ray.getOriginOS(), a);
+        AO = ray.getOriginOS().subtract(a);
 
         // Calculate barycentric coordinates: u>0 && v>0 && u+v<=1
         u = AO.dot(K) * inv_det;
@@ -58,7 +58,7 @@ public class GL3DTriangle {
             return false;
 
         // prepare to test v parameter
-        Q = GL3DVec3d.cross(AO, e1);
+        Q = AO.cross(e1);
 
         // calculate v parameter and test bounds
         v = Q.dot(ray.getDirectionOS()) * inv_det;

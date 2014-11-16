@@ -2,9 +2,9 @@ package org.helioviewer.jhv.opengl.scenegraph.visuals;
 
 import java.util.List;
 
-import org.helioviewer.jhv.base.math.GL3DVec2d;
 import org.helioviewer.jhv.base.math.GL3DVec3d;
-import org.helioviewer.jhv.base.math.GL3DVec4d;
+import org.helioviewer.jhv.base.math.Vector2d;
+import org.helioviewer.jhv.base.math.Vector4d;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DMesh;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
@@ -17,18 +17,18 @@ public class GL3DSphere extends GL3DMesh {
     private GL3DVec3d center;
     private GL3DVec3d centerOS = new GL3DVec3d(0, 0, 0);
 
-    public GL3DSphere(double radius, int resolutionX, int resolutionY, GL3DVec4d color) {
+    public GL3DSphere(double radius, int resolutionX, int resolutionY, Vector4d color) {
         this("Sphere", radius, resolutionX, resolutionY, color);
     }
 
-    public GL3DSphere(String name, double radius, int resolutionX, int resolutionY, GL3DVec4d color) {
+    public GL3DSphere(String name, double radius, int resolutionX, int resolutionY, Vector4d color) {
         super(name, color);
         this.radius = radius;
         this.resolutionX = resolutionX;
         this.resolutionY = resolutionY;
     }
 
-    public GL3DMeshPrimitive createMesh(GL3DState state, List<GL3DVec3d> positions, List<GL3DVec3d> normals, List<GL3DVec2d> textCoords, List<Integer> indices, List<GL3DVec4d> colors) {
+    public GL3DMeshPrimitive createMesh(GL3DState state, List<GL3DVec3d> positions, List<GL3DVec3d> normals, List<Vector2d> textCoords, List<Integer> indices, List<Vector4d> colors) {
 
         for (int latNumber = 0; latNumber <= this.resolutionX; latNumber++) {
             double theta = latNumber * Math.PI / resolutionX;
@@ -77,8 +77,8 @@ public class GL3DSphere extends GL3DMesh {
     }
 
     public boolean shapeHit(GL3DRay ray) {
-        GL3DVec3d l = this.center.copy().subtract(ray.getOrigin());
-        double s = l.dot(ray.getDirection().copy().normalize());
+        GL3DVec3d l = this.center.subtract(ray.getOrigin());
+        double s = l.dot(ray.getDirection().normalize());
         double l2 = l.length2();
         double r2 = this.radius * this.radius;
         if (s < 0 && l2 > r2) {
@@ -99,7 +99,7 @@ public class GL3DSphere extends GL3DMesh {
             t = s + q;
         }
         ray.setLength(t);
-        ray.setHitPoint(ray.getOrigin().copy().add(ray.getDirection().copy().normalize().multiply(t)));
+        ray.setHitPoint(ray.getOrigin().add(ray.getDirection().normalize().multiply(t)));
         // ray.setHitPoint(this.wmI.multiply(ray.getHitPoint()));
         ray.isOutside = false;
         ray.setOriginShape(this);

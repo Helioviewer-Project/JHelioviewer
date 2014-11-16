@@ -2,10 +2,10 @@ package org.helioviewer.jhv.opengl.model;
 
 import java.util.List;
 
-import org.helioviewer.jhv.base.math.Matrix4d;
-import org.helioviewer.jhv.base.math.GL3DVec2d;
 import org.helioviewer.jhv.base.math.GL3DVec3d;
-import org.helioviewer.jhv.base.math.GL3DVec4d;
+import org.helioviewer.jhv.base.math.Matrix4d;
+import org.helioviewer.jhv.base.math.Vector2d;
+import org.helioviewer.jhv.base.math.Vector4d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DAABBox;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DDrawBits.Bit;
@@ -48,7 +48,7 @@ public class GL3DHitReferenceShape extends GL3DMesh {
         return;
     }
 
-    public GL3DMeshPrimitive createMesh(GL3DState state, List<GL3DVec3d> positions, List<GL3DVec3d> normals, List<GL3DVec2d> textCoords, List<Integer> indices, List<GL3DVec4d> colors) {
+    public GL3DMeshPrimitive createMesh(GL3DState state, List<GL3DVec3d> positions, List<GL3DVec3d> normals, List<Vector2d> textCoords, List<Integer> indices, List<Vector4d> colors) {
     	this.phiRotation = Matrix4d.rotation(angle, new GL3DVec3d(0, 1, 0));
         GL3DVec3d ll = createVertex(-LARGE_VALUE, -LARGE_VALUE, 0);
         GL3DVec3d lr = createVertex(LARGE_VALUE, -LARGE_VALUE, 0);
@@ -131,8 +131,8 @@ public class GL3DHitReferenceShape extends GL3DMesh {
     }
 
     private boolean isSphereHit(GL3DRay ray) {
-    	GL3DVec3d l = new GL3DVec3d(0, 0, 0).subtract(ray.getOrigin());
-        double s = l.dot(ray.getDirection().copy().normalize());
+    	GL3DVec3d l = ray.getOrigin().multiply(-1);
+        double s = l.dot(ray.getDirection().normalize());
         double l2 = l.length2();
         double r2 = Constants.SUN_RADIUS_SQ;
         if (s < 0 && l2 > r2) {
@@ -153,7 +153,7 @@ public class GL3DHitReferenceShape extends GL3DMesh {
             t = s + q;
         }
         ray.setLength(t);
-        ray.setHitPoint(ray.getOrigin().copy().add(ray.getDirection().copy().normalize().multiply(t)));
+        ray.setHitPoint(ray.getOrigin().add(ray.getDirection().normalize().multiply(t)));
         ray.isOutside = false;
         ray.setOriginShape(this);
         // Log.debug("GL3DShape.shapeHit: Hit at Distance: "+t+" HitPoint: "+ray.getHitPoint());

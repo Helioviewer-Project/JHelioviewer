@@ -5,9 +5,9 @@ import java.util.List;
 
 import javax.media.opengl.GL2;
 
-import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.GL3DVec3d;
-import org.helioviewer.jhv.base.math.GL3DVec4d;
+import org.helioviewer.jhv.base.math.Matrix4d;
+import org.helioviewer.jhv.base.math.Vector4d;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DMesh.GL3DMeshPrimitive;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
 
@@ -33,10 +33,10 @@ public class GL3DAABBox {
     private GL3DBuffer indexBuffer;
 
     public void fromOStoWS(GL3DVec3d minOS, GL3DVec3d maxOS, Matrix4d wm) {
-        this.minWS.set(new GL3DVec3d(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE));
-        this.maxWS.set(new GL3DVec3d(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE));
-        this.minOS.set(minOS);
-        this.maxOS.set(maxOS);
+        this.minWS=new GL3DVec3d(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+        this.maxWS=new GL3DVec3d(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE);
+        this.minOS=minOS;
+        this.maxOS=maxOS;
 
         GL3DVec3d[] corners = new GL3DVec3d[8];
         corners[0] = new GL3DVec3d(minOS);
@@ -48,21 +48,20 @@ public class GL3DAABBox {
         corners[6] = new GL3DVec3d(minOS.x, maxOS.y, maxOS.z);
         corners[7] = new GL3DVec3d(maxOS);
 
-        for (GL3DVec3d corner : corners) {
-            corner.set(wm.multiply(corner));
-        }
+        for(int i=0;i<corners.length;i++)
+            corners[i] = wm.multiply(corners[i]);
 
         for (GL3DVec3d corner : corners) {
-            this.minWS.setMin(corner);
-            this.maxWS.setMax(corner);
+            this.minWS = this.minWS.setMin(corner);
+            this.maxWS = this.maxWS.setMax(corner);
         }
     }
 
     public void fromWStoOS(GL3DVec3d minWS, GL3DVec3d maxWS, Matrix4d wmI) {
-        this.minOS.set(new GL3DVec3d(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE));
-        this.maxOS.set(new GL3DVec3d(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE));
-        this.minWS.set(minWS);
-        this.maxWS.set(maxWS);
+        this.minOS=new GL3DVec3d(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
+        this.maxOS=new GL3DVec3d(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY);
+        this.minWS=minWS;
+        this.maxWS=maxWS;
 
         GL3DVec3d[] corners = new GL3DVec3d[8];
         corners[0] = new GL3DVec3d(minWS);
@@ -74,21 +73,20 @@ public class GL3DAABBox {
         corners[6] = new GL3DVec3d(minWS.x, maxWS.y, maxWS.z);
         corners[7] = new GL3DVec3d(maxWS);
 
-        for (GL3DVec3d corner : corners) {
-            corner.set(wmI.multiply(corner));
-        }
+        for(int i=0;i<corners.length;i++)
+            corners[i]=wmI.multiply(corners[i]);
 
         for (GL3DVec3d corner : corners) {
-            this.minOS.setMin(corner);
-            this.maxOS.setMax(corner);
+            this.minOS = this.minOS.setMin(corner);
+            this.maxOS = this.maxOS.setMax(corner);
         }
     }
 
-    public void drawOS(GL3DState state, GL3DVec4d color) {
+    public void drawOS(GL3DState state, Vector4d color) {
         this.draw(state, minOS, maxOS, color);
     }
 
-    private void draw(GL3DState state, GL3DVec3d minV, GL3DVec3d maxV, GL3DVec4d color) {
+    private void draw(GL3DState state, GL3DVec3d minV, GL3DVec3d maxV, Vector4d color) {
         if (this.indexBuffer == null) {
 
             GL3DVec3d[] corners = new GL3DVec3d[8];
@@ -127,7 +125,7 @@ public class GL3DAABBox {
             lines[21] = 6;
             lines[22] = 3;
             lines[23] = 7;
-            List<GL3DVec4d> colors = new ArrayList<GL3DVec4d>();
+            List<Vector4d> colors = new ArrayList<Vector4d>();
             for (int i = 0; i < 8; i++) {
                 colors.add(color);
             }
@@ -183,9 +181,10 @@ public class GL3DAABBox {
         return ((ray.getTmin() < ray.getLength()) && (ray.getTmax() > 0));
     }
 
-    public void merge(GL3DAABBox bb) {
-        minWS.setMin(bb.minWS);
-        maxWS.setMax(bb.maxWS);
+    public void merge(GL3DAABBox bb)
+    {
+        minWS = minWS.setMin(bb.minWS);
+        maxWS = maxWS.setMax(bb.maxWS);
     }
 
 }

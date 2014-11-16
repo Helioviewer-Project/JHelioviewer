@@ -28,7 +28,7 @@ public class GL3DCameraPanAnimation implements GL3DCameraAnimation {
     public GL3DCameraPanAnimation(GL3DVec3d distanceToMove, long duration) {
         this.distanceToMove = distanceToMove;
         this.timeLeft = duration;
-        this.distanceDelta = GL3DVec3d.divide(distanceToMove, this.timeLeft);
+        this.distanceDelta = distanceToMove.divide((double)this.timeLeft);
         GuiState3DWCS.mainComponentView.regristryAnimation(duration);
     }    
     
@@ -36,7 +36,7 @@ public class GL3DCameraPanAnimation implements GL3DCameraAnimation {
         if (this.startTime < 0) {
             this.startTime = System.currentTimeMillis();
             this.lastAnimationTime = System.currentTimeMillis();
-            this.targetTranslation = camera.getTranslation().copy().add(distanceToMove);
+            this.targetTranslation = camera.getTranslation().add(distanceToMove);
         }
 
         long timeDelta = System.currentTimeMillis() - lastAnimationTime;
@@ -48,7 +48,7 @@ public class GL3DCameraPanAnimation implements GL3DCameraAnimation {
             this.isFinished = true;
             camera.updateCameraTransformation(true);
         } else {
-            GL3DVec3d translation = GL3DVec3d.multiply(this.distanceDelta, timeDelta);
+            GL3DVec3d translation = this.distanceDelta.multiply(timeDelta);
             camera.addPanning(translation.x, translation.y);
             camera.updateCameraTransformation(false);
         }
@@ -60,8 +60,8 @@ public class GL3DCameraPanAnimation implements GL3DCameraAnimation {
         if (animation instanceof GL3DCameraPanAnimation) {
             GL3DCameraPanAnimation ani = (GL3DCameraPanAnimation) animation;
             this.timeLeft = Math.min(2000, this.timeLeft / 5 + ani.timeLeft);
-            this.distanceToMove.add(ani.distanceToMove);
-            this.distanceDelta = GL3DVec3d.divide(distanceToMove, this.timeLeft);
+            this.distanceToMove = this.distanceToMove.add(ani.distanceToMove);
+            this.distanceDelta = distanceToMove.divide((double)this.timeLeft);
         }
     }
 

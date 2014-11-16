@@ -2,7 +2,7 @@ package org.helioviewer.jhv.opengl.model;
 
 import javax.media.opengl.GL;
 
-import org.helioviewer.jhv.base.math.GL3DVec4d;
+import org.helioviewer.jhv.base.math.Vector4d;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DMesh;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
@@ -37,7 +37,7 @@ public abstract class GL3DImageMesh extends GL3DMesh {
     private boolean reshapeRequested = false;
     
     public GL3DImageMesh(String name, GL3DImageTextureView _imageTextureView, GLVertexShaderProgram vertexShaderProgram, GLFragmentShaderProgram fragmentShaderProgram) {
-        super(name, new GL3DVec4d(0, 1, 0, 0.5f), new GL3DVec4d(0, 0, 0, 0));
+        super(name, new Vector4d(0, 1, 0, 0.5f), new Vector4d(0, 0, 0, 0));
         this.imageTextureView = _imageTextureView;
 
         this.vertexShaderProgram = vertexShaderProgram;
@@ -61,7 +61,7 @@ public abstract class GL3DImageMesh extends GL3DMesh {
     
     
     public GL3DImageMesh(String name, GL3DImageTextureView _imageTextureView, GLVertexShaderProgram vertexShaderProgram, GLFragmentShaderProgram fragmentShaderProgram, boolean viewListener) {
-        super(name, new GL3DVec4d(0, 1, 0, 0.5f), new GL3DVec4d(0, 0, 0, 0));
+        super(name, new Vector4d(0, 1, 0, 0.5f), new Vector4d(0, 0, 0, 0));
         this.imageTextureView = _imageTextureView;
 
         this.vertexShaderProgram = vertexShaderProgram;

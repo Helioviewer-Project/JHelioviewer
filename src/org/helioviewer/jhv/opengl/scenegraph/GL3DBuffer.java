@@ -9,9 +9,9 @@ import java.util.List;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
-import org.helioviewer.jhv.base.math.GL3DVec2d;
 import org.helioviewer.jhv.base.math.GL3DVec3d;
-import org.helioviewer.jhv.base.math.GL3DVec4d;
+import org.helioviewer.jhv.base.math.Vector2d;
+import org.helioviewer.jhv.base.math.Vector4d;
 
 import com.jogamp.common.nio.Buffers;
 
@@ -62,9 +62,9 @@ public class GL3DBuffer {
         return new GL3DBuffer(state, GL3DBufferType.ELEMENT, GL3DBufferAttribute.NONE, buffer, GL3DBufferDataType.UNSIGNED_INT, 1);
     }
 
-    public static GL3DBuffer createColorBuffer(GL3DState state, List<GL3DVec4d> colors) {
+    public static GL3DBuffer createColorBuffer(GL3DState state, List<Vector4d> colors) {
         DoubleBuffer buffer = DoubleBuffer.allocate(colors.size() * 4);
-        for (GL3DVec4d color : colors) {
+        for (Vector4d color : colors) {
             buffer.put(color.x);
             buffer.put(color.y);
             buffer.put(color.z);
@@ -75,9 +75,9 @@ public class GL3DBuffer {
         return new GL3DBuffer(state, GL3DBufferType.ARRAY, GL3DBufferAttribute.COLOR, buffer, 4);
     }
 
-    public static GL3DBuffer create2DTextureCoordinateBuffer(GL3DState state, List<GL3DVec2d> texCoords) {
+    public static GL3DBuffer create2DTextureCoordinateBuffer(GL3DState state, List<Vector2d> texCoords) {
         DoubleBuffer buffer = DoubleBuffer.allocate(texCoords.size() * 2);
-        for (GL3DVec2d coord : texCoords) {
+        for (Vector2d coord : texCoords) {
         	buffer.put(coord.x);
             buffer.put(coord.y);
         }

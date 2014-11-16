@@ -51,10 +51,10 @@ public class Matrix3d {
 
     // -----------------------------------------------------------------------------
     public GL3DVec3d multiply(GL3DVec3d v) {
-        GL3DVec3d vec = new GL3DVec3d();
-        vec.x = m[0] * v.x + m[3] * v.y + m[6] * v.z;
-        vec.y = m[1] * v.x + m[4] * v.y + m[7] * v.z;
-        vec.z = m[2] * v.x + m[5] * v.y + m[8] * v.z;
+        GL3DVec3d vec = new GL3DVec3d(
+                m[0] * v.x + m[3] * v.y + m[6] * v.z,
+                m[1] * v.x + m[4] * v.y + m[7] * v.z,
+                m[2] * v.x + m[5] * v.y + m[8] * v.z);
         return vec;
     }
 

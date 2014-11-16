@@ -8,12 +8,11 @@ import javax.media.opengl.GL;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import org.helioviewer.jhv.base.GL3DHelper;
 import org.helioviewer.jhv.base.logging.Log;
+import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.Quaternion3d;
-import org.helioviewer.jhv.base.math.GL3DVec3d;
-import org.helioviewer.jhv.base.math.GL3DVec4d;
+import org.helioviewer.jhv.base.math.Vector4d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.base.wcs.CoordinateConversion;
 import org.helioviewer.jhv.base.wcs.CoordinateSystem;
@@ -100,7 +99,7 @@ public class GL3DImageLayer extends GL3DGroup implements CoordinateSystemChangeL
         CoordinateVector orientationVector = getOrientation();
         CoordinateConversion toViewSpace = getCoordinateSystem().getConversion(state.activeCamera.getViewSpaceCoordinateSystem());
         
-        GL3DVec3d orientation = GL3DHelper.toVec(toViewSpace.convert(orientationVector)).normalize();
+        GL3DVec3d orientation = toViewSpace.convert(orientationVector).toVector3d().normalize();
         
         // Log.debug("GL3DOrientedGroup '"+getName()+"': Transformed Orientation from "+orientationVector
         // +" to "+orientation+" {"+getCoordinateSystem().getClass().getSimpleName()+" -> "+state.getActiveCamera().getViewSpaceCoordinateSystem().getClass().getSimpleName()+"}");
@@ -183,8 +182,7 @@ public class GL3DImageLayer extends GL3DGroup implements CoordinateSystemChangeL
 		CoordinateConversion toViewSpace = this.getCoordinateSystem()
 				.getConversion(
 						state.activeCamera.getViewSpaceCoordinateSystem());
-		GL3DVec3d orientation = GL3DHelper.toVec(
-				toViewSpace.convert(orientationVector)).normalize();
+		GL3DVec3d orientation = toViewSpace.convert(orientationVector).toVector3d().normalize();
 		double phi = 0.0;
 		if (!(orientation.equals(new GL3DVec3d(0, 1, 0)))) {
 			GL3DVec3d orientationXZ = new GL3DVec3d(orientation.x, 0,
@@ -236,7 +234,7 @@ public class GL3DImageLayer extends GL3DGroup implements CoordinateSystemChangeL
 					.createFragmentShaderProgram(gl, this.sphereFragmentShader);
 			sphere = new GL3DImageSphere(imageTextureView, vertexShader,
 					sphereFragmentShader, this);
-			circle = new GL3DCircle(Constants.SUN_RADIUS, new GL3DVec4d(0.5f,
+			circle = new GL3DCircle(Constants.SUN_RADIUS, new Vector4d(0.5f,
 					0.5f, 0.5f, 1.0f), "Circle", this);
 			this.sphereFragmentShader
 					.setCutOffRadius((float) (Constants.SUN_RADIUS / this.imageTextureView.metadata
@@ -296,8 +294,7 @@ public class GL3DImageLayer extends GL3DGroup implements CoordinateSystemChangeL
 	public void cameraMoving(GL3DCamera camera) {
 		Matrix4d camTrans = camera.getRotation().toMatrix().inverse();
 		GL3DVec3d camDirection = new GL3DVec3d(0, 0, 1);
-		camDirection = camTrans.multiply(camDirection);
-		camDirection.normalize();
+		camDirection = camTrans.multiply(camDirection).normalize();
 
 		double angle = (Math.acos(camDirection.dot(direction)) / Math.PI * 180.0);
 		double maxAngle = 60;
@@ -368,8 +365,7 @@ public class GL3DImageLayer extends GL3DGroup implements CoordinateSystemChangeL
 		CoordinateConversion toViewSpace = this.getCoordinateSystem()
 				.getConversion(activeCamera.getViewSpaceCoordinateSystem());
 
-		GL3DVec3d orientation = GL3DHelper.toVec(
-				toViewSpace.convert(orientationVector)).normalize();
+		GL3DVec3d orientation = toViewSpace.convert(orientationVector).toVector3d().normalize();
 
 		Matrix4d phiRotation = null;
 

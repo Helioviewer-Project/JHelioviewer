@@ -8,8 +8,8 @@ import java.util.Vector;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
-import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.GL3DVec3d;
+import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.SphericalCoord;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector3d;

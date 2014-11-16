@@ -11,7 +11,7 @@ import org.helioviewer.jhv.base.GL3DKeyController;
 import org.helioviewer.jhv.base.GL3DKeyController.GL3DKeyListener;
 import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.base.math.GL3DVec3d;
-import org.helioviewer.jhv.base.math.GL3DVec4d;
+import org.helioviewer.jhv.base.math.Vector4d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
@@ -314,13 +314,13 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 
 		GL3DShape north = new GL3DArrow("Northpole", Constants.SUN_RADIUS / 16,
 				Constants.SUN_RADIUS, Constants.SUN_RADIUS / 2, 32,
-				new GL3DVec4d(1.0f, 0.2f, 0.1f, 1.0f));
+				new Vector4d(1.0f, 0.2f, 0.1f, 1.0f));
 		north.modelView().rotate(-Math.PI / 2, GL3DVec3d.XAXIS);
 		indicatorArrows.addNode(north);
 
 		GL3DShape south = new GL3DArrow("Southpole", Constants.SUN_RADIUS / 16,
 				Constants.SUN_RADIUS, Constants.SUN_RADIUS / 2, 32,
-				new GL3DVec4d(0.1f, 0.2f, 1.0f, 1.0f));
+				new Vector4d(0.1f, 0.2f, 1.0f, 1.0f));
 		south.modelView().rotate(Math.PI / 2, GL3DVec3d.XAXIS);
 		indicatorArrows.addNode(south);
 

@@ -4,9 +4,9 @@ import java.util.List;
 
 import javax.media.opengl.GL2;
 
-import org.helioviewer.jhv.base.math.GL3DVec2d;
 import org.helioviewer.jhv.base.math.GL3DVec3d;
-import org.helioviewer.jhv.base.math.GL3DVec4d;
+import org.helioviewer.jhv.base.math.Vector2d;
+import org.helioviewer.jhv.base.math.Vector4d;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DMesh;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 
@@ -24,15 +24,15 @@ public class GL3DTrianglesCone extends GL3DMesh {
     private double radius;
     private double height;
 
-    private GL3DVec4d color;
+    private Vector4d color;
 
-    public GL3DTrianglesCone(double radius, double height, int detail, GL3DVec4d color) {
+    public GL3DTrianglesCone(double radius, double height, int detail, Vector4d color) {
         this("Cone", radius, height, detail, color);
     }
 
-    public GL3DTrianglesCone(String name, double radius, double height, int detail, GL3DVec4d color) {
-        super(name, new GL3DVec4d(1, 1, 1, 1));
-        this.color = new GL3DVec4d(color.x, color.y, color.z, color.w);
+    public GL3DTrianglesCone(String name, double radius, double height, int detail, Vector4d color) {
+        super(name, new Vector4d(1, 1, 1, 1));
+        this.color = new Vector4d(color.x, color.y, color.z, color.w);
         this.radius = radius;
         this.detail = detail;
         this.height = height;
@@ -42,7 +42,7 @@ public class GL3DTrianglesCone extends GL3DMesh {
         }
     }
 
-    public GL3DMeshPrimitive createMesh(GL3DState state, List<GL3DVec3d> positions, List<GL3DVec3d> normals, List<GL3DVec2d> textCoords, List<Integer> indices, List<GL3DVec4d> colors) {
+    public GL3DMeshPrimitive createMesh(GL3DState state, List<GL3DVec3d> positions, List<GL3DVec3d> normals, List<Vector2d> textCoords, List<Integer> indices, List<Vector4d> colors) {
         positions.add(new GL3DVec3d(0, 0, this.height));
         normals.add(new GL3DVec3d(0, 0, 1));
         colors.add(this.color);

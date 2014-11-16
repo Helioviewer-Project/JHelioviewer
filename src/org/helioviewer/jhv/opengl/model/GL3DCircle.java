@@ -2,12 +2,11 @@ package org.helioviewer.jhv.opengl.model;
 
 import java.util.List;
 
-import org.helioviewer.jhv.base.GL3DHelper;
+import org.helioviewer.jhv.base.math.GL3DVec3d;
 import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.Quaternion3d;
-import org.helioviewer.jhv.base.math.GL3DVec2d;
-import org.helioviewer.jhv.base.math.GL3DVec3d;
-import org.helioviewer.jhv.base.math.GL3DVec4d;
+import org.helioviewer.jhv.base.math.Vector2d;
+import org.helioviewer.jhv.base.math.Vector4d;
 import org.helioviewer.jhv.base.wcs.CoordinateConversion;
 import org.helioviewer.jhv.base.wcs.CoordinateVector;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DMesh;
@@ -15,24 +14,24 @@ import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 
 public class GL3DCircle extends GL3DMesh {
     private double radius;
-    private GL3DVec4d color;
+    private Vector4d color;
     private GL3DImageLayer layer;
     private Matrix4d phiRotation = null;
     
-    public GL3DCircle(double radius, GL3DVec4d color, String name, GL3DImageLayer layer) {
+    public GL3DCircle(double radius, Vector4d color, String name, GL3DImageLayer layer) {
         super(name);
         this.radius = radius*0.999;
-        this.color = new GL3DVec4d((double) color.x, (double) color.y, (double) color.z, (double) color.w);
+        this.color = new Vector4d((double) color.x, (double) color.y, (double) color.z, (double) color.w);
         this.layer = layer;
     }
 
-    public GL3DMeshPrimitive createMesh(GL3DState state, List<GL3DVec3d> positions, List<GL3DVec3d> normals, List<GL3DVec2d> textCoords, List<Integer> indices, List<GL3DVec4d> colors) {
+    public GL3DMeshPrimitive createMesh(GL3DState state, List<GL3DVec3d> positions, List<GL3DVec3d> normals, List<Vector2d> textCoords, List<Integer> indices, List<Vector4d> colors) {
     	int counter = 0;
     	
     	CoordinateVector orientationVector = this.layer.getOrientation();
         CoordinateConversion toViewSpace = this.layer.getCoordinateSystem().getConversion(state.activeCamera.getViewSpaceCoordinateSystem());
 
-        GL3DVec3d orientation = GL3DHelper.toVec(toViewSpace.convert(orientationVector)).normalize();
+        GL3DVec3d orientation = toViewSpace.convert(orientationVector).toVector3d().normalize();
 
         phiRotation = Quaternion3d.calcRotation(orientation,new GL3DVec3d(0,0,1)).toMatrix().inverse();	        
         

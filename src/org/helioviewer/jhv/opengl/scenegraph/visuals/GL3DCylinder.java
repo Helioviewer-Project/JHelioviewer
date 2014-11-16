@@ -2,9 +2,9 @@ package org.helioviewer.jhv.opengl.scenegraph.visuals;
 
 import java.util.List;
 
-import org.helioviewer.jhv.base.math.GL3DVec2d;
 import org.helioviewer.jhv.base.math.GL3DVec3d;
-import org.helioviewer.jhv.base.math.GL3DVec4d;
+import org.helioviewer.jhv.base.math.Vector2d;
+import org.helioviewer.jhv.base.math.Vector4d;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DMesh;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 
@@ -14,15 +14,15 @@ public class GL3DCylinder extends GL3DMesh {
     private double radius;
     private double height;
 
-    private GL3DVec4d color;
+    private Vector4d color;
 
-    public GL3DCylinder(double radius, double height, int detail, GL3DVec4d color) {
+    public GL3DCylinder(double radius, double height, int detail, Vector4d color) {
         this("Cylinder", radius, height, detail, color);
     }
 
-    public GL3DCylinder(String name, double radius, double height, int detail, GL3DVec4d color) {
-        super(name, new GL3DVec4d(1, 1, 1, 1));
-        this.color = new GL3DVec4d(color.x, color.y, color.z, color.w);
+    public GL3DCylinder(String name, double radius, double height, int detail, Vector4d color) {
+        super(name, new Vector4d(1, 1, 1, 1));
+        this.color = new Vector4d(color.x, color.y, color.z, color.w);
         this.radius = radius;
         this.detail = detail;
         this.height = height;
@@ -31,7 +31,7 @@ public class GL3DCylinder extends GL3DMesh {
         }
     }
 
-    public GL3DMeshPrimitive createMesh(GL3DState state, List<GL3DVec3d> positions, List<GL3DVec3d> normals, List<GL3DVec2d> textCoords, List<Integer> indices, List<GL3DVec4d> colors) {
+    public GL3DMeshPrimitive createMesh(GL3DState state, List<GL3DVec3d> positions, List<GL3DVec3d> normals, List<Vector2d> textCoords, List<Integer> indices, List<Vector4d> colors) {
         double dPhi = 2 * Math.PI / this.detail;
         for (int i = 0; i < this.detail; i++) {
             double phi = i * dPhi;
@@ -40,7 +40,6 @@ public class GL3DCylinder extends GL3DMesh {
             double nz = 0;
 
             double x = nx * radius;
-            ;
             double y = ny * radius;
             double z = this.height / 2;
 

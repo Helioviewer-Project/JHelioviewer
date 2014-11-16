@@ -121,8 +121,8 @@ public class Matrix4d {
         return new GL3DVec3d((m[0] * v.x + m[4] * v.y + m[8] * v.z + m[12]) / W, (m[1] * v.x + m[5] * v.y + m[9] * v.z + m[13]) / W, (m[2] * v.x + m[6] * v.y + m[10] * v.z + m[14]) / W);
     }
 
-    public GL3DVec4d multiply(GL3DVec4d v) {
-        GL3DVec4d newV = new GL3DVec4d(m[0] * v.x + m[4] * v.y + m[8] * v.z + m[12] * v.w, m[1] * v.x + m[5] * v.y + m[9] * v.z + m[13] * v.w, m[2] * v.x + m[6] * v.y + m[10] * v.z + m[14] * v.w, m[3] * v.x + m[7] * v.y + m[11] * v.z + m[15] * v.w);
+    public Vector4d multiply(Vector4d v) {
+        Vector4d newV = new Vector4d(m[0] * v.x + m[4] * v.y + m[8] * v.z + m[12] * v.w, m[1] * v.x + m[5] * v.y + m[9] * v.z + m[13] * v.w, m[2] * v.x + m[6] * v.y + m[10] * v.z + m[14] * v.w, m[3] * v.x + m[7] * v.y + m[11] * v.z + m[15] * v.w);
         return newV;
     }
 
@@ -283,16 +283,6 @@ public class Matrix4d {
         return this;
     }
 
-    public void readLookAt(GL3DVec3d eye, GL3DVec3d at, GL3DVec3d up, GL3DVec3d right) {
-        Matrix4d invRot = new Matrix4d(this);
-        invRot.setTranslation(0, 0, 0); // remove the translation
-        invRot.transpose(); // transpose it to get inverse rot.
-        eye.set(invRot.multiply(this.translation().negate())); // setMatrix eye
-        right.set(m[0], m[4], m[8]); // normalized look right vector
-        up.set(m[1], m[5], m[9]); // normalized look up vector
-        at.set(-m[2], -m[6], -m[10]); // normalized look at vector
-    }
-
     public void posAtUp(GL3DVec3d pos) {
         this.posAtUp(pos, new GL3DVec3d(), new GL3DVec3d());
     }
@@ -308,17 +298,13 @@ public class Matrix4d {
 
         Matrix3d xz = new Matrix3d(0f, 0f, 1f, 0f, 0f, 0f, -1f, 0f, 0f);
 
-        VZ = GL3DVec3d.subtract(pos, dirAt);
+        VZ = pos.subtract(dirAt);
         if (dirUp.isApproxEqual(GL3DVec3d.ZERO, 0f)) {
-            VX = xz.multiply(VZ);
-            VX.normalize();
-            VY = GL3DVec3d.cross(VZ, VX);
-            VY.normalize();
+            VX = xz.multiply(VZ).normalize();
+            VY = VZ.cross(VX).normalize();
         } else {
-            VX = GL3DVec3d.cross(dirUp, VZ);
-            VX.normalize();
-            VY = GL3DVec3d.cross(VZ, VX);
-            VY.normalize();
+            VX = dirUp.cross(VZ).normalize();
+            VY = VZ.cross(VX).normalize();
         }
 
         set(VX.x, VY.x, VZ.x, pos.x, VX.y, VY.y, VZ.y, pos.y, VX.z, VY.z, VZ.z, pos.z, 0f, 0f, 0f, 1f);

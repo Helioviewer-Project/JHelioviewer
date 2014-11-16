@@ -63,7 +63,7 @@ public class GL3DZoom1to1Action extends AbstractAction {
 				camera.addCameraAnimation(new GL3DCameraZoomAnimation(distance,
 						500));
 				camera.addCameraAnimation(new GL3DCameraPanAnimation(camera
-						.getTranslation().copy().negate()));
+                .getTranslation().negate()));
 			}
 		}
 	}

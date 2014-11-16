@@ -2,9 +2,9 @@ package org.helioviewer.jhv.opengl.model;
 
 import java.util.List;
 
-import org.helioviewer.jhv.base.math.GL3DVec2d;
 import org.helioviewer.jhv.base.math.GL3DVec3d;
-import org.helioviewer.jhv.base.math.GL3DVec4d;
+import org.helioviewer.jhv.base.math.Vector2d;
+import org.helioviewer.jhv.base.math.Vector4d;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DMesh;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
@@ -33,7 +33,7 @@ public class GL3DFramebufferImage extends GL3DMesh implements ViewListener {
     // private Vector2dDouble textureScale;
 
     public GL3DFramebufferImage() {
-        super("Framebuffer", new GL3DVec4d(1, 1, 1, 1), new GL3DVec4d(0, 0, 0, 0));
+        super("Framebuffer", new Vector4d(1, 1, 1, 1), new Vector4d(0, 0, 0, 0));
     }
 
     public void shapeDraw(GL3DState state) {
@@ -63,7 +63,7 @@ public class GL3DFramebufferImage extends GL3DMesh implements ViewListener {
 
     }
 
-    public GL3DMeshPrimitive createMesh(GL3DState state, List<GL3DVec3d> positions, List<GL3DVec3d> normals, List<GL3DVec2d> textCoords, List<Integer> indices, List<GL3DVec4d> colors) {
+    public GL3DMeshPrimitive createMesh(GL3DState state, List<GL3DVec3d> positions, List<GL3DVec3d> normals, List<Vector2d> textCoords, List<Integer> indices, List<Vector4d> colors) {
         // Log.debug("GL3DFramebufferImage: Create Mesh!");
         if (region != null) {
         	double blx = region.getCornerX();
@@ -75,10 +75,10 @@ public class GL3DFramebufferImage extends GL3DMesh implements ViewListener {
             positions.add(new GL3DVec3d(tr_x, tr_y, 0));
             positions.add(new GL3DVec3d(blx, tr_y, 0));
 
-            textCoords.add(new GL3DVec2d(0, 0));
-            textCoords.add(new GL3DVec2d(1, 0));
-            textCoords.add(new GL3DVec2d(1, 1));
-            textCoords.add(new GL3DVec2d(0, 1));
+            textCoords.add(new Vector2d(0, 0));
+            textCoords.add(new Vector2d(1, 0));
+            textCoords.add(new Vector2d(1, 1));
+            textCoords.add(new Vector2d(0, 1));
 
             normals.add(new GL3DVec3d(0, 0, 1));
             normals.add(new GL3DVec3d(0, 0, 1));
