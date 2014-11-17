@@ -73,20 +73,17 @@ import com.jogamp.opengl.util.awt.ImageUtil;
 public class GL3DComponentView extends AbstractBasicView implements
 		GLEventListener, LayersListener, GL3DCameraListener {
 
-    private Timer postRenderTimer = new Timer(100, new ActionListener(){
-	  @Override
-	  public void actionPerformed(ActionEvent e)
-	  {
-	    canvas.repaint();
-	  }
+	private Timer postRenderTimer = new Timer(100, new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			canvas.repaint();
+		}
 	});
-	private Timer animationTimer = new Timer(0, new ActionListener()
-	{
-	  @Override
-	  public void actionPerformed(ActionEvent e)
-	  {
-	    canvas.repaint();
-	  }
+	private Timer animationTimer = new Timer(0, new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			canvas.repaint();
+		}
 	});
 
 	private long animationTime = 0;
@@ -128,7 +125,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 	public GL3DComponentView() {
 		GLCapabilities cap = new GLCapabilities(GLProfile.getDefault());
-		
+
 		try {
 			cap.setDepthBits(24);
 			this.canvas = new GLCanvas(cap);
@@ -148,9 +145,9 @@ public class GL3DComponentView extends AbstractBasicView implements
 				}
 			}
 		}
-		
+
 		this.canvas.addGLEventListener(this);
-		
+
 		LayersModel.getSingletonInstance().addLayersListener(this);
 	}
 
@@ -158,26 +155,21 @@ public class GL3DComponentView extends AbstractBasicView implements
 		return this.canvas;
 	}
 
-	public void init(GLAutoDrawable glAD)
-	{
+	public void init(GLAutoDrawable glAD) {
 		GuiState3DWCS.overViewPanel.activate(glAD.getContext());
 		Log.debug("GL3DComponentView.Init");
 		GL2 gl = glAD.getGL().getGL2();
 		GL3DState.create(gl);
 
-		try
-		{
-		    GLShaderHelper.initHelper(gl.getGL2());
-		}
-		catch(IOException _ioe)
-		{
-		    throw new RuntimeException(_ioe);
+		try {
+			GLShaderHelper.initHelper(gl.getGL2());
+		} catch (IOException _ioe) {
+			throw new RuntimeException(_ioe);
 		}
 		GLShaderBuilder.initShaderBuilder(gl);
 
 		this.getAdapter(GL3DCameraView.class).getCurrentCamera()
 				.addCameraListener(this);
-
 
 		frameBufferObject = new int[1];
 		gl.glGenFramebuffers(1, frameBufferObject, 0);
@@ -193,7 +185,8 @@ public class GL3DComponentView extends AbstractBasicView implements
 		gl.glShadeModel(GL2.GL_SMOOTH);
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-		gl.glTexEnvi(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE, GL2.GL_MODULATE);
+		gl.glTexEnvi(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE,
+				GL2.GL_MODULATE);
 		gl.glEnable(GL2.GL_BLEND);
 		gl.glEnable(GL2.GL_POINT_SMOOTH);
 		gl.glEnable(GL2.GL_COLOR_MATERIAL);
@@ -212,39 +205,47 @@ public class GL3DComponentView extends AbstractBasicView implements
 	}
 
 	public void reshape(GLAutoDrawable glAD, int x, int y, int width, int height) {
-		viewportSize = new Vector2i(canvas.getSurfaceWidth(), canvas.getSurfaceHeight());
+		viewportSize = new Vector2i(canvas.getSurfaceWidth(),
+				canvas.getSurfaceHeight());
 		// Log.debug("GL3DComponentView.Reshape");
 		GL gl = glAD.getGL();
 
 		gl.setSwapInterval(1);
-		
+
 		GuiState3DWCS.mainComponentView.getComponent().repaint();
 	}
 
 	public void display(GLAutoDrawable glAD) {
 		long time = System.currentTimeMillis();
-		if (animationTimer.isRunning() && animationTime-(time-startedTime) <= 0 && LinkedMovieManager.getActiveInstance() != null && !LinkedMovieManager.getActiveInstance().isPlaying()){
+		if (animationTimer.isRunning()
+				&& animationTime - (time - startedTime) <= 0
+				&& LinkedMovieManager.getActiveInstance() != null
+				&& !LinkedMovieManager.getActiveInstance().isPlaying()) {
 			animationTimer.stop();
-		}
-		else {
+		} else {
 			animationTime -= (time - startedTime);
 			this.startedTime = time;
 		}
 		GL2 gl = glAD.getGL().getGL2();
-		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT); // clear color and depth buffers
-	    gl.glLoadIdentity();  // reset the model-view matrix
-		
-		Viewport newViewport = StaticViewport.createAdaptedViewport(canvas.getSurfaceWidth(), canvas.getSurfaceHeight());
+		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT); // clear
+																		// color
+																		// and
+																		// depth
+																		// buffers
+		gl.glLoadIdentity(); // reset the model-view matrix
+
+		Viewport newViewport = StaticViewport.createAdaptedViewport(
+				canvas.getSurfaceWidth(), canvas.getSurfaceHeight());
 		this.getAdapter(ViewportView.class).setViewport(newViewport,
 				new ChangeEvent());
-		
-		if (defaultViewport != null){
+
+		if (defaultViewport != null) {
 		}
 
 		int width = this.viewportSize.getX();
 		int height = this.viewportSize.getY();
 		GL3DState.getUpdated(gl, width, height);
-		
+
 		if (backGroundColorHasChanged) {
 			gl.glClearColor(backgroundColor.getRed() / 255.0f,
 					backgroundColor.getGreen() / 255.0f,
@@ -258,7 +259,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 		if (rebuildShadersRequest) {
 			rebuildShaders(gl);
 		}
-		
+
 		GL3DState.get().checkGLErrors("GL3DComponentView.afterRebuildShader");
 
 		// Save Screenshot, if requested
@@ -269,7 +270,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 				backgroundColor.getGreen() / 255.0f,
 				backgroundColor.getBlue() / 255.0f,
 				backgroundColor.getAlpha() / 255.0f);
-				
+
 		Viewport v = this.getAdapter(ViewportView.class).getViewport();
 
 		this.width = v.getWidth();
@@ -279,39 +280,47 @@ public class GL3DComponentView extends AbstractBasicView implements
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glPushMatrix();
 		gl.glLoadIdentity();
-		
+
 		double fH = Math.tan(this.fov / 360.0 * Math.PI) * clipNear;
 		double fW = fH * aspect;
 		gl.glViewport(0, 0, canvas.getSurfaceWidth(), canvas.getSurfaceHeight());
 
 		if (GL3DState.get().getState() == VISUAL_TYPE.MODE_3D)
-		gl.glFrustum(-fW, fW, -fH, fH, clipNear, clipFar);
-		
+			gl.glFrustum(-fW, fW, -fH, fH, clipNear, clipFar);
+
 		else {
-			Region region = this.getAdapter(RegionView.class).getLastDecodedRegion();
-			if (region != null){
-			MetaData metaData = null;
-			double distance = GL3DTrackballCamera.DEFAULT_CAMERA_DISTANCE;
-			GL3DCamera camera = this.getAdapter(GL3DCameraView.class).getCurrentCamera();
-			if (LayersModel.getSingletonInstance().getActiveView() != null && camera != null){
-				metaData = LayersModel.getSingletonInstance().getActiveView().getAdapter(MetaDataView.class).getMetaData();
-				region = metaData.getPhysicalRegion();
+			Region region = this.getAdapter(RegionView.class)
+					.getLastDecodedRegion();
+			if (region != null) {
+				MetaData metaData = null;
+				double distance = GL3DTrackballCamera.DEFAULT_CAMERA_DISTANCE;
+				GL3DCamera camera = this.getAdapter(GL3DCameraView.class)
+						.getCurrentCamera();
+				if (LayersModel.getSingletonInstance().getActiveView() != null
+						&& camera != null) {
+					metaData = LayersModel.getSingletonInstance()
+							.getActiveView().getAdapter(MetaDataView.class)
+							.getMetaData();
+					region = metaData.getPhysicalRegion();
 
-				double halfWidth = region.getWidth() / 2;
-                double halfFOVRad = Math.toRadians(camera.getFOV() / 2.0);
-                distance = halfWidth * Math.sin(Math.PI / 2 - halfFOVRad) / Math.sin(halfFOVRad);
+					double halfWidth = region.getWidth() / 2;
+					double halfFOVRad = Math.toRadians(camera.getFOV() / 2.0);
+					distance = halfWidth * Math.sin(Math.PI / 2 - halfFOVRad)
+							/ Math.sin(halfFOVRad);
 
-			double scaleFactor = -camera.getZTranslation() / distance;
-			double top = region.getCornerX();
-			double bottom = region.getCornerX()+region.getWidth();
-	        gl.glOrtho(top*aspect*scaleFactor, bottom*aspect*scaleFactor, top*scaleFactor, bottom*scaleFactor, clipNear, clipFar);
-			}			
-		}
+					double scaleFactor = -camera.getZTranslation() / distance;
+					double top = region.getCornerX();
+					double bottom = region.getCornerX() + region.getWidth();
+					gl.glOrtho(top * aspect * scaleFactor, bottom * aspect
+							* scaleFactor, top * scaleFactor, bottom
+							* scaleFactor, clipNear, clipFar);
+				}
+			}
 		}
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 
 		displayBody(gl);
-		
+
 	}
 
 	private void displayBody(GL2 gl) {
@@ -341,7 +350,8 @@ public class GL3DComponentView extends AbstractBasicView implements
 			gl.glMatrixMode(GL2.GL_PROJECTION);
 			gl.glLoadIdentity();
 
-			gl.glOrtho(0, canvas.getSurfaceWidth(), 0, canvas.getSurfaceHeight(), -1, 10000);
+			gl.glOrtho(0, canvas.getSurfaceWidth(), 0,
+					canvas.getSurfaceHeight(), -1, 10000);
 
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
 			gl.glLoadIdentity();
@@ -355,7 +365,8 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 			// Iterator<> postRenderer = postRenderers
 			for (ScreenRenderer r : postRenderers) {
-				r.setContainerSize(canvas.getSurfaceWidth(), canvas.getSurfaceHeight());
+				r.setContainerSize(canvas.getSurfaceWidth(),
+						canvas.getSurfaceHeight());
 				r.render(glRenderer);
 			}
 
@@ -463,8 +474,8 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 		BufferedImage screenshot = new BufferedImage(viewport.getWidth(),
 				viewport.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
-		ByteBuffer.wrap(((DataBufferByte) screenshot
-				.getRaster().getDataBuffer()).getData());
+		ByteBuffer.wrap(((DataBufferByte) screenshot.getRaster()
+				.getDataBuffer()).getData());
 
 		offscreenGL.glViewport(0, 0, tileWidth, tileHeight);
 
@@ -610,7 +621,8 @@ public class GL3DComponentView extends AbstractBasicView implements
 	}
 
 	public Dimension getCanavasSize() {
-		return new Dimension(canvas.getSurfaceWidth(), canvas.getSurfaceHeight());
+		return new Dimension(canvas.getSurfaceWidth(),
+				canvas.getSurfaceHeight());
 	}
 
 	public void stop() {
@@ -635,17 +647,17 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 	@Override
 	public void layerChanged(int idx) {
-    this.canvas.repaint(15);
+		this.canvas.repaint(15);
 	}
 
 	@Override
 	public void activeLayerChanged(int idx) {
-    this.canvas.repaint(15);
+		this.canvas.repaint(15);
 	}
 
 	@Override
 	public void viewportGeometryChanged() {
-		//this.canvas.repaint();
+		// this.canvas.repaint();
 	}
 
 	@Override
@@ -655,7 +667,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 	@Override
 	public void subImageDataChanged() {
-	  //this.canvas.repaint();
+		// this.canvas.repaint();
 	}
 
 	@Override

@@ -5,10 +5,11 @@ import java.awt.event.MouseEvent;
 
 import javax.media.opengl.GL2;
 
+import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.wcs.impl.SolarImageCoordinateSystem;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
-import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRayTracer;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DSceneGraphView;
 
@@ -24,9 +25,9 @@ import org.helioviewer.jhv.viewmodel.view.opengl.GL3DSceneGraphView;
  * 
  */
 public class GL3DZoomBoxInteraction extends GL3DDefaultInteraction {
-    private GL3DRayTracer rayTracer;
     private Vector3d zoomBoxStartPoint;
     private Vector3d zoomBoxEndPoint;
+	private double metetPerPixel;
 
     public GL3DZoomBoxInteraction(GL3DTrackballCamera camera, GL3DSceneGraphView sceneGraph) {
         super(camera, sceneGraph);
@@ -35,23 +36,17 @@ public class GL3DZoomBoxInteraction extends GL3DDefaultInteraction {
 
     public void drawInteractionFeedback(GL3DState state, GL3DCamera camera) {
         if (this.isValidZoomBox()) {
-            double x0, x1, y0, y1;
-            if (this.zoomBoxEndPoint.x > this.zoomBoxStartPoint.x) {
-                x0 = this.zoomBoxStartPoint.x;
-                x1 = this.zoomBoxEndPoint.x;
-            } else {
-                x1 = this.zoomBoxStartPoint.x;
-                x0 = this.zoomBoxEndPoint.x;
-            }
-            if (this.zoomBoxEndPoint.y > this.zoomBoxStartPoint.y) {
-                y0 = this.zoomBoxStartPoint.y;
-                y1 = this.zoomBoxEndPoint.y;
-            } else {
-                y1 = this.zoomBoxStartPoint.y;
-                y0 = this.zoomBoxEndPoint.y;
-            }
-
-            GL2 gl = state.gl;
+        	Matrix4d rot = camera.getRotation().toMatrix().inverse();
+        	Vector3d p0 = new Vector3d(zoomBoxStartPoint);
+        	Vector3d p1 = new Vector3d(zoomBoxEndPoint.x, zoomBoxStartPoint.y, 0);
+        	Vector3d p2 = new Vector3d(zoomBoxEndPoint);
+        	Vector3d p3 = new Vector3d(zoomBoxStartPoint.x, zoomBoxEndPoint.y, 0);
+        	p0 = rot.multiply(p0);
+        	p1 = rot.multiply(p1);
+        	p2 = rot.multiply(p2);
+        	p3 = rot.multiply(p3);
+        	
+        	GL2 gl = state.gl;
             gl.glColor3d(1, 1, 0);
             gl.glDisable(GL2.GL_DEPTH_TEST);
             gl.glDisable(GL2.GL_LIGHTING);
@@ -60,10 +55,10 @@ public class GL3DZoomBoxInteraction extends GL3DDefaultInteraction {
             gl.glLineWidth(2.0f);
             gl.glBegin(GL2.GL_LINE_LOOP);
 
-            gl.glVertex3d(x0, y0, 0);
-            gl.glVertex3d(x1, y0, 0);
-            gl.glVertex3d(x1, y1, 0);
-            gl.glVertex3d(x0, y1, 0);
+            gl.glVertex3d(p0.x, p0.y, p0.z);
+            gl.glVertex3d(p1.x, p1.y, p1.z);
+            gl.glVertex3d(p2.x, p2.y, p2.z);
+            gl.glVertex3d(p3.x, p3.y, p3.z);
 
             gl.glEnd();
 
@@ -75,34 +70,45 @@ public class GL3DZoomBoxInteraction extends GL3DDefaultInteraction {
     }
 
     public void mousePressed(MouseEvent e, GL3DCamera camera) {
-        this.zoomBoxStartPoint = getHitPoint(e.getPoint());
+    	calculatePixelPerMeter(camera);
+        this.zoomBoxStartPoint = calculatePoint(e.getPoint(),camera);
+        this.camera.fireCameraMoving();
     }
 
-    public void mouseDragged(MouseEvent e, GL3DCamera camera) {
-        this.zoomBoxEndPoint = getHitPoint(e.getPoint());
+
+	public void mouseDragged(MouseEvent e, GL3DCamera camera) {
+        this.zoomBoxEndPoint = calculatePoint(e.getPoint(), camera);
+        this.camera.fireCameraMoving();
     }
 
     public void mouseReleased(MouseEvent e, GL3DCamera camera) {
         if (this.isValidZoomBox()) {
             camera.addCameraAnimation(createZoomAnimation());
-            long x = Math.round(-(this.zoomBoxEndPoint.x + this.zoomBoxStartPoint.x) / 2);
-            long y = Math.round(-(this.zoomBoxEndPoint.y + this.zoomBoxStartPoint.y) / 2);
-            camera.addCameraAnimation(createPanAnimation(x, y));
+            double x = -(this.zoomBoxEndPoint.x + this.zoomBoxStartPoint.x) / 2.0;
+            double y = -(this.zoomBoxEndPoint.y + this.zoomBoxStartPoint.y) / 2.0;
+            Vector3d distanceToMove = new Vector3d((x - camera.translation.x), (y - camera.translation.y), 0);
+            camera.addCameraAnimation(new GL3DCameraPanAnimation(distanceToMove, 300));;
         }
         this.zoomBoxEndPoint = null;
         this.zoomBoxStartPoint = null;
+        this.camera.fireCameraMoved();
     }
 
-    private GL3DCameraPanAnimation createPanAnimation(long x, long y) {
-        Vector3d distanceToMove = new Vector3d((x - camera.translation.x), (y - camera.translation.y), 0);
-        // Log.debug("GL3DZoomBoxInteraction: Panning "+distanceToMove);
-        return new GL3DCameraPanAnimation(distanceToMove);
+    private void calculatePixelPerMeter(GL3DCamera camera) {
+		double height = Math.tan(Math.toRadians(camera.getFOV())) * camera.getZTranslation();
+		this.metetPerPixel = height / (double)GuiState3DWCS.mainComponentView.getComponent().getHeight();
+	}
+    
+    private Vector3d calculatePoint(Point p, GL3DCamera camera){
+    	double x = p.getX() - GuiState3DWCS.mainComponentView.getComponent().getWidth()/2.0;
+    	double y = p.getY() - GuiState3DWCS.mainComponentView.getComponent().getHeight()/2.0;
+    	return new Vector3d((-x*this.metetPerPixel)-camera.getTranslation().x, (y*this.metetPerPixel)-camera.getTranslation().y, 0);
     }
 
     private GL3DCameraZoomAnimation createZoomAnimation() {
-        double halfWidth = Math.abs(this.zoomBoxEndPoint.x - this.zoomBoxStartPoint.x) / 2;
-        double halfFOVRad = Math.toRadians(camera.getFOV() / 2);
-        double distance = halfWidth * Math.sin(Math.PI / 2 - halfFOVRad) / Math.sin(halfFOVRad);
+        double width = Math.abs(this.zoomBoxEndPoint.y - this.zoomBoxStartPoint.y);
+        double fOVRad = Math.toRadians(camera.getFOV());
+        double distance = width / Math.tan(fOVRad);
         distance = -distance - camera.getZTranslation();
 
         return new GL3DCameraZoomAnimation(distance, 700);
@@ -111,11 +117,5 @@ public class GL3DZoomBoxInteraction extends GL3DDefaultInteraction {
     private boolean isValidZoomBox() {
         return this.zoomBoxEndPoint != null && this.zoomBoxStartPoint != null;
     }
-
-    protected Vector3d getHitPoint(Point p) {
-        this.rayTracer = new GL3DRayTracer(sceneGraphView.getHitReferenceShape(), this.camera);
-        GL3DRay ray = this.rayTracer.cast(p.x, p.y);
-        Vector3d hitPoint = ray.getHitPoint();
-        return hitPoint;
-    }
+    
 }

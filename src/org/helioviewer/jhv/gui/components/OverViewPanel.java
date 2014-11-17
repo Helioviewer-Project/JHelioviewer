@@ -95,7 +95,7 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 
 	@Override
 	public void activeLayerChanged(int idx) {
-		if (idx >= 0){
+		if (idx >= 0 && idx <= LayersModel.getSingletonInstance().getNumLayers()-1){
 			if (LinkedMovieManager.getActiveInstance().getMasterMovie() != null)
 				this.lastTime = LinkedMovieManager.getActiveInstance().getMasterMovie().getCurrentFrameDateTime().getMillis();
 			idx = LayersModel.getSingletonInstance().getNumLayers() - idx -1;

@@ -33,126 +33,137 @@ import org.helioviewer.jhv.viewmodel.view.opengl.GL3DSceneGraphView;
  * @author Simon Sp�rri (simon.spoerri@fhnw.ch)
  * 
  */
-public class GL3DCameraSelectorModel extends AbstractListModel<Object> implements ComboBoxModel<Object>, LayersListener {
-	
-	
+public class GL3DCameraSelectorModel extends AbstractListModel<Object>
+		implements ComboBoxModel<Object>, LayersListener {
+
 	private static final long serialVersionUID = 1L;
 
-    private static GL3DCameraSelectorModel instance;
+	private static GL3DCameraSelectorModel instance;
 
-    private List<GL3DCamera> cameras = new ArrayList<GL3DCamera>();
+	private List<GL3DCamera> cameras = new ArrayList<GL3DCamera>();
 
-    private GL3DCamera defaultCamera;
+	private GL3DCamera defaultCamera;
 
-    private GL3DCamera lastCamera;
+	private GL3DCamera lastCamera;
 
-    private GL3DTrackballCamera trackballCamera;
+	private GL3DTrackballCamera trackballCamera;
 
-    private VISUAL_TYPE visualType = VISUAL_TYPE.MODE_3D;
+	private VISUAL_TYPE visualType = VISUAL_TYPE.MODE_3D;
 
-    public static GL3DCameraSelectorModel getInstance() {
-        if (instance == null) {
-            instance = new GL3DCameraSelectorModel();
-        }
-        return instance;
-    }
+	public static GL3DCameraSelectorModel getInstance() {
+		if (instance == null) {
+			instance = new GL3DCameraSelectorModel();
+		}
+		return instance;
+	}
 
-    private GL3DCameraSelectorModel() {
-    	LayersModel.getSingletonInstance().addLayersListener(this);
-    }
+	private GL3DCameraSelectorModel() {
+		LayersModel.getSingletonInstance().addLayersListener(this);
+	}
 
-    public void activate(GL3DSceneGraphView sceneGraphView) {
-        // GL3DSceneGraphView sceneGraphView =
-        // getMainView().getAdapter(GL3DSceneGraphView.class);
+	public void activate(GL3DSceneGraphView sceneGraphView) {
+		// GL3DSceneGraphView sceneGraphView =
+		// getMainView().getAdapter(GL3DSceneGraphView.class);
 
-        if (sceneGraphView != null) {
-            trackballCamera = new GL3DTrackballCamera(sceneGraphView);
-            cameras.add(trackballCamera);
-            defaultCamera = trackballCamera;
-            lastCamera = defaultCamera;
-            trackballCamera.setSceneGraphView(sceneGraphView);
+		if (sceneGraphView != null) {
+			trackballCamera = new GL3DTrackballCamera(sceneGraphView);
+			cameras.add(trackballCamera);
+			defaultCamera = trackballCamera;
+			lastCamera = defaultCamera;
+			trackballCamera.setSceneGraphView(sceneGraphView);
 
-            if (getCameraView() != null) {
-                setCurrentCamera(lastCamera);
-            } else {
-                Log.warn("Cannot set Current Camera, no GL3DCameraView yet!");
-            }
-        }
-        getCameraView().setCurrentCamera(defaultCamera);
-    }
+			if (getCameraView() != null) {
+				setCurrentCamera(lastCamera);
+			} else {
+				Log.warn("Cannot set Current Camera, no GL3DCameraView yet!");
+			}
+		}
+		getCameraView().setCurrentCamera(defaultCamera);
+	}
 
-    public GL3DCamera getCurrentCamera() {
-        return getCameraView().getCurrentCamera();
-    }
+	public GL3DCamera getCurrentCamera() {
+		return getCameraView().getCurrentCamera();
+	}
 
-    public Object getElementAt(int index) {
-        return cameras.get(index);
-    }
+	public Object getElementAt(int index) {
+		return cameras.get(index);
+	}
 
-    public int getSize() {
-        return cameras.size();
-    }
+	public int getSize() {
+		return cameras.size();
+	}
 
-    public GL3DCamera getSelectedItem() {
-        return getCameraView().getCurrentCamera();
-    }
+	public GL3DCamera getSelectedItem() {
+		return getCameraView().getCurrentCamera();
+	}
 
-    public void setCurrentCamera(GL3DCamera camera) {
-        lastCamera = camera;
-        getCameraView().setCurrentCamera(camera);
-    }
+	public void setCurrentCamera(GL3DCamera camera) {
+		lastCamera = camera;
+		getCameraView().setCurrentCamera(camera);
+	}
 
-    public void setSelectedItem(Object anItem) {
-        if (anItem instanceof GL3DCamera) {
-            setCurrentCamera((GL3DCamera) anItem);
-        } else {
-            throw new IllegalArgumentException("Cannot set Selected Camera to an object of Type other than " + GL3DCamera.class + ". Given Object is " + anItem);
-        }
-    }
+	public void setSelectedItem(Object anItem) {
+		if (anItem instanceof GL3DCamera) {
+			setCurrentCamera((GL3DCamera) anItem);
+		} else {
+			throw new IllegalArgumentException(
+					"Cannot set Selected Camera to an object of Type other than "
+							+ GL3DCamera.class + ". Given Object is " + anItem);
+		}
+	}
 
-    private GL3DComponentView getMainView() {
-    	return GuiState3DWCS.mainComponentView;
-    }
+	private GL3DComponentView getMainView() {
+		return GuiState3DWCS.mainComponentView;
+	}
 
-    private GL3DCameraView getCameraView() {
-        GL3DComponentView mainView = getMainView();
-        if (mainView != null) {
-            return mainView.getAdapter(GL3DCameraView.class);
-        }
-        return null;
-    }
+	private GL3DCameraView getCameraView() {
+		GL3DComponentView mainView = getMainView();
+		if (mainView != null) {
+			return mainView.getAdapter(GL3DCameraView.class);
+		}
+		return null;
+	}
 
-    public GL3DTrackballCamera getTrackballCamera() {
-        return trackballCamera;
-    }
+	public GL3DTrackballCamera getTrackballCamera() {
+		return trackballCamera;
+	}
 
-    public void set3DMode(){
-    	this.visualType = VISUAL_TYPE.MODE_3D;
-    }
-    
-    public void set2DMode(){
-    	this.getCurrentCamera().reset();
-    	this.visualType = VISUAL_TYPE.MODE_2D;
-    	if (LayersModel.getSingletonInstance().getActiveView() != null)
-    		this.layerAdded(0);
-    }
-    
-    private void rotateToCurrentLayer(){
+	public void set3DMode() {
+		this.visualType = VISUAL_TYPE.MODE_3D;
+	}
+
+	public void set2DMode() {
+		this.getCurrentCamera().reset();
+		this.visualType = VISUAL_TYPE.MODE_2D;
+		if (LayersModel.getSingletonInstance().getActiveView() != null)
+			this.rotateToCurrentLayer();
+	}
+
+	private void rotateToCurrentLayer() {
 		View view = LayersModel.getSingletonInstance().getActiveView();
-		GL3DCoordinateSystemView layer = view.getAdapter(GL3DCoordinateSystemView.class);
+		GL3DCoordinateSystemView layer = view
+				.getAdapter(GL3DCoordinateSystemView.class);
 		GL3DState state = GL3DState.get();
 		CoordinateVector orientationVector = layer.getOrientation();
-        CoordinateConversion toViewSpace = layer.getCoordinateSystem().getConversion(state.activeCamera.getViewSpaceCoordinateSystem());
-        Vector3d orientation = toViewSpace.convert(orientationVector).toVector3d().normalize();
-        
-        Quaternion3d phiRotation = Quaternion3d.calcRotation(orientation,new Vector3d(0,0,1));	        
-        Quaternion3d targetRotation = phiRotation;
-        this.getCurrentCamera().addCameraAnimation(new GL3DCameraRotationAnimation(targetRotation, 700));
-    }
-    
+		CoordinateConversion toViewSpace = layer.getCoordinateSystem()
+				.getConversion(
+						state.activeCamera.getViewSpaceCoordinateSystem());
+		Vector3d orientation = toViewSpace.convert(orientationVector)
+				.toVector3d().normalize();
+
+		if (!orientation.epsilonEquals(new Vector3d(0,0,1),0.0001)){
+		Quaternion3d phiRotation = Quaternion3d.calcRotation(orientation,
+				new Vector3d(0, 0, 1));
+		Quaternion3d targetRotation = phiRotation;
+		
+		this.getCurrentCamera().addCameraAnimation(
+				new GL3DCameraRotationAnimation(targetRotation, 700));
+		}
+	}
+
 	@Override
 	public void layerAdded(int idx) {
-		if (this.visualType == VISUAL_TYPE.MODE_2D){
+		if (this.visualType == VISUAL_TYPE.MODE_2D) {
 			this.rotateToCurrentLayer();
 		}
 	}
@@ -160,19 +171,19 @@ public class GL3DCameraSelectorModel extends AbstractListModel<Object> implement
 	@Override
 	public void layerRemoved(View oldView, int oldIdx) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void layerChanged(int idx) {
-		
+
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void activeLayerChanged(int idx) {
-		if (this.visualType == VISUAL_TYPE.MODE_2D && idx > 0){
+		if (this.visualType == VISUAL_TYPE.MODE_2D && idx > 0) {
 			this.rotateToCurrentLayer();
 		}
 	}
@@ -180,25 +191,25 @@ public class GL3DCameraSelectorModel extends AbstractListModel<Object> implement
 	@Override
 	public void viewportGeometryChanged() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void timestampChanged(int idx) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void subImageDataChanged() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void layerDownloaded(int idx) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
