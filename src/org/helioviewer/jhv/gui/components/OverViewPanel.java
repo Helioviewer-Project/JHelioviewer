@@ -540,8 +540,10 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 	}
 	
 	public void setCurrentLutByName(String name){
-		this.currentLut = lutMap.get(name);
-		this.canvas.repaint();
+		if (lutMap != null){
+			this.currentLut = lutMap.get(name);
+			this.canvas.repaint();
+		}
 	}
 	
 	public void setCurrentLutByIndex(int idx){
