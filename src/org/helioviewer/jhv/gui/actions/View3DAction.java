@@ -28,5 +28,6 @@ public class View3DAction extends AbstractAction {
       GL3DCameraSelectorModel.getInstance().set3DMode();
       GL3DCameraSelectorModel.getInstance().getSelectedItem().setCurrentInteraction(GL3DCameraSelectorModel.getInstance().getSelectedItem().getRotateInteraction());
       GuiState3DWCS.topToolBar.set3DMode();
+      GuiState3DWCS.mainComponentView.getComponent().repaint();
     }
 }

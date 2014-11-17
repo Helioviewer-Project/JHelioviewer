@@ -213,6 +213,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 		gl.setSwapInterval(1);
 
 		GuiState3DWCS.mainComponentView.getComponent().repaint();
+		GuiState3DWCS.overViewPanel.repaint();
 	}
 
 	public void display(GLAutoDrawable glAD) {

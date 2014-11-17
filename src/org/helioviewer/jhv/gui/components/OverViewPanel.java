@@ -64,6 +64,7 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 	private int nextAvaibleLut = 0;
 	private int currentLut = 0;
 	private long lastTime;
+	private int invertedLut = 0;
 	
 	public OverViewPanel() {
 		this.setPreferredSize(new Dimension(200, 200));
@@ -108,7 +109,8 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 			//Filter opacityFilter = opacityFilterView.getFilter();
 			GLFilterView lutView = (GLFilterView)opacityFilterView.getView();
 			SOHOLUTFilter lutFilter = (SOHOLUTFilter)lutView.getFilter();
-			this.setCurrentLutByName(lutFilter.getLUT());
+			this.setCurrentLutByName(lutFilter.getLUT(), true);
+			this.invertedLut = lutFilter.isInverted();
 			if (lastLayer.getImageData() != null){
 			this.updateTexture = true;
 			this.canvas.repaint();
@@ -196,7 +198,8 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "texture"), 0);
 		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "lut"), 1);
 		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "currentLut"), currentLut);
-		
+		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "inverted"), this.invertedLut);
+
 		gl.glBegin(GL2.GL_QUADS);
 		gl.glTexCoord2f(0.0f,1.0f);
 		gl.glVertex2d(x0,y0);
@@ -539,9 +542,12 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 	    return buffer;
 	}
 	
-	public void setCurrentLutByName(String name){
+	public void setCurrentLutByName(String name, boolean inverted){
+		this.invertedLut = 0;
 		if (lutMap != null){
 			this.currentLut = lutMap.get(name);
+			if (inverted) this.invertedLut = 1;
+			
 			this.canvas.repaint();
 		}
 	}

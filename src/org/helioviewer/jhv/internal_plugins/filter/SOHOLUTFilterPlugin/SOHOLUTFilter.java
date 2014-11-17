@@ -263,4 +263,9 @@ public class SOHOLUTFilter extends AbstractFilter implements GLFragmentShaderFil
 	public String getLUT() {
 		return lut.getName();
 	}
+	
+	public int isInverted(){
+		if (invertLUT) return 1;
+		return 0;
+	}
 }
