@@ -223,7 +223,7 @@ public final class ViewHelper {
         if (regionView == null || viewportView == null) {
             return null;
         }
-        return calculateViewportImageSize(viewportView.getViewport(), regionView.getRegion());
+        return calculateViewportImageSize(viewportView.getViewport(), regionView.getLastDecodedRegion());
     }
 
     /**

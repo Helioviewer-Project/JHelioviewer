@@ -196,7 +196,7 @@ public class BasicImagePanel extends JPanel implements ComponentListener, ViewLi
                 viewportView.setViewport(getViewport(), new ChangeEvent());
 
             Viewport v = viewportView.getViewport();
-            Region r = regionView.getRegion();
+            Region r = regionView.getLastDecodedRegion();
             MetaData m = metaDataView.getMetaData();
 
             if (v != null && r != null && m != null)
@@ -358,7 +358,7 @@ public class BasicImagePanel extends JPanel implements ComponentListener, ViewLi
                     viewportView.setViewport(getViewport(), new ChangeEvent());
 
                 Viewport v = viewportView.getViewport();
-                Region r = regionView.getRegion();
+                Region r = regionView.getLastDecodedRegion();
                 MetaData m = metaDataView.getMetaData();
 
                 if (v != null && r != null && m != null)
@@ -399,7 +399,7 @@ public class BasicImagePanel extends JPanel implements ComponentListener, ViewLi
                 viewportView.setViewport(getViewport(), new ChangeEvent());
 
             Viewport v = viewportView.getViewport();
-            Region r = regionView.getRegion();
+            Region r = regionView.getLastDecodedRegion();
             MetaData m = metaDataView.getMetaData();
 
             if (v != null && r != null && m != null)

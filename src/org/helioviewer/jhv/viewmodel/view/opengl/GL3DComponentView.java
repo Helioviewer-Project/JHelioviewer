@@ -160,6 +160,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 	public void init(GLAutoDrawable glAD)
 	{
+		GuiState3DWCS.overViewPanel.activate(glAD.getContext());
 		Log.debug("GL3DComponentView.Init");
 		GL2 gl = glAD.getGL().getGL2();
 		GL3DState.create(gl);
@@ -287,7 +288,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 		gl.glFrustum(-fW, fW, -fH, fH, clipNear, clipFar);
 		
 		else {
-			Region region = this.getAdapter(RegionView.class).getRegion();
+			Region region = this.getAdapter(RegionView.class).getLastDecodedRegion();
 			if (region != null){
 			MetaData metaData = null;
 			double distance = GL3DTrackballCamera.DEFAULT_CAMERA_DISTANCE;
@@ -664,7 +665,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 	@Override
 	public void cameraMoved(GL3DCamera camera) {
-		// this.canvas.repaint();
+		this.canvas.repaint(15);
 	}
 
 	@Override

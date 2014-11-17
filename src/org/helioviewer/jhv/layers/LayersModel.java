@@ -1474,7 +1474,7 @@ public class LayersModel implements ViewListener
 
         // store region
         RegionView regionView=GuiState3DWCS.mainComponentView.getAdapter(RegionView.class);
-        Region region=regionView.getRegion();
+        Region region=regionView.getLastDecodedRegion();
         String regionStr=
                 String.format(Locale.ENGLISH,"<region x=\"%.4f\" y=\"%.4f\" width=\"%.4f\" height=\"%.4f\"/>%n",region.getCornerX(),region.getCornerY(),region.getWidth(),region.getHeight());
         xml.append(tab).append(regionStr);

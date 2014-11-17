@@ -95,7 +95,7 @@ public class GLFilterView extends StandardFilterView implements
 				if (subimageDataView != null) {
 					this.checkGLErrors(gl, view + ".beforeSubimageData");
 					textureHelper.renderImageDataToScreen(gl,
-							regionView.getRegion(),
+							regionView.getLastDecodedRegion(),
 							subimageDataView.getImageData());
 					this.checkGLErrors(gl, view + ".afterSubimageData");
 				}
@@ -110,7 +110,7 @@ public class GLFilterView extends StandardFilterView implements
 			gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
 
 		} else {
-			textureHelper.renderImageDataToScreen(gl, regionView.getRegion(),
+			textureHelper.renderImageDataToScreen(gl, regionView.getLastDecodedRegion(),
 					getImageData());
 		}
 	}

@@ -395,7 +395,7 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 			GL3DState.get().checkGLErrors("GL3DSceneGraph.afterRenderGL");
 		} else {
 			TEXTURE_HELPER.renderImageDataToScreen(gl,
-					view.getAdapter(RegionView.class).getRegion(), view
+					view.getAdapter(RegionView.class).getLastDecodedRegion(), view
 							.getAdapter(SubimageDataView.class)
 							.getImageData());
 		}

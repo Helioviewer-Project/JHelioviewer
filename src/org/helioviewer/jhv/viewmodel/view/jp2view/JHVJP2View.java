@@ -18,7 +18,6 @@ import org.helioviewer.jhv.viewmodel.imagedata.ImageData;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.metadata.MetaDataFactory;
 import org.helioviewer.jhv.viewmodel.region.Region;
-import org.helioviewer.jhv.viewmodel.region.StaticRegion;
 import org.helioviewer.jhv.viewmodel.view.AbstractView;
 import org.helioviewer.jhv.viewmodel.view.ImageInfoView;
 import org.helioviewer.jhv.viewmodel.view.MetaDataView;
@@ -136,11 +135,11 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
         metaData = MetaDataFactory.getMetaData(newJP2Image);
         
         if (region == null) {
-            region = StaticRegion.createAdaptedRegion(getMetaData().getPhysicalLowerLeft(), getMetaData().getPhysicalImageSize());
+            region = metaData.getPhysicalRegion();
         }
 		
         if (viewport == null) {
-            viewport = StaticViewport.createAdaptedViewport(100, 100);
+            viewport = StaticViewport.createAdaptedViewport(256, 256);
         }
 
         //if (metaData instanceof ObserverMetaData) {
@@ -328,9 +327,8 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
     /**
      * {@inheritDoc}
      */
-    public Region getRegion() {
-        Region result = lastDecodedRegion;
-        return result;
+    public Region getLastDecodedRegion() {
+        return lastDecodedRegion;
     }
 
     /**
@@ -586,7 +584,11 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
      * @return true, if the parameters actually has changed, false otherwise
      */
     protected boolean setImageViewParams(JP2ImageParameter newParams, boolean reload) {
-    	
+    	// TO DO: Rewrite this, it's just a hack
+    	 if (imageViewParams.equals(newParams) && region.getWidth() == lastDecodedRegion.getWidth() && region.getHeight() == lastDecodedRegion.getHeight()) {
+    		 return false;
+    	 }
+    	 
     	if (newParams.subImage.width == 0 || newParams.subImage.height == 0) {
             if (imageData == null) {
                 return false;

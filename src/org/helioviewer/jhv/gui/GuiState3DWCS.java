@@ -72,6 +72,7 @@ public class GuiState3DWCS {
         
         mainComponentView = new GL3DComponentView();
         mainComponentView.setView(sceneGraph);
+        LayersModel.getSingletonInstance().addLayersListener(overViewPanel);
                 
         // add Overlays (OvwelayView added before LayeredView and after
         // GL3DCameraView)
@@ -155,7 +156,18 @@ public class GuiState3DWCS {
 		// Fetch LayeredView
 		LayeredView layeredView = attachToViewchain
 				.getAdapter(LayeredView.class);
-
+		
+		JHVJPXView layerOverView = new JHVJPXView(false);
+		layerOverView.setJP2Image(((JHVJPXView)newLayer).getJP2Image());
+		while (layerOverView.getImageData() == null) {
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		overViewPanel.setLayer(layerOverView);
+		
 		synchronized (layeredView) {
 			// wait until image is loaded
 			while (newLayer.getAdapter(SubimageDataView.class)
@@ -263,7 +275,7 @@ public class GuiState3DWCS {
 
 			// If MoviewView, add MoviePanel
 			if (newLayer instanceof JHVJPXView) {
-				MoviePanel moviePanel = new MoviePanel((JHVJPXView) newLayer);
+				MoviePanel moviePanel = new MoviePanel((JHVJPXView) newLayer, layerOverView);
 				if (LayersModel.getSingletonInstance().isTimed(newLayer)) {
 					LayersModel.getSingletonInstance().setLink(newLayer, true);
 				}
@@ -271,7 +283,7 @@ public class GuiState3DWCS {
 				ImageViewerGui.getSingletonInstance().getMoviePanelContainer()
 						.addLayer(imageInfoView, moviePanel);
 			} else {
-				MoviePanel moviePanel = new MoviePanel(null);
+				MoviePanel moviePanel = new MoviePanel(null, null);
 				ImageViewerGui.getSingletonInstance().getMoviePanelContainer()
 						.addLayer(imageInfoView, moviePanel);
 			}

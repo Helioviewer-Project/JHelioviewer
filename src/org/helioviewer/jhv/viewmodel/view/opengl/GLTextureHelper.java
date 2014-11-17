@@ -560,7 +560,7 @@ public class GLTextureHelper {
      *            Application internal image format
      * @return OpenGL memory image format
      */
-    private int mapImageFormatToInternalGLFormat(ImageFormat imageFormat) {
+    public static int mapImageFormatToInternalGLFormat(ImageFormat imageFormat) {
 
         if (imageFormat instanceof SingleChannelImageFormat)
             return FORMAT_MAP[((SingleChannelImageFormat) imageFormat).getBitDepth() - 1];
@@ -578,7 +578,7 @@ public class GLTextureHelper {
      *            Application internal image format
      * @return OpenGL input image format
      */
-    private int mapImageFormatToInputGLFormat(ImageFormat imageFormat) {
+    public static int mapImageFormatToInputGLFormat(ImageFormat imageFormat) {
 
         if (imageFormat instanceof SingleChannelImageFormat)
             return GL2.GL_LUMINANCE;
@@ -596,7 +596,7 @@ public class GLTextureHelper {
      *            Bits per pixel of the input data
      * @return OpenGL type to use
      */
-    private int mapBitsPerPixelToGLType(int bitsPerPixel) {
+    public static int mapBitsPerPixelToGLType(int bitsPerPixel) {
         switch (bitsPerPixel) {
         case 8:
             return GL2.GL_UNSIGNED_BYTE;

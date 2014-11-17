@@ -181,7 +181,7 @@ public class JHVFITSView extends AbstractView implements ViewportView, RegionVie
     /**
      * {@inheritDoc}
      * */
-    public Region getRegion() {
+    public Region getLastDecodedRegion() {
 
         return region;
     }

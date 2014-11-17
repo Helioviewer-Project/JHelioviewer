@@ -46,7 +46,7 @@ public class SDOCutOutAction extends AbstractAction {
 			MetaDataView metaDataView= layersModel.getLayer(idx_active).getAdapter(MetaDataView.class);
 			
 			// get viewport image size
-	        ViewportImageSize viewportImageSize = ViewHelper.calculateViewportImageSize(viewportView.getViewport(), regionView.getRegion());
+	        ViewportImageSize viewportImageSize = ViewHelper.calculateViewportImageSize(viewportView.getViewport(), regionView.getLastDecodedRegion());
 	        
 	        // Upper-left, Upper-right and Lower-left points of the region of interest (in arcsec)
 	        Point pul = SDOCutOutController.getSingletonInstance().getPositioninArcsec(new Point(0,0));

@@ -138,7 +138,7 @@ public class HEKPlugin3dRenderer extends PhysicalRenderer3d
                 double y=coords.y;
                 double z=coords.z;
                 Vector2d imageSize=
-                        ViewHelper.convertScreenToImageDisplacement(icon.getWidth(),icon.getHeight(),g.regionView.getRegion(),ViewHelper.calculateViewportImageSize(g.viewportView.getViewport(),g.regionView.getRegion()));
+                        ViewHelper.convertScreenToImageDisplacement(icon.getWidth(),icon.getHeight(),g.regionView.getLastDecodedRegion(),ViewHelper.calculateViewportImageSize(g.viewportView.getViewport(),g.regionView.getLastDecodedRegion()));
 
                 g.commonRenderGraphics.bindImage(icon);
                 g.gl.glTexParameteri(GL.GL_TEXTURE_2D,GL.GL_TEXTURE_MAG_FILTER,GL.GL_LINEAR);
@@ -241,10 +241,10 @@ public class HEKPlugin3dRenderer extends PhysicalRenderer3d
             double heigth=-1;
             for(int i=0;i<layeredView.getNumLayers();i++)
             {
-                if(layeredView.getLayer(i).getAdapter(RegionView.class)!=null&&heigth<layeredView.getLayer(i).getAdapter(RegionView.class).getRegion().getHeight())
-                    heigth=layeredView.getLayer(i).getAdapter(RegionView.class).getRegion().getHeight();
+                if(layeredView.getLayer(i).getAdapter(RegionView.class)!=null&&heigth<layeredView.getLayer(i).getAdapter(RegionView.class).getLastDecodedRegion().getHeight())
+                    heigth=layeredView.getLayer(i).getAdapter(RegionView.class).getLastDecodedRegion().getHeight();
             }
-            Region region=view.getAdapter(RegionView.class).getRegion();
+            Region region=view.getAdapter(RegionView.class).getLastDecodedRegion();
             if(region!=null)
             {
                 scale=(float)(heigth/region.getHeight());

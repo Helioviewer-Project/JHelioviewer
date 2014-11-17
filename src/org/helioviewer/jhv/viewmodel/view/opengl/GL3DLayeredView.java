@@ -133,7 +133,7 @@ public class GL3DLayeredView extends AbstractView implements LayeredView, Region
         LinkedMovieManager.getActiveInstance().pauseLinkedMovies();
 
         ChangeEvent changeEvent = new ChangeEvent(new LayerChangedReason(this, LayerChangeType.LAYER_ADDED, newLayer));
-
+        	System.out.println("newIndex : " + newIndex);
             layers.add(newIndex, newLayer);
             newLayer.addViewListener(this);
 
@@ -238,7 +238,7 @@ public class GL3DLayeredView extends AbstractView implements LayeredView, Region
 	                if (v instanceof GLView) {
 	                    ((GLView) v).renderGL(gl, true);
 	                } else {
-	                    textureHelper.renderImageDataToScreen(gl, layer.regionView.getRegion(), v.getAdapter(SubimageDataView.class).getImageData());
+	                    textureHelper.renderImageDataToScreen(gl, layer.regionView.getLastDecodedRegion(), v.getAdapter(SubimageDataView.class).getImageData());
 	                }
                 }
             }
@@ -481,7 +481,7 @@ public class GL3DLayeredView extends AbstractView implements LayeredView, Region
     /**
      * {@inheritDoc}
      */
-    public Region getRegion() {
+    public Region getLastDecodedRegion() {
         return region;
     }
 

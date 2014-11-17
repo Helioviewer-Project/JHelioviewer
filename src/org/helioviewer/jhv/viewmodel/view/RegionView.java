@@ -50,5 +50,5 @@ public interface RegionView extends View {
      * @return Current region
      * @see #setRegion
      */
-    public Region getRegion();
+    public Region getLastDecodedRegion();
 }

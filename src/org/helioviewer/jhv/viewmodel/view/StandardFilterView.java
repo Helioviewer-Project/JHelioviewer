@@ -89,7 +89,7 @@ public class StandardFilterView extends AbstractBasicView implements FilterView,
      */
     protected void refilterPrepare() {
         if (filter instanceof RegionFilter && regionView != null) {
-            ((RegionFilter) filter).setRegion(regionView.getRegion());
+            ((RegionFilter) filter).setRegion(regionView.getLastDecodedRegion());
         }
         if (filter instanceof MetaDataFilter && metaDataView != null) {
             ((MetaDataFilter) filter).setMetaData(metaDataView.getMetaData());

@@ -259,4 +259,8 @@ public class SOHOLUTFilter extends AbstractFilter implements GLFragmentShaderFil
             return false;
         }
     }
+
+	public String getLUT() {
+		return lut.getName();
+	}
 }

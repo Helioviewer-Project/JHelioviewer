@@ -144,6 +144,7 @@ public class SOHOLUTPanel extends FilterPanel implements ActionListener, FilterA
                 combobox.setSelectedIndex(lastSelectedIndex);
             }
         } else {
+        	GuiState3DWCS.overViewPanel.setCurrentLutByName(newMap.getName());
             filter.setLUT(newMap, invertButton.isSelected());
             lastSelectedIndex = combobox.getSelectedIndex();
         }

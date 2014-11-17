@@ -129,7 +129,7 @@ public class GL3DImageRegionView extends AbstractGL3DView implements GL3DView, R
         return true;
     }
 
-    public Region getRegion() {
+    public Region getLastDecodedRegion() {
         return this.actualImageRegion;
     }
     

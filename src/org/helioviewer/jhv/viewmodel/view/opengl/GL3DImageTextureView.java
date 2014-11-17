@@ -103,7 +103,7 @@ public class GL3DImageTextureView extends AbstractGL3DView implements GL3DView {
 		}
 		gl.glBindTexture(GL.GL_TEXTURE_2D, this.textureId);
 
-		Region region = getAdapter(RegionView.class).getRegion();
+		Region region = getAdapter(RegionView.class).getLastDecodedRegion();
 		Viewport viewport = getAdapter(ViewportView.class).getViewport();
 		Vector2i renderOffset = getAdapter(GL3DImageRegionView.class)
 				.getRenderOffset();

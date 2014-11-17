@@ -57,7 +57,7 @@ public class SDOCutOutController {
 	public Point getPositioninArcsec(Point position) {
     	// check region and viewport
     	RegionView regionView = LayersModel.getSingletonInstance().getActiveView().getAdapter(RegionView.class);
-    	Region region = regionView.getRegion();
+    	Region region = regionView.getLastDecodedRegion();
 		Viewport viewport = LayersModel.getSingletonInstance().getActiveView().getAdapter(ViewportView.class).getViewport();
 		MetaData metaData = LayersModel.getSingletonInstance().getActiveView().getAdapter(MetaDataView.class).getMetaData();
 		       	
@@ -70,10 +70,10 @@ public class SDOCutOutController {
 	    // negative area; real pixel based image at 0
 	    if (metaData.getPhysicalLowerLeft().x < 0) {
 
-	    	Vector2i solarcenter = ViewHelper.convertImageToScreenDisplacement(regionView.getRegion().getUpperLeftCorner().negateX(), regionView.getRegion(), vis);
+	    	Vector2i solarcenter = ViewHelper.convertImageToScreenDisplacement(regionView.getLastDecodedRegion().getUpperLeftCorner().negateX(), regionView.getLastDecodedRegion(), vis);
 
 	    	Vector2d scaling = new Vector2d(Constants.SUN_RADIUS, Constants.SUN_RADIUS);
-	        Vector2d solarRadius = new Vector2d(ViewHelper.convertImageToScreenDisplacement(scaling, regionView.getRegion(), vis));
+	        Vector2d solarRadius = new Vector2d(ViewHelper.convertImageToScreenDisplacement(scaling, regionView.getLastDecodedRegion(), vis));
 
 	        Vector2d pos = new Vector2d(position.x - solarcenter.getX(), -position.y + solarcenter.getY()).invertedScale(solarRadius).scale(959.705);
 	        
