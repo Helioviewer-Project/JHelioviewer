@@ -20,4 +20,9 @@ public class CartesianCoord {
         return x + " " + y + " " + z;
     }
 
+    public Vector3d toVector3d()
+    {
+        return new Vector3d(x,y,z);
+    }
+
 }

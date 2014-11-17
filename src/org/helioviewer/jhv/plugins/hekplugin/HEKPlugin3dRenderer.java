@@ -70,17 +70,15 @@ public class HEKPlugin3dRenderer extends PhysicalRenderer3d
                 g.gl.glDisable(GL2.GL_DEPTH_TEST);
                 g.gl.glBlendFunc(GL2.GL_SRC_ALPHA,GL2.GL_ONE_MINUS_SRC_ALPHA);
 
-                //g.gl.glEnable(GL2.GL_POLYGON_OFFSET_FILL);
-                //g.gl.glPolygonOffset(-10,-300);
                 g.gl.glBegin(GL2.GL_TRIANGLES);
                 for(GenericTriangle<Vector3d> triangle:triangles)
                 {
+                    //g.gl.glColor3d(Math.random(),Math.random(),Math.random());
                     g.gl.glVertex3d(triangle.A.x,triangle.A.y,triangle.A.z);
                     g.gl.glVertex3d(triangle.B.x,triangle.B.y,triangle.B.z);
                     g.gl.glVertex3d(triangle.C.x,triangle.C.y,triangle.C.z);
                 }
                 g.gl.glEnd();
-                //g.gl.glDisable(GL2.GL_POLYGON_OFFSET_FILL);
             }
 
             // draw bounds

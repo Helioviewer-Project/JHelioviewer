@@ -28,6 +28,7 @@ import javax.swing.Timer;
 import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.physics.Constants;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
@@ -215,6 +216,8 @@ public class GL3DComponentView extends AbstractBasicView implements
 		GL gl = glAD.getGL();
 
 		gl.setSwapInterval(1);
+		
+		GuiState3DWCS.mainComponentView.getComponent().repaint();
 	}
 
 	public void display(GLAutoDrawable glAD) {

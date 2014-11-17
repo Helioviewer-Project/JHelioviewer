@@ -265,7 +265,7 @@ public final class Vector2d {
      * 
      * @return number representing the turn-direction of the three points
      */
-    private static double clockwise(Vector2d a, Vector2d b, Vector2d c) {
+    public static double clockwise(Vector2d a, Vector2d b, Vector2d c) {
         return (c.x - a.x) * (b.y - a.y) - (b.x - a.x) * (c.y - a.y);
     }
 

@@ -36,18 +36,6 @@ public final class Vector3d {
         z = v.z;
     }
 
-    public Vector3d getXVector() {
-        return new Vector3d(x, 0.0, 0.0);
-    }
-
-    public Vector3d getYVector() {
-        return new Vector3d(0.0, y, 0.0);
-    }
-
-    public Vector3d getZVector() {
-        return new Vector3d(0.0, 0.0, z);
-    }
-
     public Vector3d add(final Vector3d v) {
         return new Vector3d(x + v.x, y + v.y, z + v.z);
     }
