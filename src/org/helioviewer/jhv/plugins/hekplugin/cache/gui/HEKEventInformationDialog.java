@@ -205,6 +205,7 @@ public class HEKEventInformationDialog extends JDialog implements ActionListener
         hyperLinkPanel.addHyperlinkListener(this);
         hyperLinkPanel.setFont(labelIcon.getFont());
         hyperLinkPanel.setMargin(new Insets(0, 0, 0, 0));
+        hyperLinkPanel.setEditable(false);
 
         textDescription.setLineWrap(true);
         textDescription.setFocusable(false);
@@ -212,30 +213,35 @@ public class HEKEventInformationDialog extends JDialog implements ActionListener
         textDescription.setWrapStyleWord(true);
         textDescription.setFont(labelIcon.getFont());
         textDescription.setMargin(new Insets(0, 0, 0, 0));
+        textDescription.setEditable(false);
 
         textType.setBackground(this.getBackground());
         textType.setLineWrap(true);
         textType.setWrapStyleWord(true);
         textType.setFont(labelIcon.getFont());
         textType.setMargin(new Insets(0, 0, 0, 0));
+        textType.setEditable(false);
 
         textID.setBackground(this.getBackground());
         textID.setLineWrap(true);
         textID.setWrapStyleWord(true);
         textID.setFont(labelIcon.getFont());
         textID.setMargin(new Insets(0, 0, 0, 0));
+        textID.setEditable(false);
 
         textDuration.setBackground(this.getBackground());
         textDuration.setLineWrap(true);
         textDuration.setWrapStyleWord(true);
         textDuration.setFont(labelIcon.getFont());
         textDuration.setMargin(new Insets(0, 0, 0, 0));
+        textDuration.setEditable(false);
 
         textCoordinates.setBackground(this.getBackground());
         textCoordinates.setLineWrap(true);
         textCoordinates.setWrapStyleWord(true);
         textCoordinates.setFont(labelIcon.getFont());
         textCoordinates.setMargin(new Insets(0, 0, 0, 0));
+        textCoordinates.setEditable(false);
 
         // setup the summary panel
         JPanel summaryPanel = new JPanel(new GridBagLayout());
