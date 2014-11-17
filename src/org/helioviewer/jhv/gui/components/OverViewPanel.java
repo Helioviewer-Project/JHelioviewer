@@ -73,6 +73,8 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
     	this.canvas.setPreferredSize(new Dimension(200, 200));
 		this.canvas.addMouseListener(this);
 		this.canvas.addMouseMotionListener(this);
+		loadLutFromFile("/UltimateLookupTable.txt");
+        
 	}
 
 	@Override
@@ -385,7 +387,6 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 		this.canvas.addGLEventListener(this);
 		this.camera = GL3DCameraSelectorModel.getInstance().getCurrentCamera();
 		this.camera.addCameraListener(this);
-		loadLutFromFile("/UltimateLookupTable.txt");
 		this.canvas.repaint();
 	}
 
@@ -461,13 +462,12 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 	private void loadLutFromFile(String lutTxtName){
 		String line = null;
 		
-		BufferedReader br=new BufferedReader(new InputStreamReader(OverViewPanel.class.getResourceAsStream(lutTxtName)));
 		try {
+	        BufferedReader br=new BufferedReader(new InputStreamReader(OverViewPanel.class.getResourceAsStream(lutTxtName),"UTF-8"));
 			while ((line = br.readLine()) != null){
 				lutMap.put(line, this.nextAvaibleLut++);
 			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -505,7 +505,7 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 			}
 			textureHelper.checkGLErrors(gl, this + ".glTexSubImage2d");
 			gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER,
-					GL2.GL_LINEAR);
+					GL2.GL_NEAREST);
 			gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER,
 					GL2.GL_NEAREST);
 			gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S,

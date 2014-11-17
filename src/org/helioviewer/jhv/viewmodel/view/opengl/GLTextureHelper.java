@@ -546,9 +546,9 @@ public class GLTextureHelper {
         gl.glPixelStorei(GL2.GL_UNPACK_ALIGNMENT, 1);
 
         if (source.getHeight() == 1) {
-            textureImplementation.genTexture1D(gl, target, GL.GL_BGRA, source.getWidth(), GL.GL_BGRA, GL2.GL_UNSIGNED_BYTE, buffer);
+            textureImplementation.genTexture1D(gl, target, GL.GL_RGBA, source.getWidth(), GL.GL_BGRA, GL2.GL_UNSIGNED_BYTE, buffer);
         } else {
-            textureImplementation.genTexture2D(gl, target, GL.GL_BGRA, source.getWidth(), source.getHeight(), GL.GL_BGRA, GL2.GL_UNSIGNED_BYTE, buffer);
+            textureImplementation.genTexture2D(gl, target, GL.GL_RGBA, source.getWidth(), source.getHeight(), GL.GL_BGRA, GL2.GL_UNSIGNED_BYTE, buffer);
         }
     }
 

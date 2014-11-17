@@ -583,7 +583,7 @@ public class HEKEvent implements IntervalComparison<Date> {
                 }
                 
                 //TODO: fix coordinate conversion
-                /*for(int i=0;i<oldStonyBound.size()-1;i++)
+                for(int i=0;i<oldStonyBound.size()-1;i++)
                 {
                     SphericalCoord a=oldStonyBound.get(i);
                     SphericalCoord b=oldStonyBound.get(i+1);
@@ -601,10 +601,15 @@ public class HEKEvent implements IntervalComparison<Date> {
                         for(int j=1;j<steps;j++)
                         {
                             Vector3d interp=va.add(step.scale(j)).normalize().scale(Constants.SUN_RADIUS);
+                            
+                            
                             oldStonyBound.add(++i,HEKCoordinateTransform.CartesianToSpherical(interp));
+                            
+                            
+                            
                         }
                     }
-                }*/
+                }
                 
                 // remove duplicate end-point
                 oldStonyBound.remove(oldStonyBound.size()-1);
