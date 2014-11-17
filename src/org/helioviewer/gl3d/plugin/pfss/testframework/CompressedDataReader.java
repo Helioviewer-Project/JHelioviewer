@@ -76,7 +76,11 @@ public class CompressedDataReader {
 		} finally {
 
 		}
-
 	
+	}
+	
+	public static void main(String[] args) {
+		CompressedDataReader reader = new CompressedDataReader("C:/Users/Jonas Schwammberger/Documents/GitHub/PFSSCompression/test/temp/standardShort.fits");
+		reader.readFile();
 	}
 }
