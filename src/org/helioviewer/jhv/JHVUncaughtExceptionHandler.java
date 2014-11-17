@@ -2,14 +2,20 @@ package org.helioviewer.jhv;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.Vector;
 
 import javax.swing.JDialog;
@@ -59,7 +65,7 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
     private static void showErrorDialog(final String title, final Object msg) {
 
         Vector<Object> objects = new Vector<Object>();
-        objects.add(new JLabel("Fatal error detected."));
+        objects.add(new JLabel("Dang! You hit a bug in our software."));
         objects.add(new JLabel("Please be so kind to report this as a bug on"));
         JLabel bugLabel = new JLabel("https://bugs.launchpad.net/jhelioviewer/+filebug");
         Font font = bugLabel.getFont();
@@ -112,12 +118,11 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
         JOptionPane optionPane = new JOptionPane(title);
         optionPane.setMessage(objects.toArray());
         optionPane.setMessageType(JOptionPane.ERROR_MESSAGE);
-        optionPane.setOptions(new String[] { "Quit JHelioviewer", "Continue" });
+        optionPane.setOptions(new String[] { "Quit" });
         JDialog dialog = optionPane.createDialog(null, title);
-
+        
         dialog.setVisible(true);
-        if ("Quit JHelioviewer".equals(optionPane.getValue()))
-            System.exit(1);
+        Runtime.getRuntime().halt(0);
     }
 
     private JHVUncaughtExceptionHandler() {
@@ -125,56 +130,84 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
 
     // we do not use the logger here, since it should work even before logging
     // initialization
+    @SuppressWarnings("deprecation")
     public void uncaughtException(Thread t, Throwable e) {
-
-        String stackTrace = e.getClass().getCanonicalName() + "\n";
-        for (StackTraceElement el : e.getStackTrace()) {
-            stackTrace = stackTrace + "at " + el.toString() + "\n";
-        }
-
-        String msg = "Uncaught Exception detected.\n\nConfiguration:\n";
-        msg += "JHelioviewer - Version: " + JHVGlobals.VERSION + "\n";
-        msg += "Java Virtual Machine - Name: " + System.getProperty("java.vm.name") + "\n";
-        msg += "Java Virtual Machine - Vendor: " + System.getProperty("java.vm.vendor") + "\n";
-        msg += "Java Virtual Machine - Version: " + System.getProperty("java.vm.version") + "\n";
-        msg += "JRE Specification - Version: " + System.getProperty("java.specification.version") + "\n";
-        msg += "Operating System - Name: " + System.getProperty("os.name") + "\n";
-        msg += "Operating System - Architecture: " + System.getProperty("os.arch") + "\n";
-        msg += "Operating System - Version: " + System.getProperty("os.version") + "\n\n";
-
-        msg += "Date: " + new Date() + "\n";
-        msg += "Thread: " + t + "\n";
-        msg += "Message: " + e.getMessage() + "\n\n";
-        msg += "Stacktrace:\n";
-        msg += stackTrace;
-
-        try
+        //STOP THE WORLD to avoid exceptions piling up
+        Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler()
         {
-            Log.fatal("Runtime exception", e);
+            @Override
+            public void uncaughtException(Thread _t,Throwable _e)
+            {
+                //IGNORE all other exceptions
+            }
+        });
+        
+        System.err.close();
+        
+        for(Thread thr:Thread.getAllStackTraces().keySet())
+            if(thr!=Thread.currentThread())
+                thr.suspend();
+        for(Thread thr:Thread.getAllStackTraces().keySet())
+            if(thr!=Thread.currentThread())
+                thr.stop();
 
-            msg += "\nLog:\n";
+        String msg = "JHelioviewer: " + JHVGlobals.VERSION + "\n";
+        msg += "Date: " + new Date() + "\n";
+        msg += "JVM: " + System.getProperty("java.vm.name") + " " + System.getProperty("java.vm.version") + " (JRE " + System.getProperty("java.specification.version") + ")\n";
+        msg += "OS: " + System.getProperty("os.name") + " " + System.getProperty("os.arch") + " " + System.getProperty("os.version") + "\n\n";
 
-            try {
-                BufferedReader input = new BufferedReader(new FileReader(LogSettings.getCurrentLogFile()));
-                try {
-                    String line = null; // not declared within while loop
-
-                    while ((line = input.readLine()) != null) {
-                        msg += line + "\n";
-                    }
-                } finally {
-                    input.close();
-                }
-            } catch (IOException e1) {
-                e1.printStackTrace();
+        LinkedList<String> lastLines = new LinkedList<String>();
+        try(BufferedReader input = new BufferedReader(new FileReader(LogSettings.getCurrentLogFile())))
+        {
+            String line;
+            while ((line = input.readLine()) != null)
+            {
+                lastLines.addLast(line);
+                if(lastLines.size()>4)
+                    lastLines.removeFirst();
             }
         }
-        catch(Exception e2)
+        catch (Exception e1)
         {
-            System.err.println("Runtime exception");
-            System.err.println(stackTrace);
+            e1.printStackTrace();
+        }
+        
+        for(String line:lastLines)
+            msg+=line+"\n";
+
+        try(StringWriter st=new StringWriter())
+        {
+            try(PrintWriter pw=new PrintWriter(st))
+            {
+                e.printStackTrace(pw);
+                msg+=st.toString();
+            }
+        }
+        catch(IOException e1)
+        {
+            e1.printStackTrace();
         }
 
-        JHVUncaughtExceptionHandler.showErrorDialog("JHelioviewer: Fatal Error", msg);
+        for(Frame f:Frame.getFrames())
+            f.setVisible(false);
+        
+        Log.fatal("Runtime exception", e);
+        
+        //this wizardry forces the creation of a new awt event queue
+        //which is needed to show the error dialog
+        final String finalMsg=msg;
+        new Thread(new Runnable()
+        {
+            public void run()
+            {
+                EventQueue.invokeLater(new Runnable()
+                {
+                    public void run()
+                    {
+                        JHVUncaughtExceptionHandler.showErrorDialog("JHelioviewer: Fatal Error", finalMsg);
+                    }
+                });
+            }
+        }).start();
     }
 }
