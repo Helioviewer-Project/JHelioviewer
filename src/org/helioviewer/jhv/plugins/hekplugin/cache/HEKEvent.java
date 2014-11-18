@@ -583,7 +583,7 @@ public class HEKEvent implements IntervalComparison<Date> {
                 }
                 
                 //TODO: fix coordinate conversion
-                for(int i=0;i<oldStonyBound.size()-1;i++)
+                /*for(int i=0;i<oldStonyBound.size()-1;i++)
                 {
                     SphericalCoord a=oldStonyBound.get(i);
                     SphericalCoord b=oldStonyBound.get(i+1);
@@ -609,7 +609,7 @@ public class HEKEvent implements IntervalComparison<Date> {
                             
                         }
                     }
-                }
+                }*/
                 
                 // remove duplicate end-point
                 oldStonyBound.remove(oldStonyBound.size()-1);
