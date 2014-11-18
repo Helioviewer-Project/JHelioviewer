@@ -2,6 +2,7 @@ package org.helioviewer.jhv.plugins.hekplugin.cache;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -770,9 +771,24 @@ public class HEKEvent implements IntervalComparison<Date> {
         if(_coordinates.length<3)
             return res;
         
+        
         List<Vector2d> src=new ArrayList<Vector2d>();
         for(Vector2d v:_coordinates)
             src.add(v);
+        
+        //determine orientation of outline (clockwise/counter-clockwise?)
+        //http://en.wikipedia.org/wiki/Shoelace_formula
+        {
+            double sum=0;
+            Vector2d a=src.get(src.size()-1);
+            for(Vector2d b:src)
+            {
+                sum+=(b.x-a.x)*(b.y+a.y);
+                a=b;
+            }
+            if(sum<0)
+                Collections.reverse(src);
+        }
         
         while(src.size()>3)
         {
