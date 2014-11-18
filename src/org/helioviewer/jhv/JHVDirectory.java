@@ -26,7 +26,7 @@ public enum JHVDirectory {
     /** The image cache directory. */
     CACHE {
         public String getPath() {
-            return HOME.getPath() + "Cache" + File.separator;
+            return CACHE_DIR;
         }
 
         public File getFile() {
@@ -100,4 +100,11 @@ public enum JHVDirectory {
     /** A File representation of the path of the directory. */
     abstract public File getFile();
 
-};
+    private static final String CACHE_DIR=System.getProperty("java.io.tmpdir")+File.separator+"jhv-cache"+File.separator;
+    
+    static
+    {
+        new File(CACHE.getPath()).mkdir();
+    }
+}
+

@@ -17,7 +17,7 @@
 -compilerheap=1744830464
 -inlinelimit=50
 -inlinetolimit=250
--jetcplastpage:=PageClasspath
+-jetcplastpage:=PageCompile
 -jetrt=Desktop
 -jetvmprop=-Djet.jit.disable.resolution -Djet.gc.heaplimit:0 -Djet.gc.ratio:50 -Djet.stack.trace
 -jpiiproject=C:\Users\de\Documents\EclipseWorkspace\JHelioViewer\build\excelsior-win\JHelioViewer.jpn

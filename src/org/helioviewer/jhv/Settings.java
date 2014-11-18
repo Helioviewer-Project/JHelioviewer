@@ -43,20 +43,7 @@ public class Settings
      */
     public static void apply() {
         try {
-            String val;
-
-            double size = 0;
-            val = getProperty("jpip.cache.size");
-            if (val != null) {
-                try {
-                    size = Double.valueOf(val);
-                } catch (NumberFormatException ex) {
-                    Log.error(">> Settings.update(boolean) > Invalid jpip cache size: " + val);
-                }
-                setProperty("jpip.cache.size", Double.toString(size));
-            }
-
-            JHV_Kdu_cache.updateCacheDirectory(JHVDirectory.CACHE.getFile(), size);
+            JHV_Kdu_cache.updateCacheDirectory(JHVDirectory.CACHE.getFile());
         } catch (Exception ex) {
             ex.printStackTrace();
         }

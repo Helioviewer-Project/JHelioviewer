@@ -60,7 +60,7 @@ public class JHV_Kdu_cache extends Kdu_cache {
      */
     private boolean iamPersistent = true;
 
-    private static long maxCacheSize = 0;
+    private static final long CACHE_SIZE_LIMIT = 1024*1024*100;
 
     /**
      * Main constructor used when you want to use a cache file.
@@ -499,20 +499,12 @@ public class JHV_Kdu_cache extends Kdu_cache {
         return cacheFile;
     }
 
-    public static void updateCacheDirectory(File cachePath, double maxSize) {
-        maxCacheSize = Math.round(maxSize * 1048576.0);
-        updateCacheDirectory(cachePath);
-    }
-
     /**
      * This method allows to remove the cache files according to the size limit
      * specified in the properties of the application. The files are removed
      * following a LRU order.
      */
     public static void updateCacheDirectory(File cachePath) {
-        if (maxCacheSize <= 0)
-            return;
-
         File[] list = getCacheFiles(cachePath);
 
         Arrays.sort(list, new Comparator<File>() {
@@ -526,7 +518,7 @@ public class JHV_Kdu_cache extends Kdu_cache {
         for (File f : list)
             total += f.length();
 
-        for (int i = 0; (total > maxCacheSize) && (i < list.length); i++) {
+        for (int i = 0; (total > CACHE_SIZE_LIMIT) && (i < list.length); i++) {
             total -= list[i].length();
             list[i].delete();
         }
