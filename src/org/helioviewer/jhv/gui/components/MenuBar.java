@@ -92,7 +92,6 @@ public class MenuBar extends JMenuBar {
         JMenu optionsMenu = new JMenu("Options");
         optionsMenu.setMnemonic(KeyEvent.VK_O);
         optionsMenu.add(new ShowDialogAction("Preferences...", PreferencesDialog.class));
-        optionsMenu.add(new ExportSettingsAction());        
         add(optionsMenu);
 
         JMenu helpMenu = new JMenu("Help");
