@@ -1,6 +1,5 @@
 package org.helioviewer.jhv.opengl.shader;
 
-import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLFragmentShaderProgram;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLShaderBuilder;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLShaderBuilder.GLBuildShaderException;

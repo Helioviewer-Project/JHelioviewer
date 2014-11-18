@@ -164,7 +164,7 @@ public class Quaternion3d {
     public static Quaternion3d calcRotation(Vector3d startPoint, Vector3d endPoint){
     	Vector3d rotationAxis = startPoint.cross(endPoint);
         double rotationAngle = Math.atan2(rotationAxis.length(), startPoint.dot(endPoint));
-
+        if (rotationAngle == 0.0) rotationAxis = new Vector3d(0,0,1);
         return Quaternion3d.createRotation(rotationAngle, rotationAxis);
     }
 

@@ -24,14 +24,19 @@ import javax.media.opengl.GLEventListener;
 import javax.media.opengl.awt.GLJPanel;
 import javax.swing.JPanel;
 
+import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector3d;
+import org.helioviewer.jhv.base.wcs.CoordinateConversion;
+import org.helioviewer.jhv.base.wcs.CoordinateVector;
 import org.helioviewer.jhv.gui.GL3DCameraSelectorModel;
 import org.helioviewer.jhv.internal_plugins.filter.SOHOLUTFilterPlugin.SOHOLUTFilter;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
 import org.helioviewer.jhv.opengl.camera.GL3DCameraListener;
+import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
+import org.helioviewer.jhv.opengl.scenegraph.GL3DState.VISUAL_TYPE;
 import org.helioviewer.jhv.viewmodel.imagedata.ImageData;
 import org.helioviewer.jhv.viewmodel.imageformat.ImageFormat;
 import org.helioviewer.jhv.viewmodel.imagetransport.Byte8ImageTransport;
@@ -41,7 +46,7 @@ import org.helioviewer.jhv.viewmodel.region.Region;
 import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
-import org.helioviewer.jhv.viewmodel.view.opengl.GL3DLayeredView;
+import org.helioviewer.jhv.viewmodel.view.opengl.GL3DCoordinateSystemView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GLFilterView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GLTextureHelper;
 import org.helioviewer.jhv.viewmodel.viewport.StaticViewport;
@@ -66,7 +71,6 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 	private int currentLut = 0;
 	private long lastTime;
 	private int invertedLut = 0;
-	private View lastViewToDelete;
 	
 	public enum MOVE_MODE{
 		UP, DOWN
@@ -190,7 +194,6 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 		
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		gl.glLoadIdentity();
-		
 		gl.glColor3f(1, 1, 1);
 		gl.glEnable(GL2.GL_TEXTURE_2D);
 		
@@ -232,11 +235,15 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 	}
 
 	private void renderRect(GL2 gl){
+		if (GL3DState.get().getState() == VISUAL_TYPE.MODE_2D || calculateAngleToActiveLayer() < 0.01){
 		gl.glDisable(GL2.GL_TEXTURE_2D);
 		gl.glDisable(GL2.GL_BLEND);
 		gl.glShadeModel(GL2.GL_FLAT);
 		gl.glDisable(GL2.GL_TEXTURE_2D);
 		gl.glColor3d(1, 1, 136.0/255.0);
+		
+		//lastLayer.getMetaData().getMaskRotation
+		
 		Vector3d translation = camera.getTranslation();
 		double height = Math.tan(Math.toRadians(camera.getFOV())) * translation.z;
 		double width = height * camera.getAspect();
@@ -256,7 +263,7 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 			gl.glVertex2d(x1, y0);
 			gl.glVertex2d(x0, y0);
 		gl.glEnd();
-		
+		}
 		
 	}
 	
@@ -577,6 +584,7 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 	
 	@Override
 	public void mouseClicked(MouseEvent e) {
+		GL3DCameraSelectorModel.getInstance().rotateToCurrentLayer(0);
 		this.setPan(e.getX(), e.getY());
 	}
 
@@ -604,6 +612,7 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
+		GL3DCameraSelectorModel.getInstance().rotateToCurrentLayer(0);
 		this.setPan(e.getX(), e.getY());
 	}
 
@@ -636,4 +645,24 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 		}
 	}
 
+	private double calculateAngleToActiveLayer(){
+		Matrix4d camTrans = camera.getRotation().toMatrix().inverse();
+		Vector3d camDirection = new Vector3d(0, 0, 1);
+		
+		View view = LayersModel.getSingletonInstance().getActiveView();
+		GL3DCoordinateSystemView layer = view
+				.getAdapter(GL3DCoordinateSystemView.class);
+		GL3DState state = GL3DState.get();
+		CoordinateVector orientationVector = layer.getOrientation();
+		CoordinateConversion toViewSpace = layer.getCoordinateSystem()
+				.getConversion(
+						state.activeCamera.getViewSpaceCoordinateSystem());
+		Vector3d orientation = toViewSpace.convert(orientationVector)
+				.toVector3d().normalize();
+
+		camDirection = camTrans.multiply(camDirection).normalize();
+
+		double angle = (Math.acos(camDirection.dot(orientation)) / Math.PI * 180.0);
+		return angle;
+	}
 }

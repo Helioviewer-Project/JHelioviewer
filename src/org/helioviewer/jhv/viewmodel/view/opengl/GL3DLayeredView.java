@@ -133,8 +133,7 @@ public class GL3DLayeredView extends AbstractView implements LayeredView, Region
         LinkedMovieManager.getActiveInstance().pauseLinkedMovies();
 
         ChangeEvent changeEvent = new ChangeEvent(new LayerChangedReason(this, LayerChangeType.LAYER_ADDED, newLayer));
-        	System.out.println("newIndex : " + newIndex);
-            layers.add(newIndex, newLayer);
+        	layers.add(newIndex, newLayer);
             newLayer.addViewListener(this);
 
             viewLookup.put(newLayer, new Layer(newLayer));

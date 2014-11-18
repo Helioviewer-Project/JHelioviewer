@@ -136,10 +136,10 @@ public class GL3DCameraSelectorModel extends AbstractListModel<Object>
 		this.getCurrentCamera().reset();
 		this.visualType = VISUAL_TYPE.MODE_2D;
 		if (LayersModel.getSingletonInstance().getActiveView() != null)
-			this.rotateToCurrentLayer();
+			this.rotateToCurrentLayer(700);
 	}
 
-	private void rotateToCurrentLayer() {
+	public void rotateToCurrentLayer(long duration) {
 		View view = LayersModel.getSingletonInstance().getActiveView();
 		GL3DCoordinateSystemView layer = view
 				.getAdapter(GL3DCoordinateSystemView.class);
@@ -151,20 +151,19 @@ public class GL3DCameraSelectorModel extends AbstractListModel<Object>
 		Vector3d orientation = toViewSpace.convert(orientationVector)
 				.toVector3d().normalize();
 
-		if (!orientation.epsilonEquals(new Vector3d(0,0,1),0.0001)){
+		
 		Quaternion3d phiRotation = Quaternion3d.calcRotation(orientation,
 				new Vector3d(0, 0, 1));
 		Quaternion3d targetRotation = phiRotation;
 		
 		this.getCurrentCamera().addCameraAnimation(
-				new GL3DCameraRotationAnimation(targetRotation, 700));
-		}
+				new GL3DCameraRotationAnimation(targetRotation, duration));
 	}
 
 	@Override
 	public void layerAdded(int idx) {
 		if (this.visualType == VISUAL_TYPE.MODE_2D) {
-			this.rotateToCurrentLayer();
+			this.rotateToCurrentLayer(700);
 		}
 	}
 
@@ -183,8 +182,8 @@ public class GL3DCameraSelectorModel extends AbstractListModel<Object>
 
 	@Override
 	public void activeLayerChanged(int idx) {
-		if (this.visualType == VISUAL_TYPE.MODE_2D && idx > 0) {
-			this.rotateToCurrentLayer();
+		if (this.visualType == VISUAL_TYPE.MODE_2D && idx >= 0) {
+			this.rotateToCurrentLayer(700);
 		}
 	}
 

@@ -409,20 +409,12 @@ public abstract class MetaData {
         return flatDistance;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public double getMaskRotaton() {
-        return maskRotation;
-    }
-
     public Vector2d getOcculterCenter() {
         return occulterCenter;
     }
 
 	public double getMaskRotation() {
-		// TODO Auto-generated method stub
-		return 0;
+        return maskRotation;
 	}
 
 	public boolean checkForModifications() {
