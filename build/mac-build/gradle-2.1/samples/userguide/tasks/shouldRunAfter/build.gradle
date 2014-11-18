@@ -1,7 +1,0 @@
-task taskX << {
-    println 'taskX'
-}
-task taskY << {
-    println 'taskY'
-}
-taskY.shouldRunAfter taskX

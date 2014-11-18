@@ -1,8 +1,0 @@
-repositories {
-    mavenCentral()
-}
-
-task showRepos << {
-    println "All repos:"
-    println repositories.collect { it.name }
-}

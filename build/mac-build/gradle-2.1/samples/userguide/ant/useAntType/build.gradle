@@ -1,8 +1,0 @@
-task list << {
-    def path = ant.path {
-        fileset(dir: 'libs', includes: '*.jar')
-    }
-    path.list().each {
-        println it
-    }
-}

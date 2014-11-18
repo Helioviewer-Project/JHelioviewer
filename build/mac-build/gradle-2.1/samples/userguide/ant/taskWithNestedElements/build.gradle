@@ -1,8 +1,0 @@
-task zip << {
-    ant.zip(destfile: 'archive.zip') {
-        fileset(dir: 'src') {
-            include(name: '**.xml')
-            exclude(name: '**.java')
-        }
-    }
-}

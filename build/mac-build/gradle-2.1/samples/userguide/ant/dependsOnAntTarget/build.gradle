@@ -1,5 +1,0 @@
-ant.importBuild 'build.xml'
-
-task intro(dependsOn: hello) << {
-    println 'Hello, from Gradle'
-}

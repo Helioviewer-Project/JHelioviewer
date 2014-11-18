@@ -1,8 +1,0 @@
-apply plugin: "plugina"
-apply plugin: "pluginb"
-
-task showPlugins << {
-  project.plugins.each {
-    println it.getClass().name
-  }
-}
