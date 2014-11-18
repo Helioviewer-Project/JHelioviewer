@@ -32,6 +32,7 @@ public abstract class GLFragmentShaderProgram {
     protected double cutOffRadius = 0.0f;
     protected double xOffset = 0.0f;
     protected double yOffset = 0.0f;
+    protected double opacity = 1.0;
     
     /**
      * Build the shader.
@@ -71,7 +72,7 @@ public abstract class GLFragmentShaderProgram {
      *            Valid reference to the current gl object
      */
     public final void bind(GL2 gl) {
-    	bind(gl, shaderID, alpha, cutOffRadius, xOffset, yOffset);
+    	bind(gl, shaderID, alpha, cutOffRadius, xOffset, yOffset, opacity);
     }
 
     /**
@@ -105,7 +106,7 @@ public abstract class GLFragmentShaderProgram {
         Integer restoreShaderObject = shaderStack.pop();
         int restoreShader = restoreShaderObject == null ? 0 : restoreShaderObject.intValue();
         if (restoreShader >= 0) {
-            bind(gl, restoreShader, 0.0f, 0.0f, 0.0f,0.0f);
+            bind(gl, restoreShader, 0.0f, 0.0f, 0.0f,0.0f, 1.0);
         }
     }
 
@@ -115,13 +116,14 @@ public abstract class GLFragmentShaderProgram {
      * @param gl
      *            Valid reference to the current gl object
      */
-    private static void bind(GL2 gl, int shader, double alpha, double cutOffRadius, double xOffset, double yOffset) {
+    private static void bind(GL2 gl, int shader, double alpha, double cutOffRadius, double xOffset, double yOffset, double opacity) {
         if (shader != shaderCurrentlyUsed) {
             shaderCurrentlyUsed = shader;
             gl.glBindProgramARB(GL2.GL_FRAGMENT_PROGRAM_ARB, shader);
-            gl.glProgramLocalParameter4dARB(GL2.GL_FRAGMENT_PROGRAM_ARB, 1, alpha, 0.0f, 0.0f, 0.0f);
-            gl.glProgramLocalParameter4dARB(GL2.GL_FRAGMENT_PROGRAM_ARB, 0, cutOffRadius, 0.0f, 0.0f, 0.0f);
-            gl.glProgramLocalParameter4dARB(GL2.GL_FRAGMENT_PROGRAM_ARB, 2, xOffset, yOffset, 0.0f, 0.0f);
+            gl.glProgramLocalParameter4dARB(GL2.GL_FRAGMENT_PROGRAM_ARB, 2, alpha, 0.0f, 0.0f, 0.0f);
+            gl.glProgramLocalParameter4dARB(GL2.GL_FRAGMENT_PROGRAM_ARB, 1, cutOffRadius, 0.0f, 0.0f, 0.0f);
+            gl.glProgramLocalParameter4dARB(GL2.GL_FRAGMENT_PROGRAM_ARB, 3, xOffset, yOffset, 0.0f, 0.0f);
+            gl.glProgramLocalParameter4dARB(GL2.GL_FRAGMENT_PROGRAM_ARB, 0, opacity, 0.0f, 0.0f, 0.0f);
         }
     }
 

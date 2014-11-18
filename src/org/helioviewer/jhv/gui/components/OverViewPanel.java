@@ -41,6 +41,7 @@ import org.helioviewer.jhv.viewmodel.region.Region;
 import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
+import org.helioviewer.jhv.viewmodel.view.opengl.GL3DLayeredView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GLFilterView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GLTextureHelper;
 import org.helioviewer.jhv.viewmodel.viewport.StaticViewport;
@@ -65,6 +66,11 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 	private int currentLut = 0;
 	private long lastTime;
 	private int invertedLut = 0;
+	private View lastViewToDelete;
+	
+	public enum MOVE_MODE{
+		UP, DOWN
+	}
 	
 	public OverViewPanel() {
 		this.setPreferredSize(new Dimension(200, 200));
@@ -86,10 +92,11 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 
 	@Override
 	public void layerRemoved(View oldView, int oldIdx) {
-		if (oldIdx >= 0){
-			oldIdx = LayersModel.getSingletonInstance().getNumLayers() - oldIdx - 1;
+		/*if (oldIdx >= 0 && oldIdx < layers.size() && layers.size() > 0 && lastViewToDelete != oldView){
+			oldIdx = layers.size() - oldIdx - 1;
 			layers.remove(oldIdx);
-		}
+			this.lastViewToDelete = oldView;
+		}*/
 	}
 
 	@Override
@@ -98,11 +105,11 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 
 	@Override
 	public void activeLayerChanged(int idx) {
-		if (idx >= 0 && idx <= LayersModel.getSingletonInstance().getNumLayers()-1){
+		if (idx >= 0 && idx < LayersModel.getSingletonInstance().getNumLayers() && layers.size() > 0){
 			if (LinkedMovieManager.getActiveInstance().getMasterMovie() != null)
 				this.lastTime = LinkedMovieManager.getActiveInstance().getMasterMovie().getCurrentFrameDateTime().getMillis();
 			idx = LayersModel.getSingletonInstance().getNumLayers() - idx -1;
-			lastLayer = layers.get(idx);
+				lastLayer = layers.get(idx);
 			View lastView = LayersModel.getSingletonInstance().getActiveView();
 			// Just a hack
 			GLFilterView opacityFilterView = lastView.getAdapter(GLFilterView.class).getAdapter(GLFilterView.class);
@@ -113,9 +120,12 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 			this.invertedLut = lutFilter.isInverted();
 			if (lastLayer.getImageData() != null){
 			this.updateTexture = true;
-			this.canvas.repaint();
 			}
 		}
+		else {
+			lastLayer = null;
+		}
+		this.canvas.repaint();
 	}
 
 	@Override
@@ -136,8 +146,8 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 
 	@Override
 	public void subImageDataChanged() {
-		// TODO Auto-generated method stub
-		
+		this.updateTexture = true;
+		this.canvas.repaint();
 	}
 
 	@Override
@@ -600,4 +610,30 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 	@Override
 	public void mouseMoved(MouseEvent e) {
 	}
+
+	public void removeLayer(int idx) {
+		layers.remove(idx);
+	}
+	
+	public void moveActiveLayer(MOVE_MODE change){
+		int oldIndex = 0;
+		for (int i = 0; i < layers.size(); i++){
+			if (this.layers.get(i) == this.lastLayer){
+				oldIndex = i;
+				break;
+			}
+		}
+		// up
+		if (change == MOVE_MODE.UP && oldIndex < (layers.size()-1)){
+			int newIndex = oldIndex + 1;
+			this.layers.remove(lastLayer);
+			this.layers.add(newIndex, lastLayer);
+		}
+		else if(change == MOVE_MODE.DOWN && oldIndex > 0){
+			int newIndex = oldIndex - 1;
+			this.layers.remove(lastLayer);
+			this.layers.add(newIndex, lastLayer);
+		}
+	}
+
 }

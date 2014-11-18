@@ -18,6 +18,7 @@ import org.helioviewer.jhv.base.wcs.CoordinateConversion;
 import org.helioviewer.jhv.base.wcs.CoordinateSystem;
 import org.helioviewer.jhv.base.wcs.CoordinateSystemChangeListener;
 import org.helioviewer.jhv.base.wcs.CoordinateVector;
+import org.helioviewer.jhv.internal_plugins.filter.opacity.OpacityFilter;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
 import org.helioviewer.jhv.opengl.camera.GL3DCameraListener;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DDrawBits.Bit;
@@ -36,6 +37,7 @@ import org.helioviewer.jhv.viewmodel.region.Region;
 import org.helioviewer.jhv.viewmodel.region.StaticRegion;
 import org.helioviewer.jhv.viewmodel.view.MetaDataView;
 import org.helioviewer.jhv.viewmodel.view.RegionView;
+import org.helioviewer.jhv.viewmodel.view.StandardFilterView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DCoordinateSystemView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DImageTextureView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DView;
@@ -85,11 +87,9 @@ public class GL3DImageLayer extends GL3DGroup implements CoordinateSystemChangeL
 
     public void coordinateSystemChanged(CoordinateSystem coordinateSystem) {
         this.markAsChanged();
-        // Log.debug("GL3DCoordinateSystemGroup: CoordinateSystemChanged, marking as changed");
     }
 
     public void updateMatrix(GL3DState state) {
-        // Log.debug("GL3DCoordinateSystemGroup: '"+this.getName()+"' updateMatrix");
         this.updateOrientation(state);
         super.updateMatrix(state);
     }
@@ -101,11 +101,6 @@ public class GL3DImageLayer extends GL3DGroup implements CoordinateSystemChangeL
         
         Vector3d orientation = toViewSpace.convert(orientationVector).toVector3d().normalize();
         
-        // Log.debug("GL3DOrientedGroup '"+getName()+"': Transformed Orientation from "+orientationVector
-        // +" to "+orientation+" {"+getCoordinateSystem().getClass().getSimpleName()+" -> "+state.getActiveCamera().getViewSpaceCoordinateSystem().getClass().getSimpleName()+"}");
-
-        // Only rotate x and y axis, because images already cater for solar
-        // north being at the top.
         this.mv.set(Matrix4d.identity());
         
         
@@ -133,6 +128,7 @@ public class GL3DImageLayer extends GL3DGroup implements CoordinateSystemChangeL
     
 	public GL3DImageLayer(String name, GL3DView mainLayerView) {
 		super(name);
+		((OpacityFilter)mainLayerView.getAdapter(StandardFilterView.class).getFilter()).setImageLayer(this);
 		frame.setContentPane(contentPane);
 		frame.setBounds(50, 50, 640, 480);
 		frame1.setContentPane(contentPane1);

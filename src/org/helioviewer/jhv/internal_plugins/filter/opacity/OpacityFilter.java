@@ -4,6 +4,7 @@ import javax.media.opengl.GL2;
 import javax.media.opengl.glu.GLU;
 
 import org.helioviewer.jhv.base.logging.Log;
+import org.helioviewer.jhv.opengl.model.GL3DImageLayer;
 import org.helioviewer.jhv.viewmodel.filter.AbstractFilter;
 import org.helioviewer.jhv.viewmodel.filter.GLFragmentShaderFilter;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLFragmentShaderProgram;
@@ -34,13 +35,13 @@ public class OpacityFilter extends AbstractFilter implements GLFragmentShaderFil
     private float opacity;
     private OpacityShader shader = new OpacityShader();
     private OpacityPanel panel;
-
+    private GL3DImageLayer imageLayer;
     // ////////////////////////////////////////////////////////////////
     // Methods
     // ////////////////////////////////////////////////////////////////
 
     public OpacityFilter(float initialOpacity) {
-        opacity = initialOpacity;
+        this.setOpacity(initialOpacity);
     }
 
     /**
@@ -77,7 +78,7 @@ public class OpacityFilter extends AbstractFilter implements GLFragmentShaderFil
         if (opacity == newOpacity) {
             return;
         }
-
+        if (imageLayer != null) imageLayer.getSphereFragmentShader().setOpacity(newOpacity);
         opacity = newOpacity;
         notifyAllListeners();
     }
@@ -175,4 +176,8 @@ public class OpacityFilter extends AbstractFilter implements GLFragmentShaderFil
             return false;
         }
     }
+
+	public void setImageLayer(GL3DImageLayer imageLayer) {
+		this.imageLayer = imageLayer;
+	}
 }

@@ -58,13 +58,14 @@ public class OpacityPlugin extends SimpleFilterContainer {
             return true;
         }
             
+        /*
         int layerCount = 1;
         for (int i = 0; i < layeredView.getNumLayers(); i++) {
         		MetaData metaData = layeredView.getLayer(i).getAdapter(MetaDataView.class).getMetaData();
-            	if (metaData.hasCorona()) layerCount++;
-        }
+            	if (metaData.hasSphere()) layerCount++;
+        }*/
         
-		initialOpacity = 1.0f / layerCount;
+		initialOpacity = 1.0f;
         return true;
     }
 

@@ -28,6 +28,7 @@ import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.ViewListenerDistributor;
 import org.helioviewer.jhv.gui.components.MoviePanel;
+import org.helioviewer.jhv.gui.components.OverViewPanel;
 import org.helioviewer.jhv.gui.dialogs.MetaDataDialog;
 import org.helioviewer.jhv.io.APIRequestManager;
 import org.helioviewer.jhv.io.FileDownloader;
@@ -939,6 +940,7 @@ public class LayersModel implements ViewListener
     public void removeLayer(int idx)
     {
         idx=invertIndex(idx);
+    	GuiState3DWCS.overViewPanel.removeLayer(idx);
         LayeredView lv=getLayeredView();
         lv.removeLayer(idx);
         Log.debug(">> LayersModel.removeLayer()");
@@ -1059,6 +1061,7 @@ public class LayersModel implements ViewListener
      */
     public void moveLayerUp(View view)
     {
+    	GuiState3DWCS.overViewPanel.moveActiveLayer(OverViewPanel.MOVE_MODE.UP);
         if(view==null)
         {
             return;
@@ -1086,6 +1089,7 @@ public class LayersModel implements ViewListener
      */
     public void moveLayerDown(View view)
     {
+    	GuiState3DWCS.overViewPanel.moveActiveLayer(OverViewPanel.MOVE_MODE.DOWN);
         if(view==null)
         {
             return;

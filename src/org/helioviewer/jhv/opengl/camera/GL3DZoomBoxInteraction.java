@@ -10,7 +10,6 @@ import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.wcs.impl.SolarImageCoordinateSystem;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
-import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRayTracer;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DSceneGraphView;
 
 /**

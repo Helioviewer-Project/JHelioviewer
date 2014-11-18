@@ -1,5 +1,6 @@
 package org.helioviewer.jhv.opengl.shader;
 
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLFragmentShaderProgram;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLShaderBuilder;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLShaderBuilder.GLBuildShaderException;
@@ -14,10 +15,13 @@ public class GL3DImageFragmentShaderProgram extends GLFragmentShaderProgram {
      */
     protected void buildImpl(GLShaderBuilder shaderBuilder) {
         try {
-        	String program = "\tfloat2 texture;" + GLShaderBuilder.LINE_SEP;
+            String program = "\toutput.a = opacity;" + GLShaderBuilder.LINE_SEP;
+
+        	program += "\tfloat2 texture;" + GLShaderBuilder.LINE_SEP;
             program += "\ttexture.x = textureCoordinate.z - 0.5;" + GLShaderBuilder.LINE_SEP;
             program += "\ttexture.y = textureCoordinate.w - 0.5;" + GLShaderBuilder.LINE_SEP;
             
+            shaderBuilder.addEnvParameter("float opacity");
             shaderBuilder.addEnvParameter("float cutOffRadius");
             shaderBuilder.addEnvParameter("float alpha");
             
@@ -34,6 +38,10 @@ public class GL3DImageFragmentShaderProgram extends GLFragmentShaderProgram {
     
     public void setCutOffRadius(double cutOffRadius){
     	this.cutOffRadius = cutOffRadius;
+    }
+    
+    public void setOpacity(float opacity){
+    	this.opacity = opacity;
     }
 
 }
