@@ -303,9 +303,6 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 		this.imageLayers = new GL3DImageLayers();
 		root.addNode(this.imageLayers);
 
-		// this.overlayPlugins = new GL3DOverlayPlugins();
-		// root.addNode(this.overlayPlugins);
-
 		this.hitReferenceShape = new GL3DHitReferenceShape(true);
 		root.addNode(this.hitReferenceShape);
 
