@@ -22,6 +22,7 @@ public class JHVGlobals {
     public static final String TEMP_FILENAME_DELETE_PLUGIN_FILES = "delete-plugins.tmp";
 
     public static final double VERSION = 2.3;
+    public static final String RELEASE = "Beta 1";
 
     /** Constructor is private to prevent instantiation. */
     private JHVGlobals() {

@@ -424,14 +424,7 @@ class J2KReader implements Runnable {
                                 req.setQuery(stepQuerys[current_step].toString());
 
                                 socket.send(req);
-                                if (Boolean.parseBoolean(System.getProperty("export.movie.debug.on"))) {
-                                    try {
-                                        Thread.sleep(5000);
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
-                                    throw new IOException();
-                                }
+
                                 // long start = System.currentTimeMillis();
                                 res = socket.receive();
                                 // if(iamPersistent)

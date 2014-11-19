@@ -184,6 +184,15 @@ public class JPIPSocket extends HTTPSocket {
             reconnect();
         }
         // Writes the result to the output stream.
+        /*try
+        {
+            throw new RuntimeException();
+        }
+        catch(RuntimeException _re)
+        {
+            System.err.println(str.toString());
+            _re.printStackTrace();
+        }*/
         getOutputStream().write(str.toString().getBytes());
     }
 

@@ -648,7 +648,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 	@Override
 	public void layerChanged(int idx) {
-		this.canvas.repaint(15);
+		this.canvas.repaint(1500);
 	}
 
 	@Override
