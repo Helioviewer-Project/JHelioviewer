@@ -265,7 +265,7 @@ public class ImageSelectorPanel extends JPanel implements LayersListener {
      */
     public ImageSelectorPanel() {
         // set up observation dialog
-        observationDialog.addUserInterface("Image Data", observationImagePane);
+        observationDialog.addUserInterface("Image data", observationImagePane);
 
         // add components
         JPanel southPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -283,7 +283,7 @@ public class ImageSelectorPanel extends JPanel implements LayersListener {
         JScrollPane scrollPane = new JScrollPane(layerTable, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 
-        JLabel emptyLabel = new JLabel("No Layers Added yet", JLabel.CENTER);
+        JLabel emptyLabel = new JLabel("No layers added yet", JLabel.CENTER);
         emptyLabel.setFont(emptyLabel.getFont().deriveFont(Font.ITALIC));
         emptyLabel.setHorizontalTextPosition(JLabel.CENTER);
         emptyLabel.setOpaque(true);

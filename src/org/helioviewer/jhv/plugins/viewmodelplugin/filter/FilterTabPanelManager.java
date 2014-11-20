@@ -137,7 +137,6 @@ public class FilterTabPanelManager {
                 for (Component c : this.getComponents()) {
                     c.setEnabled(enabled);
                 }
-
             }
         };
 

@@ -53,7 +53,9 @@ public class HEKEvent implements IntervalComparison<Date> {
     //the points will be subsampled. (no smoothing)
     static final int MAX_OUTLINE_POINTS=256;
     
-    static final double MAX_LINE_SEGMENT_LENGTH=0.05*Constants.SUN_RADIUS;
+    //After subsampling the path segments are subdivided to make sure that all
+    //segments are shorter than this (to account for curvature smoothness)
+    static final double MAX_LINE_SEGMENT_LENGTH=0.04*Constants.SUN_RADIUS;
 
     /**
      * Flag to indicate if the event is currently being displayed in any event popup
@@ -441,8 +443,8 @@ public class HEKEvent implements IntervalComparison<Date> {
      *            - time for which the transformation should be done
      * @return converted screen coordinates, (0.0,0.0) if an error occurs
      */
-    public static Vector2d convertToScreenCoordinates(SphericalCoord stony, Date now) {
-
+    public static Vector2d convertToScreenCoordinates(SphericalCoord stony, Date now)
+    {
         if (stony == null)
             return new Vector2d(0, 0);
 
@@ -470,8 +472,10 @@ public class HEKEvent implements IntervalComparison<Date> {
     
     private static Date lastDate;
     private static double lastBZero;
-    public static Vector3d convertToSceneCoordinates(SphericalCoord stony, Date now) {
-
+    public static Vector3d convertToSceneCoordinates(SphericalCoord stony, Date now)
+    {
+        //see http://jgiesen.de/sunrot/index.html
+        
         if (stony == null)
             return new Vector3d(0, 0, 0);
 
@@ -584,16 +588,12 @@ public class HEKEvent implements IntervalComparison<Date> {
                 }
                 
                 //TODO: fix coordinate conversion
-                /*for(int i=0;i<oldStonyBound.size()-1;i++)
+                for(int i=0;i<oldStonyBound.size()-1;i++)
                 {
                     SphericalCoord a=oldStonyBound.get(i);
                     SphericalCoord b=oldStonyBound.get(i+1);
-                    Vector3d va=HEKCoordinateTransform.StonyhurstToCartesian(a).toVector3d();
-                    Vector3d vb=HEKCoordinateTransform.StonyhurstToCartesian(b).toVector3d();
-                    
-                    System.out.println(a+"   "+ HEKCoordinateTransform.RotationalToStonyhurst(
-                                    HEKCoordinateTransform.CartesianToSpherical(
-                                            new Vector3d(va.z,va.x,va.y))));
+                    Vector3d va=HEKCoordinateTransform.StonyhurstToHeliocentricCartesian(a,0,0).toVector3d();
+                    Vector3d vb=HEKCoordinateTransform.StonyhurstToHeliocentricCartesian(b,0,0).toVector3d();
                     
                     int steps=(int)(va.subtract(vb).length()/MAX_LINE_SEGMENT_LENGTH);
                     if(steps>1)
@@ -602,15 +602,10 @@ public class HEKEvent implements IntervalComparison<Date> {
                         for(int j=1;j<steps;j++)
                         {
                             Vector3d interp=va.add(step.scale(j)).normalize().scale(Constants.SUN_RADIUS);
-                            
-                            
-                            oldStonyBound.add(++i,HEKCoordinateTransform.CartesianToSpherical(interp));
-                            
-                            
-                            
+                            oldStonyBound.add(++i,HEKCoordinateTransform.CartesianToStonyhurst(interp));
                         }
                     }
-                }*/
+                }
                 
                 // remove duplicate end-point
                 oldStonyBound.remove(oldStonyBound.size()-1);
@@ -640,60 +635,24 @@ public class HEKEvent implements IntervalComparison<Date> {
      * @return
      */
     public Vector<GenericTriangle<Vector3d>> getTriangulation3D(Date now) {
-
-
-        if (!cacheValid) {
+        if (!cacheValid)
             return null;
-        }
 
-        if (cachedTriangles != null) {
-
-            Vector<GenericTriangle<Vector3d>> result = new Vector<GenericTriangle<Vector3d>>();
-
-            for (GenericTriangle<SphericalCoord> triangle : cachedTriangles) {
-            	
-            	Vector3d A = convertToSceneCoordinates(triangle.A, now).scale(1.005);
-            	Vector3d B = convertToSceneCoordinates(triangle.B, now).scale(1.005);
-            	Vector3d C = convertToSceneCoordinates(triangle.C, now).scale(1.005);
-				
-                result.add(new GenericTriangle<Vector3d>(A, B, C));
-            }
-            return result;
-        } else {
+        if (cachedTriangles == null)
             return null;
+
+        Vector<GenericTriangle<Vector3d>> result = new Vector<GenericTriangle<Vector3d>>();
+        for (GenericTriangle<SphericalCoord> triangle : cachedTriangles)
+        {
+        	Vector3d A = convertToSceneCoordinates(triangle.A, now).scale(1.005);
+        	Vector3d B = convertToSceneCoordinates(triangle.B, now).scale(1.005);
+        	Vector3d C = convertToSceneCoordinates(triangle.C, now).scale(1.005);
+			
+            result.add(new GenericTriangle<Vector3d>(A, B, C));
         }
+        return result;
     }
 
-    public Vector<GenericTriangle<Vector2d>> getTriangulation(Date now) {
-
-        int timeDifferenceInSeconds = (int) ((now.getTime() - this.getStart().getTime()) / 1000);
-
-        if (!cacheValid) {
-            return null;
-        }
-
-        if (cachedTriangles != null) {
-
-            Vector<GenericTriangle<Vector2d>> result = new Vector<GenericTriangle<Vector2d>>();
-
-            for (GenericTriangle<SphericalCoord> triangle : cachedTriangles) {
-
-                SphericalCoord rotatedA = HEKCoordinateTransform.StonyhurstRotateStonyhurst(triangle.A, timeDifferenceInSeconds);
-                SphericalCoord rotatedB = HEKCoordinateTransform.StonyhurstRotateStonyhurst(triangle.B, timeDifferenceInSeconds);
-                SphericalCoord rotatedC = HEKCoordinateTransform.StonyhurstRotateStonyhurst(triangle.C, timeDifferenceInSeconds);
-                
-                Vector2d A = HEKEvent.convertToScreenCoordinates(rotatedA, now);
-                Vector2d B = HEKEvent.convertToScreenCoordinates(rotatedB, now);
-                Vector2d C = HEKEvent.convertToScreenCoordinates(rotatedC, now);
-
-                result.add(new GenericTriangle<Vector2d>(A, B, C));
-            }
-            return result;
-        } else {
-            return null;
-        }
-    }
-    
     private void cacheTriangulation() {
         Date now = this.getStart();
 

@@ -42,7 +42,6 @@ public final class AboutDialog extends JDialog implements ActionListener, Showab
      */
     public AboutDialog() {
         super(ImageViewerGui.getMainFrame(), "About JHelioviewer", true);
-        setLayout(new BorderLayout());
         setResizable(false);
 
         JPanel contentPane = new JPanel(new BorderLayout());
@@ -58,6 +57,7 @@ public final class AboutDialog extends JDialog implements ActionListener, Showab
         + "</b><br>" + '\u00A9' + "2014 ESA JHelioviewer Team<br>" + "Part of the ESA/NASA Helioviewer project<br><br>" + "JHelioviewer is released under the <br>" + "<a href=JHelioviewer.txt>Mozilla Public License Version 2.0</a><br><br>" + "<a href='http://www.jhelioviewer.org'>www.jhelioviewer.org</a><br><br>" + "Contact: <a href='mailto:Daniel.Mueller@esa.int'>Daniel.Mueller@esa.int</a>" + "</font></center></html>");
         content.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         content.setEditable(false);
+        content.setFocusable(false);
         content.setOpaque(false);
         content.addHyperlinkListener(this);
         contentPane.add(content, BorderLayout.CENTER);
@@ -100,21 +100,24 @@ public final class AboutDialog extends JDialog implements ActionListener, Showab
 
         license.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         license.setEditable(false);
+        license.setFocusable(false);
         license.setOpaque(false);
         license.addHyperlinkListener(this);
         boxPanel.add(license);
 
+        contentPane.add(boxPanel, BorderLayout.SOUTH);
+
         JPanel closeButtonContainer = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         closeButton.addActionListener(this);
         closeButtonContainer.add(closeButton);
-        boxPanel.add(closeButtonContainer);
-
-        contentPane.add(boxPanel, BorderLayout.SOUTH);
-
+        
         scrollPane = new JScrollPane(contentPane);
         scrollPane.getVerticalScrollBar().setBlockIncrement(100);
         scrollPane.getVerticalScrollBar().setUnitIncrement(100);
+        
+        setLayout(new BorderLayout());
         add(scrollPane);
+        add(closeButtonContainer,BorderLayout.SOUTH);
 
         setPreferredSize(new Dimension(getPreferredSize().width + 50, 600));
     }

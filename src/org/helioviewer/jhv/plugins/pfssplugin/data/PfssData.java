@@ -8,7 +8,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
@@ -16,11 +18,13 @@ import javax.media.opengl.GL2;
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.Fits;
-import nom.tam.fits.FitsException;
 
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
+import org.helioviewer.jhv.base.physics.DifferentialRotation;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssSettings;
+import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 
 import com.jogamp.common.nio.Buffers;
 
@@ -30,9 +34,14 @@ import com.jogamp.common.nio.Buffers;
  * @author Stefan Meier (stefan.meier@fhnw.ch)
  * */
 public class PfssData {
+    //[2014-11-18 18:04:00]
+    private static final SimpleDateFormat DATE_FORMAT=
+            new SimpleDateFormat("[yyyy-MM-dd HH:mm:ss]");
+    
+    
 	private byte[] gzipFitsFile = null;
 	private String type = null;
-	private String date = null;
+	private Date date = null;
 	private short[] ptr = null;
 	private short[] ptr_nz_len = null;
 	private short[] ptph = null;
@@ -57,6 +66,7 @@ public class PfssData {
 
 	public boolean read = false;
 	public boolean init = false;
+	public boolean error = false;
 
 	/**
 	 * Constructor
@@ -74,7 +84,7 @@ public class PfssData {
 				BasicHDU hdus[] = fits.read();
 				BinaryTableHDU bhdu = (BinaryTableHDU) hdus[1];
 				type = Arrays.toString((String[]) bhdu.getColumn("TYPE"));
-				date = Arrays.toString((String[]) bhdu.getColumn("DATE_TIME"));
+				date = DATE_FORMAT.parse(Arrays.toString((String[]) bhdu.getColumn("DATE_TIME")));
 				b0 = ((double[]) bhdu.getColumn("B0"))[0];
 				l0 = ((double[]) bhdu.getColumn("L0"))[0];
 				ptr = ((short[][]) bhdu.getColumn("PTR"))[0];
@@ -84,9 +94,10 @@ public class PfssData {
 
 				calculatePositions();
 
-			} catch (FitsException e) {
+			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				error=true;
 			} finally {
 				try {
 					is.close();
@@ -238,10 +249,6 @@ public class PfssData {
 		return type;
 	}
 
-	public String getDate() {
-		return date;
-	}
-
 	public short[] getPtr() {
 		return ptr;
 	}
@@ -259,6 +266,9 @@ public class PfssData {
 	}
 
 	public void init(GL2 gl) {
+	    if(error)
+	        return;
+	    
 		if (gzipFitsFile != null) {
 			if (!read)
 				readFitsFile();
@@ -321,6 +331,19 @@ public class PfssData {
 	public void display(GL gl) {
 		GL2 gl2 = gl.getGL2();
 		
+        gl2.glPushMatrix();
+        
+        //TODO
+        JHVJPXView masterView=LinkedMovieManager.getActiveInstance().getMasterMovie();
+        if(masterView==null || masterView.getCurrentFrameDateTime()==null)
+            return;
+        
+        Date currentDate=masterView.getCurrentFrameDateTime().getTime();
+        if(currentDate==null)
+            return;
+
+        gl2.glRotated(DifferentialRotation.calculateRotationInDegrees(0,(currentDate.getTime()-date.getTime())/1000d),0,1,0);
+		
 		gl2.glEnableClientState(GL2.GL_VERTEX_ARRAY);
 		gl2.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
 		gl2.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
@@ -364,7 +387,7 @@ public class PfssData {
 		gl2.glDisable(GL2.GL_BLEND);
 		gl2.glDepthMask(true);
 		gl2.glLineWidth(1f);
-
+		gl2.glPopMatrix();
 	}
 
 	public boolean isInit() {

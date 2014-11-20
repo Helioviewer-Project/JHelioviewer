@@ -1,15 +1,16 @@
 package org.helioviewer.jhv.gui;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.util.AbstractList;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
 
 import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.gui.components.MoviePanel;
 import org.helioviewer.jhv.gui.components.OverViewPanel;
-import org.helioviewer.jhv.gui.components.QualitySpinner;
 import org.helioviewer.jhv.gui.components.TopToolBar;
 import org.helioviewer.jhv.internal_plugins.SelectedLayerPanel;
 import org.helioviewer.jhv.layers.LayersModel;
@@ -31,7 +32,6 @@ import org.helioviewer.jhv.viewmodel.view.MetaDataView;
 import org.helioviewer.jhv.viewmodel.view.SubimageDataView;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
-import org.helioviewer.jhv.viewmodel.view.jp2view.JP2View;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DCameraView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DComponentView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DLayeredView;
@@ -197,12 +197,12 @@ public class GuiState3DWCS {
 
 			FilterTabPanelManager compactPanelManager = new FilterTabPanelManager();
 			tabList.add(new FilterTab(FilterTabDescriptor.Type.COMPACT_FILTER,
-					"Internal Plugins", compactPanelManager));
+					"", compactPanelManager));
 
 			// If JP2View, add QualitySlider
-			if (newLayer instanceof JP2View) {
+			/*if (newLayer instanceof JP2View) {
 				compactPanelManager.add(new QualitySpinner((JP2View) newLayer));
-			}
+			}*/
 
 			compactPanelManager.add(new SelectedLayerPanel(newLayer));
 
@@ -237,35 +237,37 @@ public class GuiState3DWCS {
 			layeredView.addLayer(nextView);
 
 			// Add JTabbedPane
-			JTabbedPane tabbedPane = new JTabbedPane() {
+	        JPanel tabbedPane = new JPanel() {
 
-				private static final long serialVersionUID = 1L;
+	            private static final long serialVersionUID = 1L;
 
-				/**
-				 * Override the setEnabled method in order to keep the
-				 * containing components' enabledState synced with the
-				 * enabledState of this component.
-				 */
-				public void setEnabled(boolean enabled) {
-					for (int i = 0; i < this.getTabCount(); i++) {
-						this.getComponentAt(i).setEnabled(enabled);
-					}
-				}
-			};
+	            /**
+	             * Override the setEnabled method in order to keep the containing
+	             * components' enabledState synced with the enabledState of this
+	             * component.
+	             */
 
-			// tabbedPane.setTabPlacement(JTabbedPane.BOTTOM);
+	            public void setEnabled(boolean enabled) {
+	                for (Component c : this.getComponents()) {
+	                    c.setEnabled(enabled);
+	                }
+	            }
+	        };
+
+			tabbedPane.setLayout(new BorderLayout());
+			tabbedPane.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
 
 			for (int i = 0; i < tabList.size(); i++) {
 				FilterTab filterTab = tabList.get(i);
 				if (filterTab.getType() == Type.COMPACT_FILTER) {
-					tabbedPane.add(filterTab.getTitle(), filterTab
+					tabbedPane.add(filterTab
 							.getPaneManager().createCompactPanel());
 				}
 			}
 			for (int i = 0; i < tabList.size(); i++) {
 				FilterTab filterTab = tabList.get(i);
 				if (filterTab.getType() != Type.COMPACT_FILTER) {
-					tabbedPane.add(filterTab.getTitle(), filterTab
+					tabbedPane.add(filterTab
 							.getPaneManager().createPanel());
 				}
 			}

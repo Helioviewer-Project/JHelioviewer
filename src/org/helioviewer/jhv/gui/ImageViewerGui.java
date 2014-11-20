@@ -15,26 +15,32 @@ import java.net.URI;
 import java.net.URL;
 import java.util.AbstractList;
 
+import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 
-import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.JHVSplashScreen;
 import org.helioviewer.jhv.base.Message;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
-import org.helioviewer.jhv.gui.components.*;
+import org.helioviewer.jhv.gui.components.ControlPanelContainer;
+import org.helioviewer.jhv.gui.components.ImageSelectorPanel;
+import org.helioviewer.jhv.gui.components.MainContentPanel;
+import org.helioviewer.jhv.gui.components.MainImagePanel;
+import org.helioviewer.jhv.gui.components.MenuBar;
+import org.helioviewer.jhv.gui.components.MoviePanel;
+import org.helioviewer.jhv.gui.components.SideContentPane;
+import org.helioviewer.jhv.gui.components.StatusPanel;
+import org.helioviewer.jhv.gui.components.TopToolBar;
 import org.helioviewer.jhv.gui.components.statusplugins.FramerateStatusPanel;
 import org.helioviewer.jhv.gui.components.statusplugins.JPIPStatusPanel;
 import org.helioviewer.jhv.gui.components.statusplugins.MetaDataStatusPanel;
 import org.helioviewer.jhv.gui.components.statusplugins.PositionStatusPanel;
-import org.helioviewer.jhv.gui.components.statusplugins.QualityStatusPanel;
 import org.helioviewer.jhv.gui.components.statusplugins.ZoomStatusPanel;
 import org.helioviewer.jhv.gui.controller.GL3DCameraMouseController;
 import org.helioviewer.jhv.internal_plugins.SelectedLayerPanel;
@@ -140,7 +146,7 @@ public class ImageViewerGui {
 			// ///////////////////////////////////////////////////////////////////////////////
 
 			ZoomStatusPanel zoomStatusPanel = new ZoomStatusPanel();
-			QualityStatusPanel qualityStatusPanel = new QualityStatusPanel();
+			//QualityStatusPanel qualityStatusPanel = new QualityStatusPanel();
 			FramerateStatusPanel framerateStatus = new FramerateStatusPanel();
 
 			PositionStatusPanel positionStatusPanel = null;
@@ -153,8 +159,8 @@ public class ImageViewerGui {
 
 			StatusPanel statusPanel = new StatusPanel(SIDE_PANEL_WIDTH + 20, 5);
 			statusPanel.addPlugin(zoomStatusPanel, StatusPanel.Alignment.LEFT);
-			statusPanel.addPlugin(qualityStatusPanel,
-					StatusPanel.Alignment.LEFT);
+			/*statusPanel.addPlugin(qualityStatusPanel,
+					StatusPanel.Alignment.LEFT);*/
 			statusPanel.addPlugin(framerateStatus, StatusPanel.Alignment.LEFT);
 			statusPanel.addPlugin(jhvXMLStatusPanel,
 					StatusPanel.Alignment.RIGHT);
@@ -307,7 +313,7 @@ public class ImageViewerGui {
 			// Image adjustments and filters
 			FilterTabPanelManager compactPanelManager = new FilterTabPanelManager();
 			compactPanelManager.add(new OpacityPanel());
-			compactPanelManager.add(new QualitySpinner(null));
+			//compactPanelManager.add(new QualitySpinner(null));
 			compactPanelManager.add(new SOHOLUTPanel());
 			compactPanelManager.add(new SelectedLayerPanel(null));
 			compactPanelManager.add(new GammaCorrectionPanel());
@@ -316,14 +322,11 @@ public class ImageViewerGui {
 			compactPanelManager.add(new ChannelMixerPanel());
 
 			JPanel compactPanel = compactPanelManager.createCompactPanel();
-
-			JTabbedPane tab = new JTabbedPane();
-			tab.addTab("Internal Plugins", compactPanel);
-			tab.setEnabled(false);
 			compactPanel.setEnabled(false);
+            compactPanel.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
 
 			filterPanelContainer = new ControlPanelContainer();
-			filterPanelContainer.setDefaultPanel(tab);
+			filterPanelContainer.setDefaultPanel(compactPanel);
 			leftPane.add("Adjustments", filterPanelContainer, false);
 
 			return leftPane;

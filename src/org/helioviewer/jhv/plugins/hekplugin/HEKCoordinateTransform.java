@@ -8,6 +8,7 @@ import org.helioviewer.jhv.base.math.SphericalCoord;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
+import org.helioviewer.jhv.base.physics.DifferentialRotation;
 
 /**
  * This class copes all coordinate transformations needed in JHV.
@@ -21,40 +22,8 @@ import org.helioviewer.jhv.base.physics.Constants;
  * @author Malte Nuhn
  * 
  */
-public class HEKCoordinateTransform {
-
-    /**
-     * How many radians does the coordinate rotate?
-     * 
-     * @param latitude
-     * @param timeDifferenceInSeconds
-     * @return
-     */
-    public static double calculateRotationInRadians(double latitude, double timeDifferenceInSeconds) {
-        /*
-         * sin2l = sin(latitude)^2 sin4l = sin2l*sin2l rotation =
-         * 1.e-6*dt_rot*(2.894-0.428*sin2l-0.37*sin4l)*180/pi.
-         * 
-         * from rotation rate of small magnetic features (Howard, Harvey, and
-         * Forgach, Solar Physics, 130, 295, 1990)
-         */
-        double sin2l = Math.sin(latitude);
-        sin2l = sin2l * sin2l;
-        double sin4l = sin2l * sin2l;
-        return 1.0e-6 * timeDifferenceInSeconds * (2.894 - 0.428 * sin2l - 0.37 * sin4l);
-    }
-
-    /**
-     * How many degrees does the coordinate rotate?
-     * 
-     * @param latitude
-     * @param timeDifferenceInSeconds
-     * @return
-     */
-    private static double calculateRotationInDegree(double latitude, double timeDifferenceInSeconds) {
-        return calculateRotationInRadians(latitude, timeDifferenceInSeconds) * 180.0 / Math.PI;
-    }
-
+public class HEKCoordinateTransform
+{
     /**
      * Rotanional Spherical Coordinates, where the Z axis is aligned to the
      * NORTH / SOUTH axis
@@ -81,9 +50,9 @@ public class HEKCoordinateTransform {
         SphericalCoord result = CartesianToSpherical(rotational);
 
         return result;
-
     }
 
+    
     /**
      * Inverse operation...
      * 
@@ -94,15 +63,12 @@ public class HEKCoordinateTransform {
 
         CartesianCoord cart = StonyhurstToHeliocentricCartesian(rotational, 0.0, 0.0);
         // switch axis!
-        CartesianCoord stony = new CartesianCoord();
-        stony.x = cart.y;
-        stony.y = cart.z;
-        stony.z = cart.x;
+        CartesianCoord swapped = new CartesianCoord();
+        swapped.x = cart.y;
+        swapped.y = cart.z;
+        swapped.z = cart.x;
 
-        SphericalCoord result = CartesianToSpherical(stony);
-
-        return result;
-
+        return CartesianToSpherical(swapped);
     }
 
     public static SphericalCoord CartesianToSpherical(Vector3d cart) {
@@ -110,22 +76,16 @@ public class HEKCoordinateTransform {
     }
 
     public static SphericalCoord CartesianToSpherical(CartesianCoord cart) {
-        CartesianCoord swapped = new CartesianCoord();
-
-        swapped.x = cart.y;
-        swapped.y = cart.z;
-        swapped.z = cart.x;
-
         SphericalCoord result = new SphericalCoord();
-        result.r = Math.sqrt(swapped.x * swapped.x + swapped.y * swapped.y + swapped.z * swapped.z);
-        result.theta = Math.atan(swapped.z / Math.sqrt(swapped.x * swapped.x + swapped.y * swapped.y)) * MathUtils.RAD_TO_DEG;
-        result.phi = Math.atan2(swapped.y, swapped.x) * MathUtils.RAD_TO_DEG;
+        result.r = Math.sqrt(cart.x * cart.x + cart.y * cart.y + cart.z * cart.z);
+        result.theta = Math.atan(cart.x / Math.sqrt(cart.y * cart.y + cart.z * cart.z)) * MathUtils.RAD_TO_DEG;
+        result.phi = Math.atan2(cart.z, cart.y) * MathUtils.RAD_TO_DEG;
         return result;
     }
 
     public static SphericalCoord StonyhurstRotateStonyhurst(SphericalCoord stony, double timeDifferenceInSeconds) {
         double latitude = stony.theta / 180.0 * Math.PI;
-        double degrees = calculateRotationInDegree(latitude, timeDifferenceInSeconds);
+        double degrees = DifferentialRotation.calculateRotationInDegrees(latitude, timeDifferenceInSeconds);
 
         SphericalCoord result = new SphericalCoord(stony);
 
@@ -141,8 +101,8 @@ public class HEKCoordinateTransform {
      * @param stony
      * @return
      */
-    public static CartesianCoord StonyhurstToHeliocentricCartesian(SphericalCoord stony, double bzero, double phizero) {
-
+    public static CartesianCoord StonyhurstToHeliocentricCartesian(SphericalCoord stony, double bzero, double phizero)
+    {
         CartesianCoord result = new CartesianCoord();
         result.x = stony.r * Math.cos(stony.theta / MathUtils.RAD_TO_DEG) * Math.sin((stony.phi - phizero) / MathUtils.RAD_TO_DEG);
         result.y = stony.r * (Math.sin(stony.theta / MathUtils.RAD_TO_DEG) * Math.cos(bzero / MathUtils.RAD_TO_DEG) - Math.cos(stony.theta / MathUtils.RAD_TO_DEG) * Math.cos((stony.phi - phizero) / MathUtils.RAD_TO_DEG) * Math.sin(bzero / MathUtils.RAD_TO_DEG));
@@ -150,35 +110,14 @@ public class HEKCoordinateTransform {
         return result;
     }
 
-    public static CartesianCoord StonyhurstToCartesian(SphericalCoord stony){
-		CartesianCoord result = new CartesianCoord();
-    	double cosTheta = Math.cos(stony.theta);
-		
-        result.x = stony.r * cosTheta * Math.cos(stony.phi);
-        result.y = stony.r * cosTheta * Math.sin(stony.phi);
-        result.z = stony.r * Math.sin(stony.theta);
-        
+    public static SphericalCoord CartesianToStonyhurst(Vector3d cart){
+        SphericalCoord result = new SphericalCoord();
+        result.r = Math.sqrt(cart.x * cart.x + cart.y * cart.y + cart.z * cart.z);
+        result.theta = Math.asin(cart.y/result.r) * MathUtils.RAD_TO_DEG;
+        result.phi = Math.atan2(cart.x, cart.z) * MathUtils.RAD_TO_DEG;
         return result;
     }
     
-    /**
-     * @param helioCentricFromSat
-     * @return
-     */
-    // public SphericalCoord
-    // HeliocentricCartesiantocorrectHeliocentricCartesian(SphericalCoord
-    // helioCentricFromSat) {
-    /*
-     * HeliocentricEarthEquatorialCoordinates coordinates =
-     * solarCoordinates.convertToHeliocentricEarthEquatorialCoordinates();
-     * observationTime = newObservationTime; x = coordinates.y; double b0 =
-     * Astronomy.getB0InRadians(observationTime); y = coordinates.z *
-     * Math.cos(b0) - coordinates.x * Math.sin(b0); z = coordinates.z *
-     * Math.sin(b0) + coordinates.x * Math.cos(b0);
-     */
-
-    // }
-
     /*
      * HELIOCENTRIC EARTH EQUATORIAL (X,Y,Z)
      * 
