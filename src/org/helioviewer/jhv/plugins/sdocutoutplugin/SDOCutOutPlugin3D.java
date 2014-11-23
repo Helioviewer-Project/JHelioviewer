@@ -47,10 +47,6 @@ public class SDOCutOutPlugin3D implements Plugin {
         return "SDOCutOut Plugin";
     }
 
-    public String getDescription() {
-        return "Plugin for the SDO cut-out-service";
-    }
-
     public String getAboutLicenseText() {
     	return null;
     }

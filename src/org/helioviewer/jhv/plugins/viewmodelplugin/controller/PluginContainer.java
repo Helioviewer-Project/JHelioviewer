@@ -54,13 +54,6 @@ public class PluginContainer implements Container {
     /**
      * {@inheritDoc}
      */
-    public String getDescription() {
-        return this.plugin.getDescription();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public boolean isActive() {
         return this.pluginActive;
     }

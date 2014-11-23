@@ -54,16 +54,6 @@ public class PfssPlugin extends OverlayPlugin implements Plugin {
 
 	/**
 	 * {@inheritDoc}
-	 * <p>
-	 * A description is not needed here because this plug-in is activated always
-	 * and will not be visible in the corresponding dialogs.
-	 */
-	public String getDescription() {
-		return null;
-	}
-
-	/**
-	 * {@inheritDoc}
 	 */
 	public String getName() {
 		return "Pfss Overlay Plugin";

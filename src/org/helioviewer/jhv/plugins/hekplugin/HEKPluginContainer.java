@@ -67,13 +67,6 @@ public class HEKPluginContainer extends OverlayContainer {
     /**
      * {@inheritDoc}
      */
-    public String getDescription() {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public String getName() {
         return "HEK Events";
     }

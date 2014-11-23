@@ -32,13 +32,6 @@ public class SOHOLUTFilterPlugin extends FilterContainer {
     /**
      * {@inheritDoc}
      */
-    public String getDescription() {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public String getName() {
         return "Color Tables";
     }

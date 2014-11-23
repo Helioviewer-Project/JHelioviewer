@@ -45,13 +45,6 @@ public class GammaCorrectionPlugin extends SimpleFilterContainer {
     /**
      * {@inheritDoc}
      */
-    public String getDescription() {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public String getName() {
         return "Gamma Correction";
     }

@@ -41,13 +41,6 @@ public class PfssPluginContainer extends OverlayContainer {
 	/**
 	 * {@inheritDoc}
 	 */
-	public String getDescription() {
-		return null;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public String getName() {
 		return "PFSS";
 	}

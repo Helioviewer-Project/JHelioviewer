@@ -7,11 +7,5 @@ package org.helioviewer.jhv.base.wcs;
  * 
  */
 public interface CoordinateDimension {
-    public String getDescription();
-
-    public double getMinValue();
-
-    public double getMaxValue();
-
     public Unit getUnit();
 }

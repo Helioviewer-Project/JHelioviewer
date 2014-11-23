@@ -22,14 +22,6 @@ public interface Container {
     public String getName();
 
     /**
-     * Returns a short description what the content of the container does.
-     * 
-     * @return Short description what the content of the container does. A null
-     *         value as return value is possible.
-     */
-    public String getDescription();
-
-    /**
      * This method returns if the content is currently activated or not.
      * 
      * @return True if the content is currently used; false otherwise.

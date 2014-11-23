@@ -23,14 +23,6 @@ public interface Plugin {
     public String getName();
 
     /**
-     * This method returns a short description of the plug-in which gives a
-     * short review about the functionality.
-     * 
-     * @return Short description of the plug-in.
-     */
-    public String getDescription();
-
-    /**
      * This method will be called by the JHV application when the user want's to
      * activate the plug-in. The plug-in has to do all necessary things to
      * register and initialize itself in JHV here.
