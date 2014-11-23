@@ -19,7 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JWindow;
 
-import org.helioviewer.jhv.JHVDirectory;
+import org.helioviewer.jhv.Directories;
 import org.helioviewer.jhv.base.Message;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 
@@ -72,7 +72,7 @@ public class FileDownloader {
         }
 
         String name = sourceURI.getPath().substring(sourceURI.getPath().lastIndexOf('/') + 1);
-        String outFileName = JHVDirectory.REMOTEFILES.getPath() + sourceURI.getPath().substring(sourceURI.getPath().lastIndexOf('/') + 1);
+        String outFileName = Directories.REMOTEFILES.getPath() + sourceURI.getPath().substring(sourceURI.getPath().lastIndexOf('/') + 1);
 
         progressBar = new JProgressBar(JProgressBar.HORIZONTAL, 0, 100);
         StandAloneDialog dialog = new StandAloneDialog("Downloading " + name);
@@ -158,7 +158,7 @@ public class FileDownloader {
             return null;
         }
 
-        return new File(JHVDirectory.REMOTEFILES.getPath() + source.getPath().substring(Math.max(0, source.getPath().lastIndexOf("/"))));
+        return new File(Directories.REMOTEFILES.getPath() + source.getPath().substring(Math.max(0, source.getPath().lastIndexOf("/"))));
     }
 
     /**

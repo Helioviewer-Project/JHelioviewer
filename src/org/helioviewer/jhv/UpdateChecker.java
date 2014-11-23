@@ -29,7 +29,7 @@ import org.helioviewer.jhv.gui.dialogs.NewVersionDialog;
  * 
  * @author Helge Dietert
  */
-public class JHVUpdate implements Runnable {
+public class UpdateChecker implements Runnable {
     /**
      * File address to check for updates
      */
@@ -51,7 +51,7 @@ public class JHVUpdate implements Runnable {
      * @throws MalformedURLException
      *             Error while parsing the internal update URL
      */
-    public JHVUpdate() throws MalformedURLException {
+    public UpdateChecker() throws MalformedURLException {
         updateURL = new URL("http://jhelioviewer.org/updateJHV.txt");
         verbose = false;
     }

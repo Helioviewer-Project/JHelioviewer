@@ -8,7 +8,7 @@ import java.net.URL;
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 
-import org.helioviewer.jhv.JHVDirectory;
+import org.helioviewer.jhv.Directories;
 import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.actions.filefilters.JHVStateFilter;
@@ -68,7 +68,7 @@ public class LoadStateAction extends AbstractAction {
         final URL selectedLocation;
 
         if (stateLocation == null) {
-            final JFileChooser fileChooser = new JFileChooser(JHVDirectory.STATES.getPath());
+            final JFileChooser fileChooser = new JFileChooser(Directories.STATES.getPath());
             fileChooser.setAcceptAllFileFilterUsed(false);
             fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
             fileChooser.addChoosableFileFilter(new JHVStateFilter());

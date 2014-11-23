@@ -75,7 +75,7 @@ public class JavaHelioViewer {
         // init log
         try
         {
-            LogSettings.init("/settings/log4j.initial.properties", JHVDirectory.LOGS.getPath(), CommandLineProcessor.isOptionSet("--use-existing-log-time-stamp"));
+            LogSettings.init("/settings/log4j.initial.properties", Directories.LOGS.getPath(), CommandLineProcessor.isOptionSet("--use-existing-log-time-stamp"));
         }
         catch(IOException _ioe)
         {
@@ -91,7 +91,7 @@ public class JavaHelioViewer {
 
         // This attempts to create the necessary directories for the application
         Log.info("Create directories...");
-        JHVGlobals.createDirs();
+        Directories.createDirs();
 
         // Save the log settings. Must be done AFTER the directories are created
         LogSettings.update();
@@ -99,7 +99,7 @@ public class JavaHelioViewer {
         Log.info("Initializing JHelioviewer");
         // display the splash screen
         Log.debug("Create splash screen");
-        JHVSplashScreen splash = JHVSplashScreen.getSingletonInstance();
+        SplashScreen splash = SplashScreen.getSingletonInstance();
 
         int numProgressSteps = 10;
         Log.debug("Number of progress steps: " + numProgressSteps);
@@ -136,8 +136,8 @@ public class JavaHelioViewer {
         }
 
         // Directories where to search for lib config files
-        URI libs = JHVDirectory.LIBS.getFile().toURI();
-        URI libsBackup = JHVDirectory.LIBS_LAST_CONFIG.getFile().toURI();
+        URI libs = Directories.LIBS.getFile().toURI();
+        URI libsBackup = Directories.LIBS_LAST_CONFIG.getFile().toURI();
         URI libsRemote = null;
         try {
             libsRemote = new URI(Settings.getProperty("default.remote.lib.path"));
@@ -173,8 +173,8 @@ public class JavaHelioViewer {
         }
 
         // Apply settings after kakadu engine has been initialized
-        Log.info("Use cache directory: " + JHVDirectory.CACHE.getPath());
-        JP2Image.setCachePath(JHVDirectory.CACHE.getFile());
+        Log.info("Use cache directory: " + Directories.CACHE.getPath());
+        JP2Image.setCachePath(Directories.CACHE.getFile());
 
         Log.info("Update settings");
         Settings.apply();
@@ -197,7 +197,7 @@ public class JavaHelioViewer {
         // Check for updates in parallel, if newer version is available a small
         // message is displayed
         try {
-            JHVUpdate update = new JHVUpdate();
+            UpdateChecker update = new UpdateChecker();
             update.check();
         } catch (MalformedURLException e) {
             // Should never happen
@@ -215,7 +215,7 @@ public class JavaHelioViewer {
 
         // Load Plug ins at the very last point
         Log.info("Load plugin settings");
-        PluginManager.getSingeltonInstance().loadSettings(JHVDirectory.HOME.getPath());
+        PluginManager.getSingeltonInstance().loadSettings(Directories.HOME.getPath());
 
         Log.info("Add internal plugin: " + "FilterPlugin");
         Plugin internalPlugin = new InternalFilterPlugin();

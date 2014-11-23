@@ -24,7 +24,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 
-import org.helioviewer.jhv.JHVSplashScreen;
+import org.helioviewer.jhv.SplashScreen;
 import org.helioviewer.jhv.base.Message;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
@@ -179,7 +179,7 @@ public class ImageViewerGui {
 	 */
 	public void packAndShow(final boolean _show) {
 
-		final JHVSplashScreen splash = JHVSplashScreen.getSingletonInstance();
+		final SplashScreen splash = SplashScreen.getSingletonInstance();
 
 		// load images which should be displayed first in a separated thread
 		// that splash screen will be updated

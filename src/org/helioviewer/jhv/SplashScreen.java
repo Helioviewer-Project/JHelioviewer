@@ -30,7 +30,7 @@ import org.helioviewer.jhv.gui.components.StatusPanel.StatusTextListener;
  * 
  * @author Stephan Pagel
  */
-public class JHVSplashScreen extends JFrame implements StatusTextListener {
+public class SplashScreen extends JFrame implements StatusTextListener {
 
 	// ////////////////////////////////////////////////////////////////
 	// Definitions
@@ -38,7 +38,7 @@ public class JHVSplashScreen extends JFrame implements StatusTextListener {
 
 	private static final long serialVersionUID = 1L;
 
-	private static final JHVSplashScreen SINGLETON = new JHVSplashScreen();
+	private static final SplashScreen SINGLETON = new SplashScreen();
 
 	private SplashImagePanel imagePanel = new SplashImagePanel();
 	private JProgressBar progressBar = new JProgressBar(0, 100);
@@ -53,7 +53,7 @@ public class JHVSplashScreen extends JFrame implements StatusTextListener {
 	/**
 	 * Default constructor.
 	 * */
-	private JHVSplashScreen() {
+	private SplashScreen() {
 
 		// initialize the frame itself
 		initFrame();
@@ -70,7 +70,7 @@ public class JHVSplashScreen extends JFrame implements StatusTextListener {
 	 * 
 	 * @return the only instance of this class.
 	 * */
-	public static JHVSplashScreen getSingletonInstance() {
+	public static SplashScreen getSingletonInstance() {
 		return SINGLETON;
 	}
 

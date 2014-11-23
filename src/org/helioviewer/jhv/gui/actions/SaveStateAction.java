@@ -14,7 +14,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
-import org.helioviewer.jhv.JHVDirectory;
+import org.helioviewer.jhv.Directories;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.base.Message;
 import org.helioviewer.jhv.gui.ImageViewerGui;
@@ -111,7 +111,7 @@ public class SaveStateAction extends AbstractAction {
     private File chooseFile() {
         JFileChooser fileChooser = new JFileChooser(Settings.getProperty("default.local.path"));
         fileChooser.setFileHidingEnabled(false);
-        fileChooser.setCurrentDirectory(JHVDirectory.STATES.getFile());
+        fileChooser.setCurrentDirectory(Directories.STATES.getFile());
         fileChooser.setMultiSelectionEnabled(false);
         fileChooser.setAcceptAllFileFilterUsed(false);
         fileChooser.addChoosableFileFilter(new JHVStateFilter());
@@ -158,7 +158,7 @@ public class SaveStateAction extends AbstractAction {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
 
-        String output = new String(JHVDirectory.STATES.getPath() + "JHV_state_saved_");
+        String output = new String(Directories.STATES.getPath() + "JHV_state_saved_");
         output += dateFormat.format(new Date());
 
         return output;

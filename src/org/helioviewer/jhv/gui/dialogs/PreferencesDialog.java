@@ -20,7 +20,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.text.NumberFormatter;
 
-import org.helioviewer.jhv.JHVDirectory;
+import org.helioviewer.jhv.Directories;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.base.Message;
 import org.helioviewer.jhv.base.logging.Log;
@@ -829,7 +829,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 
 			TableModel model = table.getModel();
 
-			model.setValueAt(JHVDirectory.HOME.getPath(), 0, 1);
+			model.setValueAt(Directories.HOME.getPath(), 0, 1);
 			model.setValueAt("jpip://delphi.nascom.nasa.gov:8090", 1, 1);
 		}
 	}

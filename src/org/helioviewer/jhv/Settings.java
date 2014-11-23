@@ -10,7 +10,7 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_Kdu_cache;
 
 public class Settings
 {
-    private static final Properties defaultProperties = new Properties();
+    private static final Properties DEFAULT_PROPERTIES = new Properties();
 
     /**
      * The private constructor of this class.
@@ -23,15 +23,15 @@ public class Settings
      * */
     public static void load() {
         try {
-            defaultProperties.clear();
+            DEFAULT_PROPERTIES.clear();
 
             InputStream defaultPropStream = FileUtils.getResourceInputStream("/settings/defaults.properties");
-            defaultProperties.load(defaultPropStream);
+            DEFAULT_PROPERTIES.load(defaultPropStream);
             defaultPropStream.close();
-            Log.debug(">> Settings.load() > Load default system settings: " + defaultProperties.toString());
+            Log.debug(">> Settings.load() > Load default system settings: " + DEFAULT_PROPERTIES.toString());
 
             if (getProperty("default.local.path") == null) {
-                setProperty("default.local.path", JHVDirectory.HOME.getPath());
+                setProperty("default.local.path", Directories.HOME.getPath());
             }
         } catch (Exception ex) {
             Log.error(">> Settings.load(boolean) > Could not load settings", ex);
@@ -43,7 +43,7 @@ public class Settings
      */
     public static void apply() {
         try {
-            JHV_Kdu_cache.updateCacheDirectory(JHVDirectory.CACHE.getFile());
+            JHV_Kdu_cache.updateCacheDirectory(Directories.CACHE.getFile());
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -116,6 +116,6 @@ public class Settings
      *            Default field to read
      */
     public static String getProperty(String key) {
-        return Preferences.userRoot().get(key,defaultProperties.getProperty(key));
+        return Preferences.userRoot().get(key,DEFAULT_PROPERTIES.getProperty(key));
     }
 }

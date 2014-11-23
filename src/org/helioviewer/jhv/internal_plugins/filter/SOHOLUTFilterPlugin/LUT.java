@@ -10,7 +10,7 @@ import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.helioviewer.jhv.JHVDirectory;
+import org.helioviewer.jhv.Directories;
 import org.helioviewer.jhv.base.FileUtils;
 import org.helioviewer.jhv.base.logging.Log;
 
@@ -242,7 +242,7 @@ public class LUT {
                 }
             }
             // User addons
-            File addOnDir = JHVDirectory.COLOR_PLUGINS.getFile();
+            File addOnDir = Directories.COLOR_PLUGINS.getFile();
             for (File f : addOnDir.listFiles(new GGRFilter())) {
                 // Try to add f
                 try {

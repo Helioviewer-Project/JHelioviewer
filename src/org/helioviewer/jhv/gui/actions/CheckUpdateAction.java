@@ -5,7 +5,7 @@ import java.net.MalformedURLException;
 
 import javax.swing.AbstractAction;
 
-import org.helioviewer.jhv.JHVUpdate;
+import org.helioviewer.jhv.UpdateChecker;
 import org.helioviewer.jhv.base.logging.Log;
 
 /**
@@ -28,9 +28,9 @@ public class CheckUpdateAction extends AbstractAction {
      * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
      */
     public void actionPerformed(ActionEvent arg0) {
-        JHVUpdate update;
+        UpdateChecker update;
         try {
-            update = new JHVUpdate();
+            update = new UpdateChecker();
             update.setVerbose(true);
             update.check();
         } catch (MalformedURLException e) {
