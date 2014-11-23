@@ -70,6 +70,7 @@ public class PfssPlugin3dRenderer extends PhysicalRenderer3d {
 	 */
 	public void setDisplayRange(Date start, Date end) throws IOException {
 		manager.setDateRange(start, end);
+		
 	}
 
 	public void setVisible(boolean visible) {

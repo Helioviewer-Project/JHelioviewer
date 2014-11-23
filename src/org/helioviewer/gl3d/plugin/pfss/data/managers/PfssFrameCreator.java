@@ -4,6 +4,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.helioviewer.gl3d.plugin.pfss.data.PfssData;
+import org.helioviewer.gl3d.plugin.pfss.data.PfssDataDecompressor;
 import org.helioviewer.gl3d.plugin.pfss.data.PfssFrame;
 
 /**
@@ -27,7 +28,7 @@ public class PfssFrameCreator {
 	 */
 	public PfssFrame createFrameAsync(PfssData data) {
 		PfssFrame frame = new PfssFrame(data.getDateRange());
-		PfssDataToFrameConverter r = new PfssDataToFrameConverter(data,frame,initializer);
+		PfssDataDecompressor r = new PfssDataDecompressor(data,frame,initializer);
 		pool.execute(r);
 		return frame;
 	}

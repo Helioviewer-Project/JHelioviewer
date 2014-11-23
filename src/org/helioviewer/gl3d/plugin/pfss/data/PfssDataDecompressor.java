@@ -1,4 +1,4 @@
-package org.helioviewer.gl3d.plugin.pfss.data.managers;
+package org.helioviewer.gl3d.plugin.pfss.data;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -11,9 +11,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.helioviewer.base.physics.Constants;
-import org.helioviewer.gl3d.plugin.pfss.data.FileDescriptor;
-import org.helioviewer.gl3d.plugin.pfss.data.PfssData;
-import org.helioviewer.gl3d.plugin.pfss.data.PfssFrame;
+import org.helioviewer.gl3d.plugin.pfss.data.managers.PfssFrameInitializer;
 import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
 
 import com.jogamp.common.nio.Buffers;
@@ -29,12 +27,12 @@ import nom.tam.fits.FitsException;
  * @author Jonas Schwammberger
  *
  */
-public class PfssDataToFrameConverter implements Runnable {
+public class PfssDataDecompressor implements Runnable {
 	private final PfssData data;
 	private final PfssFrame frame;
 	private final PfssFrameInitializer initializer;
 
-	public PfssDataToFrameConverter(PfssData data, PfssFrame frame,
+	public PfssDataDecompressor(PfssData data, PfssFrame frame,
 			PfssFrameInitializer initializer) {
 		this.data = data;
 		this.frame = frame;
@@ -387,7 +385,7 @@ public class PfssDataToFrameConverter implements Runnable {
 		PfssData d = new PfssData(f,s+"fitsOut.fits");
 		d.loadData();
 		PfssFrame frame = new PfssFrame(f);
-		PfssDataToFrameConverter r = new PfssDataToFrameConverter(d, frame, null);
+		PfssDataDecompressor r = new PfssDataDecompressor(d, frame, null);
 		r.readData();
 		
 	}
