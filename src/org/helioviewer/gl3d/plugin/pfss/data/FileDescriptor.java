@@ -34,6 +34,10 @@ public class FileDescriptor implements Comparable<Date> {
 		return (startDate.before(d) & endDate.after(d)) |  startDate.equals(d) | endDate.equals(d);
 	}
 	
+	public Date getStartDate() {
+		return this.startDate;
+	}
+	
 	public int getYear() {
 		return endCal.get(Calendar.YEAR);
 	}

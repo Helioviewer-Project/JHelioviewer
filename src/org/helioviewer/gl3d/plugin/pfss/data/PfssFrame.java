@@ -7,8 +7,11 @@ import java.util.Date;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
+import org.helioviewer.base.physics.DifferentialRotation;
 import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
 import org.helioviewer.gl3d.scenegraph.math.GL3DVec3f;
+import org.helioviewer.viewmodel.view.LinkedMovieManager;
+import org.helioviewer.viewmodel.view.jp2view.JHVJPXView;
 
 import com.jogamp.common.nio.Buffers;
 
@@ -133,6 +136,17 @@ public class PfssFrame {
 	 */
 	public void display(GL gl, Date time) {
 		if(isInit && gl != null) {
+			
+			JHVJPXView masterView=(JHVJPXView) LinkedMovieManager.getActiveInstance().getMasterMovie();
+	        if(masterView==null || masterView.getCurrentFrameDateTime()==null)
+	            return;
+	        
+	        Date currentDate=masterView.getCurrentFrameDateTime().getTime();
+	        if(currentDate==null)
+	            return;
+	        
+	        
+	        
 			GL2 gl2 = gl.getGL2();
 			gl2.glEnableClientState(GL2.GL_VERTEX_ARRAY);
 			gl2.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
@@ -147,6 +161,9 @@ public class PfssFrame {
 			gl2.glVertexPointer(3, GL2.GL_FLOAT, 0, 0);
 			GL3DVec3f color;
 	
+			//merged
+			gl2.glRotated(DifferentialRotation.calculateRotationInDegrees(0,(currentDate.getTime()-descriptor.getStartDate().getTime())/1000d),0,1,0);
+			
 			gl2.glLineWidth(PfssSettings.LINE_WIDTH);
 			// gl.glPrimitiveRestartIndexNV(0);
 	
