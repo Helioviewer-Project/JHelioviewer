@@ -21,7 +21,7 @@ import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterPlugin;
  * 
  * @author Stephan Pagel
  */
-public class InternalFilterPlugin extends FilterPlugin implements InternalPlugin {
+public class InternalFilterPlugin extends FilterPlugin {
 
     /**
      * Default constructor.
