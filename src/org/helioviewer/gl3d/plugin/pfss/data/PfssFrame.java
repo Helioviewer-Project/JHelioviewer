@@ -8,6 +8,7 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
 import org.helioviewer.base.physics.DifferentialRotation;
+import org.helioviewer.gl3d.plugin.pfss.data.caching.Cacheable;
 import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
 import org.helioviewer.gl3d.scenegraph.math.GL3DVec3f;
 import org.helioviewer.viewmodel.view.LinkedMovieManager;
@@ -24,7 +25,7 @@ import com.jogamp.common.nio.Buffers;
  * @author Jonas Schwammberger
  *
  */
-public class PfssFrame {
+public class PfssFrame implements Cacheable {
 	private volatile boolean isLoaded = false;
 	private volatile boolean isInit = false;
 	private final FileDescriptor descriptor;
@@ -218,6 +219,7 @@ public class PfssFrame {
 		return isLoaded;
 	}
 	
+	@Override
 	public FileDescriptor getDescriptor() {
 		return this.descriptor;
 	}

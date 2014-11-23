@@ -15,9 +15,14 @@ public class PfssSettings {
 	public final static String PLUGIN_LOCATION = "PfssPlugin";
 
 	/**
-	 * Maximal preload of cache data.
+	 * Maximal number of frames the plugin reads ahead
 	 */
 	public final static int PRELOAD = 10;
+	
+	/**
+	 * size of frame cache, should be bigger than preload
+	 */
+	public final static int FRAME_CACHE = 20;
 
 	/**
 	 * Maximal preload of cache data.

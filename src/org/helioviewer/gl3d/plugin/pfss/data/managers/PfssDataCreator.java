@@ -18,14 +18,11 @@ import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
  */
 public class PfssDataCreator {
 	private final ExecutorService pool = Executors.newCachedThreadPool();
-	private final FileDescriptorManager manager;
 	
-	public PfssDataCreator(FileDescriptorManager manager) {
-		this.manager = manager;
+	public PfssDataCreator() {
 	}
 		
-	public PfssData getDataAsync(int fileIndex) {
-		FileDescriptor desc = manager.getFileDescriptor(fileIndex);
+	public PfssData getDataAsync(FileDescriptor desc) {
 		PfssData d = new PfssData(desc,this.createURL(desc));
 		pool.execute(d);
 		return d;

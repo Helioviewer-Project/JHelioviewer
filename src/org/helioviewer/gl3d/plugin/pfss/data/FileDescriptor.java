@@ -58,5 +58,10 @@ public class FileDescriptor implements Comparable<Date> {
 			return this.endDate.compareTo(o);
 	}
 	
+	@Override
+	public int hashCode() {
+		return endDate.hashCode();
+	}
+	
 	
 }

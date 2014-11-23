@@ -10,6 +10,8 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.helioviewer.gl3d.plugin.pfss.data.caching.Cacheable;
+
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.Fits;
@@ -21,7 +23,7 @@ import nom.tam.fits.Fits;
  * @author Jonas Schwammberger
  *
  */
-public class PfssData implements Runnable {
+public class PfssData implements Runnable, Cacheable {
 	private volatile boolean isLoaded = false;
 	private volatile byte[] rawData;
 	private final Lock lock = new ReentrantLock();
@@ -115,7 +117,8 @@ public class PfssData implements Runnable {
 		
 	}
 	
-	public FileDescriptor getDateRange() {
+	@Override
+	public FileDescriptor getDescriptor() {
 		return this.descriptor;
 	}
 }

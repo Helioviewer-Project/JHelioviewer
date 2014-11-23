@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.media.opengl.GL2;
 
+import org.helioviewer.gl3d.plugin.pfss.data.FileDescriptor;
 import org.helioviewer.gl3d.plugin.pfss.data.PfssData;
 import org.helioviewer.gl3d.plugin.pfss.data.PfssFrame;
 import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
@@ -31,7 +32,7 @@ public class FrameManager {
 
 	public FrameManager() {
 		descriptorManager = new FileDescriptorManager();
-		dataCreator = new PfssDataCreator(descriptorManager);
+		dataCreator = new PfssDataCreator();
 		initializer = new PfssFrameInitializer();
 		frameCreator = new PfssFrameCreator(initializer);
 		preloadQueue = new PfssFrame[PfssSettings.PRELOAD];
@@ -98,7 +99,8 @@ public class FrameManager {
 	 * @param index
 	 */
 	private void loadFollowing(int index) {
-		PfssData d = dataCreator.getDataAsync(nextFileIndex);
+		FileDescriptor descriptor = descriptorManager.getFileDescriptor(nextFileIndex);
+		PfssData d = dataCreator.getDataAsync(descriptor);
 		nextFileIndex = ++nextFileIndex % descriptorManager.getNumberOfFiles();
 		preloadQueue[index] = frameCreator.createFrameAsync(d);
 	}
@@ -125,7 +127,8 @@ public class FrameManager {
 			lastIndex = preloadQueue.length-1;
 			
 			for(int i = 0; i < preloadQueue.length;i++) {
-				PfssData data = dataCreator.getDataAsync(nextFileIndex);
+				FileDescriptor descriptor = descriptorManager.getFileDescriptor(nextFileIndex);
+				PfssData data = dataCreator.getDataAsync(descriptor);
 				preloadQueue[i] = frameCreator.createFrameAsync(data);
 				
 				nextFileIndex = ++nextFileIndex % descriptorManager.getNumberOfFiles();
