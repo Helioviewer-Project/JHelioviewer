@@ -34,7 +34,7 @@
             <zipfileset dir="../../lib" includes="gluegen-rt-natives-macosx-universal.jar"/>
             <zipfileset dir="../../lib" includes="gluegen-rt-natives-windows-amd64.jar"/>
             <zipfileset dir="../../lib" includes="gluegen-rt-natives-windows-i586.jar"/>
-            <zipfileset dir="../../lib" includes="jogl-all-natives-android-armv6.jar"/>
+            <zipfileset dir="../../lib" includes="jogl-all-natives-linux-amd64.jar"/>
             <zipfileset dir="../../lib" includes="jogl-all-natives-linux-i586.jar"/>
             <zipfileset dir="../../lib" includes="jogl-all-natives-macosx-universal.jar"/>
             <zipfileset dir="../../lib" includes="jogl-all-natives-windows-amd64.jar"/>
