@@ -63,6 +63,8 @@ public class SplashScreen extends JFrame implements StatusTextListener {
 
 		// show the splash screen
 		setVisible(true);
+		
+		setAlwaysOnTop(true);
 	}
 
 	/**

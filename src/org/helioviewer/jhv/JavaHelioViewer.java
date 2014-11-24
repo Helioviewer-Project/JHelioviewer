@@ -98,14 +98,10 @@ public class JavaHelioViewer {
 
         Log.info("Initializing JHelioviewer");
         // display the splash screen
-        Log.debug("Create splash screen");
         SplashScreen splash = SplashScreen.getSingletonInstance();
 
         int numProgressSteps = 10;
-        Log.debug("Number of progress steps: " + numProgressSteps);
         splash.setProgressSteps(numProgressSteps);
-
-        splash.setProgressText("Initializing JHelioviewer...");
 
         // Load settings from file but do not apply them yet
         // The settings must not be applied before the kakadu engine has been
