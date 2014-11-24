@@ -241,21 +241,6 @@ public class LUT {
                     Log.warn("Could not restore gimp gradient file " + file, e);
                 }
             }
-            // User addons
-            File addOnDir = Directories.COLOR_PLUGINS.getFile();
-            for (File f : addOnDir.listFiles(new GGRFilter())) {
-                // Try to add f
-                try {
-                    LUT l = readGimpGradientFile(f);
-                    standardList.put(l.getName(), l);
-                } catch (FileNotFoundException e) {
-                    Log.warn("Error loading color table plugin dir", e);
-                } catch (GradientError e) {
-                    Log.warn("Error loading color table plugin dir", e);
-                } catch (IOException e) {
-                    Log.warn("Error loading color table plugin dir", e);
-                }
-            }
         }
         return new TreeMap<String, LUT>(standardList);
     }

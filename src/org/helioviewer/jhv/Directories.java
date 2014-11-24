@@ -33,26 +33,6 @@ public enum Directories {
             return new File(getPath());
         }
     },
-    /** The shared library directory. */
-    LIBS {
-        public String getPath() {
-            return HOME.getPath() + "Libs" + File.separator;
-        }
-
-        public File getFile() {
-            return new File(getPath());
-        }
-    },
-    /** The shared library directory. */
-    LIBS_LAST_CONFIG {
-        public String getPath() {
-            return HOME.getPath() + "Libs" + File.separator + "LastConfig" + File.separator;
-        }
-
-        public File getFile() {
-            return new File(getPath());
-        }
-    },
     /** The JHV state directory. */
     STATES {
         public String getPath() {
@@ -77,16 +57,6 @@ public enum Directories {
     REMOTEFILES {
         public String getPath() {
             return HOME.getPath() + "Downloads" + File.separator;
-        }
-
-        public File getFile() {
-            return new File(getPath());
-        }
-    },
-    /** Directory of automatically loaded GIMP gradient files. */
-    COLOR_PLUGINS {
-        public String getPath() {
-            return HOME.getPath() + "Colortables" + File.separator;
         }
 
         public File getFile() {
