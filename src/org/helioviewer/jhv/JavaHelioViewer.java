@@ -256,14 +256,14 @@ public class JavaHelioViewer {
 			tmpLibDir = Files.createTempDirectory("jhv-libs");
 			tmpLibDir.toFile().deleteOnExit();
 
-			String directory = File.separator + "libs" + File.separator;
+			String directory = "/libs/";
 			if (os != null && arch != null) {
 				os = os.toLowerCase();
 				arch = arch.toLowerCase();
 				if (os.indexOf("windows") != -1) {
-					directory += "windows" + File.separator;
+					directory += "windows/";
 					if (arch.indexOf("64") != -1) {
-						directory += "64" + File.separator;
+						directory += "64/";
 						loadJNILibary(tmpLibDir, directory, "msvcr100.dll");
 						loadJNILibary(tmpLibDir, directory, "kdu_v63R.dll");
 						loadJNILibary(tmpLibDir, directory, "kdu_a63R.dll");
@@ -271,7 +271,7 @@ public class JavaHelioViewer {
 						loadExecuteLibary(tmpLibDir, directory,
 								"cgc-windows-x86-64.exe", "cgc");
 					} else if (arch.indexOf("86") != -1) {
-						directory += "32" + File.separator;
+						directory += "32/";
 						loadJNILibary(tmpLibDir, directory, "msvcr100.dll");
 						loadJNILibary(tmpLibDir, directory, "kdu_v63R.dll");
 						loadJNILibary(tmpLibDir, directory, "kdu_a63R.dll");
@@ -284,15 +284,15 @@ public class JavaHelioViewer {
 					}
 
 				} else if (os.indexOf("linux") != -1) {
-					directory += "linux" + File.separator;
+					directory += "linux/";
 					if (arch.indexOf("64") != -1) {
-						directory += "64" + File.separator;
+						directory += "64/";
 						loadJNILibary(tmpLibDir, directory,
 								"libkdu_jni-linux-x86-64-glibc-2-7.so");
 						loadExecuteLibary(tmpLibDir, directory,
 								"cgc-linux-x86-64", "cgc");
 					} else if (arch.indexOf("86") != -1) {
-						directory += "32" + File.separator;
+						directory += "32/";
 						loadJNILibary(tmpLibDir, directory,
 								"libkdu_jni-linux-x86-32-glibc-2-7.so");
 						loadExecuteLibary(tmpLibDir, directory,
@@ -302,7 +302,7 @@ public class JavaHelioViewer {
 								+ os + " - arch: " + arch);
 					}
 				} else if (os.indexOf("mac os x") != -1) {
-					directory += "mac" + File.separator;
+					directory += "mac/";
 					loadJNILibary(tmpLibDir, directory,
 							"libkdu_jni-mac-x86-64.jnilib");
 					loadExecuteLibary(tmpLibDir, directory, "cgc-mac", "cgc");
