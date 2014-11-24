@@ -15,7 +15,17 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import kdu_jni.*;
+import kdu_jni.Jp2_palette;
+import kdu_jni.Jp2_threadsafe_family_src;
+import kdu_jni.Jpx_codestream_source;
+import kdu_jni.Jpx_source;
+import kdu_jni.KduException;
+import kdu_jni.Kdu_channel_mapping;
+import kdu_jni.Kdu_codestream;
+import kdu_jni.Kdu_coords;
+import kdu_jni.Kdu_dims;
+import kdu_jni.Kdu_region_compositor;
+import kdu_jni.Kdu_tile;
 
 import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.base.math.Interval;

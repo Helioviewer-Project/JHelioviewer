@@ -1,15 +1,19 @@
 package org.helioviewer.jhv;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Method;
+import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Locale;
 import java.util.TimeZone;
 
 import javax.swing.UIManager;
 
+import org.helioviewer.jhv.base.FileUtils;
 import org.helioviewer.jhv.base.Message;
 import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.base.logging.LogSettings;
@@ -118,43 +122,13 @@ public class JavaHelioViewer {
         setPlatform();
         Log.info("OS: " + System.getProperty("jhv.os") + " - arch: " + System.getProperty("jhv.arch") + " - java arch: " + System.getProperty("jhv.java.arch"));
 
-        // Remove about menu on mac
-        if (System.getProperty("jhv.os").equals("mac")) {
-            try {
-                Class<?> applicationClass = Class.forName("com.apple.eawt.Application");
-                Method getSingletonApplication = applicationClass.getMethod("getApplication", (Class<?>[]) null);
-                Object application = getSingletonApplication.invoke(applicationClass.newInstance());
-                Method removeAboutMenuItem = applicationClass.getMethod("removeAboutMenuItem", (Class<?>[]) null);
-                removeAboutMenuItem.invoke(application);
-            } catch (Exception e) {
-                Log.warn(">> JavaHelioViewer.main(String[]) > Failed to disable native Mac OS about menu. Probably not running on Mac OS", e);
-            }
-        }
-
-        // Directories where to search for lib config files
-        URI libs = Directories.LIBS.getFile().toURI();
-        URI libsBackup = Directories.LIBS_LAST_CONFIG.getFile().toURI();
-        URI libsRemote = null;
-        try {
-            libsRemote = new URI(Settings.getProperty("default.remote.lib.path"));
-        } catch (URISyntaxException e1) {
-            Log.error("Invalid uri for remote library server");
-        }
-
         /* ----------Setup kakadu ----------- */
         Log.debug("Instantiate Kakadu engine");
         KakaduEngine engine = new KakaduEngine();
 
         splash.nextStep();
         splash.setProgressText("Initializing Kakadu libraries...");
-        Log.info("Try to load Kakadu libraries");
-        if (null == ResourceLoader.getSingletonInstance().loadResource("kakadu", libsRemote, libs, libs, libsBackup, System.getProperties())) {
-            Log.fatal("Could not load Kakadu libraries");
-            Message.err("Error loading Kakadu libraries", "Fatal error! The kakadu libraries could not be loaded. The log output may contain additional information.", true);
-            return;
-        } else {
-            Log.info("Successfully loaded Kakadu libraries");
-        }
+		loadLibraries();
 
         // The following code-block attempts to start the native message
         // handling
@@ -176,18 +150,6 @@ public class JavaHelioViewer {
         Settings.apply();
 
         /* ----------Setup OpenGL ----------- */
-
-        splash.nextStep();
-        splash.setProgressText("Loading OpenGL libraries...");
-
-        Log.info("Try to install CG Compiler");
-        if (null == ResourceLoader.getSingletonInstance().loadResource("cgc", libsRemote, libs, libs, libsBackup, System.getProperties())) {
-            Log.error("Could not install CG Compiler");
-            Message.err("Error installing CG Compiler", "The CG Compiler could not be installed. JHelioviewer will run in software mode.", false);
-        } else {
-            Log.info("Successfully installed CG Compiler");
-        }
-
         splash.nextStep();
 
         // Check for updates in parallel, if newer version is available a small
@@ -229,55 +191,189 @@ public class JavaHelioViewer {
 
     }
 
-    /**
-     * Reads the builtin Java properties to determine the platform and set
-     * simplified properties used by JHelioviewer.
-     */
-    private static void setPlatform()
-    {
-            String os = System.getProperty("os.name");
-            String arch = System.getProperty("os.arch");
-            String javaArch = System.getProperty("sun.arch.data.model");
+	/**
+	 * Reads the builtin Java properties to determine the platform and set
+	 * simplified properties used by JHelioviewer.
+	 */
+	private static void setPlatform() {
+		String os = System.getProperty("os.name");
+		String arch = System.getProperty("os.arch");
+		String javaArch = System.getProperty("sun.arch.data.model");
 
-            System.setProperty("jhv.java.arch", javaArch);
+		System.setProperty("jhv.java.arch", javaArch);
 
-            if (os != null && arch != null) {
-                os = os.toLowerCase();
-                arch = arch.toLowerCase();
-                if (os.indexOf("windows") != -1) {
-                    System.setProperty("jhv.os", "windows");
-                    if (arch.indexOf("64") != -1)
-                        System.setProperty("jhv.arch", "x86-64");
-                    else if (arch.indexOf("86") != -1)
-                        System.setProperty("jhv.arch", "x86-32");
-                    else {
-                        Log.error(">> Platform > Could not determine platform. OS: " + os + " - arch: " + arch);
-                    }
-                } else if (os.indexOf("linux") != -1) {
-                    System.setProperty("jhv.os", "linux");
-                    if (arch.indexOf("64") != -1)
-                        System.setProperty("jhv.arch", "x86-64");
-                    else if (arch.indexOf("86") != -1)
-                        System.setProperty("jhv.arch", "x86-32");
-                    else {
-                        Log.error(">> Platform > Could not determine platform. OS: " + os + " - arch: " + arch);
-                    }
-                } else if (os.indexOf("mac os x") != -1) {
-                    System.setProperty("jhv.os", "mac");
-                    if (arch.indexOf("ppc") != -1)
-                        System.setProperty("jhv.arch", "ppc");
-                    else if (arch.indexOf("64") != -1)
-                        System.setProperty("jhv.arch", "x86-64");
-                    else if (arch.indexOf("86") != -1)
-                        System.setProperty("jhv.arch", "x86-32");
-                    else {
-                        Log.error(">> Platform > Could not determine platform. OS: " + os + " - arch: " + arch);
-                    }
-                } else {
-                    Log.error(">> Platform > Could not determine platform. OS: " + os + " - arch: " + arch);
-                }
-            } else {
-                Log.error(">> Platform > Could not determine platform. OS: " + os + " - arch: " + arch);
-            }
-    }
+		if (os != null && arch != null) {
+			os = os.toLowerCase();
+			arch = arch.toLowerCase();
+			if (os.indexOf("windows") != -1) {
+				System.setProperty("jhv.os", "windows");
+				if (arch.indexOf("64") != -1)
+					System.setProperty("jhv.arch", "x86-64");
+				else if (arch.indexOf("86") != -1)
+					System.setProperty("jhv.arch", "x86-32");
+				else {
+					Log.error(">> Platform > Could not determine platform. OS: "
+							+ os + " - arch: " + arch);
+				}
+			} else if (os.indexOf("linux") != -1) {
+				System.setProperty("jhv.os", "linux");
+				if (arch.indexOf("64") != -1)
+					System.setProperty("jhv.arch", "x86-64");
+				else if (arch.indexOf("86") != -1)
+					System.setProperty("jhv.arch", "x86-32");
+				else {
+					Log.error(">> Platform > Could not determine platform. OS: "
+							+ os + " - arch: " + arch);
+				}
+			} else if (os.indexOf("mac os x") != -1) {
+				System.setProperty("jhv.os", "mac");
+				if (arch.indexOf("ppc") != -1)
+					System.setProperty("jhv.arch", "ppc");
+				else if (arch.indexOf("64") != -1)
+					System.setProperty("jhv.arch", "x86-64");
+				else if (arch.indexOf("86") != -1)
+					System.setProperty("jhv.arch", "x86-32");
+				else {
+					Log.error(">> Platform > Could not determine platform. OS: "
+							+ os + " - arch: " + arch);
+				}
+			} else {
+				Log.error(">> Platform > Could not determine platform. OS: "
+						+ os + " - arch: " + arch);
+			}
+		} else {
+			Log.error(">> Platform > Could not determine platform. OS: " + os
+					+ " - arch: " + arch);
+		}
+	}
+
+	private static void loadLibraries() {
+
+		String os = System.getProperty("os.name");
+		String arch = System.getProperty("os.arch");
+		Path tmpLibDir;
+		try {
+			tmpLibDir = Files.createTempDirectory("jhv-libs");
+			tmpLibDir.toFile().deleteOnExit();
+
+			String directory = File.separator + "libs" + File.separator;
+			if (os != null && arch != null) {
+				os = os.toLowerCase();
+				arch = arch.toLowerCase();
+				if (os.indexOf("windows") != -1) {
+					directory += "windows" + File.separator;
+					if (arch.indexOf("64") != -1) {
+						directory += "64" + File.separator;
+						loadJNILibary(tmpLibDir, directory, "msvcr100.dll");
+						loadJNILibary(tmpLibDir, directory, "kdu_v63R.dll");
+						loadJNILibary(tmpLibDir, directory, "kdu_a63R.dll");
+						loadJNILibary(tmpLibDir, directory, "kdu_jni.dll");
+						loadExecuteLibary(tmpLibDir, directory,
+								"cgc-windows-x86-64.exe", "cgc");
+					} else if (arch.indexOf("86") != -1) {
+						directory += "32" + File.separator;
+						loadJNILibary(tmpLibDir, directory, "msvcr100.dll");
+						loadJNILibary(tmpLibDir, directory, "kdu_v63R.dll");
+						loadJNILibary(tmpLibDir, directory, "kdu_a63R.dll");
+						loadJNILibary(tmpLibDir, directory, "kdu_jni.dll");
+						loadExecuteLibary(tmpLibDir, directory,
+								"cgc-windows-x86-32.exe", "cgc");
+					} else {
+						Log.error(">> Platform > Could not determine platform. OS: "
+								+ os + " - arch: " + arch);
+					}
+
+				} else if (os.indexOf("linux") != -1) {
+					directory += "linux" + File.separator;
+					if (arch.indexOf("64") != -1) {
+						directory += "64" + File.separator;
+						loadJNILibary(tmpLibDir, directory,
+								"libkdu_jni-linux-x86-64-glibc-2-7.so");
+						loadExecuteLibary(tmpLibDir, directory,
+								"cgc-linux-x86-64", "cgc");
+					} else if (arch.indexOf("86") != -1) {
+						directory += "32" + File.separator;
+						loadJNILibary(tmpLibDir, directory,
+								"libkdu_jni-linux-x86-32-glibc-2-7.so");
+						loadExecuteLibary(tmpLibDir, directory,
+								"cgc-linux-x86-32", "cgc");
+					} else {
+						Log.error(">> Platform > Could not determine platform. OS: "
+								+ os + " - arch: " + arch);
+					}
+				} else if (os.indexOf("mac os x") != -1) {
+					directory += "mac" + File.separator;
+					loadJNILibary(tmpLibDir, directory,
+							"libkdu_jni-mac-x86-64.jnilib");
+					loadExecuteLibary(tmpLibDir, directory, "cgc-mac", "cgc");
+				} else {
+					Log.error(">> Platform > Could not determine platform. OS: "
+							+ os + " - arch: " + arch);
+				}
+			} else {
+				Log.error(">> Platform > Could not determine platform. OS: "
+						+ os + " - arch: " + arch);
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	private static void loadJNILibary(Path tmpPath, String directory,
+			String name) {
+		InputStream in = JavaHelioViewer.class.getResourceAsStream(directory
+				+ name);
+		byte[] buffer = new byte[1024];
+		int read = -1;
+		File tmp = new File(tmpPath.toFile(), name);
+		FileOutputStream fos;
+		try {
+			fos = new FileOutputStream(tmp);
+			while ((read = in.read(buffer)) != -1) {
+				fos.write(buffer, 0, read);
+			}
+			fos.close();
+			in.close();
+
+			System.load(tmp.getAbsolutePath());
+			tmp.deleteOnExit();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	private static void loadExecuteLibary(Path tmpPath, String directory,
+			String name, String executableName) {
+		InputStream in = JavaHelioViewer.class.getResourceAsStream(directory
+				+ name);
+		byte[] buffer = new byte[1024];
+		int read = -1;
+		File tmp = new File(tmpPath.toFile(), name);
+		FileOutputStream fos;
+		try {
+			fos = new FileOutputStream(tmp);
+			while ((read = in.read(buffer)) != -1) {
+				fos.write(buffer, 0, read);
+			}
+			fos.close();
+			in.close();
+			tmp.setExecutable(true);
+			FileUtils.registerExecutable(executableName, tmp.getAbsolutePath());
+			tmp.deleteOnExit();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
 }

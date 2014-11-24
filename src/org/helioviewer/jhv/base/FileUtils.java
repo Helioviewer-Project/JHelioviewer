@@ -163,26 +163,6 @@ public class FileUtils {
         }
 
         if (!registered) {
-            if (!System.getProperty("jhv.os").equals("windows")) {
-                String[] cmd = { "chmod", "u+x", path };
-                try {
-                    Log.debug(">> FileUtils.registerExecutable(" + identifier + ", " + path + ") > Executing 'chmod u+x " + path + "'");
-                    Process process = Runtime.getRuntime().exec(cmd);
-                    logProcessOutput(process, "chmod", Level.DEBUG, true);
-                    process.waitFor();
-                    registered = (process.exitValue() == 0);
-                    process.destroy();
-                } catch (IOException e) {
-                    Log.error(">> FileUtils.registerExecutable(" + identifier + ", " + path + ") > Error while executing chmod on file. The executable may not work.", e);
-                } catch (InterruptedException e) {
-                    Log.error(">> FileUtils.registerExecutable(" + identifier + ", " + path + ") > Interrupted while waiting for chmod to finish.", e);
-                }
-            } else {
-                registered = true;
-            }
-        }
-
-        if (!registered) {
             Log.fatal(">> FileUtils.registerExecutable(" + identifier + ", " + path + ") > Error while registering executable '" + identifier + "' in '" + path + "'");
         } else {
             registeredExecutables.put(identifier, path);
