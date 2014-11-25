@@ -96,6 +96,15 @@ public class StatusPanel extends JPanel {
             rightPanel.add((JLabel) newPlugin, 0);
         }
     }
+    
+    public void addLabel(JLabel label, Alignment alignment){
+    	if (label == null) return;
+    	if (alignment == Alignment.LEFT) {
+            leftPanel.add(label);
+        } else {
+            rightPanel.add(label, 0);
+        }
+    }
 
     /**
      * Removes a plugin from the status panel.
