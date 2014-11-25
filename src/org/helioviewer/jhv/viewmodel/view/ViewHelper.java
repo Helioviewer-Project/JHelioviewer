@@ -483,15 +483,10 @@ public final class ViewHelper {
                 
                 JP2Image jp2Image = new JP2Image(uri, downloadURI);
 
-                if (jp2Image.isMultiFrame()) {
                     JHVJPXView jpxView = new JHVJPXView(isMainView);
                     jpxView.setJP2Image(jp2Image);
                     return jpxView;
-                } else {
-                    JHVJP2View jp2View = new JHVJP2View(isMainView);
-                    jp2View.setJP2Image(jp2Image);
-                    return jp2View;
-                }
+                
             } catch (Exception e) {
                 Log.debug("ViewerHelper::loadView(\"" + uri + "\", \"" + downloadURI + "\", \"" + isMainView + "\") ", e);
                 throw new IOException(e.getMessage());

@@ -143,14 +143,13 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
         });
         
         System.err.close();
-        
+        // Close all threads (excluding systemsthreads, just stopp the timer thread from the system)
         for(Thread thr:Thread.getAllStackTraces().keySet())
-            if(thr!=Thread.currentThread())
-                thr.suspend();
+            if(thr!=Thread.currentThread() && (!thr.getThreadGroup().getName().equalsIgnoreCase("system") || thr.getName().contains("Timer")))
+            	thr.suspend();
         for(Thread thr:Thread.getAllStackTraces().keySet())
-            if(thr!=Thread.currentThread())
-                thr.stop();
-
+        	if(thr!=Thread.currentThread() && (!thr.getThreadGroup().getName().equalsIgnoreCase("system") || thr.getName().contains("Timer")))
+                    thr.stop();
         String msg = "JHelioviewer: " + JHVGlobals.VERSION + "\n";
         msg += "Date: " + new Date() + "\n";
         msg += "JVM: " + System.getProperty("java.vm.name") + " " + System.getProperty("java.vm.version") + " (JRE " + System.getProperty("java.specification.version") + ")\n";
@@ -199,7 +198,7 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
         new Thread(new Runnable()
         {
             public void run()
-            {
+            {	
                 EventQueue.invokeLater(new Runnable()
                 {
                     public void run()
