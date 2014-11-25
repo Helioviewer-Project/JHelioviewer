@@ -66,20 +66,27 @@ public class GL3DRayTracer {
 					LR.scale((double)x).subtract(LU.scale((double)y)).scale(pixelSize));
 			ray = GL3DRay.createPrimaryRay(EYE, dir);
 		} else {
-			Vector3d dir = new Vector3d(0, 0, -1.0);
-			Vector3d eye = new Vector3d(camera.getTranslation()
-					.negate());
+		    
+		    Matrix4d cameraRotation = camera.getRotation().toMatrix();
+		    
+			Vector3d dir = cameraRotation.multiply(new Vector3d(0, 0, -1.0));
+			Vector3d up = cameraRotation.multiply(new Vector3d(0, -1.0, 0));
+			Vector3d right = cameraRotation.multiply(new Vector3d(1.0, 0, 0));
+			Vector3d eye = cameraRotation.multiply(new Vector3d(camera.getTranslation()
+					.negate()));
+			
 			double height = camera.getZTranslation()
 					* Math.tanh(Math.toRadians(camera.getFOV()));
 			Dimension dimension = GuiState3DWCS.mainComponentView
 					.getCanavasSize();
 			double unitPerPixel = height / dimension.getHeight();
 			
-			eye = new Vector3d(
-			        eye.x + unitPerPixel * (x - dimension.getWidth() / 2.0),
-			        eye.y + unitPerPixel * (y - dimension.getHeight() / 2.0),
-			        eye.z);
-			ray = GL3DRay.createPrimaryRay(eye, dir);
+			ray = GL3DRay.createPrimaryRay(
+			        eye.add(
+			                right.scale(unitPerPixel * (x - dimension.getWidth() / 2.0))
+			        )
+			        .add(up.scale(unitPerPixel * (y - dimension.getHeight() / 2.0)))
+			      , dir);
 		}
 		return ray;
 	}
