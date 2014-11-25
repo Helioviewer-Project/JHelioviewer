@@ -67,7 +67,10 @@ public class TimeTextField extends JTextField {
      */
     public String getFormattedInput() {
         try {
-            return FORMATTER.format(FORMATTER.parse(getText()));
+            synchronized(FORMATTER)
+            {
+                return FORMATTER.format(FORMATTER.parse(getText()));
+            }
         } catch (ParseException e) {
             return DEFAULT_TIME;
         }
@@ -79,14 +82,17 @@ public class TimeTextField extends JTextField {
      * @return Date with selected time (or defaultTime if invalid)
      */
     public Date getValue() {
-        try {
-            return FORMATTER.parse(getText());
-        } catch (ParseException e) {
+        synchronized(FORMATTER)
+        {
             try {
-                return FORMATTER.parse(DEFAULT_TIME);
-            } catch (ParseException e1) {
-                // The default time should always parseable
-                return null;
+                return FORMATTER.parse(getText());
+            } catch (ParseException e) {
+                try {
+                    return FORMATTER.parse(DEFAULT_TIME);
+                } catch (ParseException e1) {
+                    // The default time should always parseable
+                    return null;
+                }
             }
         }
     }
@@ -105,6 +111,9 @@ public class TimeTextField extends JTextField {
      *            new time to set
      */
     public void setValue(Date time) {
-        setText(FORMATTER.format(time));
+        synchronized(FORMATTER)
+        {
+            setText(FORMATTER.format(time));
+        }
     }
 }

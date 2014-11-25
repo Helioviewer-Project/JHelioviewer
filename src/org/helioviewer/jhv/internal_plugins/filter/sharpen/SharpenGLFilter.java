@@ -25,7 +25,7 @@ public class SharpenGLFilter extends SharpenFilter implements GLFragmentShaderFi
     /**
      * Fragment shader performing the unsharp mask algorithm.
      */
-    private class UnsharpMaskingShader extends GLFragmentShaderProgram {
+    private static class UnsharpMaskingShader extends GLFragmentShaderProgram {
         private GLTextureCoordinate pixelSizeParam;
         private GLTextureCoordinate weightingParam;
 

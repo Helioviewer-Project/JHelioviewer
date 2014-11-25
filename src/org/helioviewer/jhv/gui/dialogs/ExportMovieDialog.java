@@ -386,7 +386,7 @@ public class ExportMovieDialog implements ActionListener{
 	
 
 
-	public class ProgressDialog extends JDialog implements ActionListener{
+	public static class ProgressDialog extends JDialog implements ActionListener{
 		
     private static final long serialVersionUID=-488930636247393662L;
     private JProgressBar progressBar;

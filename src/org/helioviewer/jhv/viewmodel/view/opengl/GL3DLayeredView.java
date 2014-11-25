@@ -22,16 +22,7 @@ import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.region.Region;
 import org.helioviewer.jhv.viewmodel.region.RegionAdapter;
 import org.helioviewer.jhv.viewmodel.region.StaticRegion;
-import org.helioviewer.jhv.viewmodel.view.AbstractView;
-import org.helioviewer.jhv.viewmodel.view.LayeredView;
-import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
-import org.helioviewer.jhv.viewmodel.view.MetaDataView;
-import org.helioviewer.jhv.viewmodel.view.RegionView;
-import org.helioviewer.jhv.viewmodel.view.SubimageDataView;
-import org.helioviewer.jhv.viewmodel.view.View;
-import org.helioviewer.jhv.viewmodel.view.ViewHelper;
-import org.helioviewer.jhv.viewmodel.view.ViewListener;
-import org.helioviewer.jhv.viewmodel.view.ViewportView;
+import org.helioviewer.jhv.viewmodel.view.*;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJP2View;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLFragmentShaderView;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLMinimalFragmentShaderProgram;
@@ -71,7 +62,7 @@ public class GL3DLayeredView extends AbstractView implements LayeredView, Region
      * precomputed view adapters.
      * 
      */
-    public class Layer {
+    public static class Layer {
         public View view;
 
         public RegionView regionView;
@@ -159,16 +150,22 @@ public class GL3DLayeredView extends AbstractView implements LayeredView, Region
     }
 
     public void render3D(GL3DState state) {
-        renderLock.lock();
-        for (int i = 0; i < this.getNumLayers(); i++) {
-            View layerView = this.getLayer(i);
-            if (layerView instanceof GL3DView) {
-                ((GL3DView) layerView).render3D(state);
-            } else if (layerView instanceof GLView) {
-                ((GLView) layerView).renderGL(state.gl, true);
+        try
+        {
+            renderLock.lock();
+            for (int i = 0; i < this.getNumLayers(); i++) {
+                View layerView = this.getLayer(i);
+                if (layerView instanceof GL3DView) {
+                    ((GL3DView) layerView).render3D(state);
+                } else if (layerView instanceof GLView) {
+                    ((GLView) layerView).renderGL(state.gl, true);
+                }
             }
         }
-        renderLock.unlock();
+        finally
+        {
+            renderLock.unlock();
+        }
     }
 
     /**

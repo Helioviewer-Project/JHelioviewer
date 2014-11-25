@@ -12,7 +12,6 @@ import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.region.Region;
 import org.helioviewer.jhv.viewmodel.region.StaticRegion;
 import org.helioviewer.jhv.viewmodel.view.fitsview.JHVFITSView;
-import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJP2View;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JP2Image;
 import org.helioviewer.jhv.viewmodel.viewport.StaticViewport;

@@ -32,16 +32,8 @@ import org.helioviewer.jhv.gui.components.OverViewPanel;
 import org.helioviewer.jhv.gui.dialogs.MetaDataDialog;
 import org.helioviewer.jhv.io.APIRequestManager;
 import org.helioviewer.jhv.io.FileDownloader;
-import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
-import org.helioviewer.jhv.viewmodel.changeevent.ChangedReason;
-import org.helioviewer.jhv.viewmodel.changeevent.LayerChangedReason;
+import org.helioviewer.jhv.viewmodel.changeevent.*;
 import org.helioviewer.jhv.viewmodel.changeevent.LayerChangedReason.LayerChangeType;
-import org.helioviewer.jhv.viewmodel.changeevent.NonConstantMetaDataChangedReason;
-import org.helioviewer.jhv.viewmodel.changeevent.RegionChangedReason;
-import org.helioviewer.jhv.viewmodel.changeevent.SubImageDataChangedReason;
-import org.helioviewer.jhv.viewmodel.changeevent.TimestampChangedReason;
-import org.helioviewer.jhv.viewmodel.changeevent.ViewChainChangedReason;
-import org.helioviewer.jhv.viewmodel.changeevent.ViewportChangedReason;
 import org.helioviewer.jhv.viewmodel.io.APIResponse;
 import org.helioviewer.jhv.viewmodel.io.APIResponseDump;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
@@ -1574,7 +1566,7 @@ public class LayersModel implements ViewListener
         }
     }
 
-    public class StateParser extends DefaultHandler
+    public static class StateParser extends DefaultHandler
     {
 
         /**

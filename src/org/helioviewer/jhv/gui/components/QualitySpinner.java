@@ -102,7 +102,7 @@ public class QualitySpinner extends JPanel implements ChangeListener, ViewListen
 
     }
 
-    class QualityLevel {
+    static class QualityLevel {
 
         int level = 1;
         int max = 1;
@@ -119,7 +119,6 @@ public class QualitySpinner extends JPanel implements ChangeListener, ViewListen
         public int getLevel() {
             return this.level;
         }
-
     }
 
     public int getDetails() {

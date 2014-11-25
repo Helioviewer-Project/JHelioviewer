@@ -222,13 +222,13 @@ public class HEKEvent implements IntervalComparison<Date> {
      *            read the value from this property.
      * @return value of passed property, null if property does not exist
      */
-    public Boolean getBoolean(String key) {
+    public boolean getBoolean(String key) {
         // name = name.toLowerCase();
         try {
             return eventObject.getBoolean(key);
         } catch (JSONException e) {
             Log.fatal("HEKEvent.getBoolean('" + key + "') >> " + e.getMessage());
-            return null;
+            return false;
         }
     }
 
@@ -365,7 +365,7 @@ public class HEKEvent implements IntervalComparison<Date> {
      * 
      * @author Malte Nuhn
      */
-    public class HEKEventException extends Exception {
+    public static class HEKEventException extends Exception {
 
         private static final long serialVersionUID = 1L;
     }

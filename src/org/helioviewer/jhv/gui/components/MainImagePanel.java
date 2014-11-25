@@ -217,7 +217,7 @@ public class MainImagePanel extends BasicImagePanel {
      * 
      * @author Stephan Pagel
      * */
-    private class NoImagePostRenderer implements ScreenRenderer {
+    private static class NoImagePostRenderer implements ScreenRenderer {
 
         private BufferedImage image = null;
         private Dimension size = new Dimension(0, 0);

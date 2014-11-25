@@ -707,7 +707,7 @@ public class JHVCalendar extends JPanel implements ComponentListener {
      * @author Stephan Pagel
      * 
      */
-    private class CenterTableCellRenderer extends DefaultTableCellRenderer {
+    private static class CenterTableCellRenderer extends DefaultTableCellRenderer {
 
         // ////////////////////////////////////////////////////////////
         // Definitions

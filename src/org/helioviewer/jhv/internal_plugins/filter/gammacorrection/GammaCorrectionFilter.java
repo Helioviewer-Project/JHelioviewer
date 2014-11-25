@@ -67,7 +67,7 @@ public class GammaCorrectionFilter extends AbstractFilter implements GLFragmentS
     /**
      * Fragment shader for applying the gamma correction.
      */
-    private class GammaCorrectionShader extends GLFragmentShaderProgram {
+    private static class GammaCorrectionShader extends GLFragmentShaderProgram {
         private GLTextureCoordinate gammaParam;
 
         /**

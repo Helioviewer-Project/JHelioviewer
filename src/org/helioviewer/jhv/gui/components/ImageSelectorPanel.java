@@ -116,8 +116,14 @@ public class ImageSelectorPanel extends JPanel implements LayersListener {
                         try {
                             Date startDate = start.getTime();
                             Date endDate = end.getTime();
-                            Date obsStartDate = ImageDataPanel.API_DATE_FORMAT.parse(observationImagePane.getStartTime());
-                            Date obsEndDate = ImageDataPanel.API_DATE_FORMAT.parse(observationImagePane.getEndTime());
+                            Date obsStartDate;
+                            Date obsEndDate;
+                            synchronized(ImageDataPanel.API_DATE_FORMAT)
+                            {
+                                obsStartDate = ImageDataPanel.API_DATE_FORMAT.parse(observationImagePane.getStartTime());
+                                obsEndDate = ImageDataPanel.API_DATE_FORMAT.parse(observationImagePane.getEndTime());
+                            }
+                            
                             // only updates if its really necessary with a
                             // tolerance of an hour
                             final int tolerance = 60 * 60 * 1000;

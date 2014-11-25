@@ -90,37 +90,42 @@ public abstract class GL3DMesh extends GL3DShape {
     }
 
     protected void recreateMesh(GL3DState state) {
-        meshLock.lock();
-
-        this.positionVBO.disable(state);
-        this.normalVBO.disable(state);
-        this.colorVBO.disable(state);
-        this.texcoordVBO.disable(state);
-        this.indexVBO.disable(state);
-
-        this.positionVBO.delete(state);
-        this.normalVBO.delete(state);
-        this.colorVBO.delete(state);
-        this.texcoordVBO.delete(state);
-        this.indexVBO.delete(state);
-
-        positions.clear();
-        normals.clear();
-        colors.clear();
-        textCoords.clear();
-        indices.clear();
-        
-        this.primitive = this.createMesh(state, positions, normals, textCoords, indices, colors);
-
-        this.positionVBO = GL3DBuffer.createPositionBuffer(state, positions);
-        this.normalVBO = GL3DBuffer.createNormalBuffer(state, normals);
-        this.colorVBO = GL3DBuffer.createColorBuffer(state, colors);
-        this.texcoordVBO = GL3DBuffer.create2DTextureCoordinateBuffer(state, textCoords);
-        this.indexVBO = GL3DBuffer.createIndexBuffer(state, indices);
-
-        this.triangles = buildTriangles();
-
-        meshLock.unlock();
+        try
+        {
+            meshLock.lock();
+    
+            this.positionVBO.disable(state);
+            this.normalVBO.disable(state);
+            this.colorVBO.disable(state);
+            this.texcoordVBO.disable(state);
+            this.indexVBO.disable(state);
+    
+            this.positionVBO.delete(state);
+            this.normalVBO.delete(state);
+            this.colorVBO.delete(state);
+            this.texcoordVBO.delete(state);
+            this.indexVBO.delete(state);
+    
+            positions.clear();
+            normals.clear();
+            colors.clear();
+            textCoords.clear();
+            indices.clear();
+            
+            this.primitive = this.createMesh(state, positions, normals, textCoords, indices, colors);
+    
+            this.positionVBO = GL3DBuffer.createPositionBuffer(state, positions);
+            this.normalVBO = GL3DBuffer.createNormalBuffer(state, normals);
+            this.colorVBO = GL3DBuffer.createColorBuffer(state, colors);
+            this.texcoordVBO = GL3DBuffer.create2DTextureCoordinateBuffer(state, textCoords);
+            this.indexVBO = GL3DBuffer.createIndexBuffer(state, indices);
+    
+            this.triangles = buildTriangles();
+        }
+        finally
+        {
+            meshLock.unlock();
+        }
     }
 
     public void shapeDraw(GL3DState state) {

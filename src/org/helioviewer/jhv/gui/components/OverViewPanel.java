@@ -459,11 +459,9 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 		StringBuilder shaderCode = new StringBuilder();
 		String line = null;
 		
-		BufferedReader br=new BufferedReader(new InputStreamReader(OverViewPanel.class.getResourceAsStream(shaderName)));
-		try {
+		try(BufferedReader br=new BufferedReader(new InputStreamReader(OverViewPanel.class.getResourceAsStream(shaderName)))) {
 			while ((line = br.readLine()) != null){
 				shaderCode.append(line);
-				
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -479,8 +477,8 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 	private void loadLutFromFile(String lutTxtName){
 		String line = null;
 		
-		try {
-	        BufferedReader br=new BufferedReader(new InputStreamReader(OverViewPanel.class.getResourceAsStream(lutTxtName),"UTF-8"));
+		try(BufferedReader br=new BufferedReader(new InputStreamReader(OverViewPanel.class.getResourceAsStream(lutTxtName),"UTF-8")))
+		{
 			while ((line = br.readLine()) != null){
 				lutMap.put(line, this.nextAvaibleLut++);
 			}

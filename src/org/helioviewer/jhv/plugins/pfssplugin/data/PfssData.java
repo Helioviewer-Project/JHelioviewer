@@ -84,7 +84,10 @@ public class PfssData {
 				BasicHDU hdus[] = fits.read();
 				BinaryTableHDU bhdu = (BinaryTableHDU) hdus[1];
 				type = Arrays.toString((String[]) bhdu.getColumn("TYPE"));
-				date = DATE_FORMAT.parse(Arrays.toString((String[]) bhdu.getColumn("DATE_TIME")));
+				synchronized(DATE_FORMAT)
+				{
+				    date = DATE_FORMAT.parse(Arrays.toString((String[]) bhdu.getColumn("DATE_TIME")));
+				}
 				b0 = ((double[]) bhdu.getColumn("B0"))[0];
 				l0 = ((double[]) bhdu.getColumn("L0"))[0];
 				ptr = ((short[][]) bhdu.getColumn("PTR"))[0];

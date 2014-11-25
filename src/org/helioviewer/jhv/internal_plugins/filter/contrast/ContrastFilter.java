@@ -67,7 +67,7 @@ public class ContrastFilter extends AbstractFilter implements GLFragmentShaderFi
     /**
      * Fragment shader for enhancing the contrast.
      */
-    private class ContrastShader extends GLFragmentShaderProgram {
+    private static class ContrastShader extends GLFragmentShaderProgram {
         private GLTextureCoordinate contrastParam;
 
         /**

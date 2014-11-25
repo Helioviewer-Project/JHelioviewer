@@ -86,7 +86,7 @@ public class OpacityFilter extends AbstractFilter implements GLFragmentShaderFil
     /**
      * Fragment shader setting the opacity.
      */
-    private class OpacityShader extends GLFragmentShaderProgram {
+    private static class OpacityShader extends GLFragmentShaderProgram {
         private GLTextureCoordinate alphaParam;
 
         /**

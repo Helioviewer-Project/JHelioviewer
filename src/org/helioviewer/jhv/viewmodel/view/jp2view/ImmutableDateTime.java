@@ -24,6 +24,12 @@ public class ImmutableDateTime implements Comparable<ImmutableDateTime> {
     /** Internal class that holds date/time information. */
     protected Calendar calendar;
 
+    static
+    {
+        DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT+0000"));
+        TIME_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT+0000"));
+    }
+    
     /**
      * The constructor that populates the fields of the internal Calendar
      * object. No arguments may be negative or an exception will be thrown.
@@ -36,8 +42,6 @@ public class ImmutableDateTime implements Comparable<ImmutableDateTime> {
             calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+00:00"));
             calendar.clear();
             calendar.set(_year, _month, _day, _hour, _minute, _second);
-            DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT+0000"));
-            TIME_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT+0000"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -52,8 +56,6 @@ public class ImmutableDateTime implements Comparable<ImmutableDateTime> {
             calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+00:00"));
             calendar.clear();
             calendar.setTimeInMillis(seconds * 1000);
-            DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT+0000"));
-            TIME_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT+0000"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -68,8 +70,6 @@ public class ImmutableDateTime implements Comparable<ImmutableDateTime> {
             calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+00:00"));
             calendar.clear();
             calendar.setTimeInMillis(original.getMillis());
-            DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT+0000"));
-            TIME_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT+0000"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -94,12 +94,18 @@ public class ImmutableDateTime implements Comparable<ImmutableDateTime> {
 
     /** Returns the internal Date formatted to a String appropriately. */
     public String getFormattedDate() {
-        return DATE_FORMAT.format(calendar.getTime());
+        synchronized(DATE_FORMAT)
+        {
+            return DATE_FORMAT.format(calendar.getTime());
+        }
     }
 
     /** Returns the internal Time formatted to a String appropriately. */
     public String getFormattedTime() {
-        return TIME_FORMAT.format(calendar.getTime());
+        synchronized(DATE_FORMAT)
+        {
+            return TIME_FORMAT.format(calendar.getTime());
+        }
     }
 
     public Date getTime() {

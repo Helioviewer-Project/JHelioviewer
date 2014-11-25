@@ -8,7 +8,6 @@ import org.helioviewer.jhv.gui.interfaces.ImagePanelInputController;
 import org.helioviewer.jhv.viewmodel.view.RegionView;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.ViewHelper;
-import org.helioviewer.jhv.viewmodel.view.ViewportView;
 
 /**
  * Abstract base class implementing ImagePanelInputController.
@@ -29,7 +28,6 @@ public abstract class AbstractImagePanelMouseController implements ImagePanelInp
 
     protected volatile View view;
     protected volatile RegionView regionView;
-    protected volatile ViewportView viewportView;
     protected volatile BasicImagePanel imagePanel;
     protected volatile Vector2i mousePosition = null;
 
@@ -74,7 +72,6 @@ public abstract class AbstractImagePanelMouseController implements ImagePanelInp
     public void setView(View newView) {
         view = newView;
         regionView = ViewHelper.getViewAdapter(view, RegionView.class);
-        viewportView = ViewHelper.getViewAdapter(view, ViewportView.class);
     }
 
     /**

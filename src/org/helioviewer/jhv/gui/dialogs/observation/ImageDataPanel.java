@@ -15,18 +15,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JSpinner;
-import javax.swing.ListCellRenderer;
-import javax.swing.SpinnerNumberModel;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 import org.helioviewer.jhv.Settings;
@@ -466,10 +455,13 @@ public class ImageDataPanel extends ObservationDialogPanel {
             EventQueue.invokeAndWait(new Runnable() {
                 public void run() {
                     calendarEndDate.setDate(gregorianCalendar.getTime());
-                    textEndTime.setText(TimeTextField.FORMATTER.format(gregorianCalendar.getTime()));
                     gregorianCalendar.add(GregorianCalendar.DAY_OF_MONTH, -1);
                     calendarStartDate.setDate(gregorianCalendar.getTime());
-                    textStartTime.setText(TimeTextField.FORMATTER.format(gregorianCalendar.getTime()));
+                    synchronized(TimeTextField.FORMATTER)
+                    {
+                        textEndTime.setText(TimeTextField.FORMATTER.format(gregorianCalendar.getTime()));
+                        textStartTime.setText(TimeTextField.FORMATTER.format(gregorianCalendar.getTime()));
+                    }
                 }
             });
         }
@@ -482,7 +474,10 @@ public class ImageDataPanel extends ObservationDialogPanel {
          */
         public void setEndDate(Date newEnd) {
             calendarEndDate.setDate(newEnd);
-            textEndTime.setText(TimeTextField.FORMATTER.format(newEnd));
+            synchronized(TimeTextField.FORMATTER)
+            {
+                textEndTime.setText(TimeTextField.FORMATTER.format(newEnd));
+            }
         }
 
         /**
@@ -493,7 +488,10 @@ public class ImageDataPanel extends ObservationDialogPanel {
          */
         public void setStartDate(Date newStart) {
             calendarStartDate.setDate(newStart);
-            textStartTime.setText(TimeTextField.FORMATTER.format(newStart));
+            synchronized(TimeTextField.FORMATTER)
+            {
+                textStartTime.setText(TimeTextField.FORMATTER.format(newStart));
+            }
         }
 
         /**
@@ -576,7 +574,7 @@ public class ImageDataPanel extends ObservationDialogPanel {
      * @author Stephan Pagel
      * */
     @SuppressWarnings("unused")
-    private class CadencePanel extends JPanel implements ActionListener {
+    private static class CadencePanel extends JPanel implements ActionListener {
 
         // //////////////////////////////////////////////////////////////////////////
         // Definitions

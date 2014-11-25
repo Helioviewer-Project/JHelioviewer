@@ -206,7 +206,7 @@ public class GLCommonRenderGraphics {
         scalingShader = null;
     }
 
-    private class StringFontPair {
+    private static class StringFontPair {
         public String string;
         public Font font;
 

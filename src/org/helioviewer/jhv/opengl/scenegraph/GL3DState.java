@@ -1,6 +1,5 @@
 package org.helioviewer.jhv.opengl.scenegraph;
 
-import java.util.Date;
 import java.util.Stack;
 
 import javax.media.opengl.GL;
@@ -36,8 +35,6 @@ public class GL3DState {
     protected int viewportWidth;
     protected int viewportHeight;
 
-    public Date currentObservationDate;
-    
     public enum VISUAL_TYPE {
 		MODE_2D, MODE_3D
 	};

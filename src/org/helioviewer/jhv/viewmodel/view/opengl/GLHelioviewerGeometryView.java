@@ -211,7 +211,7 @@ public class GLHelioviewerGeometryView extends AbstractGLView implements Heliovi
      * third texture coordinate before transforming the vertices, to the
      * physical position is still available for fragment shader.
      */
-    private class GeometryVertexShaderProgram extends GLVertexShaderProgram {
+    private static class GeometryVertexShaderProgram extends GLVertexShaderProgram {
 
         /**
          * {@inheritDoc}

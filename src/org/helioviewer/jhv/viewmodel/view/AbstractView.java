@@ -30,9 +30,15 @@ public abstract class AbstractView implements View {
      * {@inheritDoc}
      */
     public void addViewListener(ViewListener l) {
-        lock.writeLock().lock();
-        listeners.add(l);
-        lock.writeLock().unlock();
+        try
+        {
+            lock.writeLock().lock();
+            listeners.add(l);
+        }
+        finally
+        {
+            lock.writeLock().unlock();
+        }
     }
 
     /**
@@ -46,9 +52,15 @@ public abstract class AbstractView implements View {
      * {@inheritDoc}
      */
     public void removeViewListener(ViewListener l) {
-        lock.writeLock().lock();
-        listeners.remove(l);
-        lock.writeLock().unlock();
+        try
+        {
+            lock.writeLock().lock();
+            listeners.remove(l);
+        }
+        finally
+        {
+            lock.writeLock().unlock();
+        }
     }
 
     /**

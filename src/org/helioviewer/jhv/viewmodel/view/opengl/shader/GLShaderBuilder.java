@@ -462,7 +462,7 @@ public class GLShaderBuilder {
      * 
      * @see GLShaderBuilder#addTextureParameter(String)
      */
-    private class GLShaderTextureCoordinate extends GLTextureCoordinate {
+    private static class GLShaderTextureCoordinate extends GLTextureCoordinate {
 
         /**
          * Default constructor.

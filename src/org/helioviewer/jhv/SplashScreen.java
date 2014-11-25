@@ -251,7 +251,7 @@ public class SplashScreen extends JFrame implements StatusTextListener {
 	 * 
 	 * @author Stephan Pagel
 	 * */
-	private class SplashImagePanel extends JPanel {
+	private static class SplashImagePanel extends JPanel {
 
 		// ////////////////////////////////////////////////////////////
 		// Definitions
