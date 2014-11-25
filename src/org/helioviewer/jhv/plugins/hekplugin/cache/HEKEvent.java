@@ -422,19 +422,6 @@ public class HEKEvent implements IntervalComparison<Date> {
     }
 
     /**
-     * Request the screencoordinates of this event
-     * 
-     * @param now
-     *            - point in time for which the coordinates are needed (e.g. for
-     *            tracking the event)
-     * @return
-     */
-    public Vector2d getScreenCoordinates(Date now) {
-        SphericalCoord stony = this.getStony(now);
-        return convertToScreenCoordinates(stony, now);
-    }
-
-    /**
      * Converts Stonyhurst coordinates to screencoordinates
      * 
      * @param stony

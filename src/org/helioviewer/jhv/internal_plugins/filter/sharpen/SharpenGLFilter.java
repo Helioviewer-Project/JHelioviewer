@@ -115,12 +115,4 @@ public class SharpenGLFilter extends SharpenFilter implements GLFragmentShaderFi
         pixelWidth = 1.0f / (float) width;
         pixelHeight = 1.0f / (float) height;
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void forceRefilter() {
-
-    }
-
 }

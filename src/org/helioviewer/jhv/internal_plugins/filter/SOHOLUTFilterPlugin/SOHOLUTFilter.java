@@ -9,11 +9,6 @@ import javax.media.opengl.glu.GLU;
 import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.viewmodel.filter.AbstractFilter;
 import org.helioviewer.jhv.viewmodel.filter.GLFragmentShaderFilter;
-import org.helioviewer.jhv.viewmodel.imagedata.ARGBInt32ImageData;
-import org.helioviewer.jhv.viewmodel.imagedata.ImageData;
-import org.helioviewer.jhv.viewmodel.imageformat.SingleChannelImageFormat;
-import org.helioviewer.jhv.viewmodel.imagetransport.Byte8ImageTransport;
-import org.helioviewer.jhv.viewmodel.imagetransport.Short16ImageTransport;
 import org.helioviewer.jhv.viewmodel.view.opengl.GLTextureHelper;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLShaderBuilder;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLSingleChannelLookupFragmentShaderProgram;
@@ -100,35 +95,6 @@ public class SOHOLUTFilter extends AbstractFilter implements GLFragmentShaderFil
     }
 
     // /////////////////////////
-    // STANDARD //
-    // /////////////////////////
-
-    /**
-     * {@inheritDoc}
-     */
-    public ImageData apply(ImageData data) {
-        // Ship over gray for performance as before
-        if (data == null || !(data.getImageFormat() instanceof SingleChannelImageFormat) || (lut.getName() == "Gray" && !invertLUT)) {
-            return data;
-        }
-
-        if (data.getImageTransport() instanceof Byte8ImageTransport) {
-            byte[] pixelData = ((Byte8ImageTransport) data.getImageTransport()).getByte8PixelData();
-            int[] resultPixelData = new int[pixelData.length];
-            lut.lookup8(pixelData, resultPixelData, invertLUT);
-            return new ARGBInt32ImageData(data, resultPixelData);
-        } else if (data.getImageTransport() instanceof Short16ImageTransport) {
-            short[] pixelData = ((Short16ImageTransport) data.getImageTransport()).getShort16PixelData();
-            int[] resultPixelData = new int[pixelData.length];
-            lut.lookup16(pixelData, resultPixelData, invertLUT);
-            data = new ARGBInt32ImageData(data, resultPixelData);
-            return data;
-        }
-
-        return null;
-    }
-
-    // /////////////////////////
     // OPENGL //
     // /////////////////////////
     private GLSingleChannelLookupFragmentShaderProgram shader = new GLSingleChannelLookupFragmentShaderProgram();
@@ -205,13 +171,6 @@ public class SOHOLUTFilter extends AbstractFilter implements GLFragmentShaderFil
             GLTextureHelper textureHelper = new GLTextureHelper();
             textureHelper.delTextureID(null, lookupTex);
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void forceRefilter() {
-        lastLut = null;
     }
 
     /**

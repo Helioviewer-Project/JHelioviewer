@@ -24,13 +24,4 @@ public interface ViewportImageSize extends BasicViewportImageSize {
      * @return height of the image inside the viewport.
      * */
     public int getHeight();
-
-    /**
-     * Checks if the image inside the viewport has a valid size.
-     * 
-     * @return true if width and height of the image inside the viewport has at
-     *         least one pixel; false otherwise.
-     * */
-    public boolean hasArea();
-
 }

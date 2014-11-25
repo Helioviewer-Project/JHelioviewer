@@ -17,6 +17,4 @@ public interface CoordinateSystem {
     public CoordinateVector createCoordinateVector(double... value);
 
     public CoordinateConversion getConversion(CoordinateSystem coordinateSystem);
-
-    public void addListener(CoordinateSystemChangeListener listener);
 }

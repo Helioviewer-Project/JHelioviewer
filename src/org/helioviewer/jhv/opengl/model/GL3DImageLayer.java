@@ -13,7 +13,6 @@ import org.helioviewer.jhv.base.math.Vector4d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.base.wcs.CoordinateConversion;
 import org.helioviewer.jhv.base.wcs.CoordinateSystem;
-import org.helioviewer.jhv.base.wcs.CoordinateSystemChangeListener;
 import org.helioviewer.jhv.base.wcs.CoordinateVector;
 import org.helioviewer.jhv.internal_plugins.filter.opacity.OpacityFilter;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
@@ -49,7 +48,7 @@ import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLVertexShaderProgram;
  * @author Simon Sp���rri (simon.spoerri@fhnw.ch)
  * 
  */
-public class GL3DImageLayer extends GL3DGroup implements CoordinateSystemChangeListener, GL3DCameraListener {
+public class GL3DImageLayer extends GL3DGroup implements GL3DCameraListener {
 	private static int nextLayerId = 0;
 	private final int layerId;
 	private Vector3d direction = new Vector3d(0, 0, 1);
@@ -77,10 +76,6 @@ public class GL3DImageLayer extends GL3DGroup implements CoordinateSystemChangeL
 
 	protected GL3DImageCoronaFragmentShaderProgram fragmentShader = null;
 	protected GL3DImageFragmentShaderProgram sphereFragmentShader = null;
-
-    public void coordinateSystemChanged(CoordinateSystem coordinateSystem) {
-        this.markAsChanged();
-    }
 
     public void updateMatrix(GL3DState state) {
         this.updateOrientation(state);
@@ -155,7 +150,6 @@ public class GL3DImageLayer extends GL3DGroup implements CoordinateSystemChangeL
 					"Cannot create GL3DImageLayer when no RegionView is present in Layer");
 		}
 
-		getCoordinateSystem().addListener(this);
 		this.doUpdateROI = true;
 		this.markAsChanged();
 	}
@@ -180,7 +174,6 @@ public class GL3DImageLayer extends GL3DGroup implements CoordinateSystemChangeL
 		this.accellerationShape = new GL3DHitReferenceShape(true, phi);
 		this.addNode(this.accellerationShape);
 
-        getCoordinateSystem().addListener(this);
         super.shapeInit(state);
 
 		this.doUpdateROI = true;

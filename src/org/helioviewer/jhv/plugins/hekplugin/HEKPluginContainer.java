@@ -78,13 +78,6 @@ public class HEKPluginContainer extends OverlayContainer {
         hekPanel.setCurInterval(newInterval);
     }
 
-    /**
-     * @see HEKPanel#getStructure()
-     */
-    public void getStructure() {
-        hekPanel.getStructure();
-    }
-
     public void setEnabled(boolean b) {
         hekPanel.setEnabled(b);
     }

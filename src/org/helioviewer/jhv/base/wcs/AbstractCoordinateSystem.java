@@ -1,7 +1,5 @@
 package org.helioviewer.jhv.base.wcs;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Basic implementation of a {@link CoordinateSystem}.
@@ -11,10 +9,7 @@ import java.util.List;
  */
 public abstract class AbstractCoordinateSystem implements CoordinateSystem {
 
-    private List<CoordinateSystemChangeListener> listeners;
-
     public AbstractCoordinateSystem() {
-        this.listeners = new ArrayList<CoordinateSystemChangeListener>();
     }
 
     public CoordinateVector createCoordinateVector(double... value) {
@@ -33,9 +28,5 @@ public abstract class AbstractCoordinateSystem implements CoordinateSystem {
             return new IdentityMatrixConversion(this, coordinateSystem);
         }
         throw new IllegalArgumentException("No Conversion available from " + this + " to " + coordinateSystem);
-    }
-
-    public void addListener(CoordinateSystemChangeListener listener) {
-        this.listeners.add(listener);
     }
 }

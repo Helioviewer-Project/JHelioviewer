@@ -120,21 +120,4 @@ public class StatusPanel extends JPanel {
         leftPanel.remove((JLabel) oldPlugin);
         rightPanel.remove((JLabel) oldPlugin);
     }
-
-    /**
-     * A listener to receive status texts.
-     * 
-     * @author Markus Langenberg
-     */
-    public interface StatusTextListener {
-
-        /**
-         * Callback function which will be called on every change of the status
-         * text.
-         * 
-         * @param newStatusText
-         *            The new status text
-         */
-        public void statusTextChanged(String newStatusText);
-    }
 }

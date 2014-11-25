@@ -15,7 +15,6 @@ import javax.swing.event.ChangeListener;
 
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
-import org.helioviewer.jhv.gui.components.StatusPanel.StatusTextListener;
 
 /**
  * Represents the splash screen which will be displayed when program is
@@ -30,7 +29,7 @@ import org.helioviewer.jhv.gui.components.StatusPanel.StatusTextListener;
  * 
  * @author Stephan Pagel
  */
-public class SplashScreen extends JFrame implements StatusTextListener {
+public class SplashScreen extends JFrame {
 
 	// ////////////////////////////////////////////////////////////////
 	// Definitions
@@ -198,17 +197,6 @@ public class SplashScreen extends JFrame implements StatusTextListener {
 
 		if (text != null) {
 			imagePanel.setText(text);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void statusTextChanged(String newStatusText) {
-		if (newStatusText.length() > 0) {
-			setProgressText(newStatusText);
-			setProgressSteps(steps + 1);
-			nextStep();
 		}
 	}
 
