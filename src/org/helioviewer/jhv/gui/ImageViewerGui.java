@@ -37,6 +37,7 @@ import org.helioviewer.jhv.gui.components.MoviePanel;
 import org.helioviewer.jhv.gui.components.SideContentPane;
 import org.helioviewer.jhv.gui.components.StatusPanel;
 import org.helioviewer.jhv.gui.components.TopToolBar;
+import org.helioviewer.jhv.gui.components.statusplugins.CurrentTimeLabel;
 import org.helioviewer.jhv.gui.components.statusplugins.FramerateStatusPanel;
 import org.helioviewer.jhv.gui.components.statusplugins.JPIPStatusPanel;
 import org.helioviewer.jhv.gui.components.statusplugins.MetaDataStatusPanel;
@@ -167,7 +168,8 @@ public class ImageViewerGui {
 			statusPanel.addPlugin(jpipStatusPanel, StatusPanel.Alignment.RIGHT);
 			statusPanel.addPlugin(positionStatusPanel,
 					StatusPanel.Alignment.RIGHT);
-
+			statusPanel.addLabel(new CurrentTimeLabel() , StatusPanel.Alignment.RIGHT);
+			
 			contentPanel.add(statusPanel, BorderLayout.PAGE_END);
 	}
 
