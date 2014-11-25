@@ -41,7 +41,7 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
  * @author Helge Dietert
  * 
  */
-public class JHelioViewer {
+public class JHelioviewer {
 
     public static void main(String[] args) {
         // Prints the usage message
@@ -323,7 +323,7 @@ public class JHelioViewer {
 
 	private static void loadJNILibary(Path tmpPath, String directory,
 			String name) {
-		InputStream in = JHelioViewer.class.getResourceAsStream(directory
+		InputStream in = JHelioviewer.class.getResourceAsStream(directory
 				+ name);
 		byte[] buffer = new byte[1024];
 		int read = -1;
@@ -351,7 +351,7 @@ public class JHelioViewer {
 
 	private static void loadExecuteLibary(Path tmpPath, String directory,
 			String name, String executableName) {
-		InputStream in = JHelioViewer.class.getResourceAsStream(directory
+		InputStream in = JHelioviewer.class.getResourceAsStream(directory
 				+ name);
 		byte[] buffer = new byte[1024];
 		int read = -1;

@@ -6,7 +6,7 @@ if [ -d "$dir" ]; then
   cd "$dir"
 fi
 
-APP_NAME=$(pwd)"/build/macApp/JHelioViewer.app"
+APP_NAME=$(pwd)"/build/macApp/JHelioviewer.app"
 DEVELOPER_CERTIFICATE="Developer ID Application: Stefan Meier (7VU87NT5AU)"
 BUILD_DIRECTORY=$(pwd)"/build/"
 GRANDLE="gradle-2.1/bin/gradle"

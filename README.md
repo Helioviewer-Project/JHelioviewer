@@ -1,4 +1,4 @@
-JHelioViewer
+JHelioviewer
 ============
 
-JHelioViewer
+JHelioviewer
