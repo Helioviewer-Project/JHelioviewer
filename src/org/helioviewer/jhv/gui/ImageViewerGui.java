@@ -138,6 +138,7 @@ public class ImageViewerGui {
 					JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 			leftScrollPane.setFocusable(false);
 			leftScrollPane.getVerticalScrollBar().setUnitIncrement(10);
+			leftScrollPane.setMinimumSize(new Dimension(SIDE_PANEL_WIDTH+96,0));
 			midSplitPane.setLeftComponent(leftScrollPane);
 
 			midSplitPane.setRightComponent(mainContentPanel);
