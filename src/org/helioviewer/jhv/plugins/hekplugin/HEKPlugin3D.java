@@ -82,7 +82,6 @@ public class HEKPlugin3D extends OverlayPlugin implements Plugin {
     public String getAboutLicenseText() {
         String description = "";
         description += "<p>" + "This software uses the <a href=\"http://www.json.org/java/\">JSON in Java</a> Library, licensed under a <a href=\"http://www.json.org/license.html\">custom License</a>.";
-        description += "<p>" + "This software uses the <a href=\"http://www.slf4j.org/\">Simple Logging Facade for Java (SLF4J)</a> Library,<br>licensed under the <a href=\"http://www.slf4j.org/license.html\">MIT License</a>.";
 
         return description;
     }
