@@ -20,169 +20,190 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
  */
 public abstract class DateTimeCache {
 
-    protected JHVJPXView parent;
+	protected JHVJPXView parent;
 
-    private ImmutableDateTime[] cache;
+	private ImmutableDateTime[] cache;
 
-    protected boolean stopParsing = false;
+	protected boolean stopParsing = false;
 
-    protected int nextDateToParse = 0;
-    private Thread parsingThread = null;
+	protected int nextDateToParse = 0;
+	private Thread parsingThread = null;
 
-    /**
-     * Default constructor.
-     * 
-     * @param _parent
-     *            parent view
-     */
-    public DateTimeCache(JHVJPXView _parent) {
-        parent = _parent;
-        cache = new ImmutableDateTime[_parent.getMaximumFrameNumber() + 1];
+	/**
+	 * Default constructor.
+	 * 
+	 * @param _parent
+	 *            parent view
+	 */
+	public DateTimeCache(JHVJPXView _parent) {
+		parent = _parent;
+		cache = new ImmutableDateTime[_parent.getMaximumFrameNumber() + 1];
 
-        parent.fireChangeEvent(new ChangeEvent(new CacheStatusChangedReason(parent, CacheType.COMPLETE, 0)));
-        parent.fireChangeEvent(new ChangeEvent(new CacheStatusChangedReason(parent, CacheType.PARTIAL, 0)));
-    }
+		parent.fireChangeEvent(new ChangeEvent(new CacheStatusChangedReason(
+				parent, CacheType.COMPLETE, 0)));
+		parent.fireChangeEvent(new ChangeEvent(new CacheStatusChangedReason(
+				parent, CacheType.PARTIAL, 0)));
+	}
 
-    /**
-     * Returns the last layer, whose meta data is already parsed.
-     * 
-     * @return Last layer, whose meta data is already parsed
-     */
-    public int getMetaStatus() {
-        return nextDateToParse - 1;
-    }
+	/**
+	 * Returns the last layer, whose meta data is already parsed.
+	 * 
+	 * @return Last layer, whose meta data is already parsed
+	 */
+	public int getMetaStatus() {
+		return nextDateToParse - 1;
+	}
 
-    /**
-     * Reads date and time for the given frame number from the cache.
-     * 
-     * If the cache does not contain the value yet and the function was not
-     * called by the thread responsible for parsing, waits until the value is
-     * available. When the function is called by the thread responsible for
-     * parsing, goes on parsing until the value is available. So, any case,
-     * returns the correct value.
-     * 
-     * @param frameNumber
-     *            Frame number to fetch date and time for
-     * @return Date and time of the given frame
-     */
-    public ImmutableDateTime getDateTime(int frameNumber) {
-        if (cache[frameNumber] == null) {
+	/**
+	 * Reads date and time for the given frame number from the cache.
+	 * 
+	 * If the cache does not contain the value yet and the function was not
+	 * called by the thread responsible for parsing, waits until the value is
+	 * available. When the function is called by the thread responsible for
+	 * parsing, goes on parsing until the value is available. So, any case,
+	 * returns the correct value.
+	 * 
+	 * @param frameNumber
+	 *            Frame number to fetch date and time for
+	 * @return Date and time of the given frame
+	 */
+	public ImmutableDateTime getDateTime(int frameNumber) {
+		if (cache[frameNumber] == null) {
 
-            do {
-                try {
-                    Thread.sleep(200);
-                } catch (InterruptedException e) {
-                    break;
-                }
-            } while (cache[frameNumber] == null && !stopParsing);
-        }
+			do {
+				try {
+					Thread.sleep(200);
+				} catch (InterruptedException e) {
+					break;
+				}
+			} while (cache[frameNumber] == null && !stopParsing);
+		}
 
-        return cache[frameNumber];
-    }
+		return cache[frameNumber];
+	}
 
-    /**
-     * Starts the parsing thread
-     */
-    public void startParsing() {
-        if (parsingThread != null) {
-            stopParsing();
-        }
+	/**
+	 * Starts the parsing thread
+	 */
+	public void startParsing() {
+		if (parsingThread != null) {
+			stopParsing();
+		}
 
-        parsingThread = new Thread(new Runnable() {
-            public void run() {
-                parseAll();
-            }
-        }, "DateTime Parser");
-        parsingThread.setDaemon(true);
-        parsingThread.start();
-    }
+		parsingThread = new Thread(new Runnable() {
+			public void run() {
+				parseAll();
+			}
+		}, "DateTime Parser");
+		parsingThread.setDaemon(true);
+		parsingThread.start();
+	}
 
-    /**
-     * Stops the parsing thread
-     */
-    public void stopParsing() {
-        stopParsing = true;
+	/**
+	 * Stops the parsing thread
+	 */
+	public void stopParsing() {
+		stopParsing = true;
 
-        if (parsingThread != null && parsingThread.isAlive()) {
-            try {
-                parsingThread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+		if (parsingThread != null && parsingThread.isAlive()) {
+			try {
+				parsingThread.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
-    /**
-     * Parses all time stamps.
-     * 
-     * This function is called from the parsing thread. It test first, whether
-     * the time stamps are available via an API response. If that is not the
-     * cause, it waits until the meta data are loaded, so it can read the time
-     * stamps from the meta data.
-     */
-    private void parseAll() {
+	/**
+	 * Parses all time stamps.
+	 * 
+	 * This function is called from the parsing thread. It test first, whether
+	 * the time stamps are available via an API response. If that is not the
+	 * cause, it waits until the meta data are loaded, so it can read the time
+	 * stamps from the meta data.
+	 */
+	private void parseAll() {
 
-        nextDateToParse = 0;
+		nextDateToParse = 0;
 
-        APIResponse apiResponse = APIResponseDump.getSingletonInstance().getResponse(((ImageInfoView) parent).getUri());
+		APIResponse apiResponse = APIResponseDump.getSingletonInstance()
+				.getResponse(((ImageInfoView) parent).getUri());
 
-        if (apiResponse != null) {
-            String rawFrames = apiResponse.getString("frames").replaceAll("\\[|\\]", "");
+		if (apiResponse != null) {
+			try {
 
-            if (rawFrames != null) {
-                String[] frames = rawFrames.split(",");
+				String rawFrames = apiResponse.getString("frames").replaceAll(
+						"\\[|\\]", "");
 
-                if (frames.length - 1 == parent.getMaximumFrameNumber()) {
-                    do {
-                        cache[nextDateToParse] = new ImmutableDateTime(Integer.parseInt(frames[nextDateToParse]));
-                        fireChangeEventIfNecessary();
-                        nextDateToParse++;
+				if (rawFrames != null) {
+					String[] frames = rawFrames.split(",");
 
-                    } while (!stopParsing && nextDateToParse <= parent.getMaximumFrameNumber());
-                }
-            }
-        }
+					if (frames.length - 1 == parent.getMaximumFrameNumber()) {
+						do {
+							cache[nextDateToParse] = new ImmutableDateTime(
+									Integer.parseInt(frames[nextDateToParse]));
+							fireChangeEventIfNecessary();
+							nextDateToParse++;
 
-        while (!stopParsing && nextDateToParse <= parent.getMaximumFrameNumber()) {
+						} while (!stopParsing
+								&& nextDateToParse <= parent
+										.getMaximumFrameNumber());
+					}
+				}
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
 
-            cache[nextDateToParse] = parseDateTime(nextDateToParse);
+		}
 
-            if (nextDateToParse < cache.length && cache[nextDateToParse] == null) {
-                try {
-                    Thread.sleep(200);
-                } catch (InterruptedException e) {
-                }
+		while (!stopParsing
+				&& nextDateToParse <= parent.getMaximumFrameNumber()) {
 
-            } else {
-                fireChangeEventIfNecessary();
+			cache[nextDateToParse] = parseDateTime(nextDateToParse);
 
-                nextDateToParse++;
-            }
-        }
-    }
+			if (nextDateToParse < cache.length
+					&& cache[nextDateToParse] == null) {
+				try {
+					Thread.sleep(200);
+				} catch (InterruptedException e) {
+				}
 
-    /**
-     * Fires a change event into the view chain, if the cache status has
-     * changed.
-     */
-    private void fireChangeEventIfNecessary() {
-        if (nextDateToParse <= parent.getImageCacheStatus().getImageCachedCompletelyUntil()) {
-            parent.fireChangeEvent(new ChangeEvent(new CacheStatusChangedReason(parent, CacheType.COMPLETE, nextDateToParse)));
+			} else {
+				fireChangeEventIfNecessary();
 
-        } else if (nextDateToParse <= parent.getImageCacheStatus().getImageCachedPartiallyUntil()) {
-            parent.fireChangeEvent(new ChangeEvent(new CacheStatusChangedReason(parent, CacheType.PARTIAL, nextDateToParse)));
-        }
-    }
+				nextDateToParse++;
+			}
+		}
+	}
 
-    /**
-     * Parses the date and time of the given frame number.
-     * 
-     * Since depends on the format of the meta data very much, this function is
-     * abstract and should be implemented by a specialized class.
-     * 
-     * @param frameNumber
-     *            Frame number to parse date and time for
-     * @return Date and time of the given frame
-     */
-    protected abstract ImmutableDateTime parseDateTime(int frameNumber);
+	/**
+	 * Fires a change event into the view chain, if the cache status has
+	 * changed.
+	 */
+	private void fireChangeEventIfNecessary() {
+		if (nextDateToParse <= parent.getImageCacheStatus()
+				.getImageCachedCompletelyUntil()) {
+			parent.fireChangeEvent(new ChangeEvent(
+					new CacheStatusChangedReason(parent, CacheType.COMPLETE,
+							nextDateToParse)));
+
+		} else if (nextDateToParse <= parent.getImageCacheStatus()
+				.getImageCachedPartiallyUntil()) {
+			parent.fireChangeEvent(new ChangeEvent(
+					new CacheStatusChangedReason(parent, CacheType.PARTIAL,
+							nextDateToParse)));
+		}
+	}
+
+	/**
+	 * Parses the date and time of the given frame number.
+	 * 
+	 * Since depends on the format of the meta data very much, this function is
+	 * abstract and should be implemented by a specialized class.
+	 * 
+	 * @param frameNumber
+	 *            Frame number to parse date and time for
+	 * @return Date and time of the given frame
+	 */
+	protected abstract ImmutableDateTime parseDateTime(int frameNumber);
 }

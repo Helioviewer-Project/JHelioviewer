@@ -1,5 +1,6 @@
 package org.helioviewer.jhv.gui.components;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -77,6 +78,7 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 	}
 	
 	public OverViewPanel() {
+		this.setBackground(Color.black);
 		this.setPreferredSize(new Dimension(200, 200));
 		layers = new ArrayList<JHVJPXView>();
 		lutMap = new HashMap<String, Integer>();
@@ -96,11 +98,6 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 
 	@Override
 	public void layerRemoved(View oldView, int oldIdx) {
-		/*if (oldIdx >= 0 && oldIdx < layers.size() && layers.size() > 0 && lastViewToDelete != oldView){
-			oldIdx = layers.size() - oldIdx - 1;
-			layers.remove(oldIdx);
-			this.lastViewToDelete = oldView;
-		}*/
 	}
 
 	@Override
