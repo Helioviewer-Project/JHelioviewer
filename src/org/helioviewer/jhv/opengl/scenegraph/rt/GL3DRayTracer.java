@@ -69,10 +69,10 @@ public class GL3DRayTracer {
 		    
 		    Matrix4d cameraRotation = camera.getRotation().toMatrix();
 		    
-			Vector3d dir = cameraRotation.multiply(new Vector3d(0, 0, -1.0));
-			Vector3d up = cameraRotation.multiply(new Vector3d(0, -1.0, 0));
-			Vector3d right = cameraRotation.multiply(new Vector3d(1.0, 0, 0));
-			Vector3d eye = cameraRotation.multiply(new Vector3d(camera.getTranslation()
+			Vector3d dir = cameraRotation.inverse().multiply(new Vector3d(0, 0, -1.0));
+			Vector3d up = cameraRotation.inverse().multiply(new Vector3d(0, -1.0, 0));
+			Vector3d right = cameraRotation.inverse().multiply(new Vector3d(1.0, 0, 0));
+			Vector3d eye = cameraRotation.inverse().multiply(new Vector3d(camera.getTranslation()
 					.negate()));
 			
 			double height = camera.getZTranslation()

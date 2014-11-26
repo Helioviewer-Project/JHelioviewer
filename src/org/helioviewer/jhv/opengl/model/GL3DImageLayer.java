@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.media.opengl.GL;
-
 import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.Quaternion3d;
@@ -358,27 +357,18 @@ public class GL3DImageLayer extends GL3DGroup implements GL3DCameraListener {
 			Vector3d hitPoint = ray.getHitPoint();
 			if (hitPoint != null) {
 				hitPoint = this.wmI.multiply(hitPoint);
-				
-				double x = phiRotation.m[0] * hitPoint.x + phiRotation.m[4]
-						* hitPoint.y + phiRotation.m[8] * hitPoint.z
-						+ phiRotation.m[12];
-				double y = phiRotation.m[1] * hitPoint.x + phiRotation.m[5]
-						* hitPoint.y + phiRotation.m[9] * hitPoint.z
-						+ phiRotation.m[13];
-				double z = phiRotation.m[2] * hitPoint.x + phiRotation.m[6]
-						* hitPoint.y + phiRotation.m[10] * hitPoint.z
-						+ phiRotation.m[14];
-				
-				minPhysicalX = Math.min(minPhysicalX, x);
-				minPhysicalY = Math.min(minPhysicalY, y);
-				minPhysicalZ = Math.min(minPhysicalZ, z);
-				maxPhysicalX = Math.max(maxPhysicalX, x);
-				maxPhysicalY = Math.max(maxPhysicalY, y);
-				maxPhysicalZ = Math.max(maxPhysicalZ, z);
+				Vector3d rt = phiRotation.multiply(hitPoint);
+
+				minPhysicalX = Math.min(minPhysicalX, rt.x);
+				minPhysicalY = Math.min(minPhysicalY, rt.y);
+				minPhysicalZ = Math.min(minPhysicalZ, rt.z);
+				maxPhysicalX = Math.max(maxPhysicalX, rt.x);
+				maxPhysicalY = Math.max(maxPhysicalY, rt.y);
+				maxPhysicalZ = Math.max(maxPhysicalZ, rt.z);
 				// Log.debug("GL3DImageLayer: Hitpoint: "+hitPoint+" - "+ray.isOnSun);
 			}
 		}
-		
+
 		// Restrict maximal region to physically available region
 		minPhysicalX = Math.max(minPhysicalX, metaData.getPhysicalLowerLeft().x);
 		minPhysicalY = Math.max(minPhysicalY, metaData.getPhysicalLowerLeft().y);
