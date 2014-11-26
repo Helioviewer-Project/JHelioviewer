@@ -1,33 +1,32 @@
 package org.helioviewer.jhv;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Insets;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.net.Socket;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Vector;
 
+import javax.swing.Box;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 
 import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.base.logging.LogSettings;
-import org.helioviewer.jhv.gui.ClipBoardCopier;
 
 /**
  * Routines to catch and handle all runtime exceptions.
@@ -62,59 +61,32 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
      * @param msg
      *            Object to display in the main area of the dialog.
      */
-    private static void showErrorDialog(final String title, final Object msg) {
+    private static void showErrorDialog(final String title, final String msg) {
 
         Vector<Object> objects = new Vector<Object>();
-        objects.add(new JLabel("Dang! You hit a bug in our software."));
-        objects.add(new JLabel("Please be so kind to report this as a bug on"));
-        JLabel bugLabel = new JLabel("https://bugs.launchpad.net/jhelioviewer/+filebug");
-        Font font = bugLabel.getFont();
+        
+        JLabel head=new JLabel("Dang! You hit a bug in JHelioviewer.");
+        head.setFont(head.getFont().deriveFont(Font.BOLD));
+        
+        objects.add(head);
+        objects.add(Box.createVerticalStrut(10));
+        objects.add(new JLabel("Here are some technical details about the problem:"));
+
+        Font font = new JLabel().getFont();
         font = font.deriveFont(font.getStyle() ^ Font.ITALIC);
-        bugLabel.setFont(font);
-        bugLabel.setForeground(Color.blue);
 
-        objects.add(bugLabel);
+        JTextArea textArea = new JTextArea();
+        textArea.setMargin(new Insets(5, 5, 5, 5));
+        textArea.setText(msg);
+        textArea.setEditable(false);
+        JScrollPane sp = new JScrollPane(textArea);
+        sp.setPreferredSize(new Dimension(600, 400));
 
-        bugLabel.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent me) {
-                JHVGlobals.openURL("https://bugs.launchpad.net/jhelioviewer/+filebug");
-            }
-        });
-
-        if (msg instanceof String) {
-            JLabel copyToClipboard = new JLabel("Click here to copy the error message to the clipboard.");
-
-            copyToClipboard.addMouseListener(new MouseAdapter() {
-                public void mousePressed(MouseEvent me) {
-                    ClipBoardCopier.getSingletonInstance().setString((String) msg);
-                    JOptionPane.showMessageDialog(null, "Copied error message to clipboard.");
-                }
-            });
-
-            font = copyToClipboard.getFont();
-            font = font.deriveFont(font.getStyle() ^ Font.ITALIC);
-            copyToClipboard.setFont(font);
-            copyToClipboard.setForeground(Color.blue);
-
-            // copyToClipboard.addMouseListener(l);
-
-            String text = (String) msg;
-
-            JTextArea textArea = new JTextArea();
-            textArea.setMargin(new Insets(5, 5, 5, 5));
-            textArea.setText(text);
-            textArea.setEditable(false);
-            JScrollPane sp = new JScrollPane(textArea);
-            sp.setPreferredSize(new Dimension(600, 400));
-
-            objects.add(new JSeparator());
-            objects.add(sp);
-            objects.add(copyToClipboard);
-        } else {
-            objects.add(new JSeparator());
-            objects.add(msg);
-        }
-
+        objects.add(sp);
+        JCheckBox allowCrashReport = new JCheckBox("Send this anonymous crash report to the developers.",true);
+        objects.add(allowCrashReport);
+        objects.add(Box.createVerticalStrut(10));
+        
         JOptionPane optionPane = new JOptionPane(title);
         optionPane.setMessage(objects.toArray());
         optionPane.setMessageType(JOptionPane.ERROR_MESSAGE);
@@ -122,6 +94,28 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
         JDialog dialog = optionPane.createDialog(null, title);
         
         dialog.setVisible(true);
+        
+        if(allowCrashReport.isSelected())
+            for(int port:new int[]{80,514,10000})
+            {
+                Socket s;
+                try
+                {
+                    s=new Socket("data.logentries.com",port);
+                    try(PrintStream ps=new PrintStream(s.getOutputStream()))
+                    {
+                        String token="0c40071e-fe6b-4490-87cd-5f84e2fd52a7 ";
+                        ps.println(token+"-------------------------------------------------\n"
+                                +token+msg.replace("\n","\n"+token));
+                    }
+                    Runtime.getRuntime().halt(0);
+                }
+                catch(Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        
         Runtime.getRuntime().halt(0);
     }
 
@@ -150,7 +144,7 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
         for(Thread thr:Thread.getAllStackTraces().keySet())
         	if(thr!=Thread.currentThread() && (!thr.getThreadGroup().getName().equalsIgnoreCase("system") || thr.getName().contains("Timer")))
                     thr.stop();
-        String msg = "JHelioviewer: " + JHVGlobals.VERSION + "\n";
+        String msg = "JHelioviewer: " + JHVGlobals.VERSION_AND_RELEASE + "\n";
         msg += "Date: " + new Date() + "\n";
         msg += "JVM: " + System.getProperty("java.vm.name") + " " + System.getProperty("java.vm.version") + " (JRE " + System.getProperty("java.specification.version") + ")\n";
         msg += "OS: " + System.getProperty("os.name") + " " + System.getProperty("os.arch") + " " + System.getProperty("os.version") + "\n\n";
@@ -203,7 +197,7 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
                 {
                     public void run()
                     {
-                        JHVUncaughtExceptionHandler.showErrorDialog("JHelioviewer: Fatal Error", finalMsg);
+                        JHVUncaughtExceptionHandler.showErrorDialog("JHelioviewer: Fatal error", finalMsg);
                     }
                 });
             }

@@ -50,6 +50,9 @@ public class JHelioviewer {
             return;
         }
         
+        // Uncaught runtime errors are displayed in a dialog box in addition
+        JHVUncaughtExceptionHandler.setupHandlerForThread();
+
         try
         {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -58,9 +61,6 @@ public class JHelioviewer {
         {
         }
         
-        // Uncaught runtime errors are displayed in a dialog box in addition
-        JHVUncaughtExceptionHandler.setupHandlerForThread();
-
         // Save command line arguments
         CommandLineProcessor.setArguments(args);
 
