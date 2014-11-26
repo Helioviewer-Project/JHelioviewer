@@ -80,7 +80,7 @@ public class PositionStatusPanel extends ViewStatusPanelPlugin implements MouseM
     private void updatePosition(Point position) {
     	GL3DCamera camera = GL3DCameraSelectorModel.getInstance().getCurrentCamera();
 
-    	if (camera != null){
+    	if (camera != null && camera.getLastMouseRay() != null && camera.getLastMouseRay().getHitPoint() != null){
     		GL3DRay ray = camera.getLastMouseRay();
     		Vector3d hitPoint = ray.getHitPoint();
     		if (LayersModel.getSingletonInstance().getActiveView() != null && hitPoint != null){
