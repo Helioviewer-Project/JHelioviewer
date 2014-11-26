@@ -16,6 +16,7 @@ import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.base.wcs.CoordinateSystem;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
+import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
 
 /**
  * The GL3DCamera is resposible for the view space transformation. It sets up
@@ -269,5 +270,5 @@ public abstract class GL3DCamera {
 
 	abstract public void mouseRay(MouseEvent e);
 
-	public abstract Vector3d getLastMouseHitPoint();
+	public abstract GL3DRay getLastMouseRay();
 	}
