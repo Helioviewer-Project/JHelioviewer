@@ -1,5 +1,6 @@
 package org.helioviewer.jhv.opengl.camera;
 
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -265,4 +266,8 @@ public abstract class GL3DCamera {
 
 	public abstract void setTrack(boolean selected);
 	public abstract boolean isTrack();
+
+	abstract public void mouseRay(MouseEvent e);
+
+	public abstract Vector3d getLastMouseHitPoint();
 	}

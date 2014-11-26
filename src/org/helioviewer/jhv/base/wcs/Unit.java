@@ -8,7 +8,7 @@ package org.helioviewer.jhv.base.wcs;
  * 
  */
 public enum Unit {
-    Meter("m"), Kilometer("km"), Radian("rad"), Degree("�"), Pixel("px");
+    Meter("m"), Kilometer("km"), Radian("rad"), Degree("\u00B0"), Pixel("px");
 
     private String abbreviation;
 

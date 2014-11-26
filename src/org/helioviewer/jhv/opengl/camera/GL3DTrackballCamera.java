@@ -1,5 +1,6 @@
 package org.helioviewer.jhv.opengl.camera;
 
+import java.awt.event.MouseEvent;
 import java.util.Date;
 
 import org.helioviewer.jhv.base.math.Matrix4d;
@@ -9,8 +10,11 @@ import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.base.physics.DifferentialRotation;
 import org.helioviewer.jhv.base.wcs.CoordinateSystem;
 import org.helioviewer.jhv.base.wcs.HeliocentricCartesianCoordinateSystem;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState.VISUAL_TYPE;
+import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
+import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRayTracer;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.changeevent.TimestampChangedReason;
 import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
@@ -47,6 +51,7 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener {
 
 	private Vector3d startPosition2D;
 	private boolean outside;
+	private Vector3d lastMouseHitPoint;
 
 	public GL3DTrackballCamera(GL3DSceneGraphView sceneGraphView) {
 		this.sceneGraphView = sceneGraphView;
@@ -77,42 +82,39 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener {
 				}
 				currentDate = timestampReason.getNewDateTime().getTime();
 
-				if(startDate==null)
-				    this.startDate = getStartDate();
-				
-				long timediff = (currentDate.getTime() - startDate
-							.getTime()) / 1000;
+				if (startDate == null)
+					this.startDate = getStartDate();
 
-					double rotation = DifferentialRotation
-							.calculateRotationInRadians(0, timediff);
+				long timediff = (currentDate.getTime() - startDate.getTime()) / 1000;
 
-					Quaternion3d newRotation = Quaternion3d.createRotation(
-							currentRotation - rotation, new Vector3d(0, 1, 0));
-					Vector3d newPosition = newRotation.toMatrix().multiply(
-							startPosition2D);
+				double rotation = DifferentialRotation
+						.calculateRotationInRadians(0, timediff);
 
-					Vector3d tmp = newPosition.subtract(startPosition2D);
-					this.startPosition2D = newPosition;
-					if (GL3DState.get().getState() == VISUAL_TYPE.MODE_3D)
-						this.getRotation().rotate(
-								Quaternion3d.createRotation(currentRotation
-										- rotation, new Vector3d(0, 1, 0)));
+				Quaternion3d newRotation = Quaternion3d.createRotation(
+						currentRotation - rotation, new Vector3d(0, 1, 0));
+				Vector3d newPosition = newRotation.toMatrix().multiply(
+						startPosition2D);
 
-					else if (!outside){
-					    this.translation=new Vector3d(
-					            this.translation.x + tmp.x,
-					            this.translation.y - tmp.y,
-					            this.translation.z);
+				Vector3d tmp = newPosition.subtract(startPosition2D);
+				this.startPosition2D = newPosition;
+				if (GL3DState.get().getState() == VISUAL_TYPE.MODE_3D)
+					this.getRotation().rotate(
+							Quaternion3d.createRotation(currentRotation
+									- rotation, new Vector3d(0, 1, 0)));
 
-					}
-					// fireCameraMoved();
-					this.updateCameraTransformation();
-					this.currentRotation = rotation;
-					this.startPosition2D = newPosition;
-				} else {
-					currentRotation = 0.0;
-					resetStartPosition();
+				else if (!outside) {
+					this.translation = new Vector3d(this.translation.x + tmp.x,
+							this.translation.y - tmp.y, this.translation.z);
+
 				}
+				// fireCameraMoved();
+				this.updateCameraTransformation();
+				this.currentRotation = rotation;
+				this.startPosition2D = newPosition;
+			} else {
+				currentRotation = 0.0;
+				resetStartPosition();
+			}
 
 		}
 	}
@@ -122,15 +124,14 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener {
 
 		double x = this.getTranslation().x;
 		double y = this.getTranslation().y;
-		if (x*x + y*y < Constants.SUN_RADIUS * Constants.SUN_RADIUS){
-		double z = Math.sqrt(Constants.SUN_RADIUS * Constants.SUN_RADIUS - x * x
-				- y * y);
-		this.outside = false;
-		this.startPosition2D = new Vector3d(x, y, z);
-		this.startPosition2D = this.getRotation().toMatrix()
-				.multiply(this.startPosition2D);
-		}
-		else
+		if (x * x + y * y < Constants.SUN_RADIUS * Constants.SUN_RADIUS) {
+			double z = Math.sqrt(Constants.SUN_RADIUS * Constants.SUN_RADIUS
+					- x * x - y * y);
+			this.outside = false;
+			this.startPosition2D = new Vector3d(x, y, z);
+			this.startPosition2D = this.getRotation().toMatrix()
+					.multiply(this.startPosition2D);
+		} else
 			this.outside = true;
 	}
 
@@ -209,5 +210,36 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener {
 	@Override
 	public boolean isTrack() {
 		return track;
+	}
+
+	@Override
+	public void mouseRay(MouseEvent e) {
+		int x = (int) (e.getX()
+				/ GuiState3DWCS.mainComponentView.getComponent().getSize()
+						.getWidth() * GuiState3DWCS.mainComponentView
+				.getComponent().getSurfaceWidth());
+		int y = (int) (e.getY()
+				/ GuiState3DWCS.mainComponentView.getComponent().getSize()
+						.getHeight() * GuiState3DWCS.mainComponentView
+				.getComponent().getSurfaceHeight());
+		if (sceneGraphView != null && GL3DState.get() != null) {
+			GL3DRayTracer rayTracer = new GL3DRayTracer(
+					sceneGraphView.getHitReferenceShape(), this);
+			GL3DRay ray = rayTracer.cast(x, y);
+			Vector3d earthToSun = new Vector3d(0, 0,
+					Constants.SUN_MEAN_DISTANCE_TO_EARTH);
+			earthToSun = earthToSun.subtract(ray.getHitPoint());
+			double r = earthToSun.length();
+			double theta = Math.atan(earthToSun.x / Math.sqrt(earthToSun.y * earthToSun.y + earthToSun.z * earthToSun.z));
+			double phi = Math.atan2(earthToSun.y,earthToSun.z);
+	        
+			this.lastMouseHitPoint = new Vector3d(-theta, -phi, r);
+			
+		}
+	}
+
+	@Override
+	public Vector3d getLastMouseHitPoint() {
+		return lastMouseHitPoint;
 	}
 }

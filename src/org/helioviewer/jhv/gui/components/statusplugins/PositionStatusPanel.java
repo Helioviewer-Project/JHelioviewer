@@ -1,28 +1,24 @@
 package org.helioviewer.jhv.gui.components.statusplugins;
 
-import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.util.Formatter;
+import java.text.DecimalFormat;
 
 import javax.swing.BorderFactory;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 
-import org.helioviewer.jhv.base.math.Vector2d;
-import org.helioviewer.jhv.base.math.Vector2i;
-import org.helioviewer.jhv.base.physics.Constants;
+import org.helioviewer.jhv.base.math.Vector3d;
+import org.helioviewer.jhv.gui.GL3DCameraSelectorModel;
 import org.helioviewer.jhv.gui.components.BasicImagePanel;
 import org.helioviewer.jhv.gui.interfaces.ImagePanelPlugin;
 import org.helioviewer.jhv.layers.LayersModel;
-import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.helioviewer.jhv.viewmodel.region.Region;
-import org.helioviewer.jhv.viewmodel.view.MetaDataView;
-import org.helioviewer.jhv.viewmodel.view.RegionView;
+import org.helioviewer.jhv.opengl.camera.GL3DCamera;
 import org.helioviewer.jhv.viewmodel.view.View;
-import org.helioviewer.jhv.viewmodel.view.ViewHelper;
-import org.helioviewer.jhv.viewmodel.view.ViewportView;
-import org.helioviewer.jhv.viewmodel.viewport.Viewport;
-import org.helioviewer.jhv.viewmodel.viewportimagesize.ViewportImageSize;
 
 /**
  * Status panel for displaying the current mouse position.
@@ -38,19 +34,17 @@ import org.helioviewer.jhv.viewmodel.viewportimagesize.ViewportImageSize;
  * <p>
  * If there is no layer present, this panel will be invisible.
  */
-public class PositionStatusPanel extends ViewStatusPanelPlugin implements MouseMotionListener, ImagePanelPlugin {
+public class PositionStatusPanel extends ViewStatusPanelPlugin implements MouseMotionListener, ImagePanelPlugin, MouseListener {
 
     private static final long serialVersionUID = 1L;
 
     private View view;
-    private RegionView regionView;
-    private ViewportView viewportView;
-    private MetaDataView metaDataView;
     private BasicImagePanel imagePanel;
     private Point lastPosition;
 
-    private static final char PRIME = '\u2032';
-
+    private static final char DEGREE = '\u00B0';
+    private String title = " (X, Y) : ";
+    private PopupState popupState;
     /**
      * Default constructor.
      * 
@@ -60,13 +54,14 @@ public class PositionStatusPanel extends ViewStatusPanelPlugin implements MouseM
     public PositionStatusPanel(BasicImagePanel imagePanel) {
         setBorder(BorderFactory.createEtchedBorder());
 
-        setPreferredSize(new Dimension(170, 20));
-
+        //setPreferredSize(new Dimension(170, 20));
         LayersModel.getSingletonInstance().addLayersListener(this);
 
         imagePanel.addPlugin(this);
 
-        setText("(x, y) = " + "(    0" + PRIME + PRIME + ",    0" + PRIME + PRIME + ")");
+        popupState = new PopupState();
+        this.addMouseListener(this);
+        this.setComponentPopupMenu(popupState);
     }
 
     /**
@@ -79,52 +74,33 @@ public class PositionStatusPanel extends ViewStatusPanelPlugin implements MouseM
      *            Position on the screen.
      */
     private void updatePosition(Point position) {
+    	GL3DCamera camera = GL3DCameraSelectorModel.getInstance().getCurrentCamera();
 
-        // check region and viewport
-        Region r = regionView.getLastDecodedRegion();
-        Viewport v = viewportView.getViewport();
-        MetaData m = metaDataView.getMetaData();
+    	if (camera != null){
+    		Vector3d hitPoint = camera.getLastMouseHitPoint();
+    		if (LayersModel.getSingletonInstance().getActiveView() != null && hitPoint != null){
+    			DecimalFormat df;
+    			String point = null;
+				switch (this.popupState.getSelectedState()) {
+    			case ARCSECS:
+	    			df = new DecimalFormat("#");
+	    			point = "(" + df.format(Math.toDegrees(hitPoint.x)*3600) + "\" ," + df.format(Math.toDegrees(hitPoint.y)*3600) + "\") ";
+	    			break;
+				case DEGREE:
+					df = new DecimalFormat("#.####");
+	    			point = "(" + df.format(Math.toDegrees(hitPoint.x)) + DEGREE + " ," + df.format(Math.toDegrees(hitPoint.y)) + DEGREE + ") ";
+					break;
 
-        if (r == null || v == null || m == null) {
-            setText("(x, y) = " + "(" + position.x + "," + position.y + ")");
-            return;
-        }
+				default:
+					break;
+				}
+				this.setText(title + point);
+    			return;
+    			
+    		}
+    	}
+    	this.setText(title);
 
-        // get viewport image size
-        ViewportImageSize vis = ViewHelper.calculateViewportImageSize(v, r);
-
-        // Helioviewer images have there physical lower left corner in a
-        // negative area; real pixel based image at 0
-        if (m.getPhysicalLowerLeft().x < 0) {
-
-            Vector2i solarcenter = ViewHelper.convertImageToScreenDisplacement(regionView.getLastDecodedRegion().getUpperLeftCorner().negateX(), regionView.getLastDecodedRegion(), vis);
-
-            Vector2d scaling = new Vector2d(Constants.SUN_RADIUS, Constants.SUN_RADIUS);
-            Vector2d solarRadius = new Vector2d(ViewHelper.convertImageToScreenDisplacement(scaling, regionView.getLastDecodedRegion(), vis));
-
-            Vector2d pos = new Vector2d(position.x - solarcenter.getX(), -position.y + solarcenter.getY()).invertedScale(solarRadius).scale(959.705);
-
-            Formatter fmt = new Formatter();
-            String xStr = fmt.format(" %5d", (int) Math.round(pos.x)).toString();
-            fmt.close();
-            fmt = new Formatter();
-            String yStr = fmt.format(" %5d", (int) Math.round(pos.y)).toString();
-            fmt.close();
-            setText("(x, y) = " + "(" + xStr + PRIME + PRIME + "," + yStr + PRIME + PRIME + ")");
-        } else {
-
-            // computes pixel position for simple images (e.g. jpg and png)
-            // where cursor points at
-
-            // compute coordinates in image
-            int x = (int) (r.getWidth() * (position.getX() / vis.getWidth()) + r.getCornerX());
-            int y = (int) (m.getPhysicalImageHeight() - (r.getCornerY() + r.getHeight()) + position.getY() / (double) vis.getHeight() * r.getHeight() + 0.5);
-
-            // show coordinates
-            setText("(x, y) = " + "(" + x + "," + y + ")");
-        }
-
-        lastPosition = position;
     }
 
     /**
@@ -139,9 +115,6 @@ public class PositionStatusPanel extends ViewStatusPanelPlugin implements MouseM
      */
     public void setView(View newView) {
         view = newView;
-        regionView = ViewHelper.getViewAdapter(newView, RegionView.class);
-        viewportView = ViewHelper.getViewAdapter(newView, ViewportView.class);
-        metaDataView = ViewHelper.getViewAdapter(newView, MetaDataView.class);
     }
 
     /**
@@ -166,7 +139,6 @@ public class PositionStatusPanel extends ViewStatusPanelPlugin implements MouseM
      * {@inheritDoc}
      */
     public void mouseDragged(MouseEvent e) {
-        updatePosition(e.getPoint());
     }
 
     /**
@@ -203,4 +175,104 @@ public class PositionStatusPanel extends ViewStatusPanelPlugin implements MouseM
     public void detach() {
     }
 
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		if (e.isPopupTrigger()){
+			//popup(e);
+		}
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		if (e.isPopupTrigger()){
+			//popup(e);
+		}
+	}
+	
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	class PopupState extends JPopupMenu{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 5268038408623722705L;
+		private PopupItemState.PopupItemStates selectedItem = PopupItemState.PopupItemStates.ARCSECS;
+		
+		public PopupState(){
+			for (PopupItemState.PopupItemStates popupItems : PopupItemState.PopupItemStates.values()){
+				this.add(popupItems.popupItem);
+				popupItems.popupItem.addActionListener(new ActionListener() {
+					
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						for (PopupItemState.PopupItemStates popupItems : PopupItemState.PopupItemStates.values()){
+							if (popupItems.popupItem == e.getSource()){
+								selectedItem = popupItems;
+								break;
+							}
+						}
+						updateText();
+					}
+				});
+			}
+			this.updateText();
+		}
+		
+		private void updateText(){
+			for (PopupItemState.PopupItemStates popupItems : PopupItemState.PopupItemStates.values()){
+				if (selectedItem == popupItems)
+					popupItems.popupItem.setText(popupItems.popupItem.selectedText);
+				else
+					popupItems.popupItem.setText(popupItems.popupItem.unselectedText);
+			}
+		}
+		
+		public PopupItemState.PopupItemStates getSelectedState(){
+			return this.selectedItem;
+		}
+		
+		
+	}
+	
+	
+	private static class PopupItemState extends JMenuItem{
+		private static final long serialVersionUID = -4382532722049627152L;
+		
+		public enum PopupItemStates{
+			DEGREE("degree"), ARCSECS("arcsecs");
+			
+			private PopupItemState popupItem;
+			
+			private PopupItemStates(String name){
+				this.popupItem = new PopupItemState(name);
+			}
+			
+		}
+		/**
+		 * 
+		 */
+		private String unselectedText;
+		private String selectedText;
+		
+		public PopupItemState(String name) {
+			this.unselectedText = name;
+			this.selectedText = name + "  \u2713";
+		}
+	}
 }

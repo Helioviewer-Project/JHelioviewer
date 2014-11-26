@@ -131,6 +131,7 @@ public class GL3DCameraMouseController extends AbstractImagePanelMouseController
     public void mouseMoved(MouseEvent e) {
         GL3DCamera currentCamera = getCamera();
         if (currentCamera != null) {
+        	currentCamera.mouseRay(e);
             currentCamera.getCurrentInteraction().mouseMoved(e);
         }
     }

@@ -307,7 +307,7 @@ public class ImageViewerGui {
 			this.moviePanel = new MoviePanel();
 			moviePanelContainer.setDefaultPanel(moviePanel);
 			
-			leftPane.add("Overview", GuiState3DWCS.overViewPanel, true);
+			leftPane.add("Overview", GuiState3DWCS.overViewPanel, true);			
 			leftPane.add("Movie Controls", moviePanelContainer, true);
 
 			// Layer control

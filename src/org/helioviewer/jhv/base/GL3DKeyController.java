@@ -29,10 +29,8 @@ public class GL3DKeyController extends KeyAdapter {
     }
 
     public void keyPressed(KeyEvent e) {
-        // Log.debug("GL3DKeyController: KeyTyped: "+e.getKeyChar()+", "+e.getKeyCode());
         if (listenerMap.containsKey(e.getKeyCode())) {
             List<GL3DKeyListener> listeners = listenerMap.get(e.getKeyCode());
-            // Log.debug("GL3DKeyController: Found List: "+e.getKeyChar());
             for (GL3DKeyListener l : listeners) {
                 l.keyHit(e);
             }

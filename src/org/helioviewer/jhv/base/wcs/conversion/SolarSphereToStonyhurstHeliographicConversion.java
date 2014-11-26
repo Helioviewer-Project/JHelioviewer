@@ -34,7 +34,7 @@ public class SolarSphereToStonyhurstHeliographicConversion implements Coordinate
         double _x = x / solarSphereCoordinateSystem.getSolarRadius();
 
         double theta = Math.acos(_y) - Math.PI / 2;
-        double phi = Math.acos((_x / (theta % Math.PI == 0 ? 1 : Math.sin(theta))));
+        double phi = Math.acos((_x / (theta % Math.PI))== 0 ? 1 : Math.sin(theta));
 
         double r = Math.sqrt(x * x + y * y + z * z);
         return stonyhurstCoordinateSystem.createCoordinateVector(phi, theta, r);

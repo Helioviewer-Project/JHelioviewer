@@ -1,6 +1,6 @@
 package org.helioviewer.jhv.gui.components;
 
-import java.awt.Color;
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -78,13 +78,14 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 	}
 	
 	public OverViewPanel() {
-		this.setBackground(Color.black);
 		this.setPreferredSize(new Dimension(200, 200));
 		layers = new ArrayList<JHVJPXView>();
 		lutMap = new HashMap<String, Integer>();
-    	this.add(canvas);
-    	this.canvas.setPreferredSize(new Dimension(200, 200));
-		this.canvas.addMouseListener(this);
+    	this.setLayout(new BorderLayout());
+		this.add(canvas);
+		this.setMinimumSize(new Dimension(200, 200));
+    	this.canvas.setMinimumSize(new Dimension(200,200));
+    	this.canvas.addMouseListener(this);
 		this.canvas.addMouseMotionListener(this);
 		loadLutFromFile("/UltimateLookupTable.txt");
         
@@ -114,7 +115,6 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 			View lastView = LayersModel.getSingletonInstance().getActiveView();
 			// Just a hack
 			GLFilterView opacityFilterView = lastView.getAdapter(GLFilterView.class).getAdapter(GLFilterView.class);
-			//Filter opacityFilter = opacityFilterView.getFilter();
 			GLFilterView lutView = (GLFilterView)opacityFilterView.getView();
 			SOHOLUTFilter lutFilter = (SOHOLUTFilter)lutView.getFilter();
 			this.setCurrentLutByName(lutFilter.getLUT(), true);
@@ -176,18 +176,30 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 			return;
 		}
 		
+		double aspect = this.canvas.getSize().getWidth() / this.canvas.getSize().getHeight();
 		float x0 = (float) lowerleftCorner.x;
 		float y0 = (float) lowerleftCorner.y;
 		float x1 = x0 + (float) size.x;
 		float y1 = y0 + (float) size.y;
-
+		float tmpX0 = x0;
+		float tmpX1 = x1;
+		float tmpY0 = y0;
+		float tmpY1 = y1;
+		if (aspect < 1){
+			tmpY0 = (float) (y0 / aspect);
+			tmpY1 = (float) (y1 / aspect);
+		}
+		else{
+			tmpX0 = (float) (x0 * aspect);
+			tmpX1 = (float) (x1 * aspect);
+		}
 		gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
 		gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);		
 
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glViewport(0, 0, this.canvas.getSurfaceWidth(), this.canvas.getSurfaceHeight());
 		gl.glLoadIdentity();
-		gl.glOrtho(x0, x1, y0, y1, 10, -10);
+		gl.glOrtho(tmpX0, tmpX1, tmpY0, tmpY1, 10, -10);
 		
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		gl.glLoadIdentity();
@@ -253,12 +265,23 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 		y0 -= translation.y;
 		y1 -= translation.y;
 		
+		// Draw box
 		gl.glBegin(GL2.GL_LINE_STRIP);
 			gl.glVertex2d(x0, y0);
 			gl.glVertex2d(x0, y1);
 			gl.glVertex2d(x1, y1);
 			gl.glVertex2d(x1, y0);
 			gl.glVertex2d(x0, y0);
+		gl.glEnd();
+		
+		double r = x1-x0 > y1-y0? (x1-x0)*0.02 : (y1-y0) * 0.02;
+		// Draw circle
+		gl.glBegin(GL2.GL_LINE_LOOP);
+			for (int i = 0; i < 360; i++){
+				double x = Math.sin(i * Math.PI * 2 / 360.) * r - translation.x;
+	            double y = Math.cos(i * Math.PI * 2 / 360.) * r - translation.y;
+	            gl.glVertex2d(x, y);
+			}
 		gl.glEnd();
 		}
 		
