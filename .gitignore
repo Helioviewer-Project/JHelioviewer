@@ -6,3 +6,4 @@ excelsior-win/
 *.cg
 *.asm
 /bin
+.gradle/
