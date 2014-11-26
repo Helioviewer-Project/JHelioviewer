@@ -51,7 +51,7 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener {
 
 	private Vector3d startPosition2D;
 	private boolean outside;
-	private Vector3d lastMouseHitPoint;
+	private GL3DRay lastMouseRay;
 
 	public GL3DTrackballCamera(GL3DSceneGraphView sceneGraphView) {
 		this.sceneGraphView = sceneGraphView;
@@ -227,23 +227,14 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener {
 			GL3DRayTracer rayTracer = new GL3DRayTracer(
 					sceneGraphView.getHitReferenceShape(), this);
 			GL3DRay ray = rayTracer.cast(x, y);
-			Vector3d earthToSun = new Vector3d(0, 0,
-					Constants.SUN_MEAN_DISTANCE_TO_EARTH);
-			if (ray.getHitPoint() != null) {
-				earthToSun = earthToSun.subtract(ray.getHitPoint());
-				double r = earthToSun.length();
-				double theta = Math.atan(earthToSun.x
-						/ Math.sqrt(earthToSun.y * earthToSun.y + earthToSun.z
-								* earthToSun.z));
-				double phi = Math.atan2(earthToSun.y, earthToSun.z);
-
-				this.lastMouseHitPoint = new Vector3d(-theta, -phi, r);
+			if (ray.getHitPoint() != null){
+				this.lastMouseRay = ray;
 			}
 		}
 	}
 
 	@Override
-	public Vector3d getLastMouseHitPoint() {
-		return lastMouseHitPoint;
+	public GL3DRay getLastMouseRay() {
+		return lastMouseRay;
 	}
 }

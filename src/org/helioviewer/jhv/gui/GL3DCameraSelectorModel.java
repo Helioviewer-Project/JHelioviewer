@@ -141,7 +141,7 @@ public class GL3DCameraSelectorModel extends AbstractListModel<Object>
 
 	public void rotateToCurrentLayer(long duration) {
 		View view = LayersModel.getSingletonInstance().getActiveView();
-		GL3DCoordinateSystemView layer = view
+		if (view != null){GL3DCoordinateSystemView layer = view
 				.getAdapter(GL3DCoordinateSystemView.class);
 		GL3DState state = GL3DState.get();
 		CoordinateVector orientationVector = layer.getOrientation();
@@ -158,6 +158,7 @@ public class GL3DCameraSelectorModel extends AbstractListModel<Object>
 		
 		this.getCurrentCamera().addCameraAnimation(
 				new GL3DCameraRotationAnimation(targetRotation, duration));
+		}
 	}
 
 	@Override

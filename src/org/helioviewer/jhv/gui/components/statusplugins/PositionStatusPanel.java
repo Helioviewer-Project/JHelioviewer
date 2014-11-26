@@ -12,12 +12,16 @@ import javax.swing.BorderFactory;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
+import org.helioviewer.jhv.base.math.SphericalCoord;
 import org.helioviewer.jhv.base.math.Vector3d;
+import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.gui.GL3DCameraSelectorModel;
 import org.helioviewer.jhv.gui.components.BasicImagePanel;
 import org.helioviewer.jhv.gui.interfaces.ImagePanelPlugin;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
+import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
+import org.helioviewer.jhv.plugins.hekplugin.HEKCoordinateTransform;
 import org.helioviewer.jhv.viewmodel.view.View;
 
 /**
@@ -77,18 +81,29 @@ public class PositionStatusPanel extends ViewStatusPanelPlugin implements MouseM
     	GL3DCamera camera = GL3DCameraSelectorModel.getInstance().getCurrentCamera();
 
     	if (camera != null){
-    		Vector3d hitPoint = camera.getLastMouseHitPoint();
+    		GL3DRay ray = camera.getLastMouseRay();
+    		Vector3d hitPoint = ray.getHitPoint();
     		if (LayersModel.getSingletonInstance().getActiveView() != null && hitPoint != null){
     			DecimalFormat df;
     			String point = null;
 				switch (this.popupState.getSelectedState()) {
     			case ARCSECS:
+    				Vector3d earthToSun = new Vector3d(0, 0,
+    						Constants.SUN_MEAN_DISTANCE_TO_EARTH);
+    				earthToSun = earthToSun.subtract(hitPoint);
+    					double theta = -Math.atan(earthToSun.x
+    							/ Math.sqrt(earthToSun.y * earthToSun.y + earthToSun.z
+    									* earthToSun.z));
+    					double phi = -Math.atan2(earthToSun.y, earthToSun.z);
 	    			df = new DecimalFormat("#");
-	    			point = "(" + df.format(Math.toDegrees(hitPoint.x)*3600) + "\" ," + df.format(Math.toDegrees(hitPoint.y)*3600) + "\") ";
+	    			point = "(" + df.format(Math.toDegrees(theta)*3600) + "\" ," + df.format(Math.toDegrees(phi)*3600) + "\") ";
 	    			break;
 				case DEGREE:
-					df = new DecimalFormat("#.####");
-	    			point = "(" + df.format(Math.toDegrees(hitPoint.x)) + DEGREE + " ," + df.format(Math.toDegrees(hitPoint.y)) + DEGREE + ") ";
+					SphericalCoord newPoint = HEKCoordinateTransform.CartesianToStonyhurst(hitPoint);
+					df = new DecimalFormat("#.##");
+					if (ray.isOnSun)
+	    			point = "(" + df.format(newPoint.theta) + DEGREE + " ," + df.format(newPoint.phi) + DEGREE + ") ";
+					else point = "";
 					break;
 
 				default:
