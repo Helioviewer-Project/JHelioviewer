@@ -76,6 +76,7 @@ public class GL3DImageLayer extends GL3DGroup implements GL3DCameraListener {
 
 	protected GL3DImageCoronaFragmentShaderProgram fragmentShader = null;
 	protected GL3DImageFragmentShaderProgram sphereFragmentShader = null;
+	private OpacityFilter opacityFilter;
 
     public void updateMatrix(GL3DState state) {
         this.updateOrientation(state);
@@ -217,6 +218,7 @@ public class GL3DImageLayer extends GL3DGroup implements GL3DCameraListener {
 			this.sphereFragmentShader
 					.setCutOffRadius((float) (Constants.SUN_RADIUS / this.imageTextureView.metadata
 							.getPhysicalImageWidth()));
+			this.opacityFilter.initOpacity();
 			this.addNode(circle);
 			this.addNode(sphere);
 		}
@@ -441,6 +443,10 @@ public class GL3DImageLayer extends GL3DGroup implements GL3DCameraListener {
 
 	public GL3DImageFragmentShaderProgram getSphereFragmentShader() {
 		return sphereFragmentShader;
+	}
+
+	public void addOpacityFilter(OpacityFilter opacityFilter) {
+		this.opacityFilter = opacityFilter;
 	}
 
 }

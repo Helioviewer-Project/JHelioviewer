@@ -36,6 +36,7 @@ public class OpacityFilter extends AbstractFilter implements GLFragmentShaderFil
     private OpacityShader shader = new OpacityShader();
     private OpacityPanel panel;
     private GL3DImageLayer imageLayer;
+    private boolean initLayer = false;
     // ////////////////////////////////////////////////////////////////
     // Methods
     // ////////////////////////////////////////////////////////////////
@@ -75,10 +76,12 @@ public class OpacityFilter extends AbstractFilter implements GLFragmentShaderFil
      *            New opacity, value has to be within [0, 1]
      */
     void setOpacity(float newOpacity) {
-        if (opacity == newOpacity) {
+        if (opacity == newOpacity && initLayer) {
             return;
         }
-        if (imageLayer != null) imageLayer.getSphereFragmentShader().setOpacity(newOpacity);
+        if (imageLayer != null) {
+        	imageLayer.getSphereFragmentShader().setOpacity(newOpacity);
+        }
         opacity = newOpacity;
         notifyAllListeners();
     }
@@ -179,5 +182,11 @@ public class OpacityFilter extends AbstractFilter implements GLFragmentShaderFil
 
 	public void setImageLayer(GL3DImageLayer imageLayer) {
 		this.imageLayer = imageLayer;
+		imageLayer.addOpacityFilter(this);
+	}
+
+	public void initOpacity() {
+		this.setOpacity(opacity);
+		this.initLayer = true;
 	}
 }

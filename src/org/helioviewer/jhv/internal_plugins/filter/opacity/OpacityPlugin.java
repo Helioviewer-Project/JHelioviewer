@@ -23,13 +23,14 @@ import org.helioviewer.jhv.viewmodel.view.MetaDataView;
 public class OpacityPlugin extends SimpleFilterContainer {
 
     float initialOpacity = 1.0f;
-
+    private OpacityFilter opacityFilter;
     /**
      * {@inheritDoc}
      */
 
     protected Filter getFilter() {
-        return new OpacityFilter(initialOpacity);
+    	this.opacityFilter = new OpacityFilter(initialOpacity);
+        return opacityFilter;
     }
 
     /**
@@ -42,7 +43,7 @@ public class OpacityPlugin extends SimpleFilterContainer {
     protected boolean useFilter(FilterView view) {
     	
         	MetaData currentMetaData = view.getAdapter(MetaDataView.class).getMetaData();
-            if (currentMetaData.hasCorona()){
+            if (!currentMetaData.hasSphere()){
             	initialOpacity = 1.0f;
             	return true;
             }
@@ -65,7 +66,8 @@ public class OpacityPlugin extends SimpleFilterContainer {
             	if (metaData.hasSphere()) layerCount++;
         }
         
-		//initialOpacity = 1.0f;
+		initialOpacity = 1.0f/layerCount;
+		this.opacityFilter.setOpacity(initialOpacity);
         return true;
     }
 

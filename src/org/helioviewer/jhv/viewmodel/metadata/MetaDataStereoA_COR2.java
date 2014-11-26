@@ -32,6 +32,7 @@ public class MetaDataStereoA_COR2 extends MetaData{
         	throw new MetaDataException("invalid instrument");
         }
         hasCorona = true;
+        hasSphere = false;
         this.hasRotation = true;
         this.metaDataContainer = metaDataContainer;
 

@@ -228,13 +228,16 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener {
 			GL3DRay ray = rayTracer.cast(x, y);
 			Vector3d earthToSun = new Vector3d(0, 0,
 					Constants.SUN_MEAN_DISTANCE_TO_EARTH);
-			earthToSun = earthToSun.subtract(ray.getHitPoint());
-			double r = earthToSun.length();
-			double theta = Math.atan(earthToSun.x / Math.sqrt(earthToSun.y * earthToSun.y + earthToSun.z * earthToSun.z));
-			double phi = Math.atan2(earthToSun.y,earthToSun.z);
-	        
-			this.lastMouseHitPoint = new Vector3d(-theta, -phi, r);
-			
+			if (ray != null) {
+				earthToSun = earthToSun.subtract(ray.getHitPoint());
+				double r = earthToSun.length();
+				double theta = Math.atan(earthToSun.x
+						/ Math.sqrt(earthToSun.y * earthToSun.y + earthToSun.z
+								* earthToSun.z));
+				double phi = Math.atan2(earthToSun.y, earthToSun.z);
+
+				this.lastMouseHitPoint = new Vector3d(-theta, -phi, r);
+			}
 		}
 	}
 
