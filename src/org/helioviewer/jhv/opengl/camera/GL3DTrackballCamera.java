@@ -96,6 +96,7 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener {
 						startPosition2D);
 
 				Vector3d tmp = newPosition.subtract(startPosition2D);
+				tmp = this.getRotation().toMatrix().inverse().multiply(tmp);
 				this.startPosition2D = newPosition;
 				if (GL3DState.get().getState() == VISUAL_TYPE.MODE_3D)
 					this.getRotation().rotate(
@@ -228,7 +229,7 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener {
 			GL3DRay ray = rayTracer.cast(x, y);
 			Vector3d earthToSun = new Vector3d(0, 0,
 					Constants.SUN_MEAN_DISTANCE_TO_EARTH);
-			if (ray != null) {
+			if (ray.getHitPoint() != null) {
 				earthToSun = earthToSun.subtract(ray.getHitPoint());
 				double r = earthToSun.length();
 				double theta = Math.atan(earthToSun.x
