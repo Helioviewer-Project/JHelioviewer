@@ -32,6 +32,7 @@
             <zipfileset dir="../../lib" includes="jogl-all-natives-macosx-universal.jar"/>
             <zipfileset dir="../../lib" includes="jogl-all-natives-windows-amd64.jar"/>
             <zipfileset dir="../../lib" includes="jogl-all-natives-windows-i586.jar"/>
+            <zipfileset dir="../../lib" includes="helio-coordinate-converter-0.0.1-SNAPSHOT.jar"/>
         </jar>
     </target>
 </project>
