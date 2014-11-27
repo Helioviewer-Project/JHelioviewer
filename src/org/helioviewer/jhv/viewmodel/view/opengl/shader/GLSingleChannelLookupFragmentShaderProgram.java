@@ -19,7 +19,7 @@ import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLShaderBuilder.GLBuildS
  */
 public class GLSingleChannelLookupFragmentShaderProgram extends GLFragmentShaderProgram {
 
-    private static int lutID = 0;
+    //private static int lutID = 0;
     int lutMode = -1;
 
     /**
@@ -46,9 +46,9 @@ public class GLSingleChannelLookupFragmentShaderProgram extends GLFragmentShader
 
             program = program.replaceAll("output", shaderBuilder.useOutputValue("float4", "COLOR"));
 
-            lutMode = shaderBuilder.addTextureParameter("sampler1D lut" + lutID);
-            program = program.replaceAll("lut", "lut" + lutID);
-            lutID = (lutID + 1) & 15;
+            lutMode = shaderBuilder.addTextureParameter("sampler1D lut"); // + lutID);
+            /*program = program.replaceAll("lut", "lut" + lutID);
+            lutID = (lutID + 1) & 15;*/
 
             shaderBuilder.addMainFragment(program);
 

@@ -10,6 +10,7 @@ import java.nio.CharBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -165,40 +166,52 @@ public class GLShaderHelper {
      *            Shader id to put the compiled program
      */
     public synchronized void compileProgram(GL2 gl, int programType, String source, int target) {
-        putContents(tmpCg, source);
-
-        String profile = programType == GL2.GL_FRAGMENT_PROGRAM_ARB ? "arbfp1" : "arbvp1";
-        List<String> args = new ArrayList<String>();
-        args.add("-profile");
-        args.add(profile);
-        args.add("-o");
-        args.add(tmpAsm.getPath());
-        args.add(tmpCg.getPath());
         
-        try {
-            Process p = FileUtils.invokeExecutable("cgc", args);
-            FileUtils.logProcessOutput(p, "cgc", Level.DEBUG, true);
-            p.waitFor();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        if (!tmpAsm.exists()) {
-            Log.error("Error while compiling shader program:");
-            Log.error(source);
-            return;
-        }
-        // Log.debug("GLShaderHelper.compile Source: "+source);
+        String cacheKey=programType+"@"+source;
         
-        String compiledProgram = getContents(tmpAsm);
-        // Log.debug("GLShaderHelper.compile Compiled Code: "+compiledProgram);
+        String compiledProgram = shaderCache.get(cacheKey);
+        if(compiledProgram == null)
+        {
+            putContents(tmpCg, source);
+    
+            String profile = programType == GL2.GL_FRAGMENT_PROGRAM_ARB ? "arbfp1" : "arbvp1";
+            List<String> args = new ArrayList<String>();
+            args.add("-profile");
+            args.add(profile);
+            args.add("-o");
+            args.add(tmpAsm.getPath());
+            args.add(tmpCg.getPath());
+            
+            try {
+                Process p = FileUtils.invokeExecutable("cgc", args);
+                FileUtils.logProcessOutput(p, "cgc", Level.DEBUG, true);
+                p.waitFor();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+    
+            if (!tmpAsm.exists()) {
+                Log.error("Error while compiling shader program:");
+                Log.error(source);
+                return;
+            }
+            
+            Log.debug("GLShaderHelper.compile Source: "+source);
+            compiledProgram = getContents(tmpAsm);
+            // Log.debug("GLShaderHelper.compile Compiled Code: "+compiledProgram);
+            
+            shaderCache.put(cacheKey,compiledProgram);
+        }
+        
         gl.glBindProgramARB(programType, target);
         
         CharBuffer programBuffer = CharBuffer.wrap(compiledProgram);
         gl.glProgramStringARB(programType, GL2.GL_PROGRAM_FORMAT_ASCII_ARB, compiledProgram.length(), programBuffer.toString());
     }
+    
+    private static final HashMap<String,String> shaderCache=new HashMap<>();
 
     /**
      * Reads the contents of a file and puts them to a String.
