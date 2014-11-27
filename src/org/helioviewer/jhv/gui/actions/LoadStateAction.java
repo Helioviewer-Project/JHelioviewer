@@ -27,8 +27,8 @@ public class LoadStateAction extends AbstractAction {
      * be "Load State..." in every case.
      */
     public LoadStateAction() {
-        super("Load State...");
-        putValue(SHORT_DESCRIPTION, "Loads the state saved in user specified location");
+        super("Load state...");
+        putValue(SHORT_DESCRIPTION, "Loads the saved state from a file");
         stateLocation = null;
     }
 

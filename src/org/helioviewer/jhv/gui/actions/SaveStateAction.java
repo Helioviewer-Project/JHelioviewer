@@ -30,7 +30,7 @@ public class SaveStateAction extends AbstractAction {
      * Default constructor.
      */
     public SaveStateAction() {
-        super("Save Current State ...");
+        super("Save state...");
         putValue(SHORT_DESCRIPTION, "Saves the current state of JHV");
     }
 

@@ -92,15 +92,25 @@
   -protect=nomatter
   -optimize=autodetect
 !end
-!classpathentry ../../lib/xuggle-xuggler-5.4.jar
-  -pack=noncompiled
-  -protect=nomatter
-  -optimize=autodetect
-!end
 !classpathentry .
   -pack=none
   -protect=all
   -optimize=all
+!end
+!classpathentry ../../lib/xuggle-xuggler-5.4-win32.jar
+  -pack=noncompiled
+  -protect=nomatter
+  -optimize=autodetect
+!end
+!classpathentry ../../lib/slf4j-api-1.7.7.jar
+  -pack=noncompiled
+  -protect=nomatter
+  -optimize=autodetect
+!end
+!classpathentry ../../lib/slf4j-nop-1.7.7.jar
+  -pack=noncompiled
+  -protect=nomatter
+  -optimize=autodetect
 !end
 
 !module ./JHelioViewer.usg

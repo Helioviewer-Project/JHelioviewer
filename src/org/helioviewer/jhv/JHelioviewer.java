@@ -85,6 +85,7 @@ public class JHelioviewer {
         {
             _ioe.printStackTrace();
         }
+        
 
         // Information log message
         String argString = "";
