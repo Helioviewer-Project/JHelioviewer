@@ -594,8 +594,18 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 
 	private void setPan(int x, int y){
 		Dimension canvasSize = this.canvas.getSize();
-		double xTranslation = -(x / canvasSize.getWidth() - 0.5) * this.lastLayer.getMetaData().getPhysicalImageWidth();
-		double yTranslation = (y / canvasSize.getHeight() - 0.5) * this.lastLayer.getMetadata().getPhysicalImageHeight();
+		double aspect = this.canvas.getSize().getWidth() / this.canvas.getSize().getHeight();
+		double width = this.lastLayer.getMetaData().getPhysicalImageWidth();
+		double height = this.lastLayer.getMetaData().getPhysicalImageHeight();
+		
+		if (aspect < 1){
+			height = height / aspect;
+		}
+		else{
+			width = width * aspect;
+		}
+		double xTranslation = -(x / canvasSize.getWidth() - 0.5) * width;
+		double yTranslation = (y / canvasSize.getHeight() - 0.5) * height;
 		this.camera.setPanning(xTranslation, yTranslation);
 		this.camera.updateCameraTransformation();
 	}
