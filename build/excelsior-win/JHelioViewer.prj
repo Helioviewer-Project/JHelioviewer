@@ -112,6 +112,11 @@
   -protect=nomatter
   -optimize=autodetect
 !end
+!classpathentry ../../lib/helio-coordinate-converter-0.0.1-SNAPSHOT.jar
+  -pack=noncompiled
+  -protect=nomatter
+  -optimize=autodetect
+!end
 
 !module ./JHelioViewer.usg
 !module ../../resources/images/hvImage_64x64.ico

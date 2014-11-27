@@ -1,7 +1,6 @@
 bin/
 *.class
 .metadata/
-excelsior-win/
 .app
 *.cg
 *.asm
