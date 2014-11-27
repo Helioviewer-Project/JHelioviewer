@@ -56,9 +56,10 @@ public class SaveScreenshotAsAction extends AbstractAction {
         this.loadSettings();
     	final JFileChooser fileChooser = new JFileChooser();
         fileChooser.setAcceptAllFileFilterUsed(false);
-        fileChooser.addChoosableFileFilter(new JPGFilter());
+        JPGFilter firstFilter = new JPGFilter();
+        fileChooser.addChoosableFileFilter(firstFilter);
         fileChooser.addChoosableFileFilter(new PNGFilter());
-
+        fileChooser.setFileFilter(firstFilter);
         String val;
         try {
             val = Settings.getProperty(SETTING_SCREENSHOT_EXPORT_LAST_DIRECTORY);
@@ -71,7 +72,7 @@ public class SaveScreenshotAsAction extends AbstractAction {
         
         fileChooser.setSelectedFile(new File(fileChooser.getCurrentDirectory() + "/" + this.getDefaultFileName()));
         int retVal = fileChooser.showSaveDialog(ImageViewerGui.getMainFrame());
-
+        
         if (retVal == JFileChooser.APPROVE_OPTION) {
         	Settings.setProperty(SETTING_SCREENSHOT_EXPORT_LAST_DIRECTORY, fileChooser.getCurrentDirectory().getPath() + "/");
         	File selectedFile = fileChooser.getSelectedFile();

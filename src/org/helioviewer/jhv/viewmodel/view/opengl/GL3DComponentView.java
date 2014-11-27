@@ -109,8 +109,8 @@ public class GL3DComponentView extends AbstractBasicView implements
 	private int[] frameBufferObject;
 	private int[] renderBufferDepth;
 	private int[] renderBufferColor;
-	private static int defaultTileWidth = 2048;
-	private static int defaultTileHeight = 2048;
+	private static int DEFAULT_TILE_WIDTH = 2048;
+	private static int DEFAULT_TILE_HEIGHT = 2048;
 	private int tileWidth = 512;
 	private int tileHeight = 512;
 
@@ -437,8 +437,8 @@ public class GL3DComponentView extends AbstractBasicView implements
 		this.getAdapter(ViewportView.class).setViewport(viewport,
 				new ChangeEvent());
 
-		tileWidth = width < defaultTileWidth ? width : defaultTileWidth;
-		tileHeight = height < defaultTileHeight ? height : defaultTileHeight;
+		tileWidth = width < DEFAULT_TILE_WIDTH ? width : DEFAULT_TILE_WIDTH;
+		tileHeight = height < DEFAULT_TILE_HEIGHT ? height : DEFAULT_TILE_HEIGHT;
 
 		Log.trace(">> GLComponentView.display() > Start taking screenshot");
 		double xTiles = width / (double) tileWidth;
@@ -463,12 +463,9 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 		offscreenDrawable.setRealized(true);
 		GLContext offscreenContext = canvas.getContext();
-		// GLContext offscreenContext =
-		// offscreenDrawable.createContext(this.canvas.getContext());
 		offscreenDrawable.setRealized(true);
 		offscreenContext.makeCurrent();
 		GL2 offscreenGL = offscreenContext.getGL().getGL2();
-		// GL2 offscreenGL = canvas.getContext().getGL().getGL2();
 
 		offscreenGL.glBindFramebuffer(GL2.GL_FRAMEBUFFER, frameBufferObject[0]);
 		generateNewRenderBuffers(offscreenGL);
@@ -489,16 +486,16 @@ public class GL3DComponentView extends AbstractBasicView implements
 		offscreenGL.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 		double tileLeft, tileRight, tileBottom, tileTop;
-
+		
 		for (int x = 0; x < countXTiles; x++) {
 			for (int y = 0; y < countYTiles; y++) {
 				tileLeft = left + (right - left) / xTiles * x;
 				tileRight = left + (right - left) / xTiles * (x + 1);
 				tileBottom = bottom + (top - bottom) / yTiles * y;
 				tileTop = bottom + (top - bottom) / yTiles * (y + 1);
-				// offscreenGL.glFlush();
-
+				
 				offscreenGL.glMatrixMode(GL2.GL_PROJECTION);
+				offscreenGL.glViewport(0, 0, tileWidth, tileHeight);
 				offscreenGL.glLoadIdentity();
 				offscreenGL.glPushMatrix();
 				
