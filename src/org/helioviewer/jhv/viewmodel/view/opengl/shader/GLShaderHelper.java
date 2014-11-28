@@ -198,7 +198,7 @@ public class GLShaderHelper {
                 return;
             }
             
-            Log.debug("GLShaderHelper.compile Source: "+source);
+            //Log.debug("GLShaderHelper.compile Source: "+source);
             compiledProgram = getContents(tmpAsm);
             // Log.debug("GLShaderHelper.compile Compiled Code: "+compiledProgram);
             
