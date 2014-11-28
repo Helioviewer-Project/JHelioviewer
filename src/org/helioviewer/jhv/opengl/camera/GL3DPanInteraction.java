@@ -61,9 +61,11 @@ public class GL3DPanInteraction extends GL3DDefaultInteraction {
 			meterPerPixelWidth = halfClipNearWidth * 2
 					/ (canvasSize.getWidth());
 
-			double yMeterInNearPlane = (e.getY() - canvasSize.getHeight() / 2.)
+			double x = e.getPoint().getX() * canvasSize.getWidth() / GuiState3DWCS.mainComponentView.getComponent().getWidth();
+			double y = e.getPoint().getY() * canvasSize.getHeight() / GuiState3DWCS.mainComponentView.getComponent().getHeight();
+			double yMeterInNearPlane = (y - canvasSize.getHeight() / 2.)
 					* meterPerPixelHeight;
-			double xMeterInNearPlane = (e.getX() - canvasSize.getWidth() / 2.)
+			double xMeterInNearPlane = (x - canvasSize.getWidth() / 2.)
 					* meterPerPixelWidth;
 			double yAngle = Math.atan2(yMeterInNearPlane, camera.getClipNear());
 			double xAngle = Math.atan2(xMeterInNearPlane, camera.getClipNear());
@@ -113,10 +115,12 @@ public class GL3DPanInteraction extends GL3DDefaultInteraction {
 	private void mouseDragged3DFunction(MouseEvent e, GL3DCamera camera){
 		if (defaultTranslation != null) {
 			Dimension canvasSize = GuiState3DWCS.mainComponentView.getCanavasSize();
+			double x = e.getPoint().getX() * canvasSize.getWidth() / GuiState3DWCS.mainComponentView.getComponent().getWidth();
+			double y = e.getPoint().getY() * canvasSize.getHeight() / GuiState3DWCS.mainComponentView.getComponent().getHeight();
 
-			double yMeterInNearPlane = (e.getY() - canvasSize.getHeight() / 2.)
+			double yMeterInNearPlane = (y - canvasSize.getHeight() / 2.)
 					* meterPerPixelHeight;
-			double xMeterInNearPlane = (e.getX() - canvasSize.getWidth() / 2.)
+			double xMeterInNearPlane = (x - canvasSize.getWidth() / 2.)
 					* meterPerPixelWidth;
 			double yAngle = Math.atan2(yMeterInNearPlane, camera.getClipNear());
 			double xAngle = Math.atan2(xMeterInNearPlane, camera.getClipNear());
