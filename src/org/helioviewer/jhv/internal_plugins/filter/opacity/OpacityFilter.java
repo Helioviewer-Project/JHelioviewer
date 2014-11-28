@@ -79,7 +79,7 @@ public class OpacityFilter extends AbstractFilter implements GLFragmentShaderFil
         if (opacity == newOpacity && initLayer) {
             return;
         }
-        if (imageLayer != null) {
+        if (imageLayer != null && imageLayer.getSphereFragmentShader() != null) {
         	imageLayer.getSphereFragmentShader().setOpacity(newOpacity);
         }
         opacity = newOpacity;
