@@ -67,10 +67,14 @@ public class SDOCutOutToggleButton extends Component implements LayersListener,
 	public void activeLayerChanged(int idx) {
 		if (idx >= 0) {
 			if (LayersModel.getSingletonInstance().getLayer(idx) != null) {
+				MetaDataView metaDataView = LayersModel.getSingletonInstance()
+						.getLayer(idx).getAdapter(MetaDataView.class);
+				if (metaDataView != null && metaDataView.getMetaData() != null){
 				// FIXME: remove string comparison
 				sdoCutOutButton.setEnabled(LayersModel.getSingletonInstance()
 						.getLayer(idx).getAdapter(MetaDataView.class)
 						.getMetaData().getObservatory().contains("SDO"));
+				}
 			}
 			return;
 		}

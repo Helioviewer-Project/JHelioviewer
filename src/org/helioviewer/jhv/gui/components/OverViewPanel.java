@@ -162,7 +162,7 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 		GL2 gl = drawable.getGL().getGL2();
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 		gl.glActiveTexture(GL2.GL_TEXTURE0);
-		if (lastLayer != null && lastLayer.getMetaData() != null){
+		if (lastLayer != null && lastLayer.getMetaData() != null && lastLayer.getMetadata().getPhysicalRegion() != null){
 			
 		if (this.updateTexture){
         this.createTexture(gl, this.lastLayer.getMetadata().getPhysicalRegion(), this.lastLayer.getImageData());
