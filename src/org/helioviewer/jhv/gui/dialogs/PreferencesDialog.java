@@ -600,7 +600,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 			}
 			{
 				screenshotAspectRatioSelection = new JComboBox<AspectRatio>(
-						MOVIE_ASPECT_RATIO_PRESETS);
+						IMAGE_ASPECT_RATIO_PRESETS);
 				this.add(screenshotAspectRatioSelection, "8, 4, left, default");
 				screenshotAspectRatioSelection
 						.addItemListener(new ItemListener() {
@@ -730,6 +730,10 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 			} catch (Exception _e) {
 			}
 
+			System.out.println("--------------------------############################");
+            System.out.println("--------------------------############################");
+            System.out.println("--------------------------############################");
+            System.out.println("--------------------------############################");
 			screenshotAspectRatioSelection
 					.setSelectedItem(IMAGE_ASPECT_RATIO_PRESETS[IMAGE_ASPECT_RATIO_PRESETS.length - 1]);
 			for (AspectRatio asp : IMAGE_ASPECT_RATIO_PRESETS) {
