@@ -730,10 +730,6 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 			} catch (Exception _e) {
 			}
 
-			System.out.println("--------------------------############################");
-            System.out.println("--------------------------############################");
-            System.out.println("--------------------------############################");
-            System.out.println("--------------------------############################");
 			screenshotAspectRatioSelection
 					.setSelectedItem(IMAGE_ASPECT_RATIO_PRESETS[IMAGE_ASPECT_RATIO_PRESETS.length - 1]);
 			for (AspectRatio asp : IMAGE_ASPECT_RATIO_PRESETS) {
