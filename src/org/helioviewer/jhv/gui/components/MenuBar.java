@@ -49,7 +49,7 @@ public class MenuBar extends JMenuBar {
         exampleMenu.add(new LoadStateAction("SOHO Comet Neat (February 2003)", FileUtils.getResourceUrl("/examples/SOHO_Comet_Neat_Feb2003.jhv")));
         exampleMenu.add(new LoadStateAction("SOHO Bastille Day flare (July 2000)", FileUtils.getResourceUrl("/examples/SOHO_Bastille_Day_Flare_July2000.jhv")));
         exampleMenu.add(new LoadStateAction("SOHO Lightbulb CME (February 2000)", FileUtils.getResourceUrl("/examples/SOHO_Lightbulb_CME_Feb2000.jhv")));
-        exampleMenu.add(new LoadStateAction("SOHO CMEs (May 1998)", FileUtils.getResourceUrl("/examples/SOHO_CMEs_May1998.jhv")));
+        //exampleMenu.add(new LoadStateAction("SOHO CMEs (May 1998)", FileUtils.getResourceUrl("/examples/SOHO_CMEs_May1998.jhv")));
 
         fileMenu.add(exampleMenu);
         fileMenu.add(new LoadStateAction());

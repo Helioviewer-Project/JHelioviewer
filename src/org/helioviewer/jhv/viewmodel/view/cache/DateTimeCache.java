@@ -68,6 +68,7 @@ public abstract class DateTimeCache {
 	 * @return Date and time of the given frame
 	 */
 	public ImmutableDateTime getDateTime(int frameNumber) {
+		if (cache.length <= frameNumber) return null;
 		if (cache[frameNumber] == null) {
 
 			do {
