@@ -678,6 +678,8 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 		Vector3d camDirection = new Vector3d(0, 0, 1);
 		
 		View view = LayersModel.getSingletonInstance().getActiveView();
+		if (view == null) return 0;
+		
 		GL3DCoordinateSystemView layer = view
 				.getAdapter(GL3DCoordinateSystemView.class);
 		GL3DState state = GL3DState.get();
