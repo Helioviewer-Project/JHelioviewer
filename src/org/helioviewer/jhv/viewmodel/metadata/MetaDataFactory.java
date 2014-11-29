@@ -1,7 +1,6 @@
 package org.helioviewer.jhv.viewmodel.metadata;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.JOptionPane;
 
@@ -34,24 +33,9 @@ public class MetaDataFactory {
 			try {
 				constructor = c.getDeclaredConstructor(MetaDataContainer.class);
 				metaData = constructor.newInstance(args);
-			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
+			} catch (Exception e) {
 				e.printStackTrace();
-			} catch (NoSuchMethodException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InstantiationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
 				metaData = null;
-				//e.printStackTrace();
 			}
 			if (metaData != null) break;
 		}
@@ -60,7 +44,7 @@ public class MetaDataFactory {
 			return metaData;
 		}
 		
-		JOptionPane.showMessageDialog(GuiState3DWCS.mainComponentView.getComponent(), "Not supported Metadata's");
+		JOptionPane.showMessageDialog(GuiState3DWCS.mainComponentView.getComponent(), "This data source's metadata could not be read.");
 		return null;
 		
 	}
