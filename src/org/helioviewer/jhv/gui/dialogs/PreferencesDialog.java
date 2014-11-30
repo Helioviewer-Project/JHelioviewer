@@ -427,7 +427,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 			NumberFormatter formatter = new NumberFormatter(format);
 			formatter.setValueClass(Integer.class);
 			formatter.setMinimum(1);
-			formatter.setMaximum(2048);
+			formatter.setMaximum(4096);
 			{
 				JLabel lblImageWidth = new JLabel("Image width");
 				this.add(lblImageWidth, "6, 6, right, default");
@@ -459,7 +459,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 						});
 				this.add(txtMovieImageWidth, "8, 6, left, default");
 				txtMovieImageWidth.setColumns(10);
-				txtMovieImageWidth.setToolTipText("value between 1 to 2048");
+				txtMovieImageWidth.setToolTipText("value between 1 to 4096");
 			}
 			{
 				JLabel lblImageHeight = new JLabel("Image height");
@@ -492,7 +492,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 						});
 				this.add(txtMovieImageHeight, "8, 8, left, default");
 				txtMovieImageHeight.setColumns(10);
-				txtMovieImageHeight.setToolTipText("value between 1 to 2048");
+				txtMovieImageHeight.setToolTipText("value between 1 to 4096");
 			}
 
 		}
@@ -627,7 +627,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 			NumberFormatter formatter = new NumberFormatter(format);
 			formatter.setValueClass(Integer.class);
 			formatter.setMinimum(1);
-			formatter.setMaximum(2048);
+			formatter.setMaximum(4096);
 			{
 				JLabel lblImageWidth = new JLabel("Image width");
 				this.add(lblImageWidth, "6, 6, right, default");
@@ -660,7 +660,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 				this.add(txtScreenshotImageWidth, "8, 6, left, default");
 				txtScreenshotImageWidth.setColumns(10);
 				txtScreenshotImageWidth
-						.setToolTipText("value between 1 to 2048");
+						.setToolTipText("value between 1 to 4096");
 			}
 			{
 				JLabel lblImageHeight = new JLabel("Image height");
@@ -694,7 +694,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 				this.add(txtScreenshotImageHeight, "8, 8, left, default");
 				txtScreenshotImageHeight.setColumns(10);
 				txtScreenshotImageHeight
-						.setToolTipText("value between 1 to 2048");
+						.setToolTipText("value between 1 to 4096");
 			}
 
 		}

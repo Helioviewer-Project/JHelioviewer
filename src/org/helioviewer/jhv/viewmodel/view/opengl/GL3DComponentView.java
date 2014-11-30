@@ -433,12 +433,13 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 	public BufferedImage getBufferedImage(int width, int height) {
 		defaultViewport = this.getAdapter(ViewportView.class).getViewport();
-		Viewport viewport = StaticViewport.createAdaptedViewport(width, height);
-		this.getAdapter(ViewportView.class).setViewport(viewport,
-				new ChangeEvent());
-
+		
 		tileWidth = width < DEFAULT_TILE_WIDTH ? width : DEFAULT_TILE_WIDTH;
 		tileHeight = height < DEFAULT_TILE_HEIGHT ? height : DEFAULT_TILE_HEIGHT;
+
+		Viewport viewport = StaticViewport.createAdaptedViewport(tileWidth, tileHeight);
+		this.getAdapter(ViewportView.class).setViewport(viewport,
+				new ChangeEvent());
 
 		Log.trace(">> GLComponentView.display() > Start taking screenshot");
 		double xTiles = width / (double) tileWidth;
@@ -470,8 +471,8 @@ public class GL3DComponentView extends AbstractBasicView implements
 		offscreenGL.glBindFramebuffer(GL2.GL_FRAMEBUFFER, frameBufferObject[0]);
 		generateNewRenderBuffers(offscreenGL);
 
-		BufferedImage screenshot = new BufferedImage(viewport.getWidth(),
-				viewport.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+		BufferedImage screenshot = new BufferedImage(width,
+				height, BufferedImage.TYPE_3BYTE_BGR);
 		ByteBuffer.wrap(((DataBufferByte) screenshot.getRaster()
 				.getDataBuffer()).getData());
 

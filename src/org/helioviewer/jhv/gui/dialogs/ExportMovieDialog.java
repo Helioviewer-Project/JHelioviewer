@@ -31,6 +31,7 @@ import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.ImageViewerGui;
+import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
@@ -247,57 +248,6 @@ public class ExportMovieDialog implements ActionListener{
 	
 	
 	private void exportMovie(){
-		/*mainComponentView = (ComponentView)ImageViewerGui.getSingletonInstance().getMainView();
-		//mainComponentView.stop();
-		timedJHVJPXView = LinkedMovieManager.getActiveInstance().getMasterMovie();
-		started = true;
-		
-		if (this.selectedOutputFormat.isMovieFile()){
-			
-			writer = ToolFactory.makeWriter(directory + filename + this.selectedOutputFormat.getExtension());
-			
-			if (timedJHVJPXView.getSpeedType() == SpeedType.RELATIV){
-				speed = 1000/timedJHVJPXView.getDesiredSpeed();
-			}
-			
-			else {
-				long min = timedJHVJPXView.getFrameDateTime(0).getMillis();
-				long max = timedJHVJPXView.getFrameDateTime(1).getMillis();
-				speed = (max - min) / timedJHVJPXView.getDesiredSpeed() ;	
-			}
-			if (this.useCurrentOpenGlSize) {
-				Dimension dimension = this.mainComponentView.getCanavasSize();
-				this.imageWidth = dimension.width;
-				this.imageHeigth = dimension.height;
-			}
-			writer.addVideoStream(0, 0, this.selectedOutputFormat.getCodec(),
-	                this.imageWidth, this.imageHeigth);
-		}
-
-		else if (this.selectedOutputFormat.isCompressedFile()){
-			try {
-				fileOutputStream = new FileOutputStream(this.directory + this.filename + this.selectedOutputFormat.getExtension());
-				zipOutputStream = new ZipOutputStream(fileOutputStream);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
-		else if (this.selectedOutputFormat.isImageFile()){
-			File dir = new File(this.directory+this.filename);
-			dir.mkdir();
-			directory += this.filename + "/";
-		}
-		
-		
-		if (timedJHVJPXView != null){
-			progressDialog.setMaximumOfProgressBar(timedJHVJPXView.getMaximumFrameNumber());
-
-		*/
-			//for (i = 0; i < timedJHVJPXView.getMaximumFrameNumber(); i++){
-				
-				//if (!started) break;
 		if (!started) stopExportMovie();
 				else{
 				timedJHVJPXView.setCurrentFrame(i, new ChangeEvent());
@@ -336,29 +286,6 @@ public class ExportMovieDialog implements ActionListener{
 					stopExportMovie();
 				}
 				}
-
-			//}
-		
-				/*
-			this.timedJHVJPXView.setCurrentFrame(0, new ChangeEvent());
-			// export movie
-			if (selectedOutputFormat.isMovieFile()) writer.close();
-			else if (selectedOutputFormat.isCompressedFile()){
-				try {
-					zipOutputStream.close();
-					fileOutputStream.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			progressDialog.dispose();
-			ImageViewerGui.getMainFrame().setEnabled(true);
-			
-			mainComponentView.start();*/
-			
-			
-		//}
 	}
 	
 	public void stopExportMovie(){
