@@ -83,7 +83,8 @@ public class JHelioviewer {
         }
         catch(IOException _ioe)
         {
-            _ioe.printStackTrace();
+            _ioe.
+            printStackTrace();
         }
         
 
