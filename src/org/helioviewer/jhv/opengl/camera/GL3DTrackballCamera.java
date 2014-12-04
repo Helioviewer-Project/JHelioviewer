@@ -11,6 +11,7 @@ import org.helioviewer.jhv.base.physics.DifferentialRotation;
 import org.helioviewer.jhv.base.wcs.CoordinateSystem;
 import org.helioviewer.jhv.base.wcs.HeliocentricCartesianCoordinateSystem;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
+import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState.VISUAL_TYPE;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
@@ -77,16 +78,13 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener {
 					&& (timestampReason.getView() instanceof JHVJPXView)
 					&& LinkedMovieManager.getActiveInstance().isMaster(
 							(JHVJPXView) timestampReason.getView())) {
-				if (!LinkedMovieManager.getActiveInstance().isPlaying()) {
-					//this.resetStartPosition();
-				}
-				currentDate = timestampReason.getNewDateTime().getTime();
-
+				
+				currentDate = LayersModel.getSingletonInstance().getCurrentFrameTimestamp(LayersModel.getSingletonInstance().getActiveView()).getTime();
 				if (startDate == null)
 					this.startDate = getStartDate();
 
 				long timediff = (currentDate.getTime() - startDate.getTime()) / 1000;
-
+				if (timediff == 0) return;
 				double rotation = DifferentialRotation
 						.calculateRotationInRadians(0, timediff);
 
@@ -108,13 +106,10 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener {
 							this.translation.y - tmp.y, this.translation.z);
 
 				}
-				// fireCameraMoved();
 				this.updateCameraTransformation();
 				this.currentRotation = rotation;
 				this.startPosition2D = newPosition;
 			} else {
-				currentRotation = 0.0;
-				resetStartPosition();
 			}
 
 		}

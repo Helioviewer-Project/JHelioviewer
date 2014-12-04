@@ -8,6 +8,7 @@ package org.helioviewer.jhv.base.math;
  */
 public class MathUtils {
 
+	
     public static final double RAD_TO_DEG = 180.0 / Math.PI;
 
     /**
@@ -72,5 +73,15 @@ public class MathUtils {
             return tmp;
         }
     }
-
+    
+    public static int nextPowerOfTwo(int value){
+    	value--;
+    	value |= value >> 1;
+    	value |= value >> 2;
+    	value |= value >> 4;
+    	value |= value >> 8;
+    	value |= value >> 16;
+    	value++;
+    	return value;
+    }
 };

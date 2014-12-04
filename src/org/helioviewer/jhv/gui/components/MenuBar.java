@@ -4,8 +4,6 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JOptionPane;
-
 import org.helioviewer.jhv.base.FileUtils;
 import org.helioviewer.jhv.gui.actions.*;
 import org.helioviewer.jhv.gui.actions.gl3d.GL3DCenterImageAction;
@@ -21,8 +19,6 @@ import org.helioviewer.jhv.gui.dialogs.PreferencesDialog;
 import com.apple.eawt.AboutHandler;
 import com.apple.eawt.Application;
 import com.apple.eawt.AppEvent.AboutEvent;
-import com.apple.mrj.MRJAboutHandler;
-import com.apple.mrj.MRJApplicationUtils;
 
 /**
  * Menu bar of the main window.
@@ -103,6 +99,7 @@ public class MenuBar extends JMenuBar {
         helpMenu.add(new OpenURLinBrowserAction("Submit a feature request", "https://github.com/Helioviewer-Project/JHelioViewer/issues"));
         helpMenu.addSeparator();
         helpMenu.add(new CheckUpdateAction());
+
         Application.getApplication().setAboutHandler(new AboutHandler() {		
 			@Override
 			public void handleAbout(AboutEvent arg0) {

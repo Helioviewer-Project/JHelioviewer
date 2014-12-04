@@ -211,7 +211,6 @@ public class GL3DComponentView extends AbstractBasicView implements
 	}
 
 	public void reshape(GLAutoDrawable glAD, int x, int y, int width, int height) {
-		System.out.println("Canvas dim : " + this.getCanavasSize());
 		viewportSize = new Vector2i(canvas.getSurfaceWidth(),
 				canvas.getSurfaceHeight());
 		Viewport newViewport = StaticViewport.createAdaptedViewport(

@@ -7,7 +7,6 @@ import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
 import javax.swing.Timer;
 
-import org.helioviewer.jhv.gui.components.MoviePanel;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
 
@@ -62,7 +61,6 @@ public class FramerateStatusPanel extends ViewStatusPanelPlugin {
     	if (LinkedMovieManager.getActiveInstance() != null && LinkedMovieManager.getActiveInstance().getMasterMovie() != null){
     		long current = LinkedMovieManager.getActiveInstance().getMasterMovie().getCurrentFrameDateTime().getMillis();
     		if (last >= 0 && last != current) counter++;
-    		else counter++;
     		last = current;
     	}
     }

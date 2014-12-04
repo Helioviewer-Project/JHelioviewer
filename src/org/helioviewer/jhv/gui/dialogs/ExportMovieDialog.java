@@ -333,7 +333,7 @@ public class ExportMovieDialog implements ActionListener {
 			}
 		}
 		progressDialog.dispose();
-		ImageViewerGui.getMainFrame().setEnabled(true);
+		//ImageViewerGui.getMainFrame().setEnabled(true);
 		timer.stop();
 	}
 
@@ -351,7 +351,7 @@ public class ExportMovieDialog implements ActionListener {
 		private final JPanel contentPanel = new JPanel();
 
 		public ProgressDialog(ExportMovieDialog exportMovieDialog) {
-			setAlwaysOnTop(true);
+			super(ImageViewerGui.getMainFrame());
 			this.exportMovieDialog = exportMovieDialog;
 			setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			setResizable(false);

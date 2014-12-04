@@ -370,14 +370,6 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 		System.out.println(node.getClass().getName() + " (" + node.name
 				+ ")");
 
-		/*
-		 * GL3DNode sibling = node; while((sibling = sibling.getNext()) != null)
-		 * { for(int i=0; i<level; ++i) System.out.print("   ");
-		 * 
-		 * System.out.println("Sibling: " + sibling.getClass().getName() + " ("
-		 * + node.getName() + ")"); }
-		 */
-
 		if (node instanceof GL3DGroup) {
 			GL3DGroup grp = (GL3DGroup) node;
 			for (int i = 0; i < grp.numChildNodes(); ++i) {

@@ -5,6 +5,7 @@ import java.awt.Rectangle;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
+import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.opengl.model.GL3DImageMesh;
@@ -121,8 +122,10 @@ public class GL3DImageTextureView extends AbstractGL3DView implements GL3DView {
 		
 		if (this.metadata != null){
 			th.copyFrameBufferToTexture(gl, textureId, captureRectangle);
-			this.textureScale = th.getTextureScale(textureId);
-		
+			double scaleX = captureRectangle.getWidth() / (double)MathUtils.nextPowerOfTwo((int)captureRectangle.getWidth());
+			double scaleY = captureRectangle.getHeight() / (double)MathUtils.nextPowerOfTwo((int)captureRectangle.getHeight());
+			this.textureScale = new Vector2d(scaleX, scaleY);
+
 			double xOffset = (region.getLowerLeftCorner().x - this.metadata.getPhysicalLowerLeft().x)/this.metadata.getPhysicalImageWidth();
 			double yOffset = (region.getLowerLeftCorner().y - this.metadata.getPhysicalLowerLeft().y)/this.metadata.getPhysicalImageHeight();
 			double xScale = (this.metadata.getPhysicalImageWidth()/region.getWidth());

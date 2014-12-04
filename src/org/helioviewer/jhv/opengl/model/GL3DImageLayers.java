@@ -8,11 +8,14 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
 import org.helioviewer.jhv.base.logging.Log;
+import org.helioviewer.jhv.internal_plugins.filter.channelMixer.ChannelMixerFilter;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DDrawBits.Bit;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DGroup;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DNode;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
+import org.helioviewer.jhv.viewmodel.view.FilterView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DImageTextureView;
+import org.helioviewer.jhv.viewmodel.view.opengl.GLFilterView;
 
 
 /**
@@ -87,7 +90,7 @@ public class GL3DImageLayers extends GL3DGroup {
         
         
         for (GL3DImageLayer layer : layers) {
-        	if (layer.getImageTextureView().metadata.hasSphere()) 
+        	if (layer.getImageTextureView().metadata.hasSphere())
                 layer.getCircle().draw(state);
         }
         
@@ -99,8 +102,12 @@ public class GL3DImageLayers extends GL3DGroup {
         state.gl.glEnable(GL2.GL_CULL_FACE);
         state.gl.glBlendFunc(GL2.GL_ONE, GL2.GL_ONE_MINUS_SRC_ALPHA);
         for (GL3DImageLayer layer : layers) {
-        	if (layer.getImageTextureView().metadata.hasSphere()) 
-            	layer.getImageSphere().draw(state);
+        	if (layer.getImageTextureView().metadata.hasSphere()) {
+        		ChannelMixerFilter channelMixerFilter = (ChannelMixerFilter)((GLFilterView)((GLFilterView)layer.getImageTextureView().getAdapter(GLFilterView.class).getView()).getView()).getFilter();
+            	channelMixerFilter.applyGL(state.gl);
+        		layer.getImageSphere().draw(state);
+        		channelMixerFilter.postApplyGL(state.gl);
+        	}
         }
         
         state.gl.glDisable(GL2.GL_CULL_FACE);

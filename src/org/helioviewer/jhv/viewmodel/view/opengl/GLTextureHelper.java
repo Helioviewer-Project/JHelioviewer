@@ -285,9 +285,9 @@ public class GLTextureHelper {
 	 */
 	public int copyFrameBufferToTexture(GL2 gl, int texture, Rectangle rect) {
 		gl.glActiveTexture(GL2.GL_TEXTURE0);
-		textureImplementation
+		/*textureImplementation
 				.genTexture2D(gl, texture, GL2.GL_RGBA, rect.width,
-						rect.height, GL2.GL_RGBA, GL.GL_UNSIGNED_BYTE, null);
+						rect.height, GL2.GL_RGBA, GL.GL_UNSIGNED_BYTE, null);*/
 		textureImplementation.copyFrameBufferToTexture(gl, texture, rect);
 		// Log.debug("GLTextureHelper.copyFrameBuffer: Viewport= "+rect.x+", "+rect.y+", "+rect.width+", "+rect.height);
 		return texture;
@@ -789,6 +789,15 @@ public class GLTextureHelper {
 			// Log.debug("GLTextureHelper.glCopyTexImage2D: Width="+width+", Height="+height+" x="+rect.x+", y="+rect.y);
 			gl.glCopyTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, rect.x,
 					rect.y, width, height, 0);
+			gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER,
+					GL2.GL_LINEAR);
+			gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER,
+					GL2.GL_NEAREST);
+			gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S,
+					GL2.GL_CLAMP_TO_BORDER);
+			gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T,
+					GL2.GL_CLAMP_TO_BORDER);
+
 		}
 
 		/**
