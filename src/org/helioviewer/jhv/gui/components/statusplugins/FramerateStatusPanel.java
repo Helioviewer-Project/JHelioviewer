@@ -1,10 +1,15 @@
 package org.helioviewer.jhv.gui.components.statusplugins;
 
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.Timer;
 
+import org.helioviewer.jhv.gui.components.MoviePanel;
 import org.helioviewer.jhv.layers.LayersModel;
+import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
 
 /**
  * Status panel for displaying the framerate for image series.
@@ -20,11 +25,13 @@ import org.helioviewer.jhv.layers.LayersModel;
 public class FramerateStatusPanel extends ViewStatusPanelPlugin {
 
     private static final long serialVersionUID = 1L;
-
+    private Timer timer;
+    private int counter = 0;
+    private long last = -1;
     /**
      * Default constructor.
      */
-    public FramerateStatusPanel() {
+    public FramerateStatusPanel(){
         setBorder(BorderFactory.createEtchedBorder());
 
         setPreferredSize(new Dimension(70, 20));
@@ -32,37 +39,42 @@ public class FramerateStatusPanel extends ViewStatusPanelPlugin {
 
         setVisible(true);
         LayersModel.getSingletonInstance().addLayersListener(this);
+        
+        timer = new Timer(1000, new ActionListener() {
+    		
+    		@Override
+    		public void actionPerformed(ActionEvent e) {
+    			updateFramerate();
+    			counter = 0;
+    			
+    		}
+    	});
+        timer.start();
+        
     }
 
     private void updateFramerate() {
-
-        int idx = LayersModel.getSingletonInstance().getActiveLayer();
-
-        if (LayersModel.getSingletonInstance().isValidIndex(idx)) {
-
-            double fps = LayersModel.getSingletonInstance().getFPS(LayersModel.getSingletonInstance().getActiveView());
-            String fpsString = Double.toString(fps);
-
             setVisible(true);
-            setText("fps: " + fpsString);
-
-        } else {
-
-            setVisible(false);
-
-        }
-
+            setText("fps: " + counter);
+    }
+    
+    private void count(){
+    	if (LinkedMovieManager.getActiveInstance() != null && LinkedMovieManager.getActiveInstance().getMasterMovie() != null){
+    		long current = LinkedMovieManager.getActiveInstance().getMasterMovie().getCurrentFrameDateTime().getMillis();
+    		if (last >= 0 && last != current) counter++;
+    		else counter++;
+    		last = current;
+    	}
     }
 
     public void activeLayerChanged(int idx) {
-        this.updateFramerate();
     }
 
     public void subImageDataChanged() {
-        this.updateFramerate();
+        count();
     }
     
     public void timestampChanged(){
-    	this.updateFramerate();
+    	count();
     }
 }
