@@ -381,7 +381,7 @@ public class PfssDataDecompressor implements Runnable {
 	
 	public static void main(String[] args) {
 		String s = "file:///C:/dev/git/bachelor/tools/FITSFormatter/";
-		FileDescriptor f = new FileDescriptor(new Date(0), new Date(1), "fitsOut.fits");
+		FileDescriptor f = new FileDescriptor(new Date(0), new Date(1), "fitsOut.fits",0);
 		PfssData d = new PfssData(f,s+"fitsOut.fits");
 		d.loadData();
 		PfssFrame frame = new PfssFrame(f);

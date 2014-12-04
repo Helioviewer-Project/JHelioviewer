@@ -15,12 +15,12 @@ import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
  */
 public class FrameCache {
 
-	private final FiLoCache<PfssFrame> cache;
+	private final FiFoCache<PfssFrame> cache;
 	private final PfssDataCreator dataCreator;
 	private final PfssFrameCreator frameCreator;
 	
 	public FrameCache(PfssFrameInitializer initializer) {
-		cache =new FiLoCache<>(PfssSettings.FRAME_CACHE);
+		cache =new FiFoCache<>(PfssSettings.FRAME_CACHE);
 		dataCreator = new PfssDataCreator();
 		frameCreator = new PfssFrameCreator(initializer);
 	}

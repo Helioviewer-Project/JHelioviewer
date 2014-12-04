@@ -97,7 +97,7 @@ public class FileDescriptorManager {
 				Date startTime = cal.getTime();
 					
 				if(!(endTime.before(from) || startTime.after(to))) {
-					descriptors.add(new FileDescriptor(startTime, endTime, fileName));
+					descriptors.add(new FileDescriptor(startTime, endTime, fileName,descriptors.size()));
 					
 					if(this.firstDate == null) this.firstDate = startTime;
 					
@@ -132,8 +132,23 @@ public class FileDescriptorManager {
 		return descriptors.get(index);
 	}
 	
+	/**
+	 * 
+	 * @return number of filedescriptors
+	 */
 	public int getNumberOfFiles() {
 		return descriptors.size();
+	}
+	
+	/**
+	 * Returns the following FileDescriptor
+	 * @param current 
+	 * @return
+	 */
+	public FileDescriptor getNext(FileDescriptor current) {
+		int index = current.getIndex();
+		index = ++index % this.getNumberOfFiles();
+		return this.descriptors.get(index);
 	}
 	
 	public static void main(String[] args) {

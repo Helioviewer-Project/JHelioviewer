@@ -6,14 +6,14 @@ import java.util.HashMap;
 import org.helioviewer.gl3d.plugin.pfss.data.FileDescriptor;
 
 /**
- * Implementation of a simple first-in-last-out Cache for PFSSData and PFSSFrame
+ * Implementation of a simple First-in-First-out Cache for PFSSData and PFSSFrame
  * 
  * This class is not threadsafe
  * @author Jonas Schwammberger
  *
  * @param <T>
  */
-public class FiLoCache<T extends Cacheable> {
+public class FiFoCache<T extends Cacheable> {
 	private final HashMap<FileDescriptor, Integer> cacheIndices;
 	private final ArrayList<T> cache;
 	private int oldestIndex;
@@ -22,7 +22,7 @@ public class FiLoCache<T extends Cacheable> {
 	 * 
 	 * @param size total size of the cache
 	 */
-	public FiLoCache(int size) {
+	public FiFoCache(int size) {
 		oldestIndex = 0;
 		cacheIndices = new HashMap<>(size,1);
 		cache = new ArrayList<T>(size);
