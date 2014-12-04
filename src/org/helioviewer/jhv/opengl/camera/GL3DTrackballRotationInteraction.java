@@ -6,6 +6,7 @@ import java.awt.event.MouseEvent;
 import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.Vector3d;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRayTracer;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DSceneGraphView;
@@ -61,7 +62,9 @@ public class GL3DTrackballRotationInteraction extends GL3DDefaultInteraction {
 
     protected Vector3d getVectorFromSphere(Point p, GL3DCamera camera) {
         GL3DRayTracer sunTracer = new GL3DRayTracer(sceneGraphView.getHitReferenceShape(), camera);
-        GL3DRay ray = sunTracer.cast(p.x, p.y);
+        int mouseX = (int)(p.x / GuiState3DWCS.mainComponentView.getComponent().getSize().getWidth() * GuiState3DWCS.mainComponentView.getCanavasSize().getWidth());
+        int mouseY = (int)(p.y / GuiState3DWCS.mainComponentView.getComponent().getSize().getHeight() * GuiState3DWCS.mainComponentView.getCanavasSize().getHeight());
+        GL3DRay ray = sunTracer.cast(mouseX, mouseY);
 
         Vector3d hitPoint;
 
@@ -70,8 +73,8 @@ public class GL3DTrackballRotationInteraction extends GL3DDefaultInteraction {
             hitPoint = ray.getHitPoint().normalize();
         } else {
             // Log.debug("GL3DTrackballRotationInteraction: Ray is Outside!");
-            double y = (camera.getHeight() / 2 - p.y) / camera.getHeight();
-            double x = (p.x - camera.getWidth() / 2) / camera.getWidth();
+            double y = (camera.getHeight() / 2 - mouseY) / camera.getHeight();
+            double x = (mouseX - camera.getWidth() / 2) / camera.getWidth();
             // Transform the Point so it lies on the plane that is aligned to
             // the viewspace (not the sphere)
             hitPoint = camera.getRotation().toMatrix().inverse().multiply(new Vector3d(x, y, 0).normalize());
