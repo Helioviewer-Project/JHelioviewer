@@ -147,7 +147,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 			public void actionPerformed(ActionEvent e) {
 
 				if (JOptionPane.showConfirmDialog(null,
-						"Do you really want to reset the setting values?",
+						"Do you really want to reset the Preferences?",
 						"Attention", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 					defaultsPanel.resetSettings();
 					loadDefaultMovieOnStartUp.setSelected(true);
