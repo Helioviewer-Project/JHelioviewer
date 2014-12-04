@@ -26,7 +26,7 @@ public class ExportAction extends AbstractAction{
 	     */
 	    public void actionPerformed(ActionEvent e) {
           if(LinkedMovieManager.getActiveInstance().getMasterMovie()!=null)
-            new ExportMovieDialog();
+        	  new ExportMovieDialog();
           else
             JOptionPane.showMessageDialog(GuiState3DWCS.mainComponentView.getComponent(), "At least one active layer must be visible.\n\nPlease add a layer before exporting movies.", "Error", JOptionPane.ERROR_MESSAGE);
 	    }

@@ -98,7 +98,6 @@ public class GL3DImageLayers extends GL3DGroup {
         state.gl.glCullFace(GL2.GL_BACK);
         state.gl.glEnable(GL2.GL_CULL_FACE);
         state.gl.glBlendFunc(GL2.GL_ONE, GL2.GL_ONE_MINUS_SRC_ALPHA);
-                
         for (GL3DImageLayer layer : layers) {
         	if (layer.getImageTextureView().metadata.hasSphere()) 
             	layer.getImageSphere().draw(state);

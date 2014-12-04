@@ -366,9 +366,11 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 
 		private JComboBox<AspectRatio> movieAspectRatioSelection;
 		private JFormattedTextField txtMovieImageWidth, txtMovieImageHeight;
+		private JCheckBox isTextEnabled;
 		private static final String SETTING_MOVIE_IMG_WIDTH = "export.movie.image.width";
 		private static final String SETTING_MOVIE_IMG_HEIGHT = "export.movie.image.height";
-		private boolean hasChanged = false;
+	    private static final String SETTING_MOVIE_TEXT = "export.movie.text";
+	    private boolean hasChanged = false;
 		/**
 		 * 
 		 */
@@ -397,12 +399,12 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 					FormFactory.DEFAULT_ROWSPEC, }));
 			{
 				JLabel lblAspectRation = new JLabel("Aspect ratio");
-				this.add(lblAspectRation, "6, 4, right, default");
+				this.add(lblAspectRation, "2, 4, right, default");
 			}
 			{
 				movieAspectRatioSelection = new JComboBox<AspectRatio>(
 						MOVIE_ASPECT_RATIO_PRESETS);
-				this.add(movieAspectRatioSelection, "8, 4, left, default");
+				this.add(movieAspectRatioSelection, "4, 4, left, default");
 				movieAspectRatioSelection.addItemListener(new ItemListener() {
 
 					@Override
@@ -422,6 +424,14 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 					}
 				});
 			}
+			{
+				JLabel lblSubtitle = new JLabel("Render time stamps");
+				this.add(lblSubtitle, "6, 4, right, default");
+			}
+			{
+				isTextEnabled = new JCheckBox();
+				this.add(isTextEnabled, "8,4,left, default");
+			}
 			NumberFormat format = NumberFormat.getInstance();
 			format.setGroupingUsed(false);
 			NumberFormatter formatter = new NumberFormatter(format);
@@ -430,7 +440,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 			formatter.setMaximum(4096);
 			{
 				JLabel lblImageWidth = new JLabel("Image width");
-				this.add(lblImageWidth, "6, 6, right, default");
+				this.add(lblImageWidth, "2, 6, right, default");
 			}
 			{
 				txtMovieImageWidth = new JFormattedTextField(formatter);
@@ -457,13 +467,13 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 									hasChanged = false;
 							}
 						});
-				this.add(txtMovieImageWidth, "8, 6, left, default");
+				this.add(txtMovieImageWidth, "4, 6, left, default");
 				txtMovieImageWidth.setColumns(10);
 				txtMovieImageWidth.setToolTipText("value between 1 to 4096");
 			}
 			{
 				JLabel lblImageHeight = new JLabel("Image height");
-				this.add(lblImageHeight, "6, 8, right, default");
+				this.add(lblImageHeight, "2, 8, right, default");
 			}
 			{
 				txtMovieImageHeight = new JFormattedTextField(formatter);
@@ -490,7 +500,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 									hasChanged = false;
 							}
 						});
-				this.add(txtMovieImageHeight, "8, 8, left, default");
+				this.add(txtMovieImageHeight, "4, 8, left, default");
 				txtMovieImageHeight.setColumns(10);
 				txtMovieImageHeight.setToolTipText("value between 1 to 4096");
 			}
@@ -498,7 +508,16 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 		}
 
 		public void loadSettings() {
-			String val;
+			String val;			
+			try {
+				val = Settings.getProperty(SETTING_MOVIE_TEXT);
+				if (val != null && !(val.length() == 0)) {
+					isTextEnabled.setSelected(Boolean.parseBoolean(val));
+				}
+			} catch (Throwable t) {
+				Log.error(t);
+			}
+
 			try {
 				val = Settings.getProperty(SETTING_MOVIE_IMG_HEIGHT);
 				if (val != null && !(val.length() == 0)) {
@@ -538,6 +557,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 		}
 
 		public void saveSettings() {
+			Settings.setProperty(SETTING_MOVIE_TEXT, isTextEnabled.isSelected()+ "");
 			Settings.setProperty(SETTING_MOVIE_IMG_WIDTH, txtMovieImageWidth
 					.getValue().toString());
 			Settings.setProperty(SETTING_MOVIE_IMG_HEIGHT, txtMovieImageHeight
@@ -565,8 +585,10 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 		private JComboBox<AspectRatio> screenshotAspectRatioSelection;
 		private JFormattedTextField txtScreenshotImageWidth,
 				txtScreenshotImageHeight;
+		private JCheckBox isTextEnabled;
 		private static final String SETTING_SCREENSHOT_IMG_WIDTH = "export.screenshot.image.width";
 		private static final String SETTING_SCREENSHOT_IMG_HEIGHT = "export.screenshot.image.height";
+	    private static final String SETTING_SCREENSHOT_TEXT = "export.screenshot.text";
 		private boolean hasChanged = false;
 		/**
 		 * 
@@ -596,12 +618,12 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 					FormFactory.DEFAULT_ROWSPEC, }));
 			{
 				JLabel lblAspectRation = new JLabel("Aspect ratio");
-				this.add(lblAspectRation, "6, 4, right, default");
+				this.add(lblAspectRation, "2, 4, right, default");
 			}
 			{
 				screenshotAspectRatioSelection = new JComboBox<AspectRatio>(
 						IMAGE_ASPECT_RATIO_PRESETS);
-				this.add(screenshotAspectRatioSelection, "8, 4, left, default");
+				this.add(screenshotAspectRatioSelection, "4, 4, left, default");
 				screenshotAspectRatioSelection
 						.addItemListener(new ItemListener() {
 
@@ -622,6 +644,15 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 							}
 						});
 			}
+			{
+				JLabel lblSubtitle = new JLabel("Render time stamps");
+				this.add(lblSubtitle, "6, 4, right, default");
+			}
+			{
+				isTextEnabled = new JCheckBox();
+				this.add(isTextEnabled, "8,4,left, default");
+			}
+
 			NumberFormat format = NumberFormat.getInstance();
 			format.setGroupingUsed(false);
 			NumberFormatter formatter = new NumberFormatter(format);
@@ -630,7 +661,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 			formatter.setMaximum(4096);
 			{
 				JLabel lblImageWidth = new JLabel("Image width");
-				this.add(lblImageWidth, "6, 6, right, default");
+				this.add(lblImageWidth, "2, 6, right, default");
 			}
 			{
 				txtScreenshotImageWidth = new JFormattedTextField(formatter);
@@ -657,14 +688,14 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 									hasChanged = false;
 								}
 						});
-				this.add(txtScreenshotImageWidth, "8, 6, left, default");
+				this.add(txtScreenshotImageWidth, "4, 6, left, default");
 				txtScreenshotImageWidth.setColumns(10);
 				txtScreenshotImageWidth
 						.setToolTipText("value between 1 to 4096");
 			}
 			{
 				JLabel lblImageHeight = new JLabel("Image height");
-				this.add(lblImageHeight, "6, 8, right, default");
+				this.add(lblImageHeight, "2, 8, right, default");
 			}
 			{
 				txtScreenshotImageHeight = new JFormattedTextField(formatter);
@@ -691,7 +722,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 									hasChanged = false;
 								}
 						});
-				this.add(txtScreenshotImageHeight, "8, 8, left, default");
+				this.add(txtScreenshotImageHeight, "4, 8, left, default");
 				txtScreenshotImageHeight.setColumns(10);
 				txtScreenshotImageHeight
 						.setToolTipText("value between 1 to 4096");
@@ -701,6 +732,15 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 
 		public void loadSettings() {
 			String val;
+			try {
+				val = Settings.getProperty(SETTING_SCREENSHOT_TEXT);
+				if (val != null && !(val.length() == 0)) {
+					isTextEnabled.setSelected(Boolean.parseBoolean(val));
+				}
+			} catch (Throwable t) {
+				Log.error(t);
+			}
+
 			try {
 				val = Settings.getProperty(SETTING_SCREENSHOT_IMG_HEIGHT);
 				if (val != null && !(val.length() == 0)) {
@@ -741,6 +781,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 		}
 
 		public void saveSettings() {
+			Settings.setProperty(SETTING_SCREENSHOT_TEXT, isTextEnabled.isSelected() + "");
 			Settings.setProperty(SETTING_SCREENSHOT_IMG_WIDTH,
 					txtScreenshotImageWidth.getValue().toString());
 			Settings.setProperty(SETTING_SCREENSHOT_IMG_HEIGHT,

@@ -40,7 +40,7 @@ public class FramerateStatusPanel extends ViewStatusPanelPlugin {
 
         if (LayersModel.getSingletonInstance().isValidIndex(idx)) {
 
-            double fps = LayersModel.getSingletonInstance().getFPS(idx);
+            double fps = LayersModel.getSingletonInstance().getFPS(LayersModel.getSingletonInstance().getActiveView());
             String fpsString = Double.toString(fps);
 
             setVisible(true);
@@ -60,5 +60,9 @@ public class FramerateStatusPanel extends ViewStatusPanelPlugin {
 
     public void subImageDataChanged() {
         this.updateFramerate();
+    }
+    
+    public void timestampChanged(){
+    	this.updateFramerate();
     }
 }

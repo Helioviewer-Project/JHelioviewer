@@ -91,6 +91,8 @@ class J2KRender implements Runnable {
 
     private NextFrameCandidateChooser nextFrameCandidateChooser = new NextFrameCandidateLoopChooser();
     private FrameChooser frameChooser = new RelativeFrameChooser();
+
+	private long tLast = -1;
     
     /**
      * The constructor.
@@ -322,7 +324,7 @@ class J2KRender implements Runnable {
         int numFrames = 0;
         lastFrame = -1;
         long tfrm, tmax = 0;
-        long tnow, tini = System.currentTimeMillis();
+        long tNow, tini = System.currentTimeMillis();
 
         while (!stop) {
             try {
@@ -391,19 +393,19 @@ class J2KRender implements Runnable {
                     if (lastFrame > currParams.compositionLayer) {
                         lastFrame = -1;
                     }
-                    tnow = System.currentTimeMillis();
+                    tNow = System.currentTimeMillis();
 
-                    if ((tnow - tini) >= 1000) {
-                        actualMovieFramerate = (numFrames * 1000.0f) / (tnow - tini);
-                        tini = tnow;
+                    if ((tNow - tini) >= 1000) {
+                        //actualMovieFramerate = (numFrames * 1000.0f) / (tNow - tini);
+                        tini = tNow;
                         numFrames = 0;
                     }
-
-                    lastSleepTime = tmax - (tnow - tfrm);
+                    
+                    lastSleepTime = tmax - (tNow - tfrm);
 
                     if (lastSleepTime > 0) {
                         try {
-                            Thread.sleep(lastSleepTime);
+                            Thread.sleep(20);
                         } catch (InterruptedException ex) {
                             break;
                         }
@@ -417,13 +419,12 @@ class J2KRender implements Runnable {
             if (lastFrame > currParams.compositionLayer) {
                 lastFrame = -1;
             }
-            tnow = System.currentTimeMillis();
-
-            if ((tnow - tini) >= 1000) {
-                actualMovieFramerate = (numFrames * 1000.0f) / (tnow - tini);
-                tini = tnow;
-                numFrames = 0;
+            tNow = System.currentTimeMillis();
+            
+            if (tLast >= 0) {
+                actualMovieFramerate = (1000f) / (tNow - tLast);
             }
+            this.tLast = tNow;
         }
         byteBuffer = new byte[NUM_BUFFERS][0];
         intBuffer = new int[NUM_BUFFERS][0];

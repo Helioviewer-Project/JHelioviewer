@@ -2,6 +2,7 @@ package org.helioviewer.jhv.viewmodel.view.opengl;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -61,6 +62,7 @@ import org.helioviewer.jhv.viewmodel.viewport.StaticViewport;
 import org.helioviewer.jhv.viewmodel.viewport.Viewport;
 
 import com.jogamp.opengl.util.awt.ImageUtil;
+import com.jogamp.opengl.util.awt.TextRenderer;
 
 /**
  * The top-most View in the 3D View Chain. Let's the viewchain render to its
@@ -160,6 +162,10 @@ public class GL3DComponentView extends AbstractBasicView implements
 		Log.debug("GL3DComponentView.Init");
 		GL2 gl = glAD.getGL().getGL2();
 		GL3DState.create(gl);
+		Viewport newViewport = StaticViewport.createAdaptedViewport(
+				canvas.getSurfaceWidth(), canvas.getSurfaceHeight());
+		this.getAdapter(ViewportView.class).setViewport(newViewport,
+				new ChangeEvent());
 
 		try {
 			GLShaderHelper.initHelper(gl.getGL2());
@@ -235,10 +241,6 @@ public class GL3DComponentView extends AbstractBasicView implements
 																		// buffers
 		gl.glLoadIdentity(); // reset the model-view matrix
 
-		Viewport newViewport = StaticViewport.createAdaptedViewport(
-				canvas.getSurfaceWidth(), canvas.getSurfaceHeight());
-		this.getAdapter(ViewportView.class).setViewport(newViewport,
-				new ChangeEvent());
 
 		if (defaultViewport != null) {
 		}
@@ -406,15 +408,10 @@ public class GL3DComponentView extends AbstractBasicView implements
 				renderBufferColor[0]);
 	}
 
-	public void saveScreenshot(String imageFormat, File outputFile)
-			throws IOException {
-		ImageIO.write(this.getBufferedImage(), imageFormat, outputFile);
-	}
-
 	public void saveScreenshot(String imageFormat, File outputFile, int width,
-			int height) {
+			int height, String[] descriptions) {
 		try {
-			ImageIO.write(this.getBufferedImage(width, height), imageFormat,
+			ImageIO.write(this.getBufferedImage(width, height, descriptions), imageFormat,
 					outputFile);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -427,11 +424,8 @@ public class GL3DComponentView extends AbstractBasicView implements
 		backGroundColorHasChanged = true;
 	}
 
-	public BufferedImage getBufferedImage() {
-		return getBufferedImage(this.canvas.getWidth(), this.canvas.getHeight());
-	}
-
-	public BufferedImage getBufferedImage(int width, int height) {
+	public BufferedImage getBufferedImage(int width, int height, String[] descriptions) {
+		this.canvas.repaint();
 		defaultViewport = this.getAdapter(ViewportView.class).getViewport();
 		
 		tileWidth = width < DEFAULT_TILE_WIDTH ? width : DEFAULT_TILE_WIDTH;
@@ -487,7 +481,8 @@ public class GL3DComponentView extends AbstractBasicView implements
 		offscreenGL.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 		double tileLeft, tileRight, tileBottom, tileTop;
-		
+		TextRenderer textRenderer = new TextRenderer(new Font("SansSerif", Font.BOLD, 24));
+		textRenderer.setColor(1f, 1f, 1f, 1f);
 		for (int x = 0; x < countXTiles; x++) {
 			for (int y = 0; y < countYTiles; y++) {
 				tileLeft = left + (right - left) / xTiles * x;
@@ -516,6 +511,13 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 				displayBody(offscreenGL);
 
+				if (descriptions != null && x == 0 && y == countYTiles-1){
+					textRenderer.beginRendering(canvas.getSurfaceWidth(), canvas.getSurfaceHeight());
+					for (int i = 0; i < descriptions.length; i++){
+						textRenderer.draw(descriptions[i], 5, 5 + 40 * i);					
+					}
+					textRenderer.endRendering();
+				}
 				offscreenGL.glPixelStorei(GL2.GL_PACK_ROW_LENGTH, width);
 				offscreenGL.glPixelStorei(GL2.GL_PACK_SKIP_ROWS, destY);
 				offscreenGL.glPixelStorei(GL2.GL_PACK_SKIP_PIXELS, destX);
@@ -539,6 +541,10 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 		ImageUtil.flipImageVertically(screenshot);
 
+		Viewport newViewport = StaticViewport.createAdaptedViewport(
+				canvas.getSurfaceWidth(), canvas.getSurfaceHeight());
+		this.getAdapter(ViewportView.class).setViewport(newViewport,
+				new ChangeEvent());
 		this.canvas.repaint();
 		viewport = null;
 		return screenshot;
@@ -626,16 +632,6 @@ public class GL3DComponentView extends AbstractBasicView implements
 				canvas.getSurfaceHeight());
 	}
 
-	public void stop() {
-		defaultViewport = this.getAdapter(ViewportView.class).getViewport();
-
-	}
-
-	public void start() {
-		this.getAdapter(ViewportView.class).setViewport(defaultViewport,
-				new ChangeEvent());
-	}
-
 	@Override
 	public void layerAdded(int idx) {
 		this.canvas.repaint(15);
@@ -663,7 +659,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 	@Override
 	public void timestampChanged(int idx) {
-		this.canvas.repaint(15);
+		this.canvas.repaint(50);
 	}
 
 	@Override

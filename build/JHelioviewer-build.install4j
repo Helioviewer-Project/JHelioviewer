@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="6.0" transformSequenceNumber="5">
-  <directoryPresets config="./builds" />
+  <directoryPresets config="../../../../Desktop/sign_cert.p12" />
   <application name="JHelioviewer" distributionSourceDir="" applicationId="7791-5722-0682-7193" mediaDir="./builds" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="9" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="JHelioviewer" publisher="" publisherWeb="" version="2.3" allPathsRelative="true" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="7ed177551bd348bc" javaMinVersion="1.7" javaMaxVersion="" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="en" customLocalizationFile="" />
@@ -13,7 +13,7 @@
     </searchSequence>
     <variables />
     <mergedProjects />
-    <codeSigning macEnabled="false" macPkcs12File="" windowsEnabled="false" windowsKeySource="pkcs12" windowsPvkFile="" windowsSpcFile="" windowsPkcs12File="" />
+    <codeSigning macEnabled="false" macPkcs12File="../../../../Desktop/sign_cert.p12" windowsEnabled="false" windowsKeySource="pkcs12" windowsPvkFile="" windowsSpcFile="" windowsPkcs12File="" />
   </application>
   <files keepModificationTimes="false" missingFilesStrategy="warn" globalExcludeSuffixes="" defaultOverwriteMode="4" defaultUninstallMode="0" launcherOverwriteMode="3" defaultFileMode="644" defaultDirMode="755">
     <filesets />
@@ -63,8 +63,8 @@
     </components>
   </files>
   <launchers>
-    <launcher name="JHelioviewer" id="24" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile=".-resources/mac/JHV_icon.icns" customMacBundleIdentifier="true" macBundleIdentifier="org.helioviewer.jhv.JHelioviewer" swtApp="false" fileset="" macBundleBinary="JavaApplicationStub" addMacEntitlements="true" macEntitlementsFile="./mac-build/JHelioViewer.plist" useCustomMacosExecutableName="false" customMacosExecutableName="">
-      <executable name="JHelioviewer" type="1" iconSet="true" iconFile=".-resources/windows/JHelioviewer.ico" executableDir="bin" redirectStderr="false" stderrFile="error.log" stderrMode="overwrite" redirectStdout="false" stdoutFile="output.log" stdoutMode="overwrite" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false" globalSingleInstance="false" singleInstanceActivate="true" dpiAware="false">
+    <launcher name="JHelioviewer" id="24" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="../build-resources/mac/JHV_icon.icns" customMacBundleIdentifier="false" macBundleIdentifier="org.helioviewer.jhv.JHelioviewer" swtApp="false" fileset="" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="./mac-build/JHelioViewer.plist" useCustomMacosExecutableName="false" customMacosExecutableName="">
+      <executable name="JHelioviewer" type="1" iconSet="true" iconFile="../build-resources/windows/JHelioviewer.ico" executableDir="bin" redirectStderr="false" stderrFile="error.log" stderrMode="overwrite" redirectStdout="false" stdoutFile="output.log" stdoutMode="overwrite" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false" globalSingleInstance="false" singleInstanceActivate="true" dpiAware="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" productName="" />
       </executable>
       <splashScreen show="false" width="0" height="0" bitmapFile="" windowsNative="false" textOverlay="false">
@@ -95,11 +95,11 @@
         <content />
       </infoPlist>
       <iconImageFiles>
-        <file path=".-resources/mac/JHV_icon.png" />
+        <file path="../build-resources/mac/JHV_icon.png" />
       </iconImageFiles>
     </launcher>
-    <launcher name="Linux_dis" id="296" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile=".-resources/mac/JHV_icon.icns" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="" useCustomMacosExecutableName="false" customMacosExecutableName="">
-      <executable name="jhelioviewer" type="1" iconSet="true" iconFile=".-resources/windows/JHelioviewer.ico" executableDir="bin" redirectStderr="false" stderrFile="error.log" stderrMode="overwrite" redirectStdout="false" stdoutFile="output.log" stdoutMode="overwrite" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false" globalSingleInstance="false" singleInstanceActivate="true" dpiAware="false">
+    <launcher name="Linux_dis" id="296" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="" useCustomMacosExecutableName="false" customMacosExecutableName="">
+      <executable name="jhelioviewer" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="false" stderrFile="error.log" stderrMode="overwrite" redirectStdout="false" stdoutFile="output.log" stdoutMode="overwrite" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false" globalSingleInstance="false" singleInstanceActivate="true" dpiAware="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" productName="" />
       </executable>
       <splashScreen show="false" width="0" height="0" bitmapFile="" windowsNative="false" textOverlay="false">
@@ -130,7 +130,7 @@
         <content />
       </infoPlist>
       <iconImageFiles>
-        <file path=".-resources/mac/JHV_icon.png" />
+        <file path="../build-resources/mac/JHV_icon.png" />
       </iconImageFiles>
     </launcher>
   </launchers>
@@ -734,8 +734,8 @@
       <includedDownloadableComponents />
     </windows>
   </mediaSets>
-  <buildIds buildAll="true">
+  <buildIds buildAll="false">
     <mediaSet refId="68" />
   </buildIds>
-  <buildOptions verbose="false" faster="false" disableSigning="false" disableJreBundling="false" debug="false" />
+  <buildOptions verbose="false" faster="false" disableSigning="true" disableJreBundling="false" debug="false" />
 </install4j>

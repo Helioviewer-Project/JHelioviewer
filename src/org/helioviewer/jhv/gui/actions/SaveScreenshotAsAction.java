@@ -4,7 +4,6 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -19,6 +18,7 @@ import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.actions.filefilters.ExtensionFileFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.JPGFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.PNGFilter;
+import org.helioviewer.jhv.layers.LayersModel;
 
 /**
  * Action to save a screenshot in desired image format at desired location.
@@ -34,12 +34,13 @@ public class SaveScreenshotAsAction extends AbstractAction {
 
     private static final String SETTING_SCREENSHOT_IMG_WIDTH = "export.screenshot.image.width";
     private static final String SETTING_SCREENSHOT_IMG_HEIGHT = "export.screenshot.image.height";
-    private static final String SETTING_SCREENSHOT_USE_CURRENT_OPENGL_SIZE = "export.screenshot.use.current.opengl.size";
+    private static final String SETTING_SCREENSHOT_TEXT = "export.screenshot.text";
     private static final String SETTING_SCREENSHOT_EXPORT_LAST_DIRECTORY = "export.screenshot.last.directory";
 
-    private boolean useCurrentOpenGlSize;
     private int imageWidth;
     private int imageHeight;
+
+	private boolean textEnabled;
     /**
      * Default constructor.
      */
@@ -83,30 +84,34 @@ public class SaveScreenshotAsAction extends AbstractAction {
                 selectedFile = new File(selectedFile.getPath() + "." + fileFilter.getDefaultExtension());
             }
 
-            try {
-            	GuiState3DWCS.mainComponentView.stop();
-            	if (this.useCurrentOpenGlSize) GuiState3DWCS.mainComponentView.saveScreenshot(fileFilter.getDefaultExtension(), selectedFile);        	
-            	else GuiState3DWCS.mainComponentView.saveScreenshot(fileFilter.getDefaultExtension(), selectedFile, this.imageWidth, this.imageHeight);
-            	GuiState3DWCS.mainComponentView.start();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
+            String[] descriptions = null;
+			if (textEnabled) {
+				descriptions = new String[LayersModel.getSingletonInstance()
+						.getNumLayers()];
+				for (int i = 0; i < LayersModel.getSingletonInstance()
+						.getNumLayers(); i++) {
+					descriptions[i] = LayersModel.getSingletonInstance()
+							.getDescriptor(i).title
+							+ " - "
+							+ LayersModel.getSingletonInstance().getDescriptor(
+									i).timestamp.replaceAll(" ", " - ");
+				}
+			}
+            GuiState3DWCS.mainComponentView.saveScreenshot(fileFilter.getDefaultExtension(), selectedFile, this.imageWidth, this.imageHeight, descriptions);
         }
     }
     
     private void loadSettings(){
-        String val;  
-        
-        try {
-            val = Settings.getProperty(SETTING_SCREENSHOT_USE_CURRENT_OPENGL_SIZE);
-            if (val != null && !(val.length() == 0)) {
-                useCurrentOpenGlSize = Boolean.parseBoolean(val);
-            }
-        } catch (Throwable t) {
-            Log.error(t);
-        }
+        String val;          
+		try {
+			val = Settings.getProperty(SETTING_SCREENSHOT_TEXT);
+			if (val != null && !(val.length() == 0)) {
+				this.textEnabled = Boolean.parseBoolean(val);
+			}
+		} catch (Throwable t) {
+			Log.error(t);
+		}
 
-        
         try {
             val = Settings.getProperty(SETTING_SCREENSHOT_IMG_HEIGHT);
             if (val != null && !(val.length() == 0)) {

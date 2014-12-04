@@ -78,7 +78,7 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener {
 					&& LinkedMovieManager.getActiveInstance().isMaster(
 							(JHVJPXView) timestampReason.getView())) {
 				if (!LinkedMovieManager.getActiveInstance().isPlaying()) {
-					this.resetStartPosition();
+					//this.resetStartPosition();
 				}
 				currentDate = timestampReason.getNewDateTime().getTime();
 
