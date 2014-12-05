@@ -5,6 +5,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,6 +23,7 @@ import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.base.logging.LogSettings;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.components.layerTable.LayerTableOverlapWatcher;
+import org.helioviewer.jhv.gui.dialogs.AboutDialog;
 import org.helioviewer.jhv.internal_plugins.InternalFilterPlugin;
 import org.helioviewer.jhv.io.CommandLineProcessor;
 import org.helioviewer.jhv.layers.LayersModel;
@@ -248,6 +253,7 @@ public class JHelioviewer {
 					loadJNILibary(tmpLibDir, directory,
 							"libkdu_jni-mac-x86-64.jnilib");
 					loadExecuteLibary(tmpLibDir, directory, "cgc-mac", "cgc");
+					setupOSXApplicationListener();
 				} else {
 					Log.error(">> Platform > Could not determine platform. OS: "
 							+ os + " - arch: " + arch);
@@ -317,5 +323,36 @@ public class JHelioviewer {
 			e.printStackTrace();
 		}
 
+	}
+	
+	private static void setupOSXApplicationListener(){
+		final AboutDialog aboutDialog = new AboutDialog();
+		try {
+			Class<?> applicationClass = Class.forName("com.apple.eawt.Application");
+			Object application = applicationClass.newInstance();
+			Class<?> applicationListener = Class.forName("com.apple.eawt.ApplicationListener");
+			Object listenerProxy = Proxy.newProxyInstance(applicationListener.getClassLoader(), new Class[] {applicationListener}, new InvocationHandler() {
+				
+				@Override
+				public Object invoke(Object proxy, Method method, Object[] args)
+						throws Throwable {
+					if("handleAbout".equals(method.getName())){
+						aboutDialog.showDialog();
+						setHandled(args[0], Boolean.TRUE);
+					}
+					// TODO Auto-generated method stub
+					return null;
+				}
+				private void setHandled(Object event, Boolean val) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+					                      Method handleMethod =   event.getClass().getMethod("setHandled", new Class[] {boolean.class});
+					                      handleMethod.invoke(event, new Object[] {val});
+					}
+			});
+			Method registerListenerMethod = applicationClass.getMethod("addApplicationListener", new Class[] {applicationListener});
+			registerListenerMethod.invoke(application, new Object[] {listenerProxy});
+					
+		} catch (Exception e) {
+			Log.error("Failed to load native menuitems of Mac OSX");
+		}
 	}
 }

@@ -13,7 +13,6 @@ import org.helioviewer.jhv.opengl.scenegraph.GL3DDrawBits.Bit;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DGroup;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DNode;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
-import org.helioviewer.jhv.viewmodel.view.FilterView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DImageTextureView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GLFilterView;
 

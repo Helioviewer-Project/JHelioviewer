@@ -16,10 +16,6 @@ import org.helioviewer.jhv.gui.dialogs.HelpDialog;
 import org.helioviewer.jhv.gui.dialogs.OpenRemoteFileDialog;
 import org.helioviewer.jhv.gui.dialogs.PreferencesDialog;
 
-import com.apple.eawt.AboutHandler;
-import com.apple.eawt.Application;
-import com.apple.eawt.AppEvent.AboutEvent;
-
 /**
  * Menu bar of the main window.
  * 
@@ -32,7 +28,6 @@ import com.apple.eawt.AppEvent.AboutEvent;
 public class MenuBar extends JMenuBar {
 
     private static final long serialVersionUID = 1L;
-    private AboutDialog aboutDialog = new AboutDialog();
     /**
      * Default constructor.
      */
@@ -99,13 +94,6 @@ public class MenuBar extends JMenuBar {
         helpMenu.add(new OpenURLinBrowserAction("Submit a feature request", "https://github.com/Helioviewer-Project/JHelioViewer/issues"));
         helpMenu.addSeparator();
         helpMenu.add(new CheckUpdateAction());
-
-        Application.getApplication().setAboutHandler(new AboutHandler() {		
-			@Override
-			public void handleAbout(AboutEvent arg0) {
-				aboutDialog.showDialog();
-			}
-		});
         helpMenu.add(new ShowDialogAction("About JHelioviewer...", AboutDialog.class));				
         add(helpMenu);
     }
