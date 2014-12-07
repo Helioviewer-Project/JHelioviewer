@@ -1,0 +1,2 @@
+2.3.0
+<h1>A  new beta version of JHelioviewer is available.</h1><p>If you want to try out the newest experimental features, please download <a href="http://jhelioviewer.org">JHelioviewer 2.3.0 (BETA)</a>.<br>What's new? DESCRIBE WHATS NEW <br>plus various bug fixes.</html>

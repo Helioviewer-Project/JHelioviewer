@@ -1,0 +1,2 @@
+2.2.1
+<h1>A  new version of JHelioviewer is available.</h1><p>Please download <a href="http://jhelioviewer.org">JHelioviewer 2.2.1</a>.<br>What's new? This update release contains improved movie export functionality,<br> an updated LASCO C2 coronagraph mask, the new SDO Cutout Service plug-in<br>plus various bug fixes.</html>

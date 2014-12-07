@@ -1,70 +1,160 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+<head>
+<title>JHelioviewer</title>
+<link rel="shortcut icon" href="imgs/favicon_hv.ico" />
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
 
-    <title>JHelioviewer by Helioviewer-Project</title>
-  </head>
+<!-- **** layout stylesheet **** -->
+<link rel="stylesheet" type="text/css" href="style/style.css" />
 
-  <body>
-    <header>
-      <div class="inner">
-        <h1>JHelioviewer</h1>
-        <h2>JHelioViewer</h2>
-        <a href="https://github.com/Helioviewer-Project/JHelioviewer" class="button"><small>View project on</small> GitHub</a>
-      </div>
-    </header>
+<script type="text/javascript">
+function platformDetect(){
+var pathName = String(window.location);
+  if ( (pathName.indexOf('platform=win') != -1) || (pathName.indexOf('##') != -1) ) {
+    return;
+  } else if (String(navigator.platform).toLowerCase().indexOf('mac') == 0) {
+    // Mac site
+    window.location.href = "mac.html" ;
+	} else if (String(navigator.platform).toLowerCase().indexOf('linux') == 0) {
+    // Linux site
+    window.location.href = "linux.html" ;
+  }
+}
+platformDetect();
+</script>
 
-    <div id="content-wrapper">
-      <div class="inner clearfix">
-        <section id="main-content">
-          <h1>
-<a id="what-is-jhelioviewer" class="anchor" href="#what-is-jhelioviewer" aria-hidden="true"><span class="octicon octicon-link"></span></a>What is JHelioviewer?</h1>
+<script type="text/javascript">
 
-<p>JHelioviewer is visualization software for solar image data based on the JPEG 2000 compression standard. JPEG 2000 offers many useful new features and has the potential to revolutionize the way high-resolution image data are disseminated and analyzed. The JPEG 2000 Interactive Protocol (JPIP) enables serving data in a highly compressed, quality-progressive, region-of-interest-based stream. These features minimize the data volume transmitted while maximizing its usability. This is especially relevant for solar physics since NASA's <a href="http://sdo.gsfc.nasa.gov/">Solar Dynamics Observatory</a> has started providing more than a terabyte of image data per day. </p>
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-9465077-1']);
+  _gaq.push(['_trackPageview']);
 
-<p>Read more: <a href="http://www.jhelioviewer.org/pub/Mueller+al_CiSE2009.pdf">The JHelioviewer paper (published in Computing in Science &amp; Engineering 2009)</a></p>
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
 
-<p>Visit also: The <a href="http://helioviewer.org/">Helioviewer web application</a></p>
+</script>
 
-<h1>
-<a id="about" class="anchor" href="#about" aria-hidden="true"><span class="octicon octicon-link"></span></a>About</h1>
+</head>
 
-<p>JHelioviewer is being developed as open-source software by the ESA JHelioviewer Team. For further information about the project, contact Daniel Müller (Daniel.Mueller [at] esa.int). JHelioviewer is part of the ESA/NASA Helioviewer Project. </p>
+<body>
+<div id="main">
 
-<h1>
-<a id="example-videos" class="anchor" href="#example-videos" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example videos</h1>
+<div id="logo">
+  <table border="0" cellspacing="0" cellpadding="0" width="100%">
+    <tr>
+      <td rowspan="1" valign="top" style="width:60%">
+	<h1><a href="index.html">JHelioviewer</a></h1>
+      </td>
+      <td rowspan="1" valign="top" style="width:40%;vertical-align:text-bottom">
+	&nbsp;<br />
+	<img src="imgs/eit_redt1.png" width="110" height="110" alt="" />
+	<img src="imgs/eit_greent1.png" width="110" height="110" alt="" />
+	<img src="imgs/eit_bluet1.png" width="110" height="110" alt="" />
+      </td>    
+    </tr>
+  </table>
+</div>
 
-<p><a href="http://www.youtube.com/watch?feature=player_embedded&amp;v=jciUYQHa6-0%0A" target="_blank"><img src="http://img.youtube.com/vi/jciUYQHa6-0/0.jpg" alt="Solar Prominence Eruption" width="240" height="180" border="10"></a></p>
-        </section>
+<div id="menu">
+  <ul>
+    <li><a href="index.html" class="selected">home</a></li>
+    <li><a href="download.html">download</a></li>
+    <li><a href="http://blog.helioviewer.org" target="_blank">news</a></li>
+    <li><a href="doc.html">docs</a></li>
+    <li><a href="demo.html">demo</a></li>
+    <li><a href="contact.html">about</a></li>
+  </ul>
+</div>
+<div id="site_content">    
+<div id="content">
 
-        <aside id="sidebar">
-          <a href="https://github.com/Helioviewer-Project/JHelioviewer/zipball/master" class="button">
-            <small>Download</small>
-            .zip file
-          </a>
-          <a href="https://github.com/Helioviewer-Project/JHelioviewer/tarball/master" class="button">
-            <small>Download</small>
-            .tar.gz file
-          </a>
+<div class="disignBoxSecond">
+<div class="boxContent">
+  <h1>JHelioviewer - Explore the Sun</h1>
+<!--<h4><a target="_blank" href="http://blog.helioviewer.org/2013/10/17/normal-helioviewer-services-now-resumed/">NEWS: Normal Helioviewer services now resumed.</a></h4>  
+-->
+ 
+<p style="float:left">
+  <a href="download.html"><img src="imgs/JHV_2.1_screenshot_w350.png"
+  width="450" alt="Click to download JHelioviewer" /></a>
+<br>
+<a href="download.html">JHelioviewer 2.2.1</a> (updated on 10 April 2012, <a href="https://code.launchpad.net/~helioviewer/jhelioviewer/trunk">revision 477</a>).
+</p>
 
-          <p class="repo-owner"><a href="https://github.com/Helioviewer-Project/JHelioviewer"></a> is maintained by <a href="https://github.com/Helioviewer-Project">Helioviewer-Project</a>.</p>
+<div style="float:right" class="disignBoxSecond">
+<div class="boxContent">
+<h1>Get JHelioviewer</h1>
+<p>
+<a href="downloads/JHelioviewer.exe" onClick="_gaq.push(['_trackPageview', 'downloads/JHelioviewer_n.exe']);"><img src="imgs/Download_JHV2.2_Win.png" width="200" height="60" alt="JHelioviewer for Windows" /></a>
+<br />
+<a href="download.html">Other Systems and Instructions</a><br>
+<a href="http://www.youtube.com/watch?v=xzSV94LfRwc" target="_blank">2-Minute Video Tutorial</a>
+</p>
+<p></p>
+<ul>
+<li>Explore 18+ years of <a href="http://sohowww.nascom.nasa.gov">SOHO</a> data</li>
+<li>Browse high-res <a href="http://sdo.gsfc.nasa.gov/">SDO</a> data</li>
+<li>Create your own movies of the Sun</li>
+</ul>
 
-          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
-        </aside>
-      </div>
-    </div>
+ 
+</div></div>
+<!--
+<p style="clear:left">
+</p>
+-->
+</div>
+</div>
+		
+<div class="disignBoxSecond">
+<div class="boxContent">				
+  <h1>What is JHelioviewer?</h1>
+<p>
+JHelioviewer is visualization software for solar image data based on the JPEG 2000 compression standard. 
+JPEG 2000 offers many useful new features and has the potential to
+  revolutionize the way high-resolution image data are disseminated
+  and analyzed. The JPEG 2000 Interactive Protocol (JPIP) enables serving data in a highly compressed, quality-progressive,
+  region-of-interest-based stream. These features minimize the data volume transmitted while maximizing its
+  usability. This is especially relevant for solar physics since
+  NASA's <a href="http://sdo.gsfc.nasa.gov/">Solar Dynamics
+  Observatory</a> has started providing more than a terabyte of image data per
+  day.
+  </p>
 
-  
-  </body>
+<!--
+<p>
+<a href="pub/Mueller+al_CiSE2009.pdf">Read more: The JHelioviewer paper (published in <i>Computing in Science &amp; Engineering</i> 2009).</a>
+</p>
+-->
+
+<ul>
+<li><a href="pub/Mueller+al_CiSE2009.pdf">Read more: The JHelioviewer paper (published in <i>Computing in Science &amp; Engineering</i> 2009).</a></li>
+<li><a href="http://helioviewer.org" target="_blank">The Helioviewer web application</li>
+</ul>
+
+</div>
+</div>
+
+<!--close divs for content and site-content-->
+</div>	
+</div>
+
+<div id="footer">
+<div id="copy_r">Copyright by ESA
+<!-- insert ESA logo -->    
+<!--<img width="100" height="70" alt="SOHO" src="images/esa.jpg"/>-->
+</div>
+<!-- Please do not remove this part. this template is free - the only thing we ask is to live a link to us.-->
+Design by <a href="http://www.flashdaweb.com/" target="_blank">FlashDaWeb</a>
+</div>
+
+<!--close div id=main-->
+</div>
+
+</body>
 </html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+
+<head>
+<title>JHelioviewer</title>
+<link rel="shortcut icon" href="imgs/favicon_hv.ico" />
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+
+<!-- **** layout stylesheet **** -->
+<link rel="stylesheet" type="text/css" href="style/style.css" />
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-9465077-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+    
+</head>
+
+<body>
+<div id="main">
+
+<div id="logo">
+  <table border="0" cellspacing="0" cellpadding="0" width="100%">
+    <tr>
+      <td rowspan="1" valign="top" style="width:60%">
+	<h1><a href="index.html">JHelioviewer</a></h1>
+      </td>
+      <td rowspan="1" valign="top" style="width:40%;vertical-align:text-bottom">
+	&nbsp;<br />
+	<img src="imgs/eit_redt1.png" width="110" height="110" alt="" />
+	<img src="imgs/eit_greent1.png" width="110" height="110" alt="" />
+	<img src="imgs/eit_bluet1.png" width="110" height="110" alt="" />
+      </td>    
+    </tr>
+  </table>
+</div>
+
+<div id="menu">
+  <ul>
+  <li><a href="index.html">home</a></li>
+    <li><a href="download.html" class="selected">download</a></li>
+    <li><a href="http://blog.helioviewer.org" target="_blank">news</a></li>
+    <li><a href="doc.html">docs</a></li>
+    <li><a href="demo.html">demo</a></li>
+    <li><a href="contact.html">about</a></li>
+  </ul>
+</div>
+<div id="site_content">    
+<div id="content">
+      
+<div class="disignBoxSecond">
+<div class="boxContent">
+  <h1>Installation Instructions</h1>
+  <br>
+  <p><a href="downloads/JHelioviewer.jar" onClick="_gaq.push(['_trackPageview', 'downloads/JHelioviewerD.jar']);"><img src="imgs/Download_JHV2.2_JAR.png"
+        width="200" height="60" alt="JHelioviewer Jar file" /></a>&nbsp;
+     <a href="downloads/JHelioviewer.dmg" onClick="_gaq.push(['_trackPageview', 'downloads/JHelioviewerD.dmg']);"><img src="imgs/Download_JHV2.2_Mac.png"
+         width="200" height="60" alt="JHelioviewer for Mac OS" /></a>&nbsp;
+     <a href="downloads/JHelioviewer.exe" onClick="_gaq.push(['_trackPageview', 'downloads/JHelioviewerD.exe']);"><img src="imgs/Download_JHV2.2_Win.png"
+         width="200" height="60" alt="JHelioviewer for Windows" /></a>
+</p>
+ <!--
+ <p><a href="downloads/JHelioviewer.jar" onClick="_gaq.push(['_trackEvent', 'Downloads', 'Download_JHV_JAR', 'JAR Downloads']);"><img src="imgs/Download_JHV2.1_JAR.png"
+        width="200" height="60" alt="JHelioviewer Jar file" /></a>&nbsp;
+     <a href="downloads/JHelioviewer.dmg" onClick="_gaq.push(['_trackEvent', 'Downloads', 'Download_JHV_OSX', 'OS X Downloads']);"><img src="imgs/Download_JHV2.1_Mac.png"
+         width="200" height="60" alt="JHelioviewer for Mac OS" /></a>&nbsp;
+     <a href="downloads/JHelioviewer.exe" onClick="_gaq.push(['_trackEvent', 'Downloads', 'Download_JHV_Win', 'Win Downloads']);"><img src="imgs/Download_JHV2.1_Win.png"
+         width="200" height="60" alt="JHelioviewer for Windows 32" /></a>
+</p>
+-->
+<p>
+Minimum system requirements: Java 5, OpenGL 1.4, 1 GB RAM, i386 or PowerPC G5 architecture, port 8090 accessible.
+</p>
+<!--
+</div>
+</div>
+
+<div class="disignBoxSecond">
+<div class="boxContent">
+  <h1>INSTALL</h1>
+-->
+  
+  <h2>Mac OS X</h2>
+  <p>Simply drag the JHelioviewer icon into the Applications folder:
+  <br>
+  <br>
+  <img src="imgs/JHelioviewer_OSX_installer_screenshot.png"
+       height="180"
+       alt="Mac OS X Installer Screenshot" />
+  </p>
+  <h2>MS Windows</h2>
+  <p>Double-click the .exe file  and follow the instructions on the screen.
+  </p>
+  <h2>Linux/Multi-Platform</h2>
+  <p>Make sure Java 5 or higher is installed (or <a
+  href="http://www.java.com/en/download/">download it
+  here</a>) and download the JAR file. Then launch Helioviewer by typing <code>java -Xmx1000m -jar JHelioviewer.jar</code> in a shell in the directory where you have saved the file.
+  </p>
+<p>
+  <a
+  href="http://wiki.helioviewer.org/wiki/JHelioviewer_Handbook#Launching_JHelioviewer_and_System_Requirements"
+  target="_blank">Read more about installing JHelioviewer.</a>
+</p>  
+</div>
+</div>
+
+<div class="disignBoxSecond">
+<div class="boxContent">
+  <h1>Getting started</h1>
+<ul>
+<li>The first time you start JHelioviewer, it will download several platform-dependent libraries, which will take a moment.
+</li>
+<li>You are now ready to go: Browse the latest solar movie (automatically loaded at start-up), load one of the examples or use the observation panel to access images from SOHO and SDO.
+</li>
+<li>Check out the <a
+href="http://wiki.helioviewer.org/wiki/JHelioviewer_Handbook">JHelioviewer Handbook</a>.
+
+<!--
+You can also download some of our <a href="data.html">test images and animations</a>.
+-->
+<li>
+If you find a bug, please <a href="https://bugs.launchpad.net/jhelioviewer/+filebug" target="_blank">report it here</a>. JHelioviewer is <a href="https://launchpad.net/jhelioviewer" target="_blank">open source</a> - share and enjoy!
+</li>
+</ul>
+
+</div>
+</div>
+
+
+<!--close divs for content and site-content-->
+</div>	
+</div>
+
+<div id="footer">
+<div id="copy_r">Copyright by ESA
+<!-- insert ESA logo -->    
+<!--<img width="100" height="70" alt="SOHO" src="images/esa.jpg"/>-->
+</div>
+<!-- Please do not remove this part. this template is free - the only thing we ask is to live a link to us.-->
+Design by <a href="http://www.flashdaweb.com/" target="_blank">FlashDaWeb</a>
+</div>
+
+<!--close div id=main-->
+</div>
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-9465077-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+<!-- END Google Analytics -->
+</body>
+</html>
