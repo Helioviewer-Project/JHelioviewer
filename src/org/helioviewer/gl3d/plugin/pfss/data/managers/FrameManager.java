@@ -9,6 +9,8 @@ import javax.media.opengl.GL2;
 import org.helioviewer.gl3d.plugin.pfss.data.FileDescriptor;
 import org.helioviewer.gl3d.plugin.pfss.data.PfssData;
 import org.helioviewer.gl3d.plugin.pfss.data.PfssFrame;
+import org.helioviewer.gl3d.plugin.pfss.data.creators.PfssDataCreator;
+import org.helioviewer.gl3d.plugin.pfss.data.creators.PfssFrameCreator;
 import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
 
 /**
@@ -63,10 +65,9 @@ public class FrameManager {
 			lastIndex = ++lastIndex % preloadQueue.length;
 			loadFollowing(lastIndex);
 
-			// user has skipped some frames
+			
 		} else {
-			// Improvement:check if it has to invalidate the whole preloaded
-			// queue
+			// user has skipped some frames
 			this.invalidatePreloaded();
 			this.initPreloaded(date);
 		}

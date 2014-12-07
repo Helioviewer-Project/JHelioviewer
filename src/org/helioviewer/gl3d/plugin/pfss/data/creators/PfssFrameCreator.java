@@ -1,4 +1,4 @@
-package org.helioviewer.gl3d.plugin.pfss.data.managers;
+package org.helioviewer.gl3d.plugin.pfss.data.creators;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -6,6 +6,7 @@ import java.util.concurrent.Executors;
 import org.helioviewer.gl3d.plugin.pfss.data.PfssData;
 import org.helioviewer.gl3d.plugin.pfss.data.PfssDataDecompressor;
 import org.helioviewer.gl3d.plugin.pfss.data.PfssFrame;
+import org.helioviewer.gl3d.plugin.pfss.data.managers.PfssFrameInitializer;
 
 /**
  * This class is responsible for creating PfssFrames out of PfssData objects. This task can take some time, it is implemented asynchronously
