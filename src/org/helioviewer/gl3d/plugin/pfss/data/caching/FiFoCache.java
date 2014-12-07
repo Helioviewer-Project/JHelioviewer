@@ -57,4 +57,8 @@ public class FiFoCache<T extends Cacheable> {
 	public boolean contains(FileDescriptor key) {
 		return this.cacheIndices.containsKey(key);
 	}
+	
+	public int size() {
+		return cache.size();
+	}
 }
