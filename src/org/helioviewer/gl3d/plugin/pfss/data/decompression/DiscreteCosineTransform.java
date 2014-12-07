@@ -73,11 +73,12 @@ public class DiscreteCosineTransform {
     }
 
     /**
-     * Backwards Transformation
+     * Backwards transformation
      * @param value
+     * @param noZeroSize size of array, which has non-zero coefficients. after this point it it assumed that everything else is 0
      * @return
      */
-    public float[] idct(float[] value)
+    public float[] idct(float[] value,int noZeroSize)
     {
         int adaptiveSize = value.length;
         float halfAdaptive = 2 / (float)adaptiveSize;
@@ -86,7 +87,7 @@ public class DiscreteCosineTransform {
         float[] output = new float[adaptiveSize];
         for (int k = 0; k < adaptiveSize; k++)
         {
-            for (int i = 1; i < adaptiveSize; i++)
+            for (int i = 1; i < noZeroSize; i++)
             {
                 output[k] += (float)(value[i] *  getDctFactor(i,k) / cosLength);
             }
@@ -134,19 +135,10 @@ public class DiscreteCosineTransform {
 
     public static float[] inverseTransform(float[] value)
     {
-        //dequantization
-        for (int i = 0; i < size; i++)
-        {
-            if (coefficients[i] != 1)
-            {
-                value[i] = (float)value[i] * coefficients[i];
-            }
-        }
 
         float[] output = new float[size];
         for (int k = 0; k < size; k++)
         {
-
 
             for (int i = 1; i < size; i++)
             {
