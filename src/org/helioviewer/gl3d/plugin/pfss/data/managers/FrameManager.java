@@ -30,7 +30,6 @@ public class FrameManager {
 	private final PfssFrame[] preloadQueue;
 	private int currentIndex = 0;
 	private int lastIndex = 0;
-	private int nextFileIndex;
 
 	public FrameManager() {
 		descriptorManager = new FileDescriptorManager();
@@ -62,8 +61,9 @@ public class FrameManager {
 		if (this.isNext(date)) {
 			unload(currentIndex);
 			currentIndex = ++currentIndex % preloadQueue.length;
+			int secondToLast = lastIndex;
 			lastIndex = ++lastIndex % preloadQueue.length;
-			loadFollowing(lastIndex);
+			loadFollowing(lastIndex, secondToLast);
 
 			
 		} else {
@@ -97,13 +97,14 @@ public class FrameManager {
 	/**
 	 * Loads the following Date into the free space designated by "index"
 	 * 
-	 * @param index
+	 * @param destIndex destination index in the preloadQueue
+	 * @param secondToLast index of the second to last PfssFrame
 	 */
-	private void loadFollowing(int index) {
-		FileDescriptor descriptor = descriptorManager.getFileDescriptor(nextFileIndex);
-		PfssData d = dataCreator.getDataAsync(descriptor);
-		nextFileIndex = ++nextFileIndex % descriptorManager.getNumberOfFiles();
-		preloadQueue[index] = frameCreator.createFrameAsync(d);
+	private void loadFollowing(int destIndex, int secondToLast) {
+		FileDescriptor second = preloadQueue[secondToLast].getDescriptor();
+		FileDescriptor next = descriptorManager.getNext(second);
+		PfssData d = dataCreator.getDataAsync(next);
+		preloadQueue[destIndex] = frameCreator.createFrameAsync(d);
 	}
 
 	private void invalidatePreloaded() {
@@ -119,20 +120,20 @@ public class FrameManager {
 	 * @param d
 	 */
 	private void initPreloaded(Date d) {
-		nextFileIndex = descriptorManager.getFileIndex(d);
-		nextFileIndex = nextFileIndex < 0 ? 0: nextFileIndex;
+		int index  = descriptorManager.getFileIndex(d);
+		index = index < 0 ? 0: index;
 		
 		if(descriptorManager.getNumberOfFiles() > 0)
 		{
 			currentIndex = 0;
 			lastIndex = preloadQueue.length-1;
+			FileDescriptor descriptor = descriptorManager.getFileDescriptor(index);
 			
 			for(int i = 0; i < preloadQueue.length;i++) {
-				FileDescriptor descriptor = descriptorManager.getFileDescriptor(nextFileIndex);
 				PfssData data = dataCreator.getDataAsync(descriptor);
 				preloadQueue[i] = frameCreator.createFrameAsync(data);
 				
-				nextFileIndex = ++nextFileIndex % descriptorManager.getNumberOfFiles();
+				descriptor = descriptorManager.getNext(descriptor);
 			}
 		}
 	}
