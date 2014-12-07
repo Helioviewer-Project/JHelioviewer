@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<resourceDefinition>
+    <configuration name="mac-x86-64">
+        <priority value="1" />
+        <requirements>
+            <requirement name="jhv.os" value="mac"/>
+            <requirement name="jhv.arch" value="x86-64"/>
+        </requirements>
+        <files>
+            <file name="ffmpeg-mac-x86-64" srcDir="ffmpeg-1-2-1" destDir="." registerExecutable="ffmpeg" md5="6c44f5a31c1e9c2322bd56964f90503b"/>
+        </files>
+    </configuration>
+    <configuration name="mac-x86-32">
+        <priority value="1" />
+        <requirements>
+            <requirement name="jhv.os" value="mac"/>
+            <requirement name="jhv.arch" value="x86-32"/>
+        </requirements>
+        <files>
+            <file name="ffmpeg-mac-x86-32" srcDir="ffmpeg-1-2-1" destDir="." registerExecutable="ffmpeg" md5="4393df08fc637d3f586cc1abfa0b4f67"/>
+        </files>
+    </configuration>
+    <configuration name="linux-x86-32">
+        <priority value="1" />
+        <requirements>
+            <requirement name="jhv.os" value="linux"/>
+            <requirement name="jhv.arch" value="x86-32"/>
+        </requirements>
+        <files>
+            <file name="ffmpeg-linux-x86-32" srcDir="ffmpeg-1-2-1" destDir="." registerExecutable="ffmpeg" md5="f611e848b43c0b0e6d0cfb85a11eb0e0"/>
+        </files>
+    </configuration>
+    <configuration name="linux-x86-64">
+        <priority value="1" />
+        <requirements>
+            <requirement name="jhv.os" value="linux"/>
+            <requirement name="jhv.arch" value="x86-64"/>
+        </requirements>
+        <files>
+            <file name="ffmpeg-linux-x86-64" srcDir="ffmpeg-1-2-1" destDir="." registerExecutable="ffmpeg" md5="be86b4a3ff88524bceb5ed5d03f69549"/>
+        </files>
+    </configuration>
+    <configuration name="windows-x86-32">
+        <priority value="1" />
+        <requirements>
+            <requirement name="jhv.os" value="windows"/>
+            <requirement name="jhv.arch" value="x86-32"/>
+        </requirements>
+        <files>
+            <file name="ffmpeg-windows-x86-32.exe" srcDir="ffmpeg-1-2-1" destDir="." registerExecutable="ffmpeg" md5="316ab030327520261adb7e2ab7b3e129"/>
+        </files>
+    </configuration>
+    <configuration name="windows-x86-64">
+        <priority value="1" />
+        <requirements>
+            <requirement name="jhv.os" value="windows"/>
+            <requirement name="jhv.arch" value="x86-64"/>
+        </requirements>
+        <files>
+            <file name="ffmpeg-windows-x86-64.exe" srcDir="ffmpeg-1-2-1" destDir="." registerExecutable="ffmpeg" md5="99fcc8e3380f49bd9470c1bb55e5390e"/>
+        </files>
+    </configuration>
+</resourceDefinition>

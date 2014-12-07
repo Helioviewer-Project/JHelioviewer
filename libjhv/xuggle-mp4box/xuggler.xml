@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<resourceDefinition>
+    <configuration name="mac-x86-64">
+        <priority value="1" />
+        <requirements>
+            <requirement name="jhv.os" value="mac"/>
+            <requirement name="jhv.arch" value="x86-64"/>
+        </requirements>
+        <files>
+            <file srcName="libxuggle-mac-x86-64.dylib" destName="libxuggle.dylib" srcDir="xuggler" destDir="." md5="764dbde137cf2e616ca93a2118460c89"/>
+        </files>
+    </configuration>
+    <configuration name="mac-x86-32">
+        <priority value="1" />
+        <requirements>
+            <requirement name="jhv.os" value="mac"/>
+            <requirement name="jhv.arch" value="x86-32"/>
+        </requirements>
+        <files>
+            <file srcName="libxuggle-mac-x86-32.dylib" destName="libxuggle.dylib" srcDir="xuggler" destDir="." md5="53067a77a6b65b6bc1ba0a45927c91e2"/>
+        </files>
+    </configuration>
+    <configuration name="linux-x86-32">
+        <priority value="1" />
+        <requirements>
+            <requirement name="jhv.os" value="linux"/>
+            <requirement name="jhv.arch" value="x86-32"/>
+        </requirements>
+        <files>
+            <file srcName="libxuggle-linux-x86-32.so" destName="libxuggle.so" srcDir="xuggler" destDir="." md5="84e976e7941cb57a03eb4c0d5f552050"/>
+        </files>
+    </configuration>
+    <configuration name="linux-x86-64">
+        <priority value="1" />
+        <requirements>
+            <requirement name="jhv.os" value="linux"/>
+            <requirement name="jhv.arch" value="x86-64"/>
+        </requirements>
+        <files>
+            <file srcName="libxuggle-linux-x86-64.so" destName="libxuggle.so" srcDir="xuggler" destDir="." md5="3db0d7ad67d37ba210220f3c62268f9c"/>
+        </files>
+    </configuration>
+    <configuration name="windows-x86-32">
+        <priority value="1" />
+        <requirements>
+            <requirement name="jhv.os" value="windows"/>
+            <requirement name="jhv.arch" value="x86-32"/>
+        </requirements>
+        <files>
+            <file srcName="libxuggle-5-windows-x86-32.dll" destName="libxuggle-5.dll" srcDir="xuggler" destDir="." md5="533fd9ee6c225717e370b75c3d9552c7"/>
+        </files>
+    </configuration>
+    <configuration name="windows-x86-64">
+        <priority value="1" />
+        <requirements>
+            <requirement name="jhv.os" value="windows"/>
+            <requirement name="jhv.arch" value="x86-64"/>
+        </requirements>
+        <files>
+            <file srcName="libxuggle-5-windows-x86-64.dylib" destName="libxuggle-5.dll" srcDir="xuggler" destDir="." md5="8fe7ada18bfff7077e9e98d3833ffa77"/>
+        </files>
+    </configuration>
+</resourceDefinition>
