@@ -106,8 +106,14 @@ public class PfssDataDecompressor implements Runnable {
 					Line l = lines[i];
 					
 					Point[] linePoints = new Point[l.size];
-					Point last = new Point(l.channels[0][0],l.channels[1][0],l.channels[1][0]);
-					Point current =new Point(l.channels[0][1],l.channels[1][1],l.channels[1][1]);
+
+					for(int j = 0; j < l.size;j++) {
+						linePoints[j] = new Point(l.channels[0][j],l.channels[1][j],l.channels[2][j]);
+					}
+					int nextIndex = l.size;
+
+					/*Point last = new Point(l.channels[0][0],l.channels[1][0],l.channels[2][0]);
+					Point current = new Point(l.channels[0][1],l.channels[1][1],l.channels[2][1]);
 					linePoints[0] = last;
 					linePoints[1] = current;
 					int nextIndex = 2;
@@ -116,7 +122,7 @@ public class PfssDataDecompressor implements Runnable {
 
 						if((j + 1)< l.size) {
 							//check if point should be in line or not
-							Point next = new Point(l.channels[0][j+1],l.channels[1][j+1],l.channels[1][j+1]);
+							Point next = new Point(l.channels[0][j+1],l.channels[1][j+1],l.channels[2][j+1]);
 							boolean colinear = current.AngleTo(next, last) > PfssSettings.ANGLE_OF_LOD;
 							
 							if(!colinear) {
@@ -129,13 +135,13 @@ public class PfssDataDecompressor implements Runnable {
 							//last point, always add
 							linePoints[nextIndex++] = current;
 						}
-					}
+					}*/
 					
 					//check line type
 					double mag0 = linePoints[0].magnitude();
-					if(mag0*1.1 > Constants.SunRadius) {
+					if(mag0 < Constants.SunRadius*1.05) {
 						double mag1 = linePoints[nextIndex-1].magnitude();
-						if(mag1 *1.1 > Constants.SunRadius) {
+						if(mag1 > Constants.SunRadius*1.05) {
 							stoSize += nextIndex-1;
 							types[i] = 0;
 						} else {
@@ -170,9 +176,9 @@ public class PfssDataDecompressor implements Runnable {
 							indicesSunToSun, indicesOutsideToSun);
 					
 					int lineIndex = 0;
-					while(lineIndex+1 < line.length && line[lineIndex+1]!= null)
+					while(lineIndex+1 < line.length)
 					{
-						addPoint(vertices,line[0]);
+						addPoint(vertices,line[lineIndex]);
 						addLineSegment(vertexIndex, vertexIndex+1, indexBuffer);
 						vertexIndex++;
 						lineIndex++;
@@ -277,7 +283,10 @@ public class PfssDataDecompressor implements Runnable {
 		}
 		
 		public double magnitude() {
-			return Math.sqrt(x*x+y*y+z*z);
+			double xi = x;
+			double yi = y;
+			double zi = z;
+			return Math.sqrt(xi*xi+yi*yi+zi*zi);
 		}
 		
 		public double AngleTo(Point next,Point before)
