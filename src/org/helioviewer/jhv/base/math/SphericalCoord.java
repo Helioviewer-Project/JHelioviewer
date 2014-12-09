@@ -3,7 +3,7 @@ package org.helioviewer.jhv.base.math;
 import java.util.Locale;
 
 public class SphericalCoord {
-
+	private static final char DEGREE = '\u00B0';
     public double theta = 0.0;
     public double phi = 0.0;
     public double r = 0.0;
@@ -22,7 +22,7 @@ public class SphericalCoord {
     }
 
     public String toString() {
-        return String.format(Locale.ENGLISH, "Theta=%.2f�, Phi=%.2f�, r=%.2f", theta, phi, r);
+        return String.format(Locale.ENGLISH, "Theta=%.2f"+DEGREE+", Phi=%.2f"+DEGREE+", r=%.2f", theta, phi, r);
     }
 
     public boolean equals(Object otherObject) {
