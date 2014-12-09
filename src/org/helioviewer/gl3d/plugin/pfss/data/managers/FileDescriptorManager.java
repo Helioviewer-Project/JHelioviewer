@@ -71,6 +71,15 @@ public class FileDescriptorManager {
 		}
 	}
 	
+	/**
+	 * Reads the description of one month
+	 * @param url
+	 * @param from
+	 * @param to
+	 * @param currentYear
+	 * @param currentMonth
+	 * @throws IOException
+	 */
     private void readDescription(String url,Date from, Date to,int currentYear, int currentMonth) throws IOException {
     	try {
 			URL u = new URL(url);

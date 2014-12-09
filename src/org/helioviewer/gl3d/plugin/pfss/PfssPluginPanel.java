@@ -21,6 +21,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 
 import org.helioviewer.base.logging.Log;
+import org.helioviewer.base.math.Interval;
 import org.helioviewer.gl3d.plugin.pfss.olddata.PfssCache;
 import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
 import org.helioviewer.jhv.layers.LayersListener;
@@ -185,11 +186,12 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 			start = LayersModel.getSingletonInstance().getFirstDate();
 			end = LayersModel.getSingletonInstance().getLastDate();
 		}
-
+		
 		if (start != null && end != null) {
 				retry = true;
 				while(retry) {
 				try {
+					Interval<Date> interval = LayersModel.getSingletonInstance().getFrameInterval();
 					renderer.setDisplayRange(start, end);
 					retry = false;
 				} catch (IOException e) {
