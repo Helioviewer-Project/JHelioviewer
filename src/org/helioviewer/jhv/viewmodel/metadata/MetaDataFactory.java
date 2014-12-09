@@ -33,9 +33,12 @@ public class MetaDataFactory {
 			try {
 				constructor = c.getDeclaredConstructor(MetaDataContainer.class);
 				metaData = constructor.newInstance(args);
+			} catch (NonSuitableMetaDataException _imdce)
+			{
+			    //ignore - we only tried the "wrong" metadata factory. a better fit
+			    //should be found in a later iteration
 			} catch (Exception e) {
 				e.printStackTrace();
-				metaData = null;
 			}
 			if (metaData != null) break;
 		}

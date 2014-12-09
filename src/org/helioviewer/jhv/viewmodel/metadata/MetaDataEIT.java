@@ -18,7 +18,7 @@ public class MetaDataEIT extends MetaData{
         }
         observatory = metaDataContainer.get("TELESCOP");
         if (!(instrument.equalsIgnoreCase("EIT"))){
-        	throw new MetaDataException("invalid instrument");
+        	throw new NonSuitableMetaDataException("invalid instrument: "+instrument);
         }
         hasCorona = true;
         hasSphere = true;

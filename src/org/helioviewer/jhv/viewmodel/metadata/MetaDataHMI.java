@@ -14,7 +14,7 @@ public class MetaDataHMI extends MetaData{
         measurement = metaDataContainer.get("CONTENT");
         observatory = metaDataContainer.get("TELESCOP");
         if (!(instrument.equalsIgnoreCase("HMI_FRONT2"))){
-        	throw new MetaDataException("invalid instrument");
+        	throw new NonSuitableMetaDataException("invalid instrument: "+instrument);
         }
         hasSphere = true;
 

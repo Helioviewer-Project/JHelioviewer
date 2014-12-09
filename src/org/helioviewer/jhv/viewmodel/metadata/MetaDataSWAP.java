@@ -17,7 +17,7 @@ public class MetaDataSWAP extends MetaData{
         fullName = "SWAP " + measurement;
         
         if (!(instrument.contains("SWAP"))){
-        	throw new MetaDataException("invalid instrument");
+        	throw new NonSuitableMetaDataException("invalid instrument: "+observatory+"/"+instrument+"/"+detector);
         }
         hasSphere = true;
         hasCorona = true;

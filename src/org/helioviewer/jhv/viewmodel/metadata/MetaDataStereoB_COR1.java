@@ -29,7 +29,7 @@ public class MetaDataStereoB_COR1 extends MetaData{
         fullName = instrument + " " + detector;
         
         if (!(observatory.equalsIgnoreCase("STEREO_B") && detector.equalsIgnoreCase("COR1"))){
-        	throw new MetaDataException("invalid instrument");
+        	throw new NonSuitableMetaDataException("invalid instrument: "+observatory+"/"+detector);
         }
         hasCorona = true;
         hasSphere = false;

@@ -13,7 +13,7 @@ public class MetaDataAIA extends MetaData{
         measurement = metaDataContainer.get("WAVELNTH");
         observatory = metaDataContainer.get("TELESCOP");
         if (!(instrument.equalsIgnoreCase("AIA_1") || instrument.equalsIgnoreCase("AIA_2") || instrument.equalsIgnoreCase("AIA_3") || instrument.equalsIgnoreCase("AIA_4"))){
-        	throw new MetaDataException("invalid instrument");
+        	throw new NonSuitableMetaDataException("invalid instrument: "+instrument);
         }
 
         this.hasCorona = true;

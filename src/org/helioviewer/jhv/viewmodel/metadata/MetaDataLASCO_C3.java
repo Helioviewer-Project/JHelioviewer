@@ -13,7 +13,7 @@ public class MetaDataLASCO_C3 extends MetaData{
 	public MetaDataLASCO_C3(MetaDataContainer metaDataContainer) {
         super(metaDataContainer);
         if (!(instrument.equalsIgnoreCase("LASCO") && detector.equalsIgnoreCase("C3"))){
-           	throw new MetaDataException("invalid instrument");
+           	throw new NonSuitableMetaDataException("invalid instrument: "+instrument+"/"+detector);
         }
         hasCorona = true;
 
