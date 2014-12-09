@@ -26,8 +26,8 @@ import org.helioviewer.jhv.viewmodel.view.opengl.GL3DCameraView;
  */
 public class GL3DCameraMouseController extends AbstractImagePanelMouseController implements KeyListener {
 
-    private static final Cursor CURSOR_CLOSED_HAND = Toolkit.getDefaultToolkit().createCustomCursor(IconBank.getIcon(JHVIcon.CLOSED_HAND).getImage(), new Point(9, 9), IconBank.getIcon(JHVIcon.CLOSED_HAND).toString());
-    private static final Cursor CURSOR_OPEN_HAND = Toolkit.getDefaultToolkit().createCustomCursor(IconBank.getIcon(JHVIcon.OPEN_HAND).getImage(), new Point(9, 9), IconBank.getIcon(JHVIcon.OPEN_HAND).toString());
+    private static final Cursor CURSOR_CLOSED_HAND = Toolkit.getDefaultToolkit().createCustomCursor(IconBank.getIcon(JHVIcon.CLOSED_HAND).getImage(), new Point(16, 16), IconBank.getIcon(JHVIcon.CLOSED_HAND).toString());
+    private static final Cursor CURSOR_OPEN_HAND = Toolkit.getDefaultToolkit().createCustomCursor(IconBank.getIcon(JHVIcon.OPEN_HAND).getImage(), new Point(16, 16), IconBank.getIcon(JHVIcon.OPEN_HAND).toString());
 
     private boolean buttonDown = false;
     private volatile long lastTime = System.currentTimeMillis();

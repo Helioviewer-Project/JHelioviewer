@@ -54,7 +54,7 @@ public class IconBank {
 
         // MOUSE POINTERS
 
-        OPEN_HAND("OpenedHand.gif"), OPEN_HAND_SMALL("OpenedHand2.gif"), CLOSED_HAND("ClosedHand.gif"),
+        OPEN_HAND("OpenedHand.gif"), CLOSED_HAND("ClosedHand.gif"),
 
         PAN("pan24x24.png"), PAN_SELECTED("pan_selected24x24.png"),
 
