@@ -1,12 +1,7 @@
 package org.helioviewer.jhv.gui.components.statusplugins;
 
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import javax.swing.BorderFactory;
-import javax.swing.Timer;
-
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
 
@@ -24,9 +19,9 @@ import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
 public class FramerateStatusPanel extends ViewStatusPanelPlugin {
 
     private static final long serialVersionUID = 1L;
-    private Timer timer;
     private int counter = 0;
     private long last = -1;
+    private long currentMillis = 0;
     /**
      * Default constructor.
      */
@@ -37,28 +32,22 @@ public class FramerateStatusPanel extends ViewStatusPanelPlugin {
         setText("fps:");
 
         setVisible(true);
+        currentMillis = System.currentTimeMillis();
         LayersModel.getSingletonInstance().addLayersListener(this);
-        
-        timer = new Timer(1000, new ActionListener() {
-    		
-    		@Override
-    		public void actionPerformed(ActionEvent e) {
-    			updateFramerate();
-    			counter = 0;
-    			
-    		}
-    	});
-        timer.start();
         
     }
 
     private void updateFramerate() {
             setVisible(true);
             setText("fps: " + counter);
+            counter = 0;
+            currentMillis = System.currentTimeMillis();
     }
     
     private void count(){
-    	if (LinkedMovieManager.getActiveInstance() != null && LinkedMovieManager.getActiveInstance().getMasterMovie() != null){
+    	if (LinkedMovieManager.getActiveInstance() != null && LinkedMovieManager.getActiveInstance().getMasterMovie() != null){    		
+    		if ((System.currentTimeMillis() - currentMillis) >= 1000)
+    			updateFramerate();
     		long current = LinkedMovieManager.getActiveInstance().getMasterMovie().getCurrentFrameDateTime().getMillis();
     		if (last >= 0 && last != current) counter++;
     		last = current;
@@ -73,6 +62,5 @@ public class FramerateStatusPanel extends ViewStatusPanelPlugin {
     }
     
     public void timestampChanged(){
-    	count();
     }
 }

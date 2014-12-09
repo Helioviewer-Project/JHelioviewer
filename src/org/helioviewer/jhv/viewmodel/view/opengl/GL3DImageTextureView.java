@@ -50,7 +50,7 @@ public class GL3DImageTextureView extends AbstractGL3DView implements GL3DView {
 	private boolean recaptureRequested = true;
 	private boolean regionChanged = true;
 	private boolean forceUpdate = false;
-	
+	private boolean firstTime = true;
 	private GL3DImageVertexShaderProgram vertexShader = null;
 	public MetaData metadata = null;
 	
@@ -135,6 +135,7 @@ public class GL3DImageTextureView extends AbstractGL3DView implements GL3DView {
 				this.vertexShader.changeRect(xOffset, yOffset, Math.abs(xScale), Math.abs(yScale));
 				this.vertexShader.changeTextureScale(this.textureScale.x, this.textureScale.y);
 			}
+			if (firstTime) firstTime = false;
 		}
 
 		this.recaptureRequested = false;

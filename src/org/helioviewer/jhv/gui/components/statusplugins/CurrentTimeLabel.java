@@ -16,14 +16,13 @@ public class CurrentTimeLabel extends JLabel implements LayersListener{
 	 */
 	private static final long serialVersionUID = -9216168376764918306L;
 	
-	private String title = "Current Date: ";
 	private String empty = " - ";
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss ");
 	
 	public CurrentTimeLabel() {
         this.setBorder(BorderFactory.createEtchedBorder());
 
-		this.setText(title + empty);
+		this.setText(empty);
 		LayersModel.getSingletonInstance().addLayersListener(this);		
 	}
 	@Override
@@ -54,10 +53,10 @@ public class CurrentTimeLabel extends JLabel implements LayersListener{
 	@Override
 	public void timestampChanged(int idx) {
 		if (LayersModel.getSingletonInstance().getLastUpdatedTimestamp() != null){
-			this.setText(title + dateFormat.format(LayersModel.getSingletonInstance().getLastUpdatedTimestamp()));
+			this.setText(dateFormat.format(LayersModel.getSingletonInstance().getLastUpdatedTimestamp()));
 		}
 		else{
-			this.setText(title + empty);
+			this.setText(empty);
 		}
 	}
 	@Override

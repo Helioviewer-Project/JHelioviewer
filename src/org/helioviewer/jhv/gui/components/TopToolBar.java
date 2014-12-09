@@ -38,7 +38,7 @@ public class TopToolBar extends JToolBar implements MouseListener {
     private static final long serialVersionUID = 1L;
 
     public enum SelectionMode {
-        PAN, ZOOMBOX, ROTATE
+        PAN, ZOOMBOX, ROTATE, ROTATE_Y_AXIS
     };
 
     private enum DisplayMode {
@@ -49,6 +49,7 @@ public class TopToolBar extends JToolBar implements MouseListener {
 
     private JToggleButton panButton;
     private JToggleButton rotateButton;
+    private JToggleButton rotateButtonYAxis;
     private JToggleButton zoomBoxButton;
 
     private JToggleButton trackSolarRotationButton3D;
@@ -181,12 +182,11 @@ public class TopToolBar extends JToolBar implements MouseListener {
         
         rotateButton = new JToggleButton(new GL3DSetRotationInteractionAction());
         rotateButton.setSelected(selectionMode == SelectionMode.ROTATE);
-        rotateButton.setIcon(IconBank.getIcon(JHVIcon.ROTATE));
-        rotateButton.setSelectedIcon(IconBank.getIcon(JHVIcon.ROTATE_SELECTED));
+        rotateButton.setIcon(IconBank.getIcon(JHVIcon.ROTATE_ALL_AXIS));
+        rotateButton.setSelectedIcon(IconBank.getIcon(JHVIcon.ROTATE_ALL_AXIS_SELECTED));
         rotateButton.setToolTipText("Select Rotating");
         group.add(rotateButton);
         addButton(rotateButton);
-
         addSeparator();
         
         trackSolarRotationButton3D = new JToggleButton(new GL3DToggleSolarRotationAction());
@@ -205,10 +205,13 @@ public class TopToolBar extends JToolBar implements MouseListener {
         coronaVisibilityButton.setToolTipText("Toggle Corona Visibility");
         addButton(coronaVisibilityButton);
         
-        // VSO Export - DEACTIVATED FOR NOW
-        // addSeparator();
-        // addButton(new JButton(new NewQueryAction(true)));
-
+        rotateButtonYAxis = new JToggleButton(new GL3DSetRotationYAxisInteractionAction());
+        rotateButtonYAxis.setSelected(selectionMode == SelectionMode.ROTATE_Y_AXIS);
+        rotateButtonYAxis.setIcon(IconBank.getIcon(JHVIcon.ROTATE));
+        rotateButtonYAxis.setSelectedIcon(IconBank.getIcon(JHVIcon.ROTATE_SELECTED));
+        rotateButtonYAxis.setToolTipText("Enable rotation on Y-Axis");
+        addButton(rotateButtonYAxis);
+        
         addSeparator();
 
         ButtonGroup stateGroup = new ButtonGroup();
