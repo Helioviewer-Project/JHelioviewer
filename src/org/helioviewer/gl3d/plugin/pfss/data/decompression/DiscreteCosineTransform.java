@@ -34,8 +34,8 @@ public class DiscreteCosineTransform {
         
         for (int k = 0; k < actualSize; k++)
         {
-
-            for (int i = 1; i < value.length; i++)
+        	
+            for (int i = 1; i < 20 && i < value.length; i++)
             {
             	float bla = (float)(value[i] * (Math.cos((2 * k + 1) * i * Math.PI / adaptive2)));
                 output[k] += (float)(value[i] * (Math.cos((2 * k + 1) * i * Math.PI / adaptive2)));

@@ -87,7 +87,7 @@ public class PfssDataDecompressor implements Runnable {
 
 				Line[] lines = Line.splitToLines(lengths, startEndPoints, xInt, yInt, zInt);
 				
-				DeQuantization.MultiplyLinear(lines, 360, 1, 1);
+				//DeQuantization.MultiplyLinear(lines, 360, 1, 1);
 				DeQuantization.Multiply(lines, 1000);
 				DeQuantization.MultiplyPoint(lines, 800,0);
 				
@@ -107,19 +107,17 @@ public class PfssDataDecompressor implements Runnable {
 					
 					Point[] linePoints = new Point[l.size];
 
-					for(int j = 0; j < l.size;j++) {
-						linePoints[j] = new Point(l.channels[0][j],l.channels[1][j],l.channels[2][j]);
-					}
-					int nextIndex = l.size;
+					/*int nextIndex = 0;
+					for(int j = 0; j < l.size;j+=2) {
+						linePoints[nextIndex++] = new Point(l.channels[0][j],l.channels[1][j],l.channels[2][j]);
+					}*/
 
-					/*Point last = new Point(l.channels[0][0],l.channels[1][0],l.channels[2][0]);
-					Point current = new Point(l.channels[0][1],l.channels[1][1],l.channels[2][1]);
+					Point last = new Point(l.channels[0][0],l.channels[1][0],l.channels[2][0]);
 					linePoints[0] = last;
-					linePoints[1] = current;
-					int nextIndex = 2;
+					int nextIndex = 1;
 					
-					for(int j = 2; j < l.size;j++) {
-
+					for(int j = 1; j < l.size;j++) {
+						Point current = new Point(l.channels[0][j],l.channels[1][j],l.channels[2][j]);
 						if((j + 1)< l.size) {
 							//check if point should be in line or not
 							Point next = new Point(l.channels[0][j+1],l.channels[1][j+1],l.channels[2][j+1]);
@@ -127,7 +125,6 @@ public class PfssDataDecompressor implements Runnable {
 							
 							if(!colinear) {
 								last = current;
-								current = next;
 								linePoints[nextIndex++] = current;
 							}
 							
@@ -135,7 +132,7 @@ public class PfssDataDecompressor implements Runnable {
 							//last point, always add
 							linePoints[nextIndex++] = current;
 						}
-					}*/
+					}
 					
 					//check line type
 					double mag0 = linePoints[0].magnitude();
@@ -176,7 +173,7 @@ public class PfssDataDecompressor implements Runnable {
 							indicesSunToSun, indicesOutsideToSun);
 					
 					int lineIndex = 0;
-					while(lineIndex+1 < line.length)
+					while(lineIndex+1 < line.length && line[lineIndex+1] != null)
 					{
 						addPoint(vertices,line[lineIndex]);
 						addLineSegment(vertexIndex, vertexIndex+1, indexBuffer);
