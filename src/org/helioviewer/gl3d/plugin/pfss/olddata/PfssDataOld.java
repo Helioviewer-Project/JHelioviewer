@@ -163,7 +163,7 @@ public class PfssDataOld {
 		double yStart = 0;
 		double zStart = 0;
 		boolean lineStarted = false;
-		for (int i = 0; i < this.ptr.length; i += PfssSettings.LOD_STEPS) {
+		for (int i = 0; i < this.ptr.length; i += 1) {
 
 			if (i > lineEnd && lineCounter < this.ptr_nz_len.length){
 				i = lineEnd;

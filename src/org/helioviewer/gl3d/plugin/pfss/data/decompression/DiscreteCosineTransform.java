@@ -6,98 +6,19 @@ package org.helioviewer.gl3d.plugin.pfss.data.decompression;
  *
  */
 public class DiscreteCosineTransform {
-	public static final int size = 8;
-    private static final double size2 = 2d*size;
-    private static final float halfSize = 2/(float)size;
-    private static final float[] coefficients = {1,1,2,2,8,16,24,32,20,30,40,50,60,80,100,120};
 
-    private final float[][] dctFactors;
-    private final int length;
-    
-    /**
-     * Initializes the DiscreteCosineTransform and precalculate the dct factors
-     * @param length
-     */
-    public DiscreteCosineTransform(int length) {
-    	dctFactors = new float[length][length];
-    	this.length = length;
-    	
-    	for(int k = 0; k < length;k++){
-    		for(int i = 0; i < length;i++) {
-    			dctFactors[k][i] = (float) Math.cos((2 * i + 1) * k * Math.PI);
+    public static void inverseTransform(Line[] lines) {
+    	for(Line l : lines) {
+    		for(int i = 0; i < l.channels.length;i++) {
+    			int actualSize = l.size+l.start[i]+l.end[i];
+    			float[] idct = inverseTransform(l.channels[i],actualSize);
+    			
+    			float[] cutOff = new float[l.size];
+    			System.arraycopy(idct, l.start[i], cutOff, 0, l.size);
+    			l.channels[i] = cutOff;
     		}
     	}
     }
-    
-    /**
-     * Helper method. This takes the precalculated factors if available, and not calculates itself
-     * @param k
-     * @param i
-     * @return
-     */
-    private float getDctFactor(int k, int i) {
-    	if(k < length && i < length) {
-    		return dctFactors[k][i];
-    	} 
-    	else {
-    		return (float) Math.cos((2 * i + 1) * k * Math.PI);
-    	}
-    }
-    
-    /**
-     * Forward Transformation
-     * @param value
-     * @return
-     */
-    public float[] fdct(float[] value)
-    {
-        int adaptiveSize = value.length;
-        float halfAdaptive = 2 / (float)adaptiveSize;
-        float[] output = new float[value.length];
-        double length2 = 2d * adaptiveSize;
-        
-        double cosLength = Math.cos(length2);
-        
-        for (int k = 0; k < adaptiveSize; k++)
-        {
-            output[k] = halfAdaptive;
-            double inner = 0;
-            for (int i = 0; i < adaptiveSize; i++)
-            {
-                inner += value[i] *  getDctFactor(k,i) / cosLength;
-            }
-            output[k] *= (float)inner;
-
-        }
-        return output;
-    }
-
-    /**
-     * Backwards transformation
-     * @param value
-     * @param noZeroSize size of array, which has non-zero coefficients. after this point it it assumed that everything else is 0
-     * @return
-     */
-    public float[] idct(float[] value,int noZeroSize)
-    {
-        int adaptiveSize = value.length;
-        float halfAdaptive = 2 / (float)adaptiveSize;
-        double cosLength = Math.cos(2d * adaptiveSize);
-        
-        float[] output = new float[adaptiveSize];
-        for (int k = 0; k < adaptiveSize; k++)
-        {
-            for (int i = 1; i < noZeroSize; i++)
-            {
-                output[k] += (float)(value[i] *  getDctFactor(i,k) / cosLength);
-            }
-
-            output[k] += value[0] / 2f;
-
-        }
-        return output;
-    }
-
 
 	/**
 	 * 
@@ -105,7 +26,7 @@ public class DiscreteCosineTransform {
 	 * @param actualSize
 	 * @return
 	 */
-    public static float[] inverseTransform(float[] value,int actualSize)
+    private static float[] inverseTransform(float[] value,int actualSize)
     {
 
         double adaptive2 = 2d * actualSize;
@@ -116,6 +37,7 @@ public class DiscreteCosineTransform {
 
             for (int i = 1; i < value.length; i++)
             {
+            	float bla = (float)(value[i] * (Math.cos((2 * k + 1) * i * Math.PI / adaptive2)));
                 output[k] += (float)(value[i] * (Math.cos((2 * k + 1) * i * Math.PI / adaptive2)));
             }
 

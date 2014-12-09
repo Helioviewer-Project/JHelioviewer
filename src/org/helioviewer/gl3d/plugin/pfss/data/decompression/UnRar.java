@@ -15,26 +15,28 @@ import de.innosystec.unrar.rarfile.FileHeader;
 
 public class UnRar {
 
-	public static void go() {
+	/**
+	 * 
+	 * @param data
+	 * @return
+	 * @throws IOException
+	 */
+	public static ByteArrayOutputStream unrarData(PfssData data) throws IOException {
 		try {
-			//RARParser p = new RARParser();
-			PfssData data = new PfssData(null, "file:///C:/Users/Jonas%20Schwammberger/Documents/GitHub/solution1.rar");
-			data.loadData();
+			
 			File file = TikaInputStream.get(new ByteArrayInputStream(data.getData())).getFile();
             Archive archive = new Archive(file, null);
 			FileHeader fh = archive.nextFileHeader();
 			ByteArrayOutputStream stream = new ByteArrayOutputStream();
 			archive.extractFile(fh, stream);
-			int bla = stream.size();
+			
+			return stream;
 		} catch (RarException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+			throw new IOException(e);
 		}
-		
 	}
 	
 	public static void main(String[] args) {
-		go();
+
 	}
 }

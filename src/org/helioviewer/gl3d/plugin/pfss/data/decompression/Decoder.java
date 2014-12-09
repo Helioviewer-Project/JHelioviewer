@@ -11,7 +11,6 @@ public class Decoder {
     public static final int maxValue = 63;
     public static final int minValue = -64;
     public static final int dataBitCount = 7;
-
 	
 	public static int[] decodeRLE(int[] input, int length) {
 		int[] output = new int[length];
@@ -86,6 +85,7 @@ public class Decoder {
 		 }
 		 return out;
 	 }
+	 
 	 
 	 public static void main(String[] args) {
 		 byte[] data = new byte[]{2,(byte)129,0,(byte)129,127};

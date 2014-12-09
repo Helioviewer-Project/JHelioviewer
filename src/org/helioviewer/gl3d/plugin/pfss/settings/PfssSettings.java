@@ -34,15 +34,11 @@ public class PfssSettings {
 	 */
 	public final static int DATA_PRELOAD_SIZE = 25;
 
-	/**
-	 * Stepsize for the Loading data
-	 */
-	public final static int LOD_STEPS = 1;
-
+	
 	/**
 	 * URL of the dataserver
 	 */
-	public final static String SERVER_URL = "http://soleil.i4ds.ch/sol-win/";
+	public final static String SERVER_URL = "http://soleil.i4ds.ch/sol-win/compressed/";
 
 	
 	/**

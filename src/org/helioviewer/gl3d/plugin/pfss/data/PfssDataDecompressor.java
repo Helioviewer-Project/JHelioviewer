@@ -1,6 +1,7 @@
 package org.helioviewer.gl3d.plugin.pfss.data;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.FloatBuffer;
@@ -11,6 +12,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.helioviewer.base.physics.Constants;
+import org.helioviewer.gl3d.plugin.pfss.data.decompression.DeQuantization;
+import org.helioviewer.gl3d.plugin.pfss.data.decompression.Decoder;
+import org.helioviewer.gl3d.plugin.pfss.data.decompression.DiscreteCosineTransform;
+import org.helioviewer.gl3d.plugin.pfss.data.decompression.Line;
+import org.helioviewer.gl3d.plugin.pfss.data.decompression.UnRar;
 import org.helioviewer.gl3d.plugin.pfss.data.managers.PfssFrameInitializer;
 import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
 
@@ -40,185 +46,12 @@ public class PfssDataDecompressor implements Runnable {
 	 * Reads the Pfss Data and fills out the frame object
 	 */
 	public void readData() {
-		// do decompression here
-		//this.readFits();
-		readOldfits();
+		
+		this.readFits();
+		//readOldfits();
 		
 	}
 	
-	
-	@Deprecated
-	private enum TYPE {
-		SUN_TO_OUTSIDE, SUN_TO_SUN, OUTSIDE_TO_SUN
-	};
-	
-	@Deprecated
-	private void readOldfits() {
-		if (!data.isLoaded()) {
-			try {
-				data.awaitLoaded();
-			} catch (InterruptedException e) {
-				// do nothing and exit this method
-			}
-		}
-		if (data.isLoaded()) {
-			InputStream is = null;
-			try {
-				is = new ByteArrayInputStream(data.getData());
-				Fits fits = new Fits(is, true);
-				BasicHDU hdus[] = fits.read();
-				BinaryTableHDU bhdu = (BinaryTableHDU) hdus[1];
-				double b0 = ((double[]) bhdu.getColumn("B0"))[0];
-				double l0 = ((double[]) bhdu.getColumn("L0"))[0];
-				short[] ptr = ((short[][]) bhdu.getColumn("PTR"))[0];
-				short[] ptr_nz_len = ((short[][]) bhdu.getColumn("PTR_NZ_LEN"))[0];
-				short[] ptph = ((short[][]) bhdu.getColumn("PTPH"))[0];
-				short[] ptth = ((short[][]) bhdu.getColumn("PTTH"))[0];
-	
-				FloatBuffer vertices = Buffers
-						.newDirectFloatBuffer(ptr.length * 3 + 3);
-				IntBuffer indicesSunToOutside = Buffers
-						.newDirectIntBuffer(ptr.length * 2);
-				IntBuffer indicesSunToSun = Buffers
-						.newDirectIntBuffer(ptr.length * 2);
-				IntBuffer indicesOutsideToSun = Buffers
-						.newDirectIntBuffer(ptr.length * 2);
-				
-				
-					int lineEnd = ptr_nz_len[0] - 1;
-					int lineCounter = 1;
-					int counter = 0;
-					int lineStart = 0;
-	
-					TYPE type = getType(ptr,lineStart, lineEnd);
-	
-					IntBuffer currentBuffer = this.getLineType(ptr, lineStart, lineEnd, indicesSunToOutside, indicesSunToSun, indicesOutsideToSun);
-					double xStart = 0;
-					double yStart = 0;
-					double zStart = 0;
-					boolean lineStarted = false;
-					for (int i = 0; i < ptr.length; i += PfssSettings.LOD_STEPS) {
-	
-						if (i > lineEnd && lineCounter < ptr_nz_len.length){
-							i = lineEnd;
-						}
-						boolean colinear = false;
-	
-						double r0 = ptr[i] / 8192.0 * Constants.SunRadius;
-						double phi0 = ptph[i] / 32768.0 * 2 * Math.PI;
-						double theta0 = ptth[i] / 32768.0 * 2 * Math.PI;
-	
-						phi0 -= l0 / 180.0 * Math.PI;
-						theta0 += b0 / 180.0 * Math.PI;
-						double z = r0 * Math.sin(theta0) * Math.cos(phi0);
-						double x = r0 * Math.sin(theta0) * Math.sin(phi0);
-						double y = r0 * Math.cos(theta0);
-	
-						if (lineStarted) {
-							if (i + 1 < ptr.length) {
-								double r1 = ptr[i + 1] / 8192.0 * Constants.SunRadius;
-								double phi1 = ptph[i + 1] / 32768.0 * 2 * Math.PI;
-								double theta1 = ptth[i + 1] / 32768.0 * 2 * Math.PI;
-	
-								phi1 -= l0 / 180.0 * Math.PI;
-								theta1 += b0 / 180.0 * Math.PI;
-	
-								double zEnd = r1 * Math.sin(theta1) * Math.cos(phi1);
-								double xEnd = r1 * Math.sin(theta1) * Math.sin(phi1);
-								double yEnd = r1 * Math.cos(theta1);
-								double angle = this.calculateAngleBetween2Vecotrs(xEnd - x,
-										yEnd - y, zEnd - z, x - xStart, y - yStart, z
-												- zStart);
-								colinear = angle > PfssSettings.ANGLE_OF_LOD
-										&& i != lineEnd;
-							}
-						}
-	
-						else {
-							lineStarted = true;
-							xStart = x;
-							yStart = y;
-							zStart = z;
-						}
-	
-						if (!colinear) {
-							if (i != lineEnd) {
-								xStart = x; yStart = y; zStart = z;
-								this.addIndex(currentBuffer, counter);
-							}
-							counter = this.addVertex(vertices,(float) x, (float) y, (float) z,
-									counter);
-	
-						}
-	
-						if (i == lineEnd) {
-							lineStarted = false;
-							lineStart = lineEnd + 1;
-							if (lineCounter < ptr_nz_len.length) {
-								lineEnd += ptr_nz_len[lineCounter++];
-							}
-	
-							type = getType(ptr,lineStart, lineEnd);
-							currentBuffer = this.getLineType(ptr, lineStart, lineEnd, indicesSunToOutside, indicesSunToSun, indicesOutsideToSun);
-						}
-	
-					}
-					vertices.flip();
-					indicesSunToOutside.flip();
-					indicesOutsideToSun.flip();
-					indicesSunToSun.flip();
-					frame.setLoadedData(vertices, indicesSunToOutside,
-							indicesSunToSun, indicesOutsideToSun);
-				
-	
-			} catch (FitsException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} finally {
-				try {
-					is.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-	
-	@Deprecated
-	private TYPE getType(short[] ptr ,int startLine, int lineEnd) {
-		if (ptr[startLine] > 8192 * 1.05)
-			return TYPE.OUTSIDE_TO_SUN;
-		else if (ptr[lineEnd] > 8192 * 1.05)
-			return TYPE.SUN_TO_OUTSIDE;
-		else
-			return TYPE.SUN_TO_SUN;
-	}
-	
-	@Deprecated
-	private double calculateAngleBetween2Vecotrs(double x1, double y1,
-			double z1, double x2, double y2, double z2) {
-		return (x1 * x2 + y1 * y2 + z1 * z2)
-				/ (Math.sqrt(x1 * x1 + y1 * y1 + z1 * z1) * Math.sqrt(x2 * x2
-						+ y2 * y2 + z2 * z2));
-	}
-	
-	@Deprecated
-	private void addIndex(IntBuffer buffer, int counter) {
-
-			buffer.put(counter);
-			buffer.put(counter + 1);
-		
-	}
-	
-	@Deprecated
-	private int addVertex(FloatBuffer vertices, float x, float y, float z, int counter) {
-		vertices.put(x);
-		vertices.put(y);
-		vertices.put(z);
-		return ++counter;
-	}
-
 	
 	/**
 	 * Reads the current fits file. The fits file has to be decompressed before
@@ -234,49 +67,118 @@ public class PfssDataDecompressor implements Runnable {
 		if (data.isLoaded()) {
 			InputStream is = null;
 			try {
-				is = new ByteArrayInputStream(data.getData());
+				ByteArrayOutputStream out = UnRar.unrarData(data);
+				is = new ByteArrayInputStream(out.toByteArray());
+				
 				Fits fits = new Fits(is, false);
 				BasicHDU hdus[] = fits.read();
 				BinaryTableHDU bhdu = (BinaryTableHDU) hdus[1];
-				double b0 = ((double[]) bhdu.getColumn("B0"))[0];
-				double l0 = ((double[]) bhdu.getColumn("L0"))[0];
-				short[] ptr = ((short[][]) bhdu.getColumn("PTR"))[0];
-				short[] ptr_nz_len = ((short[][]) bhdu.getColumn("PTR_NZ_LEN"))[0];
-				short[] ptph = ((short[][]) bhdu.getColumn("PTPH"))[0];
-				short[] ptth = ((short[][]) bhdu.getColumn("PTTH"))[0];
+				byte[] startEnd = ((byte[][]) bhdu.getColumn("START_END"))[0];
+				byte[] line_length = ((byte[][]) bhdu.getColumn("LINE_LENGTH"))[0];
+				byte[] xRaw = ((byte[][]) bhdu.getColumn("X"))[0];
+				byte[] yRaw = ((byte[][]) bhdu.getColumn("Y"))[0];
+				byte[] zRaw = ((byte[][]) bhdu.getColumn("Z"))[0];
+				
+				int[] startEndPoints = Decoder.decodeAdaptiveUnsigned(startEnd);
+				int[] lengths = Decoder.decodeAdaptiveUnsigned(line_length);
+				int[] xInt = Decoder.decodeAdaptive(xRaw);
+				int[] yInt = Decoder.decodeAdaptive(yRaw);
+				int[] zInt = Decoder.decodeAdaptive(zRaw);
 
-				// conservative ASSUMPTION: memory is getting wasted here
+				Line[] lines = Line.splitToLines(lengths, startEndPoints, xInt, yInt, zInt);
+				
+				DeQuantization.MultiplyLinear(lines, 360, 1, 1);
+				DeQuantization.Multiply(lines, 1000);
+				DeQuantization.MultiplyPoint(lines, 800,0);
+				
+				DiscreteCosineTransform.inverseTransform(lines);
+				
+				
+				//subsample for low-end graphic cards. Also count how many points there are for each line type
+				Point[][] points = new Point[lines.length][];
+				byte[] types = new byte[lines.length];
+				int stoSize= 0;
+				int stsSize = 0;
+				int otsSize = 0;
+				int totalSize = 0;
+				for(int i = 0; i < lines.length;i++)
+				{
+					Line l = lines[i];
+					
+					Point[] linePoints = new Point[l.size];
+					Point last = new Point(l.channels[0][0],l.channels[1][0],l.channels[1][0]);
+					Point current =new Point(l.channels[0][1],l.channels[1][1],l.channels[1][1]);
+					linePoints[0] = last;
+					linePoints[1] = current;
+					int nextIndex = 2;
+					
+					for(int j = 2; j < l.size;j++) {
+
+						if((j + 1)< l.size) {
+							//check if point should be in line or not
+							Point next = new Point(l.channels[0][j+1],l.channels[1][j+1],l.channels[1][j+1]);
+							boolean colinear = current.AngleTo(next, last) > PfssSettings.ANGLE_OF_LOD;
+							
+							if(!colinear) {
+								last = current;
+								current = next;
+								linePoints[nextIndex++] = current;
+							}
+							
+						} else {
+							//last point, always add
+							linePoints[nextIndex++] = current;
+						}
+					}
+					
+					//check line type
+					double mag0 = linePoints[0].magnitude();
+					if(mag0*1.1 > Constants.SunRadius) {
+						double mag1 = linePoints[nextIndex-1].magnitude();
+						if(mag1 *1.1 > Constants.SunRadius) {
+							stoSize += nextIndex-1;
+							types[i] = 0;
+						} else {
+							stsSize += nextIndex-1;
+							types[i] = 1;
+						}
+					}
+					else {
+						otsSize += nextIndex-1;
+						types[i] = 2;
+					}
+					totalSize += nextIndex;
+					points[i] = linePoints;
+				}
+				
 				FloatBuffer vertices = Buffers
-						.newDirectFloatBuffer(ptr.length * 3 + 3);
+						.newDirectFloatBuffer(totalSize * 3 );
 				IntBuffer indicesSunToOutside = Buffers
-						.newDirectIntBuffer(ptr.length * 2);
+						.newDirectIntBuffer(stoSize * 2);
 				IntBuffer indicesSunToSun = Buffers
-						.newDirectIntBuffer(ptr.length * 2);
+						.newDirectIntBuffer(stsSize * 2);
 				IntBuffer indicesOutsideToSun = Buffers
-						.newDirectIntBuffer(ptr.length * 2);
+						.newDirectIntBuffer(otsSize * 2);
 
 				int vertexIndex = 0;
-
-				// loop through all lines
-				for (int i = 0; i < ptr_nz_len.length; i++) {
-					int lineSize = ptr_nz_len[i];
-					Point lastP = new Point(vertexIndex, ptr[vertexIndex],
-							ptph[vertexIndex], ptth[vertexIndex], l0, b0);
-					addPoint(vertices, lastP);
-					IntBuffer indexBuffer = getLineType(ptr, vertexIndex,
-							vertexIndex + lineSize - 1, indicesSunToOutside,
+				int ots = 0;
+				int sts = 0;
+				int sto = 0;
+				for(int i = 0; i < points.length;i++) {
+					Point[] line = points[i];
+					IntBuffer indexBuffer = getLineType(types[i], indicesSunToOutside,
 							indicesSunToSun, indicesOutsideToSun);
-
-					int maxSize = vertexIndex + lineSize;
-					vertexIndex++;
-					for (; vertexIndex < maxSize; vertexIndex++) {
-						Point current = new Point(vertexIndex, ptr[vertexIndex], ptph[vertexIndex],
-								ptth[vertexIndex], l0, b0);
-						addPoint(vertices, current);
-						addLineSegment(lastP, current, indexBuffer);
-						lastP = current;
+					
+					int lineIndex = 0;
+					while(lineIndex+1 < line.length && line[lineIndex+1]!= null)
+					{
+						addPoint(vertices,line[0]);
+						addLineSegment(vertexIndex, vertexIndex+1, indexBuffer);
+						vertexIndex++;
+						lineIndex++;
 					}
-					//line has ended
+					addPoint(vertices,line[lineIndex]);
+					vertexIndex++;
 				}
 
 				vertices.flip();
@@ -287,6 +189,9 @@ public class PfssDataDecompressor implements Runnable {
 						indicesSunToSun, indicesOutsideToSun);
 
 			} catch (FitsException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} finally {
@@ -300,10 +205,11 @@ public class PfssDataDecompressor implements Runnable {
 			}
 		}
 	}
+	
 
-	private static void addLineSegment(Point from, Point to, IntBuffer indices) {
-		indices.put(from.index);
-		indices.put(to.index);
+	private static void addLineSegment(int from, int to, IntBuffer indices) {
+		indices.put(from);
+		indices.put(to);
 	}
 
 	private static void addPoint(FloatBuffer vertices, Point p) {
@@ -330,11 +236,10 @@ public class PfssDataDecompressor implements Runnable {
 	 *            outside_to_sun indexbuffer
 	 * @return returns indexbuffer of the type
 	 */
-	private static IntBuffer getLineType(short[] ptr, int startIndex,
-			int endIndex, IntBuffer sto, IntBuffer sts, IntBuffer ots) {
-		if (ptr[startIndex] > 8192 * 1.05)
+	private static IntBuffer getLineType(byte type, IntBuffer sto, IntBuffer sts, IntBuffer ots) {
+		if (type >= 2)
 			return ots;
-		else if (ptr[endIndex] > 8192 * 1.05)
+		else if (type == 0)
 			return sto;
 		else
 			return sts;
@@ -364,8 +269,36 @@ public class PfssDataDecompressor implements Runnable {
 			x = (float) (r0 * Math.sin(theta0) * Math.sin(phi0));
 			y = (float) (r0 * Math.cos(theta0));
 		}
+		
+		public Point(float x, float y, float z) {
+			this.x = x;
+			this.y = y;
+			this.z = z;
+		}
+		
+		public double magnitude() {
+			return Math.sqrt(x*x+y*y+z*z);
+		}
+		
+		public double AngleTo(Point next,Point before)
+        {
+            return calculateAngleBetween2Vecotrs(next.x - x,
+                                                    next.y - y, next.z - z, x - before.x, y - before.y, z
+                                                                                 - before.z);
+        }
+		
+		private double calculateAngleBetween2Vecotrs(double x1, double y1, double z1, double x2, double y2, double z2)
+        {
+            return (x1 * x2 + y1 * y2 + z1 * z2)
+                                         / (Math.sqrt(x1 * x1 + y1 * y1 + z1 * z1) * Math.sqrt(x2 * x2
+                                                                     + y2 * y2 + z2 * z2));
+        }
+		
+		
 
 	}
+	
+
 
 	@Override
 	public void run() {
@@ -373,9 +306,9 @@ public class PfssDataDecompressor implements Runnable {
 	}
 	
 	public static void main(String[] args) {
-		String s = "file:///C:/dev/git/bachelor/tools/FITSFormatter/";
-		FileDescriptor f = new FileDescriptor(new Date(0), new Date(1), "fitsOut.fits",0);
-		PfssData d = new PfssData(f,s+"fitsOut.fits");
+		String s = "file:///C:/Users/Jonas%20Schwammberger/Documents/GitHub/PFSSCompression/test/temp/";
+		FileDescriptor f = new FileDescriptor(new Date(0), new Date(1), "test.rar",0);
+		PfssData d = new PfssData(f,s+"test.rar");
 		d.loadData();
 		PfssFrame frame = new PfssFrame(f);
 		PfssDataDecompressor r = new PfssDataDecompressor(d, frame);
