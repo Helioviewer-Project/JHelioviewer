@@ -30,13 +30,10 @@ import nom.tam.fits.FitsException;
 public class PfssDataDecompressor implements Runnable {
 	private final PfssData data;
 	private final PfssFrame frame;
-	private final PfssFrameInitializer initializer;
 
-	public PfssDataDecompressor(PfssData data, PfssFrame frame,
-			PfssFrameInitializer initializer) {
+	public PfssDataDecompressor(PfssData data, PfssFrame frame) {
 		this.data = data;
 		this.frame = frame;
-		this.initializer = initializer;
 	}
 
 	/**
@@ -47,10 +44,6 @@ public class PfssDataDecompressor implements Runnable {
 		//this.readFits();
 		readOldfits();
 		
-		// it can happen that the readFits() could not finish loading the frame.
-		// this means that the current Frame will never be loaded
-		if (frame.isLoaded())
-			initializer.addLoadedFrame(frame);
 	}
 	
 	
@@ -385,7 +378,7 @@ public class PfssDataDecompressor implements Runnable {
 		PfssData d = new PfssData(f,s+"fitsOut.fits");
 		d.loadData();
 		PfssFrame frame = new PfssFrame(f);
-		PfssDataDecompressor r = new PfssDataDecompressor(d, frame, null);
+		PfssDataDecompressor r = new PfssDataDecompressor(d, frame);
 		r.readData();
 		
 	}

@@ -22,7 +22,7 @@ public class FrameCache {
 	public FrameCache(DataCache dataCache) {
 		cache =new FiFoCache<>(PfssSettings.FRAME_CACHE);
 		this.dataCache = dataCache;
-		frameCreator = new PfssFrameCreator(null);
+		frameCreator = new PfssFrameCreator();
 	}
 	
 	public PfssFrame get(FileDescriptor key) {
@@ -30,6 +30,7 @@ public class FrameCache {
 			return cache.get(key);
 		else {
 			PfssFrame f = load(key);
+			System.out.println("FRAME MISS: "+ key.getStartDate().toString());
 			cache.put(key, f);
 			return f;
 		}

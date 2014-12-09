@@ -6,6 +6,7 @@ import org.helioviewer.gl3d.plugin.pfss.data.PfssFrame;
 import org.helioviewer.gl3d.plugin.pfss.data.creators.PfssDataCreator;
 import org.helioviewer.gl3d.plugin.pfss.data.managers.FileDescriptorManager;
 import org.helioviewer.gl3d.plugin.pfss.data.managers.FrameManager;
+import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
 
 /**
  * Represents the DataCache responsible for caching, loading and preloading PfssData 
@@ -25,8 +26,8 @@ public class DataCache {
 		this.descriptors = descriptors;
 		
 		this.dataCreator = new PfssDataCreator();
-		this.cache = new FiFoCache<>(10);
-		this.readAheadCache = new FiFoCache<>(10);
+		this.cache = new FiFoCache<>(PfssSettings.DATA_CACHE_SIZE);
+		this.readAheadCache = new FiFoCache<>(PfssSettings.DATA_PRELOAD_SIZE);
 	}
 	
 	public PfssData get(FileDescriptor d) {

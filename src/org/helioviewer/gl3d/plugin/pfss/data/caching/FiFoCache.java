@@ -39,13 +39,12 @@ public class FiFoCache<T extends Cacheable> {
 			//unload
 			FileDescriptor d = oldest.getDescriptor();
 			cacheIndices.remove(d);
-			
-			//load
-			cacheIndices.put(key, oldestIndex);
-			cache.set(oldestIndex, value);
 		}
 		
 		//move index
+		cacheIndices.put(key, oldestIndex);
+		cache.set(oldestIndex, value);
+		
 		oldestIndex = ++oldestIndex % cache.size();
 	}
 	

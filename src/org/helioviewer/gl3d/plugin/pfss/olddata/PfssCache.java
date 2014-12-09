@@ -59,7 +59,7 @@ public class PfssCache {
 		PfssDayAndTime tmp = findData(year, month, dayAndTime);
 		if (tmp != null) {
 			lastURL = tmp.getUrl();
-			for (int i = 0; i < PfssSettings.PRELOAD; i++) {
+			for (int i = 0; i < PfssSettings.FRAME_PRELOAD; i++) {
 				if (tmp != null) {
 					PfssFitsFile tmpFits = new PfssFitsFile();
 					pfssDatas.put(tmp.getUrl(), tmpFits);
@@ -114,7 +114,7 @@ public class PfssCache {
 
 	private void preload(PfssDayAndTime dayAndTime) {
 		PfssDayAndTime tmp = dayAndTime;
-		for (int i = 0; i < PfssSettings.PRELOAD; i++) {
+		for (int i = 0; i < PfssSettings.FRAME_PRELOAD; i++) {
 			if (tmp.getNext() != null) {
 				tmp = tmp.getNext();
 				PfssFitsFile fits = pfssDatas.get(tmp.getUrl());
@@ -131,7 +131,7 @@ public class PfssCache {
 	}
 
 	private void checkList() {
-		if (pfssDatas.size() > PfssSettings.CACHE_SIZE) {
+		if (pfssDatas.size() > PfssSettings.DATA_PRELOAD_SIZE) {
 			String url = "";
 			for (String s : pfssDatas.keySet())
 				url = s;

@@ -15,11 +15,10 @@ import org.helioviewer.gl3d.plugin.pfss.data.managers.PfssFrameInitializer;
  *
  */
 public class PfssFrameCreator {
-	private final PfssFrameInitializer initializer;
 	private final ExecutorService pool = Executors.newCachedThreadPool();
 	
-	public PfssFrameCreator(PfssFrameInitializer initializer){
-		this.initializer = initializer;
+	public PfssFrameCreator(){
+		
 	}
 	
 	/**
@@ -29,7 +28,7 @@ public class PfssFrameCreator {
 	 */
 	public PfssFrame createFrameAsync(PfssData data) {
 		PfssFrame frame = new PfssFrame(data.getDescriptor());
-		PfssDataDecompressor r = new PfssDataDecompressor(data,frame,initializer);
+		PfssDataDecompressor r = new PfssDataDecompressor(data,frame);
 		pool.execute(r);
 		return frame;
 	}

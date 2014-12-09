@@ -9,6 +9,8 @@ import javax.media.opengl.GL2;
 import org.helioviewer.gl3d.plugin.pfss.data.FileDescriptor;
 import org.helioviewer.gl3d.plugin.pfss.data.PfssData;
 import org.helioviewer.gl3d.plugin.pfss.data.PfssFrame;
+import org.helioviewer.gl3d.plugin.pfss.data.caching.DataCache;
+import org.helioviewer.gl3d.plugin.pfss.data.caching.FrameCache;
 import org.helioviewer.gl3d.plugin.pfss.data.creators.PfssDataCreator;
 import org.helioviewer.gl3d.plugin.pfss.data.creators.PfssFrameCreator;
 import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
@@ -20,23 +22,22 @@ import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
  * @author Jonas Schwammberger
  */
 public class FrameManager {
-	private final PfssDataCreator dataCreator;
-	private final PfssFrameCreator frameCreator;
 	private final FileDescriptorManager descriptorManager;
 
-	private final PfssFrameInitializer initializer;
+	private final DataCache dataCache;
+	private final FrameCache frameCache;
 	private final ConcurrentLinkedQueue<PfssFrame> destructionQueue = new ConcurrentLinkedQueue<>();
-
+	private final ConcurrentLinkedQueue<PfssFrame> initQueue = new ConcurrentLinkedQueue<>();
+	
 	private final PfssFrame[] preloadQueue;
 	private int currentIndex = 0;
 	private int lastIndex = 0;
 
 	public FrameManager() {
 		descriptorManager = new FileDescriptorManager();
-		dataCreator = new PfssDataCreator();
-		initializer = new PfssFrameInitializer();
-		frameCreator = new PfssFrameCreator(initializer);
-		preloadQueue = new PfssFrame[PfssSettings.PRELOAD];
+		preloadQueue = new PfssFrame[PfssSettings.FRAME_PRELOAD];
+		dataCache = new DataCache(descriptorManager);
+		frameCache = new FrameCache(dataCache);
 	}
 
 	/**
@@ -64,8 +65,11 @@ public class FrameManager {
 			int secondToLast = lastIndex;
 			lastIndex = ++lastIndex % preloadQueue.length;
 			loadFollowing(lastIndex, secondToLast);
-
 			
+			//init next +1
+			int nextIndex = (currentIndex+1) % preloadQueue.length;
+			initQueue.add(preloadQueue[nextIndex]);
+
 		} else {
 			// user has skipped some frames
 			this.invalidatePreloaded();
@@ -103,8 +107,7 @@ public class FrameManager {
 	private void loadFollowing(int destIndex, int secondToLast) {
 		FileDescriptor second = preloadQueue[secondToLast].getDescriptor();
 		FileDescriptor next = descriptorManager.getNext(second);
-		PfssData d = dataCreator.getDataAsync(next);
-		preloadQueue[destIndex] = frameCreator.createFrameAsync(d);
+		preloadQueue[destIndex] = frameCache.get(next);
 	}
 
 	private void invalidatePreloaded() {
@@ -130,8 +133,7 @@ public class FrameManager {
 			FileDescriptor descriptor = descriptorManager.getFileDescriptor(index);
 			
 			for(int i = 0; i < preloadQueue.length;i++) {
-				PfssData data = dataCreator.getDataAsync(descriptor);
-				preloadQueue[i] = frameCreator.createFrameAsync(data);
+				preloadQueue[i] = frameCache.get(descriptor);
 				
 				descriptor = descriptorManager.getNext(descriptor);
 			}
@@ -154,10 +156,13 @@ public class FrameManager {
 	 * @param gl OpenGL object
 	 */
 	public void preInitFrames(GL2 gl) {
-		initializer.init(gl);
+		PfssFrame f = null;
+		
+		//init
+		while((f = initQueue.poll()) != null)
+			f.init(gl);
 
 		// destroy
-		PfssFrame f = null;
 		while ((f = destructionQueue.poll()) != null)
 			f.clear(gl);
 	}
