@@ -4,7 +4,6 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.glu.GLU;
 
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.changeevent.FilterChangedReason;
 import org.helioviewer.jhv.viewmodel.changeevent.RegionChangedReason;
@@ -205,15 +204,15 @@ public class GLFilterView extends StandardFilterView implements
 
 	public boolean checkGLErrors(GL gl, String message) {
 		if (gl == null) {
-			Log.warn("OpenGL not yet Initialised!");
+			System.out.println("OpenGL not yet Initialised!");
 			return true;
 		}
 		int glErrorCode = gl.glGetError();
 
 		if (glErrorCode != GL.GL_NO_ERROR) {
 			GLU glu = new GLU();
-			Log.error("GL Error (" + glErrorCode + "): "
-					+ glu.gluErrorString(glErrorCode) + " - @" + message);
+			System.err.println("GL Error (" + glErrorCode + "): "
+            + glu.gluErrorString(glErrorCode) + " - @" + message);
 			if (glErrorCode == GL.GL_INVALID_OPERATION) {
 				// Find the error position
 				int[] err = new int[1];
@@ -221,7 +220,7 @@ public class GLFilterView extends StandardFilterView implements
 				if (err[0] >= 0) {
 					String error = gl
 							.glGetString(GL2.GL_PROGRAM_ERROR_STRING_ARB);
-					Log.error("GL error at " + err[0] + ":\n" + error);
+					System.err.println("GL error at " + err[0] + ":\n" + error);
 				}
 			}
 			return true;

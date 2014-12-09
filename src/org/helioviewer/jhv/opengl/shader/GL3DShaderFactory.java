@@ -47,6 +47,7 @@ public class GL3DShaderFactory {
 
         // fill with other filters and compile
         newShaderBuilder.compile();
+        
         // Log.debug("GL3DShaderFactory.createVertexShaderProgram");
         return vertexShaderProgram;
     }

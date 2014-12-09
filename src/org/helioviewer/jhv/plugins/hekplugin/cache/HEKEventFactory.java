@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
 
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKSettings;
 import org.json.JSONArray;
@@ -71,17 +70,17 @@ public class HEKEventFactory {
             result.setEventObject(json);
         } catch (ParseException e) {
             if (!sloppy) {
-                Log.fatal("HEKEventFactory.ParseHEK(...) >> Could not parse HEK event: " + e.getMessage());
+                System.err.println("HEKEventFactory.ParseHEK(...) >> Could not parse HEK event: " + e.getMessage());
                 result = null;
             }
         } catch (JSONException e) {
             if (!sloppy) {
-                Log.fatal("HEKEventFactory.ParseHEK(...) >> Could not parse HEK event: " + e.getMessage());
+                System.err.println("HEKEventFactory.ParseHEK(...) >> Could not parse HEK event: " + e.getMessage());
                 result = null;
             }
         } catch (NumberFormatException e) {
             if (!sloppy) {
-                Log.fatal("HEKEventFactory.ParseHEK(...) >> Could not parse HEK event: " + e.getMessage());
+                System.err.println("HEKEventFactory.ParseHEK(...) >> Could not parse HEK event: " + e.getMessage());
                 result = null;
             }
         }
@@ -113,7 +112,8 @@ public class HEKEventFactory {
             result = new HEKPath(cache, path);
 
         } catch (JSONException e) {
-            Log.error("", e);
+            System.err.println("");
+            e.printStackTrace();
         }
 
         return result;
@@ -147,7 +147,8 @@ public class HEKEventFactory {
             result = new HEKPath(cache, path);
 
         } catch (JSONException e) {
-            Log.error("", e);
+            System.err.println("");
+            e.printStackTrace();
         }
 
         return result;
@@ -180,21 +181,21 @@ public class HEKEventFactory {
 
                 // Something went wrong when parsing the eventPath
                 if (eventPath == null) {
-                    Log.fatal("Error parsing an event: Could not parse the eventPath");
+                    System.err.println("Error parsing an event: Could not parse the eventPath");
                     continue;
                 }
 
                 HEKEvent event = parseHEK(entry, false);
 
                 if (event.getDuration() == null) {
-                    Log.fatal("Event has no Duration");
+                    System.err.println("Event has no Duration");
                 }
 
                 event.prepareCache();
 
                 // Something went wrong when parsing the event
                 if (event == null) {
-                    Log.fatal("Error parsing an event: Could parse the eventPath, but not the event: " + eventPath);
+                    System.err.println("Error parsing an event: Could parse the eventPath, but not the event: " + eventPath);
                     continue;
                 }
 
@@ -210,14 +211,15 @@ public class HEKEventFactory {
                 while (result.containsKey(eventPath)) {
                     id_counter++;
                     eventPath.setLastPart(lastPart + " " + id_counter);
-                    Log.info("ID NOT UNIQUE " + id_counter);
+                    System.out.println("ID NOT UNIQUE " + id_counter);
                 }
 
                 result.put(eventPath, event);
             }
 
         } catch (JSONException e) {
-            Log.error("", e);
+            System.err.println("");
+            e.printStackTrace();
         }
 
         return result;
@@ -250,7 +252,8 @@ public class HEKEventFactory {
             }
 
         } catch (JSONException e) {
-            Log.error("", e);
+            System.err.println("");
+            e.printStackTrace();
         }
 
         return result;

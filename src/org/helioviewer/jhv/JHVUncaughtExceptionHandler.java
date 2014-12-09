@@ -5,8 +5,6 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Insets;
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -14,7 +12,6 @@ import java.io.StringWriter;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.Socket;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.Vector;
 
 import javax.swing.Box;
@@ -25,8 +22,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import org.helioviewer.jhv.base.logging.Log;
-import org.helioviewer.jhv.base.logging.LogSettings;
+import org.helioviewer.jhv.base.Log;
 
 /**
  * Routines to catch and handle all runtime exceptions.
@@ -125,7 +121,8 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
     // we do not use the logger here, since it should work even before logging
     // initialization
     @SuppressWarnings("deprecation")
-    public void uncaughtException(Thread t, Throwable e) {
+    public void uncaughtException(Thread t, Throwable e)
+    {
         //STOP THE WORLD to avoid exceptions piling up
         Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler()
         {
@@ -136,7 +133,6 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
             }
         });
         
-        System.err.close();
         // Close all threads (excluding systemsthreads, just stopp the timer thread from the system)
         for(Thread thr:Thread.getAllStackTraces().keySet())
             if(thr!=Thread.currentThread() && (!thr.getThreadGroup().getName().equalsIgnoreCase("system") || thr.getName().contains("Timer")))
@@ -148,26 +144,8 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
         msg += "Date: " + new Date() + "\n";
         msg += "JVM: " + System.getProperty("java.vm.name") + " " + System.getProperty("java.vm.version") + " (JRE " + System.getProperty("java.specification.version") + ")\n";
         msg += "OS: " + System.getProperty("os.name") + " " + System.getProperty("os.arch") + " " + System.getProperty("os.version") + "\n\n";
-
-        LinkedList<String> lastLines = new LinkedList<String>();
-        try(BufferedReader input = new BufferedReader(new FileReader(LogSettings.getCurrentLogFile())))
-        {
-            String line;
-            while ((line = input.readLine()) != null)
-            {
-                lastLines.addLast(line);
-                if(lastLines.size()>4)
-                    lastLines.removeFirst();
-            }
-        }
-        catch (Exception e1)
-        {
-            e1.printStackTrace();
-        }
+        msg += Log.GetLastFewLines(4);
         
-        for(String line:lastLines)
-            msg+=line+"\n";
-
         try(StringWriter st=new StringWriter())
         {
             try(PrintWriter pw=new PrintWriter(st))
@@ -184,7 +162,7 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
         for(Frame f:Frame.getFrames())
             f.setVisible(false);
         
-        Log.fatal("Runtime exception", e);
+        e.printStackTrace();
         
         //this wizardry forces the creation of a new awt event queue
         //which is needed to show the error dialog

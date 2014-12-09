@@ -6,7 +6,6 @@ import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;
 import javax.swing.KeyStroke;
 
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.gui.GL3DCameraSelectorModel;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.IconBank;
@@ -58,8 +57,8 @@ public class GL3DZoom1to1Action extends AbstractAction {
 	            double distance = halfWidth * Math.sin(Math.PI / 2 - halfFOVRad) / Math.sin(halfFOVRad);
 	            distance = distance / region.getWidth() * (GuiState3DWCS.mainComponentView.getCanavasSize().getWidth() * unitsPerPixel);
 	            distance = -distance - camera.getZTranslation();
-	            Log.debug("GL3DZoom1to1Action: Distance = " + distance
-						+ " Existing Distance: " + camera.getZTranslation());
+	            System.out.println("GL3DZoom1to1Action: Distance = " + distance
+                + " Existing Distance: " + camera.getZTranslation());
 				camera.addCameraAnimation(new GL3DCameraZoomAnimation(distance,
 						500));
 				camera.addCameraAnimation(new GL3DCameraPanAnimation(camera

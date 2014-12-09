@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.helioviewer.jhv.base.FileUtils;
-import org.helioviewer.jhv.base.logging.Log;
 
 /**
  * Representing a single color lookup. Each lookup has a name assigned and gives
@@ -233,11 +232,14 @@ public class LUT {
                     LUT l = readGimpGradientStream(is);
                     standardList.put(l.getName(), l);
                 } catch (FileNotFoundException e) {
-                    Log.warn("Could not restore gimp gradient file " + file, e);
+                    System.out.println("Could not restore gimp gradient file " + file);
+                    e.printStackTrace();
                 } catch (GradientError e) {
-                    Log.warn("Could not restore gimp gradient file " + file, e);
+                    System.out.println("Could not restore gimp gradient file " + file);
+                    e.printStackTrace();
                 } catch (IOException e) {
-                    Log.warn("Could not restore gimp gradient file " + file, e);
+                    System.out.println("Could not restore gimp gradient file " + file);
+                    e.printStackTrace();
                 }
             }
         }
@@ -290,7 +292,8 @@ public class LUT {
             br.close();
             return intArray;
         } catch (Exception e) {// Catch exception if any
-            Log.error("Error open internal color table " + name, e);
+            System.err.println("Error open internal color table " + name);
+            e.printStackTrace();
             return null;
         }
     }

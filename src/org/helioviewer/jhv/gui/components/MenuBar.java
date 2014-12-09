@@ -4,6 +4,7 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+
 import org.helioviewer.jhv.base.FileUtils;
 import org.helioviewer.jhv.gui.actions.*;
 import org.helioviewer.jhv.gui.actions.gl3d.GL3DCenterImageAction;

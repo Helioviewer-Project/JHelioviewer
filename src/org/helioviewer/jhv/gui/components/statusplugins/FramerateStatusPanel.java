@@ -1,7 +1,9 @@
 package org.helioviewer.jhv.gui.components.statusplugins;
 
 import java.awt.Dimension;
+
 import javax.swing.BorderFactory;
+
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
 

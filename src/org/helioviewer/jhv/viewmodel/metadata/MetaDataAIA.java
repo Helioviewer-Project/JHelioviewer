@@ -1,6 +1,5 @@
 package org.helioviewer.jhv.viewmodel.metadata;
 
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
@@ -10,6 +9,7 @@ import org.helioviewer.jhv.viewmodel.view.cache.HelioviewerDateTimeCache;
 public class MetaDataAIA extends MetaData{
   public MetaDataAIA(MetaDataContainer metaDataContainer){
         super(metaDataContainer);
+        
         measurement = metaDataContainer.get("WAVELNTH");
         observatory = metaDataContainer.get("TELESCOP");
         if (!(instrument.equalsIgnoreCase("AIA_1") || instrument.equalsIgnoreCase("AIA_2") || instrument.equalsIgnoreCase("AIA_3") || instrument.equalsIgnoreCase("AIA_4"))){
@@ -32,15 +32,15 @@ public class MetaDataAIA extends MetaData{
         double arcsecPerPixelY = metaDataContainer.tryGetDouble("CDELT2");
         if (Double.isNaN(arcsecPerPixelX)) {
             if (Double.isNaN(arcsecPerPixelY)) {
-                Log.warn(">> HelioviewerMetaData.readPixelParamters() > Both CDELT1 and CDELT2 are NaN. Use 0.6 as default value.");
+                System.out.println(">> HelioviewerMetaData.readPixelParamters() > Both CDELT1 and CDELT2 are NaN. Use 0.6 as default value.");
                 arcsecPerPixelX = 0.6;
             } else {
-                Log.warn(">> HelioviewerMetaData.readPixelParamters() > CDELT1 is NaN. CDELT2 is used.");
+                System.out.println(">> HelioviewerMetaData.readPixelParamters() > CDELT1 is NaN. CDELT2 is used.");
                 arcsecPerPixelX = arcsecPerPixelY;
             }
         }
         if (Math.abs(arcsecPerPixelX - arcsecPerPixelY) > arcsecPerPixelX * 0.0001) {
-            Log.warn(">> HelioviewerMetaData.readPixelParamters() > CDELT1 and CDELT2 have different values. CDELT1 is used.");
+            System.out.println(">> HelioviewerMetaData.readPixelParamters() > CDELT1 and CDELT2 have different values. CDELT1 is used.");
         }
         // distance to sun in meters
         double distanceToSun = metaDataContainer.tryGetDouble("DSUN_OBS");
@@ -90,15 +90,15 @@ public class MetaDataAIA extends MetaData{
         double arcsecPerPixelY = metaDataContainer.tryGetDouble("CDELT2");
         if (Double.isNaN(arcsecPerPixelX)) {
             if (Double.isNaN(arcsecPerPixelY)) {
-                Log.warn(">> HelioviewerMetaData.readPixelParamters() > Both CDELT1 and CDELT2 are NaN. Use 0.6 as default value.");
+                System.out.println(">> HelioviewerMetaData.readPixelParamters() > Both CDELT1 and CDELT2 are NaN. Use 0.6 as default value.");
                 arcsecPerPixelX = 0.6;
             } else {
-                Log.warn(">> HelioviewerMetaData.readPixelParamters() > CDELT1 is NaN. CDELT2 is used.");
+                System.out.println(">> HelioviewerMetaData.readPixelParamters() > CDELT1 is NaN. CDELT2 is used.");
                 arcsecPerPixelX = arcsecPerPixelY;
             }
         }
         if (Math.abs(arcsecPerPixelX - arcsecPerPixelY) > arcsecPerPixelX * 0.0001) {
-            Log.warn(">> HelioviewerMetaData.readPixelParamters() > CDELT1 and CDELT2 have different values. CDELT1 is used.");
+            System.out.println(">> HelioviewerMetaData.readPixelParamters() > CDELT1 and CDELT2 have different values. CDELT1 is used.");
         }
         // distance to sun in meters
         double distanceToSun = metaDataContainer.tryGetDouble("DSUN_OBS");

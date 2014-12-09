@@ -20,7 +20,6 @@ import javax.swing.border.EmptyBorder;
 
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.base.Message;
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.components.TimeTextField;
@@ -125,10 +124,12 @@ public class ImageDataPanel extends ObservationDialogPanel {
                         Message.err("Could not retrieve data sources", "The list of avaible data could not be fetched. So you cannot use the GUI to add data!" + System.getProperty("line.separator") + " This may happen if you do not have an internet connection or the there are server problems. You can still open local files.", false);
                     }
                 } catch (InterruptedException e) {
-                    Log.error("Could not setup observation dialog", e);
+                    System.err.println("Could not setup observation dialog");
+                    e.printStackTrace();
                     Message.err("Could not retrieve data sources", "The list of avaible data could not be fetched. So you cannot use the GUI to add data!" + System.getProperty("line.separator") + " This may happen if you do not have an internet connection or the there are server problems. You can still open local files.", false);
                 } catch (InvocationTargetException e) {
-                    Log.error("Could not setup observation dialog", e);
+                    System.err.println("Could not setup observation dialog");
+                    e.printStackTrace();
                     Message.err("Could not retrieve data sources", "The list of avaible data could not be fetched. So you cannot use the GUI to add data!" + System.getProperty("line.separator") + " This may happen if you do not have an internet connection or the there are server problems. You can still open local files.", false);
                 }
             }
@@ -238,7 +239,8 @@ public class ImageDataPanel extends ObservationDialogPanel {
                 try {
                     APIRequestManager.requestAndOpenRemoteFile(null, getStartTime(), "", getObservation(), getInstrument(), getDetector(), getMeasurement());
                 } catch (IOException e) {
-                    Log.error("An error occured while opening the remote file!", e);
+                    System.err.println("An error occured while opening the remote file!");
+                    e.printStackTrace();
                     Message.err("An error occured while opening the remote file!", e.getMessage(), false);
                 } finally {
                     ImageViewerGui.getSingletonInstance().getMainImagePanel().setLoading(false);
@@ -266,7 +268,8 @@ public class ImageDataPanel extends ObservationDialogPanel {
                 try {
                     APIRequestManager.requestAndOpenRemoteFile(getCadence(), getStartTime(), getEndTime(), getObservation(), getInstrument(), getDetector(), getMeasurement());
                 } catch (IOException e) {
-                    Log.error("An error occured while opening the remote file!", e);
+                    System.err.println("An error occured while opening the remote file!");
+                    e.printStackTrace();
                     Message.err("An error occured while opening the remote file!", e.getMessage(), false);
                 } finally {
                     ImageViewerGui.getSingletonInstance().getMainImagePanel().setLoading(false);

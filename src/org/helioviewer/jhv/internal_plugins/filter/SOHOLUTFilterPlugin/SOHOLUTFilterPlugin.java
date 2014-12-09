@@ -1,6 +1,5 @@
 package org.helioviewer.jhv.internal_plugins.filter.SOHOLUTFilterPlugin;
 
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterContainer;
 import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTab;
 import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTabDescriptor.Type;
@@ -80,7 +79,7 @@ public class SOHOLUTFilterPlugin extends FilterContainer {
             MetaData metaData = metaDataView.getMetaData();
             	String colorKey = DefaultTable.getSingletonInstance().getColorTable(metaData);
                 if (colorKey != null) {
-                    Log.debug("Try to apply color table " + colorKey);
+                    System.out.println("Try to apply color table " + colorKey);
                     pane.setLutByName(colorKey);
                     return;
                 

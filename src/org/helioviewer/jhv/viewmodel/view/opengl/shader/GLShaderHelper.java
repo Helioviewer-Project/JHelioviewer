@@ -17,9 +17,7 @@ import java.util.List;
 import javax.media.opengl.GL2;
 import javax.media.opengl.glu.GLU;
 
-import org.apache.log4j.Level;
 import org.helioviewer.jhv.base.FileUtils;
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.viewmodel.renderer.GLCommonRenderGraphics;
 
 /**
@@ -53,7 +51,7 @@ public class GLShaderHelper {
      *            Location where to put temporary files.
      */
     public static void initHelper(GL2 gl) throws IOException {
-        Log.debug(">> GLShaderHelper.initHelper(GL gl, String _tmpPath) > Initialize helper functions");
+        System.out.println(">> GLShaderHelper.initHelper(GL gl, String _tmpPath) > Initialize helper functions");
         
         Path tmpDir=Files.createTempDirectory("jhv-cg");
         tmpDir.toFile().deleteOnExit();
@@ -67,11 +65,11 @@ public class GLShaderHelper {
         tmpCg.deleteOnExit();
 
 
-        Log.debug(">> GLShaderHelper.initHelper(GL gl, String _tmpPath) > temp path: " + tmpDir.toString());
+        System.out.println(">> GLShaderHelper.initHelper(GL gl, String _tmpPath) > temp path: " + tmpDir.toString());
         int tmp[] = new int[1];
         gl.glGetProgramivARB(GL2.GL_FRAGMENT_PROGRAM_ARB, GL2.GL_MAX_PROGRAM_TEX_INDIRECTIONS_ARB, tmp, 0);
         maxTextureIndirections = tmp[0];
-        Log.debug(">> GLShaderHelper.initHelper(GL gl, String _tmpPath) > max texture indirections: " + maxTextureIndirections);
+        System.out.println(">> GLShaderHelper.initHelper(GL gl, String _tmpPath) > max texture indirections: " + maxTextureIndirections);
     }
 
     /**
@@ -184,7 +182,7 @@ public class GLShaderHelper {
             
             try {
                 Process p = FileUtils.invokeExecutable("cgc", args);
-                FileUtils.logProcessOutput(p, "cgc", Level.DEBUG, true);
+                FileUtils.logProcessOutput(p, "cgc", true);
                 p.waitFor();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -193,8 +191,8 @@ public class GLShaderHelper {
             }
     
             if (!tmpAsm.exists()) {
-                Log.error("Error while compiling shader program:");
-                Log.error(source);
+                System.err.println("Error while compiling shader program:");
+                System.err.println(source);
                 return;
             }
             

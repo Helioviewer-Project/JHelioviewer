@@ -16,7 +16,6 @@ import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.base.DownloadStream;
 import org.helioviewer.jhv.base.Message;
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.viewmodel.io.APIResponse;
 import org.helioviewer.jhv.viewmodel.io.APIResponseDump;
@@ -69,12 +68,15 @@ public class APIRequestManager {
                     ((JHVJP2View) view).abolish();
                 }
             } else {
-                Log.error(">> APIRequestManager.getLatestImageDate() > Could not load latest image. Use current date as initial end date.", new Exception());
+                System.err.println(">> APIRequestManager.getLatestImageDate() > Could not load latest image. Use current date as initial end date.");
+                new Exception().printStackTrace();
             }
         } catch (MalformedURLException e) {
-            Log.error(">> APIRequestManager.getLatestImageDate() > Malformed jpip request url. Use current date as initial end date.", e);
+            System.err.println(">> APIRequestManager.getLatestImageDate() > Malformed jpip request url. Use current date as initial end date.");
+            e.printStackTrace();
         } catch (IOException e) {
-            Log.error(">> APIRequestManager.getLatestImageDate() > Error while opening stream. Use current date as initial end date.", e);
+            System.err.println(">> APIRequestManager.getLatestImageDate() > Error while opening stream. Use current date as initial end date.");
+            e.printStackTrace();
         }
 
         if (readDate) {
@@ -114,14 +116,17 @@ public class APIRequestManager {
             return requestData(addToViewChain, new URL(jpipRequest), new URI(fileRequest));
         } catch (IOException e) {
             if (e instanceof UnknownHostException) {
-                Log.debug(">> APIRequestManager.loadImageSeries(boolean,String,String,String,String,String,String,String)  > Error will be throw", e);
+                System.out.println(">> APIRequestManager.loadImageSeries(boolean,String,String,String,String,String,String,String)  > Error will be throw");
+                e.printStackTrace();
                 throw new IOException("Unknown Host: " + e.getMessage());
             } else {
-                Log.debug(">> APIRequestManager.loadImageSeries(boolean,String,String,String,String,String,String,String)  > Error will be throw", e);
+                System.out.println(">> APIRequestManager.loadImageSeries(boolean,String,String,String,String,String,String,String)  > Error will be throw");
+                e.printStackTrace();
                 throw new IOException("Error in the server communication:" + e.getMessage());
             }
         } catch (URISyntaxException e) {
-            Log.error("Error creating jpip request", e);
+            System.err.println("Error creating jpip request");
+            e.printStackTrace();
         }
         return null;
     }
@@ -160,22 +165,25 @@ public class APIRequestManager {
 
         String jpipRequest = fileRequest + "&jpip=true&verbose=true&linked=true";
 
-        Log.debug(">> APIRequestManager.loadImageSeries(boolean,String,String,String,String,String,String,String) > jpip request url: " + jpipRequest);
-        Log.debug(">> APIRequestManager.loadImageSeries(boolean,String,String,String,String,String,String,String) > http request url: " + fileRequest);
+        System.out.println(">> APIRequestManager.loadImageSeries(boolean,String,String,String,String,String,String,String) > jpip request url: " + jpipRequest);
+        System.out.println(">> APIRequestManager.loadImageSeries(boolean,String,String,String,String,String,String,String) > http request url: " + fileRequest);
 
         // get URL from server where file with image series is located
         try {
             return requestData(addToViewChain, new URL(jpipRequest), new URI(fileRequest));
         } catch (IOException e) {
             if (e instanceof UnknownHostException) {
-                Log.debug(">> APIRequestManager.loadImageSeries(boolean,String,String,String,String,String,String,String)  > Error will be throw", e);
+                System.out.println(">> APIRequestManager.loadImageSeries(boolean,String,String,String,String,String,String,String)  > Error will be throw");
+                e.printStackTrace();
                 throw new IOException("Unknown Host: " + e.getMessage());
             } else {
-                Log.debug(">> APIRequestManager.loadImageSeries(boolean,String,String,String,String,String,String,String)  > Error will be throw", e);
+                System.out.println(">> APIRequestManager.loadImageSeries(boolean,String,String,String,String,String,String,String)  > Error will be throw");
+                e.printStackTrace();
                 throw new IOException("Error in the server communication:" + e.getMessage());
             }
         } catch (URISyntaxException e) {
-            Log.error("Error creating jpip request", e);
+            System.err.println("Error creating jpip request");
+            e.printStackTrace();
         }
 
         return null;
@@ -210,14 +218,14 @@ public class APIRequestManager {
 
             // Could we handle the answer from the server
             if (!response.hasData()) {
-                Log.error("Could not understand server answer from " + jpipRequest);
+                System.err.println("Could not understand server answer from " + jpipRequest);
                 Message.err("Invalid Server reply", "The server data could not be parsed.", false);
                 return null;
             }
             // Just some error from the server
             String error = response.getString("error");
             if (error != null) {
-                Log.error("Data query returned error: " + error);
+                System.err.println("Data query returned error: " + error);
                 Message.err("The server returned the following error message: \n", Message.formatMessageString(error), false);
                 return null;
             }
@@ -235,16 +243,17 @@ public class APIRequestManager {
                 // We did not get a reply to load data or no reply at all
                 String message = response.getString("message");
                 if (message != null && !message.equalsIgnoreCase("null")) {
-                    Log.error("No data to load returned from " + jpipRequest);
-                    Log.error("Server message: " + message);
+                    System.err.println("No data to load returned from " + jpipRequest);
+                    System.err.println("Server message: " + message);
                     Message.err("Server could not return data", Message.formatMessageString(message), false);
                 } else {
-                    Log.error("Did not find uri in reponse to " + jpipRequest);
+                    System.err.println("Did not find uri in reponse to " + jpipRequest);
                     Message.err("No data source response", "While quering the data source, the server did not provide an answer.", false);
                 }
             }
         } catch (SocketTimeoutException e) {
-            Log.error("Socket timeout while requesting jpip url", e);
+            System.err.println("Socket timeout while requesting jpip url");
+            e.printStackTrace();
             Message.err("Socket timeout", "Socket timeout while requesting jpip url", false);
         }
         return null;

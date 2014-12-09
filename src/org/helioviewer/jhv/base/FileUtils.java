@@ -16,9 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Level;
-import org.helioviewer.jhv.base.logging.Log;
-
 /**
  * A class which provides functions for accessing and working with files.
  * 
@@ -50,10 +47,10 @@ public class FileUtils {
             for (String argument : arguments) {
                 logExec += " \"" + argument + "\"";
             }
-            Log.debug(">> FileUtils.invokeExecutable > Execute command: " + logExec);
+            System.out.println(">> FileUtils.invokeExecutable > Execute command: " + logExec);
             return Runtime.getRuntime().exec(arguments.toArray(new String[arguments.size()]));
         } else {
-            Log.debug(">> FileUtils.invokeExecutable > Execute command: " + "\"" + exec + "\"");
+            System.out.println(">> FileUtils.invokeExecutable > Execute command: " + "\"" + exec + "\"");
             return Runtime.getRuntime().exec(exec);
         }
     }
@@ -74,7 +71,7 @@ public class FileUtils {
      *            execution
      * @throws IOException
      */
-    public static void logProcessOutput(final Process process, final String processName, final Level logLevel, boolean blockUntilFinished) throws IOException {
+    public static void logProcessOutput(final Process process, final String processName, boolean blockUntilFinished) throws IOException {
         final BufferedReader stdout = new BufferedReader(new InputStreamReader(process.getInputStream()));
         final BufferedReader stderr = new BufferedReader(new InputStreamReader(process.getErrorStream()));
         Thread threadStdout = new Thread(new Runnable() {
@@ -82,15 +79,14 @@ public class FileUtils {
                 try {
                     String line;
                     while ((line = stdout.readLine()) != null) {
-                        Log.log(logLevel, ">> FileUtiles.logProcessOutput(Process, " + processName + ", " + logLevel + ") > std out: " + line);
+                        System.out.println(processName + ": " + line);
                     }
                 } catch (IOException e) {
-                    Log.error(">> FileUtiles.logProcessOutput(Process, " + processName + ", " + logLevel + ") > Error while reading standard output", e);
+                    e.printStackTrace();
                 } finally {
                     try {
                         stdout.close();
                     } catch (IOException e) {
-                        Log.error(">> FileUtiles.logProcessOutput(Process, " + processName + ", " + logLevel + ") > Error while closing standard output stream", e);
                     }
                 }
             }
@@ -100,15 +96,14 @@ public class FileUtils {
                 try {
                     String line;
                     while ((line = stderr.readLine()) != null) {
-                        Log.log(logLevel, ">> FileUtiles.logProcessOutput(Process, " + processName + ", " + logLevel + ") > std err: " + line);
+                        System.err.println(processName + ": " + line);
                     }
                 } catch (IOException e) {
-                    Log.error(">> FileUtiles.logProcessOutput(Process, " + processName + ", " + logLevel + ") > Error while reading standard error", e);
+                    e.printStackTrace();
                 } finally {
                     try {
                         stderr.close();
                     } catch (IOException e) {
-                        Log.error(">> FileUtiles.logProcessOutput(Process, " + processName + ", " + logLevel + ") > Error while closing standard error stream", e);
                     }
                 }
             }
@@ -124,7 +119,6 @@ public class FileUtils {
                 threadStderr.join();
                 threadStdout.join();
             } catch (InterruptedException e) {
-                Log.error(">> FileUtiles.logProcessOutput(Process, " + processName + ", " + logLevel + ") > Interrupted while reading process output.", e);
             }
         }
     }
@@ -142,19 +136,20 @@ public class FileUtils {
         boolean registered = false;
 
         try {
-            Log.debug(">> FileUtils.registerExecutable(" + identifier + ", " + path + ") > Trying to use execFile.setExecutable from JDK 1.6+");
+            System.out.println(">> FileUtils.registerExecutable(" + identifier + ", " + path + ") > Trying to use execFile.setExecutable from JDK 1.6+");
             File execFile = new File(path);
             registered = (Boolean) (execFile.getClass().getDeclaredMethod("setExecutable", new Class[] { boolean.class }).invoke(execFile, true));
             if (!registered) {
-                Log.error("FileUtils.registerExecutable(" + identifier + ", " + path + ") > Failed to make file executable. The executable might not work properly!");
+                System.err.println("FileUtils.registerExecutable(" + identifier + ", " + path + ") > Failed to make file executable. The executable might not work properly!");
             }
         } catch (Throwable t) {
-            Log.debug(">> FileUtils.registerExecutable(" + identifier + ", " + path + ") > Failed using setExecutable method. Fall back to Java < 1.6 registerExecutable mode.", t);
+            System.out.println(">> FileUtils.registerExecutable(" + identifier + ", " + path + ") > Failed using setExecutable method. Fall back to Java < 1.6 registerExecutable mode.");
+            t.printStackTrace();
             registered = false;
         }
 
         if (!registered) {
-            Log.fatal(">> FileUtils.registerExecutable(" + identifier + ", " + path + ") > Error while registering executable '" + identifier + "' in '" + path + "'");
+            System.err.println(">> FileUtils.registerExecutable(" + identifier + ", " + path + ") > Error while registering executable '" + identifier + "' in '" + path + "'");
         } else {
             registeredExecutables.put(identifier, path);
         }
@@ -213,14 +208,16 @@ public class FileUtils {
                     md5Algo.update(buffer, 0, length);
                 return md5Algo.digest();
             } catch (NoSuchAlgorithmException e) {
-                Log.error(">> FileUtils.calculateMd5(" + fileUri + ") > Could not md5 algorithm", e);
+                System.err.println(">> FileUtils.calculateMd5(" + fileUri + ") > Could not md5 algorithm");
+                e.printStackTrace();
             }
         } finally {
             if (fileStream != null) {
                 try {
                     fileStream.close();
                 } catch (IOException e) {
-                    Log.error(">> FileUtils.calculateMd5(" + fileUri + ") > Could not close stream.", e);
+                    System.err.println(">> FileUtils.calculateMd5(" + fileUri + ") > Could not close stream.");
+                    e.printStackTrace();
                 }
             }
         }

@@ -5,7 +5,6 @@ import java.util.Properties;
 import java.util.prefs.Preferences;
 
 import org.helioviewer.jhv.base.FileUtils;
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_Kdu_cache;
 
 public class Settings
@@ -28,13 +27,14 @@ public class Settings
             InputStream defaultPropStream = FileUtils.getResourceInputStream("/settings/defaults.properties");
             DEFAULT_PROPERTIES.load(defaultPropStream);
             defaultPropStream.close();
-            Log.debug(">> Settings.load() > Load default system settings: " + DEFAULT_PROPERTIES.toString());
+            System.out.println(">> Settings.load() > Load default system settings: " + DEFAULT_PROPERTIES.toString());
 
             if (getProperty("default.local.path") == null) {
                 setProperty("default.local.path", Directories.HOME.getPath());
             }
         } catch (Exception ex) {
-            Log.error(">> Settings.load(boolean) > Could not load settings", ex);
+            System.err.println(">> Settings.load(boolean) > Could not load settings");
+            ex.printStackTrace();
         }
     }
 

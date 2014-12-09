@@ -15,7 +15,6 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.glu.GLU;
 
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.viewmodel.imagedata.ColorMask;
 import org.helioviewer.jhv.viewmodel.imagedata.ImageData;
@@ -68,15 +67,15 @@ public class GLTextureHelper {
 	 *            Valid reference to the current gl object
 	 */
 	public static void initHelper(GL2 gl) {
-		Log.debug(">> GLTextureHelper.initHelper(GL) > Initialize helper functions");
+		System.out.println(">> GLTextureHelper.initHelper(GL) > Initialize helper functions");
 
 		textureImplementation = new PowerOfTwoTextureImplementation();
 
 		int tmp[] = new int[1];
 		gl.glGetIntegerv(GL2.GL_MAX_TEXTURE_SIZE, tmp, 0);
 		maxTextureSize = tmp[0];
-		Log.debug(">> GLTextureHelper.initHelper(GL) > max texture size: "
-				+ maxTextureSize);
+		System.out.println(">> GLTextureHelper.initHelper(GL) > max texture size: "
+        + maxTextureSize);
 
 		if (texID == 0) {
 			gl.glGenTextures(1, tmp, 0);
@@ -357,15 +356,15 @@ public class GLTextureHelper {
 
 	public boolean checkGLErrors(GL gl, String message) {
 		if (gl == null) {
-			Log.warn("OpenGL not yet Initialised!");
+			System.out.println("OpenGL not yet Initialised!");
 			return true;
 		}
 		int glErrorCode = gl.glGetError();
 
 		if (glErrorCode != GL.GL_NO_ERROR) {
 			GLU glu = new GLU();
-			Log.error("GL Error (" + glErrorCode + "): "
-					+ glu.gluErrorString(glErrorCode) + " - @" + message);
+			System.err.println("GL Error (" + glErrorCode + "): "
+            + glu.gluErrorString(glErrorCode) + " - @" + message);
 			if (glErrorCode == GL.GL_INVALID_OPERATION) {
 				// Find the error position
 				int[] err = new int[1];
@@ -373,7 +372,7 @@ public class GLTextureHelper {
 				if (err[0] >= 0) {
 					String error = gl
 							.glGetString(GL2.GL_PROGRAM_ERROR_STRING_ARB);
-					Log.error("GL error at " + err[0] + ":\n" + error);
+					System.err.println("GL error at " + err[0] + ":\n" + error);
 				}
 			}
 			return true;

@@ -43,16 +43,6 @@ public enum Directories {
             return new File(getPath());
         }
     },
-    /** The log directory. */
-    LOGS {
-        public String getPath() {
-            return HOME.getPath() + "Logs" + File.separator;
-        }
-
-        public File getFile() {
-            return new File(getPath());
-        }
-    },
     /** The remote files directory. */
     REMOTEFILES {
         public String getPath() {

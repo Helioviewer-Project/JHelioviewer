@@ -9,7 +9,6 @@ import javax.media.opengl.GL2;
 
 import org.helioviewer.jhv.base.GL3DKeyController;
 import org.helioviewer.jhv.base.GL3DKeyController.GL3DKeyListener;
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.math.Vector4d;
 import org.helioviewer.jhv.base.physics.Constants;
@@ -77,7 +76,7 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 				toggleCoronaVisibility();
 				GuiState3DWCS.mainComponentView.getComponent().repaint();
 				GuiState3DWCS.topToolBar.toogleCoronaButton();
-				Log.debug("Toggling Corona Visibility");
+				System.out.println("Toggling Corona Visibility");
 			}
 		}, KeyEvent.VK_X);
 	}
@@ -111,7 +110,7 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 				"GL3DSceneGraph.afterApplyLayersToSceneGraph");
 
 		if (state.activeCamera == null) {
-			Log.warn("GL3DSceneGraph: Camera not ready, aborting renderpass");
+			System.out.println("GL3DSceneGraph: Camera not ready, aborting renderpass");
 			return;
 		}
 		// gl.glBlendFunc(GL.GL_ONE, GL.GL_DST_ALPHA);
@@ -159,8 +158,8 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 
 	protected void setViewSpecificImplementation(View newView,
 			ChangeEvent changeEvent) {
-		Log.debug("GL3DSceneGraphView.ViewChanged: Sender=" + newView
-				+ " Event=" + changeEvent);
+		System.out.println("GL3DSceneGraphView.ViewChanged: Sender=" + newView
+        + " Event=" + changeEvent);
 
 		// Add Handler of Layer Events. Automatically add new Meshes for each
 		// Layer
@@ -184,8 +183,8 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 				if (layer != null)
 					this.addNewLayer(layer
 							.getAdapter(GL3DImageTextureView.class));
-				Log.debug("GL3DSceneGraphView: Adding Layer to Scene form LayeredView "
-						+ layer);
+				System.out.println("GL3DSceneGraphView: Adding Layer to Scene form LayeredView "
+                + layer);
 			}
 		}
 	}
@@ -214,12 +213,12 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 				break;
 			}
 		} else {
-			Log.warn("GL3DSceneGraphView: Cannot handle Layer Change for Layers without a GL3DImageTextureView!");
+			System.out.println("GL3DSceneGraphView: Cannot handle Layer Change for Layers without a GL3DImageTextureView!");
 		}
 	}
 
 	private void moveLayerToIndex(GL3DImageTextureView view, int layerIndex) {
-		Log.debug("GL3DSceneGraphView.moveLayerToIndex " + layerIndex);
+		System.out.println("GL3DSceneGraphView.moveLayerToIndex " + layerIndex);
 		this.imageLayers.moveImages(view, layerIndex);
 	}
 

@@ -28,7 +28,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileFilter;
 
 import org.helioviewer.jhv.Settings;
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.layers.LayersModel;
@@ -117,7 +116,7 @@ public class ExportMovieDialog implements ActionListener {
 				fileChooser.setCurrentDirectory(new File(val));
 			}
 		} catch (Throwable t) {
-			Log.error(t);
+			System.err.println(t);
 		}
 
 		// add Filter
@@ -169,7 +168,7 @@ public class ExportMovieDialog implements ActionListener {
 				textEnabled = Boolean.parseBoolean(val);
 			}
 		} catch (Throwable t) {
-			Log.error(t);
+			System.err.println(t);
 		}
 
 		try {
@@ -178,7 +177,7 @@ public class ExportMovieDialog implements ActionListener {
 				this.imageHeight = Integer.parseInt(val);
 			}
 		} catch (Throwable t) {
-			Log.error(t);
+			System.err.println(t);
 		}
 
 		try {
@@ -187,7 +186,7 @@ public class ExportMovieDialog implements ActionListener {
 				this.imageWidth = Integer.parseInt(val);
 			}
 		} catch (Throwable t) {
-			Log.error(t);
+			System.err.println(t);
 		}
 
 		// default settings if nothing was specified so far

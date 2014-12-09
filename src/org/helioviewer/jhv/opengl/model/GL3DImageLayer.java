@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.media.opengl.GL;
 
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.Vector3d;
@@ -401,10 +400,10 @@ public class GL3DImageLayer extends GL3DGroup implements GL3DCameraListener {
 				|| Double.isInfinite(regionWidth)) {
 
 		} else {
-			Log.error("Illegal Region calculated! " + regionWidth + ":"
-					+ regionHeight + ". x = " + minPhysicalX + " - "
-					+ maxPhysicalX + ", y = " + minPhysicalY + " - "
-					+ maxPhysicalY);
+			System.err.println("Illegal Region calculated! " + regionWidth + ":"
+            + regionHeight + ". x = " + minPhysicalX + " - "
+            + maxPhysicalX + ", y = " + minPhysicalY + " - "
+            + maxPhysicalY);
 		}
 
 	}

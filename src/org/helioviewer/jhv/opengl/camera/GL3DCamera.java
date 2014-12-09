@@ -9,7 +9,6 @@ import java.util.Stack;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.Vector3d;
@@ -89,7 +88,7 @@ public abstract class GL3DCamera {
                 this.setCurrentInteraction(this.getZoomBoxInteraction());
             }
         } else {
-            Log.debug("GL3DCamera: No Preceding Camera, resetting Camera");
+            System.out.println("GL3DCamera: No Preceding Camera, resetting Camera");
             //this.reset();
         }
     }

@@ -8,7 +8,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Vector;
 
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.base.math.CartesianCoord;
 import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.base.math.IntervalComparison;
@@ -210,7 +209,7 @@ public class HEKEvent implements IntervalComparison<Date> {
         try {
             return eventObject.getString(key);
         } catch (JSONException e) {
-            Log.fatal("HEKEvent.getString('" + key + "') >> " + e.getMessage());
+            System.err.println("HEKEvent.getString('" + key + "') >> " + e.getMessage());
             return null;
         }
     }
@@ -227,7 +226,7 @@ public class HEKEvent implements IntervalComparison<Date> {
         try {
             return eventObject.getBoolean(key);
         } catch (JSONException e) {
-            Log.fatal("HEKEvent.getBoolean('" + key + "') >> " + e.getMessage());
+            System.err.println("HEKEvent.getBoolean('" + key + "') >> " + e.getMessage());
             return false;
         }
     }
@@ -541,7 +540,7 @@ public class HEKEvent implements IntervalComparison<Date> {
             }
             catch(NumberFormatException _nfe)
             {
-                Log.fatal("Inconsistent polygon string...");
+                System.err.println("Inconsistent polygon string...");
             }
         }
         
@@ -704,7 +703,7 @@ public class HEKEvent implements IntervalComparison<Date> {
             }
 
         } else {
-            Log.info("Event has no valid timing information");
+            System.out.println("Event has no valid timing information");
         }
 
         cacheValid = true;

@@ -10,7 +10,6 @@ import java.util.HashMap;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.plugins.hekplugin.HEKPlugin3D;
 
@@ -58,7 +57,7 @@ public class HEKConstants {
      */
     private void setupEventTypes() {
 
-        Log.debug("HEKConstants -> Setting up event acronyms...");
+        System.out.println("HEKConstants -> Setting up event acronyms...");
 
         acronymStrings = new HashMap<String, String>();
 
@@ -85,7 +84,7 @@ public class HEKConstants {
         acronymStrings.put("SG", "Sigmoid");
         acronymStrings.put("SP", "Spray Surge");
 
-        Log.info("HEKConstants -> Setting up event acronyms... Done.");
+        System.out.println("HEKConstants -> Setting up event acronyms... Done.");
 
     }
 
@@ -97,7 +96,7 @@ public class HEKConstants {
     private void setupEventIcons() {
         // TODO: Malte Nuhn - Use IconBank (wait for newest version)
 
-        Log.debug("HEKConstants -> Setting up event icons...");
+        System.out.println("HEKConstants -> Setting up event icons...");
 
         smallIcons.put("AR", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/ar_small.png")));
         smallIcons.put("BP", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/bp_small.png")));
@@ -142,7 +141,7 @@ public class HEKConstants {
         // eventIcons.put("PH", new
         // ImageIcon(HEKEventRenderer.class.getResource("./resources/big/ph_small.png")));
 
-        Log.info("HEKConstants -> Setting up event icons... Done.");
+        System.out.println("HEKConstants -> Setting up event icons... Done.");
 
     }
 
@@ -153,7 +152,7 @@ public class HEKConstants {
      */
     private void setupEventBufImgs() throws IOException {
 
-        Log.debug("HEKConstants -> Setting up event buffered images...");
+        System.out.println("HEKConstants -> Setting up event buffered images...");
         // load the icons for the different event types
 
         smallBufImgs.put("AR", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/ar_small.png")));
@@ -208,7 +207,7 @@ public class HEKConstants {
         // eventIcons.put("PH",
         // ImageIO.read(HEKEventRenderer.class.getResource("./resources/big/ph_small.png")));
 
-        Log.info("HEKConstants -> Setting up event buffered images... Done.");
+        System.out.println("HEKConstants -> Setting up event buffered images... Done.");
 
     }
 

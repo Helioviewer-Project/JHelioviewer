@@ -6,7 +6,6 @@ import java.net.MalformedURLException;
 import javax.swing.AbstractAction;
 
 import org.helioviewer.jhv.UpdateChecker;
-import org.helioviewer.jhv.base.logging.Log;
 
 /**
  * Checks for updates action
@@ -35,7 +34,8 @@ public class CheckUpdateAction extends AbstractAction {
             update.check();
         } catch (MalformedURLException e) {
             // Should not happen
-            Log.error("Error while parsing update url " + e.getLocalizedMessage(), e);
+            System.err.println("Error while parsing update url " + e.getLocalizedMessage());
+            e.printStackTrace();
         }
     }
 }

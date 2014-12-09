@@ -12,7 +12,6 @@ import javax.swing.JFileChooser;
 import javax.swing.KeyStroke;
 
 import org.helioviewer.jhv.Settings;
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.actions.filefilters.ExtensionFileFilter;
@@ -68,7 +67,7 @@ public class SaveScreenshotAsAction extends AbstractAction {
                 fileChooser.setCurrentDirectory(new File(val));
             }
         } catch (Throwable t) {
-            Log.error(t);
+            System.err.println(t);
         }
         
         fileChooser.setSelectedFile(new File(fileChooser.getCurrentDirectory() + "/" + this.getDefaultFileName()));
@@ -109,7 +108,7 @@ public class SaveScreenshotAsAction extends AbstractAction {
 				this.textEnabled = Boolean.parseBoolean(val);
 			}
 		} catch (Throwable t) {
-			Log.error(t);
+			System.err.println(t);
 		}
 
         try {
@@ -118,7 +117,7 @@ public class SaveScreenshotAsAction extends AbstractAction {
                 this.imageHeight = Integer.parseInt(val);
             }
         } catch (Throwable t) {
-            Log.error(t);
+            System.err.println(t);
         }
         
         try {
@@ -127,7 +126,7 @@ public class SaveScreenshotAsAction extends AbstractAction {
             	this.imageWidth = Integer.parseInt(val);
             }
         } catch (Throwable t) {
-            Log.error(t);
+            System.err.println(t);
         }
         
 

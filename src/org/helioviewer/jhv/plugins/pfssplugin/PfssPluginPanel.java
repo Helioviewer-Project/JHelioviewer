@@ -20,7 +20,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
@@ -124,7 +123,7 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 			for(String message: messages){
 				
 				Object[] options = { "Retry", "OK" };
-				Log.error(message);
+				System.err.println(message);
 				messages.remove(message);
 				JCheckBox checkBox = new JCheckBox(
 						"Don't show this message again.");
@@ -222,7 +221,7 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 						Object[] options = { "Retry", "OK" };
 						String message = "PFSS data for " + startYear + "-"
 								+ (startMonth + 1) + " is not available";
-						Log.error(message);
+						System.err.println(message);
 						JCheckBox checkBox = new JCheckBox(
 								"Don't show this message again.");
 						if (this.pfssCache.isVisible()){

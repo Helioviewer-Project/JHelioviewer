@@ -3,7 +3,6 @@ package org.helioviewer.jhv.opengl.camera;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
@@ -59,9 +58,8 @@ public class GL3DTrackballRotationInteraction extends GL3DDefaultInteraction {
 				}
 			}
 		} catch (IllegalArgumentException exc) {
-			Log.warn(
-					"GL3DTrackballCamera.mouseDragged: Illegal Rotation ignored!",
-					exc);
+			System.out.println("GL3DTrackballCamera.mouseDragged: Illegal Rotation ignored!");
+            exc.printStackTrace();
 		}
 
 		camera.fireCameraMoving();

@@ -26,7 +26,6 @@ import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
 import javax.swing.Timer;
 
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
@@ -133,16 +132,16 @@ public class GL3DComponentView extends AbstractBasicView implements
 			this.canvas = new GLCanvas(cap);
 		} catch (Exception e) {
 			try {
-				Log.error("Unable to load 24-bit z-buffer, try 32-bit");
+				System.err.println("Unable to load 24-bit z-buffer, try 32-bit");
 				cap.setDepthBits(32);
 				this.canvas = new GLCanvas(cap);
 			} catch (Exception e2) {
-				Log.error("Unable to load 32-bit z-buffer, try 16-bit");
+				System.err.println("Unable to load 32-bit z-buffer, try 16-bit");
 				try {
 					cap.setDepthBits(16);
 					this.canvas = new GLCanvas(cap);
 				} catch (Exception e3) {
-					Log.error("Unable to load 16-bit z-buffer, use default");
+					System.err.println("Unable to load 16-bit z-buffer, use default");
 					this.canvas = new GLCanvas();
 				}
 			}
@@ -159,7 +158,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 	public void init(GLAutoDrawable glAD) {
 		GuiState3DWCS.overViewPanel.activate(glAD.getContext());
-		Log.debug("GL3DComponentView.Init");
+		System.out.println("GL3DComponentView.Init");
 		GL2 gl = glAD.getGL().getGL2();
 		GL3DState.create(gl);
 		Viewport newViewport = StaticViewport.createAdaptedViewport(
@@ -439,7 +438,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 		this.getAdapter(ViewportView.class).setViewport(viewport,
 				new ChangeEvent());
 
-		Log.trace(">> GLComponentView.display() > Start taking screenshot");
+		System.out.println(">> GLComponentView.display() > Start taking screenshot");
 		double xTiles = width / (double) tileWidth;
 		double yTiles = height / (double) tileHeight;
 		int countXTiles = width % tileWidth == 0 ? (int) xTiles
@@ -724,7 +723,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 	public void regristryAnimation(long time) {
 		if (time < 0) {
-			Log.error("Not correct time : " + time + ", must be higher then 0");
+			System.err.println("Not correct time : " + time + ", must be higher then 0");
 		} else if (!animationTimer.isRunning()) {
 			if (!LinkedMovieManager.getActiveInstance().isPlaying()) {
 				this.animationTimer.setDelay(0);

@@ -4,7 +4,6 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.gui.GL3DCameraSelectorModel;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
@@ -31,6 +30,6 @@ public class GL3DResetCameraAction extends AbstractAction {
 
     public void actionPerformed(ActionEvent e) {
         GL3DCameraSelectorModel.getInstance().getCurrentCamera().reset();
-        Log.debug("Reset Camera");
+        System.out.println("Reset Camera");
     }
 }

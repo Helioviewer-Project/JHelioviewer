@@ -1,6 +1,7 @@
 package org.helioviewer.jhv.viewmodel.metadata;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.JOptionPane;
 
@@ -29,17 +30,19 @@ public class MetaDataFactory {
 		MetaData metaData = null;
 		Object[] args = {metaDataContainer};
 		for (Class<MetaData> c : META_DATA_CLASSES){
-			Constructor<MetaData> constructor;
 			try {
-				constructor = c.getDeclaredConstructor(MetaDataContainer.class);
+			    Constructor<MetaData> constructor = c.getDeclaredConstructor(MetaDataContainer.class);
 				metaData = constructor.newInstance(args);
 			} catch (NonSuitableMetaDataException _imdce)
 			{
 			    //ignore - we only tried the "wrong" metadata factory. a better fit
 			    //should be found in a later iteration
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
+            catch(NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
+            {
+                //reflection problems are not expected in practice
+                e.printStackTrace();
+            }
 			if (metaData != null) break;
 		}
 		

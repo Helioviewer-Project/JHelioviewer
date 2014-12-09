@@ -23,8 +23,6 @@ import javax.swing.text.NumberFormatter;
 import org.helioviewer.jhv.Directories;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.base.Message;
-import org.helioviewer.jhv.base.logging.Log;
-import org.helioviewer.jhv.base.logging.LogSettings;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.ImageViewerGui;
@@ -268,7 +266,6 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 
 		// Update and save settings
 		Settings.apply();
-		LogSettings.update();
 	}
 
 	/**
@@ -515,7 +512,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 					isTextEnabled.setSelected(Boolean.parseBoolean(val));
 				}
 			} catch (Throwable t) {
-				Log.error(t);
+				System.err.println(t);
 			}
 
 			try {
@@ -525,7 +522,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 							.parseFloat(val)));
 				}
 			} catch (Throwable t) {
-				Log.error(t);
+				System.err.println(t);
 			}
 
 			try {
@@ -535,7 +532,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 							.parseFloat(val)));
 				}
 			} catch (Throwable t) {
-				Log.error(t);
+				System.err.println(t);
 			}
 
 			float ar = 16 / 9f;
@@ -738,7 +735,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 					isTextEnabled.setSelected(Boolean.parseBoolean(val));
 				}
 			} catch (Throwable t) {
-				Log.error(t);
+				System.err.println(t);
 			}
 
 			try {
@@ -748,7 +745,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 							.parseFloat(val)));
 				}
 			} catch (Throwable t) {
-				Log.error(t);
+				System.err.println(t);
 			}
 
 			try {
@@ -758,7 +755,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 							.parseFloat(val)));
 				}
 			} catch (Throwable t) {
-				Log.error(t);
+				System.err.println(t);
 			}
 
 			float ar = 16 / 9f;

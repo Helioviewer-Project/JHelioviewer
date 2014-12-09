@@ -17,7 +17,6 @@ import javax.swing.JToggleButton;
 import javax.swing.border.BevelBorder;
 
 import org.helioviewer.jhv.base.Message;
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
@@ -130,15 +129,15 @@ public class SOHOLUTPanel extends FilterPanel implements ActionListener, FilterA
             int state = fc.showOpenDialog(null);
             if (state == JFileChooser.APPROVE_OPTION) {
                 try {
-                    Log.info("Load gradient file " + fc.getSelectedFile());
+                    System.out.println("Load gradient file " + fc.getSelectedFile());
                     addLut(LUT.readGimpGradientFile(fc.getSelectedFile()));
                     lastSelectedIndex = combobox.getSelectedIndex();
                 } catch (IOException ex) {
                     Message.warn("Error loading gradient file", "Error loading gradient file: " + fc.getSelectedFile() + "\n\n" + ex.getMessage());
-                    Log.warn("Error loading gradient file: " + fc.getSelectedFile() + " - " + ex.getMessage());
+                    System.out.println("Error loading gradient file: " + fc.getSelectedFile() + " - " + ex.getMessage());
                 } catch (GradientError ex) {
                     Message.warn("Error applying gradient file", "Error loading gradient file: " + fc.getSelectedFile() + "\n\n" + ex.getMessage());
-                    Log.warn("Error applying gradient file: " + fc.getSelectedFile() + " - " + ex.getMessage());
+                    System.out.println("Error applying gradient file: " + fc.getSelectedFile() + " - " + ex.getMessage());
                 }
             } else {
                 combobox.setSelectedIndex(lastSelectedIndex);

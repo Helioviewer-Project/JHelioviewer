@@ -3,7 +3,6 @@ package org.helioviewer.jhv.gui.components.layerTable;
 import java.util.Date;
 
 import org.helioviewer.jhv.base.Message;
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
@@ -92,7 +91,7 @@ public class LayerTableOverlapWatcher implements LayersListener {
                     isGoodOverlap = false;
                 }
 
-                Log.debug("Overlap fraction for layer " + curLayer + " is " + fraction);
+                System.out.println("Overlap fraction for layer " + curLayer + " is " + fraction);
 
             }
 

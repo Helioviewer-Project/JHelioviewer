@@ -10,7 +10,6 @@ import java.util.HashMap;
 
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.base.DownloadStream;
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKSettings;
@@ -104,7 +103,7 @@ public class HEKRequestThread extends HEKRequest implements Runnable {
 
                 URL url = new URL("http://www.lmsal.com/hek/her?cosec=2&cmd=search&type=column&event_type=" + encType + fieldRequest + "&event_starttime=" + startDate + "&event_endtime=" + endDate + "&event_coordsys=helioprojective&x1=-1200&x2=1200&y1=-1200&y2=1200&temporalmode=overlap&param0=FRM_Name&op0==&value0=" + encFRM + "&result_limit=" + HEKSettings.REQUEST_EVENTS_PAGESIZE + "&page=" + page);
 
-                Log.debug("Requesting Page " + page + " of HEK Events: " + url);
+                System.out.println("Requesting Page " + page + " of HEK Events: " + url);
 
                 // this might take a while
                 DownloadStream ds = new DownloadStream(url, JHVGlobals.getStdConnectTimeout(), JHVGlobals.getStdReadTimeout());
@@ -140,11 +139,13 @@ public class HEKRequestThread extends HEKRequest implements Runnable {
             }
 
         } catch (IOException e) {
-            Log.error("Error Parsing the HEK Response.");
-            Log.error("", e);
+            System.err.println("Error Parsing the HEK Response.");
+            System.err.println("");
+            e.printStackTrace();
         } catch (JSONException e) {
-            Log.error("Error Parsing the HEK Response.");
-            Log.error("", e);
+            System.err.println("Error Parsing the HEK Response.");
+            System.err.println("");
+            e.printStackTrace();
         }
 
     }

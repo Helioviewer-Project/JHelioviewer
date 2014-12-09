@@ -3,8 +3,6 @@ package org.helioviewer.jhv.plugins.hekplugin.cache;
 import java.util.Comparator;
 import java.util.Vector;
 
-import org.helioviewer.jhv.base.logging.Log;
-
 /**
  * Class used to categorize events
  * 
@@ -21,7 +19,7 @@ public class HEKPath {
             String partB = b.getLastPart();
 
             if (partA == null || partB == null) {
-                Log.fatal("Path Lastpart is null. This should not happen!");
+                System.err.println("Path Lastpart is null. This should not happen!");
             }
             return partA.compareTo(partB);
         }

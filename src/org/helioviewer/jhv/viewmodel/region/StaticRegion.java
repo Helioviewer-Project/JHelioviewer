@@ -115,7 +115,7 @@ public class StaticRegion implements BasicRegion {
      * @return a new RegionAdapter object.
      * */
     public static Region createAdaptedRegion(final Vector2d newLowerLeftCorner, final Vector2d newSizeVector) {
-        return new RegionAdapter(new StaticRegion(newLowerLeftCorner, newSizeVector));
+        return new Region(new StaticRegion(newLowerLeftCorner, newSizeVector));
     }
 
     /**
@@ -132,7 +132,7 @@ public class StaticRegion implements BasicRegion {
      * @return a new RegionAdapter object.
      * */
     public static Region createAdaptedRegion(final double newCornerX, final double newCornerY, final double newWidth, final double newHeight) {
-        return new RegionAdapter(new StaticRegion(newCornerX, newCornerY, newWidth, newHeight));
+        return new Region(new StaticRegion(newCornerX, newCornerY, newWidth, newHeight));
     }
 
     /**
@@ -147,7 +147,7 @@ public class StaticRegion implements BasicRegion {
      * @return a new RegionAdapter object.
      * */
     public static Region createAdaptedRegion(final double newLowerLeftX, final double newLowerLeftY, final Vector2d newSizeVector) {
-        return new RegionAdapter(new StaticRegion(newLowerLeftX, newLowerLeftY, newSizeVector));
+        return new Region(new StaticRegion(newLowerLeftX, newLowerLeftY, newSizeVector));
     }
 
     /**
@@ -163,7 +163,7 @@ public class StaticRegion implements BasicRegion {
      * @return a new RegionAdapter object.
      * */
     public static Region createAdaptedRegion(final Vector2d newLowerLeftCorner, final double newWidth, final double newHeight) {
-        return new RegionAdapter(new StaticRegion(newLowerLeftCorner, newWidth, newHeight));
+        return new Region(new StaticRegion(newLowerLeftCorner, newWidth, newHeight));
     }
 
     /**
@@ -175,7 +175,7 @@ public class StaticRegion implements BasicRegion {
      * @return a new RegionAdapter object.
      * */
     public static Region createAdaptedRegion(final RectangleDouble newRectangle) {
-        return new RegionAdapter(new StaticRegion(newRectangle));
+        return new Region(new StaticRegion(newRectangle));
     }
 
 }

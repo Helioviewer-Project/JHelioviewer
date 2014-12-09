@@ -6,7 +6,6 @@ import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;
 import javax.swing.KeyStroke;
 
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.gui.GL3DCameraSelectorModel;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
@@ -47,7 +46,7 @@ public class GL3DZoomFitAction extends AbstractAction {
                 double halfFOVRad = Math.toRadians(camera.getFOV() / 2.0);
                 double distance = halfWidth * Math.sin(Math.PI / 2 - halfFOVRad) / Math.sin(halfFOVRad);
                 distance = -distance - camera.getZTranslation();
-                Log.debug("GL3DZoomFitAction: Distance = " + distance + " Existing Distance: " + camera.getZTranslation());
+                System.out.println("GL3DZoomFitAction: Distance = " + distance + " Existing Distance: " + camera.getZTranslation());
                 camera.addCameraAnimation(new GL3DCameraZoomAnimation(distance, 500));
                 camera.addCameraAnimation(new GL3DCameraPanAnimation(camera.getTranslation().negate()));
             }

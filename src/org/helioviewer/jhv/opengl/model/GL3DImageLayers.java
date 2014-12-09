@@ -7,7 +7,6 @@ import java.util.HashMap;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.internal_plugins.filter.channelMixer.ChannelMixerFilter;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DDrawBits.Bit;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DGroup;
@@ -163,7 +162,7 @@ public class GL3DImageLayers extends GL3DGroup {
     public void removeLayer(GL3DState state, GL3DImageTextureView view) {
         GL3DImageLayer layer = getImageLayerForView(view);
         layer.delete(state);
-        Log.debug("GL3DImageLayers: Removed Layer " + layer.name);
+        System.out.println("GL3DImageLayers: Removed Layer " + layer.name);
         this.imageLayerMap.remove(view);
         
     }

@@ -5,7 +5,6 @@ import java.util.GregorianCalendar;
 
 import javax.media.opengl.GL2;
 
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.base.physics.Astronomy;
 import org.helioviewer.jhv.base.wcs.CoordinateSystem;
 import org.helioviewer.jhv.base.wcs.CoordinateVector;
@@ -60,7 +59,7 @@ public class GL3DCoordinateSystemView extends AbstractGL3DView implements GL3DVi
         if (metaData.hasRotation())
         {
                 // STEREO
-                Log.debug("GL3DCoordinateSystemView: Creating STEREO Image Layer!");
+                System.out.println("GL3DCoordinateSystemView: Creating STEREO Image Layer!");
                     if (metaData.isStonyhurstProvided()) {
                         Calendar c = new GregorianCalendar();
                         c.setTime(metaData.getDateTime().getTime());
@@ -68,7 +67,7 @@ public class GL3DCoordinateSystemView extends AbstractGL3DView implements GL3DVi
                         this.coordinateSystem = new StonyhurstCoordinateSystem(b0);
                         this.orientation = this.coordinateSystem.createCoordinateVector(Math.toRadians(metaData.getStonyhurstLongitude()), Math.toRadians(metaData.getStonyhurstLatitude()), metaData.getDobs());
                         System.out.println("Stonyhurst-CoordinateSystem :  " + this.orientation);
-                        Log.debug("GL3DCoordinateSystemView: Providing Stonyhurst Coordinate System and orientation");
+                        System.out.println("GL3DCoordinateSystemView: Providing Stonyhurst Coordinate System and orientation");
                     } else if (metaData.isHEEQProvided()) {
                         Calendar c = new GregorianCalendar();
                         c.setTime(metaData.getDateTime().getTime());
@@ -76,14 +75,14 @@ public class GL3DCoordinateSystemView extends AbstractGL3DView implements GL3DVi
                         this.coordinateSystem = new HEEQCoordinateSystem(b0);
                         this.orientation = this.coordinateSystem.createCoordinateVector(metaData.getHEEQX(), metaData.getHEEQY(), metaData.getHEEQZ());
                         System.out.println("HEEQ-CoordinateSystem :  " + this.orientation);
-                        Log.debug("GL3DCoordinateSystemView: Providing HEEQ Coordinate System and orientation");
+                        System.out.println("GL3DCoordinateSystemView: Providing HEEQ Coordinate System and orientation");
                     } else {
                         this.coordinateSystem = getDefaultCoordinateSystem();
                         this.orientation = getDefaultOrientation();
                     }
         }
         
-        Log.debug("GL3DCoordinateSystem: CoordinateSystemView produced a " + this.coordinateSystem.getClass());
+        System.out.println("GL3DCoordinateSystem: CoordinateSystemView produced a " + this.coordinateSystem.getClass());
     }
 
     private static CoordinateSystem getDefaultCoordinateSystem() {

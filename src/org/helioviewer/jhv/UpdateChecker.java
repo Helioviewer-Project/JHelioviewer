@@ -9,7 +9,6 @@ import javax.swing.JOptionPane;
 
 import org.helioviewer.jhv.base.DownloadStream;
 import org.helioviewer.jhv.base.Message;
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.gui.dialogs.NewVersionDialog;
 
 /**
@@ -77,15 +76,16 @@ public class UpdateChecker implements Runnable {
                     Settings.setProperty("update.check.next", Integer.toString(n));
                 }
                 if (n != 0) {
-                    Log.info("Update check suspended for this startup");
+                    System.out.println("Update check suspended for this startup");
                     return;
                 }
             } catch (NumberFormatException e) {
-                Log.error("Invalid update setting", e);
+                System.err.println("Invalid update setting");
+                e.printStackTrace();
                 Settings.setProperty("update.check.next", Integer.toString(0));
             }
         }
-        Log.trace("Start checking for updates");
+        System.out.println("Start checking for updates");
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(new DownloadStream(updateURL, JHVGlobals.getStdConnectTimeout(), JHVGlobals.getStdReadTimeout()).getInput()));
             String[] versionParts = in.readLine().split("\\.");
@@ -103,20 +103,21 @@ public class UpdateChecker implements Runnable {
                 
             if (version>JHVGlobals.VERSION) {
                 String message = in.readLine();
-                Log.info("Found newer version " + version);
+                System.out.println("Found newer version " + version);
                 d.init(version, message);
                 d.showDialog();
                 if (!verbose) {
                     Settings.setProperty("update.check.next", Integer.toString(d.getNextCheck()));
                 }
             } else {
-                Log.info("Running the newest version of JHelioviewer");
+                System.out.println("Running the newest version of JHelioviewer");
                 if (verbose)
                     JOptionPane.showMessageDialog(null, "You are running the latest JHelioviewer version (" + JHVGlobals.VERSION + ")");
             }
             in.close();
         } catch (Exception e) {
-            Log.error("Error retrieving update server", e);
+            System.err.println("Error retrieving update server");
+            e.printStackTrace();
             if (verbose)
                 Message.warn("Update check error", "While checking for a newer version got " + e.getLocalizedMessage());
         }

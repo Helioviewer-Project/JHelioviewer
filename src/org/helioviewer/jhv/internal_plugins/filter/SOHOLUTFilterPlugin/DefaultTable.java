@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 
 import org.helioviewer.jhv.base.FileUtils;
 import org.helioviewer.jhv.base.Message;
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -49,10 +48,12 @@ public class DefaultTable {
         try(BufferedReader in = new BufferedReader(new InputStreamReader(FileUtils.getResourceInputStream("/settings/colors.js"), "UTF-8"))) {
             colorRules = new JSONArray(new JSONTokener(in));
         } catch (IOException e) {
-            Log.warn("Error reading the configuration for the default color tables", e);
+            System.out.println("Error reading the configuration for the default color tables");
+            e.printStackTrace();
             Message.warn("Color Tables", "Error reading the configuration for the default color tables: " + e.getMessage() + "\n" + "There will be no default color tables applied.");
         } catch (JSONException e) {
-            Log.warn("Error reading the configuration for the default color tables", e);
+            System.out.println("Error reading the configuration for the default color tables");
+            e.printStackTrace();
             Message.warn("Color Tables", "Error reading the configuration for the default color tables: " + e.getMessage() + "\n" + "There will be no default color tables applied.");
         }
     }
@@ -89,7 +90,8 @@ public class DefaultTable {
                 }
                 return rule.getString("color");
             } catch (JSONException e) {
-                Log.warn("Rule " + i + " for the default color table is invalid!", e);
+                System.out.println("Rule " + i + " for the default color table is invalid!");
+                e.printStackTrace();
             }
         }
         return null;

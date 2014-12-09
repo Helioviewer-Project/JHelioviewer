@@ -15,7 +15,6 @@ import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
 import org.helioviewer.jhv.Settings;
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.actions.View2DAction;
@@ -68,7 +67,8 @@ public class TopToolBar extends JToolBar implements MouseListener {
         try {
             displayMode = DisplayMode.valueOf(Settings.getProperty("display.toolbar").toUpperCase());
         } catch (Exception e) {
-            Log.error("Error when reading the display mode of the toolbar", e);
+            System.err.println("Error when reading the display mode of the toolbar");
+            e.printStackTrace();
             displayMode = DisplayMode.ICONANDTEXT;
         }
 

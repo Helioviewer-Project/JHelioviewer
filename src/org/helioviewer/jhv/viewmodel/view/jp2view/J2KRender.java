@@ -6,7 +6,6 @@ import kdu_jni.Kdu_coords;
 import kdu_jni.Kdu_dims;
 import kdu_jni.Kdu_region_compositor;
 
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.changeevent.NonConstantMetaDataChangedReason;
@@ -391,7 +390,7 @@ class J2KRender implements Runnable {
 										new ColorMask()), currParams.subImage,
 								curLayer);
 					} else {
-						Log.warn("J2KRender: Params out of sync, skip frame");
+						System.out.println("J2KRender: Params out of sync, skip frame");
 					}
 
 				} else {
@@ -402,7 +401,7 @@ class J2KRender implements Runnable {
 										new ColorMask()), currParams.subImage,
 										curLayer);
 					} else {
-						Log.warn("J2KRender: Params out of sync, skip frame");
+						System.out.println("J2KRender: Params out of sync, skip frame");
 					}
 				}
 

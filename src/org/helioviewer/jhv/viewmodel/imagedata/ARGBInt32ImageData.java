@@ -5,7 +5,6 @@ import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
 import java.awt.image.DataBufferInt;
 
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.viewmodel.imageformat.ARGB32ImageFormat;
 import org.helioviewer.jhv.viewmodel.imageformat.ImageFormat;
 import org.helioviewer.jhv.viewmodel.imagetransport.ImageTransport;
@@ -144,7 +143,7 @@ public class ARGBInt32ImageData extends AbstractImageData {
             imageTransport = new Int32ImageTransport(outputData);
 
         } else {
-            Log.error("Unknown DataBuffer: " + dataBuffer);
+            System.err.println("Unknown DataBuffer: " + dataBuffer);
         }
     }
 

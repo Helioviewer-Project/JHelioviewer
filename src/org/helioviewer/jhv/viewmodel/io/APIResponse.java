@@ -4,7 +4,6 @@ import java.io.Reader;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.helioviewer.jhv.base.logging.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -39,9 +38,11 @@ public class APIResponse {
             data = new JSONObject(new JSONTokener(source));
             uri = new URI(data.getString("uri"));
         } catch (JSONException e) {
-            Log.error("Invalid JSON response " + data, e);
+            System.err.println("Invalid JSON response " + data);
+            e.printStackTrace();
         } catch (URISyntaxException e) {
-            Log.error("Invalid uri in response " + data, e);
+            System.err.println("Invalid uri in response " + data);
+            e.printStackTrace();
         }
     }
 
@@ -56,9 +57,11 @@ public class APIResponse {
             data = new JSONObject(source);
             uri = new URI(data.getString("uri"));
         } catch (JSONException e) {
-            Log.error("Invalid JSON response " + data, e);
+            System.err.println("Invalid JSON response " + data);
+            e.printStackTrace();
         } catch (URISyntaxException e) {
-            Log.error("Invalid uri in response " + data, e);
+            System.err.println("Invalid uri in response " + data);
+            e.printStackTrace();
         }
     }
 
@@ -80,9 +83,11 @@ public class APIResponse {
             }
             uri = new URI(data.getString("uri"));
         } catch (JSONException e) {
-            Log.error("Invalid JSON response " + data, e);
+            System.err.println("Invalid JSON response " + data);
+            e.printStackTrace();
         } catch (URISyntaxException e) {
-            Log.error("Invalid uri in response " + data, e);
+            System.err.println("Invalid uri in response " + data);
+            e.printStackTrace();
         }
     }
 

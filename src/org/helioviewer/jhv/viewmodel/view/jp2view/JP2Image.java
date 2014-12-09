@@ -17,7 +17,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import kdu_jni.*;
 
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.viewmodel.io.APIResponseDump;
@@ -248,7 +247,8 @@ public class JP2Image implements MultiFrameMetaDataContainer {
                         try {
                             socket.close();
                         } catch (IOException e) {
-                            Log.error(">> JP2Image.initRemote() > Error closing socket.", e);
+                            System.err.println(">> JP2Image.initRemote() > Error closing socket.");
+                            e.printStackTrace();
                         }
                         socket = null;
                     }
@@ -605,7 +605,7 @@ public class JP2Image implements MultiFrameMetaDataContainer {
             try {
                 return Double.parseDouble(string);
             } catch (NumberFormatException e) {
-                Log.warn("NumberFormatException while trying to parse value \"" + string + "\" of key " + key + " from meta data of\n" + getURI());
+                System.out.println("NumberFormatException while trying to parse value \"" + string + "\" of key " + key + " from meta data of\n" + getURI());
                 return Double.NaN;
             }
         }
@@ -622,7 +622,7 @@ public class JP2Image implements MultiFrameMetaDataContainer {
             try {
                 return Integer.parseInt(string);
             } catch (NumberFormatException e) {
-                Log.warn("NumberFormatException while trying to parse value \"" + string + "\" of key " + key + " from meta data of\n" + getURI());
+                System.out.println("NumberFormatException while trying to parse value \"" + string + "\" of key " + key + " from meta data of\n" + getURI());
                 return 0;
             }
         }

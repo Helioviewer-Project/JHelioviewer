@@ -8,7 +8,6 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.gui.components.MoviePanel;
 import org.helioviewer.jhv.gui.components.OverViewPanel;
 import org.helioviewer.jhv.gui.components.TopToolBar;
@@ -52,7 +51,7 @@ public class GuiState3DWCS {
     }
 
     public static void createViewChains() {
-        Log.info("Start creating view chains");
+        System.out.println("Start creating view chains");
 
         // Layered View
         GL3DLayeredView layeredView = new GL3DLayeredView();

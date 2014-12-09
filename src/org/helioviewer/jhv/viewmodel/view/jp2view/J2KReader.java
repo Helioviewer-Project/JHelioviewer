@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.net.SocketException;
 
 import org.helioviewer.jhv.base.Message;
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.changeevent.ReaderErrorReason;
@@ -287,7 +286,8 @@ class J2KReader implements Runnable {
                         try {
                             socket.close();
                         } catch (IOException ioe) {
-                            Log.error(">> J2KReader.run() > Error closing socket.", ioe);
+                            System.err.println(">> J2KReader.run() > Error closing socket.");
+                            ioe.printStackTrace();
                         }
                         ChangeEvent event = new ChangeEvent(new SubImageDataChangedReason(parentViewRef));
                         event.addReason(new ReaderErrorReason(parentViewRef, e));
@@ -553,14 +553,15 @@ class J2KReader implements Runnable {
 
                     } catch (IOException e) {
                         if (VERBOSE) {
-                            Log.error(e.getMessage() + ": " + req.getMessageBody() + " " + req.getQuery());
+                            System.err.println(e.getMessage() + ": " + req.getMessageBody() + " " + req.getQuery());
                             e.printStackTrace();
                         }
                         if (socket != null) {
                             try {
                                 socket.close();
                             } catch (IOException ioe) {
-                                Log.error(">> J2KReader.run() > Error closing socket", ioe);
+                                System.err.println(">> J2KReader.run() > Error closing socket");
+                                ioe.printStackTrace();
                                 if (ioe instanceof SocketException && ioe.getMessage().contains("Broken pipe")) {
                                     Message.err("Broken pipe error", "Broken pipe error! This error is a known bug. It occurs when too many movies with too many frames are loaded. Movie playback might not work or will be very slow. Try removing the current layers and load shorter movies or select a larger movie cadence. We are sorry for this inconvenience and are working on the problem.", false);
                                 }

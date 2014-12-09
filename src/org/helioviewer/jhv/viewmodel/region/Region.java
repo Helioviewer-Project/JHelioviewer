@@ -11,69 +11,108 @@ import org.helioviewer.jhv.base.math.Vector2d;
  * 
  * @author Ludwig Schmidt
  * */
-public interface Region extends BasicRegion {
+public class Region implements BasicRegion {
+
+    private final BasicRegion region;
 
     /**
-     * Returns the x coordinate of the lower left corner of the region.
+     * Default constructor.
      * 
-     * @return x coordinate of the lower left corner.
+     * @param newRegion
+     *            BasicRegion object which holds the minimal region description.
      * */
-    public double getCornerX();
+    public Region(BasicRegion newRegion) {
+        region = newRegion;
+    }
 
     /**
-     * Returns the y coordinate of the lower left corner of the region.
-     * 
-     * @return y coordinate of the lower left corner.
+     * {@inheritDoc}
      * */
-    public double getCornerY();
+    public double getCornerX() {
+        return region.getLowerLeftCorner().x;
+    }
 
     /**
-     * Returns the width of the region.
-     * 
-     * @return width of the region.
+     * {@inheritDoc}
      * */
-    public double getWidth();
+    public double getCornerY() {
+        return region.getLowerLeftCorner().y;
+    }
 
     /**
-     * Returns the height of the region.
-     * 
-     * @return height of the region.
+     * {@inheritDoc}
      * */
-    public double getHeight();
+    public double getHeight() {
+        return region.getSize().y;
+    }
 
     /**
-     * Returns a RectangleDouble object containing the basic region information.
-     * 
-     * @return a RectangleDouble object containing the basic region information.
+     * {@inheritDoc}
      * */
-    public RectangleDouble getRectangle();
+    public double getWidth() {
+        return region.getSize().x;
+    }
 
     /**
-     * Returns the position of the upper left corner of the region.
-     * 
-     * @return a Vector2dDouble object which points to the upper left corner of
-     *         the region.
+     * {@inheritDoc}
      * */
-    public Vector2d getUpperLeftCorner();
+    public Vector2d getLowerLeftCorner() {
+        return region.getLowerLeftCorner();
+    }
 
     /**
-     * Returns the position of the lower right corner of the region.
-     * 
-     * @return a Vector2dDouble object which points to the lower right corner of
-     *         the region.
+     * {@inheritDoc}
      * */
-    public Vector2d getLowerRightCorner();
+    public Vector2d getSize() {
+        return region.getSize();
+    }
 
     /**
-     * Returns the position of the upper right corner of the region.
-     * 
-     * @return a Vector2dDouble object which points to the upper right corner of
-     *         the region.
+     * {@inheritDoc}
      * */
-    public Vector2d getUpperRightCorner();
+    public RectangleDouble getRectangle() {
+        return new RectangleDouble(region.getLowerLeftCorner(), region.getSize());
+    }
+
+    /**
+     * {@inheritDoc}
+     * */
+    public Vector2d getLowerRightCorner() {
+        return region.getLowerLeftCorner().add(region.getSize().getXVector());
+    }
+
+    /**
+     * {@inheritDoc}
+     * */
+    public Vector2d getUpperLeftCorner() {
+        return region.getLowerLeftCorner().add(region.getSize().getYVector());
+    }
+
+    /**
+     * {@inheritDoc}
+     * */
+    public Vector2d getUpperRightCorner() {
+        return region.getLowerLeftCorner().add(region.getSize());
+    }
 
     /**
      * {@inheritDoc}
      */
-    public boolean equals(Object o);
+    public boolean equals(Object o) {
+        if (!(o instanceof Region)) {
+            return false;
+        }
+
+        Region r = (Region) o;
+        return r.getSize().equals(getSize()) && r.getLowerLeftCorner().equals(getLowerLeftCorner());
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+
+    public String toString() {
+        return "[RegionAdapter: Rectangle " + this.getRectangle() + "]";
+    }
 }

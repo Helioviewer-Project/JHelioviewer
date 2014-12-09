@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.AbstractList;
 
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.viewmodel.imagedata.ImageData;
@@ -487,7 +486,8 @@ public final class ViewHelper {
                     return jpxView;
                 
             } catch (Exception e) {
-                Log.debug("ViewerHelper::loadView(\"" + uri + "\", \"" + downloadURI + "\", \"" + isMainView + "\") ", e);
+                System.out.println("ViewerHelper::loadView(\"" + uri + "\", \"" + downloadURI + "\", \"" + isMainView + "\") ");
+                e.printStackTrace();
                 throw new IOException(e.getMessage());
             }
         }

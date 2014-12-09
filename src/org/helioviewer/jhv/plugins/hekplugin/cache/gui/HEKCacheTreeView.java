@@ -22,7 +22,6 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.components.TristateCheckBox;
@@ -252,13 +251,13 @@ public class HEKCacheTreeView extends JTree implements TreeModelListener {
                         if (imageStack != null) {
                             iconImage = imageStack;
                         } else {
-                            Log.warn("Could not generate Image Stack (" + acronym + " + " + overlayMode + ")");
+                            System.out.println("Could not generate Image Stack (" + acronym + " + " + overlayMode + ")");
                         }
                     }
                     if (iconImage != null) {
                         this.setIcon(new ImageIcon(iconImage));
                     } else {
-                        Log.warn("Could not load event icon (" + acronym + ")");
+                        System.out.println("Could not load event icon (" + acronym + ")");
                     }
                 } else {
                     // must be the root node
@@ -283,13 +282,13 @@ public class HEKCacheTreeView extends JTree implements TreeModelListener {
                         if (imageStack != null) {
                             hekLogo = imageStack;
                         } else {
-                            Log.warn("Could not generate Image Stack (heklogo + " + overlayMode + ")");
+                            System.out.println("Could not generate Image Stack (heklogo + " + overlayMode + ")");
                         }
                     }
                     if (hekLogo != null) {
                         this.setIcon(new ImageIcon(hekLogo));
                     } else {
-                        Log.warn("Could not load hek icon");
+                        System.out.println("Could not load hek icon");
                     }
                 }
 

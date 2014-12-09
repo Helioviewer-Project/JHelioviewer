@@ -5,8 +5,6 @@ import java.util.LinkedList;
 
 import javax.media.opengl.GL2;
 
-import org.helioviewer.jhv.base.logging.Log;
-
 /**
  * Class to build new OpenGL shader build in Cg.
  * 
@@ -73,28 +71,28 @@ public class GLShaderBuilder {
      *            current GL object
      */
     public static void initShaderBuilder(GL2 gl) {
-        Log.debug(">> GLShaderBuilder.initShaderBuilder(GL) > Initialize shader builder");
+        System.out.println(">> GLShaderBuilder.initShaderBuilder(GL) > Initialize shader builder");
         int tmp[] = new int[1];
 
         tmp[0] = 0;
         gl.glGetIntegerv(GL2.GL_MAX_TEXTURE_IMAGE_UNITS, tmp, 0);
         maxTexUnits = tmp[0];
-        Log.debug(">> GLShaderBuilder.initShaderBuilder(GL) > max texture image units: " + maxTexUnits);
+        System.out.println(">> GLShaderBuilder.initShaderBuilder(GL) > max texture image units: " + maxTexUnits);
 
         tmp[0] = 0;
         gl.glGetIntegerv(GL2.GL_MAX_TEXTURE_COORDS, tmp, 0);
         maxTexCoords = tmp[0];
-        Log.debug(">> GLShaderBuilder.initShaderBuilder(GL) > max texture coords: " + maxTexCoords);
+        System.out.println(">> GLShaderBuilder.initShaderBuilder(GL) > max texture coords: " + maxTexCoords);
 
         tmp[0] = 0;
         gl.glGetIntegerv(GL2.GL_MAX_FRAGMENT_UNIFORM_COMPONENTS, tmp, 0);
         maxConstantRegisters = tmp[0];
-        Log.debug(">> GLShaderBuilder.initShaderBuilder(GL) > max fragment uniform components arb: " + maxConstantRegisters);
+        System.out.println(">> GLShaderBuilder.initShaderBuilder(GL) > max fragment uniform components arb: " + maxConstantRegisters);
 
         tmp[0] = 0;
         gl.glGetIntegerv(GL2.GL_MAX_VERTEX_ATTRIBS_ARB, tmp, 0);
         maxVertexAttributes = tmp[0];
-        Log.debug(">> GLShaderBuilder.initShaderBuilder(GL) > max vertex attributes arb: " + maxVertexAttributes);
+        System.out.println(">> GLShaderBuilder.initShaderBuilder(GL) > max vertex attributes arb: " + maxVertexAttributes);
 
         GLTextureCoordinate.init(gl);
     }

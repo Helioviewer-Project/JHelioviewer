@@ -7,7 +7,6 @@ import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;
 import javax.swing.ListModel;
 
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.wcs.CoordinateConversion;
@@ -75,7 +74,7 @@ public class GL3DCameraSelectorModel extends AbstractListModel<Object>
 			if (getCameraView() != null) {
 				setCurrentCamera(lastCamera);
 			} else {
-				Log.warn("Cannot set Current Camera, no GL3DCameraView yet!");
+				System.out.println("Cannot set Current Camera, no GL3DCameraView yet!");
 			}
 		}
 		getCameraView().setCurrentCamera(defaultCamera);

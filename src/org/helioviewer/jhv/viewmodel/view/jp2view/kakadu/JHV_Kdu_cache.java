@@ -12,7 +12,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import kdu_jni.KduException;
 import kdu_jni.Kdu_cache;
 
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.viewmodel.view.cache.ImageCacheStatus;
 import org.helioviewer.jhv.viewmodel.view.cache.ImageCacheStatus.CacheStatus;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPDataSegment;
@@ -253,7 +252,7 @@ public class JHV_Kdu_cache extends Kdu_cache {
             fStream = new FileOutputStream(fTarget);
             fStream.write("hvc/1.0\n".getBytes());
         } catch (Exception ex) {
-            Log.error("Error in writeToCacheMethod in file (" + fTarget + ") and FileOutputStream creation.");
+            System.err.println("Error in writeToCacheMethod in file (" + fTarget + ") and FileOutputStream creation.");
             ex.printStackTrace();
             return false;
         }
@@ -303,7 +302,7 @@ public class JHV_Kdu_cache extends Kdu_cache {
                 codestreamID = this.Get_next_codestream(codestreamID);
             }
         } catch (Exception ex) {
-            Log.error("Error in writeToCacheMethod in actual writing algorithm.");
+            System.err.println("Error in writeToCacheMethod in actual writing algorithm.");
             ex.printStackTrace();
             return false;
         } finally {
@@ -315,7 +314,7 @@ public class JHV_Kdu_cache extends Kdu_cache {
             fStream.flush();
             fStream.close();
         } catch (Exception ex) {
-            Log.error("Error in writeToCacheMethod in file and FileOutputStream closure.");
+            System.err.println("Error in writeToCacheMethod in file and FileOutputStream closure.");
             ex.printStackTrace();
             return false;
         } finally {
@@ -355,7 +354,7 @@ public class JHV_Kdu_cache extends Kdu_cache {
                     throw new JHV_KduException("Wrong cache file format.");
                 }
             } catch (Exception ex) {
-                Log.error("Error in readFromCacheMethod in file and FileInputStream creation.");
+                System.err.println("Error in readFromCacheMethod in file and FileInputStream creation.");
                 ex.printStackTrace();
                 return false;
             }
@@ -394,7 +393,7 @@ public class JHV_Kdu_cache extends Kdu_cache {
                         this.Add_to_databin(databinClassID, codestreamID, databinID, byteBuffer, 0, length, isComplete, false, true);
                 }
             } catch (Exception ex) {
-                Log.error("Error in readFromCacheMethod in actual read algorithm.");
+                System.err.println("Error in readFromCacheMethod in actual read algorithm.");
                 ex.printStackTrace();
                 return false;
             } finally {
@@ -408,7 +407,7 @@ public class JHV_Kdu_cache extends Kdu_cache {
                     fStream.close();
                 }
             } catch (Exception ex) {
-                Log.error("Error in readFromCacheMethod in file and FileInputStream closure.");
+                System.err.println("Error in readFromCacheMethod in file and FileInputStream closure.");
                 ex.printStackTrace();
                 return false;
             }

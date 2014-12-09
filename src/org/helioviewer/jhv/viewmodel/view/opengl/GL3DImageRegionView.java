@@ -2,7 +2,6 @@ package org.helioviewer.jhv.viewmodel.view.opengl;
 
 import javax.media.opengl.GL2;
 
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
@@ -10,7 +9,6 @@ import org.helioviewer.jhv.viewmodel.changeevent.RegionChangedReason;
 import org.helioviewer.jhv.viewmodel.changeevent.RegionUpdatedReason;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.region.Region;
-import org.helioviewer.jhv.viewmodel.region.RegionAdapter;
 import org.helioviewer.jhv.viewmodel.view.MetaDataView;
 import org.helioviewer.jhv.viewmodel.view.RegionView;
 import org.helioviewer.jhv.viewmodel.view.View;
@@ -90,7 +88,7 @@ public class GL3DImageRegionView extends AbstractGL3DView implements GL3DView, R
         if (metaDataView != null) {
             this.metaDataView = metaDataView;
             if (this.detectedRegion == null) {
-                this.detectedRegion = new RegionAdapter(metaDataView.getMetaData().getPhysicalRegion());
+                this.detectedRegion = new Region(metaDataView.getMetaData().getPhysicalRegion());
             }
         }
     }
@@ -134,7 +132,7 @@ public class GL3DImageRegionView extends AbstractGL3DView implements GL3DView, R
     }
     
     public boolean setViewport(Viewport v, ChangeEvent event) {
-        Log.debug("GL3DImageRegionView:setViewport() Viewport = " + v);
+        System.out.println("GL3DImageRegionView:setViewport() Viewport = " + v);
         this.maximalViewport = v;
 
         this.updateRegionAndViewport(event);

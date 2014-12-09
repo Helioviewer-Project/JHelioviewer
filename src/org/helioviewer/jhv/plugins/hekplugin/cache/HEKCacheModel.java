@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Vector;
 
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.base.math.IntervalContainer;
 import org.helioviewer.jhv.base.math.IntervalStore;
@@ -301,7 +300,7 @@ public class HEKCacheModel {
                     IntervalContainer<Date, HEKEvent> ic = is.getItem(currentInterval);
                     // remove if partial
                     if (ic.isPartial()) {
-                        Log.info("Removing old Partial " + currentInterval);
+                        System.out.println("Removing old Partial " + currentInterval);
                         is.removeInterval(currentInterval);
                     }
                 }

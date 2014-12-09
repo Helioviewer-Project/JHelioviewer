@@ -8,7 +8,6 @@ import javax.media.opengl.GL2;
 
 import org.helioviewer.jhv.base.GL3DKeyController;
 import org.helioviewer.jhv.base.GL3DKeyController.GL3DKeyListener;
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
 import org.helioviewer.jhv.opengl.camera.GL3DCameraListener;
@@ -111,7 +110,7 @@ public class GL3DCameraView extends AbstractGL3DView implements GL3DView,
 		cam.activate(this.camera);
 		this.camera = cam;
 		this.camera.addCameraListener(this);
-		Log.debug("GL3DCameraView: Set Current Camera to " + this.camera);
+		System.out.println("GL3DCameraView: Set Current Camera to " + this.camera);
 		notifyViewListeners(new ChangeEvent(new CameraChangeChangedReason(this,
 				this.camera)));
 	}

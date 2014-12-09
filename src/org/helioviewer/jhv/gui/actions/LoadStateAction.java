@@ -9,7 +9,6 @@ import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 
 import org.helioviewer.jhv.Directories;
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.actions.filefilters.JHVStateFilter;
 import org.helioviewer.jhv.layers.LayersModel;
@@ -86,7 +85,8 @@ public class LoadStateAction extends AbstractAction {
                 try {
                     selectedLocation = selectedFile.toURI().toURL();
                 } catch (MalformedURLException e1) {
-                    Log.error("Error while opening state " + selectedFile, e1);
+                    System.err.println("Error while opening state " + selectedFile);
+                    e1.printStackTrace();
                     return;
                 }
             } else {

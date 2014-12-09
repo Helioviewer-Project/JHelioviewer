@@ -19,7 +19,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.ImageViewerGui;
@@ -133,7 +132,8 @@ public class ImageSelectorPanel extends JPanel implements LayersListener {
                             }
                         } catch (ParseException e) {
                             // Should not happen
-                            Log.error("Cannot update observation dialog", e);
+                            System.err.println("Cannot update observation dialog");
+                            e.printStackTrace();
                         }
                     }
                 }

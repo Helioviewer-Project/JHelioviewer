@@ -8,7 +8,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import javax.media.opengl.GL2;
 
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.changeevent.LayerChangedReason;
@@ -20,7 +19,6 @@ import org.helioviewer.jhv.viewmodel.changeevent.SubImageDataChangedReason;
 import org.helioviewer.jhv.viewmodel.changeevent.ViewChainChangedReason;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.region.Region;
-import org.helioviewer.jhv.viewmodel.region.RegionAdapter;
 import org.helioviewer.jhv.viewmodel.region.StaticRegion;
 import org.helioviewer.jhv.viewmodel.view.*;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJP2View;
@@ -144,7 +142,7 @@ public class GL3DLayeredView extends AbstractView implements LayeredView, Region
             if (viewport != null)
                 region = ViewHelper.expandRegionToViewportAspectRatio(viewport, region, metaData);
             if (region != null)
-                region = new RegionAdapter(new StaticRegion(-0.5 * region.getWidth(), -0.5 * region.getHeight(), region.getSize()));
+                region = new Region(new StaticRegion(-0.5 * region.getWidth(), -0.5 * region.getHeight(), region.getSize()));
             recalculateRegionsAndViewports(new ChangeEvent());
         redrawBuffer(changeEvent);        
     }
@@ -184,7 +182,7 @@ public class GL3DLayeredView extends AbstractView implements LayeredView, Region
         
         renderLock.lock();
 
-        Log.debug("GL3DLayeredView: recalculateRegionsAndViewports: " + this.region + " " + this.viewport);
+        System.out.println("GL3DLayeredView: recalculateRegionsAndViewports: " + this.region + " " + this.viewport);
         boolean changed = false;
 
         if (viewport != null) {

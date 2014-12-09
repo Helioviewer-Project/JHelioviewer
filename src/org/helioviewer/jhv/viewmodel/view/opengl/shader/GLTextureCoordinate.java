@@ -2,8 +2,6 @@ package org.helioviewer.jhv.viewmodel.view.opengl.shader;
 
 import javax.media.opengl.GL2;
 
-import org.helioviewer.jhv.base.logging.Log;
-
 /**
  * Class representing a part of a OpenGL texture coordinate.
  * 
@@ -79,7 +77,7 @@ public abstract class GLTextureCoordinate {
      *            Valid reference to the current gl object
      */
     public static void init(GL2 gl) {
-        Log.debug(">> GLTextureCoordinate.init(GL) > Initialize GLTextureCoordinate");
+        System.out.println(">> GLTextureCoordinate.init(GL) > Initialize GLTextureCoordinate");
         int tmp[] = new int[1];
         gl.glGetIntegerv(GL2.GL_MAX_TEXTURE_COORDS, tmp, 0);
 

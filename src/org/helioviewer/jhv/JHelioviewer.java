@@ -18,9 +18,8 @@ import java.util.TimeZone;
 import javax.swing.UIManager;
 
 import org.helioviewer.jhv.base.FileUtils;
+import org.helioviewer.jhv.base.Log;
 import org.helioviewer.jhv.base.Message;
-import org.helioviewer.jhv.base.logging.Log;
-import org.helioviewer.jhv.base.logging.LogSettings;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.components.layerTable.LayerTableOverlapWatcher;
 import org.helioviewer.jhv.gui.dialogs.AboutDialog;
@@ -49,6 +48,8 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
 public class JHelioviewer {
 
     public static void main(String[] args) {
+        Log.redirectStdOutErr();
+        
         // Prints the usage message
         if (args.length == 1 && (args[0].equals("-h") || args[0].equals("--help"))) {
             System.out.println(CommandLineProcessor.getUsageMessage());
@@ -81,33 +82,18 @@ public class JHelioviewer {
         // Per default, the us locale should be used
         Locale.setDefault(Locale.US);
 
-        // init log
-        try
-        {
-            LogSettings.init("/settings/log4j.initial.properties", Directories.LOGS.getPath(), CommandLineProcessor.isOptionSet("--use-existing-log-time-stamp"));
-        }
-        catch(IOException _ioe)
-        {
-            _ioe.
-            printStackTrace();
-        }
-        
-
         // Information log message
         String argString = "";
         for (int i = 0; i < args.length; ++i) {
             argString += " " + args[i];
         }
-        Log.info("JHelioviewer started with command-line options:" + argString);
+        System.out.println("JHelioviewer started with command-line options:" + argString);
 
         // This attempts to create the necessary directories for the application
-        Log.info("Create directories...");
+        System.out.println("Create directories...");
         Directories.createDirs();
-
-        // Save the log settings. Must be done AFTER the directories are created
-        LogSettings.update();
-
-        Log.info("Initializing JHelioviewer");
+        
+        System.out.println("Initializing JHelioviewer");
         // display the splash screen
         SplashScreen splash = SplashScreen.getSingletonInstance();
 
@@ -119,14 +105,14 @@ public class JHelioviewer {
         // initialized
         splash.setProgressText("Loading settings...");
         splash.nextStep();
-        Log.info("Load settings");
+        System.out.println("Load settings");
         Settings.load();
         
         // Set the platform system properties
         splash.nextStep();
 
         /* ----------Setup kakadu ----------- */
-        Log.debug("Instantiate Kakadu engine");
+        System.out.println("Instantiate Kakadu engine");
         KakaduEngine engine = new KakaduEngine();
 
         splash.nextStep();
@@ -137,19 +123,20 @@ public class JHelioviewer {
         // handling
         splash.nextStep();
         try {
-            Log.debug("Setup Kakadu message handlers.");
+            System.out.println("Setup Kakadu message handlers.");
             engine.startKduMessageSystem();
         } catch (JHV_KduException e) {
-            Log.fatal("Failed to setup Kakadu message handlers.", e);
+            System.err.println("Failed to setup Kakadu message handlers.");
+            e.printStackTrace();
             Message.err("Error starting Kakadu message handler", e.getMessage(), true);
             return;
         }
 
         // Apply settings after kakadu engine has been initialized
-        Log.info("Use cache directory: " + Directories.CACHE.getPath());
+        System.out.println("Use cache directory: " + Directories.CACHE.getPath());
         JP2Image.setCachePath(Directories.CACHE.getFile());
 
-        Log.info("Update settings");
+        System.out.println("Update settings");
         Settings.apply();
 
         /* ----------Setup OpenGL ----------- */
@@ -162,10 +149,11 @@ public class JHelioviewer {
             update.check();
         } catch (MalformedURLException e) {
             // Should never happen
-            Log.error("Error retrieving internal update URL", e);
+            System.err.println("Error retrieving internal update URL");
+            e.printStackTrace();
         }
 
-        Log.debug("Installing Overlap Watcher");
+        System.out.println("Installing Overlap Watcher");
         LayerTableOverlapWatcher overlapWatcher = new LayerTableOverlapWatcher();
         LayersModel.getSingletonInstance().addLayersListener(overlapWatcher);
 
@@ -175,10 +163,10 @@ public class JHelioviewer {
         splash.nextStep();
 
         // Load Plug ins at the very last point
-        Log.info("Load plugin settings");
+        System.out.println("Load plugin settings");
         PluginManager.getSingeltonInstance().loadSettings(Directories.HOME.getPath());
 
-        Log.info("Add internal plugin: " + "FilterPlugin");
+        System.out.println("Add internal plugin: " + "FilterPlugin");
         Plugin internalPlugin = new InternalFilterPlugin();
         PluginManager.getSingeltonInstance().addInternalPlugin(internalPlugin.getClass().getClassLoader(), internalPlugin);
 
@@ -188,7 +176,7 @@ public class JHelioviewer {
         splash.setProgressText("Displaying main window...");
         splash.nextStep();
         // Create main view chain and display main window
-        Log.info("Start main window");
+        System.out.println("Start main window");
         //splash.initializeViewchain();
         ImageViewerGui.getSingletonInstance().createViewchains();
 
@@ -226,8 +214,8 @@ public class JHelioviewer {
 						loadExecuteLibary(tmpLibDir, directory,
 								"cgc-windows-x86-32.exe", "cgc");
 					} else {
-						Log.error(">> Platform > Could not determine platform. OS: "
-								+ os + " - arch: " + arch);
+						System.err.println(">> Platform > Could not determine platform. OS: "
+                        + os + " - arch: " + arch);
 					}
 
 				} else if (os.indexOf("linux") != -1) {
@@ -245,8 +233,8 @@ public class JHelioviewer {
 						loadExecuteLibary(tmpLibDir, directory,
 								"cgc-linux-x86-32", "cgc");
 					} else {
-						Log.error(">> Platform > Could not determine platform. OS: "
-								+ os + " - arch: " + arch);
+						System.err.println(">> Platform > Could not determine platform. OS: "
+                        + os + " - arch: " + arch);
 					}
 				} else if (os.indexOf("mac os x") != -1) {
 					directory += "mac/";
@@ -255,12 +243,12 @@ public class JHelioviewer {
 					loadExecuteLibary(tmpLibDir, directory, "cgc-mac", "cgc");
 					setupOSXApplicationListener();
 				} else {
-					Log.error(">> Platform > Could not determine platform. OS: "
-							+ os + " - arch: " + arch);
+					System.err.println(">> Platform > Could not determine platform. OS: "
+                    + os + " - arch: " + arch);
 				}
 			} else {
-				Log.error(">> Platform > Could not determine platform. OS: "
-						+ os + " - arch: " + arch);
+				System.err.println(">> Platform > Could not determine platform. OS: "
+                + os + " - arch: " + arch);
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -352,7 +340,7 @@ public class JHelioviewer {
 			registerListenerMethod.invoke(application, new Object[] {listenerProxy});
 					
 		} catch (Exception e) {
-			Log.error("Failed to load native menuitems of Mac OSX");
+			System.err.println("Failed to load native menuitems of Mac OSX");
 		}
 	}
 }

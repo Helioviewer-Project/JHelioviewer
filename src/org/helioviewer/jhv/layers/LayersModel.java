@@ -22,7 +22,6 @@ import javax.swing.JOptionPane;
 
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.base.Message;
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.ImageViewerGui;
@@ -943,7 +942,7 @@ public class LayersModel implements ViewListener
     	GuiState3DWCS.overViewPanel.removeLayer(idx);
         LayeredView lv=getLayeredView();
         lv.removeLayer(idx);
-        Log.debug(">> LayersModel.removeLayer()");
+        System.out.println(">> LayersModel.removeLayer()");
     }
 
     /**
@@ -1669,7 +1668,7 @@ public class LayersModel implements ViewListener
                 }
                 catch(Exception e)
                 {
-                    Log.fatal(">> LayersModel.StateParser.startElement() > Error parsing region data");
+                    System.err.println(">> LayersModel.StateParser.startElement() > Error parsing region data");
                     fullSetting.regionViewState=null;
                 }
             }
@@ -1677,7 +1676,7 @@ public class LayersModel implements ViewListener
             {
                 tmpLayerSetting=new LayerState();
 
-                Log.info("new layer setting ");
+                System.out.println("new layer setting ");
                 // try to read the "id" attribute
                 int idx_layer_id=atts.getIndex("id");
 
@@ -1817,7 +1816,7 @@ public class LayersModel implements ViewListener
                 if(directURI.getScheme().equalsIgnoreCase("jpip")&&(layerSetting.downloadURI.contains(Settings.getProperty("API.jp2series.path"))||layerSetting.downloadURI.contains(Settings.getProperty("API.jp2images.path"))))
                 {
 
-                    Log.info(">> LayersModel.StateParser.setupLayer() > Check if API-generated file \""+layerSetting.directURI+"\" still exists... ");
+                    System.out.println(">> LayersModel.StateParser.setupLayer() > Check if API-generated file \""+layerSetting.directURI+"\" still exists... ");
 
                     URL testURL=new URL(layerSetting.directURI.replaceFirst("jpip","http").replaceFirst(":8090","/jp2"));
                     HttpURLConnection testConnection=(HttpURLConnection)testURL.openConnection();
@@ -1838,21 +1837,21 @@ public class LayersModel implements ViewListener
                     {
                         String jpipRequest=layerSetting.downloadURI+"&jpip=true&verbose=true&linked=true";
 
-                        Log.info(">> LayersModel.StateParser.setupLayer() > \""+layerSetting.directURI+"\" does not exist any more.");
-                        Log.info(">> LayersModel.StateParser.setupLayer() > Requesting \""+jpipRequest+"\" instead.");
+                        System.out.println(">> LayersModel.StateParser.setupLayer() > \""+layerSetting.directURI+"\" does not exist any more.");
+                        System.out.println(">> LayersModel.StateParser.setupLayer() > Requesting \""+jpipRequest+"\" instead.");
 
                         newView=APIRequestManager.requestData(true,new URL(jpipRequest),new URI(layerSetting.downloadURI));
 
                     }
                     else
                     { // If file exists -> Open file
-                        Log.info(">> LayersModel.StateParser.setupLayer() > \""+layerSetting.directURI+"\" still exists, load it.");
+                        System.out.println(">> LayersModel.StateParser.setupLayer() > \""+layerSetting.directURI+"\" still exists, load it.");
                         newView=APIRequestManager.newLoad(directURI,new URI(layerSetting.downloadURI),true);
                     }
                 }
                 else
                 { // If no API file -> Open file
-                    Log.info(">> LayersModel.StateParser.setupLayer() > Load file \""+layerSetting.directURI+"\"");
+                    System.out.println(">> LayersModel.StateParser.setupLayer() > Load file \""+layerSetting.directURI+"\"");
                     newView=APIRequestManager.newLoad(directURI,true);
                 }
             }
@@ -1918,7 +1917,7 @@ public class LayersModel implements ViewListener
         {
 
             // First clear all Layers
-            Log.info(">> LayersModel.StateParser.setupLayers() > Removing previously existing layers");
+            System.out.println(">> LayersModel.StateParser.setupLayers() > Removing previously existing layers");
             int removedLayers=0;
             while(LayersModel.getSingletonInstance().getNumLayers()>0 && removedLayers<1000)
             {
@@ -1955,7 +1954,7 @@ public class LayersModel implements ViewListener
         {
             if(fullSetting.regionViewState!=null)
             {
-                Log.info(">> LayersModel.StateParser.setupLayers() > Setting up RegionView");
+                System.out.println(">> LayersModel.StateParser.setupLayers() > Setting up RegionView");
                 RegionViewState regionViewState=fullSetting.regionViewState;
                 RegionView regionView=LayersModel.getSingletonInstance().getLayeredView().getAdapter(RegionView.class);
                 Region region=
@@ -1964,7 +1963,7 @@ public class LayersModel implements ViewListener
             }
             else
             {
-                Log.info(">> LayersModel.StateParser.setupLayers() > Skipping RegionView setup.");
+                System.out.println(">> LayersModel.StateParser.setupLayers() > Skipping RegionView setup.");
 
             }
         }

@@ -6,7 +6,6 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.glu.GLU;
 
-import org.helioviewer.jhv.base.logging.Log;
 import org.helioviewer.jhv.viewmodel.filter.AbstractFilter;
 import org.helioviewer.jhv.viewmodel.filter.GLFragmentShaderFilter;
 import org.helioviewer.jhv.viewmodel.view.opengl.GLTextureHelper;
@@ -196,21 +195,21 @@ public class SOHOLUTFilter extends AbstractFilter implements GLFragmentShaderFil
     
     public boolean checkGLErrors(GL gl, String message) {
         if (gl == null) {
-            Log.warn("OpenGL not yet Initialised!");
+            System.out.println("OpenGL not yet Initialised!");
             return true;
         }
         int glErrorCode = gl.glGetError();
 
         if (glErrorCode != GL.GL_NO_ERROR) {
             GLU glu = new GLU();
-            Log.error("GL Error (" + glErrorCode + "): " + glu.gluErrorString(glErrorCode) + " - @" + message);
+            System.err.println("GL Error (" + glErrorCode + "): " + glu.gluErrorString(glErrorCode) + " - @" + message);
             if (glErrorCode == GL2.GL_INVALID_OPERATION) {
                 // Find the error position
                 int[] err = new int[1];
                 gl.glGetIntegerv(GL2.GL_PROGRAM_ERROR_POSITION_ARB, err, 0);
                 if (err[0] >= 0) {
                     String error = gl.glGetString(GL2.GL_PROGRAM_ERROR_STRING_ARB);
-                    Log.error("GL error at " + err[0] + ":\n" + error);
+                    System.err.println("GL error at " + err[0] + ":\n" + error);
                 }
             }
             return true;

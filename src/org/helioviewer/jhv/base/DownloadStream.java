@@ -14,8 +14,6 @@ import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
 
-import org.helioviewer.jhv.base.logging.Log;
-
 /**
  * General connection class which gives to a given URL a proper InputStream with
  * the response back, trying to use compressed transmission if the server
@@ -100,7 +98,7 @@ public class DownloadStream {
      *             From accessing the network
      */
     public void connect() throws IOException {
-        Log.info("Connect to " + url);
+        System.out.println("Connect to " + url);
         URLConnection connection = url.openConnection();
         // Set timeouts
         connection.setConnectTimeout(connectTimeout);
@@ -120,12 +118,12 @@ public class DownloadStream {
             httpC.connect();
             // Check the connection code
             if (httpC.getResponseCode() >= 400) {
-                Log.error(">> DownloadStream.connect() > Error opening http connection to " + url + " Response code: " + httpC.getResponseCode());
+                System.err.println(">> DownloadStream.connect() > Error opening http connection to " + url + " Response code: " + httpC.getResponseCode());
                 throw new IOException("Error opening http connection to " + url + " Response code: " + httpC.getResponseCode());
             }
             // Now according to the encoding open the right input Stream
             String encoding = httpC.getContentEncoding();
-            Log.debug("Created http connection with encoding " + encoding);
+            System.out.println("Created http connection with encoding " + encoding);
             if (encoding != null && encoding.equalsIgnoreCase("gzip")) {
                 in = new GZIPInputStream(httpC.getInputStream());
             } else if (encoding != null && encoding.equalsIgnoreCase("deflate")) {
@@ -134,7 +132,7 @@ public class DownloadStream {
                 in = httpC.getInputStream();
             }
         } else {
-            Log.debug("No http connection, try no compression");
+            System.out.println("No http connection, try no compression");
             // Write post data if necessary
             if (output != null) {
                 connection.setDoOutput(true);

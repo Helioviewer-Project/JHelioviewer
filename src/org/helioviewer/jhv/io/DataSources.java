@@ -18,7 +18,6 @@ import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.base.AlphanumComparator;
 import org.helioviewer.jhv.base.DownloadStream;
-import org.helioviewer.jhv.base.logging.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -207,11 +206,13 @@ public class DataSources {
                 break;
             } catch (MalformedURLException e) {
                 // Should not occur
-                Log.error("Invalid url to retrieve data source", e);
+                System.err.println("Invalid url to retrieve data source");
+                e.printStackTrace();
                 break;
             } catch (JSONException e) {
                 // Should not occur
-                Log.error("While retrieving the available data sources got invalid response", e);
+                System.err.println("While retrieving the available data sources got invalid response");
+                e.printStackTrace();
                 break;
             } catch (IOException e) {
                 // Log.error("Error while reading the available data sources",
@@ -223,7 +224,8 @@ public class DataSources {
                     Thread.sleep(5000);
                 } catch (InterruptedException e1) {
                     // Should not occur
-                    Log.error("", e1);
+                    System.err.println("");
+                    e1.printStackTrace();
                 }
             }
         }
@@ -254,7 +256,8 @@ public class DataSources {
             }
             return children.toArray(new Item[children.size()]);
         } catch (JSONException e) {
-            Log.error("Error finding children of " + root, e);
+            System.err.println("Error finding children of " + root);
+            e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -290,7 +293,8 @@ public class DataSources {
         try {
             return getChildrenList(getInstrument(observatory, instrument).getJSONObject("children"));
         } catch (JSONException e) {
-            Log.error("Cannot find instruments for " + observatory, e);
+            System.err.println("Cannot find instruments for " + observatory);
+            e.printStackTrace();
             return null;
         }
     }
@@ -321,7 +325,8 @@ public class DataSources {
         try {
             return getChildrenList(getObservatory(observatory).getJSONObject("children"));
         } catch (JSONException e) {
-            Log.error("Cannot find instruments for " + observatory, e);
+            System.err.println("Cannot find instruments for " + observatory);
+            e.printStackTrace();
             return null;
         }
     }
@@ -341,7 +346,8 @@ public class DataSources {
         try {
             return getChildrenList(getDetector(observatory, instrument, detector).getJSONObject("children"));
         } catch (JSONException e) {
-            Log.error("Cannot find instruments for " + observatory, e);
+            System.err.println("Cannot find instruments for " + observatory);
+            e.printStackTrace();
             return null;
         }
     }
