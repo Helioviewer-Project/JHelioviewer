@@ -162,15 +162,15 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 		GL2 gl = drawable.getGL().getGL2();
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 		gl.glActiveTexture(GL2.GL_TEXTURE0);
-		if (lastLayer != null && lastLayer.getMetaData() != null && lastLayer.getMetadata().getPhysicalRegion() != null){
+		if (lastLayer != null && lastLayer.getMetaData() != null && lastLayer.getMetaData().getPhysicalRegion() != null){
 			
 		if (this.updateTexture){
-        this.createTexture(gl, this.lastLayer.getMetadata().getPhysicalRegion(), this.lastLayer.getImageData());
+        this.createTexture(gl, this.lastLayer.getMetaData().getPhysicalRegion(), this.lastLayer.getImageData());
         updateTexture = false;
 		}		
         
-		Vector2d lowerleftCorner = this.lastLayer.getMetadata().getPhysicalRegion().getLowerLeftCorner();
-		Vector2d size = this.lastLayer.getMetadata().getPhysicalRegion().getSize();
+		Vector2d lowerleftCorner = this.lastLayer.getMetaData().getPhysicalRegion().getLowerLeftCorner();
+		Vector2d size = this.lastLayer.getMetaData().getPhysicalRegion().getSize();
 		gl.glDisable(GL2.GL_DEPTH_TEST);
 		if (size.x <= 0 || size.y <= 0) {
 			return;
@@ -595,6 +595,10 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 	private void setPan(int x, int y){
 		Dimension canvasSize = this.canvas.getSize();
 		double aspect = this.canvas.getSize().getWidth() / this.canvas.getSize().getHeight();
+		
+		if(this.lastLayer==null || this.lastLayer.getMetaData()==null)
+		    return;
+		
 		double width = this.lastLayer.getMetaData().getPhysicalImageWidth();
 		double height = this.lastLayer.getMetaData().getPhysicalImageHeight();
 		

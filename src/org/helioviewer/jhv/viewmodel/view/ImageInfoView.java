@@ -55,5 +55,5 @@ public interface ImageInfoView extends View {
      */
     public URI getDownloadURI();
 
-    public MetaData getMetadata();
+    public MetaData getMetaData();
 }

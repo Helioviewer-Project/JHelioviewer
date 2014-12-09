@@ -260,11 +260,4 @@ public class JHVFITSView extends AbstractView implements ViewportView, RegionVie
     public URI getDownloadURI() {
         return uri;
     }
-
-	@Override
-	public MetaData getMetadata() {
-		// TODO Auto-generated method stub
-		return m;
-	}
-    
 }

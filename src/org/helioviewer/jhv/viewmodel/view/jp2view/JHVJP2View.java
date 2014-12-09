@@ -754,10 +754,4 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
             public Region region;
         }
     }
-
-	@Override
-	public MetaData getMetadata() {
-		// TODO Auto-generated method stub
-		return metaData;
-	}
 }

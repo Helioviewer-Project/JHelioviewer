@@ -640,7 +640,7 @@ public class LayersModel implements ViewListener
         ImageInfoView imageInfoView=view.getAdapter(ImageInfoView.class);
         if(imageInfoView!=null)
         {
-            MetaData metaData=imageInfoView.getMetadata();
+            MetaData metaData=imageInfoView.getMetaData();
             return metaData.getObservatory();
         }
         else
