@@ -65,7 +65,13 @@ public class DataCache {
 		{
 			if(!readAheadCache.contains(next))
 			{
-				PfssData read = dataCreator.getDataAsync(next);
+				PfssData read = null;
+				if(cache.contains(next)) {
+					read = cache.get(next);
+				} else {
+					read = dataCreator.getDataAsync(next);
+				}
+
 				readAheadCache.put(next, read);
 			}
 		}

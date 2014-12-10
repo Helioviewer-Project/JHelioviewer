@@ -33,11 +33,11 @@ import nom.tam.fits.FitsException;
  * @author Jonas Schwammberger
  *
  */
-public class PfssDataDecompressor implements Runnable {
+public class PfssDecompressor implements Runnable {
 	private final PfssData data;
 	private final PfssFrame frame;
 
-	public PfssDataDecompressor(PfssData data, PfssFrame frame) {
+	public PfssDecompressor(PfssData data, PfssFrame frame) {
 		this.data = data;
 		this.frame = frame;
 	}
@@ -317,7 +317,7 @@ public class PfssDataDecompressor implements Runnable {
 		PfssData d = new PfssData(f,s+"test.rar");
 		d.loadData();
 		PfssFrame frame = new PfssFrame(f);
-		PfssDataDecompressor r = new PfssDataDecompressor(d, frame);
+		PfssDecompressor r = new PfssDecompressor(d, frame);
 		r.readData();
 		
 	}
