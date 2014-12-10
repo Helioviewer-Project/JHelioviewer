@@ -9,7 +9,7 @@ public class DeQuantization {
 	
 
 	
-    public static void MultiplyLinear(Line[] lines, double factor, int offset, int start)
+    public static void multiplyLinear(Line[] lines, double factor, int offset, int start)
     {
 
     	for(Line l : lines){
@@ -26,7 +26,7 @@ public class DeQuantization {
      
     }
 
-    public static void Multiply(Line[] lines, double factor)
+    public static void multiply(Line[] lines, double factor)
     {
     	for(Line l : lines){
     		for(int i = 0; i < l.channels.length;i++) {
@@ -38,10 +38,11 @@ public class DeQuantization {
     	}
     }
     
-    public static void MultiplyPoint(Line[] lines, double factor, int index) {
+    public static void multiplyPoint(Line[] lines, double factor, int index) {
     	for(Line l : lines){
     		for(int i = 0; i < l.channels.length;i++) {
-    			l.channels[i][index] = (float)(l.channels[i][index] * factor);
+    			if(index < l.channels[i].length)
+    				l.channels[i][index] = (float)(l.channels[i][index] * factor);
     		}
     	}
     }
