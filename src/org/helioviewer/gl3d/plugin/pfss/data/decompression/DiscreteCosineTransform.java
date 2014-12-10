@@ -10,12 +10,9 @@ public class DiscreteCosineTransform {
     public static void inverseTransform(Line[] lines) {
     	for(Line l : lines) {
     		for(int i = 0; i < l.channels.length;i++) {
-    			int actualSize = l.size+l.start[i]+l.end[i];
-    			float[] idct = inverseTransform(l.channels[i],actualSize);
-    			
-    			float[] cutOff = new float[l.size];
-    			System.arraycopy(idct, l.start[i], cutOff, 0, l.size);
-    			l.channels[i] = cutOff;
+    			int actualSize = l.size;
+    			float[] idct = inverseTransform(l.channels[i], actualSize);
+    			l.channels[i] = idct;
     		}
     	}
     }
@@ -26,7 +23,7 @@ public class DiscreteCosineTransform {
 	 * @param actualSize
 	 * @return
 	 */
-    private static float[] inverseTransform(float[] value,int actualSize)
+    private static float[] inverseTransform(float[] value, int actualSize)
     {
 
         double adaptive2 = 2d * actualSize;

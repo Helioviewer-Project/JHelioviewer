@@ -86,7 +86,6 @@ public class Decoder {
 		 return out;
 	 }
 	 
-	 
 	 public static void main(String[] args) {
 		 byte[] data = new byte[]{2,(byte)129,0,(byte)129,127};
 		 int[] adaptive = decodeAdaptiveUnsigned(data);

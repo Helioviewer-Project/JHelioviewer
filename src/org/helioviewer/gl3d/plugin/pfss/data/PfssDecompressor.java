@@ -73,26 +73,40 @@ public class PfssDecompressor implements Runnable {
 				Fits fits = new Fits(is, false);
 				BasicHDU hdus[] = fits.read();
 				BinaryTableHDU bhdu = (BinaryTableHDU) hdus[1];
-				byte[] startEnd = ((byte[][]) bhdu.getColumn("START_END"))[0];
+				double b0 = ((double[]) bhdu.getColumn("B0"))[0];
+				double l0 = ((double[]) bhdu.getColumn("L0"))[0];
+				byte[] startR = ((byte[][]) bhdu.getColumn("StartPointR"))[0];
+				byte[] startPhi = ((byte[][]) bhdu.getColumn("StartPointPhi"))[0];
+				byte[] startTheta = ((byte[][]) bhdu.getColumn("StartPointTheta"))[0];
 				byte[] line_length = ((byte[][]) bhdu.getColumn("LINE_LENGTH"))[0];
 				byte[] xRaw = ((byte[][]) bhdu.getColumn("X"))[0];
 				byte[] yRaw = ((byte[][]) bhdu.getColumn("Y"))[0];
 				byte[] zRaw = ((byte[][]) bhdu.getColumn("Z"))[0];
 				
-				int[] startEndPoints = Decoder.decodeAdaptiveUnsigned(startEnd);
+				int[] startRInt = Decoder.decodeAdaptive(startR);
+				int[] startPhiInt = Decoder.decodeAdaptive(startPhi);
+				int[] startThetaInt = Decoder.decodeAdaptive(startTheta);
 				int[] lengths = Decoder.decodeAdaptiveUnsigned(line_length);
 				int[] xInt = Decoder.decodeAdaptive(xRaw);
 				int[] yInt = Decoder.decodeAdaptive(yRaw);
 				int[] zInt = Decoder.decodeAdaptive(zRaw);
 
-				Line[] lines = Line.splitToLines(lengths, startEndPoints, xInt, yInt, zInt);
+				Line[] lines = Line.splitToLines(lengths, xInt, yInt, zInt);
+				Line.addStartPoint(lines, startRInt, startPhiInt, startThetaInt, l0, b0);
 				
-				DeQuantization.multiplyLinear(lines, 180, 1, 1);
-				DeQuantization.multiply(lines, 1000);
-				DeQuantization.multiplyPoint(lines, 800,0);
+				//DeQuantization.multiplyLinear(lines, 20, 0);
+				DeQuantization.multiplyLinear(lines, 30, 5, 0, 10);
+				DeQuantization.multiplyLinear(lines, 120, 0, 10, 5);
+				DeQuantization.multiplyLinear(lines, 120, 20, 15, 5);
+				DeQuantization.multiplyLinear(lines, 400, 20, 20, 5);
+				DeQuantization.multiply(lines, 1000,0);
+				//DeQuantization.multiplyPoint(lines, 800,0);
 				
 				DiscreteCosineTransform.inverseTransform(lines);
 				
+				for(Line l : lines) {
+					l.integrate();
+				}
 				
 				//subsample for low-end graphic cards. Also count how many points there are for each line type
 				Point[][] points = new Point[lines.length][];

@@ -9,12 +9,11 @@ public class DeQuantization {
 	
 
 	
-    public static void multiplyLinear(Line[] lines, double factor, int offset, int start)
+    public static void multiplyLinear(Line[] lines, double factor, int offset)
     {
-
     	for(Line l : lines){
     		for(int i = 0; i < l.channels.length;i++) {
-    			double div = factor*start;
+    			double div = factor;
     			float[] channel = l.channels[i];
     			
     			for(int j = offset; j < channel.length;j++) {
@@ -25,13 +24,30 @@ public class DeQuantization {
     	}
      
     }
+    
+    public static void multiplyLinear(Line[] lines, double start, double increase, int offset, int length)
+    {
+        for (Line l : lines)
+        {
+        	for(int i = 0; i < l.channels.length;i++) {
+    			double div =start;
+    			float[] channel = l.channels[i];
+    			
+    			for(int j = offset; j < offset + length &&j < channel.length;j++) {
+    				channel[j] = (float)(channel[j] * div);
+    				div += increase;
+    			}
+    		}
+        	
+        }
+    }
 
-    public static void multiply(Line[] lines, double factor)
+    public static void multiply(Line[] lines, double factor, int offset)
     {
     	for(Line l : lines){
     		for(int i = 0; i < l.channels.length;i++) {
     			float[] channel = l.channels[i];
-    			for(int j = 0; j < channel.length;j++) {
+    			for(int j = offset; j < channel.length;j++) {
     				channel[j] = (float)(channel[j] * factor);
     			}
     		}
