@@ -77,7 +77,15 @@ h1
   margin: 0px 0px 12px 0px; 
   font-size: 150%;
 }
-
+h2
+{ font-family: arial, sans-serif;
+  letter-spacing: .1em;
+  font-weight: normal;
+  text-transform: uppercase;
+  padding: 5px 0px 5px 0px; 
+  margin: 0px 0px 0px 0px; 
+  font-size: 120%;
+}
 .sub
 { font-size: 55%;
   padding-left: 12px; 
@@ -219,7 +227,7 @@ width:70px;
 #logo h1
 { font-family: century gothic, sans-serif;
   font-size: 60px;
-  text-transform: lowercase;
+  text-transform: inherit;
   font-weight: normal;
   padding: 0px 0px 0px 14px;
   border: 0px;
@@ -342,5 +350,10 @@ blockquote{border-color: #40403E;}
 { background: #40403E;
   color: #EEE;
   border-color: #82974B;
+}
+
+.downloadMain{
+  position: relative;
+  left: 5%;
 }
 
