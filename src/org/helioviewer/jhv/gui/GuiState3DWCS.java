@@ -11,7 +11,6 @@ import javax.swing.JPanel;
 import org.helioviewer.jhv.gui.components.MoviePanel;
 import org.helioviewer.jhv.gui.components.OverViewPanel;
 import org.helioviewer.jhv.gui.components.TopToolBar;
-import org.helioviewer.jhv.internal_plugins.SelectedLayerPanel;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginManager;
 import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterContainer;
@@ -202,8 +201,6 @@ public class GuiState3DWCS {
 			/*if (newLayer instanceof JP2View) {
 				compactPanelManager.add(new QualitySpinner((JP2View) newLayer));
 			}*/
-
-			compactPanelManager.add(new SelectedLayerPanel(newLayer));
 
 			// Add filter to view chain
 			AbstractList<FilterContainer> filterContainerList = PluginManager

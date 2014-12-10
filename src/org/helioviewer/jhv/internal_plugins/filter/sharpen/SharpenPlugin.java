@@ -5,7 +5,6 @@ import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTabDescriptor;
 import org.helioviewer.jhv.plugins.viewmodelplugin.filter.SimpleFilterContainer;
 import org.helioviewer.jhv.viewmodel.filter.Filter;
 import org.helioviewer.jhv.viewmodel.view.FilterView;
-import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLShaderHelper;
 
 /**
  * Plugin for sharpen the image.
@@ -26,11 +25,6 @@ public class SharpenPlugin extends SimpleFilterContainer {
      * {@inheritDoc}
      */
     protected Filter getFilter() {
-
-        if (GLShaderHelper.getMaxTextureIndirections() < 10) {
-            return new SharpenFilter();
-        }
-
         return new SharpenGLFilter();
     }
 

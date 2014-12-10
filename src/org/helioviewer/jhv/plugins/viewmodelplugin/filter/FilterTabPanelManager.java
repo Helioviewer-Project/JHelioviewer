@@ -154,15 +154,13 @@ public class FilterTabPanelManager {
                  * handcrafted and hardcoded :(
                  */
                 if (details.getDetails() == FilterAlignmentDetails.POSITION_OPACITY) {
-                    c.fill = GridBagConstraints.NONE;
-                    c.anchor = GridBagConstraints.WEST;
-                    c.gridx = 2;
+                    c.gridwidth = 3;
+                    c.weightx = 1;
+                    c.gridx = 0;
                     c.gridy = 1;
-                    c.weightx = 0;
-                    c.gridwidth = 1;
+                    c.anchor = GridBagConstraints.WEST;
+                    c.fill = GridBagConstraints.HORIZONTAL;
                     compactPanel.add(comp, c);
-                    c.gridy = 0;
-                    compactPanel.add(new JLabel("Opacity:"), c);
                 } else if (details.getDetails() == FilterAlignmentDetails.POSITION_QUALITY) {
                     c.fill = GridBagConstraints.NONE;
                     c.anchor = GridBagConstraints.EAST;

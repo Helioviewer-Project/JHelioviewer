@@ -26,7 +26,7 @@ public abstract class FilterPanel extends JPanel {
     /**
      * Width of the value for components to display in adjust panel
      */
-    public static final int VALUE_WIDTH = 40;
+    public static final int VALUE_WIDTH = 50;
 
     /**
      * Height for components to display in adjust panel

@@ -1,9 +1,10 @@
 package org.helioviewer.jhv.internal_plugins.filter.opacity;
 
+import java.awt.Dimension;
+
 import javax.swing.BoxLayout;
-import javax.swing.JSpinner;
-import javax.swing.JTextField;
-import javax.swing.SpinnerNumberModel;
+import javax.swing.JLabel;
+import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -23,7 +24,9 @@ import org.helioviewer.jhv.viewmodel.filter.Filter;
 public class OpacityPanel extends FilterPanel implements ChangeListener, FilterAlignmentDetails {
 
     private static final long serialVersionUID = 1L;
-    private JSpinner opacitySpinner;
+    private JSlider opacitySlider;
+    private JLabel opacityLabel;
+    private JLabel title;
     private OpacityFilter filter;
 
     /**
@@ -33,21 +36,22 @@ public class OpacityPanel extends FilterPanel implements ChangeListener, FilterA
     public OpacityPanel() {
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 
-        // title.setPreferredSize(new Dimension(AbstractFilterPanel.titleWidth,
-        // AbstractFilterPanel.height));
-        // add(title);
-
-        opacitySpinner = new JSpinner();
-        opacitySpinner.setModel(new SpinnerNumberModel(new Float(1), new Float(0), new Float(1), new Float(0.05f)));
-        opacitySpinner.addChangeListener(this);
-
-        JSpinner.NumberEditor editor = new JSpinner.NumberEditor(opacitySpinner, "0%");
-        opacitySpinner.setEditor(editor);
-        editor.getTextField().setColumns(3);
-        editor.getTextField().setHorizontalAlignment(JTextField.CENTER);
-
-        WheelSupport.installMouseWheelSupport(opacitySpinner);
-        add(opacitySpinner);
+        title = new JLabel("Opacity:");
+        title.setPreferredSize(new Dimension(FilterPanel.TITLE_WIDTH, FilterPanel.HEIGHT));
+        add(title);
+        
+        opacitySlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 0);
+        opacitySlider.setMajorTickSpacing(20);
+        opacitySlider.setPaintTicks(true);
+        opacitySlider.setPreferredSize(new Dimension(150, opacitySlider.getPreferredSize().height));
+        opacitySlider.addChangeListener(this);
+        WheelSupport.installMouseWheelSupport(opacitySlider);
+        add(opacitySlider);
+        
+        opacityLabel = new JLabel("0%");
+        opacityLabel.setHorizontalAlignment(JLabel.RIGHT);
+        opacityLabel.setPreferredSize(new Dimension(FilterPanel.VALUE_WIDTH, FilterPanel.HEIGHT));
+        add(opacityLabel);
 
         setEnabled(false);
     }
@@ -58,7 +62,9 @@ public class OpacityPanel extends FilterPanel implements ChangeListener, FilterA
      */
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
-        opacitySpinner.setEnabled(enabled);
+        opacitySlider.setEnabled(enabled);
+        opacityLabel.setEnabled(enabled);
+        title.setEnabled(enabled);
     }
 
     /**
@@ -88,7 +94,8 @@ public class OpacityPanel extends FilterPanel implements ChangeListener, FilterA
      */
     public void stateChanged(ChangeEvent e) {
         if (filter != null) {
-            float value = ((SpinnerNumberModel) opacitySpinner.getModel()).getNumber().floatValue();
+            float value = (float) opacitySlider.getValue() / 100.0f;
+            opacityLabel.setText(opacitySlider.getValue() + "%");
             filter.setOpacity(value);
             GuiState3DWCS.mainComponentView.getComponent().repaint();
         }
@@ -104,7 +111,7 @@ public class OpacityPanel extends FilterPanel implements ChangeListener, FilterA
      *            New opacity value. Must be within [0, 100]
      */
     void setValue(float opacity) {
-        ((SpinnerNumberModel) opacitySpinner.getModel()).setValue(opacity);
+        opacitySlider.setValue((int) (opacity * 100));
     }
 
     /**

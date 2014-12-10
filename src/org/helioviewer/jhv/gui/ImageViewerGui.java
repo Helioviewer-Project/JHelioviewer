@@ -44,7 +44,6 @@ import org.helioviewer.jhv.gui.components.statusplugins.MetaDataStatusPanel;
 import org.helioviewer.jhv.gui.components.statusplugins.PositionStatusPanel;
 import org.helioviewer.jhv.gui.components.statusplugins.ZoomStatusPanel;
 import org.helioviewer.jhv.gui.controller.GL3DCameraMouseController;
-import org.helioviewer.jhv.internal_plugins.SelectedLayerPanel;
 import org.helioviewer.jhv.internal_plugins.filter.SOHOLUTFilterPlugin.SOHOLUTPanel;
 import org.helioviewer.jhv.internal_plugins.filter.channelMixer.ChannelMixerPanel;
 import org.helioviewer.jhv.internal_plugins.filter.contrast.ContrastPanel;
@@ -320,7 +319,6 @@ public class ImageViewerGui {
 			compactPanelManager.add(new OpacityPanel());
 			//compactPanelManager.add(new QualitySpinner(null));
 			compactPanelManager.add(new SOHOLUTPanel());
-			compactPanelManager.add(new SelectedLayerPanel(null));
 			compactPanelManager.add(new GammaCorrectionPanel());
 			compactPanelManager.add(new ContrastPanel());
 			compactPanelManager.add(new SharpenPanel());
