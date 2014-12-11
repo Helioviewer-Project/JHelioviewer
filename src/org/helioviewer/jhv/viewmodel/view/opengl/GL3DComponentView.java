@@ -10,6 +10,7 @@ import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -412,7 +413,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 	}
 
 	public void saveScreenshot(String imageFormat, File outputFile, int width,
-			int height, String[] descriptions) {
+			int height, ArrayList<String> descriptions) {
 		try {
 			ImageIO.write(this.getBufferedImage(width, height, descriptions), imageFormat,
 					outputFile);
@@ -427,7 +428,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 		backGroundColorHasChanged = true;
 	}
 
-	public BufferedImage getBufferedImage(int width, int height, String[] descriptions) {
+	public BufferedImage getBufferedImage(int width, int height, ArrayList<String> descriptions) {
 		this.canvas.repaint();
 		defaultViewport = this.getAdapter(ViewportView.class).getViewport();
 		
@@ -514,10 +515,11 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 				displayBody(offscreenGL);
 
-				if (descriptions != null && x == 0 && y == countYTiles-1){
+				if (descriptions != null && x == 0 && y == 0){
+					int counter = 0;
 					textRenderer.beginRendering(canvas.getSurfaceWidth(), canvas.getSurfaceHeight());
-					for (int i = 0; i < descriptions.length; i++){
-						textRenderer.draw(descriptions[i], 5, 5 + 40 * i);					
+					for (String description : descriptions){
+						textRenderer.draw(description, 5, 5 + 40 * counter++);					
 					}
 					textRenderer.endRendering();
 				}

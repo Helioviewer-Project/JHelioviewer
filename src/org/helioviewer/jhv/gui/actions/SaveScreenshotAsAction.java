@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.swing.AbstractAction;
@@ -18,6 +19,9 @@ import org.helioviewer.jhv.gui.actions.filefilters.ExtensionFileFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.JPGFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.PNGFilter;
 import org.helioviewer.jhv.layers.LayersModel;
+import org.helioviewer.jhv.opengl.model.GL3DImageLayer;
+import org.helioviewer.jhv.opengl.scenegraph.GL3DDrawBits.Bit;
+import org.helioviewer.jhv.viewmodel.view.opengl.GL3DSceneGraphView;
 
 /**
  * Action to save a screenshot in desired image format at desired location.
@@ -83,17 +87,20 @@ public class SaveScreenshotAsAction extends AbstractAction {
                 selectedFile = new File(selectedFile.getPath() + "." + fileFilter.getDefaultExtension());
             }
 
-            String[] descriptions = null;
+            ArrayList<String> descriptions = null;
 			if (textEnabled) {
-				descriptions = new String[LayersModel.getSingletonInstance()
-						.getNumLayers()];
-				for (int i = 0; i < LayersModel.getSingletonInstance()
-						.getNumLayers(); i++) {
-					descriptions[i] = LayersModel.getSingletonInstance()
-							.getDescriptor(i).title
-							+ " - "
-							+ LayersModel.getSingletonInstance().getDescriptor(
-									i).timestamp.replaceAll(" ", " - ");
+				GL3DSceneGraphView scenegraphView = GuiState3DWCS.mainComponentView.getAdapter(GL3DSceneGraphView.class);
+				descriptions = new ArrayList<String>();
+				int counter = 0;
+				for (GL3DImageLayer layer : scenegraphView.getLayers().getLayers()){
+					if (!layer.isDrawBitOn(Bit.Hidden)){
+						descriptions.add(LayersModel.getSingletonInstance()
+								.getDescriptor(counter).title
+								+ " - "
+								+ LayersModel.getSingletonInstance().getDescriptor(
+										counter).timestamp.replaceAll(" ", " - "));
+					}
+					counter++;
 				}
 			}
             GuiState3DWCS.mainComponentView.saveScreenshot(fileFilter.getDefaultExtension(), selectedFile, this.imageWidth, this.imageHeight, descriptions);

@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
@@ -31,11 +32,14 @@ import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.layers.LayersModel;
+import org.helioviewer.jhv.opengl.model.GL3DImageLayer;
+import org.helioviewer.jhv.opengl.scenegraph.GL3DDrawBits.Bit;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView.SpeedType;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DComponentView;
+import org.helioviewer.jhv.viewmodel.view.opengl.GL3DSceneGraphView;
 
 import com.xuggle.mediatool.IMediaWriter;
 import com.xuggle.mediatool.ToolFactory;
@@ -255,17 +259,20 @@ public class ExportMovieDialog implements ActionListener {
 			stopExportMovie();
 		else {
 			timedJHVJPXView.setCurrentFrame(i, new ChangeEvent());
-			String[] descriptions = null;
+			ArrayList<String> descriptions = null;
 			if (textEnabled) {
-				descriptions = new String[LayersModel.getSingletonInstance()
-						.getNumLayers()];
-				for (int i = 0; i < LayersModel.getSingletonInstance()
-						.getNumLayers(); i++) {
-					descriptions[i] = LayersModel.getSingletonInstance()
-							.getDescriptor(i).title
-							+ " - "
-							+ LayersModel.getSingletonInstance().getDescriptor(
-									i).timestamp.replaceAll(" ", " - ");
+				GL3DSceneGraphView scenegraphView = GuiState3DWCS.mainComponentView.getAdapter(GL3DSceneGraphView.class);
+				descriptions = new ArrayList<String>();
+				int counter = 0;
+				for (GL3DImageLayer layer : scenegraphView.getLayers().getLayers()){
+					if (!layer.isDrawBitOn(Bit.Hidden)){
+						descriptions.add(LayersModel.getSingletonInstance()
+								.getDescriptor(counter).title
+								+ " - "
+								+ LayersModel.getSingletonInstance().getDescriptor(
+										counter).timestamp.replaceAll(" ", " - "));
+					}
+					counter++;
 				}
 			}
 			BufferedImage bufferedImage = mainComponentView.getBufferedImage(
