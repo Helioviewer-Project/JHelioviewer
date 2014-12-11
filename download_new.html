@@ -59,7 +59,7 @@
         
   <div class="disignBoxSecond">
   <div id="detected" class="boxContent">
-    <h1>Detected Plattform</h1>
+    <h1 id="titleDetected">Detected Plattform</h1>
 
 
   </div>
@@ -70,7 +70,7 @@
         
   <div class="disignBoxSecond">
   <div class="boxContent">
-    <h1>Alternativ Plattform</h1>
+    <h1 id="titleAlternativ">Alternativ Plattform</h1>
   <div id="windows" class="disignBoxSecond" style="float:left">
   <div class="boxContent">
     <div>
@@ -110,8 +110,14 @@
   </div>
   </div>
    </div>
-   <div class="disignBoxSecond">
   
+<div class="disignBoxSecond">
+<div class="boxContent">
+  <h1>Download Archive</h1>
+  <a href="download_archive.html">Download archive</a>
+</div>
+</div>
+   <div class="disignBoxSecond">
   <div class="boxContent">
   <h1>Installation Instructions</h1>
   <p>Make sure Java 6 or higher is installed (or <a
@@ -140,7 +146,7 @@ href="http://wiki.helioviewer.org/wiki/JHelioviewer_Handbook">JHelioviewer Handb
 You can also download some of our <a href="data.html">test images and animations</a>.
 -->
 <li>If you find a bug, please <a href="https://bugs.launchpad.net/jhelioviewer/+filebug" target="_blank">report it here</a>. </li>
-<li>JHelioviewer is <a href="https://launchpad.net/jhelioviewer" target="_blank">open source</a> - share and enjoy!</li>
+<li>JHelioviewer is <a href="https://github.com/Helioviewer-Project/JHelioviewer" target="_blank">open source</a> - share and enjoy!</li>
 </ul>
 
 </div>
@@ -192,7 +198,20 @@ You can also download some of our <a href="data.html">test images and animations
     }
   }
   platformDetect();
-  </script>
 
+  function loadRepos(){
+    $.getJSON( "https://api.github.com/repos/Helioviewer-Project/JHelioviewer/releases", function( data ) {
+      var items = [];
+      $.each( data, function( key, value ) {
+        //if (!value["prerelase"]{
+          $("#titleDetected").text("Detected Plattform (Version: " + value["name"] + ")");
+          $("#titleAlternativ").text("Alternativ Plattform (Version: " + value["name"] + ")");
+          return;
+        //}
+      });
+    });
+  }
+  loadRepos();
+  </script>
   </body>
   </html>
