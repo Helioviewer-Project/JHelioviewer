@@ -187,7 +187,7 @@ You can also download some of our <a href="data.html">test images and animations
   <script type="text/javascript">
   function platformDetect(){
   var pathName = String(window.location);
-    if ( (pathName.indexOf('platform=win') != -1) || (pathName.indexOf('##') != -1) ) {
+    if ( String(navigator.platform).toLowerCase().indexOf('win') == 0) {
       $("#windows").appendTo("#detected");
     } else if (String(navigator.platform).toLowerCase().indexOf('mac') == 0) {
       $("#osx").appendTo("#detected");
