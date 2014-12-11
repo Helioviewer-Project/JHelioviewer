@@ -33,16 +33,6 @@ public enum Directories {
             return new File(getPath());
         }
     },
-    /** The JHV state directory. */
-    STATES {
-        public String getPath() {
-            return HOME.getPath() + "States" + File.separator;
-        }
-
-        public File getFile() {
-            return new File(getPath());
-        }
-    },
     /** The remote files directory. */
     REMOTEFILES {
         public String getPath() {
