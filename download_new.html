@@ -114,25 +114,10 @@
   
 <div class="disignBoxSecond">
 <div class="boxContent">
-  <h1>Download Archive</h1>
-  <a href="download_archive.html">Download archive</a>
+  <h1>Other downloads</h1>
+  <a href="download_archive.html">Other downloads</a>
 </div>
 </div>
-   <div class="disignBoxSecond">
-  <div class="boxContent">
-  <h1>Installation Instructions</h1>
-  <p>Make sure Java 6 or higher is installed (or <a
-  href="http://www.java.com/en/download/">download it
-  here</a>) and download the JAR file. Then launch Helioviewer by typing <code>java -Xmx1500m -jar JHelioviewer.jar</code> in a shell in the directory where you have saved the file.
-  </p>
-<p>
-  <a
-  href="http://wiki.helioviewer.org/wiki/JHelioviewer_Handbook#Launching_JHelioviewer_and_System_Requirements"
-  target="_blank">Read more about installing JHelioviewer.</a>
-</p>  
-  
-  </div>
-  </div>
 
 <div class="disignBoxSecond">
 <div class="boxContent">
@@ -205,8 +190,8 @@ You can also download some of our <a href="data.html">test images and animations
       var items = [];
       $.each( data, function( key, value ) {
         //if (!value["prerelase"]{
-          $("#titleDetected").text("Detected Plattform (Version: " + value["name"] + ")");
-          $("#titleAlternativ").text("Alternativ Plattform (Version: " + value["name"] + ")");
+          $("#titleDetected").text("Your Plattform (" + value["name"] + ")");
+          $("#titleAlternativ").text("Other Plattforms");
           return;
         //}
       });
