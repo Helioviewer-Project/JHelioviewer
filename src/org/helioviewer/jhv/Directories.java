@@ -32,16 +32,6 @@ public enum Directories {
         public File getFile() {
             return new File(getPath());
         }
-    },
-    /** The remote files directory. */
-    REMOTEFILES {
-        public String getPath() {
-            return HOME.getPath() + "Downloads" + File.separator;
-        }
-
-        public File getFile() {
-            return new File(getPath());
-        }
     };
     
     /** A String representation of the path of the directory. */

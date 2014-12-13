@@ -385,7 +385,7 @@ public class OpenRemoteFileDialog extends JDialog implements ShowableDialog, Act
                     FileDownloader filedownloader = new FileDownloader();
                     URI newUri = filedownloader.downloadFromHTTP(uri, true);
                     ImageViewerGui.getSingletonInstance().getMainImagePanel().setLoading(false);
-
+                    GuiState3DWCS.mainComponentView.getComponent().repaint();
                     try {
                         APIRequestManager.newLoad(newUri, uri, true);
                         dispose();

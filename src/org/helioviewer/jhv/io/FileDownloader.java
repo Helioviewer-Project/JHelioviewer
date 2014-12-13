@@ -15,13 +15,16 @@ import java.net.URLConnection;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JWindow;
 
-import org.helioviewer.jhv.Directories;
 import org.helioviewer.jhv.base.Message;
 import org.helioviewer.jhv.gui.ImageViewerGui;
+import org.helioviewer.jhv.gui.actions.filefilters.ExtensionFileFilter;
+import org.helioviewer.jhv.gui.actions.filefilters.JP2Filter;
 
 /**
  * Class for downloading files from the internet.
@@ -72,7 +75,7 @@ public class FileDownloader {
         }
 
         String name = sourceURI.getPath().substring(sourceURI.getPath().lastIndexOf('/') + 1);
-        String outFileName = Directories.REMOTEFILES.getPath() + sourceURI.getPath().substring(sourceURI.getPath().lastIndexOf('/') + 1);
+        File outFile = chooseFile(name);
 
         progressBar = new JProgressBar(JProgressBar.HORIZONTAL, 0, 100);
         StandAloneDialog dialog = new StandAloneDialog("Downloading " + name);
@@ -80,7 +83,7 @@ public class FileDownloader {
 
         // if local file name doesn't exist, download file
         try {
-            if (!downloadFile(sourceURI, new File(outFileName))) {
+            if (!downloadFile(sourceURI, outFile)) {
                 if (dialog.wasInterrupted == false) {
                     Message.err("Download", "Unable to download from http", false);
                 }
@@ -95,7 +98,49 @@ public class FileDownloader {
             dialog = null;
         }
         // return destination of file
-        return new File(outFileName).toURI();
+        if (outFile != null)
+        	return outFile.toURI();
+        
+        return null;
+    }
+
+    private File chooseFile(String defaultTargetFileName) {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileHidingEnabled(false);
+        fileChooser.setMultiSelectionEnabled(false);
+        fileChooser.setAcceptAllFileFilterUsed(false);
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        fileChooser.addChoosableFileFilter(new JP2Filter());
+
+        fileChooser.setSelectedFile(new File(defaultTargetFileName));
+
+        int retVal = fileChooser.showSaveDialog(ImageViewerGui.getMainFrame());
+        File selectedFile = null;
+
+        if (retVal == JFileChooser.APPROVE_OPTION) {
+            selectedFile = fileChooser.getSelectedFile();
+
+            // Has user entered the correct extension or not?
+            ExtensionFileFilter fileFilter = (ExtensionFileFilter) fileChooser.getFileFilter();
+
+            if (!fileFilter.accept(selectedFile)) {
+                selectedFile = new File(selectedFile.getPath() + "." + fileFilter.getDefaultExtension());
+            }
+
+            // does the file already exist?
+            if (selectedFile.exists()) {
+
+                // ask if the user wants to overwrite
+                int response = JOptionPane.showConfirmDialog(null, "Overwrite existing file?", "Confirm Overwrite", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+                // if the user doesn't want to overwrite, simply return null
+                if (response == JOptionPane.CANCEL_OPTION) {
+                    return null;
+                }
+            }
+        }
+
+        return selectedFile;
     }
 
     /**

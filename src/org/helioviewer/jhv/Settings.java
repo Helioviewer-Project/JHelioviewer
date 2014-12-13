@@ -29,9 +29,6 @@ public class Settings
             defaultPropStream.close();
             System.out.println(">> Settings.load() > Load default system settings: " + DEFAULT_PROPERTIES.toString());
 
-            if (getProperty("default.local.path") == null) {
-                setProperty("default.local.path", Directories.HOME.getPath());
-            }
         } catch (Exception ex) {
             System.err.println(">> Settings.load(boolean) > Could not load settings");
             ex.printStackTrace();
