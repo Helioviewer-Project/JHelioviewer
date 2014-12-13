@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import org.helioviewer.jhv.Settings;
@@ -26,6 +27,8 @@ import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.ViewListenerDistributor;
+import org.helioviewer.jhv.gui.actions.filefilters.ExtensionFileFilter;
+import org.helioviewer.jhv.gui.actions.filefilters.JP2Filter;
 import org.helioviewer.jhv.gui.components.MoviePanel;
 import org.helioviewer.jhv.gui.components.OverViewPanel;
 import org.helioviewer.jhv.gui.dialogs.MetaDataDialog;
@@ -847,7 +850,6 @@ public class LayersModel implements ViewListener
         {
             return;
         }
-
         FileDownloader fileDownloader=new FileDownloader();
         URI source=view.getAdapter(ImageInfoView.class).getDownloadURI();
 
@@ -868,8 +870,7 @@ public class LayersModel implements ViewListener
                 }
             }
         }
-
-        File downloadDestination=fileDownloader.getDefaultDownloadLocation(view.getAdapter(ImageInfoView.class).getUri());
+        File downloadDestination = chooseFile(view.getAdapter(ImageInfoView.class).getUri().getPath().substring(Math.max(0, source.getPath().lastIndexOf("/"))));
         JHVJP2View mainView=view.getAdapter(JHVJP2View.class);
         try
         {
@@ -909,6 +910,45 @@ public class LayersModel implements ViewListener
         /*
          * if(view.getAdapter(ImageInfoView.class).getUri().getScheme(). equalsIgnoreCase("file")) { this.fireLayerChanged(getNumLayers()); }
          */
+    }
+    
+    private File chooseFile(String defaultTargetFileName) {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileHidingEnabled(false);
+        fileChooser.setMultiSelectionEnabled(false);
+        fileChooser.setAcceptAllFileFilterUsed(false);
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        fileChooser.addChoosableFileFilter(new JP2Filter());
+
+        fileChooser.setSelectedFile(new File(defaultTargetFileName));
+
+        int retVal = fileChooser.showSaveDialog(ImageViewerGui.getMainFrame());
+        File selectedFile = null;
+
+        if (retVal == JFileChooser.APPROVE_OPTION) {
+            selectedFile = fileChooser.getSelectedFile();
+
+            // Has user entered the correct extension or not?
+            ExtensionFileFilter fileFilter = (ExtensionFileFilter) fileChooser.getFileFilter();
+
+            if (!fileFilter.accept(selectedFile)) {
+                selectedFile = new File(selectedFile.getPath() + "." + fileFilter.getDefaultExtension());
+            }
+
+            // does the file already exist?
+            if (selectedFile.exists()) {
+
+                // ask if the user wants to overwrite
+                int response = JOptionPane.showConfirmDialog(null, "Overwrite existing file?", "Confirm Overwrite", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+                // if the user doesn't want to overwrite, simply return null
+                if (response == JOptionPane.CANCEL_OPTION) {
+                    return null;
+                }
+            }
+        }
+
+        return selectedFile;
     }
 
     /**

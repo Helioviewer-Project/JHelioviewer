@@ -8,7 +8,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -53,7 +52,6 @@ import org.helioviewer.jhv.internal_plugins.filter.opacity.OpacityPanel;
 import org.helioviewer.jhv.internal_plugins.filter.sharpen.SharpenPanel;
 import org.helioviewer.jhv.io.APIRequestManager;
 import org.helioviewer.jhv.io.CommandLineProcessor;
-import org.helioviewer.jhv.io.FileDownloader;
 import org.helioviewer.jhv.io.JHVRequest;
 import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTabPanelManager;
 import org.helioviewer.jhv.viewmodel.view.FilterView;
@@ -572,25 +570,6 @@ public class ImageViewerGui {
 			if (jpipUri != null) {
 				try {
 					APIRequestManager.newLoad(jpipUri, true);
-				} catch (IOException e) {
-					Message.err(
-							"An error occured while opening the remote file!",
-							e.getMessage(), false);
-				}
-			}
-		}
-		// //////////////////////
-		// -download
-		// //////////////////////
-
-		for (URI downloadAddress : downloadAddresses) {
-			if (downloadAddress != null) {
-				try {
-					FileDownloader fileDownloader = new FileDownloader();
-					File downloadFile = fileDownloader
-							.getDefaultDownloadLocation(downloadAddress);
-					fileDownloader.get(downloadAddress, downloadFile);
-					APIRequestManager.newLoad(downloadFile.toURI(), true);
 				} catch (IOException e) {
 					Message.err(
 							"An error occured while opening the remote file!",

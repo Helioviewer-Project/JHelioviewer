@@ -19,6 +19,7 @@ import javax.swing.tree.TreePath;
 
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.base.Message;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.components.DynamicModel;
 import org.helioviewer.jhv.gui.interfaces.ShowableDialog;
@@ -470,6 +471,7 @@ public class OpenRemoteFileDialog extends JDialog implements ShowableDialog, Act
                         JOptionPane.showMessageDialog(buttonShow, e.getMessage(), "File not found on streaming server!", JOptionPane.ERROR_MESSAGE);
 
                         ImageViewerGui.getSingletonInstance().getMainImagePanel().setLoading(false);
+                        GuiState3DWCS.mainComponentView.getComponent().repaint();
                     } catch (URISyntaxException e) {
                         e.printStackTrace();
                     } finally {
