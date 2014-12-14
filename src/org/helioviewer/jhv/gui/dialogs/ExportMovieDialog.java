@@ -36,6 +36,7 @@ import org.helioviewer.jhv.opengl.model.GL3DImageLayer;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DDrawBits.Bit;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJP2View.ReaderMode;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView.SpeedType;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DComponentView;
@@ -203,6 +204,11 @@ public class ExportMovieDialog implements ActionListener {
 
 	private void initExportMovie() {
 		mainComponentView = GuiState3DWCS.mainComponentView;
+		for (GL3DImageLayer layer : mainComponentView.getAdapter(GL3DSceneGraphView.class).getLayers().getLayers()){
+			JHVJPXView jhvjpxView = layer.getImageTextureView().getAdapter(JHVJPXView.class);
+            jhvjpxView.setReaderMode(ReaderMode.ONLYFIREONCOMPLETE);
+            jhvjpxView.setPersistent(true);
+        }
 		// mainComponentView.stop();
 		timedJHVJPXView = LinkedMovieManager.getActiveInstance()
 				.getMasterMovie();
@@ -341,6 +347,15 @@ public class ExportMovieDialog implements ActionListener {
 		progressDialog.dispose();
 		//ImageViewerGui.getMainFrame().setEnabled(true);
 		timer.stop();
+		for (GL3DImageLayer layer : mainComponentView.getAdapter(GL3DSceneGraphView.class).getLayers().getLayers()){
+			JHVJPXView jhvjpxView = layer.getImageTextureView().getAdapter(JHVJPXView.class);
+            if (!jhvjpxView.getJP2Image().isMultiFrame()) {
+                jhvjpxView.setReaderMode(ReaderMode.SIGNAL_RENDER_ONCE);
+            } else {
+            	jhvjpxView.setReaderMode(ReaderMode.NEVERFIRE);
+            }
+		}
+
 	}
 
 	public void cancelMovie() {

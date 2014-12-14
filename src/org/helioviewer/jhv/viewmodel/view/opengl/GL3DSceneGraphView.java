@@ -224,7 +224,8 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 
 	private void toggleLayerVisibility(GL3DImageTextureView view) {
 		GL3DNode node = this.imageLayers.getImageLayerForView(view);
-		node.drawBits.toggle(Bit.Hidden);
+		if (node != null)
+			node.drawBits.toggle(Bit.Hidden);
 	}
 
 	private void removeLayersFromSceneGraph(GL3DState state) {
