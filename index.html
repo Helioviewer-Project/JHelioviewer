@@ -9,21 +9,7 @@
 <!-- **** layout stylesheet **** -->
 <link rel="stylesheet" type="text/css" href="style/style.css" />
 
-<script type="text/javascript">
-function platformDetect(){
-var pathName = String(window.location);
-  if ( (pathName.indexOf('platform=win') != -1) || (pathName.indexOf('##') != -1) ) {
-    return;
-  } else if (String(navigator.platform).toLowerCase().indexOf('mac') == 0) {
-    // Mac site
-    window.location.href = "mac.html" ;
-	} else if (String(navigator.platform).toLowerCase().indexOf('linux') == 0) {
-    // Linux site
-    window.location.href = "linux.html" ;
-  }
-}
-platformDetect();
-</script>
+<script src="js/jquery-2.1.1.min.js"></script>
 
 <script type="text/javascript">
 
@@ -75,26 +61,18 @@ platformDetect();
 
 <div class="disignBoxSecond">
 <div class="boxContent">
+  <div style="float:left">
   <h1>JHelioviewer - Explore the Sun</h1>
-<!--<h4><a target="_blank" href="http://blog.helioviewer.org/2013/10/17/normal-helioviewer-services-now-resumed/">NEWS: Normal Helioviewer services now resumed.</a></h4>  
--->
- 
-<p style="float:left">
-  <a href="download.html"><img src="imgs/JHV_2.1_screenshot_w350.png"
-  width="450" alt="Click to download JHelioviewer" /></a>
-<br>
-<a href="download.html">JHelioviewer 2.2.1</a> (updated on 10 April 2012, <a href="https://code.launchpad.net/~helioviewer/jhelioviewer/trunk">revision 477</a>).
-</p>
+</div>
 
-<div style="float:right" class="disignBoxSecond">
+<div style="float:right; width:290px" class="disignBoxSecond">
 <div class="boxContent">
 <h1>Get JHelioviewer</h1>
-<p>
-<a href="downloads/JHelioviewer.exe" onClick="_gaq.push(['_trackPageview', 'downloads/JHelioviewer_n.exe']);"><img src="imgs/Download_JHV2.2_Win.png" width="200" height="60" alt="JHelioviewer for Windows" /></a>
+<div id="download">
+</div>
 <br />
-<a href="download.html">Other Systems and Instructions</a><br>
-<a href="http://www.youtube.com/watch?v=xzSV94LfRwc" target="_blank">2-Minute Video Tutorial</a>
-</p>
+<a href="download.html">Other platforms</a><br>
+<a href="http://www.youtube.com/watch?v=xzSV94LfRwc" target="_blank">2-minute video tutorial</a>
 <p></p>
 <ul>
 <li>Explore 18+ years of <a href="http://sohowww.nascom.nasa.gov">SOHO</a> data</li>
@@ -102,17 +80,28 @@ platformDetect();
 <li>Create your own movies of the Sun</li>
 </ul>
 
+
  
 </div></div>
+
+
+
+<p style="float:left">
+  <a href="download.html"><img src="imgs/JHV_2.1_screenshot_w350.png"
+  width="520" alt="Click to download JHelioviewer" /></a>
+</p>
+
 <!--
 <p style="clear:left">
 </p>
 -->
+
+
 </div>
 </div>
-		
-<div class="disignBoxSecond">
-<div class="boxContent">				
+    
+    <div class="disignBoxSecond" style="width:520; float:left">
+<div class="boxContent">        
   <h1>What is JHelioviewer?</h1>
 <p>
 JHelioviewer is visualization software for solar image data based on the JPEG 2000 compression standard. 
@@ -134,14 +123,15 @@ JPEG 2000 offers many useful new features and has the potential to
 
 <ul>
 <li><a href="pub/Mueller+al_CiSE2009.pdf">Read more: The JHelioviewer paper (published in <i>Computing in Science &amp; Engineering</i> 2009).</a></li>
-<li><a href="http://helioviewer.org" target="_blank">The Helioviewer web application</li>
+<li><a href="http://helioviewer.org" target="_blank">The Helioviewer web application</a></li>
 </ul>
 
 </div>
 </div>
 
+
 <!--close divs for content and site-content-->
-</div>	
+</div>  
 </div>
 
 <div id="footer">
@@ -152,9 +142,63 @@ JPEG 2000 offers many useful new features and has the potential to
 <!-- Please do not remove this part. this template is free - the only thing we ask is to live a link to us.-->
 Design by <a href="http://www.flashdaweb.com/" target="_blank">FlashDaWeb</a>
 </div>
-
 <!--close div id=main-->
 </div>
+
+<script type="text/javascript">
+function platformDetect(){
+  var pathName = String(window.location);
+
+  $.getJSON( "https://api.github.com/repos/Helioviewer-Project/JHelioviewer/releases", function( data ) {
+    var items = [];
+    $.each( data, function( key, value ) {
+      if (!value["prerelase"]){
+        var text = "<div>";
+        if ( String(navigator.platform).toLowerCase().indexOf('windows') == 0) {
+          $.each(value["assets"], function(key, value){
+            if (value["name"].toLowerCase().indexOf(".exe") >= 0){
+              text += "<a href='" + value["browser_download_url"]+ "'><img class='downloadMain' src='imgs/references/windows.png' height='140' /></>";
+            }
+          });    
+        } else if (String(navigator.platform).toLowerCase().indexOf('mac') == 0) {
+          $.each(value["assets"], function(key, value){
+            if (value["name"].toLowerCase().indexOf(".dmg") >= 0){
+              text += "<a href='" + value["browser_download_url"]+ "'><img class='downloadMain' src='imgs/references/osx.png'  height='140' /></>";
+              return false;
+            }
+          });
+        } else if (String(navigator.platform).toLowerCase().indexOf('linux') == 0) {
+          var rpm64, deb64, rpm, deb;
+          $.each(value["assets"], function(key, value){
+            if (value["name"].toLowerCase().indexOf("64_bit.rpm") >= 0){
+              rmp64 = "<a href='" + value["browser_download_url"]+ "'><img class='downloadMain' src='imgs/references/rpm-64.png' height='140' /></>";
+            }
+            else if (value["name"].toLowerCase().indexOf("64_bit.deb") >= 0){
+              deb64 = "<a href='" + value["browser_download_url"]+ "'><img class='downloadMain' src='imgs/references/deb-64.png' height='140'/></>";
+            }
+            else if (value["name"].toLowerCase().indexOf(".rpm") >= 0){
+              rpm = "<a href='" + value["browser_download_url"]+ "'><img class='downloadMain' src='imgs/references/rpm-32.png' height='140' /></>";
+            }
+            else if (value["name"].toLowerCase().indexOf(".deb") >= 0){
+              deb = "<a href='" + value["browser_download_url"]+ "'><img class='downloadMain' src='imgs/references/deb-32.png' height='140' /></>";
+            }
+          });
+
+          text += "<div>"+deb64 + deb+"</div><div>"+rpm64+rpm+"</div>";
+        }
+        text += "</div>"
+        $("#download").append(text);
+        $("a").click(function(){
+          _gaq.push(['_trackPageview', this.href]);
+        })
+        return false;
+      }
+    });
+  });
+}
+platformDetect();
+</script>
+
 
 </body>
 </html>
