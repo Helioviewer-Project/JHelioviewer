@@ -100,8 +100,6 @@ public class ExportMovieDialog implements ActionListener {
 	}
 
 	private int openFileChooser() {
-		// txtTargetFile = JHVDirectory.EXPORTS.getPath() +
-		// "JHV_movie_created_";
 		txtTargetFile = "";
 		SimpleDateFormat dateFormat = new SimpleDateFormat(
 				"yyyy-MM-dd_HH.mm.ss");
@@ -204,12 +202,6 @@ public class ExportMovieDialog implements ActionListener {
 
 	private void initExportMovie() {
 		mainComponentView = GuiState3DWCS.mainComponentView;
-		for (GL3DImageLayer layer : mainComponentView.getAdapter(GL3DSceneGraphView.class).getLayers().getLayers()){
-			JHVJPXView jhvjpxView = layer.getImageTextureView().getAdapter(JHVJPXView.class);
-            jhvjpxView.setReaderMode(ReaderMode.ONLYFIREONCOMPLETE);
-            jhvjpxView.setPersistent(true);
-        }
-		// mainComponentView.stop();
 		timedJHVJPXView = LinkedMovieManager.getActiveInstance()
 				.getMasterMovie();
 		started = true;
@@ -264,7 +256,20 @@ public class ExportMovieDialog implements ActionListener {
 		if (!started)
 			stopExportMovie();
 		else {
-			timedJHVJPXView.setCurrentFrame(i, new ChangeEvent());
+			this.progressDialog.setDescription("Load image data");
+			timedJHVJPXView.setCurrentFrame(i, new ChangeEvent(), true);
+			for (GL3DImageLayer layer : mainComponentView.getAdapter(GL3DSceneGraphView.class).getLayers().getLayers()){
+				JHVJPXView jhvjpxView = layer.getImageTextureView().getAdapter(JHVJPXView.class);
+	            while (jhvjpxView.getCurrentFrameNumber() > jhvjpxView.getImageCacheStatus().getImageCachedCompletelyUntil()){
+	            	try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+	            }
+	        }
+			this.progressDialog.setDescription("Load image metadata");
 			ArrayList<String> descriptions = null;
 			if (textEnabled) {
 				GL3DSceneGraphView scenegraphView = GuiState3DWCS.mainComponentView.getAdapter(GL3DSceneGraphView.class);
@@ -281,6 +286,7 @@ public class ExportMovieDialog implements ActionListener {
 					counter++;
 				}
 			}
+			this.progressDialog.setDescription("Render images");
 			BufferedImage bufferedImage = mainComponentView.getBufferedImage(
 					imageWidth, imageHeight, descriptions);
 
@@ -345,17 +351,7 @@ public class ExportMovieDialog implements ActionListener {
 			}
 		}
 		progressDialog.dispose();
-		//ImageViewerGui.getMainFrame().setEnabled(true);
 		timer.stop();
-		for (GL3DImageLayer layer : mainComponentView.getAdapter(GL3DSceneGraphView.class).getLayers().getLayers()){
-			JHVJPXView jhvjpxView = layer.getImageTextureView().getAdapter(JHVJPXView.class);
-            if (!jhvjpxView.getJP2Image().isMultiFrame()) {
-                jhvjpxView.setReaderMode(ReaderMode.SIGNAL_RENDER_ONCE);
-            } else {
-            	jhvjpxView.setReaderMode(ReaderMode.NEVERFIRE);
-            }
-		}
-
 	}
 
 	public void cancelMovie() {
@@ -368,6 +364,7 @@ public class ExportMovieDialog implements ActionListener {
 		private static final long serialVersionUID = -488930636247393662L;
 		private JProgressBar progressBar;
 		private JButton btnCancel;
+		private JLabel lblDescription;
 		private ExportMovieDialog exportMovieDialog;
 		private final JPanel contentPanel = new JPanel();
 
@@ -393,7 +390,10 @@ public class ExportMovieDialog implements ActionListener {
 				progressBar = new JProgressBar();
 				contentPanel.add(progressBar, BorderLayout.CENTER);
 			}
-
+			{
+				lblDescription = new JLabel("Rendering...");
+				contentPanel.add(lblDescription, BorderLayout.SOUTH);
+			}
 			{
 				JPanel buttonPane = new JPanel();
 				buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -418,6 +418,10 @@ public class ExportMovieDialog implements ActionListener {
 			this.progressBar.setValue(value);
 		}
 
+		public void setDescription(String description){
+			this.lblDescription.setText(description);
+		}
+		
 		@Override
 		public void dispose() {
 			ImageViewerGui.getMainFrame().setEnabled(true);

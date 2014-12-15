@@ -367,6 +367,7 @@ public class TopToolBar extends JToolBar implements MouseListener {
 		this.resetCamera.setEnabled(false);
 		this.rotateButton.setEnabled(false);
 		this.zoomBoxButton.setEnabled(true);
+		this.rotateButtonYAxis.setEnabled(false);
 		
 	}
 	
@@ -375,6 +376,7 @@ public class TopToolBar extends JToolBar implements MouseListener {
 		this.resetCamera.setEnabled(true);
 		this.rotateButton.setEnabled(true);
 		this.zoomBoxButton.setEnabled(false);
+		this.rotateButtonYAxis.setEnabled(true);
 	}
 
 	public void toogleCoronaButton() {

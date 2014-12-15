@@ -80,9 +80,7 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener {
 							(JHVJPXView) timestampReason.getView())) {
 				
 				currentDate = LayersModel.getSingletonInstance().getCurrentFrameTimestamp(LayersModel.getSingletonInstance().getActiveView()).getTime();
-				if (startDate == null)
-					this.startDate = getStartDate();
-
+				
 				long timediff = (currentDate.getTime() - startDate.getTime()) / 1000;
 				if (timediff == 0) return;
 				double rotation = DifferentialRotation
@@ -199,8 +197,8 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener {
 
 	@Override
 	public void setTrack(boolean track) {
-		this.track = track;
 		this.resetStartPosition();
+		this.track = track;
 	}
 
 	@Override

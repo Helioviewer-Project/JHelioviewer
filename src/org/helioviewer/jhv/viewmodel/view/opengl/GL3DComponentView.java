@@ -437,7 +437,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 		Viewport viewport = StaticViewport.createAdaptedViewport(tileWidth, tileHeight);
 		this.getAdapter(ViewportView.class).setViewport(viewport,
-				new ChangeEvent());
+				new ChangeEvent());		
 
 		System.out.println(">> GLComponentView.display() > Start taking screenshot");
 		double xTiles = width / (double) tileWidth;
