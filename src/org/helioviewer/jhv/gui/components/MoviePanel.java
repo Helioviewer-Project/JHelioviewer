@@ -841,11 +841,10 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
 
                 // move frame
                 ImmutableDateTime maxAvialableDateTime = newPanel.view.getFrameDateTime(newPanel.view.getMaximumAccessibleFrameNumber());
-
                 if (maxAvialableDateTime.getMillis() >= copyFrom.view.getCurrentFrameDateTime().getMillis()) {
                     newPanel.view.setCurrentFrame(copyFrom.view.getCurrentFrameDateTime(), new ChangeEvent());
                 } else {
-                    newPanel.view.setCurrentFrame(newPanel.view.getMaximumAccessibleFrameNumber(), new ChangeEvent());
+                    newPanel.view.setCurrentFrame(0, new ChangeEvent());
                 }
             }
 
