@@ -2,6 +2,8 @@ package org.helioviewer.jhv;
 
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.UUID;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import org.helioviewer.jhv.base.FileUtils;
@@ -10,6 +12,23 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_Kdu_cache;
 public class Settings
 {
     private static final Properties DEFAULT_PROPERTIES = new Properties();
+    
+    static
+    {
+        if(Preferences.userRoot().get("UUID",null)==null)
+        {
+            Preferences.userRoot().put("UUID",UUID.randomUUID().toString());
+            try
+            {
+                Preferences.userRoot().flush();
+            }
+            catch(BackingStoreException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+    
 
     /**
      * The private constructor of this class.
@@ -28,7 +47,6 @@ public class Settings
             DEFAULT_PROPERTIES.load(defaultPropStream);
             defaultPropStream.close();
             System.out.println(">> Settings.load() > Load default system settings: " + DEFAULT_PROPERTIES.toString());
-
         } catch (Exception ex) {
             System.err.println(">> Settings.load(boolean) > Could not load settings");
             ex.printStackTrace();

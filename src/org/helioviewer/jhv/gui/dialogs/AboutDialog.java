@@ -54,7 +54,7 @@ public final class AboutDialog extends JDialog implements ActionListener, Showab
 
         JEditorPane content = new JEditorPane("text/html", "<html><center><font style=\"font-family: '" + font.getFamily() + "'; font-size: " + font.getSize() + ";\">" + "<b>"
         + "JHelioviewer " + JHVGlobals.VERSION_AND_RELEASE
-        + "</b><br>" + '\u00A9' + "2014 ESA JHelioviewer Team<br>" + "Part of the ESA/NASA Helioviewer project<br><br>" + "JHelioviewer is released under the <br>" + "<a href=JHelioviewer.txt>Mozilla Public License Version 2.0</a><br><br>" + "<a href='http://www.jhelioviewer.org'>www.jhelioviewer.org</a><br><br>" + "Contact: <a href='mailto:Daniel.Mueller@esa.int'>Daniel.Mueller@esa.int</a>" + "</font></center></html>");
+        + "</b><br>" + '\u00A9' + "2015 ESA JHelioviewer Team<br>" + "Part of the ESA/NASA Helioviewer project<br><br>" + "JHelioviewer is released under the <br>" + "<a href=JHelioviewer.txt>Mozilla Public License Version 2.0</a><br><br>" + "<a href='http://www.jhelioviewer.org'>www.jhelioviewer.org</a><br><br>" + "Contact: <a href='mailto:Daniel.Mueller@esa.int'>Daniel.Mueller@esa.int</a>" + "</font></center></html>");
         content.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         content.setEditable(false);
         content.setFocusable(false);
@@ -80,7 +80,7 @@ public final class AboutDialog extends JDialog implements ActionListener, Showab
 
         "<p>This software uses libraries from the <a href=http://ffmpeg.org/>FFmpeg project</a>,<br> licensed under the <a href=FFmpeg.txt>LGPLv2.1</a>.<br>" +
 
-        "<p>This software uses the Chrystal Project, licensed under the LGPL.<br> Its source code can be downloaded <a href=\"http://everaldo.com/crystal/?action=downloads\">here</a>.<br>" +
+        "<p>This software uses Crystal icons, licensed under the LGPL.<br><br>" +
 
         "<p>This software uses the <a href=\"http://www.davekoelle.com/alphanum.html\">Alphanum Algorithm</a>, licensed under the LGPLv2.1.<br> Its source code can be downloaded <a href=\"http://jhelioviewer.org/libjhv/external/AlphanumComparator.java\">here</a>.<br>";
 

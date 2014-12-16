@@ -61,10 +61,8 @@ public class HEKRequestStructureThread extends HEKRequest implements Runnable {
     }
 
     public void requestStructure(Interval<Date> interval) {
-
         int page = 1;
         boolean hasMorePages = true;
-
         try {
 
             while (hasMorePages && page < (HEKSettings.REQUEST_STRUCTURE_MAXPAGES - 1)) {

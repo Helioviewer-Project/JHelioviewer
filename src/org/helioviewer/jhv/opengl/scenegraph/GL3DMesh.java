@@ -130,7 +130,7 @@ public abstract class GL3DMesh extends GL3DShape {
 
     public void shapeDraw(GL3DState state) {
         meshLock.lock();
-
+        
         // If Mesh does not have any data, do not draw!
         if (this.positions.size() < 1) {
             // Log.debug("Mesh '"+this+"' is not initialised, abortingDraw");

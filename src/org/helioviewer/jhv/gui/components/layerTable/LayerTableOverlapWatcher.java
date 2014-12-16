@@ -4,15 +4,10 @@ import java.util.Date;
 
 import org.helioviewer.jhv.base.Message;
 import org.helioviewer.jhv.base.math.Interval;
-import org.helioviewer.jhv.gui.components.MoviePanel;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
-import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
-import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.jp2view.ImmutableDateTime;
-import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
-import org.helioviewer.jhv.viewmodel.view.opengl.GL3DImageTextureView;
 
 /**
  * This class performs checks if the added layers fit the rest of the already

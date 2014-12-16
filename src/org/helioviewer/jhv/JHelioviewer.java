@@ -140,7 +140,9 @@ public class JHelioviewer {
         Settings.apply();
 
         /* ----------Setup OpenGL ----------- */
+        splash.setProgressText("Setting up the UI...");
         splash.nextStep();
+        ImageViewerGui.getMainFrame();
 
         // Check for updates in parallel, if newer version is available a small
         // message is displayed
@@ -153,13 +155,13 @@ public class JHelioviewer {
             e.printStackTrace();
         }
 
-        System.out.println("Installing Overlap Watcher");
+        System.out.println("Installing overlap watcher");
         LayerTableOverlapWatcher overlapWatcher = new LayerTableOverlapWatcher();
         LayersModel.getSingletonInstance().addLayersListener(overlapWatcher);
 
         /* ----------Setup Plug-ins ----------- */
 
-        splash.setProgressText("Loading Plugins...");
+        splash.setProgressText("Loading plugins...");
         splash.nextStep();
 
         // Load Plug ins at the very last point
@@ -173,7 +175,7 @@ public class JHelioviewer {
         for(Plugin plugin:new Plugin[]{new PfssPlugin() , new HEKPlugin3D(), new SDOCutOutPlugin3D()})
             PluginManager.getSingeltonInstance().addPlugin(plugin.getClass().getClassLoader(), plugin, null);
 
-        splash.setProgressText("Displaying main window...");
+        splash.setProgressText("Showing main window...");
         splash.nextStep();
         // Create main view chain and display main window
         System.out.println("Start main window");

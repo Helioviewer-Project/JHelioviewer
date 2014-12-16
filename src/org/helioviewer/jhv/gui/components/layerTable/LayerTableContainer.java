@@ -33,11 +33,8 @@ public class LayerTableContainer extends JPanel implements LayersListener {
      *            - the Component to show if no layers exist
      */
     public LayerTableContainer(Component table, Component empty) {
-
         super();
-
         this.setLayout(cl);
-
         this.add(empty, "empty");
         this.add(table, "table");
 
