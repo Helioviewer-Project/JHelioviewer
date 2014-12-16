@@ -142,7 +142,7 @@ function platformDetect(){
         });
         linux = "<div>" + deb64 + deb + rpm64 + rpm + "</div>";
 
-        if ( String(navigator.platform).toLowerCase().indexOf('windows') == 0) {
+        if ( String(navigator.platform).toLowerCase().indexOf('win') == 0) {
           $("#detected").append(startBox + "<h1>Windows</h1>" + windows + endBox);
           $("#otherDownload").append(startBoxFloat + "<h2>OSX</h2>" + osx + endBox + startBoxFloat + " <h2>Linux</h2>" + linux + endBox);
         } else if (String(navigator.platform).toLowerCase().indexOf('mac') == 0) {
