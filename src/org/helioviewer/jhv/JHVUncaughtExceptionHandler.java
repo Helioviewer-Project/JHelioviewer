@@ -162,7 +162,6 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
             if(thr!=Thread.currentThread() && (!thr.getThreadGroup().getName().equalsIgnoreCase("system") || thr.getName().contains("Timer")))
                 try
                 {
-                    System.out.println("Suspended: "+thr.getName()+" "+thr.getThreadGroup().getName());
                     thr.suspend();
                 }
                 catch(Throwable _th)
@@ -172,7 +171,6 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
         	if(thr!=Thread.currentThread() && (!thr.getThreadGroup().getName().equalsIgnoreCase("system") || thr.getName().contains("Timer")))
                 try
                 {
-                    System.out.println("Stopped: "+thr.getName()+" "+thr.getThreadGroup().getName());
                     thr.stop();
                 }
                 catch(Throwable _th)
