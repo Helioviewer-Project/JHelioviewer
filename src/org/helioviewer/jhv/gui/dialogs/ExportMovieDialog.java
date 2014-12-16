@@ -36,7 +36,6 @@ import org.helioviewer.jhv.opengl.model.GL3DImageLayer;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DDrawBits.Bit;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
-import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJP2View.ReaderMode;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView.SpeedType;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DComponentView;

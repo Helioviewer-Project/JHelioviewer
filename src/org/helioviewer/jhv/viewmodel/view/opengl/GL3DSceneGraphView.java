@@ -12,7 +12,9 @@ import org.helioviewer.jhv.base.GL3DKeyController.GL3DKeyListener;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.math.Vector4d;
 import org.helioviewer.jhv.base.physics.Constants;
+import org.helioviewer.jhv.gui.GL3DCameraSelectorModel;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
+import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
 import org.helioviewer.jhv.opengl.camera.GL3DCameraZoomAnimation;
 import org.helioviewer.jhv.opengl.model.GL3DFramebufferImage;
@@ -262,7 +264,8 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 				// If there is data, zoom to fit
 				MetaDataView metaDataView = getAdapter(MetaDataView.class);
 				if (metaDataView != null && metaDataView.getMetaData() != null) {
-					Region region = metaDataView.getMetaData()
+					View view = LayersModel.getSingletonInstance().getActiveView();
+					Region region = view.getAdapter(MetaDataView.class).getMetaData()
 							.getPhysicalRegion();
 					double halfWidth = region.getWidth() / 2;
 					double halfFOVRad = Math.toRadians(camera.getFOV() / 2);
@@ -273,6 +276,8 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 					// Log.debug("GL3DZoomFitAction: Distance = "+distance+" Existing Distance: "+camera.getZTranslation());
 					camera.addCameraAnimation(new GL3DCameraZoomAnimation(
 							distance, 500));
+					GL3DCameraSelectorModel.getInstance().rotateToCurrentLayer(500);
+
 				}
 			}
 			this.layersToAdd.clear();

@@ -20,7 +20,6 @@ import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState.VISUAL_TYPE;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DCameraView;
-import org.helioviewer.jhv.viewmodel.view.opengl.GL3DComponentView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DCoordinateSystemView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DSceneGraphView;
 
@@ -111,16 +110,8 @@ public class GL3DCameraSelectorModel extends AbstractListModel<Object>
 		}
 	}
 
-	private GL3DComponentView getMainView() {
-		return GuiState3DWCS.mainComponentView;
-	}
-
 	private GL3DCameraView getCameraView() {
-		GL3DComponentView mainView = getMainView();
-		if (mainView != null) {
-			return mainView.getAdapter(GL3DCameraView.class);
-		}
-		return null;
+		return GuiState3DWCS.mainComponentView.getAdapter(GL3DCameraView.class);
 	}
 
 	public GL3DTrackballCamera getTrackballCamera() {
