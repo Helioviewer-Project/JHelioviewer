@@ -8,6 +8,7 @@ import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRayTracer;
+import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DSceneGraphView;
 
 /**
@@ -24,6 +25,7 @@ public class GL3DTrackballRotationInteraction extends GL3DDefaultInteraction {
 	private Vector3d currentRotationEndPoint;
 	private volatile Quaternion3d currentDragRotation;
 	private boolean yAxisBlocked = false;
+	private boolean played;
 
 	protected GL3DTrackballRotationInteraction(GL3DTrackballCamera camera,
 			GL3DSceneGraphView sceneGraph) {
@@ -68,11 +70,18 @@ public class GL3DTrackballRotationInteraction extends GL3DDefaultInteraction {
 	public void mouseReleased(MouseEvent e, GL3DCamera camera) {
 		this.currentRotationStartPoint = null;
 		this.currentRotationEndPoint = null;
-
+		
 		camera.fireCameraMoved();
+		if (this.played){
+			LinkedMovieManager.getActiveInstance().playLinkedMovies();
+		}
 	}
 
 	public void mousePressed(MouseEvent e, GL3DCamera camera) {
+		this.played = LinkedMovieManager.getActiveInstance().isPlaying();
+		if (played){
+			LinkedMovieManager.getActiveInstance().pauseLinkedMovies();
+		}
 		// The start point of the rotation remains the same during a drag,
 		// because the
 		// mouse should always point to the same Point on the Surface of the
