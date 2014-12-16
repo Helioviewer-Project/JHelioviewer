@@ -11,18 +11,6 @@ import java.io.File;
  * 
  */
 public enum Directories {
-    /** The home directory. */
-    HOME {
-        private final String path = System.getProperty("user.home");
-
-        public String getPath() {
-            return path + File.separator + "JHelioviewer" + File.separator;
-        }
-
-        public File getFile() {
-            return new File(getPath());
-        }
-    },
     /** The image cache directory. */
     CACHE {
         public String getPath() {
@@ -45,22 +33,6 @@ public enum Directories {
     static
     {
         new File(CACHE.getPath()).mkdir();
-    }
-    
-    /**
-     * Attempts to create the necessary directories if they do not exist. It
-     * gets its list of directories to create from the JHVDirectory class.
-     * 
-     * @throws SecurityException
-     */
-    public static void createDirs() throws SecurityException {
-        Directories[] dirs = Directories.values();
-        for (Directories dir : dirs) {
-            File f = dir.getFile();
-            if (!f.exists()) {
-                f.mkdirs();
-            }
-        }
     }
 }
 

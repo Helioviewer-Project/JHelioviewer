@@ -32,7 +32,7 @@ public class UpdateChecker implements Runnable {
     /**
      * File address to check for updates
      */
-    private final URL updateURL;
+    private final URL UPDATE_URL;
     /**
      * Determines whether to show a message box if already the latest version is
      * running and if a message box is shown in case of an error.
@@ -51,7 +51,7 @@ public class UpdateChecker implements Runnable {
      *             Error while parsing the internal update URL
      */
     public UpdateChecker() throws MalformedURLException {
-        updateURL = new URL("http://jhelioviewer.org/updateJHV.txt");
+        UPDATE_URL = new URL("http://jhelioviewer.org/updateJHV.txt");
         verbose = false;
     }
 
@@ -87,7 +87,7 @@ public class UpdateChecker implements Runnable {
         }
         System.out.println("Start checking for updates");
         try {
-            BufferedReader in = new BufferedReader(new InputStreamReader(new DownloadStream(updateURL, JHVGlobals.getStdConnectTimeout(), JHVGlobals.getStdReadTimeout()).getInput()));
+            BufferedReader in = new BufferedReader(new InputStreamReader(new DownloadStream(UPDATE_URL, JHVGlobals.getStdConnectTimeout(), JHVGlobals.getStdReadTimeout()).getInput()));
             String[] versionParts = in.readLine().split("\\.");
             double version = -1;
             switch(versionParts.length)

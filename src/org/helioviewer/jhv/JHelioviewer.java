@@ -90,8 +90,8 @@ public class JHelioviewer {
         System.out.println("JHelioviewer started with command-line options:" + argString);
 
         // This attempts to create the necessary directories for the application
-        System.out.println("Create directories...");
-        Directories.createDirs();
+        //System.out.println("Create directories...");
+        //Directories.createDirs();
         
         System.out.println("Initializing JHelioviewer");
         // display the splash screen
@@ -164,7 +164,7 @@ public class JHelioviewer {
 
         // Load Plug ins at the very last point
         System.out.println("Load plugin settings");
-        PluginManager.getSingeltonInstance().loadSettings(Directories.HOME.getPath());
+        //PluginManager.getSingeltonInstance().loadSettings(JHVDirectorie.HOME.getPath());
 
         System.out.println("Add internal plugin: " + "FilterPlugin");
         Plugin internalPlugin = new InternalFilterPlugin();

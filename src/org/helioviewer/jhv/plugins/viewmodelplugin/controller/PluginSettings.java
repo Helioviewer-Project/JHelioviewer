@@ -3,7 +3,6 @@ package org.helioviewer.jhv.plugins.viewmodelplugin.controller;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.net.URI;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -25,7 +24,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 /**
  * This class handles to write and read the settings made to plug-ins into a
@@ -56,7 +54,7 @@ public class PluginSettings {
 
     private static final String PLUGIN_FILENAME = "PluginProperties.xml";
 
-    private static PluginSettings singeltonInstance = new PluginSettings();
+    private static final PluginSettings SINGLETON = new PluginSettings();
 
     private String settingsFileName;
 
@@ -77,6 +75,8 @@ public class PluginSettings {
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
         }
+        pluginsRootNode = xmlDocument.createElement(NODES_PLUGINS);
+        xmlDocument.appendChild(pluginsRootNode);
     }
 
     /**
@@ -85,7 +85,7 @@ public class PluginSettings {
      * @return the only instance of this class.
      * */
     public static PluginSettings getSingeltonInstance() {
-        return singeltonInstance;
+        return SINGLETON;
     }
 
     /**
@@ -95,19 +95,15 @@ public class PluginSettings {
      *            Path of the directory where the plug-in settings file is
      *            saved.
      */
-    public void loadPluginSettings(String settingsFilePath) {
-        settingsFileName = settingsFilePath + PLUGIN_FILENAME;
+    public void loadPluginSettings(String dir) {
+        settingsFileName = dir + PLUGIN_FILENAME;
 
         if (new File(settingsFileName).exists()) {
             // load XML from file
             try {
                 DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
                 xmlDocument = docBuilder.parse(settingsFileName);
-            } catch (ParserConfigurationException e) {
-                e.printStackTrace();
-            } catch (SAXException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

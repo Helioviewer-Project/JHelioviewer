@@ -80,7 +80,7 @@ public class LayersModel implements ViewListener
     private int activeLayer=-1;
 
     /** The sole instance of this class. */
-    private static final LayersModel LAYERS_MODEL=new LayersModel();
+    private static final LayersModel SINGLETON=new LayersModel();
 
     private AbstractList<LayersListener> layerListeners=new LinkedList<LayersListener>();
 
@@ -94,7 +94,7 @@ public class LayersModel implements ViewListener
      * */
     public static LayersModel getSingletonInstance()
     {
-        return LAYERS_MODEL;
+        return SINGLETON;
     }
 
     public LayersModel()
@@ -1323,13 +1323,13 @@ public class LayersModel implements ViewListener
             return ld;
         }
 
-        ld.isMovie=LAYERS_MODEL.isMovie(view);
-        ld.isMaster=LAYERS_MODEL.isMaster(view);
-        ld.isVisible=LAYERS_MODEL.isVisible(view);
-        ld.isTimed=LAYERS_MODEL.isTimed(view);
-        ld.title=LAYERS_MODEL.getName(view);
-        ld.observatory=LAYERS_MODEL.getObservatory(view);
-        ld.timestamp=LAYERS_MODEL.getCurrentFrameTimestampString(view);
+        ld.isMovie=SINGLETON.isMovie(view);
+        ld.isMaster=SINGLETON.isMaster(view);
+        ld.isVisible=SINGLETON.isVisible(view);
+        ld.isTimed=SINGLETON.isTimed(view);
+        ld.title=SINGLETON.getName(view);
+        ld.observatory=SINGLETON.getObservatory(view);
+        ld.timestamp=SINGLETON.getCurrentFrameTimestampString(view);
 
         return ld;
 
