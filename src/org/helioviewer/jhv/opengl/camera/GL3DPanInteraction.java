@@ -12,6 +12,7 @@ import org.helioviewer.jhv.opengl.scenegraph.GL3DState.VISUAL_TYPE;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRayTracer;
 import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
 import org.helioviewer.jhv.viewmodel.view.MetaDataView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DSceneGraphView;
 
@@ -28,6 +29,7 @@ public class GL3DPanInteraction extends GL3DDefaultInteraction {
 	private double z;
 	private Vector3d defaultTranslation;
 	private GL3DRayTracer rayTracer;
+	private boolean played;
 
 	protected GL3DPanInteraction(GL3DTrackballCamera camera,
 			GL3DSceneGraphView sceneGraph) {
@@ -35,6 +37,8 @@ public class GL3DPanInteraction extends GL3DDefaultInteraction {
 	}
 
 	public void mousePressed(MouseEvent e, GL3DCamera camera) {
+		this.played = LinkedMovieManager.getActiveInstance().isPlaying();
+		if (this.played) LinkedMovieManager.getActiveInstance().pauseLinkedMovies();
 		if (GL3DState.get().getState() == VISUAL_TYPE.MODE_3D){
 			this.mousePressed3DFunction(e, camera);
 		}
@@ -151,6 +155,7 @@ public class GL3DPanInteraction extends GL3DDefaultInteraction {
 @Override
 	public void mouseReleased(MouseEvent e, GL3DCamera camera) {
 		camera.fireCameraMoved();
+		if (this.played) LinkedMovieManager.getActiveInstance().playLinkedMovies();
 	}
 
 	protected Vector3d getHitPoint(Point p) {

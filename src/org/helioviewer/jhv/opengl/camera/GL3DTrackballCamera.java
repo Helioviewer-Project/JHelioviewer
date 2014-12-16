@@ -115,7 +115,7 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener {
 
 	private void resetStartPosition() {
 		this.startDate = getStartDate();
-
+		this.currentRotation = 0;
 		double x = this.getTranslation().x;
 		double y = this.getTranslation().y;
 		if (x * x + y * y < Constants.SUN_RADIUS * Constants.SUN_RADIUS) {

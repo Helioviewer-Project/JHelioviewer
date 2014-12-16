@@ -6,7 +6,6 @@ import java.util.List;
 import javax.media.opengl.GL;
 
 import org.helioviewer.jhv.base.math.Matrix4d;
-import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.math.Vector4d;
 import org.helioviewer.jhv.base.physics.Constants;
@@ -178,10 +177,6 @@ public class GL3DImageLayer extends GL3DGroup implements GL3DCameraListener {
 
 		this.doUpdateROI = true;
 		this.markAsChanged();
-		Quaternion3d phiRotation = Quaternion3d.createRotation(2 * Math.PI - phi,
-				new Vector3d(0, 1, 0));
-		state.activeCamera.getRotation().set(phiRotation);
-		state.activeCamera.updateCameraTransformation();
 		updateROI(state.activeCamera);
 	}
 
