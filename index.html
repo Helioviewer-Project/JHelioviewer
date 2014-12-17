@@ -168,7 +168,7 @@ function platformDetect(){
             }
           });
         } else if (String(navigator.platform).toLowerCase().indexOf('linux') == 0) {
-          var rpm64, deb64, rpm, deb;
+          var rpm64 = "", deb64 ="", rpm = "", deb ="", jar="";
           $.each(value["assets"], function(key, value){
             if (value["name"].toLowerCase().indexOf("64_bit.rpm") >= 0){
               rmp64 = "<a href='" + value["browser_download_url"]+ "'><img class='downloadMain' src='imgs/references/rpm-64.png' height='140' /></>";
@@ -182,12 +182,20 @@ function platformDetect(){
             else if (value["name"].toLowerCase().indexOf(".deb") >= 0){
               deb = "<a href='" + value["browser_download_url"]+ "'><img class='downloadMain' src='imgs/references/deb-32.png' height='140' /></>";
             }
+            else if (value["name"].toLowerCase().indexOf(".jar") >= 0){
+              jar = "<a href='" + value["browser_download_url"]+ "'><img  id='jar' class='downloadMain' src='imgs/references/all_platforms.png' height='140' /></a>";
+            }
           });
-
-          text += "<div>"+deb64 + deb+"</div><div>"+rpm64+rpm+"</div>";
+          if (rpm64 != "" || deb64 != "" || rpm != "" || deb != ""){
+            text += "<div>"+deb64 + deb+"</div><div>"+rpm64+rpm+"</div>";
+          }
+          else{
+            text += jar;
+          }
         }
         text += "</div>"
         $("#download").append(text);
+        
         $("a").click(function(){
           _gaq.push(['_trackPageview', this.href]);
         })

@@ -119,7 +119,7 @@ function platformDetect(){
         var startBox = "<div class='disignBoxSecond'><div class='boxContent'>";
         var startBoxFloat = "<div class='disignBoxSecond' style='float:left'><div class='boxContent'>";
         var endBox = "</div></div>"
-        var windows="", osx="", linux="", deb64="", deb="", rpm64="", rpm ="";
+        var windows="", osx="", linux="", deb64="", deb="", rpm64="", rpm ="", jar ="";
         $.each(value["assets"], function(key, value){
           if (value["name"].toLowerCase().indexOf(".exe") >= 0){
             windows += "<a href='" + value["browser_download_url"]+ "'><img id='windows' class='downloadMain' src='imgs/references/windows.png' height='140' /></a>";
@@ -133,24 +133,42 @@ function platformDetect(){
           else if (value["name"].toLowerCase().indexOf("64_bit.deb") >= 0){
             deb64 = "<a href='" + value["browser_download_url"]+ "'><img id='deb-64' class='downloadMain' src='imgs/references/deb-64.png' height='140'/></a>";
           }
-          else if (value["name"].toLowerCase().indexOf(".jar") >= 0){
+          else if (value["name"].toLowerCase().indexOf(".rpm") >= 0){
             rpm = "<a href='" + value["browser_download_url"]+ "'><img  id='rpm-32' class='downloadMain' src='imgs/references/rpm-32.png' height='140' /></a>";
           }
           else if (value["name"].toLowerCase().indexOf(".deb") >= 0){
             deb = "<a href='" + value["browser_download_url"]+ "'><img  id='deb-32' class='downloadMain' src='imgs/references/deb-32.png' height='140' /></a>";
           } 
-        });
-        linux = "<div>" + deb64 + deb + rpm64 + rpm + "</div>";
+          else if (value["name"].toLowerCase().indexOf(".jar") >= 0){
+            jar = "<a href='" + value["browser_download_url"]+ "'><img  id='jar' class='downloadMain' src='imgs/references/all_platforms.png' height='140' /></a>";
+          }
 
+        });
+        if (rpm64 != "" || deb64 != "" || rpm != "" || deb != ""){
+          linux = "<div>" + deb64 + deb + rpm64 + rpm + "</div>";
+        }
+        var otherPlatforms = "";
+        if (windows != "" && (String(navigator.platform).toLowerCase().indexOf('win')) != 0){
+          otherPlatforms += startBoxFloat + "<h2>Windows</h2>" + windows + endBox;
+        }
+        if (osx != "" && (String(navigator.platform).toLowerCase().indexOf('mac')) != 0){
+          otherPlatforms += startBoxFloat + "<h2>OSX</h2>" + osx + endBox;  
+        }
+        if (linux != "" && (String(navigator.platform).toLowerCase().indexOf('linux')) != 0){
+          otherPlatforms += startBoxFloat + " <h2>Linux</h2>" + linux + endBox            
+        }
+        if (jar != ""){
+          otherPlatforms += startBoxFloat + " <h2>All platforms</h2>" + jar + endBox
+        }
         if ( String(navigator.platform).toLowerCase().indexOf('win') == 0) {
           $("#detected").append(startBox + "<h1>Windows</h1>" + windows + endBox);
-          $("#otherDownload").append(startBoxFloat + "<h2>OSX</h2>" + osx + endBox + startBoxFloat + " <h2>Linux</h2>" + linux + endBox);
+          $("#otherDownload").append(otherPlatforms);
         } else if (String(navigator.platform).toLowerCase().indexOf('mac') == 0) {
           $("#detected").append(startBox + "<h1>OS X</h1>" + osx + endBox);
-          $("#otherDownload").append(startBoxFloat + "<h2>Windows</h2>" + windows + endBox + startBoxFloat + "<h2>Linux</h2>" + linux + endBox);
+          $("#otherDownload").append(otherPlatforms);
         } else if (String(navigator.platform).toLowerCase().indexOf('linux') == 0) {    
           $("#detected").append(startBox + "<h1>Linux</h1>" + linux + endBox);
-          $("#otherDownload").append(startBoxFloat + "<h2>Windows</h2>" + windows + endBox + startBoxFloat + "<h2>OSX</h2>" + osx + endBox);
+          $("#otherDownload").append(otherPlatforms);
         }
         $("a").click(function(){
           _gaq.push(['_trackPageview', this.href]);
