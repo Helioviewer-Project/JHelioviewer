@@ -1,11 +1,16 @@
 package org.helioviewer.jhv.gui.dialogs;
 
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
@@ -45,10 +50,10 @@ public final class AboutDialog extends JDialog implements ActionListener, Showab
         setResizable(false);
 
         JPanel contentPane = new JPanel(new BorderLayout());
-
+        JPanel headerPanel = new JPanel(new BorderLayout());
         JLabel logo = new JLabel(IconBank.getIcon(JHVIcon.HVLOGO_SMALL));
         logo.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        contentPane.add(logo, BorderLayout.WEST);
+        headerPanel.add(logo, BorderLayout.WEST);
 
         Font font = this.getFont();
 
@@ -60,8 +65,67 @@ public final class AboutDialog extends JDialog implements ActionListener, Showab
         content.setFocusable(false);
         content.setOpaque(false);
         content.addHyperlinkListener(this);
-        contentPane.add(content, BorderLayout.CENTER);
-
+        headerPanel.add(content, BorderLayout.CENTER);
+        contentPane.add(headerPanel, BorderLayout.NORTH);
+        
+        JPanel librariesPanel = new JPanel(new BorderLayout());
+        
+        JPanel libraries = new JPanel(new GridLayout(1, 2));
+        JLabel install4j = new JLabel(new ImageIcon(IconBank.getImage(JHVIcon.INSTALL4J)));
+        install4j.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        install4j.addMouseListener(new MouseListener() {			
+			@Override
+			public void mouseReleased(MouseEvent e) {
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent e) {
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent e) {
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				JHVGlobals.openURL("http://www.ej-technologies.com/products/install4j/overview.html");
+			}
+		});
+        JLabel raygunIo = new JLabel(IconBank.getIcon(JHVIcon.RAYGUN_IO));
+        raygunIo.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        raygunIo.addMouseListener(new MouseListener() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent e) {
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent e) {
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				JHVGlobals.openURL("https://raygun.io");
+			}
+		});
+        libraries.add(install4j);
+        libraries.add(raygunIo);
+        librariesPanel.add(new JSeparator(), BorderLayout.NORTH);
+        librariesPanel.add(libraries, BorderLayout.CENTER);
+        contentPane.add(librariesPanel, BorderLayout.CENTER);
+        
+        IconBank.getIcon(JHVIcon.INSTALL4J).toString();
         JPanel boxPanel = new JPanel();
         boxPanel.setLayout(new BoxLayout(boxPanel, BoxLayout.PAGE_AXIS));
 

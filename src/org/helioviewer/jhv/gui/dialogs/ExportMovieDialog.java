@@ -255,20 +255,15 @@ public class ExportMovieDialog implements ActionListener {
 		if (!started)
 			stopExportMovie();
 		else {
-			this.progressDialog.setDescription("Load image data");
 			timedJHVJPXView.setCurrentFrame(i, new ChangeEvent(), true);
 			for (GL3DImageLayer layer : mainComponentView.getAdapter(GL3DSceneGraphView.class).getLayers().getLayers()){
 				JHVJPXView jhvjpxView = layer.getImageTextureView().getAdapter(JHVJPXView.class);
-	            while (jhvjpxView.getCurrentFrameNumber() > jhvjpxView.getImageCacheStatus().getImageCachedCompletelyUntil()){
-	            	try {
-						Thread.sleep(100);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+	            if (jhvjpxView.getCurrentFrameNumber() > jhvjpxView.getImageCacheStatus().getImageCachedCompletelyUntil()){
+	    			this.progressDialog.setDescription("Load image data");
+	    			return;
 	            }
 	        }
-			this.progressDialog.setDescription("Load image metadata");
+
 			ArrayList<String> descriptions = null;
 			if (textEnabled) {
 				GL3DSceneGraphView scenegraphView = GuiState3DWCS.mainComponentView.getAdapter(GL3DSceneGraphView.class);

@@ -6,6 +6,7 @@ import java.util.AbstractList;
 
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.viewmodel.imagedata.ImageData;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.region.Region;
@@ -194,7 +195,12 @@ public final class ViewHelper {
             screenSubImageWidth = v.getWidth();
             screenSubImageHeight = r.getHeight() / screenMeterPerPixel;
         }
-
+        if (!GuiState3DWCS.mainComponentView.exportMovie){
+        	double factor = GuiState3DWCS.mainComponentView.getComponent().getWidth() / GuiState3DWCS.mainComponentView.getCanavasSize().getWidth();
+        	screenMeterPerPixel/=factor;
+        	screenSubImageWidth*= factor;
+        	screenSubImageHeight*= factor;
+        }
         return StaticViewportImageSize.createAdaptedViewportImageSize((int) Math.round(screenSubImageWidth), (int) Math.round(screenSubImageHeight));
     }
 

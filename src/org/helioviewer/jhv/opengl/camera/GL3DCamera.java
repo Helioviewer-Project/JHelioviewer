@@ -186,8 +186,7 @@ public abstract class GL3DCamera {
         for (Iterator<GL3DCameraAnimation> iter = this.cameraAnimations.iterator(); iter.hasNext();) {
             GL3DCameraAnimation ani = iter.next();
             if (!ani.isFinished() && ani.getClass().isInstance(animation)) {
-            	System.out.println("animation : " + animation);
-                ani.updateWithAnimation(animation);
+            	ani.updateWithAnimation(animation);
                 return;
             }
         }

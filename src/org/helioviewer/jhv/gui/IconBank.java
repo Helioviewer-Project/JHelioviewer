@@ -75,6 +75,8 @@ public class IconBank {
         MOVIE_LINK("unlocked.png"), MOVIE_UNLINK("locked.png"),
 
         SPLASH("jhv_splash.png"), HVLOGO_SMALL("hvImage_160x160.png"),
+        
+        INSTALL4J("install4j.png"), RAYGUN_IO("raygun.io.png"),
 
         SIMPLE_ARROW_RIGHT("Arrow-Right.png"), SIMPLE_ARROW_LEFT("Arrow-Left.png"),
 

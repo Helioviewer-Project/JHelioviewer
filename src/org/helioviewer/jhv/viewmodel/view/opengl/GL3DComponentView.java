@@ -124,6 +124,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 	private double aspect = 0.0;
 	private double width = 0.0;
 	private double height = 0.0;
+	public boolean exportMovie = false;
 
 	public GL3DComponentView() {
 		GLCapabilities cap = new GLCapabilities(GLProfile.getDefault());
@@ -430,6 +431,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 	public BufferedImage getBufferedImage(int width, int height, ArrayList<String> descriptions) {
 		this.canvas.repaint();
+		this.exportMovie = true;
 		defaultViewport = this.getAdapter(ViewportView.class).getViewport();
 		
 		tileWidth = width < DEFAULT_TILE_WIDTH ? width : DEFAULT_TILE_WIDTH;
@@ -545,7 +547,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 		}
 
 		ImageUtil.flipImageVertically(screenshot);
-
+		exportMovie = false;
 		Viewport newViewport = StaticViewport.createAdaptedViewport(
 				canvas.getSurfaceWidth(), canvas.getSurfaceHeight());
 		this.getAdapter(ViewportView.class).setViewport(newViewport,
