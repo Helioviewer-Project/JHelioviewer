@@ -195,7 +195,7 @@ public final class ViewHelper {
             screenSubImageWidth = v.getWidth();
             screenSubImageHeight = r.getHeight() / screenMeterPerPixel;
         }
-        if (!GuiState3DWCS.mainComponentView.exportMovie){
+        if (!GuiState3DWCS.mainComponentView.exportMovie && GuiState3DWCS.mainComponentView.getCanavasSize() != null){
         	double factor = GuiState3DWCS.mainComponentView.getComponent().getWidth() / GuiState3DWCS.mainComponentView.getCanavasSize().getWidth();
         	screenMeterPerPixel/=factor;
         	screenSubImageWidth*= factor;
