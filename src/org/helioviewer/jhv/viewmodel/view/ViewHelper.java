@@ -195,12 +195,14 @@ public final class ViewHelper {
             screenSubImageWidth = v.getWidth();
             screenSubImageHeight = r.getHeight() / screenMeterPerPixel;
         }
-        if (!GuiState3DWCS.mainComponentView.exportMovie && GuiState3DWCS.mainComponentView.getCanavasSize() != null){
-        	double factor = GuiState3DWCS.mainComponentView.getComponent().getWidth() / GuiState3DWCS.mainComponentView.getCanavasSize().getWidth();
-        	screenMeterPerPixel/=factor;
-        	screenSubImageWidth*= factor;
-        	screenSubImageHeight*= factor;
-        }
+        
+        if(GuiState3DWCS.mainComponentView!=null)
+            if (!GuiState3DWCS.mainComponentView.exportMovie && GuiState3DWCS.mainComponentView.getComponent()!=null && GuiState3DWCS.mainComponentView.getCanavasSize() != null){
+            	double factor = GuiState3DWCS.mainComponentView.getComponent().getWidth() / GuiState3DWCS.mainComponentView.getCanavasSize().getWidth();
+            	screenMeterPerPixel/=factor;
+            	screenSubImageWidth*= factor;
+            	screenSubImageHeight*= factor;
+            }
         return StaticViewportImageSize.createAdaptedViewportImageSize((int) Math.round(screenSubImageWidth), (int) Math.round(screenSubImageHeight));
     }
 

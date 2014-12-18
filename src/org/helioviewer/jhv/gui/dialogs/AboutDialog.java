@@ -5,12 +5,10 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
@@ -68,28 +66,10 @@ public final class AboutDialog extends JDialog implements ActionListener, Showab
         headerPanel.add(content, BorderLayout.CENTER);
         contentPane.add(headerPanel, BorderLayout.NORTH);
         
-        JPanel librariesPanel = new JPanel(new BorderLayout());
-        
-        JPanel libraries = new JPanel(new GridLayout(1, 2));
         JLabel install4j = new JLabel(new ImageIcon(IconBank.getImage(JHVIcon.INSTALL4J)));
         install4j.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        install4j.addMouseListener(new MouseListener() {			
-			@Override
-			public void mouseReleased(MouseEvent e) {
-			}
-			
-			@Override
-			public void mousePressed(MouseEvent e) {
-			}
-			
-			@Override
-			public void mouseExited(MouseEvent e) {
-			}
-			
-			@Override
-			public void mouseEntered(MouseEvent e) {
-			}
-			
+        install4j.addMouseListener(new MouseAdapter()
+        {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				JHVGlobals.openURL("http://www.ej-technologies.com/products/install4j/overview.html");
@@ -97,54 +77,34 @@ public final class AboutDialog extends JDialog implements ActionListener, Showab
 		});
         JLabel raygunIo = new JLabel(IconBank.getIcon(JHVIcon.RAYGUN_IO));
         raygunIo.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        raygunIo.addMouseListener(new MouseListener() {
-			@Override
-			public void mouseReleased(MouseEvent e) {
-			}
-			
-			@Override
-			public void mousePressed(MouseEvent e) {
-			}
-			
-			@Override
-			public void mouseExited(MouseEvent e) {
-			}
-			
-			@Override
-			public void mouseEntered(MouseEvent e) {
-			}
-			
+        raygunIo.addMouseListener(new MouseAdapter()
+        {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				JHVGlobals.openURL("https://raygun.io");
 			}
 		});
+        
+        
+        JPanel libraries = new JPanel(new FlowLayout(FlowLayout.CENTER,30,30));
         libraries.add(install4j);
         libraries.add(raygunIo);
-        librariesPanel.add(new JSeparator(), BorderLayout.NORTH);
-        librariesPanel.add(libraries, BorderLayout.CENTER);
-        contentPane.add(librariesPanel, BorderLayout.CENTER);
         
-        IconBank.getIcon(JHVIcon.INSTALL4J).toString();
-        JPanel boxPanel = new JPanel();
-        boxPanel.setLayout(new BoxLayout(boxPanel, BoxLayout.PAGE_AXIS));
-
-        boxPanel.add(new JSeparator());
         String text = "<html><font style=\"font-family: '" + font.getFamily() + "'; font-size: " + font.getSize() + ";\">" +
 
-        "This software uses the <a href=http://www.kakadusoftware.com>Kakadu JPEG2000 Toolkit</a>,<br> " + '\u00A9' + " 2009, NewSouth Innovations Ltd (NSI), <a href=Kakadu.txt>(License)</a><br>" +
+        "This software uses the <a href=\"http://www.kakadusoftware.com\">Kakadu JPEG2000 Toolkit</a>,<br> " + '\u00A9' + " 2009, NewSouth Innovations Ltd (NSI), <a href=Kakadu.txt>(License)</a><br>" +
 
-        "<p>This software uses the <a href=http://jogamp.org/jogl/www/>Java" + '\u2122' + " Binding for the OpenGL" + '\u00AE' + " API (JOGL)</a>,<br> maintained by the JogAmp Community, <a href=JOGL2.txt>(License)</a><br>" +
+        "<p>This software uses the <a href=\"http://jogamp.org/jogl/www/\">Java" + '\u2122' + " Binding for the OpenGL" + '\u00AE' + " API (JOGL)</a>,<br> maintained by the JogAmp Community, <a href=\"JOGL.txt\">(License)</a><br>" +
 
-        "<p>This software uses the <a href=http://jogamp.org/gluegen/www/>GlueGen Toolkit</a>,<br> maintained by the JogAmp Community, <a href=GlueGen.txt>(License)</a><br>" +
+        "<p>This software uses the <a href=\"http://jogamp.org/gluegen/www/\">GlueGen Toolkit</a>,<br> maintained by the JogAmp Community, <a href=\"GlueGen.txt\">(License)</a><br>" +
 
-        "<p>This software uses the <a href=http://developer.nvidia.com/object/cg_toolkit.html>Cg Compiler</a>,<br>" + '\u00A9' + " 2009, NVIDIA Corp., <a href=Cg.txt>(License)</a><br>" +
+        "<p>This software uses the <a href=\"http://developer.nvidia.com/object/cg_toolkit.html\">Cg Compiler</a>,<br>" + '\u00A9' + " 2009, NVIDIA Corp., <a href=\"Cg.txt\">(License)</a><br>" +
 
-        "<p>This software uses <a href=http://logging.apache.org/log4j/index.html>log4j from the Apache Logging Services Project</a>,<br>" + '\u00A9' + " 2010, Apache Software Foundation, <a href=log4j.txt>(License)</a><br>" +
+        "<p>This software uses <a href=\"http://logging.apache.org/log4j/index.html\">log4j from the Apache Logging Services Project</a>,<br>" + '\u00A9' + " 2010, Apache Software Foundation, <a href=\"log4j.txt\">(License)</a><br>" +
 
-        "<p>This software uses libraries from the <a href=http://ffmpeg.org/>FFmpeg project</a>,<br> licensed under the <a href=FFmpeg.txt>LGPLv2.1</a>.<br>" +
+        "<p>This software uses libraries from the <a href=\"http://ffmpeg.org/\">FFmpeg project</a>,<br> licensed under the <a href=\"FFmpeg.txt\">LGPLv2.1</a>.<br>" +
 
-        "<p>This software uses Crystal icons, licensed under the LGPL.<br><br>" +
+        "<p>This software uses Crystal icons, licensed under the LGPL.<br>" +
 
         "<p>This software uses the <a href=\"http://www.davekoelle.com/alphanum.html\">Alphanum Algorithm</a>, licensed under the LGPLv2.1.<br> Its source code can be downloaded <a href=\"http://jhelioviewer.org/libjhv/external/AlphanumComparator.java\">here</a>.<br>";
 
@@ -161,12 +121,16 @@ public final class AboutDialog extends JDialog implements ActionListener, Showab
         }
 
         JEditorPane license = new JEditorPane("text/html", text);
-
         license.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         license.setEditable(false);
         license.setFocusable(false);
         license.setOpaque(false);
         license.addHyperlinkListener(this);
+        
+        
+        JPanel boxPanel = new JPanel();
+        boxPanel.setLayout(new BoxLayout(boxPanel, BoxLayout.PAGE_AXIS));
+        boxPanel.add(libraries);
         boxPanel.add(license);
 
         contentPane.add(boxPanel, BorderLayout.SOUTH);
@@ -174,6 +138,7 @@ public final class AboutDialog extends JDialog implements ActionListener, Showab
         JPanel closeButtonContainer = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         closeButton.addActionListener(this);
         closeButtonContainer.add(closeButton);
+        closeButtonContainer.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
         
         scrollPane = new JScrollPane(contentPane);
         scrollPane.getVerticalScrollBar().setBlockIncrement(100);

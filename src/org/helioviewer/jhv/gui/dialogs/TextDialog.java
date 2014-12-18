@@ -2,15 +2,17 @@ package org.helioviewer.jhv.gui.dialogs;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.Scanner;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
@@ -25,30 +27,20 @@ public class TextDialog extends JDialog implements ActionListener, ShowableDialo
         super(ImageViewerGui.getMainFrame(), title, true);
         setResizable(false);
 
-        String text = "";
-        String linebreak = System.getProperty("line.separator");
-
-        Scanner scanner=null;
-        try {
-            scanner = new Scanner(new BufferedReader(new InputStreamReader(textFile.openStream())));
-
-            while (scanner.hasNext()) {
-                text += scanner.nextLine() + linebreak;
+        StringBuffer text = new StringBuffer();
+        try(BufferedReader br = new BufferedReader(new InputStreamReader(textFile.openStream())))
+        {
+            String line;
+            while ((line=br.readLine())!=null)
+            {
+                text.append(line);
+                text.append('\n');
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         
-        if(scanner!=null)
-          try
-          {
-            scanner.close();
-          }
-        catch(Exception e)
-        {
-        }
-
-        init(text);
+        init(text.toString());
     }
 
     public TextDialog(String title, String text) {
@@ -65,7 +57,11 @@ public class TextDialog extends JDialog implements ActionListener, ShowableDialo
 
         JButton closeButton = new JButton("Close");
         closeButton.addActionListener(this);
-        add(closeButton, BorderLayout.EAST);
+        
+        JPanel closeButtonContainer = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        closeButtonContainer.add(closeButton);
+        closeButtonContainer.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+        add(closeButtonContainer, BorderLayout.SOUTH);
     }
 
     public void actionPerformed(ActionEvent e) {
