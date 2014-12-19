@@ -160,24 +160,4 @@ public class FileDescriptorManager {
 		return this.descriptors.get(index);
 	}
 	
-	public static void main(String[] args) {
-		FileDescriptorManager man = new FileDescriptorManager();
-		GregorianCalendar cal = new GregorianCalendar();
-		cal.set(2014, 02, 15, 6, 3);
-		Date start = cal.getTime();
-		cal.set(2014, 03, 30, 12, 3,59);
-		Date end = cal.getTime();
-		try {
-			man.readFileDescriptors(start, end);
-			System.out.println(man.getFileIndex(start));
-			System.out.println(man.getFileIndex(end));
-			cal.set(2014, 02, 15, 6, 5);
-			System.out.println(man.getFileIndex(cal.getTime()));
-			cal.set(2014, 02, 15, 12, 4);
-			System.out.println(man.getFileIndex(cal.getTime()));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 }

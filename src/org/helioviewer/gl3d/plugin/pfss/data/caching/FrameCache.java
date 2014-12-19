@@ -3,9 +3,7 @@ package org.helioviewer.gl3d.plugin.pfss.data.caching;
 import org.helioviewer.gl3d.plugin.pfss.data.FileDescriptor;
 import org.helioviewer.gl3d.plugin.pfss.data.PfssData;
 import org.helioviewer.gl3d.plugin.pfss.data.PfssFrame;
-import org.helioviewer.gl3d.plugin.pfss.data.creators.PfssDataCreator;
 import org.helioviewer.gl3d.plugin.pfss.data.creators.PfssFrameCreator;
-import org.helioviewer.gl3d.plugin.pfss.data.managers.PfssFrameInitializer;
 import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
 
 /**
@@ -15,12 +13,12 @@ import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
  */
 public class FrameCache {
 
-	private final FiFoCache<PfssFrame> cache;
+	private final LRUCache<PfssFrame> cache;
 	private final DataCache dataCache;
 	private final PfssFrameCreator frameCreator;
 	
 	public FrameCache(DataCache dataCache) {
-		cache =new FiFoCache<>(PfssSettings.FRAME_CACHE);
+		cache =new LRUCache<>(PfssSettings.FRAME_CACHE);
 		this.dataCache = dataCache;
 		frameCreator = new PfssFrameCreator();
 	}

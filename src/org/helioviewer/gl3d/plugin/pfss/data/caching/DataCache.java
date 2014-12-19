@@ -15,19 +15,19 @@ import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
  *
  */
 public class DataCache {
-	private final FileDescriptorManager descriptors;
+	private final FileDescriptorManager descriptorManager;
 	private final PfssDataCreator dataCreator;
 	
-	private final FiFoCache<PfssData> readAheadCache;
-	private final FiFoCache<PfssData> cache;
+	private final LRUCache<PfssData> readAheadCache;
+	private final LRUCache<PfssData> cache;
 	
 	
 	public DataCache(FileDescriptorManager descriptors) {
-		this.descriptors = descriptors;
+		this.descriptorManager = descriptors;
 		
 		this.dataCreator = new PfssDataCreator();
-		this.cache = new FiFoCache<>(PfssSettings.DATA_CACHE_SIZE);
-		this.readAheadCache = new FiFoCache<>(PfssSettings.DATA_PRELOAD_SIZE);
+		this.cache = new LRUCache<>(PfssSettings.DATA_CACHE_SIZE);
+		this.readAheadCache = new LRUCache<>(PfssSettings.DATA_PRELOAD_SIZE);
 	}
 	
 	public PfssData get(FileDescriptor d) {
@@ -59,7 +59,7 @@ public class DataCache {
 	 * @param d
 	 */
 	private void readAhead(FileDescriptor d) {
-		FileDescriptor next = descriptors.getNext(d);
+		FileDescriptor next = descriptorManager.getNext(d);
 		
 		for(int i = 0; i < readAheadCache.size();i++)
 		{
