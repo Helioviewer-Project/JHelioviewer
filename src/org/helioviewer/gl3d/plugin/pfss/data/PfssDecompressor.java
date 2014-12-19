@@ -6,10 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.helioviewer.base.physics.Constants;
 import org.helioviewer.gl3d.plugin.pfss.data.decompression.DeQuantization;
@@ -17,7 +14,6 @@ import org.helioviewer.gl3d.plugin.pfss.data.decompression.Decoder;
 import org.helioviewer.gl3d.plugin.pfss.data.decompression.DiscreteCosineTransform;
 import org.helioviewer.gl3d.plugin.pfss.data.decompression.Line;
 import org.helioviewer.gl3d.plugin.pfss.data.decompression.UnRar;
-import org.helioviewer.gl3d.plugin.pfss.data.managers.PfssFrameInitializer;
 import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
 
 import com.jogamp.common.nio.Buffers;

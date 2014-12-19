@@ -13,7 +13,7 @@ import org.helioviewer.gl3d.plugin.pfss.data.FileDescriptor;
  *
  * @param <T>
  */
-public class FiFoCache<T extends Cacheable> {
+public class LRUCache<T extends Cacheable> {
 	private final HashMap<FileDescriptor, Integer> cacheIndices;
 	private final ArrayList<T> cache;
 	private int oldestIndex;
@@ -22,7 +22,7 @@ public class FiFoCache<T extends Cacheable> {
 	 * 
 	 * @param size total size of the cache
 	 */
-	public FiFoCache(int size) {
+	public LRUCache(int size) {
 		oldestIndex = 0;
 		cacheIndices = new HashMap<>(size,1);
 		cache = new ArrayList<T>(size);

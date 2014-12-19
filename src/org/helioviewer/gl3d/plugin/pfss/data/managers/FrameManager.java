@@ -24,7 +24,6 @@ import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
 public class FrameManager {
 	private final FileDescriptorManager descriptorManager;
 
-	private final DataCache dataCache;
 	private final FrameCache frameCache;
 	private final ConcurrentLinkedQueue<PfssFrame> destructionQueue = new ConcurrentLinkedQueue<>();
 	private final ConcurrentLinkedQueue<PfssFrame> initQueue = new ConcurrentLinkedQueue<>();
@@ -36,7 +35,7 @@ public class FrameManager {
 	public FrameManager() {
 		descriptorManager = new FileDescriptorManager();
 		preloadQueue = new PfssFrame[PfssSettings.FRAME_PRELOAD];
-		dataCache = new DataCache(descriptorManager);
+		DataCache dataCache = new DataCache(descriptorManager);
 		frameCache = new FrameCache(dataCache);
 	}
 
