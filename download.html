@@ -128,7 +128,8 @@ function platformDetect(){
             osx += "<a href='" + value["browser_download_url"]+ "'><img id='osx' class='downloadMain' src='imgs/references/osx.png'  height='140' /></a>";
           }
           else if (value["name"].toLowerCase().indexOf("64_bit.rpm") >= 0){
-            rmp64 = "<a href='" + value["browser_download_url"]+ "'><img id='rpm-64' class='downloadMain' src='imgs/references/rpm-64.png' height='140' /></a>";
+            console.log("rpm-64")
+            rpm64 = "<a href='" + value["browser_download_url"]+ "'><img id='rpm-64' class='downloadMain' src='imgs/references/rpm-64.png' height='140' /></a>";
           }
           else if (value["name"].toLowerCase().indexOf("64_bit.deb") >= 0){
             deb64 = "<a href='" + value["browser_download_url"]+ "'><img id='deb-64' class='downloadMain' src='imgs/references/deb-64.png' height='140'/></a>";
