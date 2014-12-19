@@ -99,7 +99,7 @@ public class PfssDecompressor implements Runnable {
 				//DeQuantization.multiplyLinear(lines, 20, 0);
 				DeQuantization.multiplyLinear(lines, 30, 5, 0, 10);
 				DeQuantization.multiplyLinear(lines, 100, 0, 10, 8);
-				DeQuantization.multiplyLinear(lines, 110, 0, 18, 7);
+				DeQuantization.multiplyLinear(lines, 90, 0, 18, 7);
 				DeQuantization.multiplyLinear(lines, 100, 0, 25, 10);
 				//DeQuantization.multiplyLinear(lines, 400, 20, 20, 15);
 				DeQuantization.multiply(lines, 1000,0);
@@ -111,6 +111,8 @@ public class PfssDecompressor implements Runnable {
 					l.backwardsPCA();
 					l.integrate();
 				}
+				
+				//Decompression done.
 				
 				//subsample for low-end graphic cards. Also count how many points there are for each line type
 				Point[][] points = new Point[lines.length][];
@@ -172,6 +174,8 @@ public class PfssDecompressor implements Runnable {
 					points[i] = linePoints;
 				}
 				
+				
+				//copy to buffers
 				FloatBuffer vertices = Buffers
 						.newDirectFloatBuffer(totalSize * 3 );
 				IntBuffer indicesSunToOutside = Buffers
