@@ -116,7 +116,7 @@
         //if (!value["prerelase"]{
           tmp = "<div class='disignBoxSecond'><div id='archive' class='boxContent'>" + value["name"] + "<ul>";
           $.each(value["assets"], function(key, value){
-              tmp += "<li><a href=" + value["url"] + ">"+ value["name"] +"</a></li>";
+              tmp += "<li><a href=" + value["browser_download_url"] + ">"+ value["name"] +"</a></li>";
           });
           tmp += "</ul></div></div>"
           console.log(tmp)
