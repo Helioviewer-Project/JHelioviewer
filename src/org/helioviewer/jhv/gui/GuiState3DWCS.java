@@ -7,6 +7,7 @@ import java.util.AbstractList;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.gui.components.MoviePanel;
 import org.helioviewer.jhv.gui.components.OverViewPanel;
@@ -146,16 +147,15 @@ public class GuiState3DWCS {
 	 *            a view of the main view chain which is equal or over the
 	 *            LayeredView.
 	 */
-	public static void addLayerToViewchainMain(ImageInfoView newLayer,
+	public static void addLayerToViewchainMain(final ImageInfoView newLayer,
 			View attachToViewchain) {
 		if (newLayer == null || attachToViewchain == null)
 			return;
 
 		// Fetch LayeredView
-		LayeredView layeredView = attachToViewchain
-				.getAdapter(LayeredView.class);
+		final LayeredView layeredView = attachToViewchain.getAdapter(LayeredView.class);
 		
-		JHVJPXView layerOverView = new JHVJPXView(false);
+		final JHVJPXView layerOverView = new JHVJPXView(false);
 		layerOverView.setJP2Image(((JHVJPXView)newLayer).getJP2Image());
 		while (layerOverView.getImageData() == null) {
 			try {
@@ -166,135 +166,138 @@ public class GuiState3DWCS {
 		}
 		overViewPanel.setLayer(layerOverView);
 		
-		synchronized (layeredView) {
-			// wait until image is loaded
-			while (newLayer.getAdapter(SubimageDataView.class)
-					.getImageData() == null) {
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+        // wait until image is loaded
+        while (newLayer.getAdapter(SubimageDataView.class).getImageData() == null)
+        {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            public void run()
+            {
+                synchronized (layeredView)
+                {
+                    // Get meta data
+                    MetaData metaData = null;
 
-			}
-			
-			// Get meta data
-			MetaData metaData = null;
+                    if (newLayer.getAdapter(MetaDataView.class) != null)
+                        metaData = newLayer.getAdapter(MetaDataView.class)
+                                .getMetaData();
 
-			if (newLayer.getAdapter(MetaDataView.class) != null)
-				metaData = newLayer.getAdapter(MetaDataView.class)
-						.getMetaData();
+                    // Create list which manages all filter tabs
+                    FilterTabList tabList = new FilterTabList();
 
-			// Create list which manages all filter tabs
-			FilterTabList tabList = new FilterTabList();
+                    // Adjust Panel for basic functions
+                    JPanel adjustPanel = new JPanel();
+                    adjustPanel.setLayout(new BoxLayout(adjustPanel,
+                            BoxLayout.PAGE_AXIS));
 
-			// Adjust Panel for basic functions
-			JPanel adjustPanel = new JPanel();
-			adjustPanel.setLayout(new BoxLayout(adjustPanel,
-					BoxLayout.PAGE_AXIS));
+                    FilterTabPanelManager compactPanelManager = new FilterTabPanelManager();
+                    tabList.add(new FilterTab(FilterTabDescriptor.Type.COMPACT_FILTER,
+                            "", compactPanelManager));
 
-			FilterTabPanelManager compactPanelManager = new FilterTabPanelManager();
-			tabList.add(new FilterTab(FilterTabDescriptor.Type.COMPACT_FILTER,
-					"", compactPanelManager));
+                    // If JP2View, add QualitySlider
+                    /*if (newLayer instanceof JP2View) {
+                        compactPanelManager.add(new QualitySpinner((JP2View) newLayer));
+                    }*/
 
-			// If JP2View, add QualitySlider
-			/*if (newLayer instanceof JP2View) {
-				compactPanelManager.add(new QualitySpinner((JP2View) newLayer));
-			}*/
+                    // Add filter to view chain
+                    AbstractList<FilterContainer> filterContainerList = PluginManager
+                            .getSingeltonInstance().getFilterContainers(true);
+                    View nextView = newLayer;
 
-			// Add filter to view chain
-			AbstractList<FilterContainer> filterContainerList = PluginManager
-					.getSingeltonInstance().getFilterContainers(true);
-			View nextView = newLayer;
+                    for (int i = filterContainerList.size() - 1; i >= 0; i--) {
+                        FilterContainer container = filterContainerList.get(i);
 
-			for (int i = filterContainerList.size() - 1; i >= 0; i--) {
-				FilterContainer container = filterContainerList.get(i);
+                        GLFilterView filterView = new GLFilterView();
+                        filterView.setView(nextView);
 
-				GLFilterView filterView = new GLFilterView();
-				filterView.setView(nextView);
+                        container.installFilter(filterView, tabList);
 
-				container.installFilter(filterView, tabList);
+                        if (filterView.getFilter() != null) {
+                            nextView = filterView;
+                        } else {
+                            filterView.setView(null);
+                        }
+                    }
 
-				if (filterView.getFilter() != null) {
-					nextView = filterView;
-				} else {
-					filterView.setView(null);
-				}
-			}
+                    // Geometry
+                    if (metaData != null) {
+                        GLHelioviewerGeometryView geometryView = new GLHelioviewerGeometryView();
+                        geometryView.setView(nextView);
+                        nextView = geometryView;
+                    }
 
-			// Geometry
-			if (metaData != null) {
-				GLHelioviewerGeometryView geometryView = new GLHelioviewerGeometryView();
-				geometryView.setView(nextView);
-				nextView = geometryView;
-			}
+                    // Add layer
+                    layeredView.addLayer(nextView);
 
-			// Add layer
-			layeredView.addLayer(nextView);
+                    // Add JTabbedPane
+                    JPanel tabbedPane = new JPanel() {
 
-			// Add JTabbedPane
-	        JPanel tabbedPane = new JPanel() {
+                        private static final long serialVersionUID = 1L;
 
-	            private static final long serialVersionUID = 1L;
+                        /**
+                         * Override the setEnabled method in order to keep the containing
+                         * components' enabledState synced with the enabledState of this
+                         * component.
+                         */
 
-	            /**
-	             * Override the setEnabled method in order to keep the containing
-	             * components' enabledState synced with the enabledState of this
-	             * component.
-	             */
+                        public void setEnabled(boolean enabled) {
+                            for (Component c : this.getComponents()) {
+                                c.setEnabled(enabled);
+                            }
+                        }
+                    };
 
-	            public void setEnabled(boolean enabled) {
-	                for (Component c : this.getComponents()) {
-	                    c.setEnabled(enabled);
-	                }
-	            }
-	        };
+                    tabbedPane.setLayout(new BorderLayout());
+                    tabbedPane.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
 
-			tabbedPane.setLayout(new BorderLayout());
-			tabbedPane.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
+                    for (int i = 0; i < tabList.size(); i++) {
+                        FilterTab filterTab = tabList.get(i);
+                        if (filterTab.getType() == Type.COMPACT_FILTER) {
+                            tabbedPane.add(filterTab.getPaneManager().createCompactPanel());
+                        }
+                    }
+                    for (int i = 0; i < tabList.size(); i++) {
+                        FilterTab filterTab = tabList.get(i);
+                        if (filterTab.getType() != Type.COMPACT_FILTER) {
+                            tabbedPane.add(filterTab.getPaneManager().createPanel());
+                        }
+                    }
 
-			for (int i = 0; i < tabList.size(); i++) {
-				FilterTab filterTab = tabList.get(i);
-				if (filterTab.getType() == Type.COMPACT_FILTER) {
-					tabbedPane.add(filterTab
-							.getPaneManager().createCompactPanel());
-				}
-			}
-			for (int i = 0; i < tabList.size(); i++) {
-				FilterTab filterTab = tabList.get(i);
-				if (filterTab.getType() != Type.COMPACT_FILTER) {
-					tabbedPane.add(filterTab
-							.getPaneManager().createPanel());
-				}
-			}
+                    ImageInfoView imageInfoView = nextView.getAdapter(ImageInfoView.class);
 
-			ImageInfoView imageInfoView = nextView
-					.getAdapter(ImageInfoView.class);
+                    // If MoviewView, add MoviePanel
+                    if (newLayer instanceof JHVJPXView) {
+                        MoviePanel moviePanel = new MoviePanel((JHVJPXView) newLayer, layerOverView);
+                        if (LayersModel.getSingletonInstance().isTimed(newLayer)) {
+                            LayersModel.getSingletonInstance().setLink(newLayer, true);
+                        }
 
-			// If MoviewView, add MoviePanel
-			if (newLayer instanceof JHVJPXView) {
-				MoviePanel moviePanel = new MoviePanel((JHVJPXView) newLayer, layerOverView);
-				if (LayersModel.getSingletonInstance().isTimed(newLayer)) {
-					LayersModel.getSingletonInstance().setLink(newLayer, true);
-				}
+                        ImageViewerGui.getSingletonInstance().getMoviePanelContainer()
+                                .addLayer(imageInfoView, moviePanel);
+                    } else {
+                        MoviePanel moviePanel = new MoviePanel(null, null);
+                        ImageViewerGui.getSingletonInstance().getMoviePanelContainer()
+                                .addLayer(imageInfoView, moviePanel);
+                    }
 
-				ImageViewerGui.getSingletonInstance().getMoviePanelContainer()
-						.addLayer(imageInfoView, moviePanel);
-			} else {
-				MoviePanel moviePanel = new MoviePanel(null, null);
-				ImageViewerGui.getSingletonInstance().getMoviePanelContainer()
-						.addLayer(imageInfoView, moviePanel);
-			}
-
-			ImageViewerGui.getSingletonInstance().getFilterPanelContainer()
-					.addLayer(imageInfoView, tabbedPane);
-			ImageViewerGui
-					.getSingletonInstance()
-					.getLeftContentPane()
-					.expand(ImageViewerGui.getSingletonInstance()
-							.getFilterPanelContainer());
-			LayersModel.getSingletonInstance().setActiveLayer(imageInfoView);
-		}
+                    ImageViewerGui.getSingletonInstance().getFilterPanelContainer()
+                            .addLayer(imageInfoView, tabbedPane);
+                    ImageViewerGui
+                            .getSingletonInstance()
+                            .getLeftContentPane()
+                            .expand(ImageViewerGui.getSingletonInstance()
+                                    .getFilterPanelContainer());
+                    LayersModel.getSingletonInstance().setActiveLayer(imageInfoView);
+                }
+            }
+        });
 	}
 
 }
