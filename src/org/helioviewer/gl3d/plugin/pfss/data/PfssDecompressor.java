@@ -93,10 +93,10 @@ public class PfssDecompressor implements Runnable {
 				Line.addStartPoint(lines, startRInt, startPhiInt, startThetaInt, l0, b0);
 				
 				//DeQuantization.multiplyLinear(lines, 20, 0);
-				DeQuantization.multiplyLinear(lines, 30, 5, 0, 10);
-				DeQuantization.multiplyLinear(lines, 100, 0, 10, 8);
-				DeQuantization.multiplyLinear(lines, 90, 0, 18, 7);
-				DeQuantization.multiplyLinear(lines, 100, 0, 25, 10);
+				DeQuantization.multiplyLinear(lines, 20, 5, 0, 10);
+				DeQuantization.multiplyLinear(lines, 80, 0, 10, 8);
+				DeQuantization.multiplyLinear(lines, 70, 0, 18, 7);
+				DeQuantization.multiplyLinear(lines, 50, 0, 25, 10);
 				//DeQuantization.multiplyLinear(lines, 400, 20, 20, 15);
 				DeQuantization.multiply(lines, 1000,0);
 				//DeQuantization.multiplyPoint(lines, 800,0);
