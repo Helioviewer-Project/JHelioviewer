@@ -28,7 +28,6 @@ public class FrameCache {
 			return cache.get(key);
 		else {
 			PfssFrame f = load(key);
-			System.out.println("FRAME MISS: "+ key.getStartDate().toString());
 			cache.put(key, f);
 			return f;
 		}
