@@ -21,9 +21,14 @@ public class PfssDataCreator {
 	
 	public PfssDataCreator() {
 	}
-		
+	
+	/**
+	 * Get PfssData Asynchronously
+	 * @param desc
+	 * @return PfssData object which will be loaded in the future
+	 */
 	public PfssData getDataAsync(FileDescriptor desc) {
-		PfssData d = new PfssData(desc,this.createURL(desc));
+		PfssData d = new PfssData(desc,createURL(desc));
 		pool.execute(d);
 		return d;
 	}

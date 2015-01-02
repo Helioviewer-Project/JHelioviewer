@@ -23,7 +23,7 @@ public class PfssFrameCreator {
 	/**
 	 * Creates a PfssFrame object asynchronously
 	 * @param data PfssData to create the frame from. PfssData does not have to be fully loaded.
-	 * @return PfssFrame object which will be fully loaded and initialized in the future
+	 * @return PfssFrame object which will be fully loaded in the future
 	 */
 	public PfssFrame createFrameAsync(PfssData data) {
 		PfssFrame frame = new PfssFrame(data.getDescriptor());

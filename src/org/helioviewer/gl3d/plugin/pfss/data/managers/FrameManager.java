@@ -54,8 +54,7 @@ public class FrameManager {
 			return null;
 		
 		//still the same frame
-		//if (preloadQueue[currentIndex].getDescriptor().isDateInRange(date))
-		if(true)
+		if (preloadQueue[currentIndex].getDescriptor().isDateInRange(date))
 			return preloadQueue[currentIndex];
 
 		// advance to next
