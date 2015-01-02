@@ -9,10 +9,9 @@ import java.nio.IntBuffer;
 import java.util.Date;
 
 import org.helioviewer.base.physics.Constants;
-import org.helioviewer.gl3d.plugin.pfss.data.decompression.DeQuantization;
-import org.helioviewer.gl3d.plugin.pfss.data.decompression.Decoder;
+import org.helioviewer.gl3d.plugin.pfss.data.decompression.ByteDecoder;
 import org.helioviewer.gl3d.plugin.pfss.data.decompression.DiscreteCosineTransform;
-import org.helioviewer.gl3d.plugin.pfss.data.decompression.Line;
+import org.helioviewer.gl3d.plugin.pfss.data.decompression.IntermediateLineData;
 import org.helioviewer.gl3d.plugin.pfss.data.decompression.UnRar;
 import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
 
@@ -71,40 +70,45 @@ public class PfssDecompressor implements Runnable {
 				BinaryTableHDU bhdu = (BinaryTableHDU) hdus[1];
 				double b0 = ((double[]) bhdu.getColumn("B0"))[0];
 				double l0 = ((double[]) bhdu.getColumn("L0"))[0];
-				short[] means = ((short[][]) bhdu.getColumn("means"))[0];
-				short[] pca = ((short[][]) bhdu.getColumn("pca"))[0];
+				byte[] line_length = ((byte[][]) bhdu.getColumn("LINE_LENGTH"))[0];
+				byte[] type = ((byte[][]) bhdu.getColumn("TYPE"))[0];
 				byte[] startR = ((byte[][]) bhdu.getColumn("StartPointR"))[0];
 				byte[] startPhi = ((byte[][]) bhdu.getColumn("StartPointPhi"))[0];
 				byte[] startTheta = ((byte[][]) bhdu.getColumn("StartPointTheta"))[0];
-				byte[] line_length = ((byte[][]) bhdu.getColumn("LINE_LENGTH"))[0];
 				byte[] xRaw = ((byte[][]) bhdu.getColumn("X"))[0];
 				byte[] yRaw = ((byte[][]) bhdu.getColumn("Y"))[0];
 				byte[] zRaw = ((byte[][]) bhdu.getColumn("Z"))[0];
 				
-				int[] startRInt = Decoder.decodeAdaptive(startR);
-				int[] startPhiInt = Decoder.decodeAdaptive(startPhi);
-				int[] startThetaInt = Decoder.decodeAdaptive(startTheta);
-				int[] lengths = Decoder.decodeAdaptiveUnsigned(line_length);
-				int[] xInt = Decoder.decodeAdaptive(xRaw);
-				int[] yInt = Decoder.decodeAdaptive(yRaw);
-				int[] zInt = Decoder.decodeAdaptive(zRaw);
+				int[] startRInt = ByteDecoder.decodeAdaptive(startR);
+				int[] startPhiInt = ByteDecoder.decodeAdaptive(startPhi);
+				int[] startThetaInt = ByteDecoder.decodeAdaptive(startTheta);
+				int[] lengths = ByteDecoder.decodeAdaptiveUnsigned(line_length);
+				int[] xInt = ByteDecoder.decodeAdaptive(xRaw);
+				int[] yInt = ByteDecoder.decodeAdaptive(yRaw);
+				int[] zInt = ByteDecoder.decodeAdaptive(zRaw);
 
-				Line[] lines = Line.splitToLines(lengths, xInt, yInt, zInt,means,pca);
-				Line.addStartPoint(lines, startRInt, startPhiInt, startThetaInt, l0, b0);
+				IntermediateLineData[] lines = IntermediateLineData.splitToLines(lengths, xInt, yInt, zInt);
+				IntermediateLineData.addStartPoint(lines, startRInt, startPhiInt, startThetaInt, l0, b0);
 				
-				//DeQuantization.multiplyLinear(lines, 20, 0);
-				DeQuantization.multiplyLinear(lines, 20, 5, 0, 10);
-				DeQuantization.multiplyLinear(lines, 60, 0, 10, 8);
-				DeQuantization.multiplyLinear(lines, 50, 0, 18, 7);
-				DeQuantization.multiplyLinear(lines, 10, 0, 25, 45);
-				//DeQuantization.multiplyLinear(lines, 400, 20, 20, 15);
-				DeQuantization.multiply(lines, 1000,0);
-				//DeQuantization.multiplyPoint(lines, 800,0);
-				
+				for(int i = 0; i < lines.length;i++) {
+					switch(type[i]) {
+						case 0:
+							multiplyLinear(lines[i],20,5,0,10);
+							multiplyLinear(lines[i],70,2,10,8);
+							multiplyLinear(lines[i],90,5,18,7);
+							multiplyLinear(lines[i],150,20,25,15);
+							break;
+						case 1:
+							multiplyLinear(lines[i],10,4,0,10);
+							multiplyLinear(lines[i],60,0,10,8);
+							multiplyLinear(lines[i],60,5,18,52);
+							break;
+					}
+				}
+				multiply(lines,1000,0);
 				DiscreteCosineTransform.inverseTransform(lines);
 				
-				for(Line l : lines) {
-					l.backwardsPCA();
+				for(IntermediateLineData l : lines) {
 					l.integrate();
 				}
 				
@@ -119,7 +123,7 @@ public class PfssDecompressor implements Runnable {
 				int totalSize = 0;
 				for(int i = 0; i < lines.length;i++)
 				{
-					Line l = lines[i];
+					IntermediateLineData l = lines[i];
 					
 					Point[] linePoints = new Point[l.size];
 
@@ -323,6 +327,30 @@ public class PfssDecompressor implements Runnable {
 	}
 	
 
+	private static void multiplyLinear(IntermediateLineData l, double start, double increase, int offset, int length)
+    {
+        	for(int i = 0; i < l.channels.length;i++) {
+    			double div =start;
+    			float[] channel = l.channels[i];
+    			
+    			for(int j = offset; j < offset + length &&j < channel.length;j++) {
+    				channel[j] = (float)(channel[j] * div);
+    				div += increase;
+    			}
+    		}
+    }
+
+    private static void multiply(IntermediateLineData[] lines, double factor, int offset)
+    {
+    	for(IntermediateLineData l : lines){
+    		for(int i = 0; i < l.channels.length;i++) {
+    			float[] channel = l.channels[i];
+    			for(int j = offset; j < channel.length;j++) {
+    				channel[j] = (float)(channel[j] * factor);
+    			}
+    		}
+    	}
+    }
 
 	@Override
 	public void run() {

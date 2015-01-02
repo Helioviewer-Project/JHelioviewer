@@ -13,13 +13,20 @@ import de.innosystec.unrar.Archive;
 import de.innosystec.unrar.exception.RarException;
 import de.innosystec.unrar.rarfile.FileHeader;
 
+/**
+ * Wrapper class around the jUnrar library.
+ * 
+ * 
+ * @author Jonas Schwammberger
+ *
+ */
 public class UnRar {
 
 	/**
-	 * 
-	 * @param data
-	 * @return
-	 * @throws IOException
+	 * Unrar PFSSData object
+	 * @param data to unrar
+	 * @return raw byte stream of unrar data
+	 * @throws IOException The jUnrar library seems unable to decompress a byteArrayInputStream and needs to have a file on the local filesystem. Throws an IOException if it was unable to write the temp file.
 	 */
 	public static ByteArrayOutputStream unrarData(PfssData data) throws IOException {
 		try {
@@ -36,7 +43,4 @@ public class UnRar {
 		}
 	}
 	
-	public static void main(String[] args) {
-
-	}
 }

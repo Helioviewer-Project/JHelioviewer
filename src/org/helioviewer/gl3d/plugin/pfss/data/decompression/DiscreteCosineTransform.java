@@ -7,8 +7,12 @@ package org.helioviewer.gl3d.plugin.pfss.data.decompression;
  */
 public class DiscreteCosineTransform {
 
-    public static void inverseTransform(Line[] lines) {
-    	for(Line l : lines) {
+	/**
+	 * calculates the inverse DCT for all channels of all lines.
+	 * @param lines lines to decompress
+	 */
+    public static void inverseTransform(IntermediateLineData[] lines) {
+    	for(IntermediateLineData l : lines) {
     		for(int i = 0; i < l.channels.length;i++) {
     			int actualSize = l.size;
     			float[] idct = inverseTransform(l.channels[i], actualSize);
