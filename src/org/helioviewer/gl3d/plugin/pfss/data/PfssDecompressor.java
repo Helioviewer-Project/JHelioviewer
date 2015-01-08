@@ -38,20 +38,9 @@ public class PfssDecompressor implements Runnable {
 	}
 
 	/**
-	 * Reads the Pfss Data and fills out the frame object
+	 * Reads the PfssData and fills out the frame object
 	 */
 	public void readData() {
-		
-		this.readFits();
-		//readOldfits();
-		
-	}
-	
-	
-	/**
-	 * Reads the current fits file. The fits file has to be decompressed before
-	 */
-	private void readFits() {
 		if (!data.isLoaded()) {
 			try {
 				data.awaitLoaded();
@@ -59,8 +48,9 @@ public class PfssDecompressor implements Runnable {
 				// do nothing and exit this method
 			}
 		}
-		if (data.isLoaded()) {
+		if (data.isLoaded() && !frame.isLoaded()) {
 			InputStream is = null;
+			IntermediateLineData[] lines = null;
 			try {
 				ByteArrayOutputStream out = UnRar.unrarData(data);
 				is = new ByteArrayInputStream(out.toByteArray());
@@ -87,7 +77,7 @@ public class PfssDecompressor implements Runnable {
 				int[] yInt = ByteDecoder.decodeAdaptive(yRaw);
 				int[] zInt = ByteDecoder.decodeAdaptive(zRaw);
 
-				IntermediateLineData[] lines = IntermediateLineData.splitToLines(lengths, xInt, yInt, zInt);
+				lines = IntermediateLineData.splitToLines(lengths, xInt, yInt, zInt);
 				IntermediateLineData.addStartPoint(lines, startRInt, startPhiInt, startThetaInt, l0, b0);
 				
 				for(int i = 0; i < lines.length;i++) {
@@ -113,121 +103,149 @@ public class PfssDecompressor implements Runnable {
 				}
 				
 				//Decompression done.
-				
-				//subsample for low-end graphic cards. Also count how many points there are for each line type
-				Point[][] points = new Point[lines.length][];
-				
-				byte[] types = new byte[lines.length];
-				int stoSize= 0;
-				int stsSize = 0;
-				int otsSize = 0;
-				int totalSize = 0;
-				for(int i = 0; i < lines.length;i++)
-				{
-					IntermediateLineData l = lines[i];
-					Point[] linePoints = new Point[l.size];
-
-					Point last = new Point(l.channels[0][0],l.channels[1][0],l.channels[2][0]);
-					linePoints[0] = last;
-					int nextIndex = 1;
-					
-					for(int j = 1; j < l.size;j++) {
-						Point current = new Point(l.channels[0][j],l.channels[1][j],l.channels[2][j]);
-						
-						if((j + 1)< l.size) {
-							//check if point should be in line or not
-							Point next = new Point(l.channels[0][j+1],l.channels[1][j+1],l.channels[2][j+1]);
-							boolean colinear = current.AngleTo(next, last) > PfssSettings.ANGLE_OF_LOD;
-							
-							if(!colinear) {
-								Point average = getAveragePoint(l, j);
-								average = average == null ? current : average;
-								
-								last = average;
-								linePoints[nextIndex++] = average;
-							}
-							
-						} else {
-							//last point, always add
-							linePoints[nextIndex++] = current;
-						}
-					}
-					
-					//check line type
-					double mag0 = linePoints[0].magnitude();
-					if(mag0 < Constants.SunRadius*1.05) {
-						double mag1 = linePoints[nextIndex-1].magnitude();
-						if(mag1 > Constants.SunRadius*1.05) {
-							stoSize += nextIndex-1;
-							types[i] = 0;
-						} else {
-							stsSize += nextIndex-1;
-							types[i] = 1;
-						}
-					}
-					else {
-						otsSize += nextIndex-1;
-						types[i] = 2;
-					}
-					totalSize += nextIndex;
-					points[i] = linePoints;
-				}
-				
-				
-				//copy to buffers
-				FloatBuffer vertices = Buffers
-						.newDirectFloatBuffer(totalSize * 3 );
-				IntBuffer indicesSunToOutside = Buffers
-						.newDirectIntBuffer(stoSize * 2);
-				IntBuffer indicesSunToSun = Buffers
-						.newDirectIntBuffer(stsSize * 2);
-				IntBuffer indicesOutsideToSun = Buffers
-						.newDirectIntBuffer(otsSize * 2);
-
-				int vertexIndex = 0;
-				int ots = 0;
-				int sts = 0;
-				int sto = 0;
-				for(int i = 0; i < points.length;i++) {
-					Point[] line = points[i];
-					IntBuffer indexBuffer = getLineType(types[i], indicesSunToOutside,
-							indicesSunToSun, indicesOutsideToSun);
-					
-					int lineIndex = 0;
-					while(lineIndex+1 < line.length && line[lineIndex+1] != null)
-					{
-						addPoint(vertices,line[lineIndex]);
-						addLineSegment(vertexIndex, vertexIndex+1, indexBuffer);
-						vertexIndex++;
-						lineIndex++;
-					}
-					addPoint(vertices,line[lineIndex]);
-					vertexIndex++;
-				}
-
-				vertices.flip();
-				indicesSunToOutside.flip();
-				indicesOutsideToSun.flip();
-				indicesSunToSun.flip();
-				frame.setLoadedData(vertices, indicesSunToOutside,
-						indicesSunToSun, indicesOutsideToSun);
-
 			} catch (FitsException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} finally {
 				try {
 					is.close();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				}
 
 			}
+			
+			this.subsampleAndConvertToBuffers(lines);
+		}	
+	}
+	
+	private static void multiplyLinear(IntermediateLineData l, double start, double increase, int offset, int length)
+    {
+        	for(int i = 0; i < l.channels.length;i++) {
+    			double div =start;
+    			float[] channel = l.channels[i];
+    			
+    			for(int j = offset; j < offset + length &&j < channel.length;j++) {
+    				channel[j] = (float)(channel[j] * div);
+    				div += increase;
+    			}
+    		}
+    }
+
+    private static void multiply(IntermediateLineData[] lines, double factor, int offset)
+    {
+    	for(IntermediateLineData l : lines){
+    		for(int i = 0; i < l.channels.length;i++) {
+    			float[] channel = l.channels[i];
+    			for(int j = offset; j < channel.length;j++) {
+    				channel[j] = (float)(channel[j] * factor);
+    			}
+    		}
+    	}
+    }
+	
+	/**
+	 * subsamples and converts the data to the buffer representation needed for the graphics card.
+	 * 
+	 * Also does average filtering.
+	 * @param lines
+	 */
+	private void subsampleAndConvertToBuffers(IntermediateLineData[] lines) {
+		Point[][] points = new Point[lines.length][];
+		
+		byte[] types = new byte[lines.length];
+		int stoSize= 0;
+		int stsSize = 0;
+		int otsSize = 0;
+		int totalSize = 0;
+		for(int i = 0; i < lines.length;i++)
+		{
+			IntermediateLineData l = lines[i];
+			Point[] linePoints = new Point[l.size];
+
+			Point last = new Point(l.channels[0][0],l.channels[1][0],l.channels[2][0]);
+			linePoints[0] = last;
+			int nextIndex = 1;
+			
+			for(int j = 1; j < l.size;j++) {
+				Point current = new Point(l.channels[0][j],l.channels[1][j],l.channels[2][j]);
+				
+				if((j + 1)< l.size) {
+					//check if point should be in line or not
+					Point next = new Point(l.channels[0][j+1],l.channels[1][j+1],l.channels[2][j+1]);
+					boolean colinear = current.AngleTo(next, last) > PfssSettings.ANGLE_OF_LOD;
+					
+					if(!colinear) {
+						Point average = getAveragePoint(l, j);
+						average = average == null ? current : average;
+						
+						last = average;
+						linePoints[nextIndex++] = average;
+					}
+					
+				} else {
+					//last point, always add
+					linePoints[nextIndex++] = current;
+				}
+			}
+			
+			//check line type
+			double mag0 = linePoints[0].magnitude();
+			if(mag0 < Constants.SunRadius*1.05) {
+				double mag1 = linePoints[nextIndex-1].magnitude();
+				if(mag1 > Constants.SunRadius*1.05) {
+					stoSize += nextIndex-1;
+					types[i] = 0;
+				} else {
+					stsSize += nextIndex-1;
+					types[i] = 1;
+				}
+			}
+			else {
+				otsSize += nextIndex-1;
+				types[i] = 2;
+			}
+			totalSize += nextIndex;
+			points[i] = linePoints;
 		}
+		
+		//copy to buffers
+		FloatBuffer vertices = Buffers
+				.newDirectFloatBuffer(totalSize * 3 );
+		IntBuffer indicesSunToOutside = Buffers
+				.newDirectIntBuffer(stoSize * 2);
+		IntBuffer indicesSunToSun = Buffers
+				.newDirectIntBuffer(stsSize * 2);
+		IntBuffer indicesOutsideToSun = Buffers
+				.newDirectIntBuffer(otsSize * 2);
+
+		int vertexIndex = 0;
+		int ots = 0;
+		int sts = 0;
+		int sto = 0;
+		for(int i = 0; i < points.length;i++) {
+			Point[] line = points[i];
+			IntBuffer indexBuffer = getLineType(types[i], indicesSunToOutside,
+					indicesSunToSun, indicesOutsideToSun);
+			
+			int lineIndex = 0;
+			while(lineIndex+1 < line.length && line[lineIndex+1] != null)
+			{
+				addPoint(vertices,line[lineIndex]);
+				addLineSegment(vertexIndex, vertexIndex+1, indexBuffer);
+				vertexIndex++;
+				lineIndex++;
+			}
+			addPoint(vertices,line[lineIndex]);
+			vertexIndex++;
+		}
+
+		vertices.flip();
+		indicesSunToOutside.flip();
+		indicesOutsideToSun.flip();
+		indicesSunToSun.flip();
+		frame.setLoadedData(vertices, indicesSunToOutside,
+				indicesSunToSun, indicesOutsideToSun);
 	}
 	
 	private Point getAveragePoint(IntermediateLineData data, int pointIndex) {
@@ -332,36 +350,7 @@ public class PfssDecompressor implements Runnable {
                                          / (Math.sqrt(x1 * x1 + y1 * y1 + z1 * z1) * Math.sqrt(x2 * x2
                                                                      + y2 * y2 + z2 * z2));
         }
-		
-		
-
 	}
-	
-
-	private static void multiplyLinear(IntermediateLineData l, double start, double increase, int offset, int length)
-    {
-        	for(int i = 0; i < l.channels.length;i++) {
-    			double div =start;
-    			float[] channel = l.channels[i];
-    			
-    			for(int j = offset; j < offset + length &&j < channel.length;j++) {
-    				channel[j] = (float)(channel[j] * div);
-    				div += increase;
-    			}
-    		}
-    }
-
-    private static void multiply(IntermediateLineData[] lines, double factor, int offset)
-    {
-    	for(IntermediateLineData l : lines){
-    		for(int i = 0; i < l.channels.length;i++) {
-    			float[] channel = l.channels[i];
-    			for(int j = offset; j < channel.length;j++) {
-    				channel[j] = (float)(channel[j] * factor);
-    			}
-    		}
-    	}
-    }
 
 	@Override
 	public void run() {

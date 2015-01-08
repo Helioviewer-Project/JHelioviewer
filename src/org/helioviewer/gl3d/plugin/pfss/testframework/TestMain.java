@@ -14,7 +14,6 @@ import org.helioviewer.gl3d.plugin.pfss.data.PfssFrame;
 public class TestMain {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 
 		File compressedFolder = new File(TestSettings.compressedFolder);
 		File[] compressedFiles = compressedFolder.listFiles();
