@@ -25,7 +25,7 @@ public class PfssSettings {
 	public final static int FRAME_CACHE = 20;
 
 	/**
-	 * Maximal size of cache data.
+	 * Maximum size of cache data.
 	 */
 	public final static int DATA_CACHE_SIZE = 25;
 	
@@ -72,7 +72,10 @@ public class PfssSettings {
 	 * Math.toRadian(DEGREEVALUE))
 	 */
 	public final static double ANGLE_OF_LOD = Math.cos(Math.toRadians(5.0));
-
+	
+	public final static int AVERAGE_FILTER_SIZE = 15;
+	public final static int AVERAGE_FILTER_MIN_LINE_SIZE = 30;
+	
 	/**
 	 * Linewidth for the OpenGL visualization
 	 */

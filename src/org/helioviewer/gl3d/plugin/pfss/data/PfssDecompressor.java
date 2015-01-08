@@ -95,13 +95,13 @@ public class PfssDecompressor implements Runnable {
 						case 0:
 							multiplyLinear(lines[i],20,5,0,10);
 							multiplyLinear(lines[i],70,2,10,8);
-							multiplyLinear(lines[i],90,5,18,7);
+							multiplyLinear(lines[i],80,5,18,7);
 							multiplyLinear(lines[i],150,20,25,15);
 							break;
 						case 1:
 							multiplyLinear(lines[i],10,4,0,10);
 							multiplyLinear(lines[i],60,0,10,8);
-							multiplyLinear(lines[i],60,5,18,52);
+							multiplyLinear(lines[i],60,4,18,52);
 							break;
 					}
 				}
@@ -116,6 +116,7 @@ public class PfssDecompressor implements Runnable {
 				
 				//subsample for low-end graphic cards. Also count how many points there are for each line type
 				Point[][] points = new Point[lines.length][];
+				
 				byte[] types = new byte[lines.length];
 				int stoSize= 0;
 				int stsSize = 0;
@@ -124,13 +125,7 @@ public class PfssDecompressor implements Runnable {
 				for(int i = 0; i < lines.length;i++)
 				{
 					IntermediateLineData l = lines[i];
-					
 					Point[] linePoints = new Point[l.size];
-
-					/*int nextIndex = 0;
-					for(int j = 0; j < l.size;j+=2) {
-						linePoints[nextIndex++] = new Point(l.channels[0][j],l.channels[1][j],l.channels[2][j]);
-					}*/
 
 					Point last = new Point(l.channels[0][0],l.channels[1][0],l.channels[2][0]);
 					linePoints[0] = last;
@@ -138,14 +133,18 @@ public class PfssDecompressor implements Runnable {
 					
 					for(int j = 1; j < l.size;j++) {
 						Point current = new Point(l.channels[0][j],l.channels[1][j],l.channels[2][j]);
+						
 						if((j + 1)< l.size) {
 							//check if point should be in line or not
 							Point next = new Point(l.channels[0][j+1],l.channels[1][j+1],l.channels[2][j+1]);
 							boolean colinear = current.AngleTo(next, last) > PfssSettings.ANGLE_OF_LOD;
 							
 							if(!colinear) {
-								last = current;
-								linePoints[nextIndex++] = current;
+								Point average = getAveragePoint(l, j);
+								average = average == null ? current : average;
+								
+								last = average;
+								linePoints[nextIndex++] = average;
 							}
 							
 						} else {
@@ -231,6 +230,33 @@ public class PfssDecompressor implements Runnable {
 		}
 	}
 	
+	private Point getAveragePoint(IntermediateLineData data, int pointIndex) {
+		Point answer = null;
+		
+		if(data.size > PfssSettings.AVERAGE_FILTER_MIN_LINE_SIZE) {
+			int startOffset = PfssSettings.AVERAGE_FILTER_SIZE/2;
+			int length = PfssSettings.AVERAGE_FILTER_SIZE;
+			if(pointIndex - startOffset < 0) {
+				length -=  startOffset - pointIndex;
+				startOffset = pointIndex;
+			}
+			
+			float avX = 0;
+			float avY = 0;
+			float avZ = 0;
+			int count = 0;
+			for(int i = pointIndex-startOffset; i < (pointIndex-startOffset+length) & i < data.size ;i++) {
+				avX += data.channels[0][i];
+				avY += data.channels[1][i];
+				avZ += data.channels[2][i];
+				count++;
+			}
+			
+			answer = new Point(avX/count,avY/count,avZ/count);
+		}
+		
+		return answer;
+	}
 
 	private static void addLineSegment(int from, int to, IntBuffer indices) {
 		indices.put(from);
@@ -279,21 +305,6 @@ public class PfssDecompressor implements Runnable {
 		float x;
 		float y;
 		float z;
-		int index;
-
-		public Point(int index, short ptr, short ptph, short ptth, double l0,
-				double b0) {
-			this.index = index;
-			double r0 = ptr / 8192.0 * Constants.SunRadius;
-			double phi0 = ptph / 32768.0 * 2 * Math.PI;
-			double theta0 = ptth / 32768.0 * 2 * Math.PI;
-
-			phi0 -= l0 / 180.0 * Math.PI;
-			theta0 += b0 / 180.0 * Math.PI;
-			z = (float) (r0 * Math.sin(theta0) * Math.cos(phi0));
-			x = (float) (r0 * Math.sin(theta0) * Math.sin(phi0));
-			y = (float) (r0 * Math.cos(theta0));
-		}
 		
 		public Point(float x, float y, float z) {
 			this.x = x;
