@@ -10,6 +10,7 @@ import org.helioviewer.gl3d.plugin.pfss.data.FileDescriptor;
 import org.helioviewer.gl3d.plugin.pfss.data.PfssData;
 import org.helioviewer.gl3d.plugin.pfss.data.PfssDecompressor;
 import org.helioviewer.gl3d.plugin.pfss.data.PfssFrame;
+import org.helioviewer.gl3d.plugin.pfss.data.decompression.DiscreteCosineTransform;
 
 public class TestMain {
 
@@ -22,7 +23,7 @@ public class TestMain {
 		
 		System.out.println("warm up hotspot compiler");
 		for(int i = 0; i < compressedFiles.length/2;i++) {
-			PfssData d = new PfssData(null,"file://"+compressedFiles[i].getAbsolutePath());
+			PfssData d = new PfssData(null,"file:///"+compressedFiles[i].getAbsolutePath());
 			d.loadData();
 			FileDescriptor f = new FileDescriptor(new Date(0), new Date(1), "test.rar",0);
 			PfssFrame frame = new PfssFrame(f);
@@ -34,7 +35,7 @@ public class TestMain {
 		PfssData[] allData = new PfssData[compressedFiles.length];
 		PfssFrame[] allFrames = new PfssFrame[compressedFiles.length];
 		for(int i = 0; i < compressedFiles.length;i++) {
-			PfssData d = new PfssData(null,"file://"+compressedFiles[i].getAbsolutePath());
+			PfssData d = new PfssData(null,"file:///"+compressedFiles[i].getAbsolutePath());
 			d.loadData();
 			allData[i] = d;
 			FileDescriptor f = new FileDescriptor(new Date(0), new Date(1), "test.rar",0);

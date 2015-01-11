@@ -1,5 +1,6 @@
 package org.helioviewer.gl3d.plugin.pfss.data.decompression;
 
+import java.lang.ref.SoftReference;
 import java.util.HashMap;
 
 /**
@@ -8,24 +9,42 @@ import java.util.HashMap;
  *
  */
 public class DiscreteCosineTransform {
-
+    private static HashMap<Integer, SoftReference<float[][]>> coefficientSoftCache = new HashMap<>(500,1.0f);
 	/**
 	 * calculates the inverse DCT for all channels of all lines.
 	 * @param lines lines to decompress
 	 */
     public static void inverseTransform(IntermediateLineData[] lines) {
-    	HashMap<Integer,float[][]> coefficientCache = new HashMap<>(lines.length);
     	for(IntermediateLineData l : lines) {
-    		float[][] dcCache = coefficientCache.get(l.size);
-    		if(dcCache == null) {
+    		//get cached coefficients
+    		SoftReference<float[][]> dcCacheRef = null;
+    		synchronized(coefficientSoftCache) {
+    			dcCacheRef = coefficientSoftCache.get(l.size);
+    		}
+    		boolean newToCache = false;
+    		float[][] dcCache = null;
+    		if(dcCacheRef == null) {
     			dcCache = new float[l.size][l.size];
-    			coefficientCache.put(l.size, dcCache);
+    			newToCache = true;
+    		} else {
+    			dcCache = dcCacheRef.get();
+    			if(dcCache == null)
+    			{
+    				dcCache = new float[l.size][l.size];
+    				newToCache = true;
+    			}
     		}
 
     		for(int i = 0; i < l.channels.length;i++) {
     			int actualSize = l.size;
     			float[] idct = inverseTransform(l.channels[i], actualSize,dcCache);
     			l.channels[i] = idct;
+    		}
+    		
+    		if(newToCache) {
+    			synchronized(coefficientSoftCache) {
+    				coefficientSoftCache.put(l.size, new SoftReference<float[][]>(dcCache));
+    			}
     		}
     	}
     }
