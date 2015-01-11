@@ -84,14 +84,14 @@ public class PfssDecompressor implements Runnable {
 					switch(type[i]) {
 						case 0:
 							multiplyLinear(lines[i],20,5,0,10);
-							multiplyLinear(lines[i],70,2,10,8);
-							multiplyLinear(lines[i],80,5,18,7);
+							multiplyLinear(lines[i],75,2,10,8);
+							multiplyLinear(lines[i],85,5,18,7);
 							multiplyLinear(lines[i],150,20,25,15);
 							break;
 						case 1:
 							multiplyLinear(lines[i],10,4,0,10);
 							multiplyLinear(lines[i],60,0,10,8);
-							multiplyLinear(lines[i],60,4,18,52);
+							multiplyLinear(lines[i],65,4,18,52);
 							break;
 					}
 				}
