@@ -433,7 +433,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 		this.canvas.repaint();
 		this.exportMovie = true;
 		defaultViewport = this.getAdapter(ViewportView.class).getViewport();
-		
+	
 		tileWidth = width < DEFAULT_TILE_WIDTH ? width : DEFAULT_TILE_WIDTH;
 		tileHeight = height < DEFAULT_TILE_HEIGHT ? height : DEFAULT_TILE_HEIGHT;
 

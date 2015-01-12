@@ -825,18 +825,18 @@ public class LayersModel implements ViewListener
         {
             return;
         }
+        URI source=view.getAdapter(ImageInfoView.class).getDownloadURI();
         final ImageInfoView infoView=view.getAdapter(ImageInfoView.class);
+        final File downloadDestination = chooseFile(view.getAdapter(ImageInfoView.class).getUri().getPath().substring(Math.max(0, source.getPath().lastIndexOf("/"))));
 
-        Thread downloadThread=new Thread(new Runnable()
+        new Thread(new Runnable()
         {
             public void run()
             {
-                downloadFromJPIP(infoView);
+                downloadFromJPIP(infoView, downloadDestination);
                 LayersModel.getSingletonInstance().viewChanged(infoView,new ChangeEvent(new LayerChangedReason(infoView,LayerChangeType.LAYER_DOWNLOADED,view)));
             }
-        },"DownloadFromJPIPThread");
-        downloadThread.setDaemon(true);
-        downloadThread.start();
+        }).start();
     }
 
     /**
@@ -844,7 +844,7 @@ public class LayersModel implements ViewListener
      * 
      * Changes the source of the ImageInfoView afterwards, since a local file is always faster.
      */
-    private void downloadFromJPIP(ImageInfoView view)
+    private void downloadFromJPIP(ImageInfoView view, File downloadDestination)
     {
         if(view==null)
         {
@@ -870,7 +870,7 @@ public class LayersModel implements ViewListener
                 }
             }
         }
-        File downloadDestination = chooseFile(view.getAdapter(ImageInfoView.class).getUri().getPath().substring(Math.max(0, source.getPath().lastIndexOf("/"))));
+        if (downloadDestination == null) return;
         JHVJP2View mainView=view.getAdapter(JHVJP2View.class);
         try
         {
@@ -921,8 +921,9 @@ public class LayersModel implements ViewListener
         fileChooser.addChoosableFileFilter(new JP2Filter());
 
         fileChooser.setSelectedFile(new File(defaultTargetFileName));
-
-        int retVal = fileChooser.showSaveDialog(ImageViewerGui.getMainFrame());
+        System.out.println("ImageViewerGui --> " + ImageViewerGui.getMainFrame());
+        
+        int retVal = fileChooser.showSaveDialog(null);
         File selectedFile = null;
 
         if (retVal == JFileChooser.APPROVE_OPTION) {
