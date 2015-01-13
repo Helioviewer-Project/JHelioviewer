@@ -115,7 +115,7 @@ function platformDetect(){
   $.getJSON( "https://api.github.com/repos/Helioviewer-Project/JHelioviewer/releases", function( data ) {
     var items = [];
     $.each( data, function( key, value ) {
-      if (!value["prerelase"]){
+      if (!value["prerelease"]){
         var startBox = "<div class='disignBoxSecond'><div class='boxContent'>";
         var startBoxFloat = "<div class='disignBoxSecond' style='float:left'><div class='boxContent'>";
         var endBox = "</div></div>"

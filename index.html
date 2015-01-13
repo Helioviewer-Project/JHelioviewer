@@ -152,7 +152,7 @@ function platformDetect(){
   $.getJSON( "https://api.github.com/repos/Helioviewer-Project/JHelioviewer/releases", function( data ) {
     var items = [];
     $.each( data, function( key, value ) {
-      if (!value["prerelase"]){
+      if (!value["prerelease"]){
         var text = "<div>";
         if ( String(navigator.platform).toLowerCase().indexOf('win') == 0) {
           $.each(value["assets"], function(key, value){
