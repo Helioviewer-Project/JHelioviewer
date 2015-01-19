@@ -31,6 +31,8 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DComponentView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DSceneGraphView;
 
+import sun.net.www.http.Hurryable;
+
 /**
  * Implementation of ImagePanelPlugin for showing event popups.
  * 
@@ -213,8 +215,7 @@ public class ImagePanelEventPopupController implements ImagePanelPlugin,
 		mouseOverHEKEvent = null;
 		mouseOverPosition = null;
 
-		GL3DComponentView gl3dview = (GL3DComponentView) view;
-		GL3DSceneGraphView scenegraphview = (GL3DSceneGraphView) gl3dview
+		GL3DSceneGraphView scenegraphview = (GL3DSceneGraphView) GuiState3DWCS.mainComponentView
 				.getView();
 		if (GL3DState.get() != null
 				&& GL3DState.get().activeCamera != null) {

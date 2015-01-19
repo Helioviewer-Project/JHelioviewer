@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="6.0" transformSequenceNumber="5">
-  <directoryPresets config="../../../../Desktop/sign_cert.p12" />
+  <directoryPresets config="./linux-build" />
   <application name="JHelioviewer" distributionSourceDir="" applicationId="7791-5722-0682-7193" mediaDir="./builds" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="9" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="JHelioviewer" publisher="" publisherWeb="" version="2.3" allPathsRelative="true" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="7ed177551bd348bc" javaMinVersion="1.7" javaMaxVersion="" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="en" customLocalizationFile="" />
@@ -523,7 +523,7 @@
       <preInstallScript mode="1" file="">
         <content />
       </preInstallScript>
-      <postInstallScript mode="1" file="">
+      <postInstallScript mode="2" file="./linux-build/post-install.sh">
         <content />
       </postInstallScript>
       <preUninstallScript mode="1" file="">
@@ -533,7 +533,7 @@
         <content />
       </postUninstallScript>
     </linuxRPM>
-    <linuxDeb name="Linux Deb Archive 64 bit" id="218" customizedId="" mediaFileName="${compiler:sys.shortName}_${compiler:sys.version}_64_bit" installDir="/opt/${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="" manualJREEntry="false" bzip="true" description="" dependencies="" maintainerEmail="" architectureSet="true" architecture="amd64">
+    <linuxDeb name="Linux Deb Archive 64 bit" id="218" customizedId="" mediaFileName="${compiler:sys.shortName}_${compiler:sys.version}_64_bit" installDir="/opt/${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="" manualJREEntry="false" bzip="true" description="" dependencies="" maintainerEmail="daniel.mueller@esa.int" architectureSet="true" architecture="amd64">
       <excludedLaunchers>
         <launcher id="24" />
       </excludedLaunchers>
@@ -563,7 +563,7 @@
       <preInstallScript mode="1" file="">
         <content />
       </preInstallScript>
-      <postInstallScript mode="1" file="">
+      <postInstallScript mode="2" file="./linux-build/post-install.sh">
         <content />
       </postInstallScript>
       <preUninstallScript mode="1" file="">
@@ -624,7 +624,7 @@
       <includedDownloadableComponents />
       <topLevelFiles />
     </macos>
-    <linuxDeb name="Linux Deb Archive 32 bit" id="269" customizedId="" mediaFileName="" installDir="/opt/${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="" manualJREEntry="false" bzip="false" description="" dependencies="" maintainerEmail="" architectureSet="true" architecture="i386">
+    <linuxDeb name="Linux Deb Archive 32 bit" id="269" customizedId="" mediaFileName="" installDir="/opt/${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="" manualJREEntry="false" bzip="false" description="" dependencies="" maintainerEmail="daniel.mueller@esa.int" architectureSet="true" architecture="i386">
       <excludedLaunchers>
         <launcher id="24" />
       </excludedLaunchers>
@@ -654,7 +654,7 @@
       <preInstallScript mode="1" file="">
         <content />
       </preInstallScript>
-      <postInstallScript mode="1" file="">
+      <postInstallScript mode="2" file="./linux-build/post-install.sh">
         <content />
       </postInstallScript>
       <preUninstallScript mode="1" file="">
@@ -694,7 +694,7 @@
       <preInstallScript mode="1" file="">
         <content />
       </preInstallScript>
-      <postInstallScript mode="1" file="">
+      <postInstallScript mode="2" file="./linux-build/post-install.sh">
         <content />
       </postInstallScript>
       <preUninstallScript mode="1" file="">
@@ -736,6 +736,11 @@
   </mediaSets>
   <buildIds buildAll="false">
     <mediaSet refId="68" />
+    <mediaSet refId="150" />
+    <mediaSet refId="216" />
+    <mediaSet refId="218" />
+    <mediaSet refId="269" />
+    <mediaSet refId="270" />
   </buildIds>
   <buildOptions verbose="false" faster="false" disableSigning="true" disableJreBundling="false" debug="false" />
 </install4j>
