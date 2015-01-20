@@ -28,10 +28,7 @@ import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.ViewListener;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
-import org.helioviewer.jhv.viewmodel.view.opengl.GL3DComponentView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DSceneGraphView;
-
-import sun.net.www.http.Hurryable;
 
 /**
  * Implementation of ImagePanelPlugin for showing event popups.

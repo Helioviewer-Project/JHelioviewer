@@ -38,7 +38,6 @@ import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView.SpeedType;
-import org.helioviewer.jhv.viewmodel.view.opengl.CompenentView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DComponentView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DSceneGraphView;
 

@@ -21,6 +21,7 @@ import java.util.Vector;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
+import org.helioviewer.jhv.Directories;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.base.Message;
 import org.helioviewer.jhv.base.math.Interval;
@@ -55,7 +56,6 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJP2View;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JP2Image;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
-import org.helioviewer.jhv.viewmodel.view.opengl.CompenentView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DComponentView;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -87,6 +87,9 @@ public class LayersModel implements ViewListener
 
     // store the last updated timestamp
     private Date lastTimestamp;
+
+	private String defaultPath;
+	private static final String DOWNLOAD_PATH = "download.path";
 
     /**
      * Method returns the sole instance of this class.
@@ -826,9 +829,9 @@ public class LayersModel implements ViewListener
         {
             return;
         }
-        URI source=view.getAdapter(ImageInfoView.class).getDownloadURI();
+        URI source=view.getAdapter(ImageInfoView.class).getUri();
         final ImageInfoView infoView=view.getAdapter(ImageInfoView.class);
-        final File downloadDestination = chooseFile(view.getAdapter(ImageInfoView.class).getUri().getPath().substring(Math.max(0, source.getPath().lastIndexOf("/"))));
+        final File downloadDestination = chooseFile(source.getPath().substring(Math.max(0, source.getPath().lastIndexOf("/")+1)));
 
         new Thread(new Runnable()
         {
@@ -914,21 +917,22 @@ public class LayersModel implements ViewListener
     }
     
     private File chooseFile(String defaultTargetFileName) {
-        JFileChooser fileChooser = new JFileChooser();
+    	this.loadSettings();
+    	JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileHidingEnabled(false);
         fileChooser.setMultiSelectionEnabled(false);
         fileChooser.setAcceptAllFileFilterUsed(false);
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fileChooser.addChoosableFileFilter(new JP2Filter());
-
+        fileChooser.setCurrentDirectory(new File(this.defaultPath));
         fileChooser.setSelectedFile(new File(defaultTargetFileName));
-        System.out.println("ImageViewerGui --> " + ImageViewerGui.getMainFrame());
         
         int retVal = fileChooser.showSaveDialog(null);
         File selectedFile = null;
 
         if (retVal == JFileChooser.APPROVE_OPTION) {
             selectedFile = fileChooser.getSelectedFile();
+        	this.defaultPath = fileChooser.getCurrentDirectory().getPath();
 
             // Has user entered the correct extension or not?
             ExtensionFileFilter fileFilter = (ExtensionFileFilter) fileChooser.getFileFilter();
@@ -949,8 +953,9 @@ public class LayersModel implements ViewListener
                 }
             }
         }
-
+        this.saveSettings();
         return selectedFile;
+        
     }
 
     /**
@@ -2123,4 +2128,26 @@ public class LayersModel implements ViewListener
             }
         }
     }
+    
+    private void loadSettings() {
+		String val;
+		try {
+			val = Settings.getProperty(DOWNLOAD_PATH);
+			if (val != null) {
+				this.defaultPath = val;
+			}
+			else
+				this.defaultPath =  Directories.REMOTEFILES.getPath();
+		} catch (Throwable t) {
+			System.err.println(t);
+		}
+
+	}
+    
+    private void saveSettings() {
+		Settings.setProperty(DOWNLOAD_PATH,
+				this.defaultPath);
+		// Update and save settings
+		Settings.apply();
+	}
 }

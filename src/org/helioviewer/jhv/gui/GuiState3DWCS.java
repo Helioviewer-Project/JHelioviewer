@@ -12,6 +12,8 @@ import javax.swing.SwingUtilities;
 import org.helioviewer.jhv.gui.components.MoviePanel;
 import org.helioviewer.jhv.gui.components.OverViewPanel;
 import org.helioviewer.jhv.gui.components.TopToolBar;
+import org.helioviewer.jhv.layers.Layer;
+import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginManager;
 import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterContainer;
@@ -46,7 +48,7 @@ public class GuiState3DWCS {
 
     public static GL3DComponentView mainComponentView;
     public static OverViewPanel overViewPanel = new OverViewPanel();
-    
+    public static Layers layers = new Layers();
     private GuiState3DWCS()
     {
     }
@@ -70,8 +72,8 @@ public class GuiState3DWCS {
         sceneGraph.setView(viewportView);
         sceneGraph.setGLOverlayView(overlayView);
         
-        mainComponentView = new GL3DComponentView();
-        //mainComponentView = new CompenentView();
+        //mainComponentView = new GL3DComponentView();
+        mainComponentView = new CompenentView();
         mainComponentView.setView(sceneGraph);
         LayersModel.getSingletonInstance().addLayersListener(overViewPanel);
                 
@@ -167,7 +169,8 @@ public class GuiState3DWCS {
 			}
 		}
 		overViewPanel.setLayer(layerOverView);
-		
+		Layer layer = new Layer(layerOverView);
+		layers.addLayer(layer);
         // wait until image is loaded
         while (newLayer.getAdapter(SubimageDataView.class).getImageData() == null)
         {

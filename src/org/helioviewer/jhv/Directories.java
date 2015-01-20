@@ -12,6 +12,27 @@ import java.io.File;
  */
 public enum Directories {
     /** The image cache directory. */
+    HOME {
+        private final String path = System.getProperty("user.home");
+
+        public String getPath() {
+            return path + File.separator + "JHelioviewer" + File.separator;
+        }
+
+        public File getFile() {
+            return new File(getPath());
+        }
+    },
+    /** The remote files directory. */
+    REMOTEFILES {
+        public String getPath() {
+            return HOME.getPath() + "Downloads" + File.separator;
+        }
+
+        public File getFile() {
+            return new File(getPath());
+        }
+    },
     CACHE {
         public String getPath() {
             return CACHE_DIR;
