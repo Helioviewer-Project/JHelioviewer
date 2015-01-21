@@ -159,6 +159,8 @@ public class GL3DComponentView extends AbstractBasicView implements
 	}
 
 	public void init(GLAutoDrawable glAD) {
+		System.out.println("V : " + glAD.getContext().getGLVersion());
+		System.out.println("V : " + glAD.getContext().getGLSLVersionString());
 		GuiState3DWCS.overViewPanel.activate(glAD.getContext());
 		System.out.println("GL3DComponentView.Init");
 		GL2 gl = glAD.getGL().getGL2();

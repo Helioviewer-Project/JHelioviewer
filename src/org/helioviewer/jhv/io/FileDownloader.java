@@ -38,6 +38,7 @@ import org.helioviewer.jhv.gui.actions.filefilters.JP2Filter;
 public class FileDownloader {
 
 	private JProgressBar progressBar;
+	private StandAloneDialog dialog;
 
 	/**
 	 * Downloads a file from a given HTTP address to the download directory of
@@ -78,7 +79,7 @@ public class FileDownloader {
 		File outFile = chooseFile(name);
 
 		progressBar = new JProgressBar(JProgressBar.HORIZONTAL, 0, 100);
-		StandAloneDialog dialog = new StandAloneDialog("Downloading " + name);
+		dialog = new StandAloneDialog("Downloading " + name);
 		dialog.setVisible(true);
 
 		// if local file name doesn't exist, download file
@@ -170,7 +171,7 @@ public class FileDownloader {
 		progressBar = new JProgressBar(JProgressBar.HORIZONTAL, 0, 100);
 		// progressBar.setPreferredSize(new Dimension(200, 20));
 
-		StandAloneDialog dialog = new StandAloneDialog(title);
+		dialog = new StandAloneDialog(title);
 		dialog.setVisible(true);
 
 		// download the file
@@ -242,7 +243,7 @@ public class FileDownloader {
 			int numCurrentRead;
 			int numTotalRead = 0;
 
-			while (!Thread.interrupted()
+			while (!Thread.interrupted() && !dialog.wasInterrupted
 					&& (numCurrentRead = in.read(buffer)) != -1) {
 				out.write(buffer, 0, numCurrentRead);
 
@@ -280,7 +281,7 @@ public class FileDownloader {
 	private class StandAloneDialog extends JWindow implements ActionListener {
 
 		private static final long serialVersionUID = 1L;
-		private boolean wasInterrupted;
+		private boolean wasInterrupted = false;
 
 		/**
 		 * Default constructor
@@ -291,7 +292,7 @@ public class FileDownloader {
 		public StandAloneDialog(String title) {
 			super(ImageViewerGui.getMainFrame());
 			setLocationRelativeTo(ImageViewerGui.getMainFrame());
-
+			
 			setLayout(new FlowLayout());
 
 			progressBar.setString(title);
@@ -299,7 +300,6 @@ public class FileDownloader {
 			add(progressBar);
 
 			JButton cmdCancel = new JButton("Cancel");
-			cmdCancel.setBorder(BorderFactory.createEtchedBorder());
 			cmdCancel.addActionListener(this);
 			add(cmdCancel);
 
@@ -318,6 +318,7 @@ public class FileDownloader {
 		 * {@inheritDoc}
 		 */
 		public void actionPerformed(ActionEvent e) {
+			System.out.println("interruppted");
 				wasInterrupted = true;
 		}
 	}

@@ -33,7 +33,6 @@ import org.helioviewer.jhv.viewmodel.view.MetaDataView;
 import org.helioviewer.jhv.viewmodel.view.SubimageDataView;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
-import org.helioviewer.jhv.viewmodel.view.opengl.CompenentView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DCameraView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DComponentView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DLayeredView;
@@ -72,8 +71,8 @@ public class GuiState3DWCS {
         sceneGraph.setView(viewportView);
         sceneGraph.setGLOverlayView(overlayView);
         
-        //mainComponentView = new GL3DComponentView();
-        mainComponentView = new CompenentView();
+        mainComponentView = new GL3DComponentView();
+        //mainComponentView = new CompenentView();
         mainComponentView.setView(sceneGraph);
         LayersModel.getSingletonInstance().addLayersListener(overViewPanel);
                 
