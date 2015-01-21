@@ -323,6 +323,7 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 	}
 	
 	private void createTexture(GL2 gl, Region region, ImageData imageData){
+		if (imageData == null || imageData.getImageTransport() == null) return;
 		int bitsPerPixel = imageData.getImageTransport().getNumBitsPerPixel();
 		Buffer buffer;
 

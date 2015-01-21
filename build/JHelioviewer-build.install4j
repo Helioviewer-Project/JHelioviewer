@@ -44,19 +44,7 @@
       <component name="JHelioviewer" id="23" customizedId="" displayDescription="false" hideHelpButton="false" selected="true" changeable="false" downloadable="false" hidden="false">
         <description />
         <include all="false">
-          <entry location="lib" fileType="regular" />
-          <entry location="examples" fileType="regular" />
-          <entry location="ggr" fileType="regular" />
-          <entry location="images" fileType="regular" />
-          <entry location="libs" fileType="regular" />
-          <entry location="licenses" fileType="regular" />
-          <entry location="luts" fileType="regular" />
-          <entry location="settings" fileType="regular" />
-          <entry location="shader" fileType="regular" />
-          <entry location="UltimateLookupTable.png" fileType="regular" />
-          <entry location="UltimateLookupTable.txt" fileType="regular" />
-          <entry location="JHelioViewer.jar" fileType="regular" />
-          <entry location="JHelioViewer" fileType="launcher" />
+          <entry location="." fileType="regular" />
         </include>
         <dependencies />
       </component>
