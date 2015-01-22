@@ -12,15 +12,16 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_Kdu_cache;
 public class Settings
 {
     private static final Properties DEFAULT_PROPERTIES = new Properties();
+    private static final Preferences PREF_NODE = Preferences.userRoot().node("jhelioviewer");
     
     static
     {
-        if(Preferences.userRoot().get("UUID",null)==null)
+        if(PREF_NODE.get("UUID",null)==null)
         {
-            Preferences.userRoot().put("UUID",UUID.randomUUID().toString());
+            PREF_NODE.put("UUID",UUID.randomUUID().toString());
             try
             {
-                Preferences.userRoot().flush();
+                PREF_NODE.flush();
             }
             catch(BackingStoreException e)
             {
@@ -45,6 +46,8 @@ public class Settings
 
             InputStream defaultPropStream = FileUtils.getResourceInputStream("/settings/defaults.properties");
             DEFAULT_PROPERTIES.load(defaultPropStream);
+            DEFAULT_PROPERTIES.setProperty("default.local.path",Directories.REMOTEFILES.getPath());
+            
             defaultPropStream.close();
             System.out.println(">> Settings.load() > Load default system settings: " + DEFAULT_PROPERTIES.toString());
         } catch (Exception ex) {
@@ -78,7 +81,7 @@ public class Settings
         if (val.equals(getProperty(key)))
             return;
         
-        Preferences.userRoot().put(key,val);
+        PREF_NODE.put(key,val);
         
         synchronized(syncObj)
         {
@@ -108,7 +111,7 @@ public class Settings
                         
                         try
                         {
-                            Preferences.userRoot().flush();
+                            PREF_NODE.flush();
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
@@ -131,6 +134,6 @@ public class Settings
      *            Default field to read
      */
     public static String getProperty(String key) {
-        return Preferences.userRoot().get(key,DEFAULT_PROPERTIES.getProperty(key));
+        return PREF_NODE.get(key,DEFAULT_PROPERTIES.getProperty(key));
     }
 }

@@ -11,22 +11,10 @@ import java.io.File;
  * 
  */
 public enum Directories {
-    /** The image cache directory. */
-    HOME {
-        private final String path = System.getProperty("user.home");
-
-        public String getPath() {
-            return path + File.separator + "JHelioviewer" + File.separator;
-        }
-
-        public File getFile() {
-            return new File(getPath());
-        }
-    },
     /** The remote files directory. */
     REMOTEFILES {
         public String getPath() {
-            return HOME.getPath() + "Downloads" + File.separator;
+            return DOWNLOAD_DIR + File.separator;
         }
 
         public File getFile() {
@@ -50,10 +38,29 @@ public enum Directories {
     abstract public File getFile();
 
     private static final String CACHE_DIR=System.getProperty("java.io.tmpdir")+File.separator+"jhv-cache"+File.separator;
+    private static String DOWNLOAD_DIR;
     
     static
     {
         new File(CACHE.getPath()).mkdir();
+        
+        DOWNLOAD_DIR = System.getProperty("user.home")
+                + File.separator + "JHelioviewer"
+                + File.separator + "Downloads";
+        if(!new File(DOWNLOAD_DIR).isDirectory())
+        {
+            DOWNLOAD_DIR = System.getProperty("user.home")
+                    + File.separator + "Downloads";
+            if(!new File(DOWNLOAD_DIR).isDirectory())
+            {
+                DOWNLOAD_DIR = System.getProperty("user.home")
+                        + File.separator + "downloads";
+                if(!new File(DOWNLOAD_DIR).isDirectory())
+                {
+                    DOWNLOAD_DIR = System.getProperty("user.home");
+                }
+            }
+        }
     }
 }
 
