@@ -231,12 +231,13 @@ public class PfssDecompressor implements Runnable {
 			int lineIndex = 0;
 			while(lineIndex+1 < line.length && line[lineIndex+1] != null)
 			{
-				addPoint(vertices,line[lineIndex]);
-				addLineSegment(vertexIndex, vertexIndex+1, indexBuffer);
+				line[lineIndex].addPointToBuffer(vertices);
+				indexBuffer.put(vertexIndex);
+				indexBuffer.put(vertexIndex+1);
 				vertexIndex++;
 				lineIndex++;
 			}
-			addPoint(vertices,line[lineIndex]);
+			line[lineIndex].addPointToBuffer(vertices);
 			vertexIndex++;
 		}
 
@@ -283,16 +284,6 @@ public class PfssDecompressor implements Runnable {
 		return answer;
 	}
 
-	private static void addLineSegment(int from, int to, IntBuffer indices) {
-		indices.put(from);
-		indices.put(to);
-	}
-
-	private static void addPoint(FloatBuffer vertices, Point p) {
-		vertices.put(p.x);
-		vertices.put(p.y);
-		vertices.put(p.z);
-	}
 
 	/**
 	 * Helper function for determining the right line type
@@ -357,6 +348,12 @@ public class PfssDecompressor implements Runnable {
                                          / (Math.sqrt(x1 * x1 + y1 * y1 + z1 * z1) * Math.sqrt(x2 * x2
                                                                      + y2 * y2 + z2 * z2));
         }
+		
+		public void addPointToBuffer(FloatBuffer vertices) {
+			vertices.put(x);
+			vertices.put(y);
+			vertices.put(z);
+		}
 	}
 
 	@Override
