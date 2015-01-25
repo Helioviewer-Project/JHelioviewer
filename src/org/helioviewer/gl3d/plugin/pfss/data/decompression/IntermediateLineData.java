@@ -1,5 +1,8 @@
 package org.helioviewer.gl3d.plugin.pfss.data.decompression;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 import org.helioviewer.base.physics.Constants;
 
 /**
@@ -11,26 +14,76 @@ public class IntermediateLineData {
 	public float[][] channels;
 
 	public float[] startPoint;
-	
+	public float[] endPoint;
 	public int size;
 	
-	/**
-	 * Integrates the lines. 
-	 */
-	public void integrate() {
+	private IntermediateLineData() {
 		
-		for(int i = 0; i < startPoint.length;i++){
-			float[] newChannel = new float[channels[i].length+1];
+	}
+	
+	public void undoPrediction(float quantizationThreshold) {
+		for(int i = 0; i < channels.length;i++) {
+			float[] decodedChannel = new float[channels[i].length+2];
+			decodedChannel[0] = startPoint[i];
+			decodedChannel[decodedChannel.length-1] = endPoint[i];
 			
-			float before = startPoint[i];
-			newChannel[0] = before;
-			for(int j = 1; j < newChannel.length;j++) {
-				newChannel[j] = channels[i][j-1]+before;
-				before = newChannel[j];
+			int channelIndex = 0;
+			LinkedList<Indices> bfIndices = new LinkedList<>();
+			bfIndices.add(new Indices(0, decodedChannel.length-1));
+			while(!bfIndices.isEmpty()) {
+				prediction(bfIndices,decodedChannel,channels[i],channelIndex, quantizationThreshold);
+				channelIndex++;
 			}
-			channels[i] = newChannel;
+			this.channels[i] = decodedChannel;
 		}
-		size++;
+	}
+	
+	public void toEuler(double l0, double b0) {
+		for(int i = 0; i <this.size;i++) {
+			float rawR =  channels[0][i];
+			float rawPhi = channels[1][i];
+			float rawTheta = channels[2][i];
+			rawR += 8192;
+			rawPhi += 16384;
+			rawTheta += 8192;
+			
+	        //convert spherical coordinate system to euler
+	        double r = rawR / 8192.0 * Constants.SunRadius;
+	        double p = rawPhi / 32768.0 * 2 * Math.PI;
+	        double t = rawTheta / 32768.0 * 2 * Math.PI;
+
+	        p -= l0 / 180.0 * Math.PI;
+	        t += b0 / 180.0 * Math.PI;
+	        channels[0][i] = (float)(r * Math.sin(t) * Math.sin(p)); 	//x
+	        channels[1][i] = (float)(r * Math.cos(t)); 				//y
+	        channels[2][i] = (float)(r * Math.sin(t) * Math.cos(p)); 	//z
+		}
+		
+	}
+	
+	private static void prediction(LinkedList<Indices> bfIndices,float[] decodedChannel,float[] channel, int nextIndex, float quantizationThreshold) {
+		Indices i = bfIndices.pollFirst();
+		float start = decodedChannel[i.startIndex];
+		float end = decodedChannel[i.endIndex];
+		
+		int toPredictIndex = (i.endIndex - i.startIndex) / 2 + i.startIndex;
+		float error = channel[nextIndex];
+		error = error <= quantizationThreshold ? error * 4: error;
+		
+		float predFactor0 = (toPredictIndex-i.startIndex)/(float)(i.endIndex - i.startIndex);
+		float predFactor1 = (i.endIndex-toPredictIndex)/(float)(i.endIndex - i.startIndex);
+		float prediction = predFactor0* start + predFactor1*end;
+		decodedChannel[toPredictIndex] = prediction-error;
+		
+		//add next level of indices
+		if (i.startIndex + 1 != toPredictIndex){
+			Indices next = new Indices(i.startIndex,toPredictIndex);
+			bfIndices.addLast(next);
+        }
+		if (i.endIndex - 1 != toPredictIndex) {
+			Indices next = new Indices(toPredictIndex,i.endIndex);
+			bfIndices.addLast(next);
+		}
 	}
 	
 	/**
@@ -45,29 +98,34 @@ public class IntermediateLineData {
 	public static void addStartPoint(IntermediateLineData[] lines, int[] radius, int[] phi, int[] theta, double l0, double b0) {
 		for(int i = 0; i < lines.length;i++) {
 			IntermediateLineData l = lines[i];
-			/*
-			 * Not all values have been sent. All zeroes at the end of radius[], phi[] or theta[] have been cropped
-			 */
 			int rawR = i < radius.length ? radius[i] : 0;
 			int rawPhi = i < phi.length ? phi[i] : 0;
 			int rawTheta = i < theta.length ? theta[i] : 0;
-			rawR += 8192;
-			rawPhi += 16384;
-			rawTheta += 8192;
 			
-            //convert spherical coordinate system to euler
-            double r = rawR / 8192.0 * Constants.SunRadius;
-            double p = rawPhi / 32768.0 * 2 * Math.PI;
-            double t = rawTheta / 32768.0 * 2 * Math.PI;
-
-            p -= l0 / 180.0 * Math.PI;
-            t += b0 / 180.0 * Math.PI;
-            l.startPoint = new float[3];
-            l.startPoint[0] = (float)(r * Math.sin(t) * Math.sin(p)); 	//x
-            l.startPoint[1] = (float)(r * Math.cos(t)); 				//y
-            l.startPoint[2] = (float)(r * Math.sin(t) * Math.cos(p)); 	//z
+			l.startPoint = new float[3];
+            l.startPoint[0] = rawR;	
+            l.startPoint[1] = rawPhi; 				
+            l.startPoint[2] = rawTheta;
 		}
 	}
+	
+	public static void addEndPoint(IntermediateLineData[] lines,
+			int[] radius, int[] phi, int[] theta, double l0,
+			double b0) {
+		for(int i = 0; i < lines.length;i++) {
+			IntermediateLineData l = lines[i];
+			int rawR = i < radius.length ? radius[i] : 0;
+			int rawPhi = i < phi.length ? phi[i] : 0;
+			int rawTheta = i < theta.length ? theta[i] : 0;
+           
+            l.endPoint = new float[3];
+            l.endPoint[0] = rawR;
+            l.endPoint[1] = rawPhi;
+            l.endPoint[2] = rawTheta;
+		}
+		
+	}
+	
 	/**
 	 * split all concatenated channels to the correspoding line. In the end, all Channels will
 	 * @param lengths array of all line lengths. These lengths are before they were Run-Length Encoded
@@ -92,15 +150,15 @@ public class IntermediateLineData {
 			 l.channels = new float[3][];
 			 
 			 
+			 
 			 //for all channels
 			 for(int j = 0; j < 3;j++) {
 				 int index = indices[j];
 				 
-				 int runLength = channels[j][index++]; //decode RLE
-				 float[] channel = toFloat(channels[j],index,runLength);
+				 float[] channel = toFloat(channels[j],index,l.size);
 				 l.channels[j] = channel;
 				 
-				 index += runLength;
+				 index += l.size;
 				 indices[j] = index;
 			 }
 			 
@@ -123,5 +181,15 @@ public class IntermediateLineData {
 			out[i-start] = data[i];
 		}
 		return out;
+	}
+
+	private static class Indices {
+		public int startIndex;
+		public int endIndex;
+		
+		public Indices(int start, int end) {
+			this.startIndex = start;
+			this.endIndex = end;
+		}
 	}
 }

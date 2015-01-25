@@ -61,45 +61,34 @@ public class PfssDecompressor implements Runnable {
 				double b0 = ((double[]) bhdu.getColumn("B0"))[0];
 				double l0 = ((double[]) bhdu.getColumn("L0"))[0];
 				byte[] line_length = ((byte[][]) bhdu.getColumn("LINE_LENGTH"))[0];
-				byte[] type = ((byte[][]) bhdu.getColumn("TYPE"))[0];
-				byte[] startR = ((byte[][]) bhdu.getColumn("StartPointR"))[0];
-				byte[] startPhi = ((byte[][]) bhdu.getColumn("StartPointPhi"))[0];
-				byte[] startTheta = ((byte[][]) bhdu.getColumn("StartPointTheta"))[0];
-				byte[] xRaw = ((byte[][]) bhdu.getColumn("X"))[0];
-				byte[] yRaw = ((byte[][]) bhdu.getColumn("Y"))[0];
-				byte[] zRaw = ((byte[][]) bhdu.getColumn("Z"))[0];
+				byte[] startR = ((byte[][]) bhdu.getColumn("StartPointsR"))[0];
+				byte[] startPhi = ((byte[][]) bhdu.getColumn("StartPointsPhi"))[0];
+				byte[] startTheta = ((byte[][]) bhdu.getColumn("StartPointsTheta"))[0];
+				byte[] endR = ((byte[][]) bhdu.getColumn("EndpointsR"))[0];
+				byte[] endPhi = ((byte[][]) bhdu.getColumn("EndpointsPhi"))[0];
+				byte[] endTheta = ((byte[][]) bhdu.getColumn("EndpointsTheta"))[0];
+				byte[] pRaw = ((byte[][]) bhdu.getColumn("R"))[0];
+				byte[] phiRaw = ((byte[][]) bhdu.getColumn("PHI"))[0];
+				byte[] thetaRaw = ((byte[][]) bhdu.getColumn("THETA"))[0];
 				
 				int[] startRInt = ByteDecoder.decodeAdaptive(startR);
 				int[] startPhiInt = ByteDecoder.decodeAdaptive(startPhi);
 				int[] startThetaInt = ByteDecoder.decodeAdaptive(startTheta);
+				int[] endRInt = ByteDecoder.decodeAdaptive(endR);
+				int[] endPhiInt = ByteDecoder.decodeAdaptive(endPhi);
+				int[] endThetaInt = ByteDecoder.decodeAdaptive(endTheta);
 				int[] lengths = ByteDecoder.decodeAdaptiveUnsigned(line_length);
-				int[] xInt = ByteDecoder.decodeAdaptive(xRaw);
-				int[] yInt = ByteDecoder.decodeAdaptive(yRaw);
-				int[] zInt = ByteDecoder.decodeAdaptive(zRaw);
+				int[] rInt = ByteDecoder.decodeAdaptive(pRaw);
+				int[] phiInt = ByteDecoder.decodeAdaptive(phiRaw);
+				int[] thetaInt = ByteDecoder.decodeAdaptive(thetaRaw);
 
-				lines = IntermediateLineData.splitToLines(lengths, xInt, yInt, zInt);
+				lines = IntermediateLineData.splitToLines(lengths, rInt, phiInt, thetaInt);
 				IntermediateLineData.addStartPoint(lines, startRInt, startPhiInt, startThetaInt, l0, b0);
-				
-				for(int i = 0; i < lines.length;i++) {
-					switch(type[i]) {
-						case 0:
-							multiplyLinear(lines[i],20,5,0,10);
-							multiplyLinear(lines[i],75,2,10,8);
-							multiplyLinear(lines[i],85,5,18,7);
-							multiplyLinear(lines[i],150,20,25,15);
-							break;
-						case 1:
-							multiplyLinear(lines[i],10,4,0,10);
-							multiplyLinear(lines[i],60,0,10,8);
-							multiplyLinear(lines[i],65,4,18,52);
-							break;
-					}
-				}
-				multiply(lines,1000,0);
-				DiscreteCosineTransform.inverseTransform(lines);
-				
+				IntermediateLineData.addEndPoint(lines, endRInt, endPhiInt, endThetaInt, l0, b0);
+
 				for(IntermediateLineData l : lines) {
-					l.integrate();
+					l.undoPrediction(21f);
+					l.toEuler(l0, b0);
 				}
 				
 				//Decompression done.
