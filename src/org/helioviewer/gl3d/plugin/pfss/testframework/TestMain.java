@@ -4,13 +4,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 
-import javax.swing.plaf.metal.MetalIconFactory.FolderIcon16;
-
 import org.helioviewer.gl3d.plugin.pfss.data.FileDescriptor;
 import org.helioviewer.gl3d.plugin.pfss.data.PfssData;
 import org.helioviewer.gl3d.plugin.pfss.data.PfssDecompressor;
 import org.helioviewer.gl3d.plugin.pfss.data.PfssFrame;
-import org.helioviewer.gl3d.plugin.pfss.data.decompression.DiscreteCosineTransform;
 
 public class TestMain {
 
@@ -18,8 +15,6 @@ public class TestMain {
 
 		File compressedFolder = new File(TestSettings.compressedFolder);
 		File[] compressedFiles = compressedFolder.listFiles();
-
-		ArrayList<PerformanceData> performance = new ArrayList<>(compressedFiles.length);
 		
 		System.out.println("warm up hotspot compiler");
 		for(int i = 0; i < compressedFiles.length/2;i++) {

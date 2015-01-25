@@ -10,7 +10,6 @@ import java.util.Date;
 
 import org.helioviewer.base.physics.Constants;
 import org.helioviewer.gl3d.plugin.pfss.data.decompression.ByteDecoder;
-import org.helioviewer.gl3d.plugin.pfss.data.decompression.DiscreteCosineTransform;
 import org.helioviewer.gl3d.plugin.pfss.data.decompression.IntermediateLineData;
 import org.helioviewer.gl3d.plugin.pfss.data.decompression.UnRar;
 import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
@@ -85,12 +84,11 @@ public class PfssDecompressor implements Runnable {
 				lines = IntermediateLineData.splitToLines(lengths, rInt, phiInt, thetaInt);
 				IntermediateLineData.addStartPoint(lines, startRInt, startPhiInt, startThetaInt, l0, b0);
 				IntermediateLineData.addEndPoint(lines, endRInt, endPhiInt, endThetaInt, l0, b0);
-
 				for(IntermediateLineData l : lines) {
-					l.undoPrediction(21f);
+					l.undoPrediction(100000f);
 					l.toEuler(l0, b0);
 				}
-				
+			
 				//Decompression done.
 			} catch (FitsException e) {
 				e.printStackTrace();
@@ -242,15 +240,9 @@ public class PfssDecompressor implements Runnable {
 		Point answer = null;
 		int startOffset = 0;
 		int length = 0;
-		if(data.size > PfssSettings.AVERAGE_FILTER_MIN_LINE_SIZE) {
-			startOffset = PfssSettings.AVERAGE_FILTER_SIZE/2;
-			length = PfssSettings.AVERAGE_FILTER_SIZE;
 
-		} else {
-			startOffset = 1;
-			length = 3;
-		}
-		
+		startOffset = 1;
+		length = 3;
 		if(pointIndex - startOffset < 0) {
 			length -=  startOffset - pointIndex;
 			startOffset = pointIndex;

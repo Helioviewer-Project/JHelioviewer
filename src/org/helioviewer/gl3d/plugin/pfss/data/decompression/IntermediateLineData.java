@@ -26,16 +26,18 @@ public class IntermediateLineData {
 			float[] decodedChannel = new float[channels[i].length+2];
 			decodedChannel[0] = startPoint[i];
 			decodedChannel[decodedChannel.length-1] = endPoint[i];
-			
-			int channelIndex = 0;
-			LinkedList<Indices> bfIndices = new LinkedList<>();
-			bfIndices.add(new Indices(0, decodedChannel.length-1));
-			while(!bfIndices.isEmpty()) {
-				prediction(bfIndices,decodedChannel,channels[i],channelIndex, quantizationThreshold);
-				channelIndex++;
+			if(decodedChannel.length > 2) {
+				int channelIndex = 0;
+				LinkedList<Indices> bfIndices = new LinkedList<>();
+				bfIndices.add(new Indices(0, decodedChannel.length-1));
+				while(!bfIndices.isEmpty()) {
+					prediction(bfIndices,decodedChannel,channels[i],channelIndex, quantizationThreshold);
+					channelIndex++;
+				}
 			}
 			this.channels[i] = decodedChannel;
 		}
+		this.size = this.channels[0].length;
 	}
 	
 	public void toEuler(double l0, double b0) {
@@ -68,11 +70,11 @@ public class IntermediateLineData {
 		
 		int toPredictIndex = (i.endIndex - i.startIndex) / 2 + i.startIndex;
 		float error = channel[nextIndex];
-		error = error <= quantizationThreshold ? error * 4: error;
+		error = Math.abs(error) < quantizationThreshold ? error * 8: error;
 		
 		float predFactor0 = (toPredictIndex-i.startIndex)/(float)(i.endIndex - i.startIndex);
 		float predFactor1 = (i.endIndex-toPredictIndex)/(float)(i.endIndex - i.startIndex);
-		float prediction = predFactor0* start + predFactor1*end;
+		float prediction = (int)(predFactor0* start + predFactor1*end);
 		decodedChannel[toPredictIndex] = prediction-error;
 		
 		//add next level of indices
