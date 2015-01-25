@@ -250,28 +250,35 @@ public class PfssDecompressor implements Runnable {
 	
 	private Point getAveragePoint(IntermediateLineData data, int pointIndex) {
 		Point answer = null;
-		
+		int startOffset = 0;
+		int length = 0;
 		if(data.size > PfssSettings.AVERAGE_FILTER_MIN_LINE_SIZE) {
-			int startOffset = PfssSettings.AVERAGE_FILTER_SIZE/2;
-			int length = PfssSettings.AVERAGE_FILTER_SIZE;
-			if(pointIndex - startOffset < 0) {
-				length -=  startOffset - pointIndex;
-				startOffset = pointIndex;
-			}
-			
-			float avX = 0;
-			float avY = 0;
-			float avZ = 0;
-			int count = 0;
-			for(int i = pointIndex-startOffset; i < (pointIndex-startOffset+length) & i < data.size ;i++) {
-				avX += data.channels[0][i];
-				avY += data.channels[1][i];
-				avZ += data.channels[2][i];
-				count++;
-			}
-			
-			answer = new Point(avX/count,avY/count,avZ/count);
+			startOffset = PfssSettings.AVERAGE_FILTER_SIZE/2;
+			length = PfssSettings.AVERAGE_FILTER_SIZE;
+
+		} else {
+			startOffset = 1;
+			length = 3;
 		}
+		
+		if(pointIndex - startOffset < 0) {
+			length -=  startOffset - pointIndex;
+			startOffset = pointIndex;
+		}
+			
+		float avX = 0;
+		float avY = 0;
+		float avZ = 0;
+		int count = 0;
+		for (int i = pointIndex - startOffset; i < (pointIndex - startOffset + length)
+				& i < data.size; i++) {
+			avX += data.channels[0][i];
+			avY += data.channels[1][i];
+			avZ += data.channels[2][i];
+			count++;
+		}
+
+		answer = new Point(avX / count, avY / count, avZ / count);
 		
 		return answer;
 	}
