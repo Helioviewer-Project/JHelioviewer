@@ -273,7 +273,7 @@ public class ExportMovieDialog implements ActionListener {
 			for (GL3DImageLayer layer : mainComponentView.getAdapter(GL3DSceneGraphView.class).getLayers().getLayers()){
 				JHVJPXView jhvjpxView = layer.getImageTextureView().getAdapter(JHVJPXView.class);
 	            if (jhvjpxView.getCurrentFrameNumber() > jhvjpxView.getImageCacheStatus().getImageCachedCompletelyUntil()){
-	    			this.progressDialog.setDescription("Load image data");
+	    			this.progressDialog.setDescription("Loading image data");
 	    			return;
 	            }
 	        }

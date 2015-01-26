@@ -109,7 +109,9 @@ public class PfssCache {
 	}
 
 	private void addFile(String url, PfssFitsFile fits) {
-		pfssDatas.remove(url);
+		if (pfssDatas.containsKey(url)){
+			pfssDatas.remove(url);
+		};
 		pfssDatas.put(url, fits);
 	}
 
