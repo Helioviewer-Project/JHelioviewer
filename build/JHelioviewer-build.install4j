@@ -52,7 +52,7 @@
   </files>
   <launchers>
     <launcher name="JHelioviewer" id="24" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="../build-resources/mac/JHV_icon.icns" customMacBundleIdentifier="false" macBundleIdentifier="org.helioviewer.jhv.JHelioviewer" swtApp="false" fileset="" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="./mac-build/JHelioViewer.plist" useCustomMacosExecutableName="false" customMacosExecutableName="">
-      <executable name="JHelioviewer" type="1" iconSet="true" iconFile="../build-resources/windows/JHelioviewer.ico" executableDir="bin" redirectStderr="false" stderrFile="error.log" stderrMode="overwrite" redirectStdout="false" stdoutFile="output.log" stdoutMode="overwrite" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false" globalSingleInstance="false" singleInstanceActivate="true" dpiAware="false">
+      <executable name="JHelioviewer" type="1" iconSet="true" iconFile="../build-resources/windows/JHelioviewer.ico" executableDir="bin" redirectStderr="false" stderrFile="error.log" stderrMode="overwrite" redirectStdout="false" stdoutFile="output.log" stdoutMode="overwrite" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false" globalSingleInstance="false" singleInstanceActivate="true" dpiAware="true">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" productName="" />
       </executable>
       <splashScreen show="false" width="0" height="0" bitmapFile="" windowsNative="false" textOverlay="false">
@@ -61,7 +61,7 @@
           <versionLine x="20" y="40" text="version ${compiler:sys.version}" fontSize="8" fontColor="0,0,0" bold="false" />
         </text>
       </splashScreen>
-      <java mainClass="org.helioviewer.jhv.JHelioviewer" vmParameters="-Dapple.laf.useScreenMenuBar=true -Xmx1024m" arguments="" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
+      <java mainClass="org.helioviewer.jhv.JHelioviewer" vmParameters="-Dapple.laf.useScreenMenuBar=true -Xmx1024m" arguments="&quot;release&quot;" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
           <directory location="classes" failOnError="true" />
           <scanDirectory location="lib" failOnError="true" />
@@ -96,7 +96,7 @@
           <versionLine x="20" y="40" text="version ${compiler:sys.version}" fontSize="8" fontColor="0,0,0" bold="false" />
         </text>
       </splashScreen>
-      <java mainClass="org.helioviewer.jhv.JHelioviewer" vmParameters="-Dapple.laf.useScreenMenuBar=true -Xmx1024m" arguments="" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
+      <java mainClass="org.helioviewer.jhv.JHelioviewer" vmParameters="-Dapple.laf.useScreenMenuBar=true -Xmx1024m" arguments="&quot;release&quot;" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
           <directory location="classes" failOnError="true" />
           <scanDirectory location="lib" failOnError="true" />
@@ -221,19 +221,6 @@
                 <condition>context.getVariable("sys.responseFile") == null</condition>
               </action>
             </actions>
-            <formComponents />
-          </screen>
-          <screen name="" id="6" customizedId="" beanClass="com.install4j.runtime.beans.screens.ComponentsScreen" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" backButton="2" finishScreen="false" wizardIndexChangeType="unchanged" wizardIndexKey="">
-            <serializedBean>
-              <java class="java.beans.XMLDecoder">
-                <object class="com.install4j.runtime.beans.screens.ComponentsScreen" />
-              </java>
-            </serializedBean>
-            <condition />
-            <validation />
-            <preActivation />
-            <postActivation />
-            <actions />
             <formComponents />
           </screen>
           <screen name="" id="7" customizedId="" beanClass="com.install4j.runtime.beans.screens.StandardProgramGroupScreen" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" backButton="2" finishScreen="false" wizardIndexChangeType="unchanged" wizardIndexKey="">
@@ -468,9 +455,13 @@
         <entry location="lib/jogl-all-natives-macosx-universal.jar" fileType="regular" />
         <entry location="lib/jogl-all-natives-windows-i586.jar" fileType="regular" />
         <entry location="lib/xuggle-xuggler-5.4-all.jar" fileType="regular" />
+        <entry location="lib/xuggle-xuggler-5.4-linux.jar" fileType="regular" />
         <entry location="lib/xuggle-xuggler-5.4-osx.jar" fileType="regular" />
+        <entry location="lib/xuggle-xuggler-5.4-win32.jar" fileType="regular" />
+        <entry location="resources/libs/.DS_Store" fileType="regular" />
         <entry location="resources/libs/linux" fileType="regular" />
         <entry location="resources/libs/mac" fileType="regular" />
+        <entry location="resources/libs/windows/.DS_Store" fileType="regular" />
         <entry location="resources/libs/windows/32" fileType="regular" />
       </exclude>
       <variables />
@@ -644,11 +635,6 @@
   </mediaSets>
   <buildIds buildAll="false">
     <mediaSet refId="68" />
-    <mediaSet refId="150" />
-    <mediaSet refId="216" />
-    <mediaSet refId="218" />
-    <mediaSet refId="269" />
-    <mediaSet refId="270" />
   </buildIds>
   <buildOptions verbose="false" faster="false" disableSigning="true" disableJreBundling="false" debug="false" />
 </install4j>

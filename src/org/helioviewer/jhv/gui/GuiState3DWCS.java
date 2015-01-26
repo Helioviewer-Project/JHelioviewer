@@ -33,6 +33,7 @@ import org.helioviewer.jhv.viewmodel.view.MetaDataView;
 import org.helioviewer.jhv.viewmodel.view.SubimageDataView;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
+import org.helioviewer.jhv.viewmodel.view.opengl.CompenentView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DCameraView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DComponentView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DLayeredView;

@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,6 +18,7 @@ import javax.swing.*;
 import org.helioviewer.jhv.base.Log;
 
 import com.mindscapehq.raygun4java.core.RaygunClient;
+import com.mindscapehq.raygun4java.core.RaygunMessageBuilder;
 import com.mindscapehq.raygun4java.core.messages.RaygunIdentifier;
 
 /**
@@ -74,7 +76,7 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
         sp.setPreferredSize(new Dimension(600, 400));
 
         objects.add(sp);
-        JCheckBox allowCrashReport = new JCheckBox("Send this anonymous crash report to the developers.",true);
+        JCheckBox allowCrashReport = new JCheckBox("Send this anonymous crash report to the developers.",JHVGlobals.tag.length() != 0);
         objects.add(allowCrashReport);
         objects.add(Box.createVerticalStrut(10));
         
@@ -108,7 +110,9 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
 
             RaygunIdentifier user = new RaygunIdentifier(Settings.getProperty("UUID"));
             client.SetUser(user);
-            client.Send(e,null,customData);
+            ArrayList<String> tags = new ArrayList<String>();
+            tags.add(JHVGlobals.tag);
+            client.Send(e,tags,customData);
         }
         
         Runtime.getRuntime().halt(0);

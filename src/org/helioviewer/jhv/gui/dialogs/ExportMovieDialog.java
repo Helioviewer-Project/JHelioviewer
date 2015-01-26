@@ -22,6 +22,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.Timer;
@@ -81,6 +82,7 @@ public class ExportMovieDialog implements ActionListener {
 	public ExportMovieDialog() {
 		exportMovieDialog = this;
 		if (openFileChooser() == JFileChooser.APPROVE_OPTION) {
+			
 			this.loadSettings();
 			Settings.setProperty(SETTING_MOVIE_EXPORT_LAST_DIRECTORY, directory);
 			ImageViewerGui.getMainFrame().setEnabled(false);
@@ -144,14 +146,26 @@ public class ExportMovieDialog implements ActionListener {
 		fileChooser.setSelectedFile(new File(txtTargetFile));
 
 		int retVal = fileChooser
-				.showDialog(ImageViewerGui.getMainFrame(), "OK");
+				.showDialog(ImageViewerGui.getMainFrame(), "Export movie");
+		
 		selectedOutputFormat = (MovieFileFilter) fileChooser.getFileFilter();
 		directory = fileChooser.getCurrentDirectory().getPath() + "/";
 		filename = fileChooser.getSelectedFile().getName();
 
+		if (fileChooser.getSelectedFile().exists()) {
+            // ask if the user wants to overwrite
+            int response = JOptionPane.showConfirmDialog(null, "Overwrite existing file?", "Confirm Overwrite", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+            // if the user doesn't want to overwrite, simply return null
+            if (response == JOptionPane.CANCEL_OPTION) {
+                return JFileChooser.CANCEL_OPTION;
+            }
+        }
+
 		for (FileFilter fileFilter : fileChooser.getChoosableFileFilters()) {
 			if (txtTargetFile.endsWith(((MovieFileFilter) fileFilter)
 					.getExtension())) {
+				 // does the file already exist?
 				selectedOutputFormat = (MovieFileFilter) fileFilter;
 				filename = filename.substring(0, filename
 						.lastIndexOf(selectedOutputFormat.getExtension()));
@@ -280,7 +294,7 @@ public class ExportMovieDialog implements ActionListener {
 					counter++;
 				}
 			}
-			this.progressDialog.setDescription("Render images");
+			this.progressDialog.setDescription("Rendering images");
 			BufferedImage bufferedImage = mainComponentView.getBufferedImage(
 					imageWidth, imageHeight, descriptions);
 

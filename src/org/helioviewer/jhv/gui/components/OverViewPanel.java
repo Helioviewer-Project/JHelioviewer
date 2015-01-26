@@ -165,8 +165,8 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 		if (lastLayer != null && lastLayer.getMetaData() != null && lastLayer.getMetaData().getPhysicalRegion() != null){
 			
 		if (this.updateTexture){
-        this.createTexture(gl, this.lastLayer.getMetaData().getPhysicalRegion(), this.lastLayer.getImageData());
-        updateTexture = false;
+			if (!this.createTexture(gl, this.lastLayer.getMetaData().getPhysicalRegion(), this.lastLayer.getImageData()));
+        		updateTexture = false;
 		}		
         
 		Vector2d lowerleftCorner = this.lastLayer.getMetaData().getPhysicalRegion().getLowerLeftCorner();
@@ -238,13 +238,16 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 		gl.glDisable(GL2.GL_TEXTURE_2D);
 		gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
 		gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);		
-
-		renderRect(gl);
+		
+		double r = tmpX1 - tmpX0 > tmpY1 - tmpY0 ? tmpX1 - tmpX0 : tmpY0 - tmpY1;
+		if (GL3DState.get().getState() == VISUAL_TYPE.MODE_2D || calculateAngleToActiveLayer() < 0.01){
+			renderRect(gl);
+			renderCircle(gl, -r/100);
+		}
 		}
 	}
 
 	private void renderRect(GL2 gl){
-		if (GL3DState.get().getState() == VISUAL_TYPE.MODE_2D || calculateAngleToActiveLayer() < 0.01){
 		gl.glDisable(GL2.GL_TEXTURE_2D);
 		gl.glDisable(GL2.GL_BLEND);
 		gl.glShadeModel(GL2.GL_FLAT);
@@ -272,9 +275,11 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 			gl.glVertex2d(x1, y1);
 			gl.glVertex2d(x1, y0);
 			gl.glVertex2d(x0, y0);
-		gl.glEnd();
-		
-		double r = x1-x0 > y1-y0? (x1-x0)*0.02 : (y1-y0) * 0.02;
+		gl.glEnd();		
+	}
+	
+	public void renderCircle(GL2 gl, double r){
+		Vector3d translation = camera.getTranslation();
 		// Draw circle
 		gl.glBegin(GL2.GL_LINE_LOOP);
 			for (int i = 0; i < 360; i++){
@@ -283,8 +288,6 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 	            gl.glVertex2d(x, y);
 			}
 		gl.glEnd();
-		}
-		
 	}
 	
 	@Override
@@ -322,8 +325,8 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 		
 	}
 	
-	private void createTexture(GL2 gl, Region region, ImageData imageData){
-		if (imageData == null || imageData.getImageTransport() == null) return;
+	private boolean createTexture(GL2 gl, Region region, ImageData imageData){
+		if (imageData == null || imageData.getImageTransport() == null) return false;
 		int bitsPerPixel = imageData.getImageTransport().getNumBitsPerPixel();
 		Buffer buffer;
 
@@ -421,6 +424,7 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 				GL2.GL_CLAMP_TO_BORDER);
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T,
 				GL2.GL_CLAMP_TO_BORDER);		
+		return true;
 	}
 	
 	public void activate(GLContext context){

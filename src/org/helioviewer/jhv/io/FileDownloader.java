@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLConnection;
+import java.nio.file.Files;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -250,6 +251,9 @@ public class FileDownloader {
 					numTotalRead += numCurrentRead;
 					progressBar.setValue(numTotalRead);
 				}
+			}
+			if (dialog.wasInterrupted){
+				Files.deleteIfExists(finalDest.toPath());
 			}
 
 		} catch (Exception e) {

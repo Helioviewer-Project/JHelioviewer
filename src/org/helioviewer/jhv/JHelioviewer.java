@@ -49,11 +49,8 @@ public class JHelioviewer {
 
     public static void main(String[] args) {
         Log.redirectStdOutErr();
-        
-        // Prints the usage message
-        if (args.length == 1 && (args[0].equals("-h") || args[0].equals("--help"))) {
-            System.out.println(CommandLineProcessor.getUsageMessage());
-            return;
+        if (args.length == 1){
+        	JHVGlobals.tag = args[0];
         }
         
         // Uncaught runtime errors are displayed in a dialog box in addition
