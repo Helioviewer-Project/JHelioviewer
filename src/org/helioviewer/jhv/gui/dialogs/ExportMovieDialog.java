@@ -38,6 +38,7 @@ import org.helioviewer.jhv.opengl.scenegraph.GL3DDrawBits.Bit;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJP2View.ReaderMode;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView.SpeedType;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DComponentView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DSceneGraphView;
@@ -95,7 +96,6 @@ public class ExportMovieDialog implements ActionListener {
 			this.initExportMovie();
 			timer = new Timer(0, this);
 			timer.start();
-			// exportMovie();
 
 		}
 	}
@@ -218,7 +218,10 @@ public class ExportMovieDialog implements ActionListener {
 		timedJHVJPXView = LinkedMovieManager.getActiveInstance()
 				.getMasterMovie();
 		started = true;
-
+		for (GL3DImageLayer layer : mainComponentView.getAdapter(GL3DSceneGraphView.class).getLayers().getLayers()){
+			JHVJPXView jhvjpxView = layer.getImageTextureView().getAdapter(JHVJPXView.class);
+			jhvjpxView.setReaderMode(ReaderMode.ONLYFIREONCOMPLETE);
+        }
 		if (this.selectedOutputFormat.isMovieFile()) {
 
 			writer = ToolFactory.makeWriter(directory + filename
@@ -345,6 +348,11 @@ public class ExportMovieDialog implements ActionListener {
 	}
 
 	public void stopExportMovie() {
+		for (GL3DImageLayer layer : mainComponentView.getAdapter(GL3DSceneGraphView.class).getLayers().getLayers()){
+			JHVJPXView jhvjpxView = layer.getImageTextureView().getAdapter(JHVJPXView.class);
+			jhvjpxView.setReaderMode(ReaderMode.ALWAYSFIREONNEWDATA);
+        }
+
 		this.timedJHVJPXView.setCurrentFrame(0, new ChangeEvent());
 		// export movie
 		if (selectedOutputFormat.isMovieFile())
