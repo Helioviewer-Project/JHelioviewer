@@ -432,6 +432,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 			format.setGroupingUsed(false);
 			NumberFormatter formatter = new NumberFormatter(format);
 			formatter.setValueClass(Integer.class);
+			formatter.setCommitsOnValidEdit(true);
 			formatter.setMinimum(1);
 			formatter.setMaximum(4096);
 			{
