@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<updateDescriptor baseUrl="http://www.jhelioviewer.org/download.html">
-  <entry targetMediaFileId="68" updatableVersionMin="2.0.0" updatableVersionMax="2.3.2" fileName="JHelioviewer.dmg" newVersion="2.3.2" newMediaFileId="68" fileSize="90300734" bundledJre="macosx-amd64-1.7.0_72_unpacked" archive="true">
+<updateDescriptor baseUrl="https://github.com/Helioviewer-Project/JHelioviewer/releases/download/v2.3-beta.10/">
+  <entry targetMediaFileId="68" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer.dmg" newVersion="2.3-BETA-10" newMediaFileId="68" fileSize="91961955" bundledJre="macosx-amd64-1.7.0_72_unpacked" archive="true">
+    <comment language="en" />
+  </entry>
+  <entry targetMediaFileId="150" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_windows-x64_2_3-BETA-10.exe" newVersion="2.3-BETA-10" newMediaFileId="150" fileSize="37041664" bundledJre="windows-amd64-1.7.0_72" archive="false">
+    <comment language="en" />
+  </entry>
+  <entry targetMediaFileId="216" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_linux_2_3-BETA-10.rpm" newVersion="2.3-BETA-10" newMediaFileId="216" fileSize="32248660" bundledJre="" archive="true">
+    <comment language="en" />
+  </entry>
+  <entry targetMediaFileId="218" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_2_3-BETA-10_64_bit.deb" newVersion="2.3-BETA-10" newMediaFileId="218" fileSize="32164176" bundledJre="" archive="true">
+    <comment language="en" />
+  </entry>
+  <entry targetMediaFileId="269" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_linux_2_3-BETA-10.deb" newVersion="2.3-BETA-10" newMediaFileId="269" fileSize="32196000" bundledJre="" archive="true">
+    <comment language="en" />
+  </entry>
+  <entry targetMediaFileId="270" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_2_3-BETA-10_64_bit.rpm" newVersion="2.3-BETA-10" newMediaFileId="270" fileSize="32286355" bundledJre="" archive="true">
     <comment language="en" />
   </entry>
 </updateDescriptor>
