@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <updateDescriptor baseUrl="http://www.jhelioviewer.org/download.html">
-  <entry targetMediaFileId="68" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer.dmg" newVersion="2.3.2" newMediaFileId="68" fileSize="90301216" bundledJre="macosx-amd64-1.7.0_72_unpacked" archive="true">
+  <entry targetMediaFileId="68" updatableVersionMin="2.0.0" updatableVersionMax="2.3.2" fileName="JHelioviewer.dmg" newVersion="2.3.2" newMediaFileId="68" fileSize="90300734" bundledJre="macosx-amd64-1.7.0_72_unpacked" archive="true">
     <comment language="en" />
   </entry>
 </updateDescriptor>
