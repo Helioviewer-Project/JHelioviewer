@@ -63,7 +63,7 @@ public class ExportMovieDialog implements ActionListener {
 	private String directory;
 	private String filename;
 	private Timer timer;
-	private int i = 0;
+	private int currentExportFrameNumber = 0;
 
 	private FileOutputStream fileOutputStream;
 	private ZipOutputStream zipOutputStream;
@@ -90,7 +90,7 @@ public class ExportMovieDialog implements ActionListener {
 			progressDialog = new ProgressDialog(exportMovieDialog);
 			progressDialog.setVisible(true);
 
-			i = 0;
+			currentExportFrameNumber = 0;
 
 			this.initExportMovie();
 			timer = new Timer(0, this);
@@ -268,16 +268,15 @@ public class ExportMovieDialog implements ActionListener {
 		if (!started)
 			stopExportMovie();
 		else {
-			/*
-			timedJHVJPXView.setCurrentFrame(i, new ChangeEvent(), true);
 			for (GL3DImageLayer layer : mainComponentView.getAdapter(GL3DSceneGraphView.class).getLayers().getLayers()){
 				JHVJPXView jhvjpxView = layer.getImageTextureView().getAdapter(JHVJPXView.class);
-	            if (jhvjpxView.getCurrentFrameNumber() > jhvjpxView.getImageCacheStatus().getImageCachedCompletelyUntil()){
-	    			this.progressDialog.setDescription("Loading image data");
+				if (currentExportFrameNumber > jhvjpxView.getImageCacheStatus().getImageCachedCompletelyUntil() && !(currentExportFrameNumber > jhvjpxView.getMaximumFrameNumber() -1)){
+	            	this.progressDialog.setDescription("Loading image data");
 	    			return;
 	            }
 	        }
-	        */
+	        
+			timedJHVJPXView.setCurrentFrame(currentExportFrameNumber, new ChangeEvent(), true);
 
 			ArrayList<String> descriptions = null;
 			if (textEnabled) {
@@ -299,15 +298,15 @@ public class ExportMovieDialog implements ActionListener {
 			BufferedImage bufferedImage = mainComponentView.getBufferedImage(
 					imageWidth, imageHeight, descriptions);
 
-			progressDialog.updateProgressBar(i);
+			progressDialog.updateProgressBar(currentExportFrameNumber);
 
 			if (this.selectedOutputFormat.isMovieFile() && started) {
-				writer.encodeVideo(0, bufferedImage, speed * i,
+				writer.encodeVideo(0, bufferedImage, speed * currentExportFrameNumber,
 						TimeUnit.MILLISECONDS);
 			}
 
 			else if (this.selectedOutputFormat.isCompressedFile() && started) {
-				String number = String.format("%04d", i);
+				String number = String.format("%04d", currentExportFrameNumber);
 				try {
 					zipOutputStream.putNextEntry(new ZipEntry(filename
 							+ "/"
@@ -327,7 +326,7 @@ public class ExportMovieDialog implements ActionListener {
 			}
 
 			else if (this.selectedOutputFormat.isImageFile() && started) {
-				String number = String.format("%04d", i);
+				String number = String.format("%04d", currentExportFrameNumber);
 				try {
 					ImageIO.write(bufferedImage, selectedOutputFormat
 							.getFileType(), new File(directory + this.filename
@@ -337,8 +336,8 @@ public class ExportMovieDialog implements ActionListener {
 					e.printStackTrace();
 				}
 			}
-			i++;
-			if (i > timedJHVJPXView.getMaximumFrameNumber()) {
+			currentExportFrameNumber++;
+			if (currentExportFrameNumber > timedJHVJPXView.getMaximumFrameNumber()) {
 				started = false;
 				stopExportMovie();
 			}

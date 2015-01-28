@@ -33,6 +33,8 @@ import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginManager;
 import org.helioviewer.jhv.plugins.viewmodelplugin.interfaces.Plugin;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JP2Image;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
+import com.install4j.api.launcher.ApplicationLauncher;
+import com.install4j.api.update.UpdateScheduleRegistry;
 
 /**
  * This class starts the applications.
@@ -48,8 +50,24 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
 public class JHelioviewer {
 
     public static void main(String[] args) {
-        Log.redirectStdOutErr();
+
+
+    	Log.redirectStdOutErr();
         if (args.length == 1){
+        	if (UpdateScheduleRegistry.checkAndReset()) {
+        	    // This will return immediately if you call it from the EDT,
+        	    // otherwise it will block until the installer application exits
+        	    ApplicationLauncher.launchApplicationInProcess("366", null, new ApplicationLauncher.Callback() {
+        	            public void exited(int exitValue) {
+        	                //TODO add your code here (not invoked on event dispatch thread)
+        	            }
+        	            
+        	            public void prepareShutdown() {
+        	                //TODO add your code here (not invoked on event dispatch thread)
+        	            }
+        	        }, ApplicationLauncher.WindowMode.FRAME, null
+        	    );
+        	}
         	JHVGlobals.tag = args[0];
         }
         
