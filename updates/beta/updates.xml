@@ -18,4 +18,7 @@
   <entry targetMediaFileId="270" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_2_3-BETA-10_64_bit.rpm" newVersion="2.3-BETA-10" newMediaFileId="270" fileSize="32286355" bundledJre="" archive="true">
     <comment language="en" />
   </entry>
+  <entry targetMediaFileId="614" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_macos_2_3-BETA-10.dmg" newVersion="2.3-BETA-10" newMediaFileId="614" fileSize="13504647" bundledJre="" archive="false">
+      <comment language="en" />
+  </entry>
 </updateDescriptor>
