@@ -3,8 +3,8 @@
 
 <head>
   <title>JHelioviewer</title>
-  <link rel="shortcut icon" href="imgs/favicon_hv.ico" />
-  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+ <link rel="shortcut icon" href="imgs/icon/JHV.ico" />
+   <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
 
   <!-- **** layout stylesheet **** -->
   <link rel="stylesheet" type="text/css" href="style/style.css" />
@@ -36,9 +36,9 @@
         </td>
         <td rowspan="1" valign="top" style="width:40%;vertical-align:text-bottom">
   	      &nbsp;<br />
-  	      <img src="imgs/eit_redt1.png" width="110" height="110" alt="" />
-  	      <img src="imgs/eit_greent1.png" width="110" height="110" alt="" />
-  	      <img src="imgs/eit_bluet1.png" width="110" height="110" alt="" />
+  	      <img src="imgs/sun/eit_redt1.png" width="110" height="110" alt="" />
+  	      <img src="imgs/sun/eit_greent1.png" width="110" height="110" alt="" />
+  	      <img src="imgs/sun/eit_bluet1.png" width="110" height="110" alt="" />
         </td>    
         </tr>
       </table>
@@ -122,26 +122,26 @@ function platformDetect(){
         var windows="", osx="", linux="", deb64="", deb="", rpm64="", rpm ="", jar ="";
         $.each(value["assets"], function(key, value){
           if (value["name"].toLowerCase().indexOf(".exe") >= 0){
-            windows += "<a href='" + value["browser_download_url"]+ "'><img id='windows' class='downloadMain' src='imgs/references/windows.png' height='140' /></a>";
+            windows += "<a href='" + value["browser_download_url"]+ "'><img id='windows' class='downloadMain' src='imgs/downloads/windows.png' height='140' /></a>";
           }
           else if (value["name"].toLowerCase().indexOf(".dmg") >= 0){
-            osx += "<a href='" + value["browser_download_url"]+ "'><img id='osx' class='downloadMain' src='imgs/references/osx.png'  height='140' /></a>";
+            osx += "<a href='" + value["browser_download_url"]+ "'><img id='osx' class='downloadMain' src='imgs/downloads/osx.png'  height='140' /></a>";
           }
           else if (value["name"].toLowerCase().indexOf("64_bit.rpm") >= 0){
             console.log("rpm-64")
-            rpm64 = "<a href='" + value["browser_download_url"]+ "'><img id='rpm-64' class='downloadMain' src='imgs/references/rpm-64.png' height='140' /></a>";
+            rpm64 = "<a href='" + value["browser_download_url"]+ "'><img id='rpm-64' class='downloadMain' src='imgs/downloads/rpm-64.png' height='140' /></a>";
           }
           else if (value["name"].toLowerCase().indexOf("64_bit.deb") >= 0){
-            deb64 = "<a href='" + value["browser_download_url"]+ "'><img id='deb-64' class='downloadMain' src='imgs/references/deb-64.png' height='140'/></a>";
+            deb64 = "<a href='" + value["browser_download_url"]+ "'><img id='deb-64' class='downloadMain' src='imgs/downloads/deb-64.png' height='140'/></a>";
           }
           else if (value["name"].toLowerCase().indexOf(".rpm") >= 0){
-            rpm = "<a href='" + value["browser_download_url"]+ "'><img  id='rpm-32' class='downloadMain' src='imgs/references/rpm-32.png' height='140' /></a>";
+            rpm = "<a href='" + value["browser_download_url"]+ "'><img  id='rpm-32' class='downloadMain' src='imgs/downloads/rpm-32.png' height='140' /></a>";
           }
           else if (value["name"].toLowerCase().indexOf(".deb") >= 0){
-            deb = "<a href='" + value["browser_download_url"]+ "'><img  id='deb-32' class='downloadMain' src='imgs/references/deb-32.png' height='140' /></a>";
+            deb = "<a href='" + value["browser_download_url"]+ "'><img  id='deb-32' class='downloadMain' src='imgs/downloads/deb-32.png' height='140' /></a>";
           } 
           else if (value["name"].toLowerCase().indexOf(".jar") >= 0){
-            jar = "<a href='" + value["browser_download_url"]+ "'><img  id='jar' class='downloadMain' src='imgs/references/all_platforms.png' height='140' /></a>";
+            jar = "<a href='" + value["browser_download_url"]+ "'><img  id='jar' class='downloadMain' src='imgs/downloads/all_platforms.png' height='140' /></a>";
           }
 
         });
