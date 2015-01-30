@@ -22,6 +22,8 @@ public class IntermediateLineData {
 	}
 	
 	public void undoPrediction(float quantizationThreshold) {
+		multiplyResiduals(this.channels);
+		
 		for(int i = 0; i < channels.length;i++) {
 			float[] decodedChannel = new float[channels[i].length+2];
 			decodedChannel[0] = startPoint[i];
@@ -40,7 +42,30 @@ public class IntermediateLineData {
 		this.size = this.channels[0].length;
 	}
 	
-	public void toEuler(double l0, double b0) {
+	private static void multiplyResiduals(float[][] channels) {
+		for(int i = 0; i < channels.length;i++) { 
+			float[] current = channels[i];
+			
+			for(int j = 0; j < 5 && j< current.length;j++) {
+				current[j] = current[j]*6;
+			}
+			
+			for(int j = 5; j < 16 && j< current.length;j++) {
+				current[j] *= 10;
+			}
+
+			for(int j = 16;  j < current.length;j++) {
+				current[j] *= 16;
+			}
+		}
+	}
+	
+	/**
+	 * Converts the spherical coordinates to cartesian
+	 * @param l0
+	 * @param b0
+	 */
+	public void toCartesian(double l0, double b0) {
 		for(int i = 0; i <this.size;i++) {
 			float rawR =  channels[0][i];
 			float rawPhi = channels[1][i];
@@ -49,7 +74,6 @@ public class IntermediateLineData {
 			rawPhi += 16384;
 			rawTheta += 8192;
 			
-	        //convert spherical coordinate system to euler
 	        double r = rawR / 8192.0 * Constants.SunRadius;
 	        double p = rawPhi / 32768.0 * 2 * Math.PI;
 	        double t = rawTheta / 32768.0 * 2 * Math.PI;
@@ -70,7 +94,7 @@ public class IntermediateLineData {
 		
 		int toPredictIndex = (i.endIndex - i.startIndex) / 2 + i.startIndex;
 		float error = channel[nextIndex];
-		error = Math.abs(error) < quantizationThreshold ? error * 8: error;
+		//error = error * 10;
 		
 		float predFactor0 = (toPredictIndex-i.startIndex)/(float)(i.endIndex - i.startIndex);
 		float predFactor1 = (i.endIndex-toPredictIndex)/(float)(i.endIndex - i.startIndex);
@@ -97,7 +121,7 @@ public class IntermediateLineData {
 	 * @param l0
 	 * @param b0
 	 */
-	public static void addStartPoint(IntermediateLineData[] lines, int[] radius, int[] phi, int[] theta, double l0, double b0) {
+	public static void addStartPoint(IntermediateLineData[] lines, int[] radius, int[] phi, int[] theta) {
 		for(int i = 0; i < lines.length;i++) {
 			IntermediateLineData l = lines[i];
 			int rawR = i < radius.length ? radius[i] : 0;
@@ -112,8 +136,7 @@ public class IntermediateLineData {
 	}
 	
 	public static void addEndPoint(IntermediateLineData[] lines,
-			int[] radius, int[] phi, int[] theta, double l0,
-			double b0) {
+			int[] radius, int[] phi, int[] theta) {
 		for(int i = 0; i < lines.length;i++) {
 			IntermediateLineData l = lines[i];
 			int rawR = i < radius.length ? radius[i] : 0;
@@ -145,14 +168,13 @@ public class IntermediateLineData {
 		 
 		 int meansIndex = 0;
 		 int pcaIndex = 0;
+		 
 		 //go through all lines
 		 for(int i = 0; i < lines.length;i++) {
 			 IntermediateLineData l = new IntermediateLineData();
 			 l.size = lengths[i];
 			 l.channels = new float[3][];
-			 
-			 
-			 
+
 			 //for all channels
 			 for(int j = 0; j < 3;j++) {
 				 int index = indices[j];

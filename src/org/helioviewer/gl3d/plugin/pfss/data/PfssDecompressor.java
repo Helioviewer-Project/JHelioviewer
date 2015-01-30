@@ -82,11 +82,11 @@ public class PfssDecompressor implements Runnable {
 				int[] thetaInt = ByteDecoder.decodeAdaptive(thetaRaw);
 
 				lines = IntermediateLineData.splitToLines(lengths, rInt, phiInt, thetaInt);
-				IntermediateLineData.addStartPoint(lines, startRInt, startPhiInt, startThetaInt, l0, b0);
-				IntermediateLineData.addEndPoint(lines, endRInt, endPhiInt, endThetaInt, l0, b0);
+				IntermediateLineData.addStartPoint(lines, startRInt, startPhiInt, startThetaInt);
+				IntermediateLineData.addEndPoint(lines, endRInt, endPhiInt, endThetaInt);
 				for(IntermediateLineData l : lines) {
 					l.undoPrediction(100000f);
-					l.toEuler(l0, b0);
+					l.toCartesian(l0, b0);
 				}
 			
 				//Decompression done.
@@ -163,7 +163,7 @@ public class PfssDecompressor implements Runnable {
 					boolean colinear = current.AngleTo(next, last) > PfssSettings.ANGLE_OF_LOD;
 					
 					if(!colinear) {
-						Point average = getAveragePoint(l, j);
+						Point average = null;//getAveragePoint(l, j);
 						average = average == null ? current : average;
 						
 						last = average;
