@@ -1,7 +1,6 @@
 package org.helioviewer.gl3d.plugin.pfss.data.decompression;
 
 import java.util.LinkedList;
-import java.util.Queue;
 
 import org.helioviewer.base.physics.Constants;
 
