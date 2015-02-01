@@ -1,6 +1,5 @@
 package org.helioviewer.gl3d.plugin.pfss;
 
-import org.helioviewer.gl3d.plugin.pfss.olddata.PfssCache;
 import org.helioviewer.viewmodel.renderer.physical.PhysicalRenderer;
 import org.helioviewer.viewmodel.view.OverlayView;
 import org.helioviewer.viewmodel.view.opengl.OverlayPluginContainer;
