@@ -295,8 +295,8 @@ public class PfssDecompressor implements Runnable {
 	
 	public static void main(String[] args) {
 		String s = "file:///C:/Users/Jonas%20Schwammberger/Documents/GitHub/PFSSCompression/test/temp/";
-		FileDescriptor f = new FileDescriptor(new Date(0), new Date(1), "test.rar",0);
-		PfssData d = new PfssData(f,s+"test.rar");
+		FileDescriptor f = new FileDescriptor(new Date(0), new Date(1), "test4_extra.rar",0);
+		PfssData d = new PfssData(f,s+"test4_extra.rar");
 		d.loadData();
 		PfssFrame frame = new PfssFrame(f);
 		PfssDecompressor r = new PfssDecompressor(d, frame);

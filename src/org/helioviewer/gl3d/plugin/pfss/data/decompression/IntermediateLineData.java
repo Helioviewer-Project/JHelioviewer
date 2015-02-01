@@ -32,10 +32,10 @@ public class IntermediateLineData {
 			decodedChannel[decodedChannel.length-1] = endPoint[i];
 			if(decodedChannel.length > 2) {
 				int channelIndex = 0;
-				LinkedList<Indices> bfIndices = new LinkedList<>();
-				bfIndices.add(new Indices(0, decodedChannel.length-1));
-				while(!bfIndices.isEmpty()) {
-					prediction(bfIndices,decodedChannel,channels[i],channelIndex);
+				LinkedList<Indices> queue = new LinkedList<>();
+				queue.add(new Indices(0, decodedChannel.length-1));
+				while(!queue.isEmpty()) {
+					prediction(queue,decodedChannel,channels[i],channelIndex);
 					channelIndex++;
 				}
 			}
@@ -44,6 +44,10 @@ public class IntermediateLineData {
 		this.size = this.channels[0].length;
 	}
 	
+	/**
+	 * Multiplies the prediction errors
+	 * @param channels
+	 */
 	private static void multiplyResiduals(float[][] channels) {
 		for(int i = 0; i < channels.length;i++) { 
 			float[] current = channels[i];
@@ -64,33 +68,33 @@ public class IntermediateLineData {
 	
 	/**
 	 * 
-	 * @param bfIndices Breath first indices of the next prediction
+	 * @param queue Breadth first indices of the next prediction
 	 * @param decodedChannel decoded channel
-	 * @param channel
+	 * @param encodedChanel
 	 * @param nextIndex
 	 */
-	private static void prediction(LinkedList<Indices> bfIndices,float[] decodedChannel,float[] channel, int nextIndex) {
-		Indices i = bfIndices.pollFirst();
+	private static void prediction(LinkedList<Indices> queue,float[] decodedChannel,float[] encodedChanel, int nextIndex) {
+		Indices i = queue.pollFirst();
 		float start = decodedChannel[i.startIndex];
 		float end = decodedChannel[i.endIndex];
 		
 		int toPredictIndex = (i.endIndex - i.startIndex) / 2 + i.startIndex;
-		float error = channel[nextIndex];
-		//error = error * 8;
+		float predictionError = encodedChanel[nextIndex];
 		
-		float predFactor0 = (toPredictIndex-i.startIndex)/(float)(i.endIndex - i.startIndex);
-		float predFactor1 = (i.endIndex-toPredictIndex)/(float)(i.endIndex - i.startIndex);
-		float prediction = (int)(predFactor0* start + predFactor1*end);
-		decodedChannel[toPredictIndex] = prediction-error;
+		//predict
+		float predictionFactor0 = (toPredictIndex-i.startIndex)/(float)(i.endIndex - i.startIndex);
+		float predictionFactor1 = (i.endIndex-toPredictIndex)/(float)(i.endIndex - i.startIndex);
+		float prediction = (int)(predictionFactor0* start + predictionFactor1*end);
+		decodedChannel[toPredictIndex] = prediction-predictionError;
 		
 		//add next level of indices
 		if (i.startIndex + 1 != toPredictIndex){
 			Indices next = new Indices(i.startIndex,toPredictIndex);
-			bfIndices.addLast(next);
+			queue.addLast(next);
         }
 		if (i.endIndex - 1 != toPredictIndex) {
 			Indices next = new Indices(toPredictIndex,i.endIndex);
-			bfIndices.addLast(next);
+			queue.addLast(next);
 		}
 	}
 	
@@ -167,36 +171,35 @@ public class IntermediateLineData {
 	/**
 	 * split all concatenated channels to the correspoding line. In the end, all Channels will
 	 * @param lengths array of all line lengths. These lengths are before they were Run-Length Encoded
-	 * @param x Channel
-	 * @param y Channel
-	 * @param z Channel
+	 * @param r Channel
+	 * @param phi Channel
+	 * @param theta Channel
 	 * @return
 	 */
-	public static IntermediateLineData[] splitToLines(int[] lengths, int[]x, int[] y,int[] z) {
+	public static IntermediateLineData[] splitToLines(int[] lengths, int[]r, int[] phi,int[] theta) {
 		 IntermediateLineData[] lines = new IntermediateLineData[lengths.length];
-		 int[][] channels = new int[][]{x,y,z};
+		 int[][] channels = new int[][]{r,phi,theta};
 		 
 		 int[] indices = new int[3];
 		 
 		 //go through all lines
 		 for(int i = 0; i < lines.length;i++) {
-			 IntermediateLineData l = new IntermediateLineData();
-			 l.size = lengths[i];
-			 l.channels = new float[3][];
+			 IntermediateLineData currentLine = new IntermediateLineData();
+			 currentLine.size = lengths[i];
+			 currentLine.channels = new float[3][];
 
 			 //for all channels
 			 for(int j = 0; j < 3;j++) {
 				 int index = indices[j];
 				 
-				 float[] channel = toFloat(channels[j],index,l.size);
-				 l.channels[j] = channel;
+				 float[] channel = toFloat(channels[j],index,currentLine.size);
+				 currentLine.channels[j] = channel;
 				 
-				 index += l.size;
+				 index += currentLine.size;
 				 indices[j] = index;
 			 }
 			 
-			 lines[i] = l;
-			 
+			 lines[i] = currentLine;
 		 }
 		 return lines;
 	 }

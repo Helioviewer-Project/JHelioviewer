@@ -49,11 +49,7 @@ public class ByteDecoder {
 			//add encoded bytes as long as the continue flag is set.
 			boolean run = (current & continueFlag) != 0;
 			while (run) {
-				//move next
-				if (run) {
-					i++;
-					current = data[i];
-				}
+				current = data[i++];
 				run = (current & continueFlag) != 0;
 				minus <<= dataBitCount;
 				value <<= dataBitCount;
@@ -82,10 +78,7 @@ public class ByteDecoder {
 			//add encoded bytes as long as the continue flag is set.
 			boolean run = (current & continueFlag) != 0;
 			while (run) {
-				if (run) {
-					i++;
-					current = data[i];
-				}
+				current = data[i++];
 				run = (current & continueFlag) != 0;
 				value <<= dataBitCount;
 				value += current & (continueFlag - 1);
