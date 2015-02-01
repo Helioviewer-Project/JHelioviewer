@@ -12,10 +12,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.helioviewer.gl3d.plugin.pfss.data.caching.Cacheable;
 
-import nom.tam.fits.BasicHDU;
-import nom.tam.fits.BinaryTableHDU;
-import nom.tam.fits.Fits;
-
 /**
  * Represents the raw pfss data. This class is able to download the data asynchronously
  * 
@@ -48,8 +44,7 @@ public class PfssData implements Runnable, Cacheable {
 		InputStream in = null;
 		lock.lock();
 		try {
-			String url2 = "file:///C:/Users/Jonas Schwammberger/Documents/GitHub/PFSSCompression/test/temp/test4_extra.rar";
-			URL u = new URL(url2);
+			URL u = new URL(url);
 			URLConnection uc = u.openConnection();
 			int contentLength = uc.getContentLength();
 			InputStream raw = uc.getInputStream();
@@ -115,7 +110,6 @@ public class PfssData implements Runnable, Cacheable {
 	@Override
 	public void run() {
 		loadData();
-		
 	}
 	
 	@Override

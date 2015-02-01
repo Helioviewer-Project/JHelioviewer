@@ -77,7 +77,6 @@ public class ByteDecoder {
 		int outIndex = 0;
 		for (int i = 0; i < data.length; i++) {
 			byte current = data[i];
-			int bla = current & (continueFlag - 1);
 			int value = (int) (current & (continueFlag - 1));
 			
 			//add encoded bytes as long as the continue flag is set.
@@ -113,11 +112,5 @@ public class ByteDecoder {
 				out++;
 		}
 		return out;
-	}
-
-	public static void main(String[] args) {
-		byte[] data = new byte[] { 2, (byte) 129, 0, (byte) 129, 127 };
-		int[] adaptive = decodeAdaptiveUnsigned(data);
-		System.out.println("");
 	}
 }

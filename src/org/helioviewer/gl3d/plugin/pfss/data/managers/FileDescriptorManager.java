@@ -119,7 +119,6 @@ public class FileDescriptorManager {
 			e.printStackTrace();
 		} catch (IOException e) {
 			throw new IOException("Unable to find data for: "+currentYear +"/"+(currentMonth+1),e);
-			//todo throw new exception explaining that resources are not available
 		}
 	}
     

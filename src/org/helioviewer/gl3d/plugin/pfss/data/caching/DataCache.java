@@ -2,10 +2,8 @@ package org.helioviewer.gl3d.plugin.pfss.data.caching;
 
 import org.helioviewer.gl3d.plugin.pfss.data.FileDescriptor;
 import org.helioviewer.gl3d.plugin.pfss.data.PfssData;
-import org.helioviewer.gl3d.plugin.pfss.data.PfssFrame;
 import org.helioviewer.gl3d.plugin.pfss.data.creators.PfssDataCreator;
 import org.helioviewer.gl3d.plugin.pfss.data.managers.FileDescriptorManager;
-import org.helioviewer.gl3d.plugin.pfss.data.managers.FrameManager;
 import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
 
 /**

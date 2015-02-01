@@ -9,7 +9,6 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Date;
 
-import org.helioviewer.base.physics.Constants;
 import org.helioviewer.gl3d.plugin.pfss.data.decompression.ByteDecoder;
 import org.helioviewer.gl3d.plugin.pfss.data.decompression.DecompressedLine;
 import org.helioviewer.gl3d.plugin.pfss.data.decompression.DecompressedPoint;
@@ -53,7 +52,6 @@ public class PfssDecompressor implements Runnable {
 		}
 		if (data.isLoaded() && !frame.isLoaded()) {
 			InputStream is = null;
-			IntermediateLineData[] lines = null;
 			ArrayList<DecompressedLine> decompressedLines = null;
 			try {
 				ByteArrayOutputStream out = UnRar.unrarData(data);
@@ -86,11 +84,11 @@ public class PfssDecompressor implements Runnable {
 				int[] phiInt = ByteDecoder.decodeAdaptive(phiRaw);
 				int[] thetaInt = ByteDecoder.decodeAdaptive(thetaRaw);
 
-				lines = IntermediateLineData.splitToLines(lengths, rInt, phiInt, thetaInt);
+				IntermediateLineData[]lines = IntermediateLineData.splitToLines(lengths, rInt, phiInt, thetaInt);
 				IntermediateLineData.addStartPoint(lines, startRInt, startPhiInt, startThetaInt);
 				IntermediateLineData.addEndPoint(lines, endRInt, endPhiInt, endThetaInt);
 				for(IntermediateLineData l : lines) {
-					l.undoPrediction(100000f);
+					l.decodePrediction();
 					l.toCartesian(l0, b0);
 				}
 			

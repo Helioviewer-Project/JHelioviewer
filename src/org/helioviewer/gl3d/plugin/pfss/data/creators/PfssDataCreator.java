@@ -1,8 +1,5 @@
 package org.helioviewer.gl3d.plugin.pfss.data.creators;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -23,7 +20,7 @@ public class PfssDataCreator {
 	}
 		
 	public PfssData getDataAsync(FileDescriptor desc) {
-		PfssData d = new PfssData(desc,this.createURL(desc));
+		PfssData d = new PfssData(desc,createURL(desc));
 		pool.execute(d);
 		return d;
 	}
