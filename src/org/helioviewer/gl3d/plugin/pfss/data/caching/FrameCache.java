@@ -35,6 +35,6 @@ public class FrameCache {
 	
 	private PfssFrame load(FileDescriptor key) {
 		PfssData data = dataCache.get(key);
-		return frameCreator.createFrameAsync(data);
+		return frameCreator.getFrameAsync(data);
 	}
 }
