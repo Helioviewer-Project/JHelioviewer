@@ -27,7 +27,7 @@ public class PfssSettings {
 	/**
 	 * Maximum size of cache data.
 	 */
-	public final static int DATA_CACHE_SIZE = 25;
+	public final static int DATA_CACHE_SIZE = 1000;
 	
 	/**
 	 * Number of Preloaded PFSSdata
@@ -73,8 +73,7 @@ public class PfssSettings {
 	 */
 	public final static double ANGLE_OF_LOD = Math.cos(Math.toRadians(4.0));
 	
-	public final static int AVERAGE_FILTER_SIZE = 15;
-	public final static int AVERAGE_FILTER_MIN_LINE_SIZE = 30;
+	public final static int SMOOTH_FILTER_SIZE = 3;
 	
 	/**
 	 * Linewidth for the OpenGL visualization

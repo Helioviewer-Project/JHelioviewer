@@ -94,7 +94,7 @@ public class IntermediateLineData {
 		
 		int toPredictIndex = (i.endIndex - i.startIndex) / 2 + i.startIndex;
 		float error = channel[nextIndex];
-		//error = error * 10;
+		//error = error * 8;
 		
 		float predFactor0 = (toPredictIndex-i.startIndex)/(float)(i.endIndex - i.startIndex);
 		float predFactor1 = (i.endIndex-toPredictIndex)/(float)(i.endIndex - i.startIndex);
