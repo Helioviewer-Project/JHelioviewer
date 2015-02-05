@@ -8,25 +8,7 @@ package org.helioviewer.gl3d.plugin.pfss.data.decompression;
 public class ByteDecoder {
 	public static final int continueFlag = 128;
 	public static final int signFlag = 64;
-	public static final int maxValue = 63;
-	public static final int minValue = -64;
 	public static final int dataBitCount = 7;
-
-	/**
-	 * Decodes the length information.
-	 * 
-	 * @param input
-	 *            RLE Encoded data
-	 * @param length
-	 *            actual length of the data
-	 * @return
-	 */
-	public static int[] decodeLength(int[] input, int length) {
-		int[] output = new int[length];
-		System.arraycopy(input, 1, output, 0, input.length); // skip length of encoded data
-
-		return output;
-	}
 
 	/**
 	 * decode the adaptive precision encoded data.
@@ -95,7 +77,7 @@ public class ByteDecoder {
 	 * the byte which marks the end of a value does not have the continue flag set.
 	 * 
 	 * @param data encoded data
-	 * @return
+	 * @return number of decoded values
 	 */
 	private static int calcLength(byte[] data) {
 		int out = 0;
