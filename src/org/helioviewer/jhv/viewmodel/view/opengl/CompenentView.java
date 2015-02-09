@@ -24,7 +24,6 @@ import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.awt.GLCanvas;
-import javax.vecmath.Vector3f;
 
 import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.Vector2d;
@@ -34,7 +33,6 @@ import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.base.wcs.CoordinateConversion;
 import org.helioviewer.jhv.base.wcs.CoordinateVector;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
-import org.helioviewer.jhv.internal_plugins.filter.SOHOLUTFilterPlugin.SOHOLUTFilter;
 import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.LayersListener;
@@ -42,13 +40,11 @@ import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.layers.NewLayerListener;
 import org.helioviewer.jhv.opengl.camera.Camera;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
-import org.helioviewer.jhv.opengl.camera.GL3DCameraListener;
 import org.helioviewer.jhv.opengl.camera.newCamera.CameraListener;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace.Ray;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState.VISUAL_TYPE;
-import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.imagedata.ImageData;
 import org.helioviewer.jhv.viewmodel.imageformat.ImageFormat;
@@ -59,7 +55,6 @@ import org.helioviewer.jhv.viewmodel.region.Region;
 import org.helioviewer.jhv.viewmodel.renderer.screen.ScreenRenderer;
 import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
 import org.helioviewer.jhv.viewmodel.view.View;
-import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 
 public class CompenentView extends GL3DComponentView implements
 GLEventListener, LayersListener, MouseListener, MouseMotionListener, MouseWheelListener, NewLayerListener, CameraListener{
