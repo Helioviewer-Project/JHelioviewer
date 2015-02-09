@@ -44,8 +44,7 @@ public class PfssData implements Runnable, Cacheable {
 		InputStream in = null;
 		lock.lock();
 		try {
-			String url2 = "file:///C:/Users/Jonas%20Schwammberger/Documents/GitHub/PFSSCompression/test/temp/test4_extra.rar";
-			URL u = new URL(url2);
+			URL u = new URL(url);
 			URLConnection uc = u.openConnection();
 			int contentLength = uc.getContentLength();
 			InputStream raw = uc.getInputStream();

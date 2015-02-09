@@ -51,8 +51,7 @@ public class FrameManager {
 			return null;
 		
 		//still the same frame
-		//if (preloadQueue[currentIndex].getDescriptor().isDateInRange(date))
-		if(true)
+		if (preloadQueue[currentIndex].getDescriptor().isDateInRange(date))
 			return preloadQueue[currentIndex];
 
 		// advance to next
@@ -134,6 +133,9 @@ public class FrameManager {
 				
 				descriptor = descriptorManager.getNext(descriptor);
 			}
+			initQueue.add(preloadQueue[0]);
+			if(preloadQueue.length > 1)
+				initQueue.add(preloadQueue[1]);
 		}
 	}
 
