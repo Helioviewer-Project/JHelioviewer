@@ -105,6 +105,7 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 				lblOpacity.setText(opacitySlider.getValue() + "%");
 				if (activeLayer != null && activeLayer.opacity != opacitySlider.getValue() / 100.0){
 					activeLayer.opacity = opacitySlider.getValue() / 100.0;
+					System.out.println("opacity");
 				}
 			}
 		});

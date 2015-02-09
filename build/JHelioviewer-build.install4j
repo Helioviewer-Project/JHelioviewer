@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="6.0" transformSequenceNumber="5">
   <directoryPresets config=".." />
-  <application name="JHelioviewer" distributionSourceDir="" applicationId="7791-5722-0682-7193" mediaDir="./builds" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="9" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="JHelioviewer" publisher="ESA JHelioviewer Team" publisherWeb="http://www.jhelioviewer.org" version="2.3-BETA-11" allPathsRelative="true" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="7ed177551bd348bc" javaMinVersion="1.7" javaMaxVersion="" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
+  <application name="JHelioviewer" distributionSourceDir="" applicationId="7791-5722-0682-7193" mediaDir="./builds" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="9" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="JHelioviewer" publisher="ESA JHelioviewer Team" publisherWeb="http://www.jhelioviewer.org" version="2.3-BETA-12" allPathsRelative="true" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="7ed177551bd348bc" javaMinVersion="1.7" javaMaxVersion="" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="en" customLocalizationFile="" />
       <additionalLanguages />
@@ -125,7 +125,7 @@
       </iconImageFiles>
     </launcher>
   </launchers>
-  <installerGui installerType="1" addOnAppId="" suggestPreviousLocations="true" autoUpdateDescriptorUrl="http://www.jhelioviewer.org/updates/beta/updates.xml" useAutoUpdateBaseUrl="true" autoUpdateBaseUrl="https://github.com/Helioviewer-Project/JHelioviewer/releases/download/v2.3-beta.11/">
+  <installerGui installerType="1" addOnAppId="" suggestPreviousLocations="true" autoUpdateDescriptorUrl="http://www.jhelioviewer.org/updates/beta/updates.xml" useAutoUpdateBaseUrl="true" autoUpdateBaseUrl="https://github.com/Helioviewer-Project/JHelioviewer/releases/download/v2.3-beta.12/">
     <staticMembers script="" />
     <customCode />
     <autoUpdate useMinUpdatableVersion="false" minUpdatableVersion="" useMaxUpdatableVersion="false" maxUpdatableVersion="">
@@ -180,187 +180,6 @@
           </screen>
         </startup>
         <screens>
-          <group name="" id="777" customizedId="" beanClass="com.install4j.runtime.beans.groups.ScreenGroup" enabled="true" commentSet="false" comment="" actionElevationType="inherit">
-            <serializedBean>
-              <java class="java.beans.XMLDecoder">
-                <object class="com.install4j.runtime.beans.groups.ScreenGroup" />
-              </java>
-            </serializedBean>
-            <beans>
-              <screen name="New version available" id="778" customizedId="" beanClass="com.install4j.runtime.beans.screens.FormScreen" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" backButton="2" finishScreen="false" wizardIndexChangeType="unchanged" wizardIndexKey="">
-                <serializedBean>
-                  <java class="java.beans.XMLDecoder">
-                    <object class="com.install4j.runtime.beans.screens.FormScreen">
-                      <void property="subTitle">
-                        <string>${i18n:updater.NewVersionAvailableSubtitle("${compiler:sys.fullName}")}</string>
-                      </void>
-                      <void property="title">
-                        <string>${i18n:updater.NewVersionAvailableTitle}</string>
-                      </void>
-                    </object>
-                  </java>
-                </serializedBean>
-                <condition />
-                <validation />
-                <preActivation />
-                <postActivation />
-                <actions />
-                <formComponents>
-                  <formComponent name="" id="779" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.KeyValuePairComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
-                    <serializedBean>
-                      <java class="java.beans.XMLDecoder">
-                        <object class="com.install4j.runtime.beans.formcomponents.KeyValuePairComponent">
-                          <void property="labelText">
-                            <string>${i18n:updater.CurrentVersionLabel}</string>
-                          </void>
-                          <void property="valueLabelColor">
-                            <object class="java.awt.Color">
-                              <int>128</int>
-                              <int>0</int>
-                              <int>0</int>
-                              <int>255</int>
-                            </object>
-                          </void>
-                          <void property="valueLabelFont">
-                            <object class="java.awt.Font">
-                              <string>dialog</string>
-                              <int>1</int>
-                              <int>0</int>
-                            </object>
-                          </void>
-                          <void property="valueLabelText">
-                            <string>${installer:sys.version}</string>
-                          </void>
-                        </object>
-                      </java>
-                    </serializedBean>
-                    <initScript />
-                    <visibilityScript />
-                  </formComponent>
-                  <group name="" id="780" customizedId="" beanClass="com.install4j.runtime.beans.groups.HorizontalFormComponentGroup" enabled="true" commentSet="false" comment="" actionElevationType="inherit">
-                    <serializedBean>
-                      <java class="java.beans.XMLDecoder">
-                        <object class="com.install4j.runtime.beans.groups.HorizontalFormComponentGroup" />
-                      </java>
-                    </serializedBean>
-                    <beans>
-                      <formComponent name="" id="781" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.KeyValuePairComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
-                        <serializedBean>
-                          <java class="java.beans.XMLDecoder">
-                            <object class="com.install4j.runtime.beans.formcomponents.KeyValuePairComponent">
-                              <void property="labelText">
-                                <string>${i18n:updater.NewVersionLabel}</string>
-                              </void>
-                              <void property="valueLabelColor">
-                                <object class="java.awt.Color">
-                                  <int>0</int>
-                                  <int>128</int>
-                                  <int>0</int>
-                                  <int>255</int>
-                                </object>
-                              </void>
-                              <void property="valueLabelFont">
-                                <object class="java.awt.Font">
-                                  <string>dialog</string>
-                                  <int>1</int>
-                                  <int>0</int>
-                                </object>
-                              </void>
-                              <void property="valueLabelText">
-                                <string>${installer:updaterNewVersion}</string>
-                              </void>
-                            </object>
-                          </java>
-                        </serializedBean>
-                        <initScript />
-                        <visibilityScript />
-                      </formComponent>
-                      <formComponent name="" id="782" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.HyperlinkActionLabelComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="5" insetBottom="" insetRight="" resetInitOnPrevious="false">
-                        <serializedBean>
-                          <java class="java.beans.XMLDecoder">
-                            <object class="com.install4j.runtime.beans.formcomponents.HyperlinkActionLabelComponent">
-                              <void property="actionScript">
-                                <object class="com.install4j.api.beans.ScriptProperty">
-                                  <void property="value">
-                                    <string>context.goForward(1, false, false);</string>
-                                  </void>
-                                </object>
-                              </void>
-                              <void property="hyperlinkText">
-                                <string>${i18n:updater.ShowComments}</string>
-                              </void>
-                            </object>
-                          </java>
-                        </serializedBean>
-                        <initScript />
-                        <visibilityScript> ((String)context.getVariable("updaterComment")).length() &gt; 0</visibilityScript>
-                      </formComponent>
-                    </beans>
-                  </group>
-                  <formComponent name="" id="783" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.SpacerComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
-                    <serializedBean>
-                      <java class="java.beans.XMLDecoder">
-                        <object class="com.install4j.runtime.beans.formcomponents.SpacerComponent" />
-                      </java>
-                    </serializedBean>
-                    <initScript />
-                    <visibilityScript />
-                  </formComponent>
-                  <formComponent name="" id="784" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.MultilineLabelComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
-                    <serializedBean>
-                      <java class="java.beans.XMLDecoder">
-                        <object class="com.install4j.runtime.beans.formcomponents.MultilineLabelComponent">
-                          <void property="labelText">
-                            <string>${i18n:updater.DownloadLocationLabel}</string>
-                          </void>
-                        </object>
-                      </java>
-                    </serializedBean>
-                    <initScript />
-                    <visibilityScript />
-                  </formComponent>
-                  <formComponent name="" id="785" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.DirectoryChooserComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
-                    <serializedBean>
-                      <java class="java.beans.XMLDecoder">
-                        <object class="com.install4j.runtime.beans.formcomponents.DirectoryChooserComponent">
-                          <void property="initialFile">
-                            <string>${installer:sys.downloadsDir}</string>
-                          </void>
-                          <void property="labelText">
-                            <string>${i18n:updater.DownloadToLabel}</string>
-                          </void>
-                          <void property="manualEntryAllowed">
-                            <boolean>false</boolean>
-                          </void>
-                          <void property="variableName">
-                            <string>updaterDownloadLocation</string>
-                          </void>
-                        </object>
-                      </java>
-                    </serializedBean>
-                    <initScript />
-                    <visibilityScript />
-                  </formComponent>
-                  <formComponent name="" id="786" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.KeyValuePairComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
-                    <serializedBean>
-                      <java class="java.beans.XMLDecoder">
-                        <object class="com.install4j.runtime.beans.formcomponents.KeyValuePairComponent">
-                          <void property="labelText">
-                            <string>${i18n:updater.DownloadSizeLabel}</string>
-                          </void>
-                          <void property="valueLabelText">
-                            <string>${installer:updaterDownloadSize}</string>
-                          </void>
-                        </object>
-                      </java>
-                    </serializedBean>
-                    <initScript />
-                    <visibilityScript />
-                  </formComponent>
-                </formComponents>
-              </screen>
-            </beans>
-          </group>
           <screen name="" id="2" customizedId="" beanClass="com.install4j.runtime.beans.screens.WelcomeScreen" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" backButton="2" finishScreen="false" wizardIndexChangeType="unchanged" wizardIndexKey="">
             <serializedBean>
               <java class="java.beans.XMLDecoder">
