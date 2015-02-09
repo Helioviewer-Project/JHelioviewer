@@ -51,9 +51,9 @@ public class JHelioviewer {
 
     public static void main(String[] args) {
 
-
     	Log.redirectStdOutErr();
-        if (args.length == 1){
+		System.out.println("tag : " + System.getProperty("raygunTag"));
+    	if (System.getProperty("raygunTag") != null){
         	if (UpdateScheduleRegistry.checkAndReset()) {
         	    // This will return immediately if you call it from the EDT,
         	    // otherwise it will block until the installer application exits
@@ -68,7 +68,7 @@ public class JHelioviewer {
         	        }, ApplicationLauncher.WindowMode.FRAME, null
         	    );
         	}
-        	JHVGlobals.tag = args[0];
+        	JHVGlobals.tag = System.getProperty("raygunTag");
         }
         
         // Uncaught runtime errors are displayed in a dialog box in addition
@@ -158,17 +158,6 @@ public class JHelioviewer {
         splash.setProgressText("Setting up the UI...");
         splash.nextStep();
         ImageViewerGui.getMainFrame();
-
-        // Check for updates in parallel, if newer version is available a small
-        // message is displayed
-        try {
-            UpdateChecker update = new UpdateChecker();
-            update.check();
-        } catch (MalformedURLException e) {
-            // Should never happen
-            System.err.println("Error retrieving internal update URL");
-            e.printStackTrace();
-        }
 
         System.out.println("Installing overlap watcher");
         LayerTableOverlapWatcher overlapWatcher = new LayerTableOverlapWatcher();

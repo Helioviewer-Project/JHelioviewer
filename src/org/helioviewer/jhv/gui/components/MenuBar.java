@@ -94,7 +94,6 @@ public class MenuBar extends JMenuBar {
         helpMenu.add(new OpenURLinBrowserAction("Report a bug", "https://github.com/Helioviewer-Project/JHelioViewer/issues"));
         helpMenu.add(new OpenURLinBrowserAction("Submit a feature request", "https://github.com/Helioviewer-Project/JHelioViewer/issues"));
         helpMenu.addSeparator();
-        helpMenu.add(new CheckUpdateAction());
         helpMenu.add(new ShowDialogAction("About JHelioviewer...", AboutDialog.class));				
         add(helpMenu);
     }

@@ -1,7 +1,7 @@
 package org.helioviewer.jhv.base.math;
 
 public class Matrix3d {
-    private double[] m = new double[9];/*
+    public double[] m = new double[9];/*
                                         * / 0 3 6 \ | 1 4 7 | \ 2 5 8 /
                                         */
 

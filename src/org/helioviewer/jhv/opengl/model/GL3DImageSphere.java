@@ -70,7 +70,7 @@ public class GL3DImageSphere extends GL3DImageMesh
         phiRotation=Matrix4d.rotation(phi,new Vector3d(0,1,0));
       }
 	
-      double resolutionX=80;
+      double resolutionX=120;
       double resolutionY=80;
 
       for(int latNumber=0;latNumber<=resolutionX;latNumber++)

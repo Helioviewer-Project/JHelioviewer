@@ -48,7 +48,19 @@
   "color":"SDO-AIA 1700 Å"},
  {"instrument":"AIA",
   "measurement":"4500",
-  "color":"SDO-AIA 4500 Å"}]
+  "color":"SDO-AIA 4500 Å"},
+ {"instrument":"SECCHI",
+  "measurement":"171",
+  "color":"STEREO EUVI 171 Å"},
+  {"instrument":"SECCHI",
+  "measurement":"195",
+  "color":"STEREO EUVI 195 Å"},
+  {"instrument":"SECCHI",
+  "measurement":"284",
+  "color":"STEREO EUVI 284 Å"},
+  {"instrument":"SECCHI",
+  "measurement":"304",
+  "color":"STEREO EUVI 304 Å"}]
 // Configuration about the used default color tables
 // This must be an array and the fist matching rule will be used
 // A rule can query "observatory", "instrument", "detector", "measurement"

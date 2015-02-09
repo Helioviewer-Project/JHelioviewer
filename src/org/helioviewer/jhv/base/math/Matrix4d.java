@@ -126,6 +126,22 @@ public class Matrix4d {
     {
         return new Vector4d(m[0] * v.x + m[4] * v.y + m[8] * v.z + m[12] * v.w, m[1] * v.x + m[5] * v.y + m[9] * v.z + m[13] * v.w, m[2] * v.x + m[6] * v.y + m[10] * v.z + m[14] * v.w, m[3] * v.x + m[7] * v.y + m[11] * v.z + m[15] * v.w);
     }
+    
+    public Matrix3d rotation(){
+    	return new Matrix3d(m[0], m[1], m[2], m[4], m[5], m[6], m[8], m[9], m[10]);
+    }
+    
+    public void setRotation(Matrix3d rotation){
+    	m[0] = rotation.m[0];
+    	m[1] = rotation.m[1];
+    	m[2] = rotation.m[3];
+    	m[4] = rotation.m[4];
+    	m[5] = rotation.m[5];
+    	m[6] = rotation.m[6];
+    	m[8] = rotation.m[7];
+    	m[9] = rotation.m[8];
+    	m[10] = rotation.m[9];
+    }
 
     public Vector3d translation() {
         return new Vector3d(m[12], m[13], m[14]);
@@ -135,6 +151,12 @@ public class Matrix4d {
         m[12] = x;
         m[13] = y;
         m[14] = z;
+    }
+    
+    public void addTranslation(Vector3d translation){
+    	m[12] += translation.x;
+    	m[13] += translation.y;
+    	m[14] += translation.z;
     }
 
     public Matrix4d inverse() {
@@ -458,4 +480,11 @@ public class Matrix4d {
         return sb.toString();
     }
 
+    public float[] toFloatArray(){
+    	float[] v = new float[16];
+    	for (int i = 0; i < m.length; i++){
+    		v[i] = (float)m[i];
+    	}
+    	return v;
+    }
 }

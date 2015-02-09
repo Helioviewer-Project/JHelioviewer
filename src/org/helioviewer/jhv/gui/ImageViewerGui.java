@@ -23,6 +23,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 
+import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.SplashScreen;
 import org.helioviewer.jhv.base.Message;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
@@ -36,6 +37,8 @@ import org.helioviewer.jhv.gui.components.MoviePanel;
 import org.helioviewer.jhv.gui.components.SideContentPane;
 import org.helioviewer.jhv.gui.components.StatusPanel;
 import org.helioviewer.jhv.gui.components.TopToolBar;
+import org.helioviewer.jhv.gui.components.newComponents.FilterTabPanel;
+import org.helioviewer.jhv.gui.components.newComponents.NewImageSelectorPanel;
 import org.helioviewer.jhv.gui.components.statusplugins.CurrentTimeLabel;
 import org.helioviewer.jhv.gui.components.statusplugins.FramerateStatusPanel;
 import org.helioviewer.jhv.gui.components.statusplugins.JPIPStatusPanel;
@@ -87,6 +90,7 @@ public class ImageViewerGui {
 
 	private SideContentPane leftPane;
 	private ImageSelectorPanel imageSelectorPanel;
+	private NewImageSelectorPanel newImageSelectorPanel;
 	private MoviePanel moviePanel;
 	private ControlPanelContainer moviePanelContainer;
 	private ControlPanelContainer filterPanelContainer;
@@ -308,9 +312,11 @@ public class ImageViewerGui {
 			leftPane.add("Movie Controls", moviePanelContainer, true);
 
 			// Layer control
-			imageSelectorPanel = new ImageSelectorPanel();
+			if (JHVGlobals.oldMode) imageSelectorPanel = new ImageSelectorPanel();
+			else newImageSelectorPanel = new NewImageSelectorPanel();
 
-			leftPane.add("Layers", imageSelectorPanel, true);
+			if (JHVGlobals.oldMode)leftPane.add("Layers", imageSelectorPanel, true);
+			else leftPane.add("new Layers", newImageSelectorPanel, true);
 
 			// Image adjustments and filters
 			FilterTabPanelManager compactPanelManager = new FilterTabPanelManager();
@@ -321,14 +327,15 @@ public class ImageViewerGui {
 			compactPanelManager.add(new ContrastPanel());
 			compactPanelManager.add(new SharpenPanel());
 			compactPanelManager.add(new ChannelMixerPanel());
-
+			
 			JPanel compactPanel = compactPanelManager.createCompactPanel();
 			compactPanel.setEnabled(false);
             compactPanel.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
 
 			filterPanelContainer = new ControlPanelContainer();
 			filterPanelContainer.setDefaultPanel(compactPanel);
-			leftPane.add("Adjustments", filterPanelContainer, false);
+			if (JHVGlobals.oldMode)leftPane.add("Adjustments", filterPanelContainer, false);
+			else leftPane.add("NEWAdjustments", new FilterTabPanel(), false);
 
 			return leftPane;
 		}
@@ -343,6 +350,10 @@ public class ImageViewerGui {
 		return this.imageSelectorPanel;
 	}
 
+	public NewImageSelectorPanel getNewImageSelectorPanel(){
+		return this.newImageSelectorPanel;
+	}
+	
 	/**
 	 * @return the movie panel container
 	 */

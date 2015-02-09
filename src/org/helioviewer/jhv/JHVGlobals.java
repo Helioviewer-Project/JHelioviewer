@@ -14,6 +14,7 @@ public class JHVGlobals {
     public static final String RELEASE = "Beta 10";
     public static final String VERSION_AND_RELEASE = JHVGlobals.VERSION + (JHVGlobals.RELEASE!=null ? " (" + JHVGlobals.RELEASE + ")":"");
     public static String tag = "";
+    public static boolean oldMode = true;
     
     private JHVGlobals()
     {

@@ -18,7 +18,6 @@ import javax.swing.*;
 import org.helioviewer.jhv.base.Log;
 
 import com.mindscapehq.raygun4java.core.RaygunClient;
-import com.mindscapehq.raygun4java.core.RaygunMessageBuilder;
 import com.mindscapehq.raygun4java.core.messages.RaygunIdentifier;
 
 /**

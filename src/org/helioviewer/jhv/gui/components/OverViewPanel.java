@@ -584,7 +584,7 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 	
 	public void setCurrentLutByName(String name, boolean inverted){
 		this.invertedLut = 0;
-		if (lutMap != null){
+		if (lutMap != null && lutMap.containsKey(name)){
 			this.currentLut = lutMap.get(name);
 			if (inverted) this.invertedLut = 1;
 			

@@ -9,6 +9,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.gui.components.MoviePanel;
 import org.helioviewer.jhv.gui.components.OverViewPanel;
 import org.helioviewer.jhv.gui.components.TopToolBar;
@@ -72,8 +73,8 @@ public class GuiState3DWCS {
         sceneGraph.setView(viewportView);
         sceneGraph.setGLOverlayView(overlayView);
         
-        mainComponentView = new GL3DComponentView();
-        //mainComponentView = new CompenentView();
+        if (JHVGlobals.oldMode) mainComponentView = new GL3DComponentView();
+        else mainComponentView = new CompenentView();
         mainComponentView.setView(sceneGraph);
         LayersModel.getSingletonInstance().addLayersListener(overViewPanel);
                 
