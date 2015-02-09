@@ -134,14 +134,11 @@ public class IntermediateLineData {
 	public static void addStartPoint(IntermediateLineData[] lines, int[] radius, int[] phi, int[] theta) {
 		for(int i = 0; i < lines.length;i++) {
 			IntermediateLineData l = lines[i];
-			int rawR = i < radius.length ? radius[i] : 0;
-			int rawPhi = i < phi.length ? phi[i] : 0;
-			int rawTheta = i < theta.length ? theta[i] : 0;
 			
 			l.startPoint = new float[3];
-            l.startPoint[0] = rawR;	
-            l.startPoint[1] = rawPhi; 				
-            l.startPoint[2] = rawTheta;
+            l.startPoint[0] = radius[i];	
+            l.startPoint[1] = phi[i]; 				
+            l.startPoint[2] = theta[i];
 		}
 	}
 	
@@ -156,14 +153,11 @@ public class IntermediateLineData {
 			int[] radius, int[] phi, int[] theta) {
 		for(int i = 0; i < lines.length;i++) {
 			IntermediateLineData l = lines[i];
-			int rawR = i < radius.length ? radius[i] : 0;
-			int rawPhi = i < phi.length ? phi[i] : 0;
-			int rawTheta = i < theta.length ? theta[i] : 0;
            
             l.endPoint = new float[3];
-            l.endPoint[0] = rawR;
-            l.endPoint[1] = rawPhi;
-            l.endPoint[2] = rawTheta;
+            l.endPoint[0] = radius[i];
+            l.endPoint[1] = phi[i];
+            l.endPoint[2] = theta[i];
 		}
 		
 	}
