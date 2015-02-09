@@ -1,7 +1,5 @@
 package org.helioviewer.jhv.base.math;
 
-import javax.vecmath.Matrix4f;
-
 public class Quaternion3d {
     public static final double EPSILON = 0.000001;
 
@@ -61,22 +59,6 @@ public class Quaternion3d {
         2 * x * z - 2 * w * y, 2 * y * z + 2 * w * x, w2 - x2 - y2 + z2, 0,
 
         0, 0, 0, w2 + x2 + y2 + z2);
-    }
-    
-    public Matrix4f toMatrixf(){
-    	float w = (float)a, w2 = w * w;
-        float x = (float)u.x, x2 = x * x;
-        float y = (float)u.y, y2 = y * y;
-        float z = (float)u.z, z2 = z * z;
-
-        return new Matrix4f(w2 + x2 - y2 - z2, 2 * x * y - 2 * w * z, 2 * x * z + 2 * w * y, 0,
-
-        2 * x * y + 2 * w * z, w2 - x2 + y2 - z2, 2 * y * z - 2 * w * x, 0,
-
-        2 * x * z - 2 * w * y, 2 * y * z + 2 * w * x, w2 - x2 - y2 + z2, 0,
-
-        0, 0, 0, w2 + x2 + y2 + z2);
-    	
     }
 
     public double getAngle() {
