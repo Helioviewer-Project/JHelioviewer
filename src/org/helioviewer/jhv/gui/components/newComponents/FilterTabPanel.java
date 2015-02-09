@@ -105,7 +105,7 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 				lblOpacity.setText(opacitySlider.getValue() + "%");
 				if (activeLayer != null && activeLayer.opacity != opacitySlider.getValue() / 100.0){
 					activeLayer.opacity = opacitySlider.getValue() / 100.0;
-					System.out.println("opacity");
+					repaintComponent();
 				}
 			}
 		});
@@ -247,7 +247,7 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 	
 	@Override
 	public void newlayerAdded() {
-		
+		this.updateLayer(GuiState3DWCS.layers.getActiveLayer());
 	}
 
 	@Override
@@ -263,6 +263,10 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 	@Override
 	public void activeLayerChanged(Layer layer) {
 		this.updateLayer(layer);
+	}
+	
+	private void repaintComponent(){
+		GuiState3DWCS.mainComponentView.getComponent().repaint();
 	}
 	
 }

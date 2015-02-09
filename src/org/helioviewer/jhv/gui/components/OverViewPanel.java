@@ -162,6 +162,7 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 		GL2 gl = drawable.getGL().getGL2();
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 		gl.glActiveTexture(GL2.GL_TEXTURE0);
+		JHVJPXView lastLayer = this.lastLayer;
 		if (lastLayer != null && lastLayer.getMetaData() != null && lastLayer.getMetaData().getPhysicalRegion() != null){
 			
 		if (this.updateTexture){
@@ -169,8 +170,8 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
         		updateTexture = false;
 		}		
         
-		Vector2d lowerleftCorner = this.lastLayer.getMetaData().getPhysicalRegion().getLowerLeftCorner();
-		Vector2d size = this.lastLayer.getMetaData().getPhysicalRegion().getSize();
+		Vector2d lowerleftCorner = lastLayer.getMetaData().getPhysicalRegion().getLowerLeftCorner();
+		Vector2d size = lastLayer.getMetaData().getPhysicalRegion().getSize();
 		gl.glDisable(GL2.GL_DEPTH_TEST);
 		if (size.x <= 0 || size.y <= 0) {
 			return;

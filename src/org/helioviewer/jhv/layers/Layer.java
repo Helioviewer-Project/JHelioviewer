@@ -46,7 +46,7 @@ public class Layer {
 		lut = new Lut();
 		redChannel = new Channelcolor("red");
 		greenChannel = new Channelcolor("green");
-		redChannel = new Channelcolor("blue");
+		blueChannel = new Channelcolor("blue");
 	}
 
 	public JHVJPXView getJhvjpxView() {

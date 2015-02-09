@@ -45,8 +45,12 @@ public class Layers {
 		}
 	}
 	
-	public int getActiveLayer(){
+	public int getActiveLayerNumber(){
 		return activeLayer;
+	}
+	
+	public Layer getActiveLayer(){
+		return layers.get(activeLayer);
 	}
 	
 	public void setActiveLayer(int activeLayer){
