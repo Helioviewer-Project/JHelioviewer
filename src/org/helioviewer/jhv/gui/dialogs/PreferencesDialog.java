@@ -434,7 +434,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 			formatter.setValueClass(Integer.class);
 			formatter.setCommitsOnValidEdit(true);
 			formatter.setMinimum(1);
-			formatter.setMaximum(4096);
+			formatter.setMaximum(2048);
 			{
 				JLabel lblImageWidth = new JLabel("Image width");
 				this.add(lblImageWidth, "2, 6, right, default");
@@ -655,7 +655,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 			NumberFormatter formatter = new NumberFormatter(format);
 			formatter.setValueClass(Integer.class);
 			formatter.setMinimum(1);
-			formatter.setMaximum(4096);
+			formatter.setMaximum(2048);
 			{
 				JLabel lblImageWidth = new JLabel("Image width");
 				this.add(lblImageWidth, "2, 6, right, default");
