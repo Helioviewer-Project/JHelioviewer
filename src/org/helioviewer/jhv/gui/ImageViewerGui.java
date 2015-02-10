@@ -308,7 +308,7 @@ public class ImageViewerGui {
 			this.moviePanel = new MoviePanel();
 			moviePanelContainer.setDefaultPanel(moviePanel);
 			
-			leftPane.add("Overview", GuiState3DWCS.overViewPanel, true);			
+			leftPane.add("Overview", GuiState3DWCS.overViewPanel, JHVGlobals.oldMode);			
 			leftPane.add("Movie Controls", moviePanelContainer, true);
 
 			// Layer control
@@ -335,7 +335,7 @@ public class ImageViewerGui {
 			filterPanelContainer = new ControlPanelContainer();
 			filterPanelContainer.setDefaultPanel(compactPanel);
 			if (JHVGlobals.oldMode)leftPane.add("Adjustments", filterPanelContainer, false);
-			else leftPane.add("NEWAdjustments", new FilterTabPanel(), false);
+			else leftPane.add("NEWAdjustments", new FilterTabPanel(), true);
 
 			return leftPane;
 		}

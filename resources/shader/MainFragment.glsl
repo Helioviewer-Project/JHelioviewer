@@ -8,9 +8,10 @@ uniform float sharpen;
 uniform float gamma;
 uniform float contrast;
 uniform float lutPosition;
-uniform float redChannel;
-uniform float greenChannel;
-uniform float blueChannel;
+uniform int lutInverted;
+uniform int redChannel;
+uniform int greenChannel;
+uniform int blueChannel;
 
 
 struct Sphere{
@@ -62,7 +63,6 @@ void intersect(in Ray ray, out float tSphere, out float tPlane)
 void main(void)
 {	
 	/* clear color */
-	gl_FragColor = vec4(0, 0, 1, 1);
 	float z = 4.015;
 	vec2 uv = gl_TexCoord[0].xy * vec2(1.,-1.) + vec2(0,1);
 	float fov = 0.08748866352592401;
@@ -84,23 +84,30 @@ void main(void)
 	float tSphere, tPlane;
     intersect (rayRot, tSphere, tPlane);
 	
-	
+	vec4 imageColor;
    	if (tSphere > 0.){	
 		vec3 posOri = rayRot.origin + tSphere*rayRot.direction;
 		if (posOri.z >= 0.0){
-	    vec2 texPos = (posOri.xy/(sunRadius*2.5) + 0.5) *vec2(1.,1.);
-		gl_FragColor = texture2D(texture,texPos) * vec4(0,1,0,opacity);
+	    	vec2 texPos = (posOri.xy/(sunRadius*2.5) + 0.5) *vec2(1.,1.);
+			imageColor = texture2D(texture,texPos);
 		}
 		else {
-			tSphere = -1.;
+			imageColor = vec4(0,0,0,1);
 		}
 	}
-   	if (tPlane > 0. && (tPlane < tSphere || tSphere < 0.)){
+   	if (tPlane > 0. && (tPlane < tSphere|| tSphere < 0.)){
 		vec3 posOri = rayRot.origin + tPlane*rayRot.direction;
-		//if (posOri.z >= .){
+		//if (posOri.z >= 0.0){
 	    vec2 texPos = (posOri.xy/(sunRadius*2.5) + 0.5) *vec2(1.,1.);
-		gl_FragColor = texture2D(texture,texPos) * vec4(0,1,1,opacity);
+		imageColor = imageColor + texture2D(texture,texPos);
 	}
+    
+    vec2 pos = vec2(imageColor.y,lutPosition/256.);
+    if (lutInverted != 0){
+    	pos.x = 1. - pos.x;
+    }
+	vec4 lutColor = texture2D(lut, pos);
+    gl_FragColor = lutColor * vec4(redChannel,greenChannel,blueChannel,opacity);
     
 }
 

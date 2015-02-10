@@ -21,9 +21,9 @@ import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.components.WheelSupport;
-import org.helioviewer.jhv.internal_plugins.filter.SOHOLUTFilterPlugin.LUT;
 import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.NewLayerListener;
+import org.helioviewer.jhv.layers.filter.LUT;
 
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -186,15 +186,36 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 		JLabel lblColorTitle = new JLabel("Color:");
 		add(lblColorTitle, "2, 10, right, default");
 		
-        Map<String, LUT> lutMap = LUT.getStandardList();
-        lutMap.put("<Load new GIMP gradient file>", null);
+        /*Map<String, LUT> lutMap = LUT.getStandardList();
+        lutMap.put("<Load new GIMP gradient file>", null);*/
         comboBoxColorTable = new JComboBox<String>();
-        comboBoxColorTable = new JComboBox<String>(lutMap.keySet().toArray(new String[0]));
+        comboBoxColorTable = new JComboBox<String>(LUT.getLut().getNames());
         comboBoxColorTable.setSelectedItem("gray");
 		add(comboBoxColorTable, "4, 10, 5, 1, fill, default");
+		comboBoxColorTable.addItemListener(new ItemListener() {
+			
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if (activeLayer != null && activeLayer.lut.idx != comboBoxColorTable.getSelectedIndex()){
+					activeLayer.lut.name = (String)comboBoxColorTable.getSelectedItem();
+					activeLayer.lut.idx = LUT.getLutPosition(activeLayer.lut.name);
+					repaintComponent();
+				}
+			}
+		});
 		
 		btnInverseColorTable = new JToggleButton(ICON_INVERT);
 		add(btnInverseColorTable, "10, 10");
+		btnInverseColorTable.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				if(activeLayer != null && activeLayer.lut.isInverted() != btnInverseColorTable.isSelected()){
+					activeLayer.lut.setInverted(btnInverseColorTable.isSelected());
+					repaintComponent();
+				}
+			}
+		});
 		
 		JLabel lblChannelsTitle = new JLabel("Channels");
 		add(lblChannelsTitle, "2, 12");
@@ -205,7 +226,8 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if (activeLayer != null && activeLayer.redChannel.isActivated() != chckbxRed.isSelected()){
-					activeLayer.redChannel.status = chckbxRed.isSelected();
+					activeLayer.redChannel.setActive(chckbxRed.isSelected());
+					repaintComponent();
 				}
 			}
 		});
@@ -216,7 +238,9 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				if (activeLayer != null && activeLayer.greenChannel.isActivated() != chckbxGreen.isSelected()){
-					activeLayer.greenChannel.status = chckbxGreen.isSelected();
+					activeLayer.greenChannel.setActive(chckbxGreen.isSelected());
+					repaintComponent();
+
 				}
 			}
 		});
@@ -227,7 +251,8 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				if (activeLayer != null && activeLayer.blueChannel.isActivated() != chckbxBlue.isSelected()){
-					activeLayer.blueChannel.status = chckbxBlue.isSelected();
+					activeLayer.blueChannel.setActive(chckbxBlue.isSelected());
+					repaintComponent();
 				}
 			}
 		});
@@ -239,6 +264,8 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 		this.gammaSlider.setValue((int) (Math.log(layer.gamma) / GAMMA_FACTOR));
 		this.opacitySlider.setValue((int) layer.opacity * 100);
 		this.sharpenSlider.setValue((int) layer.sharpen * 100);
+		this.comboBoxColorTable.setSelectedItem(layer.lut.name);
+		this.btnInverseColorTable.setSelected(layer.lut.isInverted());
 		this.chckbxRed.setSelected(layer.redChannel.isActivated());
 		this.chckbxGreen.setSelected(layer.greenChannel.isActivated());
 		this.chckbxBlue.setSelected(layer.blueChannel.isActivated());

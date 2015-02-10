@@ -68,7 +68,6 @@ GLEventListener, LayersListener, MouseListener, MouseMotionListener, MouseWheelL
 	private int shaderprogram;
 	private HashMap<String, Integer> lutMap;
 	private int nextAvaibleLut = 0;
-	private int currentLut = 0;
 	private long lastTime;
 	private int invertedLut = 0;
 	public boolean exportMovie;
@@ -367,31 +366,9 @@ GLEventListener, LayersListener, MouseListener, MouseMotionListener, MouseWheelL
 		this.canvas.repaint();
 		*/
 	}
-
-	public void setCurrentLutByName(String name, boolean inverted){
-		this.invertedLut = 0;
-		if (lutMap != null){
-			this.currentLut = lutMap.get(name);
-			if (inverted) this.invertedLut = 1;
-			
-			this.canvas.repaint();
-		}
-	}
-	
-	public void setCurrentLutByIndex(int idx){
-		this.currentLut = idx;
-		this.canvas.repaint();
-	}
 	
 	private void createTexture(GL2 gl, Layer layer){
 		ImageData imageData = layer.getJhvjpxView().getImageData();
-		Region region = layer.getJhvjpxView().getMetaData().getPhysicalRegion();
-		if (layer.texture < 0){
-			int tmp[] = new int[1];
-			gl.glGetIntegerv(GL2.GL_MAX_TEXTURE_SIZE, tmp, 0);
-			gl.glGenTextures(1, tmp, 0);
-			layer.texture = tmp[0];
-		}
 		int bitsPerPixel = imageData.getImageTransport().getNumBitsPerPixel();
 		Buffer buffer;
 
@@ -556,6 +533,8 @@ GLEventListener, LayersListener, MouseListener, MouseMotionListener, MouseWheelL
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		gl.glLoadIdentity();
 		gl.glColor3f(1, 1, 1);
+		gl.glEnable(GL2.GL_BLEND);
+		gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
 		gl.glEnable(GL2.GL_TEXTURE_2D);
 		gl.glActiveTexture(GL.GL_TEXTURE0);
 		gl.glBindTexture(GL2.GL_TEXTURE_2D, layer.texture);
@@ -571,7 +550,13 @@ GLEventListener, LayersListener, MouseListener, MouseMotionListener, MouseWheelL
 		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "texture"), 0);
 		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "lut"), 1);
 		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "sunRadius"), (float)Constants.SUN_RADIUS);
+		System.out.println("opacity : " + layer.opacity);
 		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "opacity"), (float)layer.opacity);
+		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "lutPosition"), layer.lut.idx);
+		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "lutInverted"), layer.lut.getState());
+		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "redChannel"), layer.redChannel.getState());
+		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "greenChannel"), layer.greenChannel.getState());
+		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "blueChannel"), layer.blueChannel.getState());
 		float[] transformation = cameraNEW.getTransformation().toFloatArray();
 		gl.glUniformMatrix4fv(gl.glGetUniformLocation(shaderprogram, "transformation"), 1, true, transformation, 0);
 		gl.glBegin(GL2.GL_QUADS);
@@ -604,6 +589,12 @@ GLEventListener, LayersListener, MouseListener, MouseMotionListener, MouseWheelL
 			textureHelper.checkGLErrors(gl, this + ".beforeCreateTexture");
 			for (Layer layer : layers.getLayers()){
 				if (layer.isVisible()){
+					if (layer.texture < 0){
+						int tmp[] = new int[1];
+						gl.glGetIntegerv(GL2.GL_MAX_TEXTURE_SIZE, tmp, 0);
+						gl.glGenTextures(1, tmp, 0);
+						layer.texture = tmp[0];
+					}
 					this.createTexture(gl, layer);					
 				}
 			}
@@ -615,6 +606,10 @@ GLEventListener, LayersListener, MouseListener, MouseMotionListener, MouseWheelL
 			}
 		}
 
+		// empty screen
+		if (layers.getLayerCount() <= 0){
+			
+		}
 		//renderRect(gl);
 		}
 	}
