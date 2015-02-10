@@ -338,16 +338,7 @@ class J2KReader implements Runnable {
                             JPIPQuery[] stepQuerys;
 
                             // Decide, what cache strategy to use:
-                            // - If this is not the main view, chose
-                            // FIRSTFRAMEONLY
-                            // - If this is not a movie, chose FIRSTFRAMEONLY
-                            // - If the image has been zoomed, chose
-                            // CURRENTFRAMEFIRST
-                            // - If the meta data is not complete yet, chose
-                            // MISSINGFRAMESFIRST
-                            // - In any other case, choose ALLFRAMESEQUALLY
                             CacheStrategy strategy;
-
                             if (!parentViewRef.isMainView || !parentImageRef.isMultiFrame()) {
                                 strategy = CacheStrategy.CURRENTFRAMEONLY;
                             } else if (!((JHVJPXView) parentViewRef).isMoviePlaying() && ((JHVJPXView) parentViewRef).getImageCacheStatus().getImageStatus(curLayer) != CacheStatus.COMPLETE) {
@@ -357,7 +348,7 @@ class J2KReader implements Runnable {
                             } else {
                                 strategy = CacheStrategy.ALLFRAMESEQUALLY;
                             }
-
+                            
                             // build query, based on strategy:
                             switch (strategy) {
                             case CURRENTFRAMEONLY:
@@ -367,7 +358,8 @@ class J2KReader implements Runnable {
                                 current_step = 0;
                                 break;
 
-                            default:
+                            case ALLFRAMESEQUALLY:
+                            case MISSINGFRAMESFIRST:
 
                                 int num_steps = num_layers / JPIPConstants.MAX_REQ_LAYERS;
                                 if ((num_layers % JPIPConstants.MAX_REQ_LAYERS) != 0)
@@ -393,13 +385,18 @@ class J2KReader implements Runnable {
 
                                 // select current step based on strategy:
                                 if (strategy == CacheStrategy.MISSINGFRAMESFIRST) {
-
                                     current_step = ((JHVJPXView) parentViewRef).getMaximumAccessibleFrameNumber() / JPIPConstants.MAX_REQ_LAYERS;
-
                                 } else {
                                     current_step = curLayer / JPIPConstants.MAX_REQ_LAYERS;
                                 }
+                                break;
+                                
+                            default:
+                                throw new RuntimeException("Whan an ususual strategy: "+strategy);
                             }
+                            
+                            
+                            
 
                             req = new JPIPRequest(HTTPRequest.Method.GET);
 
@@ -422,11 +419,14 @@ class J2KReader implements Runnable {
                                 stepQuerys[current_step].setField(JPIPRequestField.LEN.toString(), String.valueOf(JpipRequestLen));
 
                                 req.setQuery(stepQuerys[current_step].toString());
-
+                                System.out.println(current_step+"/"+socket.getJpipChannelID()+": "+stepQuerys[current_step].toString());
                                 socket.send(req);
 
                                 // long start = System.currentTimeMillis();
                                 res = socket.receive();
+                                
+                                System.out.println("got res "+res.getResponseSize());
+                                
                                 // if(iamPersistent)
                                 // System.out.println(res.getResponseSize() /
                                 // (System.currentTimeMillis() - start));
@@ -450,7 +450,9 @@ class J2KReader implements Runnable {
                                             }
                                             break;
 
-                                        default:
+                                            
+                                        case ALLFRAMESEQUALLY:
+                                        case MISSINGFRAMESFIRST:
                                             for (int i = 0; i < stepQuerys.length; i++) {
 
                                                 if (stepQuerys[i] == null) {
@@ -462,6 +464,10 @@ class J2KReader implements Runnable {
                                                     cacheStatus.downgradeImageStatus(j);
                                                 }
                                             }
+                                            break;
+                                            
+                                        default:
+                                            throw new RuntimeException("Whan an ususual strategy: "+strategy);
                                         }
 
                                         downgradeNecessary = false;
