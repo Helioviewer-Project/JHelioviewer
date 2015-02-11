@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<updateDescriptor baseUrl="https://github.com/Helioviewer-Project/JHelioviewer/releases/download/v2.3-beta.13/">
-  <entry targetMediaFileId="68" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer.dmg" newVersion="2.3-BETA-13" newMediaFileId="68" fileSize="92035954" bundledJre="macosx-amd64-1.7.0_72_unpacked" archive="true">
+<updateDescriptor baseUrl="https://github.com/Helioviewer-Project/JHelioviewer/releases/download/v2.3-beta.14/">
+  <entry targetMediaFileId="68" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer.dmg" newVersion="v2.3-beta.14" newMediaFileId="68" fileSize="92036449" bundledJre="macosx-amd64-1.7.0_72_unpacked" archive="true">
     <comment language="en" />
   </entry>
-  <entry targetMediaFileId="150" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_windows-x64_2_3-BETA-13.exe" newVersion="2.3-BETA-13" newMediaFileId="150" fileSize="37228544" bundledJre="windows-amd64-1.7.0_72" archive="false">
+  <entry targetMediaFileId="150" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_windows-x64_v2_3-beta_14.exe" newVersion="v2.3-beta.14" newMediaFileId="150" fileSize="37229568" bundledJre="windows-amd64-1.7.0_72" archive="false">
     <comment language="en" />
   </entry>
-  <entry targetMediaFileId="216" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_linux_2_3-BETA-13.rpm" newVersion="2.3-BETA-13" newMediaFileId="216" fileSize="32303483" bundledJre="" archive="true">
+  <entry targetMediaFileId="216" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_linux_v2_3-beta_14.rpm" newVersion="v2.3-beta.14" newMediaFileId="216" fileSize="32303746" bundledJre="" archive="true">
     <comment language="en" />
   </entry>
-  <entry targetMediaFileId="218" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_2_3-BETA-13_64_bit.deb" newVersion="2.3-BETA-13" newMediaFileId="218" fileSize="32190672" bundledJre="" archive="true">
+  <entry targetMediaFileId="218" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_v2_3-beta_14_64_bit.deb" newVersion="v2.3-beta.14" newMediaFileId="218" fileSize="32190848" bundledJre="" archive="true">
     <comment language="en" />
   </entry>
-  <entry targetMediaFileId="269" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_linux_2_3-BETA-13.deb" newVersion="2.3-BETA-13" newMediaFileId="269" fileSize="32244918" bundledJre="" archive="true">
+  <entry targetMediaFileId="269" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_linux_v2_3-beta_14.deb" newVersion="v2.3-beta.14" newMediaFileId="269" fileSize="32245302" bundledJre="" archive="true">
     <comment language="en" />
   </entry>
-  <entry targetMediaFileId="270" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_2_3-BETA-13_64_bit.rpm" newVersion="2.3-BETA-13" newMediaFileId="270" fileSize="32340997" bundledJre="" archive="true">
+  <entry targetMediaFileId="270" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_v2_3-beta_14_64_bit.rpm" newVersion="v2.3-beta.14" newMediaFileId="270" fileSize="32341198" bundledJre="" archive="true">
     <comment language="en" />
   </entry>
 </updateDescriptor>
