@@ -96,9 +96,6 @@ public class JP2Image implements MultiFrameMetaDataContainer {
      */
     private boolean isJpx = false;
 
-    /** cache path */
-    private static File cachePath;
-
     private NodeList[] xmlCache;
 
     private JHVJP2View parentView;
@@ -206,7 +203,7 @@ public class JP2Image implements MultiFrameMetaDataContainer {
             }
 
             // Creates the cache object and adds the first response to it.
-            cache = new JHV_Kdu_cache(jpipTargetID, cachePath, !isJpx);
+            cache = new JHV_Kdu_cache(jpipTargetID,!isJpx);
             cache.addJPIPResponseData(res);
 
             // Download the necessary initial data if there isn't any cache file
@@ -651,10 +648,6 @@ public class JP2Image implements MultiFrameMetaDataContainer {
         return getResolutionSet().getResolutionLevel(0).getResolutionBounds().width;
     }
 
-    public static void setCachePath(File newCachePath) {
-        cachePath = newCachePath;
-    }
-
     /**
      * Increases the reference counter.
      * 
@@ -704,7 +697,7 @@ public class JP2Image implements MultiFrameMetaDataContainer {
                 cache.Close();
                 cache.Native_destroy();
 
-                JHV_Kdu_cache.updateCacheDirectory(cachePath);
+                JHV_Kdu_cache.updateCacheDirectory();
             }
         } catch (KduException ex) {
             ex.printStackTrace();

@@ -8,7 +8,6 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
 
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.gui.components.MoviePanel;
@@ -74,7 +73,7 @@ public class GuiState3DWCS {
         sceneGraph.setView(viewportView);
         sceneGraph.setGLOverlayView(overlayView);
         
-        if (JHVGlobals.oldMode) mainComponentView = new GL3DComponentView();
+        if (JHVGlobals.OLD_RENDER_MODE) mainComponentView = new GL3DComponentView();
         else mainComponentView = new CompenentView();
         mainComponentView.setView(sceneGraph);
         LayersModel.getSingletonInstance().addLayersListener(overViewPanel);
@@ -171,7 +170,7 @@ public class GuiState3DWCS {
 			}
 		}
 		overViewPanel.setLayer(layerOverView);
-		if (!JHVGlobals.oldMode){
+		if (!JHVGlobals.OLD_RENDER_MODE){
 			SwingUtilities.invokeLater(new Runnable() {
 				
 				@Override

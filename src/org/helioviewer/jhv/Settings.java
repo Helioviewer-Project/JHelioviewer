@@ -7,7 +7,6 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import org.helioviewer.jhv.base.FileUtils;
-import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_Kdu_cache;
 
 public class Settings
 {
@@ -52,17 +51,6 @@ public class Settings
             System.out.println(">> Settings.load() > Load default system settings: " + DEFAULT_PROPERTIES.toString());
         } catch (Exception ex) {
             System.err.println(">> Settings.load(boolean) > Could not load settings");
-            ex.printStackTrace();
-        }
-    }
-
-    /**
-     * The new property values are applied to the running instance.
-     */
-    public static void apply() {
-        try {
-            JHV_Kdu_cache.updateCacheDirectory(Directories.CACHE.getFile());
-        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }

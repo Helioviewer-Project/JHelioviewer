@@ -7,10 +7,7 @@ import javax.swing.JPanel;
 
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.layers.Layer;
-import org.helioviewer.jhv.layers.LayersListener;
-import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.layers.NewLayerListener;
-import org.helioviewer.jhv.viewmodel.view.View;
 
 /**
  * GUI Component showing either the LayerTable, or a notice that currently no

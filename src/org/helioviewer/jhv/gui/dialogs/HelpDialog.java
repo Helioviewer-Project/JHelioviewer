@@ -80,6 +80,9 @@ public class HelpDialog extends JDialog implements ActionListener, ShowableDialo
         pack();
         setSize(getPreferredSize().width, getPreferredSize().height);
         setLocationRelativeTo(ImageViewerGui.getMainFrame());
+        
+        DialogTools.setDefaultButtons(closeButton,closeButton);
+        
         setVisible(true);
     }
 

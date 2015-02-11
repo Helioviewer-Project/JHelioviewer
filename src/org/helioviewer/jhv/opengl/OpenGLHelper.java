@@ -1,17 +1,14 @@
 package org.helioviewer.jhv.opengl;
 
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
-import javax.imageio.ImageIO;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLContext;
-import javax.media.opengl.glu.GLU;
 
 import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.viewmodel.imagedata.ImageData;
@@ -19,8 +16,6 @@ import org.helioviewer.jhv.viewmodel.imageformat.ImageFormat;
 import org.helioviewer.jhv.viewmodel.imagetransport.Byte8ImageTransport;
 import org.helioviewer.jhv.viewmodel.imagetransport.Int32ImageTransport;
 import org.helioviewer.jhv.viewmodel.imagetransport.Short16ImageTransport;
-import org.helioviewer.jhv.viewmodel.region.Region;
-import org.helioviewer.jhv.viewmodel.view.opengl.CompenentView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GLTextureHelper;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;

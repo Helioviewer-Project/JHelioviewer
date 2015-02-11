@@ -7,8 +7,6 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -42,14 +40,13 @@ public final class AboutDialog extends JDialog implements ActionListener, Showab
 
     private final JButton closeButton = new JButton("Close");
     private JScrollPane scrollPane;
-    private AboutDialog aboutDialog;
+
     /**
      * Default constructor.
      */
     public AboutDialog() {
         super(ImageViewerGui.getMainFrame(), "About JHelioviewer", true);
         setResizable(false);
-        aboutDialog = this;
 
         JPanel contentPane = new JPanel(new BorderLayout());
         JPanel headerPanel = new JPanel(new BorderLayout());
@@ -153,13 +150,6 @@ public final class AboutDialog extends JDialog implements ActionListener, Showab
         add(closeButtonContainer,BorderLayout.SOUTH);
 
         setPreferredSize(new Dimension(getPreferredSize().width + 50, 600));
-        this.addKeyListener(new KeyAdapter() {
-        	public void keyPressed(KeyEvent e){
-        		if (e.getKeyCode() == KeyEvent.VK_ESCAPE){
-        			aboutDialog.dispose();
-        		}
-        	}
-		});
         this.setFocusable(true);
     }
 
@@ -177,6 +167,8 @@ public final class AboutDialog extends JDialog implements ActionListener, Showab
             }
         });
 
+        DialogTools.setDefaultButtons(closeButton,closeButton);
+        
         setVisible(true);
     }
 

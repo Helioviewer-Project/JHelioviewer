@@ -22,7 +22,6 @@ import org.helioviewer.jhv.gui.actions.MoveLayerUpAction;
 import org.helioviewer.jhv.gui.actions.RemoveLayerAction;
 import org.helioviewer.jhv.gui.actions.ShowMetainfoOfView;
 import org.helioviewer.jhv.gui.actions.UnHideLayerAction;
-import org.helioviewer.jhv.gui.components.layerTable.LayerTableSelectionModel;
 import org.helioviewer.jhv.gui.components.layerTable.renderers.DescriptorIconRenderer;
 import org.helioviewer.jhv.gui.components.layerTable.renderers.DescriptorTimestampRenderer;
 import org.helioviewer.jhv.gui.components.layerTable.renderers.DescriptorTitleRenderer;

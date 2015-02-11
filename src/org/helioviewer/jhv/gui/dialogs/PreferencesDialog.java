@@ -58,6 +58,11 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 
 	private ScreenshotExportPanel screenshotExportPanel;
 	private MovieExportPanel movieExportPanel;
+	
+	private JButton acceptBtn;
+    private JButton cancelBtn;
+    private JButton resetBtn;
+
 
 	private static final AspectRatio[] MOVIE_ASPECT_RATIO_PRESETS = {
 			new AspectRatio(1, 1), new AspectRatio(4, 3),
@@ -114,9 +119,9 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 		JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		btnPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
 
-		JButton acceptBtn = new JButton(" Accept ");
-		JButton cancelBtn = new JButton(" Cancel ");
-		JButton resetBtn = new JButton(" Reset ");
+		acceptBtn = new JButton("Accept");
+		cancelBtn = new JButton("Cancel");
+		resetBtn = new JButton("Reset");
 
 		acceptBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -165,11 +170,12 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 		}
 
 		mainPanel.add(btnPanel, BorderLayout.SOUTH);
-
+		
 		getContentPane().add(mainPanel);
 		pack();
 	}
-
+	
+	
 	/**
 	 * Checks the passed pattern if it is a supported date pattern. The pattern
 	 * could contain defined letters and special characters. The method checks
@@ -210,6 +216,8 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 		pack();
 		setSize(getPreferredSize());
 		setLocationRelativeTo(ImageViewerGui.getMainFrame());
+		DialogTools.setDefaultButtons(acceptBtn,cancelBtn);
+		
 		setVisible(true);
 	}
 
@@ -264,7 +272,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 		screenshotExportPanel.saveSettings();
 
 		// Update and save settings
-		Settings.apply();
+
 	}
 
 	/**

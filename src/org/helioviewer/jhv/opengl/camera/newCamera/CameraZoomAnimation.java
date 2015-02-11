@@ -1,8 +1,8 @@
 package org.helioviewer.jhv.opengl.camera.newCamera;
 
-import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.opengl.camera.Camera;
+import org.helioviewer.jhv.opengl.camera.GL3DCamera;
 
 /**
  * This animation zooms the camera by a given amount. Zooming only affects the

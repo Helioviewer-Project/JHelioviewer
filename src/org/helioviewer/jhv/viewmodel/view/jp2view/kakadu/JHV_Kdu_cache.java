@@ -12,6 +12,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import kdu_jni.KduException;
 import kdu_jni.Kdu_cache;
 
+import org.helioviewer.jhv.Directories;
 import org.helioviewer.jhv.viewmodel.view.cache.ImageCacheStatus;
 import org.helioviewer.jhv.viewmodel.view.cache.ImageCacheStatus.CacheStatus;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPDataSegment;
@@ -57,7 +58,7 @@ public class JHV_Kdu_cache extends Kdu_cache {
     /**
      * This flags indicates if the server has to be loaded/saved to disk.
      */
-    private boolean iamPersistent = true;
+    private static boolean iamPersistent = true;
 
     private static final long CACHE_SIZE_LIMIT = 1024*1024*100;
 
@@ -67,38 +68,33 @@ public class JHV_Kdu_cache extends Kdu_cache {
      * @param _targetID
      * @param _cachePath
      */
-    public JHV_Kdu_cache(String _targetID, File _cachePath) {
+    public JHV_Kdu_cache(String _targetID) {
         super();
         targetID = _targetID;
 
-        if (_cachePath != null)
-            cacheFile = new File(_cachePath.getAbsolutePath() + File.separator + targetID + ".hvc");
-        else
-            cacheFile = null;
+        cacheFile = new File(Directories.CACHE.getFile().getAbsolutePath() + File.separator + targetID + ".hvc");
         newData = 0;
 
-        if (cacheFile != null)
+        if (iamPersistent)
             readCacheFromFile();
     }
 
+    
     /**
      * Main constructor used when you want to use a cache file.
      * 
      * @param _targetID
      * @param _cachePath
      */
-    public JHV_Kdu_cache(String _targetID, File _cachePath, boolean _iamPersistent) {
+    public JHV_Kdu_cache(String _targetID, boolean _iamPersistent) {
         super();
         targetID = _targetID;
         iamPersistent = _iamPersistent;
 
-        if (_cachePath != null)
-            cacheFile = new File(_cachePath.getAbsolutePath() + File.separator + targetID + ".hvc");
-        else
-            cacheFile = null;
+        cacheFile = new File(Directories.CACHE.getFile().getAbsolutePath() + File.separator + targetID + ".hvc");
         newData = 0;
 
-        if ((cacheFile != null) && iamPersistent)
+        if (iamPersistent)
             readCacheFromFile();
     }
 
@@ -483,8 +479,8 @@ public class JHV_Kdu_cache extends Kdu_cache {
     /**
      * @return All the cache files stored in the cache directory.
      */
-    public static File[] getCacheFiles(File cachePath) {
-        return cachePath.listFiles(new FilenameFilter() {
+    public static File[] getCacheFiles() {
+        return Directories.CACHE.getFile().listFiles(new FilenameFilter() {
             public boolean accept(File dir, String name) {
                 return (name.toUpperCase().endsWith(".HVC"));
             }
@@ -503,8 +499,8 @@ public class JHV_Kdu_cache extends Kdu_cache {
      * specified in the properties of the application. The files are removed
      * following a LRU order.
      */
-    public static void updateCacheDirectory(File cachePath) {
-        File[] list = getCacheFiles(cachePath);
+    public static void updateCacheDirectory() {
+        File[] list = getCacheFiles();
 
         Arrays.sort(list, new Comparator<File>() {
             public int compare(File o1, File o2) {

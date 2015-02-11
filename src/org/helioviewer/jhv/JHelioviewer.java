@@ -9,7 +9,6 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Locale;
@@ -17,10 +16,10 @@ import java.util.TimeZone;
 
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
-import javax.media.opengl.GLContext;
 import javax.media.opengl.GLDrawableFactory;
 import javax.media.opengl.GLProfile;
-import javax.media.opengl.glu.GLU;
+import javax.swing.JPopupMenu;
+import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 
 import org.helioviewer.jhv.base.FileUtils;
@@ -38,7 +37,6 @@ import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
 import org.helioviewer.jhv.plugins.sdocutoutplugin.SDOCutOutPlugin3D;
 import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginManager;
 import org.helioviewer.jhv.plugins.viewmodelplugin.interfaces.Plugin;
-import org.helioviewer.jhv.viewmodel.view.jp2view.JP2Image;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
 
 import com.install4j.api.launcher.ApplicationLauncher;
@@ -82,6 +80,7 @@ public class JHelioviewer {
         // Uncaught runtime errors are displayed in a dialog box in addition
         JHVUncaughtExceptionHandler.setupHandlerForThread();
 
+        // Setup Swing
         try
         {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -89,6 +88,8 @@ public class JHelioviewer {
         catch(Exception e2)
         {
         }
+        ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
+        JPopupMenu.setDefaultLightWeightPopupEnabled(false);
         
         // Save command line arguments
         CommandLineProcessor.setArguments(args);
@@ -111,24 +112,22 @@ public class JHelioviewer {
             argString += " " + args[i];
         }
         
-        if (!JHVGlobals.oldMode){
-        GLDrawableFactory fact = GLDrawableFactory.getFactory(GLProfile.getDefault()); 
-        GLCapabilities caps = new GLCapabilities(GLProfile.getDefault()); 
-        caps.setOnscreen(false); 
-        caps.setPBuffer(true); 
-        caps.setDoubleBuffered(false); 
-        final boolean createNewDevice = true;
-        final GLAutoDrawable sharedDrawable = GLDrawableFactory.getFactory(GLProfile.getDefault()).createDummyAutoDrawable(null, createNewDevice, caps, null);
-        sharedDrawable.display();
-        OpenGLHelper.glContext = sharedDrawable.getContext();
-        System.out.println("JHelioviewer started with command-line options:" + argString);
+        if (!JHVGlobals.OLD_RENDER_MODE)
+        {
+            GLDrawableFactory fact = GLDrawableFactory.getFactory(GLProfile.getDefault()); 
+            GLCapabilities caps = new GLCapabilities(GLProfile.getDefault()); 
+            caps.setOnscreen(false); 
+            caps.setPBuffer(true); 
+            caps.setDoubleBuffered(false); 
+            final boolean createNewDevice = true;
+            final GLAutoDrawable sharedDrawable = GLDrawableFactory.getFactory(GLProfile.getDefault()).createDummyAutoDrawable(null, createNewDevice, caps, null);
+            sharedDrawable.display();
+            OpenGLHelper.glContext = sharedDrawable.getContext();
+            System.out.println("JHelioviewer started with command-line options:" + argString);
         }
         
-        // This attempts to create the necessary directories for the application
-        //System.out.println("Create directories...");
-        //Directories.createDirs();
-        
         System.out.println("Initializing JHelioviewer");
+        
         // display the splash screen
         SplashScreen splash = SplashScreen.getSingletonInstance();
 
@@ -166,13 +165,6 @@ public class JHelioviewer {
             Message.err("Error starting Kakadu message handler", e.getMessage(), true);
             return;
         }
-
-        // Apply settings after kakadu engine has been initialized
-        System.out.println("Use cache directory: " + Directories.CACHE.getPath());
-        JP2Image.setCachePath(Directories.CACHE.getFile());
-
-        System.out.println("Update settings");
-        Settings.apply();
 
         /* ----------Setup OpenGL ----------- */
         splash.setProgressText("Setting up the UI...");

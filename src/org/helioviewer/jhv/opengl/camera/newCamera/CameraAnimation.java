@@ -1,6 +1,7 @@
 package org.helioviewer.jhv.opengl.camera.newCamera;
 
 import org.helioviewer.jhv.opengl.camera.Camera;
+import org.helioviewer.jhv.opengl.camera.GL3DCamera;
 
 /**
  * GL3DCameraAnimations are used to continuously change the camera over a

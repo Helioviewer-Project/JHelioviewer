@@ -5,10 +5,8 @@ import javax.swing.table.AbstractTableModel;
 
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.layers.Layer;
-import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.layers.NewLayerListener;
-import org.helioviewer.jhv.viewmodel.view.View;
 
 /**
  * A TableModel representing the state of visible Layers, internally using the

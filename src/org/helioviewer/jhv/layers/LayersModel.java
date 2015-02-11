@@ -2148,6 +2148,6 @@ public class LayersModel implements ViewListener
 		Settings.setProperty(DOWNLOAD_PATH,
 				this.defaultPath);
 		// Update and save settings
-		Settings.apply();
+
 	}
 }

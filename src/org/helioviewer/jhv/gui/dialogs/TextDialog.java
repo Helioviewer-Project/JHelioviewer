@@ -22,6 +22,7 @@ import org.helioviewer.jhv.gui.interfaces.ShowableDialog;
 public class TextDialog extends JDialog implements ActionListener, ShowableDialog {
 
     private static final long serialVersionUID = 1L;
+    private JButton closeButton;
 
     public TextDialog(String title, URL textFile) {
         super(ImageViewerGui.getMainFrame(), title, true);
@@ -55,7 +56,7 @@ public class TextDialog extends JDialog implements ActionListener, ShowableDialo
         scrollPane.setPreferredSize(new Dimension(scrollPane.getPreferredSize().width + 50, 500));
         add(scrollPane, BorderLayout.NORTH);
 
-        JButton closeButton = new JButton("Close");
+        closeButton = new JButton("Close");
         closeButton.addActionListener(this);
         
         JPanel closeButtonContainer = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -68,10 +69,14 @@ public class TextDialog extends JDialog implements ActionListener, ShowableDialo
         this.dispose();
     }
 
-    public void showDialog() {
+    public void showDialog()
+    {
         pack();
         setSize(getPreferredSize());
         setLocationRelativeTo(ImageViewerGui.getMainFrame());
+        
+        DialogTools.setDefaultButtons(closeButton,closeButton);
+        
         setVisible(true);
     }
 
