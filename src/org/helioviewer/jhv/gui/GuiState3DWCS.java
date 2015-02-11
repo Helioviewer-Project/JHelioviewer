@@ -170,9 +170,11 @@ public class GuiState3DWCS {
 			}
 		}
 		overViewPanel.setLayer(layerOverView);
-		Layer layer = new Layer(layerOverView);
-		layers.addLayer(layer);
-        // wait until image is loaded
+		if (!JHVGlobals.oldMode){
+			Layer layer = new Layer(layerOverView, mainComponentView.getComponent().getContext().getGL().getGL2());
+			layers.addLayer(layer);
+		}
+			// wait until image is loaded
         while (newLayer.getAdapter(SubimageDataView.class).getImageData() == null)
         {
             try {

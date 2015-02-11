@@ -260,6 +260,7 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 	}
 
 	private void updateLayer(Layer layer){
+		this.activeLayer = layer;
 		this.contrastSlider.setValue((int)layer.contrast * 10);
 		this.gammaSlider.setValue((int) (Math.log(layer.gamma) / GAMMA_FACTOR));
 		this.opacitySlider.setValue((int) layer.opacity * 100);
@@ -269,7 +270,6 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 		this.chckbxRed.setSelected(layer.redChannel.isActivated());
 		this.chckbxGreen.setSelected(layer.greenChannel.isActivated());
 		this.chckbxBlue.setSelected(layer.blueChannel.isActivated());
-		this.activeLayer = layer;
 	}
 	
 	@Override

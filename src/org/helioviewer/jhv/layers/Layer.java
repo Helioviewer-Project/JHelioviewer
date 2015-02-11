@@ -1,7 +1,10 @@
 package org.helioviewer.jhv.layers;
 
+import javax.media.opengl.GL2;
+
 import org.helioviewer.jhv.internal_plugins.filter.SOHOLUTFilterPlugin.DefaultTable;
 import org.helioviewer.jhv.layers.filter.LUT;
+import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 
@@ -64,7 +67,7 @@ public class Layer {
 	public int textureOverview;
 	public boolean visible = true;
 	
-	public Layer(JHVJPXView jhvjpxView) {
+	public Layer(JHVJPXView jhvjpxView, GL2 gl) {
 		this.jhvjpxView = jhvjpxView;
         MetaData metaData = jhvjpxView.getMetaData();
     	String colorKey = DefaultTable.getSingletonInstance().getColorTable(metaData);
@@ -75,6 +78,8 @@ public class Layer {
 		redChannel = new Channelcolor("red");
 		greenChannel = new Channelcolor("green");
 		blueChannel = new Channelcolor("blue");
+		this.texture = OpenGLHelper.createTexture(gl);
+		this.textureOverview = OpenGLHelper.createTexture(gl);
 	}
 
 	public JHVJPXView getJhvjpxView() {

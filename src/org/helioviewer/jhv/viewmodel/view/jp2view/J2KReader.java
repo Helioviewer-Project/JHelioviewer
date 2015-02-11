@@ -419,13 +419,11 @@ class J2KReader implements Runnable {
                                 stepQuerys[current_step].setField(JPIPRequestField.LEN.toString(), String.valueOf(JpipRequestLen));
 
                                 req.setQuery(stepQuerys[current_step].toString());
-                                System.out.println(current_step+"/"+socket.getJpipChannelID()+": "+stepQuerys[current_step].toString());
                                 socket.send(req);
 
                                 // long start = System.currentTimeMillis();
                                 res = socket.receive();
                                 
-                                System.out.println("got res "+res.getResponseSize());
                                 
                                 // if(iamPersistent)
                                 // System.out.println(res.getResponseSize() /
