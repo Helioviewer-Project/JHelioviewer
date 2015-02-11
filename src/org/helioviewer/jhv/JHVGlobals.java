@@ -10,9 +10,7 @@ import java.net.URI;
  * @author caplins
  */
 public class JHVGlobals {
-    public static final double VERSION = 2.3;
-    public static final String RELEASE = "Beta 14";
-    public static final String VERSION_AND_RELEASE = JHVGlobals.VERSION + (JHVGlobals.RELEASE!=null ? " (" + JHVGlobals.RELEASE + ")":"");
+    public static final String VERSION = System.getProperty("jhvVersion") == null ? "developer" : System.getProperty("jhvVersion");
     public static String tag = "";
     public static boolean oldMode = true;
     

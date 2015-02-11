@@ -8,6 +8,7 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.gui.components.MoviePanel;
@@ -171,8 +172,14 @@ public class GuiState3DWCS {
 		}
 		overViewPanel.setLayer(layerOverView);
 		if (!JHVGlobals.oldMode){
-			Layer layer = new Layer(layerOverView, mainComponentView.getComponent().getContext().getGL().getGL2());
-			layers.addLayer(layer);
+			SwingUtilities.invokeLater(new Runnable() {
+				
+				@Override
+				public void run() {
+					Layer layer = new Layer(layerOverView);
+					layers.addLayer(layer);
+				}
+			});			
 		}
 			// wait until image is loaded
         while (newLayer.getAdapter(SubimageDataView.class).getImageData() == null)

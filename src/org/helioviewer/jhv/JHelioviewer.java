@@ -15,6 +15,12 @@ import java.nio.file.Path;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import javax.media.opengl.GLAutoDrawable;
+import javax.media.opengl.GLCapabilities;
+import javax.media.opengl.GLContext;
+import javax.media.opengl.GLDrawableFactory;
+import javax.media.opengl.GLProfile;
+import javax.media.opengl.glu.GLU;
 import javax.swing.UIManager;
 
 import org.helioviewer.jhv.base.FileUtils;
@@ -26,6 +32,7 @@ import org.helioviewer.jhv.gui.dialogs.AboutDialog;
 import org.helioviewer.jhv.internal_plugins.InternalFilterPlugin;
 import org.helioviewer.jhv.io.CommandLineProcessor;
 import org.helioviewer.jhv.layers.LayersModel;
+import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.plugins.hekplugin.HEKPlugin3D;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
 import org.helioviewer.jhv.plugins.sdocutoutplugin.SDOCutOutPlugin3D;
@@ -33,6 +40,7 @@ import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginManager;
 import org.helioviewer.jhv.plugins.viewmodelplugin.interfaces.Plugin;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JP2Image;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
+
 import com.install4j.api.launcher.ApplicationLauncher;
 import com.install4j.api.update.UpdateScheduleRegistry;
 
@@ -102,8 +110,20 @@ public class JHelioviewer {
         for (int i = 0; i < args.length; ++i) {
             argString += " " + args[i];
         }
+        
+        if (!JHVGlobals.oldMode){
+        GLDrawableFactory fact = GLDrawableFactory.getFactory(GLProfile.getDefault()); 
+        GLCapabilities caps = new GLCapabilities(GLProfile.getDefault()); 
+        caps.setOnscreen(false); 
+        caps.setPBuffer(true); 
+        caps.setDoubleBuffered(false); 
+        final boolean createNewDevice = true;
+        final GLAutoDrawable sharedDrawable = GLDrawableFactory.getFactory(GLProfile.getDefault()).createDummyAutoDrawable(null, createNewDevice, caps, null);
+        sharedDrawable.display();
+        OpenGLHelper.glContext = sharedDrawable.getContext();
         System.out.println("JHelioviewer started with command-line options:" + argString);
-
+        }
+        
         // This attempts to create the necessary directories for the application
         //System.out.println("Create directories...");
         //Directories.createDirs();

@@ -19,12 +19,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
+import javax.media.opengl.DebugGL2;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.awt.GLCanvas;
 
+import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
@@ -34,10 +36,12 @@ import org.helioviewer.jhv.base.wcs.CoordinateConversion;
 import org.helioviewer.jhv.base.wcs.CoordinateVector;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.layers.Layer;
+import org.helioviewer.jhv.layers.Layer.Lut;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.layers.NewLayerListener;
+import org.helioviewer.jhv.layers.filter.LUT;
 import org.helioviewer.jhv.opengl.camera.Camera;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
 import org.helioviewer.jhv.opengl.camera.newCamera.CameraListener;
@@ -62,7 +66,6 @@ GLEventListener, LayersListener, MouseListener, MouseMotionListener, MouseWheelL
 	GLCanvas canvas = new GLCanvas();
 	GLTextureHelper textureHelper = new GLTextureHelper();
 	private Layers layers;
-	private int lutTexID;
 	private boolean updateTexture;
 	private GL3DCamera camera;
 	private int shaderprogram;
@@ -221,57 +224,6 @@ GLEventListener, LayersListener, MouseListener, MouseMotionListener, MouseWheelL
 		gl.glUseProgram(shaderprogram);
 	}
 	
-	private void prepareLut(GL2 gl) {
-		textureHelper.checkGLErrors(gl, this + ".beforeLoadLutTexture(LUT)");
-		loadLutTexture(gl, "/UltimateLookupTable.png");
-	}
-
-	private void loadLutTexture(GL2 gl, String lutImageName){
-		try {
-			int tmp[] = new int[1];
-			gl.glGetIntegerv(GL2.GL_MAX_TEXTURE_SIZE, tmp, 0);
-			gl.glGenTextures(1, tmp, 0);
-			lutTexID = tmp[0];
-			BufferedImage bufferedImage = ImageIO.read(CompenentView.class.getResourceAsStream(lutImageName));
-			
-			ByteBuffer buffer = readPixels(bufferedImage, false);
-
-		
-			gl.glEnable(GL2.GL_TEXTURE_2D);	
-						
-			gl.glBindTexture(GL2.GL_TEXTURE_2D, lutTexID);
-			
-			ByteBuffer b = ByteBuffer.allocate(256*256*3);
-			b.limit(256*256*3);
-
-			int internalFormat = GL2.GL_RGB;
-			int inputFormat = GL2.GL_RGB;
-			int inputType = GL2.GL_UNSIGNED_BYTE;
-			gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, internalFormat, 256,
-					256, 0, inputFormat, inputType, b);
-
-			textureHelper.checkGLErrors(gl, this + ".glTexImage2d(LUT)");
-			// Log.debug("GLTextureHelper.genTexture2D: Width="+width+", Height="+height+" Width2="+width2+", Height2="+height2);
-			
-			if (buffer != null) {
-				gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(),
-						inputFormat, inputType, buffer);
-			}
-			textureHelper.checkGLErrors(gl, this + ".glTexSubImage2d");
-			gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER,
-					GL2.GL_NEAREST);
-			gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER,
-					GL2.GL_NEAREST);
-			gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S,
-					GL2.GL_CLAMP);
-			gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T,
-					GL2.GL_CLAMP);
-			
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
 	
 	private String loadShaderFromFile(String shaderName){
 		StringBuilder shaderCode = new StringBuilder();
@@ -367,11 +319,12 @@ GLEventListener, LayersListener, MouseListener, MouseMotionListener, MouseWheelL
 		*/
 	}
 	
+	/*
 	private void createTexture(GL2 gl, Layer layer){
 		ImageData imageData = layer.getJhvjpxView().getImageData();
 		int bitsPerPixel = imageData.getImageTransport().getNumBitsPerPixel();
 		Buffer buffer;
-
+		
 		switch (bitsPerPixel) {
 		case 8:
 			buffer = ByteBuffer.wrap(((Byte8ImageTransport) imageData
@@ -467,7 +420,7 @@ GLEventListener, LayersListener, MouseListener, MouseMotionListener, MouseWheelL
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T,
 				GL2.GL_CLAMP_TO_BORDER);		
 	}
-
+	*/
 	@Override
 	public void viewportGeometryChanged() {
 		// TODO Auto-generated method stub
@@ -537,7 +490,7 @@ GLEventListener, LayersListener, MouseListener, MouseMotionListener, MouseWheelL
 		gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
 		gl.glEnable(GL2.GL_TEXTURE_2D);
 		gl.glActiveTexture(GL.GL_TEXTURE0);
-		gl.glBindTexture(GL2.GL_TEXTURE_2D, layer.texture);
+		gl.glBindTexture(GL2.GL_TEXTURE_2D, layer.getTexture());
 		
 		gl.glEnable(GL2.GL_VERTEX_PROGRAM_ARB);
 		gl.glEnable(GL2.GL_FRAGMENT_PROGRAM_ARB);
@@ -545,8 +498,8 @@ GLEventListener, LayersListener, MouseListener, MouseMotionListener, MouseWheelL
 		gl.glUseProgram(shaderprogram);
 		
 		gl.glActiveTexture(GL.GL_TEXTURE1);
-		gl.glBindTexture(GL2.GL_TEXTURE_2D, lutTexID);
-
+		gl.glBindTexture(GL2.GL_TEXTURE_2D, LUT.getLut().getTexture(gl));
+		
 		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "texture"), 0);
 		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "lut"), 1);
 		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "sunRadius"), (float)Constants.SUN_RADIUS);
@@ -559,6 +512,7 @@ GLEventListener, LayersListener, MouseListener, MouseMotionListener, MouseWheelL
 		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "blueChannel"), layer.blueChannel.getState());
 		float[] transformation = cameraNEW.getTransformation().toFloatArray();
 		gl.glUniformMatrix4fv(gl.glGetUniformLocation(shaderprogram, "transformation"), 1, true, transformation, 0);
+		
 		gl.glBegin(GL2.GL_QUADS);
 		gl.glTexCoord2f(0.0f,1.0f);
 		gl.glVertex2d(x0,y0);
@@ -588,15 +542,7 @@ GLEventListener, LayersListener, MouseListener, MouseMotionListener, MouseWheelL
 		if (this.updateTexture){
 			textureHelper.checkGLErrors(gl, this + ".beforeCreateTexture");
 			for (Layer layer : layers.getLayers()){
-				if (layer.isVisible()){
-					if (layer.texture < 0){
-						int tmp[] = new int[1];
-						gl.glGetIntegerv(GL2.GL_MAX_TEXTURE_SIZE, tmp, 0);
-						gl.glGenTextures(1, tmp, 0);
-						layer.texture = tmp[0];
-					}
-					this.createTexture(gl, layer);					
-				}
+					layer.updateTexture(gl);
 			}
         updateTexture = false;
 		}		
@@ -622,6 +568,7 @@ GLEventListener, LayersListener, MouseListener, MouseMotionListener, MouseWheelL
 
 	@Override
 	public void init(GLAutoDrawable drawable) {
+		if (System.getProperty("jhvVersion") == null) drawable.setGL(new DebugGL2(drawable.getGL().getGL2()));
 		//GuiState3DWCS.overViewPanel.activate(drawable.getContext());
 		GL2 gl = drawable.getGL().getGL2();
 		GL3DState.create(gl);
@@ -636,7 +583,6 @@ GLEventListener, LayersListener, MouseListener, MouseMotionListener, MouseWheelL
 		
 		this.canvas.repaint();
 		
-		this.prepareLut(gl);
 	}
 
 	@Override

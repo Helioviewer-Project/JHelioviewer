@@ -102,7 +102,7 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
         if(allowCrashReport.isSelected())
         {
             RaygunClient client = new RaygunClient("SchjoS2BvfVnUCdQ098hEA==");
-            client.SetVersion(JHVGlobals.VERSION_AND_RELEASE);
+            client.SetVersion(JHVGlobals.VERSION);
             Map<String, String> customData = new HashMap<String, String>();
             customData.put("Log",log);
             customData.put("JVM", System.getProperty("java.vm.name") + " " + System.getProperty("java.vm.version") + " (JRE " + System.getProperty("java.specification.version") + ")");
@@ -181,7 +181,7 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
                 }
         
         final String finalLog = Log.GetLastFewLines(6);
-        String msg = "JHelioviewer: " + JHVGlobals.VERSION_AND_RELEASE + "\n";
+        String msg = "JHelioviewer: " + JHVGlobals.VERSION + "\n";
         msg += "Date: " + new Date() + "\n";
         msg += "JVM: " + System.getProperty("java.vm.name") + " " + System.getProperty("java.vm.version") + " (JRE " + System.getProperty("java.specification.version") + ")\n";
         msg += "OS: " + System.getProperty("os.name") + " " + System.getProperty("os.arch") + " " + System.getProperty("os.version") + "\n\n";
