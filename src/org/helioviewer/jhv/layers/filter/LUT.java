@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 
 import javax.imageio.ImageIO;
 import javax.media.opengl.GL2;
+import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.viewmodel.view.opengl.CompenentView;
@@ -34,7 +35,26 @@ public class LUT {
 	
 	private LUT(){
 		lutMap = new LinkedHashMap<String, Integer>();
-		loadLutFromFile("/UltimateLookupTable.txt");        
+		loadLutFromFile("/UltimateLookupTable.txt");      
+		
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					BufferedImage bufferedImage;
+					OpenGLHelper.glContext.makeCurrent();
+					bufferedImage = ImageIO.read(CompenentView.class.getResourceAsStream("/UltimateLookupTable.png"));
+					texture = OpenGLHelper.createTexture(OpenGLHelper.glContext.getGL().getGL2(), bufferedImage, 256, 256);
+					OpenGLHelper.updateTexture(OpenGLHelper.glContext.getGL().getGL2(), texture, bufferedImage);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+		});
+		
 	}	
 	
 	private void loadLutFromFile(String lutTxtName){
@@ -51,17 +71,6 @@ public class LUT {
 	}
 	
 	public int getTexture(GL2 gl){
-		if (texture < 0){
-			BufferedImage bufferedImage;
-			try {
-				bufferedImage = ImageIO.read(CompenentView.class.getResourceAsStream("/UltimateLookupTable.png"));
-				texture = OpenGLHelper.createTexture(gl, bufferedImage, 256, 256);
-				OpenGLHelper.updateTexture(gl, texture, bufferedImage);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
 		return this.texture;
 	}
 }

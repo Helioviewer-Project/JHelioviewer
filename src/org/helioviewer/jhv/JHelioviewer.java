@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import javax.media.opengl.DebugGL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLDrawableFactory;
@@ -115,16 +116,19 @@ public class JHelioviewer {
         if (!JHVGlobals.OLD_RENDER_MODE)
         {
             GLDrawableFactory fact = GLDrawableFactory.getFactory(GLProfile.getDefault()); 
-            GLCapabilities caps = new GLCapabilities(GLProfile.getDefault()); 
-            caps.setOnscreen(false); 
-            caps.setPBuffer(true); 
-            caps.setDoubleBuffered(false); 
+    		GLDrawableFactory factory = GLDrawableFactory.getFactory(GLProfile
+    				.getDefault());
+    		GLProfile profile = GLProfile.get(GLProfile.GL2);
+    		profile = GLProfile.getDefault();
+    		GLCapabilities capabilities = new GLCapabilities(profile);
             final boolean createNewDevice = true;
-            final GLAutoDrawable sharedDrawable = GLDrawableFactory.getFactory(GLProfile.getDefault()).createDummyAutoDrawable(null, createNewDevice, caps, null);
-            sharedDrawable.display();
-            OpenGLHelper.glContext = sharedDrawable.getContext();
-            System.out.println("JHelioviewer started with command-line options:" + argString);
+            final GLAutoDrawable sharedDrawable = factory.createDummyAutoDrawable(null, createNewDevice, capabilities, null);
+        	sharedDrawable.display();
+    		if (System.getProperty("jhvVersion") == null) sharedDrawable.setGL(new DebugGL2(sharedDrawable.getGL().getGL2()));
+
+        	OpenGLHelper.glContext = sharedDrawable.getContext();
         }
+        System.out.println("JHelioviewer started with command-line options:" + argString);
         
         System.out.println("Initializing JHelioviewer");
         

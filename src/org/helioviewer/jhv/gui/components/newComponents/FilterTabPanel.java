@@ -90,7 +90,8 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 		opacitySlider.setMinorTickSpacing(20);
 		opacitySlider.setPaintTicks(true);
 		add(opacitySlider, "4,2,5,1");
-		
+		WheelSupport.installMouseWheelSupport(opacitySlider);
+
 		lblOpacity = new JLabel("%");
 		add(lblOpacity, "10, 2");
 
@@ -113,7 +114,7 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 		sharpenSlider.setMinorTickSpacing(20);
 		sharpenSlider.setPaintTicks(true);
 		add(sharpenSlider, "4, 4, 5, 1");
-		
+		WheelSupport.installMouseWheelSupport(sharpenSlider);
 		lblSharpen = new JLabel("%");
 		add(lblSharpen, "10, 4");
 		sharpenSlider.addChangeListener(new ChangeListener() {			
@@ -165,6 +166,7 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 		contrastSlider.setMinimum(-100);
 		contrastSlider.setValue(0);
 		add(contrastSlider, "4, 8, 5, 1");
+		WheelSupport.installMouseWheelSupport(contrastSlider);
 		
 		lblContrast = new JLabel("0");
 		add(lblContrast, "10,8");

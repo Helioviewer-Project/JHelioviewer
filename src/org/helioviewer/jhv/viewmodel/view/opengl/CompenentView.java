@@ -37,6 +37,7 @@ import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.layers.NewLayerListener;
 import org.helioviewer.jhv.layers.filter.LUT;
+import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.opengl.camera.Camera;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
 import org.helioviewer.jhv.opengl.camera.newCamera.CameraListener;
@@ -69,6 +70,7 @@ GLEventListener, LayersListener, MouseListener, MouseMotionListener, MouseWheelL
 	public CompenentView() {
 		GuiState3DWCS.layers.addNewLayerListener(this);
 		lutMap = new HashMap<String, Integer>();
+		this.canvas.setSharedContext(OpenGLHelper.glContext);
     	this.canvas.addMouseListener(this);
 		this.canvas.addMouseMotionListener(this);
 		this.canvas.addGLEventListener(this);
