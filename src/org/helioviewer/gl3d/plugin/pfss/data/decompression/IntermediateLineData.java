@@ -24,7 +24,7 @@ public class IntermediateLineData {
 	 * decode prediction coding
 	 */
 	public void decodePrediction() {
-		multiplyResiduals(this.channels);
+		multiplyPredictionError(this.channels);
 		
 		for(int i = 0; i < channels.length;i++) {
 			float[] decodedChannel = new float[channels[i].length+2];
@@ -48,7 +48,7 @@ public class IntermediateLineData {
 	 * Multiplies the prediction errors
 	 * @param channels
 	 */
-	private static void multiplyResiduals(float[][] channels) {
+	private static void multiplyPredictionError(float[][] channels) {
 		for(int i = 0; i < channels.length;i++) { 
 			float[] current = channels[i];
 			
