@@ -142,7 +142,7 @@ public class PfssDecompressor implements Runnable {
 					//check if point should be in line or not
 					DecompressedPoint next = currentLine.getPoint(j+1);
 					boolean colinear = current.AngleTo(next, last) > PfssSettings.ANGLE_OF_LOD;
-					
+					colinear = false;
 					if(!colinear) {
 						DecompressedPoint average = getAveragePoint(currentLine, j);
 						average = average == null ? current : average;

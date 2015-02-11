@@ -44,7 +44,8 @@ public class PfssData implements Runnable, Cacheable {
 		InputStream in = null;
 		lock.lock();
 		try {
-			URL u = new URL(url);
+			String url2 = "file:///C:/Users/Jonas%20Schwammberger/Downloads/2014-01-01_00-04_pfss_field_data.fits.rar";
+			URL u = new URL(url2);
 			URLConnection uc = u.openConnection();
 			int contentLength = uc.getContentLength();
 			InputStream raw = uc.getInputStream();

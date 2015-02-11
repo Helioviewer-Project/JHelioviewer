@@ -52,15 +52,15 @@ public class IntermediateLineData {
 		for(int i = 0; i < channels.length;i++) { 
 			float[] current = channels[i];
 			
-			for(int j = 0; j < 5 && j< current.length;j++) {
+			for(int j = 0; j < 8 && j< current.length;j++) {
 				current[j] = current[j]*6;
 			}
 			
-			for(int j = 5; j < 16 && j< current.length;j++) {
-				current[j] *= 10;
+			for(int j = 8; j < 24 && j< current.length;j++) {
+				current[j] *= 8;
 			}
 
-			for(int j = 16;  j < current.length;j++) {
+			for(int j = 24;  j < current.length;j++) {
 				current[j] *= 16;
 			}
 		}
