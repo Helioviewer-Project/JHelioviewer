@@ -52,15 +52,15 @@ public class IntermediateLineData {
 		for(int i = 0; i < channels.length;i++) { 
 			float[] current = channels[i];
 			
-			for(int j = 0; j < 8 && j< current.length;j++) {
+			for(int j = 0; j < 5 && j< current.length;j++) {
 				current[j] = current[j]*6;
 			}
 			
-			for(int j = 8; j < 24 && j< current.length;j++) {
-				current[j] *= 8;
+			for(int j = 5; j < 16 && j< current.length;j++) {
+				current[j] *= 10;
 			}
 
-			for(int j = 24;  j < current.length;j++) {
+			for(int j = 16;  j < current.length;j++) {
 				current[j] *= 16;
 			}
 		}
@@ -115,11 +115,12 @@ public class IntermediateLineData {
 	        double r = rawR / 8192.0 * Constants.SunRadius;
 	        double p = rawPhi / 32768.0 * 2 * Math.PI;
 	        double t = rawTheta / 32768.0 * 2 * Math.PI;
-
+	        t = -t;
 	        p -= l0 / 180.0 * Math.PI;
 	        t += b0 / 180.0 * Math.PI;
-	        channels[0][i] = (float)(r * Math.sin(t) * Math.sin(p)); 	//x
-	        channels[1][i] = (float)(r * Math.cos(t)); 				//y
+	        
+	        channels[0][i] = -(float)(r * Math.sin(t) * Math.sin(p)); 	//x
+	        channels[1][i] = -(float)(r * Math.cos(t)); 					//y
 	        channels[2][i] = (float)(r * Math.sin(t) * Math.cos(p)); 	//z
 		}
 	}	
