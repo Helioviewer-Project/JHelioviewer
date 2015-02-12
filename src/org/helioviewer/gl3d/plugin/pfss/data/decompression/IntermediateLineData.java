@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import org.helioviewer.base.physics.Constants;
 
 /**
- * This class is responsible for holding the intermediate data durch PFSS Decompression.
+ * This class is responsible for holding the intermediate data during decompression.
  * @author Jonas Schwammberger
  *
  */
@@ -67,7 +67,7 @@ public class IntermediateLineData {
 	}
 	
 	/**
-	 * 
+	 * predict one value
 	 * @param queue Breadth first indices of the next prediction
 	 * @param decodedChannel decoded channel
 	 * @param encodedChanel
@@ -99,11 +99,11 @@ public class IntermediateLineData {
 	}
 	
 	/**
-	 * Converts the spherical coordinates to cartesian
-	 * @param l0
-	 * @param b0
+	 * Converts the spherical coordinates to cartesian. It centers the coordinates around the viewpoint of earth.
+	 * @param longitudeToEarth
+	 * @param latitudeToEarth
 	 */
-	public void toCartesian(double l0, double b0) {
+	public void toCartesian(double longitudeToEarth, double latitudeToEarth) {
 		for(int i = 0; i <this.size;i++) {
 			float rawR =  channels[0][i];
 			float rawPhi = channels[1][i];
@@ -116,8 +116,8 @@ public class IntermediateLineData {
 	        double p = rawPhi / 32768.0 * 2 * Math.PI;
 	        double t = rawTheta / 32768.0 * 2 * Math.PI;
 	        t = -t;
-	        p -= l0 / 180.0 * Math.PI;
-	        t += b0 / 180.0 * Math.PI;
+	        p -= longitudeToEarth / 180.0 * Math.PI;
+	        t += latitudeToEarth / 180.0 * Math.PI;
 	        
 	        channels[0][i] = -(float)(r * Math.sin(t) * Math.sin(p)); 	//x
 	        channels[1][i] = -(float)(r * Math.cos(t)); 					//y
@@ -126,9 +126,9 @@ public class IntermediateLineData {
 	}	
 	
 	/**
-	 * add the starting point to each line. The starting point will be converted from spherical to euler coodinate system.
+	 * add the starting point to each fieldline..
 	 * @param lines all lines
-	 * @param radius all radii of the startpoints
+	 * @param radius all radi of the startpoints
 	 * @param phi all phi of the startpoins
 	 * @param theta all theta of the startpoints
 	 */
@@ -166,14 +166,14 @@ public class IntermediateLineData {
 	/**
 	 * split all concatenated channels to the correspoding line. In the end, all Channels will
 	 * @param lengths array of all line lengths. These lengths are before they were Run-Length Encoded
-	 * @param r Channel
+	 * @param radius Channel
 	 * @param phi Channel
 	 * @param theta Channel
 	 * @return
 	 */
-	public static IntermediateLineData[] splitToLines(int[] lengths, int[]r, int[] phi,int[] theta) {
+	public static IntermediateLineData[] splitToLines(int[] lengths, int[]radius, int[] phi,int[] theta) {
 		 IntermediateLineData[] lines = new IntermediateLineData[lengths.length];
-		 int[][] channels = new int[][]{r,phi,theta};
+		 int[][] channels = new int[][]{radius,phi,theta};
 		 
 		 int[] indices = new int[3];
 		 

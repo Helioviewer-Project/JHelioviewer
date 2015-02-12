@@ -8,7 +8,7 @@ import org.helioviewer.gl3d.plugin.pfss.data.PfssData;
 import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
 
 /**
- * Responsible for creating  PfssData objects. The PfssData objects will load asynchronously via Threadpools
+ * Responsible for creating  PfssData objects. The PfssData objects will load asynchronously via threadpools
  * 
  * @author Jonas Schwammberger
  *

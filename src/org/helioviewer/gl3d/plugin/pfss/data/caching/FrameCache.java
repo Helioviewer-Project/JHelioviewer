@@ -7,7 +7,7 @@ import org.helioviewer.gl3d.plugin.pfss.data.creators.PfssFrameCreator;
 import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
 
 /**
- * Responsible for caching and loading of PFSSFrames
+ * Responsible for caching and loading of PfssFrames. Each PfssFrame in this cache has no resources allocated outside of the JVM
  * @author Jonas Schwammberger
  *
  */
