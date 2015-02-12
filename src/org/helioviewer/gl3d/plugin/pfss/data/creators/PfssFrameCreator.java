@@ -25,7 +25,7 @@ public class PfssFrameCreator {
 	 * @param data PfssData to create the frame from. PfssData does not have to be fully loaded.
 	 * @return PfssFrame object which will be fully loaded in the future
 	 */
-	public PfssFrame createFrameAsync(PfssData data) {
+	public PfssFrame getFrameAsync(PfssData data) {
 		PfssFrame frame = new PfssFrame(data.getDescriptor());
 		PfssDecompressor r = new PfssDecompressor(data,frame);
 		pool.execute(r);

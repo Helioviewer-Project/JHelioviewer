@@ -6,7 +6,7 @@ import java.util.HashMap;
 import org.helioviewer.gl3d.plugin.pfss.data.FileDescriptor;
 
 /**
- * Implementation of a simple First-in-First-out Cache for PFSSData and PFSSFrame
+ * Implementation of a simple First-in-First-out Cache. In this usecase this cache uses the LRU algorithm.
  * 
  * This class is not threadsafe
  * @author Jonas Schwammberger

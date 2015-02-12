@@ -8,25 +8,7 @@ package org.helioviewer.gl3d.plugin.pfss.data.decompression;
 public class ByteDecoder {
 	public static final int continueFlag = 128;
 	public static final int signFlag = 64;
-	public static final int maxValue = 63;
-	public static final int minValue = -64;
 	public static final int dataBitCount = 7;
-
-	/**
-	 * Decodes the length information.
-	 * 
-	 * @param input
-	 *            RLE Encoded data
-	 * @param length
-	 *            actual length of the data
-	 * @return
-	 */
-	public static int[] decodeLength(int[] input, int length) {
-		int[] output = new int[length];
-		System.arraycopy(input, 1, output, 0, input.length); // skip length of encoded data
-
-		return output;
-	}
 
 	/**
 	 * decode the adaptive precision encoded data.
@@ -49,11 +31,7 @@ public class ByteDecoder {
 			//add encoded bytes as long as the continue flag is set.
 			boolean run = (current & continueFlag) != 0;
 			while (run) {
-				//move next
-				if (run) {
-					i++;
-					current = data[i];
-				}
+				current = data[++i];
 				run = (current & continueFlag) != 0;
 				minus <<= dataBitCount;
 				value <<= dataBitCount;
@@ -77,16 +55,12 @@ public class ByteDecoder {
 		int outIndex = 0;
 		for (int i = 0; i < data.length; i++) {
 			byte current = data[i];
-			int bla = current & (continueFlag - 1);
 			int value = (int) (current & (continueFlag - 1));
 			
 			//add encoded bytes as long as the continue flag is set.
 			boolean run = (current & continueFlag) != 0;
 			while (run) {
-				if (run) {
-					i++;
-					current = data[i];
-				}
+				current = data[++i];
 				run = (current & continueFlag) != 0;
 				value <<= dataBitCount;
 				value += current & (continueFlag - 1);
@@ -103,7 +77,7 @@ public class ByteDecoder {
 	 * the byte which marks the end of a value does not have the continue flag set.
 	 * 
 	 * @param data encoded data
-	 * @return
+	 * @return number of decoded values
 	 */
 	private static int calcLength(byte[] data) {
 		int out = 0;
@@ -113,11 +87,5 @@ public class ByteDecoder {
 				out++;
 		}
 		return out;
-	}
-
-	public static void main(String[] args) {
-		byte[] data = new byte[] { 2, (byte) 129, 0, (byte) 129, 127 };
-		int[] adaptive = decodeAdaptiveUnsigned(data);
-		System.out.println("");
 	}
 }

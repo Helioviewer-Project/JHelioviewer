@@ -5,11 +5,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -19,21 +15,16 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
-
 import org.helioviewer.base.logging.Log;
 import org.helioviewer.base.math.Interval;
-import org.helioviewer.gl3d.plugin.pfss.olddata.PfssCache;
 import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
 import org.helioviewer.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.viewmodel.changeevent.SubImageDataChangedReason;
-import org.helioviewer.viewmodel.view.LinkedMovieManager;
-import org.helioviewer.viewmodel.view.TimedMovieView;
 import org.helioviewer.viewmodel.view.View;
 import org.helioviewer.viewmodel.view.ViewListener;
-import org.helioviewer.viewmodel.view.opengl.GLView;
 import org.helioviewer.viewmodelplugin.overlay.OverlayPanel;
 
 /**
@@ -191,7 +182,6 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 				retry = true;
 				while(retry) {
 				try {
-					Interval<Date> interval = LayersModel.getSingletonInstance().getFrameInterval();
 					renderer.setDisplayRange(start, end);
 					retry = false;
 				} catch (IOException e) {

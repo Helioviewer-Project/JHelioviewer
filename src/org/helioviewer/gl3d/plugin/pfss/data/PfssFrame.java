@@ -3,6 +3,9 @@ package org.helioviewer.gl3d.plugin.pfss.data;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.Date;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
@@ -29,6 +32,8 @@ public class PfssFrame implements Cacheable {
 	private volatile boolean isLoaded = false;
 	private volatile boolean isInit = false;
 	private final FileDescriptor descriptor;
+	private final Lock lock = new ReentrantLock();
+	private final Condition isLoadedCondition = lock.newCondition();
 	
 	private FloatBuffer vertices;
 	private IntBuffer indicesSunToOutside = null;
@@ -54,12 +59,18 @@ public class PfssFrame implements Cacheable {
 	 * @param indicesOutsideToSun
 	 */
 	public void setLoadedData(FloatBuffer vertices, IntBuffer indicesSunToOutside, IntBuffer indicesSunToSun, IntBuffer indicesOutsideToSun) {
-		if(!isLoaded) {
-			this.vertices = vertices;
-			this.indicesSunToOutside = indicesSunToOutside;
-			this.indicesSunToSun = indicesSunToSun;
-			this.indicesOutsideToSun = indicesOutsideToSun;
-			isLoaded = true;
+		lock.lock();
+		try {
+			if(!isLoaded) {
+				this.vertices = vertices;
+				this.indicesSunToOutside = indicesSunToOutside;
+				this.indicesSunToSun = indicesSunToSun;
+				this.indicesOutsideToSun = indicesOutsideToSun;
+				isLoaded = true;
+			}
+			isLoadedCondition.signalAll();
+		} finally {
+			lock.unlock();
 		}
 	}
 	
@@ -146,8 +157,6 @@ public class PfssFrame implements Cacheable {
 	        if(currentDate==null)
 	            return;
 	        
-	        
-	        
 			GL2 gl2 = gl.getGL2();
 			gl2.glEnableClientState(GL2.GL_VERTEX_ARRAY);
 			gl2.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
@@ -196,14 +205,32 @@ public class PfssFrame implements Cacheable {
 			gl2.glDepthMask(true);
 			gl2.glLineWidth(1f);
 		} else {
-			if(this.isLoaded && gl != null)
+			//if it is not loaded, await
+			if(!this.isLoaded) {
+				try {
+					this.awaitLoaded();
+				} catch (InterruptedException e) {
+					//ignore
+				}
+			}
+			
+			//loaded, but failed to initialize beforehand
+			if(this.isLoaded && !this.isInit && gl != null)
 			{
 				this.init(gl);
-				this.display(gl, time);
 			}
 		}
 	}
 	
+	private void awaitLoaded() throws InterruptedException {
+		lock.lock();
+		try{
+			while(!isLoaded) isLoadedCondition.await();
+		} finally {
+			lock.unlock();
+		}
+	}
+
 	/**
 	 * 
 	 * @return true if it has been initialised and is ready to be displayed
