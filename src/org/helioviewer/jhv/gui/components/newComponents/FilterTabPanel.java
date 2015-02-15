@@ -123,6 +123,7 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 				lblSharpen.setText(sharpenSlider.getValue() + "%");
 				if (activeLayer != null && activeLayer.sharpen != sharpenSlider.getValue()/100.0){
 					activeLayer.sharpen = sharpenSlider.getValue()/100.0;
+					repaintComponent();
 				}
 			}
 		});
@@ -152,6 +153,7 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 				lblGamma.setText(label);
 				if (activeLayer != null && activeLayer.gamma != gammaValue){
 					activeLayer.gamma = gammaValue;
+					repaintComponent();
 				}
 			}
 		});
@@ -177,6 +179,7 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 				lblContrast.setText(contrastSlider.getValue() + "");
 				if (activeLayer != null &&  activeLayer.contrast != contrastSlider.getValue()/10.0){
 					activeLayer.contrast = contrastSlider.getValue() / 10.0;
+					repaintComponent();
 				}
 			}
 		});

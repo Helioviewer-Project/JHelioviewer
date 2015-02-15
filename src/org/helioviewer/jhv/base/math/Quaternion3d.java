@@ -21,6 +21,10 @@ public class Quaternion3d {
         this.u = u;
     }
 
+    public Quaternion3d(){
+    	this.clear();
+    }
+
     public void clear() {
         Quaternion3d q = Quaternion3d.createRotation(0.0, new Vector3d(0, 1, 0));
         this.a = q.a;

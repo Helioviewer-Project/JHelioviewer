@@ -1,9 +1,11 @@
 package org.helioviewer.jhv.viewmodel.metadata;
 
 import org.helioviewer.jhv.base.math.MathUtils;
+import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.RectangleDouble;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
+import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.viewmodel.region.Region;
 import org.helioviewer.jhv.viewmodel.region.StaticRegion;
@@ -31,7 +33,8 @@ public abstract class MetaData {
     protected double flatDistance;
     protected double maskRotation;
     protected Vector2d occulterCenter;
-    
+    protected Vector3d orientation = new Vector3d(0.00,0.00,1.00);
+    protected Quaternion3d defaultRotation = new Quaternion3d();
     
     protected double heeqX;
     protected double heeqY;
@@ -438,4 +441,12 @@ public abstract class MetaData {
         return Math.atan(Constants.SUN_RADIUS / distanceToSun) * MathUtils.RAD_TO_DEG * 3600;
 	}
 
+	protected void calcDefaultRotation() {
+		defaultRotation = Quaternion3d.calcRotation(orientation,
+				new Vector3d(0, 0, 1));
+	}
+	
+	public Quaternion3d getRotation(){
+		return this.defaultRotation;
+	}
 }

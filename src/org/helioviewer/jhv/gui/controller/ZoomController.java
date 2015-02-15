@@ -35,7 +35,7 @@ public class ZoomController {
 			double unitsPerPixel = metaData.getUnitsPerPixel();
 			Region region = metaData.getPhysicalRegion();
 
-			if (region != null) {
+			if (region != null && camera != null) {
 				double halfWidth = region.getWidth() / 2;
 				double halfFOVRad = Math.toRadians(camera.getFOV() / 2.0);
 				double distance = halfWidth

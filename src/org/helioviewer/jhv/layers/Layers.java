@@ -13,6 +13,7 @@ public class Layers {
 	}
 	
 	public void addLayer(Layer layer){
+		System.out.println("add Layer : " + layer.getJhvjpxView().getMetaData().getFullName());
 		layers.add(layer);
 		for (NewLayerListener renderListener : renderListeners){
 			renderListener.newlayerAdded();

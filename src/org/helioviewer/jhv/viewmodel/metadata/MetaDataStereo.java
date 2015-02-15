@@ -3,8 +3,14 @@ package org.helioviewer.jhv.viewmodel.metadata;
 import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
+import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.viewmodel.view.cache.HelioviewerDateTimeCache;
+
+import ch.fhnw.i4ds.helio.coordinate.api.CoordConverter;
+import ch.fhnw.i4ds.helio.coordinate.converter.Hg2HccConverter;
+import ch.fhnw.i4ds.helio.coordinate.coord.HeliocentricCartesianCoordinate;
+import ch.fhnw.i4ds.helio.coordinate.coord.HeliographicCoordinate;
 
 public class MetaDataStereo extends MetaData{
 
@@ -76,6 +82,14 @@ public class MetaDataStereo extends MetaData{
         this.stonyhurstLatitude = metaDataContainer.tryGetDouble("HGLT_OBS");
         this.stonyhurstLongitude = metaDataContainer.tryGetDouble("HGLN_OBS");
         this.stonyhurstAvailable = this.stonyhurstLatitude != 0.0 || this.stonyhurstLongitude != 0.0;
+        if (stonyhurstAvailable){
+        	CoordConverter<HeliographicCoordinate, HeliocentricCartesianCoordinate> converter = new Hg2HccConverter();
+        	HeliographicCoordinate hgc = new HeliographicCoordinate(stonyhurstLongitude, stonyhurstLatitude);
+        	
+        	HeliocentricCartesianCoordinate hcc = converter.convert(hgc);
+        	this.orientation = new Vector3d(hcc.getX(), hcc.getY(), hcc.getZ());
+        }
+        this.calcDefaultRotation();
    }
 
 	@Override

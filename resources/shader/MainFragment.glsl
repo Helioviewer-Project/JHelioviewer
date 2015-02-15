@@ -107,6 +107,9 @@ void main(void)
     	pos.x = 1. - pos.x;
     }
 	vec4 lutColor = texture2D(lut, pos);
+	lutColor.x = pow(lutColor.x, gamma);
+	lutColor.y = pow(lutColor.y, gamma);
+	lutColor.z = pow(lutColor.z, gamma);
     gl_FragColor = lutColor * vec4(redChannel,greenChannel,blueChannel,opacity);
     
 }

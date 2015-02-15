@@ -41,8 +41,8 @@ public class OpenGLHelper {
 	public static ByteBuffer readPixels(BufferedImage image, boolean storeAlphaChannel, boolean switchRandBChannel) {
 		int[] pixels = new int[image.getWidth() * image.getHeight()];
         image.getRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
-
-        ByteBuffer buffer = ByteBuffer.allocate(image.getWidth() * image.getHeight() * 3); //4 for RGBA, 3 for RGB
+        int factor = storeAlphaChannel ? 4 : 3;
+        ByteBuffer buffer = ByteBuffer.allocate(image.getWidth() * image.getHeight() * factor); //4 for RGBA, 3 for RGB
         
         for(int y = 0; y < image.getHeight(); y++){
             for(int x = 0; x < image.getWidth(); x++){
@@ -166,9 +166,9 @@ public class OpenGLHelper {
 		int inputType = GL2.GL_UNSIGNED_BYTE;
 		int bpp = 3;
 		switch (bufferedImage.getType()) {
-		case BufferedImage.TYPE_INT_ARGB:
-			switchChannel = true;
 		case BufferedImage.TYPE_4BYTE_ABGR:
+			switchChannel = true;
+		case BufferedImage.TYPE_INT_ARGB:
 			inputFormat = GL2.GL_RGBA;
 			internalFormat = GL2.GL_RGBA;
 			bpp = 4;
@@ -200,7 +200,7 @@ public class OpenGLHelper {
 				inputFormat, inputType, buffer);
 
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER,
-				GL2.GL_NEAREST);
+				GL2.GL_LINEAR);
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER,
 				GL2.GL_NEAREST);
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S,
