@@ -67,6 +67,7 @@ public class MainImagePanel extends BasicImagePanel {
         // call constructor of super class
         super();
 
+        if (!JHVGlobals.OLD_RENDER_MODE) centerLoadingScreen = new CenterLoadingScreen();
         // add post render that no image is loaded
         noImagePostRenderer.setContainerSize(getWidth(), getHeight());
         addPostRenderer(noImagePostRenderer);
@@ -74,8 +75,6 @@ public class MainImagePanel extends BasicImagePanel {
 
         loadingPostRenderer.setContainerSize(getWidth(), getHeight());
         
-        if (!JHVGlobals.OLD_RENDER_MODE)
-        	centerLoadingScreen = new CenterLoadingScreen();
     }
 
     /**
