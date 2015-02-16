@@ -1,7 +1,8 @@
 uniform sampler2D texture;
 uniform sampler2D lut;
-uniform mat4 modelView1;
+uniform mat4 modelView;
 uniform mat4 transformation;
+uniform mat4 layerTransformation;
 uniform float sunRadius;
 uniform float opacity;
 uniform float sharpen;
@@ -87,8 +88,9 @@ void main(void)
 	vec4 imageColor;
    	if (tSphere > 0.){	
 		vec3 posOri = rayRot.origin + tSphere*rayRot.direction;
-		if (posOri.z >= 0.0){
-	    	vec2 texPos = (posOri.xy/(sunRadius*2.5) + 0.5) *vec2(1.,1.);
+		vec3 posRot = (vec4(posOri, 1) * layerTransformation).xyz;
+		if (posRot.z >= 0.0){
+	    	vec2 texPos = (posRot.xy/(sunRadius*2.5) + 0.5) *vec2(1.,1.);
 			imageColor = texture2D(texture,texPos);
 		}
 		else {

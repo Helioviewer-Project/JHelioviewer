@@ -31,8 +31,11 @@ public class SplashScreen implements RenderAnimation{
 	public void render(GL2 gl, double canvasWidth, double canvasHeight) {
 		System.out.println("renderSplashscreen");
 		gl.glClear( GL.GL_COLOR_BUFFER_BIT );
-		gl.glMatrixMode(GL2.GL_PROJECTION);
-		gl.glLoadIdentity();
+
+		gl.glUseProgram(0);
+		gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
+		gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
+
 		double aspect = canvasWidth / canvasHeight;
 		
 		double width = aspect > 1 ? dimension.getWidth() * FACTOR : dimension.getWidth() * aspect * FACTOR;
@@ -41,21 +44,23 @@ public class SplashScreen implements RenderAnimation{
 		height /= 2.0;
 		double imageWidth = dimension.getWidth() / 2.0;
 		double imageHeight = dimension.getHeight() / 2.0;
+		gl.glDisable(GL2.GL_DEPTH_TEST);
+
+		gl.glMatrixMode(GL2.GL_PROJECTION);
+		gl.glLoadIdentity();
 		gl.glOrtho(-width, width, -height, height, 10, -10);
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
-		gl.glDisable(GL2.GL_LIGHTING);
-		gl.glDisable(GL2.GL_BLEND);
-
-		gl.glDisable(GL2.GL_TEXTURE_2D);
-		gl.glEnable(GL2.GL_TEXTURE_2D);
+		gl.glLoadIdentity();
+		gl.glColor3f(1, 1, 1);
 		gl.glEnable(GL2.GL_BLEND);
+		gl.glEnable(GL2.GL_TEXTURE_2D);
+		gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
+		gl.glActiveTexture(GL.GL_TEXTURE0);
+		gl.glBindTexture(GL2.GL_TEXTURE_2D, texture);
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER,
 				GL2.GL_LINEAR);
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER,
 				GL2.GL_LINEAR);
-		gl.glDisable(GL2.GL_DEPTH_TEST);
-		gl.glActiveTexture(GL.GL_TEXTURE0);
-		gl.glBindTexture(GL2.GL_TEXTURE_2D, texture);
 		//gl.glColor3f(1, 0, 0);
 		gl.glBegin(GL2.GL_QUADS);
 		gl.glTexCoord2f(0,0);
@@ -68,6 +73,8 @@ public class SplashScreen implements RenderAnimation{
 		gl.glVertex2d(-imageWidth,-imageHeight);
 		gl.glEnd();
 		gl.glDisable(GL2.GL_DEPTH_TEST);
+		gl.glDisable(GL2.GL_BLEND);
+		gl.glDisable(GL2.GL_TEXTURE_2D);
 	}
 
 	@Override

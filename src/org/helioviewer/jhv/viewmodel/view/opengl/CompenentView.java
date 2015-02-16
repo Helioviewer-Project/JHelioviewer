@@ -436,11 +436,13 @@ public class CompenentView extends GL3DComponentView implements
 			tmpY0 = (float) (y0 / aspect);
 			tmpY1 = (float) (y1 / aspect);
 		}
+		System.out.println("layer : " + layer.getJhvjpxView().getMetaData().getSunPixelPosition());
+		System.out.println("layer : " + layer.getJhvjpxView().getMetaData().getSunPixelRadius());
+		System.out.println(" : " + layer.getJhvjpxView().getMetaData().getSunPixelPosition());
+		System.out.println(" : " + layer.getJhvjpxView().getMetaData().getUnitsPerPixel());
 		gl.glDisable(GL2.GL_DEPTH_TEST);
 
 		gl.glMatrixMode(GL2.GL_PROJECTION);
-		gl.glViewport(0, 0, this.canvas.getSurfaceWidth(),
-				this.canvas.getSurfaceHeight());
 		gl.glLoadIdentity();
 		gl.glOrtho(tmpX0, tmpX1, tmpY0, tmpY1, 10, -10);
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
@@ -479,12 +481,17 @@ public class CompenentView extends GL3DComponentView implements
 				layer.greenChannel.getState());
 		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "blueChannel"),
 				layer.blueChannel.getState());
-		float[] transformation = layer.getJhvjpxView().getMetaData()
-				.getRotation().toMatrix()
-				.multiply(cameraNEW.getTransformation()).toFloatArray();
+		float[] transformation = cameraNEW.getTransformation().toFloatArray();
+		System.out.println("TRANSFORM : ");
+		float[] layerTransformation = layer.getJhvjpxView().getMetaData()
+				.getRotation().toMatrix().toFloatArray();
 		gl.glUniformMatrix4fv(
 				gl.glGetUniformLocation(shaderprogram, "transformation"), 1,
 				true, transformation, 0);
+
+		gl.glUniformMatrix4fv(
+				gl.glGetUniformLocation(shaderprogram, "layerTransformation"), 1,
+				true, layerTransformation, 0);
 
 		gl.glBegin(GL2.GL_QUADS);
 		gl.glTexCoord2f(0.0f, 1.0f);
@@ -504,15 +511,19 @@ public class CompenentView extends GL3DComponentView implements
 		gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
 		gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
 		gl.glEnable(GL2.GL_DEPTH_TEST);
-		textureHelper.checkGLErrors(gl, this + ".afterDisplayLayer");
 	}
 
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		GL2 gl = drawable.getGL().getGL2();
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
+		gl.glViewport(0, 0, this.canvas.getSurfaceWidth(),
+				this.canvas.getSurfaceHeight());
+		
+		
 		if (layers != null && layers.getLayerCount() > 0) {
 			gl.glPushMatrix();
+			
 			if (this.updateTexture) {
 				textureHelper.checkGLErrors(gl, this + ".beforeCreateTexture");
 				for (Layer layer : layers.getLayers()) {
@@ -520,6 +531,7 @@ public class CompenentView extends GL3DComponentView implements
 				}
 				updateTexture = false;
 			}
+			
 			for (Layer layer : layers.getLayers()) {
 				if (layer.isVisible()) {
 					this.displayLayer(gl, layer);
@@ -528,7 +540,10 @@ public class CompenentView extends GL3DComponentView implements
 			gl.glPopMatrix();
 			// renderRect(gl);
 		}
+		
 		// empty screen
+		gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
+		gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
 		System.out.println("layercount : " + layers.getLayerCount());
 		if (layers.getLayerCount() <= 0) {
 			splashScreen.render(gl, canvas.getSurfaceWidth(), canvas.getSurfaceHeight());

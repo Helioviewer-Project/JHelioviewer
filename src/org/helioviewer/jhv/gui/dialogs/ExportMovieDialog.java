@@ -82,7 +82,7 @@ public class ExportMovieDialog implements ActionListener {
 	public ExportMovieDialog() {
 		exportMovieDialog = this;
 		if (openFileChooser() == JFileChooser.APPROVE_OPTION) {
-			
+
 			this.loadSettings();
 			Settings.setProperty(SETTING_MOVIE_EXPORT_LAST_DIRECTORY, directory);
 			ImageViewerGui.getMainFrame().setEnabled(false);
@@ -144,31 +144,38 @@ public class ExportMovieDialog implements ActionListener {
 
 		fileChooser.setSelectedFile(new File(txtTargetFile));
 
-		int retVal = fileChooser
-				.showDialog(ImageViewerGui.getMainFrame(), "Export movie");
-		
-		selectedOutputFormat = (MovieFileFilter) fileChooser.getFileFilter();
-		directory = fileChooser.getCurrentDirectory().getPath() + "/";
-		filename = fileChooser.getSelectedFile().getName();
+		int retVal = fileChooser.showDialog(ImageViewerGui.getMainFrame(),
+				"Export movie");
 
-		if (fileChooser.getSelectedFile().exists()) {
-            // ask if the user wants to overwrite
-            int response = JOptionPane.showConfirmDialog(null, "Overwrite existing file?", "Confirm Overwrite", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+		if (retVal != JFileChooser.CANCEL_OPTION) {
 
-            // if the user doesn't want to overwrite, simply return null
-            if (response == JOptionPane.CANCEL_OPTION) {
-                return JFileChooser.CANCEL_OPTION;
-            }
-        }
+			selectedOutputFormat = (MovieFileFilter) fileChooser
+					.getFileFilter();
+			directory = fileChooser.getCurrentDirectory().getPath() + "/";
+			filename = fileChooser.getSelectedFile().getName();
 
-		for (FileFilter fileFilter : fileChooser.getChoosableFileFilters()) {
-			if (txtTargetFile.endsWith(((MovieFileFilter) fileFilter)
-					.getExtension())) {
-				 // does the file already exist?
-				selectedOutputFormat = (MovieFileFilter) fileFilter;
-				filename = filename.substring(0, filename
-						.lastIndexOf(selectedOutputFormat.getExtension()));
-				return retVal;
+			if (fileChooser.getSelectedFile().exists()) {
+				// ask if the user wants to overwrite
+				int response = JOptionPane.showConfirmDialog(null,
+						"Overwrite existing file?", "Confirm Overwrite",
+						JOptionPane.OK_CANCEL_OPTION,
+						JOptionPane.QUESTION_MESSAGE);
+
+				// if the user doesn't want to overwrite, simply return null
+				if (response == JOptionPane.CANCEL_OPTION) {
+					return JFileChooser.CANCEL_OPTION;
+				}
+			}
+
+			for (FileFilter fileFilter : fileChooser.getChoosableFileFilters()) {
+				if (txtTargetFile.endsWith(((MovieFileFilter) fileFilter)
+						.getExtension())) {
+					// does the file already exist?
+					selectedOutputFormat = (MovieFileFilter) fileFilter;
+					filename = filename.substring(0, filename
+							.lastIndexOf(selectedOutputFormat.getExtension()));
+					return retVal;
+				}
 			}
 		}
 
@@ -217,7 +224,7 @@ public class ExportMovieDialog implements ActionListener {
 		timedJHVJPXView = LinkedMovieManager.getActiveInstance()
 				.getMasterMovie();
 		started = true;
-		
+
 		if (this.selectedOutputFormat.isMovieFile()) {
 
 			writer = ToolFactory.makeWriter(directory + filename
@@ -268,28 +275,38 @@ public class ExportMovieDialog implements ActionListener {
 		if (!started)
 			stopExportMovie();
 		else {
-			for (GL3DImageLayer layer : mainComponentView.getAdapter(GL3DSceneGraphView.class).getLayers().getLayers()){
-				JHVJPXView jhvjpxView = layer.getImageTextureView().getAdapter(JHVJPXView.class);
-				if (currentExportFrameNumber > jhvjpxView.getImageCacheStatus().getImageCachedCompletelyUntil() && !(currentExportFrameNumber > jhvjpxView.getMaximumFrameNumber() -1)){
-	            	this.progressDialog.setDescription("Loading image data");
-	    			return;
-	            }
-	        }
-	        
-			timedJHVJPXView.setCurrentFrame(currentExportFrameNumber, new ChangeEvent(), true);
+			for (GL3DImageLayer layer : mainComponentView
+					.getAdapter(GL3DSceneGraphView.class).getLayers()
+					.getLayers()) {
+				JHVJPXView jhvjpxView = layer.getImageTextureView().getAdapter(
+						JHVJPXView.class);
+				if (currentExportFrameNumber > jhvjpxView.getImageCacheStatus()
+						.getImageCachedCompletelyUntil()
+						&& !(currentExportFrameNumber > jhvjpxView
+								.getMaximumFrameNumber() - 1)) {
+					this.progressDialog.setDescription("Loading image data");
+					return;
+				}
+			}
+
+			timedJHVJPXView.setCurrentFrame(currentExportFrameNumber,
+					new ChangeEvent(), true);
 
 			ArrayList<String> descriptions = null;
 			if (textEnabled) {
-				GL3DSceneGraphView scenegraphView = GuiState3DWCS.mainComponentView.getAdapter(GL3DSceneGraphView.class);
+				GL3DSceneGraphView scenegraphView = GuiState3DWCS.mainComponentView
+						.getAdapter(GL3DSceneGraphView.class);
 				descriptions = new ArrayList<String>();
 				int counter = 0;
-				for (GL3DImageLayer layer : scenegraphView.getLayers().getLayers()){
-					if (!layer.isDrawBitOn(Bit.Hidden)){
+				for (GL3DImageLayer layer : scenegraphView.getLayers()
+						.getLayers()) {
+					if (!layer.isDrawBitOn(Bit.Hidden)) {
 						descriptions.add(LayersModel.getSingletonInstance()
 								.getDescriptor(counter).title
 								+ " - "
-								+ LayersModel.getSingletonInstance().getDescriptor(
-										counter).timestamp.replaceAll(" ", " - "));
+								+ LayersModel.getSingletonInstance()
+										.getDescriptor(counter).timestamp
+										.replaceAll(" ", " - "));
 					}
 					counter++;
 				}
@@ -301,8 +318,8 @@ public class ExportMovieDialog implements ActionListener {
 			progressDialog.updateProgressBar(currentExportFrameNumber);
 
 			if (this.selectedOutputFormat.isMovieFile() && started) {
-				writer.encodeVideo(0, bufferedImage, speed * currentExportFrameNumber,
-						TimeUnit.MILLISECONDS);
+				writer.encodeVideo(0, bufferedImage, speed
+						* currentExportFrameNumber, TimeUnit.MILLISECONDS);
 			}
 
 			else if (this.selectedOutputFormat.isCompressedFile() && started) {
@@ -337,7 +354,8 @@ public class ExportMovieDialog implements ActionListener {
 				}
 			}
 			currentExportFrameNumber++;
-			if (currentExportFrameNumber > timedJHVJPXView.getMaximumFrameNumber()) {
+			if (currentExportFrameNumber > timedJHVJPXView
+					.getMaximumFrameNumber()) {
 				started = false;
 				stopExportMovie();
 			}
@@ -426,10 +444,10 @@ public class ExportMovieDialog implements ActionListener {
 			this.progressBar.setValue(value);
 		}
 
-		public void setDescription(String description){
+		public void setDescription(String description) {
 			this.lblDescription.setText(description);
 		}
-		
+
 		@Override
 		public void dispose() {
 			ImageViewerGui.getMainFrame().setEnabled(true);
