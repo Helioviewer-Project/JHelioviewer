@@ -201,7 +201,9 @@ public class JHelioviewer {
         System.out.println("Start main window");
         //splash.initializeViewchain();
         ImageViewerGui.getSingletonInstance().createViewchains();
-
+        
+        
+        UILatencyWatchdog.startWatchdog();
     }
 
 	private static void loadLibraries() {
