@@ -34,9 +34,6 @@ import org.helioviewer.jhv.viewmodel.renderer.GLCommonRenderGraphics;
  * @author Markus Langenberg
  */
 public class GLShaderHelper {
-
-    private static int maxTextureIndirections = 0;
-
     private static LinkedList<Integer> allShaders = new LinkedList<Integer>();
     
     private static File tmpAsm;
@@ -66,21 +63,6 @@ public class GLShaderHelper {
 
 
         System.out.println(">> GLShaderHelper.initHelper(GL gl, String _tmpPath) > temp path: " + tmpDir.toString());
-        int tmp[] = new int[1];
-        gl.glGetProgramivARB(GL2.GL_FRAGMENT_PROGRAM_ARB, GL2.GL_MAX_PROGRAM_TEX_INDIRECTIONS_ARB, tmp, 0);
-        maxTextureIndirections = tmp[0];
-        System.out.println(">> GLShaderHelper.initHelper(GL gl, String _tmpPath) > max texture indirections: " + maxTextureIndirections);
-    }
-
-    /**
-     * Returns maximum number of texture indirections supported by OpenGL
-     * shaders.
-     * 
-     * @return Maximum number of texture indirections supported by OpenGL
-     *         shaders
-     */
-    public static int getMaxTextureIndirections() {
-        return maxTextureIndirections;
     }
 
     /**
