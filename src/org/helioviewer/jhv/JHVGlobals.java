@@ -11,11 +11,17 @@ import java.net.URI;
  */
 public class JHVGlobals {
     public static final String VERSION = System.getProperty("jhvVersion") == null ? "developer" : System.getProperty("jhvVersion");
-    public static String tag = "";
+    public static String RAYGUN_TAG = "";
     public static final boolean OLD_RENDER_MODE = true;
     
     private JHVGlobals()
     {
+    }
+    
+    
+    public static boolean isReleaseVersion()
+    {
+        return RAYGUN_TAG!=null;
     }
 
     /**

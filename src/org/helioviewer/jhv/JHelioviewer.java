@@ -75,7 +75,7 @@ public class JHelioviewer {
         	        }, ApplicationLauncher.WindowMode.FRAME, null
         	    );
         	}
-        	JHVGlobals.tag = System.getProperty("raygunTag");
+        	JHVGlobals.RAYGUN_TAG = System.getProperty("raygunTag");
         }
         
         // Uncaught runtime errors are displayed in a dialog box in addition

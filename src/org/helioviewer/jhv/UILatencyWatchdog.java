@@ -13,6 +13,13 @@ import com.mindscapehq.raygun4java.core.messages.RaygunIdentifier;
 
 public class UILatencyWatchdog
 {
+    //maximum time the UI thread is allowed to block
+    private static final int MAX_LATENCY = 1000;
+    
+    //do not re-report errors within this time range
+    private static final int COOLDOWN_AFTER_TIMEOUT = 30000; 
+    
+    
     private static volatile Thread awtDispatcher; 
     private static volatile boolean setFlag;
     
@@ -47,7 +54,7 @@ public class UILatencyWatchdog
                             }
                         });
                         
-                        Thread.sleep(1000);
+                        Thread.sleep(MAX_LATENCY);
                         if(!setFlag)
                         {
                             String stackTraces="";
@@ -65,21 +72,24 @@ public class UILatencyWatchdog
                             for(StackTraceElement ste:awtDispatcher.getStackTrace())
                                 stackTraces+="  "+ste.toString()+"\n";
                             
-                            RaygunClient client = new RaygunClient("SchjoS2BvfVnUCdQ098hEA==");
-                            client.SetVersion(JHVGlobals.VERSION);
-                            Map<String, String> customData = new HashMap<String, String>();
-                            customData.put("Log",Log.GetLastFewLines(6));
-                            customData.put("JVM", System.getProperty("java.vm.name") + " " + System.getProperty("java.vm.version") + " (JRE " + System.getProperty("java.specification.version") + ")");
-    
-                            RaygunIdentifier user = new RaygunIdentifier(Settings.getProperty("UUID"));
-                            client.SetUser(user);
-                            ArrayList<String> tags = new ArrayList<String>();
-                            tags.add(JHVGlobals.tag);
-                            //client.Send(new Throwable("UI latency watchdog - UI thread hangs in:\n"+stackTraces),tags,customData);
+                            if(JHVGlobals.isReleaseVersion())
+                            {
+                                RaygunClient client = new RaygunClient("SchjoS2BvfVnUCdQ098hEA==");
+                                client.SetVersion(JHVGlobals.VERSION);
+                                Map<String, String> customData = new HashMap<String, String>();
+                                customData.put("Log",Log.GetLastFewLines(6));
+                                customData.put("JVM", System.getProperty("java.vm.name") + " " + System.getProperty("java.vm.version") + " (JRE " + System.getProperty("java.specification.version") + ")");
+                                
+                                RaygunIdentifier user = new RaygunIdentifier(Settings.getProperty("UUID"));
+                                client.SetUser(user);
+                                ArrayList<String> tags = new ArrayList<String>();
+                                tags.add(JHVGlobals.RAYGUN_TAG);
+                                client.Send(new Throwable("UI latency watchdog - UI thread hangs in:\n"+stackTraces),tags,customData);
+                            }
                             
                             System.err.println("UI latency watchdog - UI thread hangs in:\n"+stackTraces);
                             
-                            Thread.sleep(10000);
+                            Thread.sleep(COOLDOWN_AFTER_TIMEOUT);
                         }
                     }
                 }

@@ -75,7 +75,7 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
         sp.setPreferredSize(new Dimension(600, 400));
 
         objects.add(sp);
-        JCheckBox allowCrashReport = new JCheckBox("Send this anonymous crash report to the developers.",JHVGlobals.tag.length() != 0);
+        JCheckBox allowCrashReport = new JCheckBox("Send this anonymous crash report to the developers.",JHVGlobals.RAYGUN_TAG.length() != 0);
         objects.add(allowCrashReport);
         objects.add(Box.createVerticalStrut(10));
         
@@ -110,7 +110,7 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
             RaygunIdentifier user = new RaygunIdentifier(Settings.getProperty("UUID"));
             client.SetUser(user);
             ArrayList<String> tags = new ArrayList<String>();
-            tags.add(JHVGlobals.tag);
+            tags.add(JHVGlobals.RAYGUN_TAG);
             client.Send(e,tags,customData);
         }
         
