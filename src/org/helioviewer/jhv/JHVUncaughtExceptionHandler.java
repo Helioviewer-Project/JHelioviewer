@@ -75,7 +75,7 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
         sp.setPreferredSize(new Dimension(600, 400));
 
         objects.add(sp);
-        JCheckBox allowCrashReport = new JCheckBox("Send this anonymous crash report to the developers.",JHVGlobals.RAYGUN_TAG.length() != 0);
+        JCheckBox allowCrashReport = new JCheckBox("Send this anonymous crash report to the developers.",JHVGlobals.isReleaseVersion());
         objects.add(allowCrashReport);
         objects.add(Box.createVerticalStrut(10));
         

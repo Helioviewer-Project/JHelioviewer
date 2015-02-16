@@ -69,7 +69,8 @@ public class UILatencyWatchdog
                             }*/
                             
                             //collect stack trace of just the AWT dispatcher thread
-                            for(StackTraceElement ste:awtDispatcher.getStackTrace())
+                            StackTraceElement[] awtStackTrace = awtDispatcher.getStackTrace();
+                            for(StackTraceElement ste:awtStackTrace)
                                 stackTraces+="  "+ste.toString()+"\n";
                             
                             if(JHVGlobals.isReleaseVersion())
@@ -84,10 +85,14 @@ public class UILatencyWatchdog
                                 client.SetUser(user);
                                 ArrayList<String> tags = new ArrayList<String>();
                                 tags.add(JHVGlobals.RAYGUN_TAG);
-                                client.Send(new Throwable("UI latency watchdog - UI thread hangs in:\n"+stackTraces),tags,customData);
+                                
+                                Throwable diagThrowable = new Throwable("UI latency watchdog - UI thread hang detected");
+                                diagThrowable.setStackTrace(awtStackTrace);
+                                
+                                client.Send(diagThrowable,tags,customData);
                             }
                             
-                            System.err.println("UI latency watchdog - UI thread hangs in:\n"+stackTraces);
+                            System.err.println("UI latency watchdog - UI thread hang detected in:\n"+stackTraces);
                             
                             Thread.sleep(COOLDOWN_AFTER_TIMEOUT);
                         }
