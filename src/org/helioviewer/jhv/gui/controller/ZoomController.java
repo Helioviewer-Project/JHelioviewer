@@ -1,5 +1,7 @@
 package org.helioviewer.jhv.gui.controller;
 
+import java.awt.Dimension;
+
 import org.helioviewer.jhv.gui.GL3DCameraSelectorModel;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.layers.LayersModel;
@@ -36,16 +38,12 @@ public class ZoomController {
 			Region region = metaData.getPhysicalRegion();
 
 			if (region != null && camera != null) {
-				double halfWidth = region.getWidth() / 2;
-				double halfFOVRad = Math.toRadians(camera.getFOV() / 2.0);
-				double distance = halfWidth
-						* Math.sin(Math.PI / 2 - halfFOVRad)
-						/ Math.sin(halfFOVRad);
-				distance = distance
-						/ region.getWidth()
-						* GuiState3DWCS.mainComponentView.getCanavasSize()
-								.getWidth() * unitsPerPixel;
-				return -distance / camera.getZTranslation();
+				Dimension dimension = GuiState3DWCS.mainComponentView.getCanavasSize();
+				double minCanvasDimension = dimension.getHeight();
+	            double halfFOVRad = Math.toRadians(camera.getFOV() / 2.0);
+	            double distance = (minCanvasDimension/2.0 * unitsPerPixel) / Math.tan(halfFOVRad);
+
+	            return -distance / camera.getZTranslation();
 			}
 		}
 		return 1.0;

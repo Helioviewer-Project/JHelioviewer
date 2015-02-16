@@ -59,7 +59,6 @@ public class JHelioviewer {
     public static void main(String[] args) {
 
     	Log.redirectStdOutErr();
-		System.out.println("tag : " + System.getProperty("raygunTag"));
     	if (System.getProperty("raygunTag") != null){
         	if (UpdateScheduleRegistry.checkAndReset()) {
         	    // This will return immediately if you call it from the EDT,
@@ -75,8 +74,8 @@ public class JHelioviewer {
         	        }, ApplicationLauncher.WindowMode.FRAME, null
         	    );
         	}
-        	JHVGlobals.RAYGUN_TAG = System.getProperty("raygunTag");
         }
+    	JHVGlobals.RAYGUN_TAG = System.getProperty("raygunTag");
         
         // Uncaught runtime errors are displayed in a dialog box in addition
         JHVUncaughtExceptionHandler.setupHandlerForThread();

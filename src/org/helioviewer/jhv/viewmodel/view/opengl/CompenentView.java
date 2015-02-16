@@ -25,6 +25,7 @@ import javax.media.opengl.GLEventListener;
 import javax.media.opengl.awt.GLCanvas;
 
 import org.helioviewer.jhv.base.math.Matrix4d;
+import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.math.Vector3d;
@@ -49,6 +50,7 @@ import org.helioviewer.jhv.opengl.raytrace.RayTrace.Ray;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState.VISUAL_TYPE;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
+import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.renderer.screen.ScreenRenderer;
 import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
 import org.helioviewer.jhv.viewmodel.view.View;
@@ -436,10 +438,19 @@ public class CompenentView extends GL3DComponentView implements
 			tmpY0 = (float) (y0 / aspect);
 			tmpY1 = (float) (y1 / aspect);
 		}
-		System.out.println("layer : " + layer.getJhvjpxView().getMetaData().getSunPixelPosition());
-		System.out.println("layer : " + layer.getJhvjpxView().getMetaData().getSunPixelRadius());
-		System.out.println(" : " + layer.getJhvjpxView().getMetaData().getSunPixelPosition());
-		System.out.println(" : " + layer.getJhvjpxView().getMetaData().getUnitsPerPixel());
+		MetaData metaData = layer.getJhvjpxView().getMetaData();
+		float xSunOffset = (float)((metaData.getSunPixelPosition().x - metaData.getResolution().getX()/2.0)/(float)metaData.getResolution().getX());
+		float ySunOffset = -(float)((metaData.getSunPixelPosition().y - metaData.getResolution().getY()/2.0)/(float)metaData.getResolution().getY());
+		
+		Vector3d currentPos = cameraNEW.getRotation().toMatrix().multiply(new Vector3d(0, 0, 1));
+		Vector3d startPos = metaData.getRotation().toMatrix().multiply(new Vector3d(0, 0, 1));
+
+		double angle = Math.toDegrees(Math.acos(currentPos.dot(startPos)));
+		double maxAngle = 60;
+		double minAngle = 30;
+		float opacityCorona = (float) ((Math.abs(90 - angle) - minAngle) / (maxAngle - minAngle));
+		opacityCorona = opacityCorona > 1 ? 1f : opacityCorona;
+		System.out.println("opacityCorona : " + opacityCorona);
 		gl.glDisable(GL2.GL_DEPTH_TEST);
 
 		gl.glMatrixMode(GL2.GL_PROJECTION);
@@ -466,6 +477,8 @@ public class CompenentView extends GL3DComponentView implements
 		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "lut"), 1);
 		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "sunRadius"),
 				(float) Constants.SUN_RADIUS);
+		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "physicalImageWidth"), (float)metaData.getPhysicalImageWidth());
+		gl.glUniform2f(gl.glGetUniformLocation(shaderprogram, "sunOffset"), xSunOffset, ySunOffset);
 		System.out.println("opacity : " + layer.opacity);
 		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "opacity"),
 				(float) layer.opacity);
@@ -481,6 +494,7 @@ public class CompenentView extends GL3DComponentView implements
 				layer.greenChannel.getState());
 		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "blueChannel"),
 				layer.blueChannel.getState());
+		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "opacityCorona"), opacityCorona);
 		float[] transformation = cameraNEW.getTransformation().toFloatArray();
 		System.out.println("TRANSFORM : ");
 		float[] layerTransformation = layer.getJhvjpxView().getMetaData()
@@ -544,6 +558,9 @@ public class CompenentView extends GL3DComponentView implements
 		// empty screen
 		gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
 		gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
+		
+		
+		
 		System.out.println("layercount : " + layers.getLayerCount());
 		if (layers.getLayerCount() <= 0) {
 			splashScreen.render(gl, canvas.getSurfaceWidth(), canvas.getSurfaceHeight());
@@ -604,6 +621,12 @@ public class CompenentView extends GL3DComponentView implements
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		// TODO Auto-generated method stub
 		this.canvas.repaint();
 
@@ -720,6 +743,10 @@ public class CompenentView extends GL3DComponentView implements
 	public void activeLayerChanged(Layer layer) {
 		// TODO Auto-generated method stub
 
+	}
+	
+	public void addRenderAnimation(RenderAnimation renderAnimation){
+		this.animations.add(renderAnimation);
 	}
 
 }

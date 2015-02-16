@@ -1,5 +1,6 @@
 package org.helioviewer.jhv.gui.actions.gl3d;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
@@ -52,10 +53,10 @@ public class GL3DZoom1to1Action extends AbstractAction {
 			Region region = metaData.getPhysicalRegion();
             
 			if (region != null) {
-				double halfWidth = region.getWidth() / 2;
+				Dimension dimension = GuiState3DWCS.mainComponentView.getCanavasSize();
+				double minCanvasDimension = dimension.getHeight();
 	            double halfFOVRad = Math.toRadians(camera.getFOV() / 2.0);
-	            double distance = halfWidth * Math.sin(Math.PI / 2 - halfFOVRad) / Math.sin(halfFOVRad);
-	            distance = distance / region.getWidth() * (GuiState3DWCS.mainComponentView.getCanavasSize().getWidth() * unitsPerPixel);
+	            double distance = (minCanvasDimension/2.0 * unitsPerPixel) / Math.tan(halfFOVRad);
 	            distance = -distance - camera.getZTranslation();
 	            System.out.println("GL3DZoom1to1Action: Distance = " + distance
                 + " Existing Distance: " + camera.getZTranslation());

@@ -89,7 +89,7 @@ public class GLOverlayView extends AbstractGLView implements OverlayView{
 	 */
 	public void viewChanged(View sender, ChangeEvent aEvent) {
 		//Log.debug("viewChange: sender : " + sender);
-		if (aEvent.reasonOccurred(RegionChangedReason.class)){
+		if (aEvent != null && aEvent.reasonOccurred(RegionChangedReason.class)){
 				
 			Iterator<OverlayPluginContainer> iterator = this.overlays.iterator();
 			//Log.debug("sender : " + sender);
@@ -101,7 +101,7 @@ public class GLOverlayView extends AbstractGLView implements OverlayView{
 				}
 			}
 		}
-		if (aEvent.reasonOccurred(ViewChainChangedReason.class)) {
+		if (aEvent != null && aEvent.reasonOccurred(ViewChainChangedReason.class)) {
 			layeredView = ViewHelper.getViewAdapter(view, LayeredView.class);
 		}
 

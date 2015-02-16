@@ -4,6 +4,7 @@ uniform mat4 modelView;
 uniform mat4 transformation;
 uniform mat4 layerTransformation;
 uniform float sunRadius;
+uniform float physicalImageWidth;
 uniform float opacity;
 uniform float sharpen;
 uniform float gamma;
@@ -13,7 +14,8 @@ uniform int lutInverted;
 uniform int redChannel;
 uniform int greenChannel;
 uniform int blueChannel;
-
+uniform vec2 sunOffset;
+uniform float opacityCorona;
 
 struct Sphere{
 	vec3 center;
@@ -90,18 +92,19 @@ void main(void)
 		vec3 posOri = rayRot.origin + tSphere*rayRot.direction;
 		vec3 posRot = (vec4(posOri, 1) * layerTransformation).xyz;
 		if (posRot.z >= 0.0){
-	    	vec2 texPos = (posRot.xy/(sunRadius*2.5) + 0.5) *vec2(1.,1.);
+	    	vec2 texPos = (posRot.xy/physicalImageWidth + 0.5) *vec2(1.,1.) + sunOffset;
 			imageColor = texture2D(texture,texPos);
 		}
-		else {
-			imageColor = vec4(0,0,0,1);
-		}
 	}
+
    	if (tPlane > 0. && (tPlane < tSphere|| tSphere < 0.)){
 		vec3 posOri = rayRot.origin + tPlane*rayRot.direction;
 		//if (posOri.z >= 0.0){
-	    vec2 texPos = (posOri.xy/(sunRadius*2.5) + 0.5) *vec2(1.,1.);
-		imageColor = imageColor + texture2D(texture,texPos);
+	    vec2 texPos = (posOri.xy/physicalImageWidth + 0.5) *vec2(1.,1.) + sunOffset;
+	    vec4 coronaImageColor = texture2D(texture,texPos);
+	    if (opacityCorona > 0.){
+			imageColor = imageColor + vec4(coronaImageColor.xyz * opacityCorona, coronaImageColor.a);
+			}
 	}
     
     vec2 pos = vec2(imageColor.y,lutPosition/256.);

@@ -11,10 +11,12 @@ import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
+import org.helioviewer.jhv.opengl.CenterLoadingScreen;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.changeevent.LayerChangedReason;
 import org.helioviewer.jhv.viewmodel.renderer.screen.GLScreenRenderGraphics;
@@ -22,6 +24,7 @@ import org.helioviewer.jhv.viewmodel.renderer.screen.ScreenRenderer;
 import org.helioviewer.jhv.viewmodel.view.LayeredView;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.ViewHelper;
+import org.helioviewer.jhv.viewmodel.view.opengl.CompenentView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DComponentView;
 
 /**
@@ -47,6 +50,7 @@ public class MainImagePanel extends BasicImagePanel {
     private boolean noImagePostRendererSet = false;
 
     private LoadingPostRendererSwitch loadingPostRenderer = new LoadingPostRendererSwitch();
+    private CenterLoadingScreen centerLoadingScreen;
     private int loadingTasks = 0;
 
     private AbstractList<MouseMotionListener> mouseMotionListeners = new LinkedList<MouseMotionListener>();
@@ -69,6 +73,9 @@ public class MainImagePanel extends BasicImagePanel {
         noImagePostRendererSet = true;
 
         loadingPostRenderer.setContainerSize(getWidth(), getHeight());
+        
+        if (!JHVGlobals.OLD_RENDER_MODE)
+        	centerLoadingScreen = new CenterLoadingScreen();
     }
 
     /**
@@ -88,6 +95,7 @@ public class MainImagePanel extends BasicImagePanel {
                     noImagePostRendererSet = false;
                 }
                 addPostRenderer(loadingPostRenderer);
+                if (!JHVGlobals.OLD_RENDER_MODE) ((CompenentView) componentView).addRenderAnimation(centerLoadingScreen);
                 loadingPostRenderer.startAnimation();
             }
             loadingTasks++;
@@ -328,6 +336,8 @@ public class MainImagePanel extends BasicImagePanel {
          * Default constructor.
          */
         public BaseLoadingPostRenderer(JHVIcon icon, int offsetX, int offsetY, int radiusTrack, int radiusPearl, int numPearlPositions, int numPearls) {
+            //super(IconBank.JHVIcon.LOADING_BIG, 124, 101, 97, 6, 32, 12);
+
             this.offsetX = offsetX;
             this.offsetY = offsetY;
             this.radiusTrack = radiusTrack;
