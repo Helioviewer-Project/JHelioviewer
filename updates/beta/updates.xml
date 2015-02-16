@@ -6,9 +6,6 @@
   <entry targetMediaFileId="150" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_windows-x64_2_3_beta_17.exe" newVersion="2.3.beta.17" newMediaFileId="150" fileSize="37253408" bundledJre="windows-amd64-1.7.0_72" archive="false">
     <comment language="en" />
   </entry>
-  <entry targetMediaFileId="216" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_linux_2_3_beta_17.rpm" newVersion="2.3.beta.17" newMediaFileId="216" fileSize="32310558" bundledJre="" archive="true">
-    <comment language="en" />
-  </entry>
   <entry targetMediaFileId="218" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_2_3_beta_17_64_bit.deb" newVersion="2.3.beta.17" newMediaFileId="218" fileSize="32189100" bundledJre="" archive="true">
     <comment language="en" />
   </entry>
