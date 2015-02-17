@@ -12,6 +12,7 @@ import org.helioviewer.jhv.base.GL3DKeyController;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
+import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.ViewHelper;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DCameraView;
@@ -80,7 +81,7 @@ public class GL3DCameraMouseController extends AbstractImagePanelMouseController
             buttonDown = true;
         }
         GL3DCamera currentCamera = getCamera();
-        if (currentCamera != null) {
+        if (currentCamera != null && GL3DState.get()!=null) {
             currentCamera.getCurrentInteraction().mousePressed(e);
         }
     }

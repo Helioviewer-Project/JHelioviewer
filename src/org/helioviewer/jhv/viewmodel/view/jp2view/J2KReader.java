@@ -243,7 +243,7 @@ class J2KReader implements Runnable {
                 parentViewRef.readerSignal.waitForSignal();
 
             } catch (InterruptedException e) {
-                continue;
+                return;
             }
 
             // If image is not remote image, do nothing and just signal render
@@ -276,6 +276,9 @@ class J2KReader implements Runnable {
                         socket = new JPIPSocket();
                         socket.connect(parentImageRef.getURI());
                         if (!parentImageRef.isMultiFrame()) {
+                            if(Thread.currentThread().isInterrupted())
+                                return;
+                            
                             KakaduUtils.updateServerCacheModel(socket, cacheRef, true);
                         }
 
@@ -291,7 +294,14 @@ class J2KReader implements Runnable {
                         }
                         ChangeEvent event = new ChangeEvent(new SubImageDataChangedReason(parentViewRef));
                         event.addReason(new ReaderErrorReason(parentViewRef, e));
+                        
+                        if(Thread.currentThread().isInterrupted())
+                            return;
+
                         parentViewRef.fireChangeEvent(event);
+
+                        if(Thread.currentThread().isInterrupted())
+                            return;
 
                         // Send signal to try again
                         parentViewRef.readerSignal.signal();
@@ -309,10 +319,23 @@ class J2KReader implements Runnable {
                         // queries left
                         // (actually, I do not know, when this might happen...)
                         if (complete) {
+                            if(Thread.currentThread().isInterrupted())
+                                return;
+
                             if (parentViewRef.isPersistent() && req != null && req.getQuery() != null) {
+                                if(Thread.currentThread().isInterrupted())
+                                    return;
+
                                 socket.send(req);
+
+                                if(Thread.currentThread().isInterrupted())
+                                    return;
+
                                 socket.receive();
                             }
+                            
+                            if(Thread.currentThread().isInterrupted())
+                                return;
 
                             // If nothing to do and this is not the main view,
                             // close socket
@@ -395,7 +418,8 @@ class J2KReader implements Runnable {
                                 throw new RuntimeException("Whan an ususual strategy: "+strategy);
                             }
                             
-                            
+                            if(Thread.currentThread().isInterrupted())
+                                return;
                             
 
                             req = new JPIPRequest(HTTPRequest.Method.GET);
@@ -419,12 +443,21 @@ class J2KReader implements Runnable {
                                 stepQuerys[current_step].setField(JPIPRequestField.LEN.toString(), String.valueOf(JpipRequestLen));
 
                                 req.setQuery(stepQuerys[current_step].toString());
+                                
+                                if(Thread.currentThread().isInterrupted())
+                                    return;
+
                                 socket.send(req);
 
+                                if(Thread.currentThread().isInterrupted())
+                                    return;
+                                
                                 // long start = System.currentTimeMillis();
                                 res = socket.receive();
                                 
-                                
+                                if(Thread.currentThread().isInterrupted())
+                                    return;
+
                                 // if(iamPersistent)
                                 // System.out.println(res.getResponseSize() /
                                 // (System.currentTimeMillis() - start));
@@ -434,6 +467,9 @@ class J2KReader implements Runnable {
 
                                     // Update optimal package size
                                     flowControl();
+                                    
+                                    if(Thread.currentThread().isInterrupted())
+                                        return;
 
                                     // Downgrade, if necessary
                                     if (downgradeNecessary && res.getResponseSize() > 0 && parentViewRef.isMainView() && parentViewRef instanceof JHVJPXView) {
@@ -471,6 +507,9 @@ class J2KReader implements Runnable {
                                         downgradeNecessary = false;
                                     }
 
+                                    if(Thread.currentThread().isInterrupted())
+                                        return;
+
                                     // add response to cache - if query
                                     // complete, react
                                     if (cacheRef.addJPIPResponseData(res)) {
@@ -481,6 +520,9 @@ class J2KReader implements Runnable {
 
                                         // tell the cache status
                                         if (parentViewRef.isMainView() && parentViewRef instanceof JHVJPXView) {
+
+                                            if(Thread.currentThread().isInterrupted())
+                                                return;
 
                                             ImageCacheStatus cacheStatus = ((JHVJPXView) parentViewRef).getImageCacheStatus();
 
@@ -496,8 +538,15 @@ class J2KReader implements Runnable {
                                                     cacheStatus.setImageStatus(j, CacheStatus.COMPLETE);
                                                 }
                                             }
+                                            
+                                            if(Thread.currentThread().isInterrupted())
+                                                return;
+
                                         }
                                     }
+                                    
+                                    if(Thread.currentThread().isInterrupted())
+                                        return;
 
                                     // Fire ChangeEvent, if wanted
                                     if ((parentViewRef.getReaderMode() == ReaderMode.ONLYFIREONCOMPLETE && stepQuerys[current_step] == null) || parentViewRef.getReaderMode() == ReaderMode.ALWAYSFIREONNEWDATA) {
@@ -514,6 +563,9 @@ class J2KReader implements Runnable {
                                                 parentViewRef.renderRequestedSignal.signal(RenderReasons.NEW_DATA);
                                             }
                                         }
+                                        
+                                        if(Thread.currentThread().isInterrupted())
+                                            return;
                                     }
                                 }
 
@@ -535,12 +587,15 @@ class J2KReader implements Runnable {
                                 default:
                                     break;
                                 }
+                                
+                                if(Thread.currentThread().isInterrupted())
+                                    return;
 
                                 // let others do their work, too
                                 Thread.yield();
 
                                 // Check, whether caching has to be interrupted
-                                if (parentViewRef.readerSignal.isSignaled() || Thread.interrupted()) {
+                                if (parentViewRef.readerSignal.isSignaled() || Thread.currentThread().isInterrupted()) {
                                     stopReading = true;
                                 }
                             }
@@ -572,6 +627,9 @@ class J2KReader implements Runnable {
                             }
                         }
                         parentViewRef.fireChangeEvent(new ChangeEvent(new ReaderErrorReason(parentViewRef, e)));
+                        
+                        if(Thread.currentThread().isInterrupted())
+                            return;
 
                         // Send signal to try again
                         parentViewRef.readerSignal.signal();
