@@ -1,19 +1,14 @@
 package org.helioviewer.jhv.opengl;
 
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.font.NumericShaper;
 import java.awt.image.BufferedImage;
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 
-import javax.media.j3d.Alpha;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.gui.IconBank;
-import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 
 import com.jogamp.common.nio.Buffers;
 
