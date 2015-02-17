@@ -97,6 +97,7 @@ public class UILatencyWatchdog
                                 client.SetUser(user);
                                 ArrayList<String> tags = new ArrayList<String>();
                                 tags.add(JHVGlobals.RAYGUN_TAG);
+                                tags.add("latency-watchdog");
                                 
                                 Throwable diagThrowable = new Throwable("UI latency watchdog - UI thread hang detected");
                                 diagThrowable.setStackTrace(limitedStackTrace.toArray(new StackTraceElement[0]));
