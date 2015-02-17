@@ -7,6 +7,7 @@ import java.nio.IntBuffer;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
+import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
@@ -25,17 +26,23 @@ public class CenterLoadingScreen implements RenderAnimation{
 	private final double FACTOR = 8;
 
 	public CenterLoadingScreen() {
-		OpenGLHelper.glContext.makeCurrent();
-		GL2 gl = OpenGLHelper.glContext.getGL().getGL2();
-        try {
-            BufferedImage image = IconBank.getImage(IconBank.JHVIcon.LOADING_BIG);
-            texture = OpenGLHelper.createTexture(gl, image);
-            OpenGLHelper.updateTexture(gl, texture, image);
-            dimension = new Dimension(image.getWidth(), image.getHeight());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        VBOVertices = initCircleVBO(gl);        
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				OpenGLHelper.glContext.makeCurrent();
+				GL2 gl = OpenGLHelper.glContext.getGL().getGL2();
+		        try {
+		            BufferedImage image = IconBank.getImage(IconBank.JHVIcon.LOADING_BIG);
+		            texture = OpenGLHelper.createTexture(gl, image);
+		            OpenGLHelper.updateTexture(gl, texture, image);
+		            dimension = new Dimension(image.getWidth(), image.getHeight());
+		        } catch (Exception e) {
+		            e.printStackTrace();
+		        }
+		        VBOVertices = initCircleVBO(gl);        				
+			}
+		});
 	}
 	
 	@Override
@@ -62,6 +69,7 @@ public class CenterLoadingScreen implements RenderAnimation{
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		gl.glLoadIdentity();
 		gl.glColor3f(1, 1, 1);
+		/*
 		gl.glEnable(GL2.GL_BLEND);
 		gl.glEnable(GL2.GL_TEXTURE_2D);
 		gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
@@ -85,11 +93,11 @@ public class CenterLoadingScreen implements RenderAnimation{
 		gl.glDisable(GL2.GL_DEPTH_TEST);
 		gl.glDisable(GL2.GL_BLEND);
 		gl.glDisable(GL2.GL_TEXTURE_2D);
-		
+		*/
 		renderCircles(gl, 0);
 		
 	}
-
+	
 	private void renderCircles(GL2 gl, double t){
 		for (int i = 0; i < NUMBER_OF_VISIBLE_CIRCLE; i ++){
 			gl.glEnableClientState(GL2.GL_VERTEX_ARRAY);
@@ -99,9 +107,9 @@ public class CenterLoadingScreen implements RenderAnimation{
 			gl.glEnable(GL2.GL_BLEND);
 			gl.glEnable(GL2.GL_LINE_SMOOTH);
 			gl.glDepthMask(false);
+			gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, VBOVertices);
 			gl.glVertexPointer(2, GL2.GL_FLOAT, 0, 0);
 			gl.glDrawArrays(GL2.GL_LINE_STRIP, 0, size);
-			gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, VBOVertices);
 			gl.glVertexPointer(3, GL2.GL_FLOAT, 0, 0);
 
 		}
@@ -114,6 +122,7 @@ public class CenterLoadingScreen implements RenderAnimation{
 	}
 	
 	public int initCircleVBO(GL2 gl){
+		System.out.println("initCircle");
 		FloatBuffer vertices = Buffers.newDirectFloatBuffer(360 * 2);
 		
 		for (int i = 0; i < 360; i ++){

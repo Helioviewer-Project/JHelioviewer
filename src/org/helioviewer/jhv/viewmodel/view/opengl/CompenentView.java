@@ -78,6 +78,7 @@ public class CompenentView extends GL3DComponentView implements
 
 	public CompenentView() {
 		GuiState3DWCS.layers.addNewLayerListener(this);
+		animations = new CopyOnWriteArrayList<RenderAnimation>();
 		lutMap = new HashMap<String, Integer>();
 		this.canvas.setSharedContext(OpenGLHelper.glContext);
 		this.canvas.addMouseListener(this);
@@ -559,7 +560,11 @@ public class CompenentView extends GL3DComponentView implements
 		gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
 		gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
 		
-		
+		if (animations.size() > 0){
+			for (RenderAnimation animation : animations){
+				animation.render(gl, canvas.getSurfaceWidth(), canvas.getSurfaceHeight());
+			}
+		}
 		
 		System.out.println("layercount : " + layers.getLayerCount());
 		if (layers.getLayerCount() <= 0) {
