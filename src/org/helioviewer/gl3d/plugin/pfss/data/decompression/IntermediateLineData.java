@@ -100,8 +100,8 @@ public class IntermediateLineData {
 	
 	/**
 	 * Converts the spherical coordinates to cartesian. It centers the coordinates around the viewpoint of earth.
-	 * @param longitudeToEarth
-	 * @param latitudeToEarth
+	 * @param longitudeToEarth l0
+	 * @param latitudeToEarth b0
 	 */
 	public void toCartesian(double longitudeToEarth, double latitudeToEarth) {
 		for(int i = 0; i <this.size;i++) {
@@ -115,12 +115,12 @@ public class IntermediateLineData {
 	        double r = rawR / 8192.0 * Constants.SunRadius;
 	        double p = rawPhi / 32768.0 * 2 * Math.PI;
 	        double t = rawTheta / 32768.0 * 2 * Math.PI;
-	        t = -t;
+	        
 	        p -= longitudeToEarth / 180.0 * Math.PI;
 	        t += latitudeToEarth / 180.0 * Math.PI;
 	        
-	        channels[0][i] = -(float)(r * Math.sin(t) * Math.sin(p)); 	//x
-	        channels[1][i] = -(float)(r * Math.cos(t)); 					//y
+	        channels[0][i] = (float)(r * Math.sin(t) * Math.sin(p)); 	//x
+	        channels[1][i] = (float)(r * Math.cos(t)); 					//y
 	        channels[2][i] = (float)(r * Math.sin(t) * Math.cos(p)); 	//z
 		}
 	}	
