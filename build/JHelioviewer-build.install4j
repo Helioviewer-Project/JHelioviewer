@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<install4j version="6.0" transformSequenceNumber="5">
-  <directoryPresets config="../../cer/Open Source Developer, Simon Felix.pfx" />
+<install4j version="6.0.1" transformSequenceNumber="5">
+  <directoryPresets config="../../../../Desktop/cert_smeier.p12" />
   <application name="JHelioviewer" distributionSourceDir="" applicationId="7791-5722-0682-7193" mediaDir="./builds" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="9" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="JHelioviewer" publisher="ESA JHelioviewer Team" publisherWeb="http://www.jhelioviewer.org" version="2.3.beta.17" allPathsRelative="true" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="7ed177551bd348bc" javaMinVersion="1.7" javaMaxVersion="" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="en" customLocalizationFile="" />
@@ -11,9 +11,11 @@
       <envVar name="JAVA_HOME" />
       <envVar name="JDK_HOME" />
     </searchSequence>
-    <variables />
+    <variables>
+      <variable name="mode" value="beta" description="" category="" />
+    </variables>
     <mergedProjects />
-    <codeSigning macEnabled="false" macPkcs12File="../../../../Desktop/sign_cert.p12" windowsEnabled="true" windowsKeySource="pkcs12" windowsPvkFile="" windowsSpcFile="" windowsPkcs12File="../../cer/Open Source Developer, Simon Felix.pfx" />
+    <codeSigning macEnabled="true" macPkcs12File="../../../../Desktop/cert_smeier.p12" windowsEnabled="true" windowsKeySource="pkcs12" windowsPvkFile="" windowsSpcFile="" windowsPkcs12File="../../cer/Open Source Developer, Simon Felix.pfx" />
   </application>
   <files keepModificationTimes="false" missingFilesStrategy="warn" globalExcludeSuffixes="" defaultOverwriteMode="4" defaultUninstallMode="0" launcherOverwriteMode="3" defaultFileMode="644" defaultDirMode="755">
     <filesets />
@@ -55,7 +57,7 @@
     </components>
   </files>
   <launchers>
-    <launcher name="JHelioviewer" id="24" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="../build-resources/mac/JHV_icon.icns" customMacBundleIdentifier="false" macBundleIdentifier="org.helioviewer.jhv.JHelioviewer" swtApp="false" fileset="" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="./mac-build/JHelioViewer.plist" useCustomMacosExecutableName="false" customMacosExecutableName="">
+    <launcher name="JHelioviewer" id="24" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="../build-resources/mac/JHV_icon.icns" customMacBundleIdentifier="true" macBundleIdentifier="org.helioviewer.jhv.JHelioviewer" swtApp="false" fileset="" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="./mac-build/JHelioViewer.plist" useCustomMacosExecutableName="false" customMacosExecutableName="">
       <executable name="JHelioviewer" type="1" iconSet="true" iconFile="../build-resources/windows/JHelioviewer.ico" executableDir="bin" redirectStderr="false" stderrFile="error.log" stderrMode="overwrite" redirectStdout="false" stdoutFile="output.log" stdoutMode="overwrite" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false" globalSingleInstance="false" singleInstanceActivate="true" dpiAware="true">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" productName="" />
       </executable>
@@ -126,7 +128,7 @@
       </iconImageFiles>
     </launcher>
   </launchers>
-  <installerGui installerType="1" addOnAppId="" suggestPreviousLocations="true" autoUpdateDescriptorUrl="http://www.jhelioviewer.org/updates/beta/updates.xml" useAutoUpdateBaseUrl="true" autoUpdateBaseUrl="https://github.com/Helioviewer-Project/JHelioviewer/releases/download/${compiler:sys.version}/">
+  <installerGui installerType="1" addOnAppId="" suggestPreviousLocations="true" autoUpdateDescriptorUrl="http://www.jhelioviewer.org/updates/${compiler:mode}/updates.xml" useAutoUpdateBaseUrl="true" autoUpdateBaseUrl="https://github.com/Helioviewer-Project/JHelioviewer/releases/download/${compiler:sys.version}/">
     <staticMembers script="" />
     <customCode />
     <autoUpdate useMinUpdatableVersion="false" minUpdatableVersion="" useMaxUpdatableVersion="false" maxUpdatableVersion="">
@@ -141,7 +143,32 @@
               <void property="customIconImageFiles">
                 <void method="add">
                   <object class="com.install4j.api.beans.ExternalFile">
-                    <string>./resources/all_platforms.png</string>
+                    <string>./resources/all_platforms_16x16.png</string>
+                  </object>
+                </void>
+                <void method="add">
+                  <object class="com.install4j.api.beans.ExternalFile">
+                    <string>./resources/all_platforms_32x32.png</string>
+                  </object>
+                </void>
+                <void method="add">
+                  <object class="com.install4j.api.beans.ExternalFile">
+                    <string>./resources/all_platforms_64x64.png</string>
+                  </object>
+                </void>
+                <void method="add">
+                  <object class="com.install4j.api.beans.ExternalFile">
+                    <string>./resources/all_platforms_128x128.png</string>
+                  </object>
+                </void>
+                <void method="add">
+                  <object class="com.install4j.api.beans.ExternalFile">
+                    <string>./resources/all_platforms_256x256.png</string>
+                  </object>
+                </void>
+                <void method="add">
+                  <object class="com.install4j.api.beans.ExternalFile">
+                    <string>./resources/all_platforms_512x512.png</string>
                   </object>
                 </void>
               </void>
@@ -352,12 +379,47 @@
           </screen>
         </screens>
       </application>
-      <application name="" id="uninstaller" customizedId="" beanClass="com.install4j.runtime.beans.applications.UninstallerApplication" enabled="true" commentSet="false" comment="" actionElevationType="none" fileset="" customIcnsFile="" customIcoFile="" macEntitlementsFile="" automaticLauncherIntegration="false" launchMode="startupFirstWindow" launchInNewProcess="false" launchSchedule="updateSchedule" allLaunchers="true">
+      <application name="" id="uninstaller" customizedId="" beanClass="com.install4j.runtime.beans.applications.UninstallerApplication" enabled="true" commentSet="false" comment="" actionElevationType="none" fileset="" customIcnsFile="./resources/all_platforms.icns" customIcoFile="./resources/all_platforms.ico" macEntitlementsFile="" automaticLauncherIntegration="false" launchMode="startupFirstWindow" launchInNewProcess="false" launchSchedule="updateSchedule" allLaunchers="true">
         <serializedBean>
           <java class="java.beans.XMLDecoder">
-            <object class="com.install4j.runtime.beans.applications.UninstallerApplication">
+            <object class="com.install4j.runtime.beans.applications.UninstallerApplication" id="UninstallerApplication0">
+              <void property="customIconImageFiles">
+                <void method="add">
+                  <object class="com.install4j.api.beans.ExternalFile">
+                    <string>./resources/all_platforms_16x16.png</string>
+                  </object>
+                </void>
+                <void method="add">
+                  <object class="com.install4j.api.beans.ExternalFile">
+                    <string>./resources/all_platforms_32x32.png</string>
+                  </object>
+                </void>
+                <void method="add">
+                  <object class="com.install4j.api.beans.ExternalFile">
+                    <string>./resources/all_platforms_64x64.png</string>
+                  </object>
+                </void>
+                <void method="add">
+                  <object class="com.install4j.api.beans.ExternalFile">
+                    <string>./resources/all_platforms_128x128.png</string>
+                  </object>
+                </void>
+                <void method="add">
+                  <object class="com.install4j.api.beans.ExternalFile">
+                    <string>./resources/all_platforms_256x256.png</string>
+                  </object>
+                </void>
+                <void method="add">
+                  <object class="com.install4j.api.beans.ExternalFile">
+                    <string>./resources/all_platforms_512x512.png</string>
+                  </object>
+                </void>
+              </void>
               <void property="customMacosExecutableName">
                 <string>${i18n:UninstallerMenuEntry(${compiler:sys.fullName})}</string>
+              </void>
+              <void property="useCustomIcon">
+                <boolean>true</boolean>
               </void>
               <void property="useCustomMacosExecutableName">
                 <boolean>true</boolean>
@@ -463,34 +525,39 @@
           </screen>
         </screens>
       </application>
-      <application name="Updater with silent version check" id="366" customizedId="" beanClass="com.install4j.runtime.beans.applications.CustomApplication" enabled="true" commentSet="false" comment="" actionElevationType="none" fileset="" customIcnsFile="" customIcoFile="" macEntitlementsFile="" automaticLauncherIntegration="true" launchMode="startupSync" launchInNewProcess="false" launchSchedule="always" allLaunchers="true">
+      <application name="Updater with silent version check" id="366" customizedId="" beanClass="com.install4j.runtime.beans.applications.CustomApplication" enabled="true" commentSet="false" comment="" actionElevationType="none" fileset="" customIcnsFile="./resources/Update_Icon.icns" customIcoFile="./resources/Update_Icon.ico" macEntitlementsFile="" automaticLauncherIntegration="true" launchMode="startupSync" launchInNewProcess="false" launchSchedule="always" allLaunchers="true">
         <serializedBean>
           <java class="java.beans.XMLDecoder">
             <object class="com.install4j.runtime.beans.applications.CustomApplication" id="CustomApplication0">
               <void property="customIconImageFiles">
                 <void method="add">
                   <object class="com.install4j.api.beans.ExternalFile">
-                    <string>${compiler:sys.install4jHome}/resource/updater_16.png</string>
+                    <string>./resources/Update_Icon_16x16.png</string>
                   </object>
                 </void>
                 <void method="add">
                   <object class="com.install4j.api.beans.ExternalFile">
-                    <string>${compiler:sys.install4jHome}/resource/updater_32.png</string>
+                    <string>./resources/Update_Icon_32x32.png</string>
                   </object>
                 </void>
                 <void method="add">
                   <object class="com.install4j.api.beans.ExternalFile">
-                    <string>${compiler:sys.install4jHome}/resource/updater_48.png</string>
+                    <string>./resources/Update_Icon_64x64.png</string>
                   </object>
                 </void>
                 <void method="add">
                   <object class="com.install4j.api.beans.ExternalFile">
-                    <string>${compiler:sys.install4jHome}/resource/updater_128.png</string>
+                    <string>./resources/Update_Icon_128x128.png</string>
                   </object>
                 </void>
                 <void method="add">
                   <object class="com.install4j.api.beans.ExternalFile">
-                    <string>${compiler:sys.install4jHome}/resource/updater_256.png</string>
+                    <string>./resources/Update_Icon_256x256.png</string>
+                  </object>
+                </void>
+                <void method="add">
+                  <object class="com.install4j.api.beans.ExternalFile">
+                    <string>./resources/Update_Icon_512x512.png</string>
                   </object>
                 </void>
               </void>
@@ -1333,7 +1400,7 @@ return true;</string>
     </applications>
   </installerGui>
   <mediaSets>
-    <macosArchive name="Mac OS X Single Bundle Archive" id="68" customizedId="" mediaFileName="${compiler:sys.shortName}" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="macosx-amd64-1.7.0_72_unpacked" manualJREEntry="false" appleJre="false" archiveType="dmg" volumeName="${compiler:sys.shortName}" launcherId="24">
+    <macosArchive name="Mac OS X Single Bundle Archive" id="68" customizedId="" mediaFileName="${compiler:sys.shortName}" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="macosx-amd64-1.7.0_76_unpacked" manualJREEntry="false" appleJre="false" archiveType="dmg" volumeName="${compiler:sys.shortName}" launcherId="24">
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
       <exclude>
@@ -1341,12 +1408,15 @@ return true;</string>
         <entry location="lib/gluegen-rt-natives-linux-i586.jar" fileType="regular" />
         <entry location="lib/gluegen-rt-natives-windows-amd64.jar" fileType="regular" />
         <entry location="lib/gluegen-rt-natives-windows-i586.jar" fileType="regular" />
+        <entry location="lib/i4jruntime.jar" fileType="regular" />
         <entry location="lib/jogl-all-natives-linux-amd64.jar" fileType="regular" />
         <entry location="lib/jogl-all-natives-linux-i586.jar" fileType="regular" />
         <entry location="lib/jogl-all-natives-windows-amd64.jar" fileType="regular" />
         <entry location="lib/jogl-all-natives-windows-i586.jar" fileType="regular" />
         <entry location="lib/xuggle-xuggler-5.4-all.jar" fileType="regular" />
+        <entry location="lib/xuggle-xuggler-5.4-linux.jar" fileType="regular" />
         <entry location="lib/xuggle-xuggler-5.4-win32.jar" fileType="regular" />
+        <entry location="lib/xuggle-xuggler-5.4-win64.jar" fileType="regular" />
         <entry location="resources/libs/linux" fileType="regular" />
         <entry location="resources/libs/windows" fileType="regular" />
       </exclude>
@@ -1368,6 +1438,7 @@ return true;</string>
         <entry location="lib/gluegen-rt-natives-linux-i586.jar" fileType="regular" />
         <entry location="lib/gluegen-rt-natives-macosx-universal.jar" fileType="regular" />
         <entry location="lib/gluegen-rt-natives-windows-i586.jar" fileType="regular" />
+        <entry location="lib/i4jruntime.jar" fileType="regular" />
         <entry location="lib/jogl-all-natives-linux-amd64.jar" fileType="regular" />
         <entry location="lib/jogl-all-natives-linux-i586.jar" fileType="regular" />
         <entry location="lib/jogl-all-natives-macosx-universal.jar" fileType="regular" />
@@ -1471,8 +1542,8 @@ return true;</string>
       </postUninstallScript>
     </linuxRPM>
   </mediaSets>
-  <buildIds buildAll="true">
-    <mediaSet refId="150" />
+  <buildIds buildAll="false">
+    <mediaSet refId="68" />
   </buildIds>
   <buildOptions verbose="false" faster="false" disableSigning="false" disableJreBundling="false" debug="false" />
 </install4j>

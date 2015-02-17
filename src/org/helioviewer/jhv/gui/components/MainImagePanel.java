@@ -94,7 +94,7 @@ public class MainImagePanel extends BasicImagePanel {
                     noImagePostRendererSet = false;
                 }
                 addPostRenderer(loadingPostRenderer);
-                if (!JHVGlobals.OLD_RENDER_MODE) ((CompenentView) componentView).addRenderAnimation(centerLoadingScreen);
+                if (!JHVGlobals.OLD_RENDER_MODE) ((CompenentView) GuiState3DWCS.mainComponentView).addRenderAnimation(centerLoadingScreen);
                 loadingPostRenderer.startAnimation();
             }
             loadingTasks++;

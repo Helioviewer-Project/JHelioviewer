@@ -1,0 +1,82 @@
+package org.helioviewer.jhv.plugins.pfssplugin.settings;
+
+import org.helioviewer.jhv.base.math.Vector3d;
+
+/**
+ * Important settings
+ * 
+ * @author Stefan Meier (stefan.meier@fhnw.ch)
+ * */
+public class PfssSettings {
+
+	/**
+	 * Needed for the JHV plugin initialization
+	 */
+	public final static String PLUGIN_LOCATION = "PfssPlugin";
+
+	/**
+	 * Maximal number of frames the plugin reads ahead
+	 */
+	public final static int FRAME_PRELOAD = 10;
+	
+	/**
+	 * size of frame cache, should be bigger than preload
+	 */
+	public final static int FRAME_CACHE = 20;
+
+	/**
+	 * Maximum size of cache data.
+	 */
+	public final static int DATA_CACHE_SIZE = 1000;
+	
+	/**
+	 * Number of Preloaded PFSSdata
+	 */
+	public final static int DATA_PRELOAD_SIZE = 25;
+
+	
+	/**
+	 * URL of the dataserver
+	 */
+	public final static String SERVER_URL = "http://soleil.i4ds.ch/sol-win/v1/";
+
+	
+	/**
+	 * Deltas between the PFSS Files. Currently there is a file for every 6 hours
+	 */
+	public final static int FITS_FILE_D_HOUR = 6;
+	public final static int FITS_FILE_D_MINUTES = 0;
+	
+	/**
+	 * Color of the line (from sunradius to outside)
+	 */
+	public final static Vector3d SUN_OUT_LINE_COLOR = new Vector3d(0f, 1f, 0f);
+
+	/**
+	 * Color of the line (from outside to sunradius)
+	 */
+	public final static Vector3d OUT_SUN_LINE_COLOR = new Vector3d(1f, 0f, 1f);
+
+	/**
+	 * Color of the line (from sunradius to sunradius)
+	 */
+	public final static Vector3d SUN_SUN_LINE_COLOR = new Vector3d(1f, 1f, 1f);
+
+	/**
+	 * Alpha-value of lines
+	 */
+	public final static float LINE_ALPHA = 1.0f;
+
+	/**
+	 * Cos of angle for LOD in degree or radian, if you would use degree
+	 * Math.toRadian(DEGREEVALUE))
+	 */
+	public final static double ANGLE_OF_LOD = Math.cos(Math.toRadians(3.0));
+	
+	public final static int SMOOTH_FILTER_SIZE = 3;
+	
+	/**
+	 * Linewidth for the OpenGL visualization
+	 */
+	public final static float LINE_WIDTH = 1.5f;
+}

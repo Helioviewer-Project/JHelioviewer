@@ -1,28 +1,31 @@
 package org.helioviewer.jhv.plugins.pfssplugin;
 
+import java.io.IOException;
+import java.util.Date;
+
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
-import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
-import org.helioviewer.jhv.plugins.pfssplugin.data.PfssCache;
-import org.helioviewer.jhv.plugins.pfssplugin.data.PfssData;
-import org.helioviewer.jhv.plugins.pfssplugin.data.PfssFitsFile;
+import org.helioviewer.jhv.plugins.pfssplugin.data.PfssFrame;
+import org.helioviewer.jhv.plugins.pfssplugin.data.managers.FrameManager;
 import org.helioviewer.jhv.viewmodel.renderer.physical.GLPhysicalRenderGraphics;
 import org.helioviewer.jhv.viewmodel.renderer.physical.PhysicalRenderer3d;
 import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
 import org.helioviewer.jhv.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 
 /**
- * @author Stefan Meier (stefan.meier@fhnw.ch)
+ * @author Stefan Meier (stefan.meier@fhnw.ch), Jonas Schwammberger (jonas.schwammberger@fhnw.ch)
  * */
 public class PfssPlugin3dRenderer extends PhysicalRenderer3d {
-	private PfssCache pfssCache = null;
+	private FrameManager manager;
 	private GL lastGl = null;
+	private boolean isVisible = false;
 	/**
 	 * Default constructor.
 	 */
-	public PfssPlugin3dRenderer(PfssCache pfssCache) {
-		this.pfssCache = pfssCache;
+	public PfssPlugin3dRenderer() {
+		this.manager = new FrameManager();
 	}
 
 	/**
@@ -31,24 +34,45 @@ public class PfssPlugin3dRenderer extends PhysicalRenderer3d {
 	 * Draws all available and visible solar events with there associated icon.
 	 */
 	public void render(GLPhysicalRenderGraphics g) {
-		if (!LinkedMovieManager.getActiveInstance().isPlaying() && pfssCache.isVisible()) {
-			GL2 gl = g.gl.getGL2();
-			PfssFitsFile fitsToClear = pfssCache.getFitsToDelete();
-			if (fitsToClear != null)
-				fitsToClear.clear(gl);
-			PfssData pfssData = pfssCache.getData();
-
-			if (pfssData != null) {
-				if (lastGl != gl) pfssData.setInit(false);
-				pfssData.init(gl);
-				lastGl = gl;
-				if (pfssData.isInit()) {
-					pfssData.display(gl);
-				}
-				
-			}
-		GL3DState.get().checkGLErrors("PfssPlugin3dRenderer.afterRender");
+		
+		JHVJPXView masterView = LinkedMovieManager.getActiveInstance().getMasterMovie();;
+		if (this.isVisible) {
+			GL2 gl = g.gl;
+			
+			manager.preInitFrames(gl);
+			Date date = masterView.getCurrentFrameDateTime().getTime();
+			PfssFrame frame = manager.getFrame(date);
+			if(frame != null)
+				frame.display(gl, date);			
 		}
+	}
+	
+	@Deprecated
+	public void render(Date d) {
+		manager.preInitFrames(null);
+		Date date = d;
+		PfssFrame frame = manager.getFrame(date);
+		if(frame != null)
+			frame.display(null,null);
+	}
+	
+	/**
+	 * sets the dates which the renderer should display
+	 * @param start first date inclusive
+	 * @param end last date inclusive
+	 * @throws IOException if the dates are not present+
+	 */
+	public void setDisplayRange(Date start, Date end) throws IOException {
+		manager.setDateRange(start, end);
+		
+	}
+
+	public void setVisible(boolean visible) {
+		isVisible = visible;
+	}
+	
+	public boolean isVisible() {
+		return isVisible;
 	}
 
 	public void viewChanged(View view) {

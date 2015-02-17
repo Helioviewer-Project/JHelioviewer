@@ -41,7 +41,7 @@ import org.helioviewer.jhv.layers.NewLayerListener;
 import org.helioviewer.jhv.layers.filter.LUT;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.opengl.RenderAnimation;
-import org.helioviewer.jhv.opengl.SplashScreen;
+import org.helioviewer.jhv.opengl.NoImageScreen;
 import org.helioviewer.jhv.opengl.camera.Camera;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
 import org.helioviewer.jhv.opengl.camera.newCamera.CameraListener;
@@ -74,7 +74,7 @@ public class CompenentView extends GL3DComponentView implements
 	private Camera cameraNEW;
 
 	private CopyOnWriteArrayList<RenderAnimation> animations;
-	private SplashScreen splashScreen;
+	private NoImageScreen splashScreen;
 
 	public CompenentView() {
 		GuiState3DWCS.layers.addNewLayerListener(this);
@@ -549,7 +549,7 @@ public class CompenentView extends GL3DComponentView implements
 			
 			for (Layer layer : layers.getLayers()) {
 				if (layer.isVisible()) {
-					this.displayLayer(gl, layer);
+					//this.displayLayer(gl, layer);
 				}
 			}
 			gl.glPopMatrix();
@@ -585,7 +585,7 @@ public class CompenentView extends GL3DComponentView implements
 			drawable.setGL(new DebugGL2(drawable.getGL().getGL2()));
 		// GuiState3DWCS.overViewPanel.activate(drawable.getContext());
 		GL2 gl = drawable.getGL().getGL2();
-		splashScreen = new SplashScreen(gl);
+		splashScreen = new NoImageScreen(gl);
 		GL3DState.create(gl);
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 		gl.glDisable(GL2.GL_TEXTURE_2D);

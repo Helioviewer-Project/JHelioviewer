@@ -4,6 +4,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import org.helioviewer.jhv.plugins.pfssplugin.settings.PfssSettings;
 import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginManager;
 import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginSettings;
 import org.helioviewer.jhv.plugins.viewmodelplugin.interfaces.Plugin;
@@ -15,7 +16,9 @@ import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayPlugin;
  * */
 public class PfssPlugin extends OverlayPlugin implements Plugin {
 
-  /**
+	private boolean builtin_mode = false;
+
+	/**
 	 * Reference to the eventPlugin
 	 */
 	private PfssPluginContainer eventPlugin;
@@ -24,13 +27,26 @@ public class PfssPlugin extends OverlayPlugin implements Plugin {
 	 * Default constructor.
 	 */
 	public PfssPlugin() {
+		this(false);
+	}
+
+	/**
+	 * Constructor with debug flag. If debug flag is set, the plugin name shows
+	 * "Pfss Plugin Built-In Version"
+	 * 
+	 * @param builtin_mode
+	 *            - debug flag
+	 */
+	public PfssPlugin(boolean builtin_mode) {
+		this.builtin_mode = builtin_mode;
+
 		try {
 			this.pluginLocation = new URI(PfssSettings.PLUGIN_LOCATION);
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
 
-		eventPlugin = new PfssPluginContainer();
+		eventPlugin = new PfssPluginContainer(builtin_mode);
 		addOverlayContainer(eventPlugin);
 	}
 
@@ -54,9 +70,20 @@ public class PfssPlugin extends OverlayPlugin implements Plugin {
 
 	/**
 	 * {@inheritDoc}
+	 * <p>
+	 * A description is not needed here because this plug-in is activated always
+	 * and will not be visible in the corresponding dialogs.
+	 */
+	public String getDescription() {
+		return null;
+	}
+
+	/**
+	 * {@inheritDoc}
 	 */
 	public String getName() {
-		return "Pfss Overlay Plugin";
+		return "Pfss Overlay Plugin "
+				+ (builtin_mode ? "Built-In Version" : "");
 	}
 
 
@@ -68,9 +95,9 @@ public class PfssPlugin extends OverlayPlugin implements Plugin {
 	public String getAboutLicenseText() {
 		String description = "";
 		description += "<p>"
-				+ "This software uses the <a href=\"http://heasarc.gsfc.nasa.gov/docs/heasarc/fits/java/v1.0/\">Fits in Java</a> Library, licensed under a <a href=\"https://www.gnu.org/licenses/old-licenses/gpl-1.0-standalone.html\">GPL License</a>.";
+				+ "The plugin uses the <a href=\"http://heasarc.gsfc.nasa.gov/docs/heasarc/fits/java/v1.0/\">Fits in Java</a> Library, licensed under a <a href=\"https://www.gnu.org/licenses/old-licenses/gpl-1.0-standalone.html\">GPL License</a>.";
 		description += "<p>"
-				+ "This software uses the <a href=\"http://www.bzip.org\">Bzip2</a> Library, licensed under the <a href=\"http://opensource.org/licenses/bsd-license.php\">BSD License</a>.";
+				+ "The plugin uses the <a href=\"http://www.bzip.org\">Bzip2</a> Library, licensed under the <a href=\"http://opensource.org/licenses/bsd-license.php\">BSD License</a>.";
 
 		return description;
 	}

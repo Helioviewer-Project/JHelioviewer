@@ -29,5 +29,7 @@
 	<classpathentry kind="lib" path="lib/core-1.5.0.jar"/>
 	<classpathentry kind="lib" path="lib/gson-2.2.4.jar"/>
 	<classpathentry kind="lib" path="lib/i4jruntime.jar"/>
+	<classpathentry kind="lib" path="lib/tika-app-1.6.jar"/>
+	<classpathentry kind="lib" path="lib/java-unrar-0.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
