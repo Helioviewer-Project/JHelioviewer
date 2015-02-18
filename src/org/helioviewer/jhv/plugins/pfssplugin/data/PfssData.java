@@ -19,7 +19,8 @@ import org.helioviewer.jhv.plugins.pfssplugin.data.caching.Cacheable;
  * @author Jonas Schwammberger
  *
  */
-public class PfssData implements Runnable, Cacheable {
+public class PfssData implements Cacheable
+{
 	private volatile boolean isLoaded = false;
 	private volatile byte[] rawData;
 	private final Lock lock = new ReentrantLock();
@@ -82,7 +83,8 @@ public class PfssData implements Runnable, Cacheable {
 	 * 
 	 * @return true if data has finished loading into memory
 	 */
-	public boolean isLoaded() {
+	public boolean isLoaded()
+	{
 		return isLoaded;
 	}
 	
@@ -103,17 +105,14 @@ public class PfssData implements Runnable, Cacheable {
 	 * Check if it is loaded completely before accessing this method.
 	 * @return the loaded data 
 	 */
-	public byte[] getData() {
+	public byte[] getData()
+	{
 		return rawData;
 	}
 
 	@Override
-	public void run() {
-		loadData();
-	}
-	
-	@Override
-	public FileDescriptor getDescriptor() {
+	public FileDescriptor getDescriptor()
+	{
 		return this.descriptor;
 	}
 }

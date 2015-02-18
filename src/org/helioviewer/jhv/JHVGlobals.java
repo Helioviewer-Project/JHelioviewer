@@ -70,13 +70,31 @@ public class JHVGlobals {
     
     private static LinkedBlockingQueue<JFileChooser> fileChooser=new LinkedBlockingQueue<>();
     
+    public static JFileChooser getJFileChooser()
+    {
+        return getJFileChooser(null);
+    }
+    
     public static JFileChooser getJFileChooser(String _directory)
     {
         try
         {
             JFileChooser instance=fileChooser.take();
             fileChooser.add(instance);
-            instance.setCurrentDirectory(new File(_directory));
+            
+            
+            instance.setFileHidingEnabled(false);
+            instance.setMultiSelectionEnabled(false);
+            instance.setAcceptAllFileFilterUsed(false);
+            instance.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            instance.resetChoosableFileFilters();
+            instance.setSelectedFile(null);
+            
+            if(_directory==null)
+                instance.setCurrentDirectory(null);
+            else
+                instance.setCurrentDirectory(new File(_directory));
+            
             return instance;
         }
         catch(InterruptedException e)

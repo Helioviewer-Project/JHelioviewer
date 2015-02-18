@@ -14,6 +14,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
+import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.base.Message;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.actions.filefilters.ExtensionFileFilter;
@@ -107,7 +108,7 @@ public class SaveStateAction extends AbstractAction {
      *         error occured
      */
     private File chooseFile() {
-        JFileChooser fileChooser = new JFileChooser();
+        JFileChooser fileChooser = JHVGlobals.getJFileChooser();
         fileChooser.setFileHidingEnabled(false);
         fileChooser.setMultiSelectionEnabled(false);
         fileChooser.setAcceptAllFileFilterUsed(false);

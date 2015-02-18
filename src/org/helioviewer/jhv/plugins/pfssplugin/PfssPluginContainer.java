@@ -12,13 +12,9 @@ import org.helioviewer.jhv.viewmodel.view.opengl.OverlayPluginContainer;
  * 
  * @author Stefan Meier, Jonas Schwammberger
  */
-public class PfssPluginContainer extends OverlayContainer {
+public class PfssPluginContainer extends OverlayContainer
+{
 	private PfssPluginPanel pfssPluginPanel;
-	private boolean builtin_mode = false;
-
-	public PfssPluginContainer(boolean builtin_mode) {
-		this.builtin_mode = builtin_mode;
-	}
 
 	/**
 	 * {@inheritDoc}
@@ -48,7 +44,7 @@ public class PfssPluginContainer extends OverlayContainer {
 	 * {@inheritDoc}
 	 */
 	public String getName() {
-		return "PFSS " + (builtin_mode ? "Built-In Version" : "");
+		return "PFSS";
 	}
 
 

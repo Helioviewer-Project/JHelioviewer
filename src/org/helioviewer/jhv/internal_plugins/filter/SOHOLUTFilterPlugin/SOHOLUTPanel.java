@@ -16,6 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JToggleButton;
 import javax.swing.border.BevelBorder;
 
+import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.base.Message;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.IconBank;
@@ -123,7 +124,7 @@ public class SOHOLUTPanel extends FilterPanel implements ActionListener, FilterA
         LUT newMap = lutMap.get(combobox.getSelectedItem());
         if (newMap == null) {
             // Add new color table
-            JFileChooser fc = new JFileChooser();
+            JFileChooser fc = JHVGlobals.getJFileChooser();
             fc.setFileFilter(new GGRFilter());
             fc.setMultiSelectionEnabled(false);
             int state = fc.showOpenDialog(null);

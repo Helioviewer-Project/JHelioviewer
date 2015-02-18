@@ -153,9 +153,10 @@ public class PfssFrame implements Cacheable {
 	 * @param gl
 	 * @param time
 	 */
-	public void display(GL gl, Date time) {
-		if(isInit && gl != null) {
-			
+	public void display(GL gl, Date time)
+	{
+		if(isInit && gl != null)
+		{
 			JHVJPXView masterView=(JHVJPXView) LinkedMovieManager.getActiveInstance().getMasterMovie();
 	        if(masterView==null || masterView.getCurrentFrameDateTime()==null)
 	            return;
@@ -178,21 +179,22 @@ public class PfssFrame implements Cacheable {
 			gl2.glVertexPointer(3, GL2.GL_FLOAT, 0, 0);
 			Vector3d color;
 	
+            //see http://jgiesen.de/sunrot/index.html and http://www.petermeadows.com/stonyhurst/sdisk6in7.gif
+            gl2.glRotated(b0,1,0,0);
 			gl2.glRotated(DifferentialRotation.calculateRotationInDegrees(0,(currentDate.getTime()-descriptor.getStartDate().getTime())/1000d)-l0,0,1,0);
 			
-	         // TODO : Rotate B0, x-axis
-            //see http://jgiesen.de/sunrot/index.html
-		    gl2.glRotated(b0,1,0,0);
-			
 			gl2.glLineWidth(PfssSettings.LINE_WIDTH);
-			if (indicesSunToSun != null && indicesSunToSun.limit() > 0) {
+			if (indicesSunToSun != null && indicesSunToSun.limit() > 0)
+			{
 				color = PfssSettings.SUN_SUN_LINE_COLOR;
 				gl2.glColor4d(color.x, color.y, color.z, PfssSettings.LINE_ALPHA);
 				gl2.glBindBuffer(GL2.GL_ELEMENT_ARRAY_BUFFER, VBOIndicesSunToSun);
 				gl2.glDrawElements(GL2.GL_LINES, indicesSunToSun.limit(),
 						GL2.GL_UNSIGNED_INT, 0);
 			}
-			if (indicesSunToOutside != null && indicesSunToOutside.limit() > 0) {
+			
+			if (indicesSunToOutside != null && indicesSunToOutside.limit() > 0)
+			{
 				color = PfssSettings.SUN_OUT_LINE_COLOR;
 				gl2.glColor4d(color.x, color.y, color.z, PfssSettings.LINE_ALPHA);
 				gl2.glBindBuffer(GL2.GL_ELEMENT_ARRAY_BUFFER, VBOIndicesSunToOutside);
@@ -200,7 +202,8 @@ public class PfssFrame implements Cacheable {
 						GL2.GL_UNSIGNED_INT, 0);
 			}
 	
-			if (indicesOutsideToSun != null && indicesOutsideToSun.limit() > 0) {
+			if (indicesOutsideToSun != null && indicesOutsideToSun.limit() > 0)
+			{
 				color = PfssSettings.OUT_SUN_LINE_COLOR;
 				gl2.glColor4d(color.x, color.y, color.z, PfssSettings.LINE_ALPHA);
 				gl2.glBindBuffer(GL2.GL_ELEMENT_ARRAY_BUFFER, VBOIndicesOutsideToSun);
@@ -212,7 +215,9 @@ public class PfssFrame implements Cacheable {
 			gl2.glDisable(GL2.GL_BLEND);
 			gl2.glDepthMask(true);
 			gl2.glLineWidth(1f);
-		} else {
+		}
+		else
+		{
 			//if it is not loaded, await
 			if(!this.isLoaded) {
 				try {
@@ -230,7 +235,8 @@ public class PfssFrame implements Cacheable {
 		}
 	}
 	
-	private void awaitLoaded() throws InterruptedException {
+	private void awaitLoaded() throws InterruptedException
+	{
 		lock.lock();
 		try{
 			while(!isLoaded) isLoadedCondition.await();
@@ -243,19 +249,22 @@ public class PfssFrame implements Cacheable {
 	 * 
 	 * @return true if it has been initialised and is ready to be displayed
 	 */
-	public boolean isInit() {
+	public boolean isInit()
+	{
 		return isInit;
 	}
 	
 	/**
 	 * @return true if all the data has been loaded into memory
 	 */
-	public boolean isLoaded() {
+	public boolean isLoaded()
+	{
 		return isLoaded;
 	}
 	
 	@Override
-	public FileDescriptor getDescriptor() {
+	public FileDescriptor getDescriptor()
+	{
 		return this.descriptor;
 	}
 }

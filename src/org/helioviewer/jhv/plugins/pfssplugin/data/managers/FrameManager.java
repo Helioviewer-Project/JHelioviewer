@@ -16,13 +16,15 @@ import org.helioviewer.jhv.plugins.pfssplugin.data.caching.DataCache;
  * 
  * @author Jonas Schwammberger
  */
-public class FrameManager {
+public class FrameManager
+{
 	private final FileDescriptorManager descriptorManager;
 
 	private PfssFrame cur;
 	private DataCache dataCache;
 
-	public FrameManager() {
+	public FrameManager()
+	{
 		descriptorManager = new FileDescriptorManager();
 		dataCache = new DataCache(descriptorManager);
 	}
@@ -61,7 +63,8 @@ public class FrameManager {
      * @param end end date inclusive
      * @throws IOException if the requested dates could not be found
      */
-    public void setDateRange(Date start, Date end) throws IOException {
+    public void setDateRange(Date start, Date end) throws IOException
+    {
         descriptorManager.readFileDescriptors(start,end);
     }
 }

@@ -12,6 +12,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 import javax.swing.KeyStroke;
 
+import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.ImageViewerGui;
@@ -58,7 +59,7 @@ public class SaveScreenshotAsAction extends AbstractAction {
      */
     public void actionPerformed(ActionEvent e) {
         this.loadSettings();
-    	final JFileChooser fileChooser = new JFileChooser();
+    	final JFileChooser fileChooser = JHVGlobals.getJFileChooser();
         fileChooser.setAcceptAllFileFilterUsed(false);
         JPGFilter firstFilter = new JPGFilter();
         fileChooser.addChoosableFileFilter(firstFilter);

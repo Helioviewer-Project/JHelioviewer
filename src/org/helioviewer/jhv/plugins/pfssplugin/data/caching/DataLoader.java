@@ -1,8 +1,6 @@
 package org.helioviewer.jhv.plugins.pfssplugin.data.caching;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
+import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssSettings;
 import org.helioviewer.jhv.plugins.pfssplugin.data.FileDescriptor;
 import org.helioviewer.jhv.plugins.pfssplugin.data.PfssData;
@@ -13,10 +11,10 @@ import org.helioviewer.jhv.plugins.pfssplugin.data.PfssData;
  * @author Jonas Schwammberger
  *
  */
-public class DataLoader {
-	private static final ExecutorService pool = Executors.newCachedThreadPool();
-	
-	public DataLoader() {
+public class DataLoader
+{
+	public DataLoader()
+	{
 	}
 	
 	/**
@@ -24,13 +22,22 @@ public class DataLoader {
 	 * @param desc
 	 * @return PfssData object which will be loaded in the future
 	 */
-	public PfssData getDataAsync(FileDescriptor desc) {
-		PfssData d = new PfssData(desc,createURL(desc));
-		pool.execute(d);
+	public PfssData getDataAsync(FileDescriptor desc)
+	{
+		final PfssData d = new PfssData(desc,createURL(desc));
+		PfssPlugin.pool.execute(new Runnable()
+		{
+            @Override
+            public void run()
+            {
+                d.loadData();
+            }
+        });
 		return d;
 	}
 	
-	private static String createURL(FileDescriptor file) {
+	private static String createURL(FileDescriptor file)
+	{
 		StringBuilder b = new StringBuilder(PfssSettings.SERVER_URL);
 		b.append(file.getYear());
 		b.append("/");

@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssSettings;
 import org.helioviewer.jhv.plugins.pfssplugin.data.FileDescriptor;
 
@@ -20,12 +21,12 @@ import org.helioviewer.jhv.plugins.pfssplugin.data.FileDescriptor;
  *
  */
 public class FileDescriptorManager {
-	private ArrayList<FileDescriptor> descriptors;
+	private ArrayList<FileDescriptor> descriptors=new ArrayList<>();
 	private Date firstDate;
 	private Date endDate;
 	
-	public FileDescriptorManager() {
-		
+	public FileDescriptorManager()
+	{
 	}
 	
 	/**
@@ -33,7 +34,11 @@ public class FileDescriptorManager {
 	 * @param d
 	 * @return true if it is in range
 	 */
-	public boolean isDateInRange(Date d) {
+	public boolean isDateInRange(Date d)
+	{
+	    if(firstDate==null || endDate==null)
+	        return false;
+	    
 		return (firstDate.before(d) & endDate.after(d)) |  firstDate.equals(d) | endDate.equals(d);
 	}
 	
@@ -42,7 +47,8 @@ public class FileDescriptorManager {
 	 * @param from date of first file description to read
 	 * @param to date of last file description to read
 	 */
-	public void readFileDescriptors(Date from, Date to) throws IOException {
+	public void readFileDescriptors(final Date from, final Date to) throws IOException
+	{
 		this.firstDate = null;
 		this.endDate = null;
 		
@@ -57,13 +63,28 @@ public class FileDescriptorManager {
 		int currentYear = currentCal.get(Calendar.YEAR);
 		int currentMonth = currentCal.get(Calendar.MONTH);
 		
-		descriptors = new ArrayList<>(((endMonth-currentMonth)+1)* 125); //heuristic: for each month, there are about 125 fits files.
+		synchronized(descriptors)
+        {
+	        descriptors.clear();
+        }
 		
 		while(currentYear <= endYear && currentMonth <= endMonth) {
-			String m = (currentMonth) < 9 ? "0" + (currentMonth + 1)
-					: (currentMonth + 1) + "";
-			String url = PfssSettings.SERVER_URL + currentYear +"/"+m+"/list.txt";
-			this.readDescription(url, from, to,currentYear,currentMonth);
+			String m = (currentMonth) < 9 ? "0" + (currentMonth + 1) : (currentMonth + 1) + "";
+			final String url = PfssSettings.SERVER_URL + currentYear +"/"+m+"/list.txt";
+			
+			final int finalCurrentYear = currentYear;
+            final int finalCurrentMonth = currentMonth;
+			
+			PfssPlugin.pool.execute(new Runnable()
+	        {
+	            @Override
+	            public void run()
+	            {
+	                //readDescription(url, from, to, finalCurrentYear, finalCurrentMonth);
+	            }
+	        });
+			
+			readDescription(url, from, to, finalCurrentYear, finalCurrentMonth);
 			
 			currentCal.add(Calendar.MONTH, 1);
 			currentYear = currentCal.get(Calendar.YEAR);
@@ -83,8 +104,7 @@ public class FileDescriptorManager {
     private void readDescription(String url,Date from, Date to,int currentYear, int currentMonth) throws IOException {
     	try {
 			URL u = new URL(url);
-			BufferedReader in = new BufferedReader(
-					new InputStreamReader(u.openStream()));
+			BufferedReader in = new BufferedReader(new InputStreamReader(u.openStream()));
 			
 			String dateString = null;
 			String fileName= null;
@@ -105,32 +125,31 @@ public class FileDescriptorManager {
 				cal.add(Calendar.MILLISECOND, 1);// so there is exactly one millisecond difference between this and the next file descriptor
 				Date startTime = cal.getTime();
 					
-				if(!(endTime.before(from) || startTime.after(to))) {
-					descriptors.add(new FileDescriptor(startTime, endTime, fileName,descriptors.size()));
+				if(!(endTime.before(from) || startTime.after(to)))
+				{
+				    synchronized(descriptors)
+				    {
+				        descriptors.add(new FileDescriptor(startTime, endTime, fileName));
+				    }
 					
-					if(this.firstDate == null) this.firstDate = startTime;
+					if(this.firstDate == null)
+					    this.firstDate = startTime;
 					
 					this.endDate = endTime;
 				}
 			}
 		} 
-		catch (MalformedURLException e) {
+		catch (MalformedURLException e)
+		{
 			//programming error
 			e.printStackTrace();
-		} catch (IOException e) {
+		}
+    	catch (IOException e)
+		{
 			throw new IOException("Unable to find data for: "+currentYear +"/"+(currentMonth+1),e);
 		}
 	}
     
-    /**
-     * Returns the index of the FileDescriptor which contains the date
-     * @param d
-     * @return index or -1 if it could not be found
-     */
-	public int getFileIndex(Date d) {
-		return Collections.binarySearch(descriptors, d);
-	}
-	
     /**
      * Returns the Descriptor at Index
      * @param index
@@ -138,35 +157,25 @@ public class FileDescriptorManager {
      */
     public FileDescriptor getFileDescriptor(Date d)
     {
-        return getFileDescriptor(getFileIndex(d));
+        synchronized(descriptors)
+        {
+            return descriptors.get(Collections.binarySearch(descriptors, d));
+        }
     }
     
-	/**
-	 * Returns the Descriptor at Index
-	 * @param index
-	 * @return
-	 */
-	public FileDescriptor getFileDescriptor(int index) {
-		return descriptors.get(index);
-	}
-	
-	/**
-	 * 
-	 * @return number of filedescriptors
-	 */
-	public int getNumberOfFiles() {
-		return descriptors.size();
-	}
-	
 	/**
 	 * Returns the following FileDescriptor
 	 * @param current 
 	 * @return
 	 */
-	public FileDescriptor getNext(FileDescriptor current) {
-		int index = current.getIndex();
-		index = ++index % this.getNumberOfFiles();
-		return this.descriptors.get(index);
+	public FileDescriptor getNext(FileDescriptor current)
+	{
+	    synchronized(descriptors)
+	    {
+    		int index = descriptors.indexOf(current);
+    		index = ++index % descriptors.size();
+    		return descriptors.get(index);
+	    }
 	}
 	
 }

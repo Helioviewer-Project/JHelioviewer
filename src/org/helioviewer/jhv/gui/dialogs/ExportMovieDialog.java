@@ -29,6 +29,7 @@ import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileFilter;
 
+import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.ImageViewerGui;
@@ -107,7 +108,7 @@ public class ExportMovieDialog implements ActionListener {
 		txtTargetFile += selectedOutputFormat.getExtension();
 
 		// Open save-dialog
-		final JFileChooser fileChooser = new JFileChooser();
+		final JFileChooser fileChooser = JHVGlobals.getJFileChooser();
 		fileChooser.setFileHidingEnabled(false);
 		fileChooser.setMultiSelectionEnabled(false);
 		fileChooser.setAcceptAllFileFilterUsed(false);

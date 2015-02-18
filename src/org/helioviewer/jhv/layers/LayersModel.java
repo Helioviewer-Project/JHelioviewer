@@ -22,6 +22,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import org.helioviewer.jhv.Directories;
+import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.base.Message;
 import org.helioviewer.jhv.base.math.Interval;
@@ -918,7 +919,7 @@ public class LayersModel implements ViewListener
     
     private File chooseFile(String defaultTargetFileName) {
     	this.loadSettings();
-    	JFileChooser fileChooser = new JFileChooser();
+    	JFileChooser fileChooser = JHVGlobals.getJFileChooser();
         fileChooser.setFileHidingEnabled(false);
         fileChooser.setMultiSelectionEnabled(false);
         fileChooser.setAcceptAllFileFilterUsed(false);

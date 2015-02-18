@@ -34,6 +34,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.interfaces.ShowableDialog;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
@@ -178,7 +179,7 @@ public class MetaDataDialog extends JDialog implements ActionListener, ShowableD
     
     private String openFileChooser(String _filename){
         // Open save-dialog
-        final JFileChooser fileChooser = new JFileChooser();
+        final JFileChooser fileChooser = JHVGlobals.getJFileChooser();
         fileChooser.setFileHidingEnabled(false);
         fileChooser.setMultiSelectionEnabled(false);
         fileChooser.setAcceptAllFileFilterUsed(true);

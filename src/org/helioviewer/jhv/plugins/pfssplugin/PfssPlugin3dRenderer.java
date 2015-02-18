@@ -31,10 +31,11 @@ public class PfssPlugin3dRenderer extends PhysicalRenderer3d {
 	 * 
 	 * Draws all available and visible solar events with there associated icon.
 	 */
-	public void render(GLPhysicalRenderGraphics g) {
-		
+	public void render(GLPhysicalRenderGraphics g)
+	{
 		JHVJPXView masterView = LinkedMovieManager.getActiveInstance().getMasterMovie();;
-		if (this.isVisible) {
+		if (this.isVisible)
+		{
 			GL2 gl = g.gl;
 			
 			Date date = masterView.getCurrentFrameDateTime().getTime();
@@ -50,21 +51,22 @@ public class PfssPlugin3dRenderer extends PhysicalRenderer3d {
 	 * @param end last date inclusive
 	 * @throws IOException if the dates are not present+
 	 */
-	public void setDisplayRange(Date start, Date end) throws IOException {
+	public void setDisplayRange(Date start, Date end) throws IOException
+	{
 		manager.setDateRange(start, end);
-		
 	}
 
-	public void setVisible(boolean visible) {
+	public void setVisible(boolean visible)
+	{
 		isVisible = visible;
 	}
 	
-	public boolean isVisible() {
+	public boolean isVisible()
+	{
 		return isVisible;
 	}
 
-	public void viewChanged(View view) {
-
+	public void viewChanged(View view)
+	{
 	}
-
 }

@@ -3,6 +3,8 @@ package org.helioviewer.jhv.plugins.pfssplugin;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginManager;
 import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginSettings;
@@ -13,21 +15,14 @@ import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayPlugin;
 /**
  * @author Stefan Meier (stefan.meier@fhnw.ch)
  * */
-public class PfssPlugin extends OverlayPlugin implements Plugin {
-
-	private boolean builtin_mode = false;
+public class PfssPlugin extends OverlayPlugin implements Plugin
+{
+    public static final ExecutorService pool = Executors.newCachedThreadPool();
 
 	/**
 	 * Reference to the eventPlugin
 	 */
 	private PfssPluginContainer eventPlugin;
-
-	/**
-	 * Default constructor.
-	 */
-	public PfssPlugin() {
-		this(false);
-	}
 
 	/**
 	 * Constructor with debug flag. If debug flag is set, the plugin name shows
@@ -36,16 +31,18 @@ public class PfssPlugin extends OverlayPlugin implements Plugin {
 	 * @param builtin_mode
 	 *            - debug flag
 	 */
-	public PfssPlugin(boolean builtin_mode) {
-		this.builtin_mode = builtin_mode;
-
-		try {
+	public PfssPlugin()
+	{
+		try
+		{
 			this.pluginLocation = new URI(PfssSettings.PLUGIN_LOCATION);
-		} catch (URISyntaxException e) {
+		}
+		catch (URISyntaxException e)
+		{
 			e.printStackTrace();
 		}
 
-		eventPlugin = new PfssPluginContainer(builtin_mode);
+		eventPlugin = new PfssPluginContainer();
 		addOverlayContainer(eventPlugin);
 	}
 
@@ -80,9 +77,9 @@ public class PfssPlugin extends OverlayPlugin implements Plugin {
 	/**
 	 * {@inheritDoc}
 	 */
-	public String getName() {
-		return "Pfss Overlay Plugin "
-				+ (builtin_mode ? "Built-In Version" : "");
+	public String getName()
+	{
+		return "PFSS plugin";
 	}
 
 
@@ -101,22 +98,23 @@ public class PfssPlugin extends OverlayPlugin implements Plugin {
 		return description;
 	}
 
-	public static URL getResourceUrl(String name) {
+	public static URL getResourceUrl(String name)
+	{
 		return PfssPlugin.class.getResource(name);
 	}
 
 	/**
 	 * {@inheritDoc} In this case, does nothing.
 	 */
-	public void setState(String state) {
-		// TODO Implement setState for PfssPlugin
+	public void setState(String state)
+	{
 	}
 
 	/**
 	 * {@inheritDoc} In this case, does nothing.
 	 */
-	public String getState() {
-		// TODO Implement getState for PfssPlugin
+	public String getState()
+	{
 		return "";
 	}
 }
