@@ -11,8 +11,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import org.helioviewer.jhv.plugins.pfssplugin.PfssSettings;
 import org.helioviewer.jhv.plugins.pfssplugin.data.FileDescriptor;
-import org.helioviewer.jhv.plugins.pfssplugin.settings.PfssSettings;
 
 /**
  * Manages loading and accessing of FileDescriptor Objects
@@ -57,7 +57,7 @@ public class FileDescriptorManager {
 		int currentYear = currentCal.get(Calendar.YEAR);
 		int currentMonth = currentCal.get(Calendar.MONTH);
 		
-		descriptors = new ArrayList<>((endMonth-currentMonth)+1* 125); //heuristic: for each month, there are about 125 fits files.
+		descriptors = new ArrayList<>(((endMonth-currentMonth)+1)* 125); //heuristic: for each month, there are about 125 fits files.
 		
 		while(currentYear <= endYear && currentMonth <= endMonth) {
 			String m = (currentMonth) < 9 ? "0" + (currentMonth + 1)
@@ -131,6 +131,16 @@ public class FileDescriptorManager {
 		return Collections.binarySearch(descriptors, d);
 	}
 	
+    /**
+     * Returns the Descriptor at Index
+     * @param index
+     * @return
+     */
+    public FileDescriptor getFileDescriptor(Date d)
+    {
+        return getFileDescriptor(getFileIndex(d));
+    }
+    
 	/**
 	 * Returns the Descriptor at Index
 	 * @param index

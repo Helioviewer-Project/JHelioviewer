@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.plugins.pfssplugin.settings;
+package org.helioviewer.jhv.plugins.pfssplugin;
 
 import org.helioviewer.jhv.base.math.Vector3d;
 
@@ -15,16 +15,6 @@ public class PfssSettings {
 	public final static String PLUGIN_LOCATION = "PfssPlugin";
 
 	/**
-	 * Maximal number of frames the plugin reads ahead
-	 */
-	public final static int FRAME_PRELOAD = 10;
-	
-	/**
-	 * size of frame cache, should be bigger than preload
-	 */
-	public final static int FRAME_CACHE = 20;
-
-	/**
 	 * Maximum size of cache data.
 	 */
 	public final static int DATA_CACHE_SIZE = 1000;
@@ -32,7 +22,7 @@ public class PfssSettings {
 	/**
 	 * Number of Preloaded PFSSdata
 	 */
-	public final static int DATA_PRELOAD_SIZE = 25;
+	public final static int DATA_PRELOAD_SIZE = 200;
 
 	
 	/**

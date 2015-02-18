@@ -12,8 +12,8 @@ import javax.media.opengl.GL2;
 
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.DifferentialRotation;
+import org.helioviewer.jhv.plugins.pfssplugin.PfssSettings;
 import org.helioviewer.jhv.plugins.pfssplugin.data.caching.Cacheable;
-import org.helioviewer.jhv.plugins.pfssplugin.settings.PfssSettings;
 import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 
@@ -46,6 +46,9 @@ public class PfssFrame implements Cacheable {
 	private int VBOIndicesSunToSun;
 	private int VBOIndicesOutsideToSun;
 	
+	private float l0;
+	private float b0;
+	
 	public PfssFrame(FileDescriptor descriptor) {
 		this.descriptor = descriptor;
 	}
@@ -58,14 +61,18 @@ public class PfssFrame implements Cacheable {
 	 * @param indicesSunToSun
 	 * @param indicesOutsideToSun
 	 */
-	public void setLoadedData(FloatBuffer vertices, IntBuffer indicesSunToOutside, IntBuffer indicesSunToSun, IntBuffer indicesOutsideToSun) {
+	public void setLoadedData(FloatBuffer vertices, IntBuffer indicesSunToOutside, IntBuffer indicesSunToSun, IntBuffer indicesOutsideToSun, float _l0, float _b0)
+	{
 		lock.lock();
 		try {
-			if(!isLoaded) {
+			if(!isLoaded)
+			{
 				this.vertices = vertices;
 				this.indicesSunToOutside = indicesSunToOutside;
 				this.indicesSunToSun = indicesSunToSun;
 				this.indicesOutsideToSun = indicesOutsideToSun;
+				l0 = _l0;
+				b0 = _b0;
 				isLoaded = true;
 			}
 			isLoadedCondition.signalAll();
@@ -171,13 +178,13 @@ public class PfssFrame implements Cacheable {
 			gl2.glVertexPointer(3, GL2.GL_FLOAT, 0, 0);
 			Vector3d color;
 	
-			//merged
-			// TODO : Rotate B0, x-axis
-			gl2.glRotated(DifferentialRotation.calculateRotationInDegrees(0,(currentDate.getTime()-descriptor.getStartDate().getTime())/1000d),0,1,0);
+			gl2.glRotated(DifferentialRotation.calculateRotationInDegrees(0,(currentDate.getTime()-descriptor.getStartDate().getTime())/1000d)-l0,0,1,0);
+			
+	         // TODO : Rotate B0, x-axis
+            //see http://jgiesen.de/sunrot/index.html
+		    gl2.glRotated(b0,1,0,0);
 			
 			gl2.glLineWidth(PfssSettings.LINE_WIDTH);
-			// gl.glPrimitiveRestartIndexNV(0);
-	
 			if (indicesSunToSun != null && indicesSunToSun.limit() > 0) {
 				color = PfssSettings.SUN_SUN_LINE_COLOR;
 				gl2.glColor4d(color.x, color.y, color.z, PfssSettings.LINE_ALPHA);

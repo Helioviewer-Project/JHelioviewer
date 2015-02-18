@@ -2,8 +2,6 @@ package org.helioviewer.jhv.plugins.pfssplugin.data.decompression;
 
 import java.util.LinkedList;
 
-import org.helioviewer.jhv.base.physics.Constants;
-
 
 /**
  * This class is responsible for holding the intermediate data during decompression.
@@ -12,9 +10,6 @@ import org.helioviewer.jhv.base.physics.Constants;
  */
 public class IntermediateLineData {
 	public float[][] channels;
-
-	public float[] startPoint;
-	public float[] endPoint;
 	public int size;
 	
 	private IntermediateLineData() {
@@ -24,15 +19,16 @@ public class IntermediateLineData {
 	/**
 	 * decode prediction coding
 	 */
-	public void decodePrediction() {
-		multiplyPredictionError(this.channels);
+	public void decodePrediction(float _Q1, float _Q2, float _Q3)
+	{
+		dequantizePredictionErrors(_Q1,_Q2,_Q3);
 		
 		for(int i = 0; i < channels.length;i++) {
-			float[] decodedChannel = new float[channels[i].length+2];
-			decodedChannel[0] = startPoint[i];
-			decodedChannel[decodedChannel.length-1] = endPoint[i];
+			float[] decodedChannel = new float[channels[i].length];
+			decodedChannel[0] = channels[i][0];
+			decodedChannel[decodedChannel.length-1] = channels[i][0]+channels[i][1];
 			if(decodedChannel.length > 2) {
-				int channelIndex = 0;
+				int channelIndex = 2;
 				LinkedList<Indices> queue = new LinkedList<>();
 				queue.add(new Indices(0, decodedChannel.length-1));
 				while(!queue.isEmpty()) {
@@ -49,20 +45,21 @@ public class IntermediateLineData {
 	 * Multiplies the prediction errors
 	 * @param channels
 	 */
-	private static void multiplyPredictionError(float[][] channels) {
+	private void dequantizePredictionErrors(float _Q1, float _Q2, float _Q3) {
 		for(int i = 0; i < channels.length;i++) { 
 			float[] current = channels[i];
 			
-			for(int j = 0; j < 5 && j< current.length;j++) {
-				current[j] = current[j]*6;
+			int j=0;
+			for(; j < 5 && j< current.length;j++) {
+				current[j] *= _Q1;
 			}
 			
-			for(int j = 5; j < 16 && j< current.length;j++) {
-				current[j] *= 10;
+			for(; j < 16 && j< current.length;j++) {
+				current[j] *= _Q2;
 			}
 
-			for(int j = 16;  j < current.length;j++) {
-				current[j] *= 16;
+			for(;  j < current.length;j++) {
+				current[j] *= _Q3;
 			}
 		}
 	}
@@ -79,89 +76,20 @@ public class IntermediateLineData {
 		float start = decodedChannel[i.startIndex];
 		float end = decodedChannel[i.endIndex];
 		
-		int toPredictIndex = (i.endIndex - i.startIndex) / 2 + i.startIndex;
+		int toPredictIndex = (i.startIndex + i.endIndex) / 2;
 		float predictionError = encodedChanel[nextIndex];
 		
 		//predict
 		float predictionFactor0 = (toPredictIndex-i.startIndex)/(float)(i.endIndex - i.startIndex);
-		float predictionFactor1 = (i.endIndex-toPredictIndex)/(float)(i.endIndex - i.startIndex);
-		float prediction = (int)(predictionFactor0* start + predictionFactor1*end);
+		float prediction = (1-predictionFactor0)* start + predictionFactor0*end;
 		decodedChannel[toPredictIndex] = prediction-predictionError;
 		
 		//add next level of indices
-		if (i.startIndex + 1 != toPredictIndex){
-			Indices next = new Indices(i.startIndex,toPredictIndex);
-			queue.addLast(next);
-        }
-		if (i.endIndex - 1 != toPredictIndex) {
-			Indices next = new Indices(toPredictIndex,i.endIndex);
-			queue.addLast(next);
-		}
-	}
-	
-	/**
-	 * Converts the spherical coordinates to cartesian. It centers the coordinates around the viewpoint of earth.
-	 * @param longitudeToEarth
-	 * @param latitudeToEarth
-	 */
-	public void toCartesian(double longitudeToEarth, double latitudeToEarth) {
-		for(int i = 0; i <this.size;i++) {
-			float rawR =  channels[0][i];
-			float rawPhi = channels[1][i];
-			float rawTheta = channels[2][i];
-			rawR += 8192;
-			rawPhi += 16384;
-			rawTheta += 8192;
-			
-	        double r = rawR / 8192.0 * Constants.SUN_RADIUS;
-	        double p = rawPhi / 32768.0 * 2 * Math.PI;
-	        double t = rawTheta / 32768.0 * 2 * Math.PI;
+		if (i.startIndex + 1 != toPredictIndex)
+			queue.addLast(new Indices(i.startIndex,toPredictIndex));
 
-	        p -= longitudeToEarth / 180.0 * Math.PI;
-	        t += latitudeToEarth / 180.0 * Math.PI;
-	        
-	        channels[0][i] = (float)(r * Math.sin(t) * Math.sin(p)); 	//x
-	        channels[1][i] = (float)(r * Math.cos(t)); 					//y
-	        channels[2][i] = (float)(r * Math.sin(t) * Math.cos(p)); 	//z
-		}
-	}	
-	
-	/**
-	 * add the starting point to each fieldline..
-	 * @param lines all lines
-	 * @param radius all radi of the startpoints
-	 * @param phi all phi of the startpoins
-	 * @param theta all theta of the startpoints
-	 */
-	public static void addStartPoint(IntermediateLineData[] lines, int[] radius, int[] phi, int[] theta) {
-		for(int i = 0; i < lines.length;i++) {
-			IntermediateLineData l = lines[i];
-			
-			l.startPoint = new float[3];
-            l.startPoint[0] = radius[i];	
-            l.startPoint[1] = phi[i]; 				
-            l.startPoint[2] = theta[i];
-		}
-	}
-	
-	/**
-	 * add the end point to each line. The starting point will be converted from spherical to euler coodinate system.
-	 * @param lines all lines
-	 * @param radius all radii of the startpoints
-	 * @param phi all phi of the startpoins
-	 * @param theta all theta of the startpoints
-	 */
-	public static void addEndPoint(IntermediateLineData[] lines,
-			int[] radius, int[] phi, int[] theta) {
-		for(int i = 0; i < lines.length;i++) {
-			IntermediateLineData l = lines[i];
-           
-            l.endPoint = new float[3];
-            l.endPoint[0] = radius[i];
-            l.endPoint[1] = phi[i];
-            l.endPoint[2] = theta[i];
-		}
-		
+		if (i.endIndex - 1 != toPredictIndex)
+			queue.addLast(new Indices(toPredictIndex,i.endIndex));
 	}
 	
 	/**
@@ -172,9 +100,9 @@ public class IntermediateLineData {
 	 * @param theta Channel
 	 * @return
 	 */
-	public static IntermediateLineData[] splitToLines(int[] lengths, int[]radius, int[] phi,int[] theta) {
+	public static IntermediateLineData[] splitToLines(int[] lengths, int[] x, int[] y,int[] z) {
 		 IntermediateLineData[] lines = new IntermediateLineData[lengths.length];
-		 int[][] channels = new int[][]{radius,phi,theta};
+		 int[][] channels = new int[][]{x,y,z};
 		 
 		 int[] indices = new int[3];
 		 

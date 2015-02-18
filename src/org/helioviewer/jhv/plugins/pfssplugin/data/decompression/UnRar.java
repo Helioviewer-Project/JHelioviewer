@@ -32,12 +32,20 @@ public class UnRar {
 			
 			File file = TikaInputStream.get(new ByteArrayInputStream(data.getData())).getFile();
             archive = new Archive(file, null);
-			FileHeader fh = archive.nextFileHeader();
-			ByteArrayOutputStream stream = new ByteArrayOutputStream();
-			archive.extractFile(fh, stream);
-			
-			
-			return stream;
+            
+            for(;;)
+            {
+    			FileHeader fh = archive.nextFileHeader();
+    			if(fh==null)
+    			    throw new IOException("Unsupported PFSS file format version");
+    			
+    			if("v1.fits".equals(fh.getFileNameString()))
+    			{
+        			ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        			archive.extractFile(fh, stream);
+        			return stream;
+    			}
+            }
 		} catch (RarException e) {
 			throw new IOException(e);
 		}

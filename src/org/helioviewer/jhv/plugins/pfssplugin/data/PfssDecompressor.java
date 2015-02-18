@@ -9,20 +9,19 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Date;
 
+import nom.tam.fits.BasicHDU;
+import nom.tam.fits.BinaryTableHDU;
+import nom.tam.fits.Fits;
+import nom.tam.fits.FitsException;
+
 import org.helioviewer.jhv.plugins.pfssplugin.data.decompression.ByteDecoder;
 import org.helioviewer.jhv.plugins.pfssplugin.data.decompression.DecompressedLine;
 import org.helioviewer.jhv.plugins.pfssplugin.data.decompression.DecompressedPoint;
 import org.helioviewer.jhv.plugins.pfssplugin.data.decompression.IntermediateLineData;
 import org.helioviewer.jhv.plugins.pfssplugin.data.decompression.LineType;
 import org.helioviewer.jhv.plugins.pfssplugin.data.decompression.UnRar;
-import org.helioviewer.jhv.plugins.pfssplugin.settings.PfssSettings;
 
 import com.jogamp.common.nio.Buffers;
-
-import nom.tam.fits.BasicHDU;
-import nom.tam.fits.BinaryTableHDU;
-import nom.tam.fits.Fits;
-import nom.tam.fits.FitsException;
 
 /**
  * Reads in Memory PfssData and writes PfssFrames. Supports running in its own thread for asynchronous loading
@@ -60,57 +59,47 @@ public class PfssDecompressor implements Runnable {
 				Fits fits = new Fits(is, false);
 				BasicHDU hdus[] = fits.read();
 				BinaryTableHDU bhdu = (BinaryTableHDU) hdus[1];
-				double b0 = ((double[]) bhdu.getColumn("B0"))[0];
-				double l0 = ((double[]) bhdu.getColumn("L0"))[0];
-				byte[] line_length = ((byte[][]) bhdu.getColumn("LINE_LENGTH"))[0];
-				byte[] startR = ((byte[][]) bhdu.getColumn("START_R"))[0];
-				byte[] startPhi = ((byte[][]) bhdu.getColumn("START_PHI"))[0];
-				byte[] startTheta = ((byte[][]) bhdu.getColumn("START_THETA"))[0];
-				byte[] endR = ((byte[][]) bhdu.getColumn("END_R"))[0];
-				byte[] endPhi = ((byte[][]) bhdu.getColumn("END_PHI"))[0];
-				byte[] endTheta = ((byte[][]) bhdu.getColumn("END_THETA"))[0];
-				byte[] pRaw = ((byte[][]) bhdu.getColumn("CHANNEL_R"))[0];
-				byte[] phiRaw = ((byte[][]) bhdu.getColumn("CHANNEL_PHI"))[0];
-				byte[] thetaRaw = ((byte[][]) bhdu.getColumn("CHANNEL_THETA"))[0];
-				
-				int[] startRInt = ByteDecoder.decodeAdaptive(startR);
-				int[] startPhiInt = ByteDecoder.decodeAdaptive(startPhi);
-				int[] startThetaInt = ByteDecoder.decodeAdaptive(startTheta);
-				int[] endRInt = ByteDecoder.decodeAdaptive(endR);
-				int[] endPhiInt = ByteDecoder.decodeAdaptive(endPhi);
-				int[] endThetaInt = ByteDecoder.decodeAdaptive(endTheta);
-				int[] lengths = ByteDecoder.decodeAdaptiveUnsigned(line_length);
-				int[] rInt = ByteDecoder.decodeAdaptive(pRaw);
-				int[] phiInt = ByteDecoder.decodeAdaptive(phiRaw);
-				int[] thetaInt = ByteDecoder.decodeAdaptive(thetaRaw);
 
-				IntermediateLineData[]lines = IntermediateLineData.splitToLines(lengths, rInt, phiInt, thetaInt);
-				IntermediateLineData.addStartPoint(lines, startRInt, startPhiInt, startThetaInt);
-				IntermediateLineData.addEndPoint(lines, endRInt, endPhiInt, endThetaInt);
-				for(IntermediateLineData l : lines) {
-					l.decodePrediction();
-					l.toCartesian(l0, b0);
-				}
+				float b0 = bhdu.getHeader().getFloatValue("B0");
+				float l0 = bhdu.getHeader().getFloatValue("L0");
+				float Q1 = bhdu.getHeader().getFloatValue("Q1");
+				float Q2 = bhdu.getHeader().getFloatValue("Q2");
+				float Q3 = bhdu.getHeader().getFloatValue("Q3");
+				
+				byte[] line_length = ((byte[][]) bhdu.getColumn("LEN"))[0];
+				byte[] xRaw = ((byte[][]) bhdu.getColumn("X"))[0];
+				byte[] yRaw = ((byte[][]) bhdu.getColumn("Y"))[0];
+				byte[] zRaw = ((byte[][]) bhdu.getColumn("Z"))[0];
+				
+				int[] lengths = ByteDecoder.decodeAdaptiveUnsigned(line_length);
+				int[] xInt = ByteDecoder.decodeAdaptive(xRaw);
+				int[] yInt = ByteDecoder.decodeAdaptive(yRaw);
+				int[] zInt = ByteDecoder.decodeAdaptive(zRaw);
+
+				IntermediateLineData[] lines = IntermediateLineData.splitToLines(lengths, xInt, yInt, zInt);
+				for(IntermediateLineData l : lines)
+					l.decodePrediction(Q1, Q2, Q3);
 			
 				decompressedLines = new ArrayList<DecompressedLine>(lines.length);
-				for(IntermediateLineData line : lines) {
+				for(IntermediateLineData line : lines)
 					decompressedLines.add(new DecompressedLine(line));
-				}
 				
-				//Decompression done.
-			} catch (FitsException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} finally {
-				try {
-					is.close();
-				} catch (IOException e) {
-				}
-
+	            this.subsampleAndConvertToBuffers(decompressedLines, l0, b0);
 			}
-			
-			this.subsampleAndConvertToBuffers(decompressedLines);
+			catch (FitsException | IOException e)
+			{
+				e.printStackTrace();
+			}
+			finally
+			{
+				try
+				{
+					is.close();
+				}
+				catch (Exception e)
+				{
+				}
+			}
 		}	
 	}
 
@@ -121,8 +110,8 @@ public class PfssDecompressor implements Runnable {
 	 * Also does average filtering.
 	 * @param lines
 	 */
-	private void subsampleAndConvertToBuffers(ArrayList<DecompressedLine> lines) {
-		
+	private void subsampleAndConvertToBuffers(ArrayList<DecompressedLine> lines, float _l0, float _b0)
+	{
 		int stoSize= 0;
 		int stsSize = 0;
 		int otsSize = 0;
@@ -138,7 +127,7 @@ public class PfssDecompressor implements Runnable {
 			for(int j = 1; j < currentLine.getSize();j++) {
 				DecompressedPoint current = currentLine.getPoint(j);
 				
-				if((j + 1)< currentLine.getSize()) {
+				/*if((j + 1)< currentLine.getSize()) {
 					//check if point should be in line or not
 					DecompressedPoint next = currentLine.getPoint(j+1);
 					boolean colinear = current.AngleTo(next, last) > PfssSettings.ANGLE_OF_LOD;
@@ -151,7 +140,9 @@ public class PfssDecompressor implements Runnable {
 						subsampledPoints.add(average);
 					}
 					
-				} else {
+				}
+				else*/
+				{
 					//last point, always add
 					subsampledPoints.add(current);
 				}
@@ -217,7 +208,8 @@ public class PfssDecompressor implements Runnable {
 		indicesOutsideToSun.flip();
 		indicesSunToSun.flip();
 		frame.setLoadedData(vertices, indicesSunToOutside,
-				indicesSunToSun, indicesOutsideToSun);
+				indicesSunToSun, indicesOutsideToSun,
+				_l0, _b0);
 	}
 	
 	/**
@@ -226,7 +218,7 @@ public class PfssDecompressor implements Runnable {
 	 * @param pointIndex
 	 * @return
 	 */
-	private DecompressedPoint getAveragePoint(DecompressedLine line, int pointIndex) {
+	/*private DecompressedPoint getAveragePoint(DecompressedLine line, int pointIndex) {
 		DecompressedPoint answer = null;
 		int startOffset = 0;
 		int length = 0;
@@ -254,7 +246,7 @@ public class PfssDecompressor implements Runnable {
 		answer = new DecompressedPoint(avX / count, avY / count, avZ / count);
 		
 		return answer;
-	}
+	}*/
 
 	/**
 	 * Helper function for determining the right line type

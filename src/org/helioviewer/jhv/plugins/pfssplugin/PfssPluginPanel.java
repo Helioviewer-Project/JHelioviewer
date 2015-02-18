@@ -6,9 +6,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.ImageIcon;
@@ -16,9 +14,9 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
-import org.helioviewer.jhv.plugins.pfssplugin.settings.PfssSettings;
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayPanel;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.changeevent.SubImageDataChangedReason;
@@ -48,7 +46,8 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 	 * Default constructor
 	 * 
 	 * */
-	public PfssPluginPanel(PfssPlugin3dRenderer renderer) {
+	public PfssPluginPanel(PfssPlugin3dRenderer renderer)
+	{
 		// set up visual components
 		initVisualComponents();
 		// register as layers listener
@@ -59,17 +58,17 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 	/**
 	 * Force a redraw of the main window
 	 */
-	private void fireRedraw() {
-		LayersModel.getSingletonInstance().viewChanged(null,
-				new ChangeEvent(new SubImageDataChangedReason(null)));
+	private void fireRedraw()
+	{
+	    GuiState3DWCS.mainComponentView.getComponent().repaint();
 	}
 
 	/**
 	 * Sets up the visual sub components and the visual part of the component
 	 * itself.
 	 * */
-	private void initVisualComponents() {
-
+	private void initVisualComponents()
+	{
 		// set general appearance
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 0, 0, 0 };
@@ -118,18 +117,22 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 				visibleButton.setIcon(new ImageIcon(PfssPlugin
 						.getResourceUrl("/images/visible_dm.png")));
 			}
+			
+			fireRedraw();
 		}
 
 		if (act.getSource().equals(reloadButton)) {
-			layerAdded(0);
+		    messages.clear();
+			reload();
 		}
 
 	}
 
 	private void showData() {
-		if (showAgain) {
-			for(String message: messages){
-				
+		if (showAgain)
+		{
+			for(String message: messages)
+			{
 				Object[] options = { "Retry", "OK" };
 				messages.remove(message);
 				JCheckBox checkBox = new JCheckBox(
@@ -137,7 +140,7 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 				checkBox.setEnabled(showAgain);
 				Object[] params = { message, checkBox };
 				int n = JOptionPane.showOptionDialog(this, params,
-							"Pfss-Data", JOptionPane.YES_NO_CANCEL_OPTION,
+							"PFSS data", JOptionPane.YES_NO_CANCEL_OPTION,
 							JOptionPane.WARNING_MESSAGE, null, options,
 							options[1]);
 					showAgain = !checkBox.isSelected();
@@ -154,11 +157,13 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 	public void activeLayerChanged(int idx) {
 	}
 
-	public void layerAdded(int idx) {
-		this.reload();
+	public void layerAdded(int idx)
+	{
+		reload();
 	}
 	
-	public void reload(){
+	public void reload()
+	{
 		int master = -1000;
 		for (int i = 0; i < LayersModel.getSingletonInstance().getNumLayers(); i++){
 			if (LayersModel.getSingletonInstance().isMaster(i))
@@ -175,6 +180,7 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 			end = LayersModel.getSingletonInstance().getLastDate();
 		}
 		
+		messages.clear();
 		if (start != null && end != null) {
 				retry = true;
 				while(retry) {
@@ -241,30 +247,5 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 
 	@Override
 	public void viewChanged(View sender, ChangeEvent aEvent) {
-	}
-
-	public static void main(String[] args) {
-		GregorianCalendar cal = new GregorianCalendar(2014, 2, 1, 0, 4,0);
-		Date start = cal.getTime();
-		cal.set(2014, 2, 3, 12, 4);
-		Date end = cal.getTime();
-		PfssPlugin3dRenderer renderer= new PfssPlugin3dRenderer();
-		PfssPluginPanel p = new PfssPluginPanel(renderer);
-		
-		try {
-			renderer.setDisplayRange(start, end);
-
-			cal = new GregorianCalendar(2014, 2, 1, 0, 4,0);
-			for(int i = 0; i < 11;i++){
-				renderer.render(cal.getTime());
-				cal.add(Calendar.HOUR, PfssSettings.FITS_FILE_D_HOUR);
-			}
-			cal = new GregorianCalendar(2014, 2, 1, 0, 4,0);
-			renderer.render(cal.getTime());
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 }

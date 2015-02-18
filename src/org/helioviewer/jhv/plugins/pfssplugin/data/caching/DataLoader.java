@@ -1,11 +1,11 @@
-package org.helioviewer.jhv.plugins.pfssplugin.data.creators;
+package org.helioviewer.jhv.plugins.pfssplugin.data.caching;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.helioviewer.jhv.plugins.pfssplugin.PfssSettings;
 import org.helioviewer.jhv.plugins.pfssplugin.data.FileDescriptor;
 import org.helioviewer.jhv.plugins.pfssplugin.data.PfssData;
-import org.helioviewer.jhv.plugins.pfssplugin.settings.PfssSettings;
 
 /**
  * Responsible for creating  PfssData objects. The PfssData objects will load asynchronously via threadpools
@@ -13,10 +13,10 @@ import org.helioviewer.jhv.plugins.pfssplugin.settings.PfssSettings;
  * @author Jonas Schwammberger
  *
  */
-public class PfssDataCreator {
-	private final ExecutorService pool = Executors.newCachedThreadPool();
+public class DataLoader {
+	private static final ExecutorService pool = Executors.newCachedThreadPool();
 	
-	public PfssDataCreator() {
+	public DataLoader() {
 	}
 	
 	/**

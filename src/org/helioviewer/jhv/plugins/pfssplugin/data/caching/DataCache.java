@@ -1,10 +1,9 @@
 package org.helioviewer.jhv.plugins.pfssplugin.data.caching;
 
+import org.helioviewer.jhv.plugins.pfssplugin.PfssSettings;
 import org.helioviewer.jhv.plugins.pfssplugin.data.FileDescriptor;
 import org.helioviewer.jhv.plugins.pfssplugin.data.PfssData;
-import org.helioviewer.jhv.plugins.pfssplugin.data.creators.PfssDataCreator;
 import org.helioviewer.jhv.plugins.pfssplugin.data.managers.FileDescriptorManager;
-import org.helioviewer.jhv.plugins.pfssplugin.settings.PfssSettings;
 
 /**
  * Represents the DataCache responsible for caching, loading and preloading PfssData 
@@ -14,7 +13,7 @@ import org.helioviewer.jhv.plugins.pfssplugin.settings.PfssSettings;
  */
 public class DataCache {
 	private final FileDescriptorManager descriptorManager;
-	private final PfssDataCreator dataCreator;
+	private final DataLoader dataCreator;
 	
 	private final LRUCache<PfssData> readAheadCache;
 	private final LRUCache<PfssData> cache;
@@ -23,7 +22,7 @@ public class DataCache {
 	public DataCache(FileDescriptorManager descriptors) {
 		this.descriptorManager = descriptors;
 		
-		this.dataCreator = new PfssDataCreator();
+		this.dataCreator = new DataLoader();
 		this.cache = new LRUCache<>(PfssSettings.DATA_CACHE_SIZE);
 		this.readAheadCache = new LRUCache<>(PfssSettings.DATA_PRELOAD_SIZE);
 	}

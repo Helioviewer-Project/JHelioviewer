@@ -34,15 +34,19 @@ public class MetaDataFactory {
 			try {
 			    Constructor<MetaData> constructor = c.getDeclaredConstructor(MetaDataContainer.class);
 				metaData = constructor.newInstance(args);
-			} catch (NonSuitableMetaDataException _imdce)
-			{
-			    //ignore - we only tried the "wrong" metadata factory. a better fit
-			    //should be found in a later iteration
 			}
             catch(NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
             {
-                //reflection problems are not expected in practice
-                e.printStackTrace();
+                if(e.getCause() instanceof NonSuitableMetaDataException)
+                {
+                    //ignore - we only tried the "wrong" metadata factory. a better fit
+                    //should be found in a later iteration
+                }
+                else
+                {
+                    //reflection problems are not expected in practice
+                    e.printStackTrace();
+                }
             }
 			if (metaData != null) break;
 		}

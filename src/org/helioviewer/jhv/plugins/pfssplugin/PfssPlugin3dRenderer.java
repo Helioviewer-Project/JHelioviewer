@@ -3,7 +3,6 @@ package org.helioviewer.jhv.plugins.pfssplugin;
 import java.io.IOException;
 import java.util.Date;
 
-import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
 import org.helioviewer.jhv.plugins.pfssplugin.data.PfssFrame;
@@ -19,7 +18,6 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
  * */
 public class PfssPlugin3dRenderer extends PhysicalRenderer3d {
 	private FrameManager manager;
-	private GL lastGl = null;
 	private boolean isVisible = false;
 	/**
 	 * Default constructor.
@@ -39,21 +37,11 @@ public class PfssPlugin3dRenderer extends PhysicalRenderer3d {
 		if (this.isVisible) {
 			GL2 gl = g.gl;
 			
-			manager.preInitFrames(gl);
 			Date date = masterView.getCurrentFrameDateTime().getTime();
-			PfssFrame frame = manager.getFrame(date);
+			PfssFrame frame = manager.getFrame(gl,date);
 			if(frame != null)
 				frame.display(gl, date);			
 		}
-	}
-	
-	@Deprecated
-	public void render(Date d) {
-		manager.preInitFrames(null);
-		Date date = d;
-		PfssFrame frame = manager.getFrame(date);
-		if(frame != null)
-			frame.display(null,null);
 	}
 	
 	/**
