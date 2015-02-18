@@ -19,7 +19,6 @@ import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayPanel;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
-import org.helioviewer.jhv.viewmodel.changeevent.SubImageDataChangedReason;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.ViewListener;
 

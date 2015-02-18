@@ -136,6 +136,8 @@ public class JHelioviewer {
 
         int numProgressSteps = 10;
         splash.setProgressSteps(numProgressSteps);
+        
+        JHVGlobals.initFileChooserAsync();
 
         // Load settings from file but do not apply them yet
         // The settings must not be applied before the kakadu engine has been
@@ -145,7 +147,7 @@ public class JHelioviewer {
         System.out.println("Load settings");
         Settings.load();
         
-        // Set the platform system properties
+        // Set the platform system propertiess
         splash.nextStep();
 
         /* ----------Setup kakadu ----------- */

@@ -20,6 +20,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.text.NumberFormatter;
 
+import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.base.Message;
 import org.helioviewer.jhv.gui.IconBank;
@@ -836,7 +837,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 					if (row >= 2)
 						return;
 
-					JFileChooser chooser = new JFileChooser((String) table
+					JFileChooser chooser = JHVGlobals.getJFileChooser((String) table
 							.getModel().getValueAt(row, 1));
 					chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 

@@ -1,7 +1,11 @@
 package org.helioviewer.jhv;
 
 import java.awt.Desktop;
+import java.io.File;
 import java.net.URI;
+import java.util.concurrent.LinkedBlockingQueue;
+
+import javax.swing.JFileChooser;
 
 /**
  * Intended to be a class for static functions and fields relevant to the
@@ -63,5 +67,37 @@ public class JHVGlobals {
             }
         }
     }
-
+    
+    private static LinkedBlockingQueue<JFileChooser> fileChooser=new LinkedBlockingQueue<>();
+    
+    public static JFileChooser getJFileChooser(String _directory)
+    {
+        try
+        {
+            JFileChooser instance=fileChooser.take();
+            fileChooser.add(instance);
+            instance.setCurrentDirectory(new File(_directory));
+            return instance;
+        }
+        catch(InterruptedException e)
+        {
+            //shouldn't happen, except on shutdown
+            return null;
+        }
+    }
+    
+    public static void initFileChooserAsync()
+    {
+        Thread t=new Thread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                fileChooser.add(new JFileChooser());
+            }
+        });
+        
+        t.setDaemon(true);
+        t.start();
+    }
 }

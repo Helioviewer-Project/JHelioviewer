@@ -10,6 +10,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 import javax.swing.KeyStroke;
 
+import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.base.Message;
 import org.helioviewer.jhv.gui.ImageViewerGui;
@@ -47,7 +48,7 @@ public class OpenLocalFileAction extends AbstractAction {
      * {@inheritDoc}
      */
     public void actionPerformed(ActionEvent e) {
-        final JFileChooser fileChooser = new JFileChooser(Settings.getProperty("default.local.path"));
+        final JFileChooser fileChooser = JHVGlobals.getJFileChooser(Settings.getProperty("default.local.path"));
         fileChooser.setAcceptAllFileFilterUsed(false);
         fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         fileChooser.addChoosableFileFilter(new JP2Filter());
@@ -56,10 +57,10 @@ public class OpenLocalFileAction extends AbstractAction {
         fileChooser.addChoosableFileFilter(new JPGFilter());
         fileChooser.setFileFilter(new AllSupportedImageTypesFilter());
         fileChooser.setMultiSelectionEnabled(false);
-
+        
         int retVal = fileChooser.showOpenDialog(ImageViewerGui.getMainFrame());
-
-        if (retVal == JFileChooser.APPROVE_OPTION) {
+        if (retVal == JFileChooser.APPROVE_OPTION)
+        {
             File selectedFile = fileChooser.getSelectedFile();
 
             if (selectedFile.exists() && selectedFile.isFile()) {
