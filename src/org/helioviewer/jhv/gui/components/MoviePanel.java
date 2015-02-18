@@ -898,9 +898,12 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
          * @param copyFrom
          *            Panel dominating the other ones right now
          */
-        public void updateAnimationModeComboBoxLinkedMovies(MoviePanel copyFrom) {
+        public void updateAnimationModeComboBoxLinkedMovies(MoviePanel copyFrom)
+        {
+            Object newSelection = copyFrom.animationModeComboBox.getSelectedItem();
             for (MoviePanel panel : linkedMovies) {
-                panel.animationModeComboBox.setSelectedItem(copyFrom.animationModeComboBox.getSelectedItem());
+                if(panel.animationModeComboBox.getSelectedItem()!=newSelection)
+                    panel.animationModeComboBox.setSelectedItem(newSelection);
             }
         }
 
