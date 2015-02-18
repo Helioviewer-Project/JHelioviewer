@@ -5,10 +5,11 @@ import java.util.Date;
 
 import javax.media.opengl.GL2;
 
+import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin3dRenderer;
 import org.helioviewer.jhv.plugins.pfssplugin.data.FileDescriptor;
-import org.helioviewer.jhv.plugins.pfssplugin.data.PfssDecompressor;
-import org.helioviewer.jhv.plugins.pfssplugin.data.PfssFrame;
+import org.helioviewer.jhv.plugins.pfssplugin.data.PfssDecompressed;
 import org.helioviewer.jhv.plugins.pfssplugin.data.caching.DataCache;
+import org.helioviewer.jhv.plugins.pfssplugin.data.decompression.PfssDecompressor;
 
 /**
  * This class is responsible for managing frames. it Tries to have all frames
@@ -20,12 +21,12 @@ public class FrameManager
 {
 	private final FileDescriptorManager descriptorManager;
 
-	private PfssFrame cur;
+	private PfssDecompressed curFrame;
 	private DataCache dataCache;
 
-	public FrameManager()
+	public FrameManager(PfssPlugin3dRenderer _parent)
 	{
-		descriptorManager = new FileDescriptorManager();
+		descriptorManager = new FileDescriptorManager(_parent);
 		dataCache = new DataCache(descriptorManager);
 	}
 
@@ -34,27 +35,31 @@ public class FrameManager
 	 * @param date
 	 * @return Frame or null if there is no frame for the requested date
 	 */
-	public PfssFrame getFrame(GL2 _gl, Date date)
+	public PfssDecompressed getFrame(GL2 _gl, Date date)
 	{
 		//outside of loaded frames
 		if(!descriptorManager.isDateInRange(date))
 			return null;
 		
 		//still the same frame
-		if (cur!=null && cur.getDescriptor().isDateInRange(date))
-			return cur;
+		if (curFrame!=null && curFrame.getDescriptor().isDateInRange(date))
+		{
+		    if(!curFrame.isDataAssigned())
+		    {
+		        FileDescriptor fd=descriptorManager.getFileDescriptor(date);
+	            PfssDecompressor.decompress(dataCache.get(fd),curFrame);
+		    }
+			return curFrame;
+		}
 
-		if(cur!=null)
-		    cur.clear(_gl);
+		if(curFrame!=null)
+		    curFrame.dispose(_gl);
 		
-		FileDescriptor fd=descriptorManager.getFileDescriptor(date);
-		
-		cur = new PfssFrame(fd);
-        PfssDecompressor r = new PfssDecompressor(dataCache.get(fd),cur);
-        r.run();
+        FileDescriptor fd=descriptorManager.getFileDescriptor(date);
+        curFrame = new PfssDecompressed(fd);
+        PfssDecompressor.decompress(dataCache.get(fd),curFrame);
         
-		cur.init(_gl);
-		return cur;
+		return curFrame;
 	}
 	
     /**
@@ -63,8 +68,13 @@ public class FrameManager
      * @param end end date inclusive
      * @throws IOException if the requested dates could not be found
      */
-    public void setDateRange(Date start, Date end) throws IOException
+    public void setDateRange(Date start, Date end)
     {
         descriptorManager.readFileDescriptors(start,end);
+    }
+
+    public void showErrorMessages()
+    {
+        descriptorManager.showErrorMessages();
     }
 }

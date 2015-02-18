@@ -11,8 +11,7 @@ import java.util.GregorianCalendar;
  * @author Jonas Schwammberger
  *
  */
-public class FileDescriptor implements Comparable<Date>
-{
+public class FileDescriptor implements Comparable<Date> {
 	private final Calendar endCal;
 	private final Date startDate;
 	private final Date endDate;

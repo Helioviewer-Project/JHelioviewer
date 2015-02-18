@@ -43,14 +43,14 @@ public class PfssPluginContainer extends OverlayContainer
 	/**
 	 * {@inheritDoc}
 	 */
-	public String getName() {
+	public String getName()
+	{
 		return "PFSS";
 	}
 
 
 	@Override
 	public Class<? extends PhysicalRenderer3d> getOverlayClass() {
-		// TODO Auto-generated method stub
 		return PfssPlugin3dRenderer.class;
 	}
 

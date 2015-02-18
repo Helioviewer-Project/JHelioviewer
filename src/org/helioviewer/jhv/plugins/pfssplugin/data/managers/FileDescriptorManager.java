@@ -11,7 +11,12 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
+import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
+import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin3dRenderer;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssSettings;
 import org.helioviewer.jhv.plugins.pfssplugin.data.FileDescriptor;
 
@@ -20,13 +25,22 @@ import org.helioviewer.jhv.plugins.pfssplugin.data.FileDescriptor;
  * @author Jonas Schwammberger
  *
  */
-public class FileDescriptorManager {
+public class FileDescriptorManager
+{
 	private ArrayList<FileDescriptor> descriptors=new ArrayList<>();
 	private Date firstDate;
 	private Date endDate;
+	private volatile int epoch=0;
 	
-	public FileDescriptorManager()
+    private volatile String errorMessage;
+    private Date loadingFrom;
+    private Date loadingTo;
+    
+    private PfssPlugin3dRenderer parent;
+	
+	public FileDescriptorManager(PfssPlugin3dRenderer _parent)
 	{
+	    parent=_parent;
 	}
 	
 	/**
@@ -47,8 +61,15 @@ public class FileDescriptorManager {
 	 * @param from date of first file description to read
 	 * @param to date of last file description to read
 	 */
-	public void readFileDescriptors(final Date from, final Date to) throws IOException
+	public void readFileDescriptors(final Date from, final Date to)
 	{
+	    epoch++;
+	    final int curEpoch = epoch;
+	    errorMessage=null;
+	    
+	    this.loadingFrom = from;
+	    this.loadingTo = to;
+	    
 		this.firstDate = null;
 		this.endDate = null;
 		
@@ -68,7 +89,8 @@ public class FileDescriptorManager {
 	        descriptors.clear();
         }
 		
-		while(currentYear <= endYear && currentMonth <= endMonth) {
+		while(currentYear <= endYear && currentMonth <= endMonth)
+		{
 			String m = (currentMonth) < 9 ? "0" + (currentMonth + 1) : (currentMonth + 1) + "";
 			final String url = PfssSettings.SERVER_URL + currentYear +"/"+m+"/list.txt";
 			
@@ -80,11 +102,30 @@ public class FileDescriptorManager {
 	            @Override
 	            public void run()
 	            {
-	                //readDescription(url, from, to, finalCurrentYear, finalCurrentMonth);
+	                try
+                    {
+	                    if(curEpoch==epoch && errorMessage==null)
+	                        readDescription(url, from, to, finalCurrentYear, finalCurrentMonth, curEpoch);
+                    }
+                    catch(IOException e)
+                    {
+                        e.printStackTrace();
+                        if(curEpoch==epoch && errorMessage==null)
+                        {
+                            errorMessage="There was no PFSS data available for the selected time range.";
+                            SwingUtilities.invokeLater(new Runnable()
+                            {
+                                @Override
+                                public void run()
+                                {
+                                    showErrorMessages();
+                                }
+                            });
+                            
+                        }
+                    }
 	            }
 	        });
-			
-			readDescription(url, from, to, finalCurrentYear, finalCurrentMonth);
 			
 			currentCal.add(Calendar.MONTH, 1);
 			currentYear = currentCal.get(Calendar.YEAR);
@@ -101,15 +142,18 @@ public class FileDescriptorManager {
 	 * @param currentMonth
 	 * @throws IOException
 	 */
-    private void readDescription(String url,Date from, Date to,int currentYear, int currentMonth) throws IOException {
-    	try {
-			URL u = new URL(url);
-			BufferedReader in = new BufferedReader(new InputStreamReader(u.openStream()));
-			
+    private void readDescription(String url,Date from, Date to,int currentYear, int currentMonth, int _curEpoch) throws IOException
+    {
+        if(_curEpoch!=epoch)
+            return;
+        
+    	try(BufferedReader in = new BufferedReader(new InputStreamReader(new URL(url).openStream())))
+    	{
 			String dateString = null;
 			String fileName= null;
 			String line = null;
-			while((line = in.readLine()) != null) {
+			while((line = in.readLine()) != null)
+			{
 				int split = line.indexOf(' ');
 				dateString = line.substring(0,split);
 				fileName = line.substring(split+1, line.length());
@@ -129,6 +173,9 @@ public class FileDescriptorManager {
 				{
 				    synchronized(descriptors)
 				    {
+				        if(_curEpoch!=epoch)
+				            return;
+				        
 				        descriptors.add(new FileDescriptor(startTime, endTime, fileName));
 				    }
 					
@@ -176,6 +223,21 @@ public class FileDescriptorManager {
     		index = ++index % descriptors.size();
     		return descriptors.get(index);
 	    }
-	}
+	}	
 	
+    void showErrorMessages()
+    {
+        if(!parent.isVisible())
+            return;
+        
+        if(errorMessage==null)
+            return;
+        
+        Object[] options={"Retry","Cancel"};
+        Object[] params={errorMessage};
+        int n=JOptionPane.showOptionDialog(ImageViewerGui.getMainFrame(),params,"PFSS data",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE,null,options,options[1]);
+
+        if(n==0)
+            readFileDescriptors(loadingFrom,loadingTo);
+    }
 }

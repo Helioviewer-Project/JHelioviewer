@@ -19,18 +19,6 @@ public class PfssPlugin extends OverlayPlugin implements Plugin
 {
     public static final ExecutorService pool = Executors.newCachedThreadPool();
 
-	/**
-	 * Reference to the eventPlugin
-	 */
-	private PfssPluginContainer eventPlugin;
-
-	/**
-	 * Constructor with debug flag. If debug flag is set, the plugin name shows
-	 * "Pfss Plugin Built-In Version"
-	 * 
-	 * @param builtin_mode
-	 *            - debug flag
-	 */
 	public PfssPlugin()
 	{
 		try
@@ -42,8 +30,7 @@ public class PfssPlugin extends OverlayPlugin implements Plugin
 			e.printStackTrace();
 		}
 
-		eventPlugin = new PfssPluginContainer();
-		addOverlayContainer(eventPlugin);
+		addOverlayContainer(new PfssPluginContainer());
 	}
 
 	/**

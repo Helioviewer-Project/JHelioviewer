@@ -3,9 +3,7 @@ package org.helioviewer.jhv.plugins.pfssplugin;
 import java.io.IOException;
 import java.util.Date;
 
-import javax.media.opengl.GL2;
-
-import org.helioviewer.jhv.plugins.pfssplugin.data.PfssFrame;
+import org.helioviewer.jhv.plugins.pfssplugin.data.PfssDecompressed;
 import org.helioviewer.jhv.plugins.pfssplugin.data.managers.FrameManager;
 import org.helioviewer.jhv.viewmodel.renderer.physical.GLPhysicalRenderGraphics;
 import org.helioviewer.jhv.viewmodel.renderer.physical.PhysicalRenderer3d;
@@ -22,8 +20,9 @@ public class PfssPlugin3dRenderer extends PhysicalRenderer3d {
 	/**
 	 * Default constructor.
 	 */
-	public PfssPlugin3dRenderer() {
-		this.manager = new FrameManager();
+	public PfssPlugin3dRenderer()
+	{
+		manager = new FrameManager(this);
 	}
 
 	/**
@@ -34,14 +33,12 @@ public class PfssPlugin3dRenderer extends PhysicalRenderer3d {
 	public void render(GLPhysicalRenderGraphics g)
 	{
 		JHVJPXView masterView = LinkedMovieManager.getActiveInstance().getMasterMovie();;
-		if (this.isVisible)
+		if (isVisible)
 		{
-			GL2 gl = g.gl;
-			
 			Date date = masterView.getCurrentFrameDateTime().getTime();
-			PfssFrame frame = manager.getFrame(gl,date);
+			PfssDecompressed frame = manager.getFrame(g.gl,date);
 			if(frame != null)
-				frame.display(gl, date);			
+				frame.display(g.gl, date);			
 		}
 	}
 	
@@ -51,7 +48,7 @@ public class PfssPlugin3dRenderer extends PhysicalRenderer3d {
 	 * @param end last date inclusive
 	 * @throws IOException if the dates are not present+
 	 */
-	public void setDisplayRange(Date start, Date end) throws IOException
+	public void setDisplayRange(Date start, Date end)
 	{
 		manager.setDateRange(start, end);
 	}
@@ -59,6 +56,9 @@ public class PfssPlugin3dRenderer extends PhysicalRenderer3d {
 	public void setVisible(boolean visible)
 	{
 		isVisible = visible;
+		
+		if(visible)
+		    manager.showErrorMessages();
 	}
 	
 	public boolean isVisible()

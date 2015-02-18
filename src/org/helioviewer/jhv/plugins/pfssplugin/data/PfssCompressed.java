@@ -6,9 +6,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.helioviewer.jhv.plugins.pfssplugin.data.caching.Cacheable;
 
@@ -19,12 +16,10 @@ import org.helioviewer.jhv.plugins.pfssplugin.data.caching.Cacheable;
  * @author Jonas Schwammberger
  *
  */
-public class PfssData implements Cacheable
+public class PfssCompressed implements Cacheable
 {
 	private volatile boolean isLoaded = false;
 	private volatile byte[] rawData;
-	private final Lock lock = new ReentrantLock();
-	private final Condition loaded = lock.newCondition();
 	private final String url;
 	private final FileDescriptor descriptor;
 	
@@ -33,7 +28,8 @@ public class PfssData implements Cacheable
 	 * @param descriptor File Descriptor representing the file on the server
 	 * @param url file url to load
 	 */
-	public PfssData(FileDescriptor descriptor, String url) {
+	public PfssCompressed(FileDescriptor descriptor, String url)
+	{
 		this.descriptor = descriptor;
 		this.url = url;
 	}
@@ -41,9 +37,8 @@ public class PfssData implements Cacheable
 	/**
 	 * Load the data into memory. this method signals all who are waiting on the condition "loaded"
 	 */
-	public void loadData() {
+	public synchronized void loadData() {
 		InputStream in = null;
-		lock.lock();
 		try {
 			URL u = new URL(url);
 			URLConnection uc = u.openConnection();
@@ -63,7 +58,6 @@ public class PfssData implements Cacheable
 				offset += bytesRead;
 			}
 			isLoaded = true;
-			loaded.signalAll();
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -75,7 +69,6 @@ public class PfssData implements Cacheable
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			lock.unlock();
 		}
 	}
 	
@@ -86,19 +79,6 @@ public class PfssData implements Cacheable
 	public boolean isLoaded()
 	{
 		return isLoaded;
-	}
-	
-	/**
-	 * Wait for Data to load.
-	 * @throws InterruptedException
-	 */
-	public void awaitLoaded() throws InterruptedException{
-		lock.lock();
-		try{
-			while(!isLoaded) loaded.await();
-		} finally {
-			lock.unlock();
-		}
 	}
 	
 	/**

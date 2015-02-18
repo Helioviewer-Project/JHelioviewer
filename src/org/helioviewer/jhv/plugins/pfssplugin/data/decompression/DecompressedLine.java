@@ -11,7 +11,7 @@ import org.helioviewer.jhv.base.physics.Constants;
  *
  */
 public class DecompressedLine {
-	private final ArrayList<DecompressedPoint> points;
+	public final ArrayList<DecompressedPoint> points;
 	private final LineType type;
 	
 	public DecompressedLine(ArrayList<DecompressedPoint> points, LineType type) {

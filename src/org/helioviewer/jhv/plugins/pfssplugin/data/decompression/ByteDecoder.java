@@ -6,9 +6,9 @@ package org.helioviewer.jhv.plugins.pfssplugin.data.decompression;
  * @author Jonas Schwammberger
  */
 public class ByteDecoder {
-	public static final int continueFlag = 128;
-	public static final int signFlag = 64;
-	public static final int dataBitCount = 7;
+	public static final int FLAG_CONTINUE = 128;
+	public static final int FLAG_SIGN = 64;
+	public static final int DATA_BIT_COUNT = 7;
 
 	/**
 	 * decode the adaptive precision encoded data.
@@ -19,23 +19,24 @@ public class ByteDecoder {
 	 */
 	public static int[] decodeAdaptive(byte[] data) {
 		int length = calcLength(data);
+		
 		int[] output = new int[length];
 		int outIndex = 0;
 		
 		//for each encoded byte
 		for (int i = 0; i < data.length; i++) {
 			byte current = data[i];
-			int value = (short) (current & (signFlag - 1));
-			int minus = -(current & signFlag);
+			int value = (short) (current & (FLAG_SIGN - 1));
+			int minus = -(current & FLAG_SIGN);
 			
 			//add encoded bytes as long as the continue flag is set.
-			boolean run = (current & continueFlag) != 0;
+			boolean run = (current & FLAG_CONTINUE) != 0;
 			while (run) {
 				current = data[++i];
-				run = (current & continueFlag) != 0;
-				minus <<= dataBitCount;
-				value <<= dataBitCount;
-				value += current & (continueFlag - 1);
+				run = (current & FLAG_CONTINUE) != 0;
+				minus <<= DATA_BIT_COUNT;
+				value <<= DATA_BIT_COUNT;
+				value += current & (FLAG_CONTINUE - 1);
 			}
 			output[outIndex++] = (value + minus);
 		}
@@ -55,15 +56,15 @@ public class ByteDecoder {
 		int outIndex = 0;
 		for (int i = 0; i < data.length; i++) {
 			byte current = data[i];
-			int value = (int) (current & (continueFlag - 1));
+			int value = (int) (current & (FLAG_CONTINUE - 1));
 			
 			//add encoded bytes as long as the continue flag is set.
-			boolean run = (current & continueFlag) != 0;
+			boolean run = (current & FLAG_CONTINUE) != 0;
 			while (run) {
 				current = data[++i];
-				run = (current & continueFlag) != 0;
-				value <<= dataBitCount;
-				value += current & (continueFlag - 1);
+				run = (current & FLAG_CONTINUE) != 0;
+				value <<= DATA_BIT_COUNT;
+				value += current & (FLAG_CONTINUE - 1);
 			}
 			output[outIndex++] = value;
 		}
@@ -83,7 +84,7 @@ public class ByteDecoder {
 		int out = 0;
 
 		for (int i = 0; i < data.length; i++) {
-			if ((data[i] & continueFlag) == 0)
+			if ((data[i] & FLAG_CONTINUE) == 0)
 				out++;
 		}
 		return out;

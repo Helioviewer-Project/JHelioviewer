@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.tika.io.TikaInputStream;
-import org.helioviewer.jhv.plugins.pfssplugin.data.PfssData;
+import org.helioviewer.jhv.plugins.pfssplugin.data.PfssCompressed;
 
 import de.innosystec.unrar.Archive;
 import de.innosystec.unrar.exception.RarException;
@@ -26,7 +26,7 @@ public class UnRar {
 	 * @return raw byte stream of unrar data
 	 * @throws IOException The jUnrar library seems unable to decompress a byteArrayInputStream and needs to have a file on the local filesystem. Throws an IOException if it was unable to write the temp file.
 	 */
-	public static ByteArrayOutputStream unrarData(PfssData data) throws IOException {
+	public static ByteArrayOutputStream unrarData(PfssCompressed data) throws IOException {
 		Archive archive = null;
 		try {
 			

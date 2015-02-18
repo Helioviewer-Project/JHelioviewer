@@ -22,7 +22,7 @@ public class PfssSettings {
 	/**
 	 * Number of Preloaded PFSSdata
 	 */
-	public final static int DATA_PRELOAD_SIZE = 200;
+	public final static int DATA_READ_AHEAD_SIZE = 200;
 
 	
 	/**
@@ -31,6 +31,7 @@ public class PfssSettings {
 	public final static String SERVER_URL = "http://soleil.i4ds.ch/sol-win/v1/";
 
 	
+	//TODO: get rid of these - plugin shouldn't depend on the cadence of files
 	/**
 	 * Deltas between the PFSS Files. Currently there is a file for every 6 hours
 	 */
@@ -57,14 +58,6 @@ public class PfssSettings {
 	 */
 	public final static float LINE_ALPHA = 1.0f;
 
-	/**
-	 * Cos of angle for LOD in degree or radian, if you would use degree
-	 * Math.toRadian(DEGREEVALUE))
-	 */
-	public final static double ANGLE_OF_LOD = Math.cos(Math.toRadians(3.0));
-	
-	public final static int SMOOTH_FILTER_SIZE = 3;
-	
 	/**
 	 * Linewidth for the OpenGL visualization
 	 */

@@ -5,14 +5,10 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.util.Date;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JOptionPane;
 
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.layers.LayersListener;
@@ -28,18 +24,15 @@ import org.helioviewer.jhv.viewmodel.view.ViewListener;
  * @author Stefan Meier (stefan.meier@fhnw.ch)
  * */
 public class PfssPluginPanel extends OverlayPanel implements ActionListener,
-		LayersListener, ViewListener {
+		LayersListener, ViewListener
+{
 
 	private static final long serialVersionUID = 1L;
 	private PfssPlugin3dRenderer renderer;
-	private boolean showAgain = true;
-	private boolean retry = false;
-	private CopyOnWriteArrayList<String> messages = new CopyOnWriteArrayList<String>();
+
 	// UI Components
-	private JButton visibleButton = new JButton(new ImageIcon(
-			PfssPlugin.getResourceUrl("/images/invisible_dm.png")));
-	private JButton reloadButton = new JButton(new ImageIcon(
-			PfssPlugin.getResourceUrl("/images/reload.png")));
+	private JButton visibleButton = new JButton(new ImageIcon(PfssPlugin.getResourceUrl("/images/invisible_dm.png")));
+	private JButton reloadButton = new JButton(new ImageIcon(PfssPlugin.getResourceUrl("/images/reload.png")));
 
 	/**
 	 * Default constructor
@@ -110,8 +103,9 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 				renderer.setVisible(false);
 				visibleButton.setIcon(new ImageIcon(PfssPlugin
 						.getResourceUrl("/images/invisible_dm.png")));
-			} else {
-				this.showData();
+			}
+			else
+			{
 				renderer.setVisible(true);
 				visibleButton.setIcon(new ImageIcon(PfssPlugin
 						.getResourceUrl("/images/visible_dm.png")));
@@ -120,40 +114,16 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 			fireRedraw();
 		}
 
-		if (act.getSource().equals(reloadButton)) {
-		    messages.clear();
+		if (act.getSource().equals(reloadButton))
 			reload();
-		}
-
 	}
 
-	private void showData() {
-		if (showAgain)
-		{
-			for(String message: messages)
-			{
-				Object[] options = { "Retry", "OK" };
-				messages.remove(message);
-				JCheckBox checkBox = new JCheckBox(
-						"Don't show this message again.");
-				checkBox.setEnabled(showAgain);
-				Object[] params = { message, checkBox };
-				int n = JOptionPane.showOptionDialog(this, params,
-							"PFSS data", JOptionPane.YES_NO_CANCEL_OPTION,
-							JOptionPane.WARNING_MESSAGE, null, options,
-							options[1]);
-					showAgain = !checkBox.isSelected();
-					if (n == 0) {
-						retry = true;
-					}
-				}
-			}
+	public void setEnabled(boolean b)
+	{
 	}
 
-	public void setEnabled(boolean b) {
-	}
-
-	public void activeLayerChanged(int idx) {
+	public void activeLayerChanged(int idx)
+	{
 	}
 
 	public void layerAdded(int idx)
@@ -170,7 +140,8 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 		}
 		Date start;
 		Date end;
-		if (master >=0){
+		if (master >=0)
+		{
 			start = LayersModel.getSingletonInstance().getStartDate(master).getTime();
 			end = LayersModel.getSingletonInstance().getStartDate(master).getTime();
 		}
@@ -179,38 +150,8 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 			end = LayersModel.getSingletonInstance().getLastDate();
 		}
 		
-		messages.clear();
-		if (start != null && end != null) {
-				retry = true;
-				while(retry) {
-				try {
-					renderer.setDisplayRange(start, end);
-					retry = false;
-				} catch (IOException e) {
-					if (showAgain) {
-						retry = false;
-						Object[] options = { "Retry", "OK" };
-						String message = e.getMessage();
-						JCheckBox checkBox = new JCheckBox(
-								"Don't show this message again.");
-						if (this.renderer.isVisible()){
-							checkBox.setEnabled(showAgain);
-							Object[] params = { message, checkBox };
-							int n = JOptionPane.showOptionDialog(this, params,
-									"Pfss-Data", JOptionPane.YES_NO_CANCEL_OPTION,
-									JOptionPane.WARNING_MESSAGE, null, options,
-									options[1]);
-							showAgain = !checkBox.isSelected();
-							retry = n == 0;
-							
-						}
-						else{
-							messages.add(message);
-						}
-					}
-				}
-			}
-		}
+		if (start != null && end != null)
+			renderer.setDisplayRange(start, end);
 	}
 
 	public void layerChanged(int idx) {
