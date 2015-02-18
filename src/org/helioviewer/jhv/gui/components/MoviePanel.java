@@ -885,9 +885,14 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
          * @param copyFrom
          *            Panel dominating the other ones right now
          */
-        public void updateSpeedUnitComboBoxLinkedMovies(MoviePanel copyFrom) {
-            for (MoviePanel panel : linkedMovies) {
-                panel.speedUnitComboBox.setSelectedItem(copyFrom.speedUnitComboBox.getSelectedItem());
+        public void updateSpeedUnitComboBoxLinkedMovies(MoviePanel copyFrom)
+        {
+            Object newSelection = copyFrom.speedUnitComboBox.getSelectedItem();
+            
+            for (MoviePanel panel : linkedMovies)
+            {
+                if(panel.speedUnitComboBox.getSelectedItem()!=newSelection)
+                    panel.speedUnitComboBox.setSelectedItem(newSelection);
             }
         }
 
