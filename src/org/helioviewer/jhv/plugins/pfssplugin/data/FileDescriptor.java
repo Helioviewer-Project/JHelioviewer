@@ -11,7 +11,8 @@ import java.util.GregorianCalendar;
  * @author Jonas Schwammberger
  *
  */
-public class FileDescriptor implements Comparable<Date> {
+public class FileDescriptor
+{
 	private final Calendar endCal;
 	private final Date startDate;
 	private final Date endDate;
@@ -31,8 +32,9 @@ public class FileDescriptor implements Comparable<Date> {
 	 * @param d
 	 * @return true if date is after or equals the startdate and before or equals enddate
 	 */
-	public boolean isDateInRange(Date d) {
-		return (startDate.before(d) & endDate.after(d)) |  startDate.equals(d) | endDate.equals(d);
+	public boolean isDateInRange(Date d)
+	{
+		return (startDate.before(d) && endDate.after(d)) || startDate.equals(d) || endDate.equals(d);
 	}
 	
 	public Date getStartDate() {
@@ -49,14 +51,6 @@ public class FileDescriptor implements Comparable<Date> {
 	
 	public String getFileName() {
 		return this.fileName;
-	}
-	
-	@Override
-	public int compareTo(Date o) {
-		if(this.isDateInRange(o))
-			return 0;
-		else
-			return this.endDate.compareTo(o);
 	}
 	
 	@Override

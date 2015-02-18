@@ -78,7 +78,6 @@ public class PfssDecompressed
 	private void uploadVBOs(GL gl)
 	{
         if(!isDataAssigned)
-            
             return;
         
 	    if(uploadedVBOs)
@@ -153,12 +152,11 @@ public class PfssDecompressed
 	 */
 	public void display(GL gl, Date time)
 	{
+	    if(!isDataAssigned)
+	        return;
+	    
 	    if(!uploadedVBOs)
-	    {
 	        uploadVBOs(gl);
-    		if(!uploadedVBOs)
-    		    return;
-	    }
 
 		JHVJPXView masterView=(JHVJPXView) LinkedMovieManager.getActiveInstance().getMasterMovie();
         if(masterView==null || masterView.getCurrentFrameDateTime()==null)

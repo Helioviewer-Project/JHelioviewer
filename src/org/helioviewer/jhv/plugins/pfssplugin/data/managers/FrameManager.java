@@ -47,7 +47,8 @@ public class FrameManager
 		    if(!curFrame.isDataAssigned())
 		    {
 		        FileDescriptor fd=descriptorManager.getFileDescriptor(date);
-	            PfssDecompressor.decompress(dataCache.get(fd),curFrame);
+		        if(fd!=null)
+		            PfssDecompressor.decompress(dataCache.get(fd),curFrame);
 		    }
 			return curFrame;
 		}
@@ -56,10 +57,14 @@ public class FrameManager
 		    curFrame.dispose(_gl);
 		
         FileDescriptor fd=descriptorManager.getFileDescriptor(date);
-        curFrame = new PfssDecompressed(fd);
-        PfssDecompressor.decompress(dataCache.get(fd),curFrame);
+        if(fd!=null)
+        {
+            curFrame = new PfssDecompressed(fd);
+            PfssDecompressor.decompress(dataCache.get(fd),curFrame);
+            return curFrame;
+        }
         
-		return curFrame;
+        return null;
 	}
 	
     /**

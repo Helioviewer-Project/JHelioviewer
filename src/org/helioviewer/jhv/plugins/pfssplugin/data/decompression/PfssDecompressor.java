@@ -28,15 +28,15 @@ public class PfssDecompressor
 	/**
 	 * Reads the PfssData and fills out the frame object
 	 */
-	public static void decompress(PfssCompressed data,PfssDecompressed frame)
+	public static void decompress(PfssCompressed _src,PfssDecompressed _dest)
 	{
-		if (!data.isLoaded())
+		if (!_src.isLoaded())
 		    return;
 		
-		if (frame.isDataAssigned())
+		if (_dest.isDataAssigned())
 		    return;
 
-		try(InputStream is=new ByteArrayInputStream(UnRar.unrarData(data).toByteArray()))
+		try(InputStream is=new ByteArrayInputStream(UnRar.unrarData(_src).toByteArray()))
 		{
 			Fits fits = new Fits(is, false);
 			BasicHDU hdus[] = fits.read();
@@ -66,7 +66,7 @@ public class PfssDecompressor
 			for(IntermediateLineData line : lines)
 				decompressedLines.add(new DecompressedLine(line));
 			
-            convertToBuffers(decompressedLines, l0, b0, frame);
+            convertToBuffers(decompressedLines, l0, b0, _dest);
 		}
 		catch (FitsException | IOException e)
 		{

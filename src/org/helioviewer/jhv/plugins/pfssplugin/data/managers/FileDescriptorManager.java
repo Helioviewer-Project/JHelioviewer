@@ -7,13 +7,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin3dRenderer;
@@ -48,7 +48,7 @@ public class FileDescriptorManager
 	 * @param d
 	 * @return true if it is in range
 	 */
-	public boolean isDateInRange(Date d)
+	public synchronized boolean isDateInRange(Date d)
 	{
 	    if(firstDate==null || endDate==null)
 	        return false;
@@ -61,7 +61,7 @@ public class FileDescriptorManager
 	 * @param from date of first file description to read
 	 * @param to date of last file description to read
 	 */
-	public void readFileDescriptors(final Date from, final Date to)
+	public synchronized void readFileDescriptors(final Date from, final Date to)
 	{
 	    epoch++;
 	    final int curEpoch = epoch;
@@ -70,9 +70,6 @@ public class FileDescriptorManager
 	    this.loadingFrom = from;
 	    this.loadingTo = to;
 	    
-		this.firstDate = null;
-		this.endDate = null;
-		
 		Calendar currentCal = GregorianCalendar.getInstance();
 		Calendar endCal = GregorianCalendar.getInstance();
 		currentCal.setTime(from);
@@ -89,7 +86,7 @@ public class FileDescriptorManager
 	        descriptors.clear();
         }
 		
-		while(currentYear <= endYear && currentMonth <= endMonth)
+		while(currentYear < endYear || (currentYear==endYear && currentMonth <= endMonth))
 		{
 			String m = (currentMonth) < 9 ? "0" + (currentMonth + 1) : (currentMonth + 1) + "";
 			final String url = PfssSettings.SERVER_URL + currentYear +"/"+m+"/list.txt";
@@ -105,7 +102,10 @@ public class FileDescriptorManager
 	                try
                     {
 	                    if(curEpoch==epoch && errorMessage==null)
+	                    {
 	                        readDescription(url, from, to, finalCurrentYear, finalCurrentMonth, curEpoch);
+	                        GuiState3DWCS.mainComponentView.getComponent().repaint();
+	                    }	                    
                     }
                     catch(IOException e)
                     {
@@ -131,6 +131,8 @@ public class FileDescriptorManager
 			currentYear = currentCal.get(Calendar.YEAR);
 			currentMonth = currentCal.get(Calendar.MONTH);
 		}
+        this.firstDate = from;
+        this.endDate = to;
 	}
 	
 	/**
@@ -178,11 +180,6 @@ public class FileDescriptorManager
 				        
 				        descriptors.add(new FileDescriptor(startTime, endTime, fileName));
 				    }
-					
-					if(this.firstDate == null)
-					    this.firstDate = startTime;
-					
-					this.endDate = endTime;
 				}
 			}
 		} 
@@ -206,7 +203,17 @@ public class FileDescriptorManager
     {
         synchronized(descriptors)
         {
-            return descriptors.get(Collections.binarySearch(descriptors, d));
+            for(FileDescriptor fd:descriptors)
+                if(fd.isDateInRange(d))
+                    return fd;
+            
+            return null;
+            
+            //cannot use binary search since descriptors might be unordered
+            /*int index=Collections.binarySearch(descriptors, d);
+            if(index<0)
+                return null;
+            return descriptors.get(index);*/
         }
     }
     
