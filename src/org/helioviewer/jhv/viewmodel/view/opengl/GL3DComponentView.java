@@ -770,6 +770,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 		fullScreenFrame.setExtendedState(Frame.MAXIMIZED_BOTH);
 		fullScreenFrame.setUndecorated(true);
         fullScreenFrame.setVisible(true);
+		
 		this.canvas.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
