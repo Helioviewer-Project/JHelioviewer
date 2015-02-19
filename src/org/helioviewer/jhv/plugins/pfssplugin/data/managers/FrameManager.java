@@ -7,6 +7,7 @@ import javax.media.opengl.GL2;
 
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin3dRenderer;
 import org.helioviewer.jhv.plugins.pfssplugin.data.FileDescriptor;
+import org.helioviewer.jhv.plugins.pfssplugin.data.PfssCompressed;
 import org.helioviewer.jhv.plugins.pfssplugin.data.PfssDecompressed;
 import org.helioviewer.jhv.plugins.pfssplugin.data.caching.DataCache;
 import org.helioviewer.jhv.plugins.pfssplugin.data.decompression.PfssDecompressor;
@@ -48,7 +49,11 @@ public class FrameManager
 		    {
 		        FileDescriptor fd=descriptorManager.getFileDescriptor(date);
 		        if(fd!=null)
-		            PfssDecompressor.decompress(dataCache.get(fd),curFrame);
+		        {
+		            PfssCompressed comp = dataCache.get(fd);
+		            comp.loadDataAsync();
+		            PfssDecompressor.decompress(comp,curFrame);
+		        }
 		    }
 			return curFrame;
 		}
@@ -60,7 +65,10 @@ public class FrameManager
         if(fd!=null)
         {
             curFrame = new PfssDecompressed(fd);
-            PfssDecompressor.decompress(dataCache.get(fd),curFrame);
+            
+            PfssCompressed comp = dataCache.get(fd);
+            comp.loadDataAsync();
+            PfssDecompressor.decompress(comp,curFrame);
             return curFrame;
         }
         

@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginManager;
 import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginSettings;
@@ -17,7 +18,18 @@ import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayPlugin;
  * */
 public class PfssPlugin extends OverlayPlugin implements Plugin
 {
-    public static final ExecutorService pool = Executors.newCachedThreadPool();
+    private static int threadNumber=0;
+    public static final ExecutorService pool = Executors.newCachedThreadPool(new ThreadFactory()
+    {
+        @Override
+        public Thread newThread(Runnable _r)
+        {
+            Thread t=Executors.defaultThreadFactory().newThread(_r);
+            t.setName("PFSS-"+(threadNumber++));
+            t.setDaemon(true);
+            return t;
+        }
+    });
 
 	public PfssPlugin()
 	{

@@ -143,7 +143,7 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 		if (master >=0)
 		{
 			start = LayersModel.getSingletonInstance().getStartDate(master).getTime();
-			end = LayersModel.getSingletonInstance().getStartDate(master).getTime();
+			end = LayersModel.getSingletonInstance().getEndDate(master).getTime();
 		}
 		else {
 			start = LayersModel.getSingletonInstance().getFirstDate();

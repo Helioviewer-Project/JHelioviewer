@@ -1,7 +1,5 @@
 package org.helioviewer.jhv.plugins.pfssplugin.data.caching;
 
-import org.helioviewer.jhv.gui.GuiState3DWCS;
-import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssSettings;
 import org.helioviewer.jhv.plugins.pfssplugin.data.FileDescriptor;
 import org.helioviewer.jhv.plugins.pfssplugin.data.PfssCompressed;
@@ -79,15 +77,7 @@ public class DataCache
                 + "/" + desc.getFileName();
         
         final PfssCompressed d = new PfssCompressed(desc,url);
-        PfssPlugin.pool.execute(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                d.loadData();
-                GuiState3DWCS.mainComponentView.getComponent().repaint();
-            }
-        });
+        d.loadDataAsync();
         return d;
     }
 }

@@ -7,6 +7,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
+import org.helioviewer.jhv.gui.GuiState3DWCS;
+import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
 import org.helioviewer.jhv.plugins.pfssplugin.data.caching.Cacheable;
 
 /**
@@ -18,6 +20,7 @@ import org.helioviewer.jhv.plugins.pfssplugin.data.caching.Cacheable;
  */
 public class PfssCompressed implements Cacheable
 {
+    private volatile boolean isLoading = false;
 	private volatile boolean isLoaded = false;
 	private volatile byte[] rawData;
 	private final String url;
@@ -37,7 +40,14 @@ public class PfssCompressed implements Cacheable
 	/**
 	 * Load the data into memory. this method signals all who are waiting on the condition "loaded"
 	 */
-	public synchronized void loadData() {
+	public synchronized boolean loadData()
+	{
+	    if(isLoaded)
+	    {
+	        isLoading=false;
+	        return true;
+	    }
+	    
 		InputStream in = null;
 		try {
 			URL u = new URL(url);
@@ -58,11 +68,13 @@ public class PfssCompressed implements Cacheable
 				offset += bytesRead;
 			}
 			isLoaded = true;
+			return true;
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
+		    isLoading = false;
 			try {
 				if (in != null)
 					in.close();
@@ -70,6 +82,8 @@ public class PfssCompressed implements Cacheable
 				e.printStackTrace();
 			}
 		}
+		
+		return false;
 	}
 	
 	/**
@@ -80,6 +94,15 @@ public class PfssCompressed implements Cacheable
 	{
 		return isLoaded;
 	}
+	
+    /**
+     * 
+     * @return true if data is loading
+     */
+    public boolean isLoading()
+    {
+        return isLoading;
+    }
 	
 	/**
 	 * Check if it is loaded completely before accessing this method.
@@ -95,4 +118,21 @@ public class PfssCompressed implements Cacheable
 	{
 		return this.descriptor;
 	}
+
+    public void loadDataAsync()
+    {
+        if(isLoading || isLoaded)
+            return;
+        
+        isLoading=true;
+        PfssPlugin.pool.execute(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                loadData();
+                GuiState3DWCS.mainComponentView.getComponent().repaint();
+            }
+        });   
+    }
 }
