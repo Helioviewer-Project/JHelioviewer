@@ -160,11 +160,14 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 			}
 		});
 
-		if (System.getProperty("os.name").toUpperCase().contains("WIN")) {
+		if (JHVGlobals.isWindows())
+		{
 			btnPanel.add(acceptBtn);
 			btnPanel.add(resetBtn);
 			btnPanel.add(cancelBtn);
-		} else {
+		}
+		else
+		{
 			btnPanel.add(resetBtn);
 			btnPanel.add(cancelBtn);
 			btnPanel.add(acceptBtn);
@@ -210,8 +213,8 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 	/**
 	 * {@inheritDoc}
 	 */
-	public void showDialog() {
-
+	public void showDialog()
+	{
 		loadSettings();
 
 		pack();

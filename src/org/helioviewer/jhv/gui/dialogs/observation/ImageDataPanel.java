@@ -699,7 +699,7 @@ public class ImageDataPanel extends ObservationDialogPanel {
         /**
          * Label for detector and/or measurement
          */
-        private final JLabel labelDetectorMeasurement = new JLabel("Detector/Measurement");
+        private final JLabel labelDetectorMeasurement = new JLabel("Detector/measurement");
         /**
          * Combobox to select observatory
          */

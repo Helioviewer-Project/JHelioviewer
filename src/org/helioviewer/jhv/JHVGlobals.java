@@ -27,6 +27,11 @@ public class JHVGlobals {
     {
         return RAYGUN_TAG!=null;
     }
+    
+    public static boolean isWindows()
+    {
+        return System.getProperty("os.name").toUpperCase().contains("WIN");
+    }
 
     /**
      * @return standard read timeout
