@@ -102,6 +102,7 @@ public class MainImagePanel extends BasicImagePanel {
             loadingTasks--;
             if (loadingTasks == 0) {
                 removePostRenderer(loadingPostRenderer);
+                if (!JHVGlobals.OLD_RENDER_MODE) ((CompenentView) GuiState3DWCS.mainComponentView).removeRenderAnimation(centerLoadingScreen);
                 loadingPostRenderer.stopAnimation();
 
                 LayeredView layeredView = GuiState3DWCS.mainComponentView.getAdapter(LayeredView.class);

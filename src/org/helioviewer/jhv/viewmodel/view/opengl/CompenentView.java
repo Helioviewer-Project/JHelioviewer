@@ -25,7 +25,6 @@ import javax.media.opengl.GLEventListener;
 import javax.media.opengl.awt.GLCanvas;
 
 import org.helioviewer.jhv.base.math.Matrix4d;
-import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.math.Vector3d;
@@ -549,7 +548,7 @@ public class CompenentView extends GL3DComponentView implements
 			
 			for (Layer layer : layers.getLayers()) {
 				if (layer.isVisible()) {
-					//this.displayLayer(gl, layer);
+					this.displayLayer(gl, layer);
 				}
 			}
 			gl.glPopMatrix();
@@ -563,11 +562,11 @@ public class CompenentView extends GL3DComponentView implements
 		if (animations.size() > 0){
 			for (RenderAnimation animation : animations){
 				animation.render(gl, canvas.getSurfaceWidth(), canvas.getSurfaceHeight());
+				this.canvas.repaint(20);
 			}
 		}
 		
-		System.out.println("layercount : " + layers.getLayerCount());
-		if (layers.getLayerCount() <= 0) {
+		if (layers.getLayerCount() <= 0 && animations.size() <= 0) {
 			splashScreen.render(gl, canvas.getSurfaceWidth(), canvas.getSurfaceHeight());
 		}
 
@@ -752,6 +751,11 @@ public class CompenentView extends GL3DComponentView implements
 	
 	public void addRenderAnimation(RenderAnimation renderAnimation){
 		this.animations.add(renderAnimation);
+		this.canvas.repaint();
 	}
-
+	
+	public void removeRenderAnimation(RenderAnimation renderAnimation){
+		this.animations.remove(renderAnimation);
+		this.canvas.repaint();
+	}
 }

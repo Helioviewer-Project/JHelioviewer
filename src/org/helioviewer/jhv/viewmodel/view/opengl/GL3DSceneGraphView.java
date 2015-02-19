@@ -14,7 +14,6 @@ import org.helioviewer.jhv.base.math.Vector4d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.gui.GL3DCameraSelectorModel;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
-import org.helioviewer.jhv.gui.components.MoviePanel;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
 import org.helioviewer.jhv.opengl.camera.GL3DCameraZoomAnimation;

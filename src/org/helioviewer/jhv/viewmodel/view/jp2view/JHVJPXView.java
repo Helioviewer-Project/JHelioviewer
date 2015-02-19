@@ -1,6 +1,5 @@
 package org.helioviewer.jhv.viewmodel.view.jp2view;
 
-import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.changeevent.PlayStateChangedReason;
 import org.helioviewer.jhv.viewmodel.changeevent.TimestampChangedReason;

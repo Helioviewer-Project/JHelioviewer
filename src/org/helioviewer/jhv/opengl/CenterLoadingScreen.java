@@ -17,15 +17,17 @@ public class CenterLoadingScreen implements RenderAnimation {
 
 	private int texture;
 	private Dimension dimension;
-	private final double FPS = 60;
-	private final int NUMBER_OF_CIRCLE = 12;
-	private final int NUMBER_OF_VISIBLE_CIRCLE = 2;
+	private final double TOTAL_SEC_4_ONE_ROTATION = 2;
+	private final int NUMBER_OF_CIRCLE = 32;
+	private final int NUMBER_OF_VISIBLE_CIRCLE = 12;
 	private final int POINT_OF_CIRCLE = 36;
 	private int verticesSize;
 	private final double FACTOR = 8;
 
-	private final float RADIUS = 300;
-	private final float CIRCLE_RADIUS = 30;
+	private final float RADIUS = 99;
+	private final float CIRCLE_RADIUS = 8;
+	private final float DEFAULT_X_OFFSET = -3;
+	private final float DEFAULT_Y_OFFSET = 27;
 	private int[] buffers;
 	private int vertices;
 	private int indices;
@@ -58,32 +60,25 @@ public class CenterLoadingScreen implements RenderAnimation {
 
 	@Override
 	public void render(GL2 gl, double canvasWidth, double canvasHeight) {
-		System.out.println("renderCenterLoadingScreen");
 
 		gl.glUseProgram(0);
+		
 		gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
 		gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
 
-		double aspect = canvasWidth / canvasHeight;
-
-		double width = aspect > 1 ? dimension.getWidth() * FACTOR : dimension
-				.getWidth() * aspect * FACTOR;
-		double height = aspect < 1 ? dimension.getHeight() * FACTOR : dimension
-				.getHeight() / aspect * FACTOR;
-		width /= 2.0;
-		height /= 2.0;
+		
 		double imageWidth = dimension.getWidth() / 2.0;
 		double imageHeight = dimension.getHeight() / 2.0;
 		gl.glDisable(GL2.GL_DEPTH_TEST);
 
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glLoadIdentity();
-		gl.glOrtho(-width, width, -height, height, 10, -10);
+		gl.glOrtho(-imageWidth, imageWidth, -imageHeight, imageHeight, 10, -10);
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		gl.glLoadIdentity();
-		gl.glColor3f(1, 0, 0);
+		gl.glColor3f(1, 1, 1);
 
-		/*
+		
 		gl.glEnable(GL2.GL_BLEND);
 		gl.glEnable(GL2.GL_TEXTURE_2D);
 		gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
@@ -104,34 +99,41 @@ public class CenterLoadingScreen implements RenderAnimation {
 		gl.glTexCoord2f(0, 1);
 		gl.glVertex2d(-imageWidth, -imageHeight);
 		gl.glEnd();
-		*/
+		
 		gl.glDisable(GL2.GL_DEPTH_TEST);
 		gl.glDisable(GL2.GL_BLEND);
 		gl.glDisable(GL2.GL_TEXTURE_2D);
 
-		renderCircles(gl, 0);
+		renderCircles(gl);
 
 	}
 
-	private void renderCircles(GL2 gl, double t) {
+	private void renderCircles(GL2 gl) {
 		// gl.glPushMatrix();
+		double t = System.currentTimeMillis() / (TOTAL_SEC_4_ONE_ROTATION*1000.0);
+		System.out.println("t1: " + t);
+		t = t - (int) t;
+		//t /= FPS;
+		t = t - (int) t;
+		gl.glTranslated(DEFAULT_X_OFFSET, DEFAULT_Y_OFFSET, 0);
+		gl.glRotated(t*360, 0, 0, -1);
 		gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
 		gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
 		gl.glDisable(GL2.GL_LIGHTING);
 		gl.glDisable(GL2.GL_DEPTH_TEST);
 		gl.glDisable(GL2.GL_COLOR_MATERIAL);
-		//gl.glEnable(GL2.GL_BLEND);
-		//gl.glBlendFunc(GL2.GL_ONE, GL2.GL_ONE_MINUS_SRC_ALPHA);
+		gl.glEnable(GL2.GL_BLEND);
+		gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
 		gl.glEnableClientState(GL2.GL_VERTEX_ARRAY);
-		//gl.glEnableClientState(GL2.GL_COLOR_ARRAY);
-		//gl.glEnable(GL2.GL_COLOR_MATERIAL);		
+		gl.glEnableClientState(GL2.GL_COLOR_ARRAY);
+		gl.glEnable(GL2.GL_COLOR_MATERIAL);		
 		//gl.glCullFace(GL2.GL_BACK);
 
 		gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, vertices);
 		gl.glVertexPointer(2, GL2.GL_FLOAT, 0, 0);
-		gl.glColor3d(1, 0, 0);
-		//gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, color);
-		//gl.glColorPointer(3, GL2.GL_FLOAT, 0, 0);
+		
+		gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, color);
+		gl.glColorPointer(4, GL2.GL_FLOAT, 0, 0);
 				
 		gl.glBindBuffer(GL2.GL_ELEMENT_ARRAY_BUFFER, indices);
 		gl.glDrawElements(GL2.GL_TRIANGLES, indicesSize, GL2.GL_UNSIGNED_INT, 0);
@@ -154,7 +156,7 @@ public class CenterLoadingScreen implements RenderAnimation {
 				.newDirectIntBuffer((POINT_OF_CIRCLE) * 3 * NUMBER_OF_VISIBLE_CIRCLE);
 		FloatBuffer vertices = Buffers.newDirectFloatBuffer(((POINT_OF_CIRCLE) * 2 + 2)
 				* NUMBER_OF_VISIBLE_CIRCLE);
-		FloatBuffer colors = Buffers.newDirectFloatBuffer((((POINT_OF_CIRCLE) * 3))
+		FloatBuffer colors = Buffers.newDirectFloatBuffer(((POINT_OF_CIRCLE) * 4 + 4)
 				* NUMBER_OF_VISIBLE_CIRCLE);
 
 
@@ -162,34 +164,33 @@ public class CenterLoadingScreen implements RenderAnimation {
 		for (int j = 0; j  < NUMBER_OF_VISIBLE_CIRCLE; j ++){
 			float alpha = (192 - (192 * ((float) j / NUMBER_OF_VISIBLE_CIRCLE))) / 255.f;
 			double test = j / (double) NUMBER_OF_CIRCLE;
-			System.out.println("test : " + test);
-			float y = (float) Math.cos(test * 2 * Math.PI) * RADIUS;
-			float x = (float) Math.sin(test * 2 * Math.PI) * RADIUS;
+			
+			float x = (float) Math.cos(test * 2 * Math.PI) * RADIUS;
+			float y = (float) Math.sin(test * 2 * Math.PI) * RADIUS;
 			vertices.put(x);
 			vertices.put(y);
+			
+			colors.put(CIRCLE_COLOR);
+			colors.put(CIRCLE_COLOR);
+			colors.put(CIRCLE_COLOR);
+			colors.put(alpha);
 			int middle = (POINT_OF_CIRCLE + 1) * j;
 			for (int i = 0; i < POINT_OF_CIRCLE; i++){
 				vertices.put((float) (Math.cos(i/(double)POINT_OF_CIRCLE*2*Math.PI))*CIRCLE_RADIUS + x);
 				vertices.put((float) (Math.sin(i/(double)POINT_OF_CIRCLE*2*Math.PI))*CIRCLE_RADIUS + y);
-				System.out.println("vertices x "+(i+1)+": " + ((Math.cos(i/(double)POINT_OF_CIRCLE*2*Math.PI))*CIRCLE_RADIUS + x));
-				System.out.println("vertices y "+(i+1)+": " + ((Math.sin(i/(double)POINT_OF_CIRCLE*2*Math.PI))*CIRCLE_RADIUS + x));
+				colors.put(CIRCLE_COLOR);
+				colors.put(CIRCLE_COLOR);
+				colors.put(CIRCLE_COLOR);
+				colors.put(alpha);
+				System.out.println("alpha : " + alpha);
 			}
 			
 			for (int i = 1; i <= POINT_OF_CIRCLE; i++) {
-				int idx1 = i + j * POINT_OF_CIRCLE;
-				int idx2 = i+1 > POINT_OF_CIRCLE ? 1 + j * POINT_OF_CIRCLE : i+1 + j * POINT_OF_CIRCLE;
+				int idx1 = i + j * (POINT_OF_CIRCLE + 1);
+				int idx2 = i+1 > POINT_OF_CIRCLE ? 1 + j * (POINT_OF_CIRCLE+1) : i+1 + j * (POINT_OF_CIRCLE+1);
 				indices.put(idx1);
 				indices.put(middle);
 				indices.put(idx2);
-				System.out.println("i"+i+" : " + (idx1));
-				System.out.println("i"+i+" : " + (middle));
-				System.out.println("i"+i+" : " + idx2);
-				colors.put(CIRCLE_COLOR);
-				colors.put(CIRCLE_COLOR);
-				colors.put(CIRCLE_COLOR);
-
-				//colors.put(alpha);
-				System.out.println("alpha : " + alpha);
 				}
 		}
 		vertices.flip();

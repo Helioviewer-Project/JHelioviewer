@@ -1,20 +1,18 @@
 package org.helioviewer.jhv.viewmodel.view.opengl;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.File;
@@ -76,6 +74,9 @@ import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLVertexShaderView;
 import org.helioviewer.jhv.viewmodel.viewport.StaticViewport;
 import org.helioviewer.jhv.viewmodel.viewport.Viewport;
 
+import com.jogamp.newt.Window;
+import com.jogamp.newt.event.KeyListener;
+import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.util.awt.ImageUtil;
 import com.jogamp.opengl.util.awt.TextRenderer;
 
@@ -765,28 +766,29 @@ public class GL3DComponentView extends AbstractBasicView implements
 		this.removeListeners(this.canvas);
 		inactiveCanvas = this.canvas;
 		GLCapabilities cap = new GLCapabilities(GLProfile.getDefault());
-		this.fullScreenFrame = new JFrame();
-		this.canvas = new GLCanvas(cap);
-		canvas.setSharedContext(OpenGLHelper.glContext);
-		fullScreenFrame.add(canvas);
-		fullScreenFrame.setVisible(true);
-		this.canvas.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (SwingUtilities.isRightMouseButton(e))
-					escapeFullscreen();
-			}
-		});
-		this.canvas.addKeyListener(new KeyAdapter() {
+		GLWindow window = GLWindow.create(cap);
+		window.setSharedContext(OpenGLHelper.glContext);
+		window.setVisible(true);
+		window.addKeyListener(new KeyListener() {
 			
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
+			@Override
+			public void keyReleased(com.jogamp.newt.event.KeyEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void keyPressed(com.jogamp.newt.event.KeyEvent e) {
+				if (e.getKeyCode() == com.jogamp.newt.event.KeyEvent.VK_ESCAPE)
 					escapeFullscreen();
 			}
 		});
+		
 		GraphicsDevice graphicsDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice ();
-		graphicsDevice.setFullScreenWindow(fullScreenFrame);
-		this.addListeners(this.canvas);
+		//graphicsDevice.setFullScreenWindow(fullScreenFrame);
+		window.addGLEventListener(this);
+		window.setFullscreen(true);
+		this.canvas.requestFocus();
 		this.canvas.repaint();
 	}	
 

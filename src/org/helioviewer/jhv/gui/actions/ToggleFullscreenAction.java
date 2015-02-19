@@ -7,7 +7,6 @@ import javax.swing.AbstractAction;
 import javax.swing.KeyStroke;
 
 import org.helioviewer.jhv.gui.GuiState3DWCS;
-import org.helioviewer.jhv.gui.ImageViewerGui;
 
 /**
  * Action to switch fullscreen mode on and off.
