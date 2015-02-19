@@ -3,6 +3,7 @@ package org.helioviewer.jhv.opengl;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
@@ -17,14 +18,14 @@ public class CenterLoadingScreen implements RenderAnimation {
 	private int texture;
 	private Dimension dimension;
 	private final double FPS = 60;
-	private final int NUMBER_OF_CIRCLE = 32;
-	private final int NUMBER_OF_VISIBLE_CIRCLE = 1;
-	private final int POINT_OF_CIRCLE = 1;
+	private final int NUMBER_OF_CIRCLE = 12;
+	private final int NUMBER_OF_VISIBLE_CIRCLE = 2;
+	private final int POINT_OF_CIRCLE = 36;
 	private int verticesSize;
 	private final double FACTOR = 8;
 
 	private final float RADIUS = 300;
-	private final float CIRCLE_RADIUS = 80;
+	private final float CIRCLE_RADIUS = 30;
 	private int[] buffers;
 	private int vertices;
 	private int indices;
@@ -150,22 +151,20 @@ public class CenterLoadingScreen implements RenderAnimation {
 		System.out.println("initCircle");
 
 		IntBuffer indices = Buffers
-				.newDirectIntBuffer((POINT_OF_CIRCLE-1) * 3 * NUMBER_OF_VISIBLE_CIRCLE);
+				.newDirectIntBuffer((POINT_OF_CIRCLE) * 3 * NUMBER_OF_VISIBLE_CIRCLE);
 		FloatBuffer vertices = Buffers.newDirectFloatBuffer(((POINT_OF_CIRCLE) * 2 + 2)
 				* NUMBER_OF_VISIBLE_CIRCLE);
-		FloatBuffer colors = Buffers.newDirectFloatBuffer((((POINT_OF_CIRCLE-1) * 3))
+		FloatBuffer colors = Buffers.newDirectFloatBuffer((((POINT_OF_CIRCLE) * 3))
 				* NUMBER_OF_VISIBLE_CIRCLE);
 
-		int j = 0;
 
-		float alpha = (192 - (192 * ((float) j / NUMBER_OF_VISIBLE_CIRCLE))) / 255.f;
 
+		for (int j = 0; j  < NUMBER_OF_VISIBLE_CIRCLE; j ++){
+			float alpha = (192 - (192 * ((float) j / NUMBER_OF_VISIBLE_CIRCLE))) / 255.f;
 			double test = j / (double) NUMBER_OF_CIRCLE;
 			System.out.println("test : " + test);
 			float y = (float) Math.cos(test * 2 * Math.PI) * RADIUS;
 			float x = (float) Math.sin(test * 2 * Math.PI) * RADIUS;
-			x = 0;
-			y = 0;
 			vertices.put(x);
 			vertices.put(y);
 			int middle = (POINT_OF_CIRCLE + 1) * j;
@@ -173,15 +172,18 @@ public class CenterLoadingScreen implements RenderAnimation {
 				vertices.put((float) (Math.cos(i/(double)POINT_OF_CIRCLE*2*Math.PI))*CIRCLE_RADIUS + x);
 				vertices.put((float) (Math.sin(i/(double)POINT_OF_CIRCLE*2*Math.PI))*CIRCLE_RADIUS + y);
 				System.out.println("vertices x "+(i+1)+": " + ((Math.cos(i/(double)POINT_OF_CIRCLE*2*Math.PI))*CIRCLE_RADIUS + x));
+				System.out.println("vertices y "+(i+1)+": " + ((Math.sin(i/(double)POINT_OF_CIRCLE*2*Math.PI))*CIRCLE_RADIUS + x));
 			}
 			
-			for (int i = 1; i < POINT_OF_CIRCLE; i++) {
-				indices.put(i*2 + 1);
+			for (int i = 1; i <= POINT_OF_CIRCLE; i++) {
+				int idx1 = i + j * POINT_OF_CIRCLE;
+				int idx2 = i+1 > POINT_OF_CIRCLE ? 1 + j * POINT_OF_CIRCLE : i+1 + j * POINT_OF_CIRCLE;
+				indices.put(idx1);
 				indices.put(middle);
-				indices.put(i*2 + 2);
-				System.out.println("i"+i+" : " + (i*2 + 1));
+				indices.put(idx2);
+				System.out.println("i"+i+" : " + (idx1));
 				System.out.println("i"+i+" : " + (middle));
-				System.out.println("i"+i+" : " + (i*2 + 2));
+				System.out.println("i"+i+" : " + idx2);
 				colors.put(CIRCLE_COLOR);
 				colors.put(CIRCLE_COLOR);
 				colors.put(CIRCLE_COLOR);
@@ -189,6 +191,7 @@ public class CenterLoadingScreen implements RenderAnimation {
 				//colors.put(alpha);
 				System.out.println("alpha : " + alpha);
 				}
+		}
 		vertices.flip();
 		colors.flip();
 		indices.flip();
