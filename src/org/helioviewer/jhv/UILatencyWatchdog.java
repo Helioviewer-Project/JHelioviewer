@@ -83,6 +83,15 @@ public class UILatencyWatchdog
                                     limitedStackTrace.add(ste);
                             }
                             
+                            if(isRMIActive())
+                            {
+                                //it seems that someone is debugging this app
+                                //--> leads to spurious alerts
+                                //--> ignore & stop further processing
+                                System.out.println("UI latency watchdog: Debugger detected.");
+                                return;
+                            }
+                            
                             //only report hangs to raygun in release builds
                             if(JHVGlobals.isReleaseVersion())
                             {
@@ -118,9 +127,19 @@ public class UILatencyWatchdog
             }
         });
         
+        t.setName("UI latency watchdog");
         t.setDaemon(true);
         t.setPriority(Thread.MAX_PRIORITY);
         t.start();
         System.out.println("UI latency watchdog active");
+    }
+    
+    private static boolean isRMIActive()
+    {
+        for(Thread t:Thread.getAllStackTraces().keySet())
+            if(t.getName().startsWith("RMI "))
+                return true;
+        
+        return false;
     }
 }
