@@ -74,9 +74,6 @@ import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLVertexShaderView;
 import org.helioviewer.jhv.viewmodel.viewport.StaticViewport;
 import org.helioviewer.jhv.viewmodel.viewport.Viewport;
 
-import com.jogamp.newt.Window;
-import com.jogamp.newt.event.KeyListener;
-import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.util.awt.ImageUtil;
 import com.jogamp.opengl.util.awt.TextRenderer;
 
@@ -766,29 +763,31 @@ public class GL3DComponentView extends AbstractBasicView implements
 		this.removeListeners(this.canvas);
 		inactiveCanvas = this.canvas;
 		GLCapabilities cap = new GLCapabilities(GLProfile.getDefault());
-		GLWindow window = GLWindow.create(cap);
-		window.setSharedContext(OpenGLHelper.glContext);
-		window.setVisible(true);
-		window.addKeyListener(new KeyListener() {
-			
+		this.fullScreenFrame = new JFrame();
+		this.canvas = new GLCanvas(cap);
+		canvas.setSharedContext(OpenGLHelper.glContext);
+		fullScreenFrame.add(canvas);
+		fullScreenFrame.setVisible(true);
+		fullScreenFrame.setExtendedState(Frame.MAXIMIZED_BOTH);
+		fullScreenFrame.setUndecorated(true);
+		this.canvas.addMouseListener(new MouseAdapter() {
 			@Override
-			public void keyReleased(com.jogamp.newt.event.KeyEvent e) {
-				// TODO Auto-generated method stub
-				
+			public void mouseClicked(MouseEvent e) {
+				if (SwingUtilities.isRightMouseButton(e))
+					escapeFullscreen();
 			}
+		});
+		this.canvas.addKeyListener(new KeyAdapter() {
 			
-			@Override
-			public void keyPressed(com.jogamp.newt.event.KeyEvent e) {
-				if (e.getKeyCode() == com.jogamp.newt.event.KeyEvent.VK_ESCAPE)
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
 					escapeFullscreen();
 			}
 		});
 		
 		GraphicsDevice graphicsDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice ();
-		//graphicsDevice.setFullScreenWindow(fullScreenFrame);
-		window.addGLEventListener(this);
-		window.setFullscreen(true);
-		this.canvas.requestFocus();
+		graphicsDevice.setFullScreenWindow(fullScreenFrame);
+		this.addListeners(this.canvas);
 		this.canvas.repaint();
 	}	
 
