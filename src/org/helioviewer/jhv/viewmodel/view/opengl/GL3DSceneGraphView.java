@@ -14,6 +14,7 @@ import org.helioviewer.jhv.base.math.Vector4d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.gui.GL3DCameraSelectorModel;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
+import org.helioviewer.jhv.gui.components.MoviePanel;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
 import org.helioviewer.jhv.opengl.camera.GL3DCameraZoomAnimation;
@@ -36,11 +37,13 @@ import org.helioviewer.jhv.viewmodel.changeevent.LayerChangedReason;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.region.Region;
 import org.helioviewer.jhv.viewmodel.view.LayeredView;
+import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
 import org.helioviewer.jhv.viewmodel.view.MetaDataView;
 import org.helioviewer.jhv.viewmodel.view.RegionView;
 import org.helioviewer.jhv.viewmodel.view.SubimageDataView;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.ViewListener;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 
 /**
  * This is the most important view in the 3D viewchain. It assembles all 3D
@@ -81,6 +84,26 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 				System.out.println("Toggling Corona Visibility");
 			}
 		}, KeyEvent.VK_X);
+		GL3DKeyController.getInstance().addListener(new GL3DKeyListener() {
+			public void keyHit(KeyEvent e) {
+				if (LinkedMovieManager.getActiveInstance().getMasterMovie().isMoviePlaying())
+					LinkedMovieManager.getActiveInstance().getMasterMovie().pauseMovie();
+				else
+					LinkedMovieManager.getActiveInstance().getMasterMovie().playMovie();
+			}
+		}, KeyEvent.VK_SPACE);
+		GL3DKeyController.getInstance().addListener(new GL3DKeyListener() {
+			public void keyHit(KeyEvent e) {
+				JHVJPXView activeView = (JHVJPXView) LayersModel.getSingletonInstance().getActiveView().getAdapter(JHVJPXView.class);
+				activeView.setCurrentFrame(activeView.getCurrentFrameNumber()+1, new ChangeEvent());
+			}
+		}, KeyEvent.VK_RIGHT);
+		GL3DKeyController.getInstance().addListener(new GL3DKeyListener() {
+			public void keyHit(KeyEvent e) {
+				JHVJPXView activeView = (JHVJPXView) LayersModel.getSingletonInstance().getActiveView().getAdapter(JHVJPXView.class);
+				activeView.setCurrentFrame(activeView.getCurrentFrameNumber()-1, new ChangeEvent());
+			}
+		}, KeyEvent.VK_LEFT);
 	}
 
 	public void render3D(GL3DState state) {

@@ -6,6 +6,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;
 import javax.swing.KeyStroke;
 
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 
 /**
@@ -34,7 +35,7 @@ public class ToggleFullscreenAction extends AbstractAction {
      * {@inheritDoc}
      */
     public void actionPerformed(ActionEvent e) {
-        ImageViewerGui.getSingletonInstance().toggleShowSidePanel();
+    	GuiState3DWCS.mainComponentView.toFullscreen();
     }
 
 }

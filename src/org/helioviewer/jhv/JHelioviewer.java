@@ -112,8 +112,6 @@ public class JHelioviewer {
             argString += " " + args[i];
         }
         
-        if (!JHVGlobals.OLD_RENDER_MODE)
-        {
             GLDrawableFactory fact = GLDrawableFactory.getFactory(GLProfile.getDefault()); 
     		GLDrawableFactory factory = GLDrawableFactory.getFactory(GLProfile
     				.getDefault());
@@ -126,8 +124,8 @@ public class JHelioviewer {
     		if (System.getProperty("jhvVersion") == null) sharedDrawable.setGL(new DebugGL2(sharedDrawable.getGL().getGL2()));
 
         	OpenGLHelper.glContext = sharedDrawable.getContext();
-        }
-        System.out.println("JHelioviewer started with command-line options:" + argString);
+        
+        	System.out.println("JHelioviewer started with command-line options:" + argString);
         
         System.out.println("Initializing JHelioviewer");
         

@@ -18,13 +18,21 @@ public class CenterLoadingScreen implements RenderAnimation {
 	private Dimension dimension;
 	private final double FPS = 60;
 	private final int NUMBER_OF_CIRCLE = 32;
-	private final int NUMBER_OF_VISIBLE_CIRCLE = 12;
-	private int size;
+	private final int NUMBER_OF_VISIBLE_CIRCLE = 1;
+	private final int POINT_OF_CIRCLE = 1;
+	private int verticesSize;
 	private final double FACTOR = 8;
-	private double[][] circleColors;
-	private final double RADIUS = 2;
-	private int[] buffers;
 
+	private final float RADIUS = 300;
+	private final float CIRCLE_RADIUS = 80;
+	private int[] buffers;
+	private int vertices;
+	private int indices;
+	private int color;
+	private float CIRCLE_COLOR = 192 / 255f;
+	private int indicesSize;
+
+	
 	public CenterLoadingScreen() {
 		SwingUtilities.invokeLater(new Runnable() {
 
@@ -42,16 +50,7 @@ public class CenterLoadingScreen implements RenderAnimation {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				buffers = initCircleVBO(gl);
-				for (int i = 0; i < NUMBER_OF_VISIBLE_CIRCLE; i++) {
-					double alpha = 192 - (192 * ((float) i / NUMBER_OF_VISIBLE_CIRCLE)) / 250.0;
-					circleColors = new double[12][4];
-					circleColors[i][0] = 192 / 255.0;
-					circleColors[i][1] = 192 / 255.0;
-					circleColors[i][2] = 192 / 255.0;
-					circleColors[i][3] = alpha / 255.0;
-				}
-
+				initCircleVBO(gl);
 			}
 		});
 	}
@@ -81,8 +80,9 @@ public class CenterLoadingScreen implements RenderAnimation {
 		gl.glOrtho(-width, width, -height, height, 10, -10);
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		gl.glLoadIdentity();
-		gl.glColor3f(1, 1, 1);
+		gl.glColor3f(1, 0, 0);
 
+		/*
 		gl.glEnable(GL2.GL_BLEND);
 		gl.glEnable(GL2.GL_TEXTURE_2D);
 		gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
@@ -103,6 +103,7 @@ public class CenterLoadingScreen implements RenderAnimation {
 		gl.glTexCoord2f(0, 1);
 		gl.glVertex2d(-imageWidth, -imageHeight);
 		gl.glEnd();
+		*/
 		gl.glDisable(GL2.GL_DEPTH_TEST);
 		gl.glDisable(GL2.GL_BLEND);
 		gl.glDisable(GL2.GL_TEXTURE_2D);
@@ -112,30 +113,32 @@ public class CenterLoadingScreen implements RenderAnimation {
 	}
 
 	private void renderCircles(GL2 gl, double t) {
-		for (int i = 0; i < NUMBER_OF_VISIBLE_CIRCLE; i++) {
-			gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, buffers[i]);
-			// gl.glPushMatrix();
-			gl.glEnableClientState(GL2.GL_VERTEX_ARRAY);
-			gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
-			gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
-			gl.glDisable(GL2.GL_LIGHTING);
+		// gl.glPushMatrix();
+		gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
+		gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
+		gl.glDisable(GL2.GL_LIGHTING);
+		gl.glDisable(GL2.GL_DEPTH_TEST);
+		gl.glDisable(GL2.GL_COLOR_MATERIAL);
+		//gl.glEnable(GL2.GL_BLEND);
+		//gl.glBlendFunc(GL2.GL_ONE, GL2.GL_ONE_MINUS_SRC_ALPHA);
+		gl.glEnableClientState(GL2.GL_VERTEX_ARRAY);
+		//gl.glEnableClientState(GL2.GL_COLOR_ARRAY);
+		//gl.glEnable(GL2.GL_COLOR_MATERIAL);		
+		//gl.glCullFace(GL2.GL_BACK);
 
-			gl.glEnable(GL2.GL_BLEND);
-			gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
-			gl.glDepthMask(false);
+		gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, vertices);
+		gl.glVertexPointer(2, GL2.GL_FLOAT, 0, 0);
+		gl.glColor3d(1, 0, 0);
+		//gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, color);
+		//gl.glColorPointer(3, GL2.GL_FLOAT, 0, 0);
+				
+		gl.glBindBuffer(GL2.GL_ELEMENT_ARRAY_BUFFER, indices);
+		gl.glDrawElements(GL2.GL_TRIANGLES, indicesSize, GL2.GL_UNSIGNED_INT, 0);
+		gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
 
-			gl.glColor4d(circleColors[i][0], circleColors[i][1],
-					circleColors[i][2], circleColors[i][3]);
-			gl.glVertexPointer(2, GL2.GL_FLOAT, 0, 0);
-			gl.glDrawArrays(GL2.GL_TRIANGLE_FAN, 0, size);
-			double test = i / (double) NUMBER_OF_CIRCLE;
-			double y = Math.sin(test * 2 * Math.PI) * 2;
-			double x = Math.cos(test * 2 * Math.PI) * 2;
-			System.out.println(test);
-
-			// gl.glPopMatrix();
-		}
-	}
+		gl.glDisableClientState(GL2.GL_VERTEX_ARRAY);
+		gl.glDisableClientState(GL2.GL_COLOR_ARRAY);
+}
 
 	@Override
 	public void isFinish() {
@@ -143,34 +146,74 @@ public class CenterLoadingScreen implements RenderAnimation {
 
 	}
 
-	public int[] initCircleVBO(GL2 gl) {
+	public void initCircleVBO(GL2 gl) {
 		System.out.println("initCircle");
-		int[] buffer = new int[NUMBER_OF_VISIBLE_CIRCLE];
-		gl.glGenBuffers(NUMBER_OF_VISIBLE_CIRCLE, buffer, 0);
 
-		for (int j = 0; j < NUMBER_OF_VISIBLE_CIRCLE; j++) {
-			FloatBuffer vertices = Buffers.newDirectFloatBuffer(360 * 2);
+		IntBuffer indices = Buffers
+				.newDirectIntBuffer((POINT_OF_CIRCLE-1) * 3 * NUMBER_OF_VISIBLE_CIRCLE);
+		FloatBuffer vertices = Buffers.newDirectFloatBuffer(((POINT_OF_CIRCLE) * 2 + 2)
+				* NUMBER_OF_VISIBLE_CIRCLE);
+		FloatBuffer colors = Buffers.newDirectFloatBuffer((((POINT_OF_CIRCLE-1) * 3))
+				* NUMBER_OF_VISIBLE_CIRCLE);
+
+		int j = 0;
+
+		float alpha = (192 - (192 * ((float) j / NUMBER_OF_VISIBLE_CIRCLE))) / 255.f;
+
 			double test = j / (double) NUMBER_OF_CIRCLE;
-			double x = Math.cos(test * 2 * Math.PI) * RADIUS;
-			double y = Math.sin(test * 2 * Math.PI) * RADIUS;
-			for (int i = 0; i < 360; i++) {
-				vertices.put((float) (Math.cos(Math.toRadians(i)) + x));
-				vertices.put((float) (Math.sin(Math.toRadians(i)) + y));
-				System.out
-						.println("x : " + (float) Math.cos(Math.toRadians(i)));
-				System.out
-						.println("y : " + (float) Math.sin(Math.toRadians(i)));
+			System.out.println("test : " + test);
+			float y = (float) Math.cos(test * 2 * Math.PI) * RADIUS;
+			float x = (float) Math.sin(test * 2 * Math.PI) * RADIUS;
+			x = 0;
+			y = 0;
+			vertices.put(x);
+			vertices.put(y);
+			int middle = (POINT_OF_CIRCLE + 1) * j;
+			for (int i = 0; i < POINT_OF_CIRCLE; i++){
+				vertices.put((float) (Math.cos(i/(double)POINT_OF_CIRCLE*2*Math.PI))*CIRCLE_RADIUS + x);
+				vertices.put((float) (Math.sin(i/(double)POINT_OF_CIRCLE*2*Math.PI))*CIRCLE_RADIUS + y);
+				System.out.println("vertices x "+(i+1)+": " + ((Math.cos(i/(double)POINT_OF_CIRCLE*2*Math.PI))*CIRCLE_RADIUS + x));
 			}
+			
+			for (int i = 1; i < POINT_OF_CIRCLE; i++) {
+				indices.put(i*2 + 1);
+				indices.put(middle);
+				indices.put(i*2 + 2);
+				System.out.println("i"+i+" : " + (i*2 + 1));
+				System.out.println("i"+i+" : " + (middle));
+				System.out.println("i"+i+" : " + (i*2 + 2));
+				colors.put(CIRCLE_COLOR);
+				colors.put(CIRCLE_COLOR);
+				colors.put(CIRCLE_COLOR);
 
-			vertices.flip();
-			int VBOVertices = buffer[j];
-			gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, VBOVertices);
-			gl.glBufferData(GL2.GL_ARRAY_BUFFER, vertices.limit()
-					* Buffers.SIZEOF_FLOAT, vertices, GL.GL_STATIC_DRAW);
-			gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
-			size = vertices.limit();
-		}
-		return buffer;
+				//colors.put(alpha);
+				System.out.println("alpha : " + alpha);
+				}
+		vertices.flip();
+		colors.flip();
+		indices.flip();
+
+		
+		int[] buffer = new int[4];
+		gl.glGenBuffers(4, buffer, 0);
+
+		this.vertices = buffer[0];
+		gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, this.vertices);
+		gl.glBufferData(GL2.GL_ARRAY_BUFFER, vertices.limit() * Buffers.SIZEOF_FLOAT, vertices,
+				GL.GL_STATIC_DRAW);
+		verticesSize = vertices.limit();
+
+		this.indices = buffer[1];
+		gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, this.indices);
+		gl.glBufferData(GL2.GL_ARRAY_BUFFER, indices.limit() * Buffers.SIZEOF_INT, indices,
+				GL.GL_STATIC_DRAW);
+		this.indicesSize = indices.limit();
+
+		this.color = buffer[2];
+		gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, this.color);
+		gl.glBufferData(GL2.GL_ARRAY_BUFFER, colors.limit() * Buffers.SIZEOF_FLOAT, colors,
+				GL.GL_STATIC_DRAW);
+		
 	}
 
 }

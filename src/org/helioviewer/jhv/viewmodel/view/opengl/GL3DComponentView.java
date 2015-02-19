@@ -1,10 +1,20 @@
 package org.helioviewer.jhv.viewmodel.view.opengl;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.File;
@@ -25,13 +35,18 @@ import javax.media.opengl.GLDrawableFactory;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
+import org.helioviewer.jhv.base.GL3DKeyController;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
+import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
+import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
 import org.helioviewer.jhv.opengl.camera.GL3DCameraListener;
 import org.helioviewer.jhv.opengl.camera.GL3DTrackballCamera;
@@ -93,7 +108,8 @@ public class GL3DComponentView extends AbstractBasicView implements
 	private CopyOnWriteArrayList<ScreenRenderer> postRenderers = new CopyOnWriteArrayList<ScreenRenderer>();
 
 	private GLCanvas canvas;
-
+	private GLCanvas inactiveCanvas;
+	
 	private Color backgroundColor = Color.BLACK;
 
 	private boolean backGroundColorHasChanged = false;
@@ -125,10 +141,10 @@ public class GL3DComponentView extends AbstractBasicView implements
 	private double width = 0.0;
 	private double height = 0.0;
 	public boolean exportMovie = false;
+	private JFrame fullScreenFrame;
 
 	public GL3DComponentView() {
 		GLCapabilities cap = new GLCapabilities(GLProfile.getDefault());
-
 		try {
 			cap.setDepthBits(24);
 			this.canvas = new GLCanvas(cap);
@@ -148,10 +164,13 @@ public class GL3DComponentView extends AbstractBasicView implements
 				}
 			}
 		}
-
+		this.canvas.setSharedContext(OpenGLHelper.glContext);
 		this.canvas.addGLEventListener(this);
+		this.canvas.addKeyListener(GL3DKeyController.getInstance());
+		this.canvas.requestFocus();
 
 		LayersModel.getSingletonInstance().addLayersListener(this);
+		
 	}
 
 	public GLCanvas getComponent() {
@@ -161,7 +180,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 	public void init(GLAutoDrawable glAD) {
 		System.out.println("V : " + glAD.getContext().getGLVersion());
 		System.out.println("V : " + glAD.getContext().getGLSLVersionString());
-		GuiState3DWCS.overViewPanel.activate(glAD.getContext());
+		GuiState3DWCS.overViewPanel.activate();
 		System.out.println("GL3DComponentView.Init");
 		GL2 gl = glAD.getGL().getGL2();
 		GL3DState.create(gl);
@@ -741,5 +760,61 @@ public class GL3DComponentView extends AbstractBasicView implements
 			animationTime = time;
 		}
 	}
+	
+	public void toFullscreen(){
+		this.removeListeners(this.canvas);
+		inactiveCanvas = this.canvas;
+		GLCapabilities cap = new GLCapabilities(GLProfile.getDefault());
+		this.fullScreenFrame = new JFrame();
+		this.canvas = new GLCanvas(cap);
+		canvas.setSharedContext(OpenGLHelper.glContext);
+		fullScreenFrame.add(canvas);
+		fullScreenFrame.setVisible(true);
+		this.canvas.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (SwingUtilities.isRightMouseButton(e))
+					escapeFullscreen();
+			}
+		});
+		this.canvas.addKeyListener(new KeyAdapter() {
+			
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
+					escapeFullscreen();
+			}
+		});
+		GraphicsDevice graphicsDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice ();
+		graphicsDevice.setFullScreenWindow(fullScreenFrame);
+		this.addListeners(this.canvas);
+		this.canvas.repaint();
+	}	
 
+	public void escapeFullscreen(){
+		if (inactiveCanvas != null){
+		this.removeListeners(this.canvas);
+		this.fullScreenFrame.dispose();
+		this.canvas = this.inactiveCanvas;
+		this.inactiveCanvas = null;
+		this.addListeners(canvas);
+		this.canvas.repaint();
+		}
+	}
+	
+	public void removeListeners(Component canvas){
+		this.canvas.removeGLEventListener(this);
+		this.canvas.removeMouseListener(ImageViewerGui.getSingletonInstance().getMainImagePanel().getInputController());
+		this.canvas.removeMouseMotionListener(ImageViewerGui.getSingletonInstance().getMainImagePanel().getInputController());
+		this.canvas.removeMouseWheelListener(ImageViewerGui.getSingletonInstance().getMainImagePanel().getInputController());
+		this.canvas.removeKeyListener(GL3DKeyController.getInstance());
+	}
+
+	public void addListeners(Component canvas){
+		this.canvas.addGLEventListener(this);
+		this.canvas.addMouseListener(ImageViewerGui.getSingletonInstance().getMainImagePanel().getInputController());
+		this.canvas.addMouseMotionListener(ImageViewerGui.getSingletonInstance().getMainImagePanel().getInputController());
+		this.canvas.addMouseWheelListener(ImageViewerGui.getSingletonInstance().getMainImagePanel().getInputController());
+		this.canvas.addKeyListener(GL3DKeyController.getInstance());
+		this.canvas.requestFocus();
+	}
 }

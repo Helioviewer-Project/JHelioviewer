@@ -7,6 +7,7 @@ import kdu_jni.Jp2_palette;
 import kdu_jni.KduException;
 
 import org.helioviewer.jhv.base.math.Vector2i;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangedReason;
 import org.helioviewer.jhv.viewmodel.changeevent.RegionChangedReason;
@@ -653,6 +654,9 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
             event.reinitialize();
         }
         notifyViewListeners(fireEvent);
+        // Just a hack (by stefan meier), because notifyViewListener sometime doesn't work correctly
+        GuiState3DWCS.overViewPanel.subImageDataChanged();
+        GuiState3DWCS.mainComponentView.subImageDataChanged();
     }
 
     /**

@@ -34,6 +34,7 @@ import org.helioviewer.jhv.gui.GL3DCameraSelectorModel;
 import org.helioviewer.jhv.internal_plugins.filter.SOHOLUTFilterPlugin.SOHOLUTFilter;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
+import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
 import org.helioviewer.jhv.opengl.camera.GL3DCameraListener;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
@@ -58,7 +59,7 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 	 * 
 	 */
 	private static final long serialVersionUID = 6052916320152982825L;
-	GLJPanel canvas = new GLJPanel();
+	GLJPanel canvas;
 	JHVJPXView lastLayer;
 	GLTextureHelper textureHelper = new GLTextureHelper();
 	private ArrayList<JHVJPXView> layers;
@@ -82,6 +83,8 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 		layers = new ArrayList<JHVJPXView>();
 		lutMap = new HashMap<String, Integer>();
     	this.setLayout(new BorderLayout());
+    	canvas = new GLJPanel();
+    	this.canvas.setSharedContext(OpenGLHelper.glContext);
 		this.add(canvas);
 		this.setMinimumSize(new Dimension(200, 200));
     	this.canvas.setMinimumSize(new Dimension(200,200));
@@ -103,6 +106,8 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 
 	@Override
 	public void layerChanged(int idx) {
+		this.updateTexture = true;
+		this.repaint();
 	}
 
 	@Override
@@ -131,24 +136,20 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 
 	@Override
 	public void viewportGeometryChanged() {
-		
+		this.updateTexture = true;
+		this.canvas.repaint();
 	}
 
 	@Override
 	public void timestampChanged(int idx) {
-		if (LinkedMovieManager.getActiveInstance().getMasterMovie() != null)
-			if (this.lastTime != LinkedMovieManager.getActiveInstance().getMasterMovie().getCurrentFrameDateTime().getMillis()){
-				this.lastTime = LinkedMovieManager.getActiveInstance().getMasterMovie().getCurrentFrameDateTime().getMillis();
-				this.updateTexture = true;
-				this.canvas.repaint();
-			}
-		
+		this.updateTexture = true;
+		this.canvas.repaint(50);		
 	}
 
 	@Override
 	public void subImageDataChanged() {
 		this.updateTexture = true;
-		this.canvas.repaint();
+		this.canvas.repaint(50);
 	}
 
 	@Override
@@ -166,7 +167,7 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 		if (lastLayer != null && lastLayer.getMetaData() != null && lastLayer.getMetaData().getPhysicalRegion() != null){
 			
 		if (this.updateTexture){
-			if (!this.createTexture(gl, this.lastLayer.getMetaData().getPhysicalRegion(), this.lastLayer.getImageData()));
+			if (!this.createTexture(gl, lastLayer.getMetaData().getPhysicalRegion(), lastLayer.getImageData()));
         		updateTexture = false;
 		}		
         
@@ -428,8 +429,7 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 		return true;
 	}
 	
-	public void activate(GLContext context){
-		this.canvas.setSharedContext(context);
+	public void activate(){
 		this.canvas.addGLEventListener(this);
 		this.camera = GL3DCameraSelectorModel.getInstance().getCurrentCamera();
 		this.camera.addCameraListener(this);

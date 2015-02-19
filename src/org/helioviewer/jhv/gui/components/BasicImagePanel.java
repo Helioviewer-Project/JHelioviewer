@@ -290,11 +290,6 @@ public class BasicImagePanel extends JPanel implements ComponentListener, ViewLi
                 renderedImageComponent.removeMouseListener(inputController);
                 renderedImageComponent.removeMouseMotionListener(inputController);
                 renderedImageComponent.removeMouseWheelListener(inputController);
-
-                if (KeyListener.class.isAssignableFrom(inputController.getClass())) {
-                    renderedImageComponent.removeKeyListener((KeyListener) inputController);
-                }
-
             }
             removePlugin(inputController);
 
@@ -302,10 +297,6 @@ public class BasicImagePanel extends JPanel implements ComponentListener, ViewLi
                 renderedImageComponent.addMouseListener(newInputController);
                 renderedImageComponent.addMouseMotionListener(newInputController);
                 renderedImageComponent.addMouseWheelListener(newInputController);
-
-                if (KeyListener.class.isAssignableFrom(newInputController.getClass())) {
-                    renderedImageComponent.addKeyListener((KeyListener) newInputController);
-                }
             }
         }
 

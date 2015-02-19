@@ -1,5 +1,6 @@
 package org.helioviewer.jhv.viewmodel.view.jp2view;
 
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.changeevent.PlayStateChangedReason;
 import org.helioviewer.jhv.viewmodel.changeevent.TimestampChangedReason;
@@ -379,7 +380,7 @@ public class JHVJPXView extends JHVJP2View implements View {
     void setSubimageData(ImageData newImageData, SubImage roi, int compositionLayer) {
 
         metaData.updateDateTime(dateTimeCache.getDateTime(compositionLayer));
-        event.addReason(new TimestampChangedReason(this, metaData.getDateTime()));
+        event.addReason(new TimestampChangedReason(this, dateTimeCache.getDateTime(compositionLayer)));
         
         super.setSubimageData(newImageData, roi, 0);
     }
