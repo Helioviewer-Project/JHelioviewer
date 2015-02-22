@@ -19,7 +19,7 @@ import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayPlugin;
 public class PfssPlugin extends OverlayPlugin implements Plugin
 {
     private static int threadNumber=0;
-    public static final ExecutorService pool = Executors.newCachedThreadPool(new ThreadFactory()
+    public static final ExecutorService pool = Executors.newFixedThreadPool(8,new ThreadFactory()
     {
         @Override
         public Thread newThread(Runnable _r)
@@ -30,7 +30,7 @@ public class PfssPlugin extends OverlayPlugin implements Plugin
             return t;
         }
     });
-
+    
 	public PfssPlugin()
 	{
 		try
