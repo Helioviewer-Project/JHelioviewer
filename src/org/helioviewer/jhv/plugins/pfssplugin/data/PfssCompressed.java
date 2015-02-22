@@ -15,8 +15,6 @@ import org.helioviewer.jhv.plugins.pfssplugin.data.caching.Cacheable;
  * Represents the raw pfss data. This class is able to download the data asynchronously
  * 
  * This class is threadsafe
- * @author Jonas Schwammberger
- *
  */
 public class PfssCompressed implements Cacheable
 {

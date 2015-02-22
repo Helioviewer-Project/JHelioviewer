@@ -15,8 +15,6 @@ import org.helioviewer.jhv.plugins.pfssplugin.data.decompression.PfssDecompresso
 /**
  * This class is responsible for managing frames. it Tries to have all frames
  * pre-loaded and pre-initialized before they are requested
- * 
- * @author Jonas Schwammberger
  */
 public class FrameManager
 {

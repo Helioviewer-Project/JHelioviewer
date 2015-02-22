@@ -8,8 +8,6 @@ import java.util.GregorianCalendar;
  * Class Describing a pfss fits file on the server
  * 
  * this class is immutable
- * @author Jonas Schwammberger
- *
  */
 public class FileDescriptor
 {

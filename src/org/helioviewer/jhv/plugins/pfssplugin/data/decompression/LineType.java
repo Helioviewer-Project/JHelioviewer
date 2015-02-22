@@ -2,8 +2,6 @@ package org.helioviewer.jhv.plugins.pfssplugin.data.decompression;
 
 /**
  * Enum holding the different Types of lines
- * @author Jonas Schwammberger
- *
  */
 public enum LineType {
 	SUN_TO_SUN,

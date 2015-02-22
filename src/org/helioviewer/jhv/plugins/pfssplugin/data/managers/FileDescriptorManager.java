@@ -22,8 +22,6 @@ import org.helioviewer.jhv.plugins.pfssplugin.data.FileDescriptor;
 
 /**
  * Manages loading and accessing of FileDescriptor Objects
- * @author Jonas Schwammberger
- *
  */
 public class FileDescriptorManager
 {

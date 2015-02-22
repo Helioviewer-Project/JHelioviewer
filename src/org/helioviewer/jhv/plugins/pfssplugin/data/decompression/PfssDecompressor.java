@@ -19,9 +19,6 @@ import com.jogamp.common.nio.Buffers;
 
 /**
  * Reads in Memory PfssData and writes PfssFrames. Supports running in its own thread for asynchronous loading
- * 
- * @author Jonas Schwammberger
- *
  */
 public class PfssDecompressor
 {

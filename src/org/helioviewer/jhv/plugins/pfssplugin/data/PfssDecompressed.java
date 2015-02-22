@@ -21,8 +21,6 @@ import com.jogamp.common.nio.Buffers;
  * it is possible that an instance of the PfssFrame does not yet contain the data. If this is the case, display() won't do anything.
  * 
  * this class is threadsafe
- * @author Jonas Schwammberger
- *
  */
 public class PfssDecompressed
 {
@@ -181,8 +179,9 @@ public class PfssDecompressed
 		Vector3d color;
 
         //see http://jgiesen.de/sunrot/index.html and http://www.petermeadows.com/stonyhurst/sdisk6in7.gif
+		gl2.glRotated(DifferentialRotation.calculateRotationInDegrees(0,(currentDate.getTime()-descriptor.getStartDate().getTime())/1000d-60*60*6),0,1,0);
         gl2.glRotated(b0,1,0,0);
-		gl2.glRotated(DifferentialRotation.calculateRotationInDegrees(0,(currentDate.getTime()-descriptor.getStartDate().getTime())/1000d)-l0,0,1,0);
+		gl2.glRotated(-l0,0,1,0);
 		
 		gl2.glLineWidth(PfssSettings.LINE_WIDTH);
 		if (indicesSunToSun != null && indicesSunToSun.limit() > 0)

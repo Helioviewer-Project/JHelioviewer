@@ -3,8 +3,6 @@ package org.helioviewer.jhv.plugins.pfssplugin.data.decompression;
 
 /**
  * Immutable Class representing a Point in 3D Space
- * @author Jonas Schwammberger
- *
  */
 public class DecompressedPoint {
 	private final float x;

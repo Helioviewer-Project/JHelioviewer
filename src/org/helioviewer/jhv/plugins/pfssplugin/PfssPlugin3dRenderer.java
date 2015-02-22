@@ -11,9 +11,6 @@ import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 
-/**
- * @author Stefan Meier (stefan.meier@fhnw.ch), Jonas Schwammberger (jonas.schwammberger@fhnw.ch)
- * */
 public class PfssPlugin3dRenderer extends PhysicalRenderer3d {
 	private FrameManager manager;
 	private boolean isVisible = false;

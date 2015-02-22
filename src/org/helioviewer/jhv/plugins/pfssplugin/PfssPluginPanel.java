@@ -20,8 +20,6 @@ import org.helioviewer.jhv.viewmodel.view.ViewListener;
 
 /**
  * Panel of Pfss-Plugin
- * 
- * @author Stefan Meier (stefan.meier@fhnw.ch)
  * */
 public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 		LayersListener, ViewListener

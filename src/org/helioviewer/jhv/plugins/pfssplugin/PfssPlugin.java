@@ -13,9 +13,6 @@ import org.helioviewer.jhv.plugins.viewmodelplugin.interfaces.Plugin;
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayContainer;
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayPlugin;
 
-/**
- * @author Stefan Meier (stefan.meier@fhnw.ch)
- * */
 public class PfssPlugin extends OverlayPlugin implements Plugin
 {
     private static int threadNumber=0;

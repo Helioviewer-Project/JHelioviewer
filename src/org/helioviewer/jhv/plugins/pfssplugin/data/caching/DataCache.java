@@ -8,8 +8,6 @@ import org.helioviewer.jhv.plugins.pfssplugin.data.managers.FileDescriptorManage
 /**
  * Represents the DataCache responsible for caching, loading and preloading PfssData 
  * objects
- * @author Jonas Schwammberger
- *
  */
 public class DataCache
 {

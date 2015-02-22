@@ -2,11 +2,8 @@ package org.helioviewer.jhv.plugins.pfssplugin.data.decompression;
 
 import java.util.LinkedList;
 
-
 /**
  * This class is responsible for holding the intermediate data during decompression.
- * @author Jonas Schwammberger
- *
  */
 public class IntermediateLineData {
 	public float[][] channels;

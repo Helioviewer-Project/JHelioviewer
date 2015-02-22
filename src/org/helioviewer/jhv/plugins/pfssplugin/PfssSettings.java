@@ -4,8 +4,6 @@ import org.helioviewer.jhv.base.math.Vector3d;
 
 /**
  * Important settings
- * 
- * @author Stefan Meier (stefan.meier@fhnw.ch)
  * */
 public class PfssSettings {
 

@@ -14,9 +14,6 @@ import de.innosystec.unrar.rarfile.FileHeader;
 
 /**
  * Wrapper class around the jUnrar library.
- * 
- * @author Jonas Schwammberger
- *
  */
 public class UnRar {
 

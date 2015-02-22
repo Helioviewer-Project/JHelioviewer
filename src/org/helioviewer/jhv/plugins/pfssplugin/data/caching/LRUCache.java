@@ -9,9 +9,6 @@ import org.helioviewer.jhv.plugins.pfssplugin.data.FileDescriptor;
  * Implementation of a simple First-in-First-out Cache. In this usecase this cache uses the LRU algorithm.
  * 
  * This class is not threadsafe
- * @author Jonas Schwammberger
- *
- * @param <T>
  */
 public class LRUCache<T extends Cacheable> {
 	private final HashMap<FileDescriptor, Integer> cacheIndices;

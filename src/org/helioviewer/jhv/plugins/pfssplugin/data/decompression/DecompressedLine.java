@@ -4,11 +4,8 @@ import java.util.ArrayList;
 
 import org.helioviewer.jhv.base.physics.Constants;
 
-
 /**
  * Immutable Class Representing a Decompressed Fieldline
- * @author Jonas Schwammberger
- *
  */
 public class DecompressedLine {
 	public final ArrayList<DecompressedPoint> points;
