@@ -8,12 +8,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeListener;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.util.AbstractList;
-
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
@@ -25,7 +19,6 @@ import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.SplashScreen;
-import org.helioviewer.jhv.base.Message;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 import org.helioviewer.jhv.gui.components.ControlPanelContainer;
@@ -50,18 +43,9 @@ import org.helioviewer.jhv.internal_plugins.filter.SOHOLUTFilterPlugin.SOHOLUTPa
 import org.helioviewer.jhv.internal_plugins.filter.channelMixer.ChannelMixerPanel;
 import org.helioviewer.jhv.internal_plugins.filter.contrast.ContrastPanel;
 import org.helioviewer.jhv.internal_plugins.filter.gammacorrection.GammaCorrectionPanel;
-import org.helioviewer.jhv.internal_plugins.filter.opacity.OpacityFilter;
 import org.helioviewer.jhv.internal_plugins.filter.opacity.OpacityPanel;
 import org.helioviewer.jhv.internal_plugins.filter.sharpen.SharpenPanel;
-import org.helioviewer.jhv.io.APIRequestManager;
-import org.helioviewer.jhv.io.CommandLineProcessor;
-import org.helioviewer.jhv.io.JHVRequest;
 import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTabPanelManager;
-import org.helioviewer.jhv.viewmodel.view.FilterView;
-import org.helioviewer.jhv.viewmodel.view.ImageInfoView;
-import org.helioviewer.jhv.viewmodel.view.LayeredView;
-import org.helioviewer.jhv.viewmodel.view.View;
-import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DComponentView;
 
 /**
@@ -194,8 +178,6 @@ public class ImageViewerGui {
 		Thread thread = new Thread(new Runnable() {
 
 			public void run() {
-
-				loadImagesAtStartup();
 
 				// show GUI
 				splash.setProgressText("Starting JHelioviewer...");
@@ -414,182 +396,6 @@ public class ImageViewerGui {
 		mainFrame.validate();
 	}
 
-
-	/**
-	 * Loads the images which have to be displayed when the program starts.
-	 * 
-	 * If there are any images defined in the command line, than this messages
-	 * tries to load this images. Otherwise it tries to load a default image
-	 * which is defined by the default entries of the observation panel.
-	 * */
-	public void loadImagesAtStartup() {
-		// get values for different command line options
-		AbstractList<JHVRequest> jhvRequests = CommandLineProcessor
-				.getJHVOptionValues();
-		AbstractList<URI> jpipUris = CommandLineProcessor.getJPIPOptionValues();
-		AbstractList<URI> downloadAddresses = CommandLineProcessor
-				.getDownloadOptionValues();
-		AbstractList<URL> jpxUrls = CommandLineProcessor.getJPXOptionValues();
-
-		// Do nothing if no resource is specified
-		if (jhvRequests.isEmpty() && jpipUris.isEmpty()
-				&& downloadAddresses.isEmpty() && jpxUrls.isEmpty()) {
-			return;
-		}
-
-		// //////////////////////
-		// -jhv
-		// //////////////////////
-
-		// go through all jhv values
-		for (JHVRequest jhvRequest : jhvRequests) {
-			try {
-				for (int layer = 0; layer < jhvRequest.imageLayers.length; ++layer) {
-					// load image and memorize corresponding view
-					ImageInfoView imageInfoView = APIRequestManager
-							.requestAndOpenRemoteFile(jhvRequest.cadence,
-									jhvRequest.startTime, jhvRequest.endTime,
-									jhvRequest.imageLayers[layer].observatory,
-									jhvRequest.imageLayers[layer].instrument,
-									jhvRequest.imageLayers[layer].detector,
-									jhvRequest.imageLayers[layer].measurement);
-					if (imageInfoView != null && getMainView() != null) {
-						// get the layered view
-						LayeredView layeredView = getMainView().getAdapter(
-								LayeredView.class);
-
-						// go through all sub view chains of the layered
-						// view and try to find the
-						// view chain of the corresponding image info view
-						for (int i = 0; i < layeredView.getNumLayers(); i++) {
-							View subView = layeredView.getLayer(i);
-							if (subView != null) {
-								// if view has been found
-								if (imageInfoView.equals(subView
-										.getAdapter(ImageInfoView.class))) {
-
-									// Lock movie
-									if (jhvRequest.linked) {
-										JHVJPXView JHVJPXView = subView
-												.getAdapter(JHVJPXView.class);
-										if (JHVJPXView != null
-												&& JHVJPXView
-														.getMaximumFrameNumber() > 0) {
-											MoviePanel moviePanel = MoviePanel
-													.getMoviePanel(JHVJPXView);
-											if (moviePanel == null)
-												throw new InvalidViewException();
-											moviePanel.setMovieLink(true);
-										}
-									}
-
-									// opacity
-
-									// find opacity filter view
-									FilterView filterView = subView
-											.getAdapter(FilterView.class);
-
-									while (filterView != null) {
-
-										// if opacity filter has been found set
-										// opacity value
-										if (filterView.getFilter() instanceof OpacityFilter) {
-											((OpacityFilter) (filterView
-													.getFilter()))
-													.setState(Float
-															.toString(jhvRequest.imageLayers[layer].opacity / 100.0f));
-											break;
-										}
-
-										// find next filter view
-										View view = filterView.getView();
-
-										if (view == null)
-											filterView = null;
-										else
-											filterView = view
-													.getAdapter(FilterView.class);
-									}
-
-									break;
-								}
-							}
-						}
-					}
-				}
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				Message.err("An error occured while opening the remote file!",
-						e.getMessage(), false);
-			} catch (NumberFormatException e) {
-				e.printStackTrace();
-			} catch (InvalidViewException e) {
-				e.printStackTrace();
-			}
-
-		}
-
-		// //////////////////////
-		// -jpx
-		// //////////////////////
-
-		for (URL jpxUrl : jpxUrls) {
-			if (jpxUrl != null) {
-				try {
-					ImageInfoView imageInfoView = APIRequestManager
-							.requestData(true, jpxUrl, null);
-					if (imageInfoView != null && getMainView() != null) {
-						// get the layered view
-						LayeredView layeredView = getMainView().getAdapter(
-								LayeredView.class);
-
-						// go through all sub view chains of the layered
-						// view and try to find the
-						// view chain of the corresponding image info view
-						for (int i = 0; i < layeredView.getNumLayers(); i++) {
-							View subView = layeredView.getLayer(i);
-
-							// if view has been found
-							if (imageInfoView.equals(subView
-									.getAdapter(ImageInfoView.class))) {
-								JHVJPXView JHVJPXView = subView
-										.getAdapter(JHVJPXView.class);
-								MoviePanel moviePanel = MoviePanel
-										.getMoviePanel(JHVJPXView);
-								if (moviePanel == null)
-									throw new InvalidViewException();
-								moviePanel.setMovieLink(true);
-								break;
-							}
-						}
-					}
-				} catch (IOException e) {
-					Message.err(
-							"An error occured while opening the remote file!",
-							e.getMessage(), false);
-				} catch (InvalidViewException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		// //////////////////////
-		// -jpip
-		// //////////////////////
-
-		for (URI jpipUri : jpipUris) {
-			if (jpipUri != null) {
-				try {
-					APIRequestManager.newLoad(jpipUri, true);
-				} catch (IOException e) {
-					Message.err(
-							"An error occured while opening the remote file!",
-							e.getMessage(), false);
-				}
-			}
-		}
-	}
-
 	/**
 	 * Returns the only instance of this class.
 	 * 
@@ -622,20 +428,6 @@ public class ImageViewerGui {
 	 * e.g. reload data.
 	 */
 	public void updateComponents() {
-	}
-
-	/**
-	 * Toggles the visibility of the control panel on the left side.
-	 */
-	public void toggleShowSidePanel() {
-		leftScrollPane.setVisible(!leftScrollPane.isVisible());
-		contentPanel.revalidate();
-
-		int lastLocation = midSplitPane.getLastDividerLocation();
-		if (lastLocation > 10)
-			midSplitPane.setDividerLocation(lastLocation);
-		else
-			midSplitPane.setDividerLocation(SIDE_PANEL_WIDTH);
 	}
 
 	/**

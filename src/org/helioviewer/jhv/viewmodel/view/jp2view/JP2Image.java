@@ -780,7 +780,7 @@ public class JP2Image implements MultiFrameMetaDataContainer {
     }
 
     /** Returns the cache reference */
-    JHV_Kdu_cache getCacheRef() {
+    public JHV_Kdu_cache getCacheRef() {
         return cache;
     }
 

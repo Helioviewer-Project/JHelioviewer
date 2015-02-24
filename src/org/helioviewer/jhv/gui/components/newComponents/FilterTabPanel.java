@@ -28,6 +28,10 @@ import com.jgoodies.forms.layout.RowSpec;
 
 public class FilterTabPanel extends JPanel implements NewLayerListener{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6032053412521027833L;
 	private JSlider opacitySlider;
 	private JSlider sharpenSlider;
 	private JSlider gammaSlider;

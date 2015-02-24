@@ -383,7 +383,7 @@ public final class ViewHelper {
     public static Vector2i calculateInnerViewportOffset(Region innerRegion, Region outerRegion, ViewportImageSize outerViewportImageSize) {
         return ViewHelper.convertImageToScreenDisplacement(innerRegion.getUpperLeftCorner().subtract(outerRegion.getUpperLeftCorner()), outerRegion, outerViewportImageSize).negateY();
     }
-   
+ 
 
     /**
      * Loads a new image located at the given URI.
@@ -393,39 +393,17 @@ public final class ViewHelper {
      * ImageInfoView is chosen. If there is no implementation available for the
      * given type, an exception is thrown.
      * 
-     * <p>
-     * Calls {@link #loadView(URI, boolean)} with the boolean set to true.
-     * 
      * @param uri
      *            URI representing the location of the image
+     * @param isMainView
+     *            Whether the view is used as a main view or not
      * @return ImageInfoView containing the image
      * @throws IOException
      *             if anything went wrong (e.g. type not supported, image not
      *             found, etc.)
      */
     public static ImageInfoView loadView(URI uri) throws IOException {
-        return loadView(uri, true);
-    }
-
-    /**
-     * Loads a new image located at the given URI.
-     * 
-     * <p>
-     * Depending on the file type, a different implementation of the
-     * ImageInfoView is chosen. If there is no implementation available for the
-     * given type, an exception is thrown.
-     * 
-     * @param uri
-     *            URI representing the location of the image
-     * @param isMainView
-     *            Whether the view is used as a main view or not
-     * @return ImageInfoView containing the image
-     * @throws IOException
-     *             if anything went wrong (e.g. type not supported, image not
-     *             found, etc.)
-     */
-    public static ImageInfoView loadView(URI uri, boolean isMainView) throws IOException {
-        return loadView(uri, uri, isMainView);
+        return loadView(uri, uri);
     }
 
     /**
@@ -440,36 +418,14 @@ public final class ViewHelper {
      *            URI representing the location of the image
      * @param downloadURI
      *            URI from which the whole file can be downloaded
-     * 
+     * @param isMainView
+     *            Whether the view is used as a main view or not
      * @return ImageInfoView containing the image
      * @throws IOException
      *             if anything went wrong (e.g. type not supported, image not
      *             found, etc.)
      */
     public static ImageInfoView loadView(URI uri, URI downloadURI) throws IOException {
-        return loadView(uri, downloadURI, true);
-    }
-
-    /**
-     * Loads a new image located at the given URI.
-     * 
-     * <p>
-     * Depending on the file type, a different implementation of the
-     * ImageInfoView is chosen. If there is no implementation available for the
-     * given type, an exception is thrown.
-     * 
-     * @param uri
-     *            URI representing the location of the image
-     * @param downloadURI
-     *            URI from which the whole file can be downloaded
-     * @param isMainView
-     *            Whether the view is used as a main view or not
-     * @return ImageInfoView containing the image
-     * @throws IOException
-     *             if anything went wrong (e.g. type not supported, image not
-     *             found, etc.)
-     */
-    public static ImageInfoView loadView(URI uri, URI downloadURI, boolean isMainView) throws IOException {
         if (uri == null || uri.getScheme() == null || uri.toString() == null)
             throw new IOException("Invalid URI.");
 
@@ -486,15 +442,14 @@ public final class ViewHelper {
 
         } else {
             try {
-                
                 JP2Image jp2Image = new JP2Image(uri, downloadURI);
-
-                    JHVJPXView jpxView = new JHVJPXView(isMainView);
+                
+                    JHVJPXView jpxView = new JHVJPXView(true);
                     jpxView.setJP2Image(jp2Image);
                     return jpxView;
                 
             } catch (Exception e) {
-                System.out.println("ViewerHelper::loadView(\"" + uri + "\", \"" + downloadURI + "\", \"" + isMainView + "\") ");
+                System.out.println("ViewerHelper::loadView(\"" + uri + "\", \"" + downloadURI + "\", \"" + true + "\") ");
                 e.printStackTrace();
                 throw new IOException(e.getMessage());
             }
