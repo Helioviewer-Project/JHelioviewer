@@ -769,7 +769,10 @@ public class GL3DComponentView extends AbstractBasicView implements
 		fullScreenFrame.add(canvas);
 		fullScreenFrame.setExtendedState(Frame.MAXIMIZED_BOTH);
 		fullScreenFrame.setUndecorated(true);
-        fullScreenFrame.setVisible(true);
+        fullScreenFrame.setResizable(false);
+        
+		fullScreenFrame.setVisible(true);
+		
 		this.canvas.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -784,21 +787,34 @@ public class GL3DComponentView extends AbstractBasicView implements
 					escapeFullscreen();
 			}
 		});
-		
-		GraphicsDevice graphicsDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice ();
-		graphicsDevice.setFullScreenWindow(fullScreenFrame);
-		this.addListeners(this.canvas);
-		this.canvas.repaint();
+
+		GraphicsDevice graphicsDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+		if (graphicsDevice.isFullScreenSupported() && graphicsDevice.isDisplayChangeSupported())
+			graphicsDevice.setFullScreenWindow(fullScreenFrame);
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				addListeners(canvas);
+				canvas.repaint();
+			}
+		});
 	}	
 
 	public void escapeFullscreen(){
 		if (inactiveCanvas != null){
-		this.removeListeners(this.canvas);
-		this.fullScreenFrame.dispose();
-		this.canvas = this.inactiveCanvas;
-		this.inactiveCanvas = null;
-		this.addListeners(canvas);
-		this.canvas.repaint();
+			removeListeners(canvas);
+			fullScreenFrame.dispose();
+			canvas = inactiveCanvas;
+			inactiveCanvas = null;
+			SwingUtilities.invokeLater(new Runnable() {
+				
+				@Override
+				public void run() {
+					addListeners(canvas);
+					canvas.repaint();
+				}
+			});
 		}
 	}
 	
