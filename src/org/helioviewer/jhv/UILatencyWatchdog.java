@@ -42,6 +42,8 @@ public class UILatencyWatchdog
                         }
                     });
                     
+                    //wait a couple of seconds to skip non-responsive parts of startup
+                    Thread.sleep(5000);
                     
                     for(;;)
                     {
