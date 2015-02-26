@@ -20,6 +20,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicSliderUI;
 
 import org.helioviewer.jhv.gui.ButtonCreator;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.ImageViewerGui;
@@ -361,6 +362,7 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
             if (!onlyGUI) {
                 view.pauseMovie();
                 overView.pauseMovie();
+                GuiState3DWCS.overViewPanel.getActiveView().pauseMovie();
                 timeSlider.setValue(view.getCurrentFrameNumber());
             }
         } else {

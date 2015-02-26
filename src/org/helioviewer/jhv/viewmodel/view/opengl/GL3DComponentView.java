@@ -140,6 +140,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 	private double height = 0.0;
 	public boolean exportMovie = false;
 	private JFrame fullScreenFrame;
+	public boolean fullScreenMode = false;
 
 	public GL3DComponentView() {
 		GLCapabilities cap = new GLCapabilities(GLProfile.getDefault());
@@ -771,7 +772,8 @@ public class GL3DComponentView extends AbstractBasicView implements
         fullScreenFrame.setResizable(false);
         
 		fullScreenFrame.setVisible(true);
-		
+		fullScreenMode = true;
+		ImageViewerGui.getMainFrame().setVisible(false);
 		this.canvas.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -782,14 +784,14 @@ public class GL3DComponentView extends AbstractBasicView implements
 		this.canvas.addKeyListener(new KeyAdapter() {
 			
 			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
+				if (e.getKeyCode() == KeyEvent.VK_ESCAPE || (e.isAltDown() && e.getKeyCode() == KeyEvent.VK_T))
 					escapeFullscreen();
 			}
 		});
 
 		GraphicsDevice graphicsDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-		if (graphicsDevice.isFullScreenSupported() && graphicsDevice.isDisplayChangeSupported())
-			graphicsDevice.setFullScreenWindow(fullScreenFrame);
+		//if (graphicsDevice.isFullScreenSupported() && graphicsDevice.isDisplayChangeSupported())
+			//graphicsDevice.setFullScreenWindow(fullScreenFrame);
 		SwingUtilities.invokeLater(new Runnable() {
 			
 			@Override
@@ -812,8 +814,10 @@ public class GL3DComponentView extends AbstractBasicView implements
 				public void run() {
 					addListeners(canvas);
 					canvas.repaint();
+					ImageViewerGui.getMainFrame().setVisible(true);
 				}
 			});
+			fullScreenMode = false;
 		}
 	}
 	

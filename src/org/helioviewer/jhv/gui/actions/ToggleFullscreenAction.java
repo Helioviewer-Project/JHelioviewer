@@ -34,7 +34,9 @@ public class ToggleFullscreenAction extends AbstractAction {
      * {@inheritDoc}
      */
     public void actionPerformed(ActionEvent e) {
+    	if (!GuiState3DWCS.mainComponentView.fullScreenMode)
     	GuiState3DWCS.mainComponentView.toFullscreen();
+    	else GuiState3DWCS.mainComponentView.escapeFullscreen();
     }
 
 }

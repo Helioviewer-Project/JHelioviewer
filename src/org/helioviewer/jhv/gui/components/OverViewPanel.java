@@ -703,4 +703,8 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 		double angle = (Math.acos(camDirection.dot(orientation)) / Math.PI * 180.0);
 		return angle;
 	}
+
+	public JHVJPXView getActiveView() {
+		return lastLayer;
+	}
 }

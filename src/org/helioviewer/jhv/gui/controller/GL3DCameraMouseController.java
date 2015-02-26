@@ -9,6 +9,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
 import org.helioviewer.jhv.base.GL3DKeyController;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
@@ -54,7 +55,7 @@ public class GL3DCameraMouseController extends AbstractImagePanelMouseController
         if (imagePanel != null) {
             if (cameraView != null && cameraView.getCurrentCamera().getCurrentInteraction() == cameraView.getCurrentCamera().getZoomBoxInteraction()) {
             } else {
-                imagePanel.setCursor(buttonDown ? CURSOR_CLOSED_HAND : CURSOR_OPEN_HAND);
+                GuiState3DWCS.mainComponentView.getComponent().setCursor(buttonDown ? CURSOR_CLOSED_HAND : CURSOR_OPEN_HAND);
             }
         }
     }
@@ -64,7 +65,7 @@ public class GL3DCameraMouseController extends AbstractImagePanelMouseController
      */
     public void mouseExited(MouseEvent e) {
         if (imagePanel != null) {
-            imagePanel.setCursor(Cursor.getDefaultCursor());
+        	GuiState3DWCS.mainComponentView.getComponent().setCursor(Cursor.getDefaultCursor());
         }
         super.mouseExited(e);
     }
@@ -76,7 +77,7 @@ public class GL3DCameraMouseController extends AbstractImagePanelMouseController
         if (e.getButton() == MouseEvent.BUTTON1) {
             if (cameraView != null && cameraView.getCurrentCamera().getCurrentInteraction() == cameraView.getCurrentCamera().getZoomBoxInteraction()) {
             } else {
-                imagePanel.setCursor(CURSOR_CLOSED_HAND);
+            	GuiState3DWCS.mainComponentView.getComponent().setCursor(CURSOR_CLOSED_HAND);
             }
             buttonDown = true;
         }
@@ -91,7 +92,7 @@ public class GL3DCameraMouseController extends AbstractImagePanelMouseController
      */
     public void mouseReleased(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
-            imagePanel.setCursor(CURSOR_OPEN_HAND);
+        	GuiState3DWCS.mainComponentView.getComponent().setCursor(CURSOR_OPEN_HAND);
             buttonDown = false;
         }
         GL3DCamera currentCamera = getCamera();
