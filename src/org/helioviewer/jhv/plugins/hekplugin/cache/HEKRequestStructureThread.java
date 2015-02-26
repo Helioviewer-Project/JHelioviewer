@@ -71,8 +71,8 @@ public class HEKRequestStructureThread extends HEKRequest implements Runnable {
                 if (cancel)
                     return;
 
-                String startDate = HEKConstants.getSingletonInstance().getDateFormat().format(interval.getStart());
-                String endDate = HEKConstants.getSingletonInstance().getDateFormat().format(interval.getEnd());
+                String startDate = HEKConstants.getSingletonInstance().getDateFormat().format(interval.start);
+                String endDate = HEKConstants.getSingletonInstance().getDateFormat().format(interval.end);
 
                 String fields = "";
 

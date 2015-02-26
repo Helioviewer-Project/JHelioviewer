@@ -17,12 +17,12 @@ public class Interval<TimeFormat extends Comparable<TimeFormat>> implements Inte
     /**
      * Start of the interval
      */
-    protected TimeFormat start;
+    public TimeFormat start;
 
     /**
      * End of the interval
      */
-    protected TimeFormat end;
+    public TimeFormat end;
 
     /**
      * Copyconstructor. Does not deepcopy the start and end fields of the given
@@ -48,42 +48,6 @@ public class Interval<TimeFormat extends Comparable<TimeFormat>> implements Inte
      */
     public Interval(TimeFormat start, TimeFormat end) {
         this.start = start;
-        this.end = end;
-    }
-
-    /**
-     * Get the beginning of the interval.
-     * 
-     * @return the interval's start timestamp
-     */
-    public TimeFormat getStart() {
-        return start;
-    }
-
-    /**
-     * Get the end of the interval.
-     * 
-     * @return the interval's end timestamp
-     */
-    public TimeFormat getEnd() {
-        return end;
-    }
-
-    /**
-     * Set the beginning of the interval.
-     * 
-     * @param start
-     */
-    public void setStart(TimeFormat start) {
-        this.start = start;
-    }
-
-    /**
-     * Set the end of the interval.
-     * 
-     * @param end
-     */
-    public void setEnd(TimeFormat end) {
         this.end = end;
     }
 
@@ -156,10 +120,10 @@ public class Interval<TimeFormat extends Comparable<TimeFormat>> implements Inte
     public TimeFormat squeeze(TimeFormat value) {
         if (this.containsPointInclusive(value)) {
             return value;
-        } else if (value.compareTo(this.getStart()) < 0) {
-            return this.getStart();
-        } else if (value.compareTo(this.getEnd()) > 0) {
-            return this.getEnd();
+        } else if (value.compareTo(this.start) < 0) {
+            return this.start;
+        } else if (value.compareTo(this.end) > 0) {
+            return this.end;
         }
 
         // this case should never occur
@@ -367,8 +331,10 @@ public class Interval<TimeFormat extends Comparable<TimeFormat>> implements Inte
      * @see org.helioviewer.jhv.base.math.Interval#equals
      */
 
-    public int hashCode() {
-        return (this.start.toString() + " - " + this.end.toString()).hashCode();
+    public int hashCode()
+    {
+        int sth=start.hashCode();
+        return sth ^ end.hashCode() ^ (start.hashCode()<<8) ^ (start.hashCode()>>8);
     }
 
     /**

@@ -107,7 +107,7 @@ public class ResolutionSet {
     }
 
     public int getMaxResolutionLevels() {
-        return resolutionRange.getEnd();
+        return resolutionRange.end;
     }
 
     /**

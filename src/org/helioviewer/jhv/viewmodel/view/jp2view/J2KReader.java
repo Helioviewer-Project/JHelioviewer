@@ -350,7 +350,7 @@ class J2KReader implements Runnable {
                             boolean stopReading = false;
                             int curLayer = currParams.compositionLayer;
                             Interval<Integer> layers = parentImageRef.getCompositionLayerRange();
-                            int num_layers = layers.getEnd() - layers.getStart() + 1;
+                            int num_layers = layers.end - layers.start + 1;
 
                             lastResponseTime = -1;
 
@@ -396,14 +396,14 @@ class J2KReader implements Runnable {
                                 // several frames
                                 for (int i = 0; i < num_steps; i++) {
                                     lpf += JPIPConstants.MAX_REQ_LAYERS;
-                                    if (lpf > layers.getEnd())
-                                        lpf = layers.getEnd();
+                                    if (lpf > layers.end)
+                                        lpf = layers.end;
 
                                     stepQuerys[i] = createQuery(currParams, lpi, lpf);
 
                                     lpi = lpf + 1;
-                                    if (lpi > layers.getEnd())
-                                        lpi = layers.getStart();
+                                    if (lpi > layers.end)
+                                        lpi = layers.start;
                                 }
 
                                 // select current step based on strategy:
@@ -479,7 +479,7 @@ class J2KReader implements Runnable {
                                         switch (strategy) {
                                         case CURRENTFRAMEONLY:
                                         case CURRENTFRAMEFIRST:
-                                            for (int i = 0; i <= layers.getEnd(); i++) {
+                                            for (int i = 0; i <= layers.end; i++) {
                                                 cacheStatus.downgradeImageStatus(i);
                                             }
                                             break;
@@ -493,7 +493,7 @@ class J2KReader implements Runnable {
                                                     continue;
                                                 }
 
-                                                for (int j = i * JPIPConstants.MAX_REQ_LAYERS; j < Math.min((i + 1) * JPIPConstants.MAX_REQ_LAYERS, layers.getEnd() + 1); j++) {
+                                                for (int j = i * JPIPConstants.MAX_REQ_LAYERS; j < Math.min((i + 1) * JPIPConstants.MAX_REQ_LAYERS, layers.end + 1); j++) {
 
                                                     cacheStatus.downgradeImageStatus(j);
                                                 }
@@ -533,7 +533,7 @@ class J2KReader implements Runnable {
                                                 break;
 
                                             default:
-                                                for (int j = Math.min((current_step + 1) * JPIPConstants.MAX_REQ_LAYERS, layers.getEnd() + 1) - 1; j >= current_step * JPIPConstants.MAX_REQ_LAYERS; j--) {
+                                                for (int j = Math.min((current_step + 1) * JPIPConstants.MAX_REQ_LAYERS, layers.end + 1) - 1; j >= current_step * JPIPConstants.MAX_REQ_LAYERS; j--) {
 
                                                     cacheStatus.setImageStatus(j, CacheStatus.COMPLETE);
                                                 }
@@ -575,7 +575,7 @@ class J2KReader implements Runnable {
 
                                     int metaStatus = ((JHVJPXView) parentViewRef).getDateTimeCache().getMetaStatus();
 
-                                    if (metaStatus >= Math.min((current_step + 1) * JPIPConstants.MAX_REQ_LAYERS, layers.getEnd())) {
+                                    if (metaStatus >= Math.min((current_step + 1) * JPIPConstants.MAX_REQ_LAYERS, layers.end)) {
 
                                         current_step++;
                                     }

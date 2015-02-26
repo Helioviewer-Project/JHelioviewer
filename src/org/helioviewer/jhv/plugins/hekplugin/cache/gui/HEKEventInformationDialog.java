@@ -389,7 +389,7 @@ public class HEKEventInformationDialog extends JDialog implements ActionListener
         Date currentDate = LayersModel.getSingletonInstance().getLastUpdatedTimestamp();
 
         if (currentDate == null && event.getDuration() != null) {
-            currentDate = event.getDuration().getStart();
+            currentDate = event.getDuration().start;
         }
 
         String typeAcronym = event.getString("event_type");
@@ -416,7 +416,7 @@ public class HEKEventInformationDialog extends JDialog implements ActionListener
         }
 
         if (event.getDuration() != null) {
-            textDuration.setText(event.getDuration().getStart() + " - " + event.getDuration().getEnd());
+            textDuration.setText(event.getDuration().start + " - " + event.getDuration().end);
         } else {
             textDuration.setText("?");
         }

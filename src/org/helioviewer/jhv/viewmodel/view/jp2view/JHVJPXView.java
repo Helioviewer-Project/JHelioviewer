@@ -173,7 +173,7 @@ public class JHVJPXView extends JHVJP2View implements View {
             }
 
             currentDiff = dateTimeCache.getDateTime(frameNumber).getMillis() - timeMillis;
-        } while (currentDiff < 0 && frameNumber < jp2Image.getCompositionLayerRange().getEnd());
+        } while (currentDiff < 0 && frameNumber < jp2Image.getCompositionLayerRange().end);
 
         if (-lastDiff < currentDiff) {
             setCurrentFrameNumber(frameNumber - 1, event, forceSignal);
@@ -193,7 +193,7 @@ public class JHVJPXView extends JHVJP2View implements View {
      * {@inheritDoc}
      */
     public int getMaximumFrameNumber() {
-        return jp2Image.getCompositionLayerRange().getEnd();
+        return jp2Image.getCompositionLayerRange().end;
     }
 
     /**

@@ -170,7 +170,7 @@ public class JP2Image implements MultiFrameMetaDataContainer {
 
         createKakaduMachinery();
 
-        xmlCache = new NodeList[layerRange.getEnd() + 1];
+        xmlCache = new NodeList[layerRange.end + 1];
     }
 
     /**
@@ -407,7 +407,7 @@ public class JP2Image implements MultiFrameMetaDataContainer {
      * @return True, if the image contains multiple frames, false otherwise
      */
     public boolean isMultiFrame() {
-        int frameCount = getCompositionLayerRange().getEnd() - getCompositionLayerRange().getStart();
+        int frameCount = getCompositionLayerRange().end - getCompositionLayerRange().start;
         return isJpx && frameCount > 1;
     }
 

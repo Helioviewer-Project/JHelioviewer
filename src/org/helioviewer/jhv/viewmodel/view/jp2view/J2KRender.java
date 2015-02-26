@@ -481,9 +481,9 @@ class J2KRender implements Runnable {
 			NextFrameCandidateChooser {
 
 		public int getNextCandidate(int lastCandidate) {
-			if (++lastCandidate > layers.getEnd()) {
-				resetStartTime(layers.getStart());
-				return layers.getStart();
+			if (++lastCandidate > layers.end) {
+				resetStartTime(layers.start);
+				return layers.start;
 			}
 			return lastCandidate;
 		}
@@ -493,10 +493,10 @@ class J2KRender implements Runnable {
 			NextFrameCandidateChooser {
 
 		public int getNextCandidate(int lastCandidate) {
-			if (++lastCandidate > layers.getEnd()) {
+			if (++lastCandidate > layers.end) {
 				movieMode = false;
-				resetStartTime(layers.getStart());
-				return layers.getStart();
+				resetStartTime(layers.start);
+				return layers.start;
 			}
 			return lastCandidate;
 		}
@@ -509,14 +509,14 @@ class J2KRender implements Runnable {
 
 		public int getNextCandidate(int lastCandidate) {
 			lastCandidate += currentDirection;
-			if (lastCandidate < layers.getStart() && currentDirection == -1) {
+			if (lastCandidate < layers.start && currentDirection == -1) {
 				currentDirection = 1;
-				resetStartTime(layers.getStart());
-				return layers.getStart() + 1;
-			} else if (lastCandidate > layers.getEnd() && currentDirection == 1) {
+				resetStartTime(layers.start);
+				return layers.start + 1;
+			} else if (lastCandidate > layers.end && currentDirection == 1) {
 				currentDirection = -1;
-				resetStartTime(layers.getEnd());
-				return layers.getEnd() - 1;
+				resetStartTime(layers.end);
+				return layers.end - 1;
 			}
 
 			return lastCandidate;

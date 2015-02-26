@@ -53,10 +53,10 @@ public class SubImage {
     public SubImage(Interval<Integer> _domain, Interval<Integer> _range) {
         domain = _domain;
         range = _range;
-        x = domain.getStart();
-        width = domain.getEnd() - domain.getStart();
-        y = range.getStart();
-        height = range.getEnd() - range.getStart();
+        x = domain.start;
+        width = domain.end - domain.start;
+        y = range.start;
+        height = range.end - range.start;
     }
 
     /**
@@ -88,10 +88,10 @@ public class SubImage {
     /** Overridden toString method */
     public String toString() {
         String ret = "";
-        ret += "x=" + domain.getStart() + "   ";
-        ret += "y=" + range.getStart() + "   ";
-        ret += "width=" + (domain.getEnd() - domain.getStart()) + "   ";
-        ret += "height=" + (range.getEnd() - range.getStart()) + "   ";
+        ret += "x=" + domain.start + "   ";
+        ret += "y=" + range.start + "   ";
+        ret += "width=" + (domain.end - domain.start) + "   ";
+        ret += "height=" + (range.end - range.start) + "   ";
         return ret;
 
     }

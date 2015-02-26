@@ -149,7 +149,7 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
 
         jp2Image = newJP2Image;
 
-        imageViewParams = calculateParameter(newJP2Image.getQualityLayerRange().getEnd(), 0);
+        imageViewParams = calculateParameter(newJP2Image.getQualityLayerRange().end, 0);
 
         if (isMainView) {
             jp2Image.setParentView(this);
@@ -313,7 +313,7 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
      * {@inheritDoc}
      */
     public int getMaximumNumQualityLayers() {
-        return jp2Image.getQualityLayerRange().getEnd();
+        return jp2Image.getQualityLayerRange().end;
     }
 
     /**

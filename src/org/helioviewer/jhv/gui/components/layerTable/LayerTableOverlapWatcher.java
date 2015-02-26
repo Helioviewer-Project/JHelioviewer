@@ -84,7 +84,7 @@ public class LayerTableOverlapWatcher implements LayersListener {
 
                 Interval<Date> intersection = spanning.intersectInterval(span);
 
-                long len = (intersection.getEnd().getTime() - intersection.getStart().getTime());
+                long len = (intersection.end.getTime() - intersection.start.getTime());
                 double fraction = (double) len / (double) full_len;
 
                 if (fraction < SMALLEST_VALID_COVERAGE_FRACTION) {

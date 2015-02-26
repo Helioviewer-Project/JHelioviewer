@@ -160,7 +160,7 @@ public class HEKEvent implements IntervalComparison<Date> {
      */
     public Date getStart() {
         if (this.duration != null) {
-            return this.duration.getStart();
+            return this.duration.start;
         } else {
             return null;
         }
@@ -173,7 +173,7 @@ public class HEKEvent implements IntervalComparison<Date> {
      */
     public Date getEnd() {
         if (this.duration != null) {
-            return this.duration.getEnd();
+            return this.duration.end;
         } else {
             return null;
         }

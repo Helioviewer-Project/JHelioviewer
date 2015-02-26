@@ -78,8 +78,8 @@ public class HEKRequestThread extends HEKRequest implements Runnable {
                 if (cancel)
                     return;
 
-                String startDate = HEKConstants.getSingletonInstance().getDateFormat().format(interval.getStart());
-                String endDate = HEKConstants.getSingletonInstance().getDateFormat().format(interval.getEnd());
+                String startDate = HEKConstants.getSingletonInstance().getDateFormat().format(interval.start);
+                String endDate = HEKConstants.getSingletonInstance().getDateFormat().format(interval.end);
 
                 String encFRM = URLEncoder.encode(frm, "UTF-8");
                 String encType = URLEncoder.encode(type, "UTF-8");
