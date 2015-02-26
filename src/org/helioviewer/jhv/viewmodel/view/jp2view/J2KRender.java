@@ -5,8 +5,11 @@ import kdu_jni.Kdu_compositor_buf;
 import kdu_jni.Kdu_coords;
 import kdu_jni.Kdu_dims;
 import kdu_jni.Kdu_region_compositor;
+import kdu_jni.Kdu_thread_entity;
+import kdu_jni.Kdu_thread_env;
 
 import org.helioviewer.jhv.base.math.Interval;
+import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.changeevent.NonConstantMetaDataChangedReason;
 import org.helioviewer.jhv.viewmodel.imagedata.ARGBInt32ImageData;
@@ -91,6 +94,8 @@ class J2KRender implements Runnable {
 	private NextFrameCandidateChooser nextFrameCandidateChooser = new NextFrameCandidateLoopChooser();
 	private FrameChooser frameChooser = new RelativeFrameChooser();
 
+	private JHV_Kdu_thread_env jhv_Kdu_thread_env;
+
 	/**
 	 * The constructor.
 	 * 
@@ -103,6 +108,9 @@ class J2KRender implements Runnable {
 
 		parentImageRef = parentViewRef.jp2Image;
 		compositorRef = parentImageRef.getCompositorRef();
+
+		jhv_Kdu_thread_env = new JHV_Kdu_thread_env();
+		jhv_Kdu_thread_env.updateNumThreads();
 
 		stop = false;
 		myThread = null;
@@ -211,12 +219,13 @@ class J2KRender implements Runnable {
 		parentImageRef.getLock().lock();
 
 		try {
-			if (JP2Image.numJP2ImagesInUse() == 1) {
-				compositorRef.Set_thread_env(
-						JHV_Kdu_thread_env.getSingletonInstance(), 0);
-			} else {
-				compositorRef.Set_thread_env(null, 0);
+			int numberOfThreads = 2;
+			if (jhv_Kdu_thread_env.Get_num_threads() - 2 < Runtime.getRuntime().availableProcessors()){
+				numberOfThreads = 1;
 			}
+			jhv_Kdu_thread_env.updateNumThreads(numberOfThreads);
+				compositorRef.Set_thread_env(
+						jhv_Kdu_thread_env, 0);
 
 			compositorRef.Refresh();
 			compositorRef.Remove_compositing_layer(-1, true);

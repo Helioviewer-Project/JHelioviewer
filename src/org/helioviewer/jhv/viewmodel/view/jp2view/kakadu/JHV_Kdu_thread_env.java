@@ -36,7 +36,7 @@ final public class JHV_Kdu_thread_env extends Kdu_thread_env {
     public void updateNumThreads() {
         try {
             int processorCount = Runtime.getRuntime().availableProcessors();
-            processorCount = MathUtils.clip(processorCount, 1, 4);
+            processorCount = MathUtils.clip(processorCount, 1, 2);
             if (this.Get_num_threads() != processorCount) {
                 this.Destroy();
                 this.Create();
@@ -48,4 +48,17 @@ final public class JHV_Kdu_thread_env extends Kdu_thread_env {
             ex.printStackTrace();
         }
     }
+    
+    public void updateNumThreads(int i){
+        try {
+    	if (this.Get_num_threads() != i){
+    		this.Destroy();
+    		this.Create();
+    	    while (this.Get_num_threads() < i && this.Add_thread(i))
+                ;
+    	}
+
+    } catch (KduException ex) {
+        ex.printStackTrace();
+    }    }
 }
