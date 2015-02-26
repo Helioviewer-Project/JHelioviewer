@@ -88,6 +88,7 @@ public class GL3DTrackballCamera extends GL3DCamera implements ViewListener {
 
 				Quaternion3d newRotation = Quaternion3d.createRotation(
 						currentRotation - rotation, new Vector3d(0, 1, 0));
+				if (startPosition2D == null) resetStartPosition();
 				Vector3d newPosition = newRotation.toMatrix().multiply(
 						startPosition2D);
 

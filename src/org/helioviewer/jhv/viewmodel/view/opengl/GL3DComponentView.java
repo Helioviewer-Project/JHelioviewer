@@ -588,7 +588,6 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 	protected void setViewSpecificImplementation(View newView,
 			ChangeEvent changeEvent) {
-		// this.orthoView = getAdapter(GL3DOrthoView.class);
 		this.viewportView = getAdapter(ViewportView.class);
 	}
 

@@ -1,9 +1,13 @@
 package org.helioviewer.jhv.viewmodel.view.jp2view.newjpx;
 
 import java.io.IOException;
+import java.net.URI;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.helioviewer.jhv.base.Log;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JP2Image;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPConstants;
+import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPRequest;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPResponse;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPSocket;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
@@ -40,6 +44,9 @@ public class NewReader {
     /** The current length in bytes to use for requests */
     private volatile int JpipRequestLen = JPIPConstants.MIN_REQUEST_LEN;
 
+    private ConcurrentLinkedQueue<JPIPRequest> requests;
+	private URI uri;
+
     /**
      * The constructor. Creates and connects the socket if image is remote.
      * 
@@ -47,46 +54,113 @@ public class NewReader {
      * @throws IOException
      * @throws JHV_KduException
      */
-    NewReader(JP2Image jp2Image){
-    	this.jp2Image = jp2Image;
-
-    	cacheRef = jp2Image.getCacheRef();
-
-        // Attempts to connect socket if image is remote.
-        if (jp2Image.isRemote()) {
-
-            socket = jp2Image.getSocket();
-
-				try {
-		            if (socket == null) {
-		                socket = new JPIPSocket();
-		                JPIPResponse res;
-					res = (JPIPResponse) socket.connect(jp2Image.getURI());
-	                cacheRef.addJPIPResponseData(res);
-		            }
-		            // Somehow it seems we need to update the server cache model for
-		            // movies too
-		            // otherwise there can be a weird bug where the meta data seems
-		            // missing
-		            // if (!parentImageRef.isMultiFrame())
-		            KakaduUtils.updateServerCacheModel(socket, cacheRef, true);
-
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (JHV_KduException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+    public NewReader(URI uri){
+    	requests = new ConcurrentLinkedQueue<JPIPRequest>();
+    	this.uri = uri;
+    	socket = new JPIPSocket();
+    	openSocket();
+    	
+    	Thread thread = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				while(true){
+					if (requests.isEmpty()){
+						try {
+							Thread.sleep(50);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+					else receiveData();
 				}
-            
-
-
-        } else {
-            socket = null;
-        }
-
-        myThread = null;
-        stop = false;
+			}
+		});
     }
 
+
+	private void openSocket(){
+		try {
+            socket.connect(uri);
+        } catch (IOException e) {
+            e.printStackTrace();
+            
+            try {
+                socket.close();
+            } catch (IOException ioe) {
+                System.err.println(">> J2KReader.run() > Error closing socket.");
+                ioe.printStackTrace();
+            }
+            
+            if(Thread.currentThread().isInterrupted())
+                return;
+
+            if(Thread.currentThread().isInterrupted())
+                return;
+
+        }
+
+	}
+	
+	public void receiveData(){
+		if (socket.isClosed()) openSocket();
+		try {
+			socket.send(requests.poll());
+			JPIPResponse response = socket.receive();
+			// Update optimal package size
+            flowControl();
+			if (response != null && response.getResponseSize() > 0){
+				
+			}
+		} catch (IOException e) {
+			System.out.println("not correct request");
+		}
+		
+	}
+	
+    /**
+     * This method perfoms the flow control, that is, adjusts dynamically the
+     * value of the variable <code>JPIP_REQUEST_LEN</code>. The used algorithm
+     * is the same as the used one by the viewer kdu_show of Kakadu (if
+     * something works... why not to use it?)
+     */
+    private void flowControl() {
+        int adjust = 0;
+        int receivedBytes = socket.getReceivedData();
+        long replyTextTime = socket.getReplyTextTime();
+        long replyDataTime = socket.getReplyDataTime();
+
+        long tdat = replyDataTime - replyTextTime;
+
+        if (((receivedBytes - JpipRequestLen) < (JpipRequestLen >> 1)) && (receivedBytes > (JpipRequestLen >> 1))) {
+            if (tdat > 10000)
+                adjust = -1;
+            else if (lastResponseTime > 0) {
+                long tgap = replyTextTime - lastResponseTime;
+
+                if ((tgap + tdat) < 1000)
+                    adjust = +1;
+                else {
+                    double gapRatio = ((double) tgap) / ((double) (tgap + tdat));
+                    double targetRatio = ((double) (tdat + tgap)) / 10000.0;
+
+                    if (gapRatio > targetRatio)
+                        adjust = +1;
+                    else
+                        adjust = -1;
+                }
+            }
+        }
+
+        JpipRequestLen += (JpipRequestLen >> 2) * adjust;
+
+        if (JpipRequestLen > JPIPConstants.MAX_REQUEST_LEN)
+            JpipRequestLen = JPIPConstants.MAX_REQUEST_LEN;
+
+        if (JpipRequestLen < JPIPConstants.MIN_REQUEST_LEN)
+            JpipRequestLen = JPIPConstants.MIN_REQUEST_LEN;
+
+        lastResponseTime = replyDataTime;
+    }
 }

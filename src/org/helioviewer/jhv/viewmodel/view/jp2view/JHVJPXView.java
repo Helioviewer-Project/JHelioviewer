@@ -440,6 +440,7 @@ public class JHVJPXView extends JHVJP2View implements View {
         return calculateParameter(getCurrentNumQualityLayers(), getCurrentFrameNumber());
     }
 
+
 	public int getDesiredSpeed() {
 		return render.getDesiredSpeed();
 	}

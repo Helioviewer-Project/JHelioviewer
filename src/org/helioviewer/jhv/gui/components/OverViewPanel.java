@@ -700,7 +700,6 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 				.toVector3d().normalize();
 
 		camDirection = camTrans.multiply(camDirection).normalize();
-
 		double angle = (Math.acos(camDirection.dot(orientation)) / Math.PI * 180.0);
 		return angle;
 	}

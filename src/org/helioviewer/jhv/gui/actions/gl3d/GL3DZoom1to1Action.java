@@ -7,6 +7,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;
 import javax.swing.KeyStroke;
 
+import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.gui.GL3DCameraSelectorModel;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.IconBank;
@@ -55,6 +56,8 @@ public class GL3DZoom1to1Action extends AbstractAction {
 			if (region != null) {
 				Dimension dimension = GuiState3DWCS.mainComponentView.getCanavasSize();
 				double minCanvasDimension = dimension.getHeight();
+		        if (!Boolean.parseBoolean(Settings.getProperty("default.display.highDPI")))
+		        	minCanvasDimension /= 2.0;
 	            double halfFOVRad = Math.toRadians(camera.getFOV() / 2.0);
 	            double distance = (minCanvasDimension/2.0 * unitsPerPixel) / Math.tan(halfFOVRad);
 	            distance = -distance - camera.getZTranslation();

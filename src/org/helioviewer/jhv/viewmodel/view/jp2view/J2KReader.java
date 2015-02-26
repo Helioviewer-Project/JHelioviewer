@@ -322,21 +322,7 @@ class J2KReader implements Runnable {
                             if(Thread.currentThread().isInterrupted())
                                 return;
 
-                            if (parentViewRef.isPersistent() && req != null && req.getQuery() != null) {
-                                if(Thread.currentThread().isInterrupted())
-                                    return;
-
-                                socket.send(req);
-
-                                if(Thread.currentThread().isInterrupted())
-                                    return;
-
-                                socket.receive();
-                            }
                             
-                            if(Thread.currentThread().isInterrupted())
-                                return;
-
                             // If nothing to do and this is not the main view,
                             // close socket
                             if (!parentViewRef.isPersistent()) {

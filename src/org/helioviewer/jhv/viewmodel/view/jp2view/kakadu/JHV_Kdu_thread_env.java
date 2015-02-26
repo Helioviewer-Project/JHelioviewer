@@ -36,7 +36,7 @@ final public class JHV_Kdu_thread_env extends Kdu_thread_env {
     public void updateNumThreads() {
         try {
             int processorCount = Runtime.getRuntime().availableProcessors();
-            processorCount = MathUtils.clip(processorCount, 1, 8);
+            processorCount = MathUtils.clip(processorCount, 1, 4);
             if (this.Get_num_threads() != processorCount) {
                 this.Destroy();
                 this.Create();

@@ -1548,7 +1548,7 @@ return true;</string>
       </postUninstallScript>
     </linuxRPM>
   </mediaSets>
-  <buildIds buildAll="false">
+  <buildIds buildAll="true">
     <mediaSet refId="150" />
   </buildIds>
   <buildOptions verbose="false" faster="false" disableSigning="false" disableJreBundling="false" debug="false" />

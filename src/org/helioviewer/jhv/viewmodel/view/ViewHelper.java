@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.AbstractList;
 
+import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.viewmodel.imagedata.ImageData;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.region.Region;
@@ -180,7 +182,9 @@ public final class ViewHelper {
         if (v == null || r == null) {
             return null;
         }
-
+        if (!Boolean.parseBoolean(Settings.getProperty("default.display.highDPI")))
+        	v = StaticViewport.createAdaptedViewport(v.getWidth()/2, v.getHeight()/2);
+        
         double screenMeterPerPixel;
         double screenSubImageWidth;
         double screenSubImageHeight;
@@ -194,15 +198,7 @@ public final class ViewHelper {
             screenSubImageWidth = v.getWidth();
             screenSubImageHeight = r.getHeight() / screenMeterPerPixel;
         }
-        /*
-        if(GuiState3DWCS.mainComponentView!=null)
-            if (!GuiState3DWCS.mainComponentView.exportMovie && GuiState3DWCS.mainComponentView.getComponent()!=null && GuiState3DWCS.mainComponentView.getCanavasSize() != null){
-            	double factor = GuiState3DWCS.mainComponentView.getComponent().getWidth() / GuiState3DWCS.mainComponentView.getCanavasSize().getWidth();
-            	screenMeterPerPixel/=factor;
-            	screenSubImageWidth*= factor;
-            	screenSubImageHeight*= factor;
-            }
-            */
+                
         return StaticViewportImageSize.createAdaptedViewportImageSize((int) Math.round(screenSubImageWidth), (int) Math.round(screenSubImageHeight));
     }
 

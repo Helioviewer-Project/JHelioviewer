@@ -64,6 +64,8 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
     private JButton cancelBtn;
     private JButton resetBtn;
 
+	private JCheckBox highDPISupport;
+
 
 	private static final AspectRatio[] MOVIE_ASPECT_RATIO_PRESETS = {
 			new AspectRatio(1, 1), new AspectRatio(4, 3),
@@ -241,7 +243,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 				.getProperty("startup.loadmovie")));
 		doNothingOnStartUp.setSelected(!Boolean.parseBoolean(Settings
 				.getProperty("startup.loadmovie")));
-
+		highDPISupport.setSelected(Boolean.parseBoolean(Settings.getProperty("default.display.highDPI")));
 		// Default date format
 		String fmt = Settings.getProperty("default.date.format");
 
@@ -269,7 +271,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 
 		// Default date format
 		Settings.setProperty("default.date.format", dateFormatField.getText());
-
+		Settings.setProperty("default.display.highDPI", highDPISupport.isSelected() + "");
 		// Default values
 		defaultsPanel.saveSettings();
 		movieExportPanel.saveSettings();
@@ -311,9 +313,8 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 		JPanel row2 = new JPanel(new FlowLayout(FlowLayout.LEADING));
 		row2.add(new JLabel("Default date format:  "));
 		row2.add(dateFormatField);
-
 		Icon infoIcon = IconBank.getIcon(JHVIcon.INFO);
-
+		
 		dateFormatInfo = new JButton(infoIcon);
 		dateFormatInfo.setBorder(BorderFactory.createEtchedBorder());
 		dateFormatInfo.setPreferredSize(new Dimension(
@@ -329,6 +330,12 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 		row2.add(dateFormatInfo);
 		paramsPanel.add(row2);
 
+		JPanel row3 = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		row3.add(new JLabel("Support High-DPI: "));
+		highDPISupport = new JCheckBox();
+		row3.add(highDPISupport);
+		paramsPanel.add(row3);
+		
 		return paramsPanel;
 	}
 

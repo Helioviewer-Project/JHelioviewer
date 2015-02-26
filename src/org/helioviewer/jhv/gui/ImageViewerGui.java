@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeListener;
+
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
@@ -35,7 +36,6 @@ import org.helioviewer.jhv.gui.components.newComponents.NewImageSelectorPanel;
 import org.helioviewer.jhv.gui.components.statusplugins.CurrentTimeLabel;
 import org.helioviewer.jhv.gui.components.statusplugins.FramerateStatusPanel;
 import org.helioviewer.jhv.gui.components.statusplugins.JPIPStatusPanel;
-import org.helioviewer.jhv.gui.components.statusplugins.MetaDataStatusPanel;
 import org.helioviewer.jhv.gui.components.statusplugins.PositionStatusPanel;
 import org.helioviewer.jhv.gui.components.statusplugins.ZoomStatusPanel;
 import org.helioviewer.jhv.gui.controller.GL3DCameraMouseController;
@@ -132,28 +132,21 @@ public class ImageViewerGui {
 			// ///////////////////////////////////////////////////////////////////////////////
 
 			ZoomStatusPanel zoomStatusPanel = new ZoomStatusPanel();
-			//QualityStatusPanel qualityStatusPanel = new QualityStatusPanel();
 			FramerateStatusPanel framerateStatus = new FramerateStatusPanel();
 
 			PositionStatusPanel positionStatusPanel = null;
 
-			// Position panel only needed in 2D View State
 			positionStatusPanel = new PositionStatusPanel(getMainImagePanel());
 
-			MetaDataStatusPanel jhvXMLStatusPanel = new MetaDataStatusPanel();
 			JPIPStatusPanel jpipStatusPanel = new JPIPStatusPanel();
 
-			StatusPanel statusPanel = new StatusPanel(SIDE_PANEL_WIDTH + 20, 5);
+			StatusPanel statusPanel = new StatusPanel(5, 5);
+			statusPanel.addLabel(new CurrentTimeLabel() , StatusPanel.Alignment.LEFT);
 			statusPanel.addPlugin(zoomStatusPanel, StatusPanel.Alignment.LEFT);
-			/*statusPanel.addPlugin(qualityStatusPanel,
-					StatusPanel.Alignment.LEFT);*/
 			statusPanel.addPlugin(framerateStatus, StatusPanel.Alignment.LEFT);
-			statusPanel.addPlugin(jhvXMLStatusPanel,
-					StatusPanel.Alignment.RIGHT);
 			statusPanel.addPlugin(jpipStatusPanel, StatusPanel.Alignment.RIGHT);
 			statusPanel.addPlugin(positionStatusPanel,
 					StatusPanel.Alignment.RIGHT);
-			statusPanel.addLabel(new CurrentTimeLabel() , StatusPanel.Alignment.RIGHT);
 			
 			contentPanel.add(statusPanel, BorderLayout.PAGE_END);
 			

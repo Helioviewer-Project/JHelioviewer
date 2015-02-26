@@ -28,39 +28,6 @@ public class JPXLayer {
 		this.jp2Image = jp2Image;
 	}
 	
-	public void openSocket(){
-		try {
-            socket = new JPIPSocket();
-            socket.connect(jp2Image.getURI());
-            
-            /*
-            if (!parentImageRef.isMultiFrame()) {
-                if(Thread.currentThread().isInterrupted())
-                    return;
-                
-                KakaduUtils.updateServerCacheModel(socket, cacheRef, true);
-            }
-            */
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            
-            try {
-                socket.close();
-            } catch (IOException ioe) {
-                System.err.println(">> J2KReader.run() > Error closing socket.");
-                ioe.printStackTrace();
-            }
-            
-            if(Thread.currentThread().isInterrupted())
-                return;
-
-            if(Thread.currentThread().isInterrupted())
-                return;
-
-        }
-
-	}
 	
 	public static void main(String[] args) {
 		loadLibraries();
@@ -69,9 +36,12 @@ public class JPXLayer {
 			uri = new URI("jpip://helioviewer.org:8090/AIA/2015/02/23/171/2015_02_23__15_42_59_34__SDO_AIA_AIA_171.jp2");
 			URI downloadURI = new URI("http://helioviewer.org/api/index.php?action=getJP2Image&observatory=SDO&instrument=AIA&detector=AIA&measurement=171&date=2015-02-23T16:07:26Z&json=true");
 			
-
+			JP2Image jp2Image = new JP2Image(uri);
+			/*
 	        JP2Image jp2Image = new JP2Image(uri, downloadURI);
-
+			NewReader newReader = new NewReader(jp2Image);
+			newReader.openSocket();
+			*/
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -82,7 +52,6 @@ public class JPXLayer {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 	}
 	
 	private static void loadLibraries() {

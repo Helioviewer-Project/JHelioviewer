@@ -265,7 +265,7 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 	}
 
 	private void addLayersToSceneGraph(GL3DState state) {
-		GL3DCamera camera = state.activeCamera;
+		GL3DCamera camera = GL3DCameraSelectorModel.getInstance().getCurrentCamera();
 
 		synchronized (this.layersToAdd) {
 			for (GL3DImageTextureView imageTextureView : this.layersToAdd) {
