@@ -136,14 +136,16 @@ JPEG 2000 offers many useful new features and has the potential to
 </div>
 
 <div id="footer">
+<div style="text-align:center">Supported by</div>
 <div id="copy_r">Copyright by ESA
+<a href="https://raygun.io/" target="_blank"><img class="middle-right" src="imgs/references/raygun.io.png" width="75"></a>
 <!-- insert ESA logo -->    
 <!--<img width="100" height="70" alt="SOHO" src="images/esa.jpg"/>-->
 </div>
 <!-- Please do not remove this part. this template is free - the only thing we ask is to live a link to us.-->
-Design by <a href="http://www.flashdaweb.com/" target="_blank">FlashDaWeb</a>
-</div>
-<!--close div id=main-->
+Design by <a href="http://www.flashdaweb.com/">FlashDaWeb</a>
+<a href="http://www.ej-technologies.com/products/install4j/overview.html" target="_blank"><img class="middle-left" src="imgs/references/install4j.png" width="75"></a>
+
 </div>
 
 <script type="text/javascript">
@@ -193,7 +195,10 @@ function platformDetect(){
           else{
             text += jar;
           }
-        }
+        } else{
+			text += "<a href='download.html'><img src='imgs/downloads/all_platforms.png' height='140'  /></a>";
+		}
+
         text += "</div>"
         $("#download").append(text);
         
