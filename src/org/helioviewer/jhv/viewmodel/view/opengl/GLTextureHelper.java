@@ -40,7 +40,6 @@ import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLTextureCoordinate;
  */
 public class GLTextureHelper {
 
-	private static PowerOfTwoTextureImplementation textureImplementation = null;
 	private static int texID = 0;
 	private static int maxTextureSize = 2048;
 
@@ -68,8 +67,6 @@ public class GLTextureHelper {
 	 */
 	public static void initHelper(GL2 gl) {
 		System.out.println(">> GLTextureHelper.initHelper(GL) > Initialize helper functions");
-
-		textureImplementation = new PowerOfTwoTextureImplementation();
 
 		int tmp[] = new int[1];
 		gl.glGetIntegerv(GL2.GL_MAX_TEXTURE_SIZE, tmp, 0);
@@ -122,28 +119,7 @@ public class GLTextureHelper {
 	 * @see #bindTexture(GL, int, int)
 	 */
 	public synchronized void bindTexture(GL2 gl, int texture) {
-		textureImplementation.bindTexture(gl, GL.GL_TEXTURE_2D, texture);
-	}
-
-	/**
-	 * Binds a texture.
-	 * 
-	 * If PowerOfTextures are used, this will also load the texture scaling to
-	 * the texture coordinate GL_TEXTURE1, which will be used by
-	 * {@link org.helioviewer.jhv.viewmodel.view.opengl.shader.GLScalePowerOfTwoVertexShaderProgram}
-	 * . Thus, it is highly recommended to use this function for GL_TEXTURE0
-	 * instead of calling OpenGL directly.
-	 * 
-	 * @param gl
-	 *            Valid reference to the current gl object
-	 * @param target
-	 *            texture type, such as GL_TEXTURE_2D
-	 * @param texture
-	 *            texture id to bind
-	 * @see #bindTexture(GL, int, int)
-	 */
-	public synchronized void bindTexture(GL2 gl, int target, int texture) {
-		textureImplementation.bindTexture(gl, target, texture);
+		bindTexture(gl, GL.GL_TEXTURE_2D, texture);
 	}
 
 	/**
@@ -203,93 +179,6 @@ public class GLTextureHelper {
 				delTextureID(gl, textureID);
 			}
 		}
-	}
-
-	/**
-	 * Copies the current frame buffer to a texture.
-	 * 
-	 * A new texture is generated and the entire frame buffer is copied. The
-	 * caller is responsible for deleting the texture, if it is not used any
-	 * more.
-	 * 
-	 * @param gl
-	 *            Valid reference to the current gl object
-	 * @return texture the frame buffer was copied to
-	 */
-	public int copyFrameBufferToTexture(GL2 gl) {
-		int texture = genTextureID(gl);
-		return copyFrameBufferToTexture(gl, texture);
-	}
-
-	/**
-	 * Copies the current frame buffer to a texture.
-	 * 
-	 * The entire frame buffer is copied to the given texture. The caller is
-	 * responsible for deleting the texture, if it is not used any more.
-	 * 
-	 * @param gl
-	 *            Valid reference to the current gl object
-	 * @param texture
-	 *            target texture
-	 * @return texture the frame buffer was copied to
-	 */
-	public int copyFrameBufferToTexture(GL2 gl, int texture) {
-		int viewport[] = new int[4];
-		gl.glGetIntegerv(GL2.GL_VIEWPORT, viewport, 0);
-		return copyFrameBufferToTexture(gl, texture, new Rectangle(viewport[0],
-				viewport[1], viewport[2], viewport[3]));
-	}
-
-	/**
-	 * Copies the current frame buffer to a texture.
-	 * 
-	 * A new texture is generated and the given area of the frame buffer is
-	 * copied. The caller is responsible for deleting the texture, if it is not
-	 * used any more.
-	 * 
-	 * @param gl
-	 *            Valid reference to the current gl object
-	 * @param rect
-	 *            area of the frame buffer to copy
-	 * @return texture the frame buffer was copied to
-	 */
-	public int copyFrameBufferToTexture(GL2 gl, Rectangle rect) {
-		int texture = genTextureID(gl);
-		return copyFrameBufferToTexture(gl, texture, rect);
-	}
-
-	public int copyFrameBufferToSubTexture(GL2 gl, int texture, Rectangle rect) {
-		gl.glActiveTexture(GL2.GL_TEXTURE0);
-		textureImplementation.genTexture2D(gl, texture, GL.GL_RGBA, rect.width,
-				rect.height, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, null);
-		textureImplementation.copyFrameBufferToTexture(gl, texture, rect);
-		// Log.debug("GLTextureHelper.copyFrameBuffer: Viewport= "+rect.x+", "+rect.y+", "+rect.width+", "+rect.height);
-		return texture;
-	}
-
-	/**
-	 * Copies the current frame buffer to a texture.
-	 * 
-	 * The given area of the frame buffer is copied to the given texture. The
-	 * caller is responsible for deleting the texture, if it is not used any
-	 * more.
-	 * 
-	 * @param gl
-	 *            Valid reference to the current gl object
-	 * @param texture
-	 *            target texture
-	 * @param rect
-	 *            area of the frame buffer to copy
-	 * @return texture the frame buffer was copied to
-	 */
-	public int copyFrameBufferToTexture(GL2 gl, int texture, Rectangle rect) {
-		gl.glActiveTexture(GL2.GL_TEXTURE0);
-		/*textureImplementation
-				.genTexture2D(gl, texture, GL2.GL_RGBA, rect.width,
-						rect.height, GL2.GL_RGBA, GL.GL_UNSIGNED_BYTE, null);*/
-		textureImplementation.copyFrameBufferToTexture(gl, texture, rect);
-		// Log.debug("GLTextureHelper.copyFrameBuffer: Viewport= "+rect.x+", "+rect.y+", "+rect.width+", "+rect.height);
-		return texture;
 	}
 
 	/**
@@ -518,12 +407,12 @@ public class GLTextureHelper {
 		ImageFormat imageFormat = source.getImageFormat();
 
 		if (source.getHeight() == 1) {
-			textureImplementation.genTexture1D(gl, target,
+			genTexture1D(gl, target,
 					mapImageFormatToInternalGLFormat(imageFormat), width,
 					mapImageFormatToInputGLFormat(imageFormat),
 					mapBitsPerPixelToGLType(bitsPerPixel), buffer);
 		} else {
-			textureImplementation.genTexture2D(gl, target,
+			genTexture2D(gl, target,
 					mapImageFormatToInternalGLFormat(imageFormat), width,
 					height, mapImageFormatToInputGLFormat(imageFormat),
 					mapBitsPerPixelToGLType(bitsPerPixel), buffer);
@@ -574,11 +463,10 @@ public class GLTextureHelper {
 		gl.glPixelStorei(GL2.GL_UNPACK_ALIGNMENT, 1);
 
 		if (source.getHeight() == 1) {
-			textureImplementation
-					.genTexture1D(gl, target, GL.GL_RGBA, source.getWidth(),
+			genTexture1D(gl, target, GL.GL_RGBA, source.getWidth(),
 							GL.GL_BGRA, GL2.GL_UNSIGNED_BYTE, buffer);
 		} else {
-			textureImplementation.genTexture2D(gl, target, GL.GL_RGBA,
+			genTexture2D(gl, target, GL.GL_RGBA,
 					source.getWidth(), source.getHeight(), GL.GL_BGRA,
 					GL2.GL_UNSIGNED_BYTE, buffer);
 		}
@@ -644,18 +532,6 @@ public class GLTextureHelper {
 		}
 	}
 
-	/**
-	 * Texture implementation for power of two textures. After copying the
-	 * image, the loader also sets the scaling factor used by
-	 * {@link GLScalePowerOfTwoView} and
-	 * {@link org.helioviewer.jhv.viewmodel.view.opengl.shader.GLScalePowerOfTwoVertexShaderProgram}
-	 * .
-	 */
-	private static class PowerOfTwoTextureImplementation {
-
-		/**
-		 * {@inheritDoc}
-		 */
 		public void genTexture1D(GL2 gl, int texID, int internalFormat,
 				int width, int inputFormat, int inputType, Buffer buffer) {
 
@@ -782,10 +658,12 @@ public class GLTextureHelper {
 		/**
 		 * {@inheritDoc}
 		 */
-		public void copyFrameBufferToTexture(GL2 gl, int texture, Rectangle rect) {
+		public void copyFrameBufferToTexture(GL2 gl, int texture, Rectangle rect)
+		{
+		    gl.glActiveTexture(GL2.GL_TEXTURE0);
+		    
 			int width = nextPowerOfTwo(rect.width);
 			int height = nextPowerOfTwo(rect.height);
-			// Log.debug("GLTextureHelper.glCopyTexImage2D: Width="+width+", Height="+height+" x="+rect.x+", y="+rect.y);
 			gl.glCopyTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, rect.x,
 					rect.y, width, height, 0);
 			gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER,
@@ -796,7 +674,6 @@ public class GLTextureHelper {
 					GL2.GL_CLAMP_TO_BORDER);
 			gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T,
 					GL2.GL_CLAMP_TO_BORDER);
-
 		}
 
 		/**
@@ -816,7 +693,6 @@ public class GLTextureHelper {
 			}
 			return output;
 		}
-	}
 
 	/**
 	 * GLTextureCoordinate implementation for the standard texture coordinate.
