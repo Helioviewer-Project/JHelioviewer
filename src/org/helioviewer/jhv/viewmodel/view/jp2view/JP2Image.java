@@ -27,7 +27,6 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPResponse;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPSocket;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_Kdu_cache;
-import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_Kdu_thread_env;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.KakaduUtils;
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.Document;
@@ -656,7 +655,6 @@ public class JP2Image implements MultiFrameMetaDataContainer {
      * {@link #abolish()}.
      */
     public synchronized void addReference() {
-        JHV_Kdu_thread_env.getSingletonInstance().updateNumThreads();
         referenceCounter++;
     }
 

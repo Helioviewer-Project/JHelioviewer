@@ -330,11 +330,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 		row2.add(dateFormatInfo);
 		paramsPanel.add(row2);
 
-		JPanel row3 = new JPanel(new FlowLayout(FlowLayout.LEADING));
-		row3.add(new JLabel("Support High-DPI: "));
-		highDPISupport = new JCheckBox();
-		row3.add(highDPISupport);
-		paramsPanel.add(row3);
+		paramsPanel.add(highDPISupport = new JCheckBox("Use high-resolution textures"));
 		
 		return paramsPanel;
 	}
@@ -440,11 +436,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 				});
 			}
 			{
-				JLabel lblSubtitle = new JLabel("Render time stamps");
-				this.add(lblSubtitle, "6, 4, right, default");
-			}
-			{
-				isTextEnabled = new JCheckBox();
+				isTextEnabled = new JCheckBox("Render time stamps");
 				this.add(isTextEnabled, "8,4,left, default");
 			}
 			NumberFormat format = NumberFormat.getInstance();
@@ -661,11 +653,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 						});
 			}
 			{
-				JLabel lblSubtitle = new JLabel("Render time stamps");
-				this.add(lblSubtitle, "6, 4, right, default");
-			}
-			{
-				isTextEnabled = new JCheckBox();
+				isTextEnabled = new JCheckBox("Render time stamps");
 				this.add(isTextEnabled, "8,4,left, default");
 			}
 
