@@ -21,14 +21,11 @@ public class CenterLoadingScreen implements RenderAnimation {
 	private final int NUMBER_OF_CIRCLE = 32;
 	private final int NUMBER_OF_VISIBLE_CIRCLE = 12;
 	private final int POINT_OF_CIRCLE = 36;
-	private int verticesSize;
-	private final double FACTOR = 8;
 
 	private final float RADIUS = 99;
 	private final float CIRCLE_RADIUS = 8;
 	private final float DEFAULT_X_OFFSET = -3;
 	private final float DEFAULT_Y_OFFSET = 27;
-	private int[] buffers;
 	private int vertices;
 	private int indices;
 	private int color;
@@ -205,7 +202,6 @@ public class CenterLoadingScreen implements RenderAnimation {
 		gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, this.vertices);
 		gl.glBufferData(GL2.GL_ARRAY_BUFFER, vertices.limit() * Buffers.SIZEOF_FLOAT, vertices,
 				GL.GL_STATIC_DRAW);
-		verticesSize = vertices.limit();
 
 		this.indices = buffer[1];
 		gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, this.indices);

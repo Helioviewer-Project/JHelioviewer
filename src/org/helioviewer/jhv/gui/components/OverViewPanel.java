@@ -44,7 +44,6 @@ import org.helioviewer.jhv.viewmodel.imagetransport.Byte8ImageTransport;
 import org.helioviewer.jhv.viewmodel.imagetransport.Int32ImageTransport;
 import org.helioviewer.jhv.viewmodel.imagetransport.Short16ImageTransport;
 import org.helioviewer.jhv.viewmodel.region.Region;
-import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DCoordinateSystemView;
@@ -70,7 +69,6 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 	private HashMap<String, Integer> lutMap;
 	private int nextAvaibleLut = 0;
 	private int currentLut = 0;
-	private long lastTime;
 	private int invertedLut = 0;
 	
 	public enum MOVE_MODE{
@@ -112,8 +110,6 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 	@Override
 	public void activeLayerChanged(int idx) {
 		if (idx >= 0 && idx < LayersModel.getSingletonInstance().getNumLayers() && layers.size() > 0){
-			if (LinkedMovieManager.getActiveInstance().getMasterMovie() != null)
-				this.lastTime = LinkedMovieManager.getActiveInstance().getMasterMovie().getCurrentFrameDateTime().getMillis();
 			idx = LayersModel.getSingletonInstance().getNumLayers() - idx -1;
 				lastLayer = layers.get(idx);
 			View lastView = LayersModel.getSingletonInstance().getActiveView();

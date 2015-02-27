@@ -7,7 +7,6 @@ import java.util.AbstractList;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
-import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.viewmodel.imagedata.ImageData;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.region.Region;

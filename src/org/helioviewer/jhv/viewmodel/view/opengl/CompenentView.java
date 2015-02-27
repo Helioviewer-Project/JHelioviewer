@@ -24,30 +24,25 @@ import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.awt.GLCanvas;
 
-import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
-import org.helioviewer.jhv.base.wcs.CoordinateConversion;
-import org.helioviewer.jhv.base.wcs.CoordinateVector;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.LayersListener;
-import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.layers.NewLayerListener;
 import org.helioviewer.jhv.layers.filter.LUT;
+import org.helioviewer.jhv.opengl.NoImageScreen;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.opengl.RenderAnimation;
-import org.helioviewer.jhv.opengl.NoImageScreen;
 import org.helioviewer.jhv.opengl.camera.Camera;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
 import org.helioviewer.jhv.opengl.camera.newCamera.CameraListener;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace.Ray;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
-import org.helioviewer.jhv.opengl.scenegraph.GL3DState.VISUAL_TYPE;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.renderer.screen.ScreenRenderer;
@@ -62,14 +57,11 @@ public class CompenentView extends GL3DComponentView implements
 	GLTextureHelper textureHelper = new GLTextureHelper();
 	private Layers layers;
 	private boolean updateTexture;
-	private GL3DCamera camera;
 	private int shaderprogram;
 	private HashMap<String, Integer> lutMap;
 	private int nextAvaibleLut = 0;
 	private long lastTime;
-	private int invertedLut = 0;
 	public boolean exportMovie;
-	private float z = 1;
 	private Camera cameraNEW;
 
 	private CopyOnWriteArrayList<RenderAnimation> animations;
@@ -110,76 +102,6 @@ public class CompenentView extends GL3DComponentView implements
 			output <<= 1;
 		}
 		return output;
-	}
-
-	private void renderRect(GL2 gl) {
-		if (GL3DState.get().getState() == VISUAL_TYPE.MODE_2D
-				|| calculateAngleToActiveLayer() < 0.01) {
-			gl.glDisable(GL2.GL_TEXTURE_2D);
-			gl.glDisable(GL2.GL_BLEND);
-			gl.glShadeModel(GL2.GL_FLAT);
-			gl.glDisable(GL2.GL_TEXTURE_2D);
-			gl.glColor3d(1, 1, 136.0 / 255.0);
-
-			// lastLayer.getMetaData().getMaskRotation
-
-			Vector3d translation = camera.getTranslation();
-			double height = Math.tan(Math.toRadians(camera.getFOV()))
-					* translation.z;
-			double width = height * camera.getAspect();
-			double x1 = width / 2.0;
-			double y1 = height / 2.0;
-			double x0 = -x1;
-			double y0 = -y1;
-			x0 -= translation.x;
-			x1 -= translation.x;
-			y0 -= translation.y;
-			y1 -= translation.y;
-
-			// Draw box
-			gl.glBegin(GL2.GL_LINE_STRIP);
-			gl.glVertex2d(x0, y0);
-			gl.glVertex2d(x0, y1);
-			gl.glVertex2d(x1, y1);
-			gl.glVertex2d(x1, y0);
-			gl.glVertex2d(x0, y0);
-			gl.glEnd();
-
-			double r = x1 - x0 > y1 - y0 ? (x1 - x0) * 0.02 : (y1 - y0) * 0.02;
-			// Draw circle
-			gl.glBegin(GL2.GL_LINE_LOOP);
-			for (int i = 0; i < 360; i++) {
-				double x = Math.sin(i * Math.PI * 2 / 360.) * r - translation.x;
-				double y = Math.cos(i * Math.PI * 2 / 360.) * r - translation.y;
-				gl.glVertex2d(x, y);
-			}
-			gl.glEnd();
-		}
-
-	}
-
-	private double calculateAngleToActiveLayer() {
-		Matrix4d camTrans = camera.getRotation().toMatrix().inverse();
-		Vector3d camDirection = new Vector3d(0, 0, 1);
-
-		View view = LayersModel.getSingletonInstance().getActiveView();
-		if (view == null)
-			return 0;
-
-		GL3DCoordinateSystemView layer = view
-				.getAdapter(GL3DCoordinateSystemView.class);
-		GL3DState state = GL3DState.get();
-		CoordinateVector orientationVector = layer.getOrientation();
-		CoordinateConversion toViewSpace = layer.getCoordinateSystem()
-				.getConversion(
-						state.activeCamera.getViewSpaceCoordinateSystem());
-		Vector3d orientation = toViewSpace.convert(orientationVector)
-				.toVector3d().normalize();
-
-		camDirection = camTrans.multiply(camDirection).normalize();
-
-		double angle = (Math.acos(camDirection.dot(orientation)) / Math.PI * 180.0);
-		return angle;
 	}
 
 	private void initShaders(GL2 gl) {
@@ -239,28 +161,6 @@ public class CompenentView extends GL3DComponentView implements
 			e.printStackTrace();
 		}
 		return shaderCode.toString();
-	}
-
-	private ByteBuffer readPixels(BufferedImage image, boolean storeAlphaChannel) {
-		int[] pixels = new int[image.getWidth() * image.getHeight()];
-		image.getRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0,
-				image.getWidth());
-
-		ByteBuffer buffer = ByteBuffer.allocate(image.getWidth()
-				* image.getHeight() * 3); // 4 for RGBA, 3 for RGB
-
-		for (int y = 0; y < image.getHeight(); y++) {
-			for (int x = 0; x < image.getWidth(); x++) {
-				int pixel = pixels[y * image.getWidth() + x];
-				buffer.put((byte) ((pixel >> 16) & 0xFF));
-				buffer.put((byte) ((pixel >> 8) & 0xFF));
-				buffer.put((byte) (pixel & 0xFF));
-			}
-		}
-
-		buffer.flip();
-
-		return buffer;
 	}
 
 	@Override

@@ -789,9 +789,6 @@ public class GL3DComponentView extends AbstractBasicView implements
 			}
 		});
 
-		GraphicsDevice graphicsDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-		//if (graphicsDevice.isFullScreenSupported() && graphicsDevice.isDisplayChangeSupported())
-			//graphicsDevice.setFullScreenWindow(fullScreenFrame);
 		SwingUtilities.invokeLater(new Runnable() {
 			
 			@Override

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import org.helioviewer.jhv.base.Log;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JP2Image;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPConstants;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPRequest;
@@ -12,7 +11,6 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPResponse;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPSocket;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_Kdu_cache;
-import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.KakaduUtils;
 
 public class NewReader {
 

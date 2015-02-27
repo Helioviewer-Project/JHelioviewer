@@ -58,151 +58,156 @@ public class JHelioviewer {
 
     public static void main(String[] args) {
 
-    	Log.redirectStdOutErr();
-    	if (System.getProperty("raygunTag") != null){
-        	if (UpdateScheduleRegistry.checkAndReset()) {
-        	    // This will return immediately if you call it from the EDT,
-        	    // otherwise it will block until the installer application exits
-        	    ApplicationLauncher.launchApplicationInProcess("366", null, new ApplicationLauncher.Callback() {
-        	            public void exited(int exitValue) {
-        	                //TODO add your code here (not invoked on event dispatch thread)
-        	            }
-        	            
-        	            public void prepareShutdown() {
-        	                //TODO add your code here (not invoked on event dispatch thread)
-        	            }
-        	        }, ApplicationLauncher.WindowMode.FRAME, null
-        	    );
-        	}
-        }
-    	JHVGlobals.RAYGUN_TAG = System.getProperty("raygunTag");
-        
         // Uncaught runtime errors are displayed in a dialog box in addition
         JHVUncaughtExceptionHandler.setupHandlerForThread();
 
-        // Setup Swing
         try
         {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        }
-        catch(Exception e2)
-        {
-        }
-        ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
-        JPopupMenu.setDefaultLightWeightPopupEnabled(false);
-        
-        // Save command line arguments
-        CommandLineProcessor.setArguments(args);
-
-        // Save current default system timezone in user.timezone
-        System.setProperty("user.timezone", TimeZone.getDefault().getID());
-
-        // Per default all times should be given in GMT
-        TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
-
-        // Save current default locale to user.locale
-        System.setProperty("user.locale", Locale.getDefault().toString());
-
-        // Per default, the us locale should be used
-        Locale.setDefault(Locale.US);
-
-        // Information log message
-        String argString = "";
-        for (int i = 0; i < args.length; ++i) {
-            argString += " " + args[i];
-        }
-        
-            GLDrawableFactory fact = GLDrawableFactory.getFactory(GLProfile.getDefault()); 
-    		GLDrawableFactory factory = GLDrawableFactory.getFactory(GLProfile
-    				.getDefault());
+        	Log.redirectStdOutErr();
+        	if (System.getProperty("raygunTag") != null){
+            	if (UpdateScheduleRegistry.checkAndReset()) {
+            	    // This will return immediately if you call it from the EDT,
+            	    // otherwise it will block until the installer application exits
+            	    ApplicationLauncher.launchApplicationInProcess("366", null, new ApplicationLauncher.Callback() {
+            	            public void exited(int exitValue) {
+            	                //TODO add your code here (not invoked on event dispatch thread)
+            	            }
+            	            
+            	            public void prepareShutdown() {
+            	                //TODO add your code here (not invoked on event dispatch thread)
+            	            }
+            	        }, ApplicationLauncher.WindowMode.FRAME, null
+            	    );
+            	}
+            }
+        	JHVGlobals.RAYGUN_TAG = System.getProperty("raygunTag");
+            
+            // Setup Swing
+            try
+            {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            }
+            catch(Exception e2)
+            {
+            }
+            ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
+            JPopupMenu.setDefaultLightWeightPopupEnabled(false);
+            
+            // Save command line arguments
+            CommandLineProcessor.setArguments(args);
+    
+            // Save current default system timezone in user.timezone
+            System.setProperty("user.timezone", TimeZone.getDefault().getID());
+    
+            // Per default all times should be given in GMT
+            TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
+    
+            // Save current default locale to user.locale
+            System.setProperty("user.locale", Locale.getDefault().toString());
+    
+            // Per default, the us locale should be used
+            Locale.setDefault(Locale.US);
+    
+            // Information log message
+            String argString = "";
+            for (int i = 0; i < args.length; ++i) {
+                argString += " " + args[i];
+            }
+            
+    		GLDrawableFactory factory = GLDrawableFactory.getFactory(GLProfile.getDefault());
     		GLProfile profile = GLProfile.get(GLProfile.GL2);
     		profile = GLProfile.getDefault();
     		GLCapabilities capabilities = new GLCapabilities(profile);
             final boolean createNewDevice = true;
             final GLAutoDrawable sharedDrawable = factory.createDummyAutoDrawable(null, createNewDevice, capabilities, null);
         	sharedDrawable.display();
-    		if (System.getProperty("jhvVersion") == null) sharedDrawable.setGL(new DebugGL2(sharedDrawable.getGL().getGL2()));
+    		if (System.getProperty("jhvVersion") == null)
+    		    sharedDrawable.setGL(new DebugGL2(sharedDrawable.getGL().getGL2()));
 
         	OpenGLHelper.glContext = sharedDrawable.getContext();
         
         	System.out.println("JHelioviewer started with command-line options:" + argString);
-        
-        System.out.println("Initializing JHelioviewer");
-        
-        // display the splash screen
-        SplashScreen splash = SplashScreen.getSingletonInstance();
-
-        int numProgressSteps = 10;
-        splash.setProgressSteps(numProgressSteps);
-        
-        JHVGlobals.initFileChooserAsync();
-
-        // Load settings from file but do not apply them yet
-        // The settings must not be applied before the kakadu engine has been
-        // initialized
-        splash.setProgressText("Loading settings...");
-        splash.nextStep();
-        System.out.println("Load settings");
-        Settings.load();
-        
-        // Set the platform system propertiess
-        splash.nextStep();
-
-        /* ----------Setup kakadu ----------- */
-        System.out.println("Instantiate Kakadu engine");
-        KakaduEngine engine = new KakaduEngine();
-
-        splash.nextStep();
-        splash.setProgressText("Initializing Kakadu libraries...");
-		loadLibraries();
-
-        // The following code-block attempts to start the native message
-        // handling
-        splash.nextStep();
-        try {
-            System.out.println("Setup Kakadu message handlers.");
-            engine.startKduMessageSystem();
-        } catch (JHV_KduException e) {
-            System.err.println("Failed to setup Kakadu message handlers.");
-            e.printStackTrace();
-            Message.err("Error starting Kakadu message handler", e.getMessage(), true);
-            return;
+            System.out.println("Initializing JHelioviewer");
+            
+            // display the splash screen
+            SplashScreen splash = SplashScreen.getSingletonInstance();
+    
+            int numProgressSteps = 10;
+            splash.setProgressSteps(numProgressSteps);
+            
+            JHVGlobals.initFileChooserAsync();
+    
+            // Load settings from file but do not apply them yet
+            // The settings must not be applied before the kakadu engine has been
+            // initialized
+            splash.setProgressText("Loading settings...");
+            splash.nextStep();
+            System.out.println("Load settings");
+            Settings.load();
+            
+            // Set the platform system propertiess
+            splash.nextStep();
+    
+            /* ----------Setup kakadu ----------- */
+            System.out.println("Instantiate Kakadu engine");
+            KakaduEngine engine = new KakaduEngine();
+    
+            splash.nextStep();
+            splash.setProgressText("Initializing Kakadu libraries...");
+    		loadLibraries();
+    
+            // The following code-block attempts to start the native message
+            // handling
+            splash.nextStep();
+            try {
+                System.out.println("Setup Kakadu message handlers.");
+                engine.startKduMessageSystem();
+            } catch (JHV_KduException e) {
+                System.err.println("Failed to setup Kakadu message handlers.");
+                e.printStackTrace();
+                Message.err("Error starting Kakadu message handler", e.getMessage(), true);
+                return;
+            }
+    
+            /* ----------Setup OpenGL ----------- */
+            splash.setProgressText("Setting up the UI...");
+            splash.nextStep();
+            ImageViewerGui.getMainFrame();
+    
+            System.out.println("Installing overlap watcher");
+            LayerTableOverlapWatcher overlapWatcher = new LayerTableOverlapWatcher();
+            LayersModel.getSingletonInstance().addLayersListener(overlapWatcher);
+    
+            /* ----------Setup Plug-ins ----------- */
+    
+            splash.setProgressText("Loading plugins...");
+            splash.nextStep();
+    
+            // Load Plug ins at the very last point
+            System.out.println("Load plugin settings");
+            //PluginManager.getSingeltonInstance().loadSettings(JHVDirectorie.HOME.getPath());
+    
+            System.out.println("Add internal plugin: " + "FilterPlugin");
+            Plugin internalPlugin = new InternalFilterPlugin();
+            PluginManager.getSingeltonInstance().addInternalPlugin(internalPlugin.getClass().getClassLoader(), internalPlugin);
+    
+            for(Plugin plugin:new Plugin[]{new PfssPlugin() , new HEKPlugin3D(), new SDOCutOutPlugin3D()})
+                PluginManager.getSingeltonInstance().addPlugin(plugin.getClass().getClassLoader(), plugin, null);
+    
+            splash.setProgressText("Showing main window...");
+            splash.nextStep();
+            // Create main view chain and display main window
+            System.out.println("Start main window");
+            //splash.initializeViewchain();
+            ImageViewerGui.getSingletonInstance().createViewchains();
+            
+            
+            UILatencyWatchdog.startWatchdog();
         }
-
-        /* ----------Setup OpenGL ----------- */
-        splash.setProgressText("Setting up the UI...");
-        splash.nextStep();
-        ImageViewerGui.getMainFrame();
-
-        System.out.println("Installing overlap watcher");
-        LayerTableOverlapWatcher overlapWatcher = new LayerTableOverlapWatcher();
-        LayersModel.getSingletonInstance().addLayersListener(overlapWatcher);
-
-        /* ----------Setup Plug-ins ----------- */
-
-        splash.setProgressText("Loading plugins...");
-        splash.nextStep();
-
-        // Load Plug ins at the very last point
-        System.out.println("Load plugin settings");
-        //PluginManager.getSingeltonInstance().loadSettings(JHVDirectorie.HOME.getPath());
-
-        System.out.println("Add internal plugin: " + "FilterPlugin");
-        Plugin internalPlugin = new InternalFilterPlugin();
-        PluginManager.getSingeltonInstance().addInternalPlugin(internalPlugin.getClass().getClassLoader(), internalPlugin);
-
-        for(Plugin plugin:new Plugin[]{new PfssPlugin() , new HEKPlugin3D(), new SDOCutOutPlugin3D()})
-            PluginManager.getSingeltonInstance().addPlugin(plugin.getClass().getClassLoader(), plugin, null);
-
-        splash.setProgressText("Showing main window...");
-        splash.nextStep();
-        // Create main view chain and display main window
-        System.out.println("Start main window");
-        //splash.initializeViewchain();
-        ImageViewerGui.getSingletonInstance().createViewchains();
-        
-        
-        UILatencyWatchdog.startWatchdog();
+        catch(Throwable _t)
+        {
+            JHVUncaughtExceptionHandler.getSingletonInstance().uncaughtException(Thread.currentThread(),_t);
+        }
     }
 
 	private static void loadLibraries() {

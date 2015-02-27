@@ -22,18 +22,13 @@ public class Camera {
 	public static final double DEFAULT_CAMERA_DISTANCE = 12 * Constants.SUN_RADIUS;
 
     private double clipNear = Constants.SUN_RADIUS / 10;
-    private double clipFar = Constants.SUN_RADIUS * 1000;
     private double fov = 10;
     private double aspect = 0.0;
-    private double width = 0.0;
-    private double height = 0.0;
 
-    private boolean track;
 
     private Quaternion3d rotation;
     private Vector3d translation;
     
-    private CameraInteraction panInteraction;
     private CameraInteraction zoomCameraInteraction;
     private CameraInteraction rotationInteraction;
     
@@ -51,7 +46,6 @@ public class Camera {
     public Camera() {
     	this.rotation = Quaternion3d.createRotation(0.0, new Vector3d(0, 1, 0));
     	this.translation = new Vector3d(0, 0, DEFAULT_CAMERA_DISTANCE);
-    	panInteraction = new CameraPanInteraction(this);
     	zoomCameraInteraction = new CameraZoomInteraction(this);
     	rotationInteraction = new CameraRotationInteraction(this);
     	this.addCamera();
@@ -68,10 +62,6 @@ public class Camera {
     private void addCamera(){
     }
     
-    private void reset(){
-    	
-    }
-
     public Quaternion3d getRotation(){
     	return rotation;
     }

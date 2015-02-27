@@ -6,7 +6,6 @@ import java.awt.event.MouseEvent;
 import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
-import org.helioviewer.jhv.gui.components.OverViewPanel;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRayTracer;
 import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;

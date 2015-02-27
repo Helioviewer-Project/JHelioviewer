@@ -65,25 +65,20 @@ public class OpenGLHelper {
 		gl.glGetIntegerv(GL2.GL_MAX_TEXTURE_SIZE, tmp, 0);
 		gl.glGenTextures(1, tmp, 0);
 
-		boolean alpha = false;
-		boolean switchChannel = false;
 		int internalFormat = GL2.GL_RGB;
 		int inputFormat = GL2.GL_RGB;
 		int inputType = GL2.GL_UNSIGNED_BYTE;
 		int bpp = 3;
 		switch (bufferedImage.getType()) {
 		case BufferedImage.TYPE_INT_ARGB:
-			switchChannel = true;
 		case BufferedImage.TYPE_4BYTE_ABGR:
 			inputFormat = GL2.GL_RGBA;
 			internalFormat = GL2.GL_RGBA;
 			bpp = 4;
-			alpha = true;			
 			break;
 			
 		case BufferedImage.TYPE_3BYTE_BGR:
 		case BufferedImage.TYPE_INT_BGR:			
-			switchChannel = true;
 			inputFormat = GL2.GL_RGB;
 			internalFormat = GL2.GL_RGB;
 			break;
@@ -115,25 +110,20 @@ public class OpenGLHelper {
 		gl.glGetIntegerv(GL2.GL_MAX_TEXTURE_SIZE, tmp, 0);
 		gl.glGenTextures(1, tmp, 0);
 
-		boolean alpha = false;
-		boolean switchChannel = false;
 		int internalFormat = GL2.GL_RGB;
 		int inputFormat = GL2.GL_RGB;
 		int inputType = GL2.GL_UNSIGNED_BYTE;
 		int bpp = 3;
 		switch (bufferedImage.getType()) {
 		case BufferedImage.TYPE_INT_ARGB:
-			switchChannel = true;
 		case BufferedImage.TYPE_4BYTE_ABGR:
 			inputFormat = GL2.GL_RGBA;
 			internalFormat = GL2.GL_RGBA;
 			bpp = 4;
-			alpha = true;			
 			break;
 			
 		case BufferedImage.TYPE_3BYTE_BGR:
 		case BufferedImage.TYPE_INT_BGR:			
-			switchChannel = true;
 			inputFormat = GL2.GL_RGB;
 			internalFormat = GL2.GL_RGB;
 			break;
@@ -161,17 +151,13 @@ public class OpenGLHelper {
 	public static void updateTexture(GL2 gl, int texID, BufferedImage bufferedImage){
 		boolean alpha = false;
 		boolean switchChannel = false;
-		int internalFormat = GL2.GL_RGB;
 		int inputFormat = GL2.GL_RGB;
 		int inputType = GL2.GL_UNSIGNED_BYTE;
-		int bpp = 3;
 		switch (bufferedImage.getType()) {
 		case BufferedImage.TYPE_4BYTE_ABGR:
 			switchChannel = true;
 		case BufferedImage.TYPE_INT_ARGB:
 			inputFormat = GL2.GL_RGBA;
-			internalFormat = GL2.GL_RGBA;
-			bpp = 4;
 			alpha = true;			
 			break;
 			
@@ -179,11 +165,9 @@ public class OpenGLHelper {
 		case BufferedImage.TYPE_INT_BGR:			
 			switchChannel = true;
 			inputFormat = GL2.GL_RGB;
-			internalFormat = GL2.GL_RGB;
 			break;
 		case BufferedImage.TYPE_INT_RGB:
 			inputFormat = GL2.GL_RGB;
-			internalFormat = GL2.GL_RGB;
 			break;
 
 		default:
@@ -261,25 +245,7 @@ public class OpenGLHelper {
 	public static void createTexture(GL2 gl, Layer layer){
 		ImageData imageData = layer.getJhvjpxView().getImageData();
 		int bitsPerPixel = imageData.getImageTransport().getNumBitsPerPixel();
-		Buffer buffer;
 
-		switch (bitsPerPixel) {
-		case 8:
-			buffer = ByteBuffer.wrap(((Byte8ImageTransport) imageData
-					.getImageTransport()).getByte8PixelData());
-			break;
-		case 16:
-			buffer = ShortBuffer.wrap(((Short16ImageTransport) imageData
-					.getImageTransport()).getShort16PixelData());
-			break;
-		case 32:
-			buffer = IntBuffer.wrap(((Int32ImageTransport) imageData
-					.getImageTransport()).getInt32PixelData());
-			break;
-		default:
-			buffer = null;
-		}
-				
 		gl.glPixelStorei(GL2.GL_UNPACK_SKIP_PIXELS, 0);
 		gl.glPixelStorei(GL2.GL_UNPACK_SKIP_ROWS, 0);
 		gl.glPixelStorei(GL2.GL_UNPACK_ROW_LENGTH, 0);
@@ -343,7 +309,6 @@ public class OpenGLHelper {
 		gl.glPixelStorei(GL2.GL_UNPACK_ALIGNMENT, bitsPerPixel >> 3);
 
 		ImageFormat imageFormat = imageData.getImageFormat();
-		int internalFormat = GLTextureHelper.mapImageFormatToInternalGLFormat(imageFormat);
 		int inputFormat = GLTextureHelper.mapImageFormatToInputGLFormat(imageFormat);
 		int width = imageData.getWidth();
 		int height = imageData.getHeight();
