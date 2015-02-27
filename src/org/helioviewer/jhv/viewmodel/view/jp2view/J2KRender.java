@@ -302,7 +302,7 @@ class J2KRender implements Runnable {
 						: localIntBuffer;
 
 				compositorBuf.Get_region(newRegion, localIntBuffer);
-
+				
 				int srcIdx = 0;
 				int destIdx = newOffset.Get_x() + newOffset.Get_y()
 						* currParams.subImage.width;

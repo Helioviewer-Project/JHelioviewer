@@ -118,8 +118,14 @@ public class GLTextureHelper {
 	 *            texture id to bind
 	 * @see #bindTexture(GL, int, int)
 	 */
-	public synchronized void bindTexture(GL2 gl, int texture) {
-		bindTexture(gl, GL.GL_TEXTURE_2D, texture);
+	public void bindTexture(GL2 gl, int texture) {
+		gl.glBindTexture(GL.GL_TEXTURE_2D, texture);
+        
+        Vector2d scaleVector = allTextures.get(texture);
+        if (scaleVector != null) {
+        	scaleTexCoord.setValue(gl, (float) scaleVector.x,
+        			(float) scaleVector.y);
+        }
 	}
 
 	/**
@@ -636,23 +642,6 @@ public class GLTextureHelper {
 			float scaleY = (float) height / height2;
 			scaleTexCoord.setValue(gl, scaleX, scaleY);
 			allTextures.put(texID, new Vector2d(scaleX, scaleY));
-		}
-
-		/**
-		 * {@inheritDoc}
-		 * 
-		 * In this case, this function will also load the texture scaling to the
-		 * texture coordinate GL_TEXTURE1, which will be used by
-		 * {@link org.helioviewer.jhv.viewmodel.view.opengl.shader.GLScalePowerOfTwoVertexShaderProgram}
-		 */
-		public void bindTexture(GL2 gl, int target, int texture) {
-			gl.glBindTexture(target, texture);
-
-			Vector2d scaleVector = allTextures.get(texture);
-			if (scaleVector != null) {
-				scaleTexCoord.setValue(gl, (float) scaleVector.x,
-						(float) scaleVector.y);
-			}
 		}
 
 		/**

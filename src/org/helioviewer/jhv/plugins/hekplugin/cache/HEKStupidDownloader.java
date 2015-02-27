@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKSettings;
@@ -22,7 +23,18 @@ public class HEKStupidDownloader {
     /**
      * The ExecutorService running the actual downloadRequests
      */
-    private ExecutorService threadExecutor = Executors.newFixedThreadPool(HEKSettings.DOWNLOADER_MAX_THREADS);
+    private ExecutorService threadExecutor = Executors.newFixedThreadPool(HEKSettings.DOWNLOADER_MAX_THREADS,new ThreadFactory()
+    {
+        @Override
+        public Thread newThread(Runnable _r)
+        {
+            Thread t=Executors.defaultThreadFactory().newThread(_r);
+            t.setName("HEK-"+(threadNumber++));
+            t.setDaemon(true);
+            return t;
+        }
+    });
+    private int threadNumber=0;
 
     /**
      * Store all requests so that they can be canceled later on
@@ -64,7 +76,17 @@ public class HEKStupidDownloader {
         threadExecutor.shutdownNow();
 
         // create a fresh and new executor
-        threadExecutor = Executors.newFixedThreadPool(HEKSettings.DOWNLOADER_MAX_THREADS);
+        threadExecutor = Executors.newFixedThreadPool(HEKSettings.DOWNLOADER_MAX_THREADS,new ThreadFactory()
+        {
+            @Override
+            public Thread newThread(Runnable _r)
+            {
+                Thread t=Executors.defaultThreadFactory().newThread(_r);
+                t.setName("HEK-"+(threadNumber++));
+                t.setDaemon(true);
+                return t;
+            }
+        });
 
         // clear all downloadRequests
         downloadRequests = new Vector<HEKRequest>();
