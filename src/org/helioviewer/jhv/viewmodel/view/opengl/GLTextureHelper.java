@@ -15,6 +15,7 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.glu.GLU;
 
+import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.viewmodel.imagedata.ColorMask;
 import org.helioviewer.jhv.viewmodel.imagedata.ImageData;
@@ -631,8 +632,14 @@ public class GLTextureHelper {
 
 			gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER,
 					GL2.GL_LINEAR);
-			gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER,
-					GL2.GL_NEAREST);
+			if (Boolean.parseBoolean(Settings.getProperty("default.display.highDPI"))){
+				gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER,
+						GL2.GL_NEAREST);				
+			}
+			else {
+				gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER,
+						GL2.GL_LINEAR);
+			}
 			gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S,
 					GL2.GL_CLAMP_TO_BORDER);
 			gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T,

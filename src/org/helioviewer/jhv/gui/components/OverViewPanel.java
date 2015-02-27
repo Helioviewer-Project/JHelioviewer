@@ -654,6 +654,7 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 	}
 
 	public void removeLayer(int idx) {
+		layers.get(idx).abolish();
 		layers.remove(idx);
 	}
 	
