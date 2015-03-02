@@ -107,6 +107,13 @@ class J2KRender implements Runnable {
 		compositorRef = parentImageRef.getCompositorRef();
 
 		jhv_Kdu_thread_env = new JHV_Kdu_thread_env();
+		try {
+			compositorRef.Set_thread_env(
+					jhv_Kdu_thread_env, 0);
+		} catch (KduException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		stop = false;
 		myThread = null;
@@ -223,8 +230,6 @@ class J2KRender implements Runnable {
 		parentImageRef.getLock().lock();
 
 		try {
-			compositorRef.Set_thread_env(
-					jhv_Kdu_thread_env, 0);
 
 			compositorRef.Refresh();
 			compositorRef.Remove_compositing_layer(-1, true);
