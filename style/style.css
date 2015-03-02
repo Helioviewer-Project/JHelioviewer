@@ -306,23 +306,19 @@ font-size:12px;
 }
 
 
-#footer #copy_r
-{
-	float:right;
-	font-size:12px;
-}
+
 
 IMG.middle-left
 {
 	 float: right;
-	 margin: 0px px 0px 0px;
+	 margin: 0px 360px 0px 0px;
 
 }
 
 IMG.middle-right
 {
 	float: left;
-	margin: 0px 250px 0px 0px
+	margin: 0px 0px 0px 440px
 }
 
 
