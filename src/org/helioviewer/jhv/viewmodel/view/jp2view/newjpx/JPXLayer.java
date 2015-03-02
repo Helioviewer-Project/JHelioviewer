@@ -36,19 +36,13 @@ public class JPXLayer {
 			uri = new URI("jpip://helioviewer.org:8090/AIA/2015/02/23/171/2015_02_23__15_42_59_34__SDO_AIA_AIA_171.jp2");
 			URI downloadURI = new URI("http://helioviewer.org/api/index.php?action=getJP2Image&observatory=SDO&instrument=AIA&detector=AIA&measurement=171&date=2015-02-23T16:07:26Z&json=true");
 			
-			JP2Image jp2Image = new JP2Image(uri);
+			NewReader newReader = new NewReader(uri);
 			/*
 	        JP2Image jp2Image = new JP2Image(uri, downloadURI);
 			NewReader newReader = new NewReader(jp2Image);
 			newReader.openSocket();
 			*/
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JHV_KduException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

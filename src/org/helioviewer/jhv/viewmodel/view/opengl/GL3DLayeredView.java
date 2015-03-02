@@ -532,11 +532,6 @@ public class GL3DLayeredView extends AbstractView implements LayeredView, Region
      * {@inheritDoc}
      */
     public boolean setViewport(Viewport v, ChangeEvent event) {
-
-        // check if viewport has changed
-        if (viewport != null && v != null && viewport.getWidth() == v.getWidth() && viewport.getHeight() == v.getHeight())
-            return false;
-
         viewport = v;
 
         if (!setRegion(region, event)) {

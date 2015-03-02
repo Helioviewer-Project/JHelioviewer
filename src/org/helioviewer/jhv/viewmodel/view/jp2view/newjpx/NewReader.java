@@ -75,6 +75,7 @@ public class NewReader {
 				}
 			}
 		});
+    	thread.start();
     }
 
 

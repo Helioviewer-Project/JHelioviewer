@@ -279,7 +279,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 		screenshotExportPanel.saveSettings();
 
 		// Update and save settings
-		GuiState3DWCS.mainComponentView.getComponent().repaint();
+		GuiState3DWCS.mainComponentView.switchHighDPIMode();
 	}
 
 	/**

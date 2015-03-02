@@ -834,4 +834,17 @@ public class GL3DComponentView extends AbstractBasicView implements
 		this.canvas.addKeyListener(GL3DKeyController.getInstance());
 		this.canvas.requestFocus();
 	}
+	
+	public void switchHighDPIMode(){
+		viewportSize = new Vector2i(canvas.getSurfaceWidth(),
+				canvas.getSurfaceHeight());
+		Viewport newViewport = StaticViewport.createAdaptedViewport(
+				canvas.getSurfaceWidth(), canvas.getSurfaceHeight());
+		this.getAdapter(ViewportView.class).setViewport(newViewport,
+				new ChangeEvent());
+
+		GuiState3DWCS.mainComponentView.getComponent().repaint();
+		GuiState3DWCS.overViewPanel.repaint();
+
+	}
 }
