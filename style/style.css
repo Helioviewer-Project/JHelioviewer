@@ -303,6 +303,8 @@ width:70px;
 {
 padding:10px;
 font-size:12px;
+-webkit-text-size-adjust:none;
+
 }
 
 
