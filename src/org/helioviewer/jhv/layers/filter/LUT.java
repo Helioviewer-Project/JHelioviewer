@@ -18,7 +18,8 @@ public class LUT {
 	private LinkedHashMap<String, Integer> lutMap;
 	private int nextAvaibleLut = 0;
 	private int texture = -1;
-
+	private OpenGLHelper openGLHelper;
+	
 	private static LUT lut = new LUT();
 	
 	public static LUT getLut(){
@@ -35,8 +36,8 @@ public class LUT {
 	
 	private LUT(){
 		lutMap = new LinkedHashMap<String, Integer>();
+		this.openGLHelper = new OpenGLHelper();
 		loadLutFromFile("/UltimateLookupTable.txt");      
-		
 		SwingUtilities.invokeLater(new Runnable() {
 			
 			@Override
@@ -45,8 +46,8 @@ public class LUT {
 					BufferedImage bufferedImage;
 					OpenGLHelper.glContext.makeCurrent();
 					bufferedImage = ImageIO.read(CompenentView.class.getResourceAsStream("/UltimateLookupTable.png"));
-					texture = OpenGLHelper.createTexture(OpenGLHelper.glContext.getGL().getGL2(), bufferedImage, 256, 256);
-					OpenGLHelper.updateTexture(OpenGLHelper.glContext.getGL().getGL2(), texture, bufferedImage);
+					texture = openGLHelper.createTextureID();
+					openGLHelper.bindBufferedImageToGLTexture(bufferedImage, 256, 256);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

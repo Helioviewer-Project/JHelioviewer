@@ -67,11 +67,13 @@ public class Layer {
 	public int textureOverview;
 	public boolean visible = true;
 	
+	private OpenGLHelper openGLHelper;
+	
 	public Layer(JHVJPXView jhvjpxView) {
+		openGLHelper = new OpenGLHelper();
 		this.jhvjpxView = jhvjpxView;
         MetaData metaData = jhvjpxView.getMetaData();
     	String colorKey = DefaultTable.getSingletonInstance().getColorTable(metaData);
-    	System.out.println("colorKey : " + colorKey);
 		lut = new Lut();
 		lut.name = colorKey;
 		lut.idx = LUT.getLutPosition(colorKey);
@@ -84,8 +86,8 @@ public class Layer {
 	}
 
 	private void initLayer(GL2 gl){
-		this.texture = OpenGLHelper.createTexture(gl);
-		OpenGLHelper.createTexture(gl, this);		
+		this.texture = openGLHelper.createTextureID();
+		openGLHelper.bindLayerToGLTexture(this);
 	}
 	
 	public JHVJPXView getJhvjpxView() {
@@ -101,6 +103,6 @@ public class Layer {
 	}
 	
 	public void updateTexture(GL2 gl){
-		OpenGLHelper.updateTexture(gl, this);
+		openGLHelper.bindLayerToGLTexture(this);
 	}
 }

@@ -15,11 +15,13 @@ public class NoImageScreen implements RenderAnimation{
 	private Dimension dimension;
 	private final double FACTOR = 8;
 
+	private OpenGLHelper openGLHelper;
 	public NoImageScreen(GL2 gl) {		
+		openGLHelper = new OpenGLHelper();
         try {
             BufferedImage image = IconBank.getImage(JHVIcon.NOIMAGE);
-            texture = OpenGLHelper.createTexture(gl, image);
-            OpenGLHelper.updateTexture(gl, texture, image);
+            texture = openGLHelper.createTextureID();
+            openGLHelper.bindBufferedImageToGLTexture(image);
             dimension = new Dimension(image.getWidth(), image.getHeight());
         } catch (Exception e) {
             e.printStackTrace();

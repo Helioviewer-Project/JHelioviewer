@@ -119,9 +119,6 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 			SOHOLUTFilter lutFilter = (SOHOLUTFilter)lutView.getFilter();
 			this.setCurrentLutByName(lutFilter.getLUT(), true);
 			this.invertedLut = lutFilter.isInverted();
-			if (lastLayer.getImageData() != null){
-			this.updateTexture = true;
-			}
 		}
 		else {
 			lastLayer = null;
@@ -433,9 +430,6 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 
 
 	public void setLayer(JHVJPXView layerOverView) {
-		Viewport viewport = StaticViewport.createAdaptedViewport(256, 256);
-		layerOverView.setViewport(viewport, null);
-		layerOverView.setRegion(layerOverView.getMetaData().getPhysicalRegion(), null);
 		layers.add(layerOverView);
 	}
 	

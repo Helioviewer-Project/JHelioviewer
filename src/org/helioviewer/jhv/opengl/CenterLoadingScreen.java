@@ -32,25 +32,25 @@ public class CenterLoadingScreen implements RenderAnimation {
 	private float CIRCLE_COLOR = 192 / 255f;
 	private int indicesSize;
 
+	private OpenGLHelper openGLHelper;
 	
 	public CenterLoadingScreen() {
+		openGLHelper = new OpenGLHelper();
 		SwingUtilities.invokeLater(new Runnable() {
 
 			@Override
 			public void run() {
-				OpenGLHelper.glContext.makeCurrent();
-				GL2 gl = OpenGLHelper.glContext.getGL().getGL2();
 				try {
 					BufferedImage image = IconBank
 							.getImage(IconBank.JHVIcon.LOADING_BIG);
-					texture = OpenGLHelper.createTexture(gl, image);
-					OpenGLHelper.updateTexture(gl, texture, image);
+					texture = openGLHelper.createTextureID(); 
+					openGLHelper.bindBufferedImageToGLTexture(image);
 					dimension = new Dimension(image.getWidth(), image
 							.getHeight());
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				initCircleVBO(gl);
+				initCircleVBO(OpenGLHelper.glContext.getGL().getGL2());
 			}
 		});
 	}
