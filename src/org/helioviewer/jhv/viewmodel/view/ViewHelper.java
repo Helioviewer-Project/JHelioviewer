@@ -181,7 +181,8 @@ public final class ViewHelper {
         if (v == null || r == null) {
             return null;
         }
-        if (!Boolean.parseBoolean(Settings.getProperty("default.display.highDPI")))
+        
+        if (!Boolean.parseBoolean(Settings.getProperty("default.display.highDPI")) && v.getWidth() == v.getHeight())
         	v = StaticViewport.createAdaptedViewport(v.getWidth()/2, v.getHeight()/2);
         
         double screenMeterPerPixel;
@@ -199,32 +200,6 @@ public final class ViewHelper {
         }
                 
         return StaticViewportImageSize.createAdaptedViewportImageSize((int) Math.round(screenSubImageWidth), (int) Math.round(screenSubImageHeight));
-    }
-
-    /**
-     * Calculates the final size of a given region within the viewport.
-     * 
-     * <p>
-     * The resulting size is smaller or equal to the size of the viewport. It is
-     * equal if and only if the aspect ratio of the region is equal to the
-     * aspect ratio of the viewport. Otherwise, the image size is cropped to
-     * keep the regions aspect ratio and not deform the image.
-     * 
-     * <p>
-     * Basically, this function fetches the region and viewport of the given
-     * view and calls {@link #calculateViewportImageSize(Viewport, Region)}.
-     * 
-     * @param v
-     *            View containing the image.
-     * @return resulting image size of the region within the viewport
-     */
-    public static ViewportImageSize calculateViewportImageSize(View v) {
-        RegionView regionView = ViewHelper.getViewAdapter(v, RegionView.class);
-        ViewportView viewportView = ViewHelper.getViewAdapter(v, ViewportView.class);
-        if (regionView == null || viewportView == null) {
-            return null;
-        }
-        return calculateViewportImageSize(viewportView.getViewport(), regionView.getLastDecodedRegion());
     }
 
     /**
