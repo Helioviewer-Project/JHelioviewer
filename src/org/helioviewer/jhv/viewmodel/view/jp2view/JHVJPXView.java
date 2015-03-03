@@ -32,7 +32,8 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.image.SubImage;
  */
 public class JHVJPXView extends JHVJP2View implements View {
 
-    // Caching
+    public static int texID;
+	// Caching
     private ImageCacheStatus imageCacheStatus;
     private DateTimeCache dateTimeCache;
     

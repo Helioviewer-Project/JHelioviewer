@@ -16,6 +16,7 @@ import org.helioviewer.jhv.gui.components.TopToolBar;
 import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.LayersModel;
+import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginManager;
 import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterContainer;
 import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTab;
@@ -160,17 +161,16 @@ public class GuiState3DWCS {
 		// Fetch LayeredView
 		final LayeredView layeredView = attachToViewchain.getAdapter(LayeredView.class);
 		
-		final JHVJPXView layerOverView = new JHVJPXView(false);
-		layerOverView.setJP2Image(((JHVJPXView)newLayer).getJP2Image());
-		while (layerOverView.getImageData() == null) {
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-		overViewPanel.setLayer(layerOverView);
 		if (!JHVGlobals.OLD_RENDER_MODE){
+			final JHVJPXView layerOverView = new JHVJPXView(false);
+			layerOverView.setJP2Image(((JHVJPXView)newLayer).getJP2Image());
+			while (layerOverView.getImageData() == null) {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
 			SwingUtilities.invokeLater(new Runnable() {
 				
 				@Override
@@ -196,6 +196,10 @@ public class GuiState3DWCS {
             {
                 synchronized (layeredView)
                 {
+                	Layer layer = new Layer((JHVJPXView) newLayer);
+                	layer.updateTexture(OpenGLHelper.glContext.getGL().getGL2());
+                	((JHVJPXView)newLayer).texID = layer.getTexture();
+                	overViewPanel.setLayer((JHVJPXView)newLayer); 
                     // Get meta data
                     MetaData metaData = null;
 
@@ -288,7 +292,7 @@ public class GuiState3DWCS {
 
                     // If MoviewView, add MoviePanel
                     if (newLayer instanceof JHVJPXView) {
-                        MoviePanel moviePanel = new MoviePanel((JHVJPXView) newLayer, layerOverView);
+                        MoviePanel moviePanel = new MoviePanel((JHVJPXView) newLayer);
                         if (LayersModel.getSingletonInstance().isTimed(newLayer)) {
                             LayersModel.getSingletonInstance().setLink(newLayer, true);
                         }
@@ -296,7 +300,7 @@ public class GuiState3DWCS {
                         ImageViewerGui.getSingletonInstance().getMoviePanelContainer()
                                 .addLayer(imageInfoView, moviePanel);
                     } else {
-                        MoviePanel moviePanel = new MoviePanel(null, null);
+                        MoviePanel moviePanel = new MoviePanel(null);
                         ImageViewerGui.getSingletonInstance().getMoviePanelContainer()
                                 .addLayer(imageInfoView, moviePanel);
                     }

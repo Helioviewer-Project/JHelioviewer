@@ -204,7 +204,7 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 		gl.glEnable(GL2.GL_TEXTURE_2D);
 		
 		gl.glActiveTexture(GL.GL_TEXTURE0);
-		gl.glBindTexture(GL2.GL_TEXTURE_2D, texID);
+		gl.glBindTexture(GL2.GL_TEXTURE_2D, lastLayer.texID);
 		
 		gl.glActiveTexture(GL.GL_TEXTURE1);
 		gl.glBindTexture(GL2.GL_TEXTURE_2D, lutTexID);

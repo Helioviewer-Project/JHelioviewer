@@ -134,7 +134,6 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
 
     // References
     private JHVJPXView view;
-    private JHVJPXView overView;
     
     // Icons
     private static final Icon ICON_PLAY = IconBank.getIcon(JHVIcon.PLAY);
@@ -148,7 +147,7 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
      * @param movieView
      *            Associated movie view
      */
-    public MoviePanel(JHVJPXView movieView, JHVJPXView overView) {
+    public MoviePanel(JHVJPXView movieView) {
         this();
 
         if (movieView == null) {
@@ -156,7 +155,6 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
         }
 
         view = movieView;
-        this.overView = overView;
         timeSlider.setMaximum(movieView.getMaximumFrameNumber());
         timeSlider.setValue(movieView.getCurrentFrameNumber());
 
@@ -333,7 +331,6 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
         frame = Math.min(frame, view.getMaximumAccessibleFrameNumber());
         timeSlider.setValue(frame);
         view.setCurrentFrame(frame, new ChangeEvent());
-        overView.setCurrentFrame(frame, new ChangeEvent());
     }
 
     /**
@@ -361,8 +358,6 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
             playPauseButton.setToolTipText("Play movie");
             if (!onlyGUI) {
                 view.pauseMovie();
-                overView.pauseMovie();
-                GuiState3DWCS.overViewPanel.getActiveView().pauseMovie();
                 timeSlider.setValue(view.getCurrentFrameNumber());
             }
         } else {
@@ -370,7 +365,6 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
             playPauseButton.setToolTipText("Pause movie");
             if (!onlyGUI) {
                 view.playMovie();
-                overView.playMovie();
             }
         }
 
@@ -383,11 +377,9 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
     private void updateMovieSpeed() {
         if (speedUnitComboBox.getSelectedItem() == SpeedUnit.FRAMESPERSECOND) {
             view.setDesiredRelativeSpeed(((SpinnerNumberModel) speedSpinner.getModel()).getNumber().intValue());
-            overView.setDesiredRelativeSpeed(((SpinnerNumberModel) speedSpinner.getModel()).getNumber().intValue());
 
         } else {
             view.setDesiredAbsoluteSpeed(((SpinnerNumberModel) speedSpinner.getModel()).getNumber().intValue() * ((SpeedUnit) speedUnitComboBox.getSelectedItem()).getSecondsPerSecond());
-            overView.setDesiredAbsoluteSpeed(((SpinnerNumberModel) speedSpinner.getModel()).getNumber().intValue() * ((SpeedUnit) speedUnitComboBox.getSelectedItem()).getSecondsPerSecond());
         }
     }
 
@@ -461,7 +453,6 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
 
             linkedMovieManager.updateAnimationModeComboBoxLinkedMovies(this);
             view.setAnimationMode((AnimationMode) animationModeComboBox.getSelectedItem());
-            overView.setAnimationMode((AnimationMode) animationModeComboBox.getSelectedItem());
         }
 
     }
@@ -519,7 +510,6 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
 
         if (isPlaying) {
             view.pauseMovie();
-            overView.pauseMovie();
         }
     }
 
@@ -542,7 +532,6 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
     public void mouseReleased(MouseEvent e) {
         if (isPlaying) {
             view.playMovie();
-            overView.playMovie();
         }
 
         linkedMovieManager.someoneIsDragging = false;

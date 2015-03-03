@@ -670,7 +670,8 @@ public class JP2Image implements MultiFrameMetaDataContainer {
             return;
 
         if (referenceCounter < 0) {
-            throw new IllegalStateException("JP2Image abolished more than once: " + uri);
+        	return;
+            //throw new IllegalStateException("JP2Image abolished more than once: " + uri);
         }
 
         numJP2Images.decrementAndGet();
