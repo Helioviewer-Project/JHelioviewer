@@ -30,6 +30,14 @@ public class JPXLayer {
 	
 	
 	public static void main(String[] args) {
+	    
+	    System.loadLibrary("msvcr120");
+        System.loadLibrary("kdu_v75R");
+	    System.loadLibrary("kdu_a75R");
+	    System.loadLibrary("kdu_jni");
+	    
+	    //System.load("resources/libs/windows/64/kdu_jni.dll");
+	    
 		loadLibraries();
 		URI uri;
 		try {
@@ -65,20 +73,14 @@ public class JPXLayer {
 					directory += "windows/";
 					if (arch.indexOf("64") != -1) {
 						directory += "64/";
-						//loadJNILibary(tmpLibDir, directory, "msvcr100.dll");
-						loadJNILibary(tmpLibDir, directory, "kdu_v63R.dll");
-						loadJNILibary(tmpLibDir, directory, "kdu_a63R.dll");
+						loadJNILibary(tmpLibDir, directory, "msvcr120.dll");
+						loadJNILibary(tmpLibDir, directory, "kdu_v75R.dll");
+						loadJNILibary(tmpLibDir, directory, "kdu_a75R.dll");
 						loadJNILibary(tmpLibDir, directory, "kdu_jni.dll");
 						loadExecuteLibary(tmpLibDir, directory,
 								"cgc-windows-x86-64.exe", "cgc");
 					} else if (arch.indexOf("86") != -1) {
-						directory += "32/";
-						//loadJNILibary(tmpLibDir, directory, "msvcr100.dll");
-						loadJNILibary(tmpLibDir, directory, "kdu_v63R.dll");
-						loadJNILibary(tmpLibDir, directory, "kdu_a63R.dll");
-						loadJNILibary(tmpLibDir, directory, "kdu_jni.dll");
-						loadExecuteLibary(tmpLibDir, directory,
-								"cgc-windows-x86-32.exe", "cgc");
+					    throw new RuntimeException("No x86 support");
 					} else {
 						System.err.println(">> Platform > Could not determine platform. OS: "
                         + os + " - arch: " + arch);
