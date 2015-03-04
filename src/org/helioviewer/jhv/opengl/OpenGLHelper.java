@@ -37,8 +37,7 @@ public class OpenGLHelper {
 	public int createTextureID(){
 		glContext.makeCurrent();
 		GL2 gl = glContext.getGL().getGL2();
-		int tmp[] = new int[1];
-		gl.glGetIntegerv(GL2.GL_MAX_TEXTURE_SIZE, tmp, 0);
+        int tmp[] = new int[1];
 		gl.glGenTextures(1, tmp, 0);
 		this.textureID = tmp[0];
 		return tmp[0];
@@ -291,14 +290,14 @@ public class OpenGLHelper {
 			throw new RuntimeException("" + inputType);
 		}
 
-	return bpp;
+		return bpp;
 	}
 
-	public static ByteBuffer readPixels(BufferedImage image, boolean storeAlphaChannel, boolean switchRandBChannel) {
+	private static ByteBuffer readPixels(BufferedImage image, boolean storeAlphaChannel, boolean switchRandBChannel) {
 		int[] pixels = new int[image.getWidth() * image.getHeight()];
         image.getRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
         int factor = storeAlphaChannel ? 4 : 3;
-        ByteBuffer buffer = ByteBuffer.allocate(image.getWidth() * image.getHeight() * factor); //4 for RGBA, 3 for RGB
+        ByteBuffer buffer = ByteBuffer.allocateDirect(image.getWidth() * image.getHeight() * factor); //4 for RGBA, 3 for RGB
         
         for(int y = 0; y < image.getHeight(); y++){
             for(int x = 0; x < image.getWidth(); x++){
