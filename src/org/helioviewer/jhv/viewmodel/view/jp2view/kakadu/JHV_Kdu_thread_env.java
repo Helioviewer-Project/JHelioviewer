@@ -18,7 +18,7 @@ final public class JHV_Kdu_thread_env extends Kdu_thread_env
             int processorCount = Runtime.getRuntime().availableProcessors();
             processorCount = MathUtils.clip(processorCount, 1, 4);
             for(int i=0;i<processorCount;i++)
-                this.Add_thread(0);
+                this.Add_thread();
         }
         catch (KduException ex) 
         {
