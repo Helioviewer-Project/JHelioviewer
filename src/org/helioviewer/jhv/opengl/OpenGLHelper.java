@@ -51,9 +51,8 @@ public class OpenGLHelper {
 		if (this.textureHeight != height2 && this.textureWidth != width2){
 			createTexture(bufferedImage, width2, height2);
 		}
-		else{
-			updateTexture(bufferedImage);
-		}
+
+		updateTexture(bufferedImage);
 	}
 	
 	public void bindBufferedImageToGLTexture(BufferedImage bufferedImage, int width, int height){
