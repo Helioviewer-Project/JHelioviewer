@@ -9,7 +9,6 @@
 	<classpathentry kind="lib" path="lib/jgoodies-forms-1.8.0.jar"/>
 	<classpathentry kind="lib" path="lib/jogl.jar"/>
 	<classpathentry kind="lib" path="lib/json.jar"/>
-	<classpathentry kind="lib" path="lib/kdu_jni.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.16.jar"/>
 	<classpathentry kind="lib" path="lib/gluegen-rt-natives-linux-amd64.jar"/>
 	<classpathentry kind="lib" path="lib/gluegen-rt-natives-linux-i586.jar"/>
@@ -31,5 +30,6 @@
 	<classpathentry kind="lib" path="lib/i4jruntime.jar"/>
 	<classpathentry kind="lib" path="lib/tika-app-1.6.jar"/>
 	<classpathentry kind="lib" path="lib/java-unrar-0.5.jar"/>
+	<classpathentry kind="lib" path="lib/kdu.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

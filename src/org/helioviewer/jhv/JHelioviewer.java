@@ -266,8 +266,7 @@ public class JHelioviewer {
 					}
 				} else if (os.indexOf("mac os x") != -1) {
 					directory += "mac/";
-					loadJNILibary(tmpLibDir, directory,
-							"libkdu_jni-mac-x86-64.jnilib");
+					System.loadLibrary("kdu_jni");
 					loadExecuteLibary(tmpLibDir, directory, "cgc-mac", "cgc");
 					setupOSXApplicationListener();
 				} else {

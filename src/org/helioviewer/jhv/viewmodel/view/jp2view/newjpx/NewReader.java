@@ -1,12 +1,18 @@
 package org.helioviewer.jhv.viewmodel.view.jp2view.newjpx;
 
+import java.awt.Rectangle;
 import java.io.IOException;
 import java.net.URI;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.helioviewer.jhv.viewmodel.view.jp2view.JP2Image;
+import org.helioviewer.jhv.viewmodel.view.jp2view.image.JP2ImageParameter;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPConstants;
+import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPQuery;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPRequest;
+import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPRequestField;
+import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPRequest.Priority;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPResponse;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPSocket;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
@@ -42,7 +48,7 @@ public class NewReader {
     /** The current length in bytes to use for requests */
     private volatile int JpipRequestLen = JPIPConstants.MIN_REQUEST_LEN;
 
-    private ConcurrentLinkedQueue<JPIPRequest> requests;
+    private ConcurrentLinkedDeque<JPIPRequest> requests;
 	private URI uri;
 
     /**
@@ -53,7 +59,7 @@ public class NewReader {
      * @throws JHV_KduException
      */
     public NewReader(URI uri){
-    	requests = new ConcurrentLinkedQueue<JPIPRequest>();
+    	requests = new ConcurrentLinkedDeque<JPIPRequest>();
     	this.uri = uri;
     	socket = new JPIPSocket();
     	openSocket();
@@ -110,7 +116,7 @@ public class NewReader {
 			// Update optimal package size
             flowControl();
 			if (response != null && response.getResponseSize() > 0){
-				
+				System.out.println(response);
 			}
 		} catch (IOException e) {
 			System.out.println("not correct request");
@@ -161,5 +167,30 @@ public class NewReader {
             JpipRequestLen = JPIPConstants.MIN_REQUEST_LEN;
 
         lastResponseTime = replyDataTime;
+    }
+    
+    public void addRequest(JPIPRequest jpipRequest){
+    	if (jpipRequest.getPriority() == Priority.HIGH){
+    		requests.addFirst(jpipRequest);
+    	}
+    	else{
+    		requests.addLast(jpipRequest);
+    	}
+    	
+    }
+    
+    public JPIPQuery createQuery(JP2ImageParameter currParams, int iniLayer, int endLayer) {
+        JPIPQuery query = new JPIPQuery();
+
+        query.setField(JPIPRequestField.CONTEXT.toString(), "jpxl<" + iniLayer + "-" + endLayer + ">");
+        query.setField(JPIPRequestField.LAYERS.toString(), String.valueOf(currParams.qualityLayers));
+
+        Rectangle resDims = currParams.resolution.getResolutionBounds();
+
+        query.setField(JPIPRequestField.FSIZ.toString(), String.valueOf(resDims.width) + "," + String.valueOf(resDims.height) + "," + "closest");
+        query.setField(JPIPRequestField.ROFF.toString(), String.valueOf(currParams.subImage.x) + "," + String.valueOf(currParams.subImage.y));
+        query.setField(JPIPRequestField.RSIZ.toString(), String.valueOf(currParams.subImage.width) + "," + String.valueOf(currParams.subImage.height));
+
+        return query;
     }
 }
