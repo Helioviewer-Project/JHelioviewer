@@ -30,6 +30,10 @@
 	<classpathentry kind="lib" path="lib/i4jruntime.jar"/>
 	<classpathentry kind="lib" path="lib/tika-app-1.6.jar"/>
 	<classpathentry kind="lib" path="lib/java-unrar-0.5.jar"/>
-	<classpathentry kind="lib" path="lib/kdu.jar"/>
+	<classpathentry kind="lib" path="lib/kdu.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="JHelioviewer/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

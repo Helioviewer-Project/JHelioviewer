@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="6.0.1" transformSequenceNumber="5">
-  <directoryPresets config="../../cer/Open Source Developer, Simon Felix.pfx" />
-  <application name="JHelioviewer" distributionSourceDir="" applicationId="7791-5722-0682-7193" mediaDir="./builds" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="9" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="JHelioviewer" publisher="ESA JHelioviewer Team" publisherWeb="http://www.jhelioviewer.org" version="2.3.beta.22" allPathsRelative="true" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="7ed177551bd348bc" javaMinVersion="1.7" javaMaxVersion="" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
+  <directoryPresets config="../libkdu_v75R.dylib" />
+  <application name="JHelioviewer" distributionSourceDir="" applicationId="7791-5722-0682-7193" mediaDir="./builds" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="9" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="JHelioviewer" publisher="ESA JHelioviewer Team" publisherWeb="http://www.jhelioviewer.org" version="2.3.beta.23" allPathsRelative="true" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="7ed177551bd348bc" javaMinVersion="1.8" javaMaxVersion="" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="en" customLocalizationFile="" />
       <additionalLanguages />
@@ -45,6 +45,9 @@
       <dirEntry mountPoint="80" file="../jar" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="subdir" subDirectory="jar" excludeSuffixes="" dirMode="755" overrideDirMode="false">
         <exclude />
       </dirEntry>
+      <fileEntry mountPoint="80" file="../libkdu_jni.jnilib" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
+      <fileEntry mountPoint="80" file="../libkdu_a75R.dylib" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
+      <fileEntry mountPoint="80" file="../libkdu_v75R.dylib" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
     </entries>
     <components>
       <component name="JHelioviewer" id="23" customizedId="" displayDescription="false" hideHelpButton="false" selected="true" changeable="false" downloadable="false" hidden="false">
@@ -67,14 +70,14 @@
           <versionLine x="20" y="40" text="version ${compiler:sys.version}" fontSize="8" fontColor="0,0,0" bold="false" />
         </text>
       </splashScreen>
-      <java mainClass="org.helioviewer.jhv.JHelioviewer" vmParameters="-Dapple.laf.useScreenMenuBar=true -Xmx1024m -DraygunTag=release -DjhvVersion=${compiler:sys.version}" arguments="" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
+      <java mainClass="org.helioviewer.jhv.JHelioviewer" vmParameters="-Dapple.laf.useScreenMenuBar=true -Xmx1024m -DraygunTag=release -DjhvVersion=${compiler:sys.version} -DappDir=${launcher:sys.launcherDirectory}" arguments="" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
           <directory location="classes" failOnError="true" />
           <scanDirectory location="lib" failOnError="true" />
           <directory location="resources" failOnError="true" />
         </classPath>
         <nativeLibraryDirectories>
-          <directory name="libs" />
+          <directory name="lib/native" />
         </nativeLibraryDirectories>
       </java>
       <includedFiles />
@@ -109,7 +112,7 @@
           <directory location="resources" failOnError="true" />
         </classPath>
         <nativeLibraryDirectories>
-          <directory name="libs" />
+          <directory name="lib/native" />
         </nativeLibraryDirectories>
       </java>
       <includedFiles />
@@ -1420,7 +1423,9 @@ return true;</string>
         <entry location="resources/libs/linux" fileType="regular" />
         <entry location="resources/libs/windows" fileType="regular" />
       </exclude>
-      <variables />
+      <variables>
+        <variable name="dir" value="${sys.contentDir}" description="" category="" />
+      </variables>
       <autoUpdate useMinUpdatableVersion="false" minUpdatableVersion="" useMaxUpdatableVersion="false" maxUpdatableVersion="">
         <commentFiles />
         <customAttributes />
@@ -1548,8 +1553,8 @@ return true;</string>
       </postUninstallScript>
     </linuxRPM>
   </mediaSets>
-  <buildIds buildAll="true">
-    <mediaSet refId="150" />
+  <buildIds buildAll="false">
+    <mediaSet refId="68" />
   </buildIds>
   <buildOptions verbose="false" faster="false" disableSigning="false" disableJreBundling="false" debug="false" />
 </install4j>

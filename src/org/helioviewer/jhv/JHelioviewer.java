@@ -60,7 +60,7 @@ public class JHelioviewer {
 
         // Uncaught runtime errors are displayed in a dialog box in addition
         JHVUncaughtExceptionHandler.setupHandlerForThread();
-
+        
         try
         {
         	Log.redirectStdOutErr();
@@ -215,6 +215,20 @@ public class JHelioviewer {
 		String os = System.getProperty("os.name");
 		String arch = System.getProperty("os.arch");
 		Path tmpLibDir;
+		System.out.println("appDir : " + System.getProperty("appDir"));
+		System.out.println("user.dir : " + System.getProperty("user.dir"));
+		if(System.getProperty("raygunTag") != null){
+			String s = System.getProperty("appDir");
+			s = s.substring(0, s.lastIndexOf(File.separator));
+			System.setProperty("user.dir", s);
+		}
+		else {
+			System.setProperty("user.dir", "/Users/binchu/Documents/FHNW/JHelioviewer/lib/native");
+		}
+		String nativeLibraryPath = System.getProperty("user.dir") + File.separator + "lib" + File.separator + "native" + File.separator;
+		System.out.println("user.dir : " + System.getProperty("user.dir"));
+		System.out.println("user.home: " + System.getProperty("user.home"));
+		System.out.println("java.c.p : " + System.getProperty("java.class.path"));
 		try {
 			tmpLibDir = Files.createTempDirectory("jhv-libs");
 			tmpLibDir.toFile().deleteOnExit();
@@ -223,24 +237,21 @@ public class JHelioviewer {
 			if (os != null && arch != null) {
 				os = os.toLowerCase();
 				arch = arch.toLowerCase();
+				if (os.indexOf("windows") != -1){
+				    System.loadLibrary("msvcr120");
+				}
+				if (os.indexOf("mac os x") == -1){
+					System.loadLibrary("kdu_v75R");
+					System.loadLibrary("kdu_a75R");					
+				}
+				System.loadLibrary("kdu_jni");
+
 				if (os.indexOf("windows") != -1) {
 					directory += "windows/";
 					if (arch.indexOf("64") != -1) {
 						directory += "64/";
-						//loadJNILibary(tmpLibDir, directory, "msvcr100.dll");
-						loadJNILibary(tmpLibDir, directory, "kdu_v63R.dll");
-						loadJNILibary(tmpLibDir, directory, "kdu_a63R.dll");
-						loadJNILibary(tmpLibDir, directory, "kdu_jni.dll");
 						loadExecuteLibary(tmpLibDir, directory,
 								"cgc-windows-x86-64.exe", "cgc");
-					} else if (arch.indexOf("86") != -1) {
-						directory += "32/";
-						//loadJNILibary(tmpLibDir, directory, "msvcr100.dll");
-						loadJNILibary(tmpLibDir, directory, "kdu_v63R.dll");
-						loadJNILibary(tmpLibDir, directory, "kdu_a63R.dll");
-						loadJNILibary(tmpLibDir, directory, "kdu_jni.dll");
-						loadExecuteLibary(tmpLibDir, directory,
-								"cgc-windows-x86-32.exe", "cgc");
 					} else {
 						System.err.println(">> Platform > Could not determine platform. OS: "
                         + os + " - arch: " + arch);
@@ -250,23 +261,14 @@ public class JHelioviewer {
 					directory += "linux/";
 					if (arch.indexOf("64") != -1) {
 						directory += "64/";
-						loadJNILibary(tmpLibDir, directory,
-								"libkdu_jni-linux-x86-64-glibc-2-7.so");
 						loadExecuteLibary(tmpLibDir, directory,
 								"cgc-linux-x86-64", "cgc");
-					} else if (arch.indexOf("86") != -1) {
-						directory += "32/";
-						loadJNILibary(tmpLibDir, directory,
-								"libkdu_jni-linux-x86-32-glibc-2-7.so");
-						loadExecuteLibary(tmpLibDir, directory,
-								"cgc-linux-x86-32", "cgc");
 					} else {
 						System.err.println(">> Platform > Could not determine platform. OS: "
                         + os + " - arch: " + arch);
 					}
 				} else if (os.indexOf("mac os x") != -1) {
 					directory += "mac/";
-					System.loadLibrary("kdu_jni");
 					loadExecuteLibary(tmpLibDir, directory, "cgc-mac", "cgc");
 					setupOSXApplicationListener();
 				} else {

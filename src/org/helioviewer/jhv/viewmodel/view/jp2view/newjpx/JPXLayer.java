@@ -38,38 +38,11 @@ public class JPXLayer {
 	
 	public static void main(String[] args) {
 	    
-	    System.loadLibrary("msvcr120");
-        System.loadLibrary("kdu_v75R");
-	    System.loadLibrary("kdu_a75R");
-	    System.loadLibrary("kdu_jni");
+		//System.setProperty("java.library.path", "/Users/binchu/Documents/FHNW/JHelioviewer/lib/native/");
+		System.loadLibrary("kdu_jni");
 	    
 	    //System.load("resources/libs/windows/64/kdu_jni.dll");
 	    
-		loadLibraries();
-
-		/*String os = System.getProperty("os.name");
-		String arch = System.getProperty("os.arch");
-		Path tmpLibDir = null;
-		
-		try {
-			tmpLibDir = Files.createTempDirectory("jhv-libs");
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		tmpLibDir.toFile().deleteOnExit();
-		String directory = "/libs/mac/";
-		System.out.println(tmpLibDir);
-		String property = System.getProperty("java.library.path");
-		System.out.println(property);
-				
-		//System.load("/Users/binchu/Documents/FHNW/JHelioviewer/libkdu_jni.jnilib");
-		File f = new File("/var/folders/+n/+nfb8NHsHiSpEh6AHMCyvE+++TI/-Tmp-/libjogl.jnilib");
-		System.out.println(f.toString());
-
-		System.loadLibrary("kdu_jni");
-		//System.load("/Users/binchu/Documents/FHNW/JHelioviewer/libkdu_jni.jnilib");
-		//loadLibraries();*/
 
 		URI uri;
 		try {
@@ -91,7 +64,7 @@ public class JPXLayer {
 			resolutionSet.addResolutionLevel(0, new Rectangle(4096, 4096));
 			ResolutionLevel _resolution = resolutionSet.getResolutionLevel(0);
 			System.out.println("res : " + _resolution);
-			JPIPQuery query = newReader.createQuery(new JP2ImageParameter(_roi, _resolution, 0, 0), 0, 0);
+			JPIPQuery query = newReader.createQuery(new JP2ImageParameter(_roi, _resolution, 0, 0), 0, 8);
 			System.out.println("query : " + query);
 			JPIPRequest request = new JPIPRequest(Method.GET, query);
 			newReader.addRequest(request);
