@@ -303,8 +303,12 @@ width:70px;
 
 #footer
 {
-padding:10px;
-font-size:12px;
+  padding-top: 40px;
+  padding-bottom: 40px;
+  margin-top: 10px;
+  color: #767676;
+  text-align: center;
+  border-top: 0px solid #767676;
 }
 
 
@@ -323,6 +327,15 @@ IMG.middle-right
 	margin: 0px 0px 0px 440px;
 }
 
+#twitter-widget-1
+{
+	margin-right: -10px !important;
+}
+
+.socialbuttons iframe 
+{
+	margin-right: 10px;
+}
 
 /*colors Start
 ---------------------------*/
