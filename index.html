@@ -1,61 +1,8 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+---
+layout: default
+active: home
+---
 
-<head>
-<title>JHelioviewer</title>
- <link rel="shortcut icon" href="imgs/icon/JHV.ico" />
- <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
- <meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- **** layout stylesheet **** -->
-<link rel="stylesheet" type="text/css" href="style/style.css" />
-
-<script src="js/jquery-2.1.1.min.js"></script>
-
-<script type="text/javascript">
-
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-9465077-1']);
-  _gaq.push(['_trackPageview']);
-
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-
-</script>
-
-</head>
-
-<body>
-<div id="main">
-
-<div id="logo">
-  <table border="0" cellspacing="0" cellpadding="0" width="100%">
-    <tr>
-      <td rowspan="1" valign="top" style="width:60%">
-	<h1><a href="index.html">JHelioviewer</a></h1>
-      </td>
-      <td rowspan="1" valign="top" style="width:40%;vertical-align:text-bottom">
-	&nbsp;<br />
-	<img src="imgs/sun/eit_redt1.png" width="110" height="110" alt="" />
-	<img src="imgs/sun/eit_greent1.png" width="110" height="110" alt="" />
-	<img src="imgs/sun/eit_bluet1.png" width="110" height="110" alt="" />
-      </td>    
-    </tr>
-  </table>
-</div>
-
-<div id="menu">
-  <ul>
-    <li><a href="index.html" class="selected">home</a></li>
-    <li><a href="download.html">download</a></li>
-    <li><a href="http://blog.helioviewer.org" target="_blank">news</a></li>
-    <li><a href="doc.html">docs</a></li>
-    <li><a href="demo.html">demo</a></li>
-    <li><a href="contact.html">about</a></li>
-  </ul>
-</div>
 <div id="site_content">    
 <div id="content">
 
@@ -72,13 +19,13 @@
 </div>
 <br />
 <a href="download.html">Other platforms</a><br>
-<a href="http://www.youtube.com/watch?v=xzSV94LfRwc" target="_blank">2-minute video tutorial</a>
+<a href="{{ site.TutorialPage }}"2-minute video tutorial</a>
 <p></p>
 <ul>
-<li>Explore 18+ years of <a href="http://sohowww.nascom.nasa.gov">SOHO</a> data</li>
-<li>Browse high-res <a href="http://sdo.gsfc.nasa.gov/">SDO</a> data</li>
+<li>Explore 18+ years of <a "{{ site.SOHOPage }}" target="_blank">SOHO</a> data</li>
+<li>Browse high-res <a href="{{ site.SDOPage }}" target="_blank">SDO</a> data</li>
 <li>Create your own movies of the Sun</li>
-<li><a href="download_archive.html">Download latest beta release</a></li>
+<li><a href="download_archive.html" target="_blank">Download latest beta release</a></li>
 </ul>
 
 
@@ -111,7 +58,7 @@ JPEG 2000 offers many useful new features and has the potential to
   and analyzed. The JPEG 2000 Interactive Protocol (JPIP) enables serving data in a highly compressed, quality-progressive,
   region-of-interest-based stream. These features minimize the data volume transmitted while maximizing its
   usability. This is especially relevant for solar physics since
-  NASA's <a href="http://sdo.gsfc.nasa.gov/">Solar Dynamics
+  NASA's <a href="{{ site.SDOPage }}" target="_blank">Solar Dynamics
   Observatory</a> has started providing more than a terabyte of image data per
   day.
   </p>
@@ -123,7 +70,7 @@ JPEG 2000 offers many useful new features and has the potential to
 -->
 
 <ul>
-<li><a href="pub/Mueller+al_CiSE2009.pdf">Read more: The JHelioviewer paper (published in <i>Computing in Science &amp; Engineering</i> 2009).</a></li>
+<li><a href="pub/Mueller+al_CiSE2009.pdf" target="_blank">Read more: The JHelioviewer paper (published in <i>Computing in Science &amp; Engineering</i> 2009).</a></li>
 <li><a href="http://helioviewer.org" target="_blank">The Helioviewer web application</a></li>
 </ul>
 
@@ -134,25 +81,6 @@ JPEG 2000 offers many useful new features and has the potential to
 <!--close divs for content and site-content-->
 </div>  
 </div>
-
-<div id="footer">
-<div style="text-align:center">Supported by</div>
-<div style="float:right">Copyright by ESA</div>
-<div style="float-left">Design by <a href="http://www.flashdaweb.com/">FlashDaWeb</a></div>	
-
-
-<!-- insert ESA logo -->    
-<!--<img width="100" height="70" alt="SOHO" src="images/esa.jpg"/>-->
-
-<!-- Please do not remove this part. this template is free - the only thing we ask is to live a link to us.-->
-<div>
-<a href="http://www.ej-technologies.com/products/install4j/overview.html" target="_blank"><img class="middle-left" src="imgs/references/install4j.png" width="75"></a>
-<a href="https://raygun.io/" target="_blank"><img style="float:right" src="imgs/references/raygun.io.png" width="75"></a>
-</div>
-
-
-</div>
-
 <script type="text/javascript">
 function platformDetect(){
   var pathName = String(window.location);
@@ -217,7 +145,3 @@ function platformDetect(){
 }
 platformDetect();
 </script>
-
-
-</body>
-</html>
