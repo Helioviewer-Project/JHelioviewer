@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<updateDescriptor baseUrl="https://github.com/Helioviewer-Project/JHelioviewer/releases/download/2.3.beta.19/">
-  <entry targetMediaFileId="68" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer.dmg" newVersion="2.3.beta.19" newMediaFileId="68" fileSize="107232968" bundledJre="macosx-amd64-1.8.0_31_unpacked" archive="true">
+<updateDescriptor baseUrl="https://github.com/Helioviewer-Project/JHelioviewer/releases/download/2.3.beta.22/">
+  <entry targetMediaFileId="68" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer.dmg" newVersion="2.3.beta.22" newMediaFileId="68" fileSize="107261243" bundledJre="macosx-amd64-1.8.0_31_unpacked" archive="true">
     <comment language="en" />
   </entry>
-  <entry targetMediaFileId="150" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_windows-x64_2_3_beta_19.exe" newVersion="2.3.beta.19" newMediaFileId="150" fileSize="49065760" bundledJre="windows-amd64-1.8.0_31" archive="false">
+  <entry targetMediaFileId="150" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_windows-x64_2_3_beta_22.exe" newVersion="2.3.beta.22" newMediaFileId="150" fileSize="49072416" bundledJre="windows-amd64-1.8.0_31" archive="false">
     <comment language="en" />
   </entry>
-  <entry targetMediaFileId="218" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_2_3_beta_19_64_bit.deb" newVersion="2.3.beta.19" newMediaFileId="218" fileSize="59449412" bundledJre="" archive="true">
+  <entry targetMediaFileId="218" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_2_3_beta_22_64_bit.deb" newVersion="2.3.beta.22" newMediaFileId="218" fileSize="59459172" bundledJre="" archive="true">
     <comment language="en" />
   </entry>
-  <entry targetMediaFileId="270" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_2_3_beta_19_64_bit.rpm" newVersion="2.3.beta.19" newMediaFileId="270" fileSize="59581955" bundledJre="" archive="true">
+  <entry targetMediaFileId="270" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_2_3_beta_22_64_bit.rpm" newVersion="2.3.beta.22" newMediaFileId="270" fileSize="59591592" bundledJre="" archive="true">
     <comment language="en" />
   </entry>
 </updateDescriptor>
