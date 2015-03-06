@@ -20,7 +20,6 @@
 	<classpathentry kind="lib" path="lib/jogl-all-natives-macosx-universal.jar"/>
 	<classpathentry kind="lib" path="lib/jogl-all-natives-windows-amd64.jar"/>
 	<classpathentry kind="lib" path="lib/jogl-all-natives-windows-i586.jar"/>
-	<classpathentry kind="lib" path="lib/helio-coordinate-converter-0.0.1-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/xuggle-xuggler-5.4-all.jar"/>
 	<classpathentry kind="lib" path="lib/bzip2.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.7.7.jar"/>
@@ -32,8 +31,10 @@
 	<classpathentry kind="lib" path="lib/java-unrar-0.5.jar"/>
 	<classpathentry kind="lib" path="lib/kdu.jar">
 		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="JHelioviewer/"/>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="JHelioviewer/lib/native"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/helio-coordinate-converter-0.0.3-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/joda-time-2.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

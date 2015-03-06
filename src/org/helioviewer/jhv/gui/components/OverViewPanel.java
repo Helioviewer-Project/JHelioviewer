@@ -49,8 +49,6 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DCoordinateSystemView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GLFilterView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GLTextureHelper;
-import org.helioviewer.jhv.viewmodel.viewport.StaticViewport;
-import org.helioviewer.jhv.viewmodel.viewport.Viewport;
 
 public class OverViewPanel extends JPanel implements LayersListener, GLEventListener, GL3DCameraListener, MouseListener, MouseMotionListener{
 	/**

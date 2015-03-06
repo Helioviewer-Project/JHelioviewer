@@ -215,20 +215,7 @@ public class JHelioviewer {
 		String os = System.getProperty("os.name");
 		String arch = System.getProperty("os.arch");
 		Path tmpLibDir;
-		System.out.println("appDir : " + System.getProperty("appDir"));
-		System.out.println("user.dir : " + System.getProperty("user.dir"));
-		if(System.getProperty("raygunTag") != null){
-			String s = System.getProperty("appDir");
-			s = s.substring(0, s.lastIndexOf(File.separator));
-			System.setProperty("user.dir", s);
-		}
-		else {
-			System.setProperty("user.dir", "/Users/binchu/Documents/FHNW/JHelioviewer/lib/native");
-		}
-		String nativeLibraryPath = System.getProperty("user.dir") + File.separator + "lib" + File.separator + "native" + File.separator;
-		System.out.println("user.dir : " + System.getProperty("user.dir"));
-		System.out.println("user.home: " + System.getProperty("user.home"));
-		System.out.println("java.c.p : " + System.getProperty("java.class.path"));
+		
 		try {
 			tmpLibDir = Files.createTempDirectory("jhv-libs");
 			tmpLibDir.toFile().deleteOnExit();
@@ -241,8 +228,8 @@ public class JHelioviewer {
 				    System.loadLibrary("msvcr120");
 				}
 				if (os.indexOf("mac os x") == -1){
-					System.loadLibrary("kdu_v75R");
-					System.loadLibrary("kdu_a75R");					
+					//System.loadLibrary("kdu_v75R");
+					//System.loadLibrary("kdu_a75R");					
 				}
 				System.loadLibrary("kdu_jni");
 
@@ -279,34 +266,6 @@ public class JHelioviewer {
 				System.err.println(">> Platform > Could not determine platform. OS: "
                 + os + " - arch: " + arch);
 			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
-
-	private static void loadJNILibary(Path tmpPath, String directory,
-			String name) {
-		InputStream in = JHelioviewer.class.getResourceAsStream(directory
-				+ name);
-		byte[] buffer = new byte[1024];
-		int read = -1;
-		File tmp = new File(tmpPath.toFile(), name);
-		FileOutputStream fos;
-		try {
-			fos = new FileOutputStream(tmp);
-			while ((read = in.read(buffer)) != -1) {
-				fos.write(buffer, 0, read);
-			}
-			fos.close();
-			in.close();
-
-			System.load(tmp.getAbsolutePath());
-			tmp.deleteOnExit();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

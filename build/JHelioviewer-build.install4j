@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="6.0.1" transformSequenceNumber="5">
-  <directoryPresets config="../libkdu_v75R.dylib" />
+  <directoryPresets config="../lib" />
   <application name="JHelioviewer" distributionSourceDir="" applicationId="7791-5722-0682-7193" mediaDir="./builds" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="9" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="JHelioviewer" publisher="ESA JHelioviewer Team" publisherWeb="http://www.jhelioviewer.org" version="2.3.beta.23" allPathsRelative="true" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="7ed177551bd348bc" javaMinVersion="1.8" javaMaxVersion="" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="en" customLocalizationFile="" />
@@ -24,6 +24,7 @@
       <mountPoint id="182" root="" location="classes" mode="755" />
       <mountPoint id="85" root="" location="lib" mode="755" />
       <mountPoint id="80" root="" location="" mode="755" />
+      <mountPoint id="559" root="" location="bin" mode="755" />
     </mountPoints>
     <entries>
       <dirEntry mountPoint="182" file="../bin/org" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="subdir" subDirectory="org" excludeSuffixes="" dirMode="755" overrideDirMode="false">
@@ -45,9 +46,9 @@
       <dirEntry mountPoint="80" file="../jar" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="subdir" subDirectory="jar" excludeSuffixes="" dirMode="755" overrideDirMode="false">
         <exclude />
       </dirEntry>
-      <fileEntry mountPoint="80" file="../libkdu_jni.jnilib" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="80" file="../libkdu_a75R.dylib" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="80" file="../libkdu_v75R.dylib" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
+      <dirEntry mountPoint="559" file="../lib/native" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="direct" subDirectory="bin" excludeSuffixes="" dirMode="755" overrideDirMode="false">
+        <exclude />
+      </dirEntry>
     </entries>
     <components>
       <component name="JHelioviewer" id="23" customizedId="" displayDescription="false" hideHelpButton="false" selected="true" changeable="false" downloadable="false" hidden="false">
@@ -70,14 +71,14 @@
           <versionLine x="20" y="40" text="version ${compiler:sys.version}" fontSize="8" fontColor="0,0,0" bold="false" />
         </text>
       </splashScreen>
-      <java mainClass="org.helioviewer.jhv.JHelioviewer" vmParameters="-Dapple.laf.useScreenMenuBar=true -Xmx1024m -DraygunTag=release -DjhvVersion=${compiler:sys.version} -DappDir=${launcher:sys.launcherDirectory}" arguments="" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
+      <java mainClass="org.helioviewer.jhv.JHelioviewer" vmParameters="-Dapple.laf.useScreenMenuBar=true -Xmx1024m -DraygunTag=release -DjhvVersion=${compiler:sys.version}" arguments="" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
           <directory location="classes" failOnError="true" />
           <scanDirectory location="lib" failOnError="true" />
           <directory location="resources" failOnError="true" />
         </classPath>
         <nativeLibraryDirectories>
-          <directory name="lib/native" />
+          <directory name="bin" />
         </nativeLibraryDirectories>
       </java>
       <includedFiles />
@@ -112,7 +113,7 @@
           <directory location="resources" failOnError="true" />
         </classPath>
         <nativeLibraryDirectories>
-          <directory name="lib/native" />
+          <directory name="bin" />
         </nativeLibraryDirectories>
       </java>
       <includedFiles />
@@ -1416,12 +1417,21 @@ return true;</string>
         <entry location="lib/jogl-all-natives-linux-i586.jar" fileType="regular" />
         <entry location="lib/jogl-all-natives-windows-amd64.jar" fileType="regular" />
         <entry location="lib/jogl-all-natives-windows-i586.jar" fileType="regular" />
+        <entry location="lib/native" fileType="regular" />
         <entry location="lib/xuggle-xuggler-5.4-all.jar" fileType="regular" />
         <entry location="lib/xuggle-xuggler-5.4-linux.jar" fileType="regular" />
         <entry location="lib/xuggle-xuggler-5.4-win32.jar" fileType="regular" />
         <entry location="lib/xuggle-xuggler-5.4-win64.jar" fileType="regular" />
         <entry location="resources/libs/linux" fileType="regular" />
         <entry location="resources/libs/windows" fileType="regular" />
+        <entry location="bin/.DS_Store" fileType="regular" />
+        <entry location="bin/kdu_a75R.dll" fileType="regular" />
+        <entry location="bin/kdu_jni.dll" fileType="regular" />
+        <entry location="bin/kdu_v75R.dll" fileType="regular" />
+        <entry location="bin/libkdu_a75R.so" fileType="regular" />
+        <entry location="bin/libkdu_jni.so" fileType="regular" />
+        <entry location="bin/libkdu_v75R.so" fileType="regular" />
+        <entry location="bin/msvcr120.dll" fileType="regular" />
       </exclude>
       <variables>
         <variable name="dir" value="${sys.contentDir}" description="" category="" />
@@ -1454,6 +1464,7 @@ return true;</string>
         <entry location="lib/jogl-all-natives-linux-i586.jar" fileType="regular" />
         <entry location="lib/jogl-all-natives-macosx-universal.jar" fileType="regular" />
         <entry location="lib/jogl-all-natives-windows-i586.jar" fileType="regular" />
+        <entry location="lib/native" fileType="regular" />
         <entry location="lib/xuggle-xuggler-5.4-all.jar" fileType="regular" />
         <entry location="lib/xuggle-xuggler-5.4-linux.jar" fileType="regular" />
         <entry location="lib/xuggle-xuggler-5.4-osx.jar" fileType="regular" />
@@ -1462,7 +1473,12 @@ return true;</string>
         <entry location="resources/libs/linux" fileType="regular" />
         <entry location="resources/libs/mac" fileType="regular" />
         <entry location="resources/libs/windows/.DS_Store" fileType="regular" />
-        <entry location="resources/libs/windows/32" fileType="regular" />
+        <entry location="bin/libkdu_a75R.dylib" fileType="regular" />
+        <entry location="bin/libkdu_a75R.so" fileType="regular" />
+        <entry location="bin/libkdu_jni.jnilib" fileType="regular" />
+        <entry location="bin/libkdu_jni.so" fileType="regular" />
+        <entry location="bin/libkdu_v75R.dylib" fileType="regular" />
+        <entry location="bin/libkdu_v75R.so" fileType="regular" />
       </exclude>
       <variables />
       <autoUpdate useMinUpdatableVersion="false" minUpdatableVersion="" useMaxUpdatableVersion="false" maxUpdatableVersion="">
@@ -1487,12 +1503,20 @@ return true;</string>
         <entry location="lib/jogl-all-natives-macosx-universal.jar" fileType="regular" />
         <entry location="lib/jogl-all-natives-windows-amd64.jar" fileType="regular" />
         <entry location="lib/jogl-all-natives-windows-i586.jar" fileType="regular" />
+        <entry location="lib/native" fileType="regular" />
         <entry location="lib/xuggle-xuggler-5.4-all.jar" fileType="regular" />
         <entry location="lib/xuggle-xuggler-5.4-osx.jar" fileType="regular" />
         <entry location="lib/xuggle-xuggler-5.4-win32.jar" fileType="regular" />
-        <entry location="resources/libs/linux/32" fileType="regular" />
         <entry location="resources/libs/mac" fileType="regular" />
         <entry location="resources/libs/windows" fileType="regular" />
+        <entry location="bin/.DS_Store" fileType="regular" />
+        <entry location="bin/kdu_a75R.dll" fileType="regular" />
+        <entry location="bin/kdu_jni.dll" fileType="regular" />
+        <entry location="bin/kdu_v75R.dll" fileType="regular" />
+        <entry location="bin/libkdu_a75R.dylib" fileType="regular" />
+        <entry location="bin/libkdu_jni.jnilib" fileType="regular" />
+        <entry location="bin/libkdu_v75R.dylib" fileType="regular" />
+        <entry location="bin/msvcr120.dll" fileType="regular" />
       </exclude>
       <variables />
       <autoUpdate useMinUpdatableVersion="false" minUpdatableVersion="" useMaxUpdatableVersion="false" maxUpdatableVersion="">
@@ -1527,12 +1551,20 @@ return true;</string>
         <entry location="lib/jogl-all-natives-macosx-universal.jar" fileType="regular" />
         <entry location="lib/jogl-all-natives-windows-amd64.jar" fileType="regular" />
         <entry location="lib/jogl-all-natives-windows-i586.jar" fileType="regular" />
+        <entry location="lib/native" fileType="regular" />
         <entry location="lib/xuggle-xuggler-5.4-all.jar" fileType="regular" />
         <entry location="lib/xuggle-xuggler-5.4-osx.jar" fileType="regular" />
         <entry location="lib/xuggle-xuggler-5.4-win32.jar" fileType="regular" />
-        <entry location="resources/libs/linux/32" fileType="regular" />
         <entry location="resources/libs/mac" fileType="regular" />
         <entry location="resources/libs/windows" fileType="regular" />
+        <entry location="bin/.DS_Store" fileType="regular" />
+        <entry location="bin/kdu_a75R.dll" fileType="regular" />
+        <entry location="bin/kdu_jni.dll" fileType="regular" />
+        <entry location="bin/kdu_v75R.dll" fileType="regular" />
+        <entry location="bin/libkdu_a75R.dylib" fileType="regular" />
+        <entry location="bin/libkdu_jni.jnilib" fileType="regular" />
+        <entry location="bin/libkdu_v75R.dylib" fileType="regular" />
+        <entry location="bin/msvcr120.dll" fileType="regular" />
       </exclude>
       <variables />
       <autoUpdate useMinUpdatableVersion="false" minUpdatableVersion="" useMaxUpdatableVersion="false" maxUpdatableVersion="">
@@ -1553,7 +1585,7 @@ return true;</string>
       </postUninstallScript>
     </linuxRPM>
   </mediaSets>
-  <buildIds buildAll="false">
+  <buildIds buildAll="true">
     <mediaSet refId="68" />
   </buildIds>
   <buildOptions verbose="false" faster="false" disableSigning="false" disableJreBundling="false" debug="false" />

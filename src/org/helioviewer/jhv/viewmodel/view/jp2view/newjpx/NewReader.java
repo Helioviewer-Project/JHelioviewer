@@ -4,8 +4,6 @@ import java.awt.Rectangle;
 import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import org.helioviewer.jhv.viewmodel.view.jp2view.JP2Image;
 import org.helioviewer.jhv.viewmodel.view.jp2view.image.JP2ImageParameter;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPConstants;

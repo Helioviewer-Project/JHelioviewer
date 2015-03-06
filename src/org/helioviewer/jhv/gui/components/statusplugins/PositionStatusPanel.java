@@ -7,6 +7,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JMenuItem;
@@ -20,11 +24,21 @@ import org.helioviewer.jhv.gui.interfaces.ImagePanelPlugin;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
+import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
 import org.helioviewer.jhv.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.jp2view.ImmutableDateTime;
+import org.joda.time.DateTime;
 
 import ch.fhnw.i4ds.helio.coordinate.converter.Hcc2HgConverter;
+import ch.fhnw.i4ds.helio.coordinate.converter.Hcc2HpcConverter;
+import ch.fhnw.i4ds.helio.coordinate.converter.option.ConverterOption;
+import ch.fhnw.i4ds.helio.coordinate.converter.option.ConverterOptions;
 import ch.fhnw.i4ds.helio.coordinate.coord.HeliocentricCartesianCoordinate;
 import ch.fhnw.i4ds.helio.coordinate.coord.HeliographicCoordinate;
+import ch.fhnw.i4ds.helio.coordinate.coord.HelioprojectiveCartesianCoordinate;
+import ch.fhnw.i4ds.helio.coordinate.sundist.Pb0rSunDistanceAlgo;
+import ch.fhnw.i4ds.helio.coordinate.sundist.SunDistance;
+import ch.fhnw.i4ds.helio.coordinate.sundist.SunDistanceAlgo;
 
 /**
  * Status panel for displaying the current mouse position.
@@ -98,17 +112,21 @@ public class PositionStatusPanel extends ViewStatusPanelPlugin implements
 				String point = null;
 				switch (this.popupState.getSelectedState()) {
 				case ARCSECS:
-					Vector3d earthToSun = new Vector3d(0, 0,
-							Constants.SUN_MEAN_DISTANCE_TO_EARTH);
-					earthToSun = earthToSun.subtract(hitPoint);
-					double theta = -Math.atan(earthToSun.x
-							/ Math.sqrt(earthToSun.y * earthToSun.y
-									+ earthToSun.z * earthToSun.z));
-					double phi = -Math.atan2(earthToSun.y, earthToSun.z);
-					df = new DecimalFormat("#");
-					point = "(" + df.format(Math.toDegrees(theta) * 3600)
-							+ "\" ," + df.format(Math.toDegrees(phi) * 3600)
-							+ "\") ";
+					if (LinkedMovieManager.getActiveInstance().getMasterMovie() != null){
+						ImmutableDateTime currentDate = LinkedMovieManager.getActiveInstance().getMasterMovie().getCurrentFrameDateTime();
+						Calendar calendar = new GregorianCalendar();
+						calendar.setTime(currentDate.getTime());
+						DateTime dateTime = new DateTime(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH)+1, calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND), 0);
+						SunDistanceAlgo sunDistAlgo = new Pb0rSunDistanceAlgo();
+						SunDistance sunDistance = sunDistAlgo.computeDistance(dateTime);
+						Hcc2HpcConverter converter = new Hcc2HpcConverter();
+						Map<ConverterOption<?>, Object> opt = converter.getCustomOptions();
+						opt.put(ConverterOptions.SUN_DISTANCE, sunDistance.getSunDistance());
+						
+						HelioprojectiveCartesianCoordinate hpc = converter.convert(cart, opt);
+						df = new DecimalFormat("#");
+						point = "(" + df.format(hpc.getThetaX().arcsecValue()) + "\" ," + df.format(hpc.getThetaY().arcsecValue()) + "\")";
+					}
 					break;
 				case DEGREE:
 					Hcc2HgConverter converter = new Hcc2HgConverter();
@@ -116,9 +134,9 @@ public class PositionStatusPanel extends ViewStatusPanelPlugin implements
 					df = new DecimalFormat("#.##");
 					if (ray.isOnSun)
 						point = "("
-								+ df.format(newCoord.getHgLongitudeDegree())
+								+ df.format(newCoord.getHgLongitude().degValue())
 								+ DEGREE + " ,"
-								+ df.format(newCoord.getHgLatitudeDegree())
+								+ df.format(newCoord.getHgLatitude().degValue())
 								+ DEGREE + ") ";
 					else
 						point = "";

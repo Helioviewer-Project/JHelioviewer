@@ -20,7 +20,6 @@ import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicSliderUI;
 
 import org.helioviewer.jhv.gui.ButtonCreator;
-import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.ImageViewerGui;

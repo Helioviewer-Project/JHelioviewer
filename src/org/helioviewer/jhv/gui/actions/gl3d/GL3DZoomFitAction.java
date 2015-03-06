@@ -13,14 +13,10 @@ import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
-import org.helioviewer.jhv.opengl.camera.GL3DCameraPanAnimation;
 import org.helioviewer.jhv.opengl.camera.GL3DCameraZoomAnimation;
 import org.helioviewer.jhv.viewmodel.region.Region;
-import org.helioviewer.jhv.viewmodel.view.MetaDataView;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
-
-import com.install4j.runtime.installer.frontend.GUIHelper;
 
 /**
  * Action that zooms in or out to fit the currently displayed image layers to

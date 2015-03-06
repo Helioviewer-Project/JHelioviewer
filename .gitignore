@@ -5,5 +5,5 @@ bin/
 *.cg
 *.asm
 /bin
-/builds
+/build/builds
 /build/

@@ -7,6 +7,7 @@ import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.viewmodel.view.cache.HelioviewerDateTimeCache;
 
+import ch.fhnw.i4ds.helio.coordinate.api.Angle;
 import ch.fhnw.i4ds.helio.coordinate.api.CoordConverter;
 import ch.fhnw.i4ds.helio.coordinate.converter.Hg2HccConverter;
 import ch.fhnw.i4ds.helio.coordinate.coord.HeliocentricCartesianCoordinate;
@@ -84,7 +85,9 @@ public class MetaDataStereo extends MetaData{
         this.stonyhurstAvailable = this.stonyhurstLatitude != 0.0 || this.stonyhurstLongitude != 0.0;
         if (stonyhurstAvailable){
         	CoordConverter<HeliographicCoordinate, HeliocentricCartesianCoordinate> converter = new Hg2HccConverter();
-        	HeliographicCoordinate hgc = new HeliographicCoordinate(stonyhurstLongitude, stonyhurstLatitude);
+        	Angle hgLongitude = new Angle(stonyhurstLongitude);
+        	Angle hgLatitude = new Angle(stonyhurstLatitude);
+        	HeliographicCoordinate hgc = new HeliographicCoordinate(hgLongitude, hgLatitude);
         	
         	HeliocentricCartesianCoordinate hcc = converter.convert(hgc);
         	this.orientation = new Vector3d(hcc.getX(), hcc.getY(), hcc.getZ());
