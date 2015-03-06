@@ -201,6 +201,7 @@ padding:10px 24pt 10px 24px;
 position:relative;
 }
 
+
 /* thumb images
 -----------------------------*/
 
@@ -335,6 +336,46 @@ IMG.middle-right
 .socialbuttons iframe 
 {
 	margin-right: 10px;
+}
+
+.rssincl-entry
+{
+padding-left: 30px;
+padding-top: 20px;
+background:transparent url(../imgs/page-body/db_first_bg.jpg) no-repeat scroll left top;
+}
+
+.rssincl-title
+ {
+  font-family: arial, sans-serif;
+  letter-spacing: .1em;
+  font-weight: normal;
+  text-transform: uppercase;
+  padding: 16px 0px 5px 0px; 
+  margin: 0px 0px 12px 0px; 
+  font-size: 70%;
+ }
+
+.rssincl-itemtitle
+{
+font-size: 19.5px;
+}
+
+.rssincl-head
+{
+font-size: 30px;
+}
+
+.rssincl-itemdate
+{
+font-size: 10px;
+color: #888;
+margin-bottom: 15px;
+}
+
+#rssincl-box-974006
+{
+margin-top: -55px !important;
 }
 
 /*colors Start
