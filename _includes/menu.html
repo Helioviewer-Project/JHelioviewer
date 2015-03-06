@@ -1,4 +1,3 @@
-
 <header class="site-header">
 
 
@@ -14,7 +13,11 @@
 	{% else %}
 		<li><a href="download.html">download</a></li>
 	{% endif %}
-	<li><a href="http://blog.helioviewer.org" target="_blank">blog</a></li>
+	{% if page.active == "blog" %}
+		<li><a href="blog.html" class="selected">blog</a></li>
+	{% else %}
+		<li><a href="blog.html">blog</a></li>
+	{% endif %}
 	{% if page.active == "doc" %}	
 		<li><a href="doc.html" class="selected">docs</a></li>
 	{% else %}

@@ -48,8 +48,8 @@ text-decoration:underline;
 { background: #82974B;
   color: #EEE;
   border-color: #2C2C2A;
-  	background:transparent url(../imgs/page-body/nav_tab_bg.png) no-repeat scroll left top;
-	background-position: 0 -34px;
+    background:transparent url(../imgs/page-body/nav_tab_bg.png) no-repeat scroll left top;
+  background-position: 0 -34px;
 } 
 
 
@@ -140,15 +140,15 @@ ol li
 -----------------------------*/
 #main
 {
-	width:880px;
-	padding-top: 50px;
+  width:880px;
+  padding-top: 50px;
 }
 
 /*design box First*/
 
 .disignBoxFirst
 {
-	background:transparent url(../imgs/page-body/db_first_bg.jpg) no-repeat scroll left top;
+  background:transparent url(../imgs/page-body/db_first_bg.jpg) no-repeat scroll left top;
 clear:left;
 margin-bottom:10px;
 padding-top:16px;
@@ -157,7 +157,7 @@ position:relative;
 
 .disignBoxFirst .boxFirstHeader
 {
-	color:#006598;
+  color:#006598;
 font-size:18px;
 font-weight:bold;
 height:20px;
@@ -168,7 +168,7 @@ text-transform:uppercase;
 }
 .disignBoxFirst .boxContent
 {
-	font-size:13px;
+  font-size:13px;
 overflow:hidden;
 padding:10px 0pt 10px 24px;
 position:relative;
@@ -177,14 +177,14 @@ position:relative;
 /*design box Second*/
 .disignBoxSecond 
 {
-/*	background:transparent url(../imgs/page-body/db_second_bg.jpg) repeat-x scroll left top;*/
-/*    	background:transparent url(../imgs/page-body/db_second_bg_dm875.jpg) repeat-x scroll left top;*/
-	background:transparent url(../imgs/page-body/db_first_bg.jpg) no-repeat scroll left top;
+/*  background:transparent url(../imgs/page-body/db_second_bg.jpg) repeat-x scroll left top;*/
+/*      background:transparent url(../imgs/page-body/db_second_bg_dm875.jpg) repeat-x scroll left top;*/
+  background:transparent url(../imgs/page-body/db_first_bg.jpg) no-repeat scroll left top;
 }
 
 .disignBoxSecond .boxSecondHeader
 {
-	color:#006598;
+  color:#006598;
 font-size:110%;
 font-weight:bold;
 height:20px;
@@ -195,11 +195,12 @@ text-transform:uppercase;
 }
 .disignBoxSecond .boxContent
 {
-	font-size:13px;
+  font-size:13px;
 overflow:hidden;
 padding:10px 24pt 10px 24px;
 position:relative;
 }
+
 
 /* thumb images
 -----------------------------*/
@@ -316,25 +317,65 @@ width:70px;
 
 IMG.middle-left
 {
-	 float: right;
-	 margin: 0px 360px 0px 0px;
+   float: right;
+   margin: 0px 360px 0px 0px;
 
 }
 
 IMG.middle-right
 {
-	float: left;
-	margin: 0px 0px 0px 440px;
+  float: left;
+  margin: 0px 0px 0px 440px;
 }
 
 #twitter-widget-1
 {
-	margin-right: -10px !important;
+  margin-right: -10px !important;
 }
 
 .socialbuttons iframe 
 {
-	margin-right: 10px;
+  margin-right: 10px;
+}
+
+.rssincl-entry
+{
+padding-left: 30px;
+padding-top: 20px;
+background:transparent url(../imgs/page-body/db_first_bg.jpg) no-repeat scroll left top;
+}
+
+.rssincl-title
+ {
+  font-family: arial, sans-serif;
+  letter-spacing: .1em;
+  font-weight: normal;
+  text-transform: uppercase;
+  padding: 16px 0px 5px 0px; 
+  margin: 0px 0px 12px 0px; 
+  font-size: 70%;
+ }
+
+.rssincl-itemtitle
+{
+font-size: 19.5px;
+}
+
+.rssincl-head
+{
+font-size: 30px;
+}
+
+.rssincl-itemdate
+{
+font-size: 10px;
+color: #888;
+margin-bottom: 15px;
+}
+
+#rssincl-box-974006
+{
+margin-top: -55px !important;
 }
 
 /*colors Start
@@ -352,8 +393,8 @@ blockquote{border-color: #40403E;}
 
 #site_content
 { 
-	background-color:#000;
-	border-color: #40403E;
+  background-color:#000;
+  border-color: #40403E;
 }
 
 
@@ -383,4 +424,3 @@ blockquote{border-color: #40403E;}
   position: relative;
   left: 5%;
 }
-
