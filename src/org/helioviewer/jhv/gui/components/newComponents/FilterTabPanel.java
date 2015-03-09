@@ -194,7 +194,7 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
         /*Map<String, LUT> lutMap = LUT.getStandardList();
         lutMap.put("<Load new GIMP gradient file>", null);*/
         comboBoxColorTable = new JComboBox<String>();
-        comboBoxColorTable = new JComboBox<String>(LUT.getLut().getNames());
+        comboBoxColorTable = new JComboBox<String>(LUT.getNames());
         comboBoxColorTable.setSelectedItem("gray");
 		add(comboBoxColorTable, "4, 10, 5, 1, fill, default");
 		comboBoxColorTable.addItemListener(new ItemListener() {

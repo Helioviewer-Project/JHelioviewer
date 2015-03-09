@@ -74,6 +74,9 @@ public class Layer {
 		this.jhvjpxView = jhvjpxView;
         MetaData metaData = jhvjpxView.getMetaData();
     	String colorKey = DefaultTable.getSingletonInstance().getColorTable(metaData);
+        if(colorKey == null)
+            throw new RuntimeException("Couldn't find a LUT for "+metaData.getFullName());
+        
 		lut = new Lut();
 		lut.name = colorKey;
 		lut.idx = LUT.getLutPosition(colorKey);

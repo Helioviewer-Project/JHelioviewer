@@ -1,4 +1,5 @@
 eclipse.preferences.version=1
+encoding//resources/settings/colors.js=UTF-8
 encoding//src/org/helioviewer/jhv/opengl/model/GL3DImageCorona.java=UTF-8
 encoding//src/org/helioviewer/jhv/opengl/model/GL3DImageLayer.java=UTF-8
 encoding//src/org/helioviewer/jhv/opengl/model/GL3DImageSphere.java=UTF-8

@@ -371,7 +371,7 @@ public class CompenentView extends GL3DComponentView implements
 		gl.glUseProgram(shaderprogram);
 
 		gl.glActiveTexture(GL.GL_TEXTURE1);
-		gl.glBindTexture(GL2.GL_TEXTURE_2D, LUT.getLut().getTexture(gl));
+		gl.glBindTexture(GL2.GL_TEXTURE_2D, LUT.getTexture(gl));
 
 		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "texture"), 0);
 		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "lut"), 1);

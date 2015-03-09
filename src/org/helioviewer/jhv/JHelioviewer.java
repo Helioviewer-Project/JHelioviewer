@@ -210,71 +210,58 @@ public class JHelioviewer {
         }
     }
 
-	private static void loadLibraries() {
-
-		String os = System.getProperty("os.name");
-		String arch = System.getProperty("os.arch");
-		Path tmpLibDir;
-		
-		try {
-			tmpLibDir = Files.createTempDirectory("jhv-libs");
+	private static void loadLibraries()
+	{
+		try
+		{
+			Path tmpLibDir = Files.createTempDirectory("jhv-libs");
 			tmpLibDir.toFile().deleteOnExit();
 
-			String directory = "/libs/";
-			if (os != null && arch != null) {
-				os = os.toLowerCase();
-				arch = arch.toLowerCase();
-				if (os.indexOf("windows") != -1){
-				    System.loadLibrary("msvcr120");
-				}
-				if (os.indexOf("mac os x") == -1){
-					//System.loadLibrary("kdu_v75R");
-					//System.loadLibrary("kdu_a75R");					
-				}
-				System.loadLibrary("kdu_jni");
-
-				if (os.indexOf("windows") != -1) {
-					directory += "windows/";
-					if (arch.indexOf("64") != -1) {
-						directory += "64/";
-						loadExecuteLibary(tmpLibDir, directory,
-								"cgc-windows-x86-64.exe", "cgc");
-					} else {
-						System.err.println(">> Platform > Could not determine platform. OS: "
-                        + os + " - arch: " + arch);
-					}
-
-				} else if (os.indexOf("linux") != -1) {
-					directory += "linux/";
-					if (arch.indexOf("64") != -1) {
-						directory += "64/";
-						loadExecuteLibary(tmpLibDir, directory,
-								"cgc-linux-x86-64", "cgc");
-					} else {
-						System.err.println(">> Platform > Could not determine platform. OS: "
-                        + os + " - arch: " + arch);
-					}
-				} else if (os.indexOf("mac os x") != -1) {
-					directory += "mac/";
-					loadExecuteLibary(tmpLibDir, directory, "cgc-mac", "cgc");
-					setupOSXApplicationListener();
-				} else {
-					System.err.println(">> Platform > Could not determine platform. OS: "
-                    + os + " - arch: " + arch);
-				}
-			} else {
-				System.err.println(">> Platform > Could not determine platform. OS: "
-                + os + " - arch: " + arch);
+			if (JHVGlobals.isWindows())
+			{
+			    System.loadLibrary("msvcr120");
+                System.loadLibrary("kdu_v75R");
+                System.loadLibrary("kdu_a75R");                   
 			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			
+			if (JHVGlobals.isOSX())
+			{
+				//System.loadLibrary("kdu_v75R");
+				//System.loadLibrary("kdu_a75R");					
+			}
+			
+			System.loadLibrary("kdu_jni");
+
+			if (JHVGlobals.isWindows())
+			{
+				if (JHVGlobals.is64Bit())
+					loadExecuteLibary(tmpLibDir, "/libs/windows/64/", "cgc-windows-x86-64.exe", "cgc");
+				else
+	                throw new RuntimeException("Could not determine OS/arch");
+			}
+			else if (JHVGlobals.isLinux())
+			{
+				if (JHVGlobals.is64Bit())
+					loadExecuteLibary(tmpLibDir, "/libs/linux/64/", "cgc-linux-x86-64", "cgc");
+				else
+	                throw new RuntimeException("Could not determine OS/arch");
+			}
+			else if (JHVGlobals.isOSX())
+			{
+				loadExecuteLibary(tmpLibDir, "/libs/mac/", "cgc-mac", "cgc");
+				setupOSXApplicationListener();
+			}
+			else
+                throw new RuntimeException("Could not determine OS/arch");
+		}
+		catch (IOException e)
+		{
 			e.printStackTrace();
 		}
-
 	}
 
-	private static void loadExecuteLibary(Path tmpPath, String directory,
-			String name, String executableName) {
+	private static void loadExecuteLibary(Path tmpPath, String directory, String name, String executableName)
+	{
 		InputStream in = JHelioviewer.class.getResourceAsStream(directory
 				+ name);
 		byte[] buffer = new byte[1024];

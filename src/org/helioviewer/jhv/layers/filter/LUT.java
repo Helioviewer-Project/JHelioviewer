@@ -13,65 +13,70 @@ import javax.swing.SwingUtilities;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.viewmodel.view.opengl.CompenentView;
 
-public class LUT {
+public class LUT
+{
+	private static LinkedHashMap<String, Integer> lutMap;
+	private static int nextAvaibleLut = 0;
+	private static int texture = -1;
+	private static OpenGLHelper openGLHelper;
 	
-	private LinkedHashMap<String, Integer> lutMap;
-	private int nextAvaibleLut = 0;
-	private int texture = -1;
-	private OpenGLHelper openGLHelper;
-	
-	private static LUT lut = new LUT();
-	
-	public static LUT getLut(){
-		return lut;
-	}
-
-	public static int getLutPosition(String name){
-		return LUT.getLut().lutMap.get(name);
-	}
-	
-	public String[] getNames(){
-		return LUT.getLut().lutMap.keySet().toArray(new String[0]);
+	public static int getLutPosition(String name)
+	{
+	    Integer idx=lutMap.get(name);
+	    if(idx==null)
+	        throw new RuntimeException("LUT: \""+name+"\" not found in LUT.");
+	    
+		return idx;
 	}
 	
-	private LUT(){
+	public static String[] getNames()
+	{
+		return lutMap.keySet().toArray(new String[0]);
+	}
+	
+	static
+	{
 		lutMap = new LinkedHashMap<String, Integer>();
-		this.openGLHelper = new OpenGLHelper();
+		openGLHelper = new OpenGLHelper();
 		loadLutFromFile("/UltimateLookupTable.txt");      
-		SwingUtilities.invokeLater(new Runnable() {
-			
+		SwingUtilities.invokeLater(new Runnable()
+		{
 			@Override
-			public void run() {
-				try {
+			public void run()
+			{
+				try
+				{
 					BufferedImage bufferedImage;
 					OpenGLHelper.glContext.makeCurrent();
 					bufferedImage = ImageIO.read(CompenentView.class.getResourceAsStream("/UltimateLookupTable.png"));
 					texture = openGLHelper.createTextureID();
 					openGLHelper.bindBufferedImageToGLTexture(bufferedImage, 256, 256);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
+				}
+				catch (IOException e)
+				{
 					e.printStackTrace();
 				}
-				
 			}
 		});
 		
 	}	
 	
-	private void loadLutFromFile(String lutTxtName){
-		String line = null;
-		
+	private static void loadLutFromFile(String lutTxtName)
+	{
 		try(BufferedReader br=new BufferedReader(new InputStreamReader(CompenentView.class.getResourceAsStream(lutTxtName),"UTF-8")))
 		{
-			while ((line = br.readLine()) != null){
-				lutMap.put(line, this.nextAvaibleLut++);
-			}
-		} catch (Exception e) {
+		    String line = null;
+			while ((line = br.readLine()) != null)
+				lutMap.put(line, nextAvaibleLut++);
+		}
+		catch (Exception e)
+		{
 			e.printStackTrace();
 		}
 	}
 	
-	public int getTexture(GL2 gl){
-		return this.texture;
+	public static int getTexture(GL2 gl)
+	{
+		return texture;
 	}
 }

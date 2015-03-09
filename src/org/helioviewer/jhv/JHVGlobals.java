@@ -28,9 +28,24 @@ public class JHVGlobals {
         return RAYGUN_TAG!=null;
     }
     
+    public static boolean is64Bit()
+    {
+        return System.getProperty("os.arch").contains("64");
+    }
+    
     public static boolean isWindows()
     {
         return System.getProperty("os.name").toUpperCase().contains("WIN");
+    }
+    
+    public static boolean isLinux()
+    {
+        return System.getProperty("os.name").toUpperCase().contains("LINUX");
+    }
+
+    public static boolean isOSX()
+    {
+        return System.getProperty("os.name").toUpperCase().contains("MAC OS X");
     }
 
     /**
