@@ -51,6 +51,10 @@ public class LUT
 					bufferedImage = ImageIO.read(CompenentView.class.getResourceAsStream("/UltimateLookupTable.png"));
 					texture = openGLHelper.createTextureID();
 					openGLHelper.bindBufferedImageToGLTexture(bufferedImage, 256, 256);
+					OpenGLHelper.glContext.getGL().glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER,
+			                GL2.GL_NEAREST);
+					OpenGLHelper.glContext.getGL().glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER,
+			                GL2.GL_NEAREST);
 				}
 				catch (IOException e)
 				{
@@ -58,7 +62,6 @@ public class LUT
 				}
 			}
 		});
-		
 	}	
 	
 	private static void loadLutFromFile(String lutTxtName)

@@ -197,89 +197,9 @@ public class CompenentView extends GL3DComponentView implements
 
 	@Override
 	public void activeLayerChanged(int idx) {
-		/*
-		 * System.out.println("changed"); if (idx >= 0 && idx <
-		 * LayersModel.getSingletonInstance().getNumLayers() && layers.size() >
-		 * 0){ if (LinkedMovieManager.getActiveInstance().getMasterMovie() !=
-		 * null) this.lastTime =
-		 * LinkedMovieManager.getActiveInstance().getMasterMovie
-		 * ().getCurrentFrameDateTime().getMillis(); idx =
-		 * LayersModel.getSingletonInstance().getNumLayers() - idx -1; lastLayer
-		 * = layers.get(idx); View lastView =
-		 * LayersModel.getSingletonInstance().getActiveView(); // Just a hack
-		 * GLFilterView opacityFilterView =
-		 * lastView.getAdapter(GLFilterView.class
-		 * ).getAdapter(GLFilterView.class); GLFilterView lutView =
-		 * (GLFilterView)opacityFilterView.getView(); SOHOLUTFilter lutFilter =
-		 * (SOHOLUTFilter)lutView.getFilter();
-		 * this.setCurrentLutByName(lutFilter.getLUT(), true); this.invertedLut
-		 * = lutFilter.isInverted(); if (lastLayer.getImageData() != null){
-		 * this.updateTexture = true; } } else { lastLayer = null; }
-		 * this.canvas.repaint();
-		 */
 	}
 
-	/*
-	 * private void createTexture(GL2 gl, Layer layer){ ImageData imageData =
-	 * layer.getJhvjpxView().getImageData(); int bitsPerPixel =
-	 * imageData.getImageTransport().getNumBitsPerPixel(); Buffer buffer;
-	 * 
-	 * switch (bitsPerPixel) { case 8: buffer =
-	 * ByteBuffer.wrap(((Byte8ImageTransport) imageData
-	 * .getImageTransport()).getByte8PixelData()); break; case 16: buffer =
-	 * ShortBuffer.wrap(((Short16ImageTransport) imageData
-	 * .getImageTransport()).getShort16PixelData()); break; case 32: buffer =
-	 * IntBuffer.wrap(((Int32ImageTransport) imageData
-	 * .getImageTransport()).getInt32PixelData()); break; default: buffer =
-	 * null; }
-	 * 
-	 * gl.glPixelStorei(GL2.GL_UNPACK_SKIP_PIXELS, 0);
-	 * gl.glPixelStorei(GL2.GL_UNPACK_SKIP_ROWS, 0);
-	 * gl.glPixelStorei(GL2.GL_UNPACK_ROW_LENGTH, 0);
-	 * gl.glPixelStorei(GL2.GL_UNPACK_ALIGNMENT, bitsPerPixel >> 3);
-	 * 
-	 * textureHelper.checkGLErrors(gl, this + ".afterPixelStore"); ImageFormat
-	 * imageFormat = imageData.getImageFormat(); int internalFormat =
-	 * GLTextureHelper.mapImageFormatToInternalGLFormat(imageFormat); int
-	 * inputFormat = GLTextureHelper.mapImageFormatToInputGLFormat(imageFormat);
-	 * int width = imageData.getWidth(); int height = imageData.getHeight(); int
-	 * inputType = GLTextureHelper.mapBitsPerPixelToGLType(bitsPerPixel);
-	 * 
-	 * gl.glBindTexture(GL2.GL_TEXTURE_2D, layer.texture);
-	 * 
-	 * int width2 = nextPowerOfTwo(width); int height2 = nextPowerOfTwo(height);
-	 * 
-	 * int bpp = 3; switch (inputFormat) { case GL2.GL_LUMINANCE: case
-	 * GL2.GL_ALPHA: bpp = 1; break; case GL2.GL_LUMINANCE_ALPHA: bpp = 2;
-	 * break; case GL2.GL_RGB: bpp = 3; break; case GL2.GL_RGBA: case
-	 * GL2.GL_BGRA: bpp = 4; break;
-	 * 
-	 * default: throw new RuntimeException("" + inputFormat); }
-	 * 
-	 * switch (inputType) { case GL2.GL_UNSIGNED_BYTE: bpp *= 1; break; case
-	 * GL2.GL_UNSIGNED_SHORT: case GL2.GL_UNSIGNED_SHORT_5_6_5: case
-	 * GL2.GL_UNSIGNED_SHORT_4_4_4_4: case GL2.GL_UNSIGNED_SHORT_5_5_5_1: bpp *=
-	 * 2; break; case GL2.GL_UNSIGNED_INT_8_8_8_8_REV: bpp *= 4; break; default:
-	 * throw new RuntimeException("" + inputType); }
-	 * 
-	 * ByteBuffer b = ByteBuffer.allocate(width2 * height2 * bpp);
-	 * b.limit(width2 * height2 * bpp);
-	 * 
-	 * gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, internalFormat, width2, height2, 0,
-	 * inputFormat, inputType, b);
-	 * 
-	 * textureHelper.checkGLErrors(gl, this + ".glTexImage2d"); if (buffer !=
-	 * null) { gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, width, height,
-	 * inputFormat, inputType, buffer); } textureHelper.checkGLErrors(gl, this +
-	 * ".glTexSubImage2d");
-	 * 
-	 * gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER,
-	 * GL2.GL_LINEAR); gl.glTexParameteri(GL2.GL_TEXTURE_2D,
-	 * GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_NEAREST);
-	 * gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S,
-	 * GL2.GL_CLAMP_TO_BORDER); gl.glTexParameteri(GL2.GL_TEXTURE_2D,
-	 * GL2.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP_TO_BORDER); }
-	 */
+
 	@Override
 	public void viewportGeometryChanged() {
 		// TODO Auto-generated method stub

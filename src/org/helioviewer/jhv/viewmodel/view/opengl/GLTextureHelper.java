@@ -557,7 +557,7 @@ public class GLTextureHelper {
 			gl.glTexParameteri(GL2.GL_TEXTURE_1D, GL2.GL_TEXTURE_MIN_FILTER,
 					GL2.GL_LINEAR);
 			gl.glTexParameteri(GL2.GL_TEXTURE_1D, GL2.GL_TEXTURE_MAG_FILTER,
-					GL2.GL_NEAREST);
+					GL2.GL_LINEAR);
 			gl.glTexParameteri(GL2.GL_TEXTURE_1D, GL2.GL_TEXTURE_WRAP_S,
 					GL2.GL_CLAMP);
 
@@ -632,14 +632,9 @@ public class GLTextureHelper {
 
 			gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER,
 					GL2.GL_LINEAR);
-			if (Boolean.parseBoolean(Settings.getProperty("default.display.highDPI"))){
-				gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER,
-						GL2.GL_NEAREST);				
-			}
-			else {
-				gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER,
-						GL2.GL_LINEAR);
-			}
+			gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER,
+					GL2.GL_LINEAR);
+
 			gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S,
 					GL2.GL_CLAMP_TO_BORDER);
 			gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T,
@@ -665,7 +660,7 @@ public class GLTextureHelper {
 			gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER,
 					GL2.GL_LINEAR);
 			gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER,
-					GL2.GL_NEAREST);
+					GL2.GL_LINEAR);
 			gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S,
 					GL2.GL_CLAMP_TO_BORDER);
 			gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T,
