@@ -843,6 +843,6 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 		GuiState3DWCS.mainComponentView.getComponent().repaint();
 		GuiState3DWCS.overViewPanel.repaint();
-
+		LayersModel.getSingletonInstance().fireSubImageDataChanged();
 	}
 }

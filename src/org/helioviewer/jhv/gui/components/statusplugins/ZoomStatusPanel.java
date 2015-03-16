@@ -81,5 +81,4 @@ public class ZoomStatusPanel extends ViewStatusPanelPlugin implements GL3DCamera
         updateZoomLevel();
 	}
 
-
 }

@@ -58,7 +58,7 @@ public class JHV_Kdu_cache extends Kdu_cache {
     /**
      * This flags indicates if the server has to be loaded/saved to disk.
      */
-    private static boolean iamPersistent = true;
+    private static boolean iamPersistent = false;
 
     private static final long CACHE_SIZE_LIMIT = 1024*1024*100;
 
@@ -92,6 +92,7 @@ public class JHV_Kdu_cache extends Kdu_cache {
         iamPersistent = _iamPersistent;
 
         cacheFile = new File(Directories.CACHE.getFile().getAbsolutePath() + File.separator + targetID + ".hvc");
+        System.out.println("cache : " + cacheFile.toString());
         newData = 0;
 
         if (iamPersistent)

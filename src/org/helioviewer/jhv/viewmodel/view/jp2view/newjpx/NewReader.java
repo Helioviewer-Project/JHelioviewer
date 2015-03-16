@@ -4,6 +4,9 @@ import java.awt.Rectangle;
 import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.ConcurrentLinkedDeque;
+
+import kdu_jni.Kdu_cache;
+
 import org.helioviewer.jhv.viewmodel.view.jp2view.JP2Image;
 import org.helioviewer.jhv.viewmodel.view.jp2view.image.JP2ImageParameter;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPConstants;
@@ -49,6 +52,7 @@ public class NewReader {
     private ConcurrentLinkedDeque<JPIPRequest> requests;
 	private URI uri;
 
+	private Kdu_cache cache;
     /**
      * The constructor. Creates and connects the socket if image is remote.
      * 
@@ -57,7 +61,9 @@ public class NewReader {
      * @throws JHV_KduException
      */
     public NewReader(URI uri){
+    	//cacheRef = new JHV_Kdu_cache(_targetID)
     	requests = new ConcurrentLinkedDeque<JPIPRequest>();
+    	this.cache = new Kdu_cache();
     	this.uri = uri;
     	socket = new JPIPSocket();
     	openSocket();
@@ -85,7 +91,9 @@ public class NewReader {
 
 	private void openSocket(){
 		try {
-            socket.connect(uri);
+            JPIPResponse res = (JPIPResponse) socket.connect(uri);
+            String jpipTargetID = res.getHeader("JPIP-tid");
+            System.out.println("jpipTargetID : " + jpipTargetID);
         } catch (IOException e) {
             e.printStackTrace();
             

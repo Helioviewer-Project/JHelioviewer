@@ -1434,7 +1434,7 @@ public class LayersModel implements ViewListener
     /**
      * Notify all LayersListeners
      */
-    private void fireSubImageDataChanged()
+    public void fireSubImageDataChanged()
     {
         for(LayersListener ll:layerListeners)
         {
