@@ -233,7 +233,7 @@ public class HEKPlugin3dRenderer extends PhysicalRenderer3d
         double heigth=-1;
         for(int i=0;i<layeredView.getNumLayers();i++)
         {
-            if(layeredView.getLayer(i).getAdapter(RegionView.class)!=null&&heigth<layeredView.getLayer(i).getAdapter(RegionView.class).getLastDecodedRegion().getHeight())
+            if(layeredView.getLayer(i).getAdapter(RegionView.class)!=null && layeredView.getLayer(i).getAdapter(RegionView.class).getLastDecodedRegion() != null &&heigth<layeredView.getLayer(i).getAdapter(RegionView.class).getLastDecodedRegion().getHeight())
                 heigth=layeredView.getLayer(i).getAdapter(RegionView.class).getLastDecodedRegion().getHeight();
         }
         
