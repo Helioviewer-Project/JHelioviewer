@@ -28,6 +28,7 @@ import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayContainer;
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayControlComponent;
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayControlComponentManager;
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayPanel;
+import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.view.ImageInfoView;
 import org.helioviewer.jhv.viewmodel.view.LayeredView;
@@ -44,6 +45,7 @@ import org.helioviewer.jhv.viewmodel.view.opengl.GL3DViewportView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GLFilterView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GLHelioviewerGeometryView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GLOverlayView;
+import org.helioviewer.jhv.viewmodel.viewport.StaticViewport;
 
 public class GuiState3DWCS {
     public static TopToolBar topToolBar = new TopToolBar();
@@ -180,8 +182,20 @@ public class GuiState3DWCS {
 				}
 			});			
 		}
-			// wait until image is loaded
+
+		// wait until image is loaded
+		JHVJPXView jhvjpxView = (JHVJPXView)newLayer;
         while (newLayer.getAdapter(SubimageDataView.class).getImageData() == null)
+        {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        jhvjpxView.setViewport(StaticViewport.createAdaptedViewport(256, 256), new ChangeEvent());
+        jhvjpxView.setRegion(jhvjpxView.getMetaData().getPhysicalRegion(), new ChangeEvent());
+        while (newLayer.getAdapter(SubimageDataView.class).getImageData().getHeight() < 128)
         {
             try {
                 Thread.sleep(100);

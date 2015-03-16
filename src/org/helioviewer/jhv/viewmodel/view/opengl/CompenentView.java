@@ -68,10 +68,10 @@ public class CompenentView extends GL3DComponentView implements
 	private NoImageScreen splashScreen;
 
 	public CompenentView() {
+		this.canvas.setSharedContext(OpenGLHelper.glContext);
 		GuiState3DWCS.layers.addNewLayerListener(this);
 		animations = new CopyOnWriteArrayList<RenderAnimation>();
 		lutMap = new HashMap<String, Integer>();
-		this.canvas.setSharedContext(OpenGLHelper.glContext);
 		this.canvas.addMouseListener(this);
 		this.canvas.addMouseMotionListener(this);
 		this.canvas.addGLEventListener(this);
@@ -400,6 +400,7 @@ public class CompenentView extends GL3DComponentView implements
 
 	@Override
 	public void init(GLAutoDrawable drawable) {
+		drawable.getContext().makeCurrent();
 		if (System.getProperty("jhvVersion") == null)
 			drawable.setGL(new DebugGL2(drawable.getGL().getGL2()));
 		// GuiState3DWCS.overViewPanel.activate(drawable.getContext());

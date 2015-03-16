@@ -190,7 +190,9 @@ public class OpenGLHelper {
 		gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, internalFormat, width,
 				height, 0, inputFormat, inputType, b);
 
-
+		this.textureWidth = width;
+		this.textureHeight = height;
+		
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER,
 				GL2.GL_LINEAR);
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER,

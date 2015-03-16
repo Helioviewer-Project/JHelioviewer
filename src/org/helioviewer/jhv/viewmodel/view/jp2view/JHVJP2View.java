@@ -135,13 +135,8 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
         //metaData = MetaDataConstructor.getMetaData(newJP2Image);
         metaData = MetaDataFactory.getMetaData(newJP2Image);
         
-        if (region == null) {
-            region = metaData.getPhysicalRegion();
-        }
-		
-        if (viewport == null) {
-            viewport = StaticViewport.createAdaptedViewport(256, 256);
-        }
+        region = metaData.getPhysicalRegion();
+        viewport = StaticViewport.createAdaptedViewport(256, 256);
 
         //if (metaData instanceof ObserverMetaData) {
             event.addReason(new TimestampChangedReason(this, metaData.getDateTime()));
