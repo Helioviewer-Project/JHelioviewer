@@ -75,7 +75,7 @@ public class Layer {
         MetaData metaData = jhvjpxView.getMetaData();
     	String colorKey = DefaultTable.getSingletonInstance().getColorTable(metaData);
         if(colorKey == null)
-            throw new RuntimeException("Couldn't find a LUT for "+metaData.getFullName());
+        	colorKey = "Gray";
         
 		lut = new Lut();
 		lut.name = colorKey;
@@ -83,7 +83,6 @@ public class Layer {
 		redChannel = new Channelcolor("red");
 		greenChannel = new Channelcolor("green");
 		blueChannel = new Channelcolor("blue");
-		OpenGLHelper.glContext.makeCurrent();
 		this.initLayer(OpenGLHelper.glContext.getGL().getGL2());
 		//this.textureOverview = OpenGLHelper.createTexture(gl);
 	}

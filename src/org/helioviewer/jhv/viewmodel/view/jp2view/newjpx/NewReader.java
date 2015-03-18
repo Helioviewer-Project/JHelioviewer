@@ -3,13 +3,20 @@ package org.helioviewer.jhv.viewmodel.view.jp2view.newjpx;
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.FutureTask;
 
+import kdu_jni.KduException;
 import kdu_jni.Kdu_cache;
 
 import org.helioviewer.jhv.viewmodel.view.jp2view.JP2Image;
 import org.helioviewer.jhv.viewmodel.view.jp2view.image.JP2ImageParameter;
+import org.helioviewer.jhv.viewmodel.view.jp2view.io.http.HTTPSocket;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPConstants;
+import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPDataSegment;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPQuery;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPRequest;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPRequestField;
@@ -19,7 +26,7 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPSocket;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_Kdu_cache;
 
-public class NewReader {
+public class NewReader implements JHVReader, Callable<JHVCachable>{
 
     /** Whether IOExceptions should be shown on System.err or not */
     private static final boolean VERBOSE = false;
@@ -39,6 +46,8 @@ public class NewReader {
     /** The a reference to the cache object used by the run method. */
     private JHV_Kdu_cache cacheRef;
 
+    private ImageLayer imageLayer;
+    
     /**
      * The time when the last response was received. It is used for performing
      * the flow control. A negative value means that there is not a previous
@@ -57,36 +66,24 @@ public class NewReader {
      * The constructor. Creates and connects the socket if image is remote.
      * 
      * @param _imageViewRef
-     * @throws IOException
-     * @throws JHV_KduException
+     * @throws URISyntaxException 
      */
-    public NewReader(URI uri){
-    	//cacheRef = new JHV_Kdu_cache(_targetID)
-    	requests = new ConcurrentLinkedDeque<JPIPRequest>();
+    public NewReader(String url, int instrumentID) throws URISyntaxException{
     	this.cache = new Kdu_cache();
-    	this.uri = uri;
+    	this.uri = new URI(url);
+    	
+    	this.imageLayer = new ImageLayer(instrumentID);
+   
     	socket = new JPIPSocket();
     	openSocket();
-    	
-    	Thread thread = new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				while(true){
-					if (requests.isEmpty()){
-						try {
-							Thread.sleep(50);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-					else receiveData();
-				}
-			}
-		});
-    	thread.start();
+    	createRequests();
     }
+
+
+	private void createRequests() {
+		// TODO Auto-generated method stub
+		
+	}
 
 
 	private void openSocket(){
@@ -95,23 +92,18 @@ public class NewReader {
             String jpipTargetID = res.getHeader("JPIP-tid");
             System.out.println("jpipTargetID : " + jpipTargetID);
         } catch (IOException e) {
-            e.printStackTrace();
-            
-            try {
-                socket.close();
-            } catch (IOException ioe) {
-                System.err.println(">> J2KReader.run() > Error closing socket.");
-                ioe.printStackTrace();
-            }
-            
-            if(Thread.currentThread().isInterrupted())
-                return;
-
-            if(Thread.currentThread().isInterrupted())
-                return;
-
+            e.printStackTrace();            
         }
 
+	}
+	
+	private void closeSocket(){
+		try {
+			socket.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void receiveData(){
@@ -122,6 +114,17 @@ public class NewReader {
 			// Update optimal package size
             flowControl();
 			if (response != null && response.getResponseSize() > 0){
+				JPIPDataSegment data;
+
+				
+				
+				while ((data = response.removeJpipDataSegment()) != null && !data.isEOR){
+		            try {
+						imageLayer.getCache().Add_to_databin(data.classID.getKakaduClassID(), data.codestreamID, data.binID, data.data, data.offset, data.length, data.isFinal, true, false);
+					} catch (KduException e) {
+						System.err.println(e);
+					}
+				}
 				System.out.println(response);
 			}
 		} catch (IOException e) {
@@ -185,10 +188,10 @@ public class NewReader {
     	
     }
     
-    public JPIPQuery createQuery(JP2ImageParameter currParams, int iniLayer, int endLayer) {
+    public JPIPQuery createQuery(JP2ImageParameter currParams, int iniFrame, int endFrame) {
         JPIPQuery query = new JPIPQuery();
 
-        query.setField(JPIPRequestField.CONTEXT.toString(), "jpxl<" + iniLayer + "-" + endLayer + ">");
+        query.setField(JPIPRequestField.CONTEXT.toString(), "jpxl<" + iniFrame + "-" + endFrame + ">");
         query.setField(JPIPRequestField.LAYERS.toString(), String.valueOf(currParams.qualityLayers));
 
         Rectangle resDims = currParams.resolution.getResolutionBounds();
@@ -199,4 +202,20 @@ public class NewReader {
 
         return query;
     }
+
+
+	@Override
+	public FutureTask<JHVCachable> getData() {
+		FutureTask<JHVCachable> futureTask = new FutureTask<JHVCachable>(this);
+		// TODO Auto-generated method stub
+		return futureTask;
+	}
+
+
+	@Override
+	public JHVCachable call() throws Exception {
+    	receiveData();
+    	closeSocket();
+		return this.imageLayer;
+	}
 }

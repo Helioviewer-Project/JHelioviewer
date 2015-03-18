@@ -41,33 +41,41 @@ public class JPXLayer {
 		System.loadLibrary("kdu_jni");
 	    
 		URI uri;
-		try {
-			uri = new URI("jpip://helioviewer.org:8090/AIA/2015/02/23/171/2015_02_23__15_42_59_34__SDO_AIA_AIA_171.jp2");
-			URI downloadURI = new URI("http://helioviewer.org/api/index.php?action=getJP2Image&observatory=SDO&instrument=AIA&detector=AIA&measurement=171&date=2015-02-23T16:07:26Z&json=true");
 			
-			NewReader newReader = new NewReader(uri);
-			
-			//Subi
-			SubImage _roi = new SubImage(0, 0, 4096, 4096);
-			ResolutionSet resolutionSet = new ResolutionSet(8);
-			resolutionSet.addResolutionLevel(7, new Rectangle(32, 32));
-			resolutionSet.addResolutionLevel(6, new Rectangle(64, 64));
-			resolutionSet.addResolutionLevel(5, new Rectangle(128, 128));
-			resolutionSet.addResolutionLevel(4, new Rectangle(256, 256));
-			resolutionSet.addResolutionLevel(3, new Rectangle(512, 512));
-			resolutionSet.addResolutionLevel(2, new Rectangle(1024, 1024));
-			resolutionSet.addResolutionLevel(1, new Rectangle(2048, 2048));
-			resolutionSet.addResolutionLevel(0, new Rectangle(4096, 4096));
-			ResolutionLevel _resolution = resolutionSet.getResolutionLevel(0);
-			System.out.println("res : " + _resolution);
-			JPIPQuery query = newReader.createQuery(new JP2ImageParameter(_roi, _resolution, 0, 0), 0, 8);
-			System.out.println("query : " + query);
-			JPIPRequest request = new JPIPRequest(Method.GET, query);
-			newReader.addRequest(request);
+			NewReader newReader;
+			try {
+				newReader = new NewReader("jpip://api.helioviewer.org:8090/movies/SDO_AIA_335_F2014-01-01T00.00.00Z_T2014-01-01T00.45.00Z.jpx",12);
+				//Sub
+				SubImage _roi = new SubImage(0, 0, 4096, 4096);
+				ResolutionSet resolutionSet = new ResolutionSet(8);
+				resolutionSet.addResolutionLevel(7, new Rectangle(32, 32));
+				resolutionSet.addResolutionLevel(6, new Rectangle(64, 64));
+				resolutionSet.addResolutionLevel(5, new Rectangle(128, 128));
+				resolutionSet.addResolutionLevel(4, new Rectangle(256, 256));
+				resolutionSet.addResolutionLevel(3, new Rectangle(512, 512));
+				resolutionSet.addResolutionLevel(2, new Rectangle(1024, 1024));
+				resolutionSet.addResolutionLevel(1, new Rectangle(2048, 2048));
+				resolutionSet.addResolutionLevel(0, new Rectangle(4096, 4096));
+				ResolutionLevel _resolution = resolutionSet.getResolutionLevel(0);
+				System.out.println("res : " + _resolution);
+				JPIPQuery query = newReader.createQuery(new JP2ImageParameter(_roi, _resolution, 0, 0), 0, 0);
+				
+				System.out.println("query : " + query);
+				JPIPRequest request = new JPIPRequest(Method.GET, query);
+				newReader.addRequest(request);
 
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+				_roi = new SubImage(0, 0, 128, 128);
+				_resolution = resolutionSet.getResolutionLevel(5);
+				query = newReader.createQuery(new JP2ImageParameter(_roi, _resolution, 0, 0), 0, 8);
+				request = new JPIPRequest(Method.GET, query);
+				newReader.addRequest(request);
+
+			} catch (URISyntaxException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
+			
 	}
 }

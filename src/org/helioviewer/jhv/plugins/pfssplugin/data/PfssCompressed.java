@@ -11,6 +11,12 @@ import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
 import org.helioviewer.jhv.plugins.pfssplugin.data.caching.Cacheable;
 
+import com.github.junrar.Archive;
+import com.github.junrar.Volume;
+import com.github.junrar.VolumeManager;
+import com.github.junrar.io.IReadOnlyAccess;
+import com.github.junrar.io.ReadOnlyAccessByteArray;
+
 /**
  * Represents the raw pfss data. This class is able to download the data asynchronously
  * 
@@ -110,6 +116,10 @@ public class PfssCompressed implements Cacheable
 	{
 		return rawData;
 	}
+	
+	public VolumeManager getVolumeManage(){
+		return new ByteArrayVolumeManager(this.getData());
+	}
 
 	@Override
 	public FileDescriptor getDescriptor()
@@ -132,5 +142,48 @@ public class PfssCompressed implements Cacheable
                 GuiState3DWCS.mainComponentView.getComponent().repaint();
             }
         });   
+    }
+    
+    public class ByteArrayVolumeManager implements VolumeManager {
+        private byte[] bytes;
+
+        public ByteArrayVolumeManager(byte [] bytes) {
+            this.bytes = bytes;
+        }
+
+        @Override
+        public Volume nextArchive(Archive archive, Volume last)
+                throws IOException {
+            return new ByteArrayVolume( archive, bytes );
+        }
+    }
+    
+    public class ByteArrayVolume implements Volume {
+        private final Archive archive;
+        private final byte [] bytes;
+
+        /**
+         * @param file
+         */
+        public ByteArrayVolume(Archive archive, byte [] bytes) {
+            this.archive = archive;
+            this.bytes = bytes;
+        }
+
+        @Override
+        public IReadOnlyAccess getReadOnlyAccess() throws IOException {
+            return new ReadOnlyAccessByteArray(bytes);
+        }
+
+        @Override
+        public long getLength() {
+            return bytes.length;
+        }
+
+        @Override
+        public Archive getArchive() {
+            return archive;
+        }
+
     }
 }

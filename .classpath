@@ -28,11 +28,8 @@
 	<classpathentry kind="lib" path="lib/bzip2.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.7.7.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-nop-1.7.7.jar"/>
-	<classpathentry kind="lib" path="lib/core-1.5.0.jar"/>
 	<classpathentry kind="lib" path="lib/gson-2.2.4.jar"/>
 	<classpathentry kind="lib" path="lib/i4jruntime.jar"/>
-	<classpathentry kind="lib" path="lib/tika-app-1.6.jar"/>
-	<classpathentry kind="lib" path="lib/java-unrar-0.5.jar"/>
 	<classpathentry kind="lib" path="lib/kdu.jar">
 		<attributes>
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="JHelioviewer/lib/native"/>
@@ -40,5 +37,8 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/helio-coordinate-converter-0.0.3-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/joda-time-2.4.jar"/>
+	<classpathentry kind="lib" path="lib/junrar-0.7.jar"/>
+	<classpathentry kind="lib" path="lib/commons-logging-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/core-1.6.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

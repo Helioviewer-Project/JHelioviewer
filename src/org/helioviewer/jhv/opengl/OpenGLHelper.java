@@ -9,6 +9,7 @@ import java.nio.ShortBuffer;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLContext;
+import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.viewmodel.imagedata.ImageData;
@@ -43,27 +44,40 @@ public class OpenGLHelper {
 		return tmp[0];
 	}
 	
-	public void bindBufferedImageToGLTexture(BufferedImage bufferedImage){
-		int width2 = nextPowerOfTwo(bufferedImage.getWidth());
-		int height2 = nextPowerOfTwo(bufferedImage.getHeight());
-		
-		if (this.textureHeight != height2 && this.textureWidth != width2){
-			createTexture(bufferedImage, width2, height2);
-		}
+	public void bindBufferedImageToGLTexture(final BufferedImage bufferedImage){
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				glContext.makeCurrent();
+				int width2 = nextPowerOfTwo(bufferedImage.getWidth());
+				int height2 = nextPowerOfTwo(bufferedImage.getHeight());
+				
+				if (textureHeight != height2 && textureWidth != width2){
+					createTexture(bufferedImage, width2, height2);
+				}
 
-		updateTexture(bufferedImage);
+				updateTexture(bufferedImage);
+			}
+		});
 	}
 	
-	public void bindBufferedImageToGLTexture(BufferedImage bufferedImage, int width, int height){
-		glContext.makeCurrent();
-		int width2 = nextPowerOfTwo(width);
-		int height2 = nextPowerOfTwo(height);
-		
-		if (this.textureHeight != height2 && this.textureWidth != width2){
-			createTexture(bufferedImage, width2, height2);
-		}
+	public void bindBufferedImageToGLTexture(final BufferedImage bufferedImage, final int width, final int height){
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				glContext.makeCurrent();
+				int width2 = nextPowerOfTwo(width);
+				int height2 = nextPowerOfTwo(height);
+				
+				if (textureHeight != height2 && textureWidth != width2){
+					createTexture(bufferedImage, width2, height2);
+				}
 
-		updateTexture(bufferedImage);
+				updateTexture(bufferedImage);
+			}
+		});
 	}
 	
 
@@ -154,15 +168,21 @@ public class OpenGLHelper {
 	}
 	
 	
-	public void bindLayerToGLTexture(Layer layer){
-		glContext.makeCurrent();
-		ImageData imageData = layer.getJhvjpxView().getImageData();
-		int width2 = nextPowerOfTwo(imageData.getWidth());
-		int height2 = nextPowerOfTwo(imageData.getHeight());
-		if (this.textureHeight != height2 || this.textureWidth != width2){
-			this.createTexture(layer, width2, height2);
-		}
-		updateTexture(layer);
+	public void bindLayerToGLTexture(final Layer layer){
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				glContext.makeCurrent();
+				ImageData imageData = layer.getJhvjpxView().getImageData();
+				int width2 = nextPowerOfTwo(imageData.getWidth());
+				int height2 = nextPowerOfTwo(imageData.getHeight());
+				if (textureHeight != height2 | textureWidth != width2){
+					createTexture(layer, width2, height2);
+				}
+				updateTexture(layer);
+			}
+		});
 	}
 	
 	private void createTexture(Layer layer, int width, int height){

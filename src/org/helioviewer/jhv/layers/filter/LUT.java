@@ -47,7 +47,6 @@ public class LUT
 				try
 				{
 					BufferedImage bufferedImage;
-					OpenGLHelper.glContext.makeCurrent();
 					bufferedImage = ImageIO.read(CompenentView.class.getResourceAsStream("/UltimateLookupTable.png"));
 					texture = openGLHelper.createTextureID();
 					openGLHelper.bindBufferedImageToGLTexture(bufferedImage, 256, 256);

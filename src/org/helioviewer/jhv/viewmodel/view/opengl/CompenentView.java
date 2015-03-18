@@ -350,6 +350,7 @@ public class CompenentView extends GL3DComponentView implements
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		GL2 gl = drawable.getGL().getGL2();
+		gl.getContext().makeCurrent();
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 		gl.glViewport(0, 0, this.canvas.getSurfaceWidth(),
 				this.canvas.getSurfaceHeight());
@@ -386,9 +387,9 @@ public class CompenentView extends GL3DComponentView implements
 			}
 		}
 		
-		if (layers.getLayerCount() <= 0 && animations.size() <= 0) {
+		/*if (layers.getLayerCount() <= 0 && animations.size() <= 0) {
 			splashScreen.render(gl, canvas.getSurfaceWidth(), canvas.getSurfaceHeight());
-		}
+		}*/
 
 	}
 
@@ -400,12 +401,11 @@ public class CompenentView extends GL3DComponentView implements
 
 	@Override
 	public void init(GLAutoDrawable drawable) {
-		drawable.getContext().makeCurrent();
 		if (System.getProperty("jhvVersion") == null)
 			drawable.setGL(new DebugGL2(drawable.getGL().getGL2()));
 		// GuiState3DWCS.overViewPanel.activate(drawable.getContext());
 		GL2 gl = drawable.getGL().getGL2();
-		splashScreen = new NoImageScreen(gl);
+		//splashScreen = new NoImageScreen(gl);
 		GL3DState.create(gl);
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 		gl.glDisable(GL2.GL_TEXTURE_2D);

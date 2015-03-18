@@ -7,12 +7,12 @@ import kdu_jni.Jpx_source;
 import kdu_jni.KduException;
 import kdu_jni.Kdu_cache;
 import kdu_jni.Kdu_compositor_buf;
+import kdu_jni.Kdu_compressed_source_nonnative;
 import kdu_jni.Kdu_coords;
 import kdu_jni.Kdu_dims;
 import kdu_jni.Kdu_region_compositor;
 
 public class NewRender {
-	
 	
     // The amount of cache to allocate to each codestream
     private final int CODESTREAM_CACHE_THRESHOLD = 1024 * 256;
@@ -52,6 +52,7 @@ public class NewRender {
 		try {
 			compositor.Refresh();
 			Kdu_dims dimsRef1 = new Kdu_dims(), dimsRef2 = new Kdu_dims();
+			
 			compositor.Add_ilayer(layerNumber, dimsRef1, dimsRef2);
 			compositor.Set_max_quality_layers(quality);
 			

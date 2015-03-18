@@ -176,7 +176,7 @@ class J2KRender implements Runnable {
 		movieMode = val;
 		if (frameChooser instanceof AbsoluteFrameChooser) {
 			((AbsoluteFrameChooser) frameChooser)
-					.resetStartTime(currParams.compositionLayer);
+					.resetStartTime(currParams.compositionFrame);
 		}
 
 	}
@@ -227,7 +227,7 @@ class J2KRender implements Runnable {
 		return movieMode;
 	}
 
-	private void renderLayer(int numLayer) {
+	private void renderFrame(int numLayer) {
 		parentImageRef.getLock().lock();
 
 		try {
@@ -364,13 +364,13 @@ class J2KRender implements Runnable {
 
 			while (!Thread.interrupted() && !stop) {
 				tfrm = System.currentTimeMillis();
-				int curLayer = currParams.compositionLayer;
+				int curFrame = currParams.compositionFrame;
 
 				if (parentViewRef instanceof JHVJPXView) {
 
 					JHVJPXView parent = (JHVJPXView) parentViewRef;
 
-					if (parent.getMaximumAccessibleFrameNumber() < curLayer) {
+					if (parent.getMaximumAccessibleFrameNumber() < curFrame) {
 						try {
 							Thread.sleep(200);
 						} catch (InterruptedException e) {
@@ -391,7 +391,7 @@ class J2KRender implements Runnable {
 					}
 				}
 
-				renderLayer(curLayer);
+				renderFrame(curFrame);
 
 				int width = currParams.subImage.width;
 				int height = currParams.subImage.height;
@@ -402,7 +402,7 @@ class J2KRender implements Runnable {
 								new SingleChannelByte8ImageData(width, height,
 										byteBuffer[currentByteBuffer],
 										new ColorMask()), currParams.subImage,
-								curLayer);
+								curFrame);
 					} else {
 						System.out.println("J2KRender: Params out of sync, skip frame");
 					}
@@ -413,7 +413,7 @@ class J2KRender implements Runnable {
 								.setSubimageData(new ARGBInt32ImageData(width,
 										height, intBuffer[currentIntBuffer],
 										new ColorMask()), currParams.subImage,
-										curLayer);
+										curFrame);
 					} else {
 						System.out.println("J2KRender: Params out of sync, skip frame");
 					}
@@ -423,10 +423,10 @@ class J2KRender implements Runnable {
 					break;
 				else {
 					currParams = parentViewRef.getImageViewParams();
-					numFrames += currParams.compositionLayer - lastFrame;
-					lastFrame = currParams.compositionLayer;
+					numFrames += currParams.compositionFrame - lastFrame;
+					lastFrame = currParams.compositionFrame;
 					tmax = frameChooser.moveToNextFrame();
-					if (lastFrame > currParams.compositionLayer) {
+					if (lastFrame > currParams.compositionFrame) {
 						lastFrame = -1;
 					}
 					tnow = System.currentTimeMillis();
@@ -450,9 +450,9 @@ class J2KRender implements Runnable {
 					}
 				}
 			}
-			numFrames += currParams.compositionLayer - lastFrame;
-			lastFrame = currParams.compositionLayer;
-			if (lastFrame > currParams.compositionLayer) {
+			numFrames += currParams.compositionFrame - lastFrame;
+			lastFrame = currParams.compositionFrame;
+			if (lastFrame > currParams.compositionFrame) {
 				lastFrame = -1;
 			}
 			tnow = System.currentTimeMillis();
@@ -543,8 +543,8 @@ class J2KRender implements Runnable {
 
 	private class RelativeFrameChooser implements FrameChooser {
 		public long moveToNextFrame() {
-			currParams.compositionLayer = nextFrameCandidateChooser
-					.getNextCandidate(currParams.compositionLayer);
+			currParams.compositionFrame = nextFrameCandidateChooser
+					.getNextCandidate(currParams.compositionFrame);
 			return 1000 / movieSpeed;
 		}
 	}
@@ -555,7 +555,7 @@ class J2KRender implements Runnable {
 				.getDateTimeCache();
 
 		private long absoluteStartTime = dateTimeCache.getDateTime(
-				currParams.compositionLayer).getMillis();
+				currParams.compositionFrame).getMillis();
 		private long systemStartTime = System.currentTimeMillis();
 
 		public void resetStartTime(int frameNumber) {
@@ -565,7 +565,7 @@ class J2KRender implements Runnable {
 		}
 
 		public long moveToNextFrame() {
-			int lastCandidate, nextCandidate = currParams.compositionLayer;
+			int lastCandidate, nextCandidate = currParams.compositionFrame;
 			long lastDiff, nextDiff = -Long.MAX_VALUE;
 
 			do {
@@ -580,10 +580,10 @@ class J2KRender implements Runnable {
 			} while (nextDiff < 0);
 
 			if (-lastDiff < nextDiff) {
-				currParams.compositionLayer = lastCandidate;
+				currParams.compositionFrame = lastCandidate;
 				return lastDiff / movieSpeed;
 			} else {
-				currParams.compositionLayer = nextCandidate;
+				currParams.compositionFrame = nextCandidate;
 				return nextDiff / movieSpeed;
 			}
 		}

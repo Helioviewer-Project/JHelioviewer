@@ -125,7 +125,7 @@ public class JHVJPXView extends JHVJP2View implements View {
         frameNumber = Math.max(0, Math.min(getMaximumFrameNumber(), frameNumber));
 
         if (forceSignal && linkedMovieManager != null) {
-            while (getMaximumAccessibleFrameNumber() < imageViewParams.compositionLayer) {
+            while (getMaximumAccessibleFrameNumber() < imageViewParams.compositionFrame) {
                 try {
                     Thread.sleep(200);
                 } catch (InterruptedException e) {
@@ -187,7 +187,7 @@ public class JHVJPXView extends JHVJP2View implements View {
      * {@inheritDoc}
      */
     public int getCurrentFrameNumber() {
-        return imageViewParams.compositionLayer;
+        return imageViewParams.compositionFrame;
     }
 
     /**
@@ -400,11 +400,11 @@ public class JHVJPXView extends JHVJP2View implements View {
      * @return true, if the frame number has changed
      */
     protected boolean setCurrentFrameNumber(int frameNumber, ChangeEvent event, boolean forceSignal) {
-        if (frameNumber != imageViewParams.compositionLayer || forceSignal) {
+        if (frameNumber != imageViewParams.compositionFrame || forceSignal) {
 
-            imageViewParams.compositionLayer = frameNumber;
+            imageViewParams.compositionFrame = frameNumber;
 
-            while (getMaximumAccessibleFrameNumber() < imageViewParams.compositionLayer) {
+            while (getMaximumAccessibleFrameNumber() < imageViewParams.compositionFrame) {
                 try {
                     Thread.sleep(20);
                 } catch (InterruptedException e) {

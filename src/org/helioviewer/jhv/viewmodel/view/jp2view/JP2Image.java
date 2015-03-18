@@ -425,7 +425,7 @@ public class JP2Image implements MultiFrameMetaDataContainer {
     public String getValueFromXML(String _keyword, String _box) throws JHV_KduException {
         int boxNumber = 1;
         if (parentView != null && parentView.getImageViewParams() != null) {
-            boxNumber = parentView.getImageViewParams().compositionLayer + 1;
+            boxNumber = parentView.getImageViewParams().compositionFrame + 1;
         }
         return getValueFromXML(_keyword, _box, boxNumber);
     }

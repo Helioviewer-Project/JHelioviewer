@@ -22,7 +22,7 @@ public class JP2ImageParameter {
     public final int qualityLayers;
 
     /** Zero based frame number */
-    public int compositionLayer;
+    public int compositionFrame;
 
     /** This constructor assigns all variables... throw NPE if any args are null */
     public JP2ImageParameter(SubImage _roi, ResolutionLevel _resolution, int _qualityLayers, int _compositionLayer) {
@@ -31,7 +31,7 @@ public class JP2ImageParameter {
         subImage = _roi;
         resolution = _resolution;
         qualityLayers = _qualityLayers;
-        compositionLayer = _compositionLayer;
+        compositionFrame = _compositionLayer;
     }
 
     /** The toString method. */
@@ -41,7 +41,7 @@ public class JP2ImageParameter {
         ret += " " + subImage.toString();
         ret += " " + resolution.toString();
         ret += " [NumQLayers=" + qualityLayers + "]";
-        ret += " [CurrentLayerNum=" + compositionLayer + "]";
+        ret += " [CurrentLayerNum=" + compositionFrame + "]";
         ret += " ]";
         return ret;
     }
@@ -53,6 +53,6 @@ public class JP2ImageParameter {
             return false;
         }
         JP2ImageParameter params = (JP2ImageParameter) o;
-        return subImage.equals(params.subImage) && resolution.equals(params.resolution) && qualityLayers == params.qualityLayers && compositionLayer == params.compositionLayer;
+        return subImage.equals(params.subImage) && resolution.equals(params.resolution) && qualityLayers == params.qualityLayers && compositionFrame == params.compositionFrame;
     }
 }

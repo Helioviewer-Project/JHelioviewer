@@ -260,8 +260,8 @@ class J2KReader implements Runnable {
                 viewChanged = prevParams == null || !(currParams.subImage.equals(prevParams.subImage) && currParams.resolution.equals(prevParams.resolution) && currParams.qualityLayers == prevParams.qualityLayers);
 
                 if (!parentViewRef.isMainView) {
-                    viewChanged = viewChanged || currParams.compositionLayer != prevCompositionLayer;
-                    prevCompositionLayer = currParams.compositionLayer;
+                    viewChanged = viewChanged || currParams.compositionFrame != prevCompositionLayer;
+                    prevCompositionLayer = currParams.compositionFrame;
                 }
 
                 // if view has changed downgrade caching status
@@ -334,7 +334,7 @@ class J2KReader implements Runnable {
 
                             JPIPResponse res = null;
                             boolean stopReading = false;
-                            int curLayer = currParams.compositionLayer;
+                            int curLayer = currParams.compositionFrame;
                             Interval<Integer> layers = parentImageRef.getCompositionLayerRange();
                             int num_layers = layers.end - layers.start + 1;
 

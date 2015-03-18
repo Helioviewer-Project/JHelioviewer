@@ -1,16 +1,15 @@
 package org.helioviewer.jhv.plugins.pfssplugin.data.decompression;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
-import org.apache.tika.io.TikaInputStream;
 import org.helioviewer.jhv.plugins.pfssplugin.data.PfssCompressed;
 
-import de.innosystec.unrar.Archive;
-import de.innosystec.unrar.exception.RarException;
-import de.innosystec.unrar.rarfile.FileHeader;
+import com.github.junrar.Archive;
+import com.github.junrar.exception.RarException;
+import com.github.junrar.rarfile.FileHeader;
 
 /**
  * Wrapper class around the jUnrar library.
@@ -25,10 +24,9 @@ public class UnRar {
 	 */
 	public static ByteArrayOutputStream unrarData(PfssCompressed data) throws IOException {
 		Archive archive = null;
+		
 		try {
-			
-			File file = TikaInputStream.get(new ByteArrayInputStream(data.getData())).getFile();
-            archive = new Archive(file, null);
+			archive = new Archive(data.getVolumeManage());
             
             for(;;)
             {
@@ -46,7 +44,9 @@ public class UnRar {
 		} catch (RarException e) {
 			throw new IOException(e);
 		}
+
 		finally {
+			if (archive != null)
 			archive.close();
 		}
 	}

@@ -50,7 +50,7 @@ public class MainImagePanel extends BasicImagePanel {
     private boolean noImagePostRendererSet = false;
 
     private LoadingPostRendererSwitch loadingPostRenderer = new LoadingPostRendererSwitch();
-    private CenterLoadingScreen centerLoadingScreen;
+    //private CenterLoadingScreen centerLoadingScreen;
     private int loadingTasks = 0;
 
     private AbstractList<MouseMotionListener> mouseMotionListeners = new LinkedList<MouseMotionListener>();
@@ -67,7 +67,7 @@ public class MainImagePanel extends BasicImagePanel {
         // call constructor of super class
         super();
 
-        if (!JHVGlobals.OLD_RENDER_MODE) centerLoadingScreen = new CenterLoadingScreen();
+        //if (!JHVGlobals.OLD_RENDER_MODE) centerLoadingScreen = new CenterLoadingScreen();
         // add post render that no image is loaded
         noImagePostRenderer.setContainerSize(getWidth(), getHeight());
         addPostRenderer(noImagePostRenderer);
@@ -94,7 +94,7 @@ public class MainImagePanel extends BasicImagePanel {
                     noImagePostRendererSet = false;
                 }
                 addPostRenderer(loadingPostRenderer);
-                if (!JHVGlobals.OLD_RENDER_MODE) ((CompenentView) GuiState3DWCS.mainComponentView).addRenderAnimation(centerLoadingScreen);
+                //if (!JHVGlobals.OLD_RENDER_MODE) ((CompenentView) GuiState3DWCS.mainComponentView).addRenderAnimation(centerLoadingScreen);
                 loadingPostRenderer.startAnimation();
             }
             loadingTasks++;
@@ -102,7 +102,7 @@ public class MainImagePanel extends BasicImagePanel {
             loadingTasks--;
             if (loadingTasks == 0) {
                 removePostRenderer(loadingPostRenderer);
-                if (!JHVGlobals.OLD_RENDER_MODE) ((CompenentView) GuiState3DWCS.mainComponentView).removeRenderAnimation(centerLoadingScreen);
+                //if (!JHVGlobals.OLD_RENDER_MODE) ((CompenentView) GuiState3DWCS.mainComponentView).removeRenderAnimation(centerLoadingScreen);
                 loadingPostRenderer.stopAnimation();
 
                 LayeredView layeredView = GuiState3DWCS.mainComponentView.getAdapter(LayeredView.class);
