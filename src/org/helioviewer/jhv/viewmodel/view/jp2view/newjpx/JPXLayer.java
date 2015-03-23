@@ -10,6 +10,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.FutureTask;
 
 import org.helioviewer.jhv.JHelioviewer;
 import org.helioviewer.jhv.base.FileUtils;
@@ -44,7 +45,6 @@ public class JPXLayer {
 			
 			NewReader newReader;
 			try {
-				newReader = new NewReader("jpip://api.helioviewer.org:8090/movies/SDO_AIA_335_F2014-01-01T00.00.00Z_T2014-01-01T00.45.00Z.jpx",12);
 				//Sub
 				SubImage _roi = new SubImage(0, 0, 4096, 4096);
 				ResolutionSet resolutionSet = new ResolutionSet(8);
@@ -57,18 +57,18 @@ public class JPXLayer {
 				resolutionSet.addResolutionLevel(1, new Rectangle(2048, 2048));
 				resolutionSet.addResolutionLevel(0, new Rectangle(4096, 4096));
 				ResolutionLevel _resolution = resolutionSet.getResolutionLevel(0);
+				newReader = new NewReader("jpip://api.helioviewer.org:8090/movies/SDO_AIA_335_F2014-01-01T00.00.00Z_T2014-01-01T00.45.00Z.jpx",12, resolutionSet);
+
 				System.out.println("res : " + _resolution);
 				JPIPQuery query = newReader.createQuery(new JP2ImageParameter(_roi, _resolution, 0, 0), 0, 0);
 				
 				System.out.println("query : " + query);
 				JPIPRequest request = new JPIPRequest(Method.GET, query);
-				newReader.addRequest(request);
 
 				_roi = new SubImage(0, 0, 128, 128);
 				_resolution = resolutionSet.getResolutionLevel(5);
 				query = newReader.createQuery(new JP2ImageParameter(_roi, _resolution, 0, 0), 0, 8);
 				request = new JPIPRequest(Method.GET, query);
-				newReader.addRequest(request);
 
 			} catch (URISyntaxException e) {
 				// TODO Auto-generated catch block

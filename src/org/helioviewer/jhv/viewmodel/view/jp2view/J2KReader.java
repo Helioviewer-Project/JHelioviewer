@@ -401,7 +401,7 @@ class J2KReader implements Runnable {
                                 break;
                                 
                             default:
-                                throw new RuntimeException("Whan an ususual strategy: "+strategy);
+                                throw new RuntimeException("What an ususual strategy: "+strategy);
                             }
                             
                             if(Thread.currentThread().isInterrupted())
@@ -427,7 +427,7 @@ class J2KReader implements Runnable {
 
                                 // Update requested package size
                                 stepQuerys[current_step].setField(JPIPRequestField.LEN.toString(), String.valueOf(JpipRequestLen));
-
+                                System.out.println("step : " + stepQuerys[current_step]);
                                 req.setQuery(stepQuerys[current_step].toString());
                                 
                                 if(Thread.currentThread().isInterrupted())

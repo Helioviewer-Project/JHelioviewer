@@ -14,11 +14,16 @@ public class ImageLayer implements JHVCachable {
 	private String measurement2;
 	private LocalDateTime dateTime;
 	
+	private int size;
+	
 	private Kdu_cache cache;
 	
 	private int insturmentID;
 	
+	private LocalDateTime[] framesDateTime;
+	
 	public ImageLayer(int insturmentID){
+		size = 0;
 		this.insturmentID = insturmentID;
 		this.cache = new Kdu_cache();
 	}
@@ -30,10 +35,26 @@ public class ImageLayer implements JHVCachable {
 		this.measurement2 = measurement2;
 		this.dateTime = dateTime;
 	}
-	
+		
 	public Kdu_cache getCache(){
 		return cache;
 	}
 	
+	public void addSize(int size){
+		this.size += size;
+	}
 	
+	public int getSize(){
+		return this.size;
+	}
+
+	@Override
+	public void setFramesDateTime(LocalDateTime[] framesDateTime) {
+		this.framesDateTime = framesDateTime;
+	}
+
+	@Override
+	public LocalDateTime[] getFramesDateTime() {
+		return this.framesDateTime;
+	}	
 }

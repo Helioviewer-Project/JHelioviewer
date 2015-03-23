@@ -5,16 +5,18 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.time.LocalDateTime;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.FutureTask;
 
 public class NewCache {
 
 	public static NewCache singelton = new NewCache();
 	
-	private ConcurrentLinkedDeque<JHVCachable> ramCache;
+	private ConcurrentLinkedDeque<FutureTask<JHVCachable>> ramCache;
 	
 	public NewCache() {
-		ramCache = new ConcurrentLinkedDeque<JHVCachable>();
+		ramCache = new ConcurrentLinkedDeque<FutureTask<JHVCachable>>();
 		File file;
 				file = new File("/Users/binchu/Documents/FHNW/tmp");
 				file.mkdir();
@@ -24,7 +26,7 @@ public class NewCache {
 		System.out.println("test");
 	}
 	
-	public void addCacheElement(JHVCachable cacheElement){
+	public void addCacheElement(FutureTask<JHVCachable> cacheElement){
 		this.ramCache.add(cacheElement);
 	}
 	
@@ -32,5 +34,9 @@ public class NewCache {
 	
 	public static void main(String[] args) {
 		NewCache.singelton.test();
+	}
+
+	public FutureTask<JHVCachable> getCacheElement(LocalDateTime currentDate) {
+		return ramCache.poll();
 	}
 }
