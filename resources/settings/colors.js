@@ -1,4 +1,6 @@
 [
+	{"instrument":"HMI", 	"color":"Gray"},
+	{"instrument":"MDI", 	"color":"Gray"},
  	{"instrument":"EIT", 	"measurement":"171",  "color":"SOHO EIT 171 Å"},
 	{"instrument":"EIT", 	"measurement":"195",  "color":"SOHO EIT 195 Å"},
 	{"instrument":"EIT", 	"measurement":"284",  "color":"SOHO EIT 284 Å"},
