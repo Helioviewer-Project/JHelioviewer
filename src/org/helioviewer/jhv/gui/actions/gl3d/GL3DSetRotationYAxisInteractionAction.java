@@ -21,7 +21,7 @@ public class GL3DSetRotationYAxisInteractionAction extends AbstractAction {
     private static final long serialVersionUID = 1L;
 
     public GL3DSetRotationYAxisInteractionAction() {
-        super("Rotate Y-Axis");
+        super("Lock Y-axis");
     }
 
     /**
