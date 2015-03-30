@@ -7,7 +7,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.text.DecimalFormat;
-import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Map;
@@ -17,7 +16,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
 import org.helioviewer.jhv.base.math.Vector3d;
-import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.gui.GL3DCameraSelectorModel;
 import org.helioviewer.jhv.gui.components.BasicImagePanel;
 import org.helioviewer.jhv.gui.interfaces.ImagePanelPlugin;

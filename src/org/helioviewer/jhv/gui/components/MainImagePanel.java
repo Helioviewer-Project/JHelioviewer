@@ -11,12 +11,10 @@ import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
-import org.helioviewer.jhv.opengl.CenterLoadingScreen;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.changeevent.LayerChangedReason;
 import org.helioviewer.jhv.viewmodel.renderer.screen.GLScreenRenderGraphics;
@@ -24,7 +22,6 @@ import org.helioviewer.jhv.viewmodel.renderer.screen.ScreenRenderer;
 import org.helioviewer.jhv.viewmodel.view.LayeredView;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.ViewHelper;
-import org.helioviewer.jhv.viewmodel.view.opengl.CompenentView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DComponentView;
 
 /**

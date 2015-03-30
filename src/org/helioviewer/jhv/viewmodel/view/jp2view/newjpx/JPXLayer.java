@@ -1,19 +1,8 @@
 package org.helioviewer.jhv.viewmodel.view.jp2view.newjpx;
 
 import java.awt.Rectangle;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.concurrent.FutureTask;
-
-import org.helioviewer.jhv.JHelioviewer;
-import org.helioviewer.jhv.base.FileUtils;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JP2Image;
 import org.helioviewer.jhv.viewmodel.view.jp2view.image.JP2ImageParameter;
 import org.helioviewer.jhv.viewmodel.view.jp2view.image.ResolutionSet;

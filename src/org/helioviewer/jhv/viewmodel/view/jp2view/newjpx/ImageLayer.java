@@ -2,8 +2,6 @@ package org.helioviewer.jhv.viewmodel.view.jp2view.newjpx;
 
 import java.time.LocalDateTime;
 
-import javax.sound.midi.Instrument;
-
 import kdu_jni.Kdu_cache;
 
 public class ImageLayer implements JHVCachable {
@@ -21,6 +19,7 @@ public class ImageLayer implements JHVCachable {
 	private int insturmentID;
 	
 	private LocalDateTime[] framesDateTime;
+	private boolean complete;
 	
 	public ImageLayer(int insturmentID){
 		size = 0;
@@ -56,5 +55,13 @@ public class ImageLayer implements JHVCachable {
 	@Override
 	public LocalDateTime[] getFramesDateTime() {
 		return this.framesDateTime;
+	}
+
+	public void setComplete(boolean complete) {
+		this.complete = complete;
 	}	
+	
+	public boolean isComplete(){
+		return this.complete;
+	}
 }

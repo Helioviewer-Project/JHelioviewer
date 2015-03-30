@@ -217,8 +217,9 @@ public class JPIPSocket extends HTTPSocket {
         JPIPResponse res = new JPIPResponse(httpRes);
         InputStream input;
 
-        if (res.getCode() != 200)
+        if (res.getCode() != 200){
             throw new IOException("Invalid status code returned (" + res.getCode() + ") " + res.getReason());
+        }
         if (res.getHeader("Content-Type") != null && !res.getHeader("Content-Type").equals("image/jpp-stream"))
             throw new IOException("Expected image/jpp-stream content!\n" + getResponseHeadersAsString(res));
 
@@ -248,6 +249,7 @@ public class JPIPSocket extends HTTPSocket {
 
         if (res.getHeader("Connection") != null && res.getHeader("Connection").equals("close")) {
             super.close();
+            getOutputStream().close();
         }
         replyDataTm = System.currentTimeMillis();
         receivedData = jpip.getNumberOfBytesRead();

@@ -1,10 +1,6 @@
 package org.helioviewer.jhv.viewmodel.view.jp2view.newjpx;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.FutureTask;
