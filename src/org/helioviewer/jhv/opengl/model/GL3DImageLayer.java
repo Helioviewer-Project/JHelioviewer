@@ -391,16 +391,18 @@ public class GL3DImageLayer extends GL3DGroup implements GL3DCameraListener {
 					minPhysicalY, regionWidth, regionHeight);
 			// Log.debug("GL3DImageLayer: '"+getName()+" set its region");
 			this.regionView.setRegion(newRegion, null);
-		} else if (Double.isInfinite(regionHeight)
+/*		} else if (Double.isInfinite(regionHeight)
 				|| Double.isInfinite(regionWidth)) {
-
-		} else {
-			System.err.println("Illegal Region calculated! " + regionWidth + ":"
+*/
+        } else {
+            System.err.println("Illegal Region calculated! " + regionWidth + ":"
             + regionHeight + ". x = " + minPhysicalX + " - "
             + maxPhysicalX + ", y = " + minPhysicalY + " - "
             + maxPhysicalY);
-		}
-
+            
+            Region newRegion = StaticRegion.createAdaptedRegion(0,0,1,1);
+            this.regionView.setRegion(newRegion, null);
+        }
 	}
 
 	public void setCoronaVisibility(boolean visible) {
