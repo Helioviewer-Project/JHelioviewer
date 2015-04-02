@@ -94,10 +94,9 @@ public class NewTableSelectionModel extends DefaultListSelectionModel implements
     public void viewportGeometryChanged() {
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void subImageDataChanged() {
+    @Override
+    public void subImageDataChanged(int idx)
+    {
     }
 
     /**

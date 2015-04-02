@@ -248,7 +248,9 @@ public class HEKPluginPanel extends OverlayPanel implements ActionListener, HEKC
     public void layerRemoved(View oldView, int oldIdx) {
     }
 
-    public void subImageDataChanged() {
+    @Override
+    public void subImageDataChanged(int idx)
+    {
     }
 
     public void timestampChanged(int idx) {

@@ -159,16 +159,13 @@ public class GL3DCameraSelectorModel extends AbstractListModel<Object>
 	}
 
 	@Override
-	public void layerRemoved(View oldView, int oldIdx) {
-		// TODO Auto-generated method stub
-
+	public void layerRemoved(View oldView, int oldIdx)
+	{
 	}
 
 	@Override
-	public void layerChanged(int idx) {
-
-		// TODO Auto-generated method stub
-
+	public void layerChanged(int idx)
+	{
 	}
 
 	@Override
@@ -179,27 +176,23 @@ public class GL3DCameraSelectorModel extends AbstractListModel<Object>
 	}
 
 	@Override
-	public void viewportGeometryChanged() {
-		// TODO Auto-generated method stub
-
+	public void viewportGeometryChanged()
+	{
 	}
 
 	@Override
-	public void timestampChanged(int idx) {
-		// TODO Auto-generated method stub
-
+	public void timestampChanged(int idx)
+	{
 	}
 
 	@Override
-	public void subImageDataChanged() {
-		// TODO Auto-generated method stub
-
+	public void subImageDataChanged(int idx)
+	{
 	}
 
 	@Override
-	public void layerDownloaded(int idx) {
-		// TODO Auto-generated method stub
-
+	public void layerDownloaded(int idx)
+	{
 	}
 
 }

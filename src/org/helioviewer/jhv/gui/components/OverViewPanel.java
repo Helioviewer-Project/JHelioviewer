@@ -137,7 +137,8 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 	}
 
 	@Override
-	public void subImageDataChanged() {
+	public void subImageDataChanged(int idx)
+	{
 		this.updateTexture = true;
 		this.canvas.repaint(50);
 	}

@@ -135,7 +135,9 @@ public class HEKCacheTreeViewContainer extends JPanel implements HEKCacheListene
     public void timestampChanged(int idx) {
     }
 
-    public void subImageDataChanged() {
+    @Override
+    public void subImageDataChanged(int idx)
+    {
     }
 
     public void setLoadingMessage(String msg) {

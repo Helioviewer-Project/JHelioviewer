@@ -56,8 +56,22 @@ public class GL3DZoom1to1Action extends AbstractAction {
 			if (region != null) {
 				Dimension dimension = GuiState3DWCS.mainComponentView.getCanavasSize();
 				double minCanvasDimension = dimension.getHeight();
-		        if (!Boolean.parseBoolean(Settings.getProperty("default.display.highDPI")))
-		        	minCanvasDimension /= 2.0;
+				
+				/*
+				 * > Die 1:1-Skalierung der Low-Resolution-Texturen ist in der Tat unterschiedlich:
+				 * > Erst wenn man auf 200% heranzoomt, zeigt die halb-aufgelöste Textur jedes SDO-Pixel
+				 * > (da 0.5 x 200% = 100%). Sollen wir das ändern, dass der 1:1-Knopf nur auf 100% Zoomt
+				 * > und man mit Low-resolution-Texturen dann nur die Hälfte der SDO-Daten sieht? 
+				 * 
+				 * Ja, ich denke schon. Wenn der User ‘use high-res. textures’ deaktiviert, weiss er,
+				 * dass die räumliche Informationsdichte reduziert wird, aber die Darstellungsskala sollte
+				 * sich nicht ändern. Falls das mentale UI-Modell vieler User anders sein sollte, werden wir
+				 * das schnell hören, aber für den Moment denke ich, dass die meisten User erwarten, dass
+				 * die räumliche Darstellungsskala konstant bleibt.
+				 */
+				
+		        /*if (!Boolean.parseBoolean(Settings.getProperty("default.display.highDPI")))
+		        	minCanvasDimension /= 2.0;*/
 	            double halfFOVRad = Math.toRadians(camera.getFOV() / 2.0);
 	            double distance = (minCanvasDimension/2.0 * unitsPerPixel) / Math.tan(halfFOVRad);
 	            distance = -distance - camera.getZTranslation();

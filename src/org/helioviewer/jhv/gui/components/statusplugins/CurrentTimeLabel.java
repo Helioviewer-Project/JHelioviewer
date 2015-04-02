@@ -61,15 +61,15 @@ public class CurrentTimeLabel extends JLabel implements LayersListener{
 			this.setText(empty);
 		}
 	}
+	
 	@Override
-	public void subImageDataChanged() {
-		// TODO Auto-generated method stub
-		
+	public void subImageDataChanged(int idx)
+	{
 	}
+	
 	@Override
-	public void layerDownloaded(int idx) {
-		// TODO Auto-generated method stub
-		
+	public void layerDownloaded(int idx)
+	{
 	}
 
 }

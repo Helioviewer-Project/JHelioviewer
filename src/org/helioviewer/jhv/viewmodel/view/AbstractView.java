@@ -1,11 +1,7 @@
 package org.helioviewer.jhv.viewmodel.view;
 
-import java.util.AbstractList;
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 
@@ -23,44 +19,30 @@ import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
  */
 public abstract class AbstractView implements View {
 
-    private AbstractList<ViewListener> listeners = new LinkedList<ViewListener>();
-    private ReadWriteLock lock = new ReentrantReadWriteLock();
+    private CopyOnWriteArrayList<ViewListener> listeners = new CopyOnWriteArrayList<ViewListener>();
 
     /**
      * {@inheritDoc}
      */
-    public void addViewListener(ViewListener l) {
-        try
-        {
-            lock.writeLock().lock();
-            listeners.add(l);
-        }
-        finally
-        {
-            lock.writeLock().unlock();
-        }
+    public void addViewListener(ViewListener l)
+    {
+        listeners.add(l);
     }
 
     /**
      * {@inheritDoc}
      */
-    public AbstractList<ViewListener> getAllViewListener() {
+    public List<ViewListener> getAllViewListener()
+    {
         return listeners;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void removeViewListener(ViewListener l) {
-        try
-        {
-            lock.writeLock().lock();
-            listeners.remove(l);
-        }
-        finally
-        {
-            lock.writeLock().unlock();
-        }
+    public void removeViewListener(ViewListener l)
+    {
+        listeners.remove(l);
     }
 
     /**
@@ -69,18 +51,9 @@ public abstract class AbstractView implements View {
      * @param aEvent
      *            ChangeEvent to send
      */
-    protected void notifyViewListeners(ChangeEvent aEvent) {
-        lock.readLock().lock();
-        List<ViewListener> listenersCopy = null;
-        try {
-            listenersCopy = new ArrayList<ViewListener>(listeners);
-        } finally {
-            lock.readLock().unlock();
-        }
-        if (listenersCopy != null) {
-            for (ViewListener v : listenersCopy) {
-                v.viewChanged(this, aEvent);
-            }
-        }
+    protected void notifyViewListeners(ChangeEvent aEvent)
+    {
+        for (ViewListener v : listeners)
+            v.viewChanged(this, aEvent);
     }
 }

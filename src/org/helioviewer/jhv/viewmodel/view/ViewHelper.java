@@ -2,7 +2,6 @@ package org.helioviewer.jhv.viewmodel.view;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.AbstractList;
 
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.base.math.Vector2d;
@@ -438,9 +437,7 @@ public final class ViewHelper {
      */
     public static View findLastViewBeforeLayeredView(View aView) {
 
-        AbstractList<ViewListener> viewListeners = aView.getAllViewListener();
-
-        for (ViewListener v : viewListeners) {
+        for (ViewListener v : aView.getAllViewListener()) {
 
             if (v instanceof LayeredView)
                 return aView;

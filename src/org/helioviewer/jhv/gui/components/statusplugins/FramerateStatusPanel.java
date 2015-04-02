@@ -45,24 +45,22 @@ public class FramerateStatusPanel extends ViewStatusPanelPlugin {
             counter = 0;
             currentMillis = System.currentTimeMillis();
     }
-    
-    private void count(){
-    	if (LinkedMovieManager.getActiveInstance() != null && LinkedMovieManager.getActiveInstance().getMasterMovie() != null){    		
-    		if ((System.currentTimeMillis() - currentMillis) >= 1000)
-    			updateFramerate();
-    		long current = LinkedMovieManager.getActiveInstance().getMasterMovie().getCurrentFrameDateTime().getMillis();
-    		if (last >= 0 && last != current) counter++;
-    		last = current;
-    	}
-    }
 
     public void activeLayerChanged(int idx) {
     }
 
-    public void subImageDataChanged() {
-        count();
+    @Override
+    public void subImageDataChanged(int idx) {
+        if (LinkedMovieManager.getActiveInstance() != null && LinkedMovieManager.getActiveInstance().getMasterMovie() != null){         
+            if ((System.currentTimeMillis() - currentMillis) >= 1000)
+                updateFramerate();
+            long current = LinkedMovieManager.getActiveInstance().getMasterMovie().getCurrentFrameDateTime().getMillis();
+            if (last >= 0 && last != current) counter++;
+            last = current;
+        }
     }
     
     public void timestampChanged(){
+        
     }
 }

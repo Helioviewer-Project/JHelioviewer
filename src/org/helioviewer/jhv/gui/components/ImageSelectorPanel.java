@@ -358,10 +358,9 @@ public class ImageSelectorPanel extends JPanel implements LayersListener {
         activateActions();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void subImageDataChanged() {
+    @Override
+    public void subImageDataChanged(int idx)
+    {
     }
 
     /**

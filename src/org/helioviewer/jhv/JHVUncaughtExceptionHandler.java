@@ -125,6 +125,16 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
     @SuppressWarnings("deprecation")
     public void uncaughtException(final Thread t, final Throwable e)
     {
+        //stop reentrant error reporting
+        Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler()
+        {
+            @Override
+            public void uncaughtException(Thread _t,Throwable _e)
+            {
+                //IGNORE all other exceptions
+            }
+        });
+        
         if(!EventQueue.isDispatchThread())
         {
             try
@@ -134,7 +144,14 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
                     @Override
                     public void run()
                     {
-                        uncaughtException(t,e);
+                        try
+                        {
+                            uncaughtException(t,e);
+                        }
+                        catch(ThreadDeath _td)
+                        {
+                            //ignore concurrent, unhandled exceptions
+                        }
                     }
                 });
                 return;
@@ -148,16 +165,6 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
                 //off of the event dispatcher thread
             }
         }
-        
-        //stop recursive error reporting
-        Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler()
-        {
-            @Override
-            public void uncaughtException(Thread _t,Throwable _e)
-            {
-                //IGNORE all other exceptions
-            }
-        });
         
         // STOP THE WORLD to avoid exceptions piling up
         // Close all threads (excluding systemsthreads, just stop the timer thread from the system)

@@ -19,6 +19,8 @@ import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLDrawableFactory;
 import javax.media.opengl.GLProfile;
+import javax.swing.Icon;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
@@ -154,7 +156,22 @@ public class JHelioviewer {
     
             splash.nextStep();
             splash.setProgressText("Initializing Kakadu libraries...");
-    		loadLibraries();
+            
+            try
+            {
+                loadLibraries();
+            }
+            catch(UnsatisfiedLinkError _ule)
+            {
+                if(JHVGlobals.isLinux() && _ule.getMessage().contains("GLIBC"))
+                {
+                    splash.setVisible(false);
+                    JOptionPane.showMessageDialog(null,"JHelioviewer requires a more recent version of GLIBC. Please update your distribution.\n\n"+_ule.getMessage(),"JHelioviewer",JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                
+                throw _ule;
+            }
     
             // The following code-block attempts to start the native message
             // handling

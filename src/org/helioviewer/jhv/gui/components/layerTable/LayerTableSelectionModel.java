@@ -94,10 +94,9 @@ public class LayerTableSelectionModel extends DefaultListSelectionModel implemen
     public void viewportGeometryChanged() {
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void subImageDataChanged() {
+    @Override
+    public void subImageDataChanged(int idx)
+    {
     }
 
     /**

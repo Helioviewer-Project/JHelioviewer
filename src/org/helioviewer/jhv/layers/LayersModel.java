@@ -710,10 +710,7 @@ public class LayersModel implements ViewListener
         ChangedReason reason3=aEvent.getLastChangedReasonByType(ViewportChangedReason.class);
 
         if(reason!=null||reason2!=null||reason3!=null)
-        {
             this.fireViewportGeometryChanged();
-        }
-
     }
 
     private void handleTimestampChanges(View sender,ChangeEvent aEvent)
@@ -735,13 +732,9 @@ public class LayersModel implements ViewListener
                     // store last timestamp displayed
                     ImmutableDateTime currentFrameTimestamp=getCurrentFrameTimestamp(idx);
                     if(currentFrameTimestamp!=null)
-                    {
                         lastTimestamp=currentFrameTimestamp.getTime();
-                    }
                     else
-                    {
                         currentFrameTimestamp=null;
-                    }
                 }
 
             }
@@ -750,18 +743,17 @@ public class LayersModel implements ViewListener
 
     private void handleSubImageDataChanges(View sender,ChangeEvent aEvent)
     {
-        if(aEvent.reasonOccurred(SubImageDataChangedReason.class))
-        {
-            this.fireSubImageDataChanged();
-        }
+        SubImageDataChangedReason layerReason=aEvent.getLastChangedReasonByType(SubImageDataChangedReason.class);
+        if(layerReason==null)
+            return;
+        
+        fireSubImageDataChanged(findView(layerReason.getView()));
     }
 
     private void handleViewChainChanges(View sender,ChangeEvent aEvent)
     {
         if(aEvent.getLastChangedReasonByType(ViewChainChangedReason.class)!=null)
-        {
             this.fireAllLayersChanged();
-        }
     }
 
     /**
@@ -789,12 +781,7 @@ public class LayersModel implements ViewListener
      */
     public boolean isValidIndex(int idx)
     {
-        if(idx>=0&&idx<this.getNumLayers())
-        {
-            return true;
-        }
-
-        return false;
+        return idx>=0&&idx<this.getNumLayers();
     }
 
     /**
@@ -1426,20 +1413,16 @@ public class LayersModel implements ViewListener
     private void fireTimestampChanged(final int idx)
     {
         for(LayersListener ll:layerListeners)
-        {
             ll.timestampChanged(idx);
-        }
     }
 
     /**
      * Notify all LayersListeners
      */
-    public void fireSubImageDataChanged()
+    public void fireSubImageDataChanged(final int idx)
     {
         for(LayersListener ll:layerListeners)
-        {
-            ll.subImageDataChanged();
-        }
+            ll.subImageDataChanged(idx);
     }
 
     /**

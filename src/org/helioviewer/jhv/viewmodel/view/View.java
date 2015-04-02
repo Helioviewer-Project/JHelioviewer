@@ -1,6 +1,6 @@
 package org.helioviewer.jhv.viewmodel.view;
 
-import java.util.AbstractList;
+import java.util.List;
 
 import javax.swing.text.ComponentView;
 
@@ -65,7 +65,7 @@ public interface View {
      * 
      * @return List which contains references to all view listeners
      */
-    public AbstractList<ViewListener> getAllViewListener();
+    public List<ViewListener> getAllViewListener();
 
     /**
      * Returns a View of given interface or class.

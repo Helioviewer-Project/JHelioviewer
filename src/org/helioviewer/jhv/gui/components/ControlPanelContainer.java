@@ -107,10 +107,9 @@ public class ControlPanelContainer extends JPanel implements LayersListener {
     public void viewportGeometryChanged() {
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void subImageDataChanged() {
+    @Override
+    public void subImageDataChanged(int idx)
+    {
     }
 
     /**

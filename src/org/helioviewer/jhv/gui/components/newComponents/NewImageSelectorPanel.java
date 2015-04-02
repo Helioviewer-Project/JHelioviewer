@@ -269,30 +269,6 @@ public class NewImageSelectorPanel extends JPanel implements NewLayerListener {
         activateActions();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void subImageDataChanged() {
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void timestampChanged(int idx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void viewportGeometryChanged() {
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void layerDownloaded(int idx) {
-    }
-
 	@Override
 	public void newlayerAdded() {
 		activateActions();

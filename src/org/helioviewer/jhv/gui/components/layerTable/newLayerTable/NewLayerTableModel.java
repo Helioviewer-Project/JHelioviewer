@@ -65,30 +65,6 @@ public class NewLayerTableModel extends AbstractTableModel implements NewLayerLi
 
         return LayersModel.getSingletonInstance().getDescriptor(idx);
 
-    } 
-
-    /**
-     * {@inheritDoc}
-     */
-    public void activeLayerChanged(final int index) {
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void viewportGeometryChanged() {
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void subImageDataChanged() {
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void layerDownloaded(int idx) {
     }
 
 	@Override

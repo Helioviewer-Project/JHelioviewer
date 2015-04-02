@@ -653,10 +653,9 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
         public void viewportGeometryChanged() {
         }
 
-        /**
-         * {@inheritDoc}
-         */
-        public void subImageDataChanged() {
+        @Override
+        public void subImageDataChanged(int idx)
+        {
         }
 
         /**

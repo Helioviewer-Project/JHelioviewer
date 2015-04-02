@@ -159,7 +159,8 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 		this.reload();
 	}
 
-	public void subImageDataChanged() {
+	@Override
+	public void subImageDataChanged(int idx) {
 	}
 
 	public void timestampChanged(int idx) {

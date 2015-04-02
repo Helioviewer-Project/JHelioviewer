@@ -40,10 +40,10 @@ public class JHVJPXView extends JHVJP2View implements View {
     // Linking movies
     private LinkedMovieManager linkedMovieManager; // if the move is not
 
-    private SpeedType speedType = SpeedType.RELATIV;
+    private SpeedType speedType = SpeedType.RELATIVE;
     
     public enum SpeedType{
-    	ABSOLUT, RELATIV
+    	ABSOLUTE, RELATIVE
     }
     // linked, this has to
     // be null
@@ -234,7 +234,7 @@ public class JHVJPXView extends JHVJP2View implements View {
      * {@inheritDoc}
      */
     public void setDesiredRelativeSpeed(int framesPerSecond) {
-    	speedType = SpeedType.RELATIV;
+    	speedType = SpeedType.RELATIVE;
         if (render != null) {
             render.setMovieRelativeSpeed(framesPerSecond);
         }
@@ -244,7 +244,7 @@ public class JHVJPXView extends JHVJP2View implements View {
      * {@inheritDoc}
      */
     public void setDesiredAbsoluteSpeed(int observationSecondsPerSecond) {
-    	speedType = SpeedType.ABSOLUT;
+    	speedType = SpeedType.ABSOLUTE;
         if (render != null) {
             render.setMovieAbsoluteSpeed(observationSecondsPerSecond);
         }

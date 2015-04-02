@@ -220,7 +220,7 @@ public class CompenentView extends GL3DComponentView implements
 	}
 
 	@Override
-	public void subImageDataChanged() {
+	public void subImageDataChanged(int idx) {
 		this.updateTexture = true;
 		this.canvas.repaint();
 	}

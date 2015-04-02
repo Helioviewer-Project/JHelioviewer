@@ -231,7 +231,7 @@ public class ExportMovieDialog implements ActionListener {
 			writer = ToolFactory.makeWriter(directory + filename
 					+ this.selectedOutputFormat.getExtension());
 
-			if (timedJHVJPXView.getSpeedType() == SpeedType.RELATIV) {
+			if (timedJHVJPXView.getSpeedType() == SpeedType.RELATIVE) {
 				speed = 1000 / timedJHVJPXView.getDesiredSpeed();
 			}
 

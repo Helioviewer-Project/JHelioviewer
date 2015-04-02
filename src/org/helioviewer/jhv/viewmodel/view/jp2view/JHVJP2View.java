@@ -650,8 +650,8 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
         }
         notifyViewListeners(fireEvent);
         // Just a hack (by stefan meier), because notifyViewListener sometime doesn't work correctly
-        GuiState3DWCS.overViewPanel.subImageDataChanged();
-        GuiState3DWCS.mainComponentView.subImageDataChanged();
+        GuiState3DWCS.overViewPanel.subImageDataChanged(0);
+        GuiState3DWCS.mainComponentView.subImageDataChanged(0);
     }
 
     /**

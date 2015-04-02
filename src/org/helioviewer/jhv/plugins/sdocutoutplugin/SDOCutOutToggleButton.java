@@ -98,7 +98,7 @@ public class SDOCutOutToggleButton extends Component implements LayersListener,
 	}
 
 	@Override
-	public void subImageDataChanged() {
+	public void subImageDataChanged(int idx) {
 	}
 
 	@Override
