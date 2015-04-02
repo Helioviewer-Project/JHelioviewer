@@ -5,18 +5,36 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 
 public class InstrumentModel {
 
 	private final String URL_DATASOURCE = "http://api.helioviewer.org/v2/getDataSources/?";
 	private LinkedHashMap<String, Observatory> observatories = new LinkedHashMap<String, InstrumentModel.Observatory>();
+	public static InstrumentModel singelton = new InstrumentModel();
+	
+	private InstrumentModel() {
+		this.initModel();
+	}
+	
+	public Collection<Observatory> getObservatories(){
+		return observatories.values();
+	}
+	
+	public static void main(String[] args) {
+		InstrumentModel instrumentModel = InstrumentModel.singelton;
+		System.out.println(instrumentModel);
+	}
 	
 	public void initModel(){
 		StringBuilder sb = new StringBuilder();
@@ -51,9 +69,9 @@ public class InstrumentModel {
 				JSONObject jsonObservatory = observatories.getJSONObject(observatoryName);
 				addInstrument(jsonObservatory, observatory);
 			} catch (JSONException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			this.observatories.put(observatoryName, observatory);
 		}
 	}
 	
@@ -65,61 +83,73 @@ public class InstrumentModel {
 			observatory.addInstrument(instrumentName, instrument);
 			try {
 				JSONObject jsonInstrument = jsonObservatory.getJSONObject(instrumentName);
-				addDetector(jsonInstrument, instrument);
+				addFilter(jsonInstrument, instrument, observatory);
 			} catch (JSONException e) {
-				System.out.println("not avaible instrument : " + instrumentName);
+				addUILabel(jsonObservatory, observatory);
 			}
 		}
 	}
 	
-	private void addDetector(JSONObject jsonInstrument, Instrument instrument){
+	private void addFilter(JSONObject jsonInstrument, Instrument instrument, Observatory observatory){
 		Iterator<String> iterator = jsonInstrument.sortedKeys();
 		while (iterator.hasNext()) {
-			String detectorName = iterator.next();
-			Detector detector = new Detector(detectorName);
-			instrument.addDetector(detectorName, detector);
+			String filterName = iterator.next();
+			Filter filter = new Filter(filterName);
+			instrument.addFilter(filterName, filter);
 			try {				
-				JSONObject jsonDetector = jsonInstrument.getJSONObject(detectorName);
-				addDetector(jsonDetector, detector);
+				JSONObject jsonFilter = jsonInstrument.getJSONObject(filterName);
+				addFilter(jsonFilter, filter, observatory);
 			} catch (Exception e) {
-				System.out.println("not avaible detector : " + detectorName);
+				addUILabel(jsonInstrument, observatory);
 			}
 		}
 	}
 	
-	private void addDetector(JSONObject jsonDetector, Detector detector){
-		Iterator<String> iterator = jsonDetector.sortedKeys();
+	private void addFilter(JSONObject jsonFilter, Filter filter, Observatory observatory){
+		Iterator<String> iterator = jsonFilter.sortedKeys();
 		while (iterator.hasNext()) {
-			String detectorName = iterator.next();
+			String filterName = iterator.next();
 			try {
-				JSONObject jsonDetector1 = jsonDetector.getJSONObject(detectorName);
-				Detector detector1 = new Detector(detectorName);
-				detector.addDetector(detectorName, detector1);
-				addData(jsonDetector1, detector1);
+				JSONObject jsonFilter1 = jsonFilter.getJSONObject(filterName);
+				Filter detector1 = new Filter(filterName);
+				filter.addFilter(filterName, detector1);
+				addFilter(jsonFilter1, detector1, observatory);
 			} catch (Exception e) {
-				addData(jsonDetector, detector);
+				addUILabel(jsonFilter, observatory);
+				addData(jsonFilter, filter);
 				return;
 			}
 		}
 	}
 	
-	private void addData(JSONObject jsonObject, Detector detector){
+	private void addUILabel(JSONObject jsonObject, Observatory observatory){
+		JSONArray uiLabels;
+		try {
+			ArrayList<String> uiLabel = new ArrayList<String>();
+			uiLabels = (JSONArray) jsonObject.get("uiLabels");
+			for (int i = 1; i < uiLabels.length(); i++){
+				JSONObject obj = (JSONObject) uiLabels.get(i);
+				uiLabel.add(obj.getString("label"));
+				observatory.uiLabels = uiLabel;
+			}
+			System.out.println(uiLabels);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	private void addData(JSONObject jsonObject, Filter filter){
 		try {
 			Object end = jsonObject.get("end");
 			Object start = jsonObject.get("start");
 			if (start != null && end != null){
-				detector.hasDates = true;
+				filter.hasDates = true;
 			}
-			detector.layeringOrder = Integer.parseInt((String) jsonObject.getString("layeringOrder"));
-			detector.nickname = (String) jsonObject.get("nickname");
-			detector.sourceId = Integer.parseInt((String) jsonObject.getString("sourceId"));
-			JSONObject uiLabels = (JSONObject) jsonObject.get("uiLabels");
-			Iterator<String> iterator = uiLabels.keys();
-			while (iterator.hasNext()) {
-				String key = iterator.next();
-				String name = uiLabels.getString(key);
-				detector.uiLabels.put(key, name);
-			}
+			filter.layeringOrder = Integer.parseInt((String) jsonObject.getString("layeringOrder"));
+			filter.nickname = (String) jsonObject.get("nickname");
+			filter.sourceId = Integer.parseInt((String) jsonObject.getString("sourceId"));
 		} catch (JSONException e) {
 		}
 	}
@@ -127,6 +157,7 @@ public class InstrumentModel {
 	public class Observatory {
 		LinkedHashMap<String, Instrument> instruments = new LinkedHashMap<String, InstrumentModel.Instrument>(); 
 		private String name;
+		private ArrayList<String> uiLabels;
 		
 		public Observatory(String name) {
 			this.name = name;
@@ -135,23 +166,46 @@ public class InstrumentModel {
 		public void addInstrument(String name, Instrument instrument){
 			instruments.put(name, instrument);
 		}
+		
+		public Collection<Instrument> getInstruments(){
+			return this.instruments.values();
+		}
+		
+		public ArrayList<String> getUiLabels(){
+			return uiLabels;
+		}
+		
+		@Override
+		public String toString() {
+			return this.name;
+		}
 	}
 	
 	public class Instrument{
-		private LinkedHashMap<String, Detector> detectors = new LinkedHashMap<String, InstrumentModel.Detector>();
+		private LinkedHashMap<String, Filter> filters = new LinkedHashMap<String, InstrumentModel.Filter>();
 		private String name;
 		
 		public Instrument(String name) {
 			this.name = name;
 		}
 		
-		public void addDetector(String name, Detector detector){
-			detectors.put(name, detector);
+		public void addFilter(String name, Filter detector){
+			filters.put(name, detector);
+		}
+		
+		public Collection<Filter> getFilters(){
+			return this.filters.values();
+		}
+		
+		@Override
+		public String toString() {
+			// TODO Auto-generated method stub
+			return this.name;
 		}
 	}
 		
-	public class Detector{
-		private LinkedHashMap<String, Detector> detectors = new LinkedHashMap<String, InstrumentModel.Detector>();
+	public class Filter{
+		private LinkedHashMap<String, Filter> filters = new LinkedHashMap<String, InstrumentModel.Filter>();
 		private String name;
 		
 		public Boolean hasDates = false;
@@ -162,20 +216,25 @@ public class InstrumentModel {
 		public int sourceId;
 		public HashMap<String, String> uiLabels = new HashMap<String, String>();
 		
-		public Detector(String name) {
+		public Filter(String name) {
 			this.name = name;
 		}
 
-		public void addDetector(String name, Detector detector){
-			detectors.put(name, detector);
+		public void addFilter(String name, Filter filter){
+			filters.put(name, filter);
+		}
+		
+		public Collection<Filter> getFilters(){
+			return this.filters.values();
+		}
+		
+		@Override
+		public String toString() {
+			return this.name;
 		}
 		
 		
 
 	}
-	
-	public static void main(String[] args) {
-		new InstrumentModel().initModel();
-	}
-	
+		
 }

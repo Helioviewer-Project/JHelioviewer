@@ -3,24 +3,16 @@ package org.helioviewer.jhv.viewmodel.view.jp2view.newjpx;
 import java.awt.Rectangle;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
-
-import javax.swing.text.DateFormatter;
-
-import kdu_jni.Kdu_cache;
 
 import org.helioviewer.jhv.viewmodel.view.jp2view.image.ResolutionSet;
 import org.helioviewer.jhv.viewmodel.view.jp2view.image.SubImage;
@@ -126,11 +118,19 @@ public class UltimateLayer {
 	
 	
 	public void getImageData(LocalDateTime currentDate, SubImage subImage) throws InterruptedException, ExecutionException{
-		FutureTask<JHVCachable> currentLayerCache = cache.getCacheElement(currentDate);
-		ImageLayer layer = ((ImageLayer)currentLayerCache.get());
-		if (layer == null) return;
+		boolean complete = false;
+		ImageLayer layer = null;
+		while (!complete){
+			FutureTask<JHVCachable> currentLayerCache = cache.getCacheElement(currentDate);
+			layer = ((ImageLayer)currentLayerCache.get());	
+			if (layer != null)
+			complete = layer.isComplete();
+			else
+				Thread.sleep(100);
+		}
 		System.out.println("size : " + layer.getSize());
-		render.openImage(((ImageLayer)currentLayerCache.get()).getCache());
+		System.out.println("---------------------getImage---------------------");
+		render.openImage(layer.getCache());
 		float zoomPercent = this.resolutionSet.getResolutionLevel(0).getZoomPercent();
 		int[] imageData = render.getImage(0, 8, zoomPercent, subImage);
 		System.out.println(imageData);

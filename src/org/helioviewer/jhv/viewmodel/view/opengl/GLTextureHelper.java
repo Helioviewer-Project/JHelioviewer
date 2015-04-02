@@ -15,7 +15,6 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.glu.GLU;
 
-import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.viewmodel.imagedata.ColorMask;
 import org.helioviewer.jhv.viewmodel.imagedata.ImageData;

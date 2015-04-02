@@ -4,12 +4,10 @@ import java.awt.Rectangle;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.FutureTask;
 
 import kdu_jni.KduException;
@@ -20,14 +18,13 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.image.JP2ImageParameter;
 import org.helioviewer.jhv.viewmodel.view.jp2view.image.ResolutionSet;
 import org.helioviewer.jhv.viewmodel.view.jp2view.image.SubImage;
 import org.helioviewer.jhv.viewmodel.view.jp2view.image.ResolutionSet.ResolutionLevel;
-import org.helioviewer.jhv.viewmodel.view.jp2view.io.http.HTTPSocket;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.http.HTTPRequest.Method;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPConstants;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPDataSegment;
+import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPDatabinClass;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPQuery;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPRequest;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPRequestField;
-import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPRequest.Priority;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPResponse;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPSocket;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
@@ -85,13 +82,12 @@ public class NewReader implements JHVReader, Callable<JHVCachable> {
 		this.imageLayer = new ImageLayer(instrumentID);
 
 		socket = new JPIPSocket();
-		openSocket();
 		createRequests();
 	}
 
 	private void createRequests() {
 		ResolutionLevel resolutionLevel = resolutionSet
-					.getResolutionLevel(2);
+					.getResolutionLevel(0);
 			Rectangle rect = resolutionLevel.getResolutionBounds();
 
 			SubImage subImage = new SubImage(rect);
@@ -107,9 +103,10 @@ public class NewReader implements JHVReader, Callable<JHVCachable> {
 	private void openSocket() {
 		try {
 			JPIPResponse res = (JPIPResponse) socket.connect(uri);
+			addJPIPResponseData(res);
 			String jpipTargetID = res.getHeader("JPIP-tid");
 			System.out.println("jpipTargetID : " + jpipTargetID);
-		} catch (IOException e) {
+		} catch (IOException | JHV_KduException e) {
 			e.printStackTrace();
 		}
 
@@ -121,39 +118,33 @@ public class NewReader implements JHVReader, Callable<JHVCachable> {
 				openSocket();
 			JPIPDataSegment data = null;
 			JPIPQuery query = requests.poll();
+			JPIPRequest request = new JPIPRequest(Method.GET);
 			
 			boolean complete = false;
 			do {
+				if (socket.isClosed())
+					openSocket();
 				
 			query.setField(JPIPRequestField.LEN.toString(), String.valueOf(JpipRequestLen));
 
-				JPIPRequest request = new JPIPRequest(Method.GET);
 				//System.out.println("query : " + query);
 				request.setQuery(query);
 			socket.send(request);
 			JPIPResponse response = socket.receive();
 			// Update optimal package size
 			flowControl();
-			if (response != null && response.getResponseSize() > 0) {
-				while ((data = response.removeJpipDataSegment()) != null
-						&& !data.isEOR) {
-					try {
-						if (data.isComplete) complete = true;
-						imageLayer.getCache().Add_to_databin(
-								data.classID.getKakaduClassID(),
-								data.codestreamID, data.binID, data.data,
-								data.offset, data.length, data.isFinal, true,
-								false);
-						imageLayer.addSize(data.length);
-					} catch (KduException e) {
-						System.err.println(e.getStackTrace());
-					}
-				}
+			try {
+				complete = this.addJPIPResponseData(response);
+			} catch (JHV_KduException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
+
+			System.out.println("size : " + imageLayer.getSize());
 			
-			
-			} while (!data.isComplete);
-			System.out.println("complete : " + this.uri);
+			} while (!(complete));
+			imageLayer.setComplete(complete);
+			System.out.println("complete : " + uri);
 		}
 
 	}
@@ -204,6 +195,74 @@ public class NewReader implements JHVReader, Callable<JHVCachable> {
 
 		lastResponseTime = replyDataTime;
 	}
+	
+    public boolean addJPIPResponseData(JPIPResponse jRes) throws JHV_KduException {
+        JPIPDataSegment data;
+        while ((data = jRes.removeJpipDataSegment()) != null && !data.isEOR)
+        	try {
+                imageLayer.getCache().Add_to_databin(data.classID.getKakaduClassID(), data.codestreamID, data.binID, data.data, data.offset, data.length, data.isFinal, true, false);
+                imageLayer.addSize(data.length);
+            } catch (KduException ex) {
+                throw new JHV_KduException("Internal Kakadu error: " + ex.getMessage());
+            }
+        return jRes.isResponseComplete();
+    }
+    
+    private void updateServerCacheModel() throws JHV_KduException, IOException{
+    	String cModel = this.buildCacheModelUpdateString();
+        if (cModel == null)
+            return;
+
+        JPIPQuery cacheUpdateQuery = new JPIPQuery();
+        cacheUpdateQuery.setField("model", cModel);
+
+        JPIPRequest req = new JPIPRequest(JPIPRequest.Method.POST);
+        req.setQuery(cacheUpdateQuery.toString());
+
+        socket.send(req);
+        JPIPResponse res = socket.receive();
+
+        this.addJPIPResponseData(res);
+    }
+    
+    
+    public String buildCacheModelUpdateString() throws JHV_KduException {
+        int length;
+        long codestreamID, databinID;
+        boolean isComplete[] = new boolean[1];
+        StringBuilder cacheModel = new StringBuilder(1000);
+        Kdu_cache cache = imageLayer.getCache();
+        try {
+            codestreamID = cache.Get_next_codestream(-1);
+
+            while (codestreamID >= 0) {
+                cacheModel.append("[" + codestreamID + "],");
+                for (JPIPDatabinClass databinClass : JPIPDatabinClass.values()) {
+                    databinID = cache.Get_next_lru_databin(databinClass.getKakaduClassID(), codestreamID, -1, false);
+                    while (databinID >= 0) {
+                        if (cache.Mark_databin(databinClass.getKakaduClassID(), codestreamID, databinID, false)) {
+                            length = cache.Get_databin_length(databinClass.getKakaduClassID(), codestreamID, databinID, isComplete);
+                            // Append the databinClass String and the databinID
+                            cacheModel.append(databinClass.getJpipString() + (databinClass == JPIPDatabinClass.MAIN_HEADER_DATABIN ? "" : String.valueOf(databinID)));
+                            // If its not complete append the length of the
+                            // databin
+                            if (!isComplete[0])
+                                cacheModel.append(":" + String.valueOf(length));
+                            cacheModel.append(",");
+                        }
+                        databinID = cache.Get_next_lru_databin(databinClass.getKakaduClassID(), codestreamID, databinID, false);
+                    }
+                }
+                codestreamID = cache.Get_next_codestream(codestreamID);
+            }
+            if (cacheModel.length() > 0)
+                cacheModel.deleteCharAt(cacheModel.length() - 1);
+
+        } catch (KduException ex) {
+            throw new JHV_KduException("Internal Kakadu error: " + ex.getMessage());
+        }
+        return cacheModel.toString();
+    }
 
 	public JPIPQuery createQuery(JP2ImageParameter currParams, int iniFrame,
 			int endFrame) {
@@ -243,11 +302,16 @@ public class NewReader implements JHVReader, Callable<JHVCachable> {
 	@Override
 	public JHVCachable call(){
 		try {
+			openSocket();
+			updateServerCacheModel();
 			receiveData();
 			if (!socket.isClosed())
 				this.socket.close();
 			return this.imageLayer;
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JHV_KduException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

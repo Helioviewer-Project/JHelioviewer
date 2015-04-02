@@ -39,6 +39,6 @@
 	<classpathentry kind="lib" path="lib/joda-time-2.4.jar"/>
 	<classpathentry kind="lib" path="lib/junrar-0.7.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging-1.2.jar"/>
-	<classpathentry kind="lib" path="lib/core-1.6.0.jar"/>
+	<classpathentry kind="lib" path="lib/core-2.0.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
