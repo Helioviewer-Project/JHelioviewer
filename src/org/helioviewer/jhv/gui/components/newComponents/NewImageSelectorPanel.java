@@ -26,8 +26,7 @@ import org.helioviewer.jhv.gui.components.layerTable.LayerTable;
 import org.helioviewer.jhv.gui.components.layerTable.newLayerTable.NewLayerTable;
 import org.helioviewer.jhv.gui.components.layerTable.newLayerTable.NewLayerTableContainer;
 import org.helioviewer.jhv.gui.dialogs.observation.ImageDataPanel;
-import org.helioviewer.jhv.gui.dialogs.observation.ObservationDialog;
-import org.helioviewer.jhv.layers.Layer;
+import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.layers.NewLayerListener;
 import org.helioviewer.jhv.viewmodel.view.View;
@@ -43,13 +42,14 @@ public class NewImageSelectorPanel extends JPanel implements NewLayerListener {
     /**
      * Observation dialog to actually add new data
      */
-    private final ObservationDialog observationDialog = ObservationDialog.getSingletonInstance();
+    private final AddLayerPanel addLayerDialog = new AddLayerPanel();
+    //private final ObservationDialog observationDialog = ObservationDialog.getSingletonInstance();
 
     /**
      * Action to add a new layer. If there is a current active layer which much
      * different time, the dates will be updated.
      */
-    private Action addLayerAction = new AbstractAction("Add Layer", IconBank.getIcon(JHVIcon.ADD)) {
+    private Action addLayerAction = new AbstractAction("Add Layer", IconBank.getIcon(JHVIcon.ADD_NEW, 16, 16)) {
         /**
          * 
          */
@@ -116,7 +116,7 @@ public class NewImageSelectorPanel extends JPanel implements NewLayerListener {
                 }
             }
             // Show dialog
-            observationDialog.showDialog();
+            addLayerDialog.setVisible(true);
         }
     };
     /**
@@ -137,7 +137,7 @@ public class NewImageSelectorPanel extends JPanel implements NewLayerListener {
         private static final long serialVersionUID = 1L;
         {
             putValue(SHORT_DESCRIPTION, "Download the currently selected Layer");
-            putValue(SMALL_ICON, IconBank.getIcon(JHVIcon.DOWNLOAD));
+            putValue(SMALL_ICON, IconBank.getIcon(JHVIcon.DOWNLOAD_NEW, 16, 16));
         }
 
         /**
@@ -169,7 +169,7 @@ public class NewImageSelectorPanel extends JPanel implements NewLayerListener {
         private static final long serialVersionUID = 1L;
         {
             putValue(SHORT_DESCRIPTION, "Show the Metainformation of the currently selected Layer");
-            putValue(SMALL_ICON, IconBank.getIcon(JHVIcon.INFO));
+            putValue(SMALL_ICON, IconBank.getIcon(JHVIcon.INFO_NEW, 16, 16));
         }
 
         /**
@@ -191,7 +191,7 @@ public class NewImageSelectorPanel extends JPanel implements NewLayerListener {
      */
     public NewImageSelectorPanel() {
         // set up observation dialog
-        observationDialog.addUserInterface("Image data", observationImagePane);
+        //observationDialog.addUserInterface("Image data", observationImagePane);
 
         // add components
         JPanel southPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -287,7 +287,7 @@ public class NewImageSelectorPanel extends JPanel implements NewLayerListener {
 	}
 
 	@Override
-	public void activeLayerChanged(Layer layer) {
+	public void activeLayerChanged(LayerInterface layer) {
 		
 	}
 }

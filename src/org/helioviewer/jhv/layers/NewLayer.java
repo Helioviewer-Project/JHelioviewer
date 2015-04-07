@@ -1,18 +1,21 @@
 package org.helioviewer.jhv.layers;
 
 import java.time.LocalDateTime;
-
-import javax.media.opengl.GL2;
+import java.util.concurrent.ExecutionException;
 
 import org.helioviewer.jhv.internal_plugins.filter.SOHOLUTFilterPlugin.DefaultTable;
+import org.helioviewer.jhv.layers.Layer.Channelcolor;
+import org.helioviewer.jhv.layers.Layer.Lut;
 import org.helioviewer.jhv.layers.filter.LUT;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 import org.helioviewer.jhv.viewmodel.view.jp2view.image.SubImage;
+import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.NewCache;
+import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.NewRender;
+import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.UltimateLayer;
 
-@Deprecated
-public class Layer implements LayerInterface{
+public class NewLayer implements LayerInterface{
+
 	public enum SHADER_STATE{
 		FALSE, TRUE;
 	}
@@ -56,9 +59,11 @@ public class Layer implements LayerInterface{
 			return this.inverted == SHADER_STATE.TRUE ? 1 : 0;
 		}
 	}
-	private JHVJPXView jhvjpxView;
 	
-	// filter
+	private UltimateLayer ultimateLayer;
+	private NewRender newRender;
+	private NewCache newCache;
+	
 	public double opacity = 1;
 	public double sharpen = 0;
 	public double gamma = 1;
@@ -69,47 +74,39 @@ public class Layer implements LayerInterface{
 	public Channelcolor blueChannel;
 	private int texture = -1;
 	public int textureOverview;
-	public boolean visible = true;
-	
+	private boolean visible = true;
+
 	private OpenGLHelper openGLHelper;
 	
-	public Layer(JHVJPXView jhvjpxView) {
-		openGLHelper = new OpenGLHelper();
-		this.jhvjpxView = jhvjpxView;
-        MetaData metaData = jhvjpxView.getMetaData();
+	public NewLayer(int sourceID, NewRender newRender, NewCache newCache) {
+		this.ultimateLayer = new UltimateLayer(sourceID, newCache, newRender);
+	}
+	
+	@Override
+	public int getTexture() {
+		return texture;
+	}
+	
+	private void initGL(){
+		MetaData metaData = null;
     	String colorKey = DefaultTable.getSingletonInstance().getColorTable(metaData);
-        if(colorKey == null)
+        
+		if(colorKey == null)
         	colorKey = "Gray";
         
+		openGLHelper = new OpenGLHelper();		
 		lut = new Lut();
 		lut.name = colorKey;
 		lut.idx = LUT.getLutPosition(colorKey);
 		redChannel = new Channelcolor("red");
 		greenChannel = new Channelcolor("green");
 		blueChannel = new Channelcolor("blue");
-		this.initLayer(OpenGLHelper.glContext.getGL().getGL2());
-		//this.textureOverview = OpenGLHelper.createTexture(gl);
+		texture = openGLHelper.createTextureID();
 	}
 
-	private void initLayer(GL2 gl){
-		this.texture = openGLHelper.createTextureID();
-		openGLHelper.bindLayerToGLTexture(this);
-	}
-	
-	public JHVJPXView getJhvjpxView() {
-		return jhvjpxView;
-	}
-	
-	public boolean isVisible(){
-		return visible;
-	}
-
-	public int getTexture(){
-		return texture;
-	}
-	
-	public void updateTexture(GL2 gl){
-		openGLHelper.bindLayerToGLTexture(this);
+	@Override
+	public boolean isVisible() {
+		return this.visible && opacity > 0;
 	}
 
 	@Override
@@ -118,8 +115,8 @@ public class Layer implements LayerInterface{
 	}
 
 	@Override
-	public void setImageData(LocalDateTime dateTime, SubImage subImage) {
-		// TODO Auto-generated method stub
-		
+	public void setImageData(LocalDateTime dateTime, SubImage subImage) throws InterruptedException, ExecutionException{
+		this.ultimateLayer.getImageData(dateTime, subImage);
 	}
+
 }

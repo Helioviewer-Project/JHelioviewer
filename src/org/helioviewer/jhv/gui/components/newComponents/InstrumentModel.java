@@ -61,6 +61,7 @@ public class InstrumentModel {
 	}
 	
 	public void addObservatories(JSONObject observatories){
+		@SuppressWarnings("unchecked")
 		Iterator<String> iterator = observatories.sortedKeys();
 		while(iterator.hasNext()){
 			String observatoryName = iterator.next();
@@ -76,6 +77,7 @@ public class InstrumentModel {
 	}
 	
 	public void addInstrument(JSONObject jsonObservatory, Observatory observatory){
+		@SuppressWarnings("unchecked")
 		Iterator<String> iterator = jsonObservatory.sortedKeys();
 		while(iterator.hasNext()){
 			String instrumentName = iterator.next();
@@ -91,6 +93,7 @@ public class InstrumentModel {
 	}
 	
 	private void addFilter(JSONObject jsonInstrument, Instrument instrument, Observatory observatory){
+		@SuppressWarnings("unchecked")
 		Iterator<String> iterator = jsonInstrument.sortedKeys();
 		while (iterator.hasNext()) {
 			String filterName = iterator.next();
@@ -106,6 +109,7 @@ public class InstrumentModel {
 	}
 	
 	private void addFilter(JSONObject jsonFilter, Filter filter, Observatory observatory){
+		@SuppressWarnings("unchecked")
 		Iterator<String> iterator = jsonFilter.sortedKeys();
 		while (iterator.hasNext()) {
 			String filterName = iterator.next();

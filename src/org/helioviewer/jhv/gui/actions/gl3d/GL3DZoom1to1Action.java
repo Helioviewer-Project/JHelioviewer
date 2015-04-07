@@ -7,7 +7,6 @@ import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;
 import javax.swing.KeyStroke;
 
-import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.gui.GL3DCameraSelectorModel;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.IconBank;
@@ -59,15 +58,15 @@ public class GL3DZoom1to1Action extends AbstractAction {
 				
 				/*
 				 * > Die 1:1-Skalierung der Low-Resolution-Texturen ist in der Tat unterschiedlich:
-				 * > Erst wenn man auf 200% heranzoomt, zeigt die halb-aufgelöste Textur jedes SDO-Pixel
-				 * > (da 0.5 x 200% = 100%). Sollen wir das ändern, dass der 1:1-Knopf nur auf 100% Zoomt
-				 * > und man mit Low-resolution-Texturen dann nur die Hälfte der SDO-Daten sieht? 
+				 * > Erst wenn man auf 200% heranzoomt, zeigt die halb-aufgelï¿½ste Textur jedes SDO-Pixel
+				 * > (da 0.5 x 200% = 100%). Sollen wir das ï¿½ndern, dass der 1:1-Knopf nur auf 100% Zoomt
+				 * > und man mit Low-resolution-Texturen dann nur die Hï¿½lfte der SDO-Daten sieht? 
 				 * 
-				 * Ja, ich denke schon. Wenn der User ‘use high-res. textures’ deaktiviert, weiss er,
-				 * dass die räumliche Informationsdichte reduziert wird, aber die Darstellungsskala sollte
-				 * sich nicht ändern. Falls das mentale UI-Modell vieler User anders sein sollte, werden wir
-				 * das schnell hören, aber für den Moment denke ich, dass die meisten User erwarten, dass
-				 * die räumliche Darstellungsskala konstant bleibt.
+				 * Ja, ich denke schon. Wenn der User ï¿½use high-res. texturesï¿½ deaktiviert, weiss er,
+				 * dass die rï¿½umliche Informationsdichte reduziert wird, aber die Darstellungsskala sollte
+				 * sich nicht ï¿½ndern. Falls das mentale UI-Modell vieler User anders sein sollte, werden wir
+				 * das schnell hï¿½ren, aber fï¿½r den Moment denke ich, dass die meisten User erwarten, dass
+				 * die rï¿½umliche Darstellungsskala konstant bleibt.
 				 */
 				
 		        /*if (!Boolean.parseBoolean(Settings.getProperty("default.display.highDPI")))

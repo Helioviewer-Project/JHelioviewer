@@ -13,6 +13,7 @@ import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.gui.components.MoviePanel;
 import org.helioviewer.jhv.gui.components.OverViewPanel;
 import org.helioviewer.jhv.gui.components.TopToolBar;
+import org.helioviewer.jhv.gui.components.newComponents.NewMoviePanel;
 import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.LayersModel;
@@ -306,7 +307,9 @@ public class GuiState3DWCS {
 
                     // If MoviewView, add MoviePanel
                     if (newLayer instanceof JHVJPXView) {
-                        MoviePanel moviePanel = new MoviePanel((JHVJPXView) newLayer);
+                    	Component moviePanel;
+                    	if (JHVGlobals.OLD_RENDER_MODE) moviePanel = new MoviePanel((JHVJPXView) newLayer);
+                    	else moviePanel = new NewMoviePanel((JHVJPXView) newLayer);
                         if (LayersModel.getSingletonInstance().isTimed(newLayer)) {
                             LayersModel.getSingletonInstance().setLink(newLayer, true);
                         }

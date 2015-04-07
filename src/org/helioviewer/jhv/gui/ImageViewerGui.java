@@ -1,6 +1,7 @@
 package org.helioviewer.jhv.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
@@ -8,6 +9,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.util.AbstractList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
@@ -20,6 +27,7 @@ import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.SplashScreen;
+import org.helioviewer.jhv.base.Message;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 import org.helioviewer.jhv.gui.components.ControlPanelContainer;
@@ -33,19 +41,34 @@ import org.helioviewer.jhv.gui.components.StatusPanel;
 import org.helioviewer.jhv.gui.components.TopToolBar;
 import org.helioviewer.jhv.gui.components.newComponents.FilterTabPanel;
 import org.helioviewer.jhv.gui.components.newComponents.NewImageSelectorPanel;
+import org.helioviewer.jhv.gui.components.newComponents.NewMoviePanel;
 import org.helioviewer.jhv.gui.components.statusplugins.CurrentTimeLabel;
 import org.helioviewer.jhv.gui.components.statusplugins.FramerateStatusPanel;
 import org.helioviewer.jhv.gui.components.statusplugins.JPIPStatusPanel;
 import org.helioviewer.jhv.gui.components.statusplugins.PositionStatusPanel;
 import org.helioviewer.jhv.gui.components.statusplugins.ZoomStatusPanel;
 import org.helioviewer.jhv.gui.controller.GL3DCameraMouseController;
+import org.helioviewer.jhv.gui.controller.ZoomController;
 import org.helioviewer.jhv.internal_plugins.filter.SOHOLUTFilterPlugin.SOHOLUTPanel;
 import org.helioviewer.jhv.internal_plugins.filter.channelMixer.ChannelMixerPanel;
 import org.helioviewer.jhv.internal_plugins.filter.contrast.ContrastPanel;
 import org.helioviewer.jhv.internal_plugins.filter.gammacorrection.GammaCorrectionPanel;
+import org.helioviewer.jhv.internal_plugins.filter.opacity.OpacityFilter;
 import org.helioviewer.jhv.internal_plugins.filter.opacity.OpacityPanel;
 import org.helioviewer.jhv.internal_plugins.filter.sharpen.SharpenPanel;
+import org.helioviewer.jhv.io.APIRequestManager;
+import org.helioviewer.jhv.io.CommandLineProcessor;
+import org.helioviewer.jhv.io.FileDownloader;
+import org.helioviewer.jhv.io.JHVRequest;
 import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTabPanelManager;
+import org.helioviewer.jhv.viewmodel.metadata.MetaData;
+import org.helioviewer.jhv.viewmodel.view.FilterView;
+import org.helioviewer.jhv.viewmodel.view.ImageInfoView;
+import org.helioviewer.jhv.viewmodel.view.LayeredView;
+import org.helioviewer.jhv.viewmodel.view.MetaDataView;
+import org.helioviewer.jhv.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
+import org.helioviewer.jhv.viewmodel.view.opengl.CompenentView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DComponentView;
 
 /**
@@ -75,7 +98,7 @@ public class ImageViewerGui {
 	private SideContentPane leftPane;
 	private ImageSelectorPanel imageSelectorPanel;
 	private NewImageSelectorPanel newImageSelectorPanel;
-	private MoviePanel moviePanel;
+	private Component moviePanel;
 	private ControlPanelContainer moviePanelContainer;
 	private ControlPanelContainer filterPanelContainer;
 	private JMenuBar menuBar;
@@ -171,7 +194,7 @@ public class ImageViewerGui {
 		Thread thread = new Thread(new Runnable() {
 
 			public void run() {
-
+				loadImagesAtStartup();
 				// show GUI
 				splash.setProgressText("Starting JHelioviewer...");
 				splash.nextStep();
@@ -188,6 +211,150 @@ public class ImageViewerGui {
 		thread.setDaemon(true);
 		thread.start();
 	}
+	
+	private void loadImagesAtStartup() {
+
+        // get values for different command line options
+        AbstractList<JHVRequest> jhvRequests = CommandLineProcessor.getJHVOptionValues();
+        AbstractList<URI> jpipUris = CommandLineProcessor.getJPIPOptionValues();
+        AbstractList<URI> downloadAddresses = CommandLineProcessor.getDownloadOptionValues();
+        AbstractList<URL> jpxUrls = CommandLineProcessor.getJPXOptionValues();
+
+        // Do nothing if no resource is specified
+        if (jhvRequests.isEmpty() && jpipUris.isEmpty() && downloadAddresses.isEmpty() && jpxUrls.isEmpty()) {
+            return;
+        }
+
+        // //////////////////////
+        // -jhv
+        // //////////////////////
+
+        // go through all jhv values
+        for (JHVRequest jhvRequest : jhvRequests) {
+            try {
+                for (int layer = 0; layer < jhvRequest.imageLayers.length; ++layer) {
+                    // load image and memorize corresponding view
+                    ImageInfoView imageInfoView = APIRequestManager.requestAndOpenRemoteFile(jhvRequest.cadence, jhvRequest.startTime, jhvRequest.endTime, jhvRequest.imageLayers[layer].observatory, jhvRequest.imageLayers[layer].instrument, jhvRequest.imageLayers[layer].detector, jhvRequest.imageLayers[layer].measurement);
+                    if (imageInfoView != null && GuiState3DWCS.mainComponentView != null) {
+                        // get the layered view
+                        LayeredView layeredView = GuiState3DWCS.mainComponentView.getAdapter(LayeredView.class);
+
+                        // go through all sub view chains of the layered
+                        // view and try to find the
+                        // view chain of the corresponding image info view
+                        for (int i = 0; i < layeredView.getNumLayers(); i++) {
+                            View subView = layeredView.getLayer(i);
+
+                            // if view has been found
+                            if (imageInfoView.equals(subView.getAdapter(ImageInfoView.class))) {
+
+                                // Set the correct image scale
+                                MetaData imageSizeMetaData = imageInfoView.getAdapter(MetaDataView.class).getMetaData();
+                                ZoomController zoomController = new ZoomController();
+
+                                // Lock movie
+                                if (jhvRequest.linked) {
+                                    JHVJPXView movieView = subView.getAdapter(JHVJPXView.class);
+                                    if (movieView != null && movieView.getMaximumFrameNumber() > 0) {
+                                        MoviePanel moviePanel = MoviePanel.getMoviePanel(movieView);
+                                        if (moviePanel == null)
+                                            throw new InvalidViewException();
+                                        moviePanel.setMovieLink(true);
+                                    }
+                                }
+
+                                // opacity
+
+                                // find opacity filter view
+                                FilterView filterView = subView.getAdapter(FilterView.class);
+
+                                while (filterView != null) {
+
+                                    // if opacity filter has been found set
+                                    // opacity value
+                                    if (filterView.getFilter() instanceof OpacityFilter) {
+                                        ((OpacityFilter) (filterView.getFilter())).setState(Float.toString(jhvRequest.imageLayers[layer].opacity / 100.0f));
+                                        break;
+                                    }
+
+                                    // find next filter view
+                                    View view = filterView.getView();
+
+                                    if (view == null)
+                                        filterView = null;
+                                    else
+                                        filterView = view.getAdapter(FilterView.class);
+                                }
+
+                                break;
+                            }
+                        }
+                    }
+                }
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                Message.err("An error occured while opening the remote file!", e.getMessage(), false);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            } catch (InvalidViewException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        // //////////////////////
+        // -jpx
+        // //////////////////////
+
+        for (URL jpxUrl : jpxUrls) {
+            if (jpxUrl != null) {
+                try {
+                    ImageInfoView imageInfoView = APIRequestManager.requestData(true, jpxUrl, null);
+                    if (imageInfoView != null && GuiState3DWCS.mainComponentView != null) {
+                        // get the layered view
+                        LayeredView layeredView = GuiState3DWCS.mainComponentView.getAdapter(LayeredView.class);
+
+                        // go through all sub view chains of the layered
+                        // view and try to find the
+                        // view chain of the corresponding image info view
+                        for (int i = 0; i < layeredView.getNumLayers(); i++) {
+                            View subView = layeredView.getLayer(i);
+
+                            // if view has been found
+                            if (imageInfoView.equals(subView.getAdapter(ImageInfoView.class))) {
+                                JHVJPXView movieView = subView.getAdapter(JHVJPXView.class);
+                                MoviePanel moviePanel = MoviePanel.getMoviePanel(movieView);
+                                if (moviePanel == null)
+                                    throw new InvalidViewException();
+                                moviePanel.setMovieLink(true);
+                                break;
+                            }
+                        }
+                    }
+                } catch (IOException e) {
+                    Message.err("An error occured while opening the remote file!", e.getMessage(), false);
+                } catch (InvalidViewException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        // //////////////////////
+        // -jpip
+        // //////////////////////
+
+        for (URI jpipUri : jpipUris) {
+            if (jpipUri != null) {
+                try {
+                    APIRequestManager.newLoad(jpipUri, true);
+                } catch (IOException e) {
+                    Message.err("An error occured while opening the remote file!", e.getMessage(), false);
+                }
+            }
+        }
+    }
+
+
 
 	/**
 	 * Initializes the main and overview view chain.
@@ -280,7 +447,8 @@ public class ImageViewerGui {
 
 			// Movie control
 			moviePanelContainer = new ControlPanelContainer();
-			this.moviePanel = new MoviePanel();
+			if (JHVGlobals.OLD_RENDER_MODE) this.moviePanel = new MoviePanel();
+			else this.moviePanel = new NewMoviePanel();
 			moviePanelContainer.setDefaultPanel(moviePanel);
 			
 			leftPane.add("Overview", GuiState3DWCS.overViewPanel, JHVGlobals.OLD_RENDER_MODE);			

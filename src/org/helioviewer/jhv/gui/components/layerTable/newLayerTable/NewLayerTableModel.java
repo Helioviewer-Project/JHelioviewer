@@ -4,7 +4,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
 import org.helioviewer.jhv.gui.GuiState3DWCS;
-import org.helioviewer.jhv.layers.Layer;
+import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.layers.NewLayerListener;
 
@@ -95,7 +95,7 @@ public class NewLayerTableModel extends AbstractTableModel implements NewLayerLi
 	}
 
 	@Override
-	public void activeLayerChanged(Layer layer) {
+	public void activeLayerChanged(LayerInterface layer) {
 		// TODO Auto-generated method stub
 		
 	}

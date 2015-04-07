@@ -2,23 +2,12 @@ package org.helioviewer.jhv.gui.components.newComponents;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
-import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.scene.control.DatePicker;
-import javafx.scene.paint.Color;
-
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -26,13 +15,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JSpinner;
-import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import org.helioviewer.jhv.gui.components.calendar.JHVCalendarDatePicker;
-import org.helioviewer.jhv.gui.components.newComponents.InstrumentModel.Filter;
-import org.helioviewer.jhv.gui.components.newComponents.InstrumentModel.Instrument;
-import org.helioviewer.jhv.gui.components.newComponents.InstrumentModel.Observatory;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
+import org.helioviewer.jhv.layers.LayerInterface;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -41,17 +27,18 @@ import com.jgoodies.forms.layout.RowSpec;
 
 public class AddLayerPanel extends JDialog{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5707539021281900015L;
 	private final JPanel contentPanel = new JPanel();
-	private SimpleDateFormat simpleDateFormat;
-	private JTextField txtFieldStartTime, txtFieldEndTime;
-	private String lastAcceptedStartTime = "", lastAcceptedEndTime = "";
-	
-	private JHVCalendarDatePicker calendarStartDate, calendarEndDate;
 	
 	private JLabel lblFilter1, lblFilter2, lblInstrument;
 	private JComboBox<InstrumentModel.Observatory> cmbbxObservatory;
 	private JComboBox<InstrumentModel.Instrument> cmbbxInstrument;
 	private JComboBox<InstrumentModel.Filter> cmbbxFilter1, cmbbxFilter2;
+	private NewDatePicker datePickerStartDate;
+	private NewDatePicker datePickerEndDate;
 	
 	public enum TIME_STEPS{
 		SEC("sec"), MIN("min"), HOUR("hour"), DAY("day"), GET_ALL("get all");
@@ -79,7 +66,8 @@ public class AddLayerPanel extends JDialog{
 	 * Create the dialog.
 	 */
 	public AddLayerPanel() {
-		setBounds(100, 100, 450, 300);
+		this.setAlwaysOnTop(true);
+		setBounds(100, 100, 450, 310);
 		initGui();
 		addData();
 	}
@@ -88,9 +76,6 @@ public class AddLayerPanel extends JDialog{
 		InstrumentModel instrumentModel = InstrumentModel.singelton;
 		LocalDateTime endDateTime = LocalDateTime.now();
 		LocalDateTime startDateTime = endDateTime.minusDays(1);
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-		txtFieldEndTime.setText(endDateTime.format(formatter));
-		txtFieldStartTime.setText(startDateTime.format(formatter));
 		
 		for (InstrumentModel.Observatory observatory : instrumentModel.getObservatories()){
 			cmbbxObservatory.addItem(observatory);
@@ -104,22 +89,22 @@ public class AddLayerPanel extends JDialog{
 				lblFilter1.setText("");
 				lblFilter2.setText("");
 				System.out.println(observatory.getUiLabels().size());
-				lblInstrument.setEnabled(true);
-				lblFilter1.setEnabled(true);
-				lblFilter2.setEnabled(true);
-				cmbbxInstrument.setEnabled(true);
-				cmbbxFilter1.setEnabled(true);
-				cmbbxFilter2.setEnabled(true);
+				lblInstrument.setVisible(true);
+				lblFilter1.setVisible(true);
+				lblFilter2.setVisible(true);
+				cmbbxInstrument.setVisible(true);
+				cmbbxFilter1.setVisible(true);
+				cmbbxFilter2.setVisible(true);
 				switch (observatory.getUiLabels().size()) {
 				case 0:
-					lblInstrument.setEnabled(false);
-					cmbbxInstrument.setEnabled(false);
+					lblInstrument.setVisible(false);
+					cmbbxInstrument.setVisible(false);
 				case 1:
-					lblFilter1.setEnabled(false);
-					cmbbxFilter1.setEnabled(false);
+					lblFilter1.setVisible(false);
+					cmbbxFilter1.setVisible(false);
 				case 2:					
-					lblFilter2.setEnabled(false);
-					cmbbxFilter2.setEnabled(false);
+					lblFilter2.setVisible(false);
+					cmbbxFilter2.setVisible(false);
 					break;
 
 				default:
@@ -173,6 +158,10 @@ public class AddLayerPanel extends JDialog{
 				}
 			}
 		});
+		if (cmbbxObservatory.getItemCount() > 0){
+			cmbbxObservatory.setSelectedIndex(1);
+			cmbbxObservatory.setSelectedIndex(0);
+		}
 	}
 	
 	private void initGui(){
@@ -205,66 +194,12 @@ public class AddLayerPanel extends JDialog{
 				FormFactory.DEFAULT_ROWSPEC,}));
 
 		{
-            calendarStartDate = new JHVCalendarDatePicker();
-            final JFXPanel fxPanel = new JFXPanel();
-            contentPanel.add(fxPanel, "2, 2");
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    initFX(fxPanel);
-                }
-           });
+            datePickerStartDate = new NewDatePicker(LocalDateTime.now().minusDays(1));
+    		contentPanel.add(datePickerStartDate, "2, 2, 5, 1, fill, top");
 		}
 		{
-			this.txtFieldStartTime = new JTextField();
-			txtFieldStartTime.addFocusListener(new FocusAdapter() {	
-				@Override
-				public void focusLost(FocusEvent e) {
-					SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm:ss");
-					try {
-						txtFieldStartTime.setText(simpleDateFormat.format(new SimpleDateFormat("HH:mm:ss").parse(txtFieldStartTime.getText())).toString());
-					} catch (Exception e1) {
-						try {
-							txtFieldStartTime.setText(simpleDateFormat.format(new SimpleDateFormat("HH:mm").parse(txtFieldStartTime.getText())).toString());
-						} catch (Exception e2) {
-							try {
-								txtFieldStartTime.setText(simpleDateFormat.format(new SimpleDateFormat("HH").parse(txtFieldStartTime.getText())).toString());
-							} catch (Exception e3) {
-								txtFieldStartTime.setText(lastAcceptedStartTime);
-							}
-						}
-					}
-					lastAcceptedStartTime = txtFieldStartTime.getText();
-				}				
-			});contentPanel.add(txtFieldStartTime, "4, 2, 3, 1, fill, default");
-		}
-		{
-            calendarEndDate = new JHVCalendarDatePicker();
-			contentPanel.add(calendarEndDate, "2, 4");
-		}
-		{
-			this.txtFieldEndTime = new JTextField();
-			txtFieldEndTime.addFocusListener(new FocusAdapter() {	
-				@Override
-				public void focusLost(FocusEvent e) {
-					SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm:ss");
-					try {
-						txtFieldEndTime.setText(simpleDateFormat.format(new SimpleDateFormat("HH:mm:ss").parse(txtFieldEndTime.getText())).toString());
-					} catch (Exception e1) {
-						try {
-							txtFieldEndTime.setText(simpleDateFormat.format(new SimpleDateFormat("HH:mm").parse(txtFieldEndTime.getText())).toString());
-						} catch (Exception e2) {
-							try {
-								txtFieldEndTime.setText(simpleDateFormat.format(new SimpleDateFormat("HH").parse(txtFieldEndTime.getText())).toString());
-							} catch (Exception e3) {
-								txtFieldEndTime.setText(lastAcceptedEndTime);
-							}
-						}
-					}
-					lastAcceptedEndTime = txtFieldEndTime.getText();
-				}				
-			});
-			contentPanel.add(txtFieldEndTime, "4, 4, 3, 1, fill, default");
+            datePickerEndDate = new NewDatePicker(LocalDateTime.now());
+			contentPanel.add(datePickerEndDate, "2, 4, 5, 1, fill, top");
 		}
 		{
 			JLabel lblNewLabel = new JLabel("Time Step");
@@ -328,6 +263,22 @@ public class AddLayerPanel extends JDialog{
 				okButton.setActionCommand("OK");
 				buttonPane.add(okButton);
 				getRootPane().setDefaultButton(okButton);
+				okButton.addActionListener(new ActionListener() {
+					
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						InstrumentModel.Filter filter = (InstrumentModel.Filter) cmbbxFilter2.getSelectedItem();
+						if (filter == null){
+							filter = (InstrumentModel.Filter) cmbbxFilter1.getSelectedItem();
+						}  
+						if (filter != null){
+							LayerInterface layer = GuiState3DWCS.layers.addLayer(filter.sourceId);
+						}
+ 						System.out.println("implement add layer here!!!");
+						//GuiState3DWCS.layers.addLayer();
+						//new UltimateLayer(filter.sourceId, new NewCache(), new NewRender());
+					}
+				});
 			}
 			{
 				JButton cancelButton = new JButton("Cancel");
@@ -336,19 +287,4 @@ public class AddLayerPanel extends JDialog{
 			}
 		}
 	}
-
-	private static void initFX(JFXPanel fxPanel) {
-        // This method is invoked on the JavaFX thread
-        Scene scene = createScene();
-        fxPanel.setScene(scene);
-    }
-
-    private static Scene createScene() {
-        Group  root  =  new  Group();
-        Scene  scene  =  new  Scene(root, Color.ALICEBLUE);
-        DatePicker datePicker = new DatePicker(LocalDate.now());
-        root.getChildren().add(datePicker);
-
-        return (scene);
-    }
 }

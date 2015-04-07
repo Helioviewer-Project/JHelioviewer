@@ -35,11 +35,12 @@ public class IconBank {
         // The formatter will not merge together multiple lines, if at least one
         // empty line is inserted in between:
 
-        PROPERTIES("properties16.gif"), BLANK("blank_square.gif"), ADD("edit_add.png"), DOWNLOAD("download_dm.png"),
+        PROPERTIES("properties16.gif"), BLANK("blank_square.gif"), ADD("edit_add.png"), ADD_NEW("add_128x128.png"), DOWNLOAD_NEW("download_128x128.png"), INFO_NEW("info_128x128.png"), DOWNLOAD("download_dm.png"),
 
         // MOVIE CONTROLS
         PLAY("play_dm.png"), PAUSE("agt_pause-queue.png"), BACK("agt_back.png"), FORWARD("agt_forward.png"),
-
+        PLAY_NEW("TriangleRight_128x128.png"), PAUSE_NEW("Pause_128x128.png"), BACKWARD_NEW("Backward_128x128.png"), FORWARD_NEW("Forward_128x128.png"),
+        UP_NEW("TriangleUp_128x128.png"), DOWN_NEW("TriangleDown_128x128.png"),
         // ZOOMING
         ZOOM_IN("zoomIn24.png"), ZOOM_IN_SMALL("zoomIn24small.png"),
 
@@ -84,7 +85,7 @@ public class IconBank {
 
         SIMPLE_DOUBLEARROW_LEFT("DoubleArrow-Left.png"),
 
-        DATE("date.png"),
+        DATE("date.png"), CALENDER("Calendar_16x16.png"),
 
         SHOW_LESS("1uparrow1.png"), SHOW_MORE("1downarrow1.png"),
 
@@ -122,6 +123,16 @@ public class IconBank {
         return new ImageIcon(imgURL);
     }
 
+    public static ImageIcon getIcon(JHVIcon icon, int width, int height){
+        URL imgURL = FileUtils.getResourceUrl(RESOURCE_PATH + icon.getFilename());
+        ImageIcon imageIcon = new ImageIcon(imgURL);
+        Image image = imageIcon.getImage();
+        image = image.getScaledInstance(width, height, Image.SCALE_AREA_AVERAGING);
+        imageIcon.setImage(image);
+        return imageIcon;
+    	
+    }
+    
     /**
      * Returns the Image with the given enum.
      * 

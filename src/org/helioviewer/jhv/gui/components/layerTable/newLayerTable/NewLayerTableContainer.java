@@ -6,7 +6,7 @@ import java.awt.Component;
 import javax.swing.JPanel;
 
 import org.helioviewer.jhv.gui.GuiState3DWCS;
-import org.helioviewer.jhv.layers.Layer;
+import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.NewLayerListener;
 
 /**
@@ -71,7 +71,7 @@ public class NewLayerTableContainer extends JPanel implements NewLayerListener {
 	}
 
 	@Override
-	public void activeLayerChanged(Layer layer) {
+	public void activeLayerChanged(LayerInterface layer) {
 		// TODO Auto-generated method stub
 		
 	}

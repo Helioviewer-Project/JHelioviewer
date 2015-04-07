@@ -75,7 +75,7 @@ public class NewRender {
 		}
 	}
 	
-	public int[] getImage(int layerNumber, int quality, float zoomPercent, SubImage subImage){
+	public IntBuffer getImage(int layerNumber, int quality, float zoomPercent, SubImage subImage){
 		try {
 			compositor.Refresh();
 			compositor.Remove_ilayer(new Kdu_ilayer_ref(), true);
@@ -100,15 +100,9 @@ public class NewRender {
 			actualOffset.Assign(actualBufferedRegion.Access_pos());
 				        
 			Kdu_dims newRegion = new Kdu_dims();
-			System.out.println(subImage.getNumPixels());
-			int[] localIntBuff = new int[subImage.getNumPixels()*3];
 	        int region_buf_size = 0;
-	        int destPos = 0;
-	        System.out.println("complete : " + compositor.Is_processing_complete());
-	        System.out.println(subImage.height * subImage.width);
-	        IntBuffer intBuffer = IntBuffer.allocate(subImage.height * subImage.width);
+	        IntBuffer intBuffer = ByteBuffer.allocateDirect(subImage.height * subImage.width *4).asIntBuffer();;
 	        
-	        //ByteBuffer.allocateDirect(234923849*4).asIntBuffer();
 	        
 			while (compositor.Process(MAX_RENDER_SAMPLES, newRegion)){
 				
@@ -116,10 +110,6 @@ public class NewRender {
 				Kdu_coords newOffset = newRegion.Access_pos();
 				Kdu_coords newSize = newRegion.Access_size();
 				newOffset.Subtract(actualOffset);
-				System.out.println("x : " + newSize.Get_x());
-				System.out.println("y : " + newSize.Get_y());
-				int newWidth = newSize.Get_x();
-				int newHeight = newSize.Get_y();
 
 				int newPixels = newSize.Get_x() * newSize.Get_y();
 		          if (newPixels == 0) continue;
@@ -129,14 +119,11 @@ public class NewRender {
 		            int[] region_buf = new int[region_buf_size];
 			          compositorBuf.Get_region(newRegion,region_buf);
 			          intBuffer.put(region_buf);
-			          System.arraycopy(region_buf, 0, localIntBuff, destPos, newPixels);
-			          destPos += newPixels;
 		          }
 			}
 			
-			System.out.println("regionBuf : " + localIntBuff);
 			intBuffer.flip();
-			return localIntBuff;
+			return intBuffer;
 		} catch (KduException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -175,89 +162,4 @@ public class NewRender {
             e.printStackTrace();
         }
 	}
-	
-	
-	
-	public static void main(String[] args) {
-		class ImageViewer extends JPanel{
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-			private BufferedImage image;
-			
-			public ImageViewer(BufferedImage image) {
-				super();
-				this.image = image;
-			}
-			
-			@Override
-			public void paint(Graphics g) {
-				g.drawImage(image, 0, 0, this);
-			}
-		}
-		
-		NewRender newRender = new NewRender();
-		SubImage subImage = new SubImage(new Rectangle(0, 0, 1024, 1024));
-		try {
-			newRender.openLocalImage(new File("/Users/binchu/JHelioviewer/Downloads/SDO_AIA_AIA_171_F2014-12-14T08.09.35Z_T2014-12-15T08.09.35ZB1800L.jpx"));
-			int[] data = newRender.getImage(0, 8, 0.25f, subImage);
-			System.out.println(data);
-			BufferedImage image = new BufferedImage(1024, 1024, BufferedImage.TYPE_INT_RGB);
-			
-			
-			ColorModel colorModel = DirectColorModel.getRGBdefault();
-			SampleModel sampleModel = colorModel.createCompatibleSampleModel(1024, 1024);
-			DataBuffer buffer = new DataBufferInt(data, data.length);
-			WritableRaster raster = Raster.createWritableRaster(sampleModel, buffer, null);
-			image = new BufferedImage( colorModel, raster, false, null);
-			final ImageViewer imageViewer = new ImageViewer(image);
-			final JFrame frame = new JFrame();
-			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			frame.getContentPane().add(imageViewer);
-			frame.addMouseListener(new MouseListener() {
-				
-				@Override
-				public void mouseReleased(MouseEvent e) {
-					// TODO Auto-generated method stub
-					
-				}
-				
-				@Override
-				public void mousePressed(MouseEvent e) {
-					if (e.isAltDown()){
-						frame.repaint();
-					}
-				}
-				
-				@Override
-				public void mouseExited(MouseEvent e) {
-					// TODO Auto-generated method stub
-					
-				}
-				
-				@Override
-				public void mouseEntered(MouseEvent e) {
-					// TODO Auto-generated method stub
-					
-				}
-				
-				@Override
-				public void mouseClicked(MouseEvent e) {
-					// TODO Auto-generated method stub
-					
-				}
-			});
-			frame.setVisible(true);
-			
-		} catch (KduException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-
 }

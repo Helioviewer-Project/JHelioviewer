@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.IntBuffer;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -117,7 +118,7 @@ public class UltimateLayer {
 	
 	
 	
-	public void getImageData(LocalDateTime currentDate, SubImage subImage) throws InterruptedException, ExecutionException{
+	public IntBuffer getImageData(LocalDateTime currentDate, SubImage subImage) throws InterruptedException, ExecutionException{
 		boolean complete = false;
 		ImageLayer layer = null;
 		while (!complete){
@@ -132,8 +133,7 @@ public class UltimateLayer {
 		System.out.println("---------------------getImage---------------------");
 		render.openImage(layer.getCache());
 		float zoomPercent = this.resolutionSet.getResolutionLevel(0).getZoomPercent();
-		int[] imageData = render.getImage(0, 8, zoomPercent, subImage);
-		System.out.println(imageData);
+		return render.getImage(0, 8, zoomPercent, subImage);
 	}
 	
 	public static void main(String[] args) {

@@ -26,6 +26,7 @@ import org.helioviewer.jhv.gui.components.layerTable.renderers.DescriptorIconRen
 import org.helioviewer.jhv.gui.components.layerTable.renderers.DescriptorTimestampRenderer;
 import org.helioviewer.jhv.gui.components.layerTable.renderers.DescriptorTitleRenderer;
 import org.helioviewer.jhv.gui.components.layerTable.renderers.IconRenderer;
+import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.viewmodel.view.View;
 
@@ -84,7 +85,7 @@ public class NewLayerTable extends JTable {
                 if (!source.isRowSelected(row))
                     source.changeSelection(row, column, false, false);
 
-                View view = GuiState3DWCS.layers.getLayer(row).getJhvjpxView();
+                View view = ((Layer)GuiState3DWCS.layers.getLayer(row)).getJhvjpxView();
 
                 if (view != null) {
                     menu.add(new MoveLayerUpAction(view));

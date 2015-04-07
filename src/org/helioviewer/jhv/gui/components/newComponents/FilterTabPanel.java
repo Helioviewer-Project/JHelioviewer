@@ -18,6 +18,7 @@ import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.components.WheelSupport;
 import org.helioviewer.jhv.layers.Layer;
+import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.NewLayerListener;
 import org.helioviewer.jhv.layers.filter.LUT;
 
@@ -279,7 +280,7 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 	
 	@Override
 	public void newlayerAdded() {
-		this.updateLayer(GuiState3DWCS.layers.getActiveLayer());
+		this.updateLayer((Layer)GuiState3DWCS.layers.getActiveLayer());
 	}
 
 	@Override
@@ -293,8 +294,8 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 	}
 
 	@Override
-	public void activeLayerChanged(Layer layer) {
-		this.updateLayer(layer);
+	public void activeLayerChanged(LayerInterface layer) {
+		this.updateLayer((Layer)layer);
 	}
 	
 	private void repaintComponent(){

@@ -62,6 +62,24 @@ public class OpenGLHelper {
 		});
 	}
 	
+	public void bindByteBufferToGLTexture(final ByteBuffer byteBuffer, final int width, final int height){
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				glContext.makeCurrent();
+				int width2 = nextPowerOfTwo(width);
+				int height2 = nextPowerOfTwo(height);
+				
+				if (textureHeight != height2 && textureWidth != width2){
+					createTexture(width2, height2);
+				}
+
+				updateTexture(byteBuffer, width, height);
+			}
+		});
+	}
+	
 	public void bindBufferedImageToGLTexture(final BufferedImage bufferedImage, final int width, final int height){
 		SwingUtilities.invokeLater(new Runnable() {
 			
@@ -183,6 +201,44 @@ public class OpenGLHelper {
 				updateTexture(layer);
 			}
 		});
+	}
+	
+	private void createTexture(int width, int height){
+		GL2 gl = glContext.getGL().getGL2();
+		ByteBuffer b = ByteBuffer.allocate(width * height);
+		b.limit(width * height);
+		gl.glEnable(GL2.GL_TEXTURE_2D);			
+		gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL2.GL_LUMINANCE8, width,
+				height, 0, GL2.GL_LUMINANCE, GL2.GL_UNSIGNED_BYTE, b);
+		this.textureWidth = width;
+		this.textureHeight = height;
+		
+		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER,
+				GL2.GL_LINEAR);
+		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER,
+				GL2.GL_LINEAR);
+		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S,
+				GL2.GL_CLAMP_TO_BORDER);
+		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T,
+				GL2.GL_CLAMP_TO_BORDER);
+	}
+	
+	private void updateTexture(ByteBuffer byteBuffer, int width, int height){
+		GL2 gl = OpenGLHelper.glContext.getGL().getGL2();
+		gl.glEnable(GL2.GL_TEXTURE_2D);			
+		gl.glBindTexture(GL2.GL_TEXTURE_2D, this.textureID);
+		
+		gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, width, height,
+				GL2.GL_LUMINANCE, GL2.GL_UNSIGNED_BYTE, byteBuffer);
+
+		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER,
+				GL2.GL_LINEAR);
+		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER,
+				GL2.GL_LINEAR);
+		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S,
+				GL2.GL_CLAMP);
+		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T,
+				GL2.GL_CLAMP);
 	}
 	
 	private void createTexture(Layer layer, int width, int height){

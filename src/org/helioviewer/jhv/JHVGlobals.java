@@ -16,7 +16,7 @@ import javax.swing.JFileChooser;
 public class JHVGlobals {
     public static final String VERSION = System.getProperty("jhvVersion") == null ? "developer" : System.getProperty("jhvVersion");
     public static String RAYGUN_TAG;
-    public static final boolean OLD_RENDER_MODE = true;
+    public static final boolean OLD_RENDER_MODE = false;
     
     private JHVGlobals()
     {

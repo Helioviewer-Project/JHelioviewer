@@ -30,6 +30,7 @@ import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.layers.Layer;
+import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.NewLayerListener;
@@ -361,15 +362,15 @@ public class CompenentView extends GL3DComponentView implements
 			
 			if (this.updateTexture) {
 				textureHelper.checkGLErrors(gl, this + ".beforeCreateTexture");
-				for (Layer layer : layers.getLayers()) {
-					layer.updateTexture(gl);
+				for (LayerInterface layer : layers.getLayers()) {
+					((Layer)layer).updateTexture(gl);
 				}
 				updateTexture = false;
 			}
 			
-			for (Layer layer : layers.getLayers()) {
+			for (LayerInterface layer : layers.getLayers()) {
 				if (layer.isVisible()) {
-					this.displayLayer(gl, layer);
+					this.displayLayer(gl, (Layer)layer);
 				}
 			}
 			gl.glPopMatrix();
@@ -565,7 +566,7 @@ public class CompenentView extends GL3DComponentView implements
 	}
 
 	@Override
-	public void activeLayerChanged(Layer layer) {
+	public void activeLayerChanged(LayerInterface layer) {
 		// TODO Auto-generated method stub
 
 	}
