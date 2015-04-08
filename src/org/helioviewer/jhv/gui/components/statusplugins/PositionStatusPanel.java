@@ -82,6 +82,8 @@ public class PositionStatusPanel extends ViewStatusPanelPlugin implements
 		popupState = new PopupState();
 		this.addMouseListener(this);
 		this.setComponentPopupMenu(popupState);
+		
+		setToolTipText(popupState.selectedItem.popupItem.getText());
 	}
 
 	/**
@@ -275,6 +277,7 @@ public class PositionStatusPanel extends ViewStatusPanelPlugin implements
 								.values()) {
 							if (popupItems.popupItem == e.getSource()) {
 								selectedItem = popupItems;
+								PositionStatusPanel.this.setToolTipText(selectedItem.popupItem.getText());
 								break;
 							}
 						}
@@ -307,7 +310,7 @@ public class PositionStatusPanel extends ViewStatusPanelPlugin implements
 		private static final long serialVersionUID = -4382532722049627152L;
 
 		public enum PopupItemStates {
-			DEGREE("degree"), ARCSECS("arcsecs");
+			DEGREE("degrees (Heliographic)"), ARCSECS("arcsecs (Helioprojective cartesian)");
 
 			private PopupItemState popupItem;
 
