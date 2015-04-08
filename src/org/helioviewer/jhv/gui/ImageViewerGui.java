@@ -9,7 +9,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -58,7 +57,6 @@ import org.helioviewer.jhv.internal_plugins.filter.opacity.OpacityPanel;
 import org.helioviewer.jhv.internal_plugins.filter.sharpen.SharpenPanel;
 import org.helioviewer.jhv.io.APIRequestManager;
 import org.helioviewer.jhv.io.CommandLineProcessor;
-import org.helioviewer.jhv.io.FileDownloader;
 import org.helioviewer.jhv.io.JHVRequest;
 import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTabPanelManager;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
@@ -68,7 +66,6 @@ import org.helioviewer.jhv.viewmodel.view.LayeredView;
 import org.helioviewer.jhv.viewmodel.view.MetaDataView;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
-import org.helioviewer.jhv.viewmodel.view.opengl.CompenentView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DComponentView;
 
 /**

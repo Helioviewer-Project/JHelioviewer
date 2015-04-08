@@ -15,6 +15,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.viewmodel.view.jp2view.image.ResolutionSet;
 import org.helioviewer.jhv.viewmodel.view.jp2view.image.SubImage;
 import org.json.JSONArray;
@@ -86,6 +87,11 @@ public class UltimateLayer {
 					sb.append(line);
 				}
 				JSONObject jsonObject = new JSONObject(sb.toString());
+				System.out.println(sb.toString());
+				System.out.println(jsonObject.getString("error"));
+				if (jsonObject.getString("error") != null){
+					break;
+				}
 				System.out.println(jsonObject.get("frames"));
 				JSONArray frames = ((JSONArray)jsonObject.get("frames"));
 				LocalDateTime[] framesDateTime = new LocalDateTime[frames.length()];

@@ -256,11 +256,6 @@ public class JHelioviewer {
 				System.loadLibrary("kdu_a75R");
 			}
 
-			if (JHVGlobals.isOSX()) {
-				// System.loadLibrary("kdu_v75R");
-				// System.loadLibrary("kdu_a75R");
-			}
-
 			System.loadLibrary("kdu_jni");
 
 			if (JHVGlobals.isWindows()) {

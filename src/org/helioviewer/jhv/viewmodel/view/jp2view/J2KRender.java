@@ -259,7 +259,6 @@ class J2KRender implements Runnable {
 				}
 			}
 
-			System.out.println("qualityLayers : " + currParams.qualityLayers);
 			compositorRef.Set_max_quality_layers(currParams.qualityLayers);
 			compositorRef.Set_scale(false, false, false,
 					currParams.resolution.getZoomPercent());

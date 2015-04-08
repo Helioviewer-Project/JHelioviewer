@@ -1,6 +1,7 @@
 package org.helioviewer.jhv.gui.components.newComponents;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,36 +20,40 @@ import javax.swing.border.EmptyBorder;
 
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.layers.LayerInterface;
+import org.helioviewer.jhv.layers.NewLayer;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
-public class AddLayerPanel extends JDialog{
+public class AddLayerPanel extends JDialog {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 5707539021281900015L;
 	private final JPanel contentPanel = new JPanel();
-	
+
 	private JLabel lblFilter1, lblFilter2, lblInstrument;
 	private JComboBox<InstrumentModel.Observatory> cmbbxObservatory;
 	private JComboBox<InstrumentModel.Instrument> cmbbxInstrument;
 	private JComboBox<InstrumentModel.Filter> cmbbxFilter1, cmbbxFilter2;
 	private NewDatePicker datePickerStartDate;
 	private NewDatePicker datePickerEndDate;
-	
-	public enum TIME_STEPS{
+	private JSpinner candence;
+
+	public enum TIME_STEPS {
 		SEC("sec"), MIN("min"), HOUR("hour"), DAY("day"), GET_ALL("get all");
-		
+
 		private String name;
-		TIME_STEPS(String name){
+
+		TIME_STEPS(String name) {
 			this.name = name;
 		}
-				
+
 	}
+
 	/**
 	 * Launch the application.
 	 */
@@ -66,25 +71,28 @@ public class AddLayerPanel extends JDialog{
 	 * Create the dialog.
 	 */
 	public AddLayerPanel() {
+		//super(ImageViewerGui.getMainFrame());
 		this.setAlwaysOnTop(true);
 		setBounds(100, 100, 450, 310);
 		initGui();
 		addData();
 	}
-	
-	public void addData(){
+
+	public void addData() {
 		InstrumentModel instrumentModel = InstrumentModel.singelton;
 		LocalDateTime endDateTime = LocalDateTime.now();
 		LocalDateTime startDateTime = endDateTime.minusDays(1);
-		
-		for (InstrumentModel.Observatory observatory : instrumentModel.getObservatories()){
+
+		for (InstrumentModel.Observatory observatory : instrumentModel
+				.getObservatories()) {
 			cmbbxObservatory.addItem(observatory);
 		}
-		
-		cmbbxObservatory.addItemListener(new ItemListener() {	
+
+		cmbbxObservatory.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				InstrumentModel.Observatory observatory = ((InstrumentModel.Observatory)e.getItem());
+				InstrumentModel.Observatory observatory = ((InstrumentModel.Observatory) e
+						.getItem());
 				lblInstrument.setText("");
 				lblFilter1.setText("");
 				lblFilter2.setText("");
@@ -102,7 +110,7 @@ public class AddLayerPanel extends JDialog{
 				case 1:
 					lblFilter1.setVisible(false);
 					cmbbxFilter1.setVisible(false);
-				case 2:					
+				case 2:
 					lblFilter2.setVisible(false);
 					cmbbxFilter2.setVisible(false);
 					break;
@@ -115,7 +123,8 @@ public class AddLayerPanel extends JDialog{
 					try {
 						lblFilter1.setText(observatory.getUiLabels().get(1));
 						try {
-							lblFilter2.setText(observatory.getUiLabels().get(2));
+							lblFilter2
+									.setText(observatory.getUiLabels().get(2));
 						} catch (Exception e2) {
 							System.out.println("Filter2 not available");
 						}
@@ -125,93 +134,99 @@ public class AddLayerPanel extends JDialog{
 				} catch (Exception e2) {
 					System.out.println("Insturment not available");
 				}
-				
+
 				cmbbxInstrument.removeAllItems();
 				cmbbxFilter1.removeAllItems();
 				cmbbxFilter2.removeAllItems();
-				for (InstrumentModel.Instrument instrument : observatory.getInstruments()){
+				for (InstrumentModel.Instrument instrument : observatory
+						.getInstruments()) {
 					cmbbxInstrument.addItem(instrument);
 				}
 			}
 		});
 
 		cmbbxInstrument.addItemListener(new ItemListener() {
-			
+
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				System.out.println(e.getItem());
 				cmbbxFilter1.removeAllItems();
 				cmbbxFilter2.removeAllItems();
-				for (InstrumentModel.Filter filter : ((InstrumentModel.Instrument)e.getItem()).getFilters()){
+				for (InstrumentModel.Filter filter : ((InstrumentModel.Instrument) e
+						.getItem()).getFilters()) {
 					cmbbxFilter1.addItem(filter);
 				}
 			}
 		});
-		
+
 		cmbbxFilter1.addItemListener(new ItemListener() {
-			
+
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				cmbbxFilter2.removeAllItems();
-				for (InstrumentModel.Filter filter : ((InstrumentModel.Filter)e.getItem()).getFilters()){
+				for (InstrumentModel.Filter filter : ((InstrumentModel.Filter) e
+						.getItem()).getFilters()) {
 					cmbbxFilter2.addItem(filter);
 				}
 			}
 		});
-		if (cmbbxObservatory.getItemCount() > 0){
+		if (cmbbxObservatory.getItemCount() > 0) {
 			cmbbxObservatory.setSelectedIndex(1);
 			cmbbxObservatory.setSelectedIndex(0);
 		}
 	}
-	
-	private void initGui(){
+
+	private void initGui() {
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		contentPanel.setLayout(new FormLayout(new ColumnSpec[] {
-				FormFactory.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("default:grow"),
-				FormFactory.RELATED_GAP_COLSPEC,
-				FormFactory.DEFAULT_COLSPEC,
-				FormFactory.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("default:grow"),},
-			new RowSpec[] {
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,}));
+		contentPanel
+				.setLayout(new FormLayout(new ColumnSpec[] {
+						FormFactory.RELATED_GAP_COLSPEC,
+						ColumnSpec.decode("default:grow"),
+						FormFactory.RELATED_GAP_COLSPEC,
+						FormFactory.DEFAULT_COLSPEC,
+						FormFactory.RELATED_GAP_COLSPEC,
+						ColumnSpec.decode("default:grow"), }, new RowSpec[] {
+						FormFactory.RELATED_GAP_ROWSPEC,
+						FormFactory.DEFAULT_ROWSPEC,
+						FormFactory.RELATED_GAP_ROWSPEC,
+						FormFactory.DEFAULT_ROWSPEC,
+						FormFactory.RELATED_GAP_ROWSPEC,
+						FormFactory.DEFAULT_ROWSPEC,
+						FormFactory.RELATED_GAP_ROWSPEC,
+						FormFactory.DEFAULT_ROWSPEC,
+						FormFactory.RELATED_GAP_ROWSPEC,
+						FormFactory.DEFAULT_ROWSPEC,
+						FormFactory.RELATED_GAP_ROWSPEC,
+						FormFactory.DEFAULT_ROWSPEC,
+						FormFactory.RELATED_GAP_ROWSPEC,
+						FormFactory.DEFAULT_ROWSPEC,
+						FormFactory.RELATED_GAP_ROWSPEC,
+						FormFactory.DEFAULT_ROWSPEC, }));
 
 		{
-            datePickerStartDate = new NewDatePicker(LocalDateTime.now().minusDays(1));
-    		contentPanel.add(datePickerStartDate, "2, 2, 5, 1, fill, top");
+			datePickerStartDate = new NewDatePicker(LocalDateTime.now()
+					.minusDays(1));
+			contentPanel.add(datePickerStartDate, "2, 2, 5, 1, fill, top");
 		}
 		{
-            datePickerEndDate = new NewDatePicker(LocalDateTime.now());
+			datePickerEndDate = new NewDatePicker(LocalDateTime.now());
 			contentPanel.add(datePickerEndDate, "2, 4, 5, 1, fill, top");
 		}
 		{
-			JLabel lblNewLabel = new JLabel("Time Step");
-			contentPanel.add(lblNewLabel, "2, 6");
+			JLabel lblCadence = new JLabel("Time Step");
+			contentPanel.add(lblCadence, "2, 6");
 		}
 		{
-			JSpinner spinner = new JSpinner();
-			contentPanel.add(spinner, "4, 6");
+			candence = new JSpinner();
+			candence.setValue(20);
+			candence.setPreferredSize(new Dimension(80, 20));
+			contentPanel.add(candence, "4, 6");
 		}
 		{
 			JComboBox<String> comboBox = new JComboBox<String>();
-			for (TIME_STEPS timeStep : TIME_STEPS.values()){
+			for (TIME_STEPS timeStep : TIME_STEPS.values()) {
 				comboBox.addItem(timeStep.name);
 			}
 			contentPanel.add(comboBox, "6, 6, fill, default");
@@ -244,7 +259,7 @@ public class AddLayerPanel extends JDialog{
 			cmbbxFilter1 = new JComboBox<InstrumentModel.Filter>();
 			contentPanel.add(cmbbxFilter1, "6, 14, fill, default");
 		}
-		
+
 		{
 			lblFilter2 = new JLabel("");
 			contentPanel.add(lblFilter2, "2, 16");
@@ -264,19 +279,26 @@ public class AddLayerPanel extends JDialog{
 				buttonPane.add(okButton);
 				getRootPane().setDefaultButton(okButton);
 				okButton.addActionListener(new ActionListener() {
-					
+
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						InstrumentModel.Filter filter = (InstrumentModel.Filter) cmbbxFilter2.getSelectedItem();
-						if (filter == null){
-							filter = (InstrumentModel.Filter) cmbbxFilter1.getSelectedItem();
-						}  
-						if (filter != null){
-							LayerInterface layer = GuiState3DWCS.layers.addLayer(filter.sourceId);
+						InstrumentModel.Filter filter = (InstrumentModel.Filter) cmbbxFilter2
+								.getSelectedItem();
+						if (filter == null) {
+							filter = (InstrumentModel.Filter) cmbbxFilter1
+									.getSelectedItem();
 						}
- 						System.out.println("implement add layer here!!!");
-						//GuiState3DWCS.layers.addLayer();
-						//new UltimateLayer(filter.sourceId, new NewCache(), new NewRender());
+						if (filter != null) {
+							LayerInterface layer = GuiState3DWCS.layers
+									.addLayer(filter.sourceId);
+						}
+						NewLayer layer = GuiState3DWCS.layers
+								.addLayer(filter.sourceId);
+						layer.ultimateLayer.setTimeRange(
+								datePickerStartDate.getDateTime(),
+								datePickerEndDate.getDateTime(),
+								(int) candence.getValue());
+						setVisible(false);
 					}
 				});
 			}
@@ -284,6 +306,13 @@ public class AddLayerPanel extends JDialog{
 				JButton cancelButton = new JButton("Cancel");
 				cancelButton.setActionCommand("Cancel");
 				buttonPane.add(cancelButton);
+				cancelButton.addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						setVisible(false);
+					}
+				});
 			}
 		}
 	}

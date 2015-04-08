@@ -280,7 +280,8 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 	
 	@Override
 	public void newlayerAdded() {
-		this.updateLayer((Layer)GuiState3DWCS.layers.getActiveLayer());
+		if (GuiState3DWCS.layers.getActiveLayer() instanceof Layer)
+			this.updateLayer((Layer)GuiState3DWCS.layers.getActiveLayer());
 	}
 
 	@Override

@@ -1,16 +1,19 @@
 package org.helioviewer.jhv.gui.components.newComponents;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.MouseInfo;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -19,11 +22,12 @@ import java.time.format.DateTimeFormatter;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.Popup;
-import javax.swing.PopupFactory;
+import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
+
+import com.jogamp.opengl.math.geom.Frustum.Location;
 
 public class NewDatePicker extends JPanel{
 
@@ -33,7 +37,7 @@ public class NewDatePicker extends JPanel{
 	private static final long serialVersionUID = 3241360217403676930L;
 	
 	private enum KEY_MODE { UP, DOWN, NONE};
-	
+	private boolean popupVisibility = false;
 	private KEY_MODE keyMode = KEY_MODE.NONE;
 	private int factor = 0;
 	private int counter = 0;
@@ -41,9 +45,8 @@ public class NewDatePicker extends JPanel{
 	private JTextField txtFieldDate, txtFieldTime;
 	private NewDatePickerPopup newDatePickerPopup;
 	private LocalDateTime dateTime;
-	private Popup popup;
 	private final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss");
-	private final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+	private final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	private final long MAX_TIME_STEPS = 3600 * 24 * 30; 
 	public NewDatePicker(LocalDateTime dateTime) {
 		this.dateTime = dateTime;
@@ -72,23 +75,27 @@ public class NewDatePicker extends JPanel{
 			public void focusLost(FocusEvent e) {
 				LocalDate localdate = null;
 				try {
-					localdate = LocalDate.parse(txtFieldDate.getText(), DATE_FORMAT);
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/D/yyyy");
+					localdate = LocalDate.parse(txtFieldDate.getText(), formatter);
 				} catch (Exception e1) {
 					try {
-						localdate = LocalDate.parse(txtFieldTime.getText(), DateTimeFormatter.ISO_LOCAL_DATE);
+						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d");
+						localdate = LocalDate.parse(txtFieldDate.getText(), formatter);
 					} catch (Exception e2) {
 						try {
-							DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-							localdate = LocalDate.parse(txtFieldTime.getText(), formatter);
+							DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d.M.yyyy");
+							localdate = LocalDate.parse(txtFieldDate.getText(), formatter);
 						} catch (Exception e3) {
 						}
 					}
 				}
+				
 				if (localdate != null){
 					dateTime = localdate.atTime(dateTime.toLocalTime());
 					newDatePickerPopup.setCurrentDate(localdate);
 				}
-				txtFieldTime.setText(dateTime.toLocalTime().format(TIME_FORMAT));
+				txtFieldDate.setText(dateTime.format(DATE_FORMAT));
+				txtFieldTime.setText(dateTime.format(TIME_FORMAT));
 			}				
 		});
 		
@@ -107,11 +114,18 @@ public class NewDatePicker extends JPanel{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				int x = txtFieldDate.getLocationOnScreen().x;
-		        int y = txtFieldDate.getLocationOnScreen().y + txtFieldDate.getSize().height;
-				PopupFactory factory = PopupFactory.getSharedInstance();
-		        popup = factory.getPopup(btnDatePicker, newDatePickerPopup, x, y);		        
-		        popup.show();
+				if (popupVisibility){
+					newDatePickerPopup.setVisible(false);
+					popupVisibility = false;
+				}
+				else{
+					int x = txtFieldDate.getLocationOnScreen().x;
+		        	int y = txtFieldDate.getLocationOnScreen().y + txtFieldDate.getSize().height - 4;
+		        	newDatePickerPopup.setLocation(x, y);
+		        	newDatePickerPopup.setVisible(true);
+		        	newDatePickerPopup.requestFocus();
+		        	popupVisibility = true;
+				}
 			}
 		});
 		GridBagConstraints gbcBtnDatePicker = new GridBagConstraints();
@@ -204,11 +218,18 @@ public class NewDatePicker extends JPanel{
 	public void updateDate(LocalDate newDate) {
 		this.dateTime = newDate.atTime(this.dateTime.toLocalTime());
 		this.txtFieldDate.setText(dateTime.format(DATE_FORMAT));
-		popup.hide();
+		newDatePickerPopup.setVisible(false);
+		popupVisibility = false;
 	}
 
 	public void hidePopup() {
-		if (popup != null)
-			popup.hide();	
+		newDatePickerPopup.setVisible(false);
+		popupVisibility = false;				
+		btnDatePicker.setEnabled(true);
 	}
+	
+	public LocalDateTime getDateTime(){
+		return dateTime;
+	}
+	
 }

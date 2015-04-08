@@ -3,9 +3,6 @@ package org.helioviewer.jhv.layers;
 import java.time.LocalDateTime;
 import java.util.concurrent.ExecutionException;
 
-import org.helioviewer.jhv.internal_plugins.filter.SOHOLUTFilterPlugin.DefaultTable;
-import org.helioviewer.jhv.layers.Layer.Channelcolor;
-import org.helioviewer.jhv.layers.Layer.Lut;
 import org.helioviewer.jhv.layers.filter.LUT;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
@@ -60,7 +57,7 @@ public class NewLayer implements LayerInterface{
 		}
 	}
 	
-	private UltimateLayer ultimateLayer;
+	public UltimateLayer ultimateLayer;
 	private NewRender newRender;
 	private NewCache newCache;
 	
@@ -80,6 +77,7 @@ public class NewLayer implements LayerInterface{
 	
 	public NewLayer(int sourceID, NewRender newRender, NewCache newCache) {
 		this.ultimateLayer = new UltimateLayer(sourceID, newCache, newRender);
+		this.initGL();
 	}
 	
 	@Override
@@ -89,8 +87,9 @@ public class NewLayer implements LayerInterface{
 	
 	private void initGL(){
 		MetaData metaData = null;
-    	String colorKey = DefaultTable.getSingletonInstance().getColorTable(metaData);
-        
+		
+    	//String colorKey = DefaultTable.getSingletonInstance().getColorTable(metaData);
+        String colorKey = null;
 		if(colorKey == null)
         	colorKey = "Gray";
         

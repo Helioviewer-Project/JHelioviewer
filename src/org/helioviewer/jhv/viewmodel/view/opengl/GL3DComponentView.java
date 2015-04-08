@@ -1,10 +1,13 @@
 package org.helioviewer.jhv.viewmodel.view.opengl;
 
+import java.awt.AWTEvent;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
+import java.awt.Toolkit;
+import java.awt.event.AWTEventListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -36,6 +39,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import org.helioviewer.jhv.base.GL3DKeyController;
+import org.helioviewer.jhv.base.GL3DKeyController.GL3DKeyListener;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
@@ -63,6 +67,7 @@ import org.helioviewer.jhv.viewmodel.view.RegionView;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.ViewListener;
 import org.helioviewer.jhv.viewmodel.view.ViewportView;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLFragmentShaderView;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLMinimalFragmentShaderProgram;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLMinimalVertexShaderProgram;
@@ -105,7 +110,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 	private GLCanvas canvas;
 	private GLCanvas inactiveCanvas;
-	
+
 	private Color backgroundColor = Color.BLACK;
 
 	private boolean backGroundColorHasChanged = false;
@@ -147,16 +152,19 @@ public class GL3DComponentView extends AbstractBasicView implements
 			this.canvas = new GLCanvas(cap);
 		} catch (Exception e) {
 			try {
-				System.err.println("Unable to load 24-bit z-buffer, try 32-bit");
+				System.err
+						.println("Unable to load 24-bit z-buffer, try 32-bit");
 				cap.setDepthBits(32);
 				this.canvas = new GLCanvas(cap);
 			} catch (Exception e2) {
-				System.err.println("Unable to load 32-bit z-buffer, try 16-bit");
+				System.err
+						.println("Unable to load 32-bit z-buffer, try 16-bit");
 				try {
 					cap.setDepthBits(16);
 					this.canvas = new GLCanvas(cap);
 				} catch (Exception e3) {
-					System.err.println("Unable to load 16-bit z-buffer, use default");
+					System.err
+							.println("Unable to load 16-bit z-buffer, use default");
 					this.canvas = new GLCanvas();
 				}
 			}
@@ -167,7 +175,48 @@ public class GL3DComponentView extends AbstractBasicView implements
 		this.canvas.requestFocus();
 
 		LayersModel.getSingletonInstance().addLayersListener(this);
-		
+		Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
+
+			@Override
+			public void eventDispatched(AWTEvent event) {
+				if (event instanceof KeyEvent) {
+					KeyEvent k = (KeyEvent) event;
+					if (k.getID() == KeyEvent.KEY_PRESSED) {
+						JHVJPXView activeView;
+						switch (k.getKeyCode()) {
+						case KeyEvent.VK_SPACE:
+							if (LinkedMovieManager.getActiveInstance()
+									.getMasterMovie().isMoviePlaying())
+								LinkedMovieManager.getActiveInstance()
+										.getMasterMovie().pauseMovie();
+							else
+								LinkedMovieManager.getActiveInstance()
+										.getMasterMovie().playMovie();
+							break;
+						case KeyEvent.VK_RIGHT:
+							activeView = (JHVJPXView) LayersModel
+									.getSingletonInstance().getActiveView()
+									.getAdapter(JHVJPXView.class);
+							activeView.setCurrentFrame(
+									activeView.getCurrentFrameNumber() + 1,
+									new ChangeEvent());
+							break;
+						case KeyEvent.VK_LEFT:
+							activeView = (JHVJPXView) LayersModel
+									.getSingletonInstance().getActiveView()
+									.getAdapter(JHVJPXView.class);
+							activeView.setCurrentFrame(
+									activeView.getCurrentFrameNumber() - 1,
+									new ChangeEvent());
+							break;
+						default:
+							break;
+						}
+
+					}
+				}
+			}
+		}, AWTEvent.KEY_EVENT_MASK);
 	}
 
 	public GLCanvas getComponent() {
@@ -263,7 +312,6 @@ public class GL3DComponentView extends AbstractBasicView implements
 																		// depth
 																		// buffers
 		gl.glLoadIdentity(); // reset the model-view matrix
-
 
 		if (defaultViewport != null) {
 		}
@@ -434,8 +482,8 @@ public class GL3DComponentView extends AbstractBasicView implements
 	public void saveScreenshot(String imageFormat, File outputFile, int width,
 			int height, ArrayList<String> descriptions) {
 		try {
-			ImageIO.write(this.getBufferedImage(width, height, descriptions), imageFormat,
-					outputFile);
+			ImageIO.write(this.getBufferedImage(width, height, descriptions),
+					imageFormat, outputFile);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -447,19 +495,23 @@ public class GL3DComponentView extends AbstractBasicView implements
 		backGroundColorHasChanged = true;
 	}
 
-	public BufferedImage getBufferedImage(int width, int height, ArrayList<String> descriptions) {
+	public BufferedImage getBufferedImage(int width, int height,
+			ArrayList<String> descriptions) {
 		this.canvas.repaint();
 		this.exportMovie = true;
 		defaultViewport = this.getAdapter(ViewportView.class).getViewport();
-	
+
 		tileWidth = width < DEFAULT_TILE_WIDTH ? width : DEFAULT_TILE_WIDTH;
-		tileHeight = height < DEFAULT_TILE_HEIGHT ? height : DEFAULT_TILE_HEIGHT;
+		tileHeight = height < DEFAULT_TILE_HEIGHT ? height
+				: DEFAULT_TILE_HEIGHT;
 
-		Viewport viewport = StaticViewport.createAdaptedViewport(tileWidth, tileHeight);
+		Viewport viewport = StaticViewport.createAdaptedViewport(tileWidth,
+				tileHeight);
 		this.getAdapter(ViewportView.class).setViewport(viewport,
-				new ChangeEvent());		
+				new ChangeEvent());
 
-		System.out.println(">> GLComponentView.display() > Start taking screenshot");
+		System.out
+				.println(">> GLComponentView.display() > Start taking screenshot");
 		double xTiles = width / (double) tileWidth;
 		double yTiles = height / (double) tileHeight;
 		int countXTiles = width % tileWidth == 0 ? (int) xTiles
@@ -489,8 +541,8 @@ public class GL3DComponentView extends AbstractBasicView implements
 		offscreenGL.glBindFramebuffer(GL2.GL_FRAMEBUFFER, frameBufferObject[0]);
 		generateNewRenderBuffers(offscreenGL);
 
-		BufferedImage screenshot = new BufferedImage(width,
-				height, BufferedImage.TYPE_3BYTE_BGR);
+		BufferedImage screenshot = new BufferedImage(width, height,
+				BufferedImage.TYPE_3BYTE_BGR);
 		ByteBuffer.wrap(((DataBufferByte) screenshot.getRaster()
 				.getDataBuffer()).getData());
 
@@ -505,7 +557,8 @@ public class GL3DComponentView extends AbstractBasicView implements
 		offscreenGL.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 		double tileLeft, tileRight, tileBottom, tileTop;
-		TextRenderer textRenderer = new TextRenderer(new Font("SansSerif", Font.BOLD, 24));
+		TextRenderer textRenderer = new TextRenderer(new Font("SansSerif",
+				Font.BOLD, 24));
 		textRenderer.setColor(1f, 1f, 1f, 1f);
 		for (int x = 0; x < countXTiles; x++) {
 			for (int y = 0; y < countYTiles; y++) {
@@ -513,12 +566,12 @@ public class GL3DComponentView extends AbstractBasicView implements
 				tileRight = left + (right - left) / xTiles * (x + 1);
 				tileBottom = bottom + (top - bottom) / yTiles * y;
 				tileTop = bottom + (top - bottom) / yTiles * (y + 1);
-				
+
 				offscreenGL.glMatrixMode(GL2.GL_PROJECTION);
 				offscreenGL.glViewport(0, 0, tileWidth, tileHeight);
 				offscreenGL.glLoadIdentity();
 				offscreenGL.glPushMatrix();
-				
+
 				offscreenGL.glViewport(0, 0, tileWidth, tileHeight);
 				offscreenGL.glFrustum(tileLeft, tileRight, tileBottom, tileTop,
 						clipNear, clipFar);
@@ -535,11 +588,12 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 				displayBody(offscreenGL);
 
-				if (descriptions != null && x == 0 && y == 0){
+				if (descriptions != null && x == 0 && y == 0) {
 					int counter = 0;
-					textRenderer.beginRendering(canvas.getSurfaceWidth(), canvas.getSurfaceHeight());
-					for (String description : descriptions){
-						textRenderer.draw(description, 5, 5 + 40 * counter++);					
+					textRenderer.beginRendering(canvas.getSurfaceWidth(),
+							canvas.getSurfaceHeight());
+					for (String description : descriptions) {
+						textRenderer.draw(description, 5, 5 + 40 * counter++);
 					}
 					textRenderer.endRendering();
 				}
@@ -744,7 +798,8 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 	public void regristryAnimation(long time) {
 		if (time < 0) {
-			System.err.println("Not correct time : " + time + ", must be higher then 0");
+			System.err.println("Not correct time : " + time
+					+ ", must be higher then 0");
 		} else if (!animationTimer.isRunning()) {
 			if (!LinkedMovieManager.getActiveInstance().isPlaying()) {
 				this.animationTimer.setDelay(0);
@@ -756,8 +811,8 @@ public class GL3DComponentView extends AbstractBasicView implements
 			animationTime = time;
 		}
 	}
-	
-	public void toFullscreen(){
+
+	public void toFullscreen() {
 		this.removeListeners(this.canvas);
 		inactiveCanvas = this.canvas;
 		GLCapabilities cap = new GLCapabilities(GLProfile.getDefault());
@@ -767,8 +822,8 @@ public class GL3DComponentView extends AbstractBasicView implements
 		fullScreenFrame.add(canvas);
 		fullScreenFrame.setExtendedState(Frame.MAXIMIZED_BOTH);
 		fullScreenFrame.setUndecorated(true);
-        fullScreenFrame.setResizable(false);
-        
+		fullScreenFrame.setResizable(false);
+
 		fullScreenFrame.setVisible(true);
 		fullScreenMode = true;
 		ImageViewerGui.getMainFrame().setVisible(false);
@@ -780,31 +835,32 @@ public class GL3DComponentView extends AbstractBasicView implements
 			}
 		});
 		this.canvas.addKeyListener(new KeyAdapter() {
-			
+
 			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_ESCAPE || (e.isAltDown() && e.getKeyCode() == KeyEvent.VK_T))
+				if (e.getKeyCode() == KeyEvent.VK_ESCAPE
+						|| (e.isAltDown() && e.getKeyCode() == KeyEvent.VK_T))
 					escapeFullscreen();
 			}
 		});
 
 		SwingUtilities.invokeLater(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				addListeners(canvas);
 				canvas.repaint();
 			}
 		});
-	}	
+	}
 
-	public void escapeFullscreen(){
-		if (inactiveCanvas != null){
+	public void escapeFullscreen() {
+		if (inactiveCanvas != null) {
 			removeListeners(canvas);
 			fullScreenFrame.dispose();
 			canvas = inactiveCanvas;
 			inactiveCanvas = null;
 			SwingUtilities.invokeLater(new Runnable() {
-				
+
 				@Override
 				public void run() {
 					addListeners(canvas);
@@ -815,25 +871,34 @@ public class GL3DComponentView extends AbstractBasicView implements
 			fullScreenMode = false;
 		}
 	}
-	
-	public void removeListeners(Component canvas){
+
+	public void removeListeners(Component canvas) {
 		this.canvas.removeGLEventListener(this);
-		this.canvas.removeMouseListener(ImageViewerGui.getSingletonInstance().getMainImagePanel().getInputController());
-		this.canvas.removeMouseMotionListener(ImageViewerGui.getSingletonInstance().getMainImagePanel().getInputController());
-		this.canvas.removeMouseWheelListener(ImageViewerGui.getSingletonInstance().getMainImagePanel().getInputController());
+		this.canvas.removeMouseListener(ImageViewerGui.getSingletonInstance()
+				.getMainImagePanel().getInputController());
+		this.canvas.removeMouseMotionListener(ImageViewerGui
+				.getSingletonInstance().getMainImagePanel()
+				.getInputController());
+		this.canvas.removeMouseWheelListener(ImageViewerGui
+				.getSingletonInstance().getMainImagePanel()
+				.getInputController());
 		this.canvas.removeKeyListener(GL3DKeyController.getInstance());
 	}
 
-	public void addListeners(Component canvas){
+	public void addListeners(Component canvas) {
 		this.canvas.addGLEventListener(this);
-		this.canvas.addMouseListener(ImageViewerGui.getSingletonInstance().getMainImagePanel().getInputController());
-		this.canvas.addMouseMotionListener(ImageViewerGui.getSingletonInstance().getMainImagePanel().getInputController());
-		this.canvas.addMouseWheelListener(ImageViewerGui.getSingletonInstance().getMainImagePanel().getInputController());
+		this.canvas.addMouseListener(ImageViewerGui.getSingletonInstance()
+				.getMainImagePanel().getInputController());
+		this.canvas.addMouseMotionListener(ImageViewerGui
+				.getSingletonInstance().getMainImagePanel()
+				.getInputController());
+		this.canvas.addMouseWheelListener(ImageViewerGui.getSingletonInstance()
+				.getMainImagePanel().getInputController());
 		this.canvas.addKeyListener(GL3DKeyController.getInstance());
 		this.canvas.requestFocus();
 	}
-	
-	public void switchHighDPIMode(){
+
+	public void switchHighDPIMode() {
 		viewportSize = new Vector2i(canvas.getSurfaceWidth(),
 				canvas.getSurfaceHeight());
 		Viewport newViewport = StaticViewport.createAdaptedViewport(

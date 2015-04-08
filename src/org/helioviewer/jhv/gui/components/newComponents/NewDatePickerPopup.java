@@ -5,9 +5,11 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.MouseInfo;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
 import java.awt.event.FocusAdapter;
@@ -15,11 +17,16 @@ import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.Locale;
 
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
@@ -30,8 +37,8 @@ import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
-public class NewDatePickerPopup extends JPanel{
-	
+public class NewDatePickerPopup extends JDialog {
+
 	/**
 	 * 
 	 */
@@ -40,51 +47,43 @@ public class NewDatePickerPopup extends JPanel{
 	private CalenderCellRenderer calenderCellRenderer;
 	private CalenderTableModel calenderTableModel;
 	private NewDatePicker newDatePicker;
+	private NewDatePickerPopup newDatePickerPopup = this;
 	private String[] columnNames;
-	
+
 	private JPanel controlPanel;
 	private JLabel lblMonth, lblYear;
 	private JTable table;
-	private NewDatePickerPopup newDatePickerPopup = this;
-	
+	private AWTEventListener awtEventListener = new AWTEventListener() {
+
+		@Override
+		public void eventDispatched(AWTEvent event) {
+			if (event instanceof KeyEvent) {
+				KeyEvent k = (KeyEvent) event;
+				if (k.getID() == KeyEvent.KEY_PRESSED) {
+					if (k.getKeyCode() == KeyEvent.VK_ESCAPE) {
+						newDatePicker.hidePopup();
+					}
+				}
+			}
+		}
+	};
+
 	public NewDatePickerPopup(final NewDatePicker newDatePicker) {
-		this.newDatePicker = newDatePicker;
-		this.addFocusListener(new FocusAdapter(){
+		this.addWindowListener(new WindowAdapter() {
 			@Override
-			public void focusLost(FocusEvent e) {
+			public void windowDeactivated(WindowEvent e) {
 				newDatePicker.hidePopup();
-			}			
+			}
 		});
-		Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
-			
-			@Override
-			public void eventDispatched(AWTEvent event) {
-				if (event instanceof MouseEvent){
-					MouseEvent m = (MouseEvent)event;
-					if (m.getID() == MouseEvent.MOUSE_CLICKED){
-						if (!newDatePickerPopup.contains(m.getPoint())){
-							newDatePicker.hidePopup();
-						}
-					}
-				}
-			}
-		}, AWTEvent.MOUSE_EVENT_MASK);
-		
-		Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
-			
-			@Override
-			public void eventDispatched(AWTEvent event) {
-				if (event instanceof KeyEvent){
-					KeyEvent k = (KeyEvent) event;
-					if (k.getID() == KeyEvent.KEY_PRESSED){
-						if (k.getKeyCode() == KeyEvent.VK_ESCAPE){
-							newDatePicker.hidePopup();
-						}
-					}
-				}
-			}
-		}, AWTEvent.KEY_EVENT_MASK);
-		
+		this.setUndecorated(true);
+		this.setAlwaysOnTop(true);
+		this.setPreferredSize(new Dimension(250, 180));
+		this.setMinimumSize(new Dimension(250, 180));
+		this.newDatePicker = newDatePicker;
+
+		Toolkit.getDefaultToolkit().addAWTEventListener(awtEventListener,
+				AWTEvent.KEY_EVENT_MASK | AWTEvent.MOUSE_EVENT_MASK);
+
 		currentDate = LocalDate.now();
 		calenderCellRenderer = new CalenderCellRenderer();
 		calenderTableModel = new CalenderTableModel(null, null);
@@ -92,8 +91,8 @@ public class NewDatePickerPopup extends JPanel{
 		initGUI();
 		updateData();
 	}
-	
-	public NewDatePickerPopup(LocalDate date){
+
+	public NewDatePickerPopup(LocalDate date) {
 		currentDate = date;
 		calenderCellRenderer = new CalenderCellRenderer();
 		calenderCellRenderer.setCurrentDate(currentDate);
@@ -101,18 +100,17 @@ public class NewDatePickerPopup extends JPanel{
 		initGUI();
 		updateData();
 	}
-	
-	private void initGUI(){
-		this.setPreferredSize(new Dimension(250, 200));
+
+	private void initGUI() {
 		initColumnNames();
 		this.setBackground(Color.WHITE);
 		setLayout(new BorderLayout());
-		
+
 		initControlPanel();
 		initCalenderPanel();
 	}
-	
-	private void initColumnNames(){
+
+	private void initColumnNames() {
 		columnNames = new String[7];
 		int count = 0;
 		for (DayOfWeek day : DayOfWeek.values()) {
@@ -120,22 +118,23 @@ public class NewDatePickerPopup extends JPanel{
 					new Locale("en"));
 		}
 	}
-	
-	private void initControlPanel(){
+
+	private void initControlPanel() {
 		controlPanel = new JPanel();
 		controlPanel.setBackground(Color.WHITE);
 		controlPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		add(controlPanel, BorderLayout.NORTH);
-		
+
 		GridBagLayout gblPanel = new GridBagLayout();
-		gblPanel.columnWidths = new int[]{10, 28, 10, 38, 10, 32, 10, 0};
-		gblPanel.rowHeights = new int[]{16, 0};
-		gblPanel.columnWeights = new double[]{0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
-		gblPanel.rowWeights = new double[]{0.0, Double.MIN_VALUE};
+		gblPanel.columnWidths = new int[] { 10, 28, 10, 38, 10, 32, 10, 0 };
+		gblPanel.rowHeights = new int[] { 16, 0 };
+		gblPanel.columnWeights = new double[] { 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
+				0.0, Double.MIN_VALUE };
+		gblPanel.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
 		controlPanel.setLayout(gblPanel);
-		
+
 		JLabel lblMonthLeft = new JLabel("<");
-		lblMonthLeft.addMouseListener(new MouseAdapter(){
+		lblMonthLeft.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				currentDate = currentDate.minusMonths(1);
@@ -147,20 +146,26 @@ public class NewDatePickerPopup extends JPanel{
 		gbcLblMonthLeft.insets = new Insets(0, 0, 0, 5);
 		gbcLblMonthLeft.gridx = 0;
 		gbcLblMonthLeft.gridy = 0;
-		controlPanel.add(lblMonthLeft, gbcLblMonthLeft);
-		
+
 		lblMonth = new JLabel(currentDate.getMonth().name());
+		FontMetrics fontMetrics = lblMonth.getFontMetrics(lblMonth.getFont());
+		int width = 0;
+		for (Month month : Month.values()) {
+			int currentWidth = fontMetrics.stringWidth(month.name());
+			width = width > currentWidth ? width : currentWidth;
+		}
+		controlPanel.add(lblMonthLeft, gbcLblMonthLeft);
 		lblMonth.setHorizontalAlignment(JLabel.CENTER);
-		lblMonth.setPreferredSize(new Dimension(70, 20));
 		GridBagConstraints gbcLblMonth = new GridBagConstraints();
 		gbcLblMonth.anchor = GridBagConstraints.NORTH;
 		gbcLblMonth.insets = new Insets(0, 0, 0, 5);
 		gbcLblMonth.gridx = 1;
 		gbcLblMonth.gridy = 0;
+		lblMonth.setPreferredSize(new Dimension(width, 20));
 		controlPanel.add(lblMonth, gbcLblMonth);
 
 		JLabel lblMonthRight = new JLabel(">");
-		lblMonthRight.addMouseListener(new MouseAdapter(){
+		lblMonthRight.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				currentDate = currentDate.plusMonths(1);
@@ -175,7 +180,7 @@ public class NewDatePickerPopup extends JPanel{
 		controlPanel.add(lblMonthRight, gbcLblMonthRight);
 
 		JLabel lblYearLeft = new JLabel("<");
-		lblYearLeft.addMouseListener(new MouseAdapter(){
+		lblYearLeft.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				currentDate = currentDate.minusYears(1);
@@ -188,7 +193,7 @@ public class NewDatePickerPopup extends JPanel{
 		gbcLblYearLeft.gridx = 4;
 		gbcLblYearLeft.gridy = 0;
 		controlPanel.add(lblYearLeft, gbcLblYearLeft);
-		
+
 		this.lblYear = new JLabel(currentDate.getYear() + "");
 		lblYear.setHorizontalAlignment(JLabel.CENTER);
 		GridBagConstraints gbcLblYear = new GridBagConstraints();
@@ -199,7 +204,7 @@ public class NewDatePickerPopup extends JPanel{
 		controlPanel.add(lblYear, gbcLblYear);
 
 		JLabel lblYearRight = new JLabel(">");
-		lblYearRight.addMouseListener(new MouseAdapter(){
+		lblYearRight.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				currentDate = currentDate.plusYears(1);
@@ -213,20 +218,21 @@ public class NewDatePickerPopup extends JPanel{
 		controlPanel.add(lblYearRight, gbcLblYearRight);
 
 	}
-	
-	private void initCalenderPanel(){
+
+	private void initCalenderPanel() {
 		JPanel calenderPanel = new JPanel();
 		calenderPanel.setBackground(Color.WHITE);
 		add(calenderPanel, BorderLayout.CENTER);
-		
+
 		table = new JTable(calenderTableModel);
 		table.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				int row = table.getSelectedRow();
 				int column = table.getSelectedColumn();
-				if (((LocalDate)table.getValueAt(row, column)).getMonthValue() == currentDate.getMonthValue()){
-					currentDate = (LocalDate)table.getValueAt(row, column);
+				if (((LocalDate) table.getValueAt(row, column)).getMonthValue() == currentDate
+						.getMonthValue()) {
+					currentDate = (LocalDate) table.getValueAt(row, column);
 					updateData();
 					calenderCellRenderer.setCurrentDate(currentDate);
 					newDatePicker.updateDate(currentDate);
@@ -238,10 +244,11 @@ public class NewDatePickerPopup extends JPanel{
 		// avoid reordering and resizing of columns
 		table.getTableHeader().setReorderingAllowed(false);
 		table.getTableHeader().setResizingAllowed(false);
+		table.setShowGrid(false);
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		table.updateUI();
 		table.setMaximumSize(new Dimension(200, 200));
-		
+
 		JPanel headerPanel = new JPanel();
 		headerPanel.setBackground(Color.WHITE);
 		headerPanel.setLayout(new BorderLayout());
@@ -250,13 +257,13 @@ public class NewDatePickerPopup extends JPanel{
 		calenderPanel.add(headerPanel);
 		calenderPanel.add(table, BorderLayout.CENTER);
 	}
-	
-	public void setCurrentDate(LocalDate date){
+
+	public void setCurrentDate(LocalDate date) {
 		this.currentDate = date;
 		calenderCellRenderer.setCurrentDate(currentDate);
 	}
-	
-	private void updateData(){
+
+	private void updateData() {
 		calenderCellRenderer.setCurrentMonth(currentDate);
 		LocalDate firstDayOfMonth = currentDate.withDayOfMonth(1);
 		LocalDate firstDay = firstDayOfMonth.minusDays(firstDayOfMonth
@@ -268,100 +275,102 @@ public class NewDatePickerPopup extends JPanel{
 				firstDay = firstDay.plusDays(1);
 			}
 		}
-		
+
 		this.calenderTableModel.setDataVector(data, columnNames);
-		for (int i = 0; i < table.getColumnCount(); i++){
-			table.getColumnModel().getColumn(i).setCellRenderer(calenderCellRenderer);
-			table.getColumnModel().getColumn(i).setHeaderRenderer(new CalenderHeaderRenderer());
-			table.getColumnModel().getColumn(i).setPreferredWidth(250/7);
-			table.getColumnModel().getColumn(i).setWidth(250/7);
+		for (int i = 0; i < table.getColumnCount(); i++) {
+			table.getColumnModel().getColumn(i)
+					.setCellRenderer(calenderCellRenderer);
+			table.getColumnModel().getColumn(i)
+					.setHeaderRenderer(new CalenderHeaderRenderer());
+			table.getColumnModel().getColumn(i).setPreferredWidth(250 / 7);
+			table.getColumnModel().getColumn(i).setWidth(250 / 7);
 		}
 		lblMonth.setText(currentDate.getMonth().name());
-		lblYear.setText(currentDate.getYear()+"");
+		lblYear.setText(currentDate.getYear() + "");
 	}
-	
 	private class CalenderTableModel extends DefaultTableModel {
 
-		
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 3326390496144906677L;
 
-		public CalenderTableModel(Object[][] data, String[] columnNames){
+		public CalenderTableModel(Object[][] data, String[] columnNames) {
 			super(data, columnNames);
 		}
-		
+
 		@Override
 		public boolean isCellEditable(int row, int column) {
 			return false;
-		}		
+		}
 	}
 
-	private class CalenderCellRenderer extends DefaultTableCellRenderer{
-		
+	private class CalenderCellRenderer extends DefaultTableCellRenderer {
+
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1269766534482010809L;
-		
+
 		private LocalDate currentMonth, currentDateTime;
-		private final Color GRAY = new Color(195,195,195);
+		private final Color GRAY = new Color(195, 195, 195);
 		private final Color SELECTION_BACKGROUND = new Color(203, 233, 247);
 		private final Color SELECTION_BORDER = new Color(93, 184, 228);
+
 		public CalenderCellRenderer() {
-	        setHorizontalAlignment(CENTER);
+			setHorizontalAlignment(CENTER);
 		}
-		
+
 		@Override
-		public Component getTableCellRendererComponent(JTable table, Object value,
-				boolean isSelected, boolean hasFocus, int row, int column) {
-			super.getTableCellRendererComponent(table, ((LocalDate)value).getDayOfMonth(), false, hasFocus,
-					row, column);
+		public Component getTableCellRendererComponent(JTable table,
+				Object value, boolean isSelected, boolean hasFocus, int row,
+				int column) {
+			super.getTableCellRendererComponent(table,
+					((LocalDate) value).getDayOfMonth(), false, hasFocus, row,
+					column);
 			super.setBackground(Color.WHITE);
-			if (currentDateTime.isEqual((LocalDate)value)){
+			if (currentDateTime.isEqual((LocalDate) value)) {
 				super.setBackground(SELECTION_BACKGROUND);
 				setBorder(new LineBorder(SELECTION_BORDER));
-			}
-			else if (currentMonth.getMonth() != ((LocalDate)value).getMonth()){
+			} else if (currentMonth.getMonth() != ((LocalDate) value)
+					.getMonth()) {
 				super.setForeground(GRAY);
-			}
-			else {
+			} else {
 				super.setForeground(Color.BLACK);
 			}
 			return this;
 		}
-		
-		public void setCurrentDate(LocalDate currentDateTime){
+
+		public void setCurrentDate(LocalDate currentDateTime) {
 			this.currentDateTime = currentDateTime;
 		}
-		
-		public void setCurrentMonth(LocalDate currentMonth){
+
+		public void setCurrentMonth(LocalDate currentMonth) {
 			this.currentMonth = currentMonth;
 		}
-		
-		
+
 	}
-	
-	public class CalenderHeaderRenderer extends DefaultTableCellRenderer{
-		
+
+	public class CalenderHeaderRenderer extends DefaultTableCellRenderer {
+
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = -3124760824900437244L;
 
 		public CalenderHeaderRenderer() {
-	        setHorizontalAlignment(CENTER);
+			setHorizontalAlignment(CENTER);
 		}
-		
+
 		@Override
-		public Component getTableCellRendererComponent(JTable table, Object value,
-				boolean isSelected, boolean hasFocus, int row, int column) {
-			super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
-					row, column);
+		public Component getTableCellRendererComponent(JTable table,
+				Object value, boolean isSelected, boolean hasFocus, int row,
+				int column) {
+			super.getTableCellRendererComponent(table, value, isSelected,
+					hasFocus, row, column);
 			super.setBackground(Color.WHITE);
 			return this;
 		}
 	}
-	
+
 }

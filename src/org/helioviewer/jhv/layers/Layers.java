@@ -17,7 +17,7 @@ public class Layers {
 		layers = new CopyOnWriteArrayList<LayerInterface>();
 		renderListeners = new CopyOnWriteArrayList<NewLayerListener>();
 	}
-	
+		
 	public void addLayer(LayerInterface layer){
 		layers.add(layer);
 		for (NewLayerListener renderListener : renderListeners){
@@ -25,9 +25,12 @@ public class Layers {
 		}
 	}
 	
-	public LayerInterface addLayer(int id){
+	public NewLayer addLayer(int id){
 		NewLayer layer = new NewLayer(id, renderer, newCache);
 		layers.add(layer);
+		for (NewLayerListener renderListener : renderListeners){
+			renderListener.newlayerAdded();
+		}
 		return layer;
 	}
 	
@@ -41,7 +44,7 @@ public class Layers {
 			renderListener.newlayerRemoved(idx);
 		}
 	}
-	
+		
 	public void addNewLayerListener(NewLayerListener renderListener){
 		this.renderListeners.add(renderListener);
 	}

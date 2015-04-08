@@ -363,13 +363,16 @@ public class CompenentView extends GL3DComponentView implements
 			if (this.updateTexture) {
 				textureHelper.checkGLErrors(gl, this + ".beforeCreateTexture");
 				for (LayerInterface layer : layers.getLayers()) {
+					if (layer instanceof Layer)
 					((Layer)layer).updateTexture(gl);
 				}
 				updateTexture = false;
 			}
 			
 			for (LayerInterface layer : layers.getLayers()) {
+				System.out.println("renderLayer");
 				if (layer.isVisible()) {
+					if (layer instanceof Layer)
 					this.displayLayer(gl, (Layer)layer);
 				}
 			}

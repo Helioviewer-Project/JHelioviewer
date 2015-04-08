@@ -158,32 +158,14 @@ public class GuiState3DWCS {
 	 */
 	public static void addLayerToViewchainMain(final ImageInfoView newLayer,
 			View attachToViewchain) {
+		if (JHVGlobals.OLD_RENDER_MODE){
 		if (newLayer == null || attachToViewchain == null)
 			return;
 
 		// Fetch LayeredView
 		final LayeredView layeredView = attachToViewchain.getAdapter(LayeredView.class);
 		
-		if (!JHVGlobals.OLD_RENDER_MODE){
-			final JHVJPXView layerOverView = new JHVJPXView(false);
-			layerOverView.setJP2Image(((JHVJPXView)newLayer).getJP2Image());
-			while (layerOverView.getImageData() == null) {
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-			SwingUtilities.invokeLater(new Runnable() {
-				
-				@Override
-				public void run() {
-					Layer layer = new Layer(layerOverView);
-					layers.addLayer(layer);
-				}
-			});			
-		}
-
+		
 		// wait until image is loaded
 		JHVJPXView jhvjpxView = (JHVJPXView)newLayer;
         while (newLayer.getAdapter(SubimageDataView.class).getImageData() == null)
@@ -333,6 +315,6 @@ public class GuiState3DWCS {
                 }
             }
         });
-	}
+	}}
 
 }

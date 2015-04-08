@@ -83,26 +83,7 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 				System.out.println("Toggling Corona Visibility");
 			}
 		}, KeyEvent.VK_X);
-		GL3DKeyController.getInstance().addListener(new GL3DKeyListener() {
-			public void keyHit(KeyEvent e) {
-				if (LinkedMovieManager.getActiveInstance().getMasterMovie().isMoviePlaying())
-					LinkedMovieManager.getActiveInstance().getMasterMovie().pauseMovie();
-				else
-					LinkedMovieManager.getActiveInstance().getMasterMovie().playMovie();
-			}
-		}, KeyEvent.VK_SPACE);
-		GL3DKeyController.getInstance().addListener(new GL3DKeyListener() {
-			public void keyHit(KeyEvent e) {
-				JHVJPXView activeView = (JHVJPXView) LayersModel.getSingletonInstance().getActiveView().getAdapter(JHVJPXView.class);
-				activeView.setCurrentFrame(activeView.getCurrentFrameNumber()+1, new ChangeEvent());
-			}
-		}, KeyEvent.VK_RIGHT);
-		GL3DKeyController.getInstance().addListener(new GL3DKeyListener() {
-			public void keyHit(KeyEvent e) {
-				JHVJPXView activeView = (JHVJPXView) LayersModel.getSingletonInstance().getActiveView().getAdapter(JHVJPXView.class);
-				activeView.setCurrentFrame(activeView.getCurrentFrameNumber()-1, new ChangeEvent());
-			}
-		}, KeyEvent.VK_LEFT);
+		
 	}
 
 	public void render3D(GL3DState state) {

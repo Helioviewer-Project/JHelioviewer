@@ -48,10 +48,8 @@ public class JPXLayer {
 				ResolutionLevel _resolution = resolutionSet.getResolutionLevel(0);
 				newReader = new NewReader("jpip://api.helioviewer.org:8090/movies/SDO_AIA_335_F2014-01-01T00.00.00Z_T2014-01-01T00.45.00Z.jpx",12, resolutionSet);
 
-				System.out.println("res : " + _resolution);
 				JPIPQuery query = newReader.createQuery(new JP2ImageParameter(_roi, _resolution, 0, 0), 0, 0);
 				
-				System.out.println("query : " + query);
 				JPIPRequest request = new JPIPRequest(Method.GET, query);
 
 				_roi = new SubImage(0, 0, 128, 128);

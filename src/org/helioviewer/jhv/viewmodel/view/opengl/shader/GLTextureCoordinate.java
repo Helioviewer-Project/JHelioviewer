@@ -77,7 +77,6 @@ public abstract class GLTextureCoordinate {
      *            Valid reference to the current gl object
      */
     public static void init(GL2 gl) {
-        System.out.println(">> GLTextureCoordinate.init(GL) > Initialize GLTextureCoordinate");
         int tmp[] = new int[1];
         gl.glGetIntegerv(GL2.GL_MAX_TEXTURE_COORDS, tmp, 0);
 

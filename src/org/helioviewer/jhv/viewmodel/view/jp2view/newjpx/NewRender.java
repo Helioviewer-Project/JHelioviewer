@@ -1,24 +1,9 @@
 package org.helioviewer.jhv.viewmodel.view.jp2view.newjpx;
 
-import java.awt.Graphics;
-import java.awt.Rectangle;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferInt;
-import java.awt.image.DirectColorModel;
-import java.awt.image.Raster;
-import java.awt.image.SampleModel;
-import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 import org.helioviewer.jhv.viewmodel.view.jp2view.image.SubImage;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.KakaduUtils;
