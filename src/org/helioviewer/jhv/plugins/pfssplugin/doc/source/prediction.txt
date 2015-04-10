@@ -1,0 +1,76 @@
+private float[][] channels;
+private int size;
+
+public void decodePrediction(float _Q1, float _Q2, float _Q3)
+{
+	dequantizePredictionErrors(_Q1,_Q2,_Q3);
+	
+	for(int i = 0; i < channels.length;i++) {
+		float[] decodedChannel = new float[channels[i].length];
+		decodedChannel[0] = channels[i][0];
+		decodedChannel[decodedChannel.length-1] = channels[i][0]+channels[i][1];
+		if(decodedChannel.length > 2) {
+			int channelIndex = 2;
+			LinkedList<Indices> queue = new LinkedList<>();
+			queue.add(new Indices(0, decodedChannel.length-1));
+			while(!queue.isEmpty()) {
+				prediction(queue,decodedChannel,channels[i],channelIndex);
+				channelIndex++;
+			}
+		}
+		this.channels[i] = decodedChannel;
+	}
+	this.size = this.channels[0].length;
+}
+
+private void dequantizePredictionErrors(float _Q1, float _Q2, float _Q3) {
+	for(int i = 0; i < channels.length;i++) { 
+		float[] current = channels[i];
+			
+		int j=0;
+		for(; j < 5 && j< current.length;j++) {
+			current[j] *= _Q1;
+		}
+		for(; j < 16 && j< current.length;j++) {
+			current[j] *= _Q2;
+		}
+		
+		for(;  j < current.length;j++) {
+			current[j] *= _Q3;
+		}
+	}
+}
+
+private static void prediction(LinkedList<Indices> queue,float[] decodedChannel,float[] encodedChanel, int nextIndex) {
+	Indices i = queue.pollFirst();
+	float start = decodedChannel[i.startIndex];
+	float end = decodedChannel[i.endIndex];
+	
+	int toPredictIndex = (i.startIndex + i.endIndex) / 2;
+		float predictionError = encodedChanel[nextIndex];
+		
+		//predict
+	float predictionFactor = (toPredictIndex-i.startIndex)/(float)(i.endIndex - i.startIndex);
+	float prediction = (1-predictionFactor)* start + predictionFactor*end;
+	decodedChannel[toPredictIndex] = prediction-predictionError;
+	
+	//add next level of indices
+	if (i.startIndex + 1 != toPredictIndex){
+		Indices next = new Indices(i.startIndex,toPredictIndex);
+		queue.addLast(next);
+       }
+	if (i.endIndex - 1 != toPredictIndex) {
+		Indices next = new Indices(toPredictIndex,i.endIndex);
+		queue.addLast(next);
+	}
+}
+	
+private static class Indices {
+	public int startIndex;
+	public int endIndex;
+		
+	public Indices(int start, int end) {
+		this.startIndex = start;
+		this.endIndex = end;
+	}
+}
