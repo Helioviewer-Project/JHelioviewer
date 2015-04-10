@@ -45,7 +45,6 @@ public class DescriptorTimestampRenderer extends DefaultTableCellRenderer {
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         if (value instanceof LayersModel.LayerDescriptor) {
             LayersModel.LayerDescriptor descriptor = (LayersModel.LayerDescriptor) value;
-            String date = descriptor.timestamp;
             JLabel label = (JLabel) super.getTableCellRendererComponent(table, descriptor.timestamp, isSelected, hasFocus, row, column);
             label.setToolTipText("Shown observation time (UTC) of this layer.");
             if (drawLine && row > 0) {

@@ -5,14 +5,9 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.LinkedList;
 
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
-
-import org.helioviewer.jhv.gui.interfaces.MainContentPanelPlugin;
 
 /**
  * This panel acts as a container for the GUI elements which are shown in the
@@ -28,8 +23,6 @@ public class MainContentPanel extends JPanel implements ActionListener {
     // ////////////////////////////////////////////////////////////////
 
     private static final long serialVersionUID = 1L;
-
-    private final LinkedList<MainContentPanelPlugin> pluginList = new LinkedList<MainContentPanelPlugin>();
 
     private final JSplitPane splitpane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false);
     private Component mainComponent = null;

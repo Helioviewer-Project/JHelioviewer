@@ -11,11 +11,12 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.helioviewer.viewmodel.filter.Filter;
-import org.helioviewer.viewmodel.imagedata.ColorMask;
-import org.helioviewer.viewmodelplugin.filter.FilterAlignmentDetails;
-import org.helioviewer.viewmodelplugin.filter.FilterPanel;
-import org.helioviewer.viewmodelplugin.filter.FilterTabPanelManager.Area;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterAlignmentDetails;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterPanel;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTabPanelManager.Area;
+import org.helioviewer.jhv.viewmodel.filter.Filter;
+import org.helioviewer.jhv.viewmodel.imagedata.ColorMask;
 
 /**
  * Panel containing three check boxes to modify the color mask of an image.
@@ -40,26 +41,26 @@ public class ChannelMixerPanel extends FilterPanel implements ItemListener, Filt
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 
         title = new JLabel("Channels:");
-        title.setPreferredSize(new Dimension(FilterPanel.titleWidth, FilterPanel.height));
+        title.setPreferredSize(new Dimension(FilterPanel.TITLE_WIDTH, FilterPanel.HEIGHT));
         add(title);
 
         JPanel boxPanel = new JPanel(new GridLayout(1, 3));
         // boxPanel.setLayout(new BoxLayout(boxPanel, BoxLayout.LINE_AXIS));
 
         redCheckBox = new JCheckBox("Red", true);
-        redCheckBox.setPreferredSize(new Dimension(redCheckBox.getPreferredSize().width, FilterPanel.height));
+        redCheckBox.setPreferredSize(new Dimension(redCheckBox.getPreferredSize().width, FilterPanel.HEIGHT));
         redCheckBox.setToolTipText("Unchecked to omit the red color channel when drawing this layer");
         redCheckBox.addItemListener(this);
         boxPanel.add(redCheckBox, BorderLayout.WEST);
 
         greenCheckBox = new JCheckBox("Green", true);
-        greenCheckBox.setPreferredSize(new Dimension(greenCheckBox.getPreferredSize().width, FilterPanel.height));
+        greenCheckBox.setPreferredSize(new Dimension(greenCheckBox.getPreferredSize().width, FilterPanel.HEIGHT));
         greenCheckBox.setToolTipText("Unchecked to omit the green color channel when drawing this layer");
         greenCheckBox.addItemListener(this);
         boxPanel.add(greenCheckBox, BorderLayout.CENTER);
 
         blueCheckBox = new JCheckBox("Blue", true);
-        blueCheckBox.setPreferredSize(new Dimension(blueCheckBox.getPreferredSize().width, FilterPanel.height));
+        blueCheckBox.setPreferredSize(new Dimension(blueCheckBox.getPreferredSize().width, FilterPanel.HEIGHT));
         blueCheckBox.setToolTipText("Unchecked to omit the blue color channel when drawing this layer");
         blueCheckBox.addItemListener(this);
         boxPanel.add(blueCheckBox, BorderLayout.EAST);
@@ -95,6 +96,7 @@ public class ChannelMixerPanel extends FilterPanel implements ItemListener, Filt
      */
     public void itemStateChanged(ItemEvent e) {
         filter.setColorMask(redCheckBox.isSelected(), greenCheckBox.isSelected(), blueCheckBox.isSelected());
+        GuiState3DWCS.mainComponentView.getComponent().repaint();
     }
 
     public int getDetails() {

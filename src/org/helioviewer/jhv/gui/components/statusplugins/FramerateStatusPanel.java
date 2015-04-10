@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import javax.swing.BorderFactory;
 
 import org.helioviewer.jhv.layers.LayersModel;
+import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
 
 /**
  * Status panel for displaying the framerate for image series.
@@ -20,45 +21,46 @@ import org.helioviewer.jhv.layers.LayersModel;
 public class FramerateStatusPanel extends ViewStatusPanelPlugin {
 
     private static final long serialVersionUID = 1L;
-
+    private int counter = 0;
+    private long last = -1;
+    private long currentMillis = 0;
     /**
      * Default constructor.
      */
-    public FramerateStatusPanel() {
+    public FramerateStatusPanel(){
         setBorder(BorderFactory.createEtchedBorder());
 
         setPreferredSize(new Dimension(70, 20));
         setText("fps:");
 
         setVisible(true);
+        currentMillis = System.currentTimeMillis();
         LayersModel.getSingletonInstance().addLayersListener(this);
+        
     }
 
     private void updateFramerate() {
-
-        int idx = LayersModel.getSingletonInstance().getActiveLayer();
-
-        if (LayersModel.getSingletonInstance().isValidIndex(idx)) {
-
-            double fps = LayersModel.getSingletonInstance().getFPS(idx);
-            String fpsString = Double.toString(fps);
-
             setVisible(true);
-            setText("fps: " + fpsString);
-
-        } else {
-
-            setVisible(false);
-
-        }
-
+            setText("fps: " + counter);
+            counter = 0;
+            currentMillis = System.currentTimeMillis();
     }
 
     public void activeLayerChanged(int idx) {
-        this.updateFramerate();
     }
 
-    public void subImageDataChanged() {
-        this.updateFramerate();
+    @Override
+    public void subImageDataChanged(int idx) {
+        if (LinkedMovieManager.getActiveInstance() != null && LinkedMovieManager.getActiveInstance().getMasterMovie() != null){         
+            if ((System.currentTimeMillis() - currentMillis) >= 1000)
+                updateFramerate();
+            long current = LinkedMovieManager.getActiveInstance().getMasterMovie().getCurrentFrameDateTime().getMillis();
+            if (last >= 0 && last != current) counter++;
+            last = current;
+        }
+    }
+    
+    public void timestampChanged(){
+        
     }
 }

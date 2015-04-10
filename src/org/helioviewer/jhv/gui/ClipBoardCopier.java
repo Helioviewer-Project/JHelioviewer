@@ -1,8 +1,13 @@
 package org.helioviewer.jhv.gui;
 
-import java.awt.datatransfer.*;
 import java.awt.Toolkit;
-import java.io.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
 
 /**
  * Simple helper for accessing the user's clipboard.
@@ -12,7 +17,7 @@ import java.io.*;
  */
 public final class ClipBoardCopier implements ClipboardOwner {
 
-    final static ClipBoardCopier clipboard = new ClipBoardCopier();
+    private final static ClipBoardCopier SINGLETON = new ClipBoardCopier();
 
     /**
      * Returns the only instance of this class.
@@ -20,7 +25,7 @@ public final class ClipBoardCopier implements ClipboardOwner {
      * @return the only instance of this class.
      * */
     public final static ClipBoardCopier getSingletonInstance() {
-        return clipboard;
+        return SINGLETON;
     }
 
     private ClipBoardCopier() {

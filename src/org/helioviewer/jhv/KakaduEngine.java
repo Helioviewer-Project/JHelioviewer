@@ -4,8 +4,8 @@ import kdu_jni.KduException;
 import kdu_jni.Kdu_global;
 import kdu_jni.Kdu_message_formatter;
 
-import org.helioviewer.viewmodel.view.jp2view.kakadu.JHV_KduException;
-import org.helioviewer.viewmodel.view.jp2view.kakadu.JHV_Kdu_message;
+import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
+import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_Kdu_message;
 
 /**
  * This class takes care of setting up the internal Kakadu messaging objects.

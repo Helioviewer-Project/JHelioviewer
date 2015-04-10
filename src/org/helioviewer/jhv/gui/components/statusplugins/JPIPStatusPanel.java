@@ -10,7 +10,7 @@ import javax.swing.JWindow;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.layers.LayersModel;
-import org.helioviewer.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.View;
 
 /**
  * Status panel for displaying the status of the JPIP connection.
@@ -32,8 +32,8 @@ public class JPIPStatusPanel extends ViewStatusPanelPlugin {
     private ConnectionStatus lastStatus = ConnectionStatus.CONNECTED;
     private StatusChangedWindow statusChangedWindow = new StatusChangedWindow();
 
-    private static final Icon connectedIcon = IconBank.getIcon(JHVIcon.CONNECTED);
-    private static final Icon disconnectedIcon = IconBank.getIcon(JHVIcon.DISCONNECTED);
+    private static final Icon ICON_CONNECTED = IconBank.getIcon(JHVIcon.CONNECTED);
+    private static final Icon ICON_DISCONNECTED = IconBank.getIcon(JHVIcon.DISCONNECTED);
 
     public static enum ConnectionStatus {
         CONNECTED, DISCONNECTED, LOCAL
@@ -47,7 +47,7 @@ public class JPIPStatusPanel extends ViewStatusPanelPlugin {
 
         setPreferredSize(new Dimension(55, 20));
         setText("JPIP:");
-        setIcon(disconnectedIcon);
+        setIcon(ICON_DISCONNECTED);
         setVerticalTextPosition(JLabel.CENTER);
         setHorizontalTextPosition(JLabel.LEFT);
 
@@ -56,10 +56,10 @@ public class JPIPStatusPanel extends ViewStatusPanelPlugin {
 
     public void updateStatus(ConnectionStatus connectionStatus) {
         if (connectionStatus == ConnectionStatus.CONNECTED) {
-            setIcon(connectedIcon);
+            setIcon(ICON_CONNECTED);
             setText("JPIP:");
         } else if (connectionStatus == ConnectionStatus.DISCONNECTED) {
-            setIcon(disconnectedIcon);
+            setIcon(ICON_DISCONNECTED);
             setText("JPIP:");
         } else {
             setText("Local");
@@ -113,6 +113,7 @@ public class JPIPStatusPanel extends ViewStatusPanelPlugin {
             setVisible(true);
 
             Thread closeThread = new Thread(this, "Close JPIP Popup");
+            closeThread.setDaemon(true);
             closeThread.start();
         }
 

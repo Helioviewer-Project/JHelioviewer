@@ -19,7 +19,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import org.helioviewer.base.logging.Log;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.ImageViewerGui;
@@ -29,10 +28,9 @@ import org.helioviewer.jhv.gui.dialogs.observation.ImageDataPanel;
 import org.helioviewer.jhv.gui.dialogs.observation.ObservationDialog;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
-import org.helioviewer.viewmodel.view.MovieView;
-import org.helioviewer.viewmodel.view.TimedMovieView;
-import org.helioviewer.viewmodel.view.View;
-import org.helioviewer.viewmodel.view.jp2view.datetime.ImmutableDateTime;
+import org.helioviewer.jhv.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.jp2view.ImmutableDateTime;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 
 /**
  * Panel for displaying all layers including the layer specific controls.
@@ -109,7 +107,7 @@ public class ImageSelectorPanel extends JPanel implements LayersListener {
              */
 
             if (activeView != null) {
-                MovieView tmv = activeView.getAdapter(TimedMovieView.class);
+                JHVJPXView tmv = activeView.getAdapter(JHVJPXView.class);
                 if (tmv != null && tmv.getMaximumAccessibleFrameNumber() == tmv.getMaximumFrameNumber()) {
                     final ImmutableDateTime start = LayersModel.getSingletonInstance().getStartDate(activeView);
                     final ImmutableDateTime end = LayersModel.getSingletonInstance().getEndDate(activeView);
@@ -117,8 +115,14 @@ public class ImageSelectorPanel extends JPanel implements LayersListener {
                         try {
                             Date startDate = start.getTime();
                             Date endDate = end.getTime();
-                            Date obsStartDate = ImageDataPanel.apiDateFormat.parse(observationImagePane.getStartTime());
-                            Date obsEndDate = ImageDataPanel.apiDateFormat.parse(observationImagePane.getEndTime());
+                            Date obsStartDate;
+                            Date obsEndDate;
+                            synchronized(ImageDataPanel.API_DATE_FORMAT)
+                            {
+                                obsStartDate = ImageDataPanel.API_DATE_FORMAT.parse(observationImagePane.getStartTime());
+                                obsEndDate = ImageDataPanel.API_DATE_FORMAT.parse(observationImagePane.getEndTime());
+                            }
+                            
                             // only updates if its really necessary with a
                             // tolerance of an hour
                             final int tolerance = 60 * 60 * 1000;
@@ -128,7 +132,8 @@ public class ImageSelectorPanel extends JPanel implements LayersListener {
                             }
                         } catch (ParseException e) {
                             // Should not happen
-                            Log.error("Cannot update observation dialog", e);
+                            System.err.println("Cannot update observation dialog");
+                            e.printStackTrace();
                         }
                     }
                 }
@@ -266,7 +271,7 @@ public class ImageSelectorPanel extends JPanel implements LayersListener {
      */
     public ImageSelectorPanel() {
         // set up observation dialog
-        observationDialog.addUserInterface("Image Data", observationImagePane);
+        observationDialog.addUserInterface("Image data", observationImagePane);
 
         // add components
         JPanel southPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -284,7 +289,7 @@ public class ImageSelectorPanel extends JPanel implements LayersListener {
         JScrollPane scrollPane = new JScrollPane(layerTable, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 
-        JLabel emptyLabel = new JLabel("No Layers Added yet", JLabel.CENTER);
+        JLabel emptyLabel = new JLabel("No layers added yet", JLabel.CENTER);
         emptyLabel.setFont(emptyLabel.getFont().deriveFont(Font.ITALIC));
         emptyLabel.setHorizontalTextPosition(JLabel.CENTER);
         emptyLabel.setOpaque(true);
@@ -353,10 +358,9 @@ public class ImageSelectorPanel extends JPanel implements LayersListener {
         activateActions();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void subImageDataChanged() {
+    @Override
+    public void subImageDataChanged(int idx)
+    {
     }
 
     /**

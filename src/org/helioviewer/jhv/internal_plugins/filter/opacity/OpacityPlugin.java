@@ -1,16 +1,14 @@
 package org.helioviewer.jhv.internal_plugins.filter.opacity;
 
-import org.helioviewer.base.logging.Log;
-import org.helioviewer.jhv.gui.ImageViewerGui;
-import org.helioviewer.viewmodel.filter.Filter;
-import org.helioviewer.viewmodel.metadata.HelioviewerMetaData;
-import org.helioviewer.viewmodel.metadata.HelioviewerOcculterMetaData;
-import org.helioviewer.viewmodel.view.FilterView;
-import org.helioviewer.viewmodel.view.LayeredView;
-import org.helioviewer.viewmodel.view.MetaDataView;
-import org.helioviewer.viewmodelplugin.filter.FilterPanel;
-import org.helioviewer.viewmodelplugin.filter.FilterTabDescriptor;
-import org.helioviewer.viewmodelplugin.filter.SimpleFilterContainer;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterPanel;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTabDescriptor;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.SimpleFilterContainer;
+import org.helioviewer.jhv.viewmodel.filter.Filter;
+import org.helioviewer.jhv.viewmodel.metadata.MetaData;
+import org.helioviewer.jhv.viewmodel.view.FilterView;
+import org.helioviewer.jhv.viewmodel.view.LayeredView;
+import org.helioviewer.jhv.viewmodel.view.MetaDataView;
 
 /**
  * Plugin for changing the opacity of the image.
@@ -25,13 +23,14 @@ import org.helioviewer.viewmodelplugin.filter.SimpleFilterContainer;
 public class OpacityPlugin extends SimpleFilterContainer {
 
     float initialOpacity = 1.0f;
-
+    private OpacityFilter opacityFilter;
     /**
      * {@inheritDoc}
      */
 
     protected Filter getFilter() {
-        return new OpacityFilter(initialOpacity);
+    	this.opacityFilter = new OpacityFilter(initialOpacity);
+        return opacityFilter;
     }
 
     /**
@@ -42,42 +41,33 @@ public class OpacityPlugin extends SimpleFilterContainer {
      */
 
     protected boolean useFilter(FilterView view) {
-    	if (view.getAdapter(MetaDataView.class).getMetaData() instanceof HelioviewerOcculterMetaData) {
-            initialOpacity = 1.0f;
-            return true;
-        }
-        
-    	try {
-        	HelioviewerMetaData currentMetaData = (HelioviewerMetaData) view.getAdapter(MetaDataView.class).getMetaData();
-            if (currentMetaData.getDetector().startsWith("COR")){
+    	
+        	MetaData currentMetaData = view.getAdapter(MetaDataView.class).getMetaData();
+            if (!currentMetaData.hasSphere()){
             	initialOpacity = 1.0f;
             	return true;
             }
-		} catch (Exception e) {
-			Log.error("Metadata " + view.getAdapter(MetaDataView.class).getMetaData() + " can't be cast to org.helioviewer.viewmodel.metadata.HelioviewerMetaData");
-		}
-        
-        if (ImageViewerGui.getSingletonInstance().getMainView() == null) {
+        if (GuiState3DWCS.mainComponentView == null) {
             initialOpacity = 1.0f;
             return true;
         }
 
-        LayeredView layeredView = ImageViewerGui.getSingletonInstance().getMainView().getAdapter(LayeredView.class);
+        LayeredView layeredView = GuiState3DWCS.mainComponentView.getAdapter(LayeredView.class);
         
         if (layeredView == null) {
             initialOpacity = 1.0f;
             return true;
         }
             
+        
         int layerCount = 1;
         for (int i = 0; i < layeredView.getNumLayers(); i++) {
-        	if (!(layeredView.getLayer(i).getAdapter(MetaDataView.class).getMetaData() instanceof HelioviewerOcculterMetaData)) {
-        		HelioviewerMetaData metaData = (HelioviewerMetaData) layeredView.getLayer(i).getAdapter(MetaDataView.class).getMetaData();
-            	if (!metaData.getDetector().startsWith("COR")) layerCount++;
-            }
+        		MetaData metaData = layeredView.getLayer(i).getAdapter(MetaDataView.class).getMetaData();
+            	if (metaData.hasSphere()) layerCount++;
         }
         
-		initialOpacity = 1.0f / layerCount;
+		initialOpacity = 1.0f/layerCount;
+		this.opacityFilter.setOpacity(initialOpacity);
         return true;
     }
 
@@ -87,13 +77,6 @@ public class OpacityPlugin extends SimpleFilterContainer {
 
     protected FilterPanel getPanel() {
         return new OpacityPanel();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public String getDescription() {
-        return null;
     }
 
     /**

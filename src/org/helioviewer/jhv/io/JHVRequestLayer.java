@@ -20,6 +20,5 @@ public class JHVRequestLayer {
     public String instrument;
     public String detector;
     public String measurement;
-    public boolean visibility;
     public int opacity;
 }

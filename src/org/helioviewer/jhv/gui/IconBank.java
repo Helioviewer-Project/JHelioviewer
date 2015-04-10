@@ -11,7 +11,7 @@ import java.net.URL;
 
 import javax.swing.ImageIcon;
 
-import org.helioviewer.base.FileUtils;
+import org.helioviewer.jhv.base.FileUtils;
 
 /**
  * This class provides access to all images, icons and cursors which are used by
@@ -35,11 +35,12 @@ public class IconBank {
         // The formatter will not merge together multiple lines, if at least one
         // empty line is inserted in between:
 
-        PROPERTIES("properties16.gif"), BLANK("blank_square.gif"), ADD("edit_add.png"), DOWNLOAD("download_dm.png"),
+        PROPERTIES("properties16.gif"), BLANK("blank_square.gif"), ADD("edit_add.png"), ADD_NEW("add_128x128.png"), DOWNLOAD_NEW("download_128x128.png"), INFO_NEW("info_128x128.png"), DOWNLOAD("download_dm.png"),
 
         // MOVIE CONTROLS
         PLAY("play_dm.png"), PAUSE("agt_pause-queue.png"), BACK("agt_back.png"), FORWARD("agt_forward.png"),
-
+        PLAY_NEW("TriangleRight_128x128.png"), PAUSE_NEW("Pause_128x128.png"), BACKWARD_NEW("Backward_128x128.png"), FORWARD_NEW("Forward_128x128.png"),
+        UP_NEW("TriangleUp_128x128.png"), DOWN_NEW("TriangleDown_128x128.png"),
         // ZOOMING
         ZOOM_IN("zoomIn24.png"), ZOOM_IN_SMALL("zoomIn24small.png"),
 
@@ -54,7 +55,7 @@ public class IconBank {
 
         // MOUSE POINTERS
 
-        OPEN_HAND("OpenedHand.gif"), OPEN_HAND_SMALL("OpenedHand2.gif"), CLOSED_HAND("ClosedHand.gif"),
+        OPEN_HAND("OpenedHand.gif"), CLOSED_HAND("ClosedHand.gif"),
 
         PAN("pan24x24.png"), PAN_SELECTED("pan_selected24x24.png"),
 
@@ -67,7 +68,7 @@ public class IconBank {
         VISIBLE("layer_visible_dm.png"), HIDDEN("layer_invisible_dm.png"),
 
         REMOVE_LAYER("button_cancel.png"), INFO("info.png"),
-
+        CANCEL_NEW("Cancel_128x128.png"),
         CHECK("button_ok.png"), EX("button_cancel.png"), RUBBERBAND("rubberband.gif"), NOIMAGE("NoImageLoaded_256x256.png"),
 
         CONNECTED("connected_dm.png"), DISCONNECTED("not_connected_dm.png"),
@@ -75,6 +76,8 @@ public class IconBank {
         MOVIE_LINK("unlocked.png"), MOVIE_UNLINK("locked.png"),
 
         SPLASH("jhv_splash.png"), HVLOGO_SMALL("hvImage_160x160.png"),
+        
+        INSTALL4J("install4j.png"), RAYGUN_IO("raygun.io.png"),
 
         SIMPLE_ARROW_RIGHT("Arrow-Right.png"), SIMPLE_ARROW_LEFT("Arrow-Left.png"),
 
@@ -82,17 +85,17 @@ public class IconBank {
 
         SIMPLE_DOUBLEARROW_LEFT("DoubleArrow-Left.png"),
 
-        DATE("date.png"),
+        DATE("date.png"), CALENDER("Calendar_16x16.png"),
 
         SHOW_LESS("1uparrow1.png"), SHOW_MORE("1downarrow1.png"),
 
         INVERT("invert.png"), LOADING_BIG("Loading_256x256.png"), LOADING_SMALL("Loading_219x50.png"),
 
         // 3D Icons
-        MODE_3D("3D_24x24.png"), MODE_2D("2D_24x24.png"), MODE_3D_SELECTED("3D_selected_24x24.png"), MODE_2D_SELECTED("2D_selected_24x24.png"), RESET("Reset_24x24.png"), ROTATE("Rotate_24x24.png"), ROTATE_SELECTED("Rotate_selected_24x24.png"),
+        MODE_3D("3D_24x24.png"), MODE_2D("2D_24x24.png"), MODE_3D_SELECTED("3D_selected_24x24.png"), MODE_2D_SELECTED("2D_selected_24x24.png"), RESET("Reset_24x24.png"), ROTATE("Rotate_24x24.png"), ROTATE_SELECTED("Rotate_selected_24x24.png"), ROTATE_ALL_AXIS("Rotate_both_24x24.png"), ROTATE_ALL_AXIS_SELECTED("Rotate_both_selected_24x24.png"),
 
         // LAYER ICONS
-        LAYER_IMAGE("layer-image.png"), LAYER_IMAGE_OFF("layer-image-off.png"), LAYER_IMAGE_TIME("layer-image-time.png"), LAYER_IMAGE_TIME_MASTER("layer-image-time-master.png"), LAYER_IMAGE_TIME_OFF("layer-image-time-off.png"), LAYER_MOVIE("layer-movie.png"), LAYER_MOVIE_OFF("layer-movie-off.png"), LAYER_MOVIE_TIME("layer-movie-time.png"), LAYER_MOVIE_TIME_MASTER("layer-movie-time-master.png"), LAYER_MOVIE_TIME_OFF("layer-movie-time-off.png");
+        LAYER_IMAGE_24x24("layer-image_24x24.png"), LAYER_IMAGE_OFF_24x24("layer-image-off_24x24.png"), LAYER_IMAGE("layer-image.png"), LAYER_IMAGE_OFF("layer-image-off.png"), LAYER_IMAGE_TIME("layer-image-time.png"), LAYER_IMAGE_TIME_MASTER("layer-image-time-master.png"), LAYER_IMAGE_TIME_OFF("layer-image-time-off.png"), LAYER_MOVIE("layer-movie.png"), LAYER_MOVIE_OFF("layer-movie-off.png"), LAYER_MOVIE_TIME("layer-movie-time.png"), LAYER_MOVIE_TIME_MASTER("layer-movie-time-master.png"), LAYER_MOVIE_TIME_OFF("layer-movie-time-off.png");
 
         private final String fname;
 
@@ -120,6 +123,16 @@ public class IconBank {
         return new ImageIcon(imgURL);
     }
 
+    public static ImageIcon getIcon(JHVIcon icon, int width, int height){
+        URL imgURL = FileUtils.getResourceUrl(RESOURCE_PATH + icon.getFilename());
+        ImageIcon imageIcon = new ImageIcon(imgURL);
+        Image image = imageIcon.getImage();
+        image = image.getScaledInstance(width, height, Image.SCALE_AREA_AVERAGING);
+        imageIcon.setImage(image);
+        return imageIcon;
+    	
+    }
+    
     /**
      * Returns the Image with the given enum.
      * 

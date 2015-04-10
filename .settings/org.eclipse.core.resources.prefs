@@ -1,0 +1,10 @@
+eclipse.preferences.version=1
+encoding//resources/settings/colors.js=UTF-8
+encoding//src/org/helioviewer/jhv/opengl/model/GL3DImageCorona.java=UTF-8
+encoding//src/org/helioviewer/jhv/opengl/model/GL3DImageLayer.java=UTF-8
+encoding//src/org/helioviewer/jhv/opengl/model/GL3DImageSphere.java=UTF-8
+encoding//src/org/helioviewer/jhv/viewmodel/view/opengl/GL3DComponentView.java=UTF-8
+encoding//src/org/helioviewer/jhv/viewmodel/view/opengl/GL3DCoordinateSystemView.java=UTF-8
+encoding//src/org/helioviewer/jhv/viewmodel/view/opengl/GL3DImageRegionView.java=UTF-8
+encoding//src/org/helioviewer/jhv/viewmodel/view/opengl/GL3DImageTextureView.java=UTF-8
+encoding//src/org/helioviewer/jhv/viewmodel/view/opengl/GL3DLayeredView.java=UTF-8

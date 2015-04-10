@@ -10,8 +10,9 @@ import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 import javax.swing.KeyStroke;
 
-import org.helioviewer.base.message.Message;
+import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.Settings;
+import org.helioviewer.jhv.base.Message;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.actions.filefilters.AllSupportedImageTypesFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.FitsFilter;
@@ -39,7 +40,7 @@ public class OpenLocalFileAction extends AbstractAction {
      */
     public OpenLocalFileAction() {
         super("Open...");
-        putValue(SHORT_DESCRIPTION, "Open New Image");
+        putValue(SHORT_DESCRIPTION, "Open image");
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
     }
 
@@ -47,8 +48,7 @@ public class OpenLocalFileAction extends AbstractAction {
      * {@inheritDoc}
      */
     public void actionPerformed(ActionEvent e) {
-
-        final JFileChooser fileChooser = new JFileChooser(Settings.getSingletonInstance().getProperty("default.local.path"));
+        final JFileChooser fileChooser = JHVGlobals.getJFileChooser(Settings.getProperty("default.local.path"));
         fileChooser.setAcceptAllFileFilterUsed(false);
         fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         fileChooser.addChoosableFileFilter(new JP2Filter());
@@ -57,17 +57,16 @@ public class OpenLocalFileAction extends AbstractAction {
         fileChooser.addChoosableFileFilter(new JPGFilter());
         fileChooser.setFileFilter(new AllSupportedImageTypesFilter());
         fileChooser.setMultiSelectionEnabled(false);
-
+        
         int retVal = fileChooser.showOpenDialog(ImageViewerGui.getMainFrame());
-
-        if (retVal == JFileChooser.APPROVE_OPTION) {
+        if (retVal == JFileChooser.APPROVE_OPTION)
+        {
             File selectedFile = fileChooser.getSelectedFile();
 
             if (selectedFile.exists() && selectedFile.isFile()) {
 
                 // remember the current directory for future
-                Settings.getSingletonInstance().setProperty("default.local.path", fileChooser.getSelectedFile().getParent());
-                Settings.getSingletonInstance().save();
+                Settings.setProperty("default.local.path", fileChooser.getSelectedFile().getParent());
 
                 ImageViewerGui.getSingletonInstance().getMainImagePanel().setLoading(true);
 
@@ -84,7 +83,7 @@ public class OpenLocalFileAction extends AbstractAction {
                         }
                     }
                 }, "OpenLocalFile");
-
+                thread.setDaemon(true);
                 thread.start();
             }
         }

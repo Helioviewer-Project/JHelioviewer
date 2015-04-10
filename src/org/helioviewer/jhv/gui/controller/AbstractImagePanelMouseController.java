@@ -2,14 +2,10 @@ package org.helioviewer.jhv.gui.controller;
 
 import java.awt.event.MouseEvent;
 
-import org.helioviewer.base.math.Vector2dInt;
+import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.gui.components.BasicImagePanel;
 import org.helioviewer.jhv.gui.interfaces.ImagePanelInputController;
-import org.helioviewer.viewmodel.view.MetaDataView;
-import org.helioviewer.viewmodel.view.RegionView;
-import org.helioviewer.viewmodel.view.View;
-import org.helioviewer.viewmodel.view.ViewHelper;
-import org.helioviewer.viewmodel.view.ViewportView;
+import org.helioviewer.jhv.viewmodel.view.View;
 
 /**
  * Abstract base class implementing ImagePanelInputController.
@@ -29,11 +25,8 @@ public abstract class AbstractImagePanelMouseController implements ImagePanelInp
     // ///////////////////////////////////////////////////////////////////////////
 
     protected volatile View view;
-    protected volatile RegionView regionView;
-    protected volatile ViewportView viewportView;
-    protected volatile MetaDataView metaDataView;
     protected volatile BasicImagePanel imagePanel;
-    protected volatile Vector2dInt mousePosition = null;
+    protected volatile Vector2i mousePosition = null;
 
     // ///////////////////////////////////////////////////////////////////////////
     // Methods
@@ -75,9 +68,6 @@ public abstract class AbstractImagePanelMouseController implements ImagePanelInp
      * */
     public void setView(View newView) {
         view = newView;
-        regionView = ViewHelper.getViewAdapter(view, RegionView.class);
-        viewportView = ViewHelper.getViewAdapter(view, ViewportView.class);
-        metaDataView = ViewHelper.getViewAdapter(view, MetaDataView.class);
     }
 
     /**
@@ -90,7 +80,7 @@ public abstract class AbstractImagePanelMouseController implements ImagePanelInp
      * Updates the mouse position {@inheritDoc}
      */
     public void mouseMoved(MouseEvent e) {
-        mousePosition = new Vector2dInt(e.getX(), e.getY());
+        mousePosition = new Vector2i(e.getX(), e.getY());
     }
 
     /**
@@ -103,7 +93,7 @@ public abstract class AbstractImagePanelMouseController implements ImagePanelInp
     /**
      * {@inheritDoc}
      */
-    public Vector2dInt getMousePosition() {
+    public Vector2i getMousePosition() {
         return mousePosition;
     }
 }

@@ -4,7 +4,7 @@ import javax.swing.JLabel;
 
 import org.helioviewer.jhv.gui.interfaces.StatusPanelPlugin;
 import org.helioviewer.jhv.layers.LayersListener;
-import org.helioviewer.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.View;
 
 @SuppressWarnings("serial")
 public abstract class ViewStatusPanelPlugin extends JLabel implements StatusPanelPlugin, LayersListener {
@@ -48,7 +48,7 @@ public abstract class ViewStatusPanelPlugin extends JLabel implements StatusPane
     /**
      * NOP default implementation
      */
-    public void subImageDataChanged() {
+    public void subImageDataChanged(int idx) {
     }
 
     /**

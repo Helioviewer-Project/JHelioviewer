@@ -15,20 +15,7 @@ import java.awt.event.MouseWheelListener;
 import java.text.ParseException;
 import java.util.LinkedList;
 
-import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSeparator;
-import javax.swing.JSlider;
-import javax.swing.JSpinner;
-import javax.swing.KeyStroke;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicSliderUI;
 
@@ -39,21 +26,18 @@ import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.ViewListenerDistributor;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
-import org.helioviewer.viewmodel.changeevent.CacheStatusChangedReason;
-import org.helioviewer.viewmodel.changeevent.ChangeEvent;
-import org.helioviewer.viewmodel.changeevent.LayerChangedReason;
-import org.helioviewer.viewmodel.changeevent.LayerChangedReason.LayerChangeType;
-import org.helioviewer.viewmodel.changeevent.PlayStateChangedReason;
-import org.helioviewer.viewmodel.changeevent.SubImageDataChangedReason;
-import org.helioviewer.viewmodel.metadata.ObserverMetaData;
-import org.helioviewer.viewmodel.view.CachedMovieView;
-import org.helioviewer.viewmodel.view.MetaDataView;
-import org.helioviewer.viewmodel.view.MovieView;
-import org.helioviewer.viewmodel.view.MovieView.AnimationMode;
-import org.helioviewer.viewmodel.view.TimedMovieView;
-import org.helioviewer.viewmodel.view.View;
-import org.helioviewer.viewmodel.view.ViewListener;
-import org.helioviewer.viewmodel.view.jp2view.datetime.ImmutableDateTime;
+import org.helioviewer.jhv.viewmodel.changeevent.CacheStatusChangedReason;
+import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
+import org.helioviewer.jhv.viewmodel.changeevent.LayerChangedReason;
+import org.helioviewer.jhv.viewmodel.changeevent.LayerChangedReason.LayerChangeType;
+import org.helioviewer.jhv.viewmodel.changeevent.PlayStateChangedReason;
+import org.helioviewer.jhv.viewmodel.changeevent.SubImageDataChangedReason;
+import org.helioviewer.jhv.viewmodel.view.AnimationMode;
+import org.helioviewer.jhv.viewmodel.view.MetaDataView;
+import org.helioviewer.jhv.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.ViewListener;
+import org.helioviewer.jhv.viewmodel.view.jp2view.ImmutableDateTime;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 
 /**
  * Panel containing the movie controls.
@@ -71,8 +55,8 @@ import org.helioviewer.viewmodel.view.jp2view.datetime.ImmutableDateTime;
  * 
  * <p>
  * For further information about image series, see
- * {@link org.helioviewer.viewmodel.view.MovieView} and
- * {@link org.helioviewer.viewmodel.view.TimedMovieView}.
+ * {@link org.helioviewer.jhv.viewmodel.view.JHVJPXView} and
+ * {@link org.helioviewer.jhv.viewmodel.view.TimedJHVJPXView}.
  * 
  * @author Markus Langenberg
  * @author Malte Nuhn
@@ -141,21 +125,20 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
     private JButton nextFrameButton;
     private JButton advancedButton;
     private JSpinner speedSpinner;
-    private JComboBox speedUnitComboBox;
-    private JComboBox animationModeComboBox;
+    private JComboBox<SpeedUnit> speedUnitComboBox;
+    private JComboBox<?> animationModeComboBox;
 
     private JPanel modePanel;
     private JPanel speedPanel;
 
     // References
-    private MovieView view;
-    private TimedMovieView timedView = null;
-
+    private JHVJPXView view;
+    
     // Icons
-    private static final Icon playIcon = IconBank.getIcon(JHVIcon.PLAY);
-    private static final Icon pauseIcon = IconBank.getIcon(JHVIcon.PAUSE);
-    private static final Icon openIcon = IconBank.getIcon(JHVIcon.SHOW_MORE);
-    private static final Icon closeIcon = IconBank.getIcon(JHVIcon.SHOW_LESS);
+    private static final Icon ICON_PLAY = IconBank.getIcon(JHVIcon.PLAY);
+    private static final Icon ICON_PAUSE = IconBank.getIcon(JHVIcon.PAUSE);
+    private static final Icon ICON_OPEN = IconBank.getIcon(JHVIcon.SHOW_MORE);
+    private static final Icon ICON_CLOSE = IconBank.getIcon(JHVIcon.SHOW_LESS);
 
     /**
      * Default constructor.
@@ -163,7 +146,7 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
      * @param movieView
      *            Associated movie view
      */
-    public MoviePanel(MovieView movieView) {
+    public MoviePanel(JHVJPXView movieView) {
         this();
 
         if (movieView == null) {
@@ -171,15 +154,11 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
         }
 
         view = movieView;
-        if (view instanceof TimedMovieView) {
-            timedView = (TimedMovieView) movieView;
-        }
-
         timeSlider.setMaximum(movieView.getMaximumFrameNumber());
         timeSlider.setValue(movieView.getCurrentFrameNumber());
 
         SpeedUnit[] units;
-        if (view.getAdapter(MetaDataView.class) != null && view.getAdapter(MetaDataView.class).getMetaData() instanceof ObserverMetaData) {
+        if (view.getAdapter(MetaDataView.class) != null) {
             SpeedUnit[] newunits = { SpeedUnit.MINUTESPERSECOND, SpeedUnit.HOURSPERSECOND, SpeedUnit.DAYSPERSECOND, SpeedUnit.FRAMESPERSECOND };
             units = newunits;
 
@@ -199,10 +178,8 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
 
         speedUnitComboBox.addActionListener(this);
 
-        if (view instanceof CachedMovieView) {
-            timeSlider.setPartialCachedUntil(Math.min(((CachedMovieView) view).getImageCacheStatus().getImageCachedPartiallyUntil(), ((CachedMovieView) view).getDateTimeCache().getMetaStatus()));
-            timeSlider.setCompleteCachedUntil(Math.min(((CachedMovieView) view).getImageCacheStatus().getImageCachedCompletelyUntil(), ((CachedMovieView) view).getDateTimeCache().getMetaStatus()));
-        }
+        timeSlider.setPartialCachedUntil(Math.min(((JHVJPXView) view).getImageCacheStatus().getImageCachedPartiallyUntil(), ((JHVJPXView) view).getDateTimeCache().getMetaStatus()));
+        timeSlider.setCompleteCachedUntil(Math.min(((JHVJPXView) view).getImageCacheStatus().getImageCachedCompletelyUntil(), ((JHVJPXView) view).getDateTimeCache().getMetaStatus()));
 
         ViewListenerDistributor.getSingletonInstance().addViewListener(this);
         this.setEnabled(true);
@@ -235,7 +212,7 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
         previousFrameButton = ButtonCreator.createButton(IconBank.getIcon(JHVIcon.BACK), "Step to Previous Frame", this);
         buttonPanel.add(previousFrameButton);
 
-        playPauseButton = ButtonCreator.createButton(playIcon, "Play movie", this);
+        playPauseButton = ButtonCreator.createButton(ICON_PLAY, "Play movie", this);
         buttonPanel.add(playPauseButton);
 
         nextFrameButton = ButtonCreator.createButton(IconBank.getIcon(JHVIcon.FORWARD), "Step to Next Frame", this);
@@ -272,7 +249,7 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
         speedPanel.add(speedSpinner, BorderLayout.CENTER);
 
         SpeedUnit[] units = { SpeedUnit.FRAMESPERSECOND };
-        speedUnitComboBox = new JComboBox(units);
+        speedUnitComboBox = new JComboBox<SpeedUnit>(units);
 
         speedUnitComboBox.addActionListener(this);
         speedPanel.add(speedUnitComboBox, BorderLayout.EAST);
@@ -284,7 +261,7 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
         modePanel.add(new JLabel("Animation mode:"), BorderLayout.WEST);
 
         AnimationMode[] modi = { AnimationMode.LOOP, AnimationMode.STOP, AnimationMode.SWING };
-        animationModeComboBox = new JComboBox(modi);
+        animationModeComboBox = new JComboBox<Object>(modi);
         animationModeComboBox.setPreferredSize(speedUnitComboBox.getPreferredSize());
         animationModeComboBox.addActionListener(this);
         modePanel.add(animationModeComboBox, BorderLayout.EAST);
@@ -303,9 +280,6 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
      * components' enabledState synced with the enabledState of this component.
      */
     public void setEnabled(boolean enabled) {
-        if (timedView == null)
-            enabled = false;
-
         super.setEnabled(enabled);
         animationModeComboBox.setEnabled(enabled);
         timeSlider.setEnabled(enabled);
@@ -320,7 +294,7 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
     public void setAdvanced(boolean advanced) {
         MoviePanel.isAdvanced = advanced;
 
-        advancedButton.setIcon(advanced ? closeIcon : openIcon);
+        advancedButton.setIcon(advanced ? ICON_CLOSE : ICON_OPEN);
         modePanel.setVisible(advanced);
         speedPanel.setVisible(advanced);
     }
@@ -330,7 +304,7 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
      * 
      * @return movie panel if available, else null
      */
-    public static MoviePanel getMoviePanel(MovieView view) {
+    public static MoviePanel getMoviePanel(JHVJPXView view) {
         if (view.getMaximumFrameNumber() <= 0) {
             return null;
         }
@@ -353,9 +327,7 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
      *            the number of the frame
      */
     public void jumpToFrameNumber(int frame) {
-        if (view instanceof CachedMovieView) {
-            frame = Math.min(frame, view.getMaximumAccessibleFrameNumber());
-        }
+        frame = Math.min(frame, view.getMaximumAccessibleFrameNumber());
         timeSlider.setValue(frame);
         view.setCurrentFrame(frame, new ChangeEvent());
     }
@@ -381,14 +353,14 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
         isPlaying = playing;
 
         if (!isPlaying) {
-            playPauseButton.setIcon(playIcon);
+            playPauseButton.setIcon(ICON_PLAY);
             playPauseButton.setToolTipText("Play movie");
             if (!onlyGUI) {
                 view.pauseMovie();
                 timeSlider.setValue(view.getCurrentFrameNumber());
             }
         } else {
-            playPauseButton.setIcon(pauseIcon);
+            playPauseButton.setIcon(ICON_PAUSE);
             playPauseButton.setToolTipText("Pause movie");
             if (!onlyGUI) {
                 view.playMovie();
@@ -406,7 +378,7 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
             view.setDesiredRelativeSpeed(((SpinnerNumberModel) speedSpinner.getModel()).getNumber().intValue());
 
         } else {
-            timedView.setDesiredAbsoluteSpeed(((SpinnerNumberModel) speedSpinner.getModel()).getNumber().intValue() * ((SpeedUnit) speedUnitComboBox.getSelectedItem()).getSecondsPerSecond());
+            view.setDesiredAbsoluteSpeed(((SpinnerNumberModel) speedSpinner.getModel()).getNumber().intValue() * ((SpeedUnit) speedUnitComboBox.getSelectedItem()).getSecondsPerSecond());
         }
     }
 
@@ -569,7 +541,7 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
         // Stop movie, when the layer was removed.
         LayerChangedReason layerReason = aEvent.getLastChangedReasonByType(LayerChangedReason.class);
 
-        if (layerReason != null && layerReason.getSubView().getAdapter(MovieView.class) == view && layerReason.getLayerChangeType() == LayerChangeType.LAYER_REMOVED) {
+        if (layerReason != null && layerReason.getSubView().getAdapter(JHVJPXView.class) == view && layerReason.getLayerChangeType() == LayerChangeType.LAYER_REMOVED) {
             linkedMovieManager.unlinkMoviePanel(this);
             synchronized (panelList) {
                 panelList.remove(this);
@@ -591,7 +563,7 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
             PlayStateChangedReason pscr = aEvent.getLastChangedReasonByType(PlayStateChangedReason.class);
 
             // check if the event belongs to the same group of linked movies
-            if (timedView.getLinkedMovieManager() == pscr.getLinkedMovieManager()) {
+            if (view.getLinkedMovieManager() == pscr.getLinkedMovieManager()) {
 
                 if (pscr.isPlaying() != isPlaying) {
 
@@ -681,10 +653,9 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
         public void viewportGeometryChanged() {
         }
 
-        /**
-         * {@inheritDoc}
-         */
-        public void subImageDataChanged() {
+        @Override
+        public void subImageDataChanged(int idx)
+        {
         }
 
         /**
@@ -710,12 +681,12 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
          */
         private void searchCorrespondingMoviePanel(View view) {
             if (view != null) {
-                MovieView movieView = view.getAdapter(MovieView.class);
-                if (movieView != null) {
+                JHVJPXView JHVJPXView = view.getAdapter(JHVJPXView.class);
+                if (JHVJPXView != null) {
                     setEnabled(true);
                     synchronized (panelList) {
                         for (MoviePanel panel : panelList) {
-                            if (panel.view == movieView) {
+                            if (panel.view == JHVJPXView) {
                                 activePanel = panel;
                                 return;
                             }
@@ -740,7 +711,7 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
          * Default constructor.
          */
         public StaticPlayPauseAction() {
-            super("Play movie", playIcon);
+            super("Play movie", ICON_PLAY);
             putValue(MNEMONIC_KEY, KeyEvent.VK_A);
             putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.ALT_MASK));
         }
@@ -846,12 +817,7 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
          *            Panel to add
          */
         public void linkMoviePanel(MoviePanel newPanel) {
-
-            if (newPanel.timedView == null) {
-                return;
-            }
-
-            newPanel.timedView.linkMovie();
+            newPanel.view.linkMovie();
 
             if (!linkedMovies.isEmpty()) {
                 // Copy Settings
@@ -863,13 +829,11 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
                 newPanel.animationModeComboBox.setSelectedItem(copyFrom.animationModeComboBox.getSelectedItem());
 
                 // move frame
-                ImmutableDateTime maxAvialableDateTime = newPanel.timedView.getFrameDateTime(newPanel.view.getMaximumAccessibleFrameNumber());
-
-                if (maxAvialableDateTime.getMillis() >= copyFrom.timedView.getCurrentFrameDateTime().getMillis()) {
-                    newPanel.timedView.setCurrentFrame(copyFrom.timedView.getCurrentFrameDateTime(), new ChangeEvent());
-
+                ImmutableDateTime maxAvialableDateTime = newPanel.view.getFrameDateTime(newPanel.view.getMaximumAccessibleFrameNumber());
+                if (maxAvialableDateTime.getMillis() >= copyFrom.view.getCurrentFrameDateTime().getMillis()) {
+                    newPanel.view.setCurrentFrame(copyFrom.view.getCurrentFrameDateTime(), new ChangeEvent());
                 } else {
-                    newPanel.timedView.setCurrentFrame(newPanel.view.getMaximumAccessibleFrameNumber(), new ChangeEvent());
+                    newPanel.view.setCurrentFrame(0, new ChangeEvent());
                 }
             }
 
@@ -886,7 +850,7 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
          *            Panel to remove
          */
         public void unlinkMoviePanel(MoviePanel panel) {
-            panel.timedView.unlinkMovie();
+            panel.view.unlinkMovie();
             linkedMovies.remove(panel);
         }
 
@@ -910,9 +874,14 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
          * @param copyFrom
          *            Panel dominating the other ones right now
          */
-        public void updateSpeedUnitComboBoxLinkedMovies(MoviePanel copyFrom) {
-            for (MoviePanel panel : linkedMovies) {
-                panel.speedUnitComboBox.setSelectedItem(copyFrom.speedUnitComboBox.getSelectedItem());
+        public void updateSpeedUnitComboBoxLinkedMovies(MoviePanel copyFrom)
+        {
+            Object newSelection = copyFrom.speedUnitComboBox.getSelectedItem();
+            
+            for (MoviePanel panel : linkedMovies)
+            {
+                if(panel.speedUnitComboBox.getSelectedItem()!=newSelection)
+                    panel.speedUnitComboBox.setSelectedItem(newSelection);
             }
         }
 
@@ -923,9 +892,12 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
          * @param copyFrom
          *            Panel dominating the other ones right now
          */
-        public void updateAnimationModeComboBoxLinkedMovies(MoviePanel copyFrom) {
+        public void updateAnimationModeComboBoxLinkedMovies(MoviePanel copyFrom)
+        {
+            Object newSelection = copyFrom.animationModeComboBox.getSelectedItem();
             for (MoviePanel panel : linkedMovies) {
-                panel.animationModeComboBox.setSelectedItem(copyFrom.animationModeComboBox.getSelectedItem());
+                if(panel.animationModeComboBox.getSelectedItem()!=newSelection)
+                    panel.animationModeComboBox.setSelectedItem(newSelection);
             }
         }
 
@@ -941,9 +913,9 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
 
         private static final long serialVersionUID = 1L;
 
-        private static final Color notCachedColor = Color.LIGHT_GRAY;
-        private static final Color partialCachedColor = new Color(0x8080FF);
-        private static final Color completeCachedColor = new Color(0x4040FF);
+        private static final Color COLOR_NOT_CACHED = Color.LIGHT_GRAY;
+        private static final Color COLOR_PARTIALLY_CACHED = new Color(0x8080FF);
+        private static final Color COLOR_COMPLETELY_CACHED = new Color(0x4040FF);
 
         private int partialCachedUntil = 0;
         private int completeCachedUntil = 0;
@@ -1061,13 +1033,13 @@ public class MoviePanel extends JPanel implements ActionListener, ChangeListener
 
                 int completeCachedOffset = (int) ((float) (completeCachedUntil) / (getMaximum() - getMinimum()) * trackRect.width);
 
-                g.setColor(notCachedColor);
+                g.setColor(COLOR_NOT_CACHED);
                 g.fillRect(trackRect.x + partialCachedOffset, offset, trackRect.width - partialCachedOffset, height);
 
-                g.setColor(partialCachedColor);
+                g.setColor(COLOR_PARTIALLY_CACHED);
                 g.fillRect(trackRect.x + completeCachedOffset, offset, partialCachedOffset - completeCachedOffset, height);
 
-                g.setColor(completeCachedColor);
+                g.setColor(COLOR_COMPLETELY_CACHED);
                 g.fillRect(trackRect.x, offset, completeCachedOffset, height);
             }
 

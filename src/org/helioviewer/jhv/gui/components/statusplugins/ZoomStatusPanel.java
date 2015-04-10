@@ -4,9 +4,12 @@ import java.awt.Dimension;
 
 import javax.swing.BorderFactory;
 
+import org.helioviewer.jhv.gui.GL3DCameraSelectorModel;
 import org.helioviewer.jhv.gui.controller.ZoomController;
 import org.helioviewer.jhv.layers.LayersModel;
-import org.helioviewer.viewmodel.view.View;
+import org.helioviewer.jhv.opengl.camera.GL3DCamera;
+import org.helioviewer.jhv.opengl.camera.GL3DCameraListener;
+import org.helioviewer.jhv.viewmodel.view.View;
 
 /**
  * Status panel for displaying the current zoom.
@@ -21,10 +24,9 @@ import org.helioviewer.viewmodel.view.View;
  * <p>
  * If there is no layer present, this panel will be invisible.
  */
-public class ZoomStatusPanel extends ViewStatusPanelPlugin {
+public class ZoomStatusPanel extends ViewStatusPanelPlugin implements GL3DCameraListener {
 
     private static final long serialVersionUID = 1L;
-
     /**
      * Default constructor.
      */
@@ -63,5 +65,20 @@ public class ZoomStatusPanel extends ViewStatusPanelPlugin {
     public void viewportGeometryChanged() {
         updateZoomLevel();
     }
+
+    public void layerAdded(int idx) {
+    	if (idx == 0)
+    	GL3DCameraSelectorModel.getInstance().getCurrentCamera().addCameraListener(this);
+    }
+
+	@Override
+	public void cameraMoved(GL3DCamera camera) {
+        updateZoomLevel();
+	}
+
+	@Override
+	public void cameraMoving(GL3DCamera camera) {
+        updateZoomLevel();
+	}
 
 }

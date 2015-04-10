@@ -8,11 +8,12 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.components.WheelSupport;
-import org.helioviewer.viewmodel.filter.Filter;
-import org.helioviewer.viewmodelplugin.filter.FilterAlignmentDetails;
-import org.helioviewer.viewmodelplugin.filter.FilterPanel;
-import org.helioviewer.viewmodelplugin.filter.FilterTabPanelManager.Area;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterAlignmentDetails;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterPanel;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTabPanelManager.Area;
+import org.helioviewer.jhv.viewmodel.filter.Filter;
 
 /**
  * Panel containing a slider for changing the weighting of the sharpening.
@@ -36,7 +37,7 @@ public class SharpenPanel extends FilterPanel implements ChangeListener, FilterA
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 
         title = new JLabel("Sharpen:");
-        title.setPreferredSize(new Dimension(FilterPanel.titleWidth, FilterPanel.height));
+        title.setPreferredSize(new Dimension(FilterPanel.TITLE_WIDTH, FilterPanel.HEIGHT));
         add(title);
 
         sharpeningSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 0);
@@ -49,7 +50,7 @@ public class SharpenPanel extends FilterPanel implements ChangeListener, FilterA
 
         sharpeningLabel = new JLabel("0%");
         sharpeningLabel.setHorizontalAlignment(JLabel.RIGHT);
-        sharpeningLabel.setPreferredSize(new Dimension(FilterPanel.valueWidth, FilterPanel.height));
+        sharpeningLabel.setPreferredSize(new Dimension(FilterPanel.VALUE_WIDTH, FilterPanel.HEIGHT));
         add(sharpeningLabel);
 
         setEnabled(false);
@@ -83,6 +84,7 @@ public class SharpenPanel extends FilterPanel implements ChangeListener, FilterA
     public void stateChanged(ChangeEvent e) {
         filter.setWeighting((float) sharpeningSlider.getValue() / 10.0f);
         sharpeningLabel.setText(sharpeningSlider.getValue() + "%");
+        GuiState3DWCS.mainComponentView.getComponent().repaint();
     }
 
     public int getDetails() {

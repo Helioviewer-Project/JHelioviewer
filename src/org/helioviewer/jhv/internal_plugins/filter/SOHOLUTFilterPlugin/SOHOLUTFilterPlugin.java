@@ -1,20 +1,18 @@
 package org.helioviewer.jhv.internal_plugins.filter.SOHOLUTFilterPlugin;
 
-import org.helioviewer.base.logging.Log;
-import org.helioviewer.viewmodel.filter.Filter;
-import org.helioviewer.viewmodel.imageformat.SingleChannelImageFormat;
-import org.helioviewer.viewmodel.metadata.HelioviewerMetaData;
-import org.helioviewer.viewmodel.metadata.MetaData;
-import org.helioviewer.viewmodel.view.FilterView;
-import org.helioviewer.viewmodel.view.MetaDataView;
-import org.helioviewer.viewmodel.view.SubimageDataView;
-import org.helioviewer.viewmodel.view.jp2view.JHVJP2View;
-import org.helioviewer.viewmodelplugin.filter.FilterContainer;
-import org.helioviewer.viewmodelplugin.filter.FilterTab;
-import org.helioviewer.viewmodelplugin.filter.FilterTabList;
-import org.helioviewer.viewmodelplugin.filter.FilterTabPanelManager;
-import org.helioviewer.viewmodelplugin.filter.FilterTabDescriptor.Type;
-import org.helioviewer.viewmodelplugin.filter.FilterTabPanelManager.Area;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterContainer;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTab;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTabDescriptor.Type;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTabList;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTabPanelManager;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTabPanelManager.Area;
+import org.helioviewer.jhv.viewmodel.filter.Filter;
+import org.helioviewer.jhv.viewmodel.imageformat.SingleChannelImageFormat;
+import org.helioviewer.jhv.viewmodel.metadata.MetaData;
+import org.helioviewer.jhv.viewmodel.view.FilterView;
+import org.helioviewer.jhv.viewmodel.view.MetaDataView;
+import org.helioviewer.jhv.viewmodel.view.SubimageDataView;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJP2View;
 
 /**
  * Filter plugin for applying a color table to single channel images.
@@ -33,13 +31,6 @@ public class SOHOLUTFilterPlugin extends FilterContainer {
     /**
      * {@inheritDoc}
      */
-    public String getDescription() {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public String getName() {
         return "Color Tables";
     }
@@ -52,7 +43,7 @@ public class SOHOLUTFilterPlugin extends FilterContainer {
 
     protected void installFilterImpl(FilterView filterView, FilterTabList tabList) {
         // Only applicable for SingeChannelFormat
-        if (!(filterView.getAdapter(SubimageDataView.class).getSubimageData().getImageFormat() instanceof SingleChannelImageFormat))
+        if (!(filterView.getAdapter(SubimageDataView.class).getImageData().getImageFormat() instanceof SingleChannelImageFormat))
             return;
 
         SOHOLUTFilter filter = new SOHOLUTFilter();
@@ -86,14 +77,12 @@ public class SOHOLUTFilterPlugin extends FilterContainer {
         MetaDataView metaDataView = filterView.getAdapter(MetaDataView.class);
         if (metaDataView != null) {
             MetaData metaData = metaDataView.getMetaData();
-            if (metaData != null && metaData instanceof HelioviewerMetaData) {
-                HelioviewerMetaData hvMetaData = (HelioviewerMetaData) metaData;
-                String colorKey = DefaultTable.getSingletonInstance().getColorTable(hvMetaData);
+            	String colorKey = DefaultTable.getSingletonInstance().getColorTable(metaData);
                 if (colorKey != null) {
-                    Log.debug("Try to apply color table " + colorKey);
+                    System.out.println("Try to apply color table " + colorKey);
                     pane.setLutByName(colorKey);
                     return;
-                }
+                
             }
         }
 

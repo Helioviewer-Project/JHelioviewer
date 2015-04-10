@@ -11,18 +11,18 @@ import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.helioviewer.base.math.Vector2dInt;
+import org.helioviewer.jhv.base.math.Vector2i;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
-import org.helioviewer.jhv.gui.ImageViewerGui;
-import org.helioviewer.viewmodel.changeevent.ChangeEvent;
-import org.helioviewer.viewmodel.changeevent.LayerChangedReason;
-import org.helioviewer.viewmodel.renderer.screen.ScreenRenderGraphics;
-import org.helioviewer.viewmodel.renderer.screen.ScreenRenderer;
-import org.helioviewer.viewmodel.view.ComponentView;
-import org.helioviewer.viewmodel.view.LayeredView;
-import org.helioviewer.viewmodel.view.View;
-import org.helioviewer.viewmodel.view.ViewHelper;
+import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
+import org.helioviewer.jhv.viewmodel.changeevent.LayerChangedReason;
+import org.helioviewer.jhv.viewmodel.renderer.screen.GLScreenRenderGraphics;
+import org.helioviewer.jhv.viewmodel.renderer.screen.ScreenRenderer;
+import org.helioviewer.jhv.viewmodel.view.LayeredView;
+import org.helioviewer.jhv.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.ViewHelper;
+import org.helioviewer.jhv.viewmodel.view.opengl.GL3DComponentView;
 
 /**
  * This class represents an image component that is used to display the image of
@@ -47,6 +47,7 @@ public class MainImagePanel extends BasicImagePanel {
     private boolean noImagePostRendererSet = false;
 
     private LoadingPostRendererSwitch loadingPostRenderer = new LoadingPostRendererSwitch();
+    //private CenterLoadingScreen centerLoadingScreen;
     private int loadingTasks = 0;
 
     private AbstractList<MouseMotionListener> mouseMotionListeners = new LinkedList<MouseMotionListener>();
@@ -63,12 +64,14 @@ public class MainImagePanel extends BasicImagePanel {
         // call constructor of super class
         super();
 
+        //if (!JHVGlobals.OLD_RENDER_MODE) centerLoadingScreen = new CenterLoadingScreen();
         // add post render that no image is loaded
         noImagePostRenderer.setContainerSize(getWidth(), getHeight());
         addPostRenderer(noImagePostRenderer);
         noImagePostRendererSet = true;
 
         loadingPostRenderer.setContainerSize(getWidth(), getHeight());
+        
     }
 
     /**
@@ -88,6 +91,7 @@ public class MainImagePanel extends BasicImagePanel {
                     noImagePostRendererSet = false;
                 }
                 addPostRenderer(loadingPostRenderer);
+                //if (!JHVGlobals.OLD_RENDER_MODE) ((CompenentView) GuiState3DWCS.mainComponentView).addRenderAnimation(centerLoadingScreen);
                 loadingPostRenderer.startAnimation();
             }
             loadingTasks++;
@@ -95,9 +99,10 @@ public class MainImagePanel extends BasicImagePanel {
             loadingTasks--;
             if (loadingTasks == 0) {
                 removePostRenderer(loadingPostRenderer);
+                //if (!JHVGlobals.OLD_RENDER_MODE) ((CompenentView) GuiState3DWCS.mainComponentView).removeRenderAnimation(centerLoadingScreen);
                 loadingPostRenderer.stopAnimation();
 
-                LayeredView layeredView = ImageViewerGui.getSingletonInstance().getMainView().getAdapter(LayeredView.class);
+                LayeredView layeredView = GuiState3DWCS.mainComponentView.getAdapter(LayeredView.class);
                 if (layeredView.getNumberOfVisibleLayer() == 0) {
                     addPostRenderer(noImagePostRenderer);
                     noImagePostRendererSet = true;
@@ -111,11 +116,7 @@ public class MainImagePanel extends BasicImagePanel {
      * {@inheritDoc}
      */
 
-    public synchronized void setView(ComponentView newView) {
-
-        if (renderedImageComponent != null)
-            for (MouseMotionListener l : mouseMotionListeners)
-                renderedImageComponent.removeMouseMotionListener(l);
+    public void setView(GL3DComponentView newView) {
 
         super.setView(newView);
 
@@ -124,7 +125,7 @@ public class MainImagePanel extends BasicImagePanel {
             if (renderedImageComponent != null)
                 for (MouseMotionListener l : mouseMotionListeners)
                     renderedImageComponent.addMouseMotionListener(l);
-            getView().updateMainImagePanelSize(new Vector2dInt(getWidth(), getHeight()));
+            getView().updateMainImagePanelSize(new Vector2i(getWidth(), getHeight()));
             LayeredView layeredView = ViewHelper.getViewAdapter(newView, LayeredView.class);
             if (layeredView != null) {
                 if (layeredView.getNumLayers() > 0 || loadingTasks > 0) {
@@ -208,7 +209,7 @@ public class MainImagePanel extends BasicImagePanel {
         loadingPostRenderer.setContainerSize(getWidth(), getHeight());
         synchronized (this) {
             if (getView() != null) {
-                getView().updateMainImagePanelSize(new Vector2dInt(getWidth(), getHeight()));
+                getView().updateMainImagePanelSize(new Vector2i(getWidth(), getHeight()));
             }
         }
         repaint();
@@ -221,7 +222,7 @@ public class MainImagePanel extends BasicImagePanel {
      * 
      * @author Stephan Pagel
      * */
-    private class NoImagePostRenderer implements ScreenRenderer {
+    private static class NoImagePostRenderer implements ScreenRenderer {
 
         private BufferedImage image = null;
         private Dimension size = new Dimension(0, 0);
@@ -254,9 +255,9 @@ public class MainImagePanel extends BasicImagePanel {
          * 
          * Draws the no image loaded image.
          */
-        public void render(ScreenRenderGraphics g) {
+        public void render(GLScreenRenderGraphics g) {
             if (image != null) {
-                g.drawImage(image, (size.width - image.getWidth()) / 2, (size.height - image.getHeight()) / 2);
+                g.drawImage(image, (size.width - image.getWidth()) / 2, (size.height - image.getHeight()) / 2, image.getWidth(), image.getHeight());
             }
         }
     }
@@ -332,6 +333,8 @@ public class MainImagePanel extends BasicImagePanel {
          * Default constructor.
          */
         public BaseLoadingPostRenderer(JHVIcon icon, int offsetX, int offsetY, int radiusTrack, int radiusPearl, int numPearlPositions, int numPearls) {
+            //super(IconBank.JHVIcon.LOADING_BIG, 124, 101, 97, 6, 32, 12);
+
             this.offsetX = offsetX;
             this.offsetY = offsetY;
             this.radiusTrack = radiusTrack;
@@ -397,16 +400,17 @@ public class MainImagePanel extends BasicImagePanel {
          * 
          * Draws the loading image and its animation.
          */
-        public void render(ScreenRenderGraphics g) {
+        public void render(GLScreenRenderGraphics g) {
             if (image != null) {
-                g.drawImage(image, position.x, position.y);
+                g.drawImage(image, position.x, position.y, image.getWidth(), image.getHeight());
             }
 
             int centerX = position.x - radiusPearl + offsetX;
             int centerY = position.y - radiusPearl + offsetY;
 
             for (int i = 0; i < numPearls; i++) {
-                g.setColor(pearlColors[i]);
+                Color color=pearlColors[i];
+                g.gl.glColor4ub((byte) color.getRed(), (byte) color.getGreen(), (byte) color.getBlue(), (byte) color.getAlpha());
                 g.fillOval(centerX + (int) (radiusTrack * sinPositions[(i - currentPearlPos) & (numPearlPositions - 1)]), centerY + (int) (radiusTrack * sinPositions[(i - currentPearlPos + (numPearlPositions >> 2)) & (numPearlPositions - 1)]), radiusPearl * 2, radiusPearl * 2);
             }
         }
@@ -479,7 +483,7 @@ public class MainImagePanel extends BasicImagePanel {
         /**
          * {@inheritDoc}
          */
-        public void render(ScreenRenderGraphics g) {
+        public void render(GLScreenRenderGraphics g) {
             currentRenderer.render(g);
         }
 

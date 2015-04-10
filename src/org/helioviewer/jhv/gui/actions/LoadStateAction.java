@@ -8,8 +8,7 @@ import java.net.URL;
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 
-import org.helioviewer.base.logging.Log;
-import org.helioviewer.jhv.JHVDirectory;
+import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.actions.filefilters.JHVStateFilter;
 import org.helioviewer.jhv.layers.LayersModel;
@@ -27,8 +26,8 @@ public class LoadStateAction extends AbstractAction {
      * be "Load State..." in every case.
      */
     public LoadStateAction() {
-        super("Load State...");
-        putValue(SHORT_DESCRIPTION, "Loads the state saved in user specified location");
+        super("Load state...");
+        putValue(SHORT_DESCRIPTION, "Loads the saved state from a file");
         stateLocation = null;
     }
 
@@ -68,7 +67,7 @@ public class LoadStateAction extends AbstractAction {
         final URL selectedLocation;
 
         if (stateLocation == null) {
-            final JFileChooser fileChooser = new JFileChooser(JHVDirectory.STATES.getPath());
+            final JFileChooser fileChooser = JHVGlobals.getJFileChooser();
             fileChooser.setAcceptAllFileFilterUsed(false);
             fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
             fileChooser.addChoosableFileFilter(new JHVStateFilter());
@@ -86,7 +85,8 @@ public class LoadStateAction extends AbstractAction {
                 try {
                     selectedLocation = selectedFile.toURI().toURL();
                 } catch (MalformedURLException e1) {
-                    Log.error("Error while opening state " + selectedFile, e1);
+                    System.err.println("Error while opening state " + selectedFile);
+                    e1.printStackTrace();
                     return;
                 }
             } else {

@@ -6,18 +6,11 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.glu.GLU;
 
-import org.helioviewer.base.logging.Log;
-import org.helioviewer.viewmodel.filter.AbstractFilter;
-import org.helioviewer.viewmodel.filter.GLFragmentShaderFilter;
-import org.helioviewer.viewmodel.filter.StandardFilter;
-import org.helioviewer.viewmodel.imagedata.ARGBInt32ImageData;
-import org.helioviewer.viewmodel.imagedata.ImageData;
-import org.helioviewer.viewmodel.imageformat.SingleChannelImageFormat;
-import org.helioviewer.viewmodel.imagetransport.Byte8ImageTransport;
-import org.helioviewer.viewmodel.imagetransport.Short16ImageTransport;
-import org.helioviewer.viewmodel.view.opengl.GLTextureHelper;
-import org.helioviewer.viewmodel.view.opengl.shader.GLShaderBuilder;
-import org.helioviewer.viewmodel.view.opengl.shader.GLSingleChannelLookupFragmentShaderProgram;
+import org.helioviewer.jhv.viewmodel.filter.AbstractFilter;
+import org.helioviewer.jhv.viewmodel.filter.GLFragmentShaderFilter;
+import org.helioviewer.jhv.viewmodel.view.opengl.GLTextureHelper;
+import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLShaderBuilder;
+import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLSingleChannelLookupFragmentShaderProgram;
 
 /**
  * Filter for applying a color table to a single channel image.
@@ -33,7 +26,7 @@ import org.helioviewer.viewmodel.view.opengl.shader.GLSingleChannelLookupFragmen
  * 
  * @author Helge Dietert
  */
-public class SOHOLUTFilter extends AbstractFilter implements StandardFilter, GLFragmentShaderFilter {
+public class SOHOLUTFilter extends AbstractFilter implements GLFragmentShaderFilter {
     // /////////////////////////
     // GENERAL //
     // /////////////////////////
@@ -98,35 +91,6 @@ public class SOHOLUTFilter extends AbstractFilter implements StandardFilter, GLF
         lut = newLUT;
         invertLUT = invert;
         notifyAllListeners();
-    }
-
-    // /////////////////////////
-    // STANDARD //
-    // /////////////////////////
-
-    /**
-     * {@inheritDoc}
-     */
-    public ImageData apply(ImageData data) {
-        // Ship over gray for performance as before
-        if (data == null || !(data.getImageFormat() instanceof SingleChannelImageFormat) || (lut.getName() == "Gray" && !invertLUT)) {
-            return data;
-        }
-
-        if (data.getImageTransport() instanceof Byte8ImageTransport) {
-            byte[] pixelData = ((Byte8ImageTransport) data.getImageTransport()).getByte8PixelData();
-            int[] resultPixelData = new int[pixelData.length];
-            lut.lookup8(pixelData, resultPixelData, invertLUT);
-            return new ARGBInt32ImageData(data, resultPixelData);
-        } else if (data.getImageTransport() instanceof Short16ImageTransport) {
-            short[] pixelData = ((Short16ImageTransport) data.getImageTransport()).getShort16PixelData();
-            int[] resultPixelData = new int[pixelData.length];
-            lut.lookup16(pixelData, resultPixelData, invertLUT);
-            data = new ARGBInt32ImageData(data, resultPixelData);
-            return data;
-        }
-
-        return null;
     }
 
     // /////////////////////////
@@ -211,13 +175,6 @@ public class SOHOLUTFilter extends AbstractFilter implements StandardFilter, GLF
     /**
      * {@inheritDoc}
      */
-    public void forceRefilter() {
-        lastLut = null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public void setState(String state) {
         String[] values = state.trim().split(" ");
         String tableString = values[0];
@@ -225,7 +182,7 @@ public class SOHOLUTFilter extends AbstractFilter implements StandardFilter, GLF
         for (int i = 1; i < values.length - 1; i++) {
             tableString += " " + values[i];
         }
-        setLUT(LUT.getStandardList().get(tableString.replaceAll("ANGSTROM", Character.toString(LUT.angstrom))), Boolean.parseBoolean(invertString));
+        setLUT(LUT.getStandardList().get(tableString.replaceAll("ANGSTROM", Character.toString(LUT.ANGSTROM))), Boolean.parseBoolean(invertString));
         panel.setValue(lut, invertLUT);
     }
 
@@ -233,26 +190,26 @@ public class SOHOLUTFilter extends AbstractFilter implements StandardFilter, GLF
      * {@inheritDoc}
      */
     public String getState() {
-        return lut.getName().replaceAll(Character.toString(LUT.angstrom), "ANGSTROM") + " " + invertLUT;
+        return lut.getName().replaceAll(Character.toString(LUT.ANGSTROM), "ANGSTROM") + " " + invertLUT;
     }
     
     public boolean checkGLErrors(GL gl, String message) {
         if (gl == null) {
-            Log.warn("OpenGL not yet Initialised!");
+            System.out.println("OpenGL not yet Initialised!");
             return true;
         }
         int glErrorCode = gl.glGetError();
 
         if (glErrorCode != GL.GL_NO_ERROR) {
             GLU glu = new GLU();
-            Log.error("GL Error (" + glErrorCode + "): " + glu.gluErrorString(glErrorCode) + " - @" + message);
+            System.err.println("GL Error (" + glErrorCode + "): " + glu.gluErrorString(glErrorCode) + " - @" + message);
             if (glErrorCode == GL2.GL_INVALID_OPERATION) {
                 // Find the error position
                 int[] err = new int[1];
                 gl.glGetIntegerv(GL2.GL_PROGRAM_ERROR_POSITION_ARB, err, 0);
                 if (err[0] >= 0) {
                     String error = gl.glGetString(GL2.GL_PROGRAM_ERROR_STRING_ARB);
-                    Log.error("GL error at " + err[0] + ":\n" + error);
+                    System.err.println("GL error at " + err[0] + ":\n" + error);
                 }
             }
             return true;
@@ -260,4 +217,13 @@ public class SOHOLUTFilter extends AbstractFilter implements StandardFilter, GLF
             return false;
         }
     }
+
+	public String getLUT() {
+		return lut.getName();
+	}
+	
+	public int isInverted(){
+		if (invertLUT) return 1;
+		return 0;
+	}
 }

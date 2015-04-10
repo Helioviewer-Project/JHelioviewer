@@ -4,10 +4,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import org.helioviewer.base.FileUtils;
-import org.helioviewer.base.logging.Log;
-import org.helioviewer.base.message.Message;
-import org.helioviewer.viewmodel.metadata.HelioviewerMetaData;
+import org.helioviewer.jhv.base.FileUtils;
+import org.helioviewer.jhv.base.Message;
+import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,14 +45,15 @@ public class DefaultTable {
      * Used as singleton
      */
     private DefaultTable() {
-        try {
-            BufferedReader in = new BufferedReader(new InputStreamReader(FileUtils.getResourceInputStream("/settings/colors.js"), "UTF-8"));
+        try(BufferedReader in = new BufferedReader(new InputStreamReader(FileUtils.getResourceInputStream("/settings/colors.js"), "UTF-8"))) {
             colorRules = new JSONArray(new JSONTokener(in));
         } catch (IOException e) {
-            Log.warn("Error reading the configuration for the default color tables", e);
+            System.out.println("Error reading the configuration for the default color tables");
+            e.printStackTrace();
             Message.warn("Color Tables", "Error reading the configuration for the default color tables: " + e.getMessage() + "\n" + "There will be no default color tables applied.");
         } catch (JSONException e) {
-            Log.warn("Error reading the configuration for the default color tables", e);
+            System.out.println("Error reading the configuration for the default color tables");
+            e.printStackTrace();
             Message.warn("Color Tables", "Error reading the configuration for the default color tables: " + e.getMessage() + "\n" + "There will be no default color tables applied.");
         }
     }
@@ -61,11 +61,11 @@ public class DefaultTable {
     /**
      * Gives back the default color table matching to the meta data
      * 
-     * @param hvMetaData
+     * @param metaData
      *            Metadata to look for
      * @return name (key) of default color table, null if no rule applies
      */
-    public String getColorTable(HelioviewerMetaData hvMetaData) {
+    public String getColorTable(MetaData metaData) {
         // Only if the config is fine
         if (colorRules == null)
             return null;
@@ -73,24 +73,25 @@ public class DefaultTable {
             try {
                 JSONObject rule = colorRules.getJSONObject(i);
                 if (rule.has("observatory")) {
-                    if (!rule.getString("observatory").equalsIgnoreCase(hvMetaData.getObservatory()))
+                    if (!rule.getString("observatory").equalsIgnoreCase(metaData.getObservatory()))
                         continue;
                 }
                 if (rule.has("instrument")) {
-                    if (!rule.getString("instrument").equalsIgnoreCase(hvMetaData.getInstrument()))
+                    if (!rule.getString("instrument").equalsIgnoreCase(metaData.getInstrument()))
                         continue;
                 }
                 if (rule.has("detector")) {
-                    if (!rule.getString("detector").equalsIgnoreCase(hvMetaData.getDetector()))
+                    if (!rule.getString("detector").equalsIgnoreCase(metaData.getDetector()))
                         continue;
                 }
                 if (rule.has("measurement")) {
-                    if (!rule.getString("measurement").equalsIgnoreCase(hvMetaData.getMeasurement()))
+                    if (!rule.getString("measurement").equalsIgnoreCase(metaData.getMeasurement()))
                         continue;
                 }
                 return rule.getString("color");
             } catch (JSONException e) {
-                Log.warn("Rule " + i + " for the default color table is invalid!", e);
+                System.out.println("Rule " + i + " for the default color table is invalid!");
+                e.printStackTrace();
             }
         }
         return null;

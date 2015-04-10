@@ -80,6 +80,9 @@ public class DateFormatInfoDialog extends JDialog implements ActionListener, Sho
         pack();
         setSize(getPreferredSize().width, getPreferredSize().height);
         setLocationRelativeTo(ImageViewerGui.getMainFrame());
+        
+        DialogTools.setDefaultButtons(closeButton,closeButton);
+        
         setVisible(true);
     }
 

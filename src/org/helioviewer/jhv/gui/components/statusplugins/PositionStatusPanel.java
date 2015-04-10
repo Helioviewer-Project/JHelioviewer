@@ -1,28 +1,42 @@
 package org.helioviewer.jhv.gui.components.statusplugins;
 
-import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.util.Formatter;
+import java.text.DecimalFormat;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 
-import org.helioviewer.base.math.Vector2dDouble;
-import org.helioviewer.base.math.Vector2dInt;
-import org.helioviewer.base.physics.Constants;
+import org.helioviewer.jhv.base.math.Vector3d;
+import org.helioviewer.jhv.gui.GL3DCameraSelectorModel;
 import org.helioviewer.jhv.gui.components.BasicImagePanel;
 import org.helioviewer.jhv.gui.interfaces.ImagePanelPlugin;
 import org.helioviewer.jhv.layers.LayersModel;
-import org.helioviewer.viewmodel.metadata.MetaData;
-import org.helioviewer.viewmodel.region.Region;
-import org.helioviewer.viewmodel.view.MetaDataView;
-import org.helioviewer.viewmodel.view.RegionView;
-import org.helioviewer.viewmodel.view.View;
-import org.helioviewer.viewmodel.view.ViewHelper;
-import org.helioviewer.viewmodel.view.ViewportView;
-import org.helioviewer.viewmodel.viewport.Viewport;
-import org.helioviewer.viewmodel.viewportimagesize.ViewportImageSize;
+import org.helioviewer.jhv.opengl.camera.GL3DCamera;
+import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
+import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
+import org.helioviewer.jhv.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.jp2view.ImmutableDateTime;
+import org.joda.time.DateTime;
+
+import ch.fhnw.i4ds.helio.coordinate.converter.Hcc2HgConverter;
+import ch.fhnw.i4ds.helio.coordinate.converter.Hcc2HpcConverter;
+import ch.fhnw.i4ds.helio.coordinate.converter.option.ConverterOption;
+import ch.fhnw.i4ds.helio.coordinate.converter.option.ConverterOptions;
+import ch.fhnw.i4ds.helio.coordinate.coord.HeliocentricCartesianCoordinate;
+import ch.fhnw.i4ds.helio.coordinate.coord.HeliographicCoordinate;
+import ch.fhnw.i4ds.helio.coordinate.coord.HelioprojectiveCartesianCoordinate;
+import ch.fhnw.i4ds.helio.coordinate.sundist.Pb0rSunDistanceAlgo;
+import ch.fhnw.i4ds.helio.coordinate.sundist.SunDistance;
+import ch.fhnw.i4ds.helio.coordinate.sundist.SunDistanceAlgo;
 
 /**
  * Status panel for displaying the current mouse position.
@@ -38,169 +52,283 @@ import org.helioviewer.viewmodel.viewportimagesize.ViewportImageSize;
  * <p>
  * If there is no layer present, this panel will be invisible.
  */
-public class PositionStatusPanel extends ViewStatusPanelPlugin implements MouseMotionListener, ImagePanelPlugin {
+public class PositionStatusPanel extends ViewStatusPanelPlugin implements
+		MouseMotionListener, ImagePanelPlugin, MouseListener {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private View view;
-    private RegionView regionView;
-    private ViewportView viewportView;
-    private MetaDataView metaDataView;
-    private BasicImagePanel imagePanel;
-    private Point lastPosition;
+	private View view;
+	private BasicImagePanel imagePanel;
+	private Point lastPosition;
 
-    private final char PRIME = '\u2032';
+	private static final char DEGREE = '\u00B0';
+	private String title = " (X, Y) : ";
+	private PopupState popupState;
 
-    /**
-     * Default constructor.
-     * 
-     * @param imagePanel
-     *            ImagePanel to show mouse position for
-     */
-    public PositionStatusPanel(BasicImagePanel imagePanel) {
-        setBorder(BorderFactory.createEtchedBorder());
+	/**
+	 * Default constructor.
+	 * 
+	 * @param imagePanel
+	 *            ImagePanel to show mouse position for
+	 */
+	public PositionStatusPanel(BasicImagePanel imagePanel) {
+		setBorder(BorderFactory.createEtchedBorder());
 
-        setPreferredSize(new Dimension(170, 20));
+		// setPreferredSize(new Dimension(170, 20));
+		LayersModel.getSingletonInstance().addLayersListener(this);
 
-        LayersModel.getSingletonInstance().addLayersListener(this);
+		imagePanel.addPlugin(this);
 
-        imagePanel.addPlugin(this);
+		popupState = new PopupState();
+		this.addMouseListener(this);
+		this.setComponentPopupMenu(popupState);
+		
+		setToolTipText(popupState.selectedItem.popupItem.getText());
+	}
 
-        setText("(x, y) = " + "(    0" + PRIME + PRIME + ",    0" + PRIME + PRIME + ")");
-    }
+	/**
+	 * Updates the displayed position.
+	 * 
+	 * If the physical dimensions are available, translates the screen
+	 * coordinates to physical coordinates.
+	 * 
+	 * @param position
+	 *            Position on the screen.
+	 */
+	private void updatePosition(Point position) {
+		GL3DCamera camera = GL3DCameraSelectorModel.getInstance()
+				.getCurrentCamera();
 
-    /**
-     * Updates the displayed position.
-     * 
-     * If the physical dimensions are available, translates the screen
-     * coordinates to physical coordinates.
-     * 
-     * @param position
-     *            Position on the screen.
-     */
-    private void updatePosition(Point position) {
+		if (camera != null && camera.getLastMouseRay() != null
+				&& camera.getLastMouseRay().getHitPoint() != null) {
+			GL3DRay ray = camera.getLastMouseRay();
+			Vector3d hitPoint = ray.getHitPoint();
+			if (LayersModel.getSingletonInstance().getActiveView() != null
+					&& hitPoint != null) {
+				HeliocentricCartesianCoordinate cart = new HeliocentricCartesianCoordinate(
+						hitPoint.x, hitPoint.y, hitPoint.z);
 
-        // check region and viewport
-        Region r = regionView.getRegion();
-        Viewport v = viewportView.getViewport();
-        MetaData m = metaDataView.getMetaData();
+				DecimalFormat df;
+				String point = null;
+				switch (this.popupState.getSelectedState()) {
+				case ARCSECS:
+					if (LinkedMovieManager.getActiveInstance().getMasterMovie() != null){
+						ImmutableDateTime currentDate = LinkedMovieManager.getActiveInstance().getMasterMovie().getCurrentFrameDateTime();
+						Calendar calendar = new GregorianCalendar();
+						calendar.setTime(currentDate.getTime());
+						DateTime dateTime = new DateTime(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH)+1, calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND), 0);
+						SunDistanceAlgo sunDistAlgo = new Pb0rSunDistanceAlgo();
+						SunDistance sunDistance = sunDistAlgo.computeDistance(dateTime);
+						Hcc2HpcConverter converter = new Hcc2HpcConverter();
+						Map<ConverterOption<?>, Object> opt = converter.getCustomOptions();
+						opt.put(ConverterOptions.SUN_DISTANCE, sunDistance.getSunDistance());
+						
+						HelioprojectiveCartesianCoordinate hpc = converter.convert(cart, opt);
+						df = new DecimalFormat("#");
+						point = "(" + df.format(hpc.getThetaX().arcsecValue()) + "\" ," + df.format(hpc.getThetaY().arcsecValue()) + "\")";
+					}
+					break;
+				case DEGREE:
+					Hcc2HgConverter converter = new Hcc2HgConverter();
+					HeliographicCoordinate newCoord = converter.convert(cart);
+					df = new DecimalFormat("#.##");
+					if (ray.isOnSun)
+						point = "("
+								+ df.format(newCoord.getHgLongitude().degValue())
+								+ DEGREE + " ,"
+								+ df.format(newCoord.getHgLatitude().degValue())
+								+ DEGREE + ") ";
+					else
+						point = "";
+					break;
 
-        if (r == null || v == null || m == null) {
-            setText("(x, y) = " + "(" + position.x + "," + position.y + ")");
-            return;
-        }
+				default:
+					break;
+				}
+				this.setText(title + point);
+				return;
 
-        // get viewport image size
-        ViewportImageSize vis = ViewHelper.calculateViewportImageSize(v, r);
+			}
+		}
+		this.setText(title);
 
-        // Helioviewer images have there physical lower left corner in a
-        // negative area; real pixel based image at 0
-        if (m.getPhysicalLowerLeft().getX() < 0) {
+	}
 
-            Vector2dInt solarcenter = ViewHelper.convertImageToScreenDisplacement(regionView.getRegion().getUpperLeftCorner().negateX(), regionView.getRegion(), vis);
+	/**
+	 * {@inheritDoc}
+	 */
+	public View getView() {
+		return view;
+	}
 
-            Vector2dDouble scaling = new Vector2dDouble(Constants.SunRadius, Constants.SunRadius);
-            Vector2dDouble solarRadius = new Vector2dDouble(ViewHelper.convertImageToScreenDisplacement(scaling, regionView.getRegion(), vis));
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setView(View newView) {
+		view = newView;
+	}
 
-            Vector2dDouble pos = new Vector2dDouble(position.x - solarcenter.getX(), -position.y + solarcenter.getY()).invertedScale(solarRadius).scale(959.705);
+	/**
+	 * {@inheritDoc}
+	 */
+	public BasicImagePanel getImagePanel() {
+		return imagePanel;
+	}
 
-            Formatter fmt = new Formatter();
-            String xStr = fmt.format(" %5d", (int) Math.round(pos.getX())).toString();
-            fmt.close();
-            fmt = new Formatter();
-            String yStr = fmt.format(" %5d", (int) Math.round(pos.getY())).toString();
-            fmt.close();
-            setText("(x, y) = " + "(" + xStr + PRIME + PRIME + "," + yStr + PRIME + PRIME + ")");
-        } else {
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setImagePanel(BasicImagePanel newImagePanel) {
+		if (imagePanel != null) {
+			imagePanel.removeMouseMotionListener(this);
+		}
+		imagePanel = newImagePanel;
+		imagePanel.addMouseMotionListener(this);
+	}
 
-            // computes pixel position for simple images (e.g. jpg and png)
-            // where cursor points at
+	/**
+	 * {@inheritDoc}
+	 */
+	public void mouseDragged(MouseEvent e) {
+	}
 
-            // compute coordinates in image
-            int x = (int) (r.getWidth() * (position.getX() / vis.getWidth()) + r.getCornerX());
-            int y = (int) (m.getPhysicalImageHeight() - (r.getCornerY() + r.getHeight()) + position.getY() / (double) vis.getHeight() * r.getHeight() + 0.5);
+	/**
+	 * {@inheritDoc}
+	 */
+	public void mouseMoved(MouseEvent e) {
+		updatePosition(e.getPoint());
+	}
 
-            // show coordinates
-            setText("(x, y) = " + "(" + x + "," + y + ")");
-        }
+	/**
+	 * {@inheritDoc}
+	 */
+	public void activeLayerChanged(int idx) {
+		if (LayersModel.getSingletonInstance().isValidIndex(idx)) {
+			setVisible(true);
+		} else {
+			setVisible(false);
+		}
+	}
 
-        lastPosition = position;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
 
-    /**
-     * {@inheritDoc}
-     */
-    public View getView() {
-        return view;
-    }
+	public void viewportGeometryChanged() {
+		// a view change (e.g. a zoom) can change the coordinates in the
+		// picture,
+		// so we have to recalculate the position
+		if (lastPosition != null) {
+			updatePosition(lastPosition);
+		}
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public void setView(View newView) {
-        view = newView;
-        regionView = ViewHelper.getViewAdapter(newView, RegionView.class);
-        viewportView = ViewHelper.getViewAdapter(newView, ViewportView.class);
-        metaDataView = ViewHelper.getViewAdapter(newView, MetaDataView.class);
-    }
+	public void detach() {
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public BasicImagePanel getImagePanel() {
-        return imagePanel;
-    }
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		if (e.isPopupTrigger()) {
+			// popup(e);
+		}
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public void setImagePanel(BasicImagePanel newImagePanel) {
-        if (imagePanel != null) {
-            imagePanel.removeMouseMotionListener(this);
-        }
-        imagePanel = newImagePanel;
-        imagePanel.addMouseMotionListener(this);
-    }
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
 
-    /**
-     * {@inheritDoc}
-     */
-    public void mouseDragged(MouseEvent e) {
-        updatePosition(e.getPoint());
-    }
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public void mouseMoved(MouseEvent e) {
-        updatePosition(e.getPoint());
-    }
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		if (e.isPopupTrigger()) {
+			// popup(e);
+		}
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public void activeLayerChanged(int idx) {
-        if (LayersModel.getSingletonInstance().isValidIndex(idx)) {
-            setVisible(true);
-        } else {
-            setVisible(false);
-        }
-    }
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
 
-    /**
-     * {@inheritDoc}
-     */
+	}
 
-    public void viewportGeometryChanged() {
-        // a view change (e.g. a zoom) can change the coordinates in the
-        // picture,
-        // so we have to recalculate the position
-        if (lastPosition != null) {
-            updatePosition(lastPosition);
-        }
-    }
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
 
-    public void detach() {
-    }
+	}
 
+	class PopupState extends JPopupMenu {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 5268038408623722705L;
+		private PopupItemState.PopupItemStates selectedItem = PopupItemState.PopupItemStates.ARCSECS;
+
+		public PopupState() {
+			for (PopupItemState.PopupItemStates popupItems : PopupItemState.PopupItemStates
+					.values()) {
+				this.add(popupItems.popupItem);
+				popupItems.popupItem.addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						for (PopupItemState.PopupItemStates popupItems : PopupItemState.PopupItemStates
+								.values()) {
+							if (popupItems.popupItem == e.getSource()) {
+								selectedItem = popupItems;
+								PositionStatusPanel.this.setToolTipText(selectedItem.popupItem.getText());
+								break;
+							}
+						}
+						updateText();
+					}
+				});
+			}
+			this.updateText();
+		}
+
+		private void updateText() {
+			for (PopupItemState.PopupItemStates popupItems : PopupItemState.PopupItemStates
+					.values()) {
+				if (selectedItem == popupItems)
+					popupItems.popupItem
+							.setText(popupItems.popupItem.selectedText);
+				else
+					popupItems.popupItem
+							.setText(popupItems.popupItem.unselectedText);
+			}
+		}
+
+		public PopupItemState.PopupItemStates getSelectedState() {
+			return this.selectedItem;
+		}
+
+	}
+
+	private static class PopupItemState extends JMenuItem {
+		private static final long serialVersionUID = -4382532722049627152L;
+
+		public enum PopupItemStates {
+			DEGREE("degrees (Heliographic)"), ARCSECS("arcsecs (Helioprojective cartesian)");
+
+			private PopupItemState popupItem;
+
+			private PopupItemStates(String name) {
+				this.popupItem = new PopupItemState(name);
+			}
+
+		}
+
+		/**
+		 * 
+		 */
+		private String unselectedText;
+		private String selectedText;
+
+		public PopupItemState(String name) {
+			this.unselectedText = name;
+			this.selectedText = name + "  \u2713";
+		}
+	}
 }

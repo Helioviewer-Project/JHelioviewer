@@ -18,6 +18,7 @@ import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -33,18 +34,17 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.helioviewer.jhv.JHVDirectory;
+import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.interfaces.ShowableDialog;
-import org.helioviewer.viewmodel.metadata.HelioviewerMetaData;
-import org.helioviewer.viewmodel.metadata.MetaData;
-import org.helioviewer.viewmodel.view.MetaDataView;
-import org.helioviewer.viewmodel.view.fitsview.JHVFITSView;
-import org.helioviewer.viewmodel.view.jp2view.JHVJP2View;
-import org.helioviewer.viewmodel.view.jp2view.JHVJPXView;
-import org.helioviewer.viewmodel.view.jp2view.JP2Image;
-import org.helioviewer.viewmodel.view.jp2view.kakadu.JHV_KduException;
-import org.helioviewer.viewmodel.view.jp2view.kakadu.KakaduUtils;
+import org.helioviewer.jhv.viewmodel.metadata.MetaData;
+import org.helioviewer.jhv.viewmodel.view.MetaDataView;
+import org.helioviewer.jhv.viewmodel.view.fitsview.JHVFITSView;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJP2View;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JP2Image;
+import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
+import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.KakaduUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -60,10 +60,10 @@ public class MetaDataDialog extends JDialog implements ActionListener, ShowableD
     private static final long serialVersionUID = 1L;
 
     private final JButton closeButton = new JButton("Close");
-    private final JButton exportFitsButton = new JButton("Export FITS Header as XML");
+    private final JButton exportFitsButton = new JButton("Export FITS header as XML");
 
     private Vector<String> infoList = new Vector<String>();
-    private JList listBox = new JList();
+    private JList<String> listBox = new JList<String>();
     private Document xmlDoc = null;
     private boolean metaDataOK;
     private String outFileName;
@@ -73,17 +73,18 @@ public class MetaDataDialog extends JDialog implements ActionListener, ShowableD
      * The private constructor that sets the fields and the dialog.
      */
     public MetaDataDialog() {
-        super(ImageViewerGui.getMainFrame(), "Image Information");
-        setAlwaysOnTop(true);
+        super(ImageViewerGui.getMainFrame(), "Image metainfo");
+        //setAlwaysOnTop(true);
         setLayout(new BorderLayout());
         setResizable(false);
 
         listBox.setFont(new Font("Courier", Font.PLAIN, 12));
 
-        listBox.setCellRenderer(new ListCellRenderer() {
-            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        listBox.setCellRenderer(new ListCellRenderer<Object>() {
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 JTextArea textArea = new JTextArea(value.toString().trim());
                 textArea.setLineWrap(true);
+                textArea.setEditable(false);
                 textArea.setWrapStyleWord(true);
                 textArea.setFont(list.getFont());
                 return textArea;
@@ -164,11 +165,51 @@ public class MetaDataDialog extends JDialog implements ActionListener, ShowableD
         } else if (_a.getSource() == exportFitsButton) {
             DOMSource source = new DOMSource(xmlDoc.getDocumentElement().getElementsByTagName("fits").item(0));
 
-            boolean saveSuccessful = saveXMLDocument(source, outFileName);
-            if (saveSuccessful)
-                JOptionPane.showMessageDialog(this, "Fits data saved to " + outFileName);
+            
+            String fn=openFileChooser(outFileName);
+            if(fn!=null)
+            {
+                boolean saveSuccessful = saveXMLDocument(source, outFileName);
+                if (!saveSuccessful)
+                    JOptionPane.showMessageDialog(this, "Could not save document.");
+            }
         }
     }
+    
+    
+    private String openFileChooser(String _filename){
+        // Open save-dialog
+        final JFileChooser fileChooser = JHVGlobals.getJFileChooser();
+        fileChooser.setFileHidingEnabled(false);
+        fileChooser.setMultiSelectionEnabled(false);
+        fileChooser.setAcceptAllFileFilterUsed(true);
+        
+        /*fileChooser.
+        
+        // add Filter
+        for (MovieFileFilter.ImplementedMovieFilter movieFilter : MovieFileFilter.ImplementedMovieFilter.values()){
+            fileChooser.addChoosableFileFilter(movieFilter.getMovieFilter());
+        }
+
+        for (FileFilter fileFilter : fileChooser.getChoosableFileFilters()) {
+                if (txtTargetFile.endsWith(((MovieFileFilter) fileFilter).getExtension())) {
+                    fileChooser.setFileFilter(fileFilter);
+                    selectedOutputFormat = (MovieFileFilter) fileFilter;
+                }
+            }
+        
+        txtTargetFile = txtTargetFile.substring(0, txtTargetFile.lastIndexOf(selectedOutputFormat.getExtension()));
+*/
+        fileChooser.setSelectedFile(new File(_filename));
+
+        int retVal = fileChooser.showDialog(ImageViewerGui.getMainFrame(), "OK");
+        if(retVal==JFileChooser.APPROVE_OPTION)
+            return fileChooser.getSelectedFile().getPath();
+        else
+            return null;
+    }
+    
+    
 
     /**
      * Sets the full document which can be found reading the given MetaDataView.
@@ -184,23 +225,17 @@ public class MetaDataDialog extends JDialog implements ActionListener, ShowableD
 
         MetaData metaData = metaDataView.getMetaData();
 
-        if (!(metaData instanceof HelioviewerMetaData)) {
-            metaDataOK = false;
-            resetData();
-            addDataItem("No metadata is available.");
-        } else {
-            HelioviewerMetaData m = (HelioviewerMetaData) metaData;
             metaDataOK = true;
             resetData();
             addDataItem("-------------------------------");
             addDataItem("       Basic Information       ");
             addDataItem("-------------------------------");
-            addDataItem("Observatory : " + m.getObservatory());
-            addDataItem("Instrument  : " + m.getInstrument());
-            addDataItem("Detector    : " + m.getDetector());
-            addDataItem("Measurement : " + m.getMeasurement());
-            addDataItem("Date        : " + m.getDateTime().getFormattedDate());
-            addDataItem("Time        : " + m.getDateTime().getFormattedTime());
+            addDataItem("Observatory : " + metaData.getObservatory());
+            addDataItem("Instrument  : " + metaData.getInstrument());
+            addDataItem("Detector    : " + metaData.getDetector());
+            addDataItem("Measurement : " + metaData.getMeasurement());
+            addDataItem("Date        : " + metaData.getDateTime().getFormattedDate());
+            addDataItem("Time        : " + metaData.getDateTime().getFormattedTime());
 
             String xmlText = null;
             if (metaDataView instanceof JHVJP2View) {
@@ -252,13 +287,13 @@ public class MetaDataDialog extends JDialog implements ActionListener, ShowableD
                     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH.mm.ss'Z'");
                     dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 
-                    outFileName = JHVDirectory.EXPORTS.getPath() + m.getFullName() + " " + dateFormat.format(m.getDateTime().getTime()) + ".fits.xml";
+                    outFileName = metaData.getFullName() + " " + dateFormat.format(metaData.getDateTime().getTime()) + ".fits.xml";
 
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-        }
+        
     }
 
     /**

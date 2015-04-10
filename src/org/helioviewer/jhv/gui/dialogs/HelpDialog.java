@@ -41,7 +41,17 @@ public class HelpDialog extends JDialog implements ActionListener, ShowableDialo
         final String sep = System.getProperty("line.separator");
 
         // the content panel:
-        JTextArea shortcuts = new JTextArea("Keyboard shortcuts:                        Mouse shortcuts:" + sep + sep + "ALT + c       Center active image          Double left-click   Zoom in" + sep + "ALT + t       Toggle fullscreen display    Double right-click  Zoom out" + sep + "ALT + Comma   Zoom in                      Scroll wheel up     Zoom in" + sep + "ALT + Period  Zoom out                     Scroll wheel down   Zoom out" + sep + "ALT + k       Zoom to fit" + sep + "ALT + l       Zoom to native resolution" + sep + "ALT + p       Play/pause movie" + sep + "ALT + b       Step to previous frame" + sep + "ALT + n       Step to next frame" + sep + "F1            Show shortcuts");
+        JTextArea shortcuts = new JTextArea("Keyboard shortcuts:                        Mouse shortcuts:" + sep + sep +
+        		"ALT + c       Center active image          Scroll wheel up     Zoom in" + sep + 
+        		"ALT + t       Toggle fullscreen display    Scroll wheel down   Zoom out" + sep + 
+        		"ALT + i       Zoom in" + sep + 
+        		"ALT + o       Zoom out" + sep + 
+        		"ALT + k       Zoom to fit" + sep + 
+        		"ALT + l       Zoom to native resolution" + sep + 
+        		"ALT + p       Play/pause movie" + sep + 
+        		"ALT + b       Step to previous frame" + sep + 
+        		"ALT + n       Step to next frame" + sep + 
+        		"F1            Show shortcuts");
         shortcuts.setEditable(false);
         shortcuts.setFont(new Font("Courier", Font.PLAIN, 13));
         shortcuts.setBackground(getBackground());
@@ -70,6 +80,9 @@ public class HelpDialog extends JDialog implements ActionListener, ShowableDialo
         pack();
         setSize(getPreferredSize().width, getPreferredSize().height);
         setLocationRelativeTo(ImageViewerGui.getMainFrame());
+        
+        DialogTools.setDefaultButtons(closeButton,closeButton);
+        
         setVisible(true);
     }
 

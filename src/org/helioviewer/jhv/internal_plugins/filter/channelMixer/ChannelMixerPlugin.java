@@ -1,10 +1,10 @@
 package org.helioviewer.jhv.internal_plugins.filter.channelMixer;
 
-import org.helioviewer.viewmodel.filter.Filter;
-import org.helioviewer.viewmodel.view.FilterView;
-import org.helioviewer.viewmodelplugin.filter.FilterPanel;
-import org.helioviewer.viewmodelplugin.filter.FilterTabDescriptor;
-import org.helioviewer.viewmodelplugin.filter.SimpleFilterContainer;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterPanel;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTabDescriptor;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.SimpleFilterContainer;
+import org.helioviewer.jhv.viewmodel.filter.Filter;
+import org.helioviewer.jhv.viewmodel.view.FilterView;
 
 /**
  * Plugin for modifying the color mask of an image
@@ -40,13 +40,6 @@ public class ChannelMixerPlugin extends SimpleFilterContainer {
 
     protected FilterPanel getPanel() {
         return new ChannelMixerPanel();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public String getDescription() {
-        return null;
     }
 
     /**

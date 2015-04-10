@@ -5,7 +5,7 @@ import javax.swing.table.AbstractTableModel;
 
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
-import org.helioviewer.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.View;
 
 /**
  * A TableModel representing the state of visible Layers, internally using the
@@ -24,7 +24,7 @@ public class LayerTableModel extends AbstractTableModel implements LayersListene
     public static final int COLUMN_BUTTON_REMOVE = 3;
 
     /** The sole instance of this class. */
-    private static final LayerTableModel layerTableModel = new LayerTableModel();
+    private static final LayerTableModel SINGLETON = new LayerTableModel();
 
     /**
      * Returns the only instance of this class.
@@ -32,7 +32,7 @@ public class LayerTableModel extends AbstractTableModel implements LayersListene
      * @return the only instance of this class.
      * */
     public static LayerTableModel getSingletonInstance() {
-        return layerTableModel;
+        return SINGLETON;
     }
 
     private LayerTableModel() {
@@ -126,10 +126,9 @@ public class LayerTableModel extends AbstractTableModel implements LayersListene
     public void viewportGeometryChanged() {
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void subImageDataChanged() {
+    @Override
+    public void subImageDataChanged(int idx)
+    {
     }
 
     /**

@@ -1,6 +1,6 @@
 package org.helioviewer.jhv.layers;
 
-import org.helioviewer.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.View;
 
 /**
  * Interface for GUI objects to react to changes of layers
@@ -65,7 +65,7 @@ public interface LayersListener {
     /**
      * Gets fired if any image data changed.
      */
-    public void subImageDataChanged();
+    public void subImageDataChanged(int idx);
 
     /**
      * Gets fired if a remote jp2 image or movie was downloaded and now becomes

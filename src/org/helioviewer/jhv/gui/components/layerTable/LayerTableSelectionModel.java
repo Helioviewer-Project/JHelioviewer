@@ -5,7 +5,7 @@ import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
-import org.helioviewer.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.View;
 
 /**
  * SelectionModel reflecting the "activeLayer" property of the LayersModel
@@ -17,7 +17,7 @@ public class LayerTableSelectionModel extends DefaultListSelectionModel implemen
     private static final long serialVersionUID = 2276237017135257828L;
 
     /** The sole instance of this class. */
-    private static final LayerTableSelectionModel layerTableSelectionModel = new LayerTableSelectionModel();
+    private static final LayerTableSelectionModel SINGLETON = new LayerTableSelectionModel();
 
     /**
      * Returns the only instance of this class.
@@ -25,7 +25,7 @@ public class LayerTableSelectionModel extends DefaultListSelectionModel implemen
      * @return the only instance of this class.
      * */
     public static LayerTableSelectionModel getSingletonInstance() {
-        return layerTableSelectionModel;
+        return SINGLETON;
     }
 
     /**
@@ -94,10 +94,9 @@ public class LayerTableSelectionModel extends DefaultListSelectionModel implemen
     public void viewportGeometryChanged() {
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void subImageDataChanged() {
+    @Override
+    public void subImageDataChanged(int idx)
+    {
     }
 
     /**

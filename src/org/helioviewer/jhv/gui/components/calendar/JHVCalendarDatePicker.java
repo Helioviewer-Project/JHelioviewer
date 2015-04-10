@@ -9,8 +9,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.AbstractList;
@@ -23,8 +21,8 @@ import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JFormattedTextField;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.Popup;
 import javax.swing.PopupFactory;
 
@@ -45,7 +43,7 @@ import org.helioviewer.jhv.gui.IconBank.JHVIcon;
  * @see JHVCalendar
  * @author Stephan Pagel
  */
-public class JHVCalendarDatePicker extends JPanel implements FocusListener, ActionListener, KeyListener, JHVCalendarListener {
+public class JHVCalendarDatePicker extends JPanel implements FocusListener, ActionListener, JHVCalendarListener {
 
     // ////////////////////////////////////////////////////////////////
     // Definitions
@@ -59,7 +57,7 @@ public class JHVCalendarDatePicker extends JPanel implements FocusListener, Acti
 
     private JHVCalendar jhvCalendar = null;
     private Icon icon = IconBank.getIcon(JHVIcon.DATE);
-    private JTextField textField = new JTextField();
+    private JFormattedTextField textField;
     private JButton popupButton;
     private Popup popup = null;
 
@@ -82,11 +80,10 @@ public class JHVCalendarDatePicker extends JPanel implements FocusListener, Acti
 
         // set basic layout
         setLayout(new BorderLayout(0, 0));
-
+        textField = new JFormattedTextField(dateFormat);
         // set up text field
         textField.setText(dateFormat.format(calendar.getTime()));
         textField.addFocusListener(this);
-        textField.addKeyListener(this);
 
         // set up popup button
         popupButton = new JButton(icon);
@@ -181,29 +178,6 @@ public class JHVCalendarDatePicker extends JPanel implements FocusListener, Acti
             else
                 hidePopup();
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void keyPressed(KeyEvent e) {
-
-        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-            checkDateStringInTextField();
-            informAllJHVCalendarListeners(new JHVCalendarEvent(this));
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void keyReleased(KeyEvent e) {
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void keyTyped(KeyEvent e) {
     }
 
     private void checkDateStringInTextField() {

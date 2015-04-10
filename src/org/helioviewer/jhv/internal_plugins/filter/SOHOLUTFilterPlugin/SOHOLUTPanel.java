@@ -16,14 +16,15 @@ import javax.swing.JLabel;
 import javax.swing.JToggleButton;
 import javax.swing.border.BevelBorder;
 
-import org.helioviewer.base.logging.Log;
-import org.helioviewer.base.message.Message;
+import org.helioviewer.jhv.JHVGlobals;
+import org.helioviewer.jhv.base.Message;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
-import org.helioviewer.viewmodel.filter.Filter;
-import org.helioviewer.viewmodelplugin.filter.FilterAlignmentDetails;
-import org.helioviewer.viewmodelplugin.filter.FilterPanel;
-import org.helioviewer.viewmodelplugin.filter.FilterTabPanelManager.Area;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterAlignmentDetails;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterPanel;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTabPanelManager.Area;
+import org.helioviewer.jhv.viewmodel.filter.Filter;
 
 /**
  * Panel containing a combobox for choosing the color table and button to add
@@ -35,7 +36,7 @@ public class SOHOLUTPanel extends FilterPanel implements ActionListener, FilterA
 
     private static final long serialVersionUID = 1L;
 
-    private static final Icon invertIcon = IconBank.getIcon(JHVIcon.INVERT);
+    private static final Icon ICON_INVERT = IconBank.getIcon(JHVIcon.INVERT);
 
     private SOHOLUTFilter filter;
     private Map<String, LUT> lutMap;
@@ -44,11 +45,11 @@ public class SOHOLUTPanel extends FilterPanel implements ActionListener, FilterA
     /**
      * Shown combobox to choose
      */
-    private JComboBox combobox;
+    private JComboBox<String> combobox;
     /**
      * Shown invert button
      */
-    private JToggleButton invertButton = new JToggleButton(invertIcon);
+    private JToggleButton invertButton = new JToggleButton(ICON_INVERT);
     /**
      * Shown label
      */
@@ -63,12 +64,12 @@ public class SOHOLUTPanel extends FilterPanel implements ActionListener, FilterA
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 
         title = new JLabel("Color:");
-        title.setPreferredSize(new Dimension(FilterPanel.titleWidth, FilterPanel.height));
+        title.setPreferredSize(new Dimension(FilterPanel.TITLE_WIDTH, FilterPanel.HEIGHT));
         add(title);
 
         // Add add entry
         lutMap.put("<Load new GIMP gradient file>", null);
-        combobox = new JComboBox(lutMap.keySet().toArray());
+        combobox = new JComboBox<String>(lutMap.keySet().toArray(new String[0]));
         combobox.setToolTipText("Choose a color table");
         combobox.setPreferredSize(new Dimension(150, combobox.getPreferredSize().height));
         combobox.addActionListener(this);
@@ -79,7 +80,7 @@ public class SOHOLUTPanel extends FilterPanel implements ActionListener, FilterA
 
         invertButton.setToolTipText("Invert color table");
         invertButton.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
-        invertButton.setPreferredSize(new Dimension(FilterPanel.valueWidth - 14, FilterPanel.height));
+        invertButton.setPreferredSize(new Dimension(FilterPanel.VALUE_WIDTH - 14, FilterPanel.HEIGHT));
         invertButton.addActionListener(this);
         add(invertButton);
 
@@ -123,29 +124,32 @@ public class SOHOLUTPanel extends FilterPanel implements ActionListener, FilterA
         LUT newMap = lutMap.get(combobox.getSelectedItem());
         if (newMap == null) {
             // Add new color table
-            JFileChooser fc = new JFileChooser();
+            JFileChooser fc = JHVGlobals.getJFileChooser();
             fc.setFileFilter(new GGRFilter());
             fc.setMultiSelectionEnabled(false);
             int state = fc.showOpenDialog(null);
             if (state == JFileChooser.APPROVE_OPTION) {
                 try {
-                    Log.info("Load gradient file " + fc.getSelectedFile());
+                    System.out.println("Load gradient file " + fc.getSelectedFile());
                     addLut(LUT.readGimpGradientFile(fc.getSelectedFile()));
                     lastSelectedIndex = combobox.getSelectedIndex();
                 } catch (IOException ex) {
                     Message.warn("Error loading gradient file", "Error loading gradient file: " + fc.getSelectedFile() + "\n\n" + ex.getMessage());
-                    Log.warn("Error loading gradient file: " + fc.getSelectedFile() + " - " + ex.getMessage());
+                    System.out.println("Error loading gradient file: " + fc.getSelectedFile() + " - " + ex.getMessage());
                 } catch (GradientError ex) {
                     Message.warn("Error applying gradient file", "Error loading gradient file: " + fc.getSelectedFile() + "\n\n" + ex.getMessage());
-                    Log.warn("Error applying gradient file: " + fc.getSelectedFile() + " - " + ex.getMessage());
+                    System.out.println("Error applying gradient file: " + fc.getSelectedFile() + " - " + ex.getMessage());
                 }
             } else {
                 combobox.setSelectedIndex(lastSelectedIndex);
             }
         } else {
+        	GuiState3DWCS.overViewPanel.setCurrentLutByName(newMap.getName(), invertButton.isSelected());
             filter.setLUT(newMap, invertButton.isSelected());
             lastSelectedIndex = combobox.getSelectedIndex();
         }
+        GuiState3DWCS.mainComponentView.getComponent().repaint();
+        
     }
 
     /**

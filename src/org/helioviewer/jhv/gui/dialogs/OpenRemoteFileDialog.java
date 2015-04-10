@@ -13,21 +13,13 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.JTree;
+import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.tree.TreePath;
 
-import org.helioviewer.base.message.Message;
 import org.helioviewer.jhv.Settings;
+import org.helioviewer.jhv.base.Message;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.components.DynamicModel;
 import org.helioviewer.jhv.gui.interfaces.ShowableDialog;
@@ -77,7 +69,7 @@ public class OpenRemoteFileDialog extends JDialog implements ShowableDialog, Act
 
         try {
             if (treeModel == null) {
-                treeModel = new DynamicModel(Settings.getSingletonInstance().getProperty("/"));
+                treeModel = new DynamicModel(Settings.getProperty("/"));
             }
         } catch (Exception e1) {
             e1.printStackTrace();
@@ -179,7 +171,7 @@ public class OpenRemoteFileDialog extends JDialog implements ShowableDialog, Act
         } catch (Exception e) {
             e.printStackTrace();
         }
-        inputAddress.setText(Settings.getSingletonInstance().getProperty("default.remote.path"));
+        inputAddress.setText(Settings.getProperty("default.remote.path"));
 
     }
 
@@ -261,7 +253,7 @@ public class OpenRemoteFileDialog extends JDialog implements ShowableDialog, Act
             secondLabel.setText("Remote Image Path:");
             imageAddress.setText("");
             buttonShow.setText(" Advanced Options");
-            inputAddress.setText(Settings.getSingletonInstance().getProperty("default.remote.path"));
+            inputAddress.setText(Settings.getProperty("default.remote.path"));
             inputAddress.setEnabled(true);
             inputAddress.setEnabled(true);
             scrollPane.setVisible(false);
@@ -272,8 +264,8 @@ public class OpenRemoteFileDialog extends JDialog implements ShowableDialog, Act
             connectPanel.setVisible(true);
             secondLabel.setText("Concurrent HTTP Server:   ");
 
-            imageAddress.setText(Settings.getSingletonInstance().getProperty("default.httpRemote.path"));
-            inputAddress.setText(Settings.getSingletonInstance().getProperty("default.remote.path"));
+            imageAddress.setText(Settings.getProperty("default.httpRemote.path"));
+            inputAddress.setText(Settings.getProperty("default.remote.path"));
             buttonShow.setText(" Basic Options");
             scrollPane.setVisible(true);
             inputAddress.setEnabled(true);
@@ -339,12 +331,10 @@ public class OpenRemoteFileDialog extends JDialog implements ShowableDialog, Act
 
             tree.getParent().setSize(tree.getParent().getPreferredSize());
 
-            Settings.getSingletonInstance().setProperty("default.httpRemote.path", imageAddress.getText());
+            Settings.setProperty("default.httpRemote.path", imageAddress.getText());
 
-            Settings.getSingletonInstance().setProperty("default.remote.path", inputAddress.getText());
+            Settings.setProperty("default.remote.path", inputAddress.getText());
 
-            Settings.getSingletonInstance().update();
-            Settings.getSingletonInstance().save();
             tree.getParent().getParent().repaint();
         } catch (BadLocationException i) {
 
@@ -368,7 +358,7 @@ public class OpenRemoteFileDialog extends JDialog implements ShowableDialog, Act
             }
         }
 
-        String srv = Settings.getSingletonInstance().getProperty("default.httpRemote.path");
+        String srv = Settings.getProperty("default.httpRemote.path");
 
         srv = srv.trim();
 
@@ -394,7 +384,6 @@ public class OpenRemoteFileDialog extends JDialog implements ShowableDialog, Act
                     FileDownloader filedownloader = new FileDownloader();
                     URI newUri = filedownloader.downloadFromHTTP(uri, true);
                     ImageViewerGui.getSingletonInstance().getMainImagePanel().setLoading(false);
-
                     try {
                         APIRequestManager.newLoad(newUri, uri, true);
                         dispose();
@@ -402,12 +391,13 @@ public class OpenRemoteFileDialog extends JDialog implements ShowableDialog, Act
                         e.printStackTrace();
                     } finally {
                         ImageViewerGui.getSingletonInstance().getMainImagePanel().setLoading(false);
+                        GuiState3DWCS.mainComponentView.getComponent().repaint();
                     }
 
                 }
 
             });
-
+            thread.setDaemon(true);
             thread.start();
 
         } catch (URISyntaxException e1) {
@@ -434,7 +424,7 @@ public class OpenRemoteFileDialog extends JDialog implements ShowableDialog, Act
 
         String srv = inputAddress.getText();
         if (advancedOptions) {
-            srv = Settings.getSingletonInstance().getProperty("default.remote.path");
+            srv = Settings.getProperty("default.remote.path");
         }
         srv = srv.trim();
 
@@ -456,7 +446,7 @@ public class OpenRemoteFileDialog extends JDialog implements ShowableDialog, Act
         final String httpPath;
 
         if (advancedOptions) {
-            httpPath = Settings.getSingletonInstance().getProperty("default.httpRemote.path") + img;
+            httpPath = Settings.getProperty("default.httpRemote.path") + img;
         } else {
             httpPath = srv + img;
         }
@@ -473,13 +463,14 @@ public class OpenRemoteFileDialog extends JDialog implements ShowableDialog, Act
                         APIRequestManager.newLoad(uri, new URI(httpPath), true);
 
                         if (advancedOptions == false) {
-                            Settings.getSingletonInstance().setProperty("default.remote.path", inputAddress.getText());
+                            Settings.setProperty("default.remote.path", inputAddress.getText());
                         }
                     } catch (IOException e) {
 
                         JOptionPane.showMessageDialog(buttonShow, e.getMessage(), "File not found on streaming server!", JOptionPane.ERROR_MESSAGE);
 
                         ImageViewerGui.getSingletonInstance().getMainImagePanel().setLoading(false);
+                        GuiState3DWCS.mainComponentView.getComponent().repaint();
                     } catch (URISyntaxException e) {
                         e.printStackTrace();
                     } finally {
@@ -488,7 +479,7 @@ public class OpenRemoteFileDialog extends JDialog implements ShowableDialog, Act
                     }
                 }
             });
-
+            thread.setDaemon(true);
             thread.start();
         } catch (URISyntaxException e) {
             e.printStackTrace();

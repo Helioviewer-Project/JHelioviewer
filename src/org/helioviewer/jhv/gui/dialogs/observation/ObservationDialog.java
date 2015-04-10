@@ -14,10 +14,12 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.helioviewer.base.message.Message;
+import org.helioviewer.jhv.JHVGlobals;
+import org.helioviewer.jhv.base.Message;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.ImageViewerGui;
+import org.helioviewer.jhv.gui.dialogs.DialogTools;
 import org.helioviewer.jhv.gui.interfaces.ShowableDialog;
 
 /**
@@ -37,16 +39,16 @@ public class ObservationDialog extends JDialog implements ActionListener, Showab
 
     private static final long serialVersionUID = 1L;
 
-    private static final ObservationDialog singletonInstace = new ObservationDialog();
+    private static final ObservationDialog SINGLETON = new ObservationDialog();
 
     private final HashMap<String, ObservationDialogPanel> uiMap = new HashMap<String, ObservationDialogPanel>();
 
     private final JPanel contentPane = new JPanel();
     private final JPanel uiSelectionPane = new JPanel();
-    private final JComboBox uiSelectionComboBox = new JComboBox();
+    private final JComboBox<String> uiSelectionComboBox = new JComboBox<String>();
     private final JPanel buttonPane = new JPanel();
-    private final JButton btnImages = new JButton("Add Layer");
-    private final JButton btnClose = new JButton("Cancel");
+    private final JButton btnAddLayer = new JButton("Add Layer");
+    private final JButton btnCancel = new JButton("Cancel");
 
     private ObservationDialogPanel selectedPane = null;
 
@@ -67,7 +69,7 @@ public class ObservationDialog extends JDialog implements ActionListener, Showab
      * Returns the singleton instance of the dialog.
      * */
     public static ObservationDialog getSingletonInstance() {
-        return singletonInstace;
+        return SINGLETON;
     }
 
     /**
@@ -92,22 +94,31 @@ public class ObservationDialog extends JDialog implements ActionListener, Showab
         uiSelectionComboBox.addActionListener(this);
 
         buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT, 3, 3));
-        buttonPane.add(btnClose);
-        buttonPane.add(btnImages);
+        
+        if(JHVGlobals.isWindows())
+        {
+            buttonPane.add(btnAddLayer);
+            buttonPane.add(btnCancel);
+        }
+        else
+        {
+            buttonPane.add(btnCancel);
+            buttonPane.add(btnAddLayer);
+        }
 
-        btnImages.setIcon(IconBank.getIcon(JHVIcon.ADD));
-        btnImages.setToolTipText("Request the selected image data and display it");
+        btnAddLayer.setIcon(IconBank.getIcon(JHVIcon.ADD));
+        btnAddLayer.setToolTipText("Request the selected image data and display it");
 
-        btnClose.setIcon(IconBank.getIcon(JHVIcon.REMOVE_LAYER));
-        btnClose.setToolTipText("Close this Dialog");
+        btnCancel.setIcon(IconBank.getIcon(JHVIcon.REMOVE_LAYER));
+        btnCancel.setToolTipText("Close this Dialog");
 
-        final int btnWidth = Math.max(btnClose.getPreferredSize().getSize().width, btnImages.getPreferredSize().getSize().width);
+        final int btnWidth = Math.max(btnCancel.getPreferredSize().getSize().width, btnAddLayer.getPreferredSize().getSize().width);
 
-        btnImages.setPreferredSize(new Dimension(btnWidth, 25));
-        btnImages.addActionListener(this);
+        btnAddLayer.setPreferredSize(new Dimension(btnWidth, 25));
+        btnAddLayer.addActionListener(this);
 
-        btnClose.setPreferredSize(new Dimension(btnWidth, 25));
-        btnClose.addActionListener(this);
+        btnCancel.setPreferredSize(new Dimension(btnWidth, 25));
+        btnCancel.addActionListener(this);
     }
 
     /**
@@ -179,7 +190,7 @@ public class ObservationDialog extends JDialog implements ActionListener, Showab
      * Enables the load data button.
      * */
     public void setLoadButtonEnabled(final boolean enable) {
-        btnImages.setEnabled(enable);
+        btnAddLayer.setEnabled(enable);
     }
 
     /**
@@ -206,6 +217,7 @@ public class ObservationDialog extends JDialog implements ActionListener, Showab
 
         pack();
 
+        DialogTools.setDefaultButtons(btnAddLayer,btnCancel);
         setVisible(true);
     }
 
@@ -224,7 +236,8 @@ public class ObservationDialog extends JDialog implements ActionListener, Showab
     /**
      * {@inheritDoc}
      */
-    public void showDialog() {
+    public void showDialog()
+    {
         showDialog(null);
     }
 
@@ -238,7 +251,7 @@ public class ObservationDialog extends JDialog implements ActionListener, Showab
     public void actionPerformed(final ActionEvent e) {
         if (e.getSource().equals(uiSelectionComboBox)) {
             setUIContainerPane((String) uiSelectionComboBox.getSelectedItem());
-        } else if (e.getSource().equals(btnImages)) {
+        } else if (e.getSource().equals(btnAddLayer)) {
             boolean result = true;
             
             if (selectedPane != null) {
@@ -248,7 +261,7 @@ public class ObservationDialog extends JDialog implements ActionListener, Showab
             if (result) {
                 closeDialog();
             }
-        } else if (e.getSource().equals(btnClose)) {
+        } else if (e.getSource().equals(btnCancel)) {
             selectedPane.cancelButtonPressed();
             closeDialog();
         }
@@ -256,7 +269,5 @@ public class ObservationDialog extends JDialog implements ActionListener, Showab
 
 	@Override
 	public void init() {
-		// TODO Auto-generated method stub
-		
 	}
 }

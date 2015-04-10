@@ -353,14 +353,6 @@ public class CommandLineProcessor {
                     request.imageLayers[layerNumber].detector = layer[JHVRequestLayer.DETECTOR_INDEX];
                     request.imageLayers[layerNumber].measurement = layer[JHVRequestLayer.MEASUREMENT_INDEX];
 
-                    if (layer[JHVRequestLayer.VISIBILITY_INDEX].equals("0") || layer[JHVRequestLayer.VISIBILITY_INDEX].equalsIgnoreCase("false")) {
-                        request.imageLayers[layerNumber].visibility = false;
-                    } else if (layer[JHVRequestLayer.VISIBILITY_INDEX].equals("1") || layer[JHVRequestLayer.VISIBILITY_INDEX].equalsIgnoreCase("true")) {
-                        request.imageLayers[layerNumber].visibility = true;
-                    } else {
-                        throw new IllegalArgumentException("visibility must be 0,1,false or true: " + layer[JHVRequestLayer.VISIBILITY_INDEX]);
-                    }
-
                     request.imageLayers[layerNumber].opacity = Integer.parseInt(layer[JHVRequestLayer.OPACITY_INDEX]);
 
                     if (request.imageLayers[layerNumber].opacity < 0 || request.imageLayers[layerNumber].opacity > 100) {

@@ -10,11 +10,12 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.components.WheelSupport;
-import org.helioviewer.viewmodel.filter.Filter;
-import org.helioviewer.viewmodelplugin.filter.FilterAlignmentDetails;
-import org.helioviewer.viewmodelplugin.filter.FilterPanel;
-import org.helioviewer.viewmodelplugin.filter.FilterTabPanelManager.Area;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterAlignmentDetails;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterPanel;
+import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTabPanelManager.Area;
+import org.helioviewer.jhv.viewmodel.filter.Filter;
 
 /**
  * Panel containing a slider for changing the gamma value of the image.
@@ -43,7 +44,7 @@ public class GammaCorrectionPanel extends FilterPanel implements ChangeListener,
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 
         title = new JLabel("Gamma:");
-        title.setPreferredSize(new Dimension(FilterPanel.titleWidth, FilterPanel.height));
+        title.setPreferredSize(new Dimension(FilterPanel.TITLE_WIDTH, FilterPanel.HEIGHT));
         add(title);
 
         gammaSlider = new JSlider(JSlider.HORIZONTAL, -100, 100, 0);
@@ -57,7 +58,7 @@ public class GammaCorrectionPanel extends FilterPanel implements ChangeListener,
 
         gammaLabel = new JLabel("1.0");
         gammaLabel.setHorizontalAlignment(JLabel.RIGHT);
-        gammaLabel.setPreferredSize(new Dimension(FilterPanel.valueWidth, FilterPanel.height));
+        gammaLabel.setPreferredSize(new Dimension(FilterPanel.VALUE_WIDTH, FilterPanel.HEIGHT));
         add(gammaLabel);
 
         setEnabled(false);
@@ -101,6 +102,7 @@ public class GammaCorrectionPanel extends FilterPanel implements ChangeListener,
             label = label.substring(0, 3);
         }
         gammaLabel.setText(label);
+        GuiState3DWCS.mainComponentView.getComponent().repaint();
     }
 
     /**

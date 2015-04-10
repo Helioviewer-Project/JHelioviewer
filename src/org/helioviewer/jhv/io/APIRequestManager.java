@@ -12,22 +12,18 @@ import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.helioviewer.base.DownloadStream;
-import org.helioviewer.base.logging.Log;
-import org.helioviewer.base.message.Message;
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.Settings;
-import org.helioviewer.jhv.gui.ImageViewerGui;
-import org.helioviewer.jhv.gui.ViewchainFactory;
-import org.helioviewer.jhv.gui.states.StateController;
-import org.helioviewer.viewmodel.io.APIResponse;
-import org.helioviewer.viewmodel.io.APIResponseDump;
-import org.helioviewer.viewmodel.metadata.HelioviewerMetaData;
-import org.helioviewer.viewmodel.metadata.MetaData;
-import org.helioviewer.viewmodel.view.ImageInfoView;
-import org.helioviewer.viewmodel.view.MetaDataView;
-import org.helioviewer.viewmodel.view.ViewHelper;
-import org.helioviewer.viewmodel.view.jp2view.JHVJP2View;
+import org.helioviewer.jhv.base.DownloadStream;
+import org.helioviewer.jhv.base.Message;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
+import org.helioviewer.jhv.viewmodel.io.APIResponse;
+import org.helioviewer.jhv.viewmodel.io.APIResponseDump;
+import org.helioviewer.jhv.viewmodel.metadata.MetaData;
+import org.helioviewer.jhv.viewmodel.view.ImageInfoView;
+import org.helioviewer.jhv.viewmodel.view.MetaDataView;
+import org.helioviewer.jhv.viewmodel.view.ViewHelper;
+import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJP2View;
 
 /**
  * This class provides methods to download files from a server.
@@ -66,23 +62,21 @@ public class APIRequestManager {
             view = loadImage(false, observatory, instrument, detector, measurement, formatter.format(date));
             if (view != null) {
                 MetaData metaData = view.getAdapter(MetaDataView.class).getMetaData();
-                if (metaData instanceof HelioviewerMetaData) {
-                    HelioviewerMetaData helioviewerMetaData = (HelioviewerMetaData) metaData;
-                    date = helioviewerMetaData.getDateTime().getTime();
-                    readDate = true;
-                } else {
-                    Log.error(">> APIRequestManager.getLatestImageDate() > Could not find Helioviewer meta data in latest image. Use current date as initial end date.", new Exception());
-                }
+                date = metaData.getDateTime().getTime();
+                readDate = true;
                 if (view instanceof JHVJP2View) {
                     ((JHVJP2View) view).abolish();
                 }
             } else {
-                Log.error(">> APIRequestManager.getLatestImageDate() > Could not load latest image. Use current date as initial end date.", new Exception());
+                System.err.println(">> APIRequestManager.getLatestImageDate() > Could not load latest image. Use current date as initial end date.");
+                new Exception().printStackTrace();
             }
         } catch (MalformedURLException e) {
-            Log.error(">> APIRequestManager.getLatestImageDate() > Malformed jpip request url. Use current date as initial end date.", e);
+            System.err.println(">> APIRequestManager.getLatestImageDate() > Malformed jpip request url. Use current date as initial end date.");
+            e.printStackTrace();
         } catch (IOException e) {
-            Log.error(">> APIRequestManager.getLatestImageDate() > Error while opening stream. Use current date as initial end date.", e);
+            System.err.println(">> APIRequestManager.getLatestImageDate() > Error while opening stream. Use current date as initial end date.");
+            e.printStackTrace();
         }
 
         if (readDate) {
@@ -114,7 +108,7 @@ public class APIRequestManager {
      * @throws IOException
      */
     private static ImageInfoView loadImage(boolean addToViewChain, String observatory, String instrument, String detector, String measurement, String startTime) throws MalformedURLException, IOException {
-        String fileRequest = Settings.getSingletonInstance().getProperty("API.jp2images.path") + "?action=getJP2Image&observatory=" + observatory + "&instrument=" + instrument + "&detector=" + detector + "&measurement=" + measurement + "&date=" + startTime + "&json=true";
+        String fileRequest = Settings.getProperty("API.jp2images.path") + "?action=getJP2Image&observatory=" + observatory + "&instrument=" + instrument + "&detector=" + detector + "&measurement=" + measurement + "&date=" + startTime + "&json=true";
         String jpipRequest = fileRequest + "&jpip=true";
 
         // get URL from server where file with image series is located
@@ -122,14 +116,17 @@ public class APIRequestManager {
             return requestData(addToViewChain, new URL(jpipRequest), new URI(fileRequest));
         } catch (IOException e) {
             if (e instanceof UnknownHostException) {
-                Log.debug(">> APIRequestManager.loadImageSeries(boolean,String,String,String,String,String,String,String)  > Error will be throw", e);
+                System.out.println(">> APIRequestManager.loadImageSeries(boolean,String,String,String,String,String,String,String)  > Error will be throw");
+                e.printStackTrace();
                 throw new IOException("Unknown Host: " + e.getMessage());
             } else {
-                Log.debug(">> APIRequestManager.loadImageSeries(boolean,String,String,String,String,String,String,String)  > Error will be throw", e);
+                System.out.println(">> APIRequestManager.loadImageSeries(boolean,String,String,String,String,String,String,String)  > Error will be throw");
+                e.printStackTrace();
                 throw new IOException("Error in the server communication:" + e.getMessage());
             }
         } catch (URISyntaxException e) {
-            Log.error("Error creating jpip request", e);
+            System.err.println("Error creating jpip request");
+            e.printStackTrace();
         }
         return null;
     }
@@ -161,29 +158,32 @@ public class APIRequestManager {
      * @throws IOException
      */
     private static ImageInfoView loadImageSeries(boolean addToViewChain, String observatory, String instrument, String detector, String measurement, String startTime, String endTime, String cadence) throws MalformedURLException, IOException {
-        String fileRequest = Settings.getSingletonInstance().getProperty("API.jp2series.path") + "?action=getJPX&observatory=" + observatory + "&instrument=" + instrument + "&detector=" + detector + "&measurement=" + measurement + "&startTime=" + startTime + "&endTime=" + endTime;
+        String fileRequest = Settings.getProperty("API.jp2series.path") + "?action=getJPX&observatory=" + observatory + "&instrument=" + instrument + "&detector=" + detector + "&measurement=" + measurement + "&startTime=" + startTime + "&endTime=" + endTime;
         if (cadence != null) {
             fileRequest += "&cadence=" + cadence;
         }
 
         String jpipRequest = fileRequest + "&jpip=true&verbose=true&linked=true";
 
-        Log.debug(">> APIRequestManager.loadImageSeries(boolean,String,String,String,String,String,String,String) > jpip request url: " + jpipRequest);
-        Log.debug(">> APIRequestManager.loadImageSeries(boolean,String,String,String,String,String,String,String) > http request url: " + fileRequest);
+        System.out.println(">> APIRequestManager.loadImageSeries(boolean,String,String,String,String,String,String,String) > jpip request url: " + jpipRequest);
+        System.out.println(">> APIRequestManager.loadImageSeries(boolean,String,String,String,String,String,String,String) > http request url: " + fileRequest);
 
         // get URL from server where file with image series is located
         try {
             return requestData(addToViewChain, new URL(jpipRequest), new URI(fileRequest));
         } catch (IOException e) {
             if (e instanceof UnknownHostException) {
-                Log.debug(">> APIRequestManager.loadImageSeries(boolean,String,String,String,String,String,String,String)  > Error will be throw", e);
+                System.out.println(">> APIRequestManager.loadImageSeries(boolean,String,String,String,String,String,String,String)  > Error will be throw");
+                e.printStackTrace();
                 throw new IOException("Unknown Host: " + e.getMessage());
             } else {
-                Log.debug(">> APIRequestManager.loadImageSeries(boolean,String,String,String,String,String,String,String)  > Error will be throw", e);
+                System.out.println(">> APIRequestManager.loadImageSeries(boolean,String,String,String,String,String,String,String)  > Error will be throw");
+                e.printStackTrace();
                 throw new IOException("Error in the server communication:" + e.getMessage());
             }
         } catch (URISyntaxException e) {
-            Log.error("Error creating jpip request", e);
+            System.err.println("Error creating jpip request");
+            e.printStackTrace();
         }
 
         return null;
@@ -218,14 +218,14 @@ public class APIRequestManager {
 
             // Could we handle the answer from the server
             if (!response.hasData()) {
-                Log.error("Could not understand server answer from " + jpipRequest);
+                System.err.println("Could not understand server answer from " + jpipRequest);
                 Message.err("Invalid Server reply", "The server data could not be parsed.", false);
                 return null;
             }
             // Just some error from the server
             String error = response.getString("error");
             if (error != null) {
-                Log.error("Data query returned error: " + error);
+                System.err.println("Data query returned error: " + error);
                 Message.err("The server returned the following error message: \n", Message.formatMessageString(error), false);
                 return null;
             }
@@ -243,16 +243,17 @@ public class APIRequestManager {
                 // We did not get a reply to load data or no reply at all
                 String message = response.getString("message");
                 if (message != null && !message.equalsIgnoreCase("null")) {
-                    Log.error("No data to load returned from " + jpipRequest);
-                    Log.error("Server message: " + message);
+                    System.err.println("No data to load returned from " + jpipRequest);
+                    System.err.println("Server message: " + message);
                     Message.err("Server could not return data", Message.formatMessageString(message), false);
                 } else {
-                    Log.error("Did not find uri in reponse to " + jpipRequest);
+                    System.err.println("Did not find uri in reponse to " + jpipRequest);
                     Message.err("No data source response", "While quering the data source, the server did not provide an answer.", false);
                 }
             }
         } catch (SocketTimeoutException e) {
-            Log.error("Socket timeout while requesting jpip url", e);
+            System.err.println("Socket timeout while requesting jpip url");
+            e.printStackTrace();
             Message.err("Socket timeout", "Socket timeout while requesting jpip url", false);
         }
         return null;
@@ -280,8 +281,7 @@ public class APIRequestManager {
 
         ImageInfoView view = ViewHelper.loadView(uri);
         if (addToViewChain) {
-	    	ViewchainFactory factory = StateController.getInstance().getCurrentState().getViewchainFactory();
-	        factory.addLayerToViewchainMain(view, ImageViewerGui.getSingletonInstance().getMainView());
+            GuiState3DWCS.addLayerToViewchainMain(view, GuiState3DWCS.mainComponentView);
         }
         return view;
     }
@@ -307,14 +307,10 @@ public class APIRequestManager {
         }
 
         // Load new view and assign it to view chain of Main Image
-
         ImageInfoView view = ViewHelper.loadView(uri, downloadURI);
 
         if (addToViewChain) {
-            // ViewchainFactory factory = new ViewchainFactory();
-            ViewchainFactory factory = StateController.getInstance().getCurrentState().getViewchainFactory();
-            // FIXME: Simon Spoerri, properly resolve State dependencies
-            factory.addLayerToViewchainMain(view, ImageViewerGui.getSingletonInstance().getMainView());
+          GuiState3DWCS.addLayerToViewchainMain(view, GuiState3DWCS.mainComponentView);
         }
         return view;
     }

@@ -3,51 +3,43 @@ package org.helioviewer.jhv.plugins.pfssplugin;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import org.helioviewer.gl3d.plugin.pfss.PfssPluginContainer;
-import org.helioviewer.gl3d.plugin.pfss.settings.PfssSettings;
-import org.helioviewer.viewmodelplugin.controller.PluginManager;
-import org.helioviewer.viewmodelplugin.controller.PluginSettings;
-import org.helioviewer.viewmodelplugin.interfaces.Plugin;
-import org.helioviewer.viewmodelplugin.overlay.OverlayContainer;
-import org.helioviewer.viewmodelplugin.overlay.OverlayPlugin;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
-/**
- * @author Stefan Meier (stefan.meier@fhnw.ch)
- * */
-public class PfssPlugin extends OverlayPlugin implements Plugin {
+import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginManager;
+import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginSettings;
+import org.helioviewer.jhv.plugins.viewmodelplugin.interfaces.Plugin;
+import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayContainer;
+import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayPlugin;
 
-	private boolean builtin_mode = false;
-
-	/**
-	 * Reference to the eventPlugin
-	 */
-	private PfssPluginContainer eventPlugin;
-
-	/**
-	 * Default constructor.
-	 */
-	public PfssPlugin() {
-		this(false);
-	}
-
-	/**
-	 * Constructor with debug flag. If debug flag is set, the plugin name shows
-	 * "Pfss Plugin Built-In Version"
-	 * 
-	 * @param builtin_mode
-	 *            - debug flag
-	 */
-	public PfssPlugin(boolean builtin_mode) {
-		this.builtin_mode = builtin_mode;
-
-		try {
+public class PfssPlugin extends OverlayPlugin implements Plugin
+{
+    private static int threadNumber=0;
+    public static final ExecutorService pool = Executors.newFixedThreadPool(8,new ThreadFactory()
+    {
+        @Override
+        public Thread newThread(Runnable _r)
+        {
+            Thread t=Executors.defaultThreadFactory().newThread(_r);
+            t.setName("PFSS-"+(threadNumber++));
+            t.setDaemon(true);
+            return t;
+        }
+    });
+    
+	public PfssPlugin()
+	{
+		try
+		{
 			this.pluginLocation = new URI(PfssSettings.PLUGIN_LOCATION);
-		} catch (URISyntaxException e) {
+		}
+		catch (URISyntaxException e)
+		{
 			e.printStackTrace();
 		}
 
-		eventPlugin = new PfssPluginContainer(builtin_mode);
-		addOverlayContainer(eventPlugin);
+		addOverlayContainer(new PfssPluginContainer());
 	}
 
 	/**
@@ -81,9 +73,9 @@ public class PfssPlugin extends OverlayPlugin implements Plugin {
 	/**
 	 * {@inheritDoc}
 	 */
-	public String getName() {
-		return "Pfss Overlay Plugin "
-				+ (builtin_mode ? "Built-In Version" : "");
+	public String getName()
+	{
+		return "PFSS plugin";
 	}
 
 
@@ -102,22 +94,23 @@ public class PfssPlugin extends OverlayPlugin implements Plugin {
 		return description;
 	}
 
-	public static URL getResourceUrl(String name) {
+	public static URL getResourceUrl(String name)
+	{
 		return PfssPlugin.class.getResource(name);
 	}
 
 	/**
 	 * {@inheritDoc} In this case, does nothing.
 	 */
-	public void setState(String state) {
-		// TODO Implement setState for PfssPlugin
+	public void setState(String state)
+	{
 	}
 
 	/**
 	 * {@inheritDoc} In this case, does nothing.
 	 */
-	public String getState() {
-		// TODO Implement getState for PfssPlugin
+	public String getState()
+	{
 		return "";
 	}
 }

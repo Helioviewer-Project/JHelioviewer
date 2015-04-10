@@ -2,13 +2,12 @@ package org.helioviewer.jhv.gui.components.layerTable;
 
 import java.util.Date;
 
-import org.helioviewer.base.logging.Log;
-import org.helioviewer.base.math.Interval;
-import org.helioviewer.base.message.Message;
+import org.helioviewer.jhv.base.Message;
+import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
-import org.helioviewer.viewmodel.view.View;
-import org.helioviewer.viewmodel.view.jp2view.datetime.ImmutableDateTime;
+import org.helioviewer.jhv.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.jp2view.ImmutableDateTime;
 
 /**
  * This class performs checks if the added layers fit the rest of the already
@@ -27,7 +26,7 @@ public class LayerTableOverlapWatcher implements LayersListener {
      * 
      *      Value must be between 0.0 and 1.0
      */
-    public final static double smallestValidCoverageFraction = 0.7;
+    private final static double SMALLEST_VALID_COVERAGE_FRACTION = 0.7;
 
     /**
      * 
@@ -51,7 +50,7 @@ public class LayerTableOverlapWatcher implements LayersListener {
      * 
      * - The maximum coverage ratio is 1.0, the minimum is 0.0
      * 
-     * @see LayerTableOverlapWatcher#smallestValidCoverageFraction
+     * @see LayerTableOverlapWatcher#SMALLEST_VALID_COVERAGE_FRACTION
      * 
      *      In addition to this, a warning is shown if no timing information is
      *      available for the newly added layer.
@@ -85,23 +84,19 @@ public class LayerTableOverlapWatcher implements LayersListener {
 
                 Interval<Date> intersection = spanning.intersectInterval(span);
 
-                long len = (intersection.getEnd().getTime() - intersection.getStart().getTime());
+                long len = (intersection.end.getTime() - intersection.start.getTime());
                 double fraction = (double) len / (double) full_len;
 
-                if (fraction < smallestValidCoverageFraction) {
+                if (fraction < SMALLEST_VALID_COVERAGE_FRACTION) {
                     isGoodOverlap = false;
                 }
 
-                Log.debug("Overlap fraction for layer " + curLayer + " is " + fraction);
-
+                System.out.println("Overlap fraction for layer " + curLayer + " is " + fraction);
             }
 
         }
 
-        // Show a message if no timing information is available
-        if (!LayersModel.getSingletonInstance().isTimed(idx)) {
-            Message.warnTitle("No Timing Information", "This movie contains no timing information.\nIt can thus not be played in sync with other movies.");
-        } else if (!isGoodOverlap) {
+        if (!isGoodOverlap) {
             Message.warnTitle("Movies Barely Overlap", "Some of the movies do not (or only partially) overlap.\nSome movies can thus not (or only partially) be played in sync.");
         }
     }
@@ -124,10 +119,9 @@ public class LayerTableOverlapWatcher implements LayersListener {
     public void timestampChanged(int idx) {
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void subImageDataChanged() {
+    @Override
+    public void subImageDataChanged(int idx)
+    {
     }
 
     /**

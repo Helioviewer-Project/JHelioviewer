@@ -1,15 +1,12 @@
 package org.helioviewer.jhv.gui;
 
-import java.util.AbstractList;
 import java.util.ConcurrentModificationException;
-import java.util.LinkedList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.helioviewer.base.logging.Log;
-import org.helioviewer.viewmodel.changeevent.ChangeEvent;
-import org.helioviewer.viewmodel.changeevent.ViewChainChangedReason;
-import org.helioviewer.viewmodel.view.View;
-import org.helioviewer.viewmodel.view.ViewListener;
+import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
+import org.helioviewer.jhv.viewmodel.changeevent.ViewChainChangedReason;
+import org.helioviewer.jhv.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.ViewListener;
 
 /**
  * This class distributes changes from the associated view chain to all
@@ -124,27 +121,4 @@ public class ViewListenerDistributor implements ViewListener {
             e.printStackTrace();
         }
     }
-
-    class ViewChangedNotifier implements Runnable {
-        private boolean interrupted = false;
-
-        public void interrupt() {
-            interrupted = true;
-        }
-
-        public void run() {
-            synchronized (this) {
-                if (interrupted)
-                    return;
-                this.notify();
-                try {
-                    this.wait();
-                } catch (InterruptedException e) {
-                    Log.error("", e);
-                }
-            }
-        }
-
-    }
-
 }

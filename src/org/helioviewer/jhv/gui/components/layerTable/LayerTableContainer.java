@@ -7,7 +7,7 @@ import javax.swing.JPanel;
 
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
-import org.helioviewer.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.View;
 
 /**
  * GUI Component showing either the LayerTable, or a notice that currently no
@@ -33,11 +33,8 @@ public class LayerTableContainer extends JPanel implements LayersListener {
      *            - the Component to show if no layers exist
      */
     public LayerTableContainer(Component table, Component empty) {
-
         super();
-
         this.setLayout(cl);
-
         this.add(empty, "empty");
         this.add(table, "table");
 
@@ -89,10 +86,9 @@ public class LayerTableContainer extends JPanel implements LayersListener {
     public void viewportGeometryChanged() {
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void subImageDataChanged() {
+    @Override
+    public void subImageDataChanged(int idx)
+    {
     }
 
     /**

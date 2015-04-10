@@ -1,3 +1,9 @@
 bin/
 *.class
 .metadata/
+.app
+*.cg
+*.asm
+/bin
+/build/builds
+/build/

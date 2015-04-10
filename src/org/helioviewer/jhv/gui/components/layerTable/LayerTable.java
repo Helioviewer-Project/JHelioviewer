@@ -26,7 +26,7 @@ import org.helioviewer.jhv.gui.components.layerTable.renderers.DescriptorTimesta
 import org.helioviewer.jhv.gui.components.layerTable.renderers.DescriptorTitleRenderer;
 import org.helioviewer.jhv.gui.components.layerTable.renderers.IconRenderer;
 import org.helioviewer.jhv.layers.LayersModel;
-import org.helioviewer.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.View;
 
 /**
  * Extended JTable, showing the Layers currently being used

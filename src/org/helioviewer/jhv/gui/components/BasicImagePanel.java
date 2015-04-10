@@ -1,39 +1,39 @@
 package org.helioviewer.jhv.gui.components;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelListener;
 import java.util.AbstractList;
 import java.util.LinkedList;
 
+import javax.media.opengl.awt.GLCanvas;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
 import org.helioviewer.jhv.gui.interfaces.ImagePanelInputController;
 import org.helioviewer.jhv.gui.interfaces.ImagePanelPlugin;
-import org.helioviewer.viewmodel.changeevent.ChangeEvent;
-import org.helioviewer.viewmodel.changeevent.RegionChangedReason;
-import org.helioviewer.viewmodel.changeevent.SubImageDataChangedReason;
-import org.helioviewer.viewmodel.changeevent.ViewChainChangedReason;
-import org.helioviewer.viewmodel.metadata.MetaData;
-import org.helioviewer.viewmodel.region.Region;
-import org.helioviewer.viewmodel.renderer.screen.ScreenRenderer;
-import org.helioviewer.viewmodel.view.ComponentView;
-import org.helioviewer.viewmodel.view.MetaDataView;
-import org.helioviewer.viewmodel.view.RegionView;
-import org.helioviewer.viewmodel.view.View;
-import org.helioviewer.viewmodel.view.ViewHelper;
-import org.helioviewer.viewmodel.view.ViewListener;
-import org.helioviewer.viewmodel.view.ViewportView;
-import org.helioviewer.viewmodel.viewport.StaticViewport;
-import org.helioviewer.viewmodel.viewport.Viewport;
+import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
+import org.helioviewer.jhv.viewmodel.changeevent.RegionChangedReason;
+import org.helioviewer.jhv.viewmodel.changeevent.SubImageDataChangedReason;
+import org.helioviewer.jhv.viewmodel.changeevent.ViewChainChangedReason;
+import org.helioviewer.jhv.viewmodel.metadata.MetaData;
+import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.renderer.screen.ScreenRenderer;
+import org.helioviewer.jhv.viewmodel.view.MetaDataView;
+import org.helioviewer.jhv.viewmodel.view.RegionView;
+import org.helioviewer.jhv.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.ViewHelper;
+import org.helioviewer.jhv.viewmodel.view.ViewListener;
+import org.helioviewer.jhv.viewmodel.view.ViewportView;
+import org.helioviewer.jhv.viewmodel.view.opengl.GL3DComponentView;
+import org.helioviewer.jhv.viewmodel.viewport.StaticViewport;
+import org.helioviewer.jhv.viewmodel.viewport.Viewport;
+
 
 /**
  * This class represents a basic image component that is used to display the
@@ -50,7 +50,7 @@ public class BasicImagePanel extends JPanel implements ComponentListener, ViewLi
 
     private static final long serialVersionUID = 1L;
 
-    protected ComponentView componentView;
+    protected GL3DComponentView componentView;
     protected ViewportView viewportView;
     protected RegionView regionView;
     protected MetaDataView metaDataView;
@@ -59,7 +59,7 @@ public class BasicImagePanel extends JPanel implements ComponentListener, ViewLi
 
     protected AbstractList<ImagePanelPlugin> plugins;
 
-    protected Component renderedImageComponent;
+    protected GLCanvas renderedImageComponent;
 
     protected AbstractList<ScreenRenderer> postRenderers;
 
@@ -156,7 +156,7 @@ public class BasicImagePanel extends JPanel implements ComponentListener, ViewLi
      * 
      * @return associated component view.
      */
-    public ComponentView getView() {
+    public GL3DComponentView getView() {
         return componentView;
     }
 
@@ -167,16 +167,7 @@ public class BasicImagePanel extends JPanel implements ComponentListener, ViewLi
      * @param newView
      *            new component view.
      */
-    public void setView(ComponentView newView) {
-        if (renderedImageComponent != null) {
-            componentView.removeViewListener(this);
-            renderedImageComponent.removeMouseListener(inputController);
-            renderedImageComponent.removeMouseMotionListener(inputController);
-            renderedImageComponent.removeMouseWheelListener(inputController);
-
-            remove(renderedImageComponent);
-        }
-
+    public void setView(GL3DComponentView newView) {
         componentView = newView;
 
         viewportView = ViewHelper.getViewAdapter(componentView, ViewportView.class);
@@ -184,7 +175,7 @@ public class BasicImagePanel extends JPanel implements ComponentListener, ViewLi
         metaDataView = ViewHelper.getViewAdapter(componentView, MetaDataView.class);
 
         if (componentView != null) {
-            renderedImageComponent = componentView.getComponent();
+        	renderedImageComponent = componentView.getComponent();
             add(renderedImageComponent);
 
             componentView.addViewListener(this);
@@ -204,7 +195,7 @@ public class BasicImagePanel extends JPanel implements ComponentListener, ViewLi
                 viewportView.setViewport(getViewport(), new ChangeEvent());
 
             Viewport v = viewportView.getViewport();
-            Region r = regionView.getRegion();
+            Region r = regionView.getLastDecodedRegion();
             MetaData m = metaDataView.getMetaData();
 
             if (v != null && r != null && m != null)
@@ -298,11 +289,6 @@ public class BasicImagePanel extends JPanel implements ComponentListener, ViewLi
                 renderedImageComponent.removeMouseListener(inputController);
                 renderedImageComponent.removeMouseMotionListener(inputController);
                 renderedImageComponent.removeMouseWheelListener(inputController);
-
-                if (KeyListener.class.isAssignableFrom(inputController.getClass())) {
-                    renderedImageComponent.removeKeyListener((KeyListener) inputController);
-                }
-
             }
             removePlugin(inputController);
 
@@ -310,10 +296,6 @@ public class BasicImagePanel extends JPanel implements ComponentListener, ViewLi
                 renderedImageComponent.addMouseListener(newInputController);
                 renderedImageComponent.addMouseMotionListener(newInputController);
                 renderedImageComponent.addMouseWheelListener(newInputController);
-
-                if (KeyListener.class.isAssignableFrom(newInputController.getClass())) {
-                    renderedImageComponent.addKeyListener((KeyListener) newInputController);
-                }
             }
         }
 
@@ -366,7 +348,7 @@ public class BasicImagePanel extends JPanel implements ComponentListener, ViewLi
                     viewportView.setViewport(getViewport(), new ChangeEvent());
 
                 Viewport v = viewportView.getViewport();
-                Region r = regionView.getRegion();
+                Region r = regionView.getLastDecodedRegion();
                 MetaData m = metaDataView.getMetaData();
 
                 if (v != null && r != null && m != null)
@@ -407,7 +389,7 @@ public class BasicImagePanel extends JPanel implements ComponentListener, ViewLi
                 viewportView.setViewport(getViewport(), new ChangeEvent());
 
             Viewport v = viewportView.getViewport();
-            Region r = regionView.getRegion();
+            Region r = regionView.getLastDecodedRegion();
             MetaData m = metaDataView.getMetaData();
 
             if (v != null && r != null && m != null)

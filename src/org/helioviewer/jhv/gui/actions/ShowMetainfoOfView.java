@@ -1,11 +1,13 @@
 package org.helioviewer.jhv.gui.actions;
 
 import java.awt.event.ActionEvent;
+
 import javax.swing.AbstractAction;
+
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.layers.LayersModel;
-import org.helioviewer.viewmodel.view.View;
+import org.helioviewer.jhv.viewmodel.view.View;
 
 /**
  * Action to close the active layer.
@@ -21,7 +23,7 @@ public class ShowMetainfoOfView extends AbstractAction {
      * Default constructor.
      */
     public ShowMetainfoOfView(View view) {
-        super("Show Metainfo", IconBank.getIcon(JHVIcon.INFO));
+        super("Show metainfo...", IconBank.getIcon(JHVIcon.INFO));
         this.view = view;
     }
 
