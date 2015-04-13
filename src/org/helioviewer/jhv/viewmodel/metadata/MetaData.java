@@ -1,5 +1,8 @@
 package org.helioviewer.jhv.viewmodel.metadata;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.RectangleDouble;
@@ -59,7 +62,8 @@ public abstract class MetaData {
     protected boolean hasCorona = false;
     protected boolean hasSphere = false;
     protected boolean hasRotation = false;
-    
+    protected LocalDateTime localDateTime;
+	protected final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_DATE_TIME;
     
     /**
      * Default constructor, does not set size or position.
@@ -313,6 +317,10 @@ public abstract class MetaData {
      */
     public ImmutableDateTime getDateTime() {
         return time;
+    }
+    
+    public LocalDateTime getLocalDateTime(){
+    	return localDateTime;
     }
     
     abstract boolean updatePixelParameters();

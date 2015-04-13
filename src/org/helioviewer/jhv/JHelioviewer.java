@@ -14,6 +14,8 @@ import java.nio.file.Path;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import javafx.embed.swing.JFXPanel;
+
 import javax.media.opengl.DebugGL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
@@ -58,7 +60,8 @@ import com.install4j.api.update.UpdateScheduleRegistry;
 public class JHelioviewer {
 
 	public static void main(String[] args) {
-
+		new JFXPanel();
+		
 		// Uncaught runtime errors are displayed in a dialog box in addition
 		JHVUncaughtExceptionHandler.setupHandlerForThread();
 

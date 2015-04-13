@@ -1,5 +1,6 @@
 package org.helioviewer.jhv.layers;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.concurrent.ExecutionException;
 
@@ -74,10 +75,19 @@ public class NewLayer implements LayerInterface{
 	private boolean visible = true;
 
 	private OpenGLHelper openGLHelper;
+	private MetaData metaData;
 	
 	public NewLayer(int sourceID, NewRender newRender, NewCache newCache) {
 		this.ultimateLayer = new UltimateLayer(sourceID, newCache, newRender);
 		this.initGL();
+	}
+	
+	public NewLayer(String uri, NewRender newRender) {
+		System.out.println(uri);
+		this.ultimateLayer = new UltimateLayer(uri, newRender);
+		this.initGL();
+		metaData = this.ultimateLayer.getMetaData(0);
+		
 	}
 	
 	@Override
@@ -116,6 +126,21 @@ public class NewLayer implements LayerInterface{
 	@Override
 	public void setImageData(LocalDateTime dateTime, SubImage subImage) throws InterruptedException, ExecutionException{
 		this.ultimateLayer.getImageData(dateTime, subImage);
+	}
+
+	@Override
+	public String getName() {
+		String retValue = "";
+		retValue = metaData.getDetector();
+		System.out.println(retValue);
+		retValue = metaData.getFullName();
+		return retValue;
+	}
+
+	@Override
+	public LocalDateTime getTime() {
+		// TODO Auto-generated method stub
+		return ultimateLayer.getLocalDateTime(0);
 	}
 
 }

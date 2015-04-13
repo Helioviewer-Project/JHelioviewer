@@ -459,7 +459,6 @@ public class JP2Image implements MultiFrameMetaDataContainer {
             }
 
             xml = xml.trim().replace("&", "&amp;").replace("$OBS", "");
-
             InputStream in = null;
             try {
                 in = new ByteArrayInputStream(xml.getBytes("UTF-8"));

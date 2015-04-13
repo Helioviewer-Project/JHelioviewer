@@ -82,7 +82,7 @@ public class NewDatePickerPopup extends JDialog {
 		this.newDatePicker = newDatePicker;
 
 		Toolkit.getDefaultToolkit().addAWTEventListener(awtEventListener,
-				AWTEvent.KEY_EVENT_MASK | AWTEvent.MOUSE_EVENT_MASK);
+				AWTEvent.KEY_EVENT_MASK);
 
 		currentDate = LocalDate.now();
 		calenderCellRenderer = new CalenderCellRenderer();

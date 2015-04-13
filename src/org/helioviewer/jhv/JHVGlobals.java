@@ -3,6 +3,7 @@ package org.helioviewer.jhv;
 import java.awt.Desktop;
 import java.io.File;
 import java.net.URI;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.swing.JFileChooser;
@@ -17,6 +18,7 @@ public class JHVGlobals {
     public static final String VERSION = System.getProperty("jhvVersion") == null ? "developer" : System.getProperty("jhvVersion");
     public static String RAYGUN_TAG;
     public static final boolean OLD_RENDER_MODE = true;
+    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
     
     private JHVGlobals()
     {

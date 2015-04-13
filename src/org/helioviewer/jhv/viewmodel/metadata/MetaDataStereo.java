@@ -1,5 +1,7 @@
 package org.helioviewer.jhv.viewmodel.metadata;
 
+import java.time.LocalDateTime;
+
 import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
@@ -37,6 +39,7 @@ public class MetaDataStereo extends MetaData{
         
         String observedDate = metaDataContainer.get("DATE_OBS");
         time = HelioviewerDateTimeCache.parseDateTime(observedDate);
+        localDateTime = LocalDateTime.parse(observedDate, DATE_FORMAT);
 
         updatePixelParameters();
 

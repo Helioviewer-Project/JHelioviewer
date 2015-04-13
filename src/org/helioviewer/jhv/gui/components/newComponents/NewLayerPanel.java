@@ -3,12 +3,14 @@ package org.helioviewer.jhv.gui.components.newComponents;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -22,25 +24,33 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
+import org.helioviewer.jhv.JHVGlobals;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.layers.DummyLayer;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.Layers;
+import org.helioviewer.jhv.layers.NewLayerListener;
 
-public class NewLayerPanel extends JPanel {
+public class NewLayerPanel extends JPanel implements NewLayerListener{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6800340702841902680L;
+	
 	private JTable table;
 	private LayerTableModel tableModel;
-	private Layers layers;
 	Object columnNames[] = { "Column One", "Column Two", "Column Three", "Column Four"};
 	Object rowData[][] = { { "Row1-Column1", "Row1-Column2", "Row1-Column3"},
             { "Row2-Column1", "Row2-Column2", "Row2-Column3"} };
 	
-	public NewLayerPanel(Layers layers) {
-		this.layers = layers;
+	public NewLayerPanel(){
 		initGUI();
 		updateData();
+		this.setPreferredSize(new Dimension(200, 200));
+		GuiState3DWCS.layers.addNewLayerListener(this);
 	}
 
 	/**
@@ -55,10 +65,28 @@ public class NewLayerPanel extends JPanel {
 		tableModel = new LayerTableModel(null, null);
 		table = new JTable(tableModel);
 		table = new JTable(rowData, columnNames);
+		table.setTableHeader(null);
+        table.getColumnModel().getColumn(0).setCellRenderer(new ImageIconCellRenderer());
+		table.getColumnModel().getColumn(1).setCellRenderer(new ImageIconCellRenderer());
+		table.getColumnModel().getColumn(2).setCellRenderer(new ImageIconCellRenderer());
 		table.getColumnModel().getColumn(3).setCellRenderer(new ImageIconCellRenderer());
+        table.getColumnModel().getColumn(0).setPreferredWidth(35);
+        table.getColumnModel().getColumn(0).setWidth(35);
 		table.getColumnModel().getColumn(0).setResizable(false);
         table.getColumnModel().getColumn(3).setResizable(false);
         table.setShowGrid(false);
+        table.setIntercellSpacing(new Dimension(0, 0));
+		table.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				int row = table.getSelectedRow();
+				int column = table.getSelectedColumn();
+				if (column == 3){
+					GuiState3DWCS.layers.removeLayer(row);
+					updateData();
+				}
+			}
+		});
 		scrollPane.setViewportView(table);
 
 		/*for (int i = 0; i <  table.getColumnCount(); i++){
@@ -104,13 +132,15 @@ public class NewLayerPanel extends JPanel {
 
 	
 	private void updateData(){
-		Object[][] data = new Object[layers.getLayerCount()][4];
+		Object[][] data = new Object[GuiState3DWCS.layers.getLayerCount()][4];
 		int count = 0;
-		for (LayerInterface layer : layers.getLayers()){
-			data[count][2] = "a";
+		for (LayerInterface layer : GuiState3DWCS.layers.getLayers()){
+			System.out.println(layer.getName());
+			data[count][0] = layer.isVisible();
+			data[count][1] = layer.getName();
+			data[count][2] = layer.getTime();
 			data[count++][3] = IconBank.getIcon(JHVIcon.CANCEL_NEW, 16, 16);
 		}
-
 		
 		tableModel.setDataVector(data, columnNames);
 		/*for (int i = 0; i <  table.getColumnCount(); i++){
@@ -119,20 +149,22 @@ public class NewLayerPanel extends JPanel {
 		}
 		*/
 		table.setModel(tableModel);
-		table.getColumnModel().getColumn(0).setResizable(false);
-        table.getColumnModel().getColumn(3).setResizable(false);
-		table.getColumnModel().getColumn(3).setCellRenderer(new ImageIconCellRenderer());
+        //table.getColumnModel().getColumn(0).setCellRenderer(new ImageIconCellRenderer());
+        table.getColumnModel().getColumn(1).setCellRenderer(new ImageIconCellRenderer());
+        table.getColumnModel().getColumn(2).setCellRenderer(new ImageIconCellRenderer());
+        table.getColumnModel().getColumn(3).setCellRenderer(new ImageIconCellRenderer());
+		this.setFixedWidth(20, 0);
+		this.setFixedWidth(16, 3);
+        //table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        table.setShowGrid(false);
+        table.setIntercellSpacing(new Dimension(0, 0));
+
 	}
 	
-	public static void main(String[] args) {
-		Layers layers = new Layers();
-		layers.addLayer(new DummyLayer());
-		layers.addLayer(new DummyLayer());
-		NewLayerPanel newLayerPanel = new NewLayerPanel(layers);
-		JFrame frame = new JFrame();
-		frame.getContentPane().add(newLayerPanel);
-		frame.pack();
-		frame.setVisible(true);
+	private void setFixedWidth(int width, int column){
+		table.getColumnModel().getColumn(column).setMinWidth(width);
+        table.getColumnModel().getColumn(column).setMaxWidth(width);
+        table.getColumnModel().getColumn(column).setPreferredWidth(width);
 	}
 	
 	private class LayerTableModel extends DefaultTableModel {
@@ -167,20 +199,68 @@ public class NewLayerPanel extends JPanel {
 	}
 	
 	
-	private class ImageIconCellRenderer extends JLabel implements TableCellRenderer{
+	private class ImageIconCellRenderer extends DefaultTableCellRenderer{
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -2552431402411803683L;
 
 		public ImageIconCellRenderer() {
-			setOpaque(true);
-			setBackground(Color.WHITE);			
+			//setOpaque(true);
+			setHorizontalAlignment(CENTER);
+			//setBackground(Color.WHITE);			
 		}
 		
 		@Override
 		public Component getTableCellRendererComponent(JTable table,
 				Object value, boolean isSelected, boolean hasFocus, final int row,
 				int column) {
-			this.setIcon((ImageIcon)value);
+			switch (column) {
+			case 0:				
+				super.getTableCellRendererComponent(table, null, isSelected, hasFocus, row, column);
+				break;
+			case 1:		
+				super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+				break;
+			case 2:
+				LocalDateTime localDateTime = (LocalDateTime) value;
+				String date = localDateTime != null ? localDateTime.format(JHVGlobals.DATE_TIME_FORMATTER) : "";
+				super.getTableCellRendererComponent(table, date, isSelected, hasFocus, row, column);
+				break;
+			case 3:				
+				JLabel label = (JLabel) super.getTableCellRendererComponent(table, null, isSelected, hasFocus, row, column);
+				label.setIcon((ImageIcon)value);
+				label.setPreferredSize(new Dimension(20, 20));
+				return label;
+			default:
+				break;
+			}
 			return this;
 		}
+		
+	}
+
+
+	@Override
+	public void newlayerAdded() {
+		this.updateData();
+	}
+
+	@Override
+	public void newlayerRemoved(int idx) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void newtimestampChanged() {
+		this.updateData();
+	}
+
+	@Override
+	public void activeLayerChanged(LayerInterface layer) {
+		// TODO Auto-generated method stub
 		
 	}
 }

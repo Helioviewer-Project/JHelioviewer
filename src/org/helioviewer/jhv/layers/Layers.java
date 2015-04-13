@@ -18,7 +18,8 @@ public class Layers {
 		renderListeners = new CopyOnWriteArrayList<NewLayerListener>();
 	}
 		
-	public void addLayer(LayerInterface layer){
+	public void addLayer(String uri){
+		NewLayer layer = new NewLayer(uri, renderer);
 		layers.add(layer);
 		for (NewLayerListener renderListener : renderListeners){
 			renderListener.newlayerAdded();

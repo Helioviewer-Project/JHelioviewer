@@ -1,14 +1,25 @@
 package org.helioviewer.jhv.viewmodel.view.jp2view.newjpx;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.helioviewer.jhv.viewmodel.metadata.MetaData;
+import org.helioviewer.jhv.viewmodel.metadata.MetaDataFactory;
+import org.helioviewer.jhv.viewmodel.metadata.NewMetaDataContainer;
 import org.helioviewer.jhv.viewmodel.view.jp2view.image.SubImage;
+import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.KakaduUtils;
+import org.w3c.dom.Document;
 
 import kdu_jni.Jp2_threadsafe_family_src;
+import kdu_jni.Jpx_meta_manager;
 import kdu_jni.Jpx_source;
 import kdu_jni.KduException;
 import kdu_jni.Kdu_cache;
@@ -116,6 +127,29 @@ public class NewRender {
 		return null;
 	}
 	
+	public void openImage(String filename){
+		final int CODESTREAM_CACHE_THRESHOLD = 1024 * 256;
+
+		try {
+			family_src.Open(filename);
+			jpxSrc.Open(family_src, true);
+			compositor.Create(jpxSrc, CODESTREAM_CACHE_THRESHOLD);
+			compositor.Set_thread_env(threadEnviroment, null);
+		} catch (KduException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void closeImage(){
+		try {
+			family_src.Close();
+		} catch (KduException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	public void openImage(Kdu_cache cache){
 		final int CODESTREAM_CACHE_THRESHOLD = 1024 * 256;
 
@@ -137,6 +171,25 @@ public class NewRender {
 		compositor.Set_thread_env(threadEnviroment, null);
 	}
 
+	public MetaData getMetadata(int index) throws JHV_KduException{
+            String xmlText = KakaduUtils.getXml(family_src, index);
+			
+            xmlText = xmlText.trim().replace("&", "&amp;").replace("$OBS", "");
+
+            InputStream in = null;
+            try {
+                in = new ByteArrayInputStream(xmlText.getBytes("UTF-8"));
+                DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                Document doc = builder.parse(in);
+                doc.getDocumentElement().normalize();
+                
+                return MetaDataFactory.getMetaData(new NewMetaDataContainer(doc));
+                
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            return null;
+	}
 	void abolish() {
 		try
         {
@@ -146,5 +199,11 @@ public class NewRender {
         {
             e.printStackTrace();
         }
+	}
+
+	public int getFrameCount() throws KduException {
+        int[] tempVar = new int[1];
+        jpxSrc.Count_compositing_layers(tempVar);		
+        return tempVar[0];
 	}
 }

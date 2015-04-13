@@ -1,5 +1,6 @@
 package org.helioviewer.jhv.viewmodel.metadata;
 
+import java.time.LocalDateTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,6 +38,7 @@ public class MetaDataStereoB_COR1 extends MetaData{
 
         String observedDate = metaDataContainer.get("DATE_OBS");
         time = HelioviewerDateTimeCache.parseDateTime(observedDate);
+        localDateTime = LocalDateTime.parse(observedDate, DATE_FORMAT);
 
         updatePixelParameters();
 

@@ -122,4 +122,16 @@ public class Layer implements LayerInterface{
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public LocalDateTime getTime() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

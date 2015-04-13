@@ -10,4 +10,6 @@ public interface LayerInterface {
 	public boolean isVisible();
 	public void setVisible(boolean visible);
 	public void setImageData(LocalDateTime dateTime, SubImage subImage) throws InterruptedException, ExecutionException;
+	public String getName();
+	public LocalDateTime getTime();
 }

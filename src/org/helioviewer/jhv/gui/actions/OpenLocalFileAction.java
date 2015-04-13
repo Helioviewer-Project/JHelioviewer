@@ -13,6 +13,7 @@ import javax.swing.KeyStroke;
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.base.Message;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.actions.filefilters.AllSupportedImageTypesFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.FitsFilter;
@@ -20,6 +21,7 @@ import org.helioviewer.jhv.gui.actions.filefilters.JP2Filter;
 import org.helioviewer.jhv.gui.actions.filefilters.JPGFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.PNGFilter;
 import org.helioviewer.jhv.io.APIRequestManager;
+import org.helioviewer.jhv.layers.NewLayer;
 
 /**
  * Action to open a local file.
@@ -58,6 +60,52 @@ public class OpenLocalFileAction extends AbstractAction {
         fileChooser.setFileFilter(new AllSupportedImageTypesFilter());
         fileChooser.setMultiSelectionEnabled(false);
         
+        /* Native filechooser with javafx
+         * 
+         * Platform.runLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				FileChooser fileChooser = new FileChooser();
+				fileChooser.setTitle("Open local file");
+				fileChooser.setInitialDirectory(new File(Settings.getProperty("default.local.path")));
+				ExtensionFilter extensionFilter = new ExtensionFilter("JPEG 2000", "*.jpx", "*.jp2");
+				ExtensionFilter extensionFilter1 = new ExtensionFilter("All Files", "*.*");
+				fileChooser.getExtensionFilters().addAll(extensionFilter, extensionFilter1);
+				final File selectedFile = fileChooser.showOpenDialog(new Stage());
+				
+				if (selectedFile.exists() && selectedFile.isFile()) {
+
+	                // remember the current directory for future
+	                Settings.setProperty("default.local.path", selectedFile.getParent());
+
+	                ImageViewerGui.getSingletonInstance().getMainImagePanel().setLoading(true);
+
+	                // Load image in new thread
+	                if (JHVGlobals.OLD_RENDER_MODE){
+	                Thread thread = new Thread(new Runnable() {
+
+	                    public void run() {
+	                        try {
+	                            APIRequestManager.newLoad(selectedFile.toURI(), true);
+	                        } catch (IOException e) {
+	                            Message.err("An error occured while opening the file!", e.getMessage(), false);
+	                        } finally {
+	                            ImageViewerGui.getSingletonInstance().getMainImagePanel().setLoading(false);
+	                        }
+	                    }
+	                }, "OpenLocalFile");
+	                thread.setDaemon(true);
+	                thread.start();
+	                }
+	                else {
+	                	GuiState3DWCS.layers.addLayer(selectedFile.toString());
+	                }
+	            }
+			}
+		}); */
+        
+        
         int retVal = fileChooser.showOpenDialog(ImageViewerGui.getMainFrame());
         if (retVal == JFileChooser.APPROVE_OPTION)
         {
@@ -71,6 +119,7 @@ public class OpenLocalFileAction extends AbstractAction {
                 ImageViewerGui.getSingletonInstance().getMainImagePanel().setLoading(true);
 
                 // Load image in new thread
+                if (JHVGlobals.OLD_RENDER_MODE){
                 Thread thread = new Thread(new Runnable() {
 
                     public void run() {
@@ -85,6 +134,10 @@ public class OpenLocalFileAction extends AbstractAction {
                 }, "OpenLocalFile");
                 thread.setDaemon(true);
                 thread.start();
+                }
+                else {
+                	GuiState3DWCS.layers.addLayer(fileChooser.getSelectedFile().toString());
+                }
             }
         }
     }

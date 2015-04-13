@@ -32,4 +32,16 @@ public class DummyLayer implements LayerInterface{
 		
 	}
 
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public LocalDateTime getTime() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

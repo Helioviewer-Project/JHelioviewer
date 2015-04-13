@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.event.AWTEventListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,6 +15,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.File;
@@ -34,6 +36,7 @@ import javax.media.opengl.GLDrawableFactory;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
@@ -181,10 +184,19 @@ public class GL3DComponentView extends AbstractBasicView implements
 			public void eventDispatched(AWTEvent event) {
 				if (event instanceof KeyEvent) {
 					KeyEvent k = (KeyEvent) event;
+						Window activeWindow = null;
+						for (Window window : Window.getWindows()){
+							if (window.isActive()){
+								activeWindow = window;
+							}
+						}
+						if (activeWindow instanceof JFrame){
+								
 					if (k.getID() == KeyEvent.KEY_PRESSED) {
 						JHVJPXView activeView;
 						switch (k.getKeyCode()) {
 						case KeyEvent.VK_SPACE:
+							if (LinkedMovieManager.getActiveInstance().getMasterMovie() != null){
 							if (LinkedMovieManager.getActiveInstance()
 									.getMasterMovie().isMoviePlaying())
 								LinkedMovieManager.getActiveInstance()
@@ -192,29 +204,34 @@ public class GL3DComponentView extends AbstractBasicView implements
 							else
 								LinkedMovieManager.getActiveInstance()
 										.getMasterMovie().playMovie();
+							}
 							break;
 						case KeyEvent.VK_RIGHT:
+							if ((JHVJPXView) LayersModel.getSingletonInstance().getActiveView() != null){
 							activeView = (JHVJPXView) LayersModel
 									.getSingletonInstance().getActiveView()
 									.getAdapter(JHVJPXView.class);
 							activeView.setCurrentFrame(
 									activeView.getCurrentFrameNumber() + 1,
 									new ChangeEvent());
+							}
 							break;
 						case KeyEvent.VK_LEFT:
-							activeView = (JHVJPXView) LayersModel
+							if ((JHVJPXView) LayersModel.getSingletonInstance().getActiveView() != null){
+								activeView = (JHVJPXView) LayersModel
 									.getSingletonInstance().getActiveView()
 									.getAdapter(JHVJPXView.class);
 							activeView.setCurrentFrame(
 									activeView.getCurrentFrameNumber() - 1,
 									new ChangeEvent());
+							}
 							break;
 						default:
 							break;
 						}
 
 					}
-				}
+				}}
 			}
 		}, AWTEvent.KEY_EVENT_MASK);
 	}

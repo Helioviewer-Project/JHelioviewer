@@ -40,6 +40,7 @@ import org.helioviewer.jhv.gui.components.StatusPanel;
 import org.helioviewer.jhv.gui.components.TopToolBar;
 import org.helioviewer.jhv.gui.components.newComponents.FilterTabPanel;
 import org.helioviewer.jhv.gui.components.newComponents.NewImageSelectorPanel;
+import org.helioviewer.jhv.gui.components.newComponents.NewLayerPanel;
 import org.helioviewer.jhv.gui.components.newComponents.NewMoviePanel;
 import org.helioviewer.jhv.gui.components.statusplugins.CurrentTimeLabel;
 import org.helioviewer.jhv.gui.components.statusplugins.FramerateStatusPanel;
@@ -94,7 +95,8 @@ public class ImageViewerGui {
 
 	private SideContentPane leftPane;
 	private ImageSelectorPanel imageSelectorPanel;
-	private NewImageSelectorPanel newImageSelectorPanel;
+	//private NewImageSelectorPanel newImageSelectorPanel;
+	private NewLayerPanel newLayerPanel;
 	private Component moviePanel;
 	private ControlPanelContainer moviePanelContainer;
 	private ControlPanelContainer filterPanelContainer;
@@ -453,10 +455,10 @@ public class ImageViewerGui {
 
 			// Layer control
 			if (JHVGlobals.OLD_RENDER_MODE) imageSelectorPanel = new ImageSelectorPanel();
-			else newImageSelectorPanel = new NewImageSelectorPanel();
+			else newLayerPanel = new NewLayerPanel();
 
 			if (JHVGlobals.OLD_RENDER_MODE)leftPane.add("Layers", imageSelectorPanel, true);
-			else leftPane.add("new Layers", newImageSelectorPanel, true);
+			else leftPane.add("new Layers", newLayerPanel, true);
 
 			// Image adjustments and filters
 			FilterTabPanelManager compactPanelManager = new FilterTabPanelManager();
@@ -490,10 +492,6 @@ public class ImageViewerGui {
 		return this.imageSelectorPanel;
 	}
 
-	public NewImageSelectorPanel getNewImageSelectorPanel(){
-		return this.newImageSelectorPanel;
-	}
-	
 	/**
 	 * @return the movie panel container
 	 */
