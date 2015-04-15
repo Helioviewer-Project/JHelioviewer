@@ -1,12 +1,13 @@
 package org.helioviewer.jhv.layers;
 
-import java.net.URI;
+import java.awt.Rectangle;
 import java.time.LocalDateTime;
 import java.util.concurrent.ExecutionException;
 
 import org.helioviewer.jhv.layers.filter.LUT;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
+import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 import org.helioviewer.jhv.viewmodel.view.jp2view.image.SubImage;
 import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.NewCache;
 import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.NewRender;
@@ -76,7 +77,7 @@ public class NewLayer implements LayerInterface{
 
 	private OpenGLHelper openGLHelper;
 	private MetaData metaData;
-	
+		
 	public NewLayer(int sourceID, NewRender newRender, NewCache newCache) {
 		this.ultimateLayer = new UltimateLayer(sourceID, newCache, newRender);
 		this.initGL();
@@ -92,7 +93,19 @@ public class NewLayer implements LayerInterface{
 	
 	@Override
 	public int getTexture() {
+		SubImage subImage = new SubImage(new Rectangle(0, 0, 2048, 2048));
+		updateTexture(TimeLine.SINGLETON.getCurrentDateTime(), subImage);
 		return texture;
+	}
+	
+	private void updateTexture(LocalDateTime currentDateTime, SubImage subImage){
+		try {
+			openGLHelper.bindByteBufferToGLTexture(ultimateLayer.getImageData(currentDateTime, subImage), subImage.width, subImage.height);
+			
+		} catch (InterruptedException | ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	private void initGL(){
@@ -130,17 +143,23 @@ public class NewLayer implements LayerInterface{
 
 	@Override
 	public String getName() {
-		String retValue = "";
-		retValue = metaData.getDetector();
-		System.out.println(retValue);
-		retValue = metaData.getFullName();
-		return retValue;
+		return metaData.getFullName();
 	}
 
 	@Override
 	public LocalDateTime getTime() {
 		// TODO Auto-generated method stub
 		return ultimateLayer.getLocalDateTime(0);
+	}
+	
+	@Deprecated
+	public LocalDateTime[] getLocalDateTime(){
+		return ultimateLayer.getLocalDateTimes();
+	}
+
+	@Override
+	public MetaData getMetaData() {
+		return metaData;
 	}
 
 }

@@ -19,7 +19,6 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.KakaduUtils;
 import org.w3c.dom.Document;
 
 import kdu_jni.Jp2_threadsafe_family_src;
-import kdu_jni.Jpx_meta_manager;
 import kdu_jni.Jpx_source;
 import kdu_jni.KduException;
 import kdu_jni.Kdu_cache;
@@ -71,7 +70,7 @@ public class NewRender {
 		}
 	}
 	
-	public IntBuffer getImage(int layerNumber, int quality, float zoomPercent, SubImage subImage){
+	public ByteBuffer getImage(int layerNumber, int quality, float zoomPercent, SubImage subImage){
 		try {
 			compositor.Refresh();
 			compositor.Remove_ilayer(new Kdu_ilayer_ref(), true);
@@ -79,7 +78,7 @@ public class NewRender {
 			Kdu_dims dimsRef1 = new Kdu_dims(), dimsRef2 = new Kdu_dims();
 			
 			compositor.Add_ilayer(layerNumber, dimsRef1, dimsRef2);
-			
+			System.out.println("subImage : " + subImage);
 			compositor.Set_max_quality_layers(quality);
 			compositor.Set_scale(false, false, false,
 					zoomPercent);
@@ -97,8 +96,8 @@ public class NewRender {
 				        
 			Kdu_dims newRegion = new Kdu_dims();
 	        int region_buf_size = 0;
-	        IntBuffer intBuffer = ByteBuffer.allocateDirect(subImage.height * subImage.width *4).asIntBuffer();;
-	        
+	        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(subImage.height * subImage.width *4);
+	        IntBuffer intBuffer = byteBuffer.asIntBuffer();
 	        
 			while (compositor.Process(MAX_RENDER_SAMPLES, newRegion)){
 				
@@ -114,12 +113,14 @@ public class NewRender {
 		        	  region_buf_size = newPixels;
 		            int[] region_buf = new int[region_buf_size];
 			          compositorBuf.Get_region(newRegion,region_buf);
-			          intBuffer.put(region_buf);
+			          intBuffer.put(region_buf);			          
+			          System.out.println(region_buf);
 		          }
 			}
 			
 			intBuffer.flip();
-			return intBuffer;
+			compositor.Remove_ilayer(new Kdu_ilayer_ref(), true);
+			return byteBuffer;
 		} catch (KduException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -129,8 +130,11 @@ public class NewRender {
 	
 	public void openImage(String filename){
 		final int CODESTREAM_CACHE_THRESHOLD = 1024 * 256;
-
 		try {
+			compositor.Pre_destroy();
+			compositor = new Kdu_region_compositor();
+			jpxSrc.Close();
+			family_src.Close();
 			family_src.Open(filename);
 			jpxSrc.Open(family_src, true);
 			compositor.Create(jpxSrc, CODESTREAM_CACHE_THRESHOLD);

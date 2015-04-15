@@ -4,10 +4,9 @@ import java.awt.Rectangle;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.IntBuffer;
+import java.nio.ByteBuffer;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -18,8 +17,8 @@ import java.util.concurrent.FutureTask;
 
 import kdu_jni.KduException;
 
-import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
+import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 import org.helioviewer.jhv.viewmodel.view.jp2view.image.ResolutionSet;
 import org.helioviewer.jhv.viewmodel.view.jp2view.image.SubImage;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
@@ -180,20 +179,25 @@ public class UltimateLayer {
 		return localDateTimes[index];
 	}
 	
-	private IntBuffer getImageFromLocalFile(LocalDateTime currentDate, SubImage subImage){
+	@Deprecated
+	public LocalDateTime[] getLocalDateTimes(){
+		return localDateTimes;
+	}
+	
+	private ByteBuffer getImageFromLocalFile(LocalDateTime currentDate, SubImage subImage){
 		render.openImage(fileName);
 		float zoomPercent = this.resolutionSet.getResolutionLevel(0).getZoomPercent();
-		IntBuffer intBuffer = render.getImage(0, 8, zoomPercent, subImage);
+		ByteBuffer intBuffer = render.getImage(TimeLine.SINGLETON.getCurrentFrame(), 8, 0.5f, subImage);
 		render.closeImage();
 		return intBuffer;
 	}
 		
-	public IntBuffer getImageData(LocalDateTime currentDate, SubImage subImage) throws InterruptedException, ExecutionException{
-		if (fileName != null) return getImageFromLocalFile(currentDate, subImage);
+	public ByteBuffer getImageData(LocalDateTime currentDateTime, SubImage subImage) throws InterruptedException, ExecutionException{
+		if (fileName != null) return getImageFromLocalFile(currentDateTime, subImage);
 		boolean complete = false;
 		ImageLayer layer = null;
 		while (!complete){
-			FutureTask<JHVCachable> currentLayerCache = cache.getCacheElement(currentDate);
+			FutureTask<JHVCachable> currentLayerCache = cache.getCacheElement(currentDateTime);
 			layer = ((ImageLayer)currentLayerCache.get());	
 			if (layer != null)
 			complete = layer.isComplete();
@@ -204,7 +208,7 @@ public class UltimateLayer {
 		System.out.println("---------------------getImage---------------------");
 		render.openImage(layer.getCache());
 		float zoomPercent = this.resolutionSet.getResolutionLevel(0).getZoomPercent();
-		IntBuffer intBuffer = render.getImage(0, 8, zoomPercent, subImage);
+		ByteBuffer intBuffer = render.getImage(0, 8, zoomPercent, subImage);
 		render.closeImage();
 		return intBuffer;
 	}
@@ -214,19 +218,18 @@ public class UltimateLayer {
 		LocalDateTime end = LocalDateTime.of(2014, 01, 01, 0, 45, 0);
 		//UltimateLayer ultimateLayer = new UltimateLayer(10, new NewCache(), new NewRender());
 		//ultimateLayer.setTimeRange(start, end, 90);
-		UltimateLayer ultimateLayer = new UltimateLayer("/Users/binchu/JHelioviewer/Downloads/test.jp2", new NewRender());
+		UltimateLayer ultimateLayer = new UltimateLayer("/Users/sgi01411183/Downloads/FHNW/SDO_AIA_AIA_171_F2014-11-09T09.46.11Z_T2014-11-10T09.46.11ZB1800L.jpx", new NewRender());
 		SubImage subImage = new SubImage(new Rectangle(0, 0, 4096, 4096));
-		ultimateLayer.getMetaData(0);
 		try {
 			ultimateLayer.getImageData(start, subImage);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
-			System.out.println(e);
+			e.printStackTrace();
 		} catch (ExecutionException e) {
 			// TODO Auto-generated catch block
-			System.out.println(e);
+			e.printStackTrace();
 		}
 		
 	}
-
+	
 }

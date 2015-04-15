@@ -39,9 +39,8 @@ import org.helioviewer.jhv.gui.components.SideContentPane;
 import org.helioviewer.jhv.gui.components.StatusPanel;
 import org.helioviewer.jhv.gui.components.TopToolBar;
 import org.helioviewer.jhv.gui.components.newComponents.FilterTabPanel;
-import org.helioviewer.jhv.gui.components.newComponents.NewImageSelectorPanel;
 import org.helioviewer.jhv.gui.components.newComponents.NewLayerPanel;
-import org.helioviewer.jhv.gui.components.newComponents.NewMoviePanel;
+import org.helioviewer.jhv.gui.components.newComponents.NewPlayPanel;
 import org.helioviewer.jhv.gui.components.statusplugins.CurrentTimeLabel;
 import org.helioviewer.jhv.gui.components.statusplugins.FramerateStatusPanel;
 import org.helioviewer.jhv.gui.components.statusplugins.JPIPStatusPanel;
@@ -447,7 +446,7 @@ public class ImageViewerGui {
 			// Movie control
 			moviePanelContainer = new ControlPanelContainer();
 			if (JHVGlobals.OLD_RENDER_MODE) this.moviePanel = new MoviePanel();
-			else this.moviePanel = new NewMoviePanel();
+			else this.moviePanel = new NewPlayPanel();
 			moviePanelContainer.setDefaultPanel(moviePanel);
 			
 			leftPane.add("Overview", GuiState3DWCS.overViewPanel, JHVGlobals.OLD_RENDER_MODE);			

@@ -24,6 +24,9 @@ public class Layers {
 		for (NewLayerListener renderListener : renderListeners){
 			renderListener.newlayerAdded();
 		}
+		if (layers.size() == 1){
+			this.layerChanged();
+		}
 	}
 	
 	public NewLayer addLayer(int id){
@@ -31,6 +34,9 @@ public class Layers {
 		layers.add(layer);
 		for (NewLayerListener renderListener : renderListeners){
 			renderListener.newlayerAdded();
+		}
+		if (layers.size() == 1){
+			this.layerChanged();
 		}
 		return layer;
 	}
@@ -55,7 +61,6 @@ public class Layers {
 	}
 
 	public void layerChanged() {
-		System.out.println("layer changed : " + activeLayer);
 		for (NewLayerListener renderListener : renderListeners){
 			renderListener.activeLayerChanged(this.getLayer(activeLayer));
 		}

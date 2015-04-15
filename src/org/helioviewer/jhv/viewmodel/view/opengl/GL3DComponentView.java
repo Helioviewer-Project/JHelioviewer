@@ -15,7 +15,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.File;
@@ -36,13 +35,11 @@ import javax.media.opengl.GLDrawableFactory;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import org.helioviewer.jhv.base.GL3DKeyController;
-import org.helioviewer.jhv.base.GL3DKeyController.GL3DKeyListener;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
@@ -207,7 +204,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 							}
 							break;
 						case KeyEvent.VK_RIGHT:
-							if ((JHVJPXView) LayersModel.getSingletonInstance().getActiveView() != null){
+							if (LayersModel.getSingletonInstance().getActiveView() != null){
 							activeView = (JHVJPXView) LayersModel
 									.getSingletonInstance().getActiveView()
 									.getAdapter(JHVJPXView.class);
@@ -217,7 +214,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 							}
 							break;
 						case KeyEvent.VK_LEFT:
-							if ((JHVJPXView) LayersModel.getSingletonInstance().getActiveView() != null){
+							if (LayersModel.getSingletonInstance().getActiveView() != null){
 								activeView = (JHVJPXView) LayersModel
 									.getSingletonInstance().getActiveView()
 									.getAdapter(JHVJPXView.class);

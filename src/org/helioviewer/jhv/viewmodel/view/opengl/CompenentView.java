@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -33,6 +34,7 @@ import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.LayersListener;
+import org.helioviewer.jhv.layers.NewLayer;
 import org.helioviewer.jhv.layers.NewLayerListener;
 import org.helioviewer.jhv.layers.filter.LUT;
 import org.helioviewer.jhv.opengl.NoImageScreen;
@@ -47,12 +49,14 @@ import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.renderer.screen.ScreenRenderer;
+import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
+import org.helioviewer.jhv.viewmodel.timeline.TimeLine.TimeLineListener;
 import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
 import org.helioviewer.jhv.viewmodel.view.View;
 
 public class CompenentView extends GL3DComponentView implements
 		GLEventListener, LayersListener, MouseListener, MouseMotionListener,
-		MouseWheelListener, NewLayerListener, CameraListener {
+		MouseWheelListener, NewLayerListener, CameraListener, TimeLineListener {
 
 	GLCanvas canvas = new GLCanvas();
 	GLTextureHelper textureHelper = new GLTextureHelper();
@@ -71,6 +75,7 @@ public class CompenentView extends GL3DComponentView implements
 	public CompenentView() {
 		this.canvas.setSharedContext(OpenGLHelper.glContext);
 		GuiState3DWCS.layers.addNewLayerListener(this);
+		TimeLine.SINGLETON.addListener(this);
 		animations = new CopyOnWriteArrayList<RenderAnimation>();
 		lutMap = new HashMap<String, Integer>();
 		this.canvas.addMouseListener(this);
@@ -145,7 +150,7 @@ public class CompenentView extends GL3DComponentView implements
 			}
 			System.exit(1);
 		}
-		gl.glUseProgram(shaderprogram);
+		gl.glUseProgram(0);
 	}
 
 	private String loadShaderFromFile(String shaderName) {
@@ -232,10 +237,11 @@ public class CompenentView extends GL3DComponentView implements
 
 	}
 
-	public void displayLayer(GL2 gl, Layer layer) {
-		Vector2d lowerleftCorner = layer.getJhvjpxView().getMetaData()
+	public void displayLayer(GL2 gl, NewLayer layer) {
+		
+		Vector2d lowerleftCorner = layer.getMetaData()
 				.getPhysicalRegion().getLowerLeftCorner();
-		Vector2d size = layer.getJhvjpxView().getMetaData().getPhysicalRegion()
+		Vector2d size = layer.getMetaData().getPhysicalRegion()
 				.getSize();
 		if (size.x <= 0 || size.y <= 0) {
 			return;
@@ -259,7 +265,7 @@ public class CompenentView extends GL3DComponentView implements
 			tmpY0 = (float) (y0 / aspect);
 			tmpY1 = (float) (y1 / aspect);
 		}
-		MetaData metaData = layer.getJhvjpxView().getMetaData();
+		MetaData metaData = layer.getMetaData();
 		float xSunOffset = (float)((metaData.getSunPixelPosition().x - metaData.getResolution().getX()/2.0)/(float)metaData.getResolution().getX());
 		float ySunOffset = -(float)((metaData.getSunPixelPosition().y - metaData.getResolution().getY()/2.0)/(float)metaData.getResolution().getY());
 		
@@ -318,7 +324,7 @@ public class CompenentView extends GL3DComponentView implements
 		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "opacityCorona"), opacityCorona);
 		float[] transformation = cameraNEW.getTransformation().toFloatArray();
 		System.out.println("TRANSFORM : ");
-		float[] layerTransformation = layer.getJhvjpxView().getMetaData()
+		float[] layerTransformation = layer.getMetaData()
 				.getRotation().toMatrix().toFloatArray();
 		gl.glUniformMatrix4fv(
 				gl.glGetUniformLocation(shaderprogram, "transformation"), 1,
@@ -346,16 +352,17 @@ public class CompenentView extends GL3DComponentView implements
 		gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
 		gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
 		gl.glEnable(GL2.GL_DEPTH_TEST);
+		
 	}
 
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		GL2 gl = drawable.getGL().getGL2();
 		gl.getContext().makeCurrent();
+		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 		gl.glViewport(0, 0, this.canvas.getSurfaceWidth(),
 				this.canvas.getSurfaceHeight());
-		
 		
 		if (layers != null && layers.getLayerCount() > 0) {
 			gl.glPushMatrix();
@@ -372,8 +379,7 @@ public class CompenentView extends GL3DComponentView implements
 			for (LayerInterface layer : layers.getLayers()) {
 				System.out.println("renderLayer");
 				if (layer.isVisible()) {
-					if (layer instanceof Layer)
-					this.displayLayer(gl, (Layer)layer);
+					this.displayLayer(gl, (NewLayer)layer);
 				}
 			}
 			gl.glPopMatrix();
@@ -415,10 +421,11 @@ public class CompenentView extends GL3DComponentView implements
 		gl.glDisable(GL2.GL_TEXTURE_2D);
 		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);
 		gl.glEnable(GL2.GL_TEXTURE_2D);
-
+		
 		textureHelper.checkGLErrors(gl, this + ".beforeInitShader");
 		this.initShaders(gl);
 		textureHelper.checkGLErrors(gl, this + ".afterInitShader");
+		gl.glDisable(GL2.GL_TEXTURE_2D);
 
 		this.canvas.repaint();
 	}
@@ -581,6 +588,12 @@ public class CompenentView extends GL3DComponentView implements
 	
 	public void removeRenderAnimation(RenderAnimation renderAnimation){
 		this.animations.remove(renderAnimation);
+		this.canvas.repaint();
+	}
+
+	@Override
+	public void timeStampChanged(LocalDateTime localDateTime) {
+		System.out.println("timeStampChanged");
 		this.canvas.repaint();
 	}
 }

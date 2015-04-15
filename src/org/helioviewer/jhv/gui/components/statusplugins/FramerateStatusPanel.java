@@ -1,10 +1,13 @@
 package org.helioviewer.jhv.gui.components.statusplugins;
 
 import java.awt.Dimension;
+import java.time.LocalDateTime;
 
 import javax.swing.BorderFactory;
 
 import org.helioviewer.jhv.layers.LayersModel;
+import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
+import org.helioviewer.jhv.viewmodel.timeline.TimeLine.TimeLineListener;
 import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
 
 /**
@@ -18,7 +21,7 @@ import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
  * 
  * @author Markus Langenberg
  */
-public class FramerateStatusPanel extends ViewStatusPanelPlugin {
+public class FramerateStatusPanel extends ViewStatusPanelPlugin implements TimeLineListener {
 
     private static final long serialVersionUID = 1L;
     private int counter = 0;
@@ -28,6 +31,7 @@ public class FramerateStatusPanel extends ViewStatusPanelPlugin {
      * Default constructor.
      */
     public FramerateStatusPanel(){
+    	TimeLine.SINGLETON.addListener(this);
         setBorder(BorderFactory.createEtchedBorder());
 
         setPreferredSize(new Dimension(70, 20));
@@ -63,4 +67,11 @@ public class FramerateStatusPanel extends ViewStatusPanelPlugin {
     public void timestampChanged(){
         
     }
+
+	@Override
+	public void timeStampChanged(LocalDateTime localDateTime) {
+		if ((System.currentTimeMillis() - currentMillis) >= 1000)
+           updateFramerate();
+		counter++;
+	}
 }

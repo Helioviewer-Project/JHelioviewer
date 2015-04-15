@@ -21,7 +21,6 @@ import org.helioviewer.jhv.gui.actions.filefilters.JP2Filter;
 import org.helioviewer.jhv.gui.actions.filefilters.JPGFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.PNGFilter;
 import org.helioviewer.jhv.io.APIRequestManager;
-import org.helioviewer.jhv.layers.NewLayer;
 
 /**
  * Action to open a local file.

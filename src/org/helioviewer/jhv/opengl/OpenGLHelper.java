@@ -73,6 +73,7 @@ public class OpenGLHelper {
 				
 				if (textureHeight != height2 && textureWidth != width2){
 					createTexture(width2, height2);
+					System.out.println("createTexture");
 				}
 
 				updateTexture(byteBuffer, width, height);
@@ -208,8 +209,10 @@ public class OpenGLHelper {
 		ByteBuffer b = ByteBuffer.allocate(width * height);
 		b.limit(width * height);
 		gl.glEnable(GL2.GL_TEXTURE_2D);			
+		gl.glBindTexture(GL2.GL_TEXTURE_2D, this.textureID);
 		gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL2.GL_LUMINANCE8, width,
 				height, 0, GL2.GL_LUMINANCE, GL2.GL_UNSIGNED_BYTE, b);
+
 		this.textureWidth = width;
 		this.textureHeight = height;
 		
@@ -224,12 +227,21 @@ public class OpenGLHelper {
 	}
 	
 	private void updateTexture(ByteBuffer byteBuffer, int width, int height){
+		System.out.println();
 		GL2 gl = OpenGLHelper.glContext.getGL().getGL2();
+		
 		gl.glEnable(GL2.GL_TEXTURE_2D);			
+		
+		gl.glPixelStorei(GL2.GL_UNPACK_SKIP_PIXELS, 0);
+		gl.glPixelStorei(GL2.GL_UNPACK_SKIP_ROWS, 0);
+		gl.glPixelStorei(GL2.GL_UNPACK_ROW_LENGTH, 0);
+		gl.glPixelStorei(GL2.GL_UNPACK_ALIGNMENT, 8 >> 3);
+
+		
 		gl.glBindTexture(GL2.GL_TEXTURE_2D, this.textureID);
 		
 		gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, width, height,
-				GL2.GL_LUMINANCE, GL2.GL_UNSIGNED_BYTE, byteBuffer);
+				GL2.GL_ABGR_EXT, GL2.GL_UNSIGNED_BYTE, byteBuffer);
 
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER,
 				GL2.GL_LINEAR);

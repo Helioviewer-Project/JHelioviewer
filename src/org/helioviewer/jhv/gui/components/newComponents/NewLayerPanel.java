@@ -1,36 +1,31 @@
 package org.helioviewer.jhv.gui.components.newComponents;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
 
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
-import org.helioviewer.jhv.layers.DummyLayer;
 import org.helioviewer.jhv.layers.LayerInterface;
-import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.NewLayerListener;
 
 public class NewLayerPanel extends JPanel implements NewLayerListener{
@@ -40,6 +35,7 @@ public class NewLayerPanel extends JPanel implements NewLayerListener{
 	 */
 	private static final long serialVersionUID = 6800340702841902680L;
 	
+	private final AddLayerPanel addLayerPanel = new AddLayerPanel();
 	private JTable table;
 	private LayerTableModel tableModel;
 	Object columnNames[] = { "Column One", "Column Two", "Column Three", "Column Four"};
@@ -85,6 +81,9 @@ public class NewLayerPanel extends JPanel implements NewLayerListener{
 					GuiState3DWCS.layers.removeLayer(row);
 					updateData();
 				}
+				if (row != GuiState3DWCS.layers.getActiveLayerNumber()){
+					GuiState3DWCS.layers.setActiveLayer(row);
+				}
 			}
 		});
 		scrollPane.setViewportView(table);
@@ -121,6 +120,13 @@ public class NewLayerPanel extends JPanel implements NewLayerListener{
 		panel.add(btnNewButton_1, gbc_btnNewButton_1);
 
 		JButton btnNewButton = new JButton("Add Layer", IconBank.getIcon(JHVIcon.ADD_NEW, 16, 16));
+		btnNewButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				addLayerPanel.setVisible(true);
+			}
+		});
 		btnNewButton.setToolTipText("Add a new Layer");
 		GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
 		gbc_btnNewButton.anchor = GridBagConstraints.EAST;
@@ -141,14 +147,9 @@ public class NewLayerPanel extends JPanel implements NewLayerListener{
 			data[count][2] = layer.getTime();
 			data[count++][3] = IconBank.getIcon(JHVIcon.CANCEL_NEW, 16, 16);
 		}
-		
 		tableModel.setDataVector(data, columnNames);
-		/*for (int i = 0; i <  table.getColumnCount(); i++){
-			table.getColumnModel().getColumn(i)
-			.setCellRenderer(new LayerCellRenderer());
-		}
-		*/
 		table.setModel(tableModel);
+		
         //table.getColumnModel().getColumn(0).setCellRenderer(new ImageIconCellRenderer());
         table.getColumnModel().getColumn(1).setCellRenderer(new ImageIconCellRenderer());
         table.getColumnModel().getColumn(2).setCellRenderer(new ImageIconCellRenderer());
@@ -158,6 +159,12 @@ public class NewLayerPanel extends JPanel implements NewLayerListener{
         //table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         table.setShowGrid(false);
         table.setIntercellSpacing(new Dimension(0, 0));
+        
+		if (GuiState3DWCS.layers.getLayerCount() > 0){
+			System.out.println(GuiState3DWCS.layers.getActiveLayerNumber());
+			table.setRowSelectionInterval(GuiState3DWCS.layers.getActiveLayerNumber(), GuiState3DWCS.layers.getActiveLayerNumber());
+		}
+
 
 	}
 	

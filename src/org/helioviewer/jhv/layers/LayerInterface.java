@@ -3,6 +3,7 @@ package org.helioviewer.jhv.layers;
 import java.time.LocalDateTime;
 import java.util.concurrent.ExecutionException;
 
+import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.view.jp2view.image.SubImage;
 
 public interface LayerInterface {
@@ -12,4 +13,7 @@ public interface LayerInterface {
 	public void setImageData(LocalDateTime dateTime, SubImage subImage) throws InterruptedException, ExecutionException;
 	public String getName();
 	public LocalDateTime getTime();
+	public LocalDateTime[] getLocalDateTime();
+	public MetaData getMetaData();
+	
 }

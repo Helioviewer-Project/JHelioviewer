@@ -69,13 +69,13 @@ public class NewMetaDataContainer implements MetaDataContainer{
 	@Override
 	public int getPixelWidth() {
 		// TODO Auto-generated method stub
-		return 0;
+		return 4096;
 	}
 
 	@Override
 	public int getPixelHeight() {
 		// TODO Auto-generated method stub
-		return 0;
+		return 4096;
 	}
 
 }

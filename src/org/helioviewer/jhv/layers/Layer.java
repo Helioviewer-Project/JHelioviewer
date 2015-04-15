@@ -37,6 +37,11 @@ public class Layer implements LayerInterface{
 		public int getState(){
 			return this.status == SHADER_STATE.TRUE ? 1 : 0;
 		}
+		
+		@Override
+		public String toString() {
+			return name;
+		}
 	}
 	
 	public class Lut{
@@ -131,6 +136,18 @@ public class Layer implements LayerInterface{
 
 	@Override
 	public LocalDateTime getTime() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public LocalDateTime[] getLocalDateTime() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public MetaData getMetaData() {
 		// TODO Auto-generated method stub
 		return null;
 	}
