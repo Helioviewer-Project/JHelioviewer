@@ -179,20 +179,6 @@ public class NewPlayPanel extends JPanel implements TimeLineListener, NewLayerLi
 		this.setPreferredSize(new Dimension(300, 60));
 	}
 	
-	public static void main(String[] args) {
-		LocalDateTime[] localDateTimes = new LocalDateTime[50];
-		LocalDateTime localDateTime = LocalDateTime.now();
-		for (int i = 0; i < 50; i++){
-			localDateTimes[i] = localDateTime.plusDays(i);
-		}
-		TimeLine timeLine = TimeLine.SINGLETON;
-		timeLine.setFrames(localDateTimes);
-		JFrame frame = new JFrame();
-		frame.getContentPane().add(new NewPlayPanel());
-		frame.pack();
-		frame.setVisible(true);
-	}
-	
 	private JPanel initOptionPane(){
 		JPanel contentPanel = new JPanel();
 		contentPanel.setLayout(new FormLayout(new ColumnSpec[] {
@@ -282,6 +268,7 @@ public class NewPlayPanel extends JPanel implements TimeLineListener, NewLayerLi
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				lblFrames.setText(slider.getValue() + "/" + timeLine.getMaxFrames());
+				timeLine.setCurrentFrame(slider.getValue());
 			}
 		});
 		contentPanel.add(slider, "2, 2, 11, 1");

@@ -140,4 +140,10 @@ public class TimeLine implements NewLayerListener{
 	public void activeLayerChanged(LayerInterface layer) {
 		this.setFrames(layer.getLocalDateTime());
 	}
+
+	public void setCurrentFrame(int value) {
+		this.frame = value;
+		current = frames[frame];
+		dateTimeChanged();
+	}
 }

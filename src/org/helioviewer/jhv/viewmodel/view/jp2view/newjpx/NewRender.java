@@ -90,7 +90,6 @@ public class NewRender {
 			Kdu_dims actualBufferedRegion = new Kdu_dims();
 			Kdu_compositor_buf compositorBuf = compositor
 					.Get_composition_buffer(actualBufferedRegion);
-
 			Kdu_coords actualOffset = new Kdu_coords();
 			actualOffset.Assign(actualBufferedRegion.Access_pos());
 				        
