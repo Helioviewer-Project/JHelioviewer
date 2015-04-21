@@ -18,7 +18,7 @@ import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKEvent;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKEvent.GenericTriangle;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
-import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 import org.helioviewer.jhv.viewmodel.renderer.physical.GLPhysicalRenderGraphics;
 import org.helioviewer.jhv.viewmodel.renderer.physical.PhysicalRenderer3d;
 import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
@@ -237,7 +237,7 @@ public class HEKPlugin3dRenderer extends PhysicalRenderer3d
                 heigth=layeredView.getLayer(i).getAdapter(RegionView.class).getLastDecodedRegion().getHeight();
         }
         
-        Region region=view.getAdapter(RegionView.class).getLastDecodedRegion();
+        PhysicalRegion region=view.getAdapter(RegionView.class).getLastDecodedRegion();
         if(region!=null)
             scale=(float)(heigth/region.getHeight());
     }

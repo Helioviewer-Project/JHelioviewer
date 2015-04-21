@@ -17,7 +17,7 @@ import org.helioviewer.jhv.viewmodel.imagedata.SingleChannelByte8ImageData;
 import org.helioviewer.jhv.viewmodel.imagedata.SingleChannelShortImageData;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.metadata.MetaDataFactory;
-import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 import org.helioviewer.jhv.viewmodel.region.StaticRegion;
 import org.helioviewer.jhv.viewmodel.view.AbstractView;
 import org.helioviewer.jhv.viewmodel.view.ImageInfoView;
@@ -44,7 +44,7 @@ import org.helioviewer.jhv.viewmodel.viewportimagesize.ViewportImageSizeAdapter;
 public class JHVFITSView extends AbstractView implements ViewportView, RegionView, SubimageDataView, ImageInfoView, MetaDataView {
 
     protected Viewport viewport;
-    protected Region region;
+    protected PhysicalRegion region;
     protected FITSImage fits;
     protected ImageData subImageData;
     protected MetaData m;
@@ -119,7 +119,7 @@ public class JHVFITSView extends AbstractView implements ViewportView, RegionVie
      *            Event that belongs to the request.
      * */
     private void updateImageData(ChangeEvent event) {
-        Region r = region;
+        PhysicalRegion r = region;
 
         m = getMetaData();
 
@@ -181,7 +181,7 @@ public class JHVFITSView extends AbstractView implements ViewportView, RegionVie
     /**
      * {@inheritDoc}
      * */
-    public Region getLastDecodedRegion() {
+    public PhysicalRegion getLastDecodedRegion() {
 
         return region;
     }
@@ -189,7 +189,7 @@ public class JHVFITSView extends AbstractView implements ViewportView, RegionVie
     /**
      * {@inheritDoc}
      * */
-    public boolean setRegion(Region r, ChangeEvent event) {
+    public boolean setRegion(PhysicalRegion r, ChangeEvent event) {
 
         event.addReason(new RegionUpdatedReason(this, r));
 

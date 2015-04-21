@@ -16,7 +16,7 @@ import org.helioviewer.jhv.opengl.camera.GL3DCamera;
 import org.helioviewer.jhv.opengl.camera.GL3DCameraPanAnimation;
 import org.helioviewer.jhv.opengl.camera.GL3DCameraZoomAnimation;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 import org.helioviewer.jhv.viewmodel.view.MetaDataView;
 import org.helioviewer.jhv.viewmodel.view.View;
 
@@ -50,7 +50,7 @@ public class GL3DZoom1to1Action extends AbstractAction {
 						MetaData metaData = view.getAdapter(MetaDataView.class)
 					.getMetaData();
 			double unitsPerPixel = metaData.getUnitsPerPixel();
-			Region region = metaData.getPhysicalRegion();
+			PhysicalRegion region = metaData.getPhysicalRegion();
             
 			if (region != null) {
 				Dimension dimension = GuiState3DWCS.mainComponentView.getCanavasSize();

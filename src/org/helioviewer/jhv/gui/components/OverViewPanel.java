@@ -43,7 +43,7 @@ import org.helioviewer.jhv.viewmodel.imageformat.ImageFormat;
 import org.helioviewer.jhv.viewmodel.imagetransport.Byte8ImageTransport;
 import org.helioviewer.jhv.viewmodel.imagetransport.Int32ImageTransport;
 import org.helioviewer.jhv.viewmodel.imagetransport.Short16ImageTransport;
-import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DCoordinateSystemView;
@@ -318,7 +318,7 @@ public class OverViewPanel extends JPanel implements LayersListener, GLEventList
 		
 	}
 	
-	private boolean createTexture(GL2 gl, Region region, ImageData imageData){
+	private boolean createTexture(GL2 gl, PhysicalRegion region, ImageData imageData){
 		if (imageData == null || imageData.getImageTransport() == null) return false;
 		int bitsPerPixel = imageData.getImageTransport().getNumBitsPerPixel();
 		Buffer buffer;

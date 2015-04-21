@@ -27,7 +27,7 @@ import org.helioviewer.jhv.opengl.shader.GL3DImageFragmentShaderProgram;
 import org.helioviewer.jhv.opengl.shader.GL3DImageVertexShaderProgram;
 import org.helioviewer.jhv.opengl.shader.GL3DShaderFactory;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 import org.helioviewer.jhv.viewmodel.region.StaticRegion;
 import org.helioviewer.jhv.viewmodel.view.MetaDataView;
 import org.helioviewer.jhv.viewmodel.view.RegionView;
@@ -387,7 +387,7 @@ public class GL3DImageLayer extends GL3DGroup implements GL3DCameraListener {
 		double regionHeight = maxPhysicalY - minPhysicalY;
 
 		if (regionWidth > 0 && regionHeight > 0) {
-			Region newRegion = StaticRegion.createAdaptedRegion(minPhysicalX,
+			PhysicalRegion newRegion = StaticRegion.createAdaptedRegion(minPhysicalX,
 					minPhysicalY, regionWidth, regionHeight);
 			// Log.debug("GL3DImageLayer: '"+getName()+" set its region");
 			this.regionView.setRegion(newRegion, null);
@@ -400,7 +400,7 @@ public class GL3DImageLayer extends GL3DGroup implements GL3DCameraListener {
             + maxPhysicalX + ", y = " + minPhysicalY + " - "
             + maxPhysicalY);
             
-            Region newRegion = StaticRegion.createAdaptedRegion(0,0,1,1);
+            PhysicalRegion newRegion = StaticRegion.createAdaptedRegion(0,0,1,1);
             this.regionView.setRegion(newRegion, null);
         }
 	}

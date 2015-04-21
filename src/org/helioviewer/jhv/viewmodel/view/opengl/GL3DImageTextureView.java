@@ -19,7 +19,7 @@ import org.helioviewer.jhv.viewmodel.changeevent.RegionChangedReason;
 import org.helioviewer.jhv.viewmodel.changeevent.RegionUpdatedReason;
 import org.helioviewer.jhv.viewmodel.changeevent.SubImageDataChangedReason;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 import org.helioviewer.jhv.viewmodel.region.StaticRegion;
 import org.helioviewer.jhv.viewmodel.view.RegionView;
 import org.helioviewer.jhv.viewmodel.view.View;
@@ -45,7 +45,7 @@ public class GL3DImageTextureView extends AbstractGL3DView implements GL3DView {
 
 	private Vector2d textureScale = null;
 
-	private Region capturedRegion = null;
+	private PhysicalRegion capturedRegion = null;
 
 	private boolean recaptureRequested = true;
 	private boolean regionChanged = true;
@@ -96,7 +96,7 @@ public class GL3DImageTextureView extends AbstractGL3DView implements GL3DView {
 		return this.textureId;
 	}
 
-	private Region copyScreenToTexture(GL3DState state, GLTextureHelper th) {
+	private PhysicalRegion copyScreenToTexture(GL3DState state, GLTextureHelper th) {
 		GL2 gl = state.gl;
 
 		if (this.textureId < 0) {
@@ -104,7 +104,7 @@ public class GL3DImageTextureView extends AbstractGL3DView implements GL3DView {
 		}
 		gl.glBindTexture(GL.GL_TEXTURE_2D, this.textureId);
 
-		Region region = getAdapter(RegionView.class).getLastDecodedRegion();
+		PhysicalRegion region = getAdapter(RegionView.class).getLastDecodedRegion();
 		Viewport viewport = getAdapter(ViewportView.class).getViewport();
 		Vector2i renderOffset = getAdapter(GL3DImageRegionView.class)
 				.getRenderOffset();
@@ -176,7 +176,7 @@ public class GL3DImageTextureView extends AbstractGL3DView implements GL3DView {
 		return textureScale;
 	}
 
-	public Region getCapturedRegion() {
+	public PhysicalRegion getCapturedRegion() {
 		return capturedRegion;
 	}
 

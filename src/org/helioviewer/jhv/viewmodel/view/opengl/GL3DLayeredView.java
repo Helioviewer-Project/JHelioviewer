@@ -18,7 +18,7 @@ import org.helioviewer.jhv.viewmodel.changeevent.RegionUpdatedReason;
 import org.helioviewer.jhv.viewmodel.changeevent.SubImageDataChangedReason;
 import org.helioviewer.jhv.viewmodel.changeevent.ViewChainChangedReason;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 import org.helioviewer.jhv.viewmodel.region.StaticRegion;
 import org.helioviewer.jhv.viewmodel.view.*;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJP2View;
@@ -47,7 +47,7 @@ public class GL3DLayeredView extends AbstractView implements LayeredView, Region
     protected ReentrantLock layerLock = new ReentrantLock();
     protected HashMap<View, Layer> viewLookup = new HashMap<View, Layer>();
     protected Viewport viewport;
-    protected Region region;
+    protected PhysicalRegion region;
     protected MetaData metaData;
     protected ViewportImageSize viewportImageSize;
     protected double minimalRegionSize;
@@ -142,7 +142,7 @@ public class GL3DLayeredView extends AbstractView implements LayeredView, Region
             if (viewport != null)
                 region = ViewHelper.expandRegionToViewportAspectRatio(viewport, region, metaData);
             if (region != null)
-                region = new Region(new StaticRegion(-0.5 * region.getWidth(), -0.5 * region.getHeight(), region.getSize()));
+                region = new PhysicalRegion(new StaticRegion(-0.5 * region.getWidth(), -0.5 * region.getHeight(), region.getSize()));
             recalculateRegionsAndViewports(new ChangeEvent());
         redrawBuffer(changeEvent);        
     }
@@ -424,10 +424,10 @@ public class GL3DLayeredView extends AbstractView implements LayeredView, Region
 
         recalculateMetaData();
         if (metaData != null) {
-            Region bound = metaData.getPhysicalRegion();
+            PhysicalRegion bound = metaData.getPhysicalRegion();
             double lowerLeftX = Math.max(bound.getCornerX(), region.getCornerX());
             double lowerLeftY = Math.max(bound.getCornerY(), region.getCornerY());
-            Region newRegion = ViewHelper.cropInnerRegionToOuterRegion(StaticRegion.createAdaptedRegion(lowerLeftX, lowerLeftY, region.getSize()), bound);
+            PhysicalRegion newRegion = ViewHelper.cropInnerRegionToOuterRegion(StaticRegion.createAdaptedRegion(lowerLeftX, lowerLeftY, region.getSize()), bound);
             setRegion(newRegion, event);
         } else {
             recalculateRegionsAndViewports(event);
@@ -484,14 +484,14 @@ public class GL3DLayeredView extends AbstractView implements LayeredView, Region
     /**
      * {@inheritDoc}
      */
-    public Region getLastDecodedRegion() {
+    public PhysicalRegion getLastDecodedRegion() {
         return region;
     }
 
     /**
      * {@inheritDoc}
      */
-    public boolean setRegion(Region r, ChangeEvent event) {
+    public boolean setRegion(PhysicalRegion r, ChangeEvent event) {
 
         if (event == null) {
             event = new ChangeEvent(new RegionUpdatedReason(this, r));

@@ -47,6 +47,7 @@ import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
+import org.helioviewer.jhv.opengl.camera.Camera;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
 import org.helioviewer.jhv.opengl.camera.GL3DCameraListener;
 import org.helioviewer.jhv.opengl.camera.GL3DTrackballCamera;
@@ -57,7 +58,7 @@ import org.helioviewer.jhv.viewmodel.changeevent.LayerChangedReason;
 import org.helioviewer.jhv.viewmodel.changeevent.LayerChangedReason.LayerChangeType;
 import org.helioviewer.jhv.viewmodel.changeevent.ViewChainChangedReason;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 import org.helioviewer.jhv.viewmodel.renderer.screen.GLScreenRenderGraphics;
 import org.helioviewer.jhv.viewmodel.renderer.screen.ScreenRenderer;
 import org.helioviewer.jhv.viewmodel.view.AbstractBasicView;
@@ -377,7 +378,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 			gl.glFrustum(-fW, fW, -fH, fH, clipNear, clipFar);
 
 		else {
-			Region region = this.getAdapter(RegionView.class)
+			PhysicalRegion region = this.getAdapter(RegionView.class)
 					.getLastDecodedRegion();
 			if (region != null) {
 				MetaData metaData = null;
@@ -923,5 +924,9 @@ public class GL3DComponentView extends AbstractBasicView implements
 		GuiState3DWCS.mainComponentView.getComponent().repaint();
 		GuiState3DWCS.overViewPanel.repaint();
 		LayersModel.getSingletonInstance().fireSubImageDataChanged(0);
+	}
+	
+	public Camera getCurrentCamera(){
+		return null;
 	}
 }

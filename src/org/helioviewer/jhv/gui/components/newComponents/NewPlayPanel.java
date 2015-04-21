@@ -208,7 +208,6 @@ public class NewPlayPanel extends JPanel implements TimeLineListener, NewLayerLi
 			
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				System.out.println(spinner.getValue());
 				timeLine.setSpeedFactor((int)spinner.getValue());
 			}
 		});
@@ -259,6 +258,7 @@ public class NewPlayPanel extends JPanel implements TimeLineListener, NewLayerLi
 		
 		
 		slider = new TimeSlider();
+		slider.setValue(0);
 		slider.setMinimum(0);
 		slider.setMaximum(49);
         slider.setSnapToTicks(true);

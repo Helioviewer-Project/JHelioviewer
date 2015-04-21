@@ -8,7 +8,7 @@ import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 import org.helioviewer.jhv.viewmodel.view.MetaDataView;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.ViewportView;
@@ -26,7 +26,7 @@ import org.helioviewer.jhv.viewmodel.viewport.Viewport;
  */
 public class ZoomController {
 
-	public static double getZoom(View view, Region outerRegion,
+	public static double getZoom(View view, PhysicalRegion outerRegion,
 			Viewport viewport) {
 
 		View activeView = LayersModel.getSingletonInstance().getActiveView();
@@ -36,7 +36,7 @@ public class ZoomController {
 			MetaData metaData = activeView.getAdapter(MetaDataView.class)
 					.getMetaData();
 			double unitsPerPixel = metaData.getUnitsPerPixel();
-			Region region = metaData.getPhysicalRegion();
+			PhysicalRegion region = metaData.getPhysicalRegion();
 
 			if (region != null && camera != null) {
 				Dimension dimension = GuiState3DWCS.mainComponentView.getCanavasSize();

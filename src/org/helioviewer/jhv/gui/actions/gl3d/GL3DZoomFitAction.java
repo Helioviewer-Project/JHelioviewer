@@ -14,7 +14,7 @@ import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
 import org.helioviewer.jhv.opengl.camera.GL3DCameraZoomAnimation;
-import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 
@@ -41,7 +41,7 @@ public class GL3DZoomFitAction extends AbstractAction {
         View view = LayersModel.getSingletonInstance().getActiveView();
         GL3DCamera camera = GL3DCameraSelectorModel.getInstance().getCurrentCamera();
         if (view != null) {
-            Region region = view.getAdapter(JHVJPXView.class).getMetaData().getPhysicalRegion();
+            PhysicalRegion region = view.getAdapter(JHVJPXView.class).getMetaData().getPhysicalRegion();
             if (region != null) {
                 double halfWidth = region.getWidth() / 2;
                 Dimension canvasSize = GuiState3DWCS.mainComponentView.getCanavasSize();

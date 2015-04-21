@@ -8,7 +8,7 @@ import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.viewmodel.imagedata.ImageData;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 import org.helioviewer.jhv.viewmodel.region.StaticRegion;
 import org.helioviewer.jhv.viewmodel.view.fitsview.JHVFITSView;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
@@ -55,9 +55,9 @@ public final class ViewHelper {
      * @param metaData
      *            Meta data of the image, to read maximal region
      * @return Expanded region
-     * @see #contractRegionToViewportAspectRatio(Viewport, Region, MetaData)
+     * @see #contractRegionToViewportAspectRatio(Viewport, PhysicalRegion, MetaData)
      */
-    public static Region expandRegionToViewportAspectRatio(Viewport v, Region r, MetaData metaData) {
+    public static PhysicalRegion expandRegionToViewportAspectRatio(Viewport v, PhysicalRegion r, MetaData metaData) {
 
         if (v == null)
             return r;
@@ -90,9 +90,9 @@ public final class ViewHelper {
      * @param m
      *            Meta data of the image, to read maximal region
      * @return Contracted region
-     * @see #expandRegionToViewportAspectRatio(Viewport, Region, MetaData)
+     * @see #expandRegionToViewportAspectRatio(Viewport, PhysicalRegion, MetaData)
      */
-    public static Region contractRegionToViewportAspectRatio(Viewport v, Region r, MetaData m) {
+    public static PhysicalRegion contractRegionToViewportAspectRatio(Viewport v, PhysicalRegion r, MetaData m) {
 
         double viewportRatio = v.getAspectRatio();
 
@@ -176,7 +176,7 @@ public final class ViewHelper {
      *            visible region of the image
      * @return resulting image size of the region within the viewport
      */
-    public static ViewportImageSize calculateViewportImageSize(Viewport v, Region r) {
+    public static ViewportImageSize calculateViewportImageSize(Viewport v, PhysicalRegion r) {
         if (v == null || r == null) {
             return null;
         }
@@ -212,7 +212,7 @@ public final class ViewHelper {
      *            ViewportImageSize of the image within the current viewport
      * @return Displacement in image coordinates
      */
-    public static Vector2d convertScreenToImageDisplacement(Vector2i screenDisplacement, Region r, ViewportImageSize v) {
+    public static Vector2d convertScreenToImageDisplacement(Vector2i screenDisplacement, PhysicalRegion r, ViewportImageSize v) {
         return convertScreenToImageDisplacement(screenDisplacement.getX(), screenDisplacement.getY(), r, v);
     }
 
@@ -229,7 +229,7 @@ public final class ViewHelper {
      *            ViewportImageSize of the image within the current viewport
      * @return Displacement in image coordinates
      */
-    public static Vector2d convertScreenToImageDisplacement(int screenDisplacementX, int screenDisplacementY, Region r, ViewportImageSize v) {
+    public static Vector2d convertScreenToImageDisplacement(int screenDisplacementX, int screenDisplacementY, PhysicalRegion r, ViewportImageSize v) {
         return new Vector2d(r.getWidth() / ((double) v.getWidth()) * screenDisplacementX, -r.getHeight() / ((double) v.getHeight()) * screenDisplacementY);
     }
 
@@ -244,7 +244,7 @@ public final class ViewHelper {
      *            ViewportImageSize of the image within the current viewport
      * @return Displacement in screen coordinates
      */
-    public static Vector2i convertImageToScreenDisplacement(Vector2d imageDisplacement, Region r, ViewportImageSize v) {
+    public static Vector2i convertImageToScreenDisplacement(Vector2d imageDisplacement, PhysicalRegion r, ViewportImageSize v) {
         return convertImageToScreenDisplacement(imageDisplacement.x, imageDisplacement.y, r, v);
     }
 
@@ -261,7 +261,7 @@ public final class ViewHelper {
      *            ViewportImageSize of the image within the current viewport
      * @return Displacement in screen coordinates
      */
-    public static Vector2i convertImageToScreenDisplacement(double imageDisplacementX, double imageDisplacementY, Region r, ViewportImageSize v) {
+    public static Vector2i convertImageToScreenDisplacement(double imageDisplacementX, double imageDisplacementY, PhysicalRegion r, ViewportImageSize v) {
         return new Vector2i((int) Math.round(imageDisplacementX / r.getWidth() * v.getWidth()), (int) Math.round(imageDisplacementY / r.getHeight() * v.getHeight()));
     }
 
@@ -278,7 +278,7 @@ public final class ViewHelper {
      *            Meta data defining the maximal region
      * @return Region located inside the maximal region
      */
-    public static Region cropRegionToImage(Region r, MetaData metaData) {
+    public static PhysicalRegion cropRegionToImage(PhysicalRegion r, MetaData metaData) {
         if (r == null || metaData == null) {
             return r;
         }
@@ -305,7 +305,7 @@ public final class ViewHelper {
      *            Outer region, defining the maximal bounds
      * @return region located inside the outer region
      */
-    public static Region cropInnerRegionToOuterRegion(Region innerRegion, Region outerRegion) {
+    public static PhysicalRegion cropInnerRegionToOuterRegion(PhysicalRegion innerRegion, PhysicalRegion outerRegion) {
         return StaticRegion.createAdaptedRegion(innerRegion.getRectangle().cropToOuterRectangle(outerRegion.getRectangle()));
     }
 
@@ -326,7 +326,7 @@ public final class ViewHelper {
      *         region and viewport image size
      * @see #calculateInnerViewportOffset
      */
-    public static Viewport calculateInnerViewport(Region innerRegion, Region outerRegion, ViewportImageSize outerViewportImageSize) {
+    public static Viewport calculateInnerViewport(PhysicalRegion innerRegion, PhysicalRegion outerRegion, ViewportImageSize outerViewportImageSize) {
         double newWidth = outerViewportImageSize.getWidth() * innerRegion.getWidth() / outerRegion.getWidth();
         double newHeight = outerViewportImageSize.getHeight() * innerRegion.getHeight() / outerRegion.getHeight();
         return StaticViewport.createAdaptedViewport((int) Math.round(newWidth), (int) Math.round(newHeight));
@@ -349,7 +349,7 @@ public final class ViewHelper {
      *         viewport image size
      * @see #calculateInnerViewport
      */
-    public static Vector2i calculateInnerViewportOffset(Region innerRegion, Region outerRegion, ViewportImageSize outerViewportImageSize) {
+    public static Vector2i calculateInnerViewportOffset(PhysicalRegion innerRegion, PhysicalRegion outerRegion, ViewportImageSize outerViewportImageSize) {
         return ViewHelper.convertImageToScreenDisplacement(innerRegion.getUpperLeftCorner().subtract(outerRegion.getUpperLeftCorner()), outerRegion, outerViewportImageSize).negateY();
     }
  

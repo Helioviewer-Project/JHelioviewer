@@ -80,7 +80,6 @@ public class Camera {
 	
 	public Matrix4d getTransformation(){
 		Matrix4d transformation = this.rotation.toMatrix();
-		System.out.println("scale : " + (1/Constants.SUN_RADIUS));
 		transformation.addTranslation(translation);
 		return transformation;
 	}
@@ -89,7 +88,6 @@ public class Camera {
 		Quaternion3d newRotation = this.rotation.copy();
 		newRotation.rotate(rotation);
 		Matrix4d transformation = newRotation.toMatrix();
-		System.out.println("scale : " + (1/Constants.SUN_RADIUS));
 		transformation.addTranslation(translation);
 		return transformation;
 	}
@@ -120,7 +118,6 @@ public class Camera {
     
     private void animate(){
         for (Iterator<CameraAnimation> iter = this.cameraAnimations.iterator(); iter.hasNext();) {
-        	System.out.println("animate Camera!!!");
             CameraAnimation animation = iter.next();
             if (!animation.isFinished()) {
                 animation.animate(this);

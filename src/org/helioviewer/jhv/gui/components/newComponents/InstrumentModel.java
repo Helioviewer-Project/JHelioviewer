@@ -33,7 +33,6 @@ public class InstrumentModel {
 	
 	public static void main(String[] args) {
 		InstrumentModel instrumentModel = InstrumentModel.singelton;
-		System.out.println(instrumentModel);
 	}
 	
 	public void initModel(){

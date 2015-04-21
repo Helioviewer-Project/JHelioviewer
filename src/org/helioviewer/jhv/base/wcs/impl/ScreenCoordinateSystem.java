@@ -5,7 +5,7 @@ import org.helioviewer.jhv.base.wcs.CoordinateConversion;
 import org.helioviewer.jhv.base.wcs.CoordinateSystem;
 import org.helioviewer.jhv.base.wcs.Unit;
 import org.helioviewer.jhv.base.wcs.conversion.ScreenToSolarImageConversion;
-import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 import org.helioviewer.jhv.viewmodel.viewport.Viewport;
 
 /**
@@ -18,9 +18,9 @@ import org.helioviewer.jhv.viewmodel.viewport.Viewport;
 public class ScreenCoordinateSystem extends Cartesian2DCoordinateSystem {
 
     private Viewport viewport;
-    private Region region;
+    private PhysicalRegion region;
 
-    public ScreenCoordinateSystem(Viewport viewport, Region region) {
+    public ScreenCoordinateSystem(Viewport viewport, PhysicalRegion region) {
         super(Unit.Pixel);
         this.viewport = viewport;
         this.region = region;
@@ -38,7 +38,7 @@ public class ScreenCoordinateSystem extends Cartesian2DCoordinateSystem {
         return viewport;
     }
 
-    public Region getRegion() {
+    public PhysicalRegion getRegion() {
         return this.region;
     }
 }

@@ -1,7 +1,7 @@
 package org.helioviewer.jhv.viewmodel.view;
 
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
-import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 
 /**
  * View to manage the region of the image currently shown.
@@ -42,7 +42,7 @@ public interface RegionView extends View {
      * @return True, if the region has changed, false otherwise
      * @see #getRegion
      */
-    public boolean setRegion(Region r, ChangeEvent event);
+    public boolean setRegion(PhysicalRegion r, ChangeEvent event);
 
     /**
      * Returns the current region.
@@ -50,5 +50,5 @@ public interface RegionView extends View {
      * @return Current region
      * @see #setRegion
      */
-    public Region getLastDecodedRegion();
+    public PhysicalRegion getLastDecodedRegion();
 }

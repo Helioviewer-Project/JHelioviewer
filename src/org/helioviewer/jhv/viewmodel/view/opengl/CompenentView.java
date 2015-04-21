@@ -290,7 +290,7 @@ public class CompenentView extends GL3DComponentView implements
 		gl.glEnable(GL2.GL_TEXTURE_2D);
 		gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
 		gl.glActiveTexture(GL.GL_TEXTURE0);
-		gl.glBindTexture(GL2.GL_TEXTURE_2D, layer.getTexture());
+		gl.glBindTexture(GL2.GL_TEXTURE_2D, layer.getTexture(this.cameraNEW));
 
 		gl.glEnable(GL2.GL_VERTEX_PROGRAM_ARB);
 		gl.glEnable(GL2.GL_FRAGMENT_PROGRAM_ARB);
@@ -302,6 +302,7 @@ public class CompenentView extends GL3DComponentView implements
 
 		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "texture"), 0);
 		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "lut"), 1);
+		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "fov"), (float)Math.toRadians(cameraNEW.getFOV()));
 		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "sunRadius"),
 				(float) Constants.SUN_RADIUS);
 		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "physicalImageWidth"), (float)metaData.getPhysicalImageWidth());
@@ -595,5 +596,11 @@ public class CompenentView extends GL3DComponentView implements
 	public void timeStampChanged(LocalDateTime localDateTime) {
 		System.out.println("timeStampChanged");
 		this.canvas.repaint();
+	}
+	
+	@Override
+	public Camera getCurrentCamera() {
+		// TODO Auto-generated method stub
+		return cameraNEW;
 	}
 }

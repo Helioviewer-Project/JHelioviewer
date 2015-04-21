@@ -1,6 +1,6 @@
 package org.helioviewer.jhv.viewmodel.filter;
 
-import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 
 /**
  * Filter which also receives the region of the image.
@@ -26,6 +26,6 @@ public interface RegionFilter extends Filter {
      * @param region
      *            Region of the image.
      */
-    public void setRegion(Region region);
+    public void setRegion(PhysicalRegion region);
 
 }

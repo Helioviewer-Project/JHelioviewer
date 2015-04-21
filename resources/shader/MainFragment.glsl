@@ -16,6 +16,7 @@ uniform int greenChannel;
 uniform int blueChannel;
 uniform vec2 sunOffset;
 uniform float opacityCorona;
+uniform float fov;
 
 struct Sphere{
 	vec3 center;
@@ -68,10 +69,9 @@ void main(void)
 	/* clear color */
 	float z = 4.015;
 	vec2 uv = gl_TexCoord[0].xy * vec2(1.,-1.) + vec2(0,1);
-	float fov = 0.08748866352592401;
 	/* calculate viewport */
-	float width = tan(fov) * 2.;	
-	float height = tan(fov) * 2.;
+	float width = tan(fov);
+	float height = tan(fov);
 	/* MV --> z */
 	
 	vec3 rayOrigin = (vec4(0,0,1,1) * transformation).xyz; 

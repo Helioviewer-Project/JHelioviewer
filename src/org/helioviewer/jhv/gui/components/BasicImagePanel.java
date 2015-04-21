@@ -22,7 +22,7 @@ import org.helioviewer.jhv.viewmodel.changeevent.RegionChangedReason;
 import org.helioviewer.jhv.viewmodel.changeevent.SubImageDataChangedReason;
 import org.helioviewer.jhv.viewmodel.changeevent.ViewChainChangedReason;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 import org.helioviewer.jhv.viewmodel.renderer.screen.ScreenRenderer;
 import org.helioviewer.jhv.viewmodel.view.MetaDataView;
 import org.helioviewer.jhv.viewmodel.view.RegionView;
@@ -195,7 +195,7 @@ public class BasicImagePanel extends JPanel implements ComponentListener, ViewLi
                 viewportView.setViewport(getViewport(), new ChangeEvent());
 
             Viewport v = viewportView.getViewport();
-            Region r = regionView.getLastDecodedRegion();
+            PhysicalRegion r = regionView.getLastDecodedRegion();
             MetaData m = metaDataView.getMetaData();
 
             if (v != null && r != null && m != null)
@@ -348,7 +348,7 @@ public class BasicImagePanel extends JPanel implements ComponentListener, ViewLi
                     viewportView.setViewport(getViewport(), new ChangeEvent());
 
                 Viewport v = viewportView.getViewport();
-                Region r = regionView.getLastDecodedRegion();
+                PhysicalRegion r = regionView.getLastDecodedRegion();
                 MetaData m = metaDataView.getMetaData();
 
                 if (v != null && r != null && m != null)
@@ -389,7 +389,7 @@ public class BasicImagePanel extends JPanel implements ComponentListener, ViewLi
                 viewportView.setViewport(getViewport(), new ChangeEvent());
 
             Viewport v = viewportView.getViewport();
-            Region r = regionView.getLastDecodedRegion();
+            PhysicalRegion r = regionView.getLastDecodedRegion();
             MetaData m = metaDataView.getMetaData();
 
             if (v != null && r != null && m != null)

@@ -9,7 +9,7 @@ import org.helioviewer.jhv.opengl.scenegraph.GL3DMesh;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.changeevent.ImageTextureRecapturedReason;
-import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.ViewListener;
 import org.helioviewer.jhv.viewmodel.view.opengl.GLTextureHelper;
@@ -25,7 +25,7 @@ public class GL3DFramebufferImage extends GL3DMesh implements ViewListener {
     // private Vector2dDouble textureScale;
     private boolean recreateMesh = true;
 
-    private Region region;
+    private PhysicalRegion region;
 
     // private Viewport viewport;
     // private MetaData metaData;

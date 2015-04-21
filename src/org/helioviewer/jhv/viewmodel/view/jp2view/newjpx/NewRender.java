@@ -78,7 +78,6 @@ public class NewRender {
 			Kdu_dims dimsRef1 = new Kdu_dims(), dimsRef2 = new Kdu_dims();
 			
 			compositor.Add_ilayer(layerNumber, dimsRef1, dimsRef2);
-			System.out.println("subImage : " + subImage);
 			compositor.Set_max_quality_layers(quality);
 			compositor.Set_scale(false, false, false,
 					zoomPercent);
@@ -113,7 +112,6 @@ public class NewRender {
 		            int[] region_buf = new int[region_buf_size];
 			          compositorBuf.Get_region(newRegion,region_buf);
 			          intBuffer.put(region_buf);			          
-			          System.out.println(region_buf);
 		          }
 			}
 			

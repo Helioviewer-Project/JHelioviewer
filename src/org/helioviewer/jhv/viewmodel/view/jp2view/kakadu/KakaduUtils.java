@@ -1,6 +1,7 @@
 	package org.helioviewer.jhv.viewmodel.view.jp2view.kakadu;
 
 import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -94,6 +95,23 @@ public class KakaduUtils {
         return dims;
     }
 
+    public static Kdu_dims rectToKdu_dims(Rectangle rectangle) {
+        Kdu_dims dims = null;
+        try {
+            dims = new Kdu_dims();
+            Kdu_coords pos = dims.Access_pos();
+            Kdu_coords siz = dims.Access_size();
+            pos.Set_x(rectangle.x);
+            pos.Set_y(rectangle.y);
+            siz.Set_x(rectangle.width);
+            siz.Set_y(rectangle.height);
+        } catch (KduException ex) {
+            ex.printStackTrace();
+        }
+        return dims;
+    }
+
+    
     /**
      * Downloads all the necessary initial data of an image. In the case of this
      * application, it includes the main header as well as the metadata.

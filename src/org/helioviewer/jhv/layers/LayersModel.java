@@ -41,7 +41,7 @@ import org.helioviewer.jhv.viewmodel.changeevent.LayerChangedReason.LayerChangeT
 import org.helioviewer.jhv.viewmodel.io.APIResponse;
 import org.helioviewer.jhv.viewmodel.io.APIResponseDump;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 import org.helioviewer.jhv.viewmodel.region.StaticRegion;
 import org.helioviewer.jhv.viewmodel.view.FilterView;
 import org.helioviewer.jhv.viewmodel.view.ImageInfoView;
@@ -1508,7 +1508,7 @@ public class LayersModel implements ViewListener
 
         // store region
         RegionView regionView=GuiState3DWCS.mainComponentView.getAdapter(RegionView.class);
-        Region region=regionView.getLastDecodedRegion();
+        PhysicalRegion region=regionView.getLastDecodedRegion();
         String regionStr=
                 String.format(Locale.ENGLISH,"<region x=\"%.4f\" y=\"%.4f\" width=\"%.4f\" height=\"%.4f\"/>%n",region.getCornerX(),region.getCornerY(),region.getWidth(),region.getHeight());
         xml.append(tab).append(regionStr);
@@ -1988,7 +1988,7 @@ public class LayersModel implements ViewListener
                 System.out.println(">> LayersModel.StateParser.setupLayers() > Setting up RegionView");
                 RegionViewState regionViewState=fullSetting.regionViewState;
                 RegionView regionView=LayersModel.getSingletonInstance().getLayeredView().getAdapter(RegionView.class);
-                Region region=
+                PhysicalRegion region=
                         StaticRegion.createAdaptedRegion(regionViewState.regionX,regionViewState.regionY,regionViewState.regionWidth,regionViewState.regionHeight);
                 regionView.setRegion(region,new ChangeEvent());
             }

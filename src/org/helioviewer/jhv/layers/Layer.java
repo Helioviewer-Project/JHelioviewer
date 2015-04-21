@@ -1,12 +1,16 @@
 package org.helioviewer.jhv.layers;
 
+import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 import java.time.LocalDateTime;
 
 import javax.media.opengl.GL2;
 
+import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.internal_plugins.filter.SOHOLUTFilterPlugin.DefaultTable;
 import org.helioviewer.jhv.layers.filter.LUT;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
+import org.helioviewer.jhv.opengl.camera.Camera;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 import org.helioviewer.jhv.viewmodel.view.jp2view.image.SubImage;
@@ -123,7 +127,7 @@ public class Layer implements LayerInterface{
 	}
 
 	@Override
-	public void setImageData(LocalDateTime dateTime, SubImage subImage) {
+	public void setImageData(LocalDateTime dateTime) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -148,6 +152,24 @@ public class Layer implements LayerInterface{
 
 	@Override
 	public MetaData getMetaData() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setImageRegion(Rectangle2D rectangle) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getTexture(Camera camera) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public ImageRegion getImageRegion() {
 		// TODO Auto-generated method stub
 		return null;
 	}

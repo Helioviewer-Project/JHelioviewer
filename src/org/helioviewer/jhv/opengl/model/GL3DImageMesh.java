@@ -7,7 +7,7 @@ import org.helioviewer.jhv.opengl.scenegraph.GL3DMesh;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.changeevent.ImageTextureRecapturedReason;
-import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 import org.helioviewer.jhv.viewmodel.view.View;
 import org.helioviewer.jhv.viewmodel.view.ViewListener;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DImageTextureView;
@@ -32,7 +32,7 @@ public abstract class GL3DImageMesh extends GL3DMesh {
     protected GLVertexShaderProgram vertexShaderProgram;
     protected GLFragmentShaderProgram fragmentShaderProgram;
 
-    protected Region capturedRegion;
+    protected PhysicalRegion capturedRegion;
 
     private boolean reshapeRequested = false;
     

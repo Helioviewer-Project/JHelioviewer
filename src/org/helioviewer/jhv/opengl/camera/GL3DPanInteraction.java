@@ -11,7 +11,7 @@ import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState.VISUAL_TYPE;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
 import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRayTracer;
-import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
 import org.helioviewer.jhv.viewmodel.view.MetaDataView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DSceneGraphView;
@@ -86,7 +86,7 @@ public class GL3DPanInteraction extends GL3DDefaultInteraction {
 	
 	private void mousePressed2DFunction(MouseEvent e, GL3DCamera camera){		
 		if (LayersModel.getSingletonInstance().getActiveView() != null){
-		Region region = LayersModel.getSingletonInstance().getActiveView().getAdapter(MetaDataView.class).getMetaData().getPhysicalRegion();
+		PhysicalRegion region = LayersModel.getSingletonInstance().getActiveView().getAdapter(MetaDataView.class).getMetaData().getPhysicalRegion();
 		double halfWidth = region.getWidth() / 2;
 		double halfFOVRad = Math.toRadians(camera.getFOV() / 2.0);
 		double distance = halfWidth * Math.sin(Math.PI / 2 - halfFOVRad)

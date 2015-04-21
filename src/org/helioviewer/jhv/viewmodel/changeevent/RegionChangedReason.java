@@ -1,6 +1,6 @@
 package org.helioviewer.jhv.viewmodel.changeevent;
 
-import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 import org.helioviewer.jhv.viewmodel.view.View;
 
 /**
@@ -18,7 +18,7 @@ public final class RegionChangedReason implements ChangedReason {
     private View view;
 
     // memorizes the new region
-    private Region region;
+    private PhysicalRegion region;
 
     // ///////////////////////////////////////////////////////////////
     // Methods
@@ -32,7 +32,7 @@ public final class RegionChangedReason implements ChangedReason {
      * @param aNewRegion
      *            New defined region.
      * */
-    public RegionChangedReason(View aView, Region aNewRegion) {
+    public RegionChangedReason(View aView, PhysicalRegion aNewRegion) {
 
         // memorize view
         view = aView;
@@ -52,7 +52,7 @@ public final class RegionChangedReason implements ChangedReason {
      * 
      * @return new region.
      * */
-    public Region getNewRegion() {
+    public PhysicalRegion getNewRegion() {
         return region;
     }
 }

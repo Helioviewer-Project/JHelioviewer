@@ -12,7 +12,7 @@ import org.helioviewer.jhv.base.wcs.CoordinateVector;
 import org.helioviewer.jhv.base.wcs.impl.TextureCoordinateSystem;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DImageTextureView;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLFragmentShaderProgram;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLVertexShaderProgram;
@@ -37,7 +37,7 @@ public class GL3DImageCorona extends GL3DImageMesh {
     }
         
     public GL3DMeshPrimitive createMesh(GL3DState state, List<Vector3d> positions, List<Vector3d> normals, List<Vector2d> textCoords, List<Integer> indices, List<Vector4d> colors) {
-        Region region = this.capturedRegion;
+        PhysicalRegion region = this.capturedRegion;
     	if (region != null) {
     		MetaData metaData = this.layer.metaDataView.getMetaData();
     		
@@ -96,7 +96,7 @@ public class GL3DImageCorona extends GL3DImageMesh {
     }
     
     
-    public Region getCapturedRegion() { return capturedRegion; }
+    public PhysicalRegion getCapturedRegion() { return capturedRegion; }
     
     
     

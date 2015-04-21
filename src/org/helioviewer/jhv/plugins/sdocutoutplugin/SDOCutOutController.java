@@ -10,7 +10,7 @@ import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 import org.helioviewer.jhv.viewmodel.view.MetaDataView;
 import org.helioviewer.jhv.viewmodel.view.RegionView;
 import org.helioviewer.jhv.viewmodel.view.ViewHelper;
@@ -57,7 +57,7 @@ public class SDOCutOutController {
 	public Point getPositioninArcsec(Point position) {
     	// check region and viewport
     	RegionView regionView = LayersModel.getSingletonInstance().getActiveView().getAdapter(RegionView.class);
-    	Region region = regionView.getLastDecodedRegion();
+    	PhysicalRegion region = regionView.getLastDecodedRegion();
 		Viewport viewport = LayersModel.getSingletonInstance().getActiveView().getAdapter(ViewportView.class).getViewport();
 		MetaData metaData = LayersModel.getSingletonInstance().getActiveView().getAdapter(MetaDataView.class).getMetaData();
 		       	

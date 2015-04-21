@@ -141,7 +141,6 @@ public class NewLayerPanel extends JPanel implements NewLayerListener{
 		Object[][] data = new Object[GuiState3DWCS.layers.getLayerCount()][4];
 		int count = 0;
 		for (LayerInterface layer : GuiState3DWCS.layers.getLayers()){
-			System.out.println(layer.getName());
 			data[count][0] = layer.isVisible();
 			data[count][1] = layer.getName();
 			data[count][2] = layer.getTime();

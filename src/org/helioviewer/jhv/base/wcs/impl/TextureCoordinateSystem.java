@@ -6,7 +6,7 @@ import org.helioviewer.jhv.base.wcs.CoordinateConversion;
 import org.helioviewer.jhv.base.wcs.CoordinateSystem;
 import org.helioviewer.jhv.base.wcs.GenericCoordinateDimension;
 import org.helioviewer.jhv.base.wcs.Unit;
-import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 
 /**
  * The {@link TextureCoordinateSystem} defines texture coordinates of an image
@@ -17,10 +17,10 @@ import org.helioviewer.jhv.viewmodel.region.Region;
  * 
  */
 public class TextureCoordinateSystem extends Cartesian2DCoordinateSystem {
-    private Region region;
+    private PhysicalRegion region;
     private Vector2d textureScale;
 
-    public TextureCoordinateSystem(Vector2d textureScale, Region region) {
+    public TextureCoordinateSystem(Vector2d textureScale, PhysicalRegion region) {
         super(new GenericCoordinateDimension(Unit.Pixel, "Texture XCoordinate", 0, 1.0), new GenericCoordinateDimension(Unit.Pixel, "Texture YCoordinate", 0, 1.0));
 
         this.region = region;
@@ -31,7 +31,7 @@ public class TextureCoordinateSystem extends Cartesian2DCoordinateSystem {
         return super.getConversion(coordinateSystem);
     }
 
-    public Region getRegion() {
+    public PhysicalRegion getRegion() {
         return region;
     }
 

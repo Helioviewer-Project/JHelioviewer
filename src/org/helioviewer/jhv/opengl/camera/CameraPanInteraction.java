@@ -10,7 +10,7 @@ import org.helioviewer.jhv.opengl.raytrace.RayTrace;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace.Ray;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState.VISUAL_TYPE;
-import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 import org.helioviewer.jhv.viewmodel.view.MetaDataView;
 
 public class CameraPanInteraction extends CameraInteraction {
@@ -74,7 +74,7 @@ public class CameraPanInteraction extends CameraInteraction {
 	
 	private void mousePressed2DFunction(MouseEvent e){		
 		if (LayersModel.getSingletonInstance().getActiveView() != null){
-		Region region = LayersModel.getSingletonInstance().getActiveView().getAdapter(MetaDataView.class).getMetaData().getPhysicalRegion();
+		PhysicalRegion region = LayersModel.getSingletonInstance().getActiveView().getAdapter(MetaDataView.class).getMetaData().getPhysicalRegion();
 		double halfWidth = region.getWidth() / 2;
 		double halfFOVRad = Math.toRadians(camera.getFOV() / 2.0);
 		double distance = halfWidth * Math.sin(Math.PI / 2 - halfFOVRad)

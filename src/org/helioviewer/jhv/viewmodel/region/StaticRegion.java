@@ -114,8 +114,8 @@ public class StaticRegion implements BasicRegion {
      *            Vector2dDouble object which describes the size of the region.
      * @return a new RegionAdapter object.
      * */
-    public static Region createAdaptedRegion(final Vector2d newLowerLeftCorner, final Vector2d newSizeVector) {
-        return new Region(new StaticRegion(newLowerLeftCorner, newSizeVector));
+    public static PhysicalRegion createAdaptedRegion(final Vector2d newLowerLeftCorner, final Vector2d newSizeVector) {
+        return new PhysicalRegion(new StaticRegion(newLowerLeftCorner, newSizeVector));
     }
 
     /**
@@ -131,8 +131,8 @@ public class StaticRegion implements BasicRegion {
      *            height of the region.
      * @return a new RegionAdapter object.
      * */
-    public static Region createAdaptedRegion(final double newCornerX, final double newCornerY, final double newWidth, final double newHeight) {
-        return new Region(new StaticRegion(newCornerX, newCornerY, newWidth, newHeight));
+    public static PhysicalRegion createAdaptedRegion(final double newCornerX, final double newCornerY, final double newWidth, final double newHeight) {
+        return new PhysicalRegion(new StaticRegion(newCornerX, newCornerY, newWidth, newHeight));
     }
 
     /**
@@ -146,8 +146,8 @@ public class StaticRegion implements BasicRegion {
      *            Vector2dDouble object which describes the size of the region.
      * @return a new RegionAdapter object.
      * */
-    public static Region createAdaptedRegion(final double newLowerLeftX, final double newLowerLeftY, final Vector2d newSizeVector) {
-        return new Region(new StaticRegion(newLowerLeftX, newLowerLeftY, newSizeVector));
+    public static PhysicalRegion createAdaptedRegion(final double newLowerLeftX, final double newLowerLeftY, final Vector2d newSizeVector) {
+        return new PhysicalRegion(new StaticRegion(newLowerLeftX, newLowerLeftY, newSizeVector));
     }
 
     /**
@@ -162,8 +162,8 @@ public class StaticRegion implements BasicRegion {
      *            height of the region.
      * @return a new RegionAdapter object.
      * */
-    public static Region createAdaptedRegion(final Vector2d newLowerLeftCorner, final double newWidth, final double newHeight) {
-        return new Region(new StaticRegion(newLowerLeftCorner, newWidth, newHeight));
+    public static PhysicalRegion createAdaptedRegion(final Vector2d newLowerLeftCorner, final double newWidth, final double newHeight) {
+        return new PhysicalRegion(new StaticRegion(newLowerLeftCorner, newWidth, newHeight));
     }
 
     /**
@@ -174,8 +174,8 @@ public class StaticRegion implements BasicRegion {
      *            of a region.
      * @return a new RegionAdapter object.
      * */
-    public static Region createAdaptedRegion(final RectangleDouble newRectangle) {
-        return new Region(new StaticRegion(newRectangle));
+    public static PhysicalRegion createAdaptedRegion(final RectangleDouble newRectangle) {
+        return new PhysicalRegion(new StaticRegion(newRectangle));
     }
 
 }

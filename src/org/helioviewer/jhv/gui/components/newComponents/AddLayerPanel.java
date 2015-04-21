@@ -96,7 +96,6 @@ public class AddLayerPanel extends JDialog {
 				lblInstrument.setText("");
 				lblFilter1.setText("");
 				lblFilter2.setText("");
-				System.out.println(observatory.getUiLabels().size());
 				lblInstrument.setVisible(true);
 				lblFilter1.setVisible(true);
 				lblFilter2.setVisible(true);

@@ -10,7 +10,7 @@ import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
-import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 import org.helioviewer.jhv.viewmodel.region.StaticRegion;
 import org.helioviewer.jhv.viewmodel.view.jp2view.ImmutableDateTime;
 
@@ -228,7 +228,7 @@ public abstract class MetaData {
     /**
      * {@inheritDoc}
      */
-    public synchronized Region getPhysicalRegion() {
+    public synchronized PhysicalRegion getPhysicalRegion() {
         return StaticRegion.createAdaptedRegion(lowerLeftCorner, sizeVector);
     }
 

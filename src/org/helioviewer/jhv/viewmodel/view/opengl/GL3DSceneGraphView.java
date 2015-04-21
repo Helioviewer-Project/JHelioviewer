@@ -34,7 +34,7 @@ import org.helioviewer.jhv.opengl.scenegraph.visuals.GL3DArrow;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.changeevent.LayerChangedReason;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 import org.helioviewer.jhv.viewmodel.view.LayeredView;
 import org.helioviewer.jhv.viewmodel.view.MetaDataView;
 import org.helioviewer.jhv.viewmodel.view.RegionView;
@@ -266,7 +266,7 @@ public class GL3DSceneGraphView extends AbstractGL3DView implements GL3DView {
 				MetaDataView metaDataView = getAdapter(MetaDataView.class);
 				if (metaDataView != null && metaDataView.getMetaData() != null) {
 					View view = LayersModel.getSingletonInstance().getActiveView();
-					Region region = view.getAdapter(MetaDataView.class).getMetaData()
+					PhysicalRegion region = view.getAdapter(MetaDataView.class).getMetaData()
 							.getPhysicalRegion();
 					double halfWidth = region.getWidth() / 2;
 					double halfFOVRad = Math.toRadians(camera.getFOV() / 2);

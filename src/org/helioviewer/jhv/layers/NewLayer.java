@@ -1,11 +1,16 @@
 package org.helioviewer.jhv.layers;
 
 import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
+import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
 import java.util.concurrent.ExecutionException;
 
+import org.helioviewer.jhv.base.ImageRegion;
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.layers.filter.LUT;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
+import org.helioviewer.jhv.opengl.camera.Camera;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 import org.helioviewer.jhv.viewmodel.view.jp2view.image.SubImage;
@@ -77,30 +82,34 @@ public class NewLayer implements LayerInterface{
 
 	private OpenGLHelper openGLHelper;
 	private MetaData metaData;
+	
+	private ImageRegion imageRegion;
+	
+	private LayerRayTrace layerRayTrace;
 		
 	public NewLayer(int sourceID, NewRender newRender, NewCache newCache) {
-		this.ultimateLayer = new UltimateLayer(sourceID, newCache, newRender);
+		this.ultimateLayer = new UltimateLayer(sourceID, newCache, newRender, this);
 		this.initGL();
 	}
 	
 	public NewLayer(String uri, NewRender newRender) {
-		System.out.println(uri);
-		this.ultimateLayer = new UltimateLayer(uri, newRender);
+		this.ultimateLayer = new UltimateLayer(uri, newRender, this);
 		this.initGL();
 		metaData = this.ultimateLayer.getMetaData(0);
-		
+		layerRayTrace = new LayerRayTrace(GuiState3DWCS.mainComponentView.getCurrentCamera(), this);
 	}
 	
 	@Override
-	public int getTexture() {
-		SubImage subImage = new SubImage(new Rectangle(0, 0, 2048, 2048));
-		updateTexture(TimeLine.SINGLETON.getCurrentDateTime(), subImage);
+	public int getTexture(Camera camera) {
+		updateTexture(TimeLine.SINGLETON.getCurrentDateTime(), camera);
 		return texture;
 	}
 	
-	private void updateTexture(LocalDateTime currentDateTime, SubImage subImage){
+	private void updateTexture(LocalDateTime currentDateTime, Camera camera){
 		try {
-			openGLHelper.bindByteBufferToGLTexture(ultimateLayer.getImageData(currentDateTime, subImage), subImage.width, subImage.height);
+			ByteBuffer byteBuffer = ultimateLayer.getImageData(currentDateTime, camera);
+			if (byteBuffer != null)
+				openGLHelper.bindByteBufferToGLTexture(byteBuffer, 1024, 1024);
 			
 		} catch (InterruptedException | ExecutionException e) {
 			// TODO Auto-generated catch block
@@ -137,8 +146,7 @@ public class NewLayer implements LayerInterface{
 	}
 
 	@Override
-	public void setImageData(LocalDateTime dateTime, SubImage subImage) throws InterruptedException, ExecutionException{
-		this.ultimateLayer.getImageData(dateTime, subImage);
+	public void setImageData(LocalDateTime dateTime) throws InterruptedException, ExecutionException{
 	}
 
 	@Override
@@ -160,6 +168,16 @@ public class NewLayer implements LayerInterface{
 	@Override
 	public MetaData getMetaData() {
 		return metaData;
+	}
+
+	@Override
+	public void setImageRegion(Rectangle2D region) {
+		imageRegion = new ImageRegion();
+		imageRegion.setImageData(region);
+	}
+
+	public ImageRegion getImageRegion() {
+		return imageRegion;
 	}
 
 }

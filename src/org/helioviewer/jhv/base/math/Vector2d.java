@@ -89,6 +89,10 @@ public final class Vector2d {
     public static Vector2d scale(final Vector2d v, final double d) {
         return new Vector2d(v.x * d, v.y * d);
     }
+    
+    public static Vector2d scale(final Vector2i v, final double d){
+    	return new Vector2d(v.getX() * d, v.getY() * d);
+    }
 
     public Vector2d negate() {
         return new Vector2d(-x, -y);

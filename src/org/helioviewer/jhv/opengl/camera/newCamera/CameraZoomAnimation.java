@@ -30,9 +30,7 @@ public class CameraZoomAnimation implements CameraAnimation {
 
     public CameraZoomAnimation(double distanceToTravel, long duration) {
         this.distanceToTravel = distanceToTravel;
-        System.out.println("distance to Travel : " + distanceToTravel);
         this.timeLeft = duration;
-        System.out.println("duration : " + duration);
         this.distanceDelta = distanceToTravel / this.timeLeft;
         GuiState3DWCS.mainComponentView.regristryAnimation(duration);
     }
@@ -47,10 +45,7 @@ public class CameraZoomAnimation implements CameraAnimation {
         }
 
         long timeDelta = System.currentTimeMillis() - lastAnimationTime;
-        System.out.println("targetDistance : " + this.targetDistance);
-        System.out.println("z              : " + camera.getTranslation().z);
         this.timeLeft -= timeDelta;
-        System.out.println("timeLeft : " + this.timeLeft);
         if (timeLeft <= 0) {
         	camera.setZTranslation(targetDistance);
         } else {

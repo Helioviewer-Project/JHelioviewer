@@ -25,7 +25,7 @@ import org.helioviewer.jhv.viewmodel.imageformat.SingleChannelImageFormat;
 import org.helioviewer.jhv.viewmodel.imagetransport.Byte8ImageTransport;
 import org.helioviewer.jhv.viewmodel.imagetransport.Int32ImageTransport;
 import org.helioviewer.jhv.viewmodel.imagetransport.Short16ImageTransport;
-import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 import org.helioviewer.jhv.viewmodel.renderer.GLCommonRenderGraphics;
 import org.helioviewer.jhv.viewmodel.view.opengl.shader.GLTextureCoordinate;
 
@@ -203,7 +203,7 @@ public class GLTextureHelper {
 	 * @param region
 	 *            Position and size to draw the texture
 	 */
-	public void renderTextureToScreen(GL2 gl, Region region) {
+	public void renderTextureToScreen(GL2 gl, PhysicalRegion region) {
 		Vector2d lowerleftCorner = region.getLowerLeftCorner();
 		Vector2d size = region.getSize();
 
@@ -294,7 +294,7 @@ public class GLTextureHelper {
 	 * @param source
 	 *            Image data to draw to the screen
 	 */
-	public void renderImageDataToScreen(GL2 gl, Region region, ImageData source) {
+	public void renderImageDataToScreen(GL2 gl, PhysicalRegion region, ImageData source) {
 
 		gl.glActiveTexture(GL2.GL_TEXTURE0);
 		this.checkGLErrors(gl, this + ".afterActiveTexture");

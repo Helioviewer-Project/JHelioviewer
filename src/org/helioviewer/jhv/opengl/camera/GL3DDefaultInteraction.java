@@ -4,7 +4,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
 import org.helioviewer.jhv.layers.LayersModel;
-import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 import org.helioviewer.jhv.viewmodel.view.MetaDataView;
 import org.helioviewer.jhv.viewmodel.view.opengl.GL3DSceneGraphView;
 
@@ -40,7 +40,7 @@ public abstract class GL3DDefaultInteraction extends GL3DInteraction {
     public void reset() {
         MetaDataView view = sceneGraphView.getAdapter(MetaDataView.class);
         if (view != null && view.getMetaData() != null) {
-            Region region = view.getMetaData().getPhysicalRegion();
+            PhysicalRegion region = view.getMetaData().getPhysicalRegion();
             double halfWidth = region.getWidth() / 2;
             double halfFOVRad = Math.toRadians(camera.getFOV() / 2);
             double distance = halfWidth * Math.sin(Math.PI / 2 - halfFOVRad) / Math.sin(halfFOVRad);

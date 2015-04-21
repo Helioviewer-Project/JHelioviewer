@@ -18,7 +18,7 @@ import org.helioviewer.jhv.viewmodel.changeevent.ViewportChangedReason;
 import org.helioviewer.jhv.viewmodel.imagedata.ImageData;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.metadata.MetaDataFactory;
-import org.helioviewer.jhv.viewmodel.region.Region;
+import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 import org.helioviewer.jhv.viewmodel.view.AbstractView;
 import org.helioviewer.jhv.viewmodel.view.ImageInfoView;
 import org.helioviewer.jhv.viewmodel.view.MetaDataView;
@@ -63,7 +63,7 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
 
     // Member related to the view chain
     protected Viewport viewport;
-    protected Region region, lastDecodedRegion;
+    protected PhysicalRegion region, lastDecodedRegion;
     protected ImageData imageData;
     //protected MetaData metaData;
     protected MetaData metaData;
@@ -323,21 +323,21 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
     /**
      * {@inheritDoc}
      */
-    public Region getLastDecodedRegion() {
+    public PhysicalRegion getLastDecodedRegion() {
         return lastDecodedRegion;
     }
 
     /**
      * @return newest region, even if no new data has been retrieved, yet
      */
-    public Region getNewestRegion() {
+    public PhysicalRegion getNewestRegion() {
         return region;
     }
 
     /**
      * {@inheritDoc}
      */
-    public boolean setRegion(Region r, ChangeEvent event) {
+    public boolean setRegion(PhysicalRegion r, ChangeEvent event) {
 
         boolean changed = region == null ? r == null : !region.equals(r);
         region = r;
@@ -457,7 +457,7 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
      * 
      * <p>
      * To achieve this, calls
-     * {@link #calculateParameter(Viewport, Region, int, int)} with the current
+     * {@link #calculateParameter(Viewport, PhysicalRegion, int, int)} with the current
      * region and viewport and the given number of quality layers and frame
      * number.
      * 
@@ -491,7 +491,7 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
      *            Frame number to show (has to be 0 for single images)
      * @return Set of parameters used within the jp2-package
      */
-    protected JP2ImageParameter calculateParameter(Viewport v, Region r, int numQualityLayers, int frameNumber) {
+    protected JP2ImageParameter calculateParameter(Viewport v, PhysicalRegion r, int numQualityLayers, int frameNumber) {
         ViewportImageSize imageViewportDimension = ViewHelper.calculateViewportImageSize(v, r);
         MetaData metaData = getMetaData();
 
@@ -629,11 +629,11 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
      *            Area the image contains, to find the corresponding
      * @param compositionLayer
      *            Composition Layer rendered, to update meta data
-     *            {@link org.helioviewer.jhv.viewmodel.region.Region}
+     *            {@link org.helioviewer.jhv.viewmodel.region.PhysicalRegion}
      */
     void setSubimageData(ImageData newImageData, SubImage roi, int compositionLayer) {
         imageData = newImageData;
-        Region lastRegionSaved = lastDecodedRegion;
+        PhysicalRegion lastRegionSaved = lastDecodedRegion;
         subImageBuffer.setLastRegion(roi);
         this.event.addReason(new RegionUpdatedReason(this, lastDecodedRegion));
 
@@ -698,7 +698,7 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
 
     /**
      * Private class for remembering the
-     * {@link org.helioviewer.jhv.viewmodel.region.Region} corresponding to
+     * {@link org.helioviewer.jhv.viewmodel.region.PhysicalRegion} corresponding to
      * {@link org.helioviewer.jhv.viewmodel.view.jp2view.image.SubImage}.
      * 
      * <p>
@@ -717,7 +717,7 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
          * @param subImage
          * @param subImageRegion
          */
-        public void putSubImage(SubImage subImage, Region subImageRegion) {
+        public void putSubImage(SubImage subImage, PhysicalRegion subImageRegion) {
             SubImageRegion newEntry = new SubImageRegion();
             
             newEntry.subImage = subImage;
@@ -750,7 +750,7 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
          */
         private class SubImageRegion {
             public SubImage subImage;
-            public Region region;
+            public PhysicalRegion region;
         }
     }
 }
