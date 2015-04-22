@@ -81,7 +81,6 @@ public class NewRender {
 			compositor.Set_max_quality_layers(quality);
 			compositor.Set_scale(false, false, false,
 					zoomPercent);
-
 			Kdu_dims requestedBufferedRegion = KakaduUtils.roiToKdu_dims(subImage);
 			
 			compositor.Set_buffer_surface(requestedBufferedRegion);

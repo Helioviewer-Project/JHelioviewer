@@ -78,14 +78,14 @@ public class CompenentView extends GL3DComponentView implements
 		TimeLine.SINGLETON.addListener(this);
 		animations = new CopyOnWriteArrayList<RenderAnimation>();
 		lutMap = new HashMap<String, Integer>();
+		this.cameraNEW = new Camera();
+		this.cameraNEW.init(this.canvas);
+		this.cameraNEW.addCameraListener(this);
 		this.canvas.addMouseListener(this);
 		this.canvas.addMouseMotionListener(this);
 		this.canvas.addGLEventListener(this);
 		this.canvas.addMouseWheelListener(this);
 		loadLutFromFile("/UltimateLookupTable.txt");
-		this.cameraNEW = new Camera();
-		this.cameraNEW.init(this.canvas);
-		this.cameraNEW.addCameraListener(this);
 		layers = GuiState3DWCS.layers;
 	}
 

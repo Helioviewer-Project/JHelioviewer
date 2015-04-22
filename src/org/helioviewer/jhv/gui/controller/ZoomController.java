@@ -41,8 +41,8 @@ public class ZoomController {
 			if (region != null && camera != null) {
 				Dimension dimension = GuiState3DWCS.mainComponentView.getCanavasSize();
 				double minCanvasDimension = dimension.getHeight();
-		        if (!Boolean.parseBoolean(Settings.getProperty("default.display.highDPI")))
-		        	minCanvasDimension /= 2.0;
+		        //if (!Boolean.parseBoolean(Settings.getProperty("default.display.highDPI")))
+		        //	minCanvasDimension /= 2.0;
 	            double halfFOVRad = Math.toRadians(camera.getFOV() / 2.0);
 	            double distance = (minCanvasDimension/2.0 * unitsPerPixel) / Math.tan(halfFOVRad);
 

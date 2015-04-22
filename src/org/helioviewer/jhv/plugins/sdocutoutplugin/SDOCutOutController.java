@@ -64,7 +64,7 @@ public class SDOCutOutController {
     	Point point;
 	    
 	    // get viewport image size
-	    ViewportImageSize vis = ViewHelper.calculateViewportImageSize(viewport, region);
+	    ViewportImageSize vis = ViewHelper.calculateViewportImageSize(viewport, region, false);
 
 	    // Helioviewer images have there physical lower left corner in a
 	    // negative area; real pixel based image at 0

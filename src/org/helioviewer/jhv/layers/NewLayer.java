@@ -83,7 +83,7 @@ public class NewLayer implements LayerInterface{
 	private OpenGLHelper openGLHelper;
 	private MetaData metaData;
 	
-	private ImageRegion imageRegion;
+	private ImageRegion imageRegion = new ImageRegion();
 	
 	private LayerRayTrace layerRayTrace;
 		

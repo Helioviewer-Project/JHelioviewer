@@ -75,7 +75,7 @@ public class LayerRayTrace implements CameraListener{
 		
 		Rectangle2D rectangle = new Rectangle2D.Double(minX, minY, maxX-minX, maxY-minY);
 		layer.setImageRegion(rectangle);
-		System.out.println(rectangle);
+		System.out.println("rect : " + rectangle);
 		
 		//frame.repaint();
 		//frame.setVisible(true);

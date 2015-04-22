@@ -176,14 +176,13 @@ public final class ViewHelper {
      *            visible region of the image
      * @return resulting image size of the region within the viewport
      */
-    public static ViewportImageSize calculateViewportImageSize(Viewport v, PhysicalRegion r) {
+    public static ViewportImageSize calculateViewportImageSize(Viewport v, PhysicalRegion r, boolean mapping) {
         if (v == null || r == null) {
             return null;
         }
         
-        if (!Boolean.parseBoolean(Settings.getProperty("default.display.highDPI")) && v.getWidth() == v.getHeight())
+        if (!Boolean.parseBoolean(Settings.getProperty("default.display.highDPI")) && mapping)
         	v = StaticViewport.createAdaptedViewport(v.getWidth()/2, v.getHeight()/2);
-        
         double screenMeterPerPixel;
         double screenSubImageWidth;
         double screenSubImageHeight;

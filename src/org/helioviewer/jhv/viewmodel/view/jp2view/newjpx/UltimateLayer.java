@@ -194,10 +194,12 @@ public class UltimateLayer {
 	}
 		
 	public ByteBuffer getImageData(LocalDateTime currentDateTime, Camera camera) throws InterruptedException, ExecutionException{
-		imageRegion.calculateScaleFactor(newLayer, camera);
+		newLayer.getImageRegion().calculateScaleFactor(newLayer, camera);
 		if (imageRegion != null && imageRegion.contains(this.newLayer.getImageRegion()) && imageRegion.compareScaleFactor(newLayer.getImageRegion())){
 			return null;
 		}
+		
+		imageRegion = newLayer.getImageRegion();
 		
 		
 		if (fileName != null) return getImageFromLocalFile(currentDateTime);

@@ -28,6 +28,7 @@ public class RayTrace {
 		Vector3d origin = camera.getTransformation().multiply(new Vector3d(0, 0, 1));
 		double newX = (x-GuiState3DWCS.mainComponentView.getComponent().getSize().getWidth()/2.)/ GuiState3DWCS.mainComponentView.getComponent().getSize().getWidth();
 		double newY = (y-GuiState3DWCS.mainComponentView.getComponent().getSize().getHeight()/2.)/ GuiState3DWCS.mainComponentView.getComponent().getSize().getHeight();
+
 		double width = Math.tan(Math.toRadians(camera.getFOV()));
 		Vector3d direction = new Vector3d(-newX * 2 * width, newY * 2 * width, -1).normalize();
 		Ray ray = new Ray(origin, direction);

@@ -136,7 +136,7 @@ public class HEKPlugin3dRenderer extends PhysicalRenderer3d
             double y=coords.y;
             double z=coords.z;
             Vector2d imageSize=
-                    ViewHelper.convertScreenToImageDisplacement(icon.getWidth(),icon.getHeight(),g.regionView.getLastDecodedRegion(),ViewHelper.calculateViewportImageSize(g.viewportView.getViewport(),g.regionView.getLastDecodedRegion()));
+                    ViewHelper.convertScreenToImageDisplacement(icon.getWidth(),icon.getHeight(),g.regionView.getLastDecodedRegion(),ViewHelper.calculateViewportImageSize(g.viewportView.getViewport(),g.regionView.getLastDecodedRegion(), false));
 
             g.commonRenderGraphics.bindImage(icon);
             g.gl.glTexParameteri(GL.GL_TEXTURE_2D,GL.GL_TEXTURE_MAG_FILTER,GL.GL_LINEAR);
