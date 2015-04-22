@@ -102,7 +102,7 @@ public class ImageRegion {
 	}
 	
 	public float getZoomFactor(){
-		return 0;
+		return nextZoomFraction(relativeScaleFactor * absolutScaleFactor);
 	}
 	
 	public static float nextZoomFraction(double zoomFactor){

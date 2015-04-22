@@ -115,7 +115,7 @@ public class GL3DImageRegionView extends AbstractGL3DView implements GL3DView, R
     protected boolean updateRegionAndViewport(ChangeEvent event) {
         MetaData metaData = this.metaDataView.getMetaData();
         PhysicalRegion region = ViewHelper.cropRegionToImage(detectedRegion, metaData);
-        ViewportImageSize requiredViewportSize = ViewHelper.calculateViewportImageSize(this.maximalViewport, region, false);
+        ViewportImageSize requiredViewportSize = ViewHelper.calculateViewportImageSize(this.maximalViewport, region, true);
         // Log.debug("GL3DImageRegionView: requiredViewportSize: "+requiredViewportSize.getSizeVector());
         this.innerViewport = StaticViewport.createAdaptedViewport(requiredViewportSize.getSizeVector());
         // Log.debug("GL3DImageRegionView: Inner Viewport: "+innerViewport);

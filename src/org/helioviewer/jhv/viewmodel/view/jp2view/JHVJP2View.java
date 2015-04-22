@@ -492,7 +492,7 @@ public class JHVJP2View extends AbstractView implements JP2View, ViewportView, R
      * @return Set of parameters used within the jp2-package
      */
     protected JP2ImageParameter calculateParameter(Viewport v, PhysicalRegion r, int numQualityLayers, int frameNumber) {
-        ViewportImageSize imageViewportDimension = ViewHelper.calculateViewportImageSize(v, r, true);
+        ViewportImageSize imageViewportDimension = ViewHelper.calculateViewportImageSize(v, r, false);
         MetaData metaData = getMetaData();
 
         // calculate total resolution of the image necessary to
