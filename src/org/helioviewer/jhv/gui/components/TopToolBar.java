@@ -363,6 +363,8 @@ public class TopToolBar extends JToolBar implements MouseListener {
     }
 
 	public void set2DMode() {
+        this.view2d.setSelected(true);
+        this.view3d.setSelected(false);
 		this.panButton.setSelected(true);
 		this.resetCamera.setEnabled(false);
 		this.rotateButton.setEnabled(false);
@@ -372,6 +374,8 @@ public class TopToolBar extends JToolBar implements MouseListener {
 	}
 	
 	public void set3DMode() {
+        this.view2d.setSelected(false);
+	    this.view3d.setSelected(true);
 		this.rotateButton.setSelected(true);
 		this.resetCamera.setEnabled(true);
 		this.rotateButton.setEnabled(true);

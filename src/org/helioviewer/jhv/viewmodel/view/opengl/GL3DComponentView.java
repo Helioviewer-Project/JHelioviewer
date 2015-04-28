@@ -39,11 +39,13 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
+import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.base.GL3DKeyController;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.ImageViewerGui;
+import org.helioviewer.jhv.gui.actions.View2DAction;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
@@ -291,6 +293,15 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 		viewportSize = new Vector2i(0, 0);
 		this.rebuildShadersRequest = true;
+		
+		if(Settings.getProperty("startup.cameramode").equals("2D"))
+    		SwingUtilities.invokeLater(new Runnable()
+            {
+                public void run()
+                {
+                    new View2DAction().actionPerformed(null);
+                }
+            });
 	}
 
 	public void reshape(GLAutoDrawable glAD, int x, int y, int width, int height) {

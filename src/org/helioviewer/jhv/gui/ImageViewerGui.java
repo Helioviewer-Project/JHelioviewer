@@ -59,7 +59,6 @@ import org.helioviewer.jhv.io.APIRequestManager;
 import org.helioviewer.jhv.io.CommandLineProcessor;
 import org.helioviewer.jhv.io.JHVRequest;
 import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterTabPanelManager;
-import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.view.FilterView;
 import org.helioviewer.jhv.viewmodel.view.ImageInfoView;
 import org.helioviewer.jhv.viewmodel.view.LayeredView;
@@ -247,8 +246,8 @@ public class ImageViewerGui {
                             if (imageInfoView.equals(subView.getAdapter(ImageInfoView.class))) {
 
                                 // Set the correct image scale
-                                MetaData imageSizeMetaData = imageInfoView.getAdapter(MetaDataView.class).getMetaData();
-                                ZoomController zoomController = new ZoomController();
+                                imageInfoView.getAdapter(MetaDataView.class).getMetaData();
+                                new ZoomController();
 
                                 // Lock movie
                                 if (jhvRequest.linked) {

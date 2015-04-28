@@ -89,7 +89,6 @@ public class GuiState3DWCS {
         ViewListenerDistributor.getSingletonInstance().setView(mainComponentView);
         // imageSelectorPanel.setLayeredView(mainComponentView.getAdapter(LayeredView.class));
         GL3DCameraSelectorModel.getInstance().activate(mainComponentView.getAdapter(GL3DSceneGraphView.class));
-        
     }
 
 
