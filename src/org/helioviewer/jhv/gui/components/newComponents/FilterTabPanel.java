@@ -17,8 +17,8 @@ import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.components.WheelSupport;
-import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.LayerInterface;
+import org.helioviewer.jhv.layers.LayerInterface.COLOR_CHANNEL_TYPE;
 import org.helioviewer.jhv.layers.NewLayerListener;
 import org.helioviewer.jhv.layers.filter.LUT;
 
@@ -43,7 +43,7 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 	private JCheckBox chckbxBlue;
 	private JToggleButton btnInverseColorTable;
 	private JLabel lblOpacity, lblSharpen, lblGamma, lblContrast;
-	private Layer activeLayer;
+	private LayerInterface activeLayer;
 	
 	private static final double GAMMA_FACTOR = 0.01 * Math.log(10);
 	
@@ -105,8 +105,8 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				lblOpacity.setText(opacitySlider.getValue() + "%");
-				if (activeLayer != null && activeLayer.opacity != opacitySlider.getValue() / 100.0){
-					activeLayer.opacity = opacitySlider.getValue() / 100.0;
+				if (activeLayer != null && activeLayer.getOpacity() != opacitySlider.getValue() / 100.0){
+					activeLayer.setOpacity(opacitySlider.getValue() / 100.0);
 					repaintComponent();
 				}
 			}
@@ -126,8 +126,8 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				lblSharpen.setText(sharpenSlider.getValue() + "%");
-				if (activeLayer != null && activeLayer.sharpen != sharpenSlider.getValue()/100.0){
-					activeLayer.sharpen = sharpenSlider.getValue()/100.0;
+				if (activeLayer != null && activeLayer.getSharpen() != sharpenSlider.getValue()/100.0){
+					activeLayer.setSharpen(sharpenSlider.getValue()/100.0);
 					repaintComponent();
 				}
 			}
@@ -156,8 +156,8 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 		            label = label.substring(0, 3);
 		        }
 				lblGamma.setText(label);
-				if (activeLayer != null && activeLayer.gamma != gammaValue){
-					activeLayer.gamma = gammaValue;
+				if (activeLayer != null && activeLayer.getGamma() != gammaValue){
+					activeLayer.setGamma(gammaValue);
 					repaintComponent();
 				}
 			}
@@ -182,8 +182,8 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				lblContrast.setText(contrastSlider.getValue() + "");
-				if (activeLayer != null &&  activeLayer.contrast != contrastSlider.getValue()/10.0){
-					activeLayer.contrast = contrastSlider.getValue() / 10.0;
+				if (activeLayer != null &&  activeLayer.getContrast() != contrastSlider.getValue()/10.0){
+					activeLayer.setContrast(contrastSlider.getValue() / 10.0);
 					repaintComponent();
 				}
 			}
@@ -202,9 +202,9 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 			
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				if (activeLayer != null && activeLayer.lut.idx != comboBoxColorTable.getSelectedIndex()){
-					activeLayer.lut.name = (String)comboBoxColorTable.getSelectedItem();
-					activeLayer.lut.idx = LUT.getLutPosition(activeLayer.lut.name);
+				if (activeLayer != null && activeLayer.getLut().idx != comboBoxColorTable.getSelectedIndex()){
+					activeLayer.getLut().name = (String)comboBoxColorTable.getSelectedItem();
+					activeLayer.getLut().idx = LUT.getLutPosition(activeLayer.getLut().name);
 					repaintComponent();
 				}
 			}
@@ -216,8 +216,8 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 			
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				if(activeLayer != null && activeLayer.lut.isInverted() != btnInverseColorTable.isSelected()){
-					activeLayer.lut.setInverted(btnInverseColorTable.isSelected());
+				if(activeLayer != null && activeLayer.getLut().isInverted() != btnInverseColorTable.isSelected()){
+					activeLayer.getLut().setInverted(btnInverseColorTable.isSelected());
 					repaintComponent();
 				}
 			}
@@ -231,8 +231,8 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 		chckbxRed.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				if (activeLayer != null && activeLayer.redChannel.isActivated() != chckbxRed.isSelected()){
-					activeLayer.redChannel.setActive(chckbxRed.isSelected());
+				if (activeLayer != null && activeLayer.getColorChannel(COLOR_CHANNEL_TYPE.RED).isActivated() != chckbxRed.isSelected()){
+					activeLayer.getColorChannel(COLOR_CHANNEL_TYPE.RED).setActive(chckbxRed.isSelected());
 					repaintComponent();
 				}
 			}
@@ -243,8 +243,8 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 		chckbxGreen.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				if (activeLayer != null && activeLayer.greenChannel.isActivated() != chckbxGreen.isSelected()){
-					activeLayer.greenChannel.setActive(chckbxGreen.isSelected());
+				if (activeLayer != null && activeLayer.getColorChannel(COLOR_CHANNEL_TYPE.GREEN).isActivated() != chckbxGreen.isSelected()){
+					activeLayer.getColorChannel(COLOR_CHANNEL_TYPE.GREEN).setActive(chckbxGreen.isSelected());
 					repaintComponent();
 
 				}
@@ -256,8 +256,8 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 		chckbxBlue.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				if (activeLayer != null && activeLayer.blueChannel.isActivated() != chckbxBlue.isSelected()){
-					activeLayer.blueChannel.setActive(chckbxBlue.isSelected());
+				if (activeLayer != null && activeLayer.getColorChannel(COLOR_CHANNEL_TYPE.BLUE).isActivated() != chckbxBlue.isSelected()){
+					activeLayer.getColorChannel(COLOR_CHANNEL_TYPE.BLUE).setActive(chckbxBlue.isSelected());
 					repaintComponent();
 				}
 			}
@@ -265,23 +265,24 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 
 	}
 
-	private void updateLayer(Layer layer){
+	private void updateLayer(LayerInterface layer){
 		this.activeLayer = layer;
-		this.contrastSlider.setValue((int)layer.contrast * 10);
-		this.gammaSlider.setValue((int) (Math.log(layer.gamma) / GAMMA_FACTOR));
-		this.opacitySlider.setValue((int) layer.opacity * 100);
-		this.sharpenSlider.setValue((int) layer.sharpen * 100);
-		this.comboBoxColorTable.setSelectedItem(layer.lut.name);
-		this.btnInverseColorTable.setSelected(layer.lut.isInverted());
-		this.chckbxRed.setSelected(layer.redChannel.isActivated());
-		this.chckbxGreen.setSelected(layer.greenChannel.isActivated());
-		this.chckbxBlue.setSelected(layer.blueChannel.isActivated());
+		this.contrastSlider.setValue((int)layer.getContrast() * 10);
+		this.gammaSlider.setValue((int) (Math.log(layer.getGamma()) / GAMMA_FACTOR));
+		this.opacitySlider.setValue((int) layer.getOpacity() * 100);
+		this.sharpenSlider.setValue((int) layer.getSharpen() * 100);
+		this.comboBoxColorTable.setSelectedItem(layer.getLut().name);
+		this.btnInverseColorTable.setSelected(layer.getLut().isInverted());
+		this.chckbxRed.setSelected(layer.getColorChannel(COLOR_CHANNEL_TYPE.RED).isActivated());
+		this.chckbxGreen.setSelected(layer.getColorChannel(COLOR_CHANNEL_TYPE.GREEN).isActivated());
+		this.chckbxBlue.setSelected(layer.getColorChannel(COLOR_CHANNEL_TYPE.BLUE).isActivated());
 	}
 	
 	@Override
 	public void newlayerAdded() {
-		if (GuiState3DWCS.layers.getActiveLayer() instanceof Layer)
-			this.updateLayer((Layer)GuiState3DWCS.layers.getActiveLayer());
+		LayerInterface activeLayer = GuiState3DWCS.layers.getActiveLayer();
+		if (activeLayer != null)
+			this.updateLayer(activeLayer);
 	}
 
 	@Override

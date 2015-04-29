@@ -12,6 +12,7 @@ import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState.VISUAL_TYPE;
 import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 import org.helioviewer.jhv.viewmodel.view.MetaDataView;
+import org.helioviewer.jhv.viewmodel.view.opengl.CompenentView;
 
 public class CameraPanInteraction extends CameraInteraction {
 	private double meterPerPixelWidth;
@@ -19,11 +20,11 @@ public class CameraPanInteraction extends CameraInteraction {
 	private double z;
 	private Vector3d defaultTranslation;
 
-	public CameraPanInteraction(Camera camera) {
-		super(camera);
-		// TODO Auto-generated constructor stub
+	public CameraPanInteraction(CompenentView compenentView) {
+		super(compenentView);
 	}
 
+	@Override
 	public void mousePressed(MouseEvent e) {
 		if (GL3DState.get().getState() == VISUAL_TYPE.MODE_3D){
 			this.mousePressed3DFunction(e);
@@ -34,17 +35,17 @@ public class CameraPanInteraction extends CameraInteraction {
 	}
 
 	private void mousePressed3DFunction(MouseEvent e){
-		RayTrace rayTrace = new RayTrace(camera);
-		Ray ray = rayTrace.cast(e.getX(), e.getY());
+		RayTrace rayTrace = new RayTrace();
+		Ray ray = rayTrace.cast(e.getX(), e.getY(), compenentView);
 		Vector3d p = ray.getHitpoint();
 		if (p != null) {
-			this.z = camera.getTranslation().z
-					+ this.camera.getRotation().toMatrix().inverse()
+			this.z = compenentView.getTranslation().z
+					+ compenentView.getRotation().toMatrix().inverse()
 							.multiply(p).z;
 
 			Dimension canvasSize = GuiState3DWCS.mainComponentView.getCanavasSize();
-			double halfClipNearHeight = Math.tanh(Math.toRadians(camera
-					.getFOV() / 2)) * camera.getClipNear();
+			double halfClipNearHeight = Math.tanh(Math.toRadians(CompenentView
+					.FOV / 2)) * CompenentView.CLIP_NEAR;
 			double halfClipNearWidth = halfClipNearHeight
 					/ canvasSize.getHeight() * canvasSize.getWidth();
 
@@ -59,12 +60,12 @@ public class CameraPanInteraction extends CameraInteraction {
 					* meterPerPixelHeight;
 			double xMeterInNearPlane = (x - canvasSize.getWidth() / 2.)
 					* meterPerPixelWidth;
-			double yAngle = Math.atan2(yMeterInNearPlane, camera.getClipNear());
-			double xAngle = Math.atan2(xMeterInNearPlane, camera.getClipNear());
+			double yAngle = Math.atan2(yMeterInNearPlane, CompenentView.CLIP_NEAR);
+			double xAngle = Math.atan2(xMeterInNearPlane, CompenentView.CLIP_NEAR);
 			double yPosition = Math.tanh(yAngle) * z;
 			double xPosition = Math.tanh(xAngle) * z;
 
-			this.defaultTranslation = camera.getTranslation();
+			this.defaultTranslation = compenentView.getTranslation();
 			this.defaultTranslation = new Vector3d(
 			        this.defaultTranslation.x + xPosition,
 			        this.defaultTranslation.y - yPosition,
@@ -76,11 +77,11 @@ public class CameraPanInteraction extends CameraInteraction {
 		if (LayersModel.getSingletonInstance().getActiveView() != null){
 		PhysicalRegion region = LayersModel.getSingletonInstance().getActiveView().getAdapter(MetaDataView.class).getMetaData().getPhysicalRegion();
 		double halfWidth = region.getWidth() / 2;
-		double halfFOVRad = Math.toRadians(camera.getFOV() / 2.0);
+		double halfFOVRad = Math.toRadians(CompenentView.CLIP_NEAR / 2.0);
 		double distance = halfWidth * Math.sin(Math.PI / 2 - halfFOVRad)
 				/ Math.sin(halfFOVRad);
-		double scaleFactor = -camera.getTranslation().z / distance;
-		double aspect = camera.getAspect();
+		double scaleFactor = -compenentView.getTranslation().z / distance;
+		double aspect = compenentView.getAspect();
 
 		double width = region.getWidth() * scaleFactor * aspect;
 		double height = region.getHeight() * scaleFactor;
@@ -89,7 +90,7 @@ public class CameraPanInteraction extends CameraInteraction {
 		Dimension canvasSize = GuiState3DWCS.mainComponentView.getComponent().getSize();
 		this.meterPerPixelWidth = width / canvasSize.getWidth();
 		this.meterPerPixelHeight = height / canvasSize.getHeight();
-		this.defaultTranslation = camera.getTranslation();
+		this.defaultTranslation = compenentView.getTranslation();
 		this.defaultTranslation = new Vector3d(
 		        this.defaultTranslation.x - this.meterPerPixelWidth * e.getX(),
 		        this.defaultTranslation.y + this.meterPerPixelHeight * e.getY(),
@@ -106,7 +107,7 @@ public class CameraPanInteraction extends CameraInteraction {
 
 	private void mouseDragged3DFunction(MouseEvent e){
 		if (defaultTranslation != null) {
-			Dimension canvasSize = GuiState3DWCS.mainComponentView.getCanavasSize();
+			Dimension canvasSize = compenentView.getCanavasSize();
 			double x = e.getPoint().getX() * canvasSize.getWidth() / GuiState3DWCS.mainComponentView.getComponent().getWidth();
 			double y = e.getPoint().getY() * canvasSize.getHeight() / GuiState3DWCS.mainComponentView.getComponent().getHeight();
 
@@ -114,34 +115,26 @@ public class CameraPanInteraction extends CameraInteraction {
 					* meterPerPixelHeight;
 			double xMeterInNearPlane = (x - canvasSize.getWidth() / 2.)
 					* meterPerPixelWidth;
-			double yAngle = Math.atan2(yMeterInNearPlane, camera.getClipNear());
-			double xAngle = Math.atan2(xMeterInNearPlane, camera.getClipNear());
+			double yAngle = Math.atan2(yMeterInNearPlane, CompenentView.CLIP_NEAR);
+			double xAngle = Math.atan2(xMeterInNearPlane, CompenentView.CLIP_NEAR);
 			double yPosition = Math.tanh(yAngle) * z;
 			double xPosition = Math.tanh(xAngle) * z;
 
-			camera.setTranslation(new Vector3d(
+			compenentView.setTranslation(new Vector3d(
 			        defaultTranslation.x - xPosition,
 			        defaultTranslation.y + yPosition,
-			        camera.getTranslation().z));
+			        compenentView.getTranslation().z));
 
 
-			camera.fireCameraMoving();
 		}
 	}
 	
 	private void mouseDragged2DFunction(MouseEvent e){
 		if (defaultTranslation != null){
-		    camera.setTranslation(new Vector3d(
+		    compenentView.setTranslation(new Vector3d(
 		            this.defaultTranslation.x + this.meterPerPixelWidth * e.getX(),
 		            this.defaultTranslation.y - this.meterPerPixelHeight * e.getY(),
-		            camera.getTranslation().z));
-			camera.fireCameraMoving();
+		            compenentView.getTranslation().z));
 		}
 	}
-@Override
-	public void mouseReleased(MouseEvent e) {
-		camera.fireCameraMoving();
-	}
-
-
 }

@@ -1,8 +1,8 @@
 package org.helioviewer.jhv.opengl.camera.newCamera;
 
 import org.helioviewer.jhv.gui.GuiState3DWCS;
-import org.helioviewer.jhv.opengl.camera.Camera;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
+import org.helioviewer.jhv.viewmodel.view.opengl.CompenentView;
 
 /**
  * This animation zooms the camera by a given amount. Zooming only affects the
@@ -36,27 +36,27 @@ public class CameraZoomAnimation implements CameraAnimation {
     }
     
 
-    public void animate(Camera camera) {
+    public void animate(CompenentView compenentView) {
     	System.out.println("startTime : " + startTime);
         if (this.startTime < 0) {
             this.startTime = System.currentTimeMillis();
             this.lastAnimationTime = System.currentTimeMillis();
-            this.targetDistance = Math.max(Camera.MIN_DISTANCE, Math.min(Camera.MAX_DISTANCE, camera.getTranslation().z + this.distanceToTravel));
+            this.targetDistance = Math.max(CompenentView.MIN_DISTANCE, Math.min(CompenentView.MAX_DISTANCE, compenentView.getTranslation().z + this.distanceToTravel));
         }
 
         long timeDelta = System.currentTimeMillis() - lastAnimationTime;
         this.timeLeft -= timeDelta;
         if (timeLeft <= 0) {
-        	camera.setZTranslation(targetDistance);
+        	compenentView.setZTranslation(targetDistance);
         } else {
-            double zTranslation = Math.min(camera.getTranslation().z + this.distanceDelta * timeDelta, targetDistance);
+            double zTranslation = Math.min(compenentView.getTranslation().z + this.distanceDelta * timeDelta, targetDistance);
             if (this.distanceToTravel < 0) {
-                zTranslation = Math.max(camera.getTranslation().z + this.distanceDelta * timeDelta, targetDistance);
+                zTranslation = Math.max(compenentView.getTranslation().z + this.distanceDelta * timeDelta, targetDistance);
             }
-        	camera.setZTranslation(zTranslation);
+        	compenentView.setZTranslation(zTranslation);
         }
 
-        if (camera.getTranslation().z == this.targetDistance) {
+        if (compenentView.getTranslation().z == this.targetDistance) {
             this.isFinished = true;
         }
         this.lastAnimationTime = System.currentTimeMillis();
@@ -67,7 +67,7 @@ public class CameraZoomAnimation implements CameraAnimation {
             CameraZoomAnimation ani = (CameraZoomAnimation) animation;
             this.timeLeft = Math.min(2000, this.timeLeft / 5 + ani.timeLeft);
             this.distanceToTravel += ani.distanceToTravel;
-            this.targetDistance = Math.min(Camera.MIN_DISTANCE, Math.max(Camera.MAX_DISTANCE, this.targetDistance + ani.distanceToTravel));
+            this.targetDistance = Math.min(CompenentView.MIN_DISTANCE, Math.max(CompenentView.MAX_DISTANCE, this.targetDistance + ani.distanceToTravel));
             this.distanceDelta = this.distanceToTravel / this.timeLeft;
         }
     }

@@ -49,7 +49,6 @@ import org.helioviewer.jhv.gui.actions.View2DAction;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
-import org.helioviewer.jhv.opengl.camera.Camera;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
 import org.helioviewer.jhv.opengl.camera.GL3DCameraListener;
 import org.helioviewer.jhv.opengl.camera.GL3DTrackballCamera;
@@ -937,7 +936,4 @@ public class GL3DComponentView extends AbstractBasicView implements
 		LayersModel.getSingletonInstance().fireSubImageDataChanged(0);
 	}
 	
-	public Camera getCurrentCamera(){
-		return null;
-	}
 }

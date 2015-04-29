@@ -1,28 +1,19 @@
 package org.helioviewer.jhv.layers;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.math.Vector2d;
-import org.helioviewer.jhv.base.math.Vector3d;
-import org.helioviewer.jhv.base.math.Vector4d;
-import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
-import org.helioviewer.jhv.opengl.camera.Camera;
-import org.helioviewer.jhv.opengl.camera.newCamera.CameraListener;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace;
-import org.helioviewer.jhv.opengl.raytrace.RayTrace.HITPOINT_TYPE;
-import org.helioviewer.jhv.opengl.raytrace.RayTrace.Ray;
-import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
+import org.helioviewer.jhv.viewmodel.view.opengl.CompenentView;
 
-import com.sun.java.swing.plaf.windows.WindowsTreeUI.CollapsedIcon;
-
-public class LayerRayTrace implements CameraListener{
+public class LayerRayTrace{
 	private RayTrace rayTrace;
 	
 	private Rectangle rectangle = null;
@@ -34,19 +25,15 @@ public class LayerRayTrace implements CameraListener{
 	private JPanel contentPanel = new JPanel();
 	private LayerInterface layer;
 	
-	private Camera camera;
-	
-	public LayerRayTrace(Camera camera, LayerInterface layer) {
-		camera.addCameraListener(this);
-		this.camera = camera;
+	public LayerRayTrace(LayerInterface layer) {
 		this.layer = layer;
-		rayTrace = new RayTrace(camera);
+		rayTrace = new RayTrace();
 		contentPanel.setBackground(Color.BLACK);
 		frame.setContentPane(contentPanel);
 		frame.setBounds(50, 50, 640, 480);
 	}
 	
-	private void getCurrentRegion(){
+	public ImageRegion getCurrentRegion(CompenentView compenentView){
 		contentPanel.removeAll();
 		contentPanel.setLayout(null);
 		double partOfWidth = GuiState3DWCS.mainComponentView.getComponent().getWidth() / (double)(MAX_X_POINTS-1);
@@ -56,7 +43,7 @@ public class LayerRayTrace implements CameraListener{
 		
 		for (int i = 0; i < MAX_X_POINTS; i++){
 			for (int j = 0; j < MAX_Y_POINTS; j++){
-				Vector2d imagePoint = rayTrace.castTexturepos((int)(i * partOfWidth), (int)(j * partOfHeight), layer.getMetaData());
+				Vector2d imagePoint = rayTrace.castTexturepos((int)(i * partOfWidth), (int)(j * partOfHeight), layer.getMetaData(), compenentView);
 				if (imagePoint != null){
 				
 				//JPanel panel = new JPanel();
@@ -74,23 +61,11 @@ public class LayerRayTrace implements CameraListener{
 		}
 		
 		Rectangle2D rectangle = new Rectangle2D.Double(minX, minY, maxX-minX, maxY-minY);
-		layer.setImageRegion(rectangle);
-		System.out.println("rect : " + rectangle);
-		
+		ImageRegion imageRegion = new ImageRegion(layer.getTime());
+		imageRegion.setImageData(rectangle);
+		imageRegion.calculateScaleFactor(layer, compenentView);
+		return imageRegion;
 		//frame.repaint();
 		//frame.setVisible(true);
-	}
-
-	@Override
-	public void cameraMoved() {
-		System.out.println("moved");
-		getCurrentRegion();
-	}
-
-	@Override
-	public void cameraMoving() {
-		System.out.println("moving");
-		getCurrentRegion();		
-	}
-	
+	}	
 }

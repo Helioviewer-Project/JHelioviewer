@@ -1,56 +1,53 @@
 package org.helioviewer.jhv.opengl.raytrace;
 
-import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.math.Vector4d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
-import org.helioviewer.jhv.opengl.camera.Camera;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
+import org.helioviewer.jhv.viewmodel.view.opengl.CompenentView;
 
 public class RayTrace {
 	public enum HITPOINT_TYPE{
-		SPHERE, PLANE;
+		SPHERE, PLANE, SPHERE_PLANE;
 	}
 	
-	private Camera camera;
 	private Sphere sphere;
 	private Plane plane;
 	
-	public RayTrace(Camera camera) {
-		this.camera = camera;
+	public RayTrace() {
 		sphere = new Sphere(new Vector3d(0, 0, 0), Constants.SUN_RADIUS);
 		plane = new Plane(new Vector3d(1, 0, 0).cross(new Vector3d(0, 1, 0)), 0);
 	}
 	
-	public Ray cast(int x, int y){
-		Vector3d origin = camera.getTransformation().multiply(new Vector3d(0, 0, 1));
+	public Ray cast(int x, int y, CompenentView compenentView){
+		Vector3d origin = compenentView.getTransformation().multiply(new Vector3d(0, 0, 1));
 		double newX = (x-GuiState3DWCS.mainComponentView.getComponent().getSize().getWidth()/2.)/ GuiState3DWCS.mainComponentView.getComponent().getSize().getWidth();
 		double newY = (y-GuiState3DWCS.mainComponentView.getComponent().getSize().getHeight()/2.)/ GuiState3DWCS.mainComponentView.getComponent().getSize().getHeight();
 
-		double width = Math.tan(Math.toRadians(camera.getFOV()));
+		double width = Math.tan(Math.toRadians(CompenentView.FOV/2.0));
 		Vector3d direction = new Vector3d(-newX * 2 * width, newY * 2 * width, -1).normalize();
 		Ray ray = new Ray(origin, direction);
 		return intersect(ray);
 	}
 	
-	public Vector2d castTexturepos(int x, int y, MetaData metaData){		
-		Vector3d origin = camera.getTransformation().multiply(new Vector3d(0, 0, 1));
+	public Vector2d castTexturepos(int x, int y, MetaData metaData, CompenentView compenentView){		
+		Vector3d origin = compenentView.getTransformation().multiply(new Vector3d(0, 0, 1));
 		
 		double newX = (x-GuiState3DWCS.mainComponentView.getComponent().getSize().getWidth()/2.)/ GuiState3DWCS.mainComponentView.getComponent().getSize().getWidth();
 		double newY = (y-GuiState3DWCS.mainComponentView.getComponent().getSize().getHeight()/2.)/ GuiState3DWCS.mainComponentView.getComponent().getSize().getHeight();
-		double width = Math.tan(Math.toRadians(camera.getFOV()));
+		double width = Math.tan(Math.toRadians(CompenentView.FOV/2.0));
 		Vector3d direction = new Vector3d(-newX * 2 * width, newY * 2 * width, -1).normalize();
 		
 		Vector4d tmpOrigin = new Vector4d(origin.x, origin.y, origin.z, 0);
 		Vector4d tmpDirection = new Vector4d(direction.x, direction.y, direction.z, 0);
 		
-		Vector3d rayORot = camera.getTransformation().multiply(origin);
-		Vector3d rayDRot = camera.getTransformation().multiply(direction);
+		Vector3d rayORot = compenentView.getTransformation().multiply(origin);
+		Vector3d rayDRot = compenentView.getTransformation().multiply(direction);
 		
-		Vector4d rayORot1 = camera.getTransformation().multiply(tmpOrigin);
-		Vector4d rayDRot1 = camera.getTransformation().multiply(tmpDirection);
+		Vector4d rayORot1 = compenentView.getTransformation().multiply(tmpOrigin);
+		Vector4d rayDRot1 = compenentView.getTransformation().multiply(tmpDirection);
 		
 		rayORot = new Vector3d(rayORot1.x, rayORot1.y, rayORot1.z);
 		rayDRot = new Vector3d(rayDRot1.x, rayDRot1.y, rayDRot1.z);
@@ -73,11 +70,15 @@ public class RayTrace {
 		double tPlane = plane.intersect(ray);
 		if (tSphere > 0){
 			ray.hitpointType = HITPOINT_TYPE.SPHERE;
-			ray.t = tSphere;
+			ray.tSphere = tSphere;
 		}
-		if (tPlane > 0.0 && (tPlane < tSphere || tSphere < 0.)){
+		if (tPlane > 0.0 && tSphere < 0.){
 			ray.hitpointType = HITPOINT_TYPE.PLANE;
-			ray.t = tPlane;
+			ray.tPlane = tPlane;
+		}
+		else if (tPlane > 0.0 && (tSphere < 0.)){
+			ray.hitpointType = HITPOINT_TYPE.SPHERE_PLANE;
+			ray.tPlane = tPlane;
 		}
 		return ray;
 	}
@@ -86,6 +87,8 @@ public class RayTrace {
 		public Vector3d origin;
 		public Vector3d direction;
 		public double t = -1;
+		public double tSphere = -1;
+		public double tPlane = -1;
 		public HITPOINT_TYPE hitpointType;
 		
 		public Ray(Vector3d origin, Vector3d direction) {
@@ -94,7 +97,20 @@ public class RayTrace {
 		}
 		
 		public Vector3d getHitpoint(){
-			return this.origin.add(this.direction.scale(this.t));
+			if (this.hitpointType == HITPOINT_TYPE.SPHERE || this.hitpointType == HITPOINT_TYPE.SPHERE_PLANE){
+				return this.getHitpointOnSphere();
+			}
+			else {
+				return this.getHipointOnPlane();
+			}
+		}
+		
+		public Vector3d getHitpointOnSphere(){
+			return this.origin.add(this.direction.scale(this.tSphere));
+		}
+		
+		public Vector3d getHipointOnPlane(){
+			return this.origin.add(this.direction.scale(this.tPlane));
 		}
 		
 		@Override

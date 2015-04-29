@@ -1,67 +1,42 @@
 package org.helioviewer.jhv.opengl.camera;
 
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
+import org.helioviewer.jhv.viewmodel.view.opengl.CompenentView;
 
 
-public abstract class CameraInteraction implements MouseWheelListener, MouseListener, MouseMotionListener{
-	protected Camera camera;
+public abstract class CameraInteraction{
+
+	protected boolean enable = false;
+	protected CompenentView compenentView;
 	
-	public CameraInteraction(Camera camera) {
-		this.camera = camera;
+	public CameraInteraction(CompenentView compenentView) {
+		this.compenentView = compenentView;
 	}
 
-	@Override
-	public void mouseDragged(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
+	public void mouseWheelMoved(MouseWheelEvent e){	
 	}
-
-	@Override
-	public void mouseMoved(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
+	
 	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
 	}
-
-	@Override
+	
+	public void mouseDragged(MouseEvent e) {
+	}
+	
 	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
 	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseWheelMoved(MouseWheelEvent e) {
+	
+	public void setYAxisBlocked(boolean selected) {
 		// TODO Auto-generated method stub
 		
 	}
 	
+	public void setEnable(boolean enable){
+		this.enable = enable;
+	}
 	
+	public boolean isEnable(){
+		return this.enable;
+	}
 }
 

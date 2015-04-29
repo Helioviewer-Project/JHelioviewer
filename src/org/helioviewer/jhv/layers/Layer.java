@@ -1,22 +1,18 @@
 package org.helioviewer.jhv.layers;
 
-import java.awt.Rectangle;
-import java.awt.geom.Rectangle2D;
 import java.time.LocalDateTime;
 
 import javax.media.opengl.GL2;
 
-import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.internal_plugins.filter.SOHOLUTFilterPlugin.DefaultTable;
 import org.helioviewer.jhv.layers.filter.LUT;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
-import org.helioviewer.jhv.opengl.camera.Camera;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
-import org.helioviewer.jhv.viewmodel.view.jp2view.image.SubImage;
+import org.helioviewer.jhv.viewmodel.view.opengl.CompenentView;
 
 @Deprecated
-public class Layer implements LayerInterface{
+public class Layer extends LayerInterface{
 	public enum SHADER_STATE{
 		FALSE, TRUE;
 	}
@@ -122,17 +118,6 @@ public class Layer implements LayerInterface{
 	}
 
 	@Override
-	public void setVisible(boolean visible) {
-		this.visible = visible;
-	}
-
-	@Override
-	public void setImageData(LocalDateTime dateTime) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public String getName() {
 		// TODO Auto-generated method stub
 		return null;
@@ -156,21 +141,76 @@ public class Layer implements LayerInterface{
 		return null;
 	}
 
-	@Override
-	public void setImageRegion(Rectangle2D rectangle) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
-	public int getTexture(Camera camera) {
+	public double getContrast() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public ImageRegion getImageRegion() {
+	public void setContrast(double contrast) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public double getGamma() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setGamma(double gamma) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public double getOpacity() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setOpacity(double opacity) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public double getSharpen() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setSharpen(double sharpen) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public org.helioviewer.jhv.layers.LayerInterface.Lut getLut() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public ColorChannel getColorChannel(COLOR_CHANNEL_TYPE type) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getTexture(CompenentView compenentView) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getID() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

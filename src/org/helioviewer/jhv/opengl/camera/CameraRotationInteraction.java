@@ -1,5 +1,6 @@
 package org.helioviewer.jhv.opengl.camera;
 
+import java.awt.Component;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 
@@ -8,20 +9,23 @@ import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace.Ray;
 import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
+import org.helioviewer.jhv.viewmodel.view.opengl.CompenentView;
 
 public class CameraRotationInteraction extends CameraInteraction{
-	
-	public CameraRotationInteraction(Camera camera) {
-		super(camera);
-		// TODO Auto-generated constructor stub
-	}
 
 	private Vector3d currentRotationStartPoint;
 	private Vector3d currentRotationEndPoint;
 	private volatile Quaternion3d currentDragRotation;
 	private boolean yAxisBlocked = false;
 	private boolean played;
+	private Component component;
 
+	public CameraRotationInteraction(CompenentView compenentView) {
+		super(compenentView);
+		enable = true;
+	}
+
+	@Override
 	public void mouseDragged(MouseEvent e) {
 		this.currentRotationEndPoint = getVectorFromSphere(e.getPoint());
 		try {
@@ -39,12 +43,12 @@ public class CameraRotationInteraction extends CameraInteraction{
 					double angle = Math.atan2(s, c);
 					currentDragRotation = Quaternion3d.createRotation(angle,
 							new Vector3d(0, 1, 0));
-					camera.getRotation().rotate(currentDragRotation);
+					compenentView.getRotation().rotate(currentDragRotation);
 
 				} else {
 					currentDragRotation = Quaternion3d.calcRotation(
 							currentRotationStartPoint, currentRotationEndPoint);
-					camera.getRotation().rotate(currentDragRotation);
+					compenentView.getRotation().rotate(currentDragRotation);
 					currentRotationStartPoint = currentRotationEndPoint;
 				}
 			}
@@ -52,20 +56,19 @@ public class CameraRotationInteraction extends CameraInteraction{
 			System.out.println("GL3DTrackballCamera.mouseDragged: Illegal Rotation ignored!");
             exc.printStackTrace();
 		}
-
-		camera.fireCameraMoving();
 	}
 
+	@Override
 	public void mouseReleased(MouseEvent e) {
 		this.currentRotationStartPoint = null;
 		this.currentRotationEndPoint = null;
 		
-		camera.fireCameraMoved();
 		if (this.played){
 			LinkedMovieManager.getActiveInstance().playLinkedMovies();
 		}
 	}
 
+	@Override
 	public void mousePressed(MouseEvent e) {
 		this.played = LinkedMovieManager.getActiveInstance().isPlaying();
 		if (played){
@@ -79,14 +82,14 @@ public class CameraRotationInteraction extends CameraInteraction{
 	}
 
 	protected Vector3d getVectorFromSphere(Point p) {
-		RayTrace rayTrace = new RayTrace(camera);
-		Ray ray = rayTrace.cast(p.x, p.y);
+		RayTrace rayTrace = new RayTrace();
+		Ray ray = rayTrace.cast(p.x, p.y, compenentView);
 
 		Vector3d hitPoint = ray.getHitpoint();
 		return hitPoint;
 	}
 
-	public void setYAxisBlocked(boolean value) {
-		this.yAxisBlocked = value;
+	public void setYAxisBlocked(boolean selected) {
+		this.yAxisBlocked = selected;
 	}
 }

@@ -15,7 +15,6 @@ import javax.swing.AbstractAction;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
@@ -41,6 +40,11 @@ import com.jgoodies.forms.layout.RowSpec;
 
 public class NewPlayPanel extends JPanel implements TimeLineListener, NewLayerListener{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3837685812219375888L;
+
 	// different animation speeds
     private enum SpeedUnit {
         FRAMESPERSECOND {
@@ -109,6 +113,11 @@ public class NewPlayPanel extends JPanel implements TimeLineListener, NewLayerLi
     }
 	public static class NextFrameAction extends AbstractAction{
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 8262474213872230813L;
+
 		public NextFrameAction() {
 			super("Step to Next Frame", ICON_FORWARD);
             putValue(MNEMONIC_KEY, KeyEvent.VK_N);
@@ -123,6 +132,11 @@ public class NewPlayPanel extends JPanel implements TimeLineListener, NewLayerLi
 	}
 
 	public static class PreviousFrameAction extends AbstractAction{
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 3538526442851660497L;
 
 		public PreviousFrameAction() {
             super("Step to Previous Frame", ICON_BACKWARD);
@@ -139,6 +153,11 @@ public class NewPlayPanel extends JPanel implements TimeLineListener, NewLayerLi
 
 	public static class PlayPauseAction extends AbstractAction{
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 6597468856950412136L;
+
 		public PlayPauseAction() {
             super("Play movie", ICON_PLAY);
             putValue(MNEMONIC_KEY, KeyEvent.VK_A);

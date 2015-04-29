@@ -7,7 +7,7 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.NewRender;
 
 public class Layers {
 	CopyOnWriteArrayList<LayerInterface> layers;
-	CopyOnWriteArrayList<NewLayerListener> renderListeners;
+	CopyOnWriteArrayList<NewLayerListener> layerListeners;
 	private int activeLayer = 0;
 	
 	private NewRender renderer = new NewRender();
@@ -15,13 +15,13 @@ public class Layers {
 	
 	public Layers() {
 		layers = new CopyOnWriteArrayList<LayerInterface>();
-		renderListeners = new CopyOnWriteArrayList<NewLayerListener>();
+		layerListeners = new CopyOnWriteArrayList<NewLayerListener>();
 	}
 		
 	public void addLayer(String uri){
 		NewLayer layer = new NewLayer(uri, renderer);
 		layers.add(layer);
-		for (NewLayerListener renderListener : renderListeners){
+		for (NewLayerListener renderListener : layerListeners){
 			renderListener.newlayerAdded();
 		}
 		if (layers.size() == 1){
@@ -32,7 +32,7 @@ public class Layers {
 	public NewLayer addLayer(int id){
 		NewLayer layer = new NewLayer(id, renderer, newCache);
 		layers.add(layer);
-		for (NewLayerListener renderListener : renderListeners){
+		for (NewLayerListener renderListener : layerListeners){
 			renderListener.newlayerAdded();
 		}
 		if (layers.size() == 1){
@@ -47,13 +47,13 @@ public class Layers {
 	
 	public void removeLayer(int idx){
 		layers.remove(idx);
-		for (NewLayerListener renderListener : renderListeners){
+		for (NewLayerListener renderListener : layerListeners){
 			renderListener.newlayerRemoved(idx);
 		}
 	}
 		
 	public void addNewLayerListener(NewLayerListener renderListener){
-		this.renderListeners.add(renderListener);
+		this.layerListeners.add(renderListener);
 	}
 
 	public int getLayerCount() {
@@ -61,7 +61,7 @@ public class Layers {
 	}
 
 	public void layerChanged() {
-		for (NewLayerListener renderListener : renderListeners){
+		for (NewLayerListener renderListener : layerListeners){
 			renderListener.activeLayerChanged(this.getLayer(activeLayer));
 		}
 	}

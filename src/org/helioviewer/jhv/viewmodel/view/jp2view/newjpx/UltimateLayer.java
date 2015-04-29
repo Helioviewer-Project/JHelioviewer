@@ -10,6 +10,7 @@ import java.nio.ByteBuffer;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Queue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -18,14 +19,13 @@ import java.util.concurrent.FutureTask;
 import kdu_jni.KduException;
 
 import org.helioviewer.jhv.base.ImageRegion;
-import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.layers.NewLayer;
-import org.helioviewer.jhv.opengl.camera.Camera;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 import org.helioviewer.jhv.viewmodel.view.jp2view.image.ResolutionSet;
-import org.helioviewer.jhv.viewmodel.view.jp2view.image.SubImage;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
+import org.helioviewer.jhv.viewmodel.view.opengl.texture.TextureCache;
+import org.helioviewer.jhv.viewmodel.view.opengl.texture.TextureCache.CachableTexture;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,7 +46,7 @@ public class UltimateLayer {
 	public static final int RESOLUTION_LEVEL_COUNT = 8;
 	
 	private ExecutorService executorService;
-	
+		
 	private NewCache cache;
 	private ResolutionSet resolutionSet;
 	private NewRender render;
@@ -57,7 +57,10 @@ public class UltimateLayer {
 	
 	private ImageRegion imageRegion;
 	
-	public UltimateLayer(int sourceID, NewCache cache, NewRender render, NewLayer newLayer){
+	private int id;
+	
+	public UltimateLayer(int id, int sourceID, NewCache cache, NewRender render, NewLayer newLayer){
+		this.id = id;
 		this.newLayer = newLayer;
 		this.sourceID = sourceID;
 		this.cache = cache;
@@ -66,7 +69,8 @@ public class UltimateLayer {
 		this.executorService = Executors.newFixedThreadPool(MAX_THREAD_PER_LAYER);
 	}
 	
-	public UltimateLayer(String filename, NewRender render, NewLayer newLayer){
+	public UltimateLayer(int id, String filename, NewRender render, NewLayer newLayer){
+		this.id = id;
 		this.newLayer = newLayer;
 		this.sourceID = 0;
 		this.render = render;
@@ -104,7 +108,8 @@ public class UltimateLayer {
 		}
 	}
 
-	public UltimateLayer(String observatory, String instrument, String measurement1, String measurement2) {
+	public UltimateLayer(int id, String observatory, String instrument, String measurement1, String measurement2) {
+		this.id = id;
 		this.observatory = observatory;
 		this.instrument = instrument;
 		this.measurement1 = measurement1;
@@ -185,24 +190,33 @@ public class UltimateLayer {
 		return localDateTimes;
 	}
 	
-	private ByteBuffer getImageFromLocalFile(LocalDateTime currentDate){
+	private ByteBuffer getImageFromLocalFile(LocalDateTime currentDate, float zoomFactor, Rectangle imageSize){
 		render.openImage(fileName);
 		float zoomPercent = this.resolutionSet.getResolutionLevel(0).getZoomPercent();
-		ByteBuffer intBuffer = render.getImage(TimeLine.SINGLETON.getCurrentFrame(), 8, 0.5f, new SubImage(0, 0, 2048, 2048));
+		ByteBuffer intBuffer = render.getImage(TimeLine.SINGLETON.getCurrentFrame(), 8, zoomFactor, imageSize);
 		render.closeImage();
 		return intBuffer;
 	}
 		
-	public ByteBuffer getImageData(LocalDateTime currentDateTime, Camera camera) throws InterruptedException, ExecutionException{
-		newLayer.getImageRegion().calculateScaleFactor(newLayer, camera);
-		if (imageRegion != null && imageRegion.contains(this.newLayer.getImageRegion()) && imageRegion.compareScaleFactor(newLayer.getImageRegion())){
-			return null;
+	public ByteBuffer getImageData(LocalDateTime currentDateTime, ImageRegion imageRegion) throws InterruptedException, ExecutionException{
+		//newLayer.getImageRegion().calculateScaleFactor(newLayer, camera);		
+		Queue<CachableTexture> textures = TextureCache.singleton.getCacheableTextures();
+		for (CachableTexture texture : textures){
+			if (texture.compareRegion(id, imageRegion, currentDateTime)){
+				this.imageRegion = texture.getImageRegion();
+				TextureCache.singleton.setElementAsFist(texture);
+				System.out.println("region exist");
+				return null;
+			}
 		}
+		System.out.println("new image region");
 		
-		imageRegion = newLayer.getImageRegion();
+		
+		imageRegion.setLocalDateTime(currentDateTime);
+		this.imageRegion = TextureCache.singleton.addElement(imageRegion, id);
 		
 		
-		if (fileName != null) return getImageFromLocalFile(currentDateTime);
+		if (fileName != null) return getImageFromLocalFile(currentDateTime, this.imageRegion.getZoomFactor(), this.imageRegion.getImageSize());
 		boolean complete = false;
 		ImageLayer layer = null;
 		while (!complete){
@@ -217,9 +231,13 @@ public class UltimateLayer {
 		System.out.println("---------------------getImage---------------------");
 		render.openImage(layer.getCache());
 		float zoomPercent = this.resolutionSet.getResolutionLevel(0).getZoomPercent();
-		ByteBuffer intBuffer = render.getImage(0, 8, zoomPercent, new SubImage(0, 0, 2048, 2048));
+		ByteBuffer intBuffer = render.getImage(0, 8, this.imageRegion.getZoomFactor(), this.imageRegion.getImageSize());
 		render.closeImage();
 		return intBuffer;
+	}
+
+	public ImageRegion getImageRegion() {
+		return this.imageRegion;
 	}
 		
 	

@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JToggleButton;
 
+import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.gui.GL3DCameraSelectorModel;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
 import org.helioviewer.jhv.opengl.camera.GL3DInteraction;
@@ -28,7 +29,7 @@ public class GL3DSetRotationYAxisInteractionAction extends AbstractAction {
      * {@inheritDoc}
      */
     public void actionPerformed(ActionEvent e) {
-    	GL3DCameraSelectorModel.getInstance().getSelectedItem().getRotateInteraction().setYAxisBlocked(((JToggleButton)e.getSource()).isSelected());
+    	if (JHVGlobals.OLD_RENDER_MODE) GL3DCameraSelectorModel.getInstance().getSelectedItem().getRotateInteraction().setYAxisBlocked(((JToggleButton)e.getSource()).isSelected());
     }
 
 }

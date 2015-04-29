@@ -77,8 +77,12 @@ public class GuiState3DWCS {
         sceneGraph.setView(viewportView);
         sceneGraph.setGLOverlayView(overlayView);
         
-        if (JHVGlobals.OLD_RENDER_MODE) mainComponentView = new GL3DComponentView();
-        else mainComponentView = new CompenentView();
+        if (JHVGlobals.OLD_RENDER_MODE) {
+        	mainComponentView = new GL3DComponentView();
+        }
+        else {
+        	mainComponentView = new CompenentView();
+        }
         mainComponentView.setView(sceneGraph);
         LayersModel.getSingletonInstance().addLayersListener(overViewPanel);
                 

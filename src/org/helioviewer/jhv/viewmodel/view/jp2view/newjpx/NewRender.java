@@ -1,5 +1,6 @@
 package org.helioviewer.jhv.viewmodel.view.jp2view.newjpx;
 
+import java.awt.Rectangle;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +14,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.metadata.MetaDataFactory;
 import org.helioviewer.jhv.viewmodel.metadata.NewMetaDataContainer;
-import org.helioviewer.jhv.viewmodel.view.jp2view.image.SubImage;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.KakaduUtils;
 import org.w3c.dom.Document;
@@ -70,7 +70,7 @@ public class NewRender {
 		}
 	}
 	
-	public ByteBuffer getImage(int layerNumber, int quality, float zoomPercent, SubImage subImage){
+	public ByteBuffer getImage(int layerNumber, int quality, float zoomPercent, Rectangle imageSize){
 		try {
 			compositor.Refresh();
 			compositor.Remove_ilayer(new Kdu_ilayer_ref(), true);
@@ -81,7 +81,7 @@ public class NewRender {
 			compositor.Set_max_quality_layers(quality);
 			compositor.Set_scale(false, false, false,
 					zoomPercent);
-			Kdu_dims requestedBufferedRegion = KakaduUtils.roiToKdu_dims(subImage);
+			Kdu_dims requestedBufferedRegion = KakaduUtils.rectangleToKdu_dims(imageSize);
 			
 			compositor.Set_buffer_surface(requestedBufferedRegion);
 			
@@ -93,7 +93,7 @@ public class NewRender {
 				        
 			Kdu_dims newRegion = new Kdu_dims();
 	        int region_buf_size = 0;
-	        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(subImage.height * subImage.width *4);
+	        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(imageSize.height * imageSize.width *4);
 	        IntBuffer intBuffer = byteBuffer.asIntBuffer();
 	        
 			while (compositor.Process(MAX_RENDER_SAMPLES, newRegion)){

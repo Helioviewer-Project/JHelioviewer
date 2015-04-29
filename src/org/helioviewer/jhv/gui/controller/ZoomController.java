@@ -2,7 +2,6 @@ package org.helioviewer.jhv.gui.controller;
 
 import java.awt.Dimension;
 
-import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.gui.GL3DCameraSelectorModel;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.layers.LayersModel;

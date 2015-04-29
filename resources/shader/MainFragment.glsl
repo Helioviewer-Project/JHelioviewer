@@ -15,6 +15,7 @@ uniform int redChannel;
 uniform int greenChannel;
 uniform int blueChannel;
 uniform vec2 sunOffset;
+uniform vec4 imageOffset;
 uniform float opacityCorona;
 uniform float fov;
 
@@ -67,6 +68,7 @@ void intersect(in Ray ray, out float tSphere, out float tPlane)
 void main(void)
 {	
 	/* clear color */
+    
 	float z = 4.015;
 	vec2 uv = gl_TexCoord[0].xy * vec2(1.,-1.) + vec2(0,1);
 	/* calculate viewport */
@@ -92,15 +94,23 @@ void main(void)
 		vec3 posOri = rayRot.origin + tSphere*rayRot.direction;
 		vec3 posRot = (vec4(posOri, 1) * layerTransformation).xyz;
 		if (posRot.z >= 0.0){
-	    	vec2 texPos = (posRot.xy/physicalImageWidth + 0.5) *vec2(1.,1.) + sunOffset;
+            vec2 texPos = (posRot.xy/physicalImageWidth + 0.5) *vec2(1.,1.) + sunOffset;
+            if (texPos.x > 1.0 || texPos.x < 0.0 || texPos.y > 1.0 || texPos.y < 0.0) {
+                discard;
+            }
+            texPos = (texPos - imageOffset.xy) / imageOffset.zw;
 			imageColor = texture2D(texture,texPos);
 		}
 	}
 
    	if (tPlane > 0. && (tPlane < tSphere|| tSphere < 0.)){
 		vec3 posOri = rayRot.origin + tPlane*rayRot.direction;
-		//if (posOri.z >= 0.0){
-	    vec2 texPos = (posOri.xy/physicalImageWidth + 0.5) *vec2(1.,1.) + sunOffset;
+        vec2 texPos = (posOri.xy/physicalImageWidth + 0.5) *vec2(1.,1.) + sunOffset;
+        if ((texPos.x > 1.0 || texPos.x < 0.0 || texPos.y > 1.0 || texPos.y < 0.0) && tSphere < 0.) {
+            discard;
+        }
+        texPos = (texPos - imageOffset.xy) / imageOffset.zw;
+
 	    vec4 coronaImageColor = texture2D(texture,texPos);
 	    if (opacityCorona > 0.){
 			imageColor = imageColor + vec4(coronaImageColor.xyz * opacityCorona, coronaImageColor.a);

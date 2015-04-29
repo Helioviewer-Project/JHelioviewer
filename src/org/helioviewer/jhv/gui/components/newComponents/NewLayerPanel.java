@@ -143,7 +143,7 @@ public class NewLayerPanel extends JPanel implements NewLayerListener{
 		for (LayerInterface layer : GuiState3DWCS.layers.getLayers()){
 			data[count][0] = layer.isVisible();
 			data[count][1] = layer.getName();
-			data[count][2] = layer.getTime();
+			data[count][2] = layer.getTime() == null ? null : layer.getTime();
 			data[count++][3] = IconBank.getIcon(JHVIcon.CANCEL_NEW, 16, 16);
 		}
 		tableModel.setDataVector(data, columnNames);

@@ -1,7 +1,6 @@
 	package org.helioviewer.jhv.viewmodel.view.jp2view.kakadu;
 
 import java.awt.Rectangle;
-import java.awt.geom.Rectangle2D;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

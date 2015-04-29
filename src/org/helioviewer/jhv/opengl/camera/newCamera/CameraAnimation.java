@@ -1,7 +1,7 @@
 package org.helioviewer.jhv.opengl.camera.newCamera;
 
-import org.helioviewer.jhv.opengl.camera.Camera;
 import org.helioviewer.jhv.opengl.camera.GL3DCamera;
+import org.helioviewer.jhv.viewmodel.view.opengl.CompenentView;
 
 /**
  * GL3DCameraAnimations are used to continuously change the camera over a
@@ -21,7 +21,7 @@ public interface CameraAnimation {
      * @param camera
      *            Active camera that this animation can be applied to.
      */
-    public void animate(Camera camera);
+    public void animate(CompenentView compenentView);
 
     /**
      * Return true if the animation has finished. The animation will then be
