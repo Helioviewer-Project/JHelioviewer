@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<updateDescriptor baseUrl="https://github.com/Helioviewer-Project/JHelioviewer/releases/download/2.3.0/">
+  <entry targetMediaFileId="68" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer.dmg" newVersion="2.3.0" newMediaFileId="68" fileSize="82554179" bundledJre="macosx-amd64-1.8.0_45_unpacked" archive="true">
+    <comment language="en" />
+  </entry>
+  <entry targetMediaFileId="150" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_windows-x64_2_3_0.exe" newVersion="2.3.0" newMediaFileId="150" fileSize="43853600" bundledJre="windows-amd64-1.8.0_45" archive="false">
+    <comment language="en" />
+  </entry>
+  <entry targetMediaFileId="218" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_2_3_0_64_bit.deb" newVersion="2.3.0" newMediaFileId="218" fileSize="35717628" bundledJre="" archive="true">
+    <comment language="en" />
+  </entry>
+  <entry targetMediaFileId="270" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_2_3_0_64_bit.rpm" newVersion="2.3.0" newMediaFileId="270" fileSize="36147601" bundledJre="" archive="true">
+    <comment language="en" />
+  </entry>
+</updateDescriptor>
