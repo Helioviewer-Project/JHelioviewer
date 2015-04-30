@@ -448,7 +448,10 @@ public class ImageViewerGui {
 			else this.moviePanel = new NewPlayPanel();
 			moviePanelContainer.setDefaultPanel(moviePanel);
 			
-			leftPane.add("Overview", GuiState3DWCS.overViewPanel, JHVGlobals.OLD_RENDER_MODE);			
+			if (JHVGlobals.OLD_RENDER_MODE)
+				leftPane.add("Overview", GuiState3DWCS.overViewPanel, JHVGlobals.OLD_RENDER_MODE);			
+			else
+				leftPane.add("Overview", GuiState3DWCS.newOverViewPanel.getContentPane(), true);
 			leftPane.add("Movie Controls", moviePanelContainer, true);
 
 			// Layer control

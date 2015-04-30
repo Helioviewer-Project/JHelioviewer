@@ -110,7 +110,7 @@ public class CompenentView extends GL3DComponentView implements
     	}
     }
 	
-	GLCanvas canvas = new GLCanvas();
+	protected GLCanvas canvas = new GLCanvas();
 	GLTextureHelper textureHelper = new GLTextureHelper();
 	private Layers layers;
 	private boolean updateTexture;

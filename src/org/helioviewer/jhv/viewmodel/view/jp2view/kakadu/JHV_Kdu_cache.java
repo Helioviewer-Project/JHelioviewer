@@ -503,12 +503,6 @@ public class JHV_Kdu_cache extends Kdu_cache {
     public static void updateCacheDirectory() {
         File[] list = getCacheFiles();
 
-        Arrays.sort(list, new Comparator<File>() {
-            public int compare(File o1, File o2) {
-                return (int) (o1.lastModified() - o2.lastModified());
-            }
-        });
-
         long total = 0;
 
         for (File f : list)

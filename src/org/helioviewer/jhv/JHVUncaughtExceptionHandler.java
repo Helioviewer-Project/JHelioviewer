@@ -123,7 +123,7 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
     // we do not use the logger here, since it should work even before logging
     // initialization
     @SuppressWarnings("deprecation")
-    public synchronized void uncaughtException(final Thread t, final Throwable e)
+    public void uncaughtException(final Thread t, final Throwable e)
     {
         //stop reentrant error reporting
         Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler()

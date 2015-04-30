@@ -14,6 +14,7 @@ import org.helioviewer.jhv.gui.components.MoviePanel;
 import org.helioviewer.jhv.gui.components.OverViewPanel;
 import org.helioviewer.jhv.gui.components.TopToolBar;
 import org.helioviewer.jhv.gui.components.newComponents.NewMoviePanel;
+import org.helioviewer.jhv.gui.components.newComponents.NewOverViewPanel;
 import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.LayersModel;
@@ -52,8 +53,9 @@ public class GuiState3DWCS {
     public static TopToolBar topToolBar = new TopToolBar();
 
     public static GL3DComponentView mainComponentView;
-    public static OverViewPanel overViewPanel = new OverViewPanel();
     public static Layers layers = new Layers();
+    public static OverViewPanel overViewPanel = new OverViewPanel();
+    public static NewOverViewPanel newOverViewPanel = new NewOverViewPanel();
     private GuiState3DWCS()
     {
     }
