@@ -442,7 +442,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 			}
 			NumberFormat format = NumberFormat.getInstance();
 			format.setGroupingUsed(false);
-			NumberFormatter formatter = new NumberFormatter(format);
+			final NumberFormatter formatter = new NumberFormatter(format);
 			formatter.setValueClass(Integer.class);
 			formatter.setCommitsOnValidEdit(true);
 			formatter.setMinimum(1);
@@ -464,9 +464,8 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 
 									.getSelectedItem();
 									if (aspectRatio.getHeight() != 0) {
-										int width = Integer
-												.parseInt(txtMovieImageWidth
-														.getText());
+										int width = (int) txtMovieImageWidth
+														.getValue();
 										hasChanged = true;
 										txtMovieImageHeight.setValue(width
 												* aspectRatio.getHeight()
@@ -497,9 +496,8 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 
 									.getSelectedItem();
 									if (aspectRatio.getHeight() != 0) {
-										int heigth = Integer
-												.parseInt(txtMovieImageHeight
-														.getText());
+										int heigth = (int)txtMovieImageHeight
+														.getValue();
 										hasChanged = true;
 										txtMovieImageWidth.setValue(heigth
 												* aspectRatio.getWidth()

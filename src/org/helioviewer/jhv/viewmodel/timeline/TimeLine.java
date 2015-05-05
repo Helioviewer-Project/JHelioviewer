@@ -74,10 +74,12 @@ public class TimeLine implements NewLayerListener{
 	public void setFrames(LocalDateTime[] frames){
 		this.frames = frames;
 		this.frame = 0;
+		if (frames != null){
 		start = frames[0];
 		current = start;
 		this.frameCount = frames.length-1;
 		end = frames[frameCount];
+		}
 		
 	}	
 	

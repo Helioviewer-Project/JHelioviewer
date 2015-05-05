@@ -55,7 +55,7 @@ public class GuiState3DWCS {
     public static GL3DComponentView mainComponentView;
     public static Layers layers = new Layers();
     public static OverViewPanel overViewPanel = new OverViewPanel();
-    public static NewOverViewPanel newOverViewPanel = new NewOverViewPanel();
+    public static NewOverViewPanel newOverViewPanel;
     private GuiState3DWCS()
     {
     }
@@ -84,6 +84,8 @@ public class GuiState3DWCS {
         }
         else {
         	mainComponentView = new CompenentView();
+        	newOverViewPanel = new NewOverViewPanel(ImageViewerGui.getSingletonInstance().getOverviewPane());
+        	((CompenentView)mainComponentView).setSynchronizedView(newOverViewPanel);
         }
         mainComponentView.setView(sceneGraph);
         LayersModel.getSingletonInstance().addLayersListener(overViewPanel);

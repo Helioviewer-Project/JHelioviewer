@@ -84,6 +84,10 @@ public class NewLayerPanel extends JPanel implements NewLayerListener{
 				if (row != GuiState3DWCS.layers.getActiveLayerNumber()){
 					GuiState3DWCS.layers.setActiveLayer(row);
 				}
+				if (column == 0){
+					GuiState3DWCS.layers.getActiveLayer().setVisible((boolean) table.getModel().getValueAt(row, column));
+				}
+
 			}
 		});
 		scrollPane.setViewportView(table);

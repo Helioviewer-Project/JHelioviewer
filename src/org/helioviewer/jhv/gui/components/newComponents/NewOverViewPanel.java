@@ -1,28 +1,27 @@
 package org.helioviewer.jhv.gui.components.newComponents;
 
-import java.awt.Component;
 import java.awt.Dimension;
-
-import javax.swing.JLabel;
+import javax.media.opengl.GL2;
 import javax.swing.JPanel;
 
+import org.helioviewer.jhv.gui.GuiState3DWCS;
+import org.helioviewer.jhv.layers.NewLayer;
 import org.helioviewer.jhv.viewmodel.view.opengl.CompenentView;
 
 public class NewOverViewPanel extends CompenentView{
 
-	private JPanel contentPanel;
-	
-	public NewOverViewPanel() {
+	public NewOverViewPanel(JPanel jPanel) {
     	super();
-    	this.contentPanel = new JPanel();
 		this.canvas.setPreferredSize(new Dimension(200, 200));
 		this.canvas.setMinimumSize(new Dimension(200, 200));
-    	this.contentPanel.add(canvas);
-    	this.contentPanel.setPreferredSize(new Dimension(200, 200));
-    	this.contentPanel.setMinimumSize(new Dimension(200, 200));
+    	jPanel.add(canvas);
+    	
 	}
 	
-	public Component getContentPane(){
-		return this.contentPanel;
+	@Override
+	public void displayLayer(GL2 gl, NewLayer layer) {
+		System.out.println("repaint");
+		this.rotation = ((CompenentView)GuiState3DWCS.mainComponentView).getRotation();
+		super.displayLayer(gl, layer);
 	}
 }

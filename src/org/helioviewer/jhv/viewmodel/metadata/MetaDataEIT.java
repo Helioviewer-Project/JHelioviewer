@@ -24,6 +24,8 @@ public class MetaDataEIT extends MetaData{
         hasCorona = true;
         hasSphere = true;
         
+        System.out.println("measurement: " + measurement);
+        
         this.metaDataContainer = metaDataContainer;
         
         fullName = "EIT " + measurement;

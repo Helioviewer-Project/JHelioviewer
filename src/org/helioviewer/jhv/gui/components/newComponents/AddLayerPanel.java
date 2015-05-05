@@ -287,16 +287,14 @@ public class AddLayerPanel extends JDialog {
 							filter = (InstrumentModel.Filter) cmbbxFilter1
 									.getSelectedItem();
 						}
-						if (filter != null) {
-							LayerInterface layer = GuiState3DWCS.layers
-									.addLayer(filter.sourceId);
+						
+						else if (filter != null) {
+							GuiState3DWCS.layers
+									.addLayer(filter.sourceId, datePickerStartDate.getDateTime(),
+											datePickerEndDate.getDateTime(),
+											(int) candence.getValue());
 						}
-						NewLayer layer = GuiState3DWCS.layers
-								.addLayer(filter.sourceId);
-						layer.ultimateLayer.setTimeRange(
-								datePickerStartDate.getDateTime(),
-								datePickerEndDate.getDateTime(),
-								(int) candence.getValue());
+
 						setVisible(false);
 					}
 				});

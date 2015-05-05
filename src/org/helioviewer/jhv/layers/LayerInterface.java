@@ -1,6 +1,8 @@
 package org.helioviewer.jhv.layers;
 
 import java.time.LocalDateTime;
+
+import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.view.opengl.CompenentView;
 
@@ -67,7 +69,7 @@ public abstract class LayerInterface {
 	private boolean visible = true;
 
 	private static int idCounter;
-	private int id;
+	protected int id;
 	
 	public LayerInterface() {
 		this.id = idCounter++;
@@ -85,6 +87,7 @@ public abstract class LayerInterface {
 	
 	public void setVisible(boolean visible) {
 		this.visible = visible;
+		GuiState3DWCS.mainComponentView.getComponent().repaint();
 	}
 	
 	public double getContrast() {

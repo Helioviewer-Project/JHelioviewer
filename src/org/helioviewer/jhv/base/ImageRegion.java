@@ -41,6 +41,7 @@ public class ImageRegion {
 	private float xTextureScale = 1;
 	private float yTextureScale = 1;
 	
+	
 	public ImageRegion(LocalDateTime localDateTime) {
 		imageData = new Rectangle();
 		this.localDateTime = localDateTime;

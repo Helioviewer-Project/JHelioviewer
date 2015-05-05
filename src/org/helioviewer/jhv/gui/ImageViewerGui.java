@@ -1,6 +1,7 @@
 package org.helioviewer.jhv.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -100,6 +101,8 @@ public class ImageViewerGui {
 	private ControlPanelContainer filterPanelContainer;
 	private JMenuBar menuBar;
 
+	private JPanel overViewPane;
+
 	public static final int SIDE_PANEL_WIDTH = 320;
 
 	/**
@@ -137,13 +140,26 @@ public class ImageViewerGui {
 			// solarEventCatalogsPanel = new SolarEventCatalogsPanel();
 			// leftPane.add("Features/Events", solarEventCatalogsPanel, false);
 
+			//Overview-panel
+			JPanel panel = new JPanel();
+			panel.setLayout(new BorderLayout(0, 0));
+
+			if (!JHVGlobals.OLD_RENDER_MODE){
+			overViewPane = new JPanel();
+			overViewPane.setPreferredSize(new Dimension(200, 210));
+			overViewPane.setMinimumSize(new Dimension(200, 210));
+			overViewPane.setBackground(Color.BLACK);
+			panel.add(overViewPane, BorderLayout.NORTH);
+			}
+
 			// STATE - GET LEFT PANE
 			leftScrollPane = new JScrollPane(getLeftContentPane(),
 					JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 					JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 			leftScrollPane.setFocusable(false);
 			leftScrollPane.getVerticalScrollBar().setUnitIncrement(10);
-			midSplitPane.setLeftComponent(leftScrollPane);
+			panel.add(leftScrollPane, BorderLayout.CENTER);
+			midSplitPane.setLeftComponent(panel);
 
 			midSplitPane.setRightComponent(mainContentPanel);
 
@@ -450,8 +466,7 @@ public class ImageViewerGui {
 			
 			if (JHVGlobals.OLD_RENDER_MODE)
 				leftPane.add("Overview", GuiState3DWCS.overViewPanel, JHVGlobals.OLD_RENDER_MODE);			
-			else
-				leftPane.add("Overview", GuiState3DWCS.newOverViewPanel.getContentPane(), true);
+			
 			leftPane.add("Movie Controls", moviePanelContainer, true);
 
 			// Layer control
@@ -598,5 +613,9 @@ public class ImageViewerGui {
 
 	public final MainContentPanel getMainContentPanel() {
 		return mainContentPanel;
+	}
+
+	public JPanel getOverviewPane() {
+		return overViewPane;
 	}
 }

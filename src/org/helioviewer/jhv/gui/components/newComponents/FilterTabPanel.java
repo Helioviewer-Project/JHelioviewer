@@ -297,7 +297,7 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 
 	@Override
 	public void activeLayerChanged(LayerInterface layer) {
-		//this.updateLayer((Layer)layer);
+		this.updateLayer(layer);
 	}
 	
 	private void repaintComponent(){

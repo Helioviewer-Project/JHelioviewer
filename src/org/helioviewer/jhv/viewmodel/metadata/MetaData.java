@@ -10,6 +10,7 @@ import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
+import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
 import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 import org.helioviewer.jhv.viewmodel.region.StaticRegion;
 import org.helioviewer.jhv.viewmodel.view.jp2view.ImmutableDateTime;
@@ -65,6 +66,8 @@ public abstract class MetaData {
     protected LocalDateTime localDateTime;
 	protected final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_DATE_TIME;
     
+	protected LUT_ENTRY defaultLUT = LUT_ENTRY.GRAY;
+	
     /**
      * Default constructor, does not set size or position.
      */
@@ -456,5 +459,9 @@ public abstract class MetaData {
 	
 	public Quaternion3d getRotation(){
 		return this.defaultRotation;
+	}
+	
+	public LUT_ENTRY getDefaultLUT(){
+		return defaultLUT;
 	}
 }

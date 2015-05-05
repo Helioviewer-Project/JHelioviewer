@@ -21,16 +21,13 @@ import javax.media.opengl.GLDrawableFactory;
 import javax.media.opengl.GLProfile;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
-import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 
 import org.helioviewer.jhv.base.FileUtils;
 import org.helioviewer.jhv.base.Log;
 import org.helioviewer.jhv.base.Message;
-import org.helioviewer.jhv.gui.GL3DCameraSelectorModel;
 import org.helioviewer.jhv.gui.ImageViewerGui;
-import org.helioviewer.jhv.gui.actions.View2DAction;
 import org.helioviewer.jhv.gui.components.layerTable.LayerTableOverlapWatcher;
 import org.helioviewer.jhv.gui.dialogs.AboutDialog;
 import org.helioviewer.jhv.internal_plugins.InternalFilterPlugin;

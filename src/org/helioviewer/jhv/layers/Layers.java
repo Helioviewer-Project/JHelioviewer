@@ -1,5 +1,6 @@
 package org.helioviewer.jhv.layers;
 
+import java.time.LocalDateTime;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.NewCache;
@@ -41,12 +42,25 @@ public class Layers {
 		return layer;
 	}
 	
+	public NewLayer addLayer(int id, LocalDateTime start, LocalDateTime end, int cadence){
+		NewLayer layer = new NewLayer(id, renderer, newCache, start, end, cadence);
+		layers.add(layer);
+		for (NewLayerListener renderListener : layerListeners){
+			renderListener.newlayerAdded();
+		}
+		if (layers.size() == 1){
+			this.layerChanged();
+		}
+		return layer;
+	}
+	
 	public LayerInterface getLayer(int idx){
 		return layers.get(idx);
 	}
 	
 	public void removeLayer(int idx){
 		layers.remove(idx);
+		activeLayer = 0;
 		for (NewLayerListener renderListener : layerListeners){
 			renderListener.newlayerRemoved(idx);
 		}

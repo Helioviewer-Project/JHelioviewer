@@ -34,6 +34,7 @@ import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
+import org.helioviewer.jhv.gui.controller.Camera;
 import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.LayerInterface.COLOR_CHANNEL_TYPE;
@@ -49,7 +50,6 @@ import org.helioviewer.jhv.opengl.camera.CameraInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraPanInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraRotationInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraZoomInteraction;
-import org.helioviewer.jhv.opengl.camera.GL3DCamera;
 import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
 import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
@@ -61,7 +61,7 @@ import org.helioviewer.jhv.viewmodel.view.View;
 
 public class CompenentView extends GL3DComponentView implements
 		GLEventListener, LayersListener, MouseListener, MouseMotionListener,
-		MouseWheelListener, NewLayerListener, TimeLineListener {
+		MouseWheelListener, NewLayerListener, TimeLineListener, Camera {
 
 	public static final double MAX_DISTANCE = Constants.SUN_MEAN_DISTANCE_TO_EARTH * 1.8;
     public static final double MIN_DISTANCE = Constants.SUN_RADIUS * 1.2;
@@ -71,19 +71,17 @@ public class CompenentView extends GL3DComponentView implements
     public static final double FOV = 10;
    // private final double aspect = 0.0;
 
-    private Quaternion3d rotation;
+    protected Quaternion3d rotation;
     private Vector3d translation;
- 
+    protected ArrayList<CompenentView> synchronizedViews;
     
     public enum CAMERA_INTERACTION{
-    	ZOOM("Zoom", CameraZoomInteraction.class, 0), PAN("Pan", CameraPanInteraction.class, 1), ROTATE("Rotate", CameraRotationInteraction.class, 2);
-    	
+    	ZOOM("Zoom", CameraZoomInteraction.class), PAN("Pan", CameraPanInteraction.class), ROTATE("Rotate", CameraRotationInteraction.class);
     	private Constructor<?> constructor;
-    	private int idx;
     	private String name;
-    	CAMERA_INTERACTION(String name, Class<?> interactionClass, int idx){
-    		this.idx = idx;
-			try {
+
+    	CAMERA_INTERACTION(String name, Class<?> interactionClass){
+    		try {
 				constructor = interactionClass.getConstructor(CompenentView.class);
 			} catch (NoSuchMethodException | SecurityException e1) {
 				// TODO Auto-generated catch block
@@ -103,11 +101,7 @@ public class CompenentView extends GL3DComponentView implements
     	
     	public Constructor<?> getConstructor(){
     		return this.constructor;
-    	}
-    	
-    	public int getIndex(){
-    		return idx;
-    	}
+    	}    	
     }
 	
 	protected GLCanvas canvas = new GLCanvas();
@@ -123,9 +117,10 @@ public class CompenentView extends GL3DComponentView implements
 	private CopyOnWriteArrayList<RenderAnimation> animations;
 	private NoImageScreen splashScreen;
 	
-	private CameraInteraction[] cameraInteractions;
+	public CameraInteraction[] cameraInteractions;
 
 	public CompenentView() {
+		this.synchronizedViews = new ArrayList<CompenentView>();
 		this.canvas.setSharedContext(OpenGLHelper.glContext);
 		GuiState3DWCS.layers.addNewLayerListener(this);
 		TimeLine.SINGLETON.addListener(this);
@@ -141,12 +136,15 @@ public class CompenentView extends GL3DComponentView implements
     	this.rotation = Quaternion3d.createRotation(0.0, new Vector3d(0, 1, 0));
     	this.translation = new Vector3d(0, 0, DEFAULT_CAMERA_DISTANCE);
     	
-    	
-    	cameraInteractions = new CameraInteraction[CAMERA_INTERACTION.values().length];
+    	this.addCameraInteractions();
+    }
+	
+	private void addCameraInteractions(){
+		cameraInteractions = new CameraInteraction[CAMERA_INTERACTION.values().length];
 		Object[] args = {this};
     	for (CAMERA_INTERACTION interaction: CAMERA_INTERACTION.values()){
     		try {
-				cameraInteractions[interaction.getIndex()] = (CameraInteraction) interaction.getConstructor().newInstance(args);
+				cameraInteractions[interaction.ordinal()] = (CameraInteraction) interaction.getConstructor().newInstance(args);
 			} catch (InstantiationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -161,7 +159,7 @@ public class CompenentView extends GL3DComponentView implements
 				e.printStackTrace();
 			}
     	}
-    }
+	}
 	
 	public Quaternion3d getRotation(){
 		return rotation;
@@ -169,6 +167,7 @@ public class CompenentView extends GL3DComponentView implements
 	
 	public void setRotation(Quaternion3d rotation){
 		this.rotation = rotation;
+		this.repaintViewAndSynchronizedViews();
 	}
 	
     public Vector3d getTranslation() {
@@ -176,7 +175,10 @@ public class CompenentView extends GL3DComponentView implements
 	}
 	
 	public void setTranslation(Vector3d translation){
-		this.translation = translation;
+		if (!translation.isApproxEqual(this.translation, 0)){
+			this.translation = translation;
+			this.repaintViewAndSynchronizedViews();
+		}
 	}
 
 	public Matrix4d getTransformation(){
@@ -194,21 +196,26 @@ public class CompenentView extends GL3DComponentView implements
 	}
 	
 	public void setZTranslation(double z) {
-        this.translation = new Vector3d(
+		Vector3d translation = new Vector3d(
                 this.translation.x,
                 this.translation.y,
                 Math.max(MIN_DISTANCE, Math.min(MAX_DISTANCE, z)));
+		if (!translation.isApproxEqual(this.translation, 0)){
+			this.translation = translation;
+			this.repaintViewAndSynchronizedViews();
+		}
+
     }
 	
 	public void setActiveInteraction(CAMERA_INTERACTION camInteraction){
 		switch (camInteraction) {
 		case PAN:
-			this.cameraInteractions[CAMERA_INTERACTION.PAN.idx].setEnable(true);
-			this.cameraInteractions[CAMERA_INTERACTION.ROTATE.idx].setEnable(false);
+			this.cameraInteractions[CAMERA_INTERACTION.PAN.ordinal()].setEnable(true);
+			this.cameraInteractions[CAMERA_INTERACTION.ROTATE.ordinal()].setEnable(false);
 			break;
 		case ROTATE:
-			this.cameraInteractions[CAMERA_INTERACTION.PAN.idx].setEnable(false);
-			this.cameraInteractions[CAMERA_INTERACTION.ROTATE.idx].setEnable(true);			
+			this.cameraInteractions[CAMERA_INTERACTION.PAN.ordinal()].setEnable(false);
+			this.cameraInteractions[CAMERA_INTERACTION.ROTATE.ordinal()].setEnable(true);			
 			break;
 		default:
 			break;
@@ -300,16 +307,6 @@ public class CompenentView extends GL3DComponentView implements
 	public void viewChanged(View sender, ChangeEvent aEvent) {
 		// TODO Auto-generated method stub
 
-	}
-
-	@Override
-	public void cameraMoved(GL3DCamera camera) {
-		this.canvas.repaint();
-	}
-
-	@Override
-	public void cameraMoving(GL3DCamera camera) {
-		this.canvas.repaint();
 	}
 
 	@Override
@@ -575,7 +572,6 @@ public class CompenentView extends GL3DComponentView implements
 			if (cameraInteraction.isEnable())
 				cameraInteraction.mouseDragged(e);
 		}
-		this.canvas.repaint();
 	}
 
 	@Override
@@ -594,7 +590,6 @@ public class CompenentView extends GL3DComponentView implements
 			if (cameraInteraction.isEnable())
 				cameraInteraction.mousePressed(e);
 		}
-		this.canvas.repaint();
 	}
 
 	@Override
@@ -603,7 +598,6 @@ public class CompenentView extends GL3DComponentView implements
 			if (cameraInteraction.isEnable())
 				cameraInteraction.mouseReleased(e);
 		}
-		this.canvas.repaint();
 	}
 
 	@Override
@@ -684,7 +678,6 @@ public class CompenentView extends GL3DComponentView implements
 			if (cameraInteraction.isEnable())
 				cameraInteraction.mouseWheelMoved(e);
 		}
-		this.canvas.repaint();
 	}
 
 	@Override
@@ -711,5 +704,16 @@ public class CompenentView extends GL3DComponentView implements
 	
 	public double getAspect() {
 		return canvas.getSize().getHeight() / canvas.getSize().getWidth();
+	}
+	
+	public void setSynchronizedView(CompenentView compenentView){
+		this.synchronizedViews.add(compenentView);
+	}
+	
+	private void repaintViewAndSynchronizedViews(){
+		for (CompenentView compenentView : synchronizedViews){
+			compenentView.getComponent().repaint();
+		}
+		this.canvas.repaint();
 	}
 }

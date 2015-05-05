@@ -132,16 +132,21 @@ public class UltimateLayer {
 					sb.append(line);
 				}
 				JSONObject jsonObject = new JSONObject(sb.toString());
-				if (jsonObject.getString("error") != null){
-					break;
+				
+				try {
+					if (jsonObject.getString("error") != null){
+						break;
+					}					
+				} catch (JSONException e) {
+					// TODO: handle exception
 				}
+				
 				System.out.println(jsonObject.get("frames"));
 				JSONArray frames = ((JSONArray)jsonObject.get("frames"));
 				LocalDateTime[] framesDateTime = new LocalDateTime[frames.length()];
 				for (int i = 0; i < frames.length(); i++){
 					Timestamp timestamp = new Timestamp(frames.getLong(i)*1000L);
 					framesDateTime[i] = timestamp.toLocalDateTime();
-					
 				}
 				String jpipURL = jsonObject.getString("uri");
 				NewReader reader = new NewReader(jpipURL, sourceID, resolutionSet);
@@ -167,6 +172,12 @@ public class UltimateLayer {
 		if (fileName != null) return localDateTimes.length;
 		return 1;
 	}	
+	
+	public MetaData getMetaData(LocalDateTime localDateTime){
+		FutureTask<JHVCachable> jhvCacheable = cache.getCacheElement(localDateTime);
+		
+		return null;
+	}
 	
 	public MetaData getMetaData(int index){
 		render.openImage(fileName);
@@ -201,6 +212,7 @@ public class UltimateLayer {
 	public ByteBuffer getImageData(LocalDateTime currentDateTime, ImageRegion imageRegion) throws InterruptedException, ExecutionException{
 		//newLayer.getImageRegion().calculateScaleFactor(newLayer, camera);		
 		Queue<CachableTexture> textures = TextureCache.singleton.getCacheableTextures();
+		System.out.println("id : " + this.id);
 		for (CachableTexture texture : textures){
 			if (texture.compareRegion(id, imageRegion, currentDateTime)){
 				this.imageRegion = texture.getImageRegion();
@@ -240,5 +252,16 @@ public class UltimateLayer {
 		return this.imageRegion;
 	}
 		
+	
+	public static void main(String[] args) {
+		System.out.println("test");
+		NewCache newCache = new NewCache();
+		NewRender newRender = new NewRender();
+		
+		NewLayer newLayer = new NewLayer(14, newRender, newCache);
+		newLayer.setTimeRange(LocalDateTime.now().minusYears(1), LocalDateTime.now().minusYears(1).plusHours(1), 180);
+		MetaData metaData = newLayer.getMetaData();
+		System.out.println(metaData);
+	}
 	
 }
