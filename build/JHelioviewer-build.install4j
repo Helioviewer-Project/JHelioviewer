@@ -10,7 +10,7 @@
       <registry />
     </searchSequence>
     <variables>
-      <variable name="mode" value="release" description="" category="" />
+      <variable name="mode" value="release" description="&quot;release&quot; or &quot;debug&quot;" category="" />
     </variables>
     <mergedProjects />
     <codeSigning macEnabled="false" macPkcs12File="../../cer/Open Source Developer, Simon Felix.pfx" windowsEnabled="true" windowsKeySource="pkcs12" windowsPvkFile="" windowsSpcFile="" windowsPkcs12File="../../cer/Open Source Developer, Simon Felix.pfx" />
@@ -274,6 +274,9 @@
             <serializedBean>
               <java class="java.beans.XMLDecoder">
                 <object class="com.install4j.runtime.beans.screens.StandardProgramGroupScreen">
+                  <void property="allUsers">
+                    <boolean>false</boolean>
+                  </void>
                   <void property="programGroupName">
                     <string>${compiler:sys.fullName}</string>
                   </void>
