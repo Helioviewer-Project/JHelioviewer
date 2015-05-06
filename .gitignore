@@ -6,4 +6,3 @@ bin/
 *.asm
 /bin
 /build/builds
-/build/
