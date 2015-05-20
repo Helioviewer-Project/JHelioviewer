@@ -1,11 +1,6 @@
 package org.helioviewer.jhv.plugins.pfssplugin;
 
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayContainer;
-import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayControlComponent;
-import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayControlComponentManager;
-import org.helioviewer.jhv.viewmodel.renderer.physical.PhysicalRenderer3d;
-import org.helioviewer.jhv.viewmodel.view.OverlayView;
-import org.helioviewer.jhv.viewmodel.view.opengl.OverlayPluginContainer;
 
 /**
  * Plugincontainer for Pfss
@@ -19,7 +14,7 @@ public class PfssPluginContainer extends OverlayContainer
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+	/*@Override
 	protected void installOverlayImpl(OverlayView overlayView,
 			OverlayControlComponentManager controlList) {
 		PfssPlugin3dRenderer renderer = new PfssPlugin3dRenderer();
@@ -31,7 +26,7 @@ public class PfssPluginContainer extends OverlayContainer
 		controlList
 				.add(new OverlayControlComponent(pfssPluginPanel, getName()));
 
-	}
+	}*/
 
 	/**
 	 * {@inheritDoc}
@@ -49,9 +44,9 @@ public class PfssPluginContainer extends OverlayContainer
 	}
 
 
-	@Override
+	/*@Override
 	public Class<? extends PhysicalRenderer3d> getOverlayClass() {
 		return PfssPlugin3dRenderer.class;
-	}
+	}*/
 
 }

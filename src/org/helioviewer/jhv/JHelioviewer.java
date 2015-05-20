@@ -14,11 +14,6 @@ import java.nio.file.Path;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import javax.media.opengl.DebugGL2;
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLCapabilities;
-import javax.media.opengl.GLDrawableFactory;
-import javax.media.opengl.GLProfile;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.ToolTipManager;
@@ -27,12 +22,9 @@ import javax.swing.UIManager;
 import org.helioviewer.jhv.base.FileUtils;
 import org.helioviewer.jhv.base.Log;
 import org.helioviewer.jhv.base.Message;
-import org.helioviewer.jhv.gui.ImageViewerGui;
-import org.helioviewer.jhv.gui.components.layerTable.LayerTableOverlapWatcher;
+import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 import org.helioviewer.jhv.gui.dialogs.AboutDialog;
-import org.helioviewer.jhv.internal_plugins.InternalFilterPlugin;
 import org.helioviewer.jhv.io.CommandLineProcessor;
-import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.plugins.hekplugin.HEKPlugin3D;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
@@ -43,6 +35,13 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
 
 import com.install4j.api.launcher.ApplicationLauncher;
 import com.install4j.api.update.UpdateScheduleRegistry;
+import com.jogamp.opengl.DebugGL2;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLContext;
+import com.jogamp.opengl.GLDrawableFactory;
+import com.jogamp.opengl.GLProfile;
+import com.xuggle.xuggler.demos.GetContainerInfo;
 
 /**
  * This class starts the applications.
@@ -122,7 +121,8 @@ public class JHelioviewer {
 			for (int i = 0; i < args.length; ++i) {
 				argString += " " + args[i];
 			}
-
+			System.out.println(GLProfile
+					.getDefault());
 			GLDrawableFactory factory = GLDrawableFactory.getFactory(GLProfile
 					.getDefault());
 			GLProfile profile = GLProfile.get(GLProfile.GL2);
@@ -138,7 +138,7 @@ public class JHelioviewer {
 						.getGL2()));
 
 			OpenGLHelper.glContext = sharedDrawable.getContext();
-
+			OpenGLHelper.glContext = GLContext.getCurrent();
 			System.out
 					.println("JHelioviewer started with command-line options:"
 							+ argString);
@@ -205,12 +205,8 @@ public class JHelioviewer {
 			/* ----------Setup OpenGL ----------- */
 			splash.setProgressText("Setting up the UI...");
 			splash.nextStep();
-			ImageViewerGui.getMainFrame();
-
-			System.out.println("Installing overlap watcher");
-			LayerTableOverlapWatcher overlapWatcher = new LayerTableOverlapWatcher();
-			LayersModel.getSingletonInstance()
-					.addLayersListener(overlapWatcher);
+			MainFrame mainFrame = new MainFrame();
+			//ImageViewerGui.getMainFrame();
 
 			/* ----------Setup Plug-ins ----------- */
 
@@ -222,9 +218,6 @@ public class JHelioviewer {
 			// PluginManager.getSingeltonInstance().loadSettings(JHVDirectorie.HOME.getPath());
 
 			System.out.println("Add internal plugin: " + "FilterPlugin");
-			Plugin internalPlugin = new InternalFilterPlugin();
-			PluginManager.getSingeltonInstance().addInternalPlugin(
-					internalPlugin.getClass().getClassLoader(), internalPlugin);
 
 			for (Plugin plugin : new Plugin[] { new PfssPlugin(),
 					new HEKPlugin3D(), new SDOCutOutPlugin3D() })
@@ -236,8 +229,9 @@ public class JHelioviewer {
 			// Create main view chain and display main window
 			System.out.println("Start main window");
 			// splash.initializeViewchain();
-			ImageViewerGui.getSingletonInstance().createViewchains();
-			
+			//ImageViewerGui.getSingletonInstance().createViewchains();
+			mainFrame.setVisible(true);
+			splash.dispose();
 			UILatencyWatchdog.startWatchdog();
 		} catch (Throwable _t) {
 			JHVUncaughtExceptionHandler.getSingletonInstance()

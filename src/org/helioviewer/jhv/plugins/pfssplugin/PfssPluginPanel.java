@@ -5,25 +5,17 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Date;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
-import org.helioviewer.jhv.gui.GuiState3DWCS;
-import org.helioviewer.jhv.layers.LayersListener;
-import org.helioviewer.jhv.layers.LayersModel;
+import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayPanel;
-import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
-import org.helioviewer.jhv.viewmodel.view.View;
-import org.helioviewer.jhv.viewmodel.view.ViewListener;
 
 /**
  * Panel of Pfss-Plugin
  * */
-public class PfssPluginPanel extends OverlayPanel implements ActionListener,
-		LayersListener, ViewListener
-{
+public class PfssPluginPanel extends OverlayPanel implements ActionListener{
 
 	private static final long serialVersionUID = 1L;
 	private PfssPlugin3dRenderer renderer;
@@ -41,7 +33,6 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 		// set up visual components
 		initVisualComponents();
 		// register as layers listener
-		LayersModel.getSingletonInstance().addLayersListener(this);
 		this.renderer = renderer;
 	}
 
@@ -50,7 +41,7 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 	 */
 	private void fireRedraw()
 	{
-	    GuiState3DWCS.mainComponentView.getComponent().repaint();
+		MainFrame.MAIN_PANEL.repaint();
 	}
 
 	/**
@@ -131,6 +122,7 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 	
 	public void reload()
 	{
+		/*
 		int master = -1000;
 		for (int i = 0; i < LayersModel.getSingletonInstance().getNumLayers(); i++){
 			if (LayersModel.getSingletonInstance().isMaster(i))
@@ -150,41 +142,6 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 		
 		if (start != null && end != null)
 			renderer.setDisplayRange(start, end);
-	}
-
-	public void layerChanged(int idx) {
-	}
-
-	public void layerRemoved(View oldView, int oldIdx) {
-		this.reload();
-	}
-
-	@Override
-	public void subImageDataChanged(int idx) {
-	}
-
-	public void timestampChanged(int idx) {
-		// Not used anymore
-		//handled in renderer
-		
-	}
-
-	public void viewportGeometryChanged() {
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void regionChanged() {
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void layerDownloaded(int idx) {
-	}
-
-	@Override
-	public void viewChanged(View sender, ChangeEvent aEvent) {
+			*/
 	}
 }

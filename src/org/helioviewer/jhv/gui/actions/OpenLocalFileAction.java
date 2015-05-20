@@ -4,7 +4,6 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.io.IOException;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
@@ -12,15 +11,13 @@ import javax.swing.KeyStroke;
 
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.Settings;
-import org.helioviewer.jhv.base.Message;
-import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.actions.filefilters.AllSupportedImageTypesFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.FitsFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.JP2Filter;
 import org.helioviewer.jhv.gui.actions.filefilters.JPGFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.PNGFilter;
-import org.helioviewer.jhv.io.APIRequestManager;
+import org.helioviewer.jhv.layers.Layers;
 
 /**
  * Action to open a local file.
@@ -118,25 +115,7 @@ public class OpenLocalFileAction extends AbstractAction {
                 ImageViewerGui.getSingletonInstance().getMainImagePanel().setLoading(true);
 
                 // Load image in new thread
-                if (JHVGlobals.OLD_RENDER_MODE){
-                Thread thread = new Thread(new Runnable() {
-
-                    public void run() {
-                        try {
-                            APIRequestManager.newLoad(fileChooser.getSelectedFile().toURI(), true);
-                        } catch (IOException e) {
-                            Message.err("An error occured while opening the file!", e.getMessage(), false);
-                        } finally {
-                            ImageViewerGui.getSingletonInstance().getMainImagePanel().setLoading(false);
-                        }
-                    }
-                }, "OpenLocalFile");
-                thread.setDaemon(true);
-                thread.start();
-                }
-                else {
-                	GuiState3DWCS.layers.addLayer(fileChooser.getSelectedFile().toString());
-                }
+                	Layers.LAYERS.addLayer(fileChooser.getSelectedFile().toString());
             }
         }
     }

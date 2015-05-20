@@ -2,16 +2,18 @@ package org.helioviewer.jhv.opengl.camera;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
-import org.helioviewer.jhv.viewmodel.view.opengl.CompenentView;
+
+import org.helioviewer.jhv.gui.controller.Camera;
+import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 
 
 public abstract class CameraInteraction{
-
-	protected boolean enable = false;
-	protected CompenentView compenentView;
+	protected MainPanel compenentView;
+	protected Camera camera;
 	
-	public CameraInteraction(CompenentView compenentView) {
+	public CameraInteraction(MainPanel compenentView, Camera camera) {
 		this.compenentView = compenentView;
+		this.camera = camera;
 	}
 
 	public void mouseWheelMoved(MouseWheelEvent e){	
@@ -29,14 +31,6 @@ public abstract class CameraInteraction{
 	public void setYAxisBlocked(boolean selected) {
 		// TODO Auto-generated method stub
 		
-	}
-	
-	public void setEnable(boolean enable){
-		this.enable = enable;
-	}
-	
-	public boolean isEnable(){
-		return this.enable;
-	}
+	}	
 }
 

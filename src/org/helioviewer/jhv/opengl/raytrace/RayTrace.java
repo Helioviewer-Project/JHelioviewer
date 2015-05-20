@@ -4,9 +4,9 @@ import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.math.Vector4d;
 import org.helioviewer.jhv.base.physics.Constants;
-import org.helioviewer.jhv.gui.GuiState3DWCS;
+import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.helioviewer.jhv.viewmodel.view.opengl.CompenentView;
+import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 
 public class RayTrace {
 	public enum HITPOINT_TYPE{
@@ -21,23 +21,23 @@ public class RayTrace {
 		plane = new Plane(new Vector3d(1, 0, 0).cross(new Vector3d(0, 1, 0)), 0);
 	}
 	
-	public Ray cast(int x, int y, CompenentView compenentView){
+	public Ray cast(int x, int y, MainPanel compenentView){
 		Vector3d origin = compenentView.getTransformation().multiply(new Vector3d(0, 0, 1));
-		double newX = (x-GuiState3DWCS.mainComponentView.getComponent().getSize().getWidth()/2.)/ GuiState3DWCS.mainComponentView.getComponent().getSize().getWidth();
-		double newY = (y-GuiState3DWCS.mainComponentView.getComponent().getSize().getHeight()/2.)/ GuiState3DWCS.mainComponentView.getComponent().getSize().getHeight();
+		double newX = (x-MainFrame.MAIN_PANEL.getSize().getWidth()/2.)/ MainFrame.MAIN_PANEL.getSize().getWidth();
+		double newY = (y-MainFrame.MAIN_PANEL.getSize().getHeight()/2.)/ MainFrame.MAIN_PANEL.getSize().getHeight();
 
-		double width = Math.tan(Math.toRadians(CompenentView.FOV/2.0));
+		double width = Math.tan(Math.toRadians(MainPanel.FOV/2.0));
 		Vector3d direction = new Vector3d(-newX * 2 * width, newY * 2 * width, -1).normalize();
 		Ray ray = new Ray(origin, direction);
 		return intersect(ray);
 	}
 	
-	public Vector2d castTexturepos(int x, int y, MetaData metaData, CompenentView compenentView){		
+	public Vector2d castTexturepos(int x, int y, MetaData metaData, MainPanel compenentView){		
 		Vector3d origin = compenentView.getTransformation().multiply(new Vector3d(0, 0, 1));
 		
-		double newX = (x-GuiState3DWCS.mainComponentView.getComponent().getSize().getWidth()/2.)/ GuiState3DWCS.mainComponentView.getComponent().getSize().getWidth();
-		double newY = (y-GuiState3DWCS.mainComponentView.getComponent().getSize().getHeight()/2.)/ GuiState3DWCS.mainComponentView.getComponent().getSize().getHeight();
-		double width = Math.tan(Math.toRadians(CompenentView.FOV/2.0));
+		double newX = (x-MainFrame.MAIN_PANEL.getSize().getWidth()/2.)/ MainFrame.MAIN_PANEL.getSize().getWidth();
+		double newY = (y-MainFrame.MAIN_PANEL.getSize().getHeight()/2.)/ MainFrame.MAIN_PANEL.getSize().getHeight();
+		double width = Math.tan(Math.toRadians(MainPanel.FOV/2.0));
 		Vector3d direction = new Vector3d(-newX * 2 * width, newY * 2 * width, -1).normalize();
 		
 		Vector4d tmpOrigin = new Vector4d(origin.x, origin.y, origin.z, 0);
@@ -59,6 +59,7 @@ public class RayTrace {
 		if (ray.hitpointType == HITPOINT_TYPE.SPHERE && ray.getHitpoint().z < 0){
 			return null;
 		}
+		
 		Vector3d original = ray.getHitpoint();
 		double imageX = (Math.max(Math.min(original.x, metaData.getPhysicalUpperRight().x), metaData.getPhysicalLowerLeft().x) - metaData.getPhysicalLowerLeft().x) / metaData.getPhysicalImageWidth();
 		double imageY = (Math.max(Math.min(original.y, metaData.getPhysicalUpperRight().y), metaData.getPhysicalLowerLeft().y) - metaData.getPhysicalLowerLeft().y) / metaData.getPhysicalImageHeight();

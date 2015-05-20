@@ -1,8 +1,6 @@
 	package org.helioviewer.jhv.viewmodel.view.jp2view.kakadu;
 
 import java.awt.Rectangle;
-import java.io.EOFException;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 import kdu_jni.Jp2_input_box;
@@ -12,14 +10,6 @@ import kdu_jni.KduException;
 import kdu_jni.Kdu_coords;
 import kdu_jni.Kdu_dims;
 import kdu_jni.Kdu_global;
-
-import org.helioviewer.jhv.viewmodel.view.jp2view.image.SubImage;
-import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPConstants;
-import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPDatabinClass;
-import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPQuery;
-import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPRequest;
-import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPResponse;
-import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPSocket;
 
 /**
  * A collection of useful static methods.
@@ -71,29 +61,6 @@ public class KakaduUtils {
         return dims;
     }
 
-    /**
-     * Converts a SubImage object to a Kdu_dims object
-     * 
-     * @param _roi
-     *            SubImage to convert
-     * @return Kdu_dims equivalent to the given SubImage
-     */
-    public static Kdu_dims roiToKdu_dims(SubImage _roi) {
-        Kdu_dims dims = null;
-        try {
-            dims = new Kdu_dims();
-            Kdu_coords pos = dims.Access_pos();
-            Kdu_coords siz = dims.Access_size();
-            pos.Set_x(_roi.x);
-            pos.Set_y(_roi.y);
-            siz.Set_x(_roi.width);
-            siz.Set_y(_roi.height);
-        } catch (KduException ex) {
-            ex.printStackTrace();
-        }
-        return dims;
-    }
-
     public static Kdu_dims rectToKdu_dims(Rectangle rectangle) {
         Kdu_dims dims = null;
         try {
@@ -111,45 +78,6 @@ public class KakaduUtils {
     }
 
     
-    /**
-     * Downloads all the necessary initial data of an image. In the case of this
-     * application, it includes the main header as well as the metadata.
-     * JPIPSocket object should already be connected.
-     * 
-     * @param _socket
-     * @param _cache
-     * @throws IOException
-     * @throws JHV_KduException
-     */
-    public static void downloadInitialData(JPIPSocket _socket, JHV_Kdu_cache _cache) throws IOException, JHV_KduException {
-        JPIPResponse res = null;
-        JPIPRequest req = new JPIPRequest(JPIPRequest.Method.GET, new JPIPQuery("stream", "0", "metareq", "[*]!!", "len", Integer.toString(JPIPConstants.MAX_REQUEST_LEN)));
-
-        try {
-            do {
-                _socket.send(req);
-                if ((res = _socket.receive()) == null)
-                    break;
-            } while (!_cache.addJPIPResponseData(res));
-
-            if (!_cache.isDataBinCompleted(JPIPDatabinClass.MAIN_HEADER_DATABIN, 0, 0)) {
-                req.setQuery(new JPIPQuery("stream", "0"));
-
-                do {
-                    _socket.send(req);
-                    if ((res = _socket.receive()) == null)
-                        break;
-                } while (!_cache.addJPIPResponseData(res) && !_cache.isDataBinCompleted(JPIPDatabinClass.MAIN_HEADER_DATABIN, 0, 0));
-            }
-        } catch (EOFException e) {
-            e.printStackTrace();
-        }
-
-        if (!_cache.isDataBinCompleted(JPIPDatabinClass.MAIN_HEADER_DATABIN, 0, 0)) {
-            throw new IOException("Unable to read all data, data bin is not complete");
-        }
-    }
-
     /**
      * Searches the _familySrc for a box of type _boxType (the box types are
      * defined in the Kdu_global class). The method returns the in _boxNumber
@@ -175,7 +103,6 @@ public class KakaduUtils {
 
             if (!box.Open(_familySrc, jp2Locator)) {
                 throw new JHV_KduException("Box not open: " + _boxNumber);
-
             } else {
                 if (_boxType == Kdu_global.jp2_association_4cc) {
                     while (box.Get_box_type() != _boxType && box.Exists()) {
@@ -367,31 +294,5 @@ public class KakaduUtils {
             }
 
         return xml;
-    }
-
-    /**
-     * This method updates the server cache model. The JPIPSocket object should
-     * be connected already.
-     * 
-     * @param _socket
-     * @param _cache
-     * @throws IOException
-     * @throws JHV_KduException
-     */
-    public static void updateServerCacheModel(JPIPSocket _socket, JHV_Kdu_cache _cache, boolean force) throws IOException, JHV_KduException {
-        String cModel = _cache.buildCacheModelUpdateString(force);
-        if (cModel == null)
-            return;
-
-        JPIPQuery cacheUpdateQuery = new JPIPQuery();
-        cacheUpdateQuery.setField("model", cModel);
-
-        JPIPRequest req = new JPIPRequest(JPIPRequest.Method.POST);
-        req.setQuery(cacheUpdateQuery.toString());
-
-        _socket.send(req);
-        JPIPResponse res = _socket.receive();
-
-        _cache.addJPIPResponseData(res);
     }
 };

@@ -5,7 +5,6 @@ import java.awt.event.KeyEvent;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 
-import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.base.FileUtils;
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 import org.helioviewer.jhv.gui.actions.ExportAction;
@@ -16,16 +15,14 @@ import org.helioviewer.jhv.gui.actions.SaveScreenshotAsAction;
 import org.helioviewer.jhv.gui.actions.SaveStateAction;
 import org.helioviewer.jhv.gui.actions.ShowDialogAction;
 import org.helioviewer.jhv.gui.actions.ToggleFullscreenAction;
-import org.helioviewer.jhv.gui.actions.gl3d.GL3DCenterImageAction;
-import org.helioviewer.jhv.gui.actions.gl3d.GL3DZoom1to1Action;
-import org.helioviewer.jhv.gui.actions.gl3d.GL3DZoomFitAction;
-import org.helioviewer.jhv.gui.actions.gl3d.GL3DZoomInAction;
-import org.helioviewer.jhv.gui.actions.gl3d.GL3DZoomOutAction;
-import org.helioviewer.jhv.gui.components.newComponents.NewMoviePanel;
+import org.helioviewer.jhv.gui.components.newComponents.NewPlayPanel;
 import org.helioviewer.jhv.gui.dialogs.AboutDialog;
 import org.helioviewer.jhv.gui.dialogs.HelpDialog;
-import org.helioviewer.jhv.gui.dialogs.OpenRemoteFileDialog;
 import org.helioviewer.jhv.gui.dialogs.PreferencesDialog;
+import org.helioviewer.jhv.opengl.camera.newActions.Zoom1To1Action;
+import org.helioviewer.jhv.opengl.camera.newActions.ZoomFitAction;
+import org.helioviewer.jhv.opengl.camera.newActions.ZoomInAction;
+import org.helioviewer.jhv.opengl.camera.newActions.ZoomOutAction;
 
 /**
  * Menu bar of the main window.
@@ -49,8 +46,8 @@ public class MenuBar extends JMenuBar {
 		JMenu fileMenu = new JMenu("File");
 		fileMenu.setMnemonic(KeyEvent.VK_F);
 		fileMenu.add(new OpenLocalFileAction());
-		fileMenu.add(new ShowDialogAction("Open remote image...",
-				OpenRemoteFileDialog.class));
+		/*fileMenu.add(new ShowDialogAction("Open remote image...",
+				OpenRemoteFileDialog.class));*/
 		fileMenu.addSeparator();
 
 		JMenu exampleMenu = new JMenu("Load examples");
@@ -101,27 +98,23 @@ public class MenuBar extends JMenuBar {
 
 		JMenu viewMenu = new JMenu("View");
 		viewMenu.setMnemonic(KeyEvent.VK_V);
-		viewMenu.add(new GL3DCenterImageAction());
+		//viewMenu.add(new GL3DCenterImageAction());
 		viewMenu.add(new ToggleFullscreenAction());
 		viewMenu.addSeparator();
-		viewMenu.add(new GL3DZoomInAction(true));
-		viewMenu.add(new GL3DZoomOutAction(true));
-		viewMenu.add(new GL3DZoomFitAction(true));
-		viewMenu.add(new GL3DZoom1to1Action(true));
+		viewMenu.add(new ZoomInAction(true));
+		viewMenu.add(new ZoomOutAction(true));
+		viewMenu.add(new ZoomFitAction(true));
+		viewMenu.add(new Zoom1To1Action(true));
 		add(viewMenu);
 
 		JMenu movieMenu = new JMenu("Movie");
 		movieMenu.setMnemonic(KeyEvent.VK_A);
-		if (JHVGlobals.OLD_RENDER_MODE) {
-			movieMenu.add(new MoviePanel.StaticPlayPauseAction());
-			movieMenu.add(new MoviePanel.StaticPreviousFrameAction());
-			movieMenu.add(new MoviePanel.StaticNextFrameAction());
-		} else {
-			movieMenu.add(new NewMoviePanel.StaticPlayPauseAction());
-			movieMenu.add(new NewMoviePanel.StaticPreviousFrameAction());
-			movieMenu.add(new NewMoviePanel.StaticNextFrameAction());
-		}
-		add(movieMenu);
+
+			movieMenu.add(new NewPlayPanel.StaticPlayPauseAction());
+			movieMenu.add(new NewPlayPanel.StaticPreviousFrameAction());
+			movieMenu.add(new NewPlayPanel.StaticNextFrameAction());
+		
+			add(movieMenu);
 
 		JMenu optionsMenu = new JMenu("Options");
 		optionsMenu.setMnemonic(KeyEvent.VK_O);

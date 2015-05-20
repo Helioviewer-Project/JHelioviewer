@@ -3,11 +3,11 @@ package org.helioviewer.jhv.opengl;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2;
-
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
+
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
 
 public class NoImageScreen implements RenderAnimation{
 

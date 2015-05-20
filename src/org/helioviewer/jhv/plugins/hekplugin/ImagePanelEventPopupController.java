@@ -5,30 +5,11 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.util.Date;
-import java.util.Vector;
 
-import org.helioviewer.jhv.base.math.SphericalCoord;
-import org.helioviewer.jhv.base.math.Vector3d;
-import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.components.BasicImagePanel;
 import org.helioviewer.jhv.gui.interfaces.ImagePanelPlugin;
-import org.helioviewer.jhv.layers.LayersModel;
-import org.helioviewer.jhv.opengl.scenegraph.GL3DState;
-import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
-import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRayTracer;
-import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKEvent;
 import org.helioviewer.jhv.plugins.hekplugin.cache.gui.HEKEventInformationDialog;
-import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
-import org.helioviewer.jhv.viewmodel.changeevent.RegionChangedReason;
-import org.helioviewer.jhv.viewmodel.changeevent.TimestampChangedReason;
-import org.helioviewer.jhv.viewmodel.changeevent.ViewportChangedReason;
-import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
-import org.helioviewer.jhv.viewmodel.view.View;
-import org.helioviewer.jhv.viewmodel.view.ViewListener;
-import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
-import org.helioviewer.jhv.viewmodel.view.opengl.GL3DSceneGraphView;
 
 /**
  * Implementation of ImagePanelPlugin for showing event popups.
@@ -43,7 +24,7 @@ import org.helioviewer.jhv.viewmodel.view.opengl.GL3DSceneGraphView;
  * 
  */
 public class ImagePanelEventPopupController implements ImagePanelPlugin,
-		MouseListener, MouseMotionListener, ViewListener {
+		MouseListener, MouseMotionListener{
 
 	// ///////////////////////////////////////////////////////////////////////////
 	// Definitions
@@ -53,8 +34,6 @@ public class ImagePanelEventPopupController implements ImagePanelPlugin,
 			.getPredefinedCursor(Cursor.HAND_CURSOR);
 	private static final int X_OFFSET = 12;
 	private static final int Y_OFFSET = 12;
-
-	private View view;
 
 	private BasicImagePanel imagePanel;
 
@@ -70,20 +49,6 @@ public class ImagePanelEventPopupController implements ImagePanelPlugin,
 	/**
 	 * {@inheritDoc}
 	 */
-	public View getView() {
-		return view;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setView(View newView) {
-		view = newView;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public void setImagePanel(BasicImagePanel newImagePanel) {
         imagePanel = newImagePanel;
         if (imagePanel != null) {
@@ -93,9 +58,6 @@ public class ImagePanelEventPopupController implements ImagePanelPlugin,
         imagePanel = newImagePanel;
         imagePanel.addMouseMotionListener(this);
 		imagePanel.addMouseListener(this);
-
-		if (imagePanel.getView() != null)
-			imagePanel.getView().addViewListener(this);
 	}
 
 	/**
@@ -201,7 +163,7 @@ public class ImagePanelEventPopupController implements ImagePanelPlugin,
 	 * {@inheritDoc}
 	 */
 	public void mouseMoved(MouseEvent e) {
-
+		/*
 		HEKEvent lastHEKEvent = mouseOverHEKEvent;
 		if (LinkedMovieManager.getActiveInstance().getMasterMovie() != null){
 		JHVJPXView masterView = LinkedMovieManager.getActiveInstance()
@@ -259,38 +221,7 @@ public class ImagePanelEventPopupController implements ImagePanelPlugin,
 					imagePanel.setCursor(lastCursor);
 				}
 			}
-		}}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void viewChanged(View sender, ChangeEvent aEvent) {
-		if (hekPopUp != null) {
-			if (aEvent.reasonOccurred(RegionChangedReason.class)
-					|| aEvent.reasonOccurred(ViewportChangedReason.class)
-					|| aEvent.reasonOccurred(TimestampChangedReason.class)) {
-				// remove as soon as event is not visible anymore
-				if (hekPopUp != null && hekPopUp.isVisible()) {
-					Date currentDate = LayersModel.getSingletonInstance()
-							.getLastUpdatedTimestamp();
-					if (currentDate == null) {
-						hekPopUp.setVisible(false);
-						return;
-					}
-					Vector<HEKEvent> toDraw = HEKCache.getSingletonInstance()
-							.getModel().getActiveEvents(currentDate);
-					if (!toDraw.contains(hekPopUp.getEvent())) {
-						// hide popup
-						hekPopUp.setVisible(false);
-						// do not show event in the future anymore
-						if (hekPopUp.getEvent() != null) {
-							hekPopUp.getEvent().setShowEventInfo(false);
-						}
-					}
-				}
-			}
-		}
+		}}*/
 	}
 
 	public void detach() {

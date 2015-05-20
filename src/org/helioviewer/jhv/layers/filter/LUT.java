@@ -7,11 +7,12 @@ import java.io.InputStreamReader;
 import java.util.LinkedHashMap;
 
 import javax.imageio.ImageIO;
-import javax.media.opengl.GL2;
 import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.opengl.OpenGLHelper;
-import org.helioviewer.jhv.viewmodel.view.opengl.CompenentView;
+import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
+
+import com.jogamp.opengl.GL2;
 
 public class LUT
 {
@@ -32,6 +33,11 @@ public class LUT
 		}
 		
 		public String getName() {
+			return name;
+		}
+		
+		@Override
+		public String toString() {
 			return name;
 		}
 	}
@@ -68,7 +74,7 @@ public class LUT
 				try
 				{
 					BufferedImage bufferedImage;
-					bufferedImage = ImageIO.read(CompenentView.class.getResourceAsStream("/UltimateLookupTable.png"));
+					bufferedImage = ImageIO.read(MainPanel.class.getResourceAsStream("/UltimateLookupTable.png"));
 					texture = openGLHelper.createTextureID();
 					openGLHelper.bindBufferedImageToGLTexture(bufferedImage, 256, 256);
 					OpenGLHelper.glContext.getGL().glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER,
@@ -86,7 +92,7 @@ public class LUT
 	
 	private static void loadLutFromFile(String lutTxtName)
 	{
-		try(BufferedReader br=new BufferedReader(new InputStreamReader(CompenentView.class.getResourceAsStream(lutTxtName),"UTF-8")))
+		try(BufferedReader br=new BufferedReader(new InputStreamReader(MainPanel.class.getResourceAsStream(lutTxtName),"UTF-8")))
 		{
 		    String line = null;
 			while ((line = br.readLine()) != null)

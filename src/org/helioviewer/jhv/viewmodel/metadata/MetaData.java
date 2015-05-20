@@ -13,7 +13,6 @@ import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
 import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 import org.helioviewer.jhv.viewmodel.region.StaticRegion;
-import org.helioviewer.jhv.viewmodel.view.jp2view.ImmutableDateTime;
 
 public abstract class MetaData {
   private Vector2d lowerLeftCorner;
@@ -30,7 +29,6 @@ public abstract class MetaData {
     protected Vector2d sunPixelPosition = new Vector2d();
 
     protected double meterPerPixel;
-    protected ImmutableDateTime time;
 
     protected double innerRadius;
     protected double outerRadius;
@@ -190,14 +188,14 @@ public abstract class MetaData {
      * {@inheritDoc}
      */
     public synchronized double getPhysicalImageHeight() {
-        return sizeVector.y;
+        return this.getResolution().getY() * this.getUnitsPerPixel();
     }
 
     /**
      * {@inheritDoc}
      */
     public synchronized double getPhysicalImageWidth() {
-        return sizeVector.x;
+        return this.getResolution().getX() * this.getUnitsPerPixel();
     }
 
     /**
@@ -315,18 +313,11 @@ public abstract class MetaData {
         return meterPerPixel;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public ImmutableDateTime getDateTime() {
-        return time;
-    }
-    
     public LocalDateTime getLocalDateTime(){
     	return localDateTime;
     }
     
-    abstract boolean updatePixelParameters();
+    public abstract boolean updatePixelParameters();
 
 	public boolean hasSphere() {
 		// TODO Auto-generated method stub
@@ -443,10 +434,6 @@ public abstract class MetaData {
         return changed;
 	}
 
-	public void updateDateTime(ImmutableDateTime newDateTime) {
-        time = newDateTime;		
-	}
-
 	public double getRadiusSuninArcsec() {
         double distanceToSun = metaDataContainer.tryGetDouble("DSUN_OBS");
         return Math.atan(Constants.SUN_RADIUS / distanceToSun) * MathUtils.RAD_TO_DEG * 3600;
@@ -464,4 +451,9 @@ public abstract class MetaData {
 	public LUT_ENTRY getDefaultLUT(){
 		return defaultLUT;
 	}
+
+	public void setDimension(int width, int height) {
+		pixelImageSize = new Vector2i(width, height);
+	}
+	
 }

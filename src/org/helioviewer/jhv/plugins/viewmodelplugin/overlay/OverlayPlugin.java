@@ -6,7 +6,6 @@ import java.util.AbstractList;
 import java.util.LinkedList;
 
 import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginManager;
-import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginSettings;
 import org.helioviewer.jhv.plugins.viewmodelplugin.interfaces.Plugin;
 
 /**
@@ -46,9 +45,9 @@ public abstract class OverlayPlugin implements Plugin {
      */
     public void installPlugin() {
         for (OverlayContainer overlay : overlayContainerList) {
-            overlay.setActive(PluginSettings.getSingeltonInstance().isOverlayInPluginActivated(pluginLocation, overlay.getOverlayClass(), false));
-            overlay.setPosition(PluginSettings.getSingeltonInstance().getOverlayPosition(pluginLocation, overlay.getOverlayClass()));
-            PluginManager.getSingeltonInstance().addOverlayContainer(overlay);
+            //overlay.setActive(PluginSettings.getSingeltonInstance().isOverlayInPluginActivated(pluginLocation, overlay.getOverlayClass(), false));
+            //overlay.setPosition(PluginSettings.getSingeltonInstance().getOverlayPosition(pluginLocation, overlay.getOverlayClass()));
+            //PluginManager.getSingeltonInstance().addOverlayContainer(overlay);
         }
     }
 

@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import org.helioviewer.jhv.plugins.viewmodelplugin.filter.FilterContainer;
 import org.helioviewer.jhv.plugins.viewmodelplugin.interfaces.Plugin;
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayContainer;
 
@@ -27,7 +26,6 @@ public class PluginManager {
 
     private PluginSettings pluginSettings = PluginSettings.getSingeltonInstance();
     private Map<Plugin, PluginContainer> plugins = new HashMap<Plugin, PluginContainer>();
-    private AbstractList<FilterContainer> pluginFilters = new LinkedList<FilterContainer>();
     private AbstractList<OverlayContainer> pluginOverlays = new LinkedList<OverlayContainer>();
 
     // ////////////////////////////////////////////////////////////////
@@ -69,89 +67,6 @@ public class PluginManager {
         return this.plugins.values().toArray(new PluginContainer[0]);
     }
 
-    /**
-     * Adds a container with a filter to the list of all filters.
-     * 
-     * @param container
-     *            Filter container to add to the list.
-     */
-    public void addFilterContainer(FilterContainer container) {
-
-        pluginFilters.add(container);
-    }
-
-    /**
-     * Removes a container with a filter from the list of all filters.
-     * 
-     * @param container
-     *            Filter container to remove from the list.
-     */
-    public void removeFilterContainer(FilterContainer container) {
-
-        container.setActive(false);
-        container.setPosition(-1);
-        container.changeSettings();
-
-        pluginFilters.remove(container);
-    }
-
-    /**
-     * Returns the number of all available filter.
-     * 
-     * @return Number of available filter.
-     * */
-    public int getNumberOfFilter() {
-        return pluginFilters.size();
-    }
-
-    /**
-     * Returns a list with all filter which have the passed active status. If
-     * the active status is true all activated filters will be returned
-     * otherwise all available and not activated filters will be returned.
-     * <p>
-     * If a list of all activated filters is requested the list is ordered by
-     * the user specified position.
-     * 
-     * @param activated
-     *            Indicates if all available (false) or all activated (true)
-     *            filters have to be returned.
-     * @return list with all filters which have the passed active status.
-     */
-    public AbstractList<FilterContainer> getFilterContainers(boolean activated) {
-
-        AbstractList<FilterContainer> result = new LinkedList<FilterContainer>();
-
-        for (FilterContainer fc : pluginFilters) {
-
-            if (activated) {
-                if (fc.isActive() == true) {
-
-                    int position = fc.getPosition();
-
-                    if (position < 0)
-                        result.add(fc);
-                    else {
-                        boolean added = false;
-                        for (int i = 0; i < result.size(); i++) {
-                            if (position < result.get(i).getPosition() || result.get(i).getPosition() < 0) {
-                                result.add(i, fc);
-                                added = true;
-                                break;
-                            }
-                        }
-
-                        if (!added)
-                            result.add(fc);
-                    }
-                }
-            } else {
-                if (fc.isActive() == false)
-                    result.add(fc);
-            }
-        }
-
-        return result;
-    }
 
     /**
      * Adds a container with a overlay to the list of all overlays.

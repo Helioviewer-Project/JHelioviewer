@@ -1,17 +1,10 @@
 package org.helioviewer.jhv.viewmodel.metadata;
 
 import java.time.LocalDateTime;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.base.math.Vector2d;
-import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.physics.Constants;
-import org.helioviewer.jhv.viewmodel.view.cache.HelioviewerDateTimeCache;
-import org.helioviewer.jhv.viewmodel.view.fitsview.FITSImage;
-import org.helioviewer.jhv.viewmodel.view.jp2view.JP2Image;
-import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
 
 public class MetaDataStereoB_COR2 extends MetaData{
 
@@ -37,7 +30,6 @@ public class MetaDataStereoB_COR2 extends MetaData{
         this.metaDataContainer = metaDataContainer;
 
         String observedDate = metaDataContainer.get("DATE_OBS");
-        time = HelioviewerDateTimeCache.parseDateTime(observedDate);
         localDateTime = LocalDateTime.parse(observedDate, DATE_FORMAT);
 
         updatePixelParameters();
@@ -82,40 +74,6 @@ public class MetaDataStereoB_COR2 extends MetaData{
         maskRotation = Math.toRadians(metaDataContainer.tryGetDouble("CROTA"));
 
         double centerX = 0, centerY = 0;
-        if (detector != null &&  metaDataContainer instanceof JP2Image) {
-            JP2Image jp2image = (JP2Image) metaDataContainer;
-            try {
-                String crval1Original = jp2image.getValueFromXML("HV_CRVAL1_ORIGINAL", "helioviewer");
-                String crval2Original = jp2image.getValueFromXML("HV_CRVAL2_ORIGINAL", "helioviewer");
-                if (crval1Original != null && crval2Original != null) {
-                    centerX = Double.parseDouble(crval1Original);
-                    centerY = Double.parseDouble(crval2Original);
-                } else {
-                    String crvalComment = jp2image.getValueFromXML("HV_SECCHI_COMMENT_CRVAL", "helioviewer");
-                    if(crvalComment == null) {
-                        crvalComment = jp2image.getValueFromXML("HV_COMMENT", "helioviewer");
-                    }
-                    if(crvalComment != null) {
-                        Pattern pattern = Pattern.compile(".*CRVAL1=([+-]?\\d+(.\\d+)?).*");
-                        Matcher matcher = pattern.matcher(crvalComment);
-                        if(matcher.matches()) {
-                            centerX = Double.parseDouble(matcher.group(1));
-                        }
-                        pattern = Pattern.compile(".*CRVAL2=([+-]?\\d+(.\\d+)?).*");
-                        matcher = pattern.matcher(crvalComment);
-                        if(matcher.matches()) {
-                            centerY = Double.parseDouble(matcher.group(1));
-                        }
-                    }
-                }
-            } catch (JHV_KduException e) {
-                System.err.println(">> HelioviewerOcculterMetaData > Error reading helioviewer meta data key HV_SECCHI_COMMENT_CRVAL");
-                e.printStackTrace();
-            }
-        } else if (metaDataContainer instanceof FITSImage && centerX == 0 && centerY == 0) {
-            centerX = metaDataContainer.tryGetDouble("CRVAL1");
-            centerY = metaDataContainer.tryGetDouble("CRVAL2");
-        }       
         
         //Convert arcsec to meters
         double cdelt1 = metaDataContainer.tryGetDouble("CDELT1");
@@ -134,13 +92,8 @@ public class MetaDataStereoB_COR2 extends MetaData{
     }
 
 	@Override
-	boolean updatePixelParameters() {
-		boolean changed = false;
-
-        if (pixelImageSize.getX() != metaDataContainer.getPixelWidth() || pixelImageSize.getY() != metaDataContainer.getPixelHeight()) {
-            pixelImageSize = new Vector2i(metaDataContainer.getPixelWidth(), metaDataContainer.getPixelHeight());
-            changed = true;
-        }
+	public boolean updatePixelParameters() {
+		boolean changed = true;
 
         double newSolarPixelRadius = -1.0;
         double allowedRelativeDifference = 0.01;

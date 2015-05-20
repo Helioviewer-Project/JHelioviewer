@@ -10,7 +10,16 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JEditorPane;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
@@ -19,10 +28,6 @@ import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.interfaces.ShowableDialog;
-import org.helioviewer.jhv.internal_plugins.InternalFilterPlugin;
-import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginContainer;
-import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginManager;
-import org.helioviewer.jhv.plugins.viewmodelplugin.interfaces.Plugin;
 
 
 /**
@@ -109,17 +114,6 @@ public final class AboutDialog extends JDialog implements ActionListener, Showab
 
         "<p>This software uses the <a href=\"http://www.davekoelle.com/alphanum.html\">Alphanum Algorithm</a>, licensed under the LGPLv2.1.<br> Its source code can be downloaded <a href=\"http://jhelioviewer.org/libjhv/external/AlphanumComparator.java\">here</a>.<br>";
 
-        for (PluginContainer pluginContainer : PluginManager.getSingeltonInstance().getAllPlugins()) {
-            Plugin plugin = pluginContainer.getPlugin();
-            if (!(plugin instanceof InternalFilterPlugin)) {
-                String pluginAboutLicense = plugin.getAboutLicenseText();
-
-                if (pluginAboutLicense != null && !pluginAboutLicense.equals("")) {
-                    text += pluginAboutLicense;
-                }
-
-            }
-        }
 
         JEditorPane license = new JEditorPane("text/html", text);
         license.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));

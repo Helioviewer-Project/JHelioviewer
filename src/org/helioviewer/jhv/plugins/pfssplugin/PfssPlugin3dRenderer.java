@@ -1,17 +1,16 @@
 package org.helioviewer.jhv.plugins.pfssplugin;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import org.helioviewer.jhv.plugins.pfssplugin.data.PfssDecompressed;
 import org.helioviewer.jhv.plugins.pfssplugin.data.managers.FrameManager;
-import org.helioviewer.jhv.viewmodel.renderer.physical.GLPhysicalRenderGraphics;
-import org.helioviewer.jhv.viewmodel.renderer.physical.PhysicalRenderer3d;
-import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
-import org.helioviewer.jhv.viewmodel.view.View;
-import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
+import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 
-public class PfssPlugin3dRenderer extends PhysicalRenderer3d {
+import com.jogamp.opengl.GL2;
+
+public class PfssPlugin3dRenderer{
 	private FrameManager manager;
 	private boolean isVisible = false;
 	/**
@@ -27,15 +26,15 @@ public class PfssPlugin3dRenderer extends PhysicalRenderer3d {
 	 * 
 	 * Draws all available and visible solar events with there associated icon.
 	 */
-	public void render(GLPhysicalRenderGraphics g)
+	public void render(GL2 gl)
 	{
-		JHVJPXView masterView = LinkedMovieManager.getActiveInstance().getMasterMovie();;
+
 		if (isVisible)
 		{
-			Date date = masterView.getCurrentFrameDateTime().getTime();
-			PfssDecompressed frame = manager.getFrame(g.gl,date);
+			LocalDateTime localDateTime = TimeLine.SINGLETON.getCurrentDateTime();
+			PfssDecompressed frame = manager.getFrame(gl,localDateTime);
 			if(frame != null)
-				frame.display(g.gl, date);			
+				frame.display(gl, localDateTime);			
 		}
 	}
 	
@@ -63,7 +62,4 @@ public class PfssPlugin3dRenderer extends PhysicalRenderer3d {
 		return isVisible;
 	}
 
-	public void viewChanged(View view)
-	{
-	}
 }

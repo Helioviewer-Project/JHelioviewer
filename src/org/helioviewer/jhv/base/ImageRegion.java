@@ -7,22 +7,19 @@ import java.time.LocalDateTime;
 
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
-import org.helioviewer.jhv.gui.GuiState3DWCS;
+import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.helioviewer.jhv.viewmodel.view.opengl.CompenentView;
+import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 
 public class ImageRegion {
 	
-	
+	// relative image coordinates
 	private Rectangle2D imageData;
-	
+	// image size, which have been decoded
 	private Rectangle imageSize;
 	
-	private double absolutScaleFactor;
-	private double relativeScaleFactor;
-
 	private float imageScaleFactor;
 	private double imageZoomFactor;
 
@@ -41,6 +38,8 @@ public class ImageRegion {
 	private float xTextureScale = 1;
 	private float yTextureScale = 1;
 	
+	private MetaData metaData;
+	
 	
 	public ImageRegion(LocalDateTime localDateTime) {
 		imageData = new Rectangle();
@@ -48,14 +47,15 @@ public class ImageRegion {
 	}
 			
 	public void setImageData(Rectangle2D imageData){
+		System.out.println("imageData : " + imageData);
 		this.imageData = imageData;
 	}
 		
-	public Vector2d calculateImageSize(LayerInterface layerInterface, CompenentView compenentView){
+	public Vector2d calculateImageSize(LayerInterface layerInterface, MainPanel compenentView){
 		MetaData metaData = layerInterface.getMetaData();
 		Vector2i resolution = metaData.getResolution();
 		
-		double z = metaData.getPhysicalImageHeight() * Math.tan(Math.toRadians(CompenentView.FOV));
+		double z = metaData.getPhysicalImageHeight() * Math.tan(Math.toRadians(MainPanel.FOV));
 		
 		return Vector2d.scale(resolution, compenentView.getTranslation().z / z); 
 	}
@@ -76,8 +76,7 @@ public class ImageRegion {
 		return this.imageScaleFactor >= imageRegion.getScaleFactor();
 	}
 
-	public void calculateScaleFactor(LayerInterface layerInterface, CompenentView compenentView) {
-		MetaData metaData = layerInterface.getMetaData();
+	public void calculateScaleFactor(LayerInterface layerInterface, MainPanel compenentView, MetaData metaData) {
 		Vector2i resolution = metaData.getResolution();
 		
 		int textureMaxX = getNextInt(resolution.getX() * (imageData.getX() + imageData.getWidth()));
@@ -88,11 +87,11 @@ public class ImageRegion {
 		int textureHeight = textureMaxY - textureMinY;
 		
 		double texleCount = textureWidth * textureHeight;
-		Dimension canvasSize = GuiState3DWCS.mainComponentView.getCanavasSize();
+		Dimension canvasSize = MainFrame.MAIN_PANEL.getCanavasSize();
 		
 		
 		
-		double z = metaData.getPhysicalImageWidth() / Math.tan(Math.toRadians(CompenentView.FOV));
+		double z = metaData.getPhysicalImageWidth() / Math.tan(Math.toRadians(MainPanel.FOV));
 		double zoom = compenentView.getTranslation().z / z;
 		int screenMaxX = getNextInt(canvasSize.getWidth() * (imageData.getX() + imageData.getWidth()) /  zoom);
 		int screenMaxY = getNextInt(canvasSize.getHeight() * (imageData.getY() + imageData.getHeight()) / zoom);
@@ -147,33 +146,6 @@ public class ImageRegion {
 		return imageSize;
 	}
 	
-	private void calculateImageSize(LayerInterface layerInterface){
-		MetaData metaData = layerInterface.getMetaData();
-		Vector2i resolution = metaData.getResolution();
-		int maxX = getNextInt(resolution.getX() * (imageData.getX() + imageData.getWidth()));
-		int maxY = getNextInt(resolution.getY() * (imageData.getY() + imageData.getHeight()));
-		int minX = (int)(resolution.getX() * imageData.getX());
-		int minY = (int)(resolution.getY() * imageData.getY());
-		int width = maxX - minX;
-		int height = maxY - minY;
-		
-		this.relativeScaleFactor = GuiState3DWCS.mainComponentView.getCanavasSize().getWidth() / width > 1 ? 1 : GuiState3DWCS.mainComponentView.getCanavasSize().getWidth() / width;
-		
-		width = width > GuiState3DWCS.mainComponentView.getComponent().getSurfaceWidth() ? GuiState3DWCS.mainComponentView.getComponent().getSurfaceWidth() : width; 
-		height = height > GuiState3DWCS.mainComponentView.getComponent().getSurfaceHeight() ? GuiState3DWCS.mainComponentView.getComponent().getSurfaceHeight() : height;
-		int width2 = OpenGLHelper.nextPowerOfTwo(width);
-		int height2 = OpenGLHelper.nextPowerOfTwo(height);
-		
-		if (width2 >= resolution.getX() && height2 >= resolution.getY()){
-			this.imageSize = new Rectangle(width2, height2);
-			this.imageData = new Rectangle2D.Double(0, 0, 1, 1);
-		}
-		else {
-			this.imageSize = new Rectangle(width, height);
-		}
-		
-	}
-	
 	private static int getNextInt(double d){
 		return d % 1 == 0 ? (int) d : (int)(d - d % 1) + 1;
 	}
@@ -198,7 +170,7 @@ public class ImageRegion {
 	}	
 	
 	public int getTextureID(){
-		return this.textureID = textureID;
+		return this.textureID;
 	}
 	
 	public void setTextureID(int textureID){
@@ -208,6 +180,14 @@ public class ImageRegion {
 	public void setTextureScaleFactor(float xScale, float yScale) {
 		this.xTextureScale = xScale;
 		this.yTextureScale = yScale;
+	}
+	
+	public void setMetaData(MetaData metaData){
+		this.metaData = metaData;
+	}
+	
+	public MetaData getMetaData(){
+		return metaData;
 	}
 }
 

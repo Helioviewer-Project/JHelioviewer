@@ -15,11 +15,9 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import org.helioviewer.jhv.JHVGlobals;
-import org.helioviewer.jhv.base.Message;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.actions.filefilters.ExtensionFileFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.JHVStateFilter;
-import org.helioviewer.jhv.layers.LayersModel;
 
 public class SaveStateAction extends AbstractAction {
 
@@ -43,9 +41,9 @@ public class SaveStateAction extends AbstractAction {
 
         // if the user selected a filename
         if (selectedFile != null) {
-
+        	/*
             // get layer XML representation
-            String layerRepresentation = LayersModel.getSingletonInstance().getXMLRepresentation("\t");
+            //String layerRepresentation = LayersModel.getSingletonInstance().getXMLRepresentation("\t");
 
             // TODO Malte Nuhn : get Plugin XML representation
 
@@ -59,6 +57,7 @@ public class SaveStateAction extends AbstractAction {
             if (!success) {
                 Message.err(null, "An error occured while writing the JHV state to disk.", false);
             }
+            */
 
         }
 

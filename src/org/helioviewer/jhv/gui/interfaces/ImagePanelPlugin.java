@@ -1,7 +1,6 @@
 package org.helioviewer.jhv.gui.interfaces;
 
 import org.helioviewer.jhv.gui.components.BasicImagePanel;
-import org.helioviewer.jhv.viewmodel.view.View;
 
 /**
  * Interface representing a plugin for an image panel.
@@ -11,30 +10,6 @@ import org.helioviewer.jhv.viewmodel.view.View;
  * chain.
  */
 public interface ImagePanelPlugin {
-
-    /**
-     * Sets the topmost view of the view chain.
-     * 
-     * That way the plugin can access the whole view chain.
-     * 
-     * <p>
-     * This function is called during
-     * {@link org.helioviewer.jhv.gui.components.BasicImagePanel#addPlugin(ImagePanelPlugin)}
-     * , so usually the user does not have to take care of this.
-     * 
-     * @param newView
-     *            Topmost view of the view chain
-     * @see #getView()
-     */
-    public void setView(View newView);
-
-    /**
-     * Returns the topmost view of the view chain associated with this plugin.
-     * 
-     * @return Topmost view of the view chain
-     * @see #setView(View)
-     */
-    public View getView();
 
     /**
      * Sets the image panel to which the plugin is attached.

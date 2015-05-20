@@ -7,8 +7,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
-import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginManager;
-import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginSettings;
 import org.helioviewer.jhv.plugins.viewmodelplugin.interfaces.Plugin;
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayContainer;
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayPlugin;
@@ -50,13 +48,14 @@ public class PfssPlugin extends OverlayPlugin implements Plugin
 	 */
 	public void installPlugin() {
 		for (OverlayContainer overlay : overlayContainerList) {
-			overlay.setActive(PluginSettings.getSingeltonInstance()
+			/*overlay.setActive(PluginSettings.getSingeltonInstance()
 					.isOverlayInPluginActivated(pluginLocation,
 							overlay.getOverlayClass(), true));
 			overlay.setPosition(PluginSettings.getSingeltonInstance()
 					.getOverlayPosition(pluginLocation,
 							overlay.getOverlayClass()));
 			PluginManager.getSingeltonInstance().addOverlayContainer(overlay);
+			*/
 		}
 	}
 

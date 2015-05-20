@@ -6,7 +6,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;
 import javax.swing.KeyStroke;
 
-import org.helioviewer.jhv.gui.GuiState3DWCS;
+import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 
 /**
  * Action to switch fullscreen mode on and off.
@@ -34,9 +34,9 @@ public class ToggleFullscreenAction extends AbstractAction {
      * {@inheritDoc}
      */
     public void actionPerformed(ActionEvent e) {
-    	if (!GuiState3DWCS.mainComponentView.fullScreenMode)
-    	GuiState3DWCS.mainComponentView.toFullscreen();
-    	else GuiState3DWCS.mainComponentView.escapeFullscreen();
+    	if (MainFrame.MAIN_PANEL.fullScreenMode)
+    		MainFrame.MAIN_PANEL.toFullscreen();
+    	else MainFrame.MAIN_PANEL.escapeFullscreen();
     }
 
 }

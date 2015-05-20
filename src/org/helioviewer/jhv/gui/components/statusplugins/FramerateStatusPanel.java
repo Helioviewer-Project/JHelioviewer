@@ -5,10 +5,8 @@ import java.time.LocalDateTime;
 
 import javax.swing.BorderFactory;
 
-import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine.TimeLineListener;
-import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
 
 /**
  * Status panel for displaying the framerate for image series.
@@ -31,7 +29,6 @@ public class FramerateStatusPanel extends ViewStatusPanelPlugin implements TimeL
      * Default constructor.
      */
     public FramerateStatusPanel(){
-    	TimeLine.SINGLETON.addListener(this);
         setBorder(BorderFactory.createEtchedBorder());
 
         setPreferredSize(new Dimension(70, 20));
@@ -39,33 +36,19 @@ public class FramerateStatusPanel extends ViewStatusPanelPlugin implements TimeL
 
         setVisible(true);
         currentMillis = System.currentTimeMillis();
-        LayersModel.getSingletonInstance().addLayersListener(this);
-        
+        TimeLine.SINGLETON.addListener(this);
+
     }
 
     private void updateFramerate() {
             setVisible(true);
             setText("fps: " + counter);
             counter = 0;
+            System.out.println("fps : " + (System.currentTimeMillis() - currentMillis));
             currentMillis = System.currentTimeMillis();
     }
 
     public void activeLayerChanged(int idx) {
-    }
-
-    @Override
-    public void subImageDataChanged(int idx) {
-        if (LinkedMovieManager.getActiveInstance() != null && LinkedMovieManager.getActiveInstance().getMasterMovie() != null){         
-            if ((System.currentTimeMillis() - currentMillis) >= 1000)
-                updateFramerate();
-            long current = LinkedMovieManager.getActiveInstance().getMasterMovie().getCurrentFrameDateTime().getMillis();
-            if (last >= 0 && last != current) counter++;
-            last = current;
-        }
-    }
-    
-    public void timestampChanged(){
-        
     }
 
 	@Override
@@ -73,5 +56,9 @@ public class FramerateStatusPanel extends ViewStatusPanelPlugin implements TimeL
 		if ((System.currentTimeMillis() - currentMillis) >= 1000)
            updateFramerate();
 		counter++;
+	}
+
+	@Override
+	public void dateTimesChanged(int framecount) {
 	}
 }

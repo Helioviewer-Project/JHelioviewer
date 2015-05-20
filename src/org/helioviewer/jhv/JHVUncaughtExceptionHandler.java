@@ -1,7 +1,16 @@
 package org.helioviewer.jhv;
 
 import java.awt.Dialog.ModalityType;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Image;
+import java.awt.Insets;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -13,7 +22,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
-import javax.swing.*;
+import javax.swing.Box;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.UIManager;
 
 import org.helioviewer.jhv.base.Log;
 
@@ -139,7 +158,7 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
         {
             try
             {
-                EventQueue.invokeAndWait(new Runnable()
+                EventQueue.invokeLater(new Runnable()
                 {
                     @Override
                     public void run()

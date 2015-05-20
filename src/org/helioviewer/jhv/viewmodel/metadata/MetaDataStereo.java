@@ -4,10 +4,8 @@ import java.time.LocalDateTime;
 
 import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.base.math.Vector2d;
-import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
-import org.helioviewer.jhv.viewmodel.view.cache.HelioviewerDateTimeCache;
 
 import ch.fhnw.i4ds.helio.coordinate.api.Angle;
 import ch.fhnw.i4ds.helio.coordinate.api.CoordConverter;
@@ -38,7 +36,6 @@ public class MetaDataStereo extends MetaData{
 
         
         String observedDate = metaDataContainer.get("DATE_OBS");
-        time = HelioviewerDateTimeCache.parseDateTime(observedDate);
         localDateTime = LocalDateTime.parse(observedDate, DATE_FORMAT);
 
         updatePixelParameters();
@@ -99,13 +96,8 @@ public class MetaDataStereo extends MetaData{
    }
 
 	@Override
-	boolean updatePixelParameters() {
-		boolean changed = false;
-
-        if (pixelImageSize.getX() != metaDataContainer.getPixelWidth() || pixelImageSize.getY() != metaDataContainer.getPixelHeight()) {
-            pixelImageSize = new Vector2i(metaDataContainer.getPixelWidth(), metaDataContainer.getPixelHeight());
-            changed = true;
-        }
+	public boolean updatePixelParameters() {
+		boolean changed = true;
 
         double newSolarPixelRadius = -1.0;
         double allowedRelativeDifference = 0.01;

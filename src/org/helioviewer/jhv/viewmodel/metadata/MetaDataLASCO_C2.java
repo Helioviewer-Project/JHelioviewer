@@ -7,8 +7,6 @@ import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.physics.Constants;
-import org.helioviewer.jhv.viewmodel.view.cache.HelioviewerDateTimeCache;
-import org.helioviewer.jhv.viewmodel.view.fitsview.FITSImage;
 
 public class MetaDataLASCO_C2 extends MetaData{
 
@@ -30,7 +28,6 @@ public class MetaDataLASCO_C2 extends MetaData{
 
         String observedDate = metaDataContainer.get("DATE_OBS");
         observedDate += "T" + metaDataContainer.get("TIME_OBS");
-        time = HelioviewerDateTimeCache.parseDateTime(observedDate);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd'T'HH:mm:ss.SSS");
         localDateTime = LocalDateTime.parse(observedDate, formatter);
 
@@ -38,7 +35,8 @@ public class MetaDataLASCO_C2 extends MetaData{
 
         setPhysicalLowerLeftCorner(sunPixelPosition.scale(-meterPerPixel));
         setPhysicalImageSize(new Vector2d(pixelImageSize.getX() * meterPerPixel, pixelImageSize.getY() * meterPerPixel));
-
+        pixelImageSize = new Vector2i(metaDataContainer.getPixelWidth(), metaDataContainer.getPixelHeight());
+        
         double arcsecPerPixelX = metaDataContainer.tryGetDouble("CDELT1");
         double arcsecPerPixelY = metaDataContainer.tryGetDouble("CDELT2");
         if (Double.isNaN(arcsecPerPixelX)) {
@@ -76,10 +74,6 @@ public class MetaDataLASCO_C2 extends MetaData{
         maskRotation = Math.toRadians(metaDataContainer.tryGetDouble("CROTA"));
 
         double centerX = 0, centerY = 0;
-        if (metaDataContainer instanceof FITSImage && centerX == 0 && centerY == 0) {
-            centerX = metaDataContainer.tryGetDouble("CRVAL1");
-            centerY = metaDataContainer.tryGetDouble("CRVAL2");
-        }       
         
         //Convert arcsec to meters
         double cdelt1 = metaDataContainer.tryGetDouble("CDELT1");
@@ -92,15 +86,10 @@ public class MetaDataLASCO_C2 extends MetaData{
         occulterCenter = new Vector2d(centerX * getUnitsPerPixel(), centerY * getUnitsPerPixel());
 
 }
-
+	
 	@Override
-	boolean updatePixelParameters() {
-		boolean changed = false;
-
-        if (pixelImageSize.getX() != metaDataContainer.getPixelWidth() || pixelImageSize.getY() != metaDataContainer.getPixelHeight()) {
-            pixelImageSize = new Vector2i(metaDataContainer.getPixelWidth(), metaDataContainer.getPixelHeight());
-            changed = true;
-        }
+	public boolean updatePixelParameters() {
+		boolean changed = true;
 
         double newSolarPixelRadius = -1.0;
         double allowedRelativeDifference = 0.01;

@@ -14,15 +14,13 @@ import javax.swing.KeyStroke;
 
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.Settings;
-import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.actions.filefilters.ExtensionFileFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.JPGFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.PNGFilter;
-import org.helioviewer.jhv.layers.LayersModel;
-import org.helioviewer.jhv.opengl.model.GL3DImageLayer;
-import org.helioviewer.jhv.opengl.scenegraph.GL3DDrawBits.Bit;
-import org.helioviewer.jhv.viewmodel.view.opengl.GL3DSceneGraphView;
+import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
+import org.helioviewer.jhv.layers.LayerInterface;
+import org.helioviewer.jhv.layers.Layers;
 
 /**
  * Action to save a screenshot in desired image format at desired location.
@@ -90,21 +88,22 @@ public class SaveScreenshotAsAction extends AbstractAction {
 
             ArrayList<String> descriptions = null;
 			if (textEnabled) {
-				GL3DSceneGraphView scenegraphView = GuiState3DWCS.mainComponentView.getAdapter(GL3DSceneGraphView.class);
 				descriptions = new ArrayList<String>();
 				int counter = 0;
-				for (GL3DImageLayer layer : scenegraphView.getLayers().getLayers()){
-					if (!layer.isDrawBitOn(Bit.Hidden)){
-						descriptions.add(LayersModel.getSingletonInstance()
+				for (LayerInterface layer : Layers.LAYERS.getLayers()){
+					if (layer.isVisible()){
+						/*
+						 * descriptions.add(LayersModel.getSingletonInstance()
 								.getDescriptor(counter).title
 								+ " - "
 								+ LayersModel.getSingletonInstance().getDescriptor(
 										counter).timestamp.replaceAll(" ", " - "));
+										*/
 					}
 					counter++;
 				}
 			}
-            GuiState3DWCS.mainComponentView.saveScreenshot(fileFilter.getDefaultExtension(), selectedFile, this.imageWidth, this.imageHeight, descriptions);
+			MainFrame.MAIN_PANEL.saveScreenshot(fileFilter.getDefaultExtension(), selectedFile, this.imageWidth, this.imageHeight, descriptions);
         }
     }
     

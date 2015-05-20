@@ -25,10 +25,10 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicSliderUI;
 
-import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.layers.LayerInterface;
+import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.NewLayerListener;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine.TimeLineListener;
@@ -121,13 +121,13 @@ public class NewPlayPanel extends JPanel implements TimeLineListener, NewLayerLi
 		public NextFrameAction() {
 			super("Step to Next Frame", ICON_FORWARD);
             putValue(MNEMONIC_KEY, KeyEvent.VK_N);
+            putValue(MNEMONIC_KEY, KeyEvent.VK_RIGHT);
             putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_MASK));
 		}
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
-			
+			TimeLine.SINGLETON.nextFrame();
 		}		
 	}
 
@@ -141,13 +141,14 @@ public class NewPlayPanel extends JPanel implements TimeLineListener, NewLayerLi
 		public PreviousFrameAction() {
             super("Step to Previous Frame", ICON_BACKWARD);
             putValue(MNEMONIC_KEY, KeyEvent.VK_P);
+            putValue(ACCELERATOR_KEY, KeyEvent.VK_LEFT);
+            putValue(ACTION_COMMAND_KEY, KeyEvent.VK_LEFT);
             putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_B, KeyEvent.ALT_MASK));
 		}
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
-			
+			TimeLine.SINGLETON.previousFrame();
 		}		
 	}
 
@@ -166,8 +167,7 @@ public class NewPlayPanel extends JPanel implements TimeLineListener, NewLayerLi
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
-			
+			TimeLine.SINGLETON.setPlaying(!TimeLine.SINGLETON.isPlaying());
 		}		
 	}
 
@@ -190,7 +190,7 @@ public class NewPlayPanel extends JPanel implements TimeLineListener, NewLayerLi
     private JButton btnPrevious, btnPlayPause, btnForward;
 	public NewPlayPanel() {
 		TimeLine.SINGLETON.addListener(this);
-		GuiState3DWCS.layers.addNewLayerListener(this);
+		Layers.LAYERS.addNewLayerListener(this);
 		this.setLayout(new BorderLayout());
 		this.add(initGUI(), BorderLayout.CENTER);
 		optionPane = initOptionPane();
@@ -294,6 +294,13 @@ public class NewPlayPanel extends JPanel implements TimeLineListener, NewLayerLi
 		
 		btnPrevious = new JButton(ICON_BACKWARD);
 		btnPrevious.setEnabled(false);
+		btnPrevious.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				timeLine.previousFrame();
+			}
+		});
 		contentPanel.add(btnPrevious, "2, 4");
 		
 		btnPlayPause = new JButton(ICON_PLAY);
@@ -311,6 +318,13 @@ public class NewPlayPanel extends JPanel implements TimeLineListener, NewLayerLi
 		
 		btnForward = new JButton(ICON_FORWARD);
 		btnForward.setEnabled(false);
+		btnForward.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				timeLine.nextFrame();
+			}
+		});
 		contentPanel.add(btnForward, "6, 4");
 		final JButton btnOptionPane = new JButton("More Options", ICON_OPEN);
 		btnOptionPane.setToolTipText("More Options to Control Playback");
@@ -331,7 +345,7 @@ public class NewPlayPanel extends JPanel implements TimeLineListener, NewLayerLi
 			}
 		});
 		contentPanel.add(btnOptionPane, "8, 4");
-		lblFrames = new JLabel("1 / 50");
+		lblFrames = new JLabel();
 		contentPanel.add(lblFrames, "12, 4");
 		
 		
@@ -379,13 +393,7 @@ public class NewPlayPanel extends JPanel implements TimeLineListener, NewLayerLi
 
 	@Override
 	public void newlayerRemoved(int idx) {
-		setEnableButtons(GuiState3DWCS.layers.getLayerCount() > 0);
-	}
-
-	@Override
-	public void newtimestampChanged() {
-		// TODO Auto-generated method stub
-		
+		setEnableButtons(Layers.LAYERS.getLayerCount() > 0);
 	}
 
 	@Override
@@ -399,6 +407,107 @@ public class NewPlayPanel extends JPanel implements TimeLineListener, NewLayerLi
 		btnPrevious.setEnabled(enable);
 		btnPlayPause.setEnabled(enable);
 		btnForward.setEnabled(enable);
+		lblFrames.setText("");
 	}
+
+	@Override
+	public void dateTimesChanged(int framecount) {
+		System.out.println("dateTimesChanged");
+		this.slider.setMaximum(framecount);
+		lblFrames.setText(slider.getValue() + "/" + framecount);
+		this.repaint();
+	}
+	
+	   /**
+     * Action to play or pause the active layer, if it is an image series.
+     * 
+     * Static movie actions are supposed be integrated into {@link MenuBar},
+     * also to provide shortcuts. They always refer to the active layer.
+     */
+    public static class StaticPlayPauseAction extends AbstractAction{
+
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 7709407709240852446L;
+
+		/**
+         * Default constructor.
+         */
+        public StaticPlayPauseAction() {
+            super("Play movie", ICON_PLAY);
+            putValue(MNEMONIC_KEY, KeyEvent.VK_A);
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.ALT_MASK));
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public void actionPerformed(ActionEvent e) {
+            TimeLine.SINGLETON.setPlaying(!TimeLine.SINGLETON.isPlaying());
+        }
+    }
+
+    /**
+     * Action to step to the previous frame for the active layer, if it is an
+     * image series.
+     * 
+     * Static movie actions are supposed be integrated into {@link MenuBar},
+     * also to provide shortcuts. They always refer to the active layer.
+     */
+    public static class StaticPreviousFrameAction extends AbstractAction {
+
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = -6342665405812226382L;
+
+		/**
+         * Default constructor.
+         */
+        public StaticPreviousFrameAction() {
+            super("Step to Previous Frame", ICON_BACKWARD);
+            putValue(MNEMONIC_KEY, KeyEvent.VK_P);
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_B, KeyEvent.ALT_MASK));
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public void actionPerformed(ActionEvent e) {
+        	TimeLine.SINGLETON.previousFrame();
+        }
+    }
+
+    /**
+     * Action to step to the next frame for the active layer, if it is an image
+     * series.
+     * 
+     * Static movie actions are supposed be integrated into {@link MenuBar},
+     * also to provide shortcuts. They always refer to the active layer.
+     */
+    public static class StaticNextFrameAction extends AbstractAction {
+
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = -8262700086251171378L;
+
+		/**
+         * Default constructor.
+         */
+        public StaticNextFrameAction() {
+            super("Step to Next Frame", ICON_FORWARD);
+            putValue(MNEMONIC_KEY, KeyEvent.VK_N);
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_MASK));
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public void actionPerformed(ActionEvent e) {
+        	TimeLine.SINGLETON.nextFrame();
+        }
+    }
 	
 }

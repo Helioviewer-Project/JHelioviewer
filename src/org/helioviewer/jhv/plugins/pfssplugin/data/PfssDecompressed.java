@@ -2,18 +2,14 @@ package org.helioviewer.jhv.plugins.pfssplugin.data;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.Date;
-
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2;
+import java.time.LocalDateTime;
 
 import org.helioviewer.jhv.base.math.Vector3d;
-import org.helioviewer.jhv.base.physics.DifferentialRotation;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssSettings;
-import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
-import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
 
 import com.jogamp.common.nio.Buffers;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
 
 /**
  * Represents a frame of PFSS Data
@@ -148,7 +144,7 @@ public class PfssDecompressed
 	 * @param gl
 	 * @param time
 	 */
-	public void display(GL gl, Date time)
+	public void display(GL gl, LocalDateTime localDateTime)
 	{
 	    if(!isDataAssigned)
 	        return;
@@ -156,14 +152,7 @@ public class PfssDecompressed
 	    if(!uploadedVBOs)
 	        uploadVBOs(gl);
 
-		JHVJPXView masterView=(JHVJPXView) LinkedMovieManager.getActiveInstance().getMasterMovie();
-        if(masterView==null || masterView.getCurrentFrameDateTime()==null)
-            return;
-        
-        Date currentDate=masterView.getCurrentFrameDateTime().getTime();
-        if(currentDate==null)
-            return;
-        
+                
 		GL2 gl2 = gl.getGL2();
 		gl2.glEnableClientState(GL2.GL_VERTEX_ARRAY);
 		gl2.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
@@ -179,7 +168,7 @@ public class PfssDecompressed
 		Vector3d color;
 
         //see http://jgiesen.de/sunrot/index.html and http://www.petermeadows.com/stonyhurst/sdisk6in7.gif
-		gl2.glRotated(DifferentialRotation.calculateRotationInDegrees(0,(currentDate.getTime()-descriptor.getStartDate().getTime())/1000d-60*60*6),0,1,0);
+		//gl2.glRotated(DifferentialRotation.calculateRotationInDegrees(0,(currentDate.getTime()-descriptor.getStartDate().getTime())/1000d-60*60*6),0,1,0);
         gl2.glRotated(b0,1,0,0);
 		gl2.glRotated(-l0,0,1,0);
 		

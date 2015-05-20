@@ -5,20 +5,6 @@ import java.text.FieldPosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.helioviewer.jhv.base.math.Vector2d;
-import org.helioviewer.jhv.base.math.Vector2i;
-import org.helioviewer.jhv.base.physics.Constants;
-import org.helioviewer.jhv.layers.LayersModel;
-import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
-import org.helioviewer.jhv.viewmodel.view.MetaDataView;
-import org.helioviewer.jhv.viewmodel.view.RegionView;
-import org.helioviewer.jhv.viewmodel.view.ViewHelper;
-import org.helioviewer.jhv.viewmodel.view.ViewportView;
-import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
-import org.helioviewer.jhv.viewmodel.viewport.Viewport;
-import org.helioviewer.jhv.viewmodel.viewportimagesize.ViewportImageSize;
-
 public class SDOCutOutController {
 	
 	private static final SDOCutOutController SINGLETON = new SDOCutOutController();
@@ -56,7 +42,7 @@ public class SDOCutOutController {
 	// Transform the position of a point from pixels to arcsec
 	public Point getPositioninArcsec(Point position) {
     	// check region and viewport
-    	RegionView regionView = LayersModel.getSingletonInstance().getActiveView().getAdapter(RegionView.class);
+    	/*RegionView regionView = LayersModel.getSingletonInstance().getActiveView().getAdapter(RegionView.class);
     	PhysicalRegion region = regionView.getLastDecodedRegion();
 		Viewport viewport = LayersModel.getSingletonInstance().getActiveView().getAdapter(ViewportView.class).getViewport();
 		MetaData metaData = LayersModel.getSingletonInstance().getActiveView().getAdapter(MetaDataView.class).getMetaData();
@@ -122,5 +108,5 @@ public class SDOCutOutController {
 		}
 		cadenceUnits.append('s');
 		return (long) time;
-	}
+	*/return null;}
 }

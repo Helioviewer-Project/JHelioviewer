@@ -6,14 +6,10 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.TimeZone;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -25,8 +21,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ListCellRenderer;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -38,13 +32,6 @@ import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.interfaces.ShowableDialog;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.helioviewer.jhv.viewmodel.view.MetaDataView;
-import org.helioviewer.jhv.viewmodel.view.fitsview.JHVFITSView;
-import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJP2View;
-import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
-import org.helioviewer.jhv.viewmodel.view.jp2view.JP2Image;
-import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
-import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.KakaduUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -218,12 +205,8 @@ public class MetaDataDialog extends JDialog implements ActionListener, ShowableD
      *            Source to read
      * @see #addDataItem(String)
      */
-    public void setMetaData(MetaDataView metaDataView) {
+    public void setMetaData(MetaData metaData) {
 
-        if (metaDataView == null)
-            return;
-
-        MetaData metaData = metaDataView.getMetaData();
 
             metaDataOK = true;
             resetData();
@@ -234,9 +217,10 @@ public class MetaDataDialog extends JDialog implements ActionListener, ShowableD
             addDataItem("Instrument  : " + metaData.getInstrument());
             addDataItem("Detector    : " + metaData.getDetector());
             addDataItem("Measurement : " + metaData.getMeasurement());
-            addDataItem("Date        : " + metaData.getDateTime().getFormattedDate());
-            addDataItem("Time        : " + metaData.getDateTime().getFormattedTime());
+            addDataItem("Date        : " + metaData.getLocalDateTime());
+            addDataItem("Time        : " + metaData.getLocalDateTime());
 
+            /*
             String xmlText = null;
             if (metaDataView instanceof JHVJP2View) {
                 JP2Image img = ((JHVJP2View) metaDataView).getJP2Image();
@@ -292,7 +276,7 @@ public class MetaDataDialog extends JDialog implements ActionListener, ShowableD
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }
+            }*/
         
     }
 

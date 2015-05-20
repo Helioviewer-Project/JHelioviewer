@@ -4,13 +4,6 @@ import java.awt.Dimension;
 
 import javax.swing.BorderFactory;
 
-import org.helioviewer.jhv.gui.GL3DCameraSelectorModel;
-import org.helioviewer.jhv.gui.controller.ZoomController;
-import org.helioviewer.jhv.layers.LayersModel;
-import org.helioviewer.jhv.opengl.camera.GL3DCamera;
-import org.helioviewer.jhv.opengl.camera.GL3DCameraListener;
-import org.helioviewer.jhv.viewmodel.view.View;
-
 /**
  * Status panel for displaying the current zoom.
  * 
@@ -24,7 +17,7 @@ import org.helioviewer.jhv.viewmodel.view.View;
  * <p>
  * If there is no layer present, this panel will be invisible.
  */
-public class ZoomStatusPanel extends ViewStatusPanelPlugin implements GL3DCameraListener {
+public class ZoomStatusPanel extends ViewStatusPanelPlugin{
 
     private static final long serialVersionUID = 1L;
     /**
@@ -35,15 +28,13 @@ public class ZoomStatusPanel extends ViewStatusPanelPlugin implements GL3DCamera
 
         setPreferredSize(new Dimension(100, 20));
         setText("Zoom:");
-
-        LayersModel.getSingletonInstance().addLayersListener(this);
     }
 
     /**
      * Updates the displayed zoom.
      */
     private synchronized void updateZoomLevel() {
-        View view = LayersModel.getSingletonInstance().getActiveView();
+       /* View view = LayersModel.getSingletonInstance().getActiveView();
 
         if (view != null) {
             long zoom = Math.round(ZoomController.getZoom(view) * 100);
@@ -55,7 +46,7 @@ public class ZoomStatusPanel extends ViewStatusPanelPlugin implements GL3DCamera
             setVisible(true);
         } else {
             setVisible(false);
-        }
+        }*/
     }
 
     public void activeLayerChanged(int idx) {
@@ -65,20 +56,5 @@ public class ZoomStatusPanel extends ViewStatusPanelPlugin implements GL3DCamera
     public void viewportGeometryChanged() {
         updateZoomLevel();
     }
-
-    public void layerAdded(int idx) {
-    	if (idx == 0)
-    	GL3DCameraSelectorModel.getInstance().getCurrentCamera().addCameraListener(this);
-    }
-
-	@Override
-	public void cameraMoved(GL3DCamera camera) {
-        updateZoomLevel();
-	}
-
-	@Override
-	public void cameraMoving(GL3DCamera camera) {
-        updateZoomLevel();
-	}
 
 }

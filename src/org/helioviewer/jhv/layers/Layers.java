@@ -12,7 +12,9 @@ public class Layers {
 	private int activeLayer = 0;
 	
 	private NewRender renderer = new NewRender();
-	private NewCache newCache = new NewCache();
+	private NewCache newCache = NewCache.singelton;
+	
+	public static final Layers LAYERS = new Layers();
 	
 	public Layers() {
 		layers = new CopyOnWriteArrayList<LayerInterface>();
@@ -85,6 +87,7 @@ public class Layers {
 	}
 	
 	public LayerInterface getActiveLayer(){
+		if (layers.size() <= 0) return null;
 		return layers.get(activeLayer);
 	}
 	

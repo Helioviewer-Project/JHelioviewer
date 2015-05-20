@@ -11,13 +11,7 @@ import java.nio.IntBuffer;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.helioviewer.jhv.viewmodel.metadata.MetaDataFactory;
-import org.helioviewer.jhv.viewmodel.metadata.NewMetaDataContainer;
-import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
-import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.KakaduUtils;
-import org.w3c.dom.Document;
-
+import kdu_jni.Jp2_dimensions;
 import kdu_jni.Jp2_threadsafe_family_src;
 import kdu_jni.Jpx_source;
 import kdu_jni.KduException;
@@ -29,6 +23,13 @@ import kdu_jni.Kdu_global;
 import kdu_jni.Kdu_ilayer_ref;
 import kdu_jni.Kdu_region_compositor;
 import kdu_jni.Kdu_thread_env;
+
+import org.helioviewer.jhv.viewmodel.metadata.MetaData;
+import org.helioviewer.jhv.viewmodel.metadata.MetaDataFactory;
+import org.helioviewer.jhv.viewmodel.metadata.NewMetaDataContainer;
+import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
+import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.KakaduUtils;
+import org.w3c.dom.Document;
 
 public class NewRender {
 	
@@ -94,6 +95,7 @@ public class NewRender {
 			Kdu_dims newRegion = new Kdu_dims();
 	        int region_buf_size = 0;
 	        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(imageSize.height * imageSize.width *4);
+	        System.out.println("imageSize : " + imageSize);
 	        IntBuffer intBuffer = byteBuffer.asIntBuffer();
 	        
 			while (compositor.Process(MAX_RENDER_SAMPLES, newRegion)){
@@ -109,6 +111,11 @@ public class NewRender {
 		          { 
 		        	  region_buf_size = newPixels;
 		            int[] region_buf = new int[region_buf_size];
+		            /*
+		             * compositorBuf.Get_region(newRegion,region_buf,);
+			          intBuffer.array()
+			          
+		             */
 			          compositorBuf.Get_region(newRegion,region_buf);
 			          intBuffer.put(region_buf);			          
 		          }
@@ -116,6 +123,7 @@ public class NewRender {
 			
 			intBuffer.flip();
 			compositor.Remove_ilayer(new Kdu_ilayer_ref(), true);
+			
 			return byteBuffer;
 		} catch (KduException e) {
 			// TODO Auto-generated catch block
@@ -154,6 +162,10 @@ public class NewRender {
 		final int CODESTREAM_CACHE_THRESHOLD = 1024 * 256;
 
 		try {
+			compositor.Pre_destroy();
+			compositor = new Kdu_region_compositor();
+			jpxSrc.Close();
+			family_src.Close();
 			family_src.Open(cache);
 			jpxSrc.Open(family_src, true);
 			compositor.Create(jpxSrc, CODESTREAM_CACHE_THRESHOLD);
@@ -172,8 +184,8 @@ public class NewRender {
 	}
 
 	public MetaData getMetadata(int index) throws JHV_KduException{
-            String xmlText = KakaduUtils.getXml(family_src, index);
-			
+			String xmlText = KakaduUtils.getXml(family_src, index);
+
             xmlText = xmlText.trim().replace("&", "&amp;").replace("$OBS", "");
 
             InputStream in = null;
@@ -183,8 +195,18 @@ public class NewRender {
                 Document doc = builder.parse(in);
                 doc.getDocumentElement().normalize();
                 
-                return MetaDataFactory.getMetaData(new NewMetaDataContainer(doc));
-                
+                MetaData metaData = MetaDataFactory.getMetaData(new NewMetaDataContainer(doc));
+        		try {
+        			Jp2_dimensions dim = jpxSrc.Access_codestream(0,true).Access_dimensions();
+        			Kdu_coords size = dim.Get_size();
+        			metaData.setDimension(size.Get_x(), size.Get_y());
+        			metaData.updatePixelParameters();
+        			return metaData;
+        		} catch (KduException e) {
+        			// TODO Auto-generated catch block
+        			e.printStackTrace();
+        		}
+
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

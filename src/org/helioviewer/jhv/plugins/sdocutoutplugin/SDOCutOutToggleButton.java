@@ -10,12 +10,8 @@ import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 
 import org.helioviewer.jhv.gui.ImageViewerGui;
-import org.helioviewer.jhv.layers.LayersListener;
-import org.helioviewer.jhv.layers.LayersModel;
-import org.helioviewer.jhv.viewmodel.view.MetaDataView;
-import org.helioviewer.jhv.viewmodel.view.View;
 
-public class SDOCutOutToggleButton extends Component implements LayersListener,
+public class SDOCutOutToggleButton extends Component implements
 		PropertyChangeListener {
 
 	private static final long serialVersionUID = 1L;
@@ -32,7 +28,6 @@ public class SDOCutOutToggleButton extends Component implements LayersListener,
 		createButton();
 
 		// register as layers listener
-		LayersModel.getSingletonInstance().addLayersListener(this);
 	}
 
 	private void createButton() {
@@ -57,56 +52,9 @@ public class SDOCutOutToggleButton extends Component implements LayersListener,
 		Container parent = sdoCutOutButton.getParent();
 
 		if (parent != null) {
-			LayersModel.getSingletonInstance().removeLayersListener(this);
 			parent.remove(sdoCutOutButton);
 			parent.repaint();
 		}
-	}
-
-	@Override
-	public void activeLayerChanged(int idx) {
-		if (idx >= 0) {
-			if (LayersModel.getSingletonInstance().getLayer(idx) != null) {
-				MetaDataView metaDataView = LayersModel.getSingletonInstance()
-						.getLayer(idx).getAdapter(MetaDataView.class);
-				if (metaDataView != null && metaDataView.getMetaData() != null && metaDataView.getMetaData().getObservatory() != null){
-				// FIXME: remove string comparison
-				sdoCutOutButton.setEnabled(LayersModel.getSingletonInstance()
-						.getLayer(idx).getAdapter(MetaDataView.class)
-						.getMetaData().getObservatory().contains("SDO"));
-				}
-			}
-			return;
-		}
-		sdoCutOutButton.setEnabled(false);
-	}
-
-	@Override
-	public void layerAdded(int idx) {
-	}
-
-	@Override
-	public void layerChanged(int idx) {
-	}
-
-	@Override
-	public void layerDownloaded(int idx) {
-	}
-
-	@Override
-	public void layerRemoved(View oldView, int oldIdx) {
-	}
-
-	@Override
-	public void subImageDataChanged(int idx) {
-	}
-
-	@Override
-	public void timestampChanged(int idx) {
-	}
-
-	@Override
-	public void viewportGeometryChanged() {
 	}
 
 	@Override

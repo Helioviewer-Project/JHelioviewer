@@ -3,16 +3,17 @@ package org.helioviewer.jhv.viewmodel.view.jp2view.newjpx;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.FutureTask;
+
+import org.helioviewer.jhv.layers.CacheableImageData;
 
 public class NewCache {
 
 	public static NewCache singelton = new NewCache();
 	
-	private ConcurrentLinkedDeque<FutureTask<JHVCachable>> ramCache;
+	private ConcurrentLinkedDeque<CacheableImageData> ramCache;
 	
-	public NewCache() {
-		ramCache = new ConcurrentLinkedDeque<FutureTask<JHVCachable>>();
+	private NewCache() {
+		ramCache = new ConcurrentLinkedDeque<CacheableImageData>();
 		File file;
 				file = new File("/Users/binchu/Documents/FHNW/tmp");
 				file.mkdir();
@@ -22,8 +23,8 @@ public class NewCache {
 		System.out.println("test");
 	}
 	
-	public void addCacheElement(FutureTask<JHVCachable> cacheElement){
-		this.ramCache.add(cacheElement);
+	public void addCacheElement(CacheableImageData cacheableImageData){
+		this.ramCache.add(cacheableImageData);
 	}
 	
 	
@@ -32,7 +33,12 @@ public class NewCache {
 		NewCache.singelton.test();
 	}
 
-	public FutureTask<JHVCachable> getCacheElement(LocalDateTime currentDate) {
-		return ramCache.poll();
+	public CacheableImageData getCacheElement(int id, LocalDateTime currentDate){
+		for (CacheableImageData cacheableImageData : ramCache){
+			if (cacheableImageData.contains(id, currentDate))
+				return cacheableImageData;
+		}
+		return null;
+		
 	}
 }

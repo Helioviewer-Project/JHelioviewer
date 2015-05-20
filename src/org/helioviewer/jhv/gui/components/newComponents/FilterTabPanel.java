@@ -13,14 +13,14 @@ import javax.swing.JToggleButton;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.components.WheelSupport;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.LayerInterface.COLOR_CHANNEL_TYPE;
+import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.NewLayerListener;
-import org.helioviewer.jhv.layers.filter.LUT;
+import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -37,13 +37,14 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 	private JSlider sharpenSlider;
 	private JSlider gammaSlider;
 	private JSlider contrastSlider;
-	private JComboBox<String> comboBoxColorTable;
+	private JComboBox<LUT_ENTRY> comboBoxColorTable;
 	private JCheckBox chckbxRed;
 	private JCheckBox chckbxGreen;
 	private JCheckBox chckbxBlue;
 	private JToggleButton btnInverseColorTable;
 	private JLabel lblOpacity, lblSharpen, lblGamma, lblContrast;
 	private LayerInterface activeLayer;
+	private boolean firstStart = true;
 	
 	private static final double GAMMA_FACTOR = 0.01 * Math.log(10);
 	
@@ -51,7 +52,7 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 
 	public FilterTabPanel() {
 		initGui();
-		GuiState3DWCS.layers.addNewLayerListener(this);
+		Layers.LAYERS.addNewLayerListener(this);
 	}
 	
 	private void initGui(){
@@ -194,17 +195,17 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 		
         /*Map<String, LUT> lutMap = LUT.getStandardList();
         lutMap.put("<Load new GIMP gradient file>", null);*/
-        comboBoxColorTable = new JComboBox<String>();
-        comboBoxColorTable = new JComboBox<String>(LUT.getNames());
-        comboBoxColorTable.setSelectedItem("gray");
+        //comboBoxColorTable = new JComboBox<String>();
+        //comboBoxColorTable = new JComboBox<String>(LUT.getNames());
+        comboBoxColorTable = new JComboBox<LUT_ENTRY>(LUT_ENTRY.values());
+        comboBoxColorTable.setSelectedItem(LUT_ENTRY.GRAY);
 		add(comboBoxColorTable, "4, 10, 5, 1, fill, default");
 		comboBoxColorTable.addItemListener(new ItemListener() {
 			
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				if (activeLayer != null && activeLayer.getLut().idx != comboBoxColorTable.getSelectedIndex()){
-					activeLayer.getLut().name = (String)comboBoxColorTable.getSelectedItem();
-					activeLayer.getLut().idx = LUT.getLutPosition(activeLayer.getLut().name);
+				if (activeLayer != null && activeLayer.getLut() != comboBoxColorTable.getSelectedItem()){
+					activeLayer.setLut((LUT_ENTRY) comboBoxColorTable.getSelectedItem());
 					repaintComponent();
 				}
 			}
@@ -216,8 +217,8 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 			
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				if(activeLayer != null && activeLayer.getLut().isInverted() != btnInverseColorTable.isSelected()){
-					activeLayer.getLut().setInverted(btnInverseColorTable.isSelected());
+				if(activeLayer != null && activeLayer.isLutInverted() != btnInverseColorTable.isSelected()){
+					activeLayer.setLutInverted(btnInverseColorTable.isSelected());
 					repaintComponent();
 				}
 			}
@@ -265,14 +266,14 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 
 	}
 
-	private void updateLayer(LayerInterface layer){
+	public void updateLayer(LayerInterface layer){
 		this.activeLayer = layer;
 		this.contrastSlider.setValue((int)layer.getContrast() * 10);
 		this.gammaSlider.setValue((int) (Math.log(layer.getGamma()) / GAMMA_FACTOR));
 		this.opacitySlider.setValue((int) layer.getOpacity() * 100);
 		this.sharpenSlider.setValue((int) layer.getSharpen() * 100);
-		this.comboBoxColorTable.setSelectedItem(layer.getLut().name);
-		this.btnInverseColorTable.setSelected(layer.getLut().isInverted());
+		this.comboBoxColorTable.setSelectedItem(layer.getLut());
+		this.btnInverseColorTable.setSelected(layer.isLutInverted());
 		this.chckbxRed.setSelected(layer.getColorChannel(COLOR_CHANNEL_TYPE.RED).isActivated());
 		this.chckbxGreen.setSelected(layer.getColorChannel(COLOR_CHANNEL_TYPE.GREEN).isActivated());
 		this.chckbxBlue.setSelected(layer.getColorChannel(COLOR_CHANNEL_TYPE.BLUE).isActivated());
@@ -280,7 +281,7 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 	
 	@Override
 	public void newlayerAdded() {
-		LayerInterface activeLayer = GuiState3DWCS.layers.getActiveLayer();
+		LayerInterface activeLayer = Layers.LAYERS.getActiveLayer();
 		if (activeLayer != null)
 			this.updateLayer(activeLayer);
 	}
@@ -292,16 +293,12 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 	}
 
 	@Override
-	public void newtimestampChanged() {
-	}
-
-	@Override
 	public void activeLayerChanged(LayerInterface layer) {
 		this.updateLayer(layer);
 	}
 	
 	private void repaintComponent(){
-		GuiState3DWCS.mainComponentView.getComponent().repaint();
+		MainFrame.MAIN_PANEL.repaintViewAndSynchronizedViews();
 	}
 	
 }

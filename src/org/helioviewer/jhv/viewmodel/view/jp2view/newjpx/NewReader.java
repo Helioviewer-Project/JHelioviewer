@@ -1,6 +1,5 @@
 package org.helioviewer.jhv.viewmodel.view.jp2view.newjpx;
 
-import java.awt.Rectangle;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -13,11 +12,6 @@ import java.util.concurrent.FutureTask;
 import kdu_jni.KduException;
 import kdu_jni.Kdu_cache;
 
-import org.helioviewer.jhv.viewmodel.view.jp2view.JP2Image;
-import org.helioviewer.jhv.viewmodel.view.jp2view.image.JP2ImageParameter;
-import org.helioviewer.jhv.viewmodel.view.jp2view.image.ResolutionSet;
-import org.helioviewer.jhv.viewmodel.view.jp2view.image.SubImage;
-import org.helioviewer.jhv.viewmodel.view.jp2view.image.ResolutionSet.ResolutionLevel;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.http.HTTPRequest.Method;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPConstants;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPDataSegment;
@@ -28,7 +22,6 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPRequestField;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPResponse;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPSocket;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
-import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_Kdu_cache;
 
 public class NewReader implements JHVReader, Callable<JHVCachable> {
 
@@ -41,18 +34,11 @@ public class NewReader implements JHVReader, Callable<JHVCachable> {
 	/** A boolean flag used for stopping the thread. */
 	private volatile boolean stop;
 
-	/** A reference to the JP2Image this object is owned by. */
-	private JP2Image jp2Image;
-
 	/** The JPIPSocket used to connect to the server. */
 	private JPIPSocket socket;
 
-	/** The a reference to the cache object used by the run method. */
-	private JHV_Kdu_cache cacheRef;
+	private KakaduCache kakaduCache;
 
-	private ImageLayer imageLayer;
-
-	
 	/**
 	 * The time when the last response was received. It is used for performing
 	 * the flow control. A negative value means that there is not a previous
@@ -65,8 +51,6 @@ public class NewReader implements JHVReader, Callable<JHVCachable> {
 
 	private Deque<JPIPQuery> requests;
 	private URI uri;
-	private ResolutionSet resolutionSet;
-
 
 	/**
 	 * The constructor. Creates and connects the socket if image is remote.
@@ -74,30 +58,19 @@ public class NewReader implements JHVReader, Callable<JHVCachable> {
 	 * @param _imageViewRef
 	 * @throws URISyntaxException
 	 */
-	public NewReader(String url, int instrumentID, ResolutionSet resolutionSet)
-			throws URISyntaxException {
+	public NewReader(String url, int instrumentID) throws URISyntaxException {
 		this.uri = new URI(url);
-		this.resolutionSet = resolutionSet;
 		this.requests = new LinkedList<JPIPQuery>();
-		this.imageLayer = new ImageLayer(instrumentID);
+		this.kakaduCache = new KakaduCache(instrumentID);
 
 		socket = new JPIPSocket();
 		createRequests();
 	}
 
 	private void createRequests() {
-		ResolutionLevel resolutionLevel = resolutionSet
-					.getResolutionLevel(0);
-			Rectangle rect = resolutionLevel.getResolutionBounds();
+		JPIPQuery query = this.createQuery(0, UltimateLayer.MAX_FRAME_SIZE - 1);
+		requests.push(query);
 
-			SubImage subImage = new SubImage(rect);
-			JPIPQuery query = this
-					.createQuery(new JP2ImageParameter(subImage,
-							resolutionLevel, 8, 0), 0,
-							UltimateLayer.MAX_FRAME_SIZE - 1);
-			System.out.println("query   : " + query);
-			requests.push(query);
-		
 	}
 
 	private void openSocket() {
@@ -119,31 +92,31 @@ public class NewReader implements JHVReader, Callable<JHVCachable> {
 			JPIPDataSegment data = null;
 			JPIPQuery query = requests.poll();
 			JPIPRequest request = new JPIPRequest(Method.GET);
-			
+
 			boolean complete = false;
 			do {
 				if (socket.isClosed())
 					openSocket();
-				
-			query.setField(JPIPRequestField.LEN.toString(), String.valueOf(JpipRequestLen));
 
-				//System.out.println("query : " + query);
+				query.setField(JPIPRequestField.LEN.toString(),
+						String.valueOf(JpipRequestLen));
+
+				// System.out.println("query : " + query);
 				request.setQuery(query);
-			socket.send(request);
-			JPIPResponse response = socket.receive();
-			// Update optimal package size
-			flowControl();
-			try {
-				complete = this.addJPIPResponseData(response);
-			} catch (JHV_KduException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+				socket.send(request);
+				JPIPResponse response = socket.receive();
+				// Update optimal package size
+				flowControl();
+				try {
+					complete = this.addJPIPResponseData(response);
+				} catch (JHV_KduException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
-			System.out.println("size : " + imageLayer.getSize());
-			
+				System.out.println("size : " + kakaduCache.getSize());
+
 			} while (!(complete));
-			imageLayer.setComplete(complete);
 			System.out.println("complete : " + uri);
 		}
 
@@ -195,119 +168,124 @@ public class NewReader implements JHVReader, Callable<JHVCachable> {
 
 		lastResponseTime = replyDataTime;
 	}
-	
-    public boolean addJPIPResponseData(JPIPResponse jRes) throws JHV_KduException {
-        JPIPDataSegment data;
-        while ((data = jRes.removeJpipDataSegment()) != null && !data.isEOR)
-        	try {
-                imageLayer.getCache().Add_to_databin(data.classID.getKakaduClassID(), data.codestreamID, data.binID, data.data, data.offset, data.length, data.isFinal, true, false);
-                imageLayer.addSize(data.length);
-            } catch (KduException ex) {
-                throw new JHV_KduException("Internal Kakadu error: " + ex.getMessage());
-            }
-        return jRes.isResponseComplete();
-    }
-    
-    private void updateServerCacheModel() throws JHV_KduException, IOException{
-    	String cModel = this.buildCacheModelUpdateString();
-        if (cModel == null)
-            return;
 
-        JPIPQuery cacheUpdateQuery = new JPIPQuery();
-        cacheUpdateQuery.setField("model", cModel);
+	public boolean addJPIPResponseData(JPIPResponse jRes)
+			throws JHV_KduException {
+		JPIPDataSegment data;
+		while ((data = jRes.removeJpipDataSegment()) != null && !data.isEOR)
+			try {
+				kakaduCache.getCache().Add_to_databin(
+						data.classID.getKakaduClassID(), data.codestreamID,
+						data.binID, data.data, data.offset, data.length,
+						data.isFinal, true, false);
+				kakaduCache.addSize(data.length);
+			} catch (KduException ex) {
+				throw new JHV_KduException("Internal Kakadu error: "
+						+ ex.getMessage());
+			}
+		return jRes.isResponseComplete();
+	}
 
-        JPIPRequest req = new JPIPRequest(JPIPRequest.Method.POST);
-        req.setQuery(cacheUpdateQuery.toString());
+	private void updateServerCacheModel() throws JHV_KduException, IOException {
+		String cModel = this.buildCacheModelUpdateString();
+		if (cModel == null)
+			return;
 
-        socket.send(req);
-        JPIPResponse res = socket.receive();
+		JPIPQuery cacheUpdateQuery = new JPIPQuery();
+		cacheUpdateQuery.setField("model", cModel);
 
-        this.addJPIPResponseData(res);
-    }
-    
-    
-    public String buildCacheModelUpdateString() throws JHV_KduException {
-        int length;
-        long codestreamID, databinID;
-        boolean isComplete[] = new boolean[1];
-        StringBuilder cacheModel = new StringBuilder(1000);
-        Kdu_cache cache = imageLayer.getCache();
-        try {
-            codestreamID = cache.Get_next_codestream(-1);
+		JPIPRequest req = new JPIPRequest(JPIPRequest.Method.POST);
+		req.setQuery(cacheUpdateQuery.toString());
 
-            while (codestreamID >= 0) {
-                cacheModel.append("[" + codestreamID + "],");
-                for (JPIPDatabinClass databinClass : JPIPDatabinClass.values()) {
-                    databinID = cache.Get_next_lru_databin(databinClass.getKakaduClassID(), codestreamID, -1, false);
-                    while (databinID >= 0) {
-                        if (cache.Mark_databin(databinClass.getKakaduClassID(), codestreamID, databinID, false)) {
-                            length = cache.Get_databin_length(databinClass.getKakaduClassID(), codestreamID, databinID, isComplete);
-                            // Append the databinClass String and the databinID
-                            cacheModel.append(databinClass.getJpipString() + (databinClass == JPIPDatabinClass.MAIN_HEADER_DATABIN ? "" : String.valueOf(databinID)));
-                            // If its not complete append the length of the
-                            // databin
-                            if (!isComplete[0])
-                                cacheModel.append(":" + String.valueOf(length));
-                            cacheModel.append(",");
-                        }
-                        databinID = cache.Get_next_lru_databin(databinClass.getKakaduClassID(), codestreamID, databinID, false);
-                    }
-                }
-                codestreamID = cache.Get_next_codestream(codestreamID);
-            }
-            if (cacheModel.length() > 0)
-                cacheModel.deleteCharAt(cacheModel.length() - 1);
+		socket.send(req);
+		JPIPResponse res = socket.receive();
 
-        } catch (KduException ex) {
-            throw new JHV_KduException("Internal Kakadu error: " + ex.getMessage());
-        }
-        return cacheModel.toString();
-    }
+		this.addJPIPResponseData(res);
+	}
 
-	public JPIPQuery createQuery(JP2ImageParameter currParams, int iniFrame,
-			int endFrame) {
+	public String buildCacheModelUpdateString() throws JHV_KduException {
+		int length;
+		long codestreamID, databinID;
+		boolean isComplete[] = new boolean[1];
+		StringBuilder cacheModel = new StringBuilder(1000);
+		Kdu_cache cache = kakaduCache.getCache();
+		try {
+			codestreamID = cache.Get_next_codestream(-1);
+
+			while (codestreamID >= 0) {
+				cacheModel.append("[" + codestreamID + "],");
+				for (JPIPDatabinClass databinClass : JPIPDatabinClass.values()) {
+					databinID = cache.Get_next_lru_databin(
+							databinClass.getKakaduClassID(), codestreamID, -1,
+							false);
+					while (databinID >= 0) {
+						if (cache.Mark_databin(databinClass.getKakaduClassID(),
+								codestreamID, databinID, false)) {
+							length = cache.Get_databin_length(
+									databinClass.getKakaduClassID(),
+									codestreamID, databinID, isComplete);
+							// Append the databinClass String and the databinID
+							cacheModel
+									.append(databinClass.getJpipString()
+											+ (databinClass == JPIPDatabinClass.MAIN_HEADER_DATABIN ? ""
+													: String.valueOf(databinID)));
+							// If its not complete append the length of the
+							// databin
+							if (!isComplete[0])
+								cacheModel.append(":" + String.valueOf(length));
+							cacheModel.append(",");
+						}
+						databinID = cache.Get_next_lru_databin(
+								databinClass.getKakaduClassID(), codestreamID,
+								databinID, false);
+					}
+				}
+				codestreamID = cache.Get_next_codestream(codestreamID);
+			}
+			if (cacheModel.length() > 0)
+				cacheModel.deleteCharAt(cacheModel.length() - 1);
+
+		} catch (KduException ex) {
+			throw new JHV_KduException("Internal Kakadu error: "
+					+ ex.getMessage());
+		}
+		return cacheModel.toString();
+	}
+
+	public JPIPQuery createQuery(int iniFrame, int endFrame) {
 		JPIPQuery query = new JPIPQuery();
 
 		query.setField(JPIPRequestField.CONTEXT.toString(), "jpxl<" + iniFrame
 				+ "-" + endFrame + ">");
 		query.setField(JPIPRequestField.LAYERS.toString(),
-				String.valueOf(currParams.qualityLayers));
+				String.valueOf(8));
 
-		Rectangle resDims = currParams.resolution.getResolutionBounds();
-
-		query.setField(
-				JPIPRequestField.FSIZ.toString(),
-				String.valueOf(resDims.width) + ","
-						+ String.valueOf(resDims.height) + "," + "closest");
-		query.setField(
-				JPIPRequestField.ROFF.toString(),
-				String.valueOf(currParams.subImage.x) + ","
-						+ String.valueOf(currParams.subImage.y));
-		query.setField(
-				JPIPRequestField.RSIZ.toString(),
-				String.valueOf(currParams.subImage.width) + ","
-						+ String.valueOf(currParams.subImage.height));
+		query.setField(JPIPRequestField.FSIZ.toString(), String.valueOf(2048)
+				+ "," + String.valueOf(2048) + "," + "closest");
+		query.setField(JPIPRequestField.ROFF.toString(), String.valueOf(0)
+				+ "," + String.valueOf(0));
+		query.setField(JPIPRequestField.RSIZ.toString(), String.valueOf(2048)
+				+ "," + String.valueOf(2048));
 
 		return query;
 	}
 
 	@Override
 	public FutureTask<JHVCachable> getData(LocalDateTime[] framesDateTimes) {
-		this.imageLayer.setFramesDateTime(framesDateTimes);
 		FutureTask<JHVCachable> futureTask = new FutureTask<JHVCachable>(this);
 		// TODO Auto-generated method stub
 		return futureTask;
 	}
 
 	@Override
-	public JHVCachable call(){
+	public JHVCachable call() {
 		try {
 			openSocket();
 			updateServerCacheModel();
 			receiveData();
 			if (!socket.isClosed())
 				this.socket.close();
-			return this.imageLayer;
+			return this.kakaduCache;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

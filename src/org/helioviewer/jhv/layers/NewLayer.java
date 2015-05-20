@@ -5,13 +5,16 @@ import java.time.LocalDateTime;
 import java.util.concurrent.ExecutionException;
 
 import org.helioviewer.jhv.base.ImageRegion;
+import org.helioviewer.jhv.gui.ImageViewerGui;
+import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
+import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
 import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.NewCache;
 import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.NewRender;
 import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.UltimateLayer;
-import org.helioviewer.jhv.viewmodel.view.opengl.CompenentView;
+import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 
 public class NewLayer extends LayerInterface{
 	
@@ -20,17 +23,12 @@ public class NewLayer extends LayerInterface{
 	private NewRender newRender;
 	private NewCache newCache;
 	
-	public int textureOverview;
-
-	private MetaData metaData;
-		
+	public int textureOverview;		
 	private LayerRayTrace layerRayTrace;
 	
 	public NewLayer(int sourceID, NewRender newRender, NewCache newCache) {
 		super();
 		this.ultimateLayer = new UltimateLayer(id, sourceID, newCache, newRender, this);
-		metaData = this.ultimateLayer.getMetaData(0);
-		this.initGL();
 		layerRayTrace = new LayerRayTrace(this);
 	}
 	
@@ -38,54 +36,49 @@ public class NewLayer extends LayerInterface{
 		super();
 		this.ultimateLayer = new UltimateLayer(id, sourceID, newCache, newRender, this);
 		this.ultimateLayer.setTimeRange(start, end, cadence);
-		this.initGL();
-		metaData = this.ultimateLayer.getMetaData(0);
 		layerRayTrace = new LayerRayTrace(this);
 	}
 	
 	public NewLayer(String uri, NewRender newRender) {
 		super();
 		this.ultimateLayer = new UltimateLayer(id, uri, newRender, this);
-		metaData = this.ultimateLayer.getMetaData(0);
-		this.initGL();
 		layerRayTrace = new LayerRayTrace(this);
 	}
 	
 	@Override
-	public int getTexture(CompenentView compenentView) {
-		updateTexture(TimeLine.SINGLETON.getCurrentDateTime(), compenentView);
-		return this.getLastDecodedImageRegion().getTextureID();
+	public int getTexture(MainPanel compenentView, boolean highResolution) {
+		if (updateTexture(TimeLine.SINGLETON.getCurrentDateTime(), compenentView, highResolution))
+			return this.getLastDecodedImageRegion().getTextureID();
+		return -1;
 	}
 	
-	private void updateTexture(LocalDateTime currentDateTime, CompenentView compenentView){
+	private boolean updateTexture(LocalDateTime currentDateTime, MainPanel compenentView, boolean highResolution){
 		try {
-			ByteBuffer byteBuffer = ultimateLayer.getImageData(currentDateTime, layerRayTrace.getCurrentRegion(compenentView));
+			MetaData metaData = ultimateLayer.getMetaData(currentDateTime);
+			if (metaData != null){
+				if (firstRun){
+					this.lut = metaData.getDefaultLUT();
+					firstRun = false;
+					ImageViewerGui.getSingletonInstance().filterTabPanel.updateLayer(this);
+					MainFrame.MAIN_PANEL.repaintViewAndSynchronizedViews();
+				}
+			ByteBuffer byteBuffer = ultimateLayer.getImageData(currentDateTime, layerRayTrace.getCurrentRegion(compenentView, metaData), metaData, highResolution);
 			if (byteBuffer != null){
 				OpenGLHelper.bindByteBufferToGLTexture(this.getLastDecodedImageRegion(), byteBuffer, this.getLastDecodedImageRegion().getImageSize());
 			}
-		} catch (InterruptedException | ExecutionException e) {
+			return true;
+			}
+		} catch (InterruptedException | ExecutionException | JHV_KduException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return false;
 	}
 	
-	private void initGL(){
-		//MetaData metaData = null;
-		
-    	//String colorKey = DefaultTable.getSingletonInstance().getColorTable(metaData);
-        String colorKey = null;
-		if(colorKey == null)
-        	colorKey = "Gray";
-        
-		lut = new Lut();
-		lut.name = metaData.getDefaultLUT().name();
-		lut.idx = metaData.getDefaultLUT().ordinal();
-	}
-
 	@Override
 	public String getName() {
-		if (metaData == null) return "";
-		return metaData.getFullName();
+		if (this.getLastDecodedImageRegion() == null) return "";
+		return this.getLastDecodedImageRegion().getMetaData().getFullName();
 	}
 
 	@Override
@@ -101,7 +94,7 @@ public class NewLayer extends LayerInterface{
 
 	@Override
 	public MetaData getMetaData() {
-		return metaData;
+		return this.getLastDecodedImageRegion().getMetaData();
 	}
 
 	public ImageRegion getLastDecodedImageRegion(){
@@ -112,5 +105,4 @@ public class NewLayer extends LayerInterface{
 			int cadence) {
 		ultimateLayer.setTimeRange(start, end, cadence);
 	}
-	
 }

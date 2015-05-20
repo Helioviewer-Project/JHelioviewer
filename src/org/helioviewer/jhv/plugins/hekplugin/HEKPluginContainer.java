@@ -3,13 +3,7 @@ package org.helioviewer.jhv.plugins.hekplugin;
 import java.util.Date;
 
 import org.helioviewer.jhv.base.math.Interval;
-import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayContainer;
-import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayControlComponent;
-import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayControlComponentManager;
-import org.helioviewer.jhv.viewmodel.renderer.physical.PhysicalRenderer3d;
-import org.helioviewer.jhv.viewmodel.view.OverlayView;
-import org.helioviewer.jhv.viewmodel.view.opengl.OverlayPluginContainer;
 
 /**
  * Overlay plug-in to display different kinds of solar events retrieved from the
@@ -44,15 +38,15 @@ public class HEKPluginContainer extends OverlayContainer {
     /**
      * {@inheritDoc}
      */
-    @Override
+    /*@Override
     public Class<? extends PhysicalRenderer3d> getOverlayClass() {
         return HEKPlugin3dRenderer.class;
-    }
+    }*/
 
     /**
      * {@inheritDoc}
      */
-    @Override
+    /*@Override
     protected void installOverlayImpl(OverlayView overlayView, OverlayControlComponentManager controlList) {
         
     	hekPanel = new HEKPluginPanel(HEKCache.getSingletonInstance());
@@ -62,7 +56,7 @@ public class HEKPluginContainer extends OverlayContainer {
         overlayView.addOverlay(overlayPluginContainer);
         controlList.add(new OverlayControlComponent(hekPanel, getName()));
         hekPanel.reload();
-    }
+    }*/
 
     /**
      * {@inheritDoc}

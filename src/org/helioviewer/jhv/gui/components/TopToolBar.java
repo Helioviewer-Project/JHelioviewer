@@ -14,15 +14,18 @@ import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
-import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.actions.View2DAction;
 import org.helioviewer.jhv.gui.actions.View3DAction;
-import org.helioviewer.jhv.gui.actions.gl3d.*;
-import org.helioviewer.jhv.gui.actions.newActions.SetCameraInteractionAction;
-import org.helioviewer.jhv.viewmodel.view.opengl.CompenentView;
+import org.helioviewer.jhv.gui.actions.newActions.SetCameraPanInteractionAction;
+import org.helioviewer.jhv.gui.actions.newActions.SetCameraRotationInteractionAction;
+import org.helioviewer.jhv.opengl.camera.newActions.ResetCameraAction;
+import org.helioviewer.jhv.opengl.camera.newActions.Zoom1To1Action;
+import org.helioviewer.jhv.opengl.camera.newActions.ZoomFitAction;
+import org.helioviewer.jhv.opengl.camera.newActions.ZoomInAction;
+import org.helioviewer.jhv.opengl.camera.newActions.ZoomOutAction;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -148,10 +151,12 @@ public class TopToolBar extends JToolBar implements MouseListener {
 	protected void createNewToolBar(SelectionMode selectionMode) {
 		removeAll();
 		// Zoom
-		zoomInButton = new JButton(new GL3DZoomInAction(false));
-		zoomOutButton = new JButton(new GL3DZoomOutAction(false));
-		zoomFitButton = new JButton(new GL3DZoomFitAction(false));
-		zoom1to1Button = new JButton(new GL3DZoom1to1Action(false));
+		zoomInButton = new JButton(new ZoomInAction(false));
+		zoomOutButton = new JButton(new ZoomOutAction(false));
+		zoomFitButton = new JButton(new ZoomFitAction(false));
+		zoom1to1Button = new JButton(new Zoom1To1Action(false));	
+		resetCamera = new JButton(new ResetCameraAction());
+
 		addButton(zoomInButton);
 		addButton(zoomOutButton);
 		addButton(zoomFitButton);
@@ -159,7 +164,6 @@ public class TopToolBar extends JToolBar implements MouseListener {
 
 		// zoom1to1Button.setEnabled(false);
 
-		resetCamera = new JButton(new GL3DResetCameraAction());
 		addButton(resetCamera);
 
 		addSeparator();
@@ -167,11 +171,7 @@ public class TopToolBar extends JToolBar implements MouseListener {
 		// Selection
 		ButtonGroup group = new ButtonGroup();
 
-		if (JHVGlobals.OLD_RENDER_MODE)
-			panButton = new JToggleButton(new GL3DSetPanInteractionAction());
-		else
-			panButton = new JToggleButton(new SetCameraInteractionAction("Pan",
-					CompenentView.CAMERA_INTERACTION.PAN));
+		panButton = new JToggleButton(new SetCameraPanInteractionAction());
 		panButton.setSelected(selectionMode == SelectionMode.PAN);
 		panButton.setIcon(IconBank.getIcon(JHVIcon.PAN));
 		panButton.setSelectedIcon(IconBank.getIcon(JHVIcon.PAN_SELECTED));
@@ -179,7 +179,7 @@ public class TopToolBar extends JToolBar implements MouseListener {
 		group.add(panButton);
 		addButton(panButton);
 
-		zoomBoxButton = new JToggleButton(new GL3DSetZoomBoxInteractionAction());
+		/*zoomBoxButton = new JToggleButton(new GL3DSetZoomBoxInteractionAction());
 		zoomBoxButton.setSelected(selectionMode == SelectionMode.ZOOMBOX);
 		zoomBoxButton.setIcon(IconBank.getIcon(JHVIcon.SELECT));
 		zoomBoxButton
@@ -187,13 +187,9 @@ public class TopToolBar extends JToolBar implements MouseListener {
 		zoomBoxButton.setToolTipText("Select Zoom Box");
 		group.add(zoomBoxButton);
 		addButton(zoomBoxButton);
-
-		if (JHVGlobals.OLD_RENDER_MODE)
-			rotateButton = new JToggleButton(
-					new GL3DSetRotationInteractionAction());
-		else
-			rotateButton = new JToggleButton(new SetCameraInteractionAction(
-					"Rotate", CompenentView.CAMERA_INTERACTION.ROTATE));
+		*/
+		
+		rotateButton = new JToggleButton(new SetCameraRotationInteractionAction());
 
 		rotateButton.setSelected(selectionMode == SelectionMode.ROTATE);
 		rotateButton.setIcon(IconBank.getIcon(JHVIcon.ROTATE_ALL_AXIS));
@@ -204,9 +200,9 @@ public class TopToolBar extends JToolBar implements MouseListener {
 		addButton(rotateButton);
 		addSeparator();
 
-		trackSolarRotationButton3D = new JToggleButton(
-				new GL3DToggleSolarRotationAction());
-		trackSolarRotationButton3D.setSelected(false);
+		
+		//trackSolarRotationButton3D = new JToggleButton(new GL3DToggleSolarRotationAction());
+		/*trackSolarRotationButton3D.setSelected(false);
 		trackSolarRotationButton3D.setIcon(IconBank.getIcon(JHVIcon.FOCUS));
 		trackSolarRotationButton3D.setSelectedIcon(IconBank
 				.getIcon(JHVIcon.FOCUS_SELECTED));
@@ -215,8 +211,7 @@ public class TopToolBar extends JToolBar implements MouseListener {
 		addButton(trackSolarRotationButton3D);
 
 		// coronaVisibilityButton =
-		coronaVisibilityButton = new JToggleButton(
-				new GL3DToggleCoronaVisibilityAction());
+		//coronaVisibilityButton = new JToggleButton(new GL3DToggleCoronaVisibilityAction());
 		coronaVisibilityButton.setSelected(false);
 		coronaVisibilityButton.setIcon(IconBank
 				.getIcon(JHVIcon.LAYER_IMAGE_24x24));
@@ -225,8 +220,7 @@ public class TopToolBar extends JToolBar implements MouseListener {
 		coronaVisibilityButton.setToolTipText("Toggle Corona Visibility");
 		addButton(coronaVisibilityButton);
 
-		rotateButtonYAxis = new JToggleButton(
-				new GL3DSetRotationYAxisInteractionAction());
+		//rotateButtonYAxis = new JToggleButton(new GL3DSetRotationYAxisInteractionAction());
 		rotateButtonYAxis
 				.setSelected(selectionMode == SelectionMode.ROTATE_Y_AXIS);
 		rotateButtonYAxis.setIcon(IconBank.getIcon(JHVIcon.ROTATE));
@@ -234,7 +228,7 @@ public class TopToolBar extends JToolBar implements MouseListener {
 				.getIcon(JHVIcon.ROTATE_SELECTED));
 		rotateButtonYAxis.setToolTipText("Enable rotation on Y-Axis");
 		addButton(rotateButtonYAxis);
-
+		*/
 		addSeparator();
 
 		ButtonGroup stateGroup = new ButtonGroup();
@@ -405,8 +399,8 @@ public class TopToolBar extends JToolBar implements MouseListener {
 		this.rotateButton.setSelected(true);
 		this.resetCamera.setEnabled(true);
 		this.rotateButton.setEnabled(true);
-		this.zoomBoxButton.setEnabled(false);
-		this.rotateButtonYAxis.setEnabled(true);
+		//this.zoomBoxButton.setEnabled(false);
+		//this.rotateButtonYAxis.setEnabled(true);
 	}
 
 	public void toogleCoronaButton() {

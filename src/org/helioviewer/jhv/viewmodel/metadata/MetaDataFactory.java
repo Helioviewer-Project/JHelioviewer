@@ -5,7 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.JOptionPane;
 
-import org.helioviewer.jhv.gui.GuiState3DWCS;
+import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 
 public class MetaDataFactory {
 	@SuppressWarnings("unchecked")
@@ -55,7 +55,7 @@ public class MetaDataFactory {
 			return metaData;
 		}
 		
-		JOptionPane.showMessageDialog(GuiState3DWCS.mainComponentView.getComponent(), "This data source's metadata could not be read.");
+		JOptionPane.showMessageDialog(MainFrame.MAIN_PANEL, "This data source's metadata could not be read.");
 		return null;
 		
 	}

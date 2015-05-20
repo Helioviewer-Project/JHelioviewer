@@ -6,7 +6,6 @@ import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.physics.Constants;
-import org.helioviewer.jhv.viewmodel.view.cache.HelioviewerDateTimeCache;
 
 public class MetaDataHMI extends MetaData{
 
@@ -25,7 +24,6 @@ public class MetaDataHMI extends MetaData{
         
 
         String observedDate = metaDataContainer.get("DATE_OBS");
-        time = HelioviewerDateTimeCache.parseDateTime(observedDate);
         localDateTime = LocalDateTime.parse(observedDate, DATE_FORMAT);
 
         updatePixelParameters();
@@ -77,7 +75,7 @@ public class MetaDataHMI extends MetaData{
    }
 
 	@Override
-	boolean updatePixelParameters() {
+	public boolean updatePixelParameters() {
 		boolean changed = false;
 
         if (pixelImageSize.getX() != metaDataContainer.getPixelWidth() || pixelImageSize.getY() != metaDataContainer.getPixelHeight()) {

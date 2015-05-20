@@ -11,13 +11,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.helioviewer.jhv.gui.components.TristateCheckBox;
-import org.helioviewer.jhv.layers.LayersListener;
-import org.helioviewer.jhv.layers.LayersModel;
+import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheListener;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheLoadingModel;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKPath;
-import org.helioviewer.jhv.viewmodel.view.View;
 
 /**
  * GUI Component showing either the HEKCacheTreeView, or a notice that currently
@@ -28,7 +26,7 @@ import org.helioviewer.jhv.viewmodel.view.View;
  * 
  * @author Malte Nuhn
  */
-public class HEKCacheTreeViewContainer extends JPanel implements HEKCacheListener, LayersListener {
+public class HEKCacheTreeViewContainer extends JPanel implements HEKCacheListener {
 
     private static final long serialVersionUID = 1L;
 
@@ -45,7 +43,6 @@ public class HEKCacheTreeViewContainer extends JPanel implements HEKCacheListene
         super();
         this.setLayout(cl);
         HEKCache.getSingletonInstance().getModel().addCacheListener(this);
-        LayersModel.getSingletonInstance().addLayersListener(this);
 
         emptyLabel.setFont(emptyLabel.getFont().deriveFont(Font.ITALIC));
         emptyLabel.setHorizontalTextPosition(JLabel.CENTER);
@@ -78,7 +75,7 @@ public class HEKCacheTreeViewContainer extends JPanel implements HEKCacheListene
         boolean rootLoading = HEKCache.getSingletonInstance().getLoadingModel().getState(HEKCache.getSingletonInstance().getModel().getRoot(), false) != HEKCacheLoadingModel.PATH_NOTHING;
         // boolean anyLoading =
         // HEKCache.getSingletonInstance().getModel().isLoading();
-        boolean layersAvailable = LayersModel.getSingletonInstance().getNumLayers() > 0;
+        boolean layersAvailable = Layers.LAYERS.getLayerCount() > 0;
 
         boolean show = !rootLoading && layersAvailable && wasLoaded;
 
@@ -113,31 +110,6 @@ public class HEKCacheTreeViewContainer extends JPanel implements HEKCacheListene
      */
     public void cacheStateChanged() {
         update();
-    }
-
-    public void layerAdded(int idx) {
-        update();
-    }
-
-    public void layerRemoved(View oldView, int oldIdx) {
-        update();
-    }
-
-    public void layerChanged(int idx) {
-    }
-
-    public void activeLayerChanged(int idx) {
-    }
-
-    public void viewportGeometryChanged() {
-    }
-
-    public void timestampChanged(int idx) {
-    }
-
-    @Override
-    public void subImageDataChanged(int idx)
-    {
     }
 
     public void setLoadingMessage(String msg) {

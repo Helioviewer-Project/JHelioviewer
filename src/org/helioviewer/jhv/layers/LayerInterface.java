@@ -2,9 +2,10 @@ package org.helioviewer.jhv.layers;
 
 import java.time.LocalDateTime;
 
-import org.helioviewer.jhv.gui.GuiState3DWCS;
+import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
+import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.helioviewer.jhv.viewmodel.view.opengl.CompenentView;
+import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 
 public abstract class LayerInterface {
 		
@@ -37,37 +38,21 @@ public abstract class LayerInterface {
 			return this.status == SHADER_STATE.TRUE ? 1 : 0;
 		}
 	}
-	
-	public class Lut{
-		private SHADER_STATE inverted = SHADER_STATE.FALSE;
-		public int idx = 0;
-		public String name;
-		
-		public boolean isInverted(){
-			return inverted == SHADER_STATE.TRUE;
-		}
-		
-		public void setInverted(boolean inverted){
-			this.inverted = inverted ? SHADER_STATE.TRUE : SHADER_STATE.FALSE;
-		}
-		
-		public int getState(){
-			return this.inverted == SHADER_STATE.TRUE ? 1 : 0;
-		}
-	}
-	
+
 	private double opacity = 1;
 	private double sharpen = 0;
 	private double gamma = 1;
-	private double contrast = 0;;
-	protected Lut lut = new Lut();
+	private double contrast = 1;;
+	protected LUT_ENTRY lut = LUT_ENTRY.GRAY;
 	private ColorChannel redChannel = new ColorChannel("red");
 	private ColorChannel greenChannel = new ColorChannel("green");
 	private ColorChannel blueChannel = new ColorChannel("blue");
-	private int texture = -1;
 	public int textureOverview;
 	private boolean visible = true;
+	protected boolean invertedLut = false;
 
+	protected boolean firstRun = true;
+	
 	private static int idCounter;
 	protected int id;
 	
@@ -75,7 +60,7 @@ public abstract class LayerInterface {
 		this.id = idCounter++;
 	}
 	
-	public abstract int getTexture(CompenentView compenentView);
+	public abstract int getTexture(MainPanel compenentView, boolean highResolution);
 	public abstract String getName();
 	public abstract LocalDateTime getTime();
 	public abstract LocalDateTime[] getLocalDateTime();
@@ -87,7 +72,7 @@ public abstract class LayerInterface {
 	
 	public void setVisible(boolean visible) {
 		this.visible = visible;
-		GuiState3DWCS.mainComponentView.getComponent().repaint();
+		MainFrame.MAIN_PANEL.repaintViewAndSynchronizedViews();
 	}
 	
 	public double getContrast() {
@@ -122,7 +107,7 @@ public abstract class LayerInterface {
 		this.sharpen = sharpen;
 	}
 
-	public Lut getLut() {
+	public LUT_ENTRY getLut() {
 		return lut;
 	}
 
@@ -141,8 +126,23 @@ public abstract class LayerInterface {
 	}
 
 	public int getID() {
-		// TODO Auto-generated method stub
 		return id;
+	}
+
+	public void setLut(LUT_ENTRY lutEntry) {
+		this.lut = lutEntry;
+	}
+
+	public boolean isLutInverted() {
+		return invertedLut;
+	}
+
+	public void setLutInverted(boolean selected) {
+		this.invertedLut = selected;
+	}
+	
+	public int getLutState(){
+		return invertedLut ? 1 : 0;	
 	}
 
 }

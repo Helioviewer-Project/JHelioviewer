@@ -6,10 +6,7 @@ import java.net.URL;
 import java.util.Date;
 
 import org.helioviewer.jhv.base.math.Interval;
-import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKSettings;
-import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginManager;
-import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginSettings;
 import org.helioviewer.jhv.plugins.viewmodelplugin.interfaces.Plugin;
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayContainer;
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayPlugin;
@@ -45,10 +42,10 @@ public class HEKPlugin3D extends OverlayPlugin implements Plugin {
      */
     public void installPlugin() {
         for (OverlayContainer overlay : overlayContainerList) {
-            overlay.setActive(PluginSettings.getSingeltonInstance().isOverlayInPluginActivated(pluginLocation, overlay.getOverlayClass(), true));
-            overlay.setPosition(PluginSettings.getSingeltonInstance().getOverlayPosition(pluginLocation, overlay.getOverlayClass()));
-            PluginManager.getSingeltonInstance().addOverlayContainer(overlay);
-            ImageViewerGui.getSingletonInstance().getMainImagePanel().addPlugin(new ImagePanelEventPopupController());
+            //overlay.setActive(PluginSettings.getSingeltonInstance().isOverlayInPluginActivated(pluginLocation, overlay.getOverlayClass(), true));
+            //overlay.setPosition(PluginSettings.getSingeltonInstance().getOverlayPosition(pluginLocation, overlay.getOverlayClass()));
+            //PluginManager.getSingeltonInstance().addOverlayContainer(overlay);
+            //ImageViewerGui.getSingletonInstance().getMainImagePanel().addPlugin(new ImagePanelEventPopupController());
         }
     }
 

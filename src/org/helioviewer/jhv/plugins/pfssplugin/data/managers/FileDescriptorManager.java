@@ -13,8 +13,8 @@ import java.util.GregorianCalendar;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.ImageViewerGui;
+import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin3dRenderer;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssSettings;
@@ -102,7 +102,7 @@ public class FileDescriptorManager
 	                    if(curEpoch==epoch && errorMessage==null)
 	                    {
 	                        readDescription(url, from, to, finalCurrentYear, finalCurrentMonth, curEpoch);
-	                        GuiState3DWCS.mainComponentView.getComponent().repaint();
+	                        MainFrame.MAIN_PANEL.repaintViewAndSynchronizedViews();;
 	                    }	                    
                     }
                     catch(IOException e)

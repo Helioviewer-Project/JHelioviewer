@@ -1,8 +1,6 @@
 package org.helioviewer.jhv.opengl.camera.newCamera;
 
-import org.helioviewer.jhv.gui.GuiState3DWCS;
-import org.helioviewer.jhv.opengl.camera.GL3DCamera;
-import org.helioviewer.jhv.viewmodel.view.opengl.CompenentView;
+import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 
 /**
  * This animation zooms the camera by a given amount. Zooming only affects the
@@ -32,16 +30,16 @@ public class CameraZoomAnimation implements CameraAnimation {
         this.distanceToTravel = distanceToTravel;
         this.timeLeft = duration;
         this.distanceDelta = distanceToTravel / this.timeLeft;
-        GuiState3DWCS.mainComponentView.regristryAnimation(duration);
     }
     
 
-    public void animate(CompenentView compenentView) {
+    public void animate(MainPanel compenentView) {
     	System.out.println("startTime : " + startTime);
         if (this.startTime < 0) {
             this.startTime = System.currentTimeMillis();
             this.lastAnimationTime = System.currentTimeMillis();
-            this.targetDistance = Math.max(CompenentView.MIN_DISTANCE, Math.min(CompenentView.MAX_DISTANCE, compenentView.getTranslation().z + this.distanceToTravel));
+            this.targetDistance = Math.max(MainPanel.MIN_DISTANCE, Math.min(MainPanel.MAX_DISTANCE, compenentView.getTranslation().z + this.distanceToTravel));
+            compenentView.repaint();
         }
 
         long timeDelta = System.currentTimeMillis() - lastAnimationTime;
@@ -67,7 +65,7 @@ public class CameraZoomAnimation implements CameraAnimation {
             CameraZoomAnimation ani = (CameraZoomAnimation) animation;
             this.timeLeft = Math.min(2000, this.timeLeft / 5 + ani.timeLeft);
             this.distanceToTravel += ani.distanceToTravel;
-            this.targetDistance = Math.min(CompenentView.MIN_DISTANCE, Math.max(CompenentView.MAX_DISTANCE, this.targetDistance + ani.distanceToTravel));
+            this.targetDistance = Math.min(MainPanel.MIN_DISTANCE, Math.max(MainPanel.MAX_DISTANCE, this.targetDistance + ani.distanceToTravel));
             this.distanceDelta = this.distanceToTravel / this.timeLeft;
         }
     }

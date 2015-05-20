@@ -3,6 +3,7 @@ package org.helioviewer.jhv.viewmodel.view.opengl.texture;
 import java.time.LocalDateTime;
 import java.util.ArrayDeque;
 import java.util.Queue;
+
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
 

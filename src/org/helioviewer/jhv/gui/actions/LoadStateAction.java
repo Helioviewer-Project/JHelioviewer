@@ -11,7 +11,6 @@ import javax.swing.JFileChooser;
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.actions.filefilters.JHVStateFilter;
-import org.helioviewer.jhv.layers.LayersModel;
 
 public class LoadStateAction extends AbstractAction {
 
@@ -101,7 +100,7 @@ public class LoadStateAction extends AbstractAction {
         new Thread(new Runnable() {
             public void run() {
                 ImageViewerGui.getSingletonInstance().getMainImagePanel().setLoading(true);
-                LayersModel.getSingletonInstance().loadState(selectedLocation);
+                //LayersModel.getSingletonInstance().loadState(selectedLocation);
                 ImageViewerGui.getSingletonInstance().getMainImagePanel().setLoading(false);
             }
         }, "LoadStateThread").start();

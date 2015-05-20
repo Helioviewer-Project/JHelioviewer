@@ -9,9 +9,10 @@ import javax.swing.JPanel;
 
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.math.Vector2d;
-import org.helioviewer.jhv.gui.GuiState3DWCS;
+import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace;
-import org.helioviewer.jhv.viewmodel.view.opengl.CompenentView;
+import org.helioviewer.jhv.viewmodel.metadata.MetaData;
+import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 
 public class LayerRayTrace{
 	private RayTrace rayTrace;
@@ -31,21 +32,23 @@ public class LayerRayTrace{
 		contentPanel.setBackground(Color.BLACK);
 		frame.setContentPane(contentPanel);
 		frame.setBounds(50, 50, 640, 480);
+		//frame.setVisible(true);
 	}
 	
-	public ImageRegion getCurrentRegion(CompenentView compenentView){
+	public ImageRegion getCurrentRegion(MainPanel compenentView, MetaData metaData){
 		contentPanel.removeAll();
 		contentPanel.setLayout(null);
-		double partOfWidth = GuiState3DWCS.mainComponentView.getComponent().getWidth() / (double)(MAX_X_POINTS-1);
-		double partOfHeight = GuiState3DWCS.mainComponentView.getComponent().getHeight() / (double)(MAX_Y_POINTS-1);
+		double partOfWidth = MainFrame.MAIN_PANEL.getWidth() / (double)(MAX_X_POINTS-1);
+		double partOfHeight = MainFrame.MAIN_PANEL.getHeight() / (double)(MAX_Y_POINTS-1);
 		
 		double minX = Double.MAX_VALUE, minY = Double.MAX_VALUE, maxX = Double.MIN_VALUE, maxY = Double.MIN_VALUE;
 		
 		for (int i = 0; i < MAX_X_POINTS; i++){
 			for (int j = 0; j < MAX_Y_POINTS; j++){
-				Vector2d imagePoint = rayTrace.castTexturepos((int)(i * partOfWidth), (int)(j * partOfHeight), layer.getMetaData(), compenentView);
-				if (imagePoint != null){
+				Vector2d imagePoint = rayTrace.castTexturepos((int)(i * partOfWidth), (int)(j * partOfHeight), metaData, compenentView);
 				
+				if (imagePoint != null){
+									
 				//JPanel panel = new JPanel();
 				//panel.setBackground(Color.YELLOW);
 
@@ -59,11 +62,13 @@ public class LayerRayTrace{
 				}
 			}
 		}
+		//frame.repaint();
+		
 		
 		Rectangle2D rectangle = new Rectangle2D.Double(minX, minY, maxX-minX, maxY-minY);
 		ImageRegion imageRegion = new ImageRegion(layer.getTime());
 		imageRegion.setImageData(rectangle);
-		imageRegion.calculateScaleFactor(layer, compenentView);
+		imageRegion.calculateScaleFactor(layer, compenentView, metaData);
 		return imageRegion;
 		//frame.repaint();
 		//frame.setVisible(true);

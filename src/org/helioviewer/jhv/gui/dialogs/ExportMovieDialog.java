@@ -1,54 +1,12 @@
 package org.helioviewer.jhv.gui.dialogs;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
-import javax.imageio.ImageIO;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.Timer;
-import javax.swing.border.EmptyBorder;
-import javax.swing.filechooser.FileFilter;
-
-import org.helioviewer.jhv.JHVGlobals;
-import org.helioviewer.jhv.Settings;
-import org.helioviewer.jhv.gui.GuiState3DWCS;
-import org.helioviewer.jhv.gui.ImageViewerGui;
-import org.helioviewer.jhv.layers.LayersModel;
-import org.helioviewer.jhv.opengl.model.GL3DImageLayer;
-import org.helioviewer.jhv.opengl.scenegraph.GL3DDrawBits.Bit;
-import org.helioviewer.jhv.viewmodel.changeevent.ChangeEvent;
-import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
-import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView;
-import org.helioviewer.jhv.viewmodel.view.jp2view.JHVJPXView.SpeedType;
-import org.helioviewer.jhv.viewmodel.view.opengl.GL3DComponentView;
-import org.helioviewer.jhv.viewmodel.view.opengl.GL3DSceneGraphView;
-
-import com.xuggle.mediatool.IMediaWriter;
-import com.xuggle.mediatool.ToolFactory;
 
 public class ExportMovieDialog implements ActionListener {
+	/*
 	private JHVJPXView timedJHVJPXView = null;
-	private GL3DComponentView mainComponentView = null;
+	private CompenentView mainComponentView = null;
 
 	private long speed = 0;
 	private IMediaWriter writer;
@@ -273,12 +231,11 @@ public class ExportMovieDialog implements ActionListener {
 	}
 
 	private void exportMovie() {
+		/*
 		if (!started)
 			stopExportMovie();
 		else {
-			for (GL3DImageLayer layer : mainComponentView
-					.getAdapter(GL3DSceneGraphView.class).getLayers()
-					.getLayers()) {
+			for (LayerInterface layer : GuiState3DWCS.layers.getLayers()) {
 				JHVJPXView jhvjpxView = layer.getImageTextureView().getAdapter(
 						JHVJPXView.class);
 				if (currentExportFrameNumber > jhvjpxView.getImageCacheStatus()
@@ -465,9 +422,11 @@ public class ExportMovieDialog implements ActionListener {
 		}
 	}
 
+	*/
+	
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		exportMovie();
+		//exportMovie();
 	}
-
+	
 }

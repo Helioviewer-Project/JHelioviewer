@@ -2,10 +2,7 @@ package org.helioviewer.jhv.plugins.viewmodelplugin.overlay;
 
 import java.net.URI;
 
-import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginSettings;
 import org.helioviewer.jhv.plugins.viewmodelplugin.interfaces.Container;
-import org.helioviewer.jhv.viewmodel.renderer.physical.PhysicalRenderer3d;
-import org.helioviewer.jhv.viewmodel.view.OverlayView;
 
 /**
  * The basic class which manages the interface between JHV and the contained
@@ -40,10 +37,10 @@ public abstract class OverlayContainer implements Container {
      *            List which manages the locations for the visual GUI elements
      *            of the overlays.
      */
-    public final void installOverlay(OverlayView overlayView, OverlayControlComponentManager controlList) {
+    /*public final void installOverlay(OverlayView overlayView, OverlayControlComponentManager controlList) {
         installOverlayImpl(overlayView, controlList);
         saveOverlaySettings();
-    }
+    }*/
 
     /**
      * This method installs the corresponding overlay and adds the visual
@@ -55,7 +52,7 @@ public abstract class OverlayContainer implements Container {
      *            List which manages the locations for the visual GUI elements
      *            of the overlays.
      */
-    protected abstract void installOverlayImpl(OverlayView overlayView, OverlayControlComponentManager controlList);
+    //protected abstract void installOverlayImpl(OverlayView overlayView, OverlayControlComponentManager controlList);
 
     /**
      * {@inheritDoc}
@@ -85,13 +82,6 @@ public abstract class OverlayContainer implements Container {
     public String toString() {
         return getName();
     }
-
-    /**
-     * This method returns the class of the contained overlay.
-     * 
-     * @return Class of the contained overlay.
-     */
-    public abstract Class<? extends PhysicalRenderer3d> getOverlayClass();
 
     /**
      * Returns the current order position of the overlay. The position is
@@ -135,6 +125,6 @@ public abstract class OverlayContainer implements Container {
      * {@link org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginManager}.
      */
     private void saveOverlaySettings() {
-        PluginSettings.getSingeltonInstance().overlaySettingsToXML(pluginLocation, this);
+        //PluginSettings.getSingeltonInstance().overlaySettingsToXML(pluginLocation, this);
     }
 }

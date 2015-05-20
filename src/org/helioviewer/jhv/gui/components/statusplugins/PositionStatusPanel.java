@@ -6,37 +6,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.text.DecimalFormat;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
-import org.helioviewer.jhv.base.math.Vector3d;
-import org.helioviewer.jhv.gui.GL3DCameraSelectorModel;
 import org.helioviewer.jhv.gui.components.BasicImagePanel;
 import org.helioviewer.jhv.gui.interfaces.ImagePanelPlugin;
-import org.helioviewer.jhv.layers.LayersModel;
-import org.helioviewer.jhv.opengl.camera.GL3DCamera;
-import org.helioviewer.jhv.opengl.scenegraph.rt.GL3DRay;
-import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
-import org.helioviewer.jhv.viewmodel.view.View;
-import org.helioviewer.jhv.viewmodel.view.jp2view.ImmutableDateTime;
-import org.joda.time.DateTime;
-
-import ch.fhnw.i4ds.helio.coordinate.converter.Hcc2HgConverter;
-import ch.fhnw.i4ds.helio.coordinate.converter.Hcc2HpcConverter;
-import ch.fhnw.i4ds.helio.coordinate.converter.option.ConverterOption;
-import ch.fhnw.i4ds.helio.coordinate.converter.option.ConverterOptions;
-import ch.fhnw.i4ds.helio.coordinate.coord.HeliocentricCartesianCoordinate;
-import ch.fhnw.i4ds.helio.coordinate.coord.HeliographicCoordinate;
-import ch.fhnw.i4ds.helio.coordinate.coord.HelioprojectiveCartesianCoordinate;
-import ch.fhnw.i4ds.helio.coordinate.sundist.Pb0rSunDistanceAlgo;
-import ch.fhnw.i4ds.helio.coordinate.sundist.SunDistance;
-import ch.fhnw.i4ds.helio.coordinate.sundist.SunDistanceAlgo;
 
 /**
  * Status panel for displaying the current mouse position.
@@ -57,7 +33,6 @@ public class PositionStatusPanel extends ViewStatusPanelPlugin implements
 
 	private static final long serialVersionUID = 1L;
 
-	private View view;
 	private BasicImagePanel imagePanel;
 	private Point lastPosition;
 
@@ -75,9 +50,8 @@ public class PositionStatusPanel extends ViewStatusPanelPlugin implements
 		setBorder(BorderFactory.createEtchedBorder());
 
 		// setPreferredSize(new Dimension(170, 20));
-		LayersModel.getSingletonInstance().addLayersListener(this);
 
-		imagePanel.addPlugin(this);
+		//imagePanel.addPlugin(this);
 
 		popupState = new PopupState();
 		this.addMouseListener(this);
@@ -96,6 +70,7 @@ public class PositionStatusPanel extends ViewStatusPanelPlugin implements
 	 *            Position on the screen.
 	 */
 	private void updatePosition(Point position) {
+		/*
 		GL3DCamera camera = GL3DCameraSelectorModel.getInstance()
 				.getCurrentCamera();
 
@@ -151,21 +126,7 @@ public class PositionStatusPanel extends ViewStatusPanelPlugin implements
 			}
 		}
 		this.setText(title);
-
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public View getView() {
-		return view;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setView(View newView) {
-		view = newView;
+		*/
 	}
 
 	/**
@@ -197,30 +158,6 @@ public class PositionStatusPanel extends ViewStatusPanelPlugin implements
 	 */
 	public void mouseMoved(MouseEvent e) {
 		updatePosition(e.getPoint());
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void activeLayerChanged(int idx) {
-		if (LayersModel.getSingletonInstance().isValidIndex(idx)) {
-			setVisible(true);
-		} else {
-			setVisible(false);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-
-	public void viewportGeometryChanged() {
-		// a view change (e.g. a zoom) can change the coordinates in the
-		// picture,
-		// so we have to recalculate the position
-		if (lastPosition != null) {
-			updatePosition(lastPosition);
-		}
 	}
 
 	public void detach() {

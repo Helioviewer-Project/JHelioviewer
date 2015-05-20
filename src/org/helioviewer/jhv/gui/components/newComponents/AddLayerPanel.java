@@ -18,9 +18,7 @@ import javax.swing.JSeparator;
 import javax.swing.JSpinner;
 import javax.swing.border.EmptyBorder;
 
-import org.helioviewer.jhv.gui.GuiState3DWCS;
-import org.helioviewer.jhv.layers.LayerInterface;
-import org.helioviewer.jhv.layers.NewLayer;
+import org.helioviewer.jhv.layers.Layers;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -71,7 +69,7 @@ public class AddLayerPanel extends JDialog {
 	 * Create the dialog.
 	 */
 	public AddLayerPanel() {
-		//super(ImageViewerGui.getMainFrame());
+		// super(ImageViewerGui.getMainFrame());
 		this.setAlwaysOnTop(true);
 		setBounds(100, 100, 450, 310);
 		initGui();
@@ -287,12 +285,12 @@ public class AddLayerPanel extends JDialog {
 							filter = (InstrumentModel.Filter) cmbbxFilter1
 									.getSelectedItem();
 						}
-						
-						else if (filter != null) {
-							GuiState3DWCS.layers
-									.addLayer(filter.sourceId, datePickerStartDate.getDateTime(),
-											datePickerEndDate.getDateTime(),
-											(int) candence.getValue());
+
+						if (filter != null) {
+							Layers.LAYERS.addLayer(filter.sourceId,
+									datePickerStartDate.getDateTime(),
+									datePickerEndDate.getDateTime(),
+									(int) candence.getValue());
 						}
 
 						setVisible(false);

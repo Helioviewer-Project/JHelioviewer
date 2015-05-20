@@ -2,26 +2,17 @@ package org.helioviewer.jhv.opengl;
 
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2;
-import javax.media.opengl.GLContext;
 import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.base.ImageRegion;
-import org.helioviewer.jhv.layers.Layer;
-import org.helioviewer.jhv.viewmodel.imagedata.ImageData;
-import org.helioviewer.jhv.viewmodel.imageformat.ImageFormat;
-import org.helioviewer.jhv.viewmodel.imagetransport.Byte8ImageTransport;
-import org.helioviewer.jhv.viewmodel.imagetransport.Int32ImageTransport;
-import org.helioviewer.jhv.viewmodel.imagetransport.Short16ImageTransport;
-import org.helioviewer.jhv.viewmodel.view.opengl.GLTextureHelper;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLContext;
 
 public class OpenGLHelper {
 	public static GLContext glContext;
@@ -95,11 +86,6 @@ public class OpenGLHelper {
 	}
 	
 	public void bindBufferedImageToGLTexture(final BufferedImage bufferedImage, final int width, final int height){
-		SwingUtilities.invokeLater(new Runnable() {
-			
-			@Override
-			public void run() {
-				glContext.makeCurrent();
 				int width2 = nextPowerOfTwo(width);
 				int height2 = nextPowerOfTwo(height);
 				
@@ -108,8 +94,7 @@ public class OpenGLHelper {
 				}
 
 				updateTexture(bufferedImage);
-			}
-		});
+		
 	}
 	
 
@@ -198,25 +183,7 @@ public class OpenGLHelper {
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T,
 				GL2.GL_CLAMP);
 	}
-	
-	
-	public void bindLayerToGLTexture(final Layer layer){
-		SwingUtilities.invokeLater(new Runnable() {
-			
-			@Override
-			public void run() {
-				glContext.makeCurrent();
-				ImageData imageData = layer.getJhvjpxView().getImageData();
-				int width2 = nextPowerOfTwo(imageData.getWidth());
-				int height2 = nextPowerOfTwo(imageData.getHeight());
-				if (textureHeight != height2 | textureWidth != width2){
-					createTexture(layer, width2, height2);
-				}
-				updateTexture(layer);
-			}
-		});
-	}
-	
+		
 	private static void createTexture(ImageRegion imageRegion, int width, int height){
 		GL2 gl = GLContext.getCurrentGL().getGL2();
 		ByteBuffer b = ByteBuffer.allocate(width * height);
@@ -264,93 +231,6 @@ public class OpenGLHelper {
 				GL2.GL_CLAMP);
 	}
 	
-	private void createTexture(Layer layer, int width, int height){
-		GL2 gl = glContext.getGL().getGL2();
-		ImageData imageData = layer.getJhvjpxView().getImageData();
-		int bitsPerPixel = imageData.getImageTransport().getNumBitsPerPixel();
-
-		gl.glPixelStorei(GL2.GL_UNPACK_SKIP_PIXELS, 0);
-		gl.glPixelStorei(GL2.GL_UNPACK_SKIP_ROWS, 0);
-		gl.glPixelStorei(GL2.GL_UNPACK_ROW_LENGTH, 0);
-		gl.glPixelStorei(GL2.GL_UNPACK_ALIGNMENT, bitsPerPixel >> 3);
-
-		ImageFormat imageFormat = imageData.getImageFormat();
-		int internalFormat = GLTextureHelper.mapImageFormatToInternalGLFormat(imageFormat);
-		int inputFormat = GLTextureHelper.mapImageFormatToInputGLFormat(imageFormat);
-		int inputType = GLTextureHelper.mapBitsPerPixelToGLType(bitsPerPixel);
-		
-		gl.glEnable(GL2.GL_TEXTURE_2D);			
-		gl.glBindTexture(GL2.GL_TEXTURE_2D, layer.getTexture());
-		
-		int bpp = OpenGLHelper.getBitsPerPixel(inputFormat, inputType);
-		ByteBuffer b = ByteBuffer.allocate(width * height * bpp);
-		b.limit(width * height * bpp);
-
-		gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, internalFormat, width,
-				height, 0, inputFormat, inputType, b);
-
-		this.textureWidth = width;
-		this.textureHeight = height;
-		
-		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER,
-				GL2.GL_LINEAR);
-		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER,
-				GL2.GL_LINEAR);
-		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S,
-				GL2.GL_CLAMP_TO_BORDER);
-		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T,
-				GL2.GL_CLAMP_TO_BORDER);	
-	}
-	
-	private void updateTexture(Layer layer){
-		GL2 gl = OpenGLHelper.glContext.getGL().getGL2();
-		ImageData imageData = layer.getJhvjpxView().getImageData();
-		int bitsPerPixel = imageData.getImageTransport().getNumBitsPerPixel();
-		Buffer buffer;
-
-		switch (bitsPerPixel) {
-		case 8:
-			buffer = ByteBuffer.wrap(((Byte8ImageTransport) imageData
-					.getImageTransport()).getByte8PixelData());
-			break;
-		case 16:
-			buffer = ShortBuffer.wrap(((Short16ImageTransport) imageData
-					.getImageTransport()).getShort16PixelData());
-			break;
-		case 32:
-			buffer = IntBuffer.wrap(((Int32ImageTransport) imageData
-					.getImageTransport()).getInt32PixelData());
-			break;
-		default:
-			buffer = null;
-		}
-				
-		gl.glPixelStorei(GL2.GL_UNPACK_SKIP_PIXELS, 0);
-		gl.glPixelStorei(GL2.GL_UNPACK_SKIP_ROWS, 0);
-		gl.glPixelStorei(GL2.GL_UNPACK_ROW_LENGTH, 0);
-		gl.glPixelStorei(GL2.GL_UNPACK_ALIGNMENT, bitsPerPixel >> 3);
-
-		ImageFormat imageFormat = imageData.getImageFormat();
-		int inputFormat = GLTextureHelper.mapImageFormatToInputGLFormat(imageFormat);
-		int width = imageData.getWidth();
-		int height = imageData.getHeight();
-		int inputType = GLTextureHelper.mapBitsPerPixelToGLType(bitsPerPixel);
-		
-		gl.glBindTexture(GL2.GL_TEXTURE_2D, layer.getTexture());
-		
-		gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, width, height,
-					inputFormat, inputType, buffer);
-
-		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER,
-				GL2.GL_LINEAR);
-		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER,
-				GL2.GL_LINEAR);
-		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S,
-				GL2.GL_CLAMP_TO_BORDER);
-		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T,
-				GL2.GL_CLAMP_TO_BORDER);
-	}
-
 	public static int getBitsPerPixel(int inputFormat, int inputType){
 		int bpp = 3;
 

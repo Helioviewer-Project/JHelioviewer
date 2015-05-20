@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.helioviewer.jhv.gui.controller.GL3DCameraMouseController;
-
 /**
  * This singleton receives all KeyEvents by the
  * {@link GL3DCameraMouseController}. Register a GL3DKeyListener to be informed

@@ -1,22 +1,8 @@
 package org.helioviewer.jhv.plugins.sdocutoutplugin;
 
-import java.awt.Point;
 import java.awt.event.ActionEvent;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.swing.AbstractAction;
-import javax.swing.JToggleButton;
-
-import org.helioviewer.jhv.JHVGlobals;
-import org.helioviewer.jhv.base.Message;
-import org.helioviewer.jhv.layers.LayersModel;
-import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.helioviewer.jhv.viewmodel.view.MetaDataView;
-import org.helioviewer.jhv.viewmodel.view.RegionView;
-import org.helioviewer.jhv.viewmodel.view.ViewHelper;
-import org.helioviewer.jhv.viewmodel.view.ViewportView;
-import org.helioviewer.jhv.viewmodel.viewportimagesize.ViewportImageSize;
 
 public class SDOCutOutAction extends AbstractAction {
 	
@@ -33,8 +19,9 @@ public class SDOCutOutAction extends AbstractAction {
      * {@inheritDoc}
      */
     public void actionPerformed(ActionEvent e) {
+    	/*
     	// LayersModel, helioMetaData
-		LayersModel layersModel = LayersModel.getSingletonInstance();
+		 layersModel = LayersModel.getSingletonInstance();
 		 
 		// Active layer index
 		int idx_active = layersModel.getActiveLayer();
@@ -101,7 +88,7 @@ public class SDOCutOutAction extends AbstractAction {
 					String wavelengths=SDOCutOutAPI.API_WAVELENGTHS;
 					for (int i=0; i< layersModel.getNumLayers(); i++)
 					{
-					  MetaData helioMetaData = layersModel.getLayer(i).getAdapter(MetaDataView.class).getMetaData();
+					  MetaData helioMetaData = GuiState3DWCS.layers.getLayer(i).getMetaData();
 						
 						if (helioMetaData.getObservatory().contains("SDO"))
 			    		{
@@ -157,10 +144,11 @@ public class SDOCutOutAction extends AbstractAction {
 					Log.info("Track is activated");
 					break;
 				}
-			}*/
+			}
 			
 			JHVGlobals.openURL(newUrl);
 		}
 		((JToggleButton)e.getSource()).setSelected(false);
+		*/
     }
 }

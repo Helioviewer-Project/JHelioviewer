@@ -1,15 +1,15 @@
 package org.helioviewer.jhv.opengl.camera;
 
-import java.awt.Component;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 
 import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.Vector3d;
+import org.helioviewer.jhv.gui.controller.Camera;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace.Ray;
-import org.helioviewer.jhv.viewmodel.view.LinkedMovieManager;
-import org.helioviewer.jhv.viewmodel.view.opengl.CompenentView;
+import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
+import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 
 public class CameraRotationInteraction extends CameraInteraction{
 
@@ -18,11 +18,9 @@ public class CameraRotationInteraction extends CameraInteraction{
 	private volatile Quaternion3d currentDragRotation;
 	private boolean yAxisBlocked = false;
 	private boolean played;
-	private Component component;
 
-	public CameraRotationInteraction(CompenentView compenentView) {
-		super(compenentView);
-		enable = true;
+	public CameraRotationInteraction(MainPanel compenentView, Camera camera) {
+		super(compenentView, camera);
 	}
 
 	@Override
@@ -44,11 +42,12 @@ public class CameraRotationInteraction extends CameraInteraction{
 					currentDragRotation = Quaternion3d.createRotation(angle,
 							new Vector3d(0, 1, 0));
 					compenentView.getRotation().rotate(currentDragRotation);
-
+					camera.setRotation(compenentView.getRotation());
 				} else {
 					currentDragRotation = Quaternion3d.calcRotation(
 							currentRotationStartPoint, currentRotationEndPoint);
 					compenentView.getRotation().rotate(currentDragRotation);
+					camera.setRotation(compenentView.getRotation());
 					currentRotationStartPoint = currentRotationEndPoint;
 				}
 			}
@@ -63,17 +62,13 @@ public class CameraRotationInteraction extends CameraInteraction{
 		this.currentRotationStartPoint = null;
 		this.currentRotationEndPoint = null;
 		
-		if (this.played){
-			LinkedMovieManager.getActiveInstance().playLinkedMovies();
-		}
+			TimeLine.SINGLETON.setPlaying(played);
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		this.played = LinkedMovieManager.getActiveInstance().isPlaying();
-		if (played){
-			LinkedMovieManager.getActiveInstance().pauseLinkedMovies();
-		}
+		this.played = TimeLine.SINGLETON.isPlaying();
+		TimeLine.SINGLETON.setPlaying(false);
 		// The start point of the rotation remains the same during a drag,
 		// because the
 		// mouse should always point to the same Point on the Surface of the

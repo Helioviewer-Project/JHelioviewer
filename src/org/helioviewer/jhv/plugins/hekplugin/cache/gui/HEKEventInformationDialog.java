@@ -3,7 +3,6 @@ package org.helioviewer.jhv.plugins.hekplugin.cache.gui;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -14,9 +13,20 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Date;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JEditorPane;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
@@ -25,11 +35,7 @@ import org.helioviewer.jhv.gui.ButtonCreator;
 import org.helioviewer.jhv.gui.ClipBoardCopier;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
-import org.helioviewer.jhv.gui.TableColumnResizer;
-import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKEvent;
-import org.helioviewer.jhv.plugins.hekplugin.cache.HEKEventTableModel;
-import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
 
 /**
  * Popup displaying informations about a HEK event.
@@ -369,7 +375,7 @@ public class HEKEventInformationDialog extends JDialog implements ActionListener
      *            Corresponding solar event
      */
     public void setEvent(HEKEvent newEvent) {
-
+    	/*
         if (event == newEvent || newEvent == null)
             return;
 
@@ -458,6 +464,7 @@ public class HEKEventInformationDialog extends JDialog implements ActionListener
         hyperLinkPanel.setText(htmlLinks.toString());
 
         pack();
+        */
 
     }
 

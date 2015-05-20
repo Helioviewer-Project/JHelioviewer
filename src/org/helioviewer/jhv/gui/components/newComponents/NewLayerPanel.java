@@ -22,13 +22,15 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import org.helioviewer.jhv.JHVGlobals;
-import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.layers.LayerInterface;
+import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.NewLayerListener;
+import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
+import org.helioviewer.jhv.viewmodel.timeline.TimeLine.TimeLineListener;
 
-public class NewLayerPanel extends JPanel implements NewLayerListener{
+public class NewLayerPanel extends JPanel implements NewLayerListener, TimeLineListener{
 
 	/**
 	 * 
@@ -46,7 +48,8 @@ public class NewLayerPanel extends JPanel implements NewLayerListener{
 		initGUI();
 		updateData();
 		this.setPreferredSize(new Dimension(200, 200));
-		GuiState3DWCS.layers.addNewLayerListener(this);
+		Layers.LAYERS.addNewLayerListener(this);
+		TimeLine.SINGLETON.addListener(this);
 	}
 
 	/**
@@ -78,14 +81,14 @@ public class NewLayerPanel extends JPanel implements NewLayerListener{
 				int row = table.getSelectedRow();
 				int column = table.getSelectedColumn();
 				if (column == 3){
-					GuiState3DWCS.layers.removeLayer(row);
+					Layers.LAYERS.removeLayer(row);
 					updateData();
 				}
-				if (row != GuiState3DWCS.layers.getActiveLayerNumber()){
-					GuiState3DWCS.layers.setActiveLayer(row);
+				if (row != Layers.LAYERS.getActiveLayerNumber()){
+					Layers.LAYERS.setActiveLayer(row);
 				}
 				if (column == 0){
-					GuiState3DWCS.layers.getActiveLayer().setVisible((boolean) table.getModel().getValueAt(row, column));
+					Layers.LAYERS.getActiveLayer().setVisible((boolean) table.getModel().getValueAt(row, column));
 				}
 
 			}
@@ -142,9 +145,9 @@ public class NewLayerPanel extends JPanel implements NewLayerListener{
 
 	
 	private void updateData(){
-		Object[][] data = new Object[GuiState3DWCS.layers.getLayerCount()][4];
+		Object[][] data = new Object[Layers.LAYERS.getLayerCount()][4];
 		int count = 0;
-		for (LayerInterface layer : GuiState3DWCS.layers.getLayers()){
+		for (LayerInterface layer : Layers.LAYERS.getLayers()){
 			data[count][0] = layer.isVisible();
 			data[count][1] = layer.getName();
 			data[count][2] = layer.getTime() == null ? null : layer.getTime();
@@ -163,9 +166,9 @@ public class NewLayerPanel extends JPanel implements NewLayerListener{
         table.setShowGrid(false);
         table.setIntercellSpacing(new Dimension(0, 0));
         
-		if (GuiState3DWCS.layers.getLayerCount() > 0){
-			System.out.println(GuiState3DWCS.layers.getActiveLayerNumber());
-			table.setRowSelectionInterval(GuiState3DWCS.layers.getActiveLayerNumber(), GuiState3DWCS.layers.getActiveLayerNumber());
+		if (Layers.LAYERS.getLayerCount() > 0){
+			System.out.println(Layers.LAYERS.getActiveLayerNumber());
+			table.setRowSelectionInterval(Layers.LAYERS.getActiveLayerNumber(), Layers.LAYERS.getActiveLayerNumber());
 		}
 
 
@@ -264,13 +267,18 @@ public class NewLayerPanel extends JPanel implements NewLayerListener{
 	}
 
 	@Override
-	public void newtimestampChanged() {
-		this.updateData();
-	}
-
-	@Override
 	public void activeLayerChanged(LayerInterface layer) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void timeStampChanged(LocalDateTime localDateTime) {
+		updateData();
+	}
+
+	@Override
+	public void dateTimesChanged(int framecount) {
+		updateData();
 	}
 }

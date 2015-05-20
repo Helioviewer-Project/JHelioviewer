@@ -7,7 +7,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
-import org.helioviewer.jhv.gui.GuiState3DWCS;
+import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
 import org.helioviewer.jhv.plugins.pfssplugin.data.caching.Cacheable;
 
@@ -139,7 +139,7 @@ public class PfssCompressed implements Cacheable
             public void run()
             {
                 loadData();
-                GuiState3DWCS.mainComponentView.getComponent().repaint();
+                MainFrame.MAIN_PANEL.repaint();
             }
         });   
     }

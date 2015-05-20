@@ -17,9 +17,7 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 
 import org.helioviewer.jhv.base.math.Interval;
-import org.helioviewer.jhv.gui.GuiState3DWCS;
-import org.helioviewer.jhv.layers.LayersListener;
-import org.helioviewer.jhv.layers.LayersModel;
+import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheListener;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheLoadingModel;
@@ -31,14 +29,13 @@ import org.helioviewer.jhv.plugins.hekplugin.cache.HEKStupidDownloader;
 import org.helioviewer.jhv.plugins.hekplugin.cache.gui.HEKCacheTreeView;
 import org.helioviewer.jhv.plugins.hekplugin.cache.gui.HEKCacheTreeViewContainer;
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayPanel;
-import org.helioviewer.jhv.viewmodel.view.View;
 
 /**
  * Represents the UI components which manage the HEK event catalog.
  * 
  * @author Malte Nuhn
  * */
-public class HEKPluginPanel extends OverlayPanel implements ActionListener, HEKCacheListener, LayersListener {
+public class HEKPluginPanel extends OverlayPanel implements ActionListener, HEKCacheListener {
 
     private static final long serialVersionUID = 1L;
 
@@ -75,7 +72,6 @@ public class HEKPluginPanel extends OverlayPanel implements ActionListener, HEKC
         initVisualComponents();
 
         // register as layers listener
-        LayersModel.getSingletonInstance().addLayersListener(this);
         HEKCache.getSingletonInstance().getModel().addCacheListener(this);
     }
 
@@ -83,7 +79,7 @@ public class HEKPluginPanel extends OverlayPanel implements ActionListener, HEKC
      * Force a redraw of the main window
      */
     private void fireRedraw() {
-    	GuiState3DWCS.mainComponentView.getComponent().repaint();
+    	MainFrame.MAIN_PANEL.repaint();
     }
 
     /**
@@ -203,6 +199,7 @@ public class HEKPluginPanel extends OverlayPanel implements ActionListener, HEKC
     }
 
     public void reload() {
+    	/*
     	Date start = LayersModel.getSingletonInstance().getFirstDate();
         Date end = LayersModel.getSingletonInstance().getLastDate();
         
@@ -223,6 +220,7 @@ public class HEKPluginPanel extends OverlayPanel implements ActionListener, HEKC
 	    	threadUpdate.setDaemon(true);
 	        threadUpdate.start();
 	    }
+	    */
 	}
 
 	public void setEnabled(boolean b) {
@@ -233,31 +231,6 @@ public class HEKPluginPanel extends OverlayPanel implements ActionListener, HEKC
             HEKCache.getSingletonInstance().getController().fireEventsChanged(rootPath);
         }
         tree.setEnabled(b);
-    }
-
-    public void activeLayerChanged(int idx) {
-    }
-
-    public void layerAdded(int idx) {
-    	this.reload();
-    }
-
-    public void layerChanged(int idx) {
-    }
-
-    public void layerRemoved(View oldView, int oldIdx) {
-    }
-
-    @Override
-    public void subImageDataChanged(int idx)
-    {
-    }
-
-    public void timestampChanged(int idx) {
-        // Not used anymore
-    }
-
-    public void viewportGeometryChanged() {
     }
 
     public void cacheStateChanged() {

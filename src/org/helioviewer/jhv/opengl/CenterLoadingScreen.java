@@ -5,13 +5,13 @@ import java.awt.image.BufferedImage;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2;
 import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.gui.IconBank;
 
 import com.jogamp.common.nio.Buffers;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
 
 public class CenterLoadingScreen implements RenderAnimation {
 

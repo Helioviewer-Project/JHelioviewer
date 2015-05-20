@@ -1,16 +1,14 @@
 package org.helioviewer.jhv.plugins.pfssplugin.data.managers;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Date;
 
-import javax.media.opengl.GL2;
-
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin3dRenderer;
-import org.helioviewer.jhv.plugins.pfssplugin.data.FileDescriptor;
-import org.helioviewer.jhv.plugins.pfssplugin.data.PfssCompressed;
 import org.helioviewer.jhv.plugins.pfssplugin.data.PfssDecompressed;
 import org.helioviewer.jhv.plugins.pfssplugin.data.caching.DataCache;
-import org.helioviewer.jhv.plugins.pfssplugin.data.decompression.PfssDecompressor;
+
+import com.jogamp.opengl.GL2;
 
 /**
  * This class is responsible for managing frames. it Tries to have all frames
@@ -34,8 +32,9 @@ public class FrameManager
 	 * @param date
 	 * @return Frame or null if there is no frame for the requested date
 	 */
-	public PfssDecompressed getFrame(GL2 _gl, Date date)
+	public PfssDecompressed getFrame(GL2 _gl, LocalDateTime date)
 	{
+		/*
 		//outside of loaded frames
 		if(!descriptorManager.isDateInRange(date))
 			return null;
@@ -69,8 +68,9 @@ public class FrameManager
             PfssDecompressor.decompress(comp,curFrame);
             return curFrame;
         }
-        
+        */
         return null;
+        
 	}
 	
     /**
