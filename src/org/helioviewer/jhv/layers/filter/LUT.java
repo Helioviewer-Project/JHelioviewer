@@ -13,6 +13,7 @@ import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 
 import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLContext;
 
 public class LUT
 {
@@ -77,9 +78,9 @@ public class LUT
 					bufferedImage = ImageIO.read(MainPanel.class.getResourceAsStream("/UltimateLookupTable.png"));
 					texture = openGLHelper.createTextureID();
 					openGLHelper.bindBufferedImageToGLTexture(bufferedImage, 256, 256);
-					OpenGLHelper.glContext.getGL().glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER,
-			                GL2.GL_NEAREST);
-					OpenGLHelper.glContext.getGL().glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER,
+					GLContext.getCurrentGL().getGL2().glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER,
+			               GL2.GL_NEAREST);
+					GLContext.getCurrentGL().getGL2().glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER,
 			                GL2.GL_NEAREST);
 				}
 				catch (IOException e)
@@ -104,7 +105,7 @@ public class LUT
 		}
 	}
 	
-	public static int getTexture(GL2 gl)
+	public static int getTexture()
 	{
 		return texture;
 	}	

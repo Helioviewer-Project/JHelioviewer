@@ -11,12 +11,12 @@ import javax.swing.KeyStroke;
 
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.Settings;
-import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.actions.filefilters.AllSupportedImageTypesFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.FitsFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.JP2Filter;
 import org.helioviewer.jhv.gui.actions.filefilters.JPGFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.PNGFilter;
+import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 import org.helioviewer.jhv.layers.Layers;
 
 /**
@@ -102,7 +102,7 @@ public class OpenLocalFileAction extends AbstractAction {
 		}); */
         
         
-        int retVal = fileChooser.showOpenDialog(ImageViewerGui.getMainFrame());
+        int retVal = fileChooser.showOpenDialog(MainFrame.SINGLETON);
         if (retVal == JFileChooser.APPROVE_OPTION)
         {
             File selectedFile = fileChooser.getSelectedFile();
@@ -112,7 +112,7 @@ public class OpenLocalFileAction extends AbstractAction {
                 // remember the current directory for future
                 Settings.setProperty("default.local.path", fileChooser.getSelectedFile().getParent());
 
-                ImageViewerGui.getSingletonInstance().getMainImagePanel().setLoading(true);
+                //ImageViewerGui.getSingletonInstance().getMainImagePanel().setLoading(true);
 
                 // Load image in new thread
                 	Layers.LAYERS.addLayer(fileChooser.getSelectedFile().toString());

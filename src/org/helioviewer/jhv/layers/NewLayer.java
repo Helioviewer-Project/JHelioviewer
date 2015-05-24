@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.util.concurrent.ExecutionException;
 
 import org.helioviewer.jhv.base.ImageRegion;
-import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
@@ -59,7 +58,7 @@ public class NewLayer extends LayerInterface{
 				if (firstRun){
 					this.lut = metaData.getDefaultLUT();
 					firstRun = false;
-					ImageViewerGui.getSingletonInstance().filterTabPanel.updateLayer(this);
+					MainFrame.SINGLETON.filterTabPanel.updateLayer(this);
 					MainFrame.MAIN_PANEL.repaintViewAndSynchronizedViews();
 				}
 			ByteBuffer byteBuffer = ultimateLayer.getImageData(currentDateTime, layerRayTrace.getCurrentRegion(compenentView, metaData), metaData, highResolution);

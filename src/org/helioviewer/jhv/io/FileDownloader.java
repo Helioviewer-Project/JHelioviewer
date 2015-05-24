@@ -23,9 +23,9 @@ import javax.swing.JWindow;
 
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.base.Message;
-import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.actions.filefilters.ExtensionFileFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.JP2Filter;
+import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 
 /**
  * Class for downloading files from the internet.
@@ -117,7 +117,7 @@ public class FileDownloader {
 
 		fileChooser.setSelectedFile(new File(defaultTargetFileName));
 
-		int retVal = fileChooser.showSaveDialog(ImageViewerGui.getMainFrame());
+		int retVal = fileChooser.showSaveDialog(MainFrame.SINGLETON);
 		File selectedFile = null;
 
 		if (retVal == JFileChooser.APPROVE_OPTION) {
@@ -294,8 +294,8 @@ public class FileDownloader {
 		 *            Text to show on top of the progress bar
 		 */
 		public StandAloneDialog(String title) {
-			super(ImageViewerGui.getMainFrame());
-			setLocationRelativeTo(ImageViewerGui.getMainFrame());
+			super(MainFrame.SINGLETON);
+			setLocationRelativeTo(MainFrame.SINGLETON);
 			
 			setLayout(new FlowLayout());
 
@@ -308,8 +308,7 @@ public class FileDownloader {
 			add(cmdCancel);
 
 			setSize(getPreferredSize());
-			JPanel mainPanel = ImageViewerGui.getSingletonInstance()
-					.getMainImagePanel();
+			MainFrame mainPanel = MainFrame.SINGLETON;
 			Point mainImagePanelLocation = mainPanel.getLocationOnScreen();
 			Dimension mainImagePanelSize = mainPanel.getSize();
 			int x = mainImagePanelLocation.x + mainImagePanelSize.width

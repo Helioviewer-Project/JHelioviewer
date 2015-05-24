@@ -26,7 +26,7 @@ import javax.swing.event.HyperlinkListener;
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
-import org.helioviewer.jhv.gui.ImageViewerGui;
+import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 import org.helioviewer.jhv.gui.interfaces.ShowableDialog;
 
 
@@ -50,7 +50,7 @@ public final class AboutDialog extends JDialog implements ActionListener, Showab
      * Default constructor.
      */
     public AboutDialog() {
-        super(ImageViewerGui.getMainFrame(), "About JHelioviewer", true);
+        super(MainFrame.SINGLETON, "About JHelioviewer", true);
         setResizable(false);
 
         JPanel contentPane = new JPanel(new BorderLayout());
@@ -153,7 +153,7 @@ public final class AboutDialog extends JDialog implements ActionListener, Showab
     public void showDialog() {
         pack();
         setSize(getPreferredSize());
-        setLocationRelativeTo(ImageViewerGui.getMainFrame());
+        setLocationRelativeTo(MainFrame.SINGLETON);
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -181,7 +181,7 @@ public final class AboutDialog extends JDialog implements ActionListener, Showab
     public void hyperlinkUpdate(HyperlinkEvent e) {
         if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
             if (e.getURL() == null) {
-                TextDialog textDialog = new TextDialog("License - " + e.getDescription().substring(0, e.getDescription().indexOf('.')), ImageViewerGui.class.getResource("/licenses/" + e.getDescription()));
+                TextDialog textDialog = new TextDialog("License - " + e.getDescription().substring(0, e.getDescription().indexOf('.')), MainFrame.class.getResource("/licenses/" + e.getDescription()));
                 textDialog.showDialog();
             } else {
                 JHVGlobals.openURL(e.getURL().toString());

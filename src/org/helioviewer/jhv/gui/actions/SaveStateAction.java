@@ -15,9 +15,9 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import org.helioviewer.jhv.JHVGlobals;
-import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.actions.filefilters.ExtensionFileFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.JHVStateFilter;
+import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 
 public class SaveStateAction extends AbstractAction {
 
@@ -116,7 +116,7 @@ public class SaveStateAction extends AbstractAction {
         String txtTargetFile = getDefaultFileName();
         fileChooser.setSelectedFile(new File(txtTargetFile));
 
-        int retVal = fileChooser.showSaveDialog(ImageViewerGui.getMainFrame());
+        int retVal = fileChooser.showSaveDialog(MainFrame.SINGLETON);
         File selectedFile = null;
 
         if (retVal == JFileChooser.APPROVE_OPTION) {

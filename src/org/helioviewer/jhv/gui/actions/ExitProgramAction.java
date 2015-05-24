@@ -8,7 +8,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
-import org.helioviewer.jhv.gui.ImageViewerGui;
+import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 import org.helioviewer.jhv.layers.Layers;
 
 /**
@@ -37,7 +37,7 @@ public class ExitProgramAction extends AbstractAction {
 
 		if (Layers.LAYERS.getLayerCount() > 0) {
 			int option = JOptionPane.showConfirmDialog(
-					ImageViewerGui.getMainFrame(),
+					MainFrame.SINGLETON,
 					"Are you sure you want to quit?", "Confirm",
 					JOptionPane.OK_CANCEL_OPTION);
 			if (option == JOptionPane.CANCEL_OPTION) {

@@ -9,7 +9,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 
-import org.helioviewer.jhv.gui.ImageViewerGui;
+import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 
 public class SDOCutOutToggleButton extends Component implements
 		PropertyChangeListener {
@@ -44,7 +44,7 @@ public class SDOCutOutToggleButton extends Component implements
 
 	public void installButton() {
 		initVisualComponents();
-		ImageViewerGui.getSingletonInstance().addTopToolBarPlugin(this,
+		MainFrame.SINGLETON.addTopToolBarPlugin(this,
 				sdoCutOutButton);
 	}
 

@@ -49,7 +49,6 @@ import com.jogamp.opengl.DebugGL2;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
-import com.jogamp.opengl.GLContext;
 import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.awt.GLCanvas;
 
@@ -57,6 +56,11 @@ public class MainPanel extends GLCanvas implements
 		GLEventListener, MouseListener, MouseMotionListener,
 		MouseWheelListener, NewLayerListener, TimeLineListener, Camera {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6714893614985558471L;
+	
 	public static final double MAX_DISTANCE = Constants.SUN_MEAN_DISTANCE_TO_EARTH * 1.8;
 	public static final double MIN_DISTANCE = Constants.SUN_RADIUS * 1.2;
 	public static final double DEFAULT_CAMERA_DISTANCE = 14 * Constants.SUN_RADIUS;
@@ -90,8 +94,7 @@ public class MainPanel extends GLCanvas implements
 	public MainPanel() {
 		this.cameraAnimations = new CopyOnWriteArrayList<CameraAnimation>();
 		this.synchronizedViews = new ArrayList<MainPanel>();
-		if (GLContext.getCurrent() != null)
-			this.setSharedContext(GLContext.getCurrent());
+		this.setSharedContext(OpenGLHelper.glContext);
 		Layers.LAYERS.addNewLayerListener(this);
 		TimeLine.SINGLETON.addListener(this);
 		animations = new CopyOnWriteArrayList<RenderAnimation>();
@@ -258,22 +261,7 @@ public class MainPanel extends GLCanvas implements
 
 			double aspect = this.getSize().getWidth()
 					/ this.getSize().getHeight();
-			float x0 = (float) lowerleftCorner.x;
-			float y0 = (float) lowerleftCorner.y;
-			float x1 = x0 + (float) size.x;
-			float y1 = y0 + (float) size.y;
-			float tmpX0 = x0;
-			float tmpX1 = x1;
-			float tmpY0 = y0;
-			float tmpY1 = y1;
-			// if height is bigger then width
-			if (aspect < 1) {
-				tmpX0 = (float) (x0 * aspect);
-				tmpX1 = (float) (x1 * aspect);
-			} else {
-				tmpY0 = (float) (y0 / aspect);
-				tmpY1 = (float) (y1 / aspect);
-			}
+			
 			MetaData metaData = layer.getMetaData();
 			float xSunOffset = (float) ((metaData.getSunPixelPosition().x - metaData
 					.getResolution().getX() / 2.0) / (float) metaData
@@ -312,7 +300,7 @@ public class MainPanel extends GLCanvas implements
 			gl.glUseProgram(shaderprogram);
 
 			gl.glActiveTexture(GL.GL_TEXTURE1);
-			gl.glBindTexture(GL2.GL_TEXTURE_2D, LUT.getTexture(gl));
+			gl.glBindTexture(GL2.GL_TEXTURE_2D, LUT.getTexture());
 
 			gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "texture"), 0);
 			gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "lut"), 1);
@@ -496,7 +484,7 @@ public class MainPanel extends GLCanvas implements
 		System.out.println("height: " + height);
 		//this.getParent().setPreferredSize(new Dimension(width, height));
 		//gl.glViewport(0, 0, width, height);
-		this.repaint();
+		//this.repaint();
 	}
 
 	@Override
@@ -614,7 +602,7 @@ public class MainPanel extends GLCanvas implements
 		return this.getSize().getHeight() / this.getSize().getWidth();
 	}
 
-	public void setSynchronizedView(MainPanel compenentView) {
+	public void addSynchronizedView(MainPanel compenentView) {
 		this.synchronizedViews.add(compenentView);
 	}
 

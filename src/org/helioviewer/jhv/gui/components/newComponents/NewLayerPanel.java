@@ -47,7 +47,8 @@ public class NewLayerPanel extends JPanel implements NewLayerListener, TimeLineL
 	public NewLayerPanel(){
 		initGUI();
 		updateData();
-		this.setPreferredSize(new Dimension(200, 200));
+		this.setMinimumSize(new Dimension());
+		//this.setPreferredSize(new Dimension(200, 200));
 		Layers.LAYERS.addNewLayerListener(this);
 		TimeLine.SINGLETON.addListener(this);
 	}

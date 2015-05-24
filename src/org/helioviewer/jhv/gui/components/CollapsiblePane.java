@@ -14,7 +14,7 @@ import javax.swing.SwingConstants;
 
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
-import org.helioviewer.jhv.gui.ImageViewerGui;
+import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 
 /**
  * Panel managing a collapsible area.
@@ -57,7 +57,7 @@ public class CollapsiblePane extends JComponent implements ActionListener {
         } else {
             toggleButton.setIcon(IconBank.getIcon(JHVIcon.RIGHT2));
         }
-        toggleButton.setPreferredSize(new Dimension(ImageViewerGui.SIDE_PANEL_WIDTH, (int) toggleButton.getPreferredSize().getHeight()));
+        toggleButton.setPreferredSize(new Dimension(MainFrame.SIDE_PANEL_WIDTH, (int) toggleButton.getPreferredSize().getHeight()));
         toggleButton.addActionListener(this);
 
         this.component = component;
@@ -86,7 +86,7 @@ public class CollapsiblePane extends JComponent implements ActionListener {
         toggleButton.setSelected(true);
         component.setVisible(true);
         toggleButton.setIcon(ICON_EXPANDED);
-        ImageViewerGui.getSingletonInstance().getContentPane().revalidate();
+        MainFrame.SINGLETON.getContentPane().revalidate();
     }
 
     /**
@@ -96,7 +96,7 @@ public class CollapsiblePane extends JComponent implements ActionListener {
         toggleButton.setSelected(false);
         component.setVisible(false);
         toggleButton.setIcon(ICON_COLLAPSED);
-        ImageViewerGui.getSingletonInstance().getContentPane().revalidate();
+        MainFrame.SINGLETON.getContentPane().revalidate();
     }
 
     /**

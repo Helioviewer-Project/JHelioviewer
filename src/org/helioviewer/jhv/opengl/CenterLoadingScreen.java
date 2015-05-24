@@ -12,6 +12,7 @@ import org.helioviewer.jhv.gui.IconBank;
 import com.jogamp.common.nio.Buffers;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLContext;
 
 public class CenterLoadingScreen implements RenderAnimation {
 
@@ -50,7 +51,7 @@ public class CenterLoadingScreen implements RenderAnimation {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				initCircleVBO(OpenGLHelper.glContext.getGL().getGL2());
+				initCircleVBO(GLContext.getCurrentGL().getGL2());
 			}
 		});
 	}

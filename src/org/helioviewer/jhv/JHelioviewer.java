@@ -16,6 +16,7 @@ import java.util.TimeZone;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 
@@ -38,10 +39,8 @@ import com.install4j.api.update.UpdateScheduleRegistry;
 import com.jogamp.opengl.DebugGL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
-import com.jogamp.opengl.GLContext;
 import com.jogamp.opengl.GLDrawableFactory;
 import com.jogamp.opengl.GLProfile;
-import com.xuggle.xuggler.demos.GetContainerInfo;
 
 /**
  * This class starts the applications.
@@ -138,14 +137,14 @@ public class JHelioviewer {
 						.getGL2()));
 
 			OpenGLHelper.glContext = sharedDrawable.getContext();
-			OpenGLHelper.glContext = GLContext.getCurrent();
+
 			System.out
 					.println("JHelioviewer started with command-line options:"
 							+ argString);
 			System.out.println("Initializing JHelioviewer");
 
 			// display the splash screen
-			SplashScreen splash = SplashScreen.getSingletonInstance();
+			final SplashScreen splash = SplashScreen.getSingletonInstance();
 
 			int numProgressSteps = 10;
 			splash.setProgressSteps(numProgressSteps);
@@ -205,7 +204,6 @@ public class JHelioviewer {
 			/* ----------Setup OpenGL ----------- */
 			splash.setProgressText("Setting up the UI...");
 			splash.nextStep();
-			MainFrame mainFrame = new MainFrame();
 			//ImageViewerGui.getMainFrame();
 
 			/* ----------Setup Plug-ins ----------- */
@@ -230,9 +228,16 @@ public class JHelioviewer {
 			System.out.println("Start main window");
 			// splash.initializeViewchain();
 			//ImageViewerGui.getSingletonInstance().createViewchains();
-			mainFrame.setVisible(true);
-			splash.dispose();
-			UILatencyWatchdog.startWatchdog();
+			SwingUtilities.invokeLater(new Runnable() {
+				
+				@Override
+				public void run() {
+					
+					MainFrame.SINGLETON.setVisible(true);
+					splash.dispose();
+					UILatencyWatchdog.startWatchdog();
+				}
+			});
 		} catch (Throwable _t) {
 			JHVUncaughtExceptionHandler.getSingletonInstance()
 					.uncaughtException(Thread.currentThread(), _t);

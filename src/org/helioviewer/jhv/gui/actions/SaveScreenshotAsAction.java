@@ -14,7 +14,6 @@ import javax.swing.KeyStroke;
 
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.Settings;
-import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.actions.filefilters.ExtensionFileFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.JPGFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.PNGFilter;
@@ -74,7 +73,7 @@ public class SaveScreenshotAsAction extends AbstractAction {
         }
         
         fileChooser.setSelectedFile(new File(fileChooser.getCurrentDirectory() + "/" + this.getDefaultFileName()));
-        int retVal = fileChooser.showSaveDialog(ImageViewerGui.getMainFrame());
+        int retVal = fileChooser.showSaveDialog(MainFrame.SINGLETON);
         
         if (retVal == JFileChooser.APPROVE_OPTION) {
         	Settings.setProperty(SETTING_SCREENSHOT_EXPORT_LAST_DIRECTORY, fileChooser.getCurrentDirectory().getPath() + "/");

@@ -16,7 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import org.helioviewer.jhv.gui.ImageViewerGui;
+import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 import org.helioviewer.jhv.gui.interfaces.ShowableDialog;
 
 public class TextDialog extends JDialog implements ActionListener, ShowableDialog {
@@ -25,7 +25,7 @@ public class TextDialog extends JDialog implements ActionListener, ShowableDialo
     private JButton closeButton;
 
     public TextDialog(String title, URL textFile) {
-        super(ImageViewerGui.getMainFrame(), title, true);
+        super(MainFrame.SINGLETON, title, true);
         setResizable(false);
 
         StringBuffer text = new StringBuffer();
@@ -45,7 +45,7 @@ public class TextDialog extends JDialog implements ActionListener, ShowableDialo
     }
 
     public TextDialog(String title, String text) {
-        super(ImageViewerGui.getMainFrame(), title, true);
+        super(MainFrame.SINGLETON, title, true);
         init(text);
     }
 
@@ -73,7 +73,7 @@ public class TextDialog extends JDialog implements ActionListener, ShowableDialo
     {
         pack();
         setSize(getPreferredSize());
-        setLocationRelativeTo(ImageViewerGui.getMainFrame());
+        setLocationRelativeTo(MainFrame.SINGLETON);
         
         DialogTools.setDefaultButtons(closeButton,closeButton);
         

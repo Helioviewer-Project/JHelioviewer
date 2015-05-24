@@ -12,7 +12,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
-import org.helioviewer.jhv.gui.ImageViewerGui;
+import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 import org.helioviewer.jhv.gui.interfaces.ShowableDialog;
 
 /**
@@ -40,7 +40,7 @@ public class DateFormatInfoDialog extends JDialog implements ActionListener, Sho
      */
     public DateFormatInfoDialog() {
 
-        super(ImageViewerGui.getMainFrame(), "Date format information", true);
+        super(MainFrame.SINGLETON, "Date format information", true);
         setLayout(new BorderLayout());
         setResizable(false);
 
@@ -79,7 +79,7 @@ public class DateFormatInfoDialog extends JDialog implements ActionListener, Sho
     public void showDialog() {
         pack();
         setSize(getPreferredSize().width, getPreferredSize().height);
-        setLocationRelativeTo(ImageViewerGui.getMainFrame());
+        setLocationRelativeTo(MainFrame.SINGLETON);
         
         DialogTools.setDefaultButtons(closeButton,closeButton);
         

@@ -12,7 +12,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
-import org.helioviewer.jhv.gui.ImageViewerGui;
+import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 import org.helioviewer.jhv.gui.interfaces.ShowableDialog;
 
 /**
@@ -34,7 +34,7 @@ public class HelpDialog extends JDialog implements ActionListener, ShowableDialo
      * The private constructor that sets the fields and the dialog.
      */
     public HelpDialog() {
-        super(ImageViewerGui.getMainFrame(), "Shortcuts", true);
+        super(MainFrame.SINGLETON, "Shortcuts", true);
         setLayout(new BorderLayout());
         setResizable(false);
 
@@ -79,7 +79,7 @@ public class HelpDialog extends JDialog implements ActionListener, ShowableDialo
     public void showDialog() {
         pack();
         setSize(getPreferredSize().width, getPreferredSize().height);
-        setLocationRelativeTo(ImageViewerGui.getMainFrame());
+        setLocationRelativeTo(MainFrame.SINGLETON);
         
         DialogTools.setDefaultButtons(closeButton,closeButton);
         

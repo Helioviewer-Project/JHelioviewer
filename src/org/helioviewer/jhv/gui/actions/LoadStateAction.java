@@ -9,8 +9,8 @@ import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 
 import org.helioviewer.jhv.JHVGlobals;
-import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.actions.filefilters.JHVStateFilter;
+import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 
 public class LoadStateAction extends AbstractAction {
 
@@ -72,7 +72,7 @@ public class LoadStateAction extends AbstractAction {
             fileChooser.addChoosableFileFilter(new JHVStateFilter());
             fileChooser.setMultiSelectionEnabled(false);
 
-            int retVal = fileChooser.showOpenDialog(ImageViewerGui.getMainFrame());
+            int retVal = fileChooser.showOpenDialog(MainFrame.SINGLETON);
 
             if (retVal != JFileChooser.APPROVE_OPTION) {
                 return;
@@ -99,9 +99,9 @@ public class LoadStateAction extends AbstractAction {
         // stateLocation is not null.
         new Thread(new Runnable() {
             public void run() {
-                ImageViewerGui.getSingletonInstance().getMainImagePanel().setLoading(true);
+                //ImageViewerGui.getSingletonInstance().getMainImagePanel().setLoading(true);
                 //LayersModel.getSingletonInstance().loadState(selectedLocation);
-                ImageViewerGui.getSingletonInstance().getMainImagePanel().setLoading(false);
+                //ImageViewerGui.getSingletonInstance().getMainImagePanel().setLoading(false);
             }
         }, "LoadStateThread").start();
     }

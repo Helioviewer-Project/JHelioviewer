@@ -41,7 +41,7 @@ import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.base.Message;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
-import org.helioviewer.jhv.gui.ImageViewerGui;
+import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 import org.helioviewer.jhv.gui.interfaces.ShowableDialog;
 
 import com.jgoodies.forms.factories.FormFactory;
@@ -97,7 +97,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 	 */
 	public PreferencesDialog() {
 
-		super(ImageViewerGui.getMainFrame(), "Preferences", true);
+		super(MainFrame.SINGLETON, "Preferences", true);
 		setResizable(false);
 
 		JPanel mainPanel = new JPanel(new BorderLayout());
@@ -153,7 +153,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 				}
 
 				saveSettings();
-				ImageViewerGui.getSingletonInstance().updateComponents();
+				//MainFrame.SINGLETON.updateComponents();
 				dispose();
 			}
 		});
@@ -237,7 +237,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 
 		pack();
 		setSize(getPreferredSize());
-		setLocationRelativeTo(ImageViewerGui.getMainFrame());
+		setLocationRelativeTo(MainFrame.SINGLETON);
 		DialogTools.setDefaultButtons(acceptBtn,cancelBtn);
 		
 		setVisible(true);

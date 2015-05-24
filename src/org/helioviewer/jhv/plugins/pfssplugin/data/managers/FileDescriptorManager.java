@@ -13,7 +13,6 @@ import java.util.GregorianCalendar;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin3dRenderer;
@@ -240,7 +239,7 @@ public class FileDescriptorManager
         
         Object[] options={"Retry","Cancel"};
         Object[] params={errorMessage};
-        int n=JOptionPane.showOptionDialog(ImageViewerGui.getMainFrame(),params,"PFSS data",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE,null,options,options[1]);
+        int n=JOptionPane.showOptionDialog(MainFrame.SINGLETON,params,"PFSS data",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE,null,options,options[1]);
 
         if(n==0)
             readFileDescriptors(loadingFrom,loadingTo);

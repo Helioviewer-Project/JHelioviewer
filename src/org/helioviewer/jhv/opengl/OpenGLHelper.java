@@ -32,8 +32,8 @@ public class OpenGLHelper {
 	}
 	
 	public int createTextureID(){
-		glContext.makeCurrent();
-		GL2 gl = glContext.getGL().getGL2();
+		GL2 gl = GLContext.getCurrent().getGL().getGL2();
+		System.out.println("lut : " + GLContext.getCurrent());
         int tmp[] = new int[1];
 		gl.glGenTextures(1, tmp, 0);
 		this.textureID = tmp[0];
@@ -42,6 +42,7 @@ public class OpenGLHelper {
 	
 	public static int[] createTextureIDs(int countTexture){
 		GL2 gl = GLContext.getCurrentGL().getGL2();
+		System.out.println("layer : " + GLContext.getCurrent());
 		int tmp[] = new int[countTexture];
 		gl.glGenTextures(countTexture, tmp, 0);
 		return tmp;
@@ -52,7 +53,6 @@ public class OpenGLHelper {
 			
 			@Override
 			public void run() {
-				glContext.makeCurrent();
 				int width2 = nextPowerOfTwo(bufferedImage.getWidth());
 				int height2 = nextPowerOfTwo(bufferedImage.getHeight());
 				
@@ -99,7 +99,7 @@ public class OpenGLHelper {
 	
 
 	private void createTexture(BufferedImage bufferedImage, int width, int height){
-		GL2 gl = glContext.getGL().getGL2();
+		GL2 gl = GLContext.getCurrentGL().getGL2();
 		
 		int internalFormat = GL2.GL_RGB;
 		int inputFormat = GL2.GL_RGB;
@@ -139,7 +139,7 @@ public class OpenGLHelper {
 	}
 	
 	private void updateTexture(BufferedImage bufferedImage){
-		GL2 gl = glContext.getGL().getGL2();
+		GL2 gl = GLContext.getCurrentGL().getGL2();
 		boolean alpha = false;
 		boolean switchChannel = false;
 		int inputFormat = GL2.GL_RGB;

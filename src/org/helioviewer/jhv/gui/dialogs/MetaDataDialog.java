@@ -29,7 +29,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.helioviewer.jhv.JHVGlobals;
-import org.helioviewer.jhv.gui.ImageViewerGui;
+import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 import org.helioviewer.jhv.gui.interfaces.ShowableDialog;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.w3c.dom.Document;
@@ -60,7 +60,7 @@ public class MetaDataDialog extends JDialog implements ActionListener, ShowableD
      * The private constructor that sets the fields and the dialog.
      */
     public MetaDataDialog() {
-        super(ImageViewerGui.getMainFrame(), "Image metainfo");
+        super(MainFrame.SINGLETON, "Image metainfo");
         //setAlwaysOnTop(true);
         setLayout(new BorderLayout());
         setResizable(false);
@@ -135,7 +135,7 @@ public class MetaDataDialog extends JDialog implements ActionListener, ShowableD
         else
             setSize(450, 600);
 
-        setLocationRelativeTo(ImageViewerGui.getMainFrame());
+        setLocationRelativeTo(MainFrame.SINGLETON);
         setVisible(true);
     }
 
@@ -189,7 +189,7 @@ public class MetaDataDialog extends JDialog implements ActionListener, ShowableD
 */
         fileChooser.setSelectedFile(new File(_filename));
 
-        int retVal = fileChooser.showDialog(ImageViewerGui.getMainFrame(), "OK");
+        int retVal = fileChooser.showDialog(MainFrame.SINGLETON, "OK");
         if(retVal==JFileChooser.APPROVE_OPTION)
             return fileChooser.getSelectedFile().getPath();
         else
