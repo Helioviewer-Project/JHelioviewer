@@ -63,16 +63,18 @@ public class TimeLine implements NewLayerListener {
 	}
 
 	public LocalDateTime nextFrame() {
+		LocalDateTime last = current;
 		current = frames[frame++];
 		frame = frame > frameCount ? 0 : frame;
-		dateTimeChanged();
+		dateTimeChanged(last);
 		return current;
 	}
 	
 	public LocalDateTime previousFrame(){
+		LocalDateTime last = current;
 		current = frames[frame--];
 		frame = frame < 0 ? frameCount : frame;
-		dateTimeChanged();
+		dateTimeChanged(last);
 		return current;
 	}
 
@@ -112,9 +114,9 @@ public class TimeLine implements NewLayerListener {
 		timeLineListeners.remove(timeLineListener);
 	}
 
-	private void dateTimeChanged() {
+	private void dateTimeChanged(LocalDateTime last) {
 		for (TimeLine.TimeLineListener timeLineListener : timeLineListeners) {
-			timeLineListener.timeStampChanged(current);
+			timeLineListener.timeStampChanged(current, last);
 		}
 	}
 
@@ -147,13 +149,14 @@ public class TimeLine implements NewLayerListener {
 	public void setCurrentFrame(int value) {
 		if (value != frame) {
 			this.frame = value;
+			LocalDateTime last = current;
 			current = frames[frame];
-			dateTimeChanged();
+			dateTimeChanged(last);
 		}
 	}
 
 	public interface TimeLineListener {
-		void timeStampChanged(LocalDateTime localDateTime);
+		void timeStampChanged(LocalDateTime current, LocalDateTime last);
 
 		@Deprecated
 		void dateTimesChanged(int framecount);

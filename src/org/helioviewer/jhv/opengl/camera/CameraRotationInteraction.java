@@ -42,13 +42,13 @@ public class CameraRotationInteraction extends CameraInteraction{
 					double angle = Math.atan2(s, c);
 					currentDragRotation = Quaternion3d.createRotation(angle,
 							new Vector3d(0, 1, 0));
-					componentView.getRotation().rotate(currentDragRotation);
-					camera.setRotation(componentView.getRotation());
+					mainPanel.getRotation().rotate(currentDragRotation);
+					camera.setRotation(mainPanel.getRotation());
 				} else {
 					currentDragRotation = Quaternion3d.calcRotation(
 							currentRotationStartPoint, currentRotationEndPoint);
-					componentView.getRotation().rotate(currentDragRotation);
-					camera.setRotation(componentView.getRotation());
+					mainPanel.getRotation().rotate(currentDragRotation);
+					camera.setRotation(mainPanel.getRotation());
 					currentRotationStartPoint = currentRotationEndPoint;
 				}
 			}
@@ -79,7 +79,7 @@ public class CameraRotationInteraction extends CameraInteraction{
 
 	protected Vector3d getVectorFromSphere(Point p) {
 		RayTrace rayTrace = new RayTrace();
-		Ray ray = rayTrace.cast(p.x, p.y, componentView);
+		Ray ray = rayTrace.cast(p.x, p.y, mainPanel);
 
 		Vector3d hitPoint = ray.getHitpoint();
 		return hitPoint;

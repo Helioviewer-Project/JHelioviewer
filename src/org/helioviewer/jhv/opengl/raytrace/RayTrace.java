@@ -4,7 +4,6 @@ import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.math.Vector4d;
 import org.helioviewer.jhv.base.physics.Constants;
-import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 import org.helioviewer.jhv.opengl.camera.CameraMode;
 import org.helioviewer.jhv.opengl.camera.CameraMode.MODE;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
@@ -24,19 +23,19 @@ public class RayTrace {
 	}
 	
 	public Ray cast(int x, int y, MainPanel compenentView){
-		double newX = (x-compenentView.getSize().getWidth()/2.)/ compenentView.getWidth();
-		double newY = (y-compenentView.getSize().getHeight()/2.)/ compenentView.getSize().getHeight();
+		double newX = (x-compenentView.getWidth()/2.)/ compenentView.getWidth();
+		double newY = (y-compenentView.getHeight()/2.)/ compenentView.getHeight();
 
-		double width = Math.tan(Math.toRadians(MainPanel.FOV/2.0));
+		double width = Math.tan(Math.toRadians(MainPanel.FOV/2.0)) * 2;
 		
 		Vector3d origin;
 		Vector3d direction;
 		if (CameraMode.mode == MODE.MODE_3D){
 			origin = compenentView.getTransformation().multiply(new Vector3d(0, 0, 1));
-			direction = new Vector3d(-newX * 2 * width, newY * 2 * width, -1).normalize();
+			direction = new Vector3d(-newX * width, newY * width, -1).normalize();
 		}
 		else {
-			width = Math.tan(Math.toRadians(MainPanel.FOV)) * compenentView.getTranslation().z;
+			width = Math.tan(Math.toRadians(MainPanel.FOV / 2.0)) * compenentView.getTranslation().z * 2;
 			origin = compenentView.getTransformation().multiply(new Vector3d(0, 0, 1)).add(new Vector3d(newX * width, newY * width, 0));
 			direction = new Vector3d(0, 0, -1).normalize();
 		}
@@ -47,8 +46,8 @@ public class RayTrace {
 	
 	public Vector2d castTexturepos(int x, int y, MetaData metaData, MainPanel compenentView){		
 		
-		double newX = (x-compenentView.getSize().getSize().getWidth()/2.)/ compenentView.getSize().getSize().getWidth();
-		double newY = (y-compenentView.getSize().getSize().getHeight()/2.)/ compenentView.getSize().getSize().getHeight();
+		double newX = (x-compenentView.getWidth()/2.)/ compenentView.getWidth();
+		double newY = (y-compenentView.getHeight()/2.)/ compenentView.getHeight();
 		double width = Math.tan(Math.toRadians(MainPanel.FOV/2.0));
 		
 		Vector3d origin;
@@ -58,7 +57,7 @@ public class RayTrace {
 			direction = new Vector3d(-newX * 2 * width, newY * 2 * width, -1).normalize();
 		}
 		else {
-			width = Math.tan(Math.toRadians(MainPanel.FOV)) * compenentView.getTranslation().z;
+			width = Math.tan(Math.toRadians(MainPanel.FOV / 2.0)) * compenentView.getTranslation().z * 2.0;
 			origin = compenentView.getTransformation().multiply(new Vector3d(0, 0, 1)).add(new Vector3d(newX * width, newY * width, 0));
 			direction = new Vector3d(0, 0, -1).normalize();
 		}

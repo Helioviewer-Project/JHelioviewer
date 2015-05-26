@@ -1,12 +1,14 @@
 package org.helioviewer.jhv.opengl.camera;
 
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 import org.helioviewer.jhv.gui.controller.Camera;
 import org.helioviewer.jhv.layers.Layers;
+import org.helioviewer.jhv.opengl.camera.CameraMode.MODE;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace.Ray;
 import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
@@ -17,15 +19,31 @@ public class CameraPanInteraction extends CameraInteraction {
 	private double meterPerPixelHeight;
 	private double z;
 	private Vector3d defaultTranslation;
+	private Point lastPosition;
 
-	public CameraPanInteraction(MainPanel compenentView, Camera camera) {
-		super(compenentView, camera);
+	public CameraPanInteraction(MainPanel mainPanel, Camera camera) {
+		super(mainPanel, camera);
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
 		// if (GL3DState.get().getState() == VISUAL_TYPE.MODE_3D){
 		this.mousePressed3DFunction(e);
+		
+		double z;
+		if (CameraMode.mode == MODE.MODE_3D){
+			RayTrace rayTrace = new RayTrace();
+			z = mainPanel.getTranslation().z - rayTrace.cast(e.getX(), e.getY(), mainPanel).getHitpoint().z;
+		}
+		else z = mainPanel.getTranslation().z;
+		
+		double width = Math.tan(Math.toRadians(MainPanel.FOV/ 2.0)) * z * 2;
+		double height = width / mainPanel.getAspect();
+		System.out.println("width : " + width);
+		meterPerPixelWidth = width/(double)mainPanel.getWidth();
+		meterPerPixelHeight = height/(double)mainPanel.getHeight();
+		lastPosition = e.getPoint();
+		
 		/*
 		 * } else { this.mousePressed2DFunction(e); }
 		 */
@@ -33,11 +51,11 @@ public class CameraPanInteraction extends CameraInteraction {
 
 	private void mousePressed3DFunction(MouseEvent e) {
 		RayTrace rayTrace = new RayTrace();
-		Ray ray = rayTrace.cast(e.getX(), e.getY(), componentView);
+		Ray ray = rayTrace.cast(e.getX(), e.getY(), mainPanel);
 		Vector3d p = ray.getHitpoint();
 		if (p != null) {
-			this.z = componentView.getTranslation().z
-					+ componentView.getRotation().toMatrix().inverse()
+			this.z = mainPanel.getTranslation().z
+					+ mainPanel.getRotation().toMatrix().inverse()
 							.multiply(p).z;
 
 			Dimension canvasSize = MainFrame.MAIN_PANEL
@@ -70,7 +88,7 @@ public class CameraPanInteraction extends CameraInteraction {
 			double yPosition = Math.tanh(yAngle) * z;
 			double xPosition = Math.tanh(xAngle) * z;
 
-			this.defaultTranslation = componentView.getTranslation();
+			this.defaultTranslation = mainPanel.getTranslation();
 			this.defaultTranslation = new Vector3d(this.defaultTranslation.x
 					- xPosition, this.defaultTranslation.y - yPosition,
 					this.defaultTranslation.z);
@@ -85,8 +103,8 @@ public class CameraPanInteraction extends CameraInteraction {
 		double halfFOVRad = Math.toRadians(MainPanel.CLIP_NEAR / 2.0);
 		double distance = halfWidth * Math.sin(Math.PI / 2 - halfFOVRad)
 				/ Math.sin(halfFOVRad);
-		double scaleFactor = -componentView.getTranslation().z / distance;
-		double aspect = componentView.getAspect();
+		double scaleFactor = -mainPanel.getTranslation().z / distance;
+		double aspect = mainPanel.getAspect();
 
 		double width = region.getWidth() * scaleFactor * aspect;
 		double height = region.getHeight() * scaleFactor;
@@ -96,7 +114,7 @@ public class CameraPanInteraction extends CameraInteraction {
 					.getSize();
 			this.meterPerPixelWidth = width / canvasSize.getWidth();
 			this.meterPerPixelHeight = height / canvasSize.getHeight();
-			this.defaultTranslation = componentView.getTranslation();
+			this.defaultTranslation = mainPanel.getTranslation();
 			this.defaultTranslation = new Vector3d(this.defaultTranslation.x
 					- this.meterPerPixelWidth * e.getX(),
 					this.defaultTranslation.y - this.meterPerPixelHeight
@@ -106,13 +124,25 @@ public class CameraPanInteraction extends CameraInteraction {
 
 	public void mouseDragged(MouseEvent e) {
 		// if (GL3DState.get().getState() == VISUAL_TYPE.MODE_3D)
-		this.mouseDragged3DFunction(e);
+		//this.mouseDragged3DFunction(e);
 		/* else this.mouseDragged2DFunction(e); */
+		double xTranslation = (lastPosition.getX() - e.getX()) * meterPerPixelWidth;
+		double yTranslation = (lastPosition.getY() - e.getY()) * meterPerPixelHeight;
+		System.out.println(lastPosition.getX() - e.getX());
+		System.out.println(lastPosition.getY() - e.getY());
+		System.out.println("xTranslation : " + xTranslation);
+		System.out.println("yTranslation : " + yTranslation);
+		System.out.println(e.getPoint());
+		System.out.println(lastPosition);
+		Vector3d translation = camera.getTranslation();
+		this.lastPosition = e.getPoint();
+		camera.setTranslation(new Vector3d(translation.x + xTranslation, translation.y + yTranslation, translation.z));
+		
 	}
 
 	private void mouseDragged3DFunction(MouseEvent e) {
 		if (defaultTranslation != null) {
-			Dimension canvasSize = componentView.getCanavasSize();
+			Dimension canvasSize = mainPanel.getCanavasSize();
 			double x = e.getPoint().getX() * canvasSize.getWidth()
 					/ MainFrame.MAIN_PANEL.getWidth();
 			double y = e.getPoint().getY()

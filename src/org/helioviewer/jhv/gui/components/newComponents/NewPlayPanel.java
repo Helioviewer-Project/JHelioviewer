@@ -354,7 +354,7 @@ public class NewPlayPanel extends JPanel implements TimeLineListener, NewLayerLi
 	}
 	
 	@Override
-	public void timeStampChanged(LocalDateTime localDateTime) {
+	public void timeStampChanged(LocalDateTime current, LocalDateTime last) {
 		slider.setValue(timeLine.getCurrentFrame());
 	}
 	

@@ -72,7 +72,7 @@ public class OverViewPanel extends MainPanel{
 		
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glLoadIdentity();
-		double width = Math.tan(Math.toRadians(FOV)) * this.translation.z / 2.0;
+		double width = Math.tan(Math.toRadians(FOV / 2.0)) * this.translation.z;
 		double height = width / this.aspect;		
 		gl.glOrtho(-width, width, height, -height, -Constants.SUN_RADIUS, Constants.SUN_RADIUS);
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
@@ -114,5 +114,9 @@ public class OverViewPanel extends MainPanel{
 		mainViews.add(compenentView);
     	this.cameraInteractions[0] = new CameraZoomInteraction(this, compenentView);
     	this.cameraInteractions[1] = new CameraRotationInteraction(this, compenentView);
+	}
+	
+	@Override
+	protected void calculateTrackRotation() {
 	}
 }

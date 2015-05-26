@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,7 +25,9 @@ import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.math.Vector3d;
+import org.helioviewer.jhv.base.math.Vector4d;
 import org.helioviewer.jhv.base.physics.Constants;
+import org.helioviewer.jhv.base.physics.DifferentialRotation;
 import org.helioviewer.jhv.gui.controller.Camera;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.LayerInterface.COLOR_CHANNEL_TYPE;
@@ -43,13 +46,15 @@ import org.helioviewer.jhv.opengl.camera.CameraRotationInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraZoomBoxInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraZoomInteraction;
 import org.helioviewer.jhv.opengl.camera.animation.CameraAnimation;
-import org.helioviewer.jhv.opengl.camera.animation.CameraRotationAnimation;
 import org.helioviewer.jhv.opengl.camera.animation.CameraTransformationAnimation;
-import org.helioviewer.jhv.opengl.camera.animation.CameraTranslationAnimation;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine.TimeLineListener;
+
+import ch.fhnw.i4ds.helio.coordinate.converter.Hcc2HgConverter;
+import ch.fhnw.i4ds.helio.coordinate.coord.HeliocentricCartesianCoordinate;
+import ch.fhnw.i4ds.helio.coordinate.coord.HeliographicCoordinate;
 
 import com.jogamp.opengl.DebugGL2;
 import com.jogamp.opengl.GL;
@@ -97,6 +102,8 @@ public class MainPanel extends GLCanvas implements
 	public boolean fullScreenMode;
 
 	private boolean track = false;
+
+	private LocalDateTime lastDate;
 
 	public MainPanel() {
 		this.cameraAnimations = new CopyOnWriteArrayList<CameraAnimation>();
@@ -269,8 +276,6 @@ public class MainPanel extends GLCanvas implements
 
 		int layerTexture = layer.getTexture(this, false);
 		if (layerTexture >= 0) {
-			Vector2d lowerleftCorner = layer.getMetaData().getPhysicalRegion()
-					.getLowerLeftCorner();
 			Vector2d size = layer.getMetaData().getPhysicalRegion().getSize();
 			if (size.x <= 0 || size.y <= 0) {
 				return;
@@ -404,6 +409,7 @@ public class MainPanel extends GLCanvas implements
 		gl.glViewport(0, 0, this.getSurfaceWidth(),
 				this.getSurfaceHeight());
 
+		if (track) calculateTrackRotation();
 		if (layers != null && layers.getLayerCount() > 0) {
 			gl.glPushMatrix();
 				if (CameraMode.mode == MODE.MODE_2D){
@@ -418,7 +424,7 @@ public class MainPanel extends GLCanvas implements
 
 			gl.glMatrixMode(GL2.GL_PROJECTION);
 			gl.glLoadIdentity();
-			double width = Math.tan(Math.toRadians(FOV)) * this.translation.z / 2.0;
+			double width = Math.tan(Math.toRadians(FOV / 2.0)) * this.translation.z;
 			double height = width / this.aspect;
 			
 			gl.glOrtho(-width + this.translation.x, width + this.translation.x, height + this.translation.y, -height  + this.translation.y, -Constants.SUN_RADIUS, Constants.SUN_RADIUS);
@@ -453,6 +459,43 @@ public class MainPanel extends GLCanvas implements
 		}
 
 	}
+
+	protected void calculateTrackRotation() {
+		if (!lastDate.isEqual(TimeLine.SINGLETON.getCurrentDateTime()))	{
+		Duration difference = Duration.between(lastDate, TimeLine.SINGLETON.getCurrentDateTime());
+
+		long seconds = difference.getSeconds();
+		lastDate = TimeLine.SINGLETON.getCurrentDateTime();
+			RayTrace rayTrace = new RayTrace();
+			Vector3d hitPoint = rayTrace.cast(getWidth()/2, getHeight()/2, this).getHitpoint();
+			System.out.println(hitPoint);
+			System.out.println("time : " + seconds);
+			HeliocentricCartesianCoordinate cart = new HeliocentricCartesianCoordinate(
+					hitPoint.x, hitPoint.y, hitPoint.z);
+			Hcc2HgConverter converter = new Hcc2HgConverter();
+			HeliographicCoordinate newCoord = converter.convert(cart);
+			System.out.println("rad : " + newCoord.getHgLatitude().radValue());
+			double angle = DifferentialRotation.calculateRotationInRadians(newCoord.getHgLatitude().radValue(), seconds);
+			System.out.println(angle);
+			Quaternion3d rotation = new Quaternion3d(angle, new Vector3d(0, -1, 0));
+			System.out.println("rotation : " + rotation);
+			Quaternion3d currentRotation = this.rotation.copy();
+			
+			currentRotation.rotate(rotation);
+			if (CameraMode.mode == MODE.MODE_3D){
+			this.rotation = currentRotation;
+			}
+			else {
+				System.out.println(rotation.toMatrix());
+				Vector4d newPoint = rotation.toMatrix().multiply(new Vector4d(hitPoint.x, hitPoint.y, hitPoint.z, 0));
+				Vector3d tmpPoint = new Vector3d(newPoint.x, newPoint.y, newPoint.z);
+				tmpPoint = tmpPoint.add(hitPoint.negate());
+				System.out.println(tmpPoint);
+				this.translation = new Vector3d(translation.x + newPoint.x, translation.y, translation.z);
+			}
+		}
+	}
+
 
 	private void calculateBounds() {
 		RayTrace rayTrace = new RayTrace();
@@ -614,7 +657,7 @@ public class MainPanel extends GLCanvas implements
 	}
 
 	@Override
-	public void timeStampChanged(LocalDateTime localDateTime) {
+	public void timeStampChanged(LocalDateTime current, LocalDateTime last) {
 		this.repaint();
 	}
 
@@ -627,10 +670,10 @@ public class MainPanel extends GLCanvas implements
 	}
 
 	public void repaintViewAndSynchronizedViews() {
+		this.repaint();
 		for (MainPanel compenentView : synchronizedViews) {
 			compenentView.repaint();
 		}
-		this.repaint();
 	}
 
 	@Override
@@ -639,10 +682,6 @@ public class MainPanel extends GLCanvas implements
 	
 	public double[][] getRectBounds(){
 		return rectBounds;
-	}
-	
-	public double getAspectRatio(){
-		return aspect;
 	}
 	
 	public void addCameraAnimation(CameraAnimation cameraAnimation){
@@ -669,6 +708,7 @@ public class MainPanel extends GLCanvas implements
 
 	public void toggleTrack() {
 		this.track = !track ;
+		this.lastDate = TimeLine.SINGLETON.getCurrentDateTime();
 	}
 
 }

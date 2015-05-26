@@ -52,7 +52,7 @@ public class FramerateStatusPanel extends ViewStatusPanelPlugin implements TimeL
     }
 
 	@Override
-	public void timeStampChanged(LocalDateTime localDateTime) {
+	public void timeStampChanged(LocalDateTime current, LocalDateTime last) {
 		if ((System.currentTimeMillis() - currentMillis) >= 1000)
            updateFramerate();
 		counter++;

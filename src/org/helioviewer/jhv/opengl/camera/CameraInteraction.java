@@ -10,11 +10,11 @@ import com.jogamp.opengl.GL2;
 
 
 public abstract class CameraInteraction{
-	protected MainPanel componentView;
+	protected MainPanel mainPanel;
 	protected Camera camera;
 	
-	public CameraInteraction(MainPanel compenentView, Camera camera) {
-		this.componentView = compenentView;
+	public CameraInteraction(MainPanel mainPanel, Camera camera) {
+		this.mainPanel = mainPanel;
 		this.camera = camera;
 	}
 

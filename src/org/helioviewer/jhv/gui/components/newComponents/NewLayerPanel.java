@@ -274,7 +274,7 @@ public class NewLayerPanel extends JPanel implements NewLayerListener, TimeLineL
 	}
 
 	@Override
-	public void timeStampChanged(LocalDateTime localDateTime) {
+	public void timeStampChanged(LocalDateTime current, LocalDateTime last) {
 		updateData();
 	}
 
