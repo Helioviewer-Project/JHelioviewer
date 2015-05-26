@@ -55,6 +55,7 @@ public abstract class LayerInterface {
 	
 	private static int idCounter;
 	protected int id;
+	protected boolean coronaVisibility = true;
 	
 	public LayerInterface() {
 		this.id = idCounter++;
@@ -144,5 +145,4 @@ public abstract class LayerInterface {
 	public int getLutState(){
 		return invertedLut ? 1 : 0;	
 	}
-
 }

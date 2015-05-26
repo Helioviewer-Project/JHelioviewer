@@ -33,11 +33,11 @@ public class CameraPanInteraction extends CameraInteraction {
 
 	private void mousePressed3DFunction(MouseEvent e) {
 		RayTrace rayTrace = new RayTrace();
-		Ray ray = rayTrace.cast(e.getX(), e.getY(), compenentView);
+		Ray ray = rayTrace.cast(e.getX(), e.getY(), componentView);
 		Vector3d p = ray.getHitpoint();
 		if (p != null) {
-			this.z = compenentView.getTranslation().z
-					+ compenentView.getRotation().toMatrix().inverse()
+			this.z = componentView.getTranslation().z
+					+ componentView.getRotation().toMatrix().inverse()
 							.multiply(p).z;
 
 			Dimension canvasSize = MainFrame.MAIN_PANEL
@@ -70,9 +70,9 @@ public class CameraPanInteraction extends CameraInteraction {
 			double yPosition = Math.tanh(yAngle) * z;
 			double xPosition = Math.tanh(xAngle) * z;
 
-			this.defaultTranslation = compenentView.getTranslation();
+			this.defaultTranslation = componentView.getTranslation();
 			this.defaultTranslation = new Vector3d(this.defaultTranslation.x
-					+ xPosition, this.defaultTranslation.y - yPosition,
+					- xPosition, this.defaultTranslation.y - yPosition,
 					this.defaultTranslation.z);
 		}
 	}
@@ -85,8 +85,8 @@ public class CameraPanInteraction extends CameraInteraction {
 		double halfFOVRad = Math.toRadians(MainPanel.CLIP_NEAR / 2.0);
 		double distance = halfWidth * Math.sin(Math.PI / 2 - halfFOVRad)
 				/ Math.sin(halfFOVRad);
-		double scaleFactor = -compenentView.getTranslation().z / distance;
-		double aspect = compenentView.getAspect();
+		double scaleFactor = -componentView.getTranslation().z / distance;
+		double aspect = componentView.getAspect();
 
 		double width = region.getWidth() * scaleFactor * aspect;
 		double height = region.getHeight() * scaleFactor;
@@ -96,10 +96,10 @@ public class CameraPanInteraction extends CameraInteraction {
 					.getSize();
 			this.meterPerPixelWidth = width / canvasSize.getWidth();
 			this.meterPerPixelHeight = height / canvasSize.getHeight();
-			this.defaultTranslation = compenentView.getTranslation();
+			this.defaultTranslation = componentView.getTranslation();
 			this.defaultTranslation = new Vector3d(this.defaultTranslation.x
 					- this.meterPerPixelWidth * e.getX(),
-					this.defaultTranslation.y + this.meterPerPixelHeight
+					this.defaultTranslation.y - this.meterPerPixelHeight
 							* e.getY(), this.defaultTranslation.z);
 		}
 	}
@@ -112,7 +112,7 @@ public class CameraPanInteraction extends CameraInteraction {
 
 	private void mouseDragged3DFunction(MouseEvent e) {
 		if (defaultTranslation != null) {
-			Dimension canvasSize = compenentView.getCanavasSize();
+			Dimension canvasSize = componentView.getCanavasSize();
 			double x = e.getPoint().getX() * canvasSize.getWidth()
 					/ MainFrame.MAIN_PANEL.getWidth();
 			double y = e.getPoint().getY()
@@ -133,7 +133,7 @@ public class CameraPanInteraction extends CameraInteraction {
 
 			camera.setTranslation(new Vector3d(
 					defaultTranslation.x - xPosition, defaultTranslation.y
-							+ yPosition, camera.getTranslation().z));
+							- yPosition, camera.getTranslation().z));
 
 		}
 	}

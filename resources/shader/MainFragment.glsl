@@ -22,6 +22,7 @@ uniform vec4 imageOffset;
 uniform float opacityCorona;
 uniform float fov;
 uniform vec2 imageResolution;
+uniform int cameraMode;
 
 struct Sphere{
     vec3 center;
@@ -137,22 +138,31 @@ vec4 contrastValue(vec3 color){
 
 void main(void)
 {
+    gl_FragColor = vec4(0,0,0,1);
     /* clear color */
-    float z = 4.015;
-    vec2 uv = gl_TexCoord[0].xy * vec2(1.,-1.) + vec2(0,1);
+    vec2 uv = gl_TexCoord[0].xy;
     /* calculate viewport */
-    float width = tan(fov);
-    float height = tan(fov);
+    float width;
+    float height;
     /* MV --> z */
+    vec3 rayOrigin;
+    vec3 rayDirection;
     
     //2D
-    //vec2 tmpWidth = (-1.0 +2.0*uv) *vec2(width, height);
-    //vec3 rayOrigin = (vec4(0,0,1,1) * transformation).xyz + vec3(tmpWidth, 0);
-    //vec3 rayDirection = vec3( 0, 0, -1.0);
-    
+    if (cameraMode == 0){
+        float zTranslation = (vec4(0,0,1,1) * transformation).z;
+        width = zTranslation * tan(fov);
+        vec2 tmpWidth = (-1.0 +2.0*uv) * width;
+        rayOrigin = (vec4(0,0,1,1) * transformation).xyz + vec3(tmpWidth, 0);
+        rayDirection = vec3( 0, 0, -1.0);
+    }
     //3D
-    vec3 rayOrigin = (vec4(0,0,1,1) * transformation).xyz;
-    vec3 rayDirection = normalize(vec3( (-1.0 +2.0*uv) *vec2(width, height), -1.0));
+    else{
+        width = tan(fov);
+        height = tan(fov);
+        rayOrigin = (vec4(0,0,1,1) * transformation).xyz;
+        rayDirection = normalize(vec3( (-1.0 +2.0*uv) *vec2(width, height), -1.0));
+    }
     
     Ray ray1 = Ray(rayOrigin, rayDirection);
     /* MV --> rotation */

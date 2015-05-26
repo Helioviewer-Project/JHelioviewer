@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.gui.actions.newActions;
+package org.helioviewer.jhv.gui.actions;
 
 import java.awt.event.ActionEvent;
 

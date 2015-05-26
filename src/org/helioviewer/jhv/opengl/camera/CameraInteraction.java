@@ -6,13 +6,15 @@ import java.awt.event.MouseWheelEvent;
 import org.helioviewer.jhv.gui.controller.Camera;
 import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 
+import com.jogamp.opengl.GL2;
+
 
 public abstract class CameraInteraction{
-	protected MainPanel compenentView;
+	protected MainPanel componentView;
 	protected Camera camera;
 	
 	public CameraInteraction(MainPanel compenentView, Camera camera) {
-		this.compenentView = compenentView;
+		this.componentView = compenentView;
 		this.camera = camera;
 	}
 
@@ -28,9 +30,8 @@ public abstract class CameraInteraction{
 	public void mouseReleased(MouseEvent e) {
 	}
 	
-	public void setYAxisBlocked(boolean selected) {
-		// TODO Auto-generated method stub
+	public void renderInteraction(GL2 gl){
 		
-	}	
+	}
 }
 

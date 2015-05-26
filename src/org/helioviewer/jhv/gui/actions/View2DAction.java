@@ -6,6 +6,7 @@ import javax.swing.AbstractAction;
 
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
+import org.helioviewer.jhv.opengl.camera.CameraMode;
 
 public class View2DAction extends AbstractAction
 {
@@ -24,8 +25,6 @@ public class View2DAction extends AbstractAction
      */
     public void actionPerformed(ActionEvent e)
     {
-        Settings.setProperty("startup.cameramode", "2D");
-        
-        MainFrame.TOP_TOOL_BAR.set2DMode();
+    	CameraMode.set2DMode();
     }
 }

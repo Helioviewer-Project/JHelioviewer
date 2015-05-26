@@ -47,7 +47,6 @@ public class ImageRegion {
 	}
 			
 	public void setImageData(Rectangle2D imageData){
-		System.out.println("imageData : " + imageData);
 		this.imageData = imageData;
 	}
 		

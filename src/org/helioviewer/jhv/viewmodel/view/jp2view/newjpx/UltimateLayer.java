@@ -224,17 +224,13 @@ public class UltimateLayer {
 		// newLayer.getImageRegion().calculateScaleFactor(newLayer, camera);
 		Queue<CachableTexture> textures = TextureCache.singleton
 				.getCacheableTextures();
-		System.out.println("id : " + this.id);
 		for (CachableTexture texture : textures) {
 			if (texture.compareRegion(id, imageRegion, currentDateTime)) {
 				this.imageRegion = texture.getImageRegion();
 				TextureCache.singleton.setElementAsFist(texture);
-				System.out.println("region exist");
 				return null;
 			}
 		}
-		System.out.println("new image region");
-
 		if (fileName != null) {
 			imageRegion.setLocalDateTime(currentDateTime);
 			this.imageRegion = TextureCache.singleton.addElement(imageRegion,
@@ -257,7 +253,6 @@ public class UltimateLayer {
 		this.imageRegion = TextureCache.singleton.addElement(imageRegion, id);
 		this.imageRegion.setMetaData(metaData);
 
-		System.out.println("size : " + layer.getSize());
 		System.out
 				.println("---------------------getImage---------------------");
 		render.openImage(layer.getCache());

@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.opengl.camera.newCamera;
+package org.helioviewer.jhv.opengl.camera.animation;
 
 import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 

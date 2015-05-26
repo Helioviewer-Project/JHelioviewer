@@ -6,6 +6,7 @@ import javax.swing.AbstractAction;
 
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
+import org.helioviewer.jhv.opengl.camera.CameraMode;
 
 public class View3DAction extends AbstractAction
 {
@@ -24,9 +25,6 @@ public class View3DAction extends AbstractAction
      */
     public void actionPerformed(ActionEvent e)
     {
-        Settings.setProperty("startup.cameramode","3D");
-        
-        MainFrame.TOP_TOOL_BAR.set3DMode();
-        MainFrame.MAIN_PANEL.repaintViewAndSynchronizedViews();
+    	CameraMode.set3DMode();
     }
 }

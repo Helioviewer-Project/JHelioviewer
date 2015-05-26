@@ -19,10 +19,10 @@ import org.helioviewer.jhv.gui.components.newComponents.NewPlayPanel;
 import org.helioviewer.jhv.gui.dialogs.AboutDialog;
 import org.helioviewer.jhv.gui.dialogs.HelpDialog;
 import org.helioviewer.jhv.gui.dialogs.PreferencesDialog;
-import org.helioviewer.jhv.opengl.camera.newActions.Zoom1To1Action;
-import org.helioviewer.jhv.opengl.camera.newActions.ZoomFitAction;
-import org.helioviewer.jhv.opengl.camera.newActions.ZoomInAction;
-import org.helioviewer.jhv.opengl.camera.newActions.ZoomOutAction;
+import org.helioviewer.jhv.opengl.camera.actions.Zoom1To1Action;
+import org.helioviewer.jhv.opengl.camera.actions.ZoomFitAction;
+import org.helioviewer.jhv.opengl.camera.actions.ZoomInAction;
+import org.helioviewer.jhv.opengl.camera.actions.ZoomOutAction;
 
 /**
  * Menu bar of the main window.

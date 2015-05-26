@@ -13,6 +13,7 @@ public class Layers {
 	
 	private NewRender renderer = new NewRender();
 	private NewCache newCache = NewCache.singelton;
+	private boolean coronaVisibility = true;
 	
 	public static final Layers LAYERS = new Layers();
 	
@@ -100,5 +101,13 @@ public class Layers {
 	
 	public CopyOnWriteArrayList<LayerInterface> getLayers(){
 		return layers;
+	}
+
+	public void toggleCoronaVisibility() {
+		this.coronaVisibility = !this.coronaVisibility;
+	}
+	
+	public boolean getCoronaVisibility(){
+		return this.coronaVisibility;
 	}
 }

@@ -16,9 +16,10 @@ public class CameraRotationInteraction extends CameraInteraction{
 	private Vector3d currentRotationStartPoint;
 	private Vector3d currentRotationEndPoint;
 	private volatile Quaternion3d currentDragRotation;
-	private boolean yAxisBlocked = false;
 	private boolean played;
 
+	public static boolean yAxisBlocked = false;
+	
 	public CameraRotationInteraction(MainPanel compenentView, Camera camera) {
 		super(compenentView, camera);
 	}
@@ -41,13 +42,13 @@ public class CameraRotationInteraction extends CameraInteraction{
 					double angle = Math.atan2(s, c);
 					currentDragRotation = Quaternion3d.createRotation(angle,
 							new Vector3d(0, 1, 0));
-					compenentView.getRotation().rotate(currentDragRotation);
-					camera.setRotation(compenentView.getRotation());
+					componentView.getRotation().rotate(currentDragRotation);
+					camera.setRotation(componentView.getRotation());
 				} else {
 					currentDragRotation = Quaternion3d.calcRotation(
 							currentRotationStartPoint, currentRotationEndPoint);
-					compenentView.getRotation().rotate(currentDragRotation);
-					camera.setRotation(compenentView.getRotation());
+					componentView.getRotation().rotate(currentDragRotation);
+					camera.setRotation(componentView.getRotation());
 					currentRotationStartPoint = currentRotationEndPoint;
 				}
 			}
@@ -78,13 +79,10 @@ public class CameraRotationInteraction extends CameraInteraction{
 
 	protected Vector3d getVectorFromSphere(Point p) {
 		RayTrace rayTrace = new RayTrace();
-		Ray ray = rayTrace.cast(p.x, p.y, compenentView);
+		Ray ray = rayTrace.cast(p.x, p.y, componentView);
 
 		Vector3d hitPoint = ray.getHitpoint();
 		return hitPoint;
 	}
 
-	public void setYAxisBlocked(boolean selected) {
-		this.yAxisBlocked = selected;
-	}
 }

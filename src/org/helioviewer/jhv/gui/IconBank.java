@@ -50,6 +50,10 @@ public class IconBank {
 
         ZOOM_1TO1("zoom1to124.png"), ZOOM_1TO1_SMALL("zoom1to124small.png"),
 
+        NEW_ZOOM_IN("zoom_in_128x128.png"), NEW_ZOOM_OUT("zoom_out_128x128.png"), NEW_ZOOM_1TO1("zoom_1_to_1_128x128.png"),
+        NEW_ZOOM_FIT("zoom_fit_128x128.png"),
+        
+        
         // ARROWS
         LEFT("arrow_left.gif"), RIGHT("arrow_right.gif"), UP("1uparrow1.png"), DOWN("1downarrow1.png"), RIGHT2("arrow.plain.right.gif"), DOWN2("arrow.plain.down.gif"),
 
@@ -58,7 +62,7 @@ public class IconBank {
         OPEN_HAND("OpenedHand.gif"), CLOSED_HAND("ClosedHand.gif"),
 
         PAN("pan24x24.png"), PAN_SELECTED("pan_selected24x24.png"),
-
+        NEW_PAN("pan_128x128.png"),
         SELECT("select24x24.png"), SELECT_SELECTED("select_selected24x24.png"),
 
         FOCUS("crosshairs24x24.png"), FOCUS_SELECTED("crosshairs_checked24x24.png"),
@@ -93,8 +97,9 @@ public class IconBank {
 
         // 3D Icons
         MODE_3D("3D_24x24.png"), MODE_2D("2D_24x24.png"), MODE_3D_SELECTED("3D_selected_24x24.png"), MODE_2D_SELECTED("2D_selected_24x24.png"), RESET("Reset_24x24.png"), ROTATE("Rotate_24x24.png"), ROTATE_SELECTED("Rotate_selected_24x24.png"), ROTATE_ALL_AXIS("Rotate_both_24x24.png"), ROTATE_ALL_AXIS_SELECTED("Rotate_both_selected_24x24.png"),
-
+        NEW_CAMERA("camera_128x128.png"),
         // LAYER ICONS
+        SUN_WITH_128x128("sun_with_128x128.png"), SUN_WITHOUT_128x128("sun_without_128x128.png"),
         LAYER_IMAGE_24x24("layer-image_24x24.png"), LAYER_IMAGE_OFF_24x24("layer-image-off_24x24.png"), LAYER_IMAGE("layer-image.png"), LAYER_IMAGE_OFF("layer-image-off.png"), LAYER_IMAGE_TIME("layer-image-time.png"), LAYER_IMAGE_TIME_MASTER("layer-image-time-master.png"), LAYER_IMAGE_TIME_OFF("layer-image-time-off.png"), LAYER_MOVIE("layer-movie.png"), LAYER_MOVIE_OFF("layer-movie-off.png"), LAYER_MOVIE_TIME("layer-movie-time.png"), LAYER_MOVIE_TIME_MASTER("layer-movie-time-master.png"), LAYER_MOVIE_TIME_OFF("layer-movie-time-off.png");
 
         private final String fname;

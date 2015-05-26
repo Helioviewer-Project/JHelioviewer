@@ -1,0 +1,92 @@
+package org.helioviewer.jhv.opengl.camera;
+
+import java.awt.event.MouseEvent;
+
+import org.helioviewer.jhv.base.math.Vector3d;
+import org.helioviewer.jhv.gui.controller.Camera;
+import org.helioviewer.jhv.opengl.camera.animation.CameraTranslationAnimation;
+import org.helioviewer.jhv.opengl.raytrace.RayTrace;
+import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
+
+import com.jogamp.opengl.GL2;
+
+public class CameraZoomBoxInteraction extends CameraInteraction {
+
+	private boolean rendering = false;
+	private RayTrace rayTrace;
+
+	private Vector3d start;
+	private Vector3d end;
+
+	public CameraZoomBoxInteraction(MainPanel compenentView, Camera camera) {
+		super(compenentView, camera);
+		this.rayTrace = new RayTrace();
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		start = rayTrace.cast(e.getX(), e.getY(), componentView).getHitpoint();
+		camera.repaintViewAndSynchronizedViews();
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		end = rayTrace.cast(e.getX(), e.getY(), componentView).getHitpoint();
+		camera.repaintViewAndSynchronizedViews();
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		if (start != null && end != null){
+		Vector3d newPoint = start.add(end).scale(0.5);
+		newPoint = new Vector3d(newPoint.x, newPoint.y, camera.getTranslation().z);
+		Vector3d rect = start.add(end.negate());
+		System.out.println("rect : " + rect);
+		double width;
+		if (rect.x > rect.y){
+			width = Math.abs(rect.x);
+		}
+		else {
+			width = Math.abs(rect.y * camera.getAspect());
+		}
+		
+		double z = Math.max(width / Math.tan(Math.toRadians(MainPanel.FOV)), MainPanel.MIN_DISTANCE);
+		
+		newPoint = new Vector3d(newPoint.x, newPoint.y, z);
+
+		start = null;
+		end = null;
+		camera.addCameraAnimation(new CameraTranslationAnimation(newPoint, camera));
+		}
+	}
+
+	@Override
+	public void renderInteraction(GL2 gl) {
+		if (start != null && end != null) {
+			System.out.println("renderZoombox");
+			gl.glColor3d(1, 1, 1);
+			gl.glEnable(GL2.GL_LINE_STIPPLE);
+			gl.glDisable(GL2.GL_DEPTH_TEST);
+			gl.glDisable(GL2.GL_LIGHTING);
+			gl.glDisable(GL2.GL_TEXTURE_2D);
+
+			System.out.println("start : " + start);
+			System.out.println("end   : " + end);
+			gl.glLineWidth(2.0f);
+			gl.glLineStipple(1, (short) 255);
+			gl.glBegin(GL2.GL_LINE_LOOP);
+			gl.glVertex2d(start.x, start.y);
+			gl.glVertex2d(start.x, end.y);
+			gl.glVertex2d(end.x, end.y);
+			gl.glVertex2d(end.x, start.y);
+			gl.glEnd();
+
+			gl.glLineWidth(1.0f);
+			gl.glDisable(GL2.GL_LINE_STIPPLE);
+
+			//gl.glEnable(GL2.GL_LIGHTING);
+			//gl.glEnable(GL2.GL_DEPTH_TEST);
+			//gl.glEnable(GL2.GL_TEXTURE_2D);
+		}
+	}
+}

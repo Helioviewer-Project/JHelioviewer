@@ -36,10 +36,16 @@ import org.helioviewer.jhv.opengl.NoImageScreen;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.opengl.RenderAnimation;
 import org.helioviewer.jhv.opengl.camera.CameraInteraction;
+import org.helioviewer.jhv.opengl.camera.CameraMode;
+import org.helioviewer.jhv.opengl.camera.CameraMode.MODE;
 import org.helioviewer.jhv.opengl.camera.CameraPanInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraRotationInteraction;
+import org.helioviewer.jhv.opengl.camera.CameraZoomBoxInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraZoomInteraction;
-import org.helioviewer.jhv.opengl.camera.newCamera.CameraAnimation;
+import org.helioviewer.jhv.opengl.camera.animation.CameraAnimation;
+import org.helioviewer.jhv.opengl.camera.animation.CameraRotationAnimation;
+import org.helioviewer.jhv.opengl.camera.animation.CameraTransformationAnimation;
+import org.helioviewer.jhv.opengl.camera.animation.CameraTranslationAnimation;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
@@ -66,8 +72,9 @@ public class MainPanel extends GLCanvas implements
 	public static final double DEFAULT_CAMERA_DISTANCE = 14 * Constants.SUN_RADIUS;
 
 	public static final double CLIP_NEAR = Constants.SUN_RADIUS / 10;
+	public static final double CLIP_FAR = Constants.SUN_RADIUS * 1000;
 	public static final double FOV = 10;
-	private double aspect = 0.0;
+	protected double aspect = 0.0;
 
 	private double[][] rectBounds;
 
@@ -78,11 +85,9 @@ public class MainPanel extends GLCanvas implements
 	private CopyOnWriteArrayList<CameraAnimation> cameraAnimations;
 	
 	private Layers layers;
-	private boolean updateTexture;
 	private int shaderprogram;
 	private HashMap<String, Integer> lutMap;
 	private int nextAvaibleLut = 0;
-	private long lastTime;
 	public boolean exportMovie;
 
 	private CopyOnWriteArrayList<RenderAnimation> animations;
@@ -90,6 +95,8 @@ public class MainPanel extends GLCanvas implements
 
 	protected CameraInteraction[] cameraInteractions;
 	public boolean fullScreenMode;
+
+	private boolean track = false;
 
 	public MainPanel() {
 		this.cameraAnimations = new CopyOnWriteArrayList<CameraAnimation>();
@@ -161,12 +168,22 @@ public class MainPanel extends GLCanvas implements
 
 	}
 
+	public void setTransformation(Quaternion3d rotation, Vector3d translation) {
+		this.rotation = rotation;
+		this.translation = translation;
+		repaintViewAndSynchronizedViews();
+	}
+	
 	public void setRotationInteraction(){
 		this.cameraInteractions[1] = new CameraRotationInteraction(this, this);
 	}
 	
 	public void setPanInteraction(){
 		this.cameraInteractions[1] = new CameraPanInteraction(this, this);
+	}
+	
+	public void setZoomBoxInteraction(){
+		this.cameraInteractions[1] = new CameraZoomBoxInteraction(this, this);
 	}
 	
 	private void loadLutFromFile(String lutTxtName) {
@@ -280,6 +297,7 @@ public class MainPanel extends GLCanvas implements
 			double minAngle = 30;
 			float opacityCorona = (float) ((Math.abs(90 - angle) - minAngle) / (maxAngle - minAngle));
 			opacityCorona = opacityCorona > 1 ? 1f : opacityCorona;
+			if (!Layers.LAYERS.getCoronaVisibility()) opacityCorona = 0;
 			gl.glDisable(GL2.GL_DEPTH_TEST);
 
 			gl.glMatrixMode(GL2.GL_PROJECTION);
@@ -323,7 +341,6 @@ public class MainPanel extends GLCanvas implements
 					(float) layer.getOpacity());
 			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "gamma"),
 					(float) layer.getGamma());
-			System.out.println("sharpen : " + layer.getSharpen());
 			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "sharpen"), (float) layer.getSharpen());
 			gl.glUniform1f(
 					gl.glGetUniformLocation(shaderprogram, "lutPosition"),
@@ -343,7 +360,7 @@ public class MainPanel extends GLCanvas implements
 			gl.glUniform1f(
 					gl.glGetUniformLocation(shaderprogram, "opacityCorona"),
 					opacityCorona);
-			System.out.println("contrast : " + layer.getContrast());
+			gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "cameraMode"), CameraMode.getCameraMode());
 			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "contrast"), (float) layer.getContrast());
 			float[] transformation = getTransformation().toFloatArray();
 			float[] layerTransformation = layer.getMetaData().getRotation()
@@ -354,8 +371,6 @@ public class MainPanel extends GLCanvas implements
 
 			gl.glUniformMatrix4fv(gl.glGetUniformLocation(shaderprogram,
 					"layerTransformation"), 1, true, layerTransformation, 0);
-			System.out.println(layer.getLastDecodedImageRegion().textureWidth);
-			System.out.println(layer.getLastDecodedImageRegion().getImageSize());
 			gl.glUniform2f(gl.glGetUniformLocation(shaderprogram, "imageResolution"), layer.getLastDecodedImageRegion().textureHeight, layer.getLastDecodedImageRegion().textureHeight);
 			gl.glBegin(GL2.GL_QUADS);
 			gl.glTexCoord2f(0.0f, 1.0f);
@@ -391,14 +406,27 @@ public class MainPanel extends GLCanvas implements
 
 		if (layers != null && layers.getLayerCount() > 0) {
 			gl.glPushMatrix();
-
+				if (CameraMode.mode == MODE.MODE_2D){
+					this.rotation = layers.getActiveLayer().getMetaData().getRotation().copy();
+				}
 				for (LayerInterface layer : layers.getLayers()) {
 				if (layer.isVisible()) {
 					this.displayLayer(gl, (NewLayer) layer);
 				}
 			}
 			gl.glPopMatrix();
+
+			gl.glMatrixMode(GL2.GL_PROJECTION);
+			gl.glLoadIdentity();
+			double width = Math.tan(Math.toRadians(FOV)) * this.translation.z / 2.0;
+			double height = width / this.aspect;
+			
+			gl.glOrtho(-width + this.translation.x, width + this.translation.x, height + this.translation.y, -height  + this.translation.y, -Constants.SUN_RADIUS, Constants.SUN_RADIUS);
+			gl.glMatrixMode(GL2.GL_MODELVIEW);
+			gl.glLoadIdentity();
 			calculateBounds();
+			for (CameraInteraction cameraInteraction : cameraInteractions)
+				cameraInteraction.renderInteraction(gl);
 		}		
 
 		// empty screen
@@ -421,7 +449,6 @@ public class MainPanel extends GLCanvas implements
 		
 		if (!cameraAnimations.isEmpty() && cameraAnimations.get(0).isFinished()) cameraAnimations.remove(0);
 		if (!cameraAnimations.isEmpty()){
-			System.out.println("animate");
 				cameraAnimations.get(0).animate(this);
 		}
 
@@ -455,7 +482,6 @@ public class MainPanel extends GLCanvas implements
 
 	@Override
 	public void init(GLAutoDrawable drawable) {
-		System.out.println("init");
 		if (System.getProperty("jhvVersion") == null)
 			drawable.setGL(new DebugGL2(drawable.getGL().getGL2()));
 		// GuiState3DWCS.overViewPanel.activate(drawable.getContext());
@@ -480,8 +506,6 @@ public class MainPanel extends GLCanvas implements
 		//parent.removeAll();
 		//parent.add(this);
 		aspect = this.getSize().getWidth() / this.getSize().getHeight();
-		System.out.println("width : " + width);
-		System.out.println("height: " + height);
 		//this.getParent().setPreferredSize(new Dimension(width, height));
 		//gl.glViewport(0, 0, width, height);
 		//this.repaint();
@@ -559,14 +583,11 @@ public class MainPanel extends GLCanvas implements
 
 	@Override
 	public void newlayerAdded() {
-		System.out.println("newLayerAdded");
-		this.updateTexture = true;
 		this.repaint();
 	}
 
 	@Override
 	public void newlayerRemoved(int idx) {
-		this.updateTexture = true;
 		this.repaint();
 	}
 
@@ -579,8 +600,7 @@ public class MainPanel extends GLCanvas implements
 
 	@Override
 	public void activeLayerChanged(LayerInterface layer) {
-		// TODO Auto-generated method stub
-
+		repaintViewAndSynchronizedViews();
 	}
 
 	public void addRenderAnimation(RenderAnimation renderAnimation) {
@@ -599,7 +619,7 @@ public class MainPanel extends GLCanvas implements
 	}
 
 	public double getAspect() {
-		return this.getSize().getHeight() / this.getSize().getWidth();
+		return this.aspect;
 	}
 
 	public void addSynchronizedView(MainPanel compenentView) {
@@ -631,8 +651,9 @@ public class MainPanel extends GLCanvas implements
 	}
 
 	public void resetCamera() {
-		this.rotation = Quaternion3d.createRotation(0.0, new Vector3d(0, 1, 0));
-		this.translation = new Vector3d(0, 0, DEFAULT_CAMERA_DISTANCE);
+		Quaternion3d rotation = Quaternion3d.createRotation(0.0, new Vector3d(0, 1, 0));
+		Vector3d translation = new Vector3d(0, 0, DEFAULT_CAMERA_DISTANCE);
+		this.addCameraAnimation(new CameraTransformationAnimation(rotation, translation, this));
 		this.repaintViewAndSynchronizedViews();
 	}
 
@@ -644,6 +665,10 @@ public class MainPanel extends GLCanvas implements
 	public void escapeFullscreen() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public void toggleTrack() {
+		this.track = !track ;
 	}
 
 }

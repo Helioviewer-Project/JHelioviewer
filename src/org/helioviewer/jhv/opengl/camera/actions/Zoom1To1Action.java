@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.opengl.camera.newActions;
+package org.helioviewer.jhv.opengl.camera.actions;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -12,7 +12,7 @@ import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.Layers;
-import org.helioviewer.jhv.opengl.camera.newCamera.CameraZoomAnimation;
+import org.helioviewer.jhv.opengl.camera.animation.CameraZoomAnimation;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
@@ -22,8 +22,8 @@ public class Zoom1To1Action extends AbstractAction {
 	private static final long serialVersionUID = 1L;
 
 	public Zoom1To1Action(boolean small) {
-		super("Zoom 1:1", small ? IconBank.getIcon(JHVIcon.ZOOM_1TO1_SMALL)
-				: IconBank.getIcon(JHVIcon.ZOOM_1TO1));
+		super("Zoom 1:1", small ? IconBank.getIcon(JHVIcon.NEW_ZOOM_1TO1, 16, 16)
+				: IconBank.getIcon(JHVIcon.NEW_ZOOM_1TO1, 24 ,24));
 		putValue(SHORT_DESCRIPTION, "Zoom to Native Resolution");
 		putValue(MNEMONIC_KEY, KeyEvent.VK_Z);
 		putValue(ACCELERATOR_KEY,
@@ -46,8 +46,7 @@ public class Zoom1To1Action extends AbstractAction {
 	            double halfFOVRad = Math.toRadians(compenentView.FOV / 2.0);
 	            double distance = (minCanvasDimension/2.0 * unitsPerPixel) / Math.tan(halfFOVRad);
 	            distance = distance - compenentView.getTranslation().z;
-	            compenentView.addCameraAnimation(new CameraZoomAnimation(distance,
-						500));
+	            compenentView.addCameraAnimation(new CameraZoomAnimation(distance));
 			}
 		}
 	}

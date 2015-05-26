@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.gui.actions.newActions;
+package org.helioviewer.jhv.gui.actions;
 
 import java.awt.event.ActionEvent;
 
@@ -21,6 +21,7 @@ public class SetCameraRotationInteractionAction extends AbstractAction{
 	public void actionPerformed(ActionEvent e) {
 		MainFrame.MAIN_PANEL.setRotationInteraction();
 		MainFrame.OVERVIEW_PANEL.setRotationInteraction();
+		MainFrame.TOP_TOOL_BAR.enableYRotationInteraction();
 	}
 
 }

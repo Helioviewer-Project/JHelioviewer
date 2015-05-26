@@ -29,17 +29,17 @@ public class LayerRayTrace{
 	public LayerRayTrace(LayerInterface layer) {
 		this.layer = layer;
 		rayTrace = new RayTrace();
-		contentPanel.setBackground(Color.BLACK);
-		frame.setContentPane(contentPanel);
-		frame.setBounds(50, 50, 640, 480);
+		//contentPanel.setBackground(Color.BLACK);
+		//frame.setContentPane(contentPanel);
+		//frame.setBounds(50, 50, 640, 480);
 		//frame.setVisible(true);
 	}
 	
 	public ImageRegion getCurrentRegion(MainPanel compenentView, MetaData metaData){
 		contentPanel.removeAll();
 		contentPanel.setLayout(null);
-		double partOfWidth = MainFrame.MAIN_PANEL.getWidth() / (double)(MAX_X_POINTS-1);
-		double partOfHeight = MainFrame.MAIN_PANEL.getHeight() / (double)(MAX_Y_POINTS-1);
+		double partOfWidth = compenentView.getWidth() / (double)(MAX_X_POINTS-1);
+		double partOfHeight = compenentView.getHeight() / (double)(MAX_Y_POINTS-1);
 		
 		double minX = Double.MAX_VALUE, minY = Double.MAX_VALUE, maxX = Double.MIN_VALUE, maxY = Double.MIN_VALUE;
 		
