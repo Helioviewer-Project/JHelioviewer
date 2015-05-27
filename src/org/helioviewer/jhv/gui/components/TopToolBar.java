@@ -1,5 +1,6 @@
 package org.helioviewer.jhv.gui.components;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -31,8 +32,6 @@ import org.helioviewer.jhv.opengl.camera.actions.ZoomFitAction;
 import org.helioviewer.jhv.opengl.camera.actions.ZoomInAction;
 import org.helioviewer.jhv.opengl.camera.actions.ZoomOutAction;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 /**
  * Toolbar containing the most common actions.
  * 
@@ -61,7 +60,7 @@ public class TopToolBar extends JToolBar implements MouseListener {
 	private JToggleButton rotateButtonYAxis;
 	private JToggleButton zoomBoxButton;
 
-	private JToggleButton trackSolarRotationButton3D;
+	private JToggleButton trackButton;
 	private JToggleButton coronaVisibilityButton;
 	private JButton zoomInButton, zoomOutButton, zoomFitButton, zoom1to1Button;
 	private JButton resetCamera;
@@ -72,7 +71,7 @@ public class TopToolBar extends JToolBar implements MouseListener {
 	 * Default constructor.
 	 */
 	public TopToolBar() {
-		setRollover(true);
+		//setRollover(true);
 		setFloatable(false);
 
 		try {
@@ -85,29 +84,8 @@ public class TopToolBar extends JToolBar implements MouseListener {
 			displayMode = DisplayMode.ICONANDTEXT;
 		}
 
-		createNewToolBar(SelectionMode.PAN);
+		createNewToolBar();
 		addMouseListener(this);
-	}
-
-	/**
-	 * Sets the active selection mode.
-	 * 
-	 * @param mode
-	 *            Selection mode, can be either PAN, ZOOMBOX or FOCUS.
-	 */
-	public void setActiveSelectionMode(SelectionMode mode) {
-		switch (mode) {
-		case PAN:
-			panButton.doClick();
-			break;
-		case ZOOMBOX:
-			zoomBoxButton.doClick();
-			break;
-		case ROTATE:
-			throw new NotImplementedException();
-		default:
-			throw new NotImplementedException();
-		}
 	}
 
 	/**
@@ -148,12 +126,11 @@ public class TopToolBar extends JToolBar implements MouseListener {
 	 * This function is called during the construction of this panel as well as
 	 * after the display mode has changed.
 	 * 
-	 * @param selectionMode
 	 *            Current selection mode, to select the correct button.
 	 * @see #setDisplayMode(DisplayMode)
 	 */
-	protected void createNewToolBar(SelectionMode selectionMode) {
-		removeAll();
+	protected void createNewToolBar() {
+		//removeAll();
 		// Zoom
 		zoomInButton = new JButton(new ZoomInAction(false));
 		zoomOutButton = new JButton(new ZoomOutAction(false));
@@ -174,41 +151,30 @@ public class TopToolBar extends JToolBar implements MouseListener {
 		ButtonGroup group = new ButtonGroup();
 
 		panButton = new JToggleButton(new SetCameraPanInteractionAction());
-		panButton.setSelected(selectionMode == SelectionMode.PAN);
 		panButton.setIcon(IconBank.getIcon(JHVIcon.NEW_PAN, 24, 24));
-		panButton.setSelectedIcon(IconBank.getIcon(JHVIcon.PAN_SELECTED));
 		panButton.setToolTipText("Select Panning");
+		panButton.setPreferredSize(new Dimension(50, 50));
 		group.add(panButton);
 		addButton(panButton);
 
 		zoomBoxButton = new JToggleButton(new SetCameraZoomBoxInteractionAction());
-		zoomBoxButton.setSelected(selectionMode == SelectionMode.ZOOMBOX);
 		zoomBoxButton.setIcon(IconBank.getIcon(JHVIcon.NEW_ZOOMBOX, 24 ,24));
-		zoomBoxButton
-				.setSelectedIcon(IconBank.getIcon(JHVIcon.SELECT_SELECTED));
 		zoomBoxButton.setToolTipText("Select Zoom Box");
 		group.add(zoomBoxButton);
 		addButton(zoomBoxButton);
 		
 		rotateButton = new JToggleButton(new SetCameraRotationInteractionAction());
-
-		rotateButton.setSelected(selectionMode == SelectionMode.ROTATE);
-		rotateButton.setIcon(IconBank.getIcon(JHVIcon.ROTATE_ALL_AXIS));
-		rotateButton.setSelectedIcon(IconBank
-				.getIcon(JHVIcon.ROTATE_ALL_AXIS_SELECTED));
+		rotateButton.setIcon(IconBank.getIcon(JHVIcon.NEW_ROTATION, 24, 24));
 		rotateButton.setToolTipText("Select Rotating");
 		group.add(rotateButton);
 		addButton(rotateButton);
 		addSeparator();
 
-		trackSolarRotationButton3D = new JToggleButton(new SetCameraTrackAction());
-		trackSolarRotationButton3D.setSelected(false);
-		trackSolarRotationButton3D.setIcon(IconBank.getIcon(JHVIcon.FOCUS));
-		trackSolarRotationButton3D.setSelectedIcon(IconBank
-				.getIcon(JHVIcon.FOCUS_SELECTED));
-		trackSolarRotationButton3D
+		trackButton = new JToggleButton(new SetCameraTrackAction());
+		trackButton.setIcon(IconBank.getIcon(JHVIcon.NEW_TRACK, 24, 24));
+		trackButton
 				.setToolTipText("Enable Solar Rotation Tracking");
-		addButton(trackSolarRotationButton3D);
+		addButton(trackButton);
 
 		coronaVisibilityButton = new JToggleButton(new SetCoronaVisibilityAction());
 		coronaVisibilityButton.setSelected(false);
@@ -220,11 +186,8 @@ public class TopToolBar extends JToolBar implements MouseListener {
 		addButton(coronaVisibilityButton);
 
 		rotateButtonYAxis = new JToggleButton(new SetCameraYAxisBlockedAction());
-		rotateButtonYAxis
-				.setSelected(selectionMode == SelectionMode.ROTATE_Y_AXIS);
-		rotateButtonYAxis.setIcon(IconBank.getIcon(JHVIcon.ROTATE));
-		rotateButtonYAxis.setSelectedIcon(IconBank
-				.getIcon(JHVIcon.ROTATE_SELECTED));
+		rotateButtonYAxis.setIcon(IconBank.getIcon(JHVIcon.NEW_ROTATION_Y_AXIS, 24, 24));
+		
 		rotateButtonYAxis.setToolTipText("Enable rotation on Y-Axis");
 		addButton(rotateButtonYAxis);
 		
@@ -265,9 +228,11 @@ public class TopToolBar extends JToolBar implements MouseListener {
 		// button.setMargin(buttonMargin);
 		button.setVerticalTextPosition(SwingConstants.BOTTOM);
 		button.setHorizontalTextPosition(SwingConstants.CENTER);
-		button.setBorderPainted(false);
-		button.setFocusPainted(false);
-		button.setOpaque(false);
+		if (button instanceof JButton)
+			button.setBorderPainted(false);
+		
+		//button.setFocusPainted(false);
+		//button.setOpaque(false);
 		button.addMouseListener(this);
 
 		switch (displayMode) {
@@ -306,7 +271,7 @@ public class TopToolBar extends JToolBar implements MouseListener {
 			selectionMode = SelectionMode.ZOOMBOX;
 		}
 
-		createNewToolBar(selectionMode);
+		createNewToolBar();
 
 		firePropertyChange("displayMode", oldDisplayMode, displayMode);
 
@@ -417,11 +382,6 @@ public class TopToolBar extends JToolBar implements MouseListener {
 	}
 
 	public void setTrack(boolean track) {
-		this.trackSolarRotationButton3D.setSelected(track);
+		this.trackButton.setSelected(track);
 	}
-
-	public void enableYRotationInteraction() {
-		
-	}
-
 }

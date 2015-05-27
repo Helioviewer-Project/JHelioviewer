@@ -3,7 +3,6 @@ package org.helioviewer.jhv.opengl.camera;
 import java.awt.event.MouseEvent;
 
 import org.helioviewer.jhv.base.math.Vector3d;
-import org.helioviewer.jhv.gui.controller.Camera;
 import org.helioviewer.jhv.opengl.camera.animation.CameraTranslationAnimation;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace;
 import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;

@@ -1,13 +1,44 @@
 package org.helioviewer.jhv.gui.dialogs;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import javax.imageio.ImageIO;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.border.EmptyBorder;
+import javax.swing.filechooser.FileFilter;
+
+import org.helioviewer.jhv.JHVGlobals;
+import org.helioviewer.jhv.Settings;
+import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
+import org.helioviewer.jhv.layers.LayerInterface;
+import org.helioviewer.jhv.layers.Layers;
+import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
+
+import com.xuggle.mediatool.IMediaWriter;
+import com.xuggle.mediatool.ToolFactory;
 
 public class ExportMovieDialog implements ActionListener {
-	/*
-	private JHVJPXView timedJHVJPXView = null;
-	private CompenentView mainComponentView = null;
-
+	
 	private long speed = 0;
 	private IMediaWriter writer;
 
@@ -21,7 +52,6 @@ public class ExportMovieDialog implements ActionListener {
 
 	private String directory;
 	private String filename;
-	private Timer timer;
 	private int currentExportFrameNumber = 0;
 
 	private FileOutputStream fileOutputStream;
@@ -44,7 +74,7 @@ public class ExportMovieDialog implements ActionListener {
 
 			this.loadSettings();
 			Settings.setProperty(SETTING_MOVIE_EXPORT_LAST_DIRECTORY, directory);
-			ImageViewerGui.getMainFrame().setEnabled(false);
+			MainFrame.SINGLETON.setEnabled(false);
 
 			progressDialog = new ProgressDialog(exportMovieDialog);
 			progressDialog.setVisible(true);
@@ -52,17 +82,13 @@ public class ExportMovieDialog implements ActionListener {
 			currentExportFrameNumber = 0;
 
 			this.initExportMovie();
-			timer = new Timer(0, this);
-			timer.start();
-
 		}
 	}
 
 	private int openFileChooser() {
 		txtTargetFile = "";
-		SimpleDateFormat dateFormat = new SimpleDateFormat(
-				"yyyy-MM-dd_HH.mm.ss");
-		txtTargetFile += dateFormat.format(new Date());
+
+		txtTargetFile += LocalDateTime.now().format(JHVGlobals.DATE_TIME_FORMATTER);
 		txtTargetFile += selectedOutputFormat.getExtension();
 
 		// Open save-dialog
@@ -103,7 +129,7 @@ public class ExportMovieDialog implements ActionListener {
 
 		fileChooser.setSelectedFile(new File(txtTargetFile));
 
-		int retVal = fileChooser.showDialog(ImageViewerGui.getMainFrame(),
+		int retVal = fileChooser.showDialog(MainFrame.SINGLETON,
 				"Export movie");
 
 		if (retVal != JFileChooser.CANCEL_OPTION) {
@@ -179,9 +205,8 @@ public class ExportMovieDialog implements ActionListener {
 	}
 
 	private void initExportMovie() {
-		mainComponentView = GuiState3DWCS.mainComponentView;
-		timedJHVJPXView = LinkedMovieManager.getActiveInstance()
-				.getMasterMovie();
+		//mainComponentView = GuiState3DWCS.mainComponentView;
+		
 		started = true;
 
 		if (this.selectedOutputFormat.isMovieFile()) {
@@ -189,20 +214,8 @@ public class ExportMovieDialog implements ActionListener {
 			writer = ToolFactory.makeWriter(directory + filename
 					+ this.selectedOutputFormat.getExtension());
 
-			if (timedJHVJPXView.getSpeedType() == SpeedType.RELATIVE) {
-				speed = 1000 / timedJHVJPXView.getDesiredSpeed();
-			}
+			speed = 1000 / TimeLine.SINGLETON.getSpeedFactor();
 
-			else {
-				long min = timedJHVJPXView.getFrameDateTime(0).getMillis();
-				long max = timedJHVJPXView.getFrameDateTime(1).getMillis();
-				speed = (max - min) / timedJHVJPXView.getDesiredSpeed();
-			}
-			if (this.textEnabled) {
-				Dimension dimension = this.mainComponentView.getCanavasSize();
-				this.imageWidth = dimension.width;
-				this.imageHeight = dimension.height;
-			}
 			writer.addVideoStream(0, 0, this.selectedOutputFormat.getCodec(),
 					this.imageWidth, this.imageHeight);
 		}
@@ -225,59 +238,39 @@ public class ExportMovieDialog implements ActionListener {
 			directory += this.filename + "/";
 		}
 
-		if (timedJHVJPXView != null)
-			progressDialog.setMaximumOfProgressBar(timedJHVJPXView
-					.getMaximumFrameNumber());
+		progressDialog.setMaximumOfProgressBar(TimeLine.SINGLETON.getMaxFrames());
+		TimeLine.SINGLETON.setCurrentFrame(0);
 	}
 
 	private void exportMovie() {
-		/*
+		
 		if (!started)
 			stopExportMovie();
 		else {
-			for (LayerInterface layer : GuiState3DWCS.layers.getLayers()) {
-				JHVJPXView jhvjpxView = layer.getImageTextureView().getAdapter(
-						JHVJPXView.class);
-				if (currentExportFrameNumber > jhvjpxView.getImageCacheStatus()
-						.getImageCachedCompletelyUntil()
-						&& !(currentExportFrameNumber > jhvjpxView
-								.getMaximumFrameNumber() - 1)) {
-					this.progressDialog.setDescription("Loading image data");
-					return;
-				}
-			}
-
-			timedJHVJPXView.setCurrentFrame(currentExportFrameNumber,
-					new ChangeEvent(), true);
-
+	
 			ArrayList<String> descriptions = null;
 			if (textEnabled) {
-				GL3DSceneGraphView scenegraphView = GuiState3DWCS.mainComponentView
-						.getAdapter(GL3DSceneGraphView.class);
 				descriptions = new ArrayList<String>();
 				int counter = 0;
-				for (GL3DImageLayer layer : scenegraphView.getLayers()
-						.getLayers()) {
-					if (!layer.isDrawBitOn(Bit.Hidden)) {
-						descriptions.add(LayersModel.getSingletonInstance()
-								.getDescriptor(counter).title
+				for (LayerInterface layer : Layers.LAYERS.getLayers()) {
+					if (layer.isVisible()) {
+						descriptions.add(layer.getMetaData().getFullName()
 								+ " - "
-								+ LayersModel.getSingletonInstance()
-										.getDescriptor(counter).timestamp
-										.replaceAll(" ", " - "));
+								+ layer.getTime().format(JHVGlobals.DATE_TIME_FORMATTER));
 					}
 					counter++;
 				}
 			}
+
 			this.progressDialog.setDescription("Rendering images");
-			BufferedImage bufferedImage = mainComponentView.getBufferedImage(
-					imageWidth, imageHeight, descriptions);
+			//BufferedImage bufferedImage = mainComponentView.getBufferedImage(
+			//		imageWidth, imageHeight, descriptions);
 
 			progressDialog.updateProgressBar(currentExportFrameNumber);
 
 			if (this.selectedOutputFormat.isMovieFile() && started) {
-				writer.encodeVideo(0, bufferedImage, speed
-						* currentExportFrameNumber, TimeUnit.MILLISECONDS);
+				//writer.encodeVideo(0, bufferedImage, speed
+				//		* currentExportFrameNumber, TimeUnit.MILLISECONDS);
 			}
 
 			else if (this.selectedOutputFormat.isCompressedFile() && started) {
@@ -290,9 +283,9 @@ public class ExportMovieDialog implements ActionListener {
 							+ number
 							+ this.selectedOutputFormat.getInnerMovieFilter()
 									.getExtension()));
-					ImageIO.write(bufferedImage, this.selectedOutputFormat
-							.getInnerMovieFilter().getFileType(),
-							zipOutputStream);
+					//ImageIO.write(bufferedImage, this.selectedOutputFormat
+					//		.getInnerMovieFilter().getFileType(),
+					//		zipOutputStream);
 					zipOutputStream.closeEntry();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -302,18 +295,17 @@ public class ExportMovieDialog implements ActionListener {
 
 			else if (this.selectedOutputFormat.isImageFile() && started) {
 				String number = String.format("%04d", currentExportFrameNumber);
-				try {
-					ImageIO.write(bufferedImage, selectedOutputFormat
-							.getFileType(), new File(directory + this.filename
-							+ this.filename + "-" + number
-							+ this.selectedOutputFormat.getExtension()));
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				//try {
+					//ImageIO.write(bufferedImage, selectedOutputFormat
+					//		.getFileType(), new File(directory + this.filename
+					//		+ this.filename + "-" + number
+					//		+ this.selectedOutputFormat.getExtension()));
+				//} catch (IOException e) {
+				//	e.printStackTrace();
+				//}
 			}
 			currentExportFrameNumber++;
-			if (currentExportFrameNumber > timedJHVJPXView
-					.getMaximumFrameNumber()) {
+			if (currentExportFrameNumber > TimeLine.SINGLETON.getMaxFrames()) {
 				started = false;
 				stopExportMovie();
 			}
@@ -321,7 +313,7 @@ public class ExportMovieDialog implements ActionListener {
 	}
 
 	public void stopExportMovie() {
-		this.timedJHVJPXView.setCurrentFrame(0, new ChangeEvent());
+		TimeLine.SINGLETON.setCurrentFrame(0);
 		// export movie
 		if (selectedOutputFormat.isMovieFile())
 			writer.close();
@@ -335,7 +327,6 @@ public class ExportMovieDialog implements ActionListener {
 			}
 		}
 		progressDialog.dispose();
-		timer.stop();
 	}
 
 	public void cancelMovie() {
@@ -353,7 +344,7 @@ public class ExportMovieDialog implements ActionListener {
 		private final JPanel contentPanel = new JPanel();
 
 		public ProgressDialog(ExportMovieDialog exportMovieDialog) {
-			super(ImageViewerGui.getMainFrame());
+			super(MainFrame.SINGLETON);
 			this.exportMovieDialog = exportMovieDialog;
 			setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			setResizable(false);
@@ -390,7 +381,7 @@ public class ExportMovieDialog implements ActionListener {
 			}
 
 			this.pack();
-			this.setLocationRelativeTo(ImageViewerGui.getMainFrame());
+			this.setLocationRelativeTo(MainFrame.SINGLETON);
 
 		}
 
@@ -408,7 +399,7 @@ public class ExportMovieDialog implements ActionListener {
 
 		@Override
 		public void dispose() {
-			ImageViewerGui.getMainFrame().setEnabled(true);
+			MainFrame.SINGLETON.setEnabled(true);
 			super.dispose();
 		}
 
@@ -422,7 +413,7 @@ public class ExportMovieDialog implements ActionListener {
 		}
 	}
 
-	*/
+	
 	
 	@Override
 	public void actionPerformed(ActionEvent arg0) {

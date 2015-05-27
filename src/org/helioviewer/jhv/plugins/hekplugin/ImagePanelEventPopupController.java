@@ -6,7 +6,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
-import org.helioviewer.jhv.gui.components.BasicImagePanel;
+import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 import org.helioviewer.jhv.gui.interfaces.ImagePanelPlugin;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKEvent;
 import org.helioviewer.jhv.plugins.hekplugin.cache.gui.HEKEventInformationDialog;
@@ -35,7 +35,7 @@ public class ImagePanelEventPopupController implements ImagePanelPlugin,
 	private static final int X_OFFSET = 12;
 	private static final int Y_OFFSET = 12;
 
-	private BasicImagePanel imagePanel;
+	private MainFrame imagePanel;
 
 	private HEKEvent mouseOverHEKEvent = null;
 	private Point mouseOverPosition = null;
@@ -49,7 +49,7 @@ public class ImagePanelEventPopupController implements ImagePanelPlugin,
 	/**
 	 * {@inheritDoc}
 	 */
-	public void setImagePanel(BasicImagePanel newImagePanel) {
+	public void setImagePanel(MainFrame newImagePanel) {
         imagePanel = newImagePanel;
         if (imagePanel != null) {
             imagePanel.removeMouseMotionListener(this);
@@ -63,7 +63,7 @@ public class ImagePanelEventPopupController implements ImagePanelPlugin,
 	/**
 	 * {@inheritDoc}
 	 */
-	public BasicImagePanel getImagePanel() {
+	public MainFrame getImagePanel() {
 		return imagePanel;
 	}
 

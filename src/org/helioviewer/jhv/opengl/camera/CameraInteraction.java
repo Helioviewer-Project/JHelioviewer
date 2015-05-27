@@ -3,7 +3,6 @@ package org.helioviewer.jhv.opengl.camera;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
-import org.helioviewer.jhv.gui.controller.Camera;
 import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 
 import com.jogamp.opengl.GL2;
@@ -31,6 +30,11 @@ public abstract class CameraInteraction{
 	}
 	
 	public void renderInteraction(GL2 gl){
+		
+	}
+
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
 		
 	}
 }

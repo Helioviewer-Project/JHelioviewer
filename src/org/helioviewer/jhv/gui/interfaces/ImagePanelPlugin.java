@@ -1,6 +1,6 @@
 package org.helioviewer.jhv.gui.interfaces;
 
-import org.helioviewer.jhv.gui.components.BasicImagePanel;
+import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 
 /**
  * Interface representing a plugin for an image panel.
@@ -25,7 +25,7 @@ public interface ImagePanelPlugin {
      *            Image panel to which the plugin is attached
      * @see #getImagePanel()
      */
-    public void setImagePanel(BasicImagePanel newImagePanel);
+    public void setImagePanel(MainFrame newImagePanel);
 
     /**
      * Returns the image panel to which the plugin is attached.
@@ -33,7 +33,7 @@ public interface ImagePanelPlugin {
      * @return Image panel to which the plugin is attached
      * @see #setImagePanel(BasicImagePanel)
      */
-    public BasicImagePanel getImagePanel();
+    public MainFrame getImagePanel();
 
     /**
      * Callback function to be called when the controller is detached. This

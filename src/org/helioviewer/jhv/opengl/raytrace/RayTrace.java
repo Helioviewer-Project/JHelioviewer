@@ -24,7 +24,7 @@ public class RayTrace {
 	
 	public Ray cast(int x, int y, MainPanel compenentView){
 		double newX = (x-compenentView.getWidth()/2.)/ compenentView.getWidth();
-		double newY = (y-compenentView.getHeight()/2.)/ compenentView.getHeight();
+		double newY = (y-compenentView.getHeight()/2.)/ compenentView.getWidth();
 
 		double width = Math.tan(Math.toRadians(MainPanel.FOV/2.0)) * 2;
 		
@@ -32,7 +32,7 @@ public class RayTrace {
 		Vector3d direction;
 		if (CameraMode.mode == MODE.MODE_3D){
 			origin = compenentView.getTransformation().multiply(new Vector3d(0, 0, 1));
-			direction = new Vector3d(-newX * width, newY * width, -1).normalize();
+			direction = new Vector3d(newX * width, newY * width, -1).normalize();
 		}
 		else {
 			width = Math.tan(Math.toRadians(MainPanel.FOV / 2.0)) * compenentView.getTranslation().z * 2;
@@ -47,14 +47,14 @@ public class RayTrace {
 	public Vector2d castTexturepos(int x, int y, MetaData metaData, MainPanel compenentView){		
 		
 		double newX = (x-compenentView.getWidth()/2.)/ compenentView.getWidth();
-		double newY = (y-compenentView.getHeight()/2.)/ compenentView.getHeight();
-		double width = Math.tan(Math.toRadians(MainPanel.FOV/2.0));
+		double newY = (y-compenentView.getHeight()/2.)/ compenentView.getWidth();
+		double width = Math.tan(Math.toRadians(MainPanel.FOV/2.0)) * 2;
 		
 		Vector3d origin;
 		Vector3d direction;
 		if (CameraMode.mode == MODE.MODE_3D){
 			origin = compenentView.getTransformation().multiply(new Vector3d(0, 0, 1));
-			direction = new Vector3d(-newX * 2 * width, newY * 2 * width, -1).normalize();
+			direction = new Vector3d(newX * width, newY * width, -1).normalize();
 		}
 		else {
 			width = Math.tan(Math.toRadians(MainPanel.FOV / 2.0)) * compenentView.getTranslation().z * 2.0;

@@ -93,11 +93,13 @@ public class OverViewPanel extends MainPanel{
 		for (MainPanel mainView : mainViews){
 			double[][] bounds = mainView.getRectBounds();
 		gl.glColor3d(0.0, 1.0, 0);
+		gl.glEnable(GL2.GL_BLEND);
+		gl.glEnable(GL2.GL_LINE_SMOOTH);
 		gl.glBegin(GL2.GL_LINE_LOOP);
-			gl.glVertex3d(bounds[0][0], bounds[0][1], bounds[0][2]);
-			gl.glVertex3d(bounds[1][0], bounds[1][1], bounds[1][2]);
-			gl.glVertex3d(bounds[2][0], bounds[2][1], bounds[2][2]);
-			gl.glVertex3d(bounds[3][0], bounds[3][1], bounds[3][2]);
+			System.out.println("boundLenght : " + bounds.length);
+			for (double[] bound : bounds){
+				gl.glVertex3d(bound[0], bound[1], bound[2]);				
+			}
 		gl.glEnd();
 		
 		gl.glBegin(GL2.GL_LINE_LOOP);
@@ -108,6 +110,9 @@ public class OverViewPanel extends MainPanel{
 			}
 		gl.glEnd();
 		}
+		gl.glDisable(GL2.GL_LINE_SMOOTH);
+		gl.glDisable(GL2.GL_BLEND);
+
 	}
 	
 	public void addMainView(MainPanel compenentView){
@@ -118,5 +123,9 @@ public class OverViewPanel extends MainPanel{
 	
 	@Override
 	protected void calculateTrackRotation() {
+	}
+	
+	@Override
+	protected void calculateBounds() {
 	}
 }

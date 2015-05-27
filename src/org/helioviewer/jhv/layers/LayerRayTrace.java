@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.math.Vector2d;
+import org.helioviewer.jhv.gui.components.newComponents.OverViewPanel;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
@@ -27,15 +28,18 @@ public class LayerRayTrace{
 	public LayerRayTrace(LayerInterface layer) {
 		this.layer = layer;
 		rayTrace = new RayTrace();
-		//contentPanel.setBackground(Color.BLACK);
-		//frame.setContentPane(contentPanel);
-		//frame.setBounds(50, 50, 640, 480);
-		//frame.setVisible(true);
+		/*contentPanel.setBackground(Color.BLACK);
+		frame.setContentPane(contentPanel);
+		frame.setBounds(50, 50, 640, 480);
+		frame.setVisible(true);
+		*/
 	}
 	
 	public ImageRegion getCurrentRegion(MainPanel compenentView, MetaData metaData){
-		contentPanel.removeAll();
-		contentPanel.setLayout(null);
+		if (!(compenentView instanceof OverViewPanel)){
+			contentPanel.removeAll();
+			contentPanel.setLayout(null);
+		}
 		double partOfWidth = compenentView.getWidth() / (double)(MAX_X_POINTS-1);
 		double partOfHeight = compenentView.getHeight() / (double)(MAX_Y_POINTS-1);
 		
@@ -46,17 +50,20 @@ public class LayerRayTrace{
 				Vector2d imagePoint = rayTrace.castTexturepos((int)(i * partOfWidth), (int)(j * partOfHeight), metaData, compenentView);
 				
 				if (imagePoint != null){
-									
-				//JPanel panel = new JPanel();
-				//panel.setBackground(Color.YELLOW);
+					/*JPanel panel = null;
+					if (!(compenentView instanceof OverViewPanel)){
 
+				panel = new JPanel();
+				panel.setBackground(Color.YELLOW);
+					}*/
 				minX = Math.min(minX, imagePoint.x);
 				maxX = Math.max(maxX, imagePoint.x);
 				minY = Math.min(minY, imagePoint.y);
 				maxY = Math.max(maxY, imagePoint.y);
 				
+				//if (!(compenentView instanceof OverViewPanel)){
 				//panel.setBounds((int) (imagePoint.x * contentPanel.getWidth()) - 3,(int) (imagePoint.y * contentPanel.getHeight()) - 3, 5, 5);
-				//contentPanel.add(panel);
+				//contentPanel.add(panel);}
 				}
 			}
 		}

@@ -4,10 +4,12 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 import javax.swing.KeyStroke;
@@ -18,8 +20,13 @@ import org.helioviewer.jhv.gui.actions.filefilters.ExtensionFileFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.JPGFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.PNGFilter;
 import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
+import org.helioviewer.jhv.gui.components.newComponents.MovieExportOffscreenRenderer;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.Layers;
+import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
+
+import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLProfile;
 
 /**
  * Action to save a screenshot in desired image format at desired location.
@@ -89,20 +96,33 @@ public class SaveScreenshotAsAction extends AbstractAction {
 			if (textEnabled) {
 				descriptions = new ArrayList<String>();
 				int counter = 0;
-				for (LayerInterface layer : Layers.LAYERS.getLayers()){
-					if (layer.isVisible()){
-						/*
-						 * descriptions.add(LayersModel.getSingletonInstance()
-								.getDescriptor(counter).title
+				for (LayerInterface layer : Layers.LAYERS.getLayers()) {
+					if (layer.isVisible()) {
+						descriptions.add(layer.getMetaData().getFullName()
 								+ " - "
-								+ LayersModel.getSingletonInstance().getDescriptor(
-										counter).timestamp.replaceAll(" ", " - "));
-										*/
+								+ layer.getTime().format(JHVGlobals.DATE_TIME_FORMATTER));
 					}
 					counter++;
 				}
 			}
-			MainFrame.MAIN_PANEL.saveScreenshot(fileFilter.getDefaultExtension(), selectedFile, this.imageWidth, this.imageHeight, descriptions);
+			
+			GLProfile profile = GLProfile.get(GLProfile.GL2);
+			profile = GLProfile.getDefault();
+			GLCapabilities capabilities = new GLCapabilities(profile);
+			capabilities.setDoubleBuffered(false);
+			capabilities.setOnscreen(false);
+			capabilities.setHardwareAccelerated(true);
+			capabilities.setFBO(true);
+
+			try {
+				MovieExportOffscreenRenderer offScreenRenderer = new MovieExportOffscreenRenderer(this.imageWidth, this.imageHeight);
+				offScreenRenderer.setSynchronizedView(MainFrame.MAIN_PANEL);
+				ImageIO.write(offScreenRenderer.getBufferedImage(descriptions),
+						fileFilter.getDefaultExtension(), selectedFile);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+			
         }
     }
     

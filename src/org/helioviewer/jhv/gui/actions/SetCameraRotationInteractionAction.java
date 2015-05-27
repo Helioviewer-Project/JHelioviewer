@@ -21,7 +21,6 @@ public class SetCameraRotationInteractionAction extends AbstractAction{
 	public void actionPerformed(ActionEvent e) {
 		MainFrame.MAIN_PANEL.setRotationInteraction();
 		MainFrame.OVERVIEW_PANEL.setRotationInteraction();
-		MainFrame.TOP_TOOL_BAR.enableYRotationInteraction();
 	}
 
 }

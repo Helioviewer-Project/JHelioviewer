@@ -11,7 +11,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
-import org.helioviewer.jhv.gui.components.BasicImagePanel;
+import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 import org.helioviewer.jhv.gui.interfaces.ImagePanelPlugin;
 
 /**
@@ -33,7 +33,7 @@ public class PositionStatusPanel extends ViewStatusPanelPlugin implements
 
 	private static final long serialVersionUID = 1L;
 
-	private BasicImagePanel imagePanel;
+	private MainFrame imagePanel;
 	private Point lastPosition;
 
 	private static final char DEGREE = '\u00B0';
@@ -46,7 +46,7 @@ public class PositionStatusPanel extends ViewStatusPanelPlugin implements
 	 * @param imagePanel
 	 *            ImagePanel to show mouse position for
 	 */
-	public PositionStatusPanel(BasicImagePanel imagePanel) {
+	public PositionStatusPanel(MainFrame imagePanel) {
 		setBorder(BorderFactory.createEtchedBorder());
 
 		// setPreferredSize(new Dimension(170, 20));
@@ -132,14 +132,14 @@ public class PositionStatusPanel extends ViewStatusPanelPlugin implements
 	/**
 	 * {@inheritDoc}
 	 */
-	public BasicImagePanel getImagePanel() {
+	public MainFrame getImagePanel() {
 		return imagePanel;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void setImagePanel(BasicImagePanel newImagePanel) {
+	public void setImagePanel(MainFrame newImagePanel) {
 		if (imagePanel != null) {
 			imagePanel.removeMouseMotionListener(this);
 		}

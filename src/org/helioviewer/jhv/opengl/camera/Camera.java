@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.gui.controller;
+package org.helioviewer.jhv.opengl.camera;
 
 import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.Quaternion3d;

@@ -6,6 +6,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 
 import org.helioviewer.jhv.base.FileUtils;
+import org.helioviewer.jhv.gui.IconBank;
+import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 import org.helioviewer.jhv.gui.actions.ExportAction;
 import org.helioviewer.jhv.gui.actions.LoadStateAction;
@@ -118,7 +120,7 @@ public class MenuBar extends JMenuBar {
 
 		JMenu optionsMenu = new JMenu("Options");
 		optionsMenu.setMnemonic(KeyEvent.VK_O);
-		optionsMenu.add(new ShowDialogAction("Preferences...",
+		optionsMenu.add(new ShowDialogAction("Preferences...", IconBank.getIcon(JHVIcon.SETTINGS, 16, 16),
 				PreferencesDialog.class));
 		add(optionsMenu);
 

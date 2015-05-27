@@ -130,6 +130,10 @@ public class TimeLine implements NewLayerListener {
 		this.speedFactor = 1000 / speedFactor;
 		timer.setDelay(this.speedFactor);
 	}
+	
+	public int getSpeedFactor(){
+		return timer.getDelay();
+	}
 
 	@Override
 	public void newlayerAdded() {

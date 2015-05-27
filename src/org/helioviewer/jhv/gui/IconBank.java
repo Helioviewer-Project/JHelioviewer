@@ -99,11 +99,15 @@ public class IconBank {
         MODE_3D("3D_24x24.png"), MODE_2D("2D_24x24.png"), MODE_3D_SELECTED("3D_selected_24x24.png"), MODE_2D_SELECTED("2D_selected_24x24.png"), RESET("Reset_24x24.png"), ROTATE("Rotate_24x24.png"), ROTATE_SELECTED("Rotate_selected_24x24.png"), ROTATE_ALL_AXIS("Rotate_both_24x24.png"), ROTATE_ALL_AXIS_SELECTED("Rotate_both_selected_24x24.png"),
         NEW_CAMERA("camera_128x128.png"),
         
-        CAMERA_MODE_3D("3D_128x128.png"), CAMERA_MODE_2D("2D_128x128.png"),
+        FULLSCREEN("fullscreen_128x128.png"), SETTINGS("settings_128x128.png"),
+        
+        CAMERA_MODE_3D("sphere_128x128.png"), CAMERA_MODE_2D("circle_128x128.png"),
+        NEW_TRACK("track_128x128.png"),
+        NEW_ROTATION("Rotation_128x128.png"), NEW_ROTATION_Y_AXIS("Rotation_Y_Axis_128x128.png"),
         // LAYER ICONS
         SUN_WITH_128x128("sun_with_128x128.png"), SUN_WITHOUT_128x128("sun_without_128x128.png"),
         LAYER_IMAGE_24x24("layer-image_24x24.png"), LAYER_IMAGE_OFF_24x24("layer-image-off_24x24.png"), LAYER_IMAGE("layer-image.png"), LAYER_IMAGE_OFF("layer-image-off.png"), LAYER_IMAGE_TIME("layer-image-time.png"), LAYER_IMAGE_TIME_MASTER("layer-image-time-master.png"), LAYER_IMAGE_TIME_OFF("layer-image-time-off.png"), LAYER_MOVIE("layer-movie.png"), LAYER_MOVIE_OFF("layer-movie-off.png"), LAYER_MOVIE_TIME("layer-movie-time.png"), LAYER_MOVIE_TIME_MASTER("layer-movie-time-master.png"), LAYER_MOVIE_TIME_OFF("layer-movie-time-off.png");
-
+        
         private final String fname;
 
         JHVIcon(String _fname) {

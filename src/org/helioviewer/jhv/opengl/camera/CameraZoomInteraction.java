@@ -3,7 +3,6 @@ package org.helioviewer.jhv.opengl.camera;
 import java.awt.Component;
 import java.awt.event.MouseWheelEvent;
 
-import org.helioviewer.jhv.gui.controller.Camera;
 import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 
 
