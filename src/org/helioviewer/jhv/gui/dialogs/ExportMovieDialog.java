@@ -1,7 +1,6 @@
 package org.helioviewer.jhv.gui.dialogs;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,6 +23,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileFilter;
 
@@ -38,7 +38,7 @@ import com.xuggle.mediatool.IMediaWriter;
 import com.xuggle.mediatool.ToolFactory;
 
 public class ExportMovieDialog implements ActionListener {
-	
+
 	private long speed = 0;
 	private IMediaWriter writer;
 
@@ -48,14 +48,13 @@ public class ExportMovieDialog implements ActionListener {
 	private String txtTargetFile;
 	private ProgressDialog progressDialog;
 
-	private boolean started = false;
+	private boolean started = true;
 
 	private String directory;
 	private String filename;
-	private int currentExportFrameNumber = 0;
 
-	private FileOutputStream fileOutputStream;
-	private ZipOutputStream zipOutputStream;
+	private volatile FileOutputStream fileOutputStream;
+	private volatile ZipOutputStream zipOutputStream;
 
 	private static final String SETTING_MOVIE_EXPORT_LAST_DIRECTORY = "export.movie.last.directory";
 
@@ -67,6 +66,9 @@ public class ExportMovieDialog implements ActionListener {
 	private int imageWidth;
 	private int imageHeight;
 	private ExportMovieDialog exportMovieDialog;
+	private Thread thread;
+	private ArrayList<String> descriptions;
+	private BufferedImage bufferedImage;
 
 	public ExportMovieDialog() {
 		exportMovieDialog = this;
@@ -79,16 +81,99 @@ public class ExportMovieDialog implements ActionListener {
 			progressDialog = new ProgressDialog(exportMovieDialog);
 			progressDialog.setVisible(true);
 
-			currentExportFrameNumber = 0;
-
 			this.initExportMovie();
+			thread = new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+						TimeLine.SINGLETON.setCurrentFrame(0);
+						for (int i = 0; i < TimeLine.SINGLETON.getMaxFrames(); i++){
+							
+							descriptions = null;
+							if (textEnabled) {
+								descriptions = new ArrayList<String>();
+								for (LayerInterface layer : Layers.LAYERS.getLayers()) {
+									if (layer.isVisible()) {
+										descriptions.add(layer.getMetaData().getFullName()
+												+ " - "
+												+ layer.getTime().format(JHVGlobals.DATE_TIME_FORMATTER));
+									}
+								}
+							}
+
+							bufferedImage = null;
+							progressDialog.setDescription("Rendering images");
+							SwingUtilities.invokeLater(new Runnable() {
+								
+								@Override
+								public void run() {
+									bufferedImage = MainFrame.MAIN_PANEL.getBufferedImage(
+											imageWidth, imageHeight, descriptions);
+								}
+							});
+							
+							while (bufferedImage == null){
+								try {
+									if(!started) break;
+									Thread.sleep(20);
+								} catch (InterruptedException e) {
+									break;
+								}
+							}
+							if(!started) break;
+							
+							progressDialog.updateProgressBar(i);
+							
+							if (selectedOutputFormat.isMovieFile() && started) {
+									writer.encodeVideo(0, bufferedImage, speed
+										* i, TimeUnit.MILLISECONDS);
+							}
+
+							else if (selectedOutputFormat.isCompressedFile() && started) {
+								String number = String.format("%04d", i);
+								try {
+									zipOutputStream.putNextEntry(new ZipEntry(filename
+											+ "/"
+											+ filename
+											+ "-"
+											+ number
+											+ selectedOutputFormat.getInnerMovieFilter()
+													.getExtension()));
+									ImageIO.write(bufferedImage, selectedOutputFormat
+											.getInnerMovieFilter().getFileType(),
+											zipOutputStream);
+									zipOutputStream.closeEntry();
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+							}
+
+							else if (selectedOutputFormat.isImageFile() && started) {
+								String number = String.format("%04d", i);
+								try {
+									ImageIO.write(bufferedImage, selectedOutputFormat
+											.getFileType(), new File(directory + filename
+											+ filename + "-" + number
+											+ selectedOutputFormat.getExtension()));
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+							}
+							TimeLine.SINGLETON.nextFrame();
+						}
+						stopExportMovie();
+					}
+					
+			}, "Movie Export");
+			thread.start();
 		}
 	}
 
 	private int openFileChooser() {
 		txtTargetFile = "";
 
-		txtTargetFile += LocalDateTime.now().format(JHVGlobals.DATE_TIME_FORMATTER);
+		txtTargetFile += LocalDateTime.now().format(
+				JHVGlobals.DATE_TIME_FORMATTER);
 		txtTargetFile += selectedOutputFormat.getExtension();
 
 		// Open save-dialog
@@ -129,8 +214,8 @@ public class ExportMovieDialog implements ActionListener {
 
 		fileChooser.setSelectedFile(new File(txtTargetFile));
 
-		int retVal = fileChooser.showDialog(MainFrame.SINGLETON,
-				"Export movie");
+		int retVal = fileChooser
+				.showDialog(MainFrame.SINGLETON, "Export movie");
 
 		if (retVal != JFileChooser.CANCEL_OPTION) {
 
@@ -205,10 +290,6 @@ public class ExportMovieDialog implements ActionListener {
 	}
 
 	private void initExportMovie() {
-		//mainComponentView = GuiState3DWCS.mainComponentView;
-		
-		started = true;
-
 		if (this.selectedOutputFormat.isMovieFile()) {
 
 			writer = ToolFactory.makeWriter(directory + filename
@@ -227,7 +308,6 @@ public class ExportMovieDialog implements ActionListener {
 						+ this.selectedOutputFormat.getExtension());
 				zipOutputStream = new ZipOutputStream(fileOutputStream);
 			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -238,81 +318,22 @@ public class ExportMovieDialog implements ActionListener {
 			directory += this.filename + "/";
 		}
 
-		progressDialog.setMaximumOfProgressBar(TimeLine.SINGLETON.getMaxFrames());
+		progressDialog.setMaximumOfProgressBar(TimeLine.SINGLETON
+				.getMaxFrames());
 		TimeLine.SINGLETON.setCurrentFrame(0);
 	}
 
-	private void exportMovie() {
-		
-		if (!started)
-			stopExportMovie();
-		else {
-	
-			ArrayList<String> descriptions = null;
-			if (textEnabled) {
-				descriptions = new ArrayList<String>();
-				int counter = 0;
-				for (LayerInterface layer : Layers.LAYERS.getLayers()) {
-					if (layer.isVisible()) {
-						descriptions.add(layer.getMetaData().getFullName()
-								+ " - "
-								+ layer.getTime().format(JHVGlobals.DATE_TIME_FORMATTER));
-					}
-					counter++;
-				}
-			}
-
-			this.progressDialog.setDescription("Rendering images");
-			//BufferedImage bufferedImage = mainComponentView.getBufferedImage(
-			//		imageWidth, imageHeight, descriptions);
-
-			progressDialog.updateProgressBar(currentExportFrameNumber);
-
-			if (this.selectedOutputFormat.isMovieFile() && started) {
-				//writer.encodeVideo(0, bufferedImage, speed
-				//		* currentExportFrameNumber, TimeUnit.MILLISECONDS);
-			}
-
-			else if (this.selectedOutputFormat.isCompressedFile() && started) {
-				String number = String.format("%04d", currentExportFrameNumber);
-				try {
-					zipOutputStream.putNextEntry(new ZipEntry(filename
-							+ "/"
-							+ this.filename
-							+ "-"
-							+ number
-							+ this.selectedOutputFormat.getInnerMovieFilter()
-									.getExtension()));
-					//ImageIO.write(bufferedImage, this.selectedOutputFormat
-					//		.getInnerMovieFilter().getFileType(),
-					//		zipOutputStream);
-					zipOutputStream.closeEntry();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-
-			else if (this.selectedOutputFormat.isImageFile() && started) {
-				String number = String.format("%04d", currentExportFrameNumber);
-				//try {
-					//ImageIO.write(bufferedImage, selectedOutputFormat
-					//		.getFileType(), new File(directory + this.filename
-					//		+ this.filename + "-" + number
-					//		+ this.selectedOutputFormat.getExtension()));
-				//} catch (IOException e) {
-				//	e.printStackTrace();
-				//}
-			}
-			currentExportFrameNumber++;
-			if (currentExportFrameNumber > TimeLine.SINGLETON.getMaxFrames()) {
-				started = false;
-				stopExportMovie();
+	public void stopExportMovie() {
+		thread.suspend();
+		thread.interrupt();
+		while(thread.isAlive()){
+			try {
+				Thread.sleep(20);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
-	}
-
-	public void stopExportMovie() {
 		TimeLine.SINGLETON.setCurrentFrame(0);
 		// export movie
 		if (selectedOutputFormat.isMovieFile())
@@ -322,15 +343,10 @@ public class ExportMovieDialog implements ActionListener {
 				zipOutputStream.close();
 				fileOutputStream.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 		progressDialog.dispose();
-	}
-
-	public void cancelMovie() {
-		started = false;
 	}
 
 	public static class ProgressDialog extends JDialog implements
@@ -406,18 +422,20 @@ public class ExportMovieDialog implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent ae) {
 			if (ae.getSource() == btnCancel) {
-				this.exportMovieDialog.cancelMovie();
+				this.exportMovieDialog.cancelMovie();;
 				dispose();
 			}
 
 		}
 	}
+	
+	public void cancelMovie() {
+		started = false;
+	}
 
-	
-	
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		//exportMovie();
+		// exportMovie();
 	}
-	
+
 }

@@ -81,8 +81,10 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
     private JButton resetBtn;
 
 	private JCheckBox highDPISupport;
-
-
+	
+	private static final int MAX_SIZE_SCREENSHOT = 4096;
+	private static final int MAX_SIZE_MOVIE_EXPORT = 4096;
+	
 	private static final AspectRatio[] MOVIE_ASPECT_RATIO_PRESETS = {
 			new AspectRatio(1, 1), new AspectRatio(4, 3),
 			new AspectRatio(16, 9), new AspectRatio(16, 10),
@@ -459,7 +461,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 			formatter.setValueClass(Integer.class);
 			formatter.setCommitsOnValidEdit(true);
 			formatter.setMinimum(1);
-			formatter.setMaximum(2048);
+			formatter.setMaximum(MAX_SIZE_MOVIE_EXPORT);
 			{
 				JLabel lblImageWidth = new JLabel("Image width");
 				this.add(lblImageWidth, "2, 6, right, default");
@@ -674,7 +676,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 			NumberFormatter formatter = new NumberFormatter(format);
 			formatter.setValueClass(Integer.class);
 			formatter.setMinimum(1);
-			formatter.setMaximum(2048);
+			formatter.setMaximum(MAX_SIZE_SCREENSHOT);
 			{
 				JLabel lblImageWidth = new JLabel("Image width");
 				this.add(lblImageWidth, "2, 6, right, default");

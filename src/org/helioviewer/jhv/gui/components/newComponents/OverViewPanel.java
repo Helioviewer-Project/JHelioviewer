@@ -65,21 +65,21 @@ public class OverViewPanel extends MainPanel{
 	public void display(GLAutoDrawable drawable) {
 		this.zoomToFit();
 		super.display(drawable);
-		GL2 gl = drawable.getGL().getGL2();
 		
-		gl.glViewport(0, 0, this.getSurfaceWidth(),
-				this.getSurfaceHeight());
-		
+	}
+	
+	@Override
+	protected void render(GL2 gl) {
+		super.render(gl);
+		gl.glPushMatrix();
 		gl.glMatrixMode(GL2.GL_PROJECTION);
-		gl.glLoadIdentity();
 		double width = Math.tan(Math.toRadians(FOV / 2.0)) * this.translation.z;
-		double height = width / this.aspect;		
-		gl.glOrtho(-width, width, height, -height, -Constants.SUN_RADIUS, Constants.SUN_RADIUS);
+		gl.glOrtho(-width, width, width, -width, -Constants.SUN_RADIUS, Constants.SUN_RADIUS);
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
-		gl.glLoadIdentity();
 		gl.glDisable(GL2.GL_DEPTH_TEST);
 		
 		displayRect(gl, width / 100.0);		
+		gl.glPopMatrix();
 	}
 	
 	@Override

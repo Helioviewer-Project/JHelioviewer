@@ -20,10 +20,8 @@ import org.helioviewer.jhv.gui.actions.filefilters.ExtensionFileFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.JPGFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.PNGFilter;
 import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
-import org.helioviewer.jhv.gui.components.newComponents.MovieExportOffscreenRenderer;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.Layers;
-import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 
 import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLProfile;
@@ -115,14 +113,12 @@ public class SaveScreenshotAsAction extends AbstractAction {
 			capabilities.setFBO(true);
 
 			try {
-				MovieExportOffscreenRenderer offScreenRenderer = new MovieExportOffscreenRenderer(this.imageWidth, this.imageHeight);
-				offScreenRenderer.setSynchronizedView(MainFrame.MAIN_PANEL);
-				ImageIO.write(offScreenRenderer.getBufferedImage(descriptions),
+				ImageIO.write(MainFrame.MAIN_PANEL.getBufferedImage(this.imageWidth, this.imageHeight, descriptions),
 						fileFilter.getDefaultExtension(), selectedFile);
 			} catch (IOException e1) {
+				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			
         }
     }
     

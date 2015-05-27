@@ -2,12 +2,14 @@ package org.helioviewer.jhv.viewmodel.view.opengl;
 
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +25,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.Vector2d;
-import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.base.physics.DifferentialRotation;
@@ -60,8 +61,14 @@ import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLContext;
+import com.jogamp.opengl.GLDrawable;
+import com.jogamp.opengl.GLDrawableFactory;
 import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLCanvas;
+import com.jogamp.opengl.util.awt.ImageUtil;
+import com.jogamp.opengl.util.awt.TextRenderer;
 
 public class MainPanel extends GLCanvas implements GLEventListener,
 		MouseListener, MouseMotionListener, MouseWheelListener,
@@ -104,6 +111,15 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	private boolean track = false;
 
 	private LocalDateTime lastDate;
+
+	private int[] frameBufferObject;
+
+	private int[] renderBufferDepth;
+
+	private int[] renderBufferColor;
+	
+	private static int DEFAULT_TILE_WIDTH = 2048;
+	private static int DEFAULT_TILE_HEIGHT = 2048;
 
 	public MainPanel() {
 		this.cameraAnimations = new CopyOnWriteArrayList<CameraAnimation>();
@@ -306,11 +322,6 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 				opacityCorona = 0;
 			gl.glDisable(GL2.GL_DEPTH_TEST);
 
-			gl.glMatrixMode(GL2.GL_PROJECTION);
-			gl.glLoadIdentity();
-			gl.glOrtho(-1, 1, -1 / aspect, 1 / aspect, 10, -10);
-			gl.glMatrixMode(GL2.GL_MODELVIEW);
-			gl.glLoadIdentity();
 			gl.glColor3f(1, 1, 1);
 			gl.glEnable(GL2.GL_BLEND);
 			gl.glEnable(GL2.GL_TEXTURE_2D);
@@ -407,18 +418,18 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 			this.repaint(1000);
 	}
 
-	@Override
-	public void display(GLAutoDrawable drawable) {
-		GL2 gl = drawable.getGL().getGL2();
-		gl.getContext().makeCurrent();
+	protected void render(GL2 gl){
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
-		gl.glViewport(0, 0, this.getSurfaceWidth(), this.getSurfaceHeight());
 
 		if (track)
 			calculateTrackRotation();
 		if (layers != null && layers.getLayerCount() > 0) {
+			gl.glMatrixMode(GL2.GL_PROJECTION);
 			gl.glPushMatrix();
+			gl.glOrtho(-1, 1, -1, 1, 10, -10);
+			gl.glMatrixMode(GL2.GL_MODELVIEW);
+
 			if (CameraMode.mode == MODE.MODE_2D) {
 				this.rotation = layers.getActiveLayer().getMetaData()
 						.getRotation().copy();
@@ -428,22 +439,24 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 					this.displayLayer(gl, (NewLayer) layer);
 				}
 			}
-			gl.glPopMatrix();
-
 			gl.glMatrixMode(GL2.GL_PROJECTION);
-			gl.glLoadIdentity();
+			gl.glPopMatrix();
+			gl.glPushMatrix();
 			double width = Math.tan(Math.toRadians(FOV / 2.0))
 					* this.translation.z;
-			double height = width / this.aspect;
-
+			
 			gl.glOrtho(-width + this.translation.x, width + this.translation.x,
-					height + this.translation.y, -height + this.translation.y,
+					width + this.translation.y, -width + this.translation.y,
 					-Constants.SUN_RADIUS, Constants.SUN_RADIUS);
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
-			gl.glLoadIdentity();
 			calculateBounds();
-			for (CameraInteraction cameraInteraction : cameraInteractions)
+			for (CameraInteraction cameraInteraction : cameraInteractions){
 				cameraInteraction.renderInteraction(gl);
+			}
+			gl.glMatrixMode(GL2.GL_PROJECTION);
+			gl.glPopMatrix();
+			gl.glMatrixMode(GL2.GL_MODELVIEW);
+
 		}
 
 		// empty screen
@@ -468,7 +481,22 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 			cameraAnimations.remove(0);
 		if (!cameraAnimations.isEmpty()) {
 			cameraAnimations.get(0).animate(this);
-		}
+		}		
+	}
+	
+	@Override
+	public void display(GLAutoDrawable drawable) {
+		drawable.getContext().makeCurrent();
+		GL2 gl = drawable.getGL().getGL2();
+		gl.glViewport(0, 0, this.getSurfaceWidth(), this.getSurfaceHeight());
+
+		gl.glMatrixMode(GL2.GL_PROJECTION);
+		gl.glLoadIdentity();
+		gl.glScaled(1, aspect, 1);
+		gl.glMatrixMode(GL2.GL_MODELVIEW);
+		gl.glLoadIdentity();
+		
+		this.render(gl);
 
 	}
 
@@ -552,6 +580,10 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 
 		gl.glDisable(GL2.GL_TEXTURE_2D);
+
+		frameBufferObject = new int[1];
+		gl.glGenFramebuffers(1, frameBufferObject, 0);
+		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, frameBufferObject[0]);
 		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);
 		gl.glEnable(GL2.GL_TEXTURE_2D);
 
@@ -560,6 +592,34 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 
 	}
 
+	private void generateNewRenderBuffers(GL2 gl, int width, int height) {
+		// tileWidth = defaultTileWidth;
+		// tileHeight = defaultTileHeight;
+		if (renderBufferDepth != null) {
+			gl.glDeleteRenderbuffers(1, renderBufferDepth, 0);
+		}
+		renderBufferDepth = new int[1];
+		gl.glGenRenderbuffers(1, renderBufferDepth, 0);
+		gl.glBindRenderbuffer(GL2.GL_RENDERBUFFER, renderBufferDepth[0]);
+		gl.glRenderbufferStorage(GL2.GL_RENDERBUFFER, GL2.GL_DEPTH_COMPONENT,
+				width, height);
+		gl.glFramebufferRenderbuffer(GL2.GL_FRAMEBUFFER,
+				GL2.GL_DEPTH_ATTACHMENT, GL2.GL_RENDERBUFFER,
+				renderBufferDepth[0]);
+
+		if (renderBufferColor != null) {
+			gl.glDeleteRenderbuffers(1, renderBufferColor, 0);
+		}
+		renderBufferColor = new int[1];
+		gl.glGenRenderbuffers(1, renderBufferColor, 0);
+		gl.glBindRenderbuffer(GL2.GL_RENDERBUFFER, renderBufferColor[0]);
+		gl.glRenderbufferStorage(GL2.GL_RENDERBUFFER, GL2.GL_RGBA8, width,
+				height);
+		gl.glFramebufferRenderbuffer(GL2.GL_FRAMEBUFFER,
+				GL2.GL_COLOR_ATTACHMENT0, GL2.GL_RENDERBUFFER,
+				renderBufferColor[0]);
+	}
+	
 	@Override
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width,
 			int height) {
@@ -633,13 +693,123 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 
 	public BufferedImage getBufferedImage(int imageWidth, int imageHeight,
 			ArrayList<String> descriptions) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
-	public void updateMainImagePanelSize(Vector2i vector2i) {
-		// TODO Auto-generated method stub
+		int tileWidth = imageWidth < DEFAULT_TILE_WIDTH ? imageWidth : DEFAULT_TILE_WIDTH;
+		int tileHeight = imageHeight < DEFAULT_TILE_HEIGHT ? imageHeight
+				: DEFAULT_TILE_HEIGHT;
 
+		System.out
+				.println(">> GLComponentView.display() > Start taking screenshot");
+		double xTiles = imageWidth / (double) tileWidth;
+		double yTiles = imageHeight / (double) tileHeight;
+		int countXTiles = imageWidth % tileWidth == 0 ? (int) xTiles
+				: (int) xTiles + 1;
+		int countYTiles = imageHeight % tileHeight == 0 ? (int) yTiles
+				: (int) yTiles + 1;
+
+		GLDrawableFactory factory = GLDrawableFactory.getFactory(GLProfile
+				.getDefault());
+		GLProfile profile = GLProfile.get(GLProfile.GL2);
+		profile = GLProfile.getDefault();
+		GLCapabilities capabilities = new GLCapabilities(profile);
+		capabilities.setDoubleBuffered(false);
+		capabilities.setOnscreen(false);
+		capabilities.setHardwareAccelerated(true);
+		capabilities.setFBO(true);
+
+		GLDrawable offscreenDrawable = factory.createOffscreenDrawable(null,
+				capabilities, null, tileWidth, tileHeight);
+
+		offscreenDrawable.setRealized(true);
+		GLContext offscreenContext = this.getContext();
+		offscreenDrawable.setRealized(true);
+		offscreenContext.makeCurrent();
+		GL2 offscreenGL = offscreenContext.getGL().getGL2();
+
+		offscreenGL.glBindFramebuffer(GL2.GL_FRAMEBUFFER, frameBufferObject[0]);
+		generateNewRenderBuffers(offscreenGL, tileWidth, tileHeight);
+
+		BufferedImage screenshot = new BufferedImage(imageWidth, imageHeight,
+				BufferedImage.TYPE_3BYTE_BGR);
+		ByteBuffer.wrap(((DataBufferByte) screenshot.getRaster()
+				.getDataBuffer()).getData());
+
+		offscreenGL.glViewport(0, 0, tileWidth, tileHeight);
+		offscreenGL.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+
+		double aspect = imageWidth / (double) imageHeight;
+		double top = Math.tan(MainPanel.FOV / 360.0 * Math.PI) * MainPanel.CLIP_NEAR;
+		double right = top * aspect;
+		double left = -right;
+		double bottom = -top;
+		
+		double tileLeft, tileRight, tileBottom, tileTop;
+		TextRenderer textRenderer = new TextRenderer(new Font("SansSerif",
+				Font.BOLD, 24));
+		textRenderer.setColor(1f, 1f, 1f, 1f);
+
+		offscreenGL.glViewport(0, 0, tileWidth, tileHeight);
+
+		offscreenGL.glMatrixMode(GL2.GL_PROJECTION);
+		offscreenGL.glLoadIdentity();
+		offscreenGL.glScaled(1, aspect, 1);
+		offscreenGL.glMatrixMode(GL2.GL_MODELVIEW);
+
+		for (int x = 0; x < countXTiles; x++) {
+			for (int y = 0; y < countYTiles; y++) {
+				offscreenGL.glMatrixMode(GL2.GL_PROJECTION);
+				offscreenGL.glPushMatrix();
+				offscreenGL.glMatrixMode(GL2.GL_MODELVIEW);
+				tileLeft = left + (right - left) / xTiles * x;
+				tileRight = left + (right - left) / xTiles * (x + 1);
+				tileBottom = bottom + (top - bottom) / yTiles * y;
+				tileTop = bottom + (top - bottom) / yTiles * (y + 1);
+
+
+				offscreenGL.glMatrixMode(GL2.GL_PROJECTION);
+				offscreenGL.glViewport(0, 0, imageWidth, imageHeight);
+				offscreenGL.glTranslated(-x, -y, 0);
+				offscreenGL.glMatrixMode(GL2.GL_MODELVIEW);
+				
+
+				// double factor =
+				int destX = tileWidth * x;
+				int destY = tileHeight * y;
+
+				render(offscreenGL);
+				
+				if (descriptions != null && x == 0 && y == 0) {
+					int counter = 0;
+					textRenderer.beginRendering(this.getSurfaceWidth(),
+							this.getSurfaceHeight());
+					for (String description : descriptions) {
+						textRenderer.draw(description, 5, 5 + 40 * counter++);
+					}
+					textRenderer.endRendering();
+				}
+				offscreenGL.glPixelStorei(GL2.GL_PACK_ROW_LENGTH, imageWidth);
+				offscreenGL.glPixelStorei(GL2.GL_PACK_SKIP_ROWS, destY);
+				offscreenGL.glPixelStorei(GL2.GL_PACK_SKIP_PIXELS, destX);
+				offscreenGL.glPixelStorei(GL2.GL_PACK_ALIGNMENT, 1);
+
+				int cutOffX = imageWidth >= (x + 1) * tileWidth ? tileWidth
+						: tileWidth - x * tileWidth;
+				int cutOffY = imageHeight >= (y + 1) * tileHeight ? tileHeight
+						: tileHeight - y * tileHeight;
+
+				offscreenGL.glReadPixels(0, 0, cutOffX, cutOffY, GL2.GL_BGR,
+						GL2.GL_UNSIGNED_BYTE, ByteBuffer
+								.wrap(((DataBufferByte) screenshot.getRaster()
+										.getDataBuffer()).getData()));
+				offscreenGL.glMatrixMode(GL2.GL_PROJECTION);
+				offscreenGL.glPopMatrix();
+				offscreenGL.glMatrixMode(GL2.GL_MODELVIEW);
+
+			}
+		}
+
+		ImageUtil.flipImageVertically(screenshot);
+		return screenshot;
 	}
 
 	@Override
