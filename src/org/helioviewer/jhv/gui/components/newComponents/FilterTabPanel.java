@@ -44,8 +44,6 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 	private JToggleButton btnInverseColorTable;
 	private JLabel lblOpacity, lblSharpen, lblGamma, lblContrast;
 	private LayerInterface activeLayer;
-	private boolean firstStart = true;
-	
 	private static final double GAMMA_FACTOR = 0.01 * Math.log(10);
 	
     private static final Icon ICON_INVERT = IconBank.getIcon(JHVIcon.INVERT);
@@ -288,8 +286,6 @@ public class FilterTabPanel extends JPanel implements NewLayerListener{
 
 	@Override
 	public void newlayerRemoved(int idx) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

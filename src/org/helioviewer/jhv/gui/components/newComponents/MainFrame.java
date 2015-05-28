@@ -40,7 +40,7 @@ public class MainFrame extends JFrame{
 
 	public static final int SIDE_PANEL_WIDTH = 320;
 
-	protected JSplitPane splitPane;
+	private JSplitPane splitPane;
 
 	public FilterTabPanel filterTabPanel;
 

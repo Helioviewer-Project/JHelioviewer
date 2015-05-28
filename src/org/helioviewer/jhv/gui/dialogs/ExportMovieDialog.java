@@ -65,20 +65,18 @@ public class ExportMovieDialog implements ActionListener {
 	private boolean textEnabled;
 	private int imageWidth;
 	private int imageHeight;
-	private ExportMovieDialog exportMovieDialog;
 	private Thread thread;
 	private ArrayList<String> descriptions;
 	private BufferedImage bufferedImage;
 
 	public ExportMovieDialog() {
-		exportMovieDialog = this;
 		if (openFileChooser() == JFileChooser.APPROVE_OPTION) {
 
 			this.loadSettings();
 			Settings.setProperty(SETTING_MOVIE_EXPORT_LAST_DIRECTORY, directory);
 			MainFrame.SINGLETON.setEnabled(false);
 
-			progressDialog = new ProgressDialog(exportMovieDialog);
+			progressDialog = new ProgressDialog(this);
 			progressDialog.setVisible(true);
 
 			this.initExportMovie();
@@ -323,17 +321,7 @@ public class ExportMovieDialog implements ActionListener {
 		TimeLine.SINGLETON.setCurrentFrame(0);
 	}
 
-	public void stopExportMovie() {
-		thread.suspend();
-		thread.interrupt();
-		while(thread.isAlive()){
-			try {
-				Thread.sleep(20);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+	private void stopExportMovie() {
 		TimeLine.SINGLETON.setCurrentFrame(0);
 		// export movie
 		if (selectedOutputFormat.isMovieFile())
@@ -349,7 +337,7 @@ public class ExportMovieDialog implements ActionListener {
 		progressDialog.dispose();
 	}
 
-	public static class ProgressDialog extends JDialog implements
+	private class ProgressDialog extends JDialog implements
 			ActionListener {
 
 		private static final long serialVersionUID = -488930636247393662L;
@@ -359,7 +347,7 @@ public class ExportMovieDialog implements ActionListener {
 		private ExportMovieDialog exportMovieDialog;
 		private final JPanel contentPanel = new JPanel();
 
-		public ProgressDialog(ExportMovieDialog exportMovieDialog) {
+		private ProgressDialog(ExportMovieDialog exportMovieDialog) {
 			super(MainFrame.SINGLETON);
 			this.exportMovieDialog = exportMovieDialog;
 			setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -405,7 +393,7 @@ public class ExportMovieDialog implements ActionListener {
 			this.progressBar.setMaximum(maximum);
 		}
 
-		public void updateProgressBar(int value) {
+		private void updateProgressBar(int value) {
 			this.progressBar.setValue(value);
 		}
 

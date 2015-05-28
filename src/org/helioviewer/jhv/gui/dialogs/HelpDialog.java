@@ -102,7 +102,5 @@ public class HelpDialog extends JDialog implements ActionListener, ShowableDialo
 
 	@Override
 	public void init() {
-		// TODO Auto-generated method stub
-		
 	}
 }

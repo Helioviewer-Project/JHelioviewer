@@ -244,11 +244,6 @@ public class JHelioviewer {
 		}
 	}
 
-	private static Exception JavaException(String string) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	private static void loadLibraries() {
 		try {
 			Path tmpLibDir = Files.createTempDirectory("jhv-libs");

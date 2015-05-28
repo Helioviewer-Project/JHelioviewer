@@ -15,8 +15,8 @@ public class CameraRotationInteraction extends CameraInteraction {
 
 	public static boolean yAxisBlocked = false;
 
-	public CameraRotationInteraction(MainPanel compenentView, Camera camera) {
-		super(compenentView, camera);
+	public CameraRotationInteraction(MainPanel mainPanel, Camera camera) {
+		super(mainPanel, camera);
 	}
 
 	@Override

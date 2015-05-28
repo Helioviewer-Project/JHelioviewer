@@ -87,7 +87,7 @@ public class NewPlayPanel extends JPanel implements TimeLineListener, NewLayerLi
         public abstract int getSecondsPerSecond();
     }
     
-    public enum AnimationMode
+    private enum AnimationMode
     {
         LOOP
         {
@@ -111,66 +111,6 @@ public class NewPlayPanel extends JPanel implements TimeLineListener, NewLayerLi
             }
         }
     }
-	public static class NextFrameAction extends AbstractAction{
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 8262474213872230813L;
-
-		public NextFrameAction() {
-			super("Step to Next Frame", ICON_FORWARD);
-            putValue(MNEMONIC_KEY, KeyEvent.VK_N);
-            putValue(MNEMONIC_KEY, KeyEvent.VK_RIGHT);
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_MASK));
-		}
-		
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			TimeLine.SINGLETON.nextFrame();
-		}		
-	}
-
-	public static class PreviousFrameAction extends AbstractAction{
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 3538526442851660497L;
-
-		public PreviousFrameAction() {
-            super("Step to Previous Frame", ICON_BACKWARD);
-            putValue(MNEMONIC_KEY, KeyEvent.VK_P);
-            putValue(ACCELERATOR_KEY, KeyEvent.VK_LEFT);
-            putValue(ACTION_COMMAND_KEY, KeyEvent.VK_LEFT);
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_B, KeyEvent.ALT_MASK));
-		}
-		
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			TimeLine.SINGLETON.previousFrame();
-		}		
-	}
-
-	public static class PlayPauseAction extends AbstractAction{
-		
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 6597468856950412136L;
-
-		public PlayPauseAction() {
-            super("Play movie", ICON_PLAY);
-            putValue(MNEMONIC_KEY, KeyEvent.VK_A);
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.ALT_MASK));
-		}
-		
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			TimeLine.SINGLETON.setPlaying(!TimeLine.SINGLETON.isPlaying());
-		}		
-	}
-
 	
     // Icons
     private static final Icon ICON_PLAY = IconBank.getIcon(JHVIcon.PLAY_NEW, 16, 16);

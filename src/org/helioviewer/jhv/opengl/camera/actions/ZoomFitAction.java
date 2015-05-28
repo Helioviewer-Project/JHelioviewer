@@ -37,7 +37,7 @@ public class ZoomFitAction extends AbstractAction {
                 Dimension canvasSize = MainFrame.MAIN_PANEL.getSize();
                 double aspect = canvasSize.getWidth() / canvasSize.getHeight();
                 halfWidth = aspect > 1 ? halfWidth * aspect : halfWidth;
-                double halfFOVRad = Math.toRadians(compenentView.FOV / 2.0);
+                double halfFOVRad = Math.toRadians(MainPanel.FOV / 2.0);
                 double distance = halfWidth * Math.sin(Math.PI / 2 - halfFOVRad) / Math.sin(halfFOVRad);
                 distance = distance - compenentView.getTranslation().z;
                 compenentView.addCameraAnimation(new CameraZoomAnimation(distance, 500));

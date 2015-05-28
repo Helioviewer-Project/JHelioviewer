@@ -44,11 +44,6 @@ public class TextDialog extends JDialog implements ActionListener, ShowableDialo
         init(text.toString());
     }
 
-    public TextDialog(String title, String text) {
-        super(MainFrame.SINGLETON, title, true);
-        init(text);
-    }
-
     private void init(String text) {
         JTextArea textArea = new JTextArea(text);
         textArea.setEditable(false);

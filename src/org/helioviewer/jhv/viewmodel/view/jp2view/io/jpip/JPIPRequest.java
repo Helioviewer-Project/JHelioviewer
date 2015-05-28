@@ -13,7 +13,7 @@ public class JPIPRequest extends HTTPRequest {
     private String query = null;
     private Priority priority;
     
-    public enum Priority{
+    private enum Priority{
     	HIGH, LOW;
     }
     
@@ -25,18 +25,6 @@ public class JPIPRequest extends HTTPRequest {
      */
     public JPIPRequest(Method _method) {
         super(_method);
-    }
-
-    /**
-     * This constructor allows to specify directly the initial query.
-     * 
-     * @param _method
-     * @param _query
-     */
-    public JPIPRequest(Method _method, Object _query) {
-        super(_method);
-
-        query = _query.toString();
     }
 
     /** Method does nothing. */

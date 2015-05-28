@@ -36,7 +36,7 @@ public abstract class MetaData {
     protected double maskRotation;
     protected Vector2d occulterCenter;
     protected Vector3d orientation = new Vector3d(0.00,0.00,1.00);
-    protected Quaternion3d defaultRotation = new Quaternion3d();
+    private Quaternion3d defaultRotation = new Quaternion3d();
     
     protected double heeqX;
     protected double heeqY;
@@ -86,88 +86,6 @@ public abstract class MetaData {
             instrument = " ";
         }
 
-    }
-
-    /**
-     * Constructor, setting size and position.
-     * 
-     * @param newLowerLeftCorner
-     *            Physical lower left corner of the corresponding image
-     * @param newSizeVector
-     *            Physical size of the corresponding image
-     */
-    public MetaData(Vector2d newLowerLeftCorner, Vector2d newSizeVector) {
-        lowerLeftCorner = newLowerLeftCorner;
-        sizeVector = newSizeVector;
-    }
-
-    /**
-     * Constructor, setting size and position.
-     * 
-     * @param newLowerLeftCornerX
-     *            Physical lower left x-coordinate of the corresponding image
-     * @param newLowerLeftCornerY
-     *            Physical lower left y-coordinate of the corresponding image
-     * @param newWidth
-     *            Physical width of the corresponding image
-     * @param newHeight
-     *            Physical height of the corresponding image
-     */
-    public MetaData(double newLowerLeftCornerX, double newLowerLeftCornerY, double newWidth, double newHeight) {
-        lowerLeftCorner = new Vector2d(newLowerLeftCornerX, newLowerLeftCornerY);
-        sizeVector = new Vector2d(newWidth, newHeight);
-    }
-
-    /**
-     * Constructor, setting size and position.
-     * 
-     * @param newLowerLeftCorner
-     *            Physical lower left corner of the corresponding image
-     * @param newWidth
-     *            Physical width of the corresponding image
-     * @param newHeight
-     *            Physical height of the corresponding image
-     */
-    public MetaData(Vector2d newLowerLeftCorner, double newWidth, double newHeight) {
-        lowerLeftCorner = newLowerLeftCorner;
-        sizeVector = new Vector2d(newWidth, newHeight);
-    }
-
-    /**
-     * Constructor, setting size and position.
-     * 
-     * @param newLowerLeftCornerX
-     *            Physical lower left x-coordinate of the corresponding image
-     * @param newLowerLeftCornerY
-     *            Physical lower left y-coordinate of the corresponding image
-     * @param newSizeVector
-     *            Physical size of the corresponding image
-     */
-    public MetaData(double newLowerLeftCornerX, double newLowerLeftCornerY, Vector2d newSizeVector) {
-        lowerLeftCorner = new Vector2d(newLowerLeftCornerX, newLowerLeftCornerY);
-        sizeVector = newSizeVector;
-    }
-
-    /**
-     * Constructor, setting size and position.
-     * 
-     * @param newRectangle
-     *            Full physical rectangle of the corresponding image
-     */
-    public MetaData(RectangleDouble newRectangle) {
-        lowerLeftCorner = newRectangle.getLowerLeftCorner();
-        sizeVector = newRectangle.getSize();
-    }
-
-    /**
-     * Copy constructor
-     * 
-     * @param original
-     *            Object to copy
-     */
-    public MetaData(MetaData original) {
-        lowerLeftCorner = new Vector2d(original.lowerLeftCorner);
-        sizeVector = new Vector2d(original.sizeVector);
     }
 
     /**
@@ -319,20 +237,6 @@ public abstract class MetaData {
     
     public abstract boolean updatePixelParameters();
 
-	public boolean hasSphere() {
-		// TODO Auto-generated method stub
-		return hasSphere;
-	}
-
-	public boolean hasCorona() {
-		// TODO Auto-generated method stub
-		return hasCorona;
-	}
-	
-	public boolean hasRotation(){
-		return hasRotation;
-	}
-
 	public double getHEEX() {
         return heeX;
     }
@@ -420,18 +324,6 @@ public abstract class MetaData {
 
 	public double getMaskRotation() {
         return maskRotation;
-	}
-
-	public boolean checkForModifications() {
-        boolean changed = updatePixelParameters();
-
-        double currentMaskRotation = Math.toRadians(metaDataContainer.tryGetDouble("CROTA"));
-        if (changed || Math.abs(maskRotation - currentMaskRotation) > Math.toRadians(1)) {
-            maskRotation = currentMaskRotation;
-            changed = true;
-        }
-
-        return changed;
 	}
 
 	public double getRadiusSuninArcsec() {

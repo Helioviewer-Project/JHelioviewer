@@ -175,13 +175,6 @@ public class NewRender {
 			e.printStackTrace();
 		}
 	}
-	
-	public void openLocalImage(File file) throws KduException, IOException{
-		family_src.Open(file.getCanonicalPath(), true);
-		jpxSrc.Open(family_src, false);
-		compositor.Create(jpxSrc, CODESTREAM_CACHE_THRESHOLD);
-		compositor.Set_thread_env(threadEnviroment, null);
-	}
 
 	public MetaData getMetadata(int index) throws JHV_KduException{
 			String xmlText = KakaduUtils.getXml(family_src, index);
@@ -211,16 +204,6 @@ public class NewRender {
                 ex.printStackTrace();
             }
             return null;
-	}
-	void abolish() {
-		try
-        {
-            threadEnviroment.Destroy();
-        }
-        catch(KduException e)
-        {
-            e.printStackTrace();
-        }
 	}
 
 	public int getFrameCount() throws KduException {

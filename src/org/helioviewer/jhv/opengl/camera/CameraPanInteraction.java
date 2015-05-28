@@ -11,8 +11,6 @@ import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 public class CameraPanInteraction extends CameraInteraction {
 	private double meterPerPixelWidth;
 	private double meterPerPixelHeight;
-	private double z;
-	private Vector3d defaultTranslation;
 	private Point lastPosition;
 	private boolean dragged;
 	

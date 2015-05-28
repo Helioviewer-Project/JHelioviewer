@@ -32,7 +32,7 @@ public class CollapsiblePane extends JComponent implements ActionListener {
     private static final ImageIcon ICON_EXPANDED = IconBank.getIcon(JHVIcon.DOWN2);
     private static final ImageIcon ICON_COLLAPSED = IconBank.getIcon(JHVIcon.RIGHT2);
 
-    protected JToggleButton toggleButton;
+    private JToggleButton toggleButton;
     private Component component;
 
     /**

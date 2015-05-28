@@ -32,16 +32,16 @@ public class HTTPSocket extends Socket {
     private String lastUsedHost = null;
 
     /** The default port for the HTTP socket */
-    static public final int PORT = 80;
+    static private final int PORT = 80;
 
     /** The maximum HTTP version supported */
-    static public final double version = 1.1;
+    static private final double version = 1.1;
 
     /** The version in standard formated text */
     static public final String versionText = "HTTP/" + Double.toString(version);
 
     /** The array of bytes that contains the CRLF codes */
-    static public final byte CRLFBytes[] = { 13, 10 };
+    static private final byte CRLFBytes[] = { 13, 10 };
 
     /** The string representation of the CRLF codes */
     static public final String CRLF = new String(CRLFBytes);

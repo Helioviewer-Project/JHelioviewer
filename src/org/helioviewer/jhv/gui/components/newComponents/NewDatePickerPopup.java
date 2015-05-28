@@ -33,7 +33,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
-public class NewDatePickerPopup extends JDialog {
+class NewDatePickerPopup extends JDialog {
 
 	/**
 	 * 
@@ -43,7 +43,6 @@ public class NewDatePickerPopup extends JDialog {
 	private CalenderCellRenderer calenderCellRenderer;
 	private CalenderTableModel calenderTableModel;
 	private NewDatePicker newDatePicker;
-	private NewDatePickerPopup newDatePickerPopup = this;
 	private String[] columnNames;
 
 	private JPanel controlPanel;
@@ -64,7 +63,7 @@ public class NewDatePickerPopup extends JDialog {
 		}
 	};
 
-	public NewDatePickerPopup(final NewDatePicker newDatePicker) {
+	NewDatePickerPopup(final NewDatePicker newDatePicker) {
 		this.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowDeactivated(WindowEvent e) {
@@ -84,15 +83,6 @@ public class NewDatePickerPopup extends JDialog {
 		calenderCellRenderer = new CalenderCellRenderer();
 		calenderTableModel = new CalenderTableModel(null, null);
 		calenderCellRenderer.setCurrentDate(currentDate);
-		initGUI();
-		updateData();
-	}
-
-	public NewDatePickerPopup(LocalDate date) {
-		currentDate = date;
-		calenderCellRenderer = new CalenderCellRenderer();
-		calenderCellRenderer.setCurrentDate(currentDate);
-		calenderTableModel = new CalenderTableModel(null, null);
 		initGUI();
 		updateData();
 	}
@@ -347,7 +337,7 @@ public class NewDatePickerPopup extends JDialog {
 
 	}
 
-	public class CalenderHeaderRenderer extends DefaultTableCellRenderer {
+	private class CalenderHeaderRenderer extends DefaultTableCellRenderer {
 
 		/**
 		 * 

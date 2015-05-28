@@ -80,7 +80,7 @@ public class ChunkedInputStream extends InputStream {
                     return tmpRead[0] & 0xff;
             }
     }
-    byte[] tmpRead=new byte[1];
+    private byte[] tmpRead=new byte[1];
     
     
     @Override

@@ -11,7 +11,6 @@ public interface Camera {
     public Vector3d getTranslation();
 	public void setTranslation(Vector3d translation);
 	public Matrix4d getTransformation();
-	public Matrix4d getTransformation(Quaternion3d rotation);
 	public void setZTranslation(double z);
 	public void repaintViewAndSynchronizedViews();
 	public void addCameraAnimation(CameraAnimation cameraAnimation);

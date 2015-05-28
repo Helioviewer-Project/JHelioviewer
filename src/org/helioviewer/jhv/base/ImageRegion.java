@@ -49,15 +49,6 @@ public class ImageRegion {
 	public void setImageData(Rectangle2D imageData){
 		this.imageData = imageData;
 	}
-		
-	public Vector2d calculateImageSize(LayerInterface layerInterface, MainPanel compenentView){
-		MetaData metaData = layerInterface.getMetaData();
-		Vector2i resolution = metaData.getResolution();
-		
-		double z = metaData.getPhysicalImageHeight() * Math.tan(Math.toRadians(MainPanel.FOV));
-		
-		return Vector2d.scale(resolution, compenentView.getTranslation().z / z); 
-	}
 	
 	public Rectangle2D getImageData(){
 		return this.imageData;
@@ -125,7 +116,7 @@ public class ImageRegion {
 		return textureScaleHeight * yTextureScale;
 	}
 	
-	public void calculateImageSize(Vector2i resolution){
+	private void calculateImageSize(Vector2i resolution){
 		//Math.ceil(resolution);
 		int textureMaxX = getNextInt(resolution.getX() * (imageData.getX() + imageData.getWidth()) * imageScaleFactor);
 		int textureMaxY = getNextInt(resolution.getY() * (imageData.getY() + imageData.getHeight()) * imageScaleFactor);
@@ -153,7 +144,7 @@ public class ImageRegion {
 		return imageScaleFactor;
 	}
 	
-	public static float nextZoomFraction(double zoomFactor){
+	private static float nextZoomFraction(double zoomFactor){
 		int powerOfTwo = OpenGLHelper.nextPowerOfTwo(getNextInt((1/zoomFactor)));
 		powerOfTwo >>= 1;
 		return 1/(float)powerOfTwo;

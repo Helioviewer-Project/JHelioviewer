@@ -10,7 +10,7 @@ import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 
 public class RayTrace {
-	public enum HITPOINT_TYPE{
+	private enum HITPOINT_TYPE{
 		SPHERE, PLANE, SPHERE_PLANE;
 	}
 	
@@ -106,14 +106,14 @@ public class RayTrace {
 	}
 	
 	public class Ray{
-		public Vector3d origin;
-		public Vector3d direction;
-		public double t = -1;
-		public double tSphere = -1;
-		public double tPlane = -1;
-		public HITPOINT_TYPE hitpointType;
+		private Vector3d origin;
+		private Vector3d direction;
+		private double t = -1;
+		private double tSphere = -1;
+		private double tPlane = -1;
+		private HITPOINT_TYPE hitpointType;
 		
-		public Ray(Vector3d origin, Vector3d direction) {
+		private Ray(Vector3d origin, Vector3d direction) {
 			this.origin = origin;
 			this.direction = direction;
 		}

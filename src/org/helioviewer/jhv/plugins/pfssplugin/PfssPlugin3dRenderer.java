@@ -6,11 +6,12 @@ import java.util.Date;
 
 import org.helioviewer.jhv.plugins.pfssplugin.data.PfssDecompressed;
 import org.helioviewer.jhv.plugins.pfssplugin.data.managers.FrameManager;
+import org.helioviewer.jhv.plugins.plugin.RenderablePlugin;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 
 import com.jogamp.opengl.GL2;
 
-public class PfssPlugin3dRenderer{
+public class PfssPlugin3dRenderer implements RenderablePlugin{
 	private FrameManager manager;
 	private boolean isVisible = false;
 	/**
@@ -60,6 +61,11 @@ public class PfssPlugin3dRenderer{
 	public boolean isVisible()
 	{
 		return isVisible;
+	}
+
+	@Override
+	public LocalDateTime getDateTime() {
+		return null;
 	}
 
 }

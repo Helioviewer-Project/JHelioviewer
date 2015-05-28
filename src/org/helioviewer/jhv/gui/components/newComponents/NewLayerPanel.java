@@ -30,7 +30,7 @@ import org.helioviewer.jhv.layers.NewLayerListener;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine.TimeLineListener;
 
-public class NewLayerPanel extends JPanel implements NewLayerListener, TimeLineListener{
+class NewLayerPanel extends JPanel implements NewLayerListener, TimeLineListener{
 
 	/**
 	 * 
@@ -39,9 +39,9 @@ public class NewLayerPanel extends JPanel implements NewLayerListener, TimeLineL
 	
 	private final AddLayerPanel addLayerPanel = new AddLayerPanel();
 	private JTable table;
+	private Object columnNames[] = { "Column One", "Column Two", "Column Three", "Column Four"};
 	private LayerTableModel tableModel;
-	Object columnNames[] = { "Column One", "Column Two", "Column Three", "Column Four"};
-	Object rowData[][] = { { "Row1-Column1", "Row1-Column2", "Row1-Column3"},
+	private Object rowData[][] = { { "Row1-Column1", "Row1-Column2", "Row1-Column3"},
             { "Row2-Column1", "Row2-Column2", "Row2-Column3"} };
 	
 	public NewLayerPanel(){

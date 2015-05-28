@@ -7,8 +7,8 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.NewCache;
 import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.NewRender;
 
 public class Layers {
-	CopyOnWriteArrayList<LayerInterface> layers;
-	CopyOnWriteArrayList<NewLayerListener> layerListeners;
+	private CopyOnWriteArrayList<LayerInterface> layers;
+	private CopyOnWriteArrayList<NewLayerListener> layerListeners;
 	private int activeLayer = 0;
 	
 	private NewRender renderer = new NewRender();
@@ -33,18 +33,6 @@ public class Layers {
 		}
 	}
 	
-	public NewLayer addLayer(int id){
-		NewLayer layer = new NewLayer(id, renderer, newCache);
-		layers.add(layer);
-		for (NewLayerListener renderListener : layerListeners){
-			renderListener.newlayerAdded();
-		}
-		if (layers.size() == 1){
-			this.layerChanged();
-		}
-		return layer;
-	}
-	
 	public NewLayer addLayer(int id, LocalDateTime start, LocalDateTime end, int cadence){
 		NewLayer layer = new NewLayer(id, renderer, newCache, start, end, cadence);
 		layers.add(layer);
@@ -57,7 +45,7 @@ public class Layers {
 		return layer;
 	}
 	
-	public LayerInterface getLayer(int idx){
+	private LayerInterface getLayer(int idx){
 		return layers.get(idx);
 	}
 	
@@ -77,7 +65,7 @@ public class Layers {
 		return layers.size();
 	}
 
-	public void layerChanged() {
+	private void layerChanged() {
 		for (NewLayerListener renderListener : layerListeners){
 			renderListener.activeLayerChanged(this.getLayer(activeLayer));
 		}

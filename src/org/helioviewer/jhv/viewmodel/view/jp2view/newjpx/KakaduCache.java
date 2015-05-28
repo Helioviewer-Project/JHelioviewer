@@ -8,13 +8,8 @@ public class KakaduCache implements JHVCachable {
 	
 	private Kdu_cache cache;
 	
-	private int insturmentID;
-	
-	private boolean complete;	
-	
 	public KakaduCache(int insturmentID){
 		size = 0;
-		this.insturmentID = insturmentID;
 		this.cache = new Kdu_cache();
 	}
 		

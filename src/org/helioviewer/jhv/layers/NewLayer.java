@@ -18,11 +18,8 @@ import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 public class NewLayer extends LayerInterface{
 	
 	
-	public UltimateLayer ultimateLayer;
-	private NewRender newRender;
-	private NewCache newCache;
-	
-	public int textureOverview;		
+	private UltimateLayer ultimateLayer;
+			
 	private LayerRayTrace layerRayTrace;
 	
 	public NewLayer(int sourceID, NewRender newRender, NewCache newCache) {
@@ -100,8 +97,4 @@ public class NewLayer extends LayerInterface{
 		return ultimateLayer.getImageRegion();
 	}
 
-	public void setTimeRange(LocalDateTime start, LocalDateTime end,
-			int cadence) {
-		ultimateLayer.setTimeRange(start, end, cadence);
-	}
 }

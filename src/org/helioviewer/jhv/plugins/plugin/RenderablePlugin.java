@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 import com.jogamp.opengl.GL2;
 
-public interface RenderablePluginInterface {	
+public interface RenderablePlugin {	
 	void render(GL2 gl);
 	LocalDateTime getDateTime();
 	

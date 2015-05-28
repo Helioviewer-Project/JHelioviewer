@@ -22,7 +22,7 @@ import javax.swing.JTextField;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 
-public class NewDatePicker extends JPanel{
+class NewDatePicker extends JPanel{
 
 	/**
 	 * 
@@ -41,7 +41,8 @@ public class NewDatePicker extends JPanel{
 	private final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss");
 	private final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	private final long MAX_TIME_STEPS = 3600 * 24 * 30; 
-	public NewDatePicker(LocalDateTime dateTime) {
+	
+	NewDatePicker(LocalDateTime dateTime) {
 		this.dateTime = dateTime;
 		newDatePickerPopup = new NewDatePickerPopup(this);
 		initGUI();
@@ -208,14 +209,14 @@ public class NewDatePicker extends JPanel{
 		this.dateTime = dateTime;
 	}
 
-	public void updateDate(LocalDate newDate) {
+	void updateDate(LocalDate newDate) {
 		this.dateTime = newDate.atTime(this.dateTime.toLocalTime());
 		this.txtFieldDate.setText(dateTime.format(DATE_FORMAT));
 		newDatePickerPopup.setVisible(false);
 		popupVisibility = false;
 	}
 
-	public void hidePopup() {
+	void hidePopup() {
 		newDatePickerPopup.setVisible(false);
 		popupVisibility = false;				
 		btnDatePicker.setEnabled(true);

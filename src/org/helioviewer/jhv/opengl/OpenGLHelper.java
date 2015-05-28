@@ -16,9 +16,9 @@ import com.jogamp.opengl.GLContext;
 
 public class OpenGLHelper {
 	public static GLContext glContext;
-	public int textureID;
-	public int textureWidth = 0;
-	public int textureHeight = 0;
+	private int textureID;
+	private int textureWidth = 0;
+	private int textureHeight = 0;
 	
 	private float scaleFactorHeight;
 	private float scaleFactorWidth;
@@ -229,49 +229,6 @@ public class OpenGLHelper {
 				GL2.GL_CLAMP);
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T,
 				GL2.GL_CLAMP);
-	}
-	
-	public static int getBitsPerPixel(int inputFormat, int inputType){
-		int bpp = 3;
-
-		switch (inputFormat) {
-		case GL2.GL_LUMINANCE:
-		case GL2.GL_ALPHA:
-			bpp = 1;
-			break;
-		case GL2.GL_LUMINANCE_ALPHA:
-			bpp = 2;
-			break;
-		case GL2.GL_RGB:
-			bpp = 3;
-			break;
-		case GL2.GL_RGBA:
-		case GL2.GL_BGRA:
-			bpp = 4;
-			break;
-
-		default:
-			throw new RuntimeException("" + inputFormat);
-		}
-
-		switch (inputType) {
-		case GL2.GL_UNSIGNED_BYTE:
-			bpp *= 1;
-			break;
-		case GL2.GL_UNSIGNED_SHORT:
-		case GL2.GL_UNSIGNED_SHORT_5_6_5:
-		case GL2.GL_UNSIGNED_SHORT_4_4_4_4:
-		case GL2.GL_UNSIGNED_SHORT_5_5_5_1:
-			bpp *= 2;
-			break;
-		case GL2.GL_UNSIGNED_INT_8_8_8_8_REV:
-			bpp *= 4;
-			break;
-		default:
-			throw new RuntimeException("" + inputType);
-		}
-
-		return bpp;
 	}
 
 	private static ByteBuffer readPixels(BufferedImage image, boolean storeAlphaChannel, boolean switchRandBChannel) {

@@ -12,8 +12,8 @@ import java.io.InputStream;
  */
 public class LineReader
 {
-    static public final int CR = 13;
-    static public final int LF = 10;
+    static private final int CR = 13;
+    static private final int LF = 10;
 
     private LineReader()
     {

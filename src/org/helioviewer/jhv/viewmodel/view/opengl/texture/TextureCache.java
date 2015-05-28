@@ -49,11 +49,11 @@ public class TextureCache {
 		private ImageRegion imageRegion;
 		private int textureID;
 		
-		public CachableTexture(int textureID) {
+		private CachableTexture(int textureID) {
 			this.textureID = textureID;
 		}
 		
-		public void setNewImageRegion(int id, ImageRegion imageRegion){
+		private void setNewImageRegion(int id, ImageRegion imageRegion){
 			this.id = id;
 			imageRegion.setTextureID(this.textureID);
 			this.imageRegion = imageRegion;

@@ -1,10 +1,7 @@
 package org.helioviewer.jhv.layers;
 
-import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.math.Vector2d;
@@ -16,13 +13,9 @@ import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 public class LayerRayTrace{
 	private RayTrace rayTrace;
 	
-	private Rectangle rectangle = null;
-	
 	private final int MAX_X_POINTS = 11;
 	private final int MAX_Y_POINTS = 11;
 	
-	private JFrame frame = new JFrame();
-	private JPanel contentPanel = new JPanel();
 	private LayerInterface layer;
 	
 	public LayerRayTrace(LayerInterface layer) {
@@ -36,10 +29,10 @@ public class LayerRayTrace{
 	}
 	
 	public ImageRegion getCurrentRegion(MainPanel compenentView, MetaData metaData){
-		if (!(compenentView instanceof OverViewPanel)){
+		/*if (!(compenentView instanceof OverViewPanel)){
 			contentPanel.removeAll();
 			contentPanel.setLayout(null);
-		}
+		}*/
 		double partOfWidth = compenentView.getWidth() / (double)(MAX_X_POINTS-1);
 		double partOfHeight = compenentView.getHeight() / (double)(MAX_Y_POINTS-1);
 		

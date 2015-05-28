@@ -11,14 +11,13 @@ import com.jogamp.opengl.GL2;
 
 public class CameraZoomBoxInteraction extends CameraInteraction {
 
-	private boolean rendering = false;
 	private RayTrace rayTrace;
 
 	private Vector3d start;
 	private Vector3d end;
 
-	public CameraZoomBoxInteraction(MainPanel compenentView, Camera camera) {
-		super(compenentView, camera);
+	public CameraZoomBoxInteraction(MainPanel mainPanel, Camera camera) {
+		super(mainPanel, camera);
 		this.rayTrace = new RayTrace();
 	}
 

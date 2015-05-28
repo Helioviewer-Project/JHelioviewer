@@ -902,11 +902,11 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 	 * @author Andre Dau
 	 * 
 	 */
-	static class AspectRatio {
+	private static class AspectRatio {
 		private int width;
 		private int height;
 
-		public AspectRatio(int width, int height) {
+		private AspectRatio(int width, int height) {
 			this.width = width;
 			this.height = height;
 		}

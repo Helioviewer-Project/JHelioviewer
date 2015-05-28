@@ -111,8 +111,8 @@ public class Settings
     }
     
     //used to coordinate delayed flushing
-    final static Object syncObj=new Object();
-    static Thread saveThread;
+    private final static Object syncObj=new Object();
+    private static Thread saveThread;
 
     /**
      * Method that returns the value of the specified property. User defined

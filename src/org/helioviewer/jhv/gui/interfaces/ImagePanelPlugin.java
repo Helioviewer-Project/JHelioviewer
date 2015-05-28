@@ -35,9 +35,4 @@ public interface ImagePanelPlugin {
      */
     public MainFrame getImagePanel();
 
-    /**
-     * Callback function to be called when the controller is detached. This
-     * function provides space for clean up work to do.
-     */
-    public void detach();
 }

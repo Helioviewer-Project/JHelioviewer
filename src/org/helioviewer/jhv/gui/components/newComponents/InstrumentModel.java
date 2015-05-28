@@ -17,11 +17,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
-public class InstrumentModel {
+class InstrumentModel {
 
 	private final String URL_DATASOURCE = "http://api.helioviewer.org/v2/getDataSources/?";
 	private LinkedHashMap<String, Observatory> observatories = new LinkedHashMap<String, InstrumentModel.Observatory>();
-	public static InstrumentModel singelton = new InstrumentModel();
+	public static InstrumentModel SINGLETON = new InstrumentModel();
 	
 	private InstrumentModel() {
 		this.initModel();
@@ -30,11 +30,7 @@ public class InstrumentModel {
 	public Collection<Observatory> getObservatories(){
 		return observatories.values();
 	}
-	
-	public static void main(String[] args) {
-		InstrumentModel instrumentModel = InstrumentModel.singelton;
-	}
-	
+		
 	public void initModel(){
 		StringBuilder sb = new StringBuilder();
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(new URL(URL_DATASOURCE).openStream()))){

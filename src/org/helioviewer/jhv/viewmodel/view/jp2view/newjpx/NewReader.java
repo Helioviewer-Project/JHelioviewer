@@ -25,15 +25,6 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
 
 public class NewReader implements JHVReader, Callable<JHVCachable> {
 
-	/** Whether IOExceptions should be shown on System.err or not */
-	private static final boolean VERBOSE = false;
-
-	/** The thread that this object runs on. */
-	private volatile Thread myThread;
-
-	/** A boolean flag used for stopping the thread. */
-	private volatile boolean stop;
-
 	/** The JPIPSocket used to connect to the server. */
 	private JPIPSocket socket;
 
@@ -85,11 +76,10 @@ public class NewReader implements JHVReader, Callable<JHVCachable> {
 
 	}
 
-	public void receiveData() throws IOException {
+	private void receiveData() throws IOException {
 		while (!requests.isEmpty()) {
 			if (socket.isClosed())
 				openSocket();
-			JPIPDataSegment data = null;
 			JPIPQuery query = requests.poll();
 			JPIPRequest request = new JPIPRequest(Method.GET);
 
@@ -110,7 +100,6 @@ public class NewReader implements JHVReader, Callable<JHVCachable> {
 				try {
 					complete = this.addJPIPResponseData(response);
 				} catch (JHV_KduException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 
@@ -169,7 +158,7 @@ public class NewReader implements JHVReader, Callable<JHVCachable> {
 		lastResponseTime = replyDataTime;
 	}
 
-	public boolean addJPIPResponseData(JPIPResponse jRes)
+	private boolean addJPIPResponseData(JPIPResponse jRes)
 			throws JHV_KduException {
 		JPIPDataSegment data;
 		while ((data = jRes.removeJpipDataSegment()) != null && !data.isEOR)
@@ -203,7 +192,7 @@ public class NewReader implements JHVReader, Callable<JHVCachable> {
 		this.addJPIPResponseData(res);
 	}
 
-	public String buildCacheModelUpdateString() throws JHV_KduException {
+	private String buildCacheModelUpdateString() throws JHV_KduException {
 		int length;
 		long codestreamID, databinID;
 		boolean isComplete[] = new boolean[1];
@@ -252,7 +241,7 @@ public class NewReader implements JHVReader, Callable<JHVCachable> {
 		return cacheModel.toString();
 	}
 
-	public JPIPQuery createQuery(int iniFrame, int endFrame) {
+	private JPIPQuery createQuery(int iniFrame, int endFrame) {
 		JPIPQuery query = new JPIPQuery();
 
 		query.setField(JPIPRequestField.CONTEXT.toString(), "jpxl<" + iniFrame
@@ -273,7 +262,6 @@ public class NewReader implements JHVReader, Callable<JHVCachable> {
 	@Override
 	public FutureTask<JHVCachable> getData(LocalDateTime[] framesDateTimes) {
 		FutureTask<JHVCachable> futureTask = new FutureTask<JHVCachable>(this);
-		// TODO Auto-generated method stub
 		return futureTask;
 	}
 
@@ -287,10 +275,8 @@ public class NewReader implements JHVReader, Callable<JHVCachable> {
 				this.socket.close();
 			return this.kakaduCache;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (JHV_KduException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;

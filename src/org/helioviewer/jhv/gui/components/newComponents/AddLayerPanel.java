@@ -25,7 +25,7 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
-public class AddLayerPanel extends JDialog {
+class AddLayerPanel extends JDialog {
 
 	/**
 	 * 
@@ -41,7 +41,7 @@ public class AddLayerPanel extends JDialog {
 	private NewDatePicker datePickerEndDate;
 	private JSpinner candence;
 
-	public enum TIME_STEPS {
+	private enum TIME_STEPS {
 		SEC("sec"), MIN("min"), HOUR("hour"), DAY("day"), GET_ALL("get all");
 
 		private String name;
@@ -76,8 +76,8 @@ public class AddLayerPanel extends JDialog {
 		addData();
 	}
 
-	public void addData() {
-		InstrumentModel instrumentModel = InstrumentModel.singelton;
+	private void addData() {
+		InstrumentModel instrumentModel = InstrumentModel.SINGLETON;
 		LocalDateTime endDateTime = LocalDateTime.now();
 		LocalDateTime startDateTime = endDateTime.minusDays(1);
 

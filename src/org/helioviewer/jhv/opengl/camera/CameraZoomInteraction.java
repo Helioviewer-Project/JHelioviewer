@@ -8,10 +8,9 @@ import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 
 public class CameraZoomInteraction extends CameraInteraction{
     private static final double ZOOM_WHEEL_FACTOR = 1.0 / 20;
-    private Component component;
-
-    public CameraZoomInteraction(MainPanel compenentView, Camera camera) {
-    	super(compenentView, camera);
+    
+    public CameraZoomInteraction(MainPanel mainPanel, Camera camera) {
+    	super(mainPanel, camera);
 	}
 	
     @Override

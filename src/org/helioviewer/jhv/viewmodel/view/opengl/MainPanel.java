@@ -1,8 +1,14 @@
 package org.helioviewer.jhv.viewmodel.view.opengl;
 
+import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Frame;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -22,12 +28,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+
 import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.base.physics.DifferentialRotation;
+import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.LayerInterface.COLOR_CHANNEL_TYPE;
 import org.helioviewer.jhv.layers.Layers;
@@ -81,18 +91,18 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 
 	public static final double MAX_DISTANCE = Constants.SUN_MEAN_DISTANCE_TO_EARTH * 1.8;
 	public static final double MIN_DISTANCE = Constants.SUN_RADIUS * 1.2;
-	public static final double DEFAULT_CAMERA_DISTANCE = 14 * Constants.SUN_RADIUS;
+	private static final double DEFAULT_CAMERA_DISTANCE = 14 * Constants.SUN_RADIUS;
 
-	public static final double CLIP_NEAR = Constants.SUN_RADIUS / 10;
+	private static final double CLIP_NEAR = Constants.SUN_RADIUS / 10;
 	public static final double CLIP_FAR = Constants.SUN_RADIUS * 1000;
 	public static final double FOV = 10;
-	protected double aspect = 0.0;
+	private double aspect = 0.0;
 
 	private double[][] rectBounds;
 
 	protected Quaternion3d rotation;
 	protected Vector3d translation;
-	protected ArrayList<MainPanel> synchronizedViews;
+	private ArrayList<MainPanel> synchronizedViews;
 
 	private CopyOnWriteArrayList<CameraAnimation> cameraAnimations;
 
@@ -100,7 +110,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	private int shaderprogram;
 	private HashMap<String, Integer> lutMap;
 	private int nextAvaibleLut = 0;
-	public boolean exportMovie;
+	
 
 	private CopyOnWriteArrayList<RenderAnimation> animations;
 	private NoImageScreen splashScreen;
@@ -222,15 +232,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		}
 	}
 
-	public int nextPowerOfTwo(int input) {
-		int output = 1;
-		while (output < input) {
-			output <<= 1;
-		}
-		return output;
-	}
-
-	protected void initShaders(GL2 gl) {
+	private void initShaders(GL2 gl) {
 		int vertexShader = gl.glCreateShader(GL2.GL_VERTEX_SHADER);
 		int fragmentShader = gl.glCreateShader(GL2.GL_FRAGMENT_SHADER);
 
@@ -296,9 +298,6 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 			if (size.x <= 0 || size.y <= 0) {
 				return;
 			}
-
-			double aspect = this.getSize().getWidth()
-					/ this.getSize().getHeight();
 
 			MetaData metaData = layer.getMetaData();
 			float xSunOffset = (float) ((metaData.getSunPixelPosition().x - metaData
@@ -623,14 +622,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	@Override
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width,
 			int height) {
-		GL2 gl = drawable.getGL().getGL2();
-		Container parent = this.getParent();
-		// parent.removeAll();
-		// parent.add(this);
 		aspect = this.getSize().getWidth() / this.getSize().getHeight();
-		// this.getParent().setPreferredSize(new Dimension(width, height));
-		// gl.glViewport(0, 0, width, height);
-		// this.repaint();
 	}
 
 	@Override
@@ -678,17 +670,6 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 
 	public Dimension getCanavasSize() {
 		return new Dimension(this.getSurfaceWidth(), this.getSurfaceHeight());
-	}
-
-	public void regristryAnimation(long duration) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void saveScreenshot(String defaultExtension, File selectedFile,
-			int imageWidth, int imageHeight, ArrayList<String> descriptions) {
-		// TODO Auto-generated method stub
-
 	}
 
 	public BufferedImage getBufferedImage(int imageWidth, int imageHeight,
@@ -834,16 +815,6 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		repaintViewAndSynchronizedViews();
 	}
 
-	public void addRenderAnimation(RenderAnimation renderAnimation) {
-		this.animations.add(renderAnimation);
-		this.repaint();
-	}
-
-	public void removeRenderAnimation(RenderAnimation renderAnimation) {
-		this.animations.remove(renderAnimation);
-		this.repaint();
-	}
-
 	@Override
 	public void timeStampChanged(LocalDateTime current, LocalDateTime last) {
 		this.repaint();
@@ -887,13 +858,54 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	}
 
 	public void toFullscreen() {
-		// TODO Auto-generated method stub
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
 
-	}
+				GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
+				GraphicsDevice graphicsDevice = MainFrame.SINGLETON.getGraphicsConfiguration().getDevice();
+				if (graphicsDevice == null) graphicsDevice = graphicsEnvironment.getDefaultScreenDevice();
 
-	public void escapeFullscreen() {
-		// TODO Auto-generated method stub
+				final JFrame fullscreenFrame = new JFrame(graphicsDevice.getDefaultConfiguration());
 
+				fullscreenFrame.getContentPane().setLayout(new BorderLayout());
+				final Container lastParent = MainPanel.this.getParent();
+				fullscreenFrame.getContentPane().add(MainPanel.this);
+				
+				fullscreenFrame.setExtendedState(Frame.MAXIMIZED_BOTH);
+				fullscreenFrame.setUndecorated(true);
+				fullscreenFrame.setResizable(false);
+				
+				if (graphicsDevice.isFullScreenSupported()){
+					graphicsDevice.setFullScreenWindow(fullscreenFrame);
+				}
+								
+				fullscreenFrame.setVisible(true);
+				
+				
+				final KeyAdapter keyAdapter = new KeyAdapter() {
+					@Override
+					public void keyPressed(KeyEvent e) {
+						if (e.getKeyCode() == KeyEvent.VK_ESCAPE
+								|| (e.isAltDown() && e.getKeyCode() == KeyEvent.VK_T)){
+							System.out.println("enter");
+							MainPanel.this.removeKeyListener(this);
+							fullscreenFrame.getContentPane().remove(MainPanel.this);
+							lastParent.add(MainPanel.this);
+							fullscreenFrame.setVisible(false);
+							
+							fullscreenFrame.dispose();
+						}
+					}
+				};
+				
+				fullscreenFrame.addKeyListener(keyAdapter);
+				MainPanel.this.addKeyListener(keyAdapter);
+			}
+		});
+		
+		
 	}
 
 	public void toggleTrack() {

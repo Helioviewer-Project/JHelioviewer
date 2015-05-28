@@ -43,7 +43,7 @@ public class Zoom1To1Action extends AbstractAction {
 				Dimension dimension = MainFrame.MAIN_PANEL.getCanavasSize();
 				double minCanvasDimension = dimension.getHeight();
 				
-	            double halfFOVRad = Math.toRadians(compenentView.FOV / 2.0);
+	            double halfFOVRad = Math.toRadians(MainPanel.FOV / 2.0);
 	            double distance = (minCanvasDimension/2.0 * unitsPerPixel) / Math.tan(halfFOVRad);
 	            distance = distance - compenentView.getTranslation().z;
 	            compenentView.addCameraAnimation(new CameraZoomAnimation(distance));

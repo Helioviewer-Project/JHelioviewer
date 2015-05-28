@@ -45,8 +45,8 @@ public class TopToolBar extends JToolBar implements MouseListener {
 
 	private static final long serialVersionUID = 1L;
 
-	public enum SelectionMode {
-		PAN, ZOOMBOX, ROTATE, ROTATE_Y_AXIS
+	private enum SelectionMode {
+		ZOOMBOX, ROTATE
 	};
 
 	private enum DisplayMode {
@@ -64,8 +64,8 @@ public class TopToolBar extends JToolBar implements MouseListener {
 	private JToggleButton coronaVisibilityButton;
 	private JButton zoomInButton, zoomOutButton, zoomFitButton, zoom1to1Button;
 	private JButton resetCamera;
-	protected JToggleButton view2d;
-	protected JToggleButton view3d;
+	private JToggleButton view2d;
+	private JToggleButton view3d;
 
 	/**
 	 * Default constructor.
@@ -129,7 +129,7 @@ public class TopToolBar extends JToolBar implements MouseListener {
 	 *            Current selection mode, to select the correct button.
 	 * @see #setDisplayMode(DisplayMode)
 	 */
-	protected void createNewToolBar() {
+	private void createNewToolBar() {
 		//removeAll();
 		// Zoom
 		zoomInButton = new JButton(new ZoomInAction(false));
@@ -224,7 +224,7 @@ public class TopToolBar extends JToolBar implements MouseListener {
 	 * @param button
 	 *            Button to add
 	 */
-	public void addButton(AbstractButton button) {
+	private void addButton(AbstractButton button) {
 		// button.setMargin(buttonMargin);
 		button.setVerticalTextPosition(SwingConstants.BOTTOM);
 		button.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -264,13 +264,7 @@ public class TopToolBar extends JToolBar implements MouseListener {
 			Settings.setProperty("display.toolbar", mode.toString()
 					.toLowerCase());
 		}
-		SelectionMode selectionMode;
-		selectionMode = SelectionMode.ROTATE;
-
-		if (zoomBoxButton.isSelected()) {
-			selectionMode = SelectionMode.ZOOMBOX;
-		}
-
+		
 		createNewToolBar();
 
 		firePropertyChange("displayMode", oldDisplayMode, displayMode);
@@ -287,23 +281,13 @@ public class TopToolBar extends JToolBar implements MouseListener {
 			this.add(new JToggleButton(button.getIcon()));
 	}
 
-	public void disableStateButton() {
-		this.view2d.setEnabled(false);
-		this.view3d.setEnabled(false);
-	}
-
-	public void enableStateButton() {
-		this.view2d.setEnabled(true);
-		this.view3d.setEnabled(true);
-	}
-
 	/**
 	 * Shows the popup if the correct mouse button was pressed.
 	 * 
 	 * @param e
 	 *            MouseEvent that triggered the event
 	 */
-	protected void maybeShowPopup(MouseEvent e) {
+	private void maybeShowPopup(MouseEvent e) {
 		if (e.isPopupTrigger() || e.getButton() == MouseEvent.BUTTON3) {
 
 			JPopupMenu popUpMenu = new JPopupMenu();
@@ -362,23 +346,6 @@ public class TopToolBar extends JToolBar implements MouseListener {
 		this.rotateButton.setEnabled(true);
 		this.zoomBoxButton.setEnabled(false);
 		//this.rotateButtonYAxis.setEnabled(true);
-	}
-
-	public void toogleCoronaButton() {
-		coronaVisibilityButton
-				.setSelected(!coronaVisibilityButton.isSelected());
-	}
-
-	public void selectZoomBox() {
-		this.zoomBoxButton.setSelected(true);
-	}
-
-	public void selectRotation() {
-		this.rotateButton.setSelected(true);
-	}
-
-	public void selectPan() {
-		this.panButton.setSelected(true);
 	}
 
 	public void setTrack(boolean track) {

@@ -48,19 +48,6 @@ public class LUT
 	private static int texture = -1;
 	private static OpenGLHelper openGLHelper;
 	
-	public static int getLutPosition(String name)
-	{
-	    Integer idx=lutMap.get(name);
-	    if(idx==null)
-	        throw new RuntimeException("LUT: \""+name+"\" not found in LUT.");
-	    
-		return idx;
-	}
-	
-	public static String[] getNames()
-	{
-		return lutMap.keySet().toArray(new String[0]);
-	}
 	
 	static
 	{

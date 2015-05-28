@@ -45,7 +45,7 @@ public class JPIPDataSegment implements Cloneable {
     public boolean isEOR;
 
     /** Indicates if this data segment is a complete data bin */
-    public boolean isComplete;
+    private boolean isComplete;
 
     /** Default constructor */
     public JPIPDataSegment() {

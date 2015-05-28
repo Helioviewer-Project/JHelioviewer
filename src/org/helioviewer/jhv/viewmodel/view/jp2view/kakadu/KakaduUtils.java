@@ -19,24 +19,6 @@ import kdu_jni.Kdu_global;
  * @author Juan Pablo
  */
 public class KakaduUtils {
-    /**
-     * Converts a Kdu_dims object to its Java equivalent (Rectangle).
-     * 
-     * @param _dims
-     *            Kdu_dims to convert
-     * @return Rectangle equivalent to the given Kdu_dims
-     */
-    public static Rectangle kdu_dimsToRect(Kdu_dims _dims) {
-        Rectangle rect = new Rectangle();
-        try {
-            Kdu_coords pos = _dims.Access_pos();
-            Kdu_coords siz = _dims.Access_size();
-            rect.setBounds(pos.Get_x(), pos.Get_y(), siz.Get_x(), siz.Get_y());
-        } catch (KduException ex) {
-            ex.printStackTrace();
-        }
-        return rect;
-    }
 
     /**
      * Converts a Rectangle object to a Kdu_dims object
@@ -55,22 +37,6 @@ public class KakaduUtils {
             pos.Set_y(_rect.y);
             siz.Set_x(_rect.width);
             siz.Set_y(_rect.height);
-        } catch (KduException ex) {
-            ex.printStackTrace();
-        }
-        return dims;
-    }
-
-    public static Kdu_dims rectToKdu_dims(Rectangle rectangle) {
-        Kdu_dims dims = null;
-        try {
-            dims = new Kdu_dims();
-            Kdu_coords pos = dims.Access_pos();
-            Kdu_coords siz = dims.Access_size();
-            pos.Set_x(rectangle.x);
-            pos.Set_y(rectangle.y);
-            siz.Set_x(rectangle.width);
-            siz.Set_y(rectangle.height);
         } catch (KduException ex) {
             ex.printStackTrace();
         }

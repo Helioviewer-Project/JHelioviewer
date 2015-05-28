@@ -23,9 +23,6 @@ import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.Layers;
 
-import com.jogamp.opengl.GLCapabilities;
-import com.jogamp.opengl.GLProfile;
-
 /**
  * Action to save a screenshot in desired image format at desired location.
  * 
@@ -93,24 +90,14 @@ public class SaveScreenshotAsAction extends AbstractAction {
             ArrayList<String> descriptions = null;
 			if (textEnabled) {
 				descriptions = new ArrayList<String>();
-				int counter = 0;
 				for (LayerInterface layer : Layers.LAYERS.getLayers()) {
 					if (layer.isVisible()) {
 						descriptions.add(layer.getMetaData().getFullName()
 								+ " - "
 								+ layer.getTime().format(JHVGlobals.DATE_TIME_FORMATTER));
 					}
-					counter++;
 				}
 			}
-			
-			GLProfile profile = GLProfile.get(GLProfile.GL2);
-			profile = GLProfile.getDefault();
-			GLCapabilities capabilities = new GLCapabilities(profile);
-			capabilities.setDoubleBuffered(false);
-			capabilities.setOnscreen(false);
-			capabilities.setHardwareAccelerated(true);
-			capabilities.setFBO(true);
 
 			try {
 				ImageIO.write(MainFrame.MAIN_PANEL.getBufferedImage(this.imageWidth, this.imageHeight, descriptions),

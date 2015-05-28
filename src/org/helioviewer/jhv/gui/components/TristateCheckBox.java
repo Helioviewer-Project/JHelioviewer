@@ -77,7 +77,7 @@ public final class TristateCheckBox extends JCheckBox {
     /**
      * If indeterminate is TRUE, the magic 'block' will be drawn
      */
-    boolean indeterminate = false;
+    private boolean indeterminate = false;
 
     public TristateCheckBox(String caption) {
         super(caption);

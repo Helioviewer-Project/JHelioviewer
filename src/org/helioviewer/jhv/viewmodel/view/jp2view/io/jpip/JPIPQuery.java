@@ -10,7 +10,7 @@ import java.util.Hashtable;
  */
 public class JPIPQuery implements Cloneable {
     /** The hashtable holding the jpip-request-fields */
-    protected Hashtable<String, String> fields = new Hashtable<String, String>();
+    private Hashtable<String, String> fields = new Hashtable<String, String>();
 
     /** Default constructor. */
     public JPIPQuery() {
@@ -52,25 +52,6 @@ public class JPIPQuery implements Cloneable {
      */
     public void setField(String _key, String _value) {
         fields.put(_key, _value);
-    }
-
-    /**
-     * Removes a specified pair (key, value).
-     * 
-     * @param _key
-     */
-    public void removeField(String _key) {
-        fields.remove(_key);
-    }
-
-    /**
-     * Gets the value of the specified field. Returns null if non exists.
-     * 
-     * @param _key
-     * @return Value corresponding to given key
-     */
-    public String getValue(String _key) {
-        return fields.get(_key);
     }
 
     /** Clones the query. */

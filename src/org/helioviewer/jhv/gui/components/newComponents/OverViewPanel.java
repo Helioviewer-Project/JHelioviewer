@@ -89,7 +89,7 @@ public class OverViewPanel extends MainPanel{
 		super.displayLayer(gl, layer);
 	}
 	
-	public void displayRect(GL2 gl, double radius){
+	private void displayRect(GL2 gl, double radius){
 		for (MainPanel mainView : mainViews){
 			double[][] bounds = mainView.getRectBounds();
 		gl.glColor3d(0.0, 1.0, 0);
