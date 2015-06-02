@@ -162,7 +162,7 @@ public class PfssDecompressed
 		gl2.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
 		gl2.glBlendEquation(GL2.GL_FUNC_ADD);
 		gl2.glEnable(GL2.GL_LINE_SMOOTH);
-		gl2.glDepthMask(false);
+		gl2.glDepthMask(true);
 		gl2.glBindBuffer(GL2.GL_ARRAY_BUFFER, VBOVertices);
 		gl2.glVertexPointer(3, GL2.GL_FLOAT, 0, 0);
 		Vector3d color;

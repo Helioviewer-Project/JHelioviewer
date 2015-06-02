@@ -5,7 +5,6 @@ import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.time.LocalDateTime;
 
-import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 import org.helioviewer.jhv.layers.LayerInterface;

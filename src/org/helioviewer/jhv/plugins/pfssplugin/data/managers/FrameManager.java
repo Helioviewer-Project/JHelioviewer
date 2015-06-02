@@ -2,11 +2,13 @@ package org.helioviewer.jhv.plugins.pfssplugin.data.managers;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin3dRenderer;
+import org.helioviewer.jhv.plugins.pfssplugin.data.FileDescriptor;
+import org.helioviewer.jhv.plugins.pfssplugin.data.PfssCompressed;
 import org.helioviewer.jhv.plugins.pfssplugin.data.PfssDecompressed;
 import org.helioviewer.jhv.plugins.pfssplugin.data.caching.DataCache;
+import org.helioviewer.jhv.plugins.pfssplugin.data.decompression.PfssDecompressor;
 
 import com.jogamp.opengl.GL2;
 
@@ -34,7 +36,7 @@ public class FrameManager
 	 */
 	public PfssDecompressed getFrame(GL2 _gl, LocalDateTime date)
 	{
-		/*
+		
 		//outside of loaded frames
 		if(!descriptorManager.isDateInRange(date))
 			return null;
@@ -68,7 +70,7 @@ public class FrameManager
             PfssDecompressor.decompress(comp,curFrame);
             return curFrame;
         }
-        */
+        
         return null;
         
 	}
@@ -79,7 +81,7 @@ public class FrameManager
      * @param end end date inclusive
      * @throws IOException if the requested dates could not be found
      */
-    public void setDateRange(Date start, Date end)
+    public void setDateRange(LocalDateTime start, LocalDateTime end)
     {
         descriptorManager.readFileDescriptors(start,end);
     }

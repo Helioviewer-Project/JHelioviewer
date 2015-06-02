@@ -24,7 +24,18 @@ import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.components.MenuBar;
 import org.helioviewer.jhv.gui.components.SideContentPane;
 import org.helioviewer.jhv.gui.components.TopToolBar;
+import org.helioviewer.jhv.gui.components.statusplugins.CurrentTimeLabel;
+import org.helioviewer.jhv.gui.components.statusplugins.FramerateStatusPanel;
+import org.helioviewer.jhv.gui.components.statusplugins.PositionStatusPanel;
+import org.helioviewer.jhv.gui.components.statusplugins.ZoomStatusPanel;
+import org.helioviewer.jhv.plugins.plugin.Plugin;
+import org.helioviewer.jhv.plugins.plugin.Plugins;
 import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
+
+import com.jgoodies.forms.factories.FormFactory;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.RowSpec;
 
 public class MainFrame extends JFrame{
 
@@ -98,6 +109,7 @@ public class MainFrame extends JFrame{
 		splitPane.setRightComponent(MAIN_PANEL);
 		splitPane.setLeftComponent(getLeftPane());
 		
+		contentPane.add(this.getStatusPane(), BorderLayout.SOUTH);		
 	}
 	
 	private JPanel getLeftPane(){
@@ -148,6 +160,42 @@ public class MainFrame extends JFrame{
 		return left;
 	}
 	
+	private JPanel getStatusPane(){
+		JPanel statusPane = new JPanel();
+		
+		statusPane.setLayout(new FormLayout(new ColumnSpec[] {
+				FormFactory.RELATED_GAP_COLSPEC,
+				FormFactory.DEFAULT_COLSPEC,
+				FormFactory.RELATED_GAP_COLSPEC,
+				FormFactory.DEFAULT_COLSPEC,
+				FormFactory.RELATED_GAP_COLSPEC,
+				FormFactory.DEFAULT_COLSPEC,
+				FormFactory.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("default:grow"),
+				FormFactory.RELATED_GAP_COLSPEC,
+				FormFactory.DEFAULT_COLSPEC,
+				FormFactory.RELATED_GAP_COLSPEC,},
+			new RowSpec[] {
+				FormFactory.RELATED_GAP_ROWSPEC,
+				RowSpec.decode("default:grow"),
+				FormFactory.RELATED_GAP_ROWSPEC,}));
+		
+
+		FramerateStatusPanel framerateStatusPanel = new FramerateStatusPanel();
+		statusPane.add(framerateStatusPanel, "2, 2, fill, fill");
+		
+		ZoomStatusPanel zoomStatusPanel = new ZoomStatusPanel();
+		statusPane.add(zoomStatusPanel, "4, 2, fill, fill");
+		
+		CurrentTimeLabel currentTimeLabel = new CurrentTimeLabel();
+		statusPane.add(currentTimeLabel, "6, 2, fill, fill");
+		
+		PositionStatusPanel positionStatusPanel = new PositionStatusPanel(this);
+		statusPane.add(positionStatusPanel, "10, 2, fill, fill");
+
+		return statusPane;
+	}
+	
 	private SideContentPane getSideBar(){
 		SideContentPane leftPane = new SideContentPane();
 
@@ -162,6 +210,10 @@ public class MainFrame extends JFrame{
 		// Filter control
 		filterTabPanel = new FilterTabPanel();
 		leftPane.add("Adjustments", filterTabPanel , true);
+		
+		for (Plugin plugin : Plugins.plugins){
+			leftPane.add(plugin.getName(), plugin.getPanel(), false);
+		}
 		
 		return leftPane;
 	}

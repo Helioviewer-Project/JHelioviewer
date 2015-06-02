@@ -170,4 +170,14 @@ public class TimeLine implements NewLayerListener {
 	public void updateLocalDateTimes(LocalDateTime[] localDateTimes) {
 		this.setFrames(localDateTimes);
 	}
+
+	public LocalDateTime getFirstDateTime() {
+		if (frames == null) return null;
+		return frames[0];
+	}
+
+	public LocalDateTime getLastDateTime() {
+		if (frames == null) return null;
+		return frames[frames.length - 1];
+	}
 }

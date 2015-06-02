@@ -5,10 +5,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -25,13 +24,13 @@ import org.helioviewer.jhv.plugins.pfssplugin.data.FileDescriptor;
 public class FileDescriptorManager
 {
 	private ArrayList<FileDescriptor> descriptors=new ArrayList<>();
-	private Date firstDate;
-	private Date endDate;
+	private LocalDateTime firstDate;
+	private LocalDateTime endDate;
 	private volatile int epoch=0;
 	
     private volatile String errorMessage;
-    private Date loadingFrom;
-    private Date loadingTo;
+    private LocalDateTime loadingFrom;
+    private LocalDateTime loadingTo;
     
     private PfssPlugin3dRenderer parent;
 	
@@ -42,15 +41,15 @@ public class FileDescriptorManager
 	
 	/**
 	 * checks if Date is in Range of the FileDescriptor Manager
-	 * @param d
+	 * @param currentLocalDateTime
 	 * @return true if it is in range
 	 */
-	public synchronized boolean isDateInRange(Date d)
+	public synchronized boolean isDateInRange(LocalDateTime currentLocalDateTime)
 	{
 	    if(firstDate==null || endDate==null)
 	        return false;
 	    
-		return (firstDate.before(d) & endDate.after(d)) |  firstDate.equals(d) | endDate.equals(d);
+		return (firstDate.isBefore(currentLocalDateTime) & endDate.isAfter(currentLocalDateTime)) |  firstDate.isEqual(currentLocalDateTime) | endDate.isEqual(currentLocalDateTime);
 	}
 	
 	/**
@@ -58,7 +57,7 @@ public class FileDescriptorManager
 	 * @param from date of first file description to read
 	 * @param to date of last file description to read
 	 */
-	public synchronized void readFileDescriptors(final Date from, final Date to)
+	public synchronized void readFileDescriptors(final LocalDateTime from, final LocalDateTime to)
 	{
 	    epoch++;
 	    final int curEpoch = epoch;
@@ -67,30 +66,23 @@ public class FileDescriptorManager
 	    this.loadingFrom = from;
 	    this.loadingTo = to;
 	    
-		Calendar currentCal = GregorianCalendar.getInstance();
-		Calendar endCal = GregorianCalendar.getInstance();
-		currentCal.setTime(from);
-		endCal.setTime(to);
-
-		int endYear = endCal.get(Calendar.YEAR);
-		int endMonth = endCal.get(Calendar.MONTH);
-		
-		int currentYear = currentCal.get(Calendar.YEAR);
-		int currentMonth = currentCal.get(Calendar.MONTH);
-		
+	    this.firstDate = from;
+	    this.endDate = to;
+	    
+		LocalDateTime currentDate = from;
+		DateTimeFormatter monthFormatter = DateTimeFormatter.ofPattern("MM");
+		DateTimeFormatter yearFormatter = DateTimeFormatter.ofPattern("YYYY");
+	    
 		synchronized(descriptors)
         {
 	        descriptors.clear();
         }
 		
-		while(currentYear < endYear || (currentYear==endYear && currentMonth <= endMonth))
+		while(currentDate.isBefore(to))
 		{
-			String m = (currentMonth) < 9 ? "0" + (currentMonth + 1) : (currentMonth + 1) + "";
-			final String url = PfssSettings.SERVER_URL + currentYear +"/"+m+"/list.txt";
-			
-			final int finalCurrentYear = currentYear;
-            final int finalCurrentMonth = currentMonth;
-			
+			final String url = PfssSettings.SERVER_URL + currentDate.format(yearFormatter) +"/"+currentDate.format(monthFormatter)+"/list.txt";
+			System.out.println("url : " + url);
+			final LocalDateTime current = currentDate;
 			PfssPlugin.pool.execute(new Runnable()
 	        {
 	            @Override
@@ -100,7 +92,7 @@ public class FileDescriptorManager
                     {
 	                    if(curEpoch==epoch && errorMessage==null)
 	                    {
-	                        readDescription(url, from, to, finalCurrentYear, finalCurrentMonth, curEpoch);
+	                        readDescription(url, current, to, curEpoch);
 	                        MainFrame.MAIN_PANEL.repaintViewAndSynchronizedViews();;
 	                    }	                    
                     }
@@ -124,12 +116,8 @@ public class FileDescriptorManager
 	            }
 	        });
 			
-			currentCal.add(Calendar.MONTH, 1);
-			currentYear = currentCal.get(Calendar.YEAR);
-			currentMonth = currentCal.get(Calendar.MONTH);
+			currentDate = currentDate.plusMonths(1);
 		}
-        this.firstDate = from;
-        this.endDate = to;
 	}
 	
 	/**
@@ -141,41 +129,36 @@ public class FileDescriptorManager
 	 * @param currentMonth
 	 * @throws IOException
 	 */
-    private void readDescription(String url,Date from, Date to,int currentYear, int currentMonth, int _curEpoch) throws IOException
+    private void readDescription(String url,LocalDateTime from, LocalDateTime to, int _curEpoch) throws IOException
     {
         if(_curEpoch!=epoch)
             return;
-        
+        System.out.println(url);
     	try(BufferedReader in = new BufferedReader(new InputStreamReader(new URL(url).openStream())))
     	{
 			String dateString = null;
 			String fileName= null;
 			String line = null;
+			
+			final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
 			while((line = in.readLine()) != null)
 			{
 				int split = line.indexOf(' ');
 				dateString = line.substring(0,split);
 				fileName = line.substring(split+1, line.length());
-				
-				//make dateString to date
-				int t = dateString.indexOf('T');
-				String[] date = dateString.substring(0,t).split("-");
-				String[] time = dateString.substring(t+1,dateString.length()-1).split(":");
-				Calendar cal = new GregorianCalendar(currentYear, currentMonth, Integer.parseInt(date[2]), Integer.parseInt(time[0]), Integer.parseInt(time[1]));
-				Date endTime = cal.getTime();
-				cal.add(Calendar.HOUR, -PfssSettings.FITS_FILE_D_HOUR);
-				cal.add(Calendar.MINUTE, -PfssSettings.FITS_FILE_D_MINUTES);
-				cal.add(Calendar.MILLISECOND, 1);// so there is exactly one millisecond difference between this and the next file descriptor
-				Date startTime = cal.getTime();
+
+				LocalDateTime end = LocalDateTime.parse(dateString, dateTimeFormatter);
+				LocalDateTime start = end.minusHours(PfssSettings.FITS_FILE_D_HOUR).minusMinutes(PfssSettings.FITS_FILE_D_MINUTES).plusNanos(1);
 					
-				if(!(endTime.before(from) || startTime.after(to)))
+				if(!(end.isBefore(from) || start.isAfter(to)))
 				{
 				    synchronized(descriptors)
 				    {
 				        if(_curEpoch!=epoch)
 				            return;
 				        
-				        descriptors.add(new FileDescriptor(startTime, endTime, fileName));
+				        descriptors.add(new FileDescriptor(start, end, fileName));
 				    }
 				}
 			}
@@ -187,7 +170,7 @@ public class FileDescriptorManager
 		}
     	catch (IOException e)
 		{
-			throw new IOException("Unable to find data for: "+currentYear +"/"+(currentMonth+1),e);
+    		throw new IOException("Unable to find data for: "+from.getYear() +"/"+from.getMonthValue(),e);
 		}
 	}
     
@@ -196,12 +179,12 @@ public class FileDescriptorManager
      * @param index
      * @return
      */
-    public FileDescriptor getFileDescriptor(Date d)
+    public FileDescriptor getFileDescriptor(LocalDateTime localDateTime)
     {
         synchronized(descriptors)
         {
             for(FileDescriptor fd:descriptors)
-                if(fd.isDateInRange(d))
+                if(fd.isDateInRange(localDateTime))
                     return fd;
             
             return null;

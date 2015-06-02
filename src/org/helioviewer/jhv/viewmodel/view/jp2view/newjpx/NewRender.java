@@ -2,8 +2,6 @@ package org.helioviewer.jhv.viewmodel.view.jp2view.newjpx;
 
 import java.awt.Rectangle;
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;

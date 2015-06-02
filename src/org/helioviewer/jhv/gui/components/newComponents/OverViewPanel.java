@@ -76,17 +76,18 @@ public class OverViewPanel extends MainPanel{
 		double width = Math.tan(Math.toRadians(FOV / 2.0)) * this.translation.z;
 		gl.glOrtho(-width, width, width, -width, -Constants.SUN_RADIUS, Constants.SUN_RADIUS);
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
-		gl.glDisable(GL2.GL_DEPTH_TEST);
+		gl.glLoadIdentity();
+		gl.glEnable(GL2.GL_DEPTH_TEST);
 		
 		displayRect(gl, width / 100.0);		
 		gl.glPopMatrix();
 	}
 	
 	@Override
-	public void displayLayer(GL2 gl, NewLayer layer) {
+	public boolean displayLayer(GL2 gl, NewLayer layer) {
 		System.out.println("repaint");
 		this.rotation = MainFrame.MAIN_PANEL.getRotation();
-		super.displayLayer(gl, layer);
+		return super.displayLayer(gl, layer);
 	}
 	
 	private void displayRect(GL2 gl, double radius){

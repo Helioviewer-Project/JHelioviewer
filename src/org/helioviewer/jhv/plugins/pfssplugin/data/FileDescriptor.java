@@ -1,8 +1,6 @@
 package org.helioviewer.jhv.plugins.pfssplugin.data;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import java.time.LocalDateTime;
 
 /**
  * Class Describing a pfss fits file on the server
@@ -11,17 +9,14 @@ import java.util.GregorianCalendar;
  */
 public class FileDescriptor
 {
-	private final Calendar endCal;
-	private final Date startDate;
-	private final Date endDate;
+	private final LocalDateTime startLocalDateTime;
+	private final LocalDateTime endLocalDateTime;
 	private final String fileName;
 	
-	public FileDescriptor(Date start, Date end, String fileName)
+	public FileDescriptor(LocalDateTime startLocalDateTime, LocalDateTime endLocalDateTime, String fileName)
 	{
-		this.startDate = (Date) start.clone();
-		this.endDate = (Date)end.clone();
-		this.endCal = GregorianCalendar.getInstance();
-		endCal.setTime(end);
+		this.startLocalDateTime = startLocalDateTime;
+		this.endLocalDateTime = endLocalDateTime;
 		this.fileName = fileName;
 	}
 	
@@ -30,21 +25,17 @@ public class FileDescriptor
 	 * @param d
 	 * @return true if date is after or equals the startdate and before or equals enddate
 	 */
-	public boolean isDateInRange(Date d)
+	public boolean isDateInRange(LocalDateTime currentLocalDateTime)
 	{
-		return (startDate.before(d) && endDate.after(d)) || startDate.equals(d) || endDate.equals(d);
+		return (startLocalDateTime.isBefore(currentLocalDateTime) && endLocalDateTime.isAfter(currentLocalDateTime)) || startLocalDateTime.isEqual(currentLocalDateTime) || endLocalDateTime.isEqual(currentLocalDateTime);
 	}
 	
-	public Date getStartDate() {
-		return this.startDate;
+	public LocalDateTime getStartDate() {
+		return this.startLocalDateTime;
 	}
 	
-	public int getYear() {
-		return endCal.get(Calendar.YEAR);
-	}
-	
-	public int getMonth() {
-		return endCal.get(Calendar.MONTH);
+	public LocalDateTime getDateTime(){
+		return endLocalDateTime;
 	}
 	
 	public String getFileName() {
@@ -53,7 +44,7 @@ public class FileDescriptor
 	
 	@Override
 	public int hashCode() {
-		return endDate.hashCode();
+		return endLocalDateTime.hashCode();
 	}
 	
 	

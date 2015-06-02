@@ -27,11 +27,6 @@ import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 import org.helioviewer.jhv.gui.dialogs.AboutDialog;
 import org.helioviewer.jhv.io.CommandLineProcessor;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
-import org.helioviewer.jhv.plugins.hekplugin.HEKPlugin3D;
-import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
-import org.helioviewer.jhv.plugins.sdocutoutplugin.SDOCutOutPlugin3D;
-import org.helioviewer.jhv.plugins.viewmodelplugin.controller.PluginManager;
-import org.helioviewer.jhv.plugins.viewmodelplugin.interfaces.Plugin;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
 
 import com.install4j.api.launcher.ApplicationLauncher;
@@ -217,11 +212,12 @@ public class JHelioviewer {
 
 			System.out.println("Add internal plugin: " + "FilterPlugin");
 
-			for (Plugin plugin : new Plugin[] { new PfssPlugin(),
+			//Plugins.PLUGINS.addPlugin(new PfssPlugin());
+			/*for (Plugin plugin : new Plugin[] { new PfssPlugin(),
 					new HEKPlugin3D(), new SDOCutOutPlugin3D() })
 				PluginManager.getSingeltonInstance().addPlugin(
 						plugin.getClass().getClassLoader(), plugin, null);
-
+			*/
 			splash.setProgressText("Showing main window...");
 			splash.nextStep();
 			// Create main view chain and display main window

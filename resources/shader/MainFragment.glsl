@@ -6,7 +6,6 @@ uniform sampler2D lut;
 uniform mat4 modelView;
 uniform mat4 transformation;
 uniform mat4 layerTransformation;
-uniform float sunRadius;
 uniform float physicalImageWidth;
 uniform float opacity;
 uniform float sharpen;
@@ -23,6 +22,7 @@ uniform float opacityCorona;
 uniform float fov;
 uniform vec2 imageResolution;
 uniform int cameraMode;
+uniform float near;
 
 struct Sphere{
     vec3 center;
@@ -39,7 +39,7 @@ struct Plane{
     float d;
 };
 
-Sphere sphere = Sphere(vec3(0,0,0),sunRadius);
+Sphere sphere = Sphere(vec3(0,0,0),695700000);
 Plane plane = Plane(cross(vec3(1,0,0),vec3(0,1.,0)),-0.);
 
 float intersectSphere(in Ray ray, in Sphere sphere)
@@ -149,8 +149,8 @@ void main(void)
     vec3 rayDirection;
     
     //2D
+    float zTranslation = (vec4(0,0,0,1) * transformation).z;
     if (cameraMode == 0){
-        float zTranslation = (vec4(0,0,1,1) * transformation).z;
         width = zTranslation * tan(fov);
         vec2 tmpWidth = (-1.0 +2.0*uv) * width;
         rayOrigin = (vec4(0,0,1,1) * transformation).xyz + vec3(tmpWidth, 0);
@@ -174,10 +174,13 @@ void main(void)
     intersect (rayRot, tSphere, tPlane);
     
     vec4 imageColor;
+    gl_FragDepth = 1;
     
    	if (tSphere > 0.){
         vec3 posOri = rayRot.origin + tSphere*rayRot.direction;
         vec3 posRot = (vec4(posOri, 1) * layerTransformation).xyz;
+        
+        vec3 ray = ray1.origin + tSphere * ray1.direction;
         if (posRot.z >= 0.0){
             vec2 texPos = (posRot.xy/physicalImageWidth + 0.5) *vec2(1.,1.) + sunOffset;
             if (texPos.x > 1.0 || texPos.x < 0.0 || texPos.y > 1.0 || texPos.y < 0.0) {
@@ -186,8 +189,15 @@ void main(void)
             texPos = (texPos - imageOffset.xy) / imageOffset.zw;
             imageColor = sharpenValue(texPos);
             imageColor = contrastValue(imageColor.xyz);
-            //imageColor = texture2D(texture,texPos);
         }
+        
+        float far = zTranslation - 4 * 695700000;
+            
+		gl_FragDepth = (1. /(zTranslation - ray.z) - 1. / near) / (1. /far - 1. / near);            
+            
+         //gl_FragDepth =  posRot.z;
+            //imageColor = texture2D(texture,texPos);
+        
     }
     
    	if (tPlane > 0. && (tPlane < tSphere|| tSphere < 0.)){
@@ -215,6 +225,6 @@ void main(void)
     lutColor.y = pow(lutColor.y, gamma);
     lutColor.z = pow(lutColor.z, gamma);
     gl_FragColor = lutColor * vec4(redChannel,greenChannel,blueChannel,opacity);
-    
+    //gl_FragColor = vec4(gl_FragDepth, gl_FragDepth, gl_FragDepth, 1);
 }
 

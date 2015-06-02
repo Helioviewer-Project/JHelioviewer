@@ -5,12 +5,14 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDateTime;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayPanel;
+import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 
 /**
  * Panel of Pfss-Plugin
@@ -122,26 +124,10 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener{
 	
 	public void reload()
 	{
-		/*
-		int master = -1000;
-		for (int i = 0; i < LayersModel.getSingletonInstance().getNumLayers(); i++){
-			if (LayersModel.getSingletonInstance().isMaster(i))
-				master = i;
-		}
-		Date start;
-		Date end;
-		if (master >=0)
-		{
-			start = LayersModel.getSingletonInstance().getStartDate(master).getTime();
-			end = LayersModel.getSingletonInstance().getEndDate(master).getTime();
-		}
-		else {
-			start = LayersModel.getSingletonInstance().getFirstDate();
-			end = LayersModel.getSingletonInstance().getLastDate();
-		}
+		LocalDateTime startLocalDateTime = TimeLine.SINGLETON.getFirstDateTime();
+		LocalDateTime endLocalDateTime = TimeLine.SINGLETON.getLastDateTime();
+		if (startLocalDateTime != null && endLocalDateTime != null)
+			renderer.setDisplayRange(startLocalDateTime, endLocalDateTime);
 		
-		if (start != null && end != null)
-			renderer.setDisplayRange(start, end);
-			*/
 	}
 }

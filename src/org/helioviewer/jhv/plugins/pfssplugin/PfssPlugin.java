@@ -1,17 +1,13 @@
 package org.helioviewer.jhv.plugins.pfssplugin;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
-import org.helioviewer.jhv.plugins.viewmodelplugin.interfaces.Plugin;
-import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayContainer;
-import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayPlugin;
+import org.helioviewer.jhv.plugins.plugin.Plugin;
 
-public class PfssPlugin extends OverlayPlugin implements Plugin
+public class PfssPlugin extends Plugin
 {
     private static int threadNumber=0;
     public static final ExecutorService pool = Executors.newFixedThreadPool(8,new ThreadFactory()
@@ -28,35 +24,9 @@ public class PfssPlugin extends OverlayPlugin implements Plugin
     
 	public PfssPlugin()
 	{
-		try
-		{
-			this.pluginLocation = new URI(PfssSettings.PLUGIN_LOCATION);
-		}
-		catch (URISyntaxException e)
-		{
-			e.printStackTrace();
-		}
-
-		addOverlayContainer(new PfssPluginContainer());
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * <p>
-	 * Overrides the default method because the internal provided filters are
-	 * activated by default.
-	 */
-	public void installPlugin() {
-		for (OverlayContainer overlay : overlayContainerList) {
-			/*overlay.setActive(PluginSettings.getSingeltonInstance()
-					.isOverlayInPluginActivated(pluginLocation,
-							overlay.getOverlayClass(), true));
-			overlay.setPosition(PluginSettings.getSingeltonInstance()
-					.getOverlayPosition(pluginLocation,
-							overlay.getOverlayClass()));
-			PluginManager.getSingeltonInstance().addOverlayContainer(overlay);
-			*/
-		}
+		PfssPlugin3dRenderer pfssPlugin3dRenderer = new PfssPlugin3dRenderer();
+		pluginPanel = new PfssPluginPanel(pfssPlugin3dRenderer);
+		pluginRenderer = pfssPlugin3dRenderer;
 	}
 
 	/**

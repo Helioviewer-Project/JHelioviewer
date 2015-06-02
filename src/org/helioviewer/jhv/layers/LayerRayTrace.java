@@ -2,10 +2,8 @@ package org.helioviewer.jhv.layers;
 
 import java.awt.geom.Rectangle2D;
 
-
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.math.Vector2d;
-import org.helioviewer.jhv.gui.components.newComponents.OverViewPanel;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
