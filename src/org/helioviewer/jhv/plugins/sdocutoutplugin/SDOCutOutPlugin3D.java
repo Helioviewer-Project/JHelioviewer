@@ -1,12 +1,12 @@
 package org.helioviewer.jhv.plugins.sdocutoutplugin;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 
-import org.helioviewer.jhv.plugins.viewmodelplugin.interfaces.Plugin;
+import org.helioviewer.jhv.plugins.plugin.NewPlugin;
+import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
 
-public class SDOCutOutPlugin3D implements Plugin {
+public class SDOCutOutPlugin3D extends NewPlugin {
 
 	/**
      * Sets up the visual sub components and the visual part of the component
@@ -21,11 +21,7 @@ public class SDOCutOutPlugin3D implements Plugin {
      * Default constructor
      */
     public SDOCutOutPlugin3D() {
-    	try {
-    		pluginLocation = new URI(SDOCutOutSettings.PLUGIN_LOCATION);
-    	} catch (URISyntaxException e) {
-    		e.printStackTrace();
-    	}
+    	UltimatePluginInterface.addButtonToToolbar(new SDOCutOutToggleButton());
     }
     
     public URI getLocation() {
@@ -50,25 +46,6 @@ public class SDOCutOutPlugin3D implements Plugin {
     public String getAboutLicenseText() {
     	return null;
     }
-
-    /**
-     * Used for testing the plugin
-     * 
-     * @see org.helioviewer.jhv.plugins.sdocutoutplugin.SDOCutOutPluginLauncher#main(String[])
-     * @param args
-     */
-    public static void main(String[] args) {
-        //JavaHelioViewerLauncher.start(SDOCutOutPluginLauncher.class, args);
-    }
-
-	@Override
-	public String getState() {
-		return null;
-	}
-
-	@Override
-	public void setState(String state) {
-	}
 	
 	public static URL getResourceUrl(String name) {
 		return SDOCutOutPlugin3D.class.getResource(name);

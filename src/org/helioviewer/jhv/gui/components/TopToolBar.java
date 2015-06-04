@@ -224,7 +224,7 @@ public class TopToolBar extends JToolBar implements MouseListener {
 	 * @param button
 	 *            Button to add
 	 */
-	private void addButton(AbstractButton button) {
+	public void addButton(AbstractButton button) {
 		// button.setMargin(buttonMargin);
 		button.setVerticalTextPosition(SwingConstants.BOTTOM);
 		button.setHorizontalTextPosition(SwingConstants.CENTER);

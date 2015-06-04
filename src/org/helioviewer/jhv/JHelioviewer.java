@@ -27,6 +27,7 @@ import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 import org.helioviewer.jhv.gui.dialogs.AboutDialog;
 import org.helioviewer.jhv.io.CommandLineProcessor;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
+import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
 
 import com.install4j.api.launcher.ApplicationLauncher;
@@ -212,12 +213,8 @@ public class JHelioviewer {
 
 			System.out.println("Add internal plugin: " + "FilterPlugin");
 
-			//Plugins.PLUGINS.addPlugin(new PfssPlugin());
-			/*for (Plugin plugin : new Plugin[] { new PfssPlugin(),
-					new HEKPlugin3D(), new SDOCutOutPlugin3D() })
-				PluginManager.getSingeltonInstance().addPlugin(
-						plugin.getClass().getClassLoader(), plugin, null);
-			*/
+			UltimatePluginInterface.SIGLETON.getClass();
+			
 			splash.setProgressText("Showing main window...");
 			splash.nextStep();
 			// Create main view chain and display main window

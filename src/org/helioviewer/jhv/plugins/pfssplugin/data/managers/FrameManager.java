@@ -3,7 +3,7 @@ package org.helioviewer.jhv.plugins.pfssplugin.data.managers;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
-import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin3dRenderer;
+import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
 import org.helioviewer.jhv.plugins.pfssplugin.data.FileDescriptor;
 import org.helioviewer.jhv.plugins.pfssplugin.data.PfssCompressed;
 import org.helioviewer.jhv.plugins.pfssplugin.data.PfssDecompressed;
@@ -23,7 +23,7 @@ public class FrameManager
 	private PfssDecompressed curFrame;
 	private DataCache dataCache;
 
-	public FrameManager(PfssPlugin3dRenderer _parent)
+	public FrameManager(PfssPlugin _parent)
 	{
 		descriptorManager = new FileDescriptorManager(_parent);
 		dataCache = new DataCache(descriptorManager);

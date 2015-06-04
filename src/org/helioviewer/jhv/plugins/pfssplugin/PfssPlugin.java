@@ -1,14 +1,24 @@
 package org.helioviewer.jhv.plugins.pfssplugin;
 
+import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
-import org.helioviewer.jhv.plugins.plugin.Plugin;
+import org.helioviewer.jhv.plugins.pfssplugin.data.PfssDecompressed;
+import org.helioviewer.jhv.plugins.pfssplugin.data.managers.FrameManager;
+import org.helioviewer.jhv.plugins.plugin.NewPlugin;
+import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
+import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 
-public class PfssPlugin extends Plugin
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
+
+public class PfssPlugin extends NewPlugin
 {
+	private static final String NAME = "PFSS plugin";
     private static int threadNumber=0;
     public static final ExecutorService pool = Executors.newFixedThreadPool(8,new ThreadFactory()
     {
@@ -21,12 +31,27 @@ public class PfssPlugin extends Plugin
             return t;
         }
     });
+
     
+	private FrameManager manager;
+	private boolean isVisible = false;
+
 	public PfssPlugin()
 	{
-		PfssPlugin3dRenderer pfssPlugin3dRenderer = new PfssPlugin3dRenderer();
-		pluginPanel = new PfssPluginPanel(pfssPlugin3dRenderer);
-		pluginRenderer = pfssPlugin3dRenderer;
+		manager = new FrameManager(this);
+		UltimatePluginInterface.addPanelToLeftControllPanel(NAME, new PfssPluginPanel(this), false);
+	}
+	
+	@Override
+	public void render(GL2 gl) {
+		if (isVisible){
+			LocalDateTime localDateTime = UltimatePluginInterface.SIGLETON.getCurrentDateTime();
+			PfssDecompressed frame = manager.getFrame(gl,localDateTime);
+			if(frame != null)
+				frame.display(gl, localDateTime);			
+			gl.glDepthMask(false);
+			gl.glEnable(GL.GL_DEPTH_TEST);
+		}
 	}
 
 	/**
@@ -38,15 +63,6 @@ public class PfssPlugin extends Plugin
 	public String getDescription() {
 		return null;
 	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public String getName()
-	{
-		return "PFSS plugin";
-	}
-
 
 	/**
 	 * {@inheritDoc}
@@ -62,24 +78,34 @@ public class PfssPlugin extends Plugin
 
 		return description;
 	}
-
+	
 	public static URL getResourceUrl(String name)
 	{
 		return PfssPlugin.class.getResource(name);
 	}
-
+	
 	/**
-	 * {@inheritDoc} In this case, does nothing.
+	 * sets the dates which the renderer should display
+	 * @param start first date inclusive
+	 * @param end last date inclusive
+	 * @throws IOException if the dates are not present+
 	 */
-	public void setState(String state)
+	public void setDisplayRange(LocalDateTime start, LocalDateTime end)
 	{
+		manager.setDateRange(start, end);
 	}
 
-	/**
-	 * {@inheritDoc} In this case, does nothing.
-	 */
-	public String getState()
+	public void setVisible(boolean visible)
 	{
-		return "";
+		isVisible = visible;
+		
+		if(visible)
+		    manager.showErrorMessages();
 	}
+	
+	public boolean isVisible()
+	{
+		return isVisible;
+	}
+
 }

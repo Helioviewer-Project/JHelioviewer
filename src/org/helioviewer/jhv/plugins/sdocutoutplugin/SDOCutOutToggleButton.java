@@ -1,17 +1,17 @@
 package org.helioviewer.jhv.plugins.sdocutoutplugin;
 
-import java.awt.Component;
 import java.awt.Container;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 
 import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 
-public class SDOCutOutToggleButton extends Component implements
+public class SDOCutOutToggleButton extends JButton implements
 		PropertyChangeListener {
 
 	private static final long serialVersionUID = 1L;

@@ -20,17 +20,17 @@ import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 public class PfssPluginPanel extends OverlayPanel implements ActionListener{
 
 	private static final long serialVersionUID = 1L;
-	private PfssPlugin3dRenderer renderer;
 
 	// UI Components
 	private JButton visibleButton = new JButton(new ImageIcon(PfssPlugin.getResourceUrl("/images/invisible_dm.png")));
 	private JButton reloadButton = new JButton(new ImageIcon(PfssPlugin.getResourceUrl("/images/reload.png")));
-
+	private PfssPlugin renderer;
+	
 	/**
 	 * Default constructor
 	 * 
 	 * */
-	public PfssPluginPanel(PfssPlugin3dRenderer renderer)
+	public PfssPluginPanel(PfssPlugin renderer)
 	{
 		// set up visual components
 		initVisualComponents();
@@ -80,12 +80,6 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener{
 
 		this.add(reloadButton, c6);
 		reloadButton.setToolTipText("reload PFSS data");
-	}
-
-	/**
-	 * Updates components.
-	 * */
-	public void updateComponents() {
 	}
 
 	public void actionPerformed(ActionEvent act) {

@@ -28,8 +28,6 @@ import org.helioviewer.jhv.gui.components.statusplugins.CurrentTimeLabel;
 import org.helioviewer.jhv.gui.components.statusplugins.FramerateStatusPanel;
 import org.helioviewer.jhv.gui.components.statusplugins.PositionStatusPanel;
 import org.helioviewer.jhv.gui.components.statusplugins.ZoomStatusPanel;
-import org.helioviewer.jhv.plugins.plugin.Plugin;
-import org.helioviewer.jhv.plugins.plugin.Plugins;
 import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 
 import com.jgoodies.forms.factories.FormFactory;
@@ -48,12 +46,13 @@ public class MainFrame extends JFrame{
 	public static final OverViewPanel OVERVIEW_PANEL = new OverViewPanel();
 	public static final TopToolBar TOP_TOOL_BAR = new TopToolBar();
 	public static final MainFrame SINGLETON = new MainFrame();
-
 	public static final int SIDE_PANEL_WIDTH = 320;
+	public static SideContentPane LEFT_PANE;
 
 	private JSplitPane splitPane;
 
 	public FilterTabPanel filterTabPanel;
+
 
 
 	public MainFrame() {
@@ -197,25 +196,20 @@ public class MainFrame extends JFrame{
 	}
 	
 	private SideContentPane getSideBar(){
-		SideContentPane leftPane = new SideContentPane();
-
+		LEFT_PANE = new SideContentPane();
 		// Movie control
 		NewPlayPanel moviePanel = new NewPlayPanel();
-		leftPane.add("Movie Controls", moviePanel, true);
+		LEFT_PANE.add("Movie Controls", moviePanel, true);
 		
 		// Layer control
 		NewLayerPanel newLayerPanel = new NewLayerPanel();
-		leftPane.add("Layers", newLayerPanel, true);
+		LEFT_PANE.add("Layers", newLayerPanel, true);
 
 		// Filter control
 		filterTabPanel = new FilterTabPanel();
-		leftPane.add("Adjustments", filterTabPanel , true);
+		LEFT_PANE.add("Adjustments", filterTabPanel , true);
 		
-		for (Plugin plugin : Plugins.plugins){
-			leftPane.add(plugin.getName(), plugin.getPanel(), false);
-		}
-		
-		return leftPane;
+		return LEFT_PANE;
 	}
 
 	private void initMenuBar(){

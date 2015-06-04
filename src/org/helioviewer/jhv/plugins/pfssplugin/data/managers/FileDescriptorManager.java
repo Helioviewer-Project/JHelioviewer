@@ -14,7 +14,6 @@ import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
-import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin3dRenderer;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssSettings;
 import org.helioviewer.jhv.plugins.pfssplugin.data.FileDescriptor;
 
@@ -32,9 +31,9 @@ public class FileDescriptorManager
     private LocalDateTime loadingFrom;
     private LocalDateTime loadingTo;
     
-    private PfssPlugin3dRenderer parent;
+    private PfssPlugin parent;
 	
-	public FileDescriptorManager(PfssPlugin3dRenderer _parent)
+	public FileDescriptorManager(PfssPlugin _parent)
 	{
 	    parent=_parent;
 	}

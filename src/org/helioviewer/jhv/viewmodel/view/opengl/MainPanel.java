@@ -58,8 +58,7 @@ import org.helioviewer.jhv.opengl.camera.CameraZoomInteraction;
 import org.helioviewer.jhv.opengl.camera.animation.CameraAnimation;
 import org.helioviewer.jhv.opengl.camera.animation.CameraTransformationAnimation;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace;
-import org.helioviewer.jhv.plugins.plugin.Plugin;
-import org.helioviewer.jhv.plugins.plugin.Plugins;
+import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine.TimeLineListener;
@@ -483,6 +482,8 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 			gl.glPopMatrix();
 			gl.glPushMatrix();
 			
+			gl.glScaled(aspect, 1, 1);
+			
 
 			/*gl.glOrtho(-width + this.translation.x, width + this.translation.x,
 					width + this.translation.y, -width + this.translation.y,
@@ -507,12 +508,9 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 			}
 			gl.glEnable(GL2.GL_DEPTH_TEST);
 			gl.glDepthFunc(GL2.GL_LESS);
-			for (Plugin plugin : Plugins.plugins) {
-				if (plugin.getRenderer() != null
-						&& plugin.getRenderer().isVisible()) {
-					plugin.getRenderer().render(gl);
-				}
-			}
+			
+			UltimatePluginInterface.SIGLETON.renderPlugin(gl);
+			
 			gl.glMatrixMode(GL2.GL_PROJECTION);
 			gl.glPopMatrix();
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
