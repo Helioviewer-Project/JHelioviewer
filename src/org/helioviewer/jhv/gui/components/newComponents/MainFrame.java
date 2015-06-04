@@ -105,7 +105,7 @@ public class MainFrame extends JFrame{
 		OVERVIEW_PANEL.setMinimumSize(new Dimension(200, 200));
 		OVERVIEW_PANEL.setPreferredSize(new Dimension(240, 200));
 
-		splitPane.setRightComponent(MAIN_PANEL);
+		splitPane.setRightComponent(MAIN_PANEL);		
 		splitPane.setLeftComponent(getLeftPane());
 		
 		contentPane.add(this.getStatusPane(), BorderLayout.SOUTH);		
@@ -125,6 +125,7 @@ public class MainFrame extends JFrame{
 		gbc_overViewPane.fill = GridBagConstraints.BOTH;
 		gbc_overViewPane.gridx = 0;
 		gbc_overViewPane.gridy = 0;
+		
 		left.add(OVERVIEW_PANEL, gbc_overViewPane);
 		OVERVIEW_PANEL.addMainView(MAIN_PANEL);
 		MAIN_PANEL.addSynchronizedView(OVERVIEW_PANEL);

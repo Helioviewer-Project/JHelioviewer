@@ -17,6 +17,8 @@ import com.jogamp.opengl.GLContext;
 
 public class CenterLoadingScreen implements RenderAnimation {
 
+	public static final CenterLoadingScreen SINGLETON = new CenterLoadingScreen();
+	
 	private int texture;
 	private Dimension dimension;
 	private final double TOTAL_SEC_4_ONE_ROTATION = 2;
@@ -38,16 +40,10 @@ public class CenterLoadingScreen implements RenderAnimation {
 	
 	public CenterLoadingScreen() {
 		openGLHelper = new OpenGLHelper();
-		SwingUtilities.invokeLater(new Runnable() {
-
-			@Override
-			public void run() {
 				texture = openGLHelper.createTextureID();
 				BufferedImage image = IconBank.getImage(JHVIcon.LOADING_BIG);
 				openGLHelper.bindBufferedImageToGLTexture(image);
 				initCircleVBO(GLContext.getCurrentGL().getGL2());
-			}
-		});
 	}
 
 	@Override

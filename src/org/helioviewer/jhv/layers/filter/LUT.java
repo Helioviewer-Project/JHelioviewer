@@ -54,12 +54,9 @@ public class LUT
 		lutMap = new LinkedHashMap<String, Integer>();
 		openGLHelper = new OpenGLHelper();
 		loadLutFromFile("/UltimateLookupTable.txt");      
-		SwingUtilities.invokeLater(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				try
+		
+		
+		try
 				{
 					BufferedImage bufferedImage;
 					bufferedImage = ImageIO.read(MainPanel.class.getResourceAsStream("/UltimateLookupTable.png"));
@@ -74,9 +71,7 @@ public class LUT
 				{
 					e.printStackTrace();
 				}
-			}
-		});
-	}	
+		}	
 	
 	private static void loadLutFromFile(String lutTxtName)
 	{

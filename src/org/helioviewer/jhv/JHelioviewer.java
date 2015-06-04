@@ -118,6 +118,7 @@ public class JHelioviewer {
 			}
 			System.out.println(GLProfile
 					.getDefault());
+			GLProfile.initSingleton();
 			GLDrawableFactory factory = GLDrawableFactory.getFactory(GLProfile
 					.getDefault());
 			GLProfile profile = GLProfile.get(GLProfile.GL2);
@@ -133,7 +134,7 @@ public class JHelioviewer {
 						.getGL2()));
 
 			OpenGLHelper.glContext = sharedDrawable.getContext();
-
+			
 			System.out
 					.println("JHelioviewer started with command-line options:"
 							+ argString);

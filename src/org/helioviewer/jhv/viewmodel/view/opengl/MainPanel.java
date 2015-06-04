@@ -30,6 +30,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import org.helioviewer.jhv.SplashScreen;
 import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.Vector2d;
@@ -114,9 +115,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	private int nextAvaibleLut = 0;
 
 	private CopyOnWriteArrayList<RenderAnimation> animations;
-	private NoImageScreen splashScreen;
-	private CenterLoadingScreen loadingScreen;
-
+	
 	protected CameraInteraction[] cameraInteractions;
 	public boolean fullScreenMode;
 
@@ -137,6 +136,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		this.cameraAnimations = new CopyOnWriteArrayList<CameraAnimation>();
 		this.synchronizedViews = new ArrayList<MainPanel>();
 		this.setSharedContext(OpenGLHelper.glContext);
+		
 		Layers.LAYERS.addNewLayerListener(this);
 		TimeLine.SINGLETON.addListener(this);
 		animations = new CopyOnWriteArrayList<RenderAnimation>();
@@ -145,7 +145,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		this.addGLEventListener(this);
 		this.addMouseWheelListener(this);
 		layers = Layers.LAYERS;
-
+		
 		this.rotation = Quaternion3d.createRotation(0.0, new Vector3d(0, 1, 0));
 		this.translation = new Vector3d(0, 0, DEFAULT_CAMERA_DISTANCE);
 
@@ -467,7 +467,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 					height = (int)(getSurfaceHeight() * 0.15);					
 				}
 				gl.glViewport(xOffset, yOffset, width, height);
-				loadingScreen.render(gl);
+				CenterLoadingScreen.SINGLETON.render(gl);
 				gl.glViewport(0, 0, getSurfaceWidth(), getSurfaceHeight());
 				repaint(20);
 			}
@@ -530,7 +530,6 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 
 	@Override
 	public void display(GLAutoDrawable drawable) {
-		drawable.getContext().makeCurrent();
 		GL2 gl = drawable.getGL().getGL2();
 		gl.glViewport(0, 0, this.getSurfaceWidth(), this.getSurfaceHeight());
 
@@ -598,7 +597,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 			int yOffset = (int)(getSurfaceHeight() * 0.425);
 			int height = (int)(getSurfaceHeight() * 0.15);
 			gl.glViewport(xOffset, yOffset, width, height);
-			splashScreen.render(gl);
+			NoImageScreen.SINGLETON.render(gl);
 			gl.glViewport(0, 0, getSurfaceWidth(), getSurfaceHeight());
 		}
 	}
@@ -691,9 +690,6 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		gl.glEnable(GL2.GL_TEXTURE_2D);
 
 		this.initShaders(gl);
-
-		splashScreen = new NoImageScreen();
-		loadingScreen = new CenterLoadingScreen();
 		
 		gl.glDisable(GL2.GL_TEXTURE_2D);
 

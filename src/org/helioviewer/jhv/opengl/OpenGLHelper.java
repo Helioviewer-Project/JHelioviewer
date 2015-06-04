@@ -32,7 +32,7 @@ public class OpenGLHelper {
 	}
 	
 	public int createTextureID(){
-		GL2 gl = GLContext.getCurrent().getGL().getGL2();
+		GL2 gl = GLContext.getCurrentGL().getGL().getGL2();
 		System.out.println("lut : " + GLContext.getCurrent());
         int tmp[] = new int[1];
 		gl.glGenTextures(1, tmp, 0);
@@ -49,10 +49,6 @@ public class OpenGLHelper {
 	}
 	
 	public void bindBufferedImageToGLTexture(final BufferedImage bufferedImage){
-		SwingUtilities.invokeLater(new Runnable() {
-			
-			@Override
-			public void run() {
 				int width2 = nextPowerOfTwo(bufferedImage.getWidth());
 				int height2 = nextPowerOfTwo(bufferedImage.getHeight());
 				
@@ -61,8 +57,6 @@ public class OpenGLHelper {
 				}
 
 				updateTexture(bufferedImage);
-			}
-		});
 	}
 	
 	public static void bindByteBufferToGLTexture(ImageRegion region, final ByteBuffer byteBuffer, final Rectangle imageSize){

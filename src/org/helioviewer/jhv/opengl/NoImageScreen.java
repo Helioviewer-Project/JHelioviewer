@@ -1,5 +1,6 @@
 package org.helioviewer.jhv.opengl;
 
+import java.awt.EventQueue;
 import java.awt.image.BufferedImage;
 
 import javax.swing.SwingUtilities;
@@ -16,17 +17,13 @@ public class NoImageScreen implements RenderAnimation {
 
 	private OpenGLHelper openGLHelper;
 
+	public static final NoImageScreen SINGLETON = new NoImageScreen();
+	
 	public NoImageScreen() {
 		openGLHelper = new OpenGLHelper();
-		SwingUtilities.invokeLater(new Runnable() {
-
-			@Override
-			public void run() {
 				texture = openGLHelper.createTextureID();
 				BufferedImage image = IconBank.getImage(JHVIcon.NOIMAGE);
 				openGLHelper.bindBufferedImageToGLTexture(image);
-			}
-		});
 	}
 
 	@Override
