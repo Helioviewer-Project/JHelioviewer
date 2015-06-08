@@ -32,8 +32,7 @@ public class OpenGLHelper {
 	}
 	
 	public int createTextureID(){
-		GL2 gl = GLContext.getCurrentGL().getGL().getGL2();
-		System.out.println("lut : " + GLContext.getCurrent());
+		GL2 gl = GLContext.getCurrentGL().getGL2();
         int tmp[] = new int[1];
 		gl.glGenTextures(1, tmp, 0);
 		this.textureID = tmp[0];
@@ -42,7 +41,6 @@ public class OpenGLHelper {
 	
 	public static int[] createTextureIDs(int countTexture){
 		GL2 gl = GLContext.getCurrentGL().getGL2();
-		System.out.println("layer : " + GLContext.getCurrent());
 		int tmp[] = new int[countTexture];
 		gl.glGenTextures(countTexture, tmp, 0);
 		return tmp;
@@ -56,7 +54,10 @@ public class OpenGLHelper {
 					createTexture(bufferedImage, width2, height2);
 				}
 
-				updateTexture(bufferedImage);
+				this.textureHeight = height2;
+				this.textureWidth = width2;
+
+				updateTexture(bufferedImage,0,0);
 	}
 	
 	public static void bindByteBufferToGLTexture(ImageRegion region, final ByteBuffer byteBuffer, final Rectangle imageSize){
@@ -87,9 +88,25 @@ public class OpenGLHelper {
 					createTexture(bufferedImage, width2, height2);
 				}
 
-				updateTexture(bufferedImage);
-		
+				this.textureHeight = height2;
+				this.textureWidth = width2;
+
+				updateTexture(bufferedImage, 0, 0);		
 	}
+	
+	public void bindBufferedImageToGLTexture(final BufferedImage bufferedImage, int xOffset, int yOffset, final int width, final int height){
+		int width2 = nextPowerOfTwo(width);
+		int height2 = nextPowerOfTwo(height);
+
+		if (textureHeight != height2 && textureWidth != width2){
+			createTexture(bufferedImage, width2, height2);			
+		}
+		this.textureHeight = height2;
+		this.textureWidth = width2;
+		this.scaleFactorWidth = bufferedImage.getWidth() / (float)width2;
+		this.scaleFactorHeight = bufferedImage.getHeight() / (float)height2;
+		updateTexture(bufferedImage, xOffset, yOffset);		
+	}	
 	
 
 	private void createTexture(BufferedImage bufferedImage, int width, int height){
@@ -129,10 +146,9 @@ public class OpenGLHelper {
 		b.limit(width*height*bpp);
 		gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, internalFormat, width,
 				height, 0, inputFormat, inputType, b);
-
 	}
 	
-	private void updateTexture(BufferedImage bufferedImage){
+	private void updateTexture(BufferedImage bufferedImage, int xOffset, int yOffset){
 		GL2 gl = GLContext.getCurrentGL().getGL2();
 		boolean alpha = false;
 		boolean switchChannel = false;
@@ -165,7 +181,7 @@ public class OpenGLHelper {
 		gl.glEnable(GL2.GL_TEXTURE_2D);			
 		gl.glBindTexture(GL2.GL_TEXTURE_2D, this.textureID);
 		
-		gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(),
+		gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, xOffset, yOffset, bufferedImage.getWidth(), bufferedImage.getHeight(),
 				inputFormat, inputType, buffer);
 
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER,
@@ -176,6 +192,8 @@ public class OpenGLHelper {
 				GL2.GL_CLAMP);
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T,
 				GL2.GL_CLAMP);
+
+		gl.glDisable(GL2.GL_TEXTURE_2D);		
 	}
 		
 	private static void createTexture(ImageRegion imageRegion, int width, int height){
@@ -223,6 +241,8 @@ public class OpenGLHelper {
 				GL2.GL_CLAMP);
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T,
 				GL2.GL_CLAMP);
+		gl.glBindTexture(GL2.GL_TEXTURE_2D, 0);
+		gl.glDisable(GL2.GL_TEXTURE_2D);		
 	}
 
 	private static ByteBuffer readPixels(BufferedImage image, boolean storeAlphaChannel, boolean switchRandBChannel) {

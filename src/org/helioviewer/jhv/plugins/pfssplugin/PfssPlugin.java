@@ -49,19 +49,7 @@ public class PfssPlugin extends NewPlugin
 			PfssDecompressed frame = manager.getFrame(gl,localDateTime);
 			if(frame != null)
 				frame.display(gl, localDateTime);			
-			gl.glDepthMask(false);
-			gl.glEnable(GL.GL_DEPTH_TEST);
 		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * <p>
-	 * A description is not needed here because this plug-in is activated always
-	 * and will not be visible in the corresponding dialogs.
-	 */
-	public String getDescription() {
-		return null;
 	}
 
 	/**

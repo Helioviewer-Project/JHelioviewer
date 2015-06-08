@@ -121,10 +121,4 @@ public class HEKCacheTreeViewContainer extends JPanel implements HEKCacheListene
 
     public void structureChanged(HEKPath path) {
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void layerDownloaded(int idx) {
-    }
 }

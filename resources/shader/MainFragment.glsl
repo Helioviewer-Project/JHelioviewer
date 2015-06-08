@@ -216,7 +216,7 @@ void main(void)
         }
     }
     
-    vec2 pos = vec2(imageColor.y,lutPosition/256.);
+    vec2 pos = vec2(imageColor.y,(lutPosition + 0.5 ) /255.);
     if (lutInverted != 0){
         pos.x = 1. - pos.x;
     }

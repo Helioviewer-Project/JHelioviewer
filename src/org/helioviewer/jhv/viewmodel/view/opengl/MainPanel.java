@@ -47,7 +47,6 @@ import org.helioviewer.jhv.layers.filter.LUT;
 import org.helioviewer.jhv.opengl.CenterLoadingScreen;
 import org.helioviewer.jhv.opengl.NoImageScreen;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
-import org.helioviewer.jhv.opengl.RenderAnimation;
 import org.helioviewer.jhv.opengl.camera.Camera;
 import org.helioviewer.jhv.opengl.camera.CameraInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraMode;
@@ -59,6 +58,7 @@ import org.helioviewer.jhv.opengl.camera.CameraZoomInteraction;
 import org.helioviewer.jhv.opengl.camera.animation.CameraAnimation;
 import org.helioviewer.jhv.opengl.camera.animation.CameraTransformationAnimation;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace;
+import org.helioviewer.jhv.plugins.hekplugin.HEKIcon;
 import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
@@ -113,8 +113,6 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	private int shaderprogram;
 	private HashMap<String, Integer> lutMap;
 	private int nextAvaibleLut = 0;
-
-	private CopyOnWriteArrayList<RenderAnimation> animations;
 	
 	protected CameraInteraction[] cameraInteractions;
 	public boolean fullScreenMode;
@@ -139,7 +137,6 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		
 		Layers.LAYERS.addNewLayerListener(this);
 		TimeLine.SINGLETON.addListener(this);
-		animations = new CopyOnWriteArrayList<RenderAnimation>();
 		this.addMouseListener(this);
 		this.addMouseMotionListener(this);
 		this.addGLEventListener(this);
@@ -309,13 +306,14 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 			gl.glEnable(GL2.GL_DEPTH_TEST);
 			gl.glDepthFunc(GL2.GL_LEQUAL);
 			gl.glDepthMask(true);  
-			gl.glColor3f(1, 1, 1);
+			gl.glColor4f(1, 1, 1, 1);
 			gl.glEnable(GL2.GL_BLEND);
 			gl.glEnable(GL2.GL_TEXTURE_2D);
 			gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
 			gl.glActiveTexture(GL.GL_TEXTURE0);
 			gl.glBindTexture(GL2.GL_TEXTURE_2D, layerTexture);
 
+			
 			gl.glEnable(GL2.GL_VERTEX_PROGRAM_ARB);
 			gl.glEnable(GL2.GL_FRAGMENT_PROGRAM_ARB);
 
@@ -328,8 +326,6 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 			gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "lut"), 1);
 			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "fov"),
 					(float) Math.toRadians(MainPanel.FOV / 2.0));
-			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "sunRadius"),
-					(float) Constants.SUN_RADIUS);
 			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram,
 					"physicalImageWidth"), (float) metaData
 					.getPhysicalImageWidth());
@@ -386,20 +382,23 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 					gl.glGetUniformLocation(shaderprogram, "imageResolution"),
 					layer.getLastDecodedImageRegion().textureHeight,
 					layer.getLastDecodedImageRegion().textureHeight);
+					
 			gl.glBegin(GL2.GL_QUADS);
 			
 			gl.glTexCoord2f(0.0f, 1.0f);
-			gl.glVertex3d(-1, -1, 0);
+			gl.glVertex2d(-1, -1);
 			gl.glTexCoord2f(1.0f, 1.0f);
-			gl.glVertex3d(1, -1, 0);
+			gl.glVertex2d(1, -1);
 			gl.glTexCoord2f(1.0f, 0.0f);
-			gl.glVertex3d(1, 1, 0);
+			gl.glVertex2d(1, 1);
 			gl.glTexCoord2f(0.0f, 0.0f);
-			gl.glVertex3d(-1, 1, 0);
+			gl.glVertex2d(-1, 1);
 
 			gl.glEnd();
 			gl.glUseProgram(0);
+			//gl.glBindTexture(GL2.GL_TEXTURE_2D, 0);
 			gl.glActiveTexture(GL.GL_TEXTURE0);
+			//gl.glBindTexture(GL2.GL_TEXTURE_2D, 0);
 			gl.glDisable(GL2.GL_BLEND);
 			gl.glDisable(GL2.GL_TEXTURE_2D);
 			gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
@@ -416,9 +415,11 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	protected void render(GL2 gl) {
 		gl.glClearDepth(1);
 		gl.glDepthMask(true);
-		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
+		gl.glClear(GL2.GL_COLOR_BUFFER_BIT);
 		gl.glClear(GL2.GL_DEPTH_BUFFER_BIT);
 		gl.glDepthMask(false);
+		
+		// Calculate Track
 		if (track)
 			calculateTrackRotation();
 		if (layers != null && layers.getLayerCount() > 0) {
@@ -450,8 +451,14 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 				}
 			}
 			
+			System.out.println("visible : "+ layerLoaded);
+			System.out.println("visible : "+ notCenterAnimation);
+			gl.glMatrixMode(GL2.GL_MODELVIEW);
 			gl.glPopMatrix();
-
+			gl.glMatrixMode(GL2.GL_PROJECTION);
+			gl.glPopMatrix();			
+			gl.glPushMatrix();
+			gl.glMatrixMode(GL2.GL_MODELVIEW);
 			if (!layerLoaded){
 				int xOffset, yOffset, width, height;
 				if (notCenterAnimation){
@@ -467,10 +474,15 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 					height = (int)(getSurfaceHeight() * 0.15);					
 				}
 				gl.glViewport(xOffset, yOffset, width, height);
-				CenterLoadingScreen.SINGLETON.render(gl);
+				CenterLoadingScreen.render(gl);
 				gl.glViewport(0, 0, getSurfaceWidth(), getSurfaceHeight());
 				repaint(20);
 			}
+			gl.glMatrixMode(GL2.GL_PROJECTION);
+			gl.glPopMatrix();
+			gl.glPushMatrix();
+			gl.glMatrixMode(GL2.GL_MODELVIEW);
+			
 			Quaternion3d rotation = new Quaternion3d(this.rotation.getAngle(), this.rotation.getRotationAxis().negateY());
 			Matrix4d transformation = rotation.toMatrix();
 			transformation.addTranslation(translation.negate());
@@ -478,9 +490,6 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 			
 
 			
-			gl.glMatrixMode(GL2.GL_PROJECTION);
-			gl.glPopMatrix();
-			gl.glPushMatrix();
 			
 			gl.glScaled(aspect, 1, 1);
 			
@@ -489,6 +498,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 					width + this.translation.y, -width + this.translation.y,
 					CLIP_NEAR, CLIP_FAR);*/
 			GLU glu = new GLU();
+			gl.glMatrixMode(GL2.GL_PROJECTION);
 			
 			glu.gluPerspective(MainPanel.FOV, this.aspect, clipNear, this.translation.z + 4 * Constants.SUN_RADIUS);
 			/*gl.glFrustum(-width + this.translation.x, width + this.translation.x,
@@ -506,15 +516,11 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 			for (CameraInteraction cameraInteraction : cameraInteractions) {
 				cameraInteraction.renderInteraction(gl);
 			}
-			gl.glEnable(GL2.GL_DEPTH_TEST);
-			gl.glDepthFunc(GL2.GL_LESS);
 			
-			UltimatePluginInterface.SIGLETON.renderPlugin(gl);
-			
+			renderPlugins(gl);
 			gl.glMatrixMode(GL2.GL_PROJECTION);
 			gl.glPopMatrix();
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
-
 		}
 
 		// empty screen
@@ -528,47 +534,99 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		}
 	}
 
+	protected void renderPlugins(GL2 gl){
+		gl.glEnable(GL2.GL_DEPTH_TEST);
+		gl.glDepthFunc(GL2.GL_LESS);
+		
+		UltimatePluginInterface.SIGLETON.renderPlugin(gl);		
+	}
+	
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		GL2 gl = drawable.getGL().getGL2();
+
 		gl.glViewport(0, 0, this.getSurfaceWidth(), this.getSurfaceHeight());
 
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glLoadIdentity();
 		gl.glScaled(1, aspect, 1);
+		gl.glPushMatrix();
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		gl.glLoadIdentity();
-
 		this.render(gl);
+		gl.glMatrixMode(GL2.GL_PROJECTION);
+		gl.glPopMatrix();
+		gl.glLoadIdentity();
+		//gl.glScaled(1, aspect, 1);
+		gl.glMatrixMode(GL2.GL_MODELVIEW);		
 		
+		
+		gl.glDisable(GL2.GL_BLEND);
+		gl.glDisable(GL2.GL_TEXTURE_2D);
+		gl.glUseProgram(0);
+		gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
+		gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
+		gl.glDisable(GL2.GL_DEPTH_TEST);
+		
+		if (Layers.LAYERS.getLayerCount() == 0){
+			System.out.println("render noImage " + this.getClass());
+			double dim = Math.max(getSurfaceHeight(), getSurfaceWidth()) * 0.15;
+			
+			int xOffset = (int)(getSurfaceWidth() / 2 - dim / 2);
+			int width = (int)(dim);
+			int yOffset = (int)(getSurfaceHeight() / 2 - dim / 2);
+			int height = (int)(dim);
+			System.out.println("xOffset : " + xOffset);
+			System.out.println("yOffset : " + yOffset);
+			System.out.println("width   : " + width);
+			gl.glViewport(xOffset, yOffset, width, height);
+			NoImageScreen.render(gl);
+			gl.glViewport(0, 0, getSurfaceWidth(), getSurfaceHeight());
+		}
+
+		
+		gl.glEnable(GL2.GL_TEXTURE_2D);
 		gl.glActiveTexture(GL.GL_TEXTURE0);
 		gl.glDisable(GL2.GL_BLEND);
 		gl.glDisable(GL2.GL_TEXTURE_2D);
+		gl.glEnable(GL2.GL_FRAGMENT_PROGRAM_ARB);
+		gl.glEnable(GL2.GL_VERTEX_PROGRAM_ARB);
 		gl.glUseProgram(0);
 		gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
 		gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
 
 		gl.glEnable(GL2.GL_BLEND);
 		gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
-
+		
+		
+		
 		gl.glEnable(GL2.GL_TEXTURE_2D);
- 		gl.glColor3d(1, 1, 1);
+		
+		
+		gl.glColor4d(1, 1, 1, 1);
 		gl.glEnable(GL2.GL_DEPTH_TEST);
+		
+		
 		int tmp[] = new int[1];
 		gl.glGenTextures(1, tmp, 0);
 		gl.glBindTexture(GL2.GL_TEXTURE_2D, tmp[0]);
 		gl.glCopyTexImage2D(GL2.GL_TEXTURE_2D, 0, GL2.GL_DEPTH_COMPONENT24, 0, 0, this.getSurfaceWidth(), this.getSurfaceHeight(), 0);
+		
 		gl.glDisable(GL2.GL_DEPTH_TEST);
 
 		gl.glDisable(GL2.GL_BLEND);
 		
-		//gl.glBindTexture(GL2.GL_TEXTURE_2D, LUT.getTexture());
-
+		//gl.glBindTexture(GL2.GL_TEXTURE_2D, HEKIcon.SINGLETON.getTexture());
+		
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER,
 				GL2.GL_LINEAR);
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER,
 				GL2.GL_LINEAR);
-
+		
+		gl.glDepthMask(true);
+	    
+		gl.glDisable(GL2.GL_BLEND);
+		
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glLoadIdentity();
 		gl.glPushMatrix();
@@ -586,20 +644,12 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		gl.glTexCoord2f(0, 1);
 		gl.glVertex2d(0, 0);
 	    gl.glEnd();
+	    gl.glBindTexture(GL2.GL_TEXTURE_2D, 0);
+	    gl.glDisable(GL2.GL_TEXTURE_2D);
+	    
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glPopMatrix();
-		gl.glMatrixMode(GL2.GL_MODELVIEW );
-		
-		
-		if (Layers.LAYERS.getLayerCount() == 0){
-			int xOffset = (int)(getSurfaceWidth() * 0.425);
-			int width = (int)(getSurfaceWidth() * 0.15);
-			int yOffset = (int)(getSurfaceHeight() * 0.425);
-			int height = (int)(getSurfaceHeight() * 0.15);
-			gl.glViewport(xOffset, yOffset, width, height);
-			NoImageScreen.SINGLETON.render(gl);
-			gl.glViewport(0, 0, getSurfaceWidth(), getSurfaceHeight());
-		}
+		gl.glMatrixMode(GL2.GL_MODELVIEW );		
 	}
 
 	protected void calculateTrackRotation() {

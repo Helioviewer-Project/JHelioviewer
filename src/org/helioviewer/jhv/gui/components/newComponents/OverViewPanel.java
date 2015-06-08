@@ -85,15 +85,16 @@ public class OverViewPanel extends MainPanel{
 	
 	@Override
 	public boolean displayLayer(GL2 gl, NewLayer layer) {
-		System.out.println("repaint");
 		this.rotation = MainFrame.MAIN_PANEL.getRotation();
 		return super.displayLayer(gl, layer);
 	}
 	
 	private void displayRect(GL2 gl, double radius){
+		gl.glDisable(GL2.GL_DEPTH_TEST);
 		for (MainPanel mainView : mainViews){
 			double[][] bounds = mainView.getRectBounds();
-		gl.glColor3d(0.0, 1.0, 0);
+		gl.glColor4f(0, 1, 0,1);
+		gl.glDisable(GL2.GL_TEXTURE_2D);
 		gl.glEnable(GL2.GL_BLEND);
 		gl.glEnable(GL2.GL_LINE_SMOOTH);
 		gl.glBegin(GL2.GL_LINE_LOOP);

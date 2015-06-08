@@ -49,7 +49,7 @@ public class LUT
 	private static OpenGLHelper openGLHelper;
 	
 	
-	static
+	private static void init()
 	{
 		lutMap = new LinkedHashMap<String, Integer>();
 		openGLHelper = new OpenGLHelper();
@@ -62,10 +62,14 @@ public class LUT
 					bufferedImage = ImageIO.read(MainPanel.class.getResourceAsStream("/UltimateLookupTable.png"));
 					texture = openGLHelper.createTextureID();
 					openGLHelper.bindBufferedImageToGLTexture(bufferedImage, 256, 256);
+					GLContext.getCurrentGL().glEnable(GL2.GL_TEXTURE_2D);
+					GLContext.getCurrentGL().glBindTexture(GL2.GL_TEXTURE_2D, texture);
 					GLContext.getCurrentGL().getGL2().glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER,
 			               GL2.GL_NEAREST);
 					GLContext.getCurrentGL().getGL2().glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER,
 			                GL2.GL_NEAREST);
+					GLContext.getCurrentGL().glBindTexture(GL2.GL_TEXTURE_2D, 0);
+					GLContext.getCurrentGL().glDisable(GL2.GL_TEXTURE_2D);
 				}
 				catch (IOException e)
 				{
@@ -89,6 +93,7 @@ public class LUT
 	
 	public static int getTexture()
 	{
+		if (texture < 0) init();
 		return texture;
 	}	
 }

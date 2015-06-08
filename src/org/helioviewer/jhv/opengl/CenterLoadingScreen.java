@@ -15,30 +15,28 @@ import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLContext;
 
-public class CenterLoadingScreen implements RenderAnimation {
-
-	public static final CenterLoadingScreen SINGLETON = new CenterLoadingScreen();
+public class CenterLoadingScreen{
 	
-	private int texture;
-	private Dimension dimension;
-	private final double TOTAL_SEC_4_ONE_ROTATION = 2;
-	private final int NUMBER_OF_CIRCLE = 32;
-	private final int NUMBER_OF_VISIBLE_CIRCLE = 12;
-	private final int POINT_OF_CIRCLE = 36;
-
-	private final float RADIUS = 0.43f;
-	private final float CIRCLE_RADIUS = 0.04f;
-	private final float DEFAULT_X_OFFSET = -0.003f;
-	private final float DEFAULT_Y_OFFSET = 0.027f;
-	private int vertices;
-	private int indices;
-	private int color;
-	private float CIRCLE_COLOR = 192 / 255f;
-	private int indicesSize;
-
-	private OpenGLHelper openGLHelper;
 	
-	public CenterLoadingScreen() {
+	private static final double TOTAL_SEC_4_ONE_ROTATION = 2;
+	private static final int NUMBER_OF_CIRCLE = 32;
+	private static final int NUMBER_OF_VISIBLE_CIRCLE = 12;
+	private static final int POINT_OF_CIRCLE = 36;
+
+	private static final float RADIUS = 0.43f;
+	private static final float CIRCLE_RADIUS = 0.04f;
+	private static final float DEFAULT_X_OFFSET = -0.003f;
+	private static final float DEFAULT_Y_OFFSET = 0.027f;
+	
+	private static int vertices;
+	private static int indices;
+	private static int color;
+	private static float CIRCLE_COLOR = 192 / 255f;
+	private static int indicesSize;
+	private static OpenGLHelper openGLHelper;
+	private static int texture;
+
+	private static void init() {
 		openGLHelper = new OpenGLHelper();
 				texture = openGLHelper.createTextureID();
 				BufferedImage image = IconBank.getImage(JHVIcon.LOADING_BIG);
@@ -46,8 +44,7 @@ public class CenterLoadingScreen implements RenderAnimation {
 				initCircleVBO(GLContext.getCurrentGL().getGL2());
 	}
 
-	@Override
-	public void render(GL2 gl) {
+	public static void render(GL2 gl) {
 
 		gl.glUseProgram(0);
 		gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
@@ -60,11 +57,12 @@ public class CenterLoadingScreen implements RenderAnimation {
 		gl.glOrtho(-0.5, 0.5, -0.5, 0.5, 10, -10);
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		gl.glLoadIdentity();
-		gl.glColor3f(1, 1, 1);
+		gl.glColor4f(1, 1, 1, 1);
 		gl.glEnable(GL2.GL_BLEND);
 		gl.glEnable(GL2.GL_TEXTURE_2D);
 		gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
 		gl.glActiveTexture(GL.GL_TEXTURE0);
+		if (texture < 0) init();
 		gl.glBindTexture(GL2.GL_TEXTURE_2D, texture);
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER,
 				GL2.GL_LINEAR);
@@ -81,7 +79,7 @@ public class CenterLoadingScreen implements RenderAnimation {
 		gl.glTexCoord2f(0, 1);
 		gl.glVertex2d(-0.4, -0.4);
 		gl.glEnd();
-		
+
 		gl.glDisable(GL2.GL_DEPTH_TEST);
 		gl.glDisable(GL2.GL_BLEND);
 		gl.glDisable(GL2.GL_TEXTURE_2D);
@@ -90,7 +88,7 @@ public class CenterLoadingScreen implements RenderAnimation {
 
 	}
 
-	private void renderCircles(GL2 gl) {
+	private static void renderCircles(GL2 gl) {
 		// gl.glPushMatrix();
 		double t = System.currentTimeMillis() / (TOTAL_SEC_4_ONE_ROTATION*1000.0);
 		System.out.println("t1: " + t);
@@ -126,7 +124,7 @@ public class CenterLoadingScreen implements RenderAnimation {
 		gl.glDisableClientState(GL2.GL_COLOR_ARRAY);
 	}
 
-	public void initCircleVBO(GL2 gl) {
+	private static void initCircleVBO(GL2 gl) {
 		System.out.println("initCircle");
 
 		IntBuffer indices = Buffers
@@ -176,19 +174,19 @@ public class CenterLoadingScreen implements RenderAnimation {
 		int[] buffer = new int[3];
 		gl.glGenBuffers(3, buffer, 0);
 
-		this.vertices = buffer[0];
-		gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, this.vertices);
+		CenterLoadingScreen.vertices = buffer[0];
+		gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, CenterLoadingScreen.vertices);
 		gl.glBufferData(GL2.GL_ARRAY_BUFFER, vertices.limit() * Buffers.SIZEOF_FLOAT, vertices,
 				GL.GL_STATIC_DRAW);
 
-		this.indices = buffer[1];
-		gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, this.indices);
+		CenterLoadingScreen.indices = buffer[1];
+		gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, CenterLoadingScreen.indices);
 		gl.glBufferData(GL2.GL_ARRAY_BUFFER, indices.limit() * Buffers.SIZEOF_INT, indices,
 				GL.GL_STATIC_DRAW);
-		this.indicesSize = indices.limit();
+		indicesSize = indices.limit();
 
-		this.color = buffer[2];
-		gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, this.color);
+		color = buffer[2];
+		gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, color);
 		gl.glBufferData(GL2.GL_ARRAY_BUFFER, colors.limit() * Buffers.SIZEOF_FLOAT, colors,
 				GL.GL_STATIC_DRAW);
 		

@@ -6,6 +6,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
@@ -28,6 +30,7 @@ import org.helioviewer.jhv.plugins.hekplugin.cache.HEKPath;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKStupidDownloader;
 import org.helioviewer.jhv.plugins.hekplugin.cache.gui.HEKCacheTreeView;
 import org.helioviewer.jhv.plugins.hekplugin.cache.gui.HEKCacheTreeViewContainer;
+import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayPanel;
 
 /**
@@ -199,17 +202,23 @@ public class HEKPluginPanel extends OverlayPanel implements ActionListener, HEKC
     }
 
     public void reload() {
-    	/*
-    	Date start = LayersModel.getSingletonInstance().getFirstDate();
-        Date end = LayersModel.getSingletonInstance().getLastDate();
-        
-        if (start != null && end != null){
+    	
+		LocalDateTime startDateTime = UltimatePluginInterface
+				.getStartDateTime();
+		LocalDateTime endDateTime = UltimatePluginInterface.getEndDateTime();
+		
+        if (startDateTime != null && endDateTime != null){
         	
         
 	    	Thread threadUpdate = new Thread(new Runnable() {
 	            public void run() {
-	            	Date start = LayersModel.getSingletonInstance().getFirstDate();
-	                Date end = LayersModel.getSingletonInstance().getLastDate();
+	        		LocalDateTime startDateTime = UltimatePluginInterface
+	        				.getStartDateTime();
+	        		LocalDateTime endDateTime = UltimatePluginInterface.getEndDateTime();
+	        		Date start = Date.from(startDateTime.atZone(ZoneId.systemDefault())
+	        				.toInstant());
+	        		Date end = Date.from(endDateTime.atZone(ZoneId.systemDefault())
+	        				.toInstant());
 	            	if (start != null && end != null) {
 	                	Interval<Date> range = new Interval<Date>(start, end);
 	                    HEKCache.getSingletonInstance().getController().setCurInterval(range);
@@ -220,7 +229,7 @@ public class HEKPluginPanel extends OverlayPanel implements ActionListener, HEKC
 	    	threadUpdate.setDaemon(true);
 	        threadUpdate.start();
 	    }
-	    */
+	    
 	}
 
 	public void setEnabled(boolean b) {

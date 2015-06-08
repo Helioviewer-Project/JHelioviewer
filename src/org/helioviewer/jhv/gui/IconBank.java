@@ -172,7 +172,7 @@ public class IconBank {
 
         return null;
     }
-
+    
     public static Color getAverageColor(BufferedImage bufImg) {
         long sumRed = 0;
         long sumGreen = 0;

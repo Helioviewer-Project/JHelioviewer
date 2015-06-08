@@ -1,5 +1,6 @@
 package org.helioviewer.jhv.plugins.hekplugin.cache;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
