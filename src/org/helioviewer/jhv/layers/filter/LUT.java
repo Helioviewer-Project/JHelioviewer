@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.util.LinkedHashMap;
 
 import javax.imageio.ImageIO;
-import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
@@ -49,7 +48,7 @@ public class LUT
 	private static OpenGLHelper openGLHelper;
 	
 	
-	private static void init()
+	static
 	{
 		lutMap = new LinkedHashMap<String, Integer>();
 		openGLHelper = new OpenGLHelper();
@@ -93,7 +92,6 @@ public class LUT
 	
 	public static int getTexture()
 	{
-		if (texture < 0) init();
 		return texture;
 	}	
 }

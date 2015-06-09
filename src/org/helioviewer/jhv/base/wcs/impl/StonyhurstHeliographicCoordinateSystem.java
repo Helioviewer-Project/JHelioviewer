@@ -15,9 +15,9 @@ import org.helioviewer.jhv.base.wcs.Unit;
  * 
  */
 public class StonyhurstHeliographicCoordinateSystem extends AbstractCoordinateSystem implements CoordinateSystem {
-    public static final int PHI = 0;
-    public static final int THETA = 1;
-    public static final int RADIUS = 2;
+    private static final int PHI = 0;
+    private static final int THETA = 1;
+    private static final int RADIUS = 2;
 
     private CoordinateDimension phiDimension;
     private CoordinateDimension thetaDimension;

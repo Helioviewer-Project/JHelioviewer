@@ -30,7 +30,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import org.helioviewer.jhv.SplashScreen;
 import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.Vector2d;
@@ -38,13 +37,16 @@ import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.base.physics.DifferentialRotation;
 import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
+import org.helioviewer.jhv.gui.components.statuslabels.StatusLabel;
+import org.helioviewer.jhv.gui.components.statuslabels.StatusLabelInterfaces.StatusLabelCamera;
+import org.helioviewer.jhv.gui.components.statuslabels.StatusLabelInterfaces.StatusLabelMouse;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.LayerInterface.COLOR_CHANNEL_TYPE;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.NewLayer;
 import org.helioviewer.jhv.layers.NewLayerListener;
 import org.helioviewer.jhv.layers.filter.LUT;
-import org.helioviewer.jhv.opengl.CenterLoadingScreen;
+import org.helioviewer.jhv.opengl.LoadingScreen;
 import org.helioviewer.jhv.opengl.NoImageScreen;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.opengl.camera.Camera;
@@ -58,6 +60,7 @@ import org.helioviewer.jhv.opengl.camera.CameraZoomInteraction;
 import org.helioviewer.jhv.opengl.camera.animation.CameraAnimation;
 import org.helioviewer.jhv.opengl.camera.animation.CameraTransformationAnimation;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace;
+import org.helioviewer.jhv.opengl.raytrace.RayTrace.Ray;
 import org.helioviewer.jhv.plugins.hekplugin.HEKIcon;
 import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
@@ -106,7 +109,9 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	protected Quaternion3d rotation;
 	protected Vector3d translation;
 	private ArrayList<MainPanel> synchronizedViews;
-
+	
+	private ArrayList<StatusLabelMouse> statusLabelsMouses;
+	private ArrayList<StatusLabelCamera> statusLabelCameras;
 	private CopyOnWriteArrayList<CameraAnimation> cameraAnimations;
 
 	private Layers layers;
@@ -133,6 +138,8 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	public MainPanel() {
 		this.cameraAnimations = new CopyOnWriteArrayList<CameraAnimation>();
 		this.synchronizedViews = new ArrayList<MainPanel>();
+		statusLabelsMouses = new ArrayList<StatusLabelMouse>();
+		statusLabelCameras = new ArrayList<StatusLabelCamera>();
 		this.setSharedContext(OpenGLHelper.glContext);
 		
 		Layers.LAYERS.addNewLayerListener(this);
@@ -160,6 +167,9 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	public void setRotation(Quaternion3d rotation) {
 		this.rotation = rotation;
 		this.repaintViewAndSynchronizedViews();
+		for (StatusLabelCamera statusLabelCamera : statusLabelCameras){
+			statusLabelCamera.cameraChanged();
+		}
 	}
 
 	public Vector3d getTranslation() {
@@ -170,6 +180,9 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		if (!translation.isApproxEqual(this.translation, 0)) {
 			this.translation = translation;
 			this.repaintViewAndSynchronizedViews();
+			for (StatusLabelCamera statusLabelCamera : statusLabelCameras){
+				statusLabelCamera.cameraChanged();
+			}
 		}
 	}
 
@@ -194,6 +207,9 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		if (!translation.isApproxEqual(this.translation, 0)) {
 			this.translation = translation;
 			this.repaintViewAndSynchronizedViews();
+			for (StatusLabelCamera statusLabelCamera : statusLabelCameras){
+				statusLabelCamera.cameraChanged();
+			}
 		}
 
 	}
@@ -202,6 +218,9 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		this.rotation = rotation;
 		this.translation = translation;
 		repaintViewAndSynchronizedViews();
+		for (StatusLabelCamera statusLabelCamera : statusLabelCameras){
+			statusLabelCamera.cameraChanged();
+		}
 	}
 
 	public void setRotationInteraction() {
@@ -474,7 +493,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 					height = (int)(getSurfaceHeight() * 0.15);					
 				}
 				gl.glViewport(xOffset, yOffset, width, height);
-				CenterLoadingScreen.render(gl);
+				LoadingScreen.render(gl);
 				gl.glViewport(0, 0, getSurfaceWidth(), getSurfaceHeight());
 				repaint(20);
 			}
@@ -616,7 +635,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 
 		gl.glDisable(GL2.GL_BLEND);
 		
-		//gl.glBindTexture(GL2.GL_TEXTURE_2D, HEKIcon.SINGLETON.getTexture());
+		//gl.glBindTexture(GL2.GL_TEXTURE_2D, HEKIcon.getTexture());
 		
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER,
 				GL2.GL_LINEAR);
@@ -788,8 +807,11 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		// TODO Auto-generated method stub
-
+		RayTrace rayTrace = new RayTrace();
+		Ray ray = rayTrace.cast(e.getX(), e.getY(), this);
+		for (StatusLabelMouse statusLabel : statusLabelsMouses){
+			statusLabel.mouseMoved(e, ray);
+		}
 	}
 
 	@Override
@@ -818,8 +840,11 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-
+		RayTrace rayTrace = new RayTrace();
+		Ray ray = rayTrace.cast(e.getX(), e.getY(), this);
+		for (StatusLabelMouse statusLabel : statusLabelsMouses){
+			statusLabel.mouseExited(e, ray);
+		}
 	}
 
 	public Dimension getCanavasSize() {
@@ -1070,6 +1095,14 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 
 	public boolean getTrack() {
 		return track;
+	}
+	
+	public void addStatusLabelMouse(StatusLabelMouse statusLabelMouse){
+		statusLabelsMouses.add(statusLabelMouse);
+	}
+	
+	public void addStatusLabelCamera(StatusLabelCamera statusLabelCamera){
+		statusLabelCameras.add(statusLabelCamera);
 	}
 
 }

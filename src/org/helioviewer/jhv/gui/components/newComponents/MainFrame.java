@@ -24,10 +24,10 @@ import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.components.MenuBar;
 import org.helioviewer.jhv.gui.components.SideContentPane;
 import org.helioviewer.jhv.gui.components.TopToolBar;
-import org.helioviewer.jhv.gui.components.statusplugins.CurrentTimeLabel;
-import org.helioviewer.jhv.gui.components.statusplugins.FramerateStatusPanel;
-import org.helioviewer.jhv.gui.components.statusplugins.PositionStatusPanel;
-import org.helioviewer.jhv.gui.components.statusplugins.ZoomStatusPanel;
+import org.helioviewer.jhv.gui.components.statuslabels.CurrentTimeLabel;
+import org.helioviewer.jhv.gui.components.statuslabels.FramerateStatusPanel;
+import org.helioviewer.jhv.gui.components.statuslabels.PositionStatusPanel;
+import org.helioviewer.jhv.gui.components.statuslabels.ZoomStatusPanel;
 import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 
 import com.jgoodies.forms.factories.FormFactory;

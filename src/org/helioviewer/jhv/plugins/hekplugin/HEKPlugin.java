@@ -4,9 +4,6 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -17,30 +14,22 @@ import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.SphericalCoord;
 import org.helioviewer.jhv.base.math.Vector3d;
-import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.base.physics.DifferentialRotation;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKEvent;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKEvent.GenericTriangle;
 import org.helioviewer.jhv.plugins.hekplugin.cache.gui.HEKEventInformationDialog;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
-import org.helioviewer.jhv.plugins.hekplugin.settings.HEKSettings;
 import org.helioviewer.jhv.plugins.plugin.NewPlugin;
 import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
-import org.helioviewer.jhv.plugins.viewmodelplugin.interfaces.Plugin;
-import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayContainer;
-import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayPlugin;
 
-import ch.fhnw.i4ds.helio.coordinate.util.Constant;
-
-import com.apple.eawt.event.RotationEvent;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 
 /**
  * @author Malte Nuhn
  * */
-public class HEKPlugin3D extends NewPlugin {
+public class HEKPlugin extends NewPlugin {
 	/**
 	 * Reference to the eventPlugin
 	 */
@@ -64,7 +53,7 @@ public class HEKPlugin3D extends NewPlugin {
 	/**
 	 * Default constructor.
 	 */
-	public HEKPlugin3D() {
+	public HEKPlugin() {
 		hekPluginPanel = new HEKPluginPanel(HEKCache.getSingletonInstance());
 		UltimatePluginInterface.addPanelToLeftControllPanel(NAME,
 				hekPluginPanel, false);
@@ -122,6 +111,7 @@ public class HEKPlugin3D extends NewPlugin {
 
 		boolean large = evt.getShowEventInfo();
 		String type = evt.getString("event_type");
+		System.out.println("large : " + large);
 		int offSetFactor = -1;
 		for (HEKIcon.HEKICONS hekIcon : HEKIcon.HEKICONS.values()) {
 			if (hekIcon.name().startsWith(type)) {
@@ -142,10 +132,9 @@ public class HEKPlugin3D extends NewPlugin {
 			gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER,
 					GL.GL_LINEAR);
 
-			float imageScaleFactor = HEKIcon
-					.getImageScaleFactorHeight();
-			
-			double scale = 0.0002;
+			float imageScaleFactor = HEKIcon.getImageScaleFactorHeight();
+
+			double scale = large ? 0.0004 : 0.0002;
 			double width2 = UltimatePluginInterface.getViewPortSize() * scale;
 			double height2 = UltimatePluginInterface.getViewPortSize() * scale;
 
@@ -158,30 +147,20 @@ public class HEKPlugin3D extends NewPlugin {
 			Matrix4d r = Matrix4d.rotation(angle, axis.normalize());
 			r.setTranslation(x, y, z);
 
-			System.out.println("renderIcon");
 			Vector3d p0 = new Vector3d(-width2, -height2, 0);
 			Vector3d p1 = new Vector3d(-width2, height2, 0);
 			Vector3d p2 = new Vector3d(width2, height2, 0);
 			Vector3d p3 = new Vector3d(width2, -height2, 0);
-			
+
 			p0 = r.multiply(p0);
 			p1 = r.multiply(p1);
 			p2 = r.multiply(p2);
 			p3 = r.multiply(p3);
-			System.out.println("p0 : " + p0);
-			System.out.println("p1 : " + p1);
-			System.out.println("p2 : " + p2);
-			System.out.println("p3 : " + p3);
-			
+
 			gl.glColor4f(1, 1, 1, 1);
-			
+
 			gl.glBegin(GL2.GL_QUADS);
 
-			System.out.println(imageScaleFactor);
-			System.out.println(offSetFactor);
-			
-			System.out.println("off : " + offSetFactor * imageScaleFactor);
-			System.out.println("off : " + (offSetFactor + 1) * imageScaleFactor);
 			gl.glTexCoord2f(0.0f, offSetFactor * imageScaleFactor);
 			gl.glVertex3d(p0.x, p0.y, p0.z);
 			gl.glTexCoord2f(0.0f, (offSetFactor + 1) * imageScaleFactor);
@@ -274,7 +253,8 @@ public class HEKPlugin3D extends NewPlugin {
 			hekPopUp.setVisible(true);
 			hekPopUp.pack();
 			UltimatePluginInterface.setCursor(CURSOR_HELP);
-
+			
+			UltimatePluginInterface.repaintMainPanel();
 		}
 	}
 
@@ -341,28 +321,27 @@ public class HEKPlugin3D extends NewPlugin {
 	};
 
 	public void mouseMoved(MouseEvent e, Vector3d point) {
-		if (isVisible()) {
-			HEKEvent lastHEKEvent = mouseOverHEKEvent;
+		HEKEvent lastHEKEvent = mouseOverHEKEvent;
 
-			LocalDateTime in = UltimatePluginInterface.SIGLETON
-					.getCurrentDateTime();
+		LocalDateTime in = UltimatePluginInterface.SIGLETON
+				.getCurrentDateTime();
+		if (in != null) {
 			Date currentDate = Date.from(in.atZone(ZoneId.systemDefault())
 					.toInstant());
 
 			mouseOverHEKEvent = null;
 			mouseOverPosition = null;
 
-			if (currentDate != null) {
-				Vector<HEKEvent> toDraw = HEKCache.getSingletonInstance()
-						.getModel().getActiveEvents(currentDate);
-
+			Vector<HEKEvent> toDraw = HEKCache.getSingletonInstance()
+					.getModel().getActiveEvents(currentDate);
+			if (toDraw.size() > 0) {
 				for (HEKEvent evt : toDraw) {
 					SphericalCoord stony = evt.getStony(currentDate);
 					Vector3d coords = HEKEvent.convertToSceneCoordinates(stony,
 							currentDate);
 
 					double deltaX = Math.abs(point.x - coords.x);
-					double deltaY = Math.abs(point.y - coords.y);
+					double deltaY = Math.abs(-point.y - coords.y);
 					double deltaZ = Math.abs(point.z - coords.z);
 					if (deltaX < 10000000 && deltaZ < 10000000
 							&& deltaY < 10000000) {
@@ -380,6 +359,7 @@ public class HEKPlugin3D extends NewPlugin {
 				}
 			}
 		}
+
 	}
 
 	/**
@@ -396,7 +376,7 @@ public class HEKPlugin3D extends NewPlugin {
 	}
 
 	public static URL getResourceUrl(String name) {
-		return HEKPlugin3D.class.getResource(name);
+		return HEKPlugin.class.getResource(name);
 	}
 
 	public void setVisible(boolean visible) {

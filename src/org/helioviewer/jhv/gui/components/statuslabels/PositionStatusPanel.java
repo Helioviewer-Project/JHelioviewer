@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.gui.components.statusplugins;
+package org.helioviewer.jhv.gui.components.statuslabels;
 
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -6,13 +6,34 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.text.DecimalFormat;
+import java.time.LocalDateTime;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
+import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
-import org.helioviewer.jhv.gui.interfaces.ImagePanelPlugin;
+import org.helioviewer.jhv.opengl.raytrace.RayTrace;
+import org.helioviewer.jhv.opengl.raytrace.RayTrace.HITPOINT_TYPE;
+import org.helioviewer.jhv.opengl.raytrace.RayTrace.Ray;
+import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
+import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
+import org.joda.time.DateTime;
+
+import ch.fhnw.i4ds.helio.coordinate.converter.Hcc2HgConverter;
+import ch.fhnw.i4ds.helio.coordinate.converter.Hcc2HpcConverter;
+import ch.fhnw.i4ds.helio.coordinate.converter.option.ConverterOption;
+import ch.fhnw.i4ds.helio.coordinate.converter.option.ConverterOptions;
+import ch.fhnw.i4ds.helio.coordinate.coord.HeliocentricCartesianCoordinate;
+import ch.fhnw.i4ds.helio.coordinate.coord.HeliographicCoordinate;
+import ch.fhnw.i4ds.helio.coordinate.coord.HelioprojectiveCartesianCoordinate;
+import ch.fhnw.i4ds.helio.coordinate.sundist.Pb0rSunDistanceAlgo;
+import ch.fhnw.i4ds.helio.coordinate.sundist.SunDistance;
+import ch.fhnw.i4ds.helio.coordinate.sundist.SunDistanceAlgo;
 
 /**
  * Status panel for displaying the current mouse position.
@@ -28,8 +49,7 @@ import org.helioviewer.jhv.gui.interfaces.ImagePanelPlugin;
  * <p>
  * If there is no layer present, this panel will be invisible.
  */
-public class PositionStatusPanel extends ViewStatusPanelPlugin implements
-		MouseMotionListener, ImagePanelPlugin, MouseListener {
+public class PositionStatusPanel extends StatusLabel implements MouseListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -37,7 +57,7 @@ public class PositionStatusPanel extends ViewStatusPanelPlugin implements
 	private Point lastPosition;
 
 	private static final char DEGREE = '\u00B0';
-	private String title = " (X, Y) : ";
+	private static final String title = " (X, Y) : ";
 	private PopupState popupState;
 
 	/**
@@ -49,14 +69,12 @@ public class PositionStatusPanel extends ViewStatusPanelPlugin implements
 	public PositionStatusPanel(MainFrame imagePanel) {
 		setBorder(BorderFactory.createEtchedBorder());
 
-		// setPreferredSize(new Dimension(170, 20));
-
-		//imagePanel.addPlugin(this);
-
 		popupState = new PopupState();
+		MainFrame.MAIN_PANEL.addStatusLabelMouse(this);
+		MainFrame.OVERVIEW_PANEL.addStatusLabelMouse(this);
 		this.addMouseListener(this);
 		this.setComponentPopupMenu(popupState);
-		
+
 		setToolTipText(popupState.selectedItem.popupItem.getText());
 	}
 
@@ -69,82 +87,69 @@ public class PositionStatusPanel extends ViewStatusPanelPlugin implements
 	 * @param position
 	 *            Position on the screen.
 	 */
-	private void updatePosition(Point position) {
-		/*
-		GL3DCamera camera = GL3DCameraSelectorModel.getInstance()
-				.getCurrentCamera();
+	private void updatePosition(Ray ray) {
+		if (ray == null){
+			this.setText(title);
+			return;
+		}
+		HeliocentricCartesianCoordinate cart = new HeliocentricCartesianCoordinate(
+				ray.getHitpoint().x, ray.getHitpoint().y, ray.getHitpoint().z);
 
-		if (camera != null && camera.getLastMouseRay() != null
-				&& camera.getLastMouseRay().getHitPoint() != null) {
-			GL3DRay ray = camera.getLastMouseRay();
-			Vector3d hitPoint = ray.getHitPoint();
-			if (LayersModel.getSingletonInstance().getActiveView() != null
-					&& hitPoint != null) {
-				HeliocentricCartesianCoordinate cart = new HeliocentricCartesianCoordinate(
-						hitPoint.x, hitPoint.y, hitPoint.z);
-
-				DecimalFormat df;
-				String point = null;
-				switch (this.popupState.getSelectedState()) {
-				case ARCSECS:
-					if (LinkedMovieManager.getActiveInstance().getMasterMovie() != null){
-						ImmutableDateTime currentDate = LinkedMovieManager.getActiveInstance().getMasterMovie().getCurrentFrameDateTime();
-						Calendar calendar = new GregorianCalendar();
-						calendar.setTime(currentDate.getTime());
-						DateTime dateTime = new DateTime(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH)+1, calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND), 0);
-						SunDistanceAlgo sunDistAlgo = new Pb0rSunDistanceAlgo();
-						SunDistance sunDistance = sunDistAlgo.computeDistance(dateTime);
-						Hcc2HpcConverter converter = new Hcc2HpcConverter();
-						Map<ConverterOption<?>, Object> opt = converter.getCustomOptions();
-						opt.put(ConverterOptions.SUN_DISTANCE, sunDistance.getSunDistance());
-						
-						HelioprojectiveCartesianCoordinate hpc = converter.convert(cart, opt);
-						df = new DecimalFormat("#");
-						point = "(" + df.format(hpc.getThetaX().arcsecValue()) + "\" ," + df.format(hpc.getThetaY().arcsecValue()) + "\")";
-					}
-					break;
-				case DEGREE:
-					Hcc2HgConverter converter = new Hcc2HgConverter();
-					HeliographicCoordinate newCoord = converter.convert(cart);
-					df = new DecimalFormat("#.##");
-					if (ray.isOnSun)
-						point = "("
-								+ df.format(newCoord.getHgLongitude().degValue())
-								+ DEGREE + " ,"
-								+ df.format(newCoord.getHgLatitude().degValue())
-								+ DEGREE + ") ";
-					else
-						point = "";
-					break;
-
-				default:
-					break;
-				}
-				this.setText(title + point);
+		DecimalFormat df;
+		String point = null;
+		switch (this.popupState.getSelectedState()) {
+		case ARCSECS:
+			LocalDateTime current = TimeLine.SINGLETON.getCurrentDateTime();
+			if (current == null){
+				this.setText(title);
 				return;
-
 			}
+			DateTime dateTime = new DateTime(current.getYear(),
+					current.getMonthValue(), current.getDayOfMonth(),
+					current.getHour(), current.getMinute(),
+					current.getSecond(), 0);
+			SunDistanceAlgo sunDistAlgo = new Pb0rSunDistanceAlgo();
+			SunDistance sunDistance = sunDistAlgo.computeDistance(dateTime);
+			Hcc2HpcConverter converter = new Hcc2HpcConverter();
+			Map<ConverterOption<?>, Object> opt = converter.getCustomOptions();
+			opt.put(ConverterOptions.SUN_DISTANCE, sunDistance.getSunDistance());
+
+			HelioprojectiveCartesianCoordinate hpc = converter.convert(cart,
+					opt);
+			df = new DecimalFormat("#");
+			point = "(" + df.format(hpc.getThetaX().arcsecValue()) + "\" ,"
+					+ df.format(hpc.getThetaY().arcsecValue()) + "\")";
+			break;
+		case DEGREE:
+			Hcc2HgConverter converter1 = new Hcc2HgConverter();
+			HeliographicCoordinate newCoord = converter1.convert(cart);
+			df = new DecimalFormat("#.##");
+			if (!(ray.getHitpointType() == HITPOINT_TYPE.PLANE))
+				point = "(" + df.format(newCoord.getHgLongitude().degValue())
+						+ DEGREE + " ,"
+						+ df.format(newCoord.getHgLatitude().degValue())
+						+ DEGREE + ") ";
+			else
+				point = "";
+			break;
+
+		default:
+			break;
 		}
-		this.setText(title);
-		*/
+		this.setText(title + point);
+		System.out.println("setText : " + title + point);
+
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public MainFrame getImagePanel() {
-		return imagePanel;
+	
+	@Override
+	public void mouseMoved(MouseEvent e, Ray ray) {
+		updatePosition(ray);
 	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setImagePanel(MainFrame newImagePanel) {
-		if (imagePanel != null) {
-			imagePanel.removeMouseMotionListener(this);
-		}
-		imagePanel = newImagePanel;
-		imagePanel.addMouseMotionListener(this);
+	
+	@Override
+	public void mouseExited(MouseEvent e, Ray ray) {
+		updatePosition(null);
 	}
 
 	/**
@@ -152,17 +157,7 @@ public class PositionStatusPanel extends ViewStatusPanelPlugin implements
 	 */
 	public void mouseDragged(MouseEvent e) {
 	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void mouseMoved(MouseEvent e) {
-		updatePosition(e.getPoint());
-	}
-
-	public void detach() {
-	}
-
+	
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		if (e.isPopupTrigger()) {
@@ -195,7 +190,7 @@ public class PositionStatusPanel extends ViewStatusPanelPlugin implements
 
 	}
 
-	class PopupState extends JPopupMenu {
+	private class PopupState extends JPopupMenu {
 		/**
 		 * 
 		 */
@@ -214,7 +209,9 @@ public class PositionStatusPanel extends ViewStatusPanelPlugin implements
 								.values()) {
 							if (popupItems.popupItem == e.getSource()) {
 								selectedItem = popupItems;
-								PositionStatusPanel.this.setToolTipText(selectedItem.popupItem.getText());
+								PositionStatusPanel.this
+										.setToolTipText(selectedItem.popupItem
+												.getText());
 								break;
 							}
 						}
@@ -247,7 +244,8 @@ public class PositionStatusPanel extends ViewStatusPanelPlugin implements
 		private static final long serialVersionUID = -4382532722049627152L;
 
 		public enum PopupItemStates {
-			DEGREE("degrees (Heliographic)"), ARCSECS("arcsecs (Helioprojective cartesian)");
+			DEGREE("degrees (Heliographic)"), ARCSECS(
+					"arcsecs (Helioprojective cartesian)");
 
 			private PopupItemState popupItem;
 

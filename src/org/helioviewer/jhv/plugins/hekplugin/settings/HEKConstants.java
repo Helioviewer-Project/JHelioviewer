@@ -11,7 +11,7 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 import org.helioviewer.jhv.gui.IconBank;
-import org.helioviewer.jhv.plugins.hekplugin.HEKPlugin3D;
+import org.helioviewer.jhv.plugins.hekplugin.HEKPlugin;
 
 public class HEKConstants {
 
@@ -40,14 +40,14 @@ public class HEKConstants {
      * @throws IOException
      */
     private void setupBufImgs() throws IOException {
-        smallOverlayBufImgs.put("HUMAN", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/human-flag-small.png")));
-        smallOverlayBufImgs.put("LOADING", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/loading-flag-small.png")));
-        smallOverlayBufImgs.put("QUEUED", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/queued-flag-small.png")));
-        smallOverlayBufImgs.put("HEK", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/hekLogoSmall.png")));
-        largeOverlayBufImgs.put("HUMAN", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/human-flag.png")));
-        largeOverlayBufImgs.put("LOADING", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/loading-flag.png")));
-        largeOverlayBufImgs.put("QUEUED", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/queued-flag.png")));
-        largeOverlayBufImgs.put("HEK", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/hekLogo.png")));
+        smallOverlayBufImgs.put("HUMAN", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/human-flag-small.png")));
+        smallOverlayBufImgs.put("LOADING", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/loading-flag-small.png")));
+        smallOverlayBufImgs.put("QUEUED", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/queued-flag-small.png")));
+        smallOverlayBufImgs.put("HEK", ImageIO.read(HEKPlugin.getResourceUrl("/images/hekLogoSmall.png")));
+        largeOverlayBufImgs.put("HUMAN", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/human-flag.png")));
+        largeOverlayBufImgs.put("LOADING", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/loading-flag.png")));
+        largeOverlayBufImgs.put("QUEUED", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/queued-flag.png")));
+        largeOverlayBufImgs.put("HEK", ImageIO.read(HEKPlugin.getResourceUrl("/images/hekLogo.png")));
     }
 
     /**
@@ -98,45 +98,45 @@ public class HEKConstants {
 
         System.out.println("HEKConstants -> Setting up event icons...");
 
-        smallIcons.put("AR", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/ar_small.png")));
-        smallIcons.put("BP", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/bp_small.png")));
-        smallIcons.put("CD", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/cd_small.png")));
-        smallIcons.put("CE", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/ce_small.png")));
-        smallIcons.put("CH", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/ch_small.png")));
-        smallIcons.put("CJ", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/cj_small.png")));
-        smallIcons.put("CW", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/cw_small.png")));
-        smallIcons.put("EF", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/ef_small.png")));
-        smallIcons.put("FA", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/fa_small.png")));
-        smallIcons.put("FE", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/fe_small.png")));
-        smallIcons.put("FI", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/fi_small.png")));
-        smallIcons.put("FL", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/fl_small.png")));
-        smallIcons.put("LP", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/lp_small.png")));
-        smallIcons.put("NR", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/nr_small.png")));
-        smallIcons.put("OS", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/os_small.png")));
-        smallIcons.put("OT", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/ot_small.png")));
-        smallIcons.put("SG", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/sg_small.png")));
-        smallIcons.put("SP", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/sp_small.png")));
-        smallIcons.put("SS", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/ss_small.png")));
+        smallIcons.put("AR", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/ar_small.png")));
+        smallIcons.put("BP", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/bp_small.png")));
+        smallIcons.put("CD", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/cd_small.png")));
+        smallIcons.put("CE", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/ce_small.png")));
+        smallIcons.put("CH", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/ch_small.png")));
+        smallIcons.put("CJ", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/cj_small.png")));
+        smallIcons.put("CW", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/cw_small.png")));
+        smallIcons.put("EF", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/ef_small.png")));
+        smallIcons.put("FA", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/fa_small.png")));
+        smallIcons.put("FE", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/fe_small.png")));
+        smallIcons.put("FI", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/fi_small.png")));
+        smallIcons.put("FL", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/fl_small.png")));
+        smallIcons.put("LP", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/lp_small.png")));
+        smallIcons.put("NR", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/nr_small.png")));
+        smallIcons.put("OS", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/os_small.png")));
+        smallIcons.put("OT", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/ot_small.png")));
+        smallIcons.put("SG", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/sg_small.png")));
+        smallIcons.put("SP", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/sp_small.png")));
+        smallIcons.put("SS", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/ss_small.png")));
 
-        largeIcons.put("AR", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/ar_icon.png")));
-        largeIcons.put("BP", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/bp_icon.png")));
-        largeIcons.put("CD", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/cd_icon.png")));
-        largeIcons.put("CE", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/ce_icon.png")));
-        largeIcons.put("CH", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/ch_icon.png")));
-        largeIcons.put("CJ", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/cj_icon.png")));
-        largeIcons.put("CW", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/cw_icon.png")));
-        largeIcons.put("EF", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/ef_icon.png")));
-        largeIcons.put("FA", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/fa_icon.png")));
-        largeIcons.put("FE", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/fe_icon.png")));
-        largeIcons.put("FI", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/fi_icon.png")));
-        largeIcons.put("FL", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/fl_icon.png")));
-        largeIcons.put("LP", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/lp_icon.png")));
-        largeIcons.put("NR", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/nr_icon.png")));
-        largeIcons.put("OS", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/os_icon.png")));
-        largeIcons.put("OT", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/ot_icon.png")));
-        largeIcons.put("SG", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/sg_icon.png")));
-        largeIcons.put("SP", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/sp_icon.png")));
-        largeIcons.put("SS", new ImageIcon(HEKPlugin3D.getResourceUrl("/images/EventIcons/ss_icon.png")));
+        largeIcons.put("AR", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/ar_icon.png")));
+        largeIcons.put("BP", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/bp_icon.png")));
+        largeIcons.put("CD", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/cd_icon.png")));
+        largeIcons.put("CE", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/ce_icon.png")));
+        largeIcons.put("CH", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/ch_icon.png")));
+        largeIcons.put("CJ", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/cj_icon.png")));
+        largeIcons.put("CW", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/cw_icon.png")));
+        largeIcons.put("EF", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/ef_icon.png")));
+        largeIcons.put("FA", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/fa_icon.png")));
+        largeIcons.put("FE", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/fe_icon.png")));
+        largeIcons.put("FI", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/fi_icon.png")));
+        largeIcons.put("FL", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/fl_icon.png")));
+        largeIcons.put("LP", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/lp_icon.png")));
+        largeIcons.put("NR", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/nr_icon.png")));
+        largeIcons.put("OS", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/os_icon.png")));
+        largeIcons.put("OT", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/ot_icon.png")));
+        largeIcons.put("SG", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/sg_icon.png")));
+        largeIcons.put("SP", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/sp_icon.png")));
+        largeIcons.put("SS", new ImageIcon(HEKPlugin.getResourceUrl("/images/EventIcons/ss_icon.png")));
 
         // eventIcons.put("PH", new
         // ImageIcon(HEKEventRenderer.class.getResource("./resources/big/ph_small.png")));
@@ -155,45 +155,45 @@ public class HEKConstants {
         System.out.println("HEKConstants -> Setting up event buffered images...");
         // load the icons for the different event types
 
-        smallBufImgs.put("AR", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/ar_small.png")));
-        smallBufImgs.put("BP", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/bp_small.png")));
-        smallBufImgs.put("CD", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/cd_small.png")));
-        smallBufImgs.put("CE", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/ce_small.png")));
-        smallBufImgs.put("CH", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/ch_small.png")));
-        smallBufImgs.put("CJ", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/cj_small.png")));
-        smallBufImgs.put("CW", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/cw_small.png")));
-        smallBufImgs.put("EF", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/ef_small.png")));
-        smallBufImgs.put("FA", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/fa_small.png")));
-        smallBufImgs.put("FE", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/fe_small.png")));
-        smallBufImgs.put("FI", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/fi_small.png")));
-        smallBufImgs.put("FL", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/fl_small.png")));
-        smallBufImgs.put("LP", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/lp_small.png")));
-        smallBufImgs.put("NR", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/nr_small.png")));
-        smallBufImgs.put("OS", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/os_small.png")));
-        smallBufImgs.put("OT", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/ot_small.png")));
-        smallBufImgs.put("SG", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/sg_small.png")));
-        smallBufImgs.put("SP", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/sp_small.png")));
-        smallBufImgs.put("SS", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/ss_small.png")));
+        smallBufImgs.put("AR", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/ar_small.png")));
+        smallBufImgs.put("BP", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/bp_small.png")));
+        smallBufImgs.put("CD", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/cd_small.png")));
+        smallBufImgs.put("CE", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/ce_small.png")));
+        smallBufImgs.put("CH", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/ch_small.png")));
+        smallBufImgs.put("CJ", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/cj_small.png")));
+        smallBufImgs.put("CW", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/cw_small.png")));
+        smallBufImgs.put("EF", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/ef_small.png")));
+        smallBufImgs.put("FA", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/fa_small.png")));
+        smallBufImgs.put("FE", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/fe_small.png")));
+        smallBufImgs.put("FI", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/fi_small.png")));
+        smallBufImgs.put("FL", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/fl_small.png")));
+        smallBufImgs.put("LP", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/lp_small.png")));
+        smallBufImgs.put("NR", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/nr_small.png")));
+        smallBufImgs.put("OS", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/os_small.png")));
+        smallBufImgs.put("OT", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/ot_small.png")));
+        smallBufImgs.put("SG", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/sg_small.png")));
+        smallBufImgs.put("SP", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/sp_small.png")));
+        smallBufImgs.put("SS", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/ss_small.png")));
 
-        largeBufImgs.put("AR", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/ar_icon.png")));
-        largeBufImgs.put("BP", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/bp_icon.png")));
-        largeBufImgs.put("CD", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/cd_icon.png")));
-        largeBufImgs.put("CE", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/ce_icon.png")));
-        largeBufImgs.put("CH", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/ch_icon.png")));
-        largeBufImgs.put("CJ", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/cj_icon.png")));
-        largeBufImgs.put("CW", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/cw_icon.png")));
-        largeBufImgs.put("EF", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/ef_icon.png")));
-        largeBufImgs.put("FA", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/fa_icon.png")));
-        largeBufImgs.put("FE", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/fe_icon.png")));
-        largeBufImgs.put("FI", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/fi_icon.png")));
-        largeBufImgs.put("FL", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/fl_icon.png")));
-        largeBufImgs.put("LP", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/lp_icon.png")));
-        largeBufImgs.put("NR", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/nr_icon.png")));
-        largeBufImgs.put("OS", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/os_icon.png")));
-        largeBufImgs.put("OT", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/ot_icon.png")));
-        largeBufImgs.put("SG", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/sg_icon.png")));
-        largeBufImgs.put("SP", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/sp_icon.png")));
-        largeBufImgs.put("SS", ImageIO.read(HEKPlugin3D.getResourceUrl("/images/EventIcons/ss_icon.png")));
+        largeBufImgs.put("AR", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/ar_icon.png")));
+        largeBufImgs.put("BP", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/bp_icon.png")));
+        largeBufImgs.put("CD", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/cd_icon.png")));
+        largeBufImgs.put("CE", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/ce_icon.png")));
+        largeBufImgs.put("CH", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/ch_icon.png")));
+        largeBufImgs.put("CJ", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/cj_icon.png")));
+        largeBufImgs.put("CW", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/cw_icon.png")));
+        largeBufImgs.put("EF", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/ef_icon.png")));
+        largeBufImgs.put("FA", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/fa_icon.png")));
+        largeBufImgs.put("FE", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/fe_icon.png")));
+        largeBufImgs.put("FI", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/fi_icon.png")));
+        largeBufImgs.put("FL", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/fl_icon.png")));
+        largeBufImgs.put("LP", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/lp_icon.png")));
+        largeBufImgs.put("NR", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/nr_icon.png")));
+        largeBufImgs.put("OS", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/os_icon.png")));
+        largeBufImgs.put("OT", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/ot_icon.png")));
+        largeBufImgs.put("SG", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/sg_icon.png")));
+        largeBufImgs.put("SP", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/sp_icon.png")));
+        largeBufImgs.put("SS", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/ss_icon.png")));
 
         // if we are missing some colors, take the average color of the icon
         for (String key : smallBufImgs.keySet()) {

@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.gui.components.statusplugins;
+package org.helioviewer.jhv.gui.components.statuslabels;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 
@@ -10,31 +10,23 @@ import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine.TimeLineListener;
 
 
-public class CurrentTimeLabel extends JLabel implements TimeLineListener{
+public class CurrentTimeLabel extends StatusLabel{
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -9216168376764918306L;
 	
-	private String empty = " - ";
-	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss ");
+	private static final String EMPTY = " - ";
 	
 	public CurrentTimeLabel() {
+		super();
         this.setBorder(BorderFactory.createEtchedBorder());
-
-		this.setText(empty);
-		TimeLine.SINGLETON.addListener(this);
+		this.setText(EMPTY);
 	}
 
 	@Override
 	public void timeStampChanged(LocalDateTime current, LocalDateTime last) {
 		this.setText(current.format(JHVGlobals.DATE_TIME_FORMATTER));
-	}
-
-	@Override
-	public void dateTimesChanged(int framecount) {
-		// TODO Auto-generated method stub
-		
 	}
 }

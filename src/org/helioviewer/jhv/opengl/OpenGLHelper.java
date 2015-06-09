@@ -4,8 +4,6 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 
-import javax.swing.SwingUtilities;
-
 import org.helioviewer.jhv.base.ImageRegion;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -192,8 +190,6 @@ public class OpenGLHelper {
 				GL2.GL_CLAMP);
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T,
 				GL2.GL_CLAMP);
-
-		gl.glDisable(GL2.GL_TEXTURE_2D);		
 	}
 		
 	private static void createTexture(ImageRegion imageRegion, int width, int height){
@@ -241,8 +237,6 @@ public class OpenGLHelper {
 				GL2.GL_CLAMP);
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T,
 				GL2.GL_CLAMP);
-		gl.glBindTexture(GL2.GL_TEXTURE_2D, 0);
-		gl.glDisable(GL2.GL_TEXTURE_2D);		
 	}
 
 	private static ByteBuffer readPixels(BufferedImage image, boolean storeAlphaChannel, boolean switchRandBChannel) {

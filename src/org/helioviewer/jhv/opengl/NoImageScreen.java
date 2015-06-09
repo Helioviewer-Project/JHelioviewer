@@ -1,9 +1,6 @@
 package org.helioviewer.jhv.opengl;
 
-import java.awt.EventQueue;
 import java.awt.image.BufferedImage;
-
-import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
@@ -18,7 +15,7 @@ public class NoImageScreen{
 	private static OpenGLHelper openGLHelper;
 
 	
-	private static void init() {
+	static {
 		openGLHelper = new OpenGLHelper();
 				texture = openGLHelper.createTextureID();
 				BufferedImage image = IconBank.getImage(JHVIcon.NOIMAGE);
@@ -44,7 +41,7 @@ public class NoImageScreen{
 		gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
 		
 		gl.glActiveTexture(GL.GL_TEXTURE0);
-		if (texture < 0) init();
+		
 		gl.glBindTexture(GL2.GL_TEXTURE_2D, texture);
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER,
 				GL2.GL_LINEAR);

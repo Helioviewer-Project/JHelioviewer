@@ -6,7 +6,6 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.geom.Dimension2D;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -16,7 +15,7 @@ import javax.swing.JPanel;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace;
-import org.helioviewer.jhv.plugins.hekplugin.HEKPlugin3D;
+import org.helioviewer.jhv.plugins.hekplugin.HEKPlugin;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
 import org.helioviewer.jhv.plugins.sdocutoutplugin.SDOCutOutPlugin3D;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
@@ -36,7 +35,7 @@ public class UltimatePluginInterface implements TimeLineListener, MouseListener,
 		TimeLine.SINGLETON.addListener(this);
 		plugins.add(new SDOCutOutPlugin3D());
 		plugins.add(new PfssPlugin());
-		plugins.add(new HEKPlugin3D());
+		plugins.add(new HEKPlugin());
 		MainFrame.MAIN_PANEL.addMouseListener(this);
 		MainFrame.MAIN_PANEL.addMouseMotionListener(this);
 	}
@@ -184,6 +183,10 @@ public class UltimatePluginInterface implements TimeLineListener, MouseListener,
 	
 	public static double getViewPortSize(){
 		return MainFrame.MAIN_PANEL.getTranslation().z * Math.tan(MainPanel.FOV / 2) * 2;
+	}
+
+	public static void repaintMainPanel() {
+		MainFrame.MAIN_PANEL.repaintViewAndSynchronizedViews();
 	}
 	
 }

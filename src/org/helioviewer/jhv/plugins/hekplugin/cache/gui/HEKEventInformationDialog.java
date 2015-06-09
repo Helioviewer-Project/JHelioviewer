@@ -3,6 +3,7 @@ package org.helioviewer.jhv.plugins.hekplugin.cache.gui;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -13,9 +14,13 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
@@ -36,6 +41,9 @@ import org.helioviewer.jhv.gui.ClipBoardCopier;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKEvent;
+import org.helioviewer.jhv.plugins.hekplugin.cache.HEKEventTableModel;
+import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
+import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
 
 /**
  * Popup displaying informations about a HEK event.
@@ -165,6 +173,7 @@ public class HEKEventInformationDialog extends JDialog implements ActionListener
                 // store information to not display the event anymore
                 if (event != null) {
                     event.setShowEventInfo(false);
+                    UltimatePluginInterface.repaintMainPanel();
                     event = null;
                 }
             }
@@ -173,6 +182,7 @@ public class HEKEventInformationDialog extends JDialog implements ActionListener
                 // store information to not display the event anymore
                 if (event != null) {
                     event.setShowEventInfo(false);
+                    UltimatePluginInterface.repaintMainPanel();
                     event = null;
                 }
             }
@@ -375,7 +385,7 @@ public class HEKEventInformationDialog extends JDialog implements ActionListener
      *            Corresponding solar event
      */
     public void setEvent(HEKEvent newEvent) {
-    	/*
+    	
         if (event == newEvent || newEvent == null)
             return;
 
@@ -390,9 +400,13 @@ public class HEKEventInformationDialog extends JDialog implements ActionListener
         event.setShowEventInfo(true);
         infoTable.setModel(new HEKEventTableModel(event));
         infoTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        TableColumnResizer.autoResizeTable(infoTable, true);
+        //TableColumnResizer.autoResizeTable(infoTable, true);
 
-        Date currentDate = LayersModel.getSingletonInstance().getLastUpdatedTimestamp();
+        LocalDateTime in = UltimatePluginInterface.SIGLETON
+				.getCurrentDateTime();
+		
+        Date currentDate = Date.from(in.atZone(ZoneId.systemDefault())
+					.toInstant());
 
         if (currentDate == null && event.getDuration() != null) {
             currentDate = event.getDuration().start;
@@ -464,7 +478,7 @@ public class HEKEventInformationDialog extends JDialog implements ActionListener
         hyperLinkPanel.setText(htmlLinks.toString());
 
         pack();
-        */
+        
 
     }
 

@@ -1,7 +1,7 @@
 package org.helioviewer.jhv.base.math;
 
 public class Quaternion3d {
-    public static final double EPSILON = 0.000001;
+    private static final double EPSILON = 0.000001;
 
     protected double a;
 

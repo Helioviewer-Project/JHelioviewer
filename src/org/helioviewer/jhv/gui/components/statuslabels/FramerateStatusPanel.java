@@ -1,9 +1,10 @@
-package org.helioviewer.jhv.gui.components.statusplugins;
+package org.helioviewer.jhv.gui.components.statuslabels;
 
 import java.awt.Dimension;
 import java.time.LocalDateTime;
 
 import javax.swing.BorderFactory;
+import javax.swing.JLabel;
 
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine.TimeLineListener;
@@ -19,46 +20,37 @@ import org.helioviewer.jhv.viewmodel.timeline.TimeLine.TimeLineListener;
  * 
  * @author Markus Langenberg
  */
-public class FramerateStatusPanel extends ViewStatusPanelPlugin implements TimeLineListener {
+public class FramerateStatusPanel extends StatusLabel{
 
     private static final long serialVersionUID = 1L;
     private int counter = 0;
-    private long last = -1;
     private long currentMillis = 0;
+    private static final String TITLE = "fps:";
+    
     /**
      * Default constructor.
      */
     public FramerateStatusPanel(){
+    	super();
         setBorder(BorderFactory.createEtchedBorder());
 
         setPreferredSize(new Dimension(70, 20));
-        setText("fps:");
+        setText(TITLE);
 
-        setVisible(true);
         currentMillis = System.currentTimeMillis();
-        TimeLine.SINGLETON.addListener(this);
 
     }
 
     private void updateFramerate() {
             setVisible(true);
-            setText("fps: " + counter);
+            setText(TITLE + counter);
             counter = 0;
-            System.out.println("fps : " + (System.currentTimeMillis() - currentMillis));
             currentMillis = System.currentTimeMillis();
     }
 
-    public void activeLayerChanged(int idx) {
-    }
-
-	@Override
 	public void timeStampChanged(LocalDateTime current, LocalDateTime last) {
 		if ((System.currentTimeMillis() - currentMillis) >= 1000)
            updateFramerate();
 		counter++;
-	}
-
-	@Override
-	public void dateTimesChanged(int framecount) {
 	}
 }

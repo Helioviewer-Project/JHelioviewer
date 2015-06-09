@@ -1,11 +1,16 @@
 package org.helioviewer.jhv.plugins.hekplugin;
 
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.HashMap;
+import java.net.URL;
 
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
+import org.helioviewer.jhv.base.FileUtils;
+import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
 
 public class HEKIcon {
@@ -13,10 +18,10 @@ public class HEKIcon {
 	private static final int IMAGE_HEIGHT = 1024;
 	private static final int IMAGE_WIDTH = 32;
 	private static final String PATH = "/images/EventIcons/";
-	
+
 	private static int texture = -1;
 	private static OpenGLHelper openGLHelper;
-	
+
 	enum HEKICONS {
 		AR_ICON("ar_icon.png"), PB_ICON("bp_icon.png"), CD_ICON("cd_icon.png"), CE_ICON(
 				"ce_icon.png"), CH_ICON("ch_icon.png"), CJ_ICON("cj_icon.png"), CW_ICON(
@@ -28,7 +33,7 @@ public class HEKIcon {
 
 		private String name;
 		private String id;
-		
+
 		private HEKICONS(String name) {
 			this.name = name;
 			this.id = name.substring(0, 2);
@@ -36,38 +41,61 @@ public class HEKIcon {
 
 		public String getName() {
 			return name;
-		}		
-		
-		public String getID(){
+		}
+
+		public String getID() {
 			return id;
 		}
 	}
 
-	private static void init(){
+	static {
 		openGLHelper = new OpenGLHelper();
 		texture = openGLHelper.createTextureID();
 		for (HEKICONS hekIcon : HEKICONS.values()) {
-			try {
-				System.out.println("name : " + PATH + hekIcon.getName());
-				BufferedImage bufferedImage = ImageIO.read(HEKPlugin3D
-						.getResourceUrl(PATH + hekIcon.getName()));
-				openGLHelper.bindBufferedImageToGLTexture(bufferedImage, 0,
-						hekIcon.ordinal() * bufferedImage.getHeight(),
-						bufferedImage.getWidth(), bufferedImage.getHeight()
-								* HEKICONS.values().length);
-			} catch (IOException e) {
-				System.out.println("error");
-				e.printStackTrace();
-			}
+			System.out.println("name : " + PATH + hekIcon.getName());
+			BufferedImage bufferedImage = getImage(hekIcon);
+			openGLHelper.bindBufferedImageToGLTexture(bufferedImage, 0,
+					hekIcon.ordinal() * bufferedImage.getHeight(),
+					bufferedImage.getWidth(), bufferedImage.getHeight()
+							* HEKICONS.values().length);
 		}
 	}
-	
-	public static int getTexture(){
-		if (texture < 0) init();
+
+	public static int getTexture() {
 		return texture;
 	}
 
 	public static float getImageScaleFactorHeight() {
 		return openGLHelper.getScaleFactorHeight();
 	}
+
+	private static BufferedImage getImage(HEKICONS icon) {
+
+		ImageIcon imageIcon = getIcon(icon);
+
+		if (imageIcon == null)
+			return null;
+
+		Image image = imageIcon.getImage();
+
+		if (image != null && image.getWidth(null) > 0
+				&& image.getHeight(null) > 0) {
+			BufferedImage bi = new BufferedImage(image.getWidth(null),
+					image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+
+			Graphics g = bi.getGraphics();
+			g.drawImage(image, 0, 0, null);
+			g.dispose();
+
+			return bi;
+		}
+
+		return null;
+	}
+
+	private static ImageIcon getIcon(HEKICONS icon) {
+		URL imgURL = FileUtils.getResourceUrl(PATH + icon.getName());
+		return new ImageIcon(imgURL);
+	}
+
 }

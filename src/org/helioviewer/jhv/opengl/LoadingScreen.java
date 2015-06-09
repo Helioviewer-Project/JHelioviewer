@@ -1,11 +1,8 @@
 package org.helioviewer.jhv.opengl;
 
-import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-
-import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
@@ -15,7 +12,7 @@ import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLContext;
 
-public class CenterLoadingScreen{
+public class LoadingScreen{
 	
 	
 	private static final double TOTAL_SEC_4_ONE_ROTATION = 2;
@@ -36,7 +33,7 @@ public class CenterLoadingScreen{
 	private static OpenGLHelper openGLHelper;
 	private static int texture;
 
-	private static void init() {
+	static{
 		openGLHelper = new OpenGLHelper();
 				texture = openGLHelper.createTextureID();
 				BufferedImage image = IconBank.getImage(JHVIcon.LOADING_BIG);
@@ -62,7 +59,7 @@ public class CenterLoadingScreen{
 		gl.glEnable(GL2.GL_TEXTURE_2D);
 		gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
 		gl.glActiveTexture(GL.GL_TEXTURE0);
-		if (texture < 0) init();
+		
 		gl.glBindTexture(GL2.GL_TEXTURE_2D, texture);
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER,
 				GL2.GL_LINEAR);
@@ -125,7 +122,6 @@ public class CenterLoadingScreen{
 	}
 
 	private static void initCircleVBO(GL2 gl) {
-		System.out.println("initCircle");
 
 		IntBuffer indices = Buffers
 				.newDirectIntBuffer((POINT_OF_CIRCLE) * 3 * NUMBER_OF_VISIBLE_CIRCLE);
@@ -174,13 +170,13 @@ public class CenterLoadingScreen{
 		int[] buffer = new int[3];
 		gl.glGenBuffers(3, buffer, 0);
 
-		CenterLoadingScreen.vertices = buffer[0];
-		gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, CenterLoadingScreen.vertices);
+		LoadingScreen.vertices = buffer[0];
+		gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, LoadingScreen.vertices);
 		gl.glBufferData(GL2.GL_ARRAY_BUFFER, vertices.limit() * Buffers.SIZEOF_FLOAT, vertices,
 				GL.GL_STATIC_DRAW);
 
-		CenterLoadingScreen.indices = buffer[1];
-		gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, CenterLoadingScreen.indices);
+		LoadingScreen.indices = buffer[1];
+		gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, LoadingScreen.indices);
 		gl.glBufferData(GL2.GL_ARRAY_BUFFER, indices.limit() * Buffers.SIZEOF_INT, indices,
 				GL.GL_STATIC_DRAW);
 		indicesSize = indices.limit();

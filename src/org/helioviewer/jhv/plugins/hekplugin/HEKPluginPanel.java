@@ -47,8 +47,8 @@ public class HEKPluginPanel extends OverlayPanel implements ActionListener, HEKC
     private JProgressBar progressBar = new JProgressBar();
     private HEKCacheTreeView tree = new HEKCacheTreeView(HEKCache.getSingletonInstance());
     private JScrollPane treeView = new JScrollPane(tree);
-    private JButton cancelButton = new JButton(new ImageIcon(HEKPlugin3D.getResourceUrl("/images/hekCancel.png")));
-    private JButton reloadButton = new JButton(new ImageIcon(HEKPlugin3D.getResourceUrl("/images/hekReload.png")));
+    private JButton cancelButton = new JButton(new ImageIcon(HEKPlugin.getResourceUrl("/images/hekCancel.png")));
+    private JButton reloadButton = new JButton(new ImageIcon(HEKPlugin.getResourceUrl("/images/hekReload.png")));
     private HEKCacheTreeViewContainer container = new HEKCacheTreeViewContainer();
 
     private HEKCacheModel cacheModel;

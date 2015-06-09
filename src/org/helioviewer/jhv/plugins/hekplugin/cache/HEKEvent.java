@@ -50,11 +50,11 @@ public class HEKEvent implements IntervalComparison<Date> {
     
     //Maximum number of points of the outline. If there are more points than this limit
     //the points will be subsampled. (no smoothing)
-    static final int MAX_OUTLINE_POINTS=256;
+    private static final int MAX_OUTLINE_POINTS=256;
     
     //After subsampling the path segments are subdivided to make sure that all
     //segments are shorter than this (to account for curvature smoothness)
-    static final double MAX_LINE_SEGMENT_LENGTH=0.04*Constants.SUN_RADIUS;
+    private static final double MAX_LINE_SEGMENT_LENGTH=0.04*Constants.SUN_RADIUS;
 
     /**
      * Flag to indicate if the event is currently being displayed in any event popup

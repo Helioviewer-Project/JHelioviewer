@@ -90,7 +90,10 @@ public class NewLayer extends LayerInterface{
 
 	@Override
 	public MetaData getMetaData() {
-		return this.getLastDecodedImageRegion().getMetaData();
+		if (getLastDecodedImageRegion() != null) {
+			return this.getLastDecodedImageRegion().getMetaData();
+		}
+		return null;
 	}
 
 	public ImageRegion getLastDecodedImageRegion(){

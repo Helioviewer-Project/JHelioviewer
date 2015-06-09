@@ -11,9 +11,7 @@ import org.helioviewer.jhv.plugins.pfssplugin.data.PfssDecompressed;
 import org.helioviewer.jhv.plugins.pfssplugin.data.managers.FrameManager;
 import org.helioviewer.jhv.plugins.plugin.NewPlugin;
 import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
-import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 
-import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 
 public class PfssPlugin extends NewPlugin
