@@ -23,6 +23,7 @@ uniform float fov;
 uniform vec2 imageResolution;
 uniform int cameraMode;
 uniform float near;
+uniform float far;
 
 struct Sphere{
     vec3 center;
@@ -191,7 +192,7 @@ void main(void)
             imageColor = contrastValue(imageColor.xyz);
         }
         
-        float far = zTranslation - 4 * 695700000;
+        //float far = zTranslation - 4 * 695700000;
             
 		gl_FragDepth = (1. /(zTranslation - ray.z) - 1. / near) / (1. /far - 1. / near);            
             

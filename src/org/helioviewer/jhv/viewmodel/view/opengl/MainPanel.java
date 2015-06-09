@@ -388,6 +388,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 			
 			float clipNear = (float)Math.max(this.translation.z - 4 * Constants.SUN_RADIUS, CLIP_NEAR);
 			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "near"), clipNear);
+			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "far"), (float)(this.translation.z + 4 * Constants.SUN_RADIUS));
 			float[] transformation = getTransformation().toFloatArray();
 			float[] layerTransformation = layer.getMetaData().getRotation()
 					.toMatrix().toFloatArray();
@@ -446,7 +447,6 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 			gl.glPushMatrix();
 
 			double clipNear = Math.max(this.translation.z - 4 * Constants.SUN_RADIUS, CLIP_NEAR);
-			
 			gl.glOrtho(-1, 1, -1, 1, clipNear, this.translation.z + 4 * Constants.SUN_RADIUS);
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
 			gl.glLoadIdentity();
@@ -470,8 +470,6 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 				}
 			}
 			
-			System.out.println("visible : "+ layerLoaded);
-			System.out.println("visible : "+ notCenterAnimation);
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
 			gl.glPopMatrix();
 			gl.glMatrixMode(GL2.GL_PROJECTION);
@@ -501,23 +499,20 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 			gl.glPopMatrix();
 			gl.glPushMatrix();
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
+
 			
 			Quaternion3d rotation = new Quaternion3d(this.rotation.getAngle(), this.rotation.getRotationAxis().negateY());
 			Matrix4d transformation = rotation.toMatrix();
 			transformation.addTranslation(translation.negate());
 			gl.glMultMatrixd(transformation.m, 0);
 			
-
-			
-			
-			gl.glScaled(aspect, 1, 1);
-			
-
 			/*gl.glOrtho(-width + this.translation.x, width + this.translation.x,
 					width + this.translation.y, -width + this.translation.y,
 					CLIP_NEAR, CLIP_FAR);*/
 			GLU glu = new GLU();
 			gl.glMatrixMode(GL2.GL_PROJECTION);
+			gl.glLoadIdentity();
+			gl.glScaled(aspect, aspect, 1);
 			
 			glu.gluPerspective(MainPanel.FOV, this.aspect, clipNear, this.translation.z + 4 * Constants.SUN_RADIUS);
 			/*gl.glFrustum(-width + this.translation.x, width + this.translation.x,
@@ -556,8 +551,9 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	protected void renderPlugins(GL2 gl){
 		gl.glEnable(GL2.GL_DEPTH_TEST);
 		gl.glDepthFunc(GL2.GL_LESS);
-		
+		gl.glDepthMask(true);
 		UltimatePluginInterface.SIGLETON.renderPlugin(gl);		
+		gl.glDepthMask(false);
 	}
 	
 	@Override
@@ -588,16 +584,12 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		gl.glDisable(GL2.GL_DEPTH_TEST);
 		
 		if (Layers.LAYERS.getLayerCount() == 0){
-			System.out.println("render noImage " + this.getClass());
 			double dim = Math.max(getSurfaceHeight(), getSurfaceWidth()) * 0.15;
 			
 			int xOffset = (int)(getSurfaceWidth() / 2 - dim / 2);
 			int width = (int)(dim);
 			int yOffset = (int)(getSurfaceHeight() / 2 - dim / 2);
 			int height = (int)(dim);
-			System.out.println("xOffset : " + xOffset);
-			System.out.println("yOffset : " + yOffset);
-			System.out.println("width   : " + width);
 			gl.glViewport(xOffset, yOffset, width, height);
 			NoImageScreen.render(gl);
 			gl.glViewport(0, 0, getSurfaceWidth(), getSurfaceHeight());
