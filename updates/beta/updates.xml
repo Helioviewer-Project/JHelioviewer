@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <updateDescriptor baseUrl="https://github.com/Helioviewer-Project/JHelioviewer/releases/download/2.3.beta.30/">
-  <entry targetMediaFileId="68" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer.dmg" newVersion="2.3.beta.30" newMediaFileId="68" fileSize="82544277" bundledJre="macosx-amd64-1.8.0_45_unpacked" archive="true">
+  <entry targetMediaFileId="68" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer.dmg" newVersion="2.3.0" newMediaFileId="68" fileSize="82544277" bundledJre="macosx-amd64-1.8.0_45_unpacked" archive="true">
     <comment language="en" />
   </entry>
   <entry targetMediaFileId="150" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_windows-x64_2_3_beta_30.exe" newVersion="2.3.beta.30" newMediaFileId="150" fileSize="43858720" bundledJre="windows-amd64-1.8.0_45" archive="false">
