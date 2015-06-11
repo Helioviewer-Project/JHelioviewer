@@ -2,11 +2,12 @@ package org.helioviewer.jhv.plugins.hekplugin.cache;
 
 import java.util.HashMap;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class HEKCacheExpansionModel {
     HEKCache cache;
     HEKCacheModel cacheModel;
-    private HashMap<HEKPath, Boolean> expansionState = new HashMap<HEKPath, Boolean>();
+    private ConcurrentHashMap<HEKPath, Boolean> expansionState = new ConcurrentHashMap<HEKPath, Boolean>();
 
     public HEKCacheExpansionModel(HEKCache cache) {
         this.cache = cache;

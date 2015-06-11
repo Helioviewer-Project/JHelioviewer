@@ -17,6 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -84,7 +85,7 @@ public class LayersModel implements ViewListener
     /** The sole instance of this class. */
     private static final LayersModel SINGLETON=new LayersModel();
 
-    private AbstractList<LayersListener> layerListeners=new LinkedList<LayersListener>();
+    private CopyOnWriteArrayList<LayersListener> layerListeners=new CopyOnWriteArrayList<LayersListener>();
 
     // store the last updated timestamp
     private Date lastTimestamp;
