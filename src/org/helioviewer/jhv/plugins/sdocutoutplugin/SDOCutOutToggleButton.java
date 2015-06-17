@@ -1,61 +1,49 @@
 package org.helioviewer.jhv.plugins.sdocutoutplugin;
 
-import java.awt.Container;
+import java.awt.Image;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.net.URL;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
-
-import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 
 public class SDOCutOutToggleButton extends JButton implements
 		PropertyChangeListener {
 
 	private static final long serialVersionUID = 1L;
 
-	private JToggleButton sdoCutOutButton;
-
+	private static final String PATH = "/images/";
 	public SDOCutOutToggleButton() {
-
-		installButton();
+		super(new SDOCutOutAction());
+		initButton();
 	}
 
-	private void initVisualComponents() {
-
-		createButton();
-
-		// register as layers listener
+	private void initButton() {
+		setSelected(false);
+		setIcon(SDOCutOutToggleButton
+				.getIcon(SDOCutOutSettings.ICON_FILENAME,24, 24));
+		setToolTipText("Connect to SDO Cut-Out Service");
+		setEnabled(true);
+		setVerticalTextPosition(SwingConstants.BOTTOM);
+		setHorizontalAlignment(SwingConstants.CENTER);
+		setHorizontalTextPosition(SwingConstants.CENTER);
 	}
+	
+	
+	
 
-	private void createButton() {
-		sdoCutOutButton = new JToggleButton(new SDOCutOutAction());
-		sdoCutOutButton.setSelected(false);
-		sdoCutOutButton.setIcon(new ImageIcon(SDOCutOutPlugin3D
-				.getResourceUrl(SDOCutOutSettings.ICON_FILENAME)));
-		sdoCutOutButton.setToolTipText("Connect to SDO Cut-Out Service");
-		sdoCutOutButton.setEnabled(true);
-		sdoCutOutButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-		sdoCutOutButton.setHorizontalAlignment(SwingConstants.CENTER);
-		sdoCutOutButton.setHorizontalTextPosition(SwingConstants.CENTER);
-	}
-
-	public void installButton() {
-		initVisualComponents();
-		MainFrame.SINGLETON.addTopToolBarPlugin(this,
-				sdoCutOutButton);
-	}
-
-	public void removeButton() {
-		Container parent = sdoCutOutButton.getParent();
-
-		if (parent != null) {
-			parent.remove(sdoCutOutButton);
-			parent.repaint();
-		}
-	}
+    public static ImageIcon getIcon(String fileName, int width, int height){
+        URL imgURL = SDOCutOutPlugin3D.getResourceUrl(PATH + fileName);
+        System.out.println(imgURL);
+        ImageIcon imageIcon = new ImageIcon(imgURL);
+        Image image = imageIcon.getImage();
+        image = image.getScaledInstance(width, height, Image.SCALE_AREA_AVERAGING);
+        imageIcon.setImage(image);
+        return imageIcon;
+    	
+    }
 
 	@Override
 	/*

@@ -29,7 +29,7 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.KakaduUtils;
 import org.w3c.dom.Document;
 
-public class NewRender {
+public class KakaduRender {
 	
     // The amount of cache to allocate to each codestream
     private final int CODESTREAM_CACHE_THRESHOLD = 1024 * 256;
@@ -54,7 +54,7 @@ public class NewRender {
 	private Kdu_thread_env threadEnviroment;
 	private static final int MAX_RENDER_SAMPLES = 500000;
 
-	public NewRender() {
+	public KakaduRender() {
 	    int numberThreads;
 		try {
 			numberThreads = Kdu_global.Kdu_get_num_processors();
@@ -77,6 +77,7 @@ public class NewRender {
 			Kdu_dims dimsRef1 = new Kdu_dims(), dimsRef2 = new Kdu_dims();
 			
 			compositor.Add_ilayer(layerNumber, dimsRef1, dimsRef2);
+			
 			compositor.Set_max_quality_layers(quality);
 			compositor.Set_scale(false, false, false,
 					zoomPercent);

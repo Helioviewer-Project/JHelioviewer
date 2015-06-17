@@ -15,9 +15,9 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import org.helioviewer.jhv.JHVGlobals;
+import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.actions.filefilters.ExtensionFileFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.JHVStateFilter;
-import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 
 public class SaveStateAction extends AbstractAction {
 

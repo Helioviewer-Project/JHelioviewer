@@ -26,7 +26,6 @@ public class MetaDataAIA extends MetaData{
         this.instrument = "AIA";
         fullName = "AIA " + measurement;
         
-        System.out.println("measurement : " + measurement);
         switch (measurement) {
 		case "131":
 			defaultLUT = LUT_ENTRY.SDO_AIA_131;

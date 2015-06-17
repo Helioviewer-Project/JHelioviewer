@@ -1,13 +1,12 @@
-package org.helioviewer.jhv.gui.components.statuslabels;
+package org.helioviewer.jhv.gui.statusLabels;
 
 import java.awt.event.MouseEvent;
 import java.time.LocalDateTime;
 
 import javax.swing.JLabel;
 
-import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
-import org.helioviewer.jhv.gui.components.statuslabels.StatusLabelInterfaces.StatusLabelCamera;
-import org.helioviewer.jhv.gui.components.statuslabels.StatusLabelInterfaces.StatusLabelMouse;
+import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelCamera;
+import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelMouse;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.NewLayerListener;

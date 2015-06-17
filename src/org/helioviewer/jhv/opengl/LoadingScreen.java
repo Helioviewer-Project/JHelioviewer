@@ -50,7 +50,6 @@ public class LoadingScreen{
 		gl.glDisable(GL2.GL_DEPTH_TEST);
 
 		gl.glMatrixMode(GL2.GL_PROJECTION);
-		gl.glLoadIdentity();
 		gl.glOrtho(-0.5, 0.5, -0.5, 0.5, 10, -10);
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		gl.glLoadIdentity();
@@ -88,7 +87,6 @@ public class LoadingScreen{
 	private static void renderCircles(GL2 gl) {
 		// gl.glPushMatrix();
 		double t = System.currentTimeMillis() / (TOTAL_SEC_4_ONE_ROTATION*1000.0);
-		System.out.println("t1: " + t);
 		t = t - (int) t;
 		//t /= FPS;
 		t = t - (int) t;

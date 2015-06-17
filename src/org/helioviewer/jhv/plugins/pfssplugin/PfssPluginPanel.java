@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
-import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
+import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayPanel;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 

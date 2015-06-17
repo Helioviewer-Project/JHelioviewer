@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.gui.components.newComponents;
+package org.helioviewer.jhv.gui.dialogs;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -18,6 +18,8 @@ import javax.swing.JSeparator;
 import javax.swing.JSpinner;
 import javax.swing.border.EmptyBorder;
 
+import org.helioviewer.jhv.gui.MainFrame;
+import org.helioviewer.jhv.gui.dialogs.calender.DatePicker;
 import org.helioviewer.jhv.layers.Layers;
 
 import com.jgoodies.forms.factories.FormFactory;
@@ -25,7 +27,7 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
-class AddLayerPanel extends JDialog {
+public class AddLayerPanel extends JDialog {
 
 	/**
 	 * 
@@ -37,8 +39,8 @@ class AddLayerPanel extends JDialog {
 	private JComboBox<InstrumentModel.Observatory> cmbbxObservatory;
 	private JComboBox<InstrumentModel.Instrument> cmbbxInstrument;
 	private JComboBox<InstrumentModel.Filter> cmbbxFilter1, cmbbxFilter2;
-	private NewDatePicker datePickerStartDate;
-	private NewDatePicker datePickerEndDate;
+	private DatePicker datePickerStartDate;
+	private DatePicker datePickerEndDate;
 	private JSpinner candence;
 
 	private enum TIME_STEPS {
@@ -53,35 +55,23 @@ class AddLayerPanel extends JDialog {
 	}
 
 	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		try {
-			AddLayerPanel dialog = new AddLayerPanel();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
 	 * Create the dialog.
 	 */
 	public AddLayerPanel() {
-		// super(ImageViewerGui.getMainFrame());
+		super(MainFrame.SINGLETON);
 		this.setAlwaysOnTop(true);
-		setBounds(100, 100, 450, 310);
+		setMinimumSize(new Dimension(450, 310));
+		setPreferredSize(new Dimension(450, 310));
+		setLocationRelativeTo(MainFrame.SINGLETON);
 		initGui();
 		addData();
 	}
 
 	private void addData() {
-		InstrumentModel instrumentModel = InstrumentModel.SINGLETON;
 		LocalDateTime endDateTime = LocalDateTime.now();
 		LocalDateTime startDateTime = endDateTime.minusDays(1);
 
-		for (InstrumentModel.Observatory observatory : instrumentModel
+		for (InstrumentModel.Observatory observatory : InstrumentModel
 				.getObservatories()) {
 			cmbbxObservatory.addItem(observatory);
 		}
@@ -203,12 +193,12 @@ class AddLayerPanel extends JDialog {
 						FormFactory.DEFAULT_ROWSPEC, }));
 
 		{
-			datePickerStartDate = new NewDatePicker(LocalDateTime.now()
+			datePickerStartDate = new DatePicker(LocalDateTime.now()
 					.minusDays(1));
 			contentPanel.add(datePickerStartDate, "2, 2, 5, 1, fill, top");
 		}
 		{
-			datePickerEndDate = new NewDatePicker(LocalDateTime.now());
+			datePickerEndDate = new DatePicker(LocalDateTime.now());
 			contentPanel.add(datePickerEndDate, "2, 4, 5, 1, fill, top");
 		}
 		{
@@ -310,5 +300,9 @@ class AddLayerPanel extends JDialog {
 				});
 			}
 		}
+	}
+	
+	public void updateGUI(){
+		this.addData();
 	}
 }

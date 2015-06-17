@@ -39,7 +39,6 @@ public class NoImageScreen{
 		gl.glEnable(GL2.GL_BLEND);
 		gl.glEnable(GL2.GL_TEXTURE_2D);
 		gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
-		
 		gl.glActiveTexture(GL.GL_TEXTURE0);
 		
 		gl.glBindTexture(GL2.GL_TEXTURE_2D, texture);

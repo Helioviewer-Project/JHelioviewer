@@ -5,7 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.JOptionPane;
 
-import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
+import org.helioviewer.jhv.gui.MainFrame;
 
 public class MetaDataFactory {
 	@SuppressWarnings("unchecked")

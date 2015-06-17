@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.gui.components.statuslabels;
+package org.helioviewer.jhv.gui.statusLabels;
 
 import java.awt.event.MouseEvent;
 

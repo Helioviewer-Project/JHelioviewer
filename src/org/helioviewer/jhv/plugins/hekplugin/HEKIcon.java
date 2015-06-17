@@ -3,14 +3,11 @@ package org.helioviewer.jhv.plugins.hekplugin;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.net.URL;
 
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 import org.helioviewer.jhv.base.FileUtils;
-import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
 
 public class HEKIcon {

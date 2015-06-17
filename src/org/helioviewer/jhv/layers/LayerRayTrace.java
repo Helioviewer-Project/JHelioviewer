@@ -1,5 +1,6 @@
 package org.helioviewer.jhv.layers;
 
+import java.awt.Dimension;
 import java.awt.geom.Rectangle2D;
 
 import org.helioviewer.jhv.base.ImageRegion;
@@ -26,19 +27,23 @@ public class LayerRayTrace{
 		*/
 	}
 	
-	public ImageRegion getCurrentRegion(MainPanel compenentView, MetaData metaData){
+	public ImageRegion getCurrentRegion(MainPanel mainPanel, MetaData metaData){
+		return getCurrentRegion(mainPanel, metaData, mainPanel.getCanavasSize());
+	}
+	
+	public ImageRegion getCurrentRegion(MainPanel mainPanel, MetaData metaData, Dimension size){
 		/*if (!(compenentView instanceof OverViewPanel)){
 			contentPanel.removeAll();
 			contentPanel.setLayout(null);
 		}*/
-		double partOfWidth = compenentView.getWidth() / (double)(MAX_X_POINTS-1);
-		double partOfHeight = compenentView.getHeight() / (double)(MAX_Y_POINTS-1);
+		double partOfWidth = mainPanel.getWidth() / (double)(MAX_X_POINTS-1);
+		double partOfHeight = mainPanel.getHeight() / (double)(MAX_Y_POINTS-1);
 		
 		double minX = Double.MAX_VALUE, minY = Double.MAX_VALUE, maxX = Double.MIN_VALUE, maxY = Double.MIN_VALUE;
 		
 		for (int i = 0; i < MAX_X_POINTS; i++){
 			for (int j = 0; j < MAX_Y_POINTS; j++){
-				Vector2d imagePoint = rayTrace.castTexturepos((int)(i * partOfWidth), (int)(j * partOfHeight), metaData, compenentView);
+				Vector2d imagePoint = rayTrace.castTexturepos((int)(i * partOfWidth), (int)(j * partOfHeight), metaData, mainPanel);
 				
 				if (imagePoint != null){
 					/*JPanel panel = null;
@@ -64,7 +69,7 @@ public class LayerRayTrace{
 		Rectangle2D rectangle = new Rectangle2D.Double(minX, minY, maxX-minX, maxY-minY);
 		ImageRegion imageRegion = new ImageRegion(layer.getTime());
 		imageRegion.setImageData(rectangle);
-		imageRegion.calculateScaleFactor(layer, compenentView, metaData);
+		imageRegion.calculateScaleFactor(layer, mainPanel, metaData, size);
 		return imageRegion;
 		//frame.repaint();
 		//frame.setVisible(true);

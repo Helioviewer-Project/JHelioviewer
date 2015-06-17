@@ -1,10 +1,5 @@
-package org.helioviewer.jhv.gui.components.newComponents;
+package org.helioviewer.jhv.gui.dialogs;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -12,50 +7,53 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
+import org.helioviewer.jhv.base.downloadmanager.AbstractRequest.PRIORITY;
+import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
+import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 
-class InstrumentModel {
+public class InstrumentModel {
 
-	private final String URL_DATASOURCE = "http://api.helioviewer.org/v2/getDataSources/?";
-	private LinkedHashMap<String, Observatory> observatories = new LinkedHashMap<String, InstrumentModel.Observatory>();
-	public static InstrumentModel SINGLETON = new InstrumentModel();
+	private static final String URL_DATASOURCE = "http://api.helioviewer.org/v2/getDataSources/?";
+	private static LinkedHashMap<String, Observatory> observatories = new LinkedHashMap<String, InstrumentModel.Observatory>();
+	private static AddLayerPanel addLayerPanel;
 	
-	private InstrumentModel() {
-		this.initModel();
+	static {
+		Thread thread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				HTTPRequest httpRequest = new HTTPRequest(URL_DATASOURCE, PRIORITY.HIGH);
+				UltimateDownloadManager.addRequest(httpRequest);
+				
+				while (!httpRequest.isFinished()) {
+					try {
+						Thread.sleep(20);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				try {
+					JSONObject jsonObject = new JSONObject(httpRequest.getDataAsString());
+					addObservatories(jsonObject);
+					addLayerPanel.updateGUI();
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}, "MODEL_LOAD");
+		thread.start();
 	}
 	
-	public Collection<Observatory> getObservatories(){
+	public static Collection<Observatory> getObservatories(){
 		return observatories.values();
 	}
-		
-	public void initModel(){
-		StringBuilder sb = new StringBuilder();
-		try (BufferedReader in = new BufferedReader(new InputStreamReader(new URL(URL_DATASOURCE).openStream()))){
-			String line = null;
-			
-			while((line = in.readLine()) != null)
-			{
-				sb.append(line);
-			}
-
-			JSONObject jsonObject = new JSONObject(sb.toString());
-			addObservatories(jsonObject);
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 	
-	public void addObservatories(JSONObject observatories){
+	private static void addObservatories(JSONObject observatories){
 		@SuppressWarnings("unchecked")
 		Iterator<String> iterator = observatories.sortedKeys();
 		while(iterator.hasNext()){
@@ -67,11 +65,11 @@ class InstrumentModel {
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
-			this.observatories.put(observatoryName, observatory);
+			InstrumentModel.observatories.put(observatoryName, observatory);
 		}
 	}
 	
-	public void addInstrument(JSONObject jsonObservatory, Observatory observatory){
+	private static void addInstrument(JSONObject jsonObservatory, Observatory observatory){
 		@SuppressWarnings("unchecked")
 		Iterator<String> iterator = jsonObservatory.sortedKeys();
 		while(iterator.hasNext()){
@@ -87,7 +85,7 @@ class InstrumentModel {
 		}
 	}
 	
-	private void addFilter(JSONObject jsonInstrument, Instrument instrument, Observatory observatory){
+	private static void addFilter(JSONObject jsonInstrument, Instrument instrument, Observatory observatory){
 		@SuppressWarnings("unchecked")
 		Iterator<String> iterator = jsonInstrument.sortedKeys();
 		while (iterator.hasNext()) {
@@ -103,7 +101,7 @@ class InstrumentModel {
 		}
 	}
 	
-	private void addFilter(JSONObject jsonFilter, Filter filter, Observatory observatory){
+	private static void addFilter(JSONObject jsonFilter, Filter filter, Observatory observatory){
 		@SuppressWarnings("unchecked")
 		Iterator<String> iterator = jsonFilter.sortedKeys();
 		while (iterator.hasNext()) {
@@ -121,7 +119,7 @@ class InstrumentModel {
 		}
 	}
 	
-	private void addUILabel(JSONObject jsonObject, Observatory observatory){
+	private static void addUILabel(JSONObject jsonObject, Observatory observatory){
 		JSONArray uiLabels;
 		try {
 			ArrayList<String> uiLabel = new ArrayList<String>();
@@ -139,7 +137,7 @@ class InstrumentModel {
 		
 	}
 	
-	private void addData(JSONObject jsonObject, Filter filter){
+	private static void addData(JSONObject jsonObject, Filter filter){
 		try {
 			Object end = jsonObject.get("end");
 			Object start = jsonObject.get("start");
@@ -153,12 +151,12 @@ class InstrumentModel {
 		}
 	}
 	
-	public class Observatory {
+	public static class Observatory {
 		LinkedHashMap<String, Instrument> instruments = new LinkedHashMap<String, InstrumentModel.Instrument>(); 
 		private String name;
 		private ArrayList<String> uiLabels;
 		
-		public Observatory(String name) {
+		private Observatory(String name) {
 			this.name = name;
 		}
 		
@@ -180,7 +178,7 @@ class InstrumentModel {
 		}
 	}
 	
-	public class Instrument{
+	public static class Instrument{
 		private LinkedHashMap<String, Filter> filters = new LinkedHashMap<String, InstrumentModel.Filter>();
 		private String name;
 		
@@ -203,7 +201,7 @@ class InstrumentModel {
 		}
 	}
 		
-	public class Filter{
+	public static class Filter{
 		private LinkedHashMap<String, Filter> filters = new LinkedHashMap<String, InstrumentModel.Filter>();
 		private String name;
 		
@@ -234,6 +232,10 @@ class InstrumentModel {
 		
 		
 
+	}
+
+	public static void addAddLayerPanel(AddLayerPanel addLayerPanel) {
+		InstrumentModel.addLayerPanel = addLayerPanel;
 	}
 		
 }

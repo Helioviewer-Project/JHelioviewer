@@ -13,7 +13,7 @@ import javax.swing.AbstractButton;
 import javax.swing.JPanel;
 
 import org.helioviewer.jhv.base.math.Vector3d;
-import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
+import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace;
 import org.helioviewer.jhv.plugins.hekplugin.HEKPlugin;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;

@@ -1,27 +1,22 @@
-package org.helioviewer.jhv.gui.components.statuslabels;
+package org.helioviewer.jhv.gui.statusLabels;
 
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
-import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
-import org.helioviewer.jhv.base.math.Vector3d;
-import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
-import org.helioviewer.jhv.opengl.raytrace.RayTrace;
+import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace.HITPOINT_TYPE;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace.Ray;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
-import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 import org.joda.time.DateTime;
 
 import ch.fhnw.i4ds.helio.coordinate.converter.Hcc2HgConverter;
@@ -137,8 +132,6 @@ public class PositionStatusPanel extends StatusLabel implements MouseListener {
 			break;
 		}
 		this.setText(title + point);
-		System.out.println("setText : " + title + point);
-
 	}
 
 	

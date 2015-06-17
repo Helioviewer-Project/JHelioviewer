@@ -27,17 +27,6 @@ public class SDOCutOutPlugin3D extends NewPlugin {
     public URI getLocation() {
     	return this.pluginLocation;
     }
-	
-	public void installPlugin() {
-		if (sdoCutOutToggleButton == null)
-			sdoCutOutToggleButton = new SDOCutOutToggleButton();
-		
-    }
-
-    public void uninstallPlugin() {
-    	if (sdoCutOutToggleButton != null)
-    		sdoCutOutToggleButton.removeButton();
-    }
     
     public String getName() {
         return "SDOCutOut Plugin";

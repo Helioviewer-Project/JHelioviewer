@@ -1,14 +1,12 @@
-package org.helioviewer.jhv.gui.components.statuslabels;
+package org.helioviewer.jhv.gui.statusLabels;
 
 import java.awt.Dimension;
 
 import javax.swing.BorderFactory;
-import javax.swing.JLabel;
 
-import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
+import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.Layers;
-import org.helioviewer.jhv.opengl.camera.animation.CameraZoomAnimation;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;

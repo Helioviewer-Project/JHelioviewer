@@ -4,7 +4,7 @@ import java.awt.EventQueue;
 
 import javax.swing.JOptionPane;
 
-import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
+import org.helioviewer.jhv.gui.MainFrame;
 
 /**
  * General messages pulled from JHVGlobals

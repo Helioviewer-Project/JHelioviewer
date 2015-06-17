@@ -10,6 +10,6 @@ public class SDOCutOutSettings {
     /**
      * Icon file name
      */
-    public static final String ICON_FILENAME = "/images/sdocutout24x24.png";
+    public static final String ICON_FILENAME = "sdo_128x128.png";
 
 }

@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.gui.components.newComponents;
+package org.helioviewer.jhv.gui.leftPanel;
 
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -15,6 +15,7 @@ import javax.swing.event.ChangeListener;
 
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
+import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.components.WheelSupport;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.LayerInterface.COLOR_CHANNEL_TYPE;

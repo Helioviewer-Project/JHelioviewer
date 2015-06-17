@@ -23,7 +23,7 @@ import javax.swing.UIManager;
 import org.helioviewer.jhv.base.FileUtils;
 import org.helioviewer.jhv.base.Log;
 import org.helioviewer.jhv.base.Message;
-import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
+import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.dialogs.AboutDialog;
 import org.helioviewer.jhv.io.CommandLineProcessor;
 import org.helioviewer.jhv.opengl.OpenGLHelper;

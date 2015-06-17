@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.gui.components.newComponents;
+package org.helioviewer.jhv.gui.leftPanel;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -38,7 +38,7 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
-public class NewPlayPanel extends JPanel implements TimeLineListener, NewLayerListener{
+public class MoviePanel extends JPanel implements TimeLineListener, NewLayerListener{
 	
 	/**
 	 * 
@@ -128,14 +128,15 @@ public class NewPlayPanel extends JPanel implements TimeLineListener, NewLayerLi
     
     private JSlider slider;
     private JButton btnPrevious, btnPlayPause, btnForward;
-	public NewPlayPanel() {
+	public MoviePanel() {
 		TimeLine.SINGLETON.addListener(this);
 		Layers.LAYERS.addNewLayerListener(this);
 		this.setLayout(new BorderLayout());
 		this.add(initGUI(), BorderLayout.CENTER);
 		optionPane = initOptionPane();
 		this.add(optionPane, BorderLayout.SOUTH);
-		this.setPreferredSize(new Dimension(300, 60));
+		this.setMinimumSize(new Dimension(200, 60));
+		this.setPreferredSize(new Dimension(200, 60));
 	}
 	
 	private JPanel initOptionPane(){

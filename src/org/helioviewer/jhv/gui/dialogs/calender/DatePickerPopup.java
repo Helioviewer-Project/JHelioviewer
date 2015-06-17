@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.gui.components.newComponents;
+package org.helioviewer.jhv.gui.dialogs.calender;
 
 import java.awt.AWTEvent;
 import java.awt.BorderLayout;
@@ -33,7 +33,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
-class NewDatePickerPopup extends JDialog {
+class DatePickerPopup extends JDialog {
 
 	/**
 	 * 
@@ -42,7 +42,7 @@ class NewDatePickerPopup extends JDialog {
 	private LocalDate currentDate;
 	private CalenderCellRenderer calenderCellRenderer;
 	private CalenderTableModel calenderTableModel;
-	private NewDatePicker newDatePicker;
+	private DatePicker newDatePicker;
 	private String[] columnNames;
 
 	private JPanel controlPanel;
@@ -63,7 +63,7 @@ class NewDatePickerPopup extends JDialog {
 		}
 	};
 
-	NewDatePickerPopup(final NewDatePicker newDatePicker) {
+	DatePickerPopup(final DatePicker newDatePicker) {
 		this.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowDeactivated(WindowEvent e) {

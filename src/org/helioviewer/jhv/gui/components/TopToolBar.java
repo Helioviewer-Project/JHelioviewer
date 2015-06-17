@@ -272,7 +272,7 @@ public class TopToolBar extends JToolBar implements MouseListener {
 		revalidate();
 	}
 
-	public void addToolbarPlugin(JToggleButton button) {
+	public void addToolbarPlugin(AbstractButton button) {
 		if (displayMode == DisplayMode.ICONANDTEXT)
 			this.add(button);
 		else if (displayMode == DisplayMode.TEXTONLY)

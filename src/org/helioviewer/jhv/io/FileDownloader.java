@@ -22,9 +22,9 @@ import javax.swing.JWindow;
 
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.base.Message;
+import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.actions.filefilters.ExtensionFileFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.JP2Filter;
-import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 
 /**
  * Class for downloading files from the internet.

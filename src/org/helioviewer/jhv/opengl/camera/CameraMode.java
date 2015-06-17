@@ -1,7 +1,7 @@
 package org.helioviewer.jhv.opengl.camera;
 
 import org.helioviewer.jhv.Settings;
-import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
+import org.helioviewer.jhv.gui.MainFrame;
 
 
 public class CameraMode {
@@ -30,7 +30,6 @@ public class CameraMode {
 	}
 	
 	public static int getCameraMode(){
-		System.out.println("mode : " + (mode == MODE.MODE_3D? 1:0));
 		return mode == MODE.MODE_3D? 1:0;
 	}
 

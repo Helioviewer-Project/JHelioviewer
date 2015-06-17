@@ -9,8 +9,8 @@ import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 
 import org.helioviewer.jhv.JHVGlobals;
+import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.actions.filefilters.JHVStateFilter;
-import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
 
 public class LoadStateAction extends AbstractAction {
 

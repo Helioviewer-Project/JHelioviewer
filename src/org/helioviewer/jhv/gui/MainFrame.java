@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.gui.components.newComponents;
+package org.helioviewer.jhv.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -11,23 +11,26 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.beans.PropertyChangeListener;
 
+import javax.swing.AbstractButton;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 
-import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.components.MenuBar;
 import org.helioviewer.jhv.gui.components.SideContentPane;
 import org.helioviewer.jhv.gui.components.TopToolBar;
-import org.helioviewer.jhv.gui.components.statuslabels.CurrentTimeLabel;
-import org.helioviewer.jhv.gui.components.statuslabels.FramerateStatusPanel;
-import org.helioviewer.jhv.gui.components.statuslabels.PositionStatusPanel;
-import org.helioviewer.jhv.gui.components.statuslabels.ZoomStatusPanel;
+import org.helioviewer.jhv.gui.leftPanel.FilterTabPanel;
+import org.helioviewer.jhv.gui.leftPanel.LayerPanel;
+import org.helioviewer.jhv.gui.leftPanel.MoviePanel;
+import org.helioviewer.jhv.gui.leftPanel.OverViewPanel;
+import org.helioviewer.jhv.gui.statusLabels.CurrentTimeLabel;
+import org.helioviewer.jhv.gui.statusLabels.FramerateStatusPanel;
+import org.helioviewer.jhv.gui.statusLabels.PositionStatusPanel;
+import org.helioviewer.jhv.gui.statusLabels.ZoomStatusPanel;
 import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 
 import com.jgoodies.forms.factories.FormFactory;
@@ -35,6 +38,12 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
+
+/**
+ * This class include the mainframe of the application
+ * @author stefanmeier
+ *
+ */
 public class MainFrame extends JFrame{
 
 	/**
@@ -54,7 +63,7 @@ public class MainFrame extends JFrame{
 	public FilterTabPanel filterTabPanel;
 
 
-
+	
 	public MainFrame() {
 		super("ESA JHelioviewer");
 		initMainFrame();
@@ -103,7 +112,7 @@ public class MainFrame extends JFrame{
 					
 		MAIN_PANEL.setMinimumSize(new Dimension());
 		OVERVIEW_PANEL.setMinimumSize(new Dimension(200, 200));
-		OVERVIEW_PANEL.setPreferredSize(new Dimension(240, 200));
+		OVERVIEW_PANEL.setPreferredSize(new Dimension(200, 200));
 
 		splitPane.setRightComponent(MAIN_PANEL);		
 		splitPane.setLeftComponent(getLeftPane());
@@ -131,7 +140,7 @@ public class MainFrame extends JFrame{
 		MAIN_PANEL.addSynchronizedView(OVERVIEW_PANEL);
 		
 		JPanel scrollContentPane = new JPanel(new BorderLayout());
-		scrollContentPane.setMinimumSize(new Dimension());
+		scrollContentPane.setMinimumSize(new Dimension(200,40));
 		JScrollPane scrollPane = new JScrollPane(scrollContentPane);
 		scrollPane.setMinimumSize(new Dimension());
 		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
@@ -199,11 +208,11 @@ public class MainFrame extends JFrame{
 	private SideContentPane getSideBar(){
 		LEFT_PANE = new SideContentPane();
 		// Movie control
-		NewPlayPanel moviePanel = new NewPlayPanel();
+		MoviePanel moviePanel = new MoviePanel();
 		LEFT_PANE.add("Movie Controls", moviePanel, true);
 		
 		// Layer control
-		NewLayerPanel newLayerPanel = new NewLayerPanel();
+		LayerPanel newLayerPanel = new LayerPanel();
 		LEFT_PANE.add("Layers", newLayerPanel, true);
 
 		// Filter control
@@ -221,7 +230,7 @@ public class MainFrame extends JFrame{
 
 	public void addTopToolBarPlugin(
 			PropertyChangeListener propertyChangeListener,
-			JToggleButton button) {
+			AbstractButton button) {
 		MainFrame.TOP_TOOL_BAR.addToolbarPlugin(button);
 
 		MainFrame.TOP_TOOL_BAR

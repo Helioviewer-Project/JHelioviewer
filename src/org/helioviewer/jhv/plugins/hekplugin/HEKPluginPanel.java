@@ -19,7 +19,7 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 
 import org.helioviewer.jhv.base.math.Interval;
-import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
+import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheListener;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheLoadingModel;

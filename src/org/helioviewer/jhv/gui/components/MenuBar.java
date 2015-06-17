@@ -17,10 +17,10 @@ import org.helioviewer.jhv.gui.actions.SaveScreenshotAsAction;
 import org.helioviewer.jhv.gui.actions.SaveStateAction;
 import org.helioviewer.jhv.gui.actions.ShowDialogAction;
 import org.helioviewer.jhv.gui.actions.ToggleFullscreenAction;
-import org.helioviewer.jhv.gui.components.newComponents.NewPlayPanel;
 import org.helioviewer.jhv.gui.dialogs.AboutDialog;
 import org.helioviewer.jhv.gui.dialogs.HelpDialog;
 import org.helioviewer.jhv.gui.dialogs.PreferencesDialog;
+import org.helioviewer.jhv.gui.leftPanel.MoviePanel;
 import org.helioviewer.jhv.opengl.camera.actions.Zoom1To1Action;
 import org.helioviewer.jhv.opengl.camera.actions.ZoomFitAction;
 import org.helioviewer.jhv.opengl.camera.actions.ZoomInAction;
@@ -112,9 +112,9 @@ public class MenuBar extends JMenuBar {
 		JMenu movieMenu = new JMenu("Movie");
 		movieMenu.setMnemonic(KeyEvent.VK_A);
 
-			movieMenu.add(new NewPlayPanel.StaticPlayPauseAction());
-			movieMenu.add(new NewPlayPanel.StaticPreviousFrameAction());
-			movieMenu.add(new NewPlayPanel.StaticNextFrameAction());
+			movieMenu.add(new MoviePanel.StaticPlayPauseAction());
+			movieMenu.add(new MoviePanel.StaticPreviousFrameAction());
+			movieMenu.add(new MoviePanel.StaticNextFrameAction());
 		
 			add(movieMenu);
 

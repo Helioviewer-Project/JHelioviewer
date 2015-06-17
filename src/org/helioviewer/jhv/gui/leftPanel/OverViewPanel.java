@@ -1,10 +1,11 @@
-package org.helioviewer.jhv.gui.components.newComponents;
+package org.helioviewer.jhv.gui.leftPanel;
 
 import java.awt.Dimension;
 import java.util.ArrayList;
 
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
+import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.NewLayer;
@@ -19,8 +20,18 @@ import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 
+/**
+ * The OverViewPanel is used for the current overviewpanel.
+ * It extend the MainPanel to used the same renderloop
+ * @author stefanmeier
+ *
+ */
 public class OverViewPanel extends MainPanel{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2662016428464982455L;
 	private ArrayList<MainPanel> mainViews;
 	
 	public OverViewPanel() {
@@ -98,7 +109,6 @@ public class OverViewPanel extends MainPanel{
 		gl.glEnable(GL2.GL_BLEND);
 		gl.glEnable(GL2.GL_LINE_SMOOTH);
 		gl.glBegin(GL2.GL_LINE_LOOP);
-			System.out.println("boundLenght : " + bounds.length);
 			for (double[] bound : bounds){
 				gl.glVertex3d(bound[0], bound[1], bound[2]);				
 			}

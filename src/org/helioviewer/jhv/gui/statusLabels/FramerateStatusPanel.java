@@ -1,13 +1,9 @@
-package org.helioviewer.jhv.gui.components.statuslabels;
+package org.helioviewer.jhv.gui.statusLabels;
 
 import java.awt.Dimension;
 import java.time.LocalDateTime;
 
 import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-
-import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
-import org.helioviewer.jhv.viewmodel.timeline.TimeLine.TimeLineListener;
 
 /**
  * Status panel for displaying the framerate for image series.

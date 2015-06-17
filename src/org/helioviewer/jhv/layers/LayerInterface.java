@@ -1,8 +1,9 @@
 package org.helioviewer.jhv.layers;
 
+import java.awt.Dimension;
 import java.time.LocalDateTime;
 
-import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
+import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
@@ -61,7 +62,7 @@ public abstract class LayerInterface {
 		this.id = idCounter++;
 	}
 	
-	public abstract int getTexture(MainPanel compenentView, boolean highResolution);
+	public abstract int getTexture(MainPanel compenentView, boolean highResolution, Dimension size);
 	public abstract String getName();
 	public abstract LocalDateTime getTime();
 	public abstract LocalDateTime[] getLocalDateTime();

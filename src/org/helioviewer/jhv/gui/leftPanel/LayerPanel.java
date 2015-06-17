@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.gui.components.newComponents;
+package org.helioviewer.jhv.gui.leftPanel;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -18,19 +18,28 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
+import org.helioviewer.jhv.gui.dialogs.AddLayerPanel;
+import org.helioviewer.jhv.gui.dialogs.InstrumentModel;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.NewLayerListener;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine.TimeLineListener;
 
-class NewLayerPanel extends JPanel implements NewLayerListener, TimeLineListener{
+
+/**
+ * The new LayerPanel, include a JTable for the current added layers
+ * @author stefanmeier
+ *
+ */
+public class LayerPanel extends JPanel implements NewLayerListener, TimeLineListener{
 
 	/**
 	 * 
@@ -44,11 +53,12 @@ class NewLayerPanel extends JPanel implements NewLayerListener, TimeLineListener
 	private Object rowData[][] = { { "Row1-Column1", "Row1-Column2", "Row1-Column3"},
             { "Row2-Column1", "Row2-Column2", "Row2-Column3"} };
 	
-	public NewLayerPanel(){
+	public LayerPanel(){
 		initGUI();
 		updateData();
-		this.setMinimumSize(new Dimension());
-		//this.setPreferredSize(new Dimension(200, 200));
+		InstrumentModel.addAddLayerPanel(addLayerPanel);
+		this.setMinimumSize(new Dimension(200, 200));
+		this.setPreferredSize(new Dimension(200, 200));
 		Layers.LAYERS.addNewLayerListener(this);
 		TimeLine.SINGLETON.addListener(this);
 	}
@@ -145,34 +155,39 @@ class NewLayerPanel extends JPanel implements NewLayerListener, TimeLineListener
 	}
 
 	
-	private void updateData(){
-		Object[][] data = new Object[Layers.LAYERS.getLayerCount()][4];
-		int count = 0;
-		for (LayerInterface layer : Layers.LAYERS.getLayers()){
-			data[count][0] = layer.isVisible();
-			data[count][1] = layer.getName();
-			data[count][2] = layer.getTime() == null ? null : layer.getTime();
-			data[count++][3] = IconBank.getIcon(JHVIcon.CANCEL_NEW, 16, 16);
-		}
-		tableModel.setDataVector(data, columnNames);
-		table.setModel(tableModel);
-		
-        //table.getColumnModel().getColumn(0).setCellRenderer(new ImageIconCellRenderer());
-        table.getColumnModel().getColumn(1).setCellRenderer(new ImageIconCellRenderer());
-        table.getColumnModel().getColumn(2).setCellRenderer(new ImageIconCellRenderer());
-        table.getColumnModel().getColumn(3).setCellRenderer(new ImageIconCellRenderer());
-		this.setFixedWidth(20, 0);
-		this.setFixedWidth(16, 3);
-        //table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        table.setShowGrid(false);
-        table.setIntercellSpacing(new Dimension(0, 0));
-        
-		if (Layers.LAYERS.getLayerCount() > 0){
-			System.out.println(Layers.LAYERS.getActiveLayerNumber());
-			table.setRowSelectionInterval(Layers.LAYERS.getActiveLayerNumber(), Layers.LAYERS.getActiveLayerNumber());
-		}
-
-
+	private synchronized void updateData(){
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				Object[][] data = new Object[Layers.LAYERS.getLayerCount()][4];
+				int count = 0;
+				for (LayerInterface layer : Layers.LAYERS.getLayers()){
+					data[count][0] = layer.isVisible();
+					data[count][1] = layer.getName();
+					data[count][2] = layer.getTime() == null ? null : layer.getTime();
+					data[count][3] = IconBank.getIcon(JHVIcon.CANCEL_NEW, 16, 16);
+					count++;
+				}
+				tableModel.setDataVector(data, columnNames);
+				table.setModel(tableModel);
+				
+		        //table.getColumnModel().getColumn(0).setCellRenderer(new ImageIconCellRenderer());
+		        table.getColumnModel().getColumn(1).setCellRenderer(new ImageIconCellRenderer());
+		        table.getColumnModel().getColumn(2).setCellRenderer(new ImageIconCellRenderer());
+		        table.getColumnModel().getColumn(3).setCellRenderer(new ImageIconCellRenderer());
+				setFixedWidth(20, 0);
+				setFixedWidth(16, 3);
+		        //table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		        table.setShowGrid(false);
+		        table.setIntercellSpacing(new Dimension(0, 0));
+		        
+				if (Layers.LAYERS.getLayerCount() > 0){
+					System.out.println(Layers.LAYERS.getActiveLayerNumber());
+					table.setRowSelectionInterval(Layers.LAYERS.getActiveLayerNumber(), Layers.LAYERS.getActiveLayerNumber());
+				}	
+			}
+		});
 	}
 	
 	private void setFixedWidth(int width, int column){

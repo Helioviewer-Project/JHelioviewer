@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.gui.components.newComponents;
+package org.helioviewer.jhv.gui.dialogs.calender;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -22,7 +22,7 @@ import javax.swing.JTextField;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 
-class NewDatePicker extends JPanel{
+public class DatePicker extends JPanel{
 
 	/**
 	 * 
@@ -36,15 +36,15 @@ class NewDatePicker extends JPanel{
 	private int counter = 0;
 	private JButton btnDatePicker;
 	private JTextField txtFieldDate, txtFieldTime;
-	private NewDatePickerPopup newDatePickerPopup;
+	private DatePickerPopup newDatePickerPopup;
 	private LocalDateTime dateTime;
 	private final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss");
 	private final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	private final long MAX_TIME_STEPS = 3600 * 24 * 30; 
 	
-	NewDatePicker(LocalDateTime dateTime) {
+	public DatePicker(LocalDateTime dateTime) {
 		this.dateTime = dateTime;
-		newDatePickerPopup = new NewDatePickerPopup(this);
+		newDatePickerPopup = new DatePickerPopup(this);
 		initGUI();
 		initData();
 	}

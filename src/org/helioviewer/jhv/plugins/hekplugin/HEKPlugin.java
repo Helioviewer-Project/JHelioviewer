@@ -63,34 +63,36 @@ public class HEKPlugin extends NewPlugin {
 	public void render(GL2 gl) {
 		LocalDateTime in = UltimatePluginInterface.SIGLETON
 				.getCurrentDateTime();
-		Date currentDate = Date.from(in.atZone(ZoneId.systemDefault())
-				.toInstant());
-		Vector<HEKEvent> toDraw = HEKCache.getSingletonInstance().getModel()
-				.getActiveEvents(currentDate);
-		if (toDraw != null && toDraw.size() > 0) {
+		if (in != null) {
+			Date currentDate = Date.from(in.atZone(ZoneId.systemDefault())
+					.toInstant());
+			Vector<HEKEvent> toDraw = HEKCache.getSingletonInstance()
+					.getModel().getActiveEvents(currentDate);
+			if (toDraw != null && toDraw.size() > 0) {
 
-			gl.glDisable(GL2.GL_TEXTURE_2D);
-			gl.glEnable(GL2.GL_CULL_FACE);
-			gl.glEnable(GL2.GL_LINE_SMOOTH);
-			gl.glEnable(GL2.GL_BLEND);
+				gl.glDisable(GL2.GL_TEXTURE_2D);
+				gl.glEnable(GL2.GL_CULL_FACE);
+				gl.glEnable(GL2.GL_LINE_SMOOTH);
+				gl.glEnable(GL2.GL_BLEND);
 
-			for (HEKEvent evt : toDraw)
-				drawPolygon(gl, evt, currentDate);
+				for (HEKEvent evt : toDraw)
+					drawPolygon(gl, evt, currentDate);
 
-			gl.glDisable(GL2.GL_LINE_SMOOTH);
+				gl.glDisable(GL2.GL_LINE_SMOOTH);
 
-			gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
-			gl.glDisable(GL2.GL_DEPTH_TEST);
-			gl.glEnable(GL2.GL_TEXTURE_2D);
-			gl.glColor4f(1.0f, 1.0f, 1.0f, 1);
+				gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
+				gl.glDisable(GL2.GL_DEPTH_TEST);
+				gl.glEnable(GL2.GL_TEXTURE_2D);
+				gl.glColor4f(1.0f, 1.0f, 1.0f, 1);
 
-			for (HEKEvent evt : toDraw)
-				drawIcon(gl, evt, currentDate);
+				for (HEKEvent evt : toDraw)
+					drawIcon(gl, evt, currentDate);
 
-			gl.glDisable(GL2.GL_TEXTURE_2D);
-			gl.glDisable(GL2.GL_BLEND);
-			gl.glEnable(GL2.GL_DEPTH_TEST);
-			gl.glDisable(GL2.GL_CULL_FACE);
+				gl.glDisable(GL2.GL_TEXTURE_2D);
+				gl.glDisable(GL2.GL_BLEND);
+				gl.glEnable(GL2.GL_DEPTH_TEST);
+				gl.glDisable(GL2.GL_CULL_FACE);
+			}
 		}
 	}
 
@@ -253,7 +255,7 @@ public class HEKPlugin extends NewPlugin {
 			hekPopUp.setVisible(true);
 			hekPopUp.pack();
 			UltimatePluginInterface.setCursor(CURSOR_HELP);
-			
+
 			UltimatePluginInterface.repaintMainPanel();
 		}
 	}

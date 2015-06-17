@@ -14,7 +14,7 @@ import javax.swing.SwingConstants;
 
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
-import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
+import org.helioviewer.jhv.gui.MainFrame;
 
 /**
  * Panel managing a collapsible area.

@@ -8,7 +8,7 @@ import javax.swing.KeyStroke;
 
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
-import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
+import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.opengl.camera.animation.CameraZoomAnimation;
 import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 

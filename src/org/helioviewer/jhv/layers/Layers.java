@@ -3,16 +3,14 @@ package org.helioviewer.jhv.layers;
 import java.time.LocalDateTime;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.NewCache;
-import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.NewRender;
+import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.KakaduRender;
 
 public class Layers {
 	private CopyOnWriteArrayList<LayerInterface> layers;
 	private CopyOnWriteArrayList<NewLayerListener> layerListeners;
 	private int activeLayer = 0;
 	
-	private NewRender renderer = new NewRender();
-	private NewCache newCache = NewCache.singelton;
+	private KakaduRender renderer = new KakaduRender();
 	private boolean coronaVisibility = true;
 	
 	public static final Layers LAYERS = new Layers();
@@ -34,7 +32,7 @@ public class Layers {
 	}
 	
 	public NewLayer addLayer(int id, LocalDateTime start, LocalDateTime end, int cadence){
-		NewLayer layer = new NewLayer(id, renderer, newCache, start, end, cadence);
+		NewLayer layer = new NewLayer(id, renderer, start, end, cadence);
 		layers.add(layer);
 		for (NewLayerListener renderListener : layerListeners){
 			renderListener.newlayerAdded();

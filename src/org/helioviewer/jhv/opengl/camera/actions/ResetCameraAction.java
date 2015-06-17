@@ -6,7 +6,7 @@ import javax.swing.AbstractAction;
 
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
-import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
+import org.helioviewer.jhv.gui.MainFrame;
 
 public class ResetCameraAction extends AbstractAction {
 

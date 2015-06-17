@@ -36,10 +36,9 @@ import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.base.physics.DifferentialRotation;
-import org.helioviewer.jhv.gui.components.newComponents.MainFrame;
-import org.helioviewer.jhv.gui.components.statuslabels.StatusLabel;
-import org.helioviewer.jhv.gui.components.statuslabels.StatusLabelInterfaces.StatusLabelCamera;
-import org.helioviewer.jhv.gui.components.statuslabels.StatusLabelInterfaces.StatusLabelMouse;
+import org.helioviewer.jhv.gui.MainFrame;
+import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelCamera;
+import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelMouse;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.LayerInterface.COLOR_CHANNEL_TYPE;
 import org.helioviewer.jhv.layers.Layers;
@@ -61,11 +60,11 @@ import org.helioviewer.jhv.opengl.camera.animation.CameraAnimation;
 import org.helioviewer.jhv.opengl.camera.animation.CameraTransformationAnimation;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace.Ray;
-import org.helioviewer.jhv.plugins.hekplugin.HEKIcon;
 import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine.TimeLineListener;
+import org.helioviewer.jhv.viewmodel.view.opengl.texture.TextureCache;
 
 import ch.fhnw.i4ds.helio.coordinate.converter.Hcc2HgConverter;
 import ch.fhnw.i4ds.helio.coordinate.coord.HeliocentricCartesianCoordinate;
@@ -131,6 +130,10 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	private int[] renderBufferDepth;
 
 	private int[] renderBufferColor;
+
+	private Dimension size;
+
+	private boolean loading = false;
 
 	private static int DEFAULT_TILE_WIDTH = 2048;
 	private static int DEFAULT_TILE_HEIGHT = 2048;
@@ -295,7 +298,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 
 	public boolean displayLayer(GL2 gl, NewLayer layer) {
 
-		int layerTexture = layer.getTexture(this, false);
+		int layerTexture = layer.getTexture(this, false, size);
 		if (layerTexture > 0) {
 			Vector2d size = layer.getMetaData().getPhysicalRegion().getSize();
 			if (size.x <= 0 || size.y <= 0) {
@@ -476,29 +479,6 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 			gl.glPopMatrix();			
 			gl.glPushMatrix();
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
-			if (!layerLoaded){
-				int xOffset, yOffset, width, height;
-				if (notCenterAnimation){
-					xOffset = (int)(getSurfaceWidth() * 0.9);
-					width = (int)(getSurfaceWidth() * 0.1);
-					yOffset = (int)(getSurfaceHeight() * 0.9);
-					height = (int)(getSurfaceHeight() * 0.1);
-				}
-				else {
-					xOffset = (int)(getSurfaceWidth() * 0.425);
-					width = (int)(getSurfaceWidth() * 0.15);
-					yOffset = (int)(getSurfaceHeight() * 0.425);
-					height = (int)(getSurfaceHeight() * 0.15);					
-				}
-				gl.glViewport(xOffset, yOffset, width, height);
-				LoadingScreen.render(gl);
-				gl.glViewport(0, 0, getSurfaceWidth(), getSurfaceHeight());
-				repaint(20);
-			}
-			gl.glMatrixMode(GL2.GL_PROJECTION);
-			gl.glPopMatrix();
-			gl.glPushMatrix();
-			gl.glMatrixMode(GL2.GL_MODELVIEW);
 
 			
 			Quaternion3d rotation = new Quaternion3d(this.rotation.getAngle(), this.rotation.getRotationAxis().negateY());
@@ -535,6 +515,32 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 			gl.glMatrixMode(GL2.GL_PROJECTION);
 			gl.glPopMatrix();
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
+			
+			gl.glMatrixMode(GL2.GL_PROJECTION);
+			gl.glLoadIdentity();
+			double xScale = aspect > 1 ? 1/aspect : 1;
+			double yScale = aspect < 1 ? aspect : 1;
+			gl.glScaled(xScale, yScale, 1);
+			gl.glMatrixMode(GL2.GL_MODELVIEW);		
+			if (!layerLoaded || loading){
+				int xOffset, yOffset, width, height;
+				if (notCenterAnimation){
+					xOffset = (int)(getSurfaceWidth() * 0.9);
+					width = (int)(getSurfaceWidth() * 0.1);
+					yOffset = (int)(getSurfaceHeight() * 0.9);
+					height = (int)(getSurfaceHeight() * 0.1);
+				}
+				else {
+					xOffset = (int)(getSurfaceWidth() * 0.425);
+					width = (int)(getSurfaceWidth() * 0.15);
+					yOffset = (int)(getSurfaceHeight() * 0.425);
+					height = (int)(getSurfaceHeight() * 0.15);					
+				}
+				gl.glViewport(xOffset, yOffset, width, height);
+				LoadingScreen.render(gl);
+				gl.glViewport(0, 0, getSurfaceWidth(), getSurfaceHeight());
+				repaint(20);
+			}
 		}
 
 		// empty screen
@@ -558,6 +564,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	
 	@Override
 	public void display(GLAutoDrawable drawable) {
+		this.size = getCanavasSize();
 		GL2 gl = drawable.getGL().getGL2();
 
 		gl.glViewport(0, 0, this.getSurfaceWidth(), this.getSurfaceHeight());
@@ -739,6 +746,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		// GuiState3DWCS.overViewPanel.activate(drawable.getContext());
 		aspect = this.getSize().getWidth() / this.getSize().getHeight();
 		GL2 gl = drawable.getGL().getGL2();
+		TextureCache.init();
 		// splashScreen = new NoImageScreen(gl);
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 
@@ -901,6 +909,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		textRenderer.setColor(1f, 1f, 1f, 1f);
 
 		offscreenGL.glViewport(0, 0, tileWidth, tileHeight);
+		this.size = new Dimension(tileWidth, tileHeight);
 
 		offscreenGL.glMatrixMode(GL2.GL_PROJECTION);
 		offscreenGL.glLoadIdentity();
@@ -925,7 +934,6 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 				// double factor =
 				int destX = tileWidth * x;
 				int destY = tileHeight * y;
-
 				render(offscreenGL);
 
 				if (descriptions != null && x == 0 && y == 0) {
@@ -1095,6 +1103,10 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	
 	public void addStatusLabelCamera(StatusLabelCamera statusLabelCamera){
 		statusLabelCameras.add(statusLabelCamera);
+	}
+
+	public void setLoading(boolean state) {
+		this.loading = state;
 	}
 
 }
