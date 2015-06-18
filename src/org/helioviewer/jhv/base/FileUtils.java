@@ -1,17 +1,11 @@
 package org.helioviewer.jhv.base;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -183,85 +177,4 @@ public class FileUtils {
     public static URL getResourceUrl(String resourcePath) {
         return FileUtils.class.getResource(resourcePath);
     }
-
-    /**
-     * Calculates the MD5 hash of a file.
-     * 
-     * @param fileUri
-     *            The URI of the file from which the md5 hash should be
-     *            calculated
-     * @return The MD5 hash
-     * @throws URISyntaxException
-     * @throws IOException
-     */
-    public static byte[] calculateMd5(URI fileUri) throws URISyntaxException, IOException {
-        InputStream fileStream = null;
-        try {
-            fileStream = new DownloadStream(fileUri, 0, 0).getInput();
-            fileStream = new BufferedInputStream(fileStream);
-            try {
-                MessageDigest md5Algo = MessageDigest.getInstance("MD5");
-                md5Algo.reset();
-                byte[] buffer = new byte[8192];
-                int length;
-                while ((length = fileStream.read(buffer)) != -1)
-                    md5Algo.update(buffer, 0, length);
-                return md5Algo.digest();
-            } catch (NoSuchAlgorithmException e) {
-                System.err.println(">> FileUtils.calculateMd5(" + fileUri + ") > Could not md5 algorithm");
-                e.printStackTrace();
-            }
-        } finally {
-            if (fileStream != null) {
-                try {
-                    fileStream.close();
-                } catch (IOException e) {
-                    System.err.println(">> FileUtils.calculateMd5(" + fileUri + ") > Could not close stream.");
-                    e.printStackTrace();
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Converts a hex string into a byte array
-     * 
-     * @param s
-     *            The hex string
-     * @return The byte array
-     */
-    public static byte[] hexStringToByteArray(String s) {
-        int len = s.length();
-        byte[] data = new byte[len / 2];
-        for (int i = 0; i < len; i += 2) {
-            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4) + Character.digit(s.charAt(i + 1), 16));
-        }
-        return data;
-    }
-
-    /**
-     * Converts a byte array into a hex string
-     * 
-     * @param b
-     *            The byte array
-     * @return The hex string
-     */
-    public static String byteArrayToHexString(byte b[]) {
-        byte[] hex = new byte[2 * b.length];
-        int index = 0;
-
-        for (byte a : b) {
-            int v = a & 0xFF;
-            hex[index++] = HEX_CHAR_TABLE[v >>> 4];
-            hex[index++] = HEX_CHAR_TABLE[v & 0xF];
-        }
-        try {
-            return new String(hex, "ASCII");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
 }

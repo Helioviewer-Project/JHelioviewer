@@ -10,6 +10,7 @@ import java.net.URLConnection;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
 import org.helioviewer.jhv.plugins.pfssplugin.data.caching.Cacheable;
+import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 
 import com.github.junrar.Archive;
 import com.github.junrar.Volume;
@@ -133,6 +134,16 @@ public class PfssCompressed implements Cacheable
             return;
         
         isLoading=true;
+        
+        Thread thread = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				MainFrame.MAIN_PANEL.repaintViewAndSynchronizedViews();
+			}
+		}, "PFSS-LOAD-DATA-ASYNC");
+        thread.start();
         PfssPlugin.pool.execute(new Runnable()
         {
             @Override

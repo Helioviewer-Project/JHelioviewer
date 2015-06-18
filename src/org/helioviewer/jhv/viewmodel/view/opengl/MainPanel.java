@@ -483,7 +483,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 			
 			Quaternion3d rotation = new Quaternion3d(this.rotation.getAngle(), this.rotation.getRotationAxis().negateY());
 			Matrix4d transformation = rotation.toMatrix();
-			transformation.addTranslation(translation.negate());
+			transformation.addTranslation(new Vector3d(-translation.x, translation.y, -translation.z));
 			gl.glMultMatrixd(transformation.m, 0);
 			
 			/*gl.glOrtho(-width + this.translation.x, width + this.translation.x,

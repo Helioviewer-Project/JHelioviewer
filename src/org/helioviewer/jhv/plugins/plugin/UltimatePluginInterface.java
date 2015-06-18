@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import javax.swing.AbstractButton;
 import javax.swing.JPanel;
 
+import org.helioviewer.jhv.base.downloadmanager.AbstractRequest.PRIORITY;
+import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
+import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace;
@@ -189,4 +192,15 @@ public class UltimatePluginInterface implements TimeLineListener, MouseListener,
 		MainFrame.MAIN_PANEL.repaintViewAndSynchronizedViews();
 	}
 	
+	public static HTTPRequest generateAndStartHTPPRequest(String uri, PRIORITY priority){
+		HTTPRequest httpRequest = new HTTPRequest(uri, priority);
+		UltimateDownloadManager.addRequest(httpRequest);
+		return httpRequest;
+	}
+	
+	public static HTTPRequest generateAndStartHTPPRequest(String uri, int port, PRIORITY priority){
+		HTTPRequest httpRequest = new HTTPRequest(uri, port, priority);
+		UltimateDownloadManager.addRequest(httpRequest);
+		return httpRequest;
+	}
 }

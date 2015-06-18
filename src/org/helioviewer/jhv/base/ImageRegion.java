@@ -6,7 +6,6 @@ import java.awt.geom.Rectangle2D;
 import java.time.LocalDateTime;
 
 import org.helioviewer.jhv.base.math.Vector2i;
-import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;

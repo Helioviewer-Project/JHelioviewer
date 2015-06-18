@@ -12,10 +12,13 @@ import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
+import org.helioviewer.jhv.base.downloadmanager.AbstractRequest.PRIORITY;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssSettings;
 import org.helioviewer.jhv.plugins.pfssplugin.data.FileDescriptor;
+import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
 
 /**
  * Manages loading and accessing of FileDescriptor Objects
@@ -68,110 +71,68 @@ public class FileDescriptorManager
 	    this.firstDate = from;
 	    this.endDate = to;
 	    
-		LocalDateTime currentDate = from;
-		DateTimeFormatter monthFormatter = DateTimeFormatter.ofPattern("MM");
-		DateTimeFormatter yearFormatter = DateTimeFormatter.ofPattern("YYYY");
 	    
 		synchronized(descriptors)
         {
 	        descriptors.clear();
         }
 		
-		while(currentDate.isBefore(to))
-		{
-			final String url = PfssSettings.SERVER_URL + currentDate.format(yearFormatter) +"/"+currentDate.format(monthFormatter)+"/list.txt";
-			System.out.println("url : " + url);
-			final LocalDateTime current = currentDate;
-			PfssPlugin.pool.execute(new Runnable()
-	        {
-	            @Override
-	            public void run()
-	            {
-	                try
-                    {
-	                    if(curEpoch==epoch && errorMessage==null)
-	                    {
-	                        readDescription(url, current, to, curEpoch);
-	                        MainFrame.MAIN_PANEL.repaintViewAndSynchronizedViews();;
-	                    }	                    
-                    }
-                    catch(IOException e)
-                    {
-                        e.printStackTrace();
-                        if(curEpoch==epoch && errorMessage==null)
-                        {
-                            errorMessage="There was no PFSS data available for the selected time range.";
-                            SwingUtilities.invokeLater(new Runnable()
-                            {
-                                @Override
-                                public void run()
-                                {
-                                    showErrorMessages();
-                                }
-                            });
-                            
-                        }
-                    }
-	            }
-	        });
+		Thread thread = new Thread(new Runnable() {
 			
-			currentDate = currentDate.plusMonths(1);
-		}
-	}
-	
-	/**
-	 * Reads the description of one month
-	 * @param url
-	 * @param from
-	 * @param to
-	 * @param currentYear
-	 * @param currentMonth
-	 * @throws IOException
-	 */
-    private void readDescription(String url,LocalDateTime from, LocalDateTime to, int _curEpoch) throws IOException
-    {
-        if(_curEpoch!=epoch)
-            return;
-        System.out.println(url);
-    	try(BufferedReader in = new BufferedReader(new InputStreamReader(new URL(url).openStream())))
-    	{
-			String dateString = null;
-			String fileName= null;
-			String line = null;
-			
-			final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-
-			while((line = in.readLine()) != null)
-			{
-				int split = line.indexOf(' ');
-				dateString = line.substring(0,split);
-				fileName = line.substring(split+1, line.length());
-
-				LocalDateTime end = LocalDateTime.parse(dateString, dateTimeFormatter);
-				LocalDateTime start = end.minusHours(PfssSettings.FITS_FILE_D_HOUR).minusMinutes(PfssSettings.FITS_FILE_D_MINUTES).plusNanos(1);
-					
-				if(!(end.isBefore(from) || start.isAfter(to)))
+			@Override
+			public void run() {
+				LocalDateTime currentDate = from;
+				DateTimeFormatter monthFormatter = DateTimeFormatter.ofPattern("MM");
+				DateTimeFormatter yearFormatter = DateTimeFormatter.ofPattern("YYYY");
+				DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+				
+				ArrayList<HTTPRequest> httpRequests = new ArrayList<HTTPRequest>();
+				while(currentDate.isBefore(to))
 				{
-				    synchronized(descriptors)
-				    {
-				        if(_curEpoch!=epoch)
-				            return;
-				        
-				        descriptors.add(new FileDescriptor(start, end, fileName));
-				    }
+					final String url = PfssSettings.SERVER_URL + currentDate.format(yearFormatter) +"/"+currentDate.format(monthFormatter)+"/list.txt";
+					httpRequests.add(UltimatePluginInterface.generateAndStartHTPPRequest(url, PRIORITY.MEDIUM));
+					currentDate = currentDate.plusMonths(1);
+				}
+				
+				for (HTTPRequest httpRequest : httpRequests){
+					while(!httpRequest.isFinished()){
+						try {
+							Thread.sleep(20);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+					
+					String lines[] = httpRequest.getDataAsString().split("\\r?\\n");
+					for (String line : lines){
+							int split = line.indexOf(' ');
+							String dateString = line.substring(0,split);
+							String fileName = line.substring(split+1, line.length());
+
+							LocalDateTime end = LocalDateTime.parse(dateString, dateTimeFormatter);
+							LocalDateTime start = end.minusHours(PfssSettings.FITS_FILE_D_HOUR).minusMinutes(PfssSettings.FITS_FILE_D_MINUTES).plusNanos(1);
+								
+							if(!(end.isBefore(from) || start.isAfter(to)))
+							{
+							    synchronized(descriptors)
+							    {
+							        if(curEpoch!=epoch)
+							            return;
+							        
+							        descriptors.add(new FileDescriptor(start, end, fileName));
+							    }
+							}
+						
+
+					}
 				}
 			}
-		} 
-		catch (MalformedURLException e)
-		{
-			//programming error
-			e.printStackTrace();
-		}
-    	catch (IOException e)
-		{
-    		throw new IOException("Unable to find data for: "+from.getYear() +"/"+from.getMonthValue(),e);
-		}
+		}, "PFSS-DESCRIPTION-LOADER");
+		thread.start();
+		
 	}
+	
     
     /**
      * Returns the Descriptor at Index

@@ -1,18 +1,16 @@
 package org.helioviewer.jhv.plugins.hekplugin.cache;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Date;
 import java.util.HashMap;
 
-import org.helioviewer.jhv.JHVGlobals;
-import org.helioviewer.jhv.base.DownloadStream;
+import org.helioviewer.jhv.base.downloadmanager.AbstractRequest.PRIORITY;
+import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKSettings;
+import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -101,37 +99,26 @@ public class HEKRequestThread extends HEKRequest implements Runnable {
 
                 }
 
-                URL url = new URL("http://www.lmsal.com/hek/her?cosec=2&cmd=search&type=column&event_type=" + encType + fieldRequest + "&event_starttime=" + startDate + "&event_endtime=" + endDate + "&event_coordsys=helioprojective&x1=-1200&x2=1200&y1=-1200&y2=1200&temporalmode=overlap&param0=FRM_Name&op0==&value0=" + encFRM + "&result_limit=" + HEKSettings.REQUEST_EVENTS_PAGESIZE + "&page=" + page);
 
-                System.out.println("Requesting Page " + page + " of HEK Events: " + url);
+                String uri = "http://www.lmsal.com/hek/her?cosec=2&cmd=search&type=column&event_type=" + encType + fieldRequest + "&event_starttime=" + startDate + "&event_endtime=" + endDate + "&event_coordsys=helioprojective&x1=-1200&x2=1200&y1=-1200&y2=1200&temporalmode=overlap&param0=FRM_Name&op0==&value0=" + encFRM + "&result_limit=" + HEKSettings.REQUEST_EVENTS_PAGESIZE + "&page=" + page;
+                System.out.println("Requesting Page " + page + " of HEK Events: " + uri);
 
                 // this might take a while
-                DownloadStream ds = new DownloadStream(url, JHVGlobals.getStdConnectTimeout(), JHVGlobals.getStdReadTimeout());
-
+                HTTPRequest httpRequest = UltimatePluginInterface.generateAndStartHTPPRequest(uri, PRIORITY.MEDIUM);
                 // return if the current operation was canceled
-                if (cancel)
-                    return;
 
-                inputStream = ds.getInput();
+                while (!httpRequest.isFinished()) {
+                	try {
+						Thread.sleep(20);
+	                    if (cancel)
+	                        return;
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 
-                BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
-                StringBuilder sb = new StringBuilder();
-                String str;
-                String all = "";
-
-                while ((str = in.readLine()) != null) {
-                    // return if the current operation was canceled
-                    if (cancel)
-                        return;
-
-                    sb.append(str);
-                }
-
-                in.close();
-
-                all = sb.toString();
-
-                JSONObject json = new JSONObject(all);
+                JSONObject json = new JSONObject(httpRequest.getDataAsString());
                 parseAndFeed(json, interval);
 
                 hasMorePages = json.getBoolean("overmax");

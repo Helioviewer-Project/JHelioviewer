@@ -22,21 +22,21 @@ public class RayTrace {
 		plane = new Plane(new Vector3d(1, 0, 0).cross(new Vector3d(0, 1, 0)), 0);
 	}
 	
-	public Ray cast(int x, int y, MainPanel compenentView){
-		double newX = (x-compenentView.getWidth()/2.)/ compenentView.getWidth();
-		double newY = (y-compenentView.getHeight()/2.)/ compenentView.getWidth();
+	public Ray cast(int x, int y, MainPanel mainPanel){
+		double newX = (x-mainPanel.getWidth()/2.)/ mainPanel.getWidth();
+		double newY = (y-mainPanel.getHeight()/2.)/ mainPanel.getWidth();
 
 		double width = Math.tan(Math.toRadians(MainPanel.FOV/2.0)) * 2;
 		
 		Vector3d origin;
 		Vector3d direction;
 		if (CameraMode.mode == MODE.MODE_3D){
-			origin = compenentView.getTransformation().multiply(new Vector3d(0, 0, 1));
+			origin = mainPanel.getTransformation().multiply(new Vector3d(0, 0, 1));
 			direction = new Vector3d(newX * width, newY * width, -1).normalize();
 		}
 		else {
-			width = Math.tan(Math.toRadians(MainPanel.FOV / 2.0)) * compenentView.getTranslation().z * 2;
-			origin = compenentView.getTransformation().multiply(new Vector3d(0, 0, 1)).add(new Vector3d(newX * width, newY * width, 0));
+			width = Math.tan(Math.toRadians(MainPanel.FOV / 2.0)) * mainPanel.getTranslation().z * 2;
+			origin = mainPanel.getTransformation().multiply(new Vector3d(0, 0, 1)).add(new Vector3d(newX * width, newY * width, 0));
 			direction = new Vector3d(0, 0, -1).normalize();
 		}
 		
@@ -44,31 +44,31 @@ public class RayTrace {
 		return intersect(ray);
 	}
 	
-	public Vector2d castTexturepos(int x, int y, MetaData metaData, MainPanel compenentView){		
+	public Vector2d castTexturepos(int x, int y, MetaData metaData, MainPanel mainPanel){		
 		
-		double newX = (x-compenentView.getWidth()/2.)/ compenentView.getWidth();
-		double newY = (y-compenentView.getHeight()/2.)/ compenentView.getWidth();
+		double newX = (x-mainPanel.getWidth()/2.)/ mainPanel.getWidth();
+		double newY = (y-mainPanel.getHeight()/2.)/ mainPanel.getWidth();
 		double width = Math.tan(Math.toRadians(MainPanel.FOV/2.0)) * 2;
 		
 		Vector3d origin;
 		Vector3d direction;
 		if (CameraMode.mode == MODE.MODE_3D){
-			origin = compenentView.getTransformation().multiply(new Vector3d(0, 0, 1));
+			origin = mainPanel.getTransformation().multiply(new Vector3d(0, 0, 1));
 			direction = new Vector3d(newX * width, newY * width, -1).normalize();
 		}
 		else {
-			width = Math.tan(Math.toRadians(MainPanel.FOV / 2.0)) * compenentView.getTranslation().z * 2.0;
-			origin = compenentView.getTransformation().multiply(new Vector3d(0, 0, 1)).add(new Vector3d(newX * width, newY * width, 0));
+			width = Math.tan(Math.toRadians(MainPanel.FOV / 2.0)) * mainPanel.getTranslation().z * 2.0;
+			origin = mainPanel.getTransformation().multiply(new Vector3d(0, 0, 1)).add(new Vector3d(newX * width, newY * width, 0));
 			direction = new Vector3d(0, 0, -1).normalize();
 		}
 		Vector4d tmpOrigin = new Vector4d(origin.x, origin.y, origin.z, 0);
 		Vector4d tmpDirection = new Vector4d(direction.x, direction.y, direction.z, 0);
 		
-		Vector3d rayORot = compenentView.getTransformation().multiply(origin);
-		Vector3d rayDRot = compenentView.getTransformation().multiply(direction);
+		Vector3d rayORot = mainPanel.getTransformation().multiply(origin);
+		Vector3d rayDRot = mainPanel.getTransformation().multiply(direction);
 				
-		Vector4d rayORot1 = compenentView.getTransformation().multiply(tmpOrigin);
-		Vector4d rayDRot1 = compenentView.getTransformation().multiply(tmpDirection);
+		Vector4d rayORot1 = mainPanel.getTransformation().multiply(tmpOrigin);
+		Vector4d rayDRot1 = mainPanel.getTransformation().multiply(tmpDirection);
 		
 		rayORot = new Vector3d(rayORot1.x, rayORot1.y, rayORot1.z);
 		rayDRot = new Vector3d(rayDRot1.x, rayDRot1.y, rayDRot1.z);
