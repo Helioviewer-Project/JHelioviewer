@@ -19,6 +19,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
@@ -29,7 +31,7 @@ import org.helioviewer.jhv.gui.dialogs.AddLayerPanel;
 import org.helioviewer.jhv.gui.dialogs.InstrumentModel;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.Layers;
-import org.helioviewer.jhv.layers.NewLayerListener;
+import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine.TimeLineListener;
 
@@ -39,7 +41,7 @@ import org.helioviewer.jhv.viewmodel.timeline.TimeLine.TimeLineListener;
  * @author stefanmeier
  *
  */
-public class LayerPanel extends JPanel implements NewLayerListener, TimeLineListener{
+public class LayerPanel extends JPanel implements LayerListener, TimeLineListener{
 
 	/**
 	 * 
@@ -86,6 +88,22 @@ public class LayerPanel extends JPanel implements NewLayerListener, TimeLineList
         table.getColumnModel().getColumn(3).setResizable(false);
         table.setShowGrid(false);
         table.setIntercellSpacing(new Dimension(0, 0));
+        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				SwingUtilities.invokeLater(new Runnable() {
+					
+					@Override
+					public void run() {
+						int row = table.getSelectedRow();
+						if (row != Layers.LAYERS.getActiveLayerNumber()){
+							Layers.LAYERS.setActiveLayer(row);
+						}				
+					}
+				});
+			}
+		});
 		table.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -95,10 +113,7 @@ public class LayerPanel extends JPanel implements NewLayerListener, TimeLineList
 					Layers.LAYERS.removeLayer(row);
 					updateData();
 				}
-				if (row != Layers.LAYERS.getActiveLayerNumber()){
-					Layers.LAYERS.setActiveLayer(row);
-				}
-				if (column == 0){
+				else if (column == 0){
 					Layers.LAYERS.getActiveLayer().setVisible((boolean) table.getModel().getValueAt(row, column));
 				}
 

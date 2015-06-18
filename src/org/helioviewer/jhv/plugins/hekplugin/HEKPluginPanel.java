@@ -82,7 +82,7 @@ public class HEKPluginPanel extends OverlayPanel implements ActionListener, HEKC
      * Force a redraw of the main window
      */
     private void fireRedraw() {
-    	MainFrame.MAIN_PANEL.repaint();
+    	UltimatePluginInterface.repaintMainPanel();
     }
 
     /**

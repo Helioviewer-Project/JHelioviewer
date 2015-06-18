@@ -7,9 +7,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
+import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
+import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
+import org.helioviewer.jhv.base.downloadmanager.AbstractRequest.PRIORITY;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
 import org.helioviewer.jhv.plugins.pfssplugin.data.caching.Cacheable;
+import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
 import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 
 import com.github.junrar.Archive;
@@ -30,7 +34,7 @@ public class PfssCompressed implements Cacheable
 	private volatile byte[] rawData;
 	private final String url;
 	private final FileDescriptor descriptor;
-	
+	private final HTTPRequest httpRequest;
 	/**
 	 * 
 	 * @param descriptor File Descriptor representing the file on the server
@@ -40,6 +44,8 @@ public class PfssCompressed implements Cacheable
 	{
 		this.descriptor = descriptor;
 		this.url = url;
+		httpRequest = UltimatePluginInterface.generateAndStartHTPPRequest(url, PRIORITY.MEDIUM);
+		
 	}
 	
 	/**
@@ -53,42 +59,18 @@ public class PfssCompressed implements Cacheable
 	        return true;
 	    }
 	    
-		InputStream in = null;
-		try {
-			URL u = new URL(url);
-			URLConnection uc = u.openConnection();
-			int contentLength = uc.getContentLength();
-			InputStream raw = uc.getInputStream();
-			in = new BufferedInputStream(raw);
-
-			rawData = new byte[contentLength];
-
-			int bytesRead = 0;
-			int offset = 0;
-			while (offset < contentLength) {
-				bytesRead = in.read(rawData, offset, rawData.length
-						- offset);
-				if (bytesRead == -1)
-					break;
-				offset += bytesRead;
-			}
-			isLoaded = true;
-			return true;
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-		    isLoading = false;
-			try {
-				if (in != null)
-					in.close();
-			} catch (IOException e) {
+	    while (!httpRequest.isFinished()) {
+	    	try {
+				Thread.sleep(20);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		
-		return false;
+	    
+	    rawData = httpRequest.getData();
+	    isLoaded = true;
+	    return true;
 	}
 	
 	/**
@@ -135,22 +117,13 @@ public class PfssCompressed implements Cacheable
         
         isLoading=true;
         
-        Thread thread = new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-				MainFrame.MAIN_PANEL.repaintViewAndSynchronizedViews();
-			}
-		}, "PFSS-LOAD-DATA-ASYNC");
-        thread.start();
         PfssPlugin.pool.execute(new Runnable()
         {
             @Override
             public void run()
             {
                 loadData();
-                MainFrame.MAIN_PANEL.repaint();
+                UltimatePluginInterface.repaintMainPanel();
             }
         });   
     }

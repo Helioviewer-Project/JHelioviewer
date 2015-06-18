@@ -11,6 +11,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 import org.helioviewer.jhv.gui.MainFrame;
+import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
 import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayPanel;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 
@@ -43,7 +44,7 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener{
 	 */
 	private void fireRedraw()
 	{
-		MainFrame.MAIN_PANEL.repaint();
+		UltimatePluginInterface.repaintMainPanel();
 	}
 
 	/**

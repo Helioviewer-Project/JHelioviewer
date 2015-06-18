@@ -6,94 +6,94 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.KakaduRender;
 
 public class Layers {
-	private CopyOnWriteArrayList<LayerInterface> layers;
-	private CopyOnWriteArrayList<NewLayerListener> layerListeners;
-	private int activeLayer = 0;
+	private static CopyOnWriteArrayList<LayerInterface> layers;
+	private static CopyOnWriteArrayList<LayerListener> layerListeners;
+	private static int activeLayer = 0;
 	
-	private KakaduRender renderer = new KakaduRender();
-	private boolean coronaVisibility = true;
+	private static KakaduRender renderer = new KakaduRender();
+	private static boolean coronaVisibility = true;
 	
 	public static final Layers LAYERS = new Layers();
 	
-	public Layers() {
+	static {
 		layers = new CopyOnWriteArrayList<LayerInterface>();
-		layerListeners = new CopyOnWriteArrayList<NewLayerListener>();
+		layerListeners = new CopyOnWriteArrayList<LayerListener>();
 	}
 		
-	public void addLayer(String uri){
-		NewLayer layer = new NewLayer(uri, renderer);
+	public static void addLayer(String uri){
+		ImageLayer layer = new ImageLayer(uri, renderer);
 		layers.add(layer);
-		for (NewLayerListener renderListener : layerListeners){
+		for (LayerListener renderListener : layerListeners){
 			renderListener.newlayerAdded();
 		}
 		if (layers.size() == 1){
-			this.layerChanged();
+			layerChanged();
 		}
 	}
 	
-	public NewLayer addLayer(int id, LocalDateTime start, LocalDateTime end, int cadence){
-		NewLayer layer = new NewLayer(id, renderer, start, end, cadence);
+	public static ImageLayer addLayer(int id, LocalDateTime start, LocalDateTime end, int cadence){
+		ImageLayer layer = new ImageLayer(id, renderer, start, end, cadence);
 		layers.add(layer);
-		for (NewLayerListener renderListener : layerListeners){
+		for (LayerListener renderListener : layerListeners){
 			renderListener.newlayerAdded();
 		}
 		if (layers.size() == 1){
-			this.layerChanged();
+			layerChanged();
 		}
 		return layer;
 	}
 	
-	private LayerInterface getLayer(int idx){
+	private static LayerInterface getLayer(int idx){
 		return layers.get(idx);
 	}
 	
-	public void removeLayer(int idx){
+	public static void removeLayer(int idx){
 		layers.remove(idx);
 		activeLayer = 0;
-		for (NewLayerListener renderListener : layerListeners){
+		for (LayerListener renderListener : layerListeners){
 			renderListener.newlayerRemoved(idx);
 		}
 	}
 		
-	public void addNewLayerListener(NewLayerListener renderListener){
-		this.layerListeners.add(renderListener);
+	public static void addNewLayerListener(LayerListener renderListener){
+		layerListeners.add(renderListener);
 	}
 
-	public int getLayerCount() {
+	public static int getLayerCount() {
 		return layers.size();
 	}
 
-	private void layerChanged() {
-		for (NewLayerListener renderListener : layerListeners){
-			renderListener.activeLayerChanged(this.getLayer(activeLayer));
+	private static void layerChanged() {
+		for (LayerListener renderListener : layerListeners){
+			renderListener.activeLayerChanged(getLayer(activeLayer));
 		}
 	}
 	
-	public int getActiveLayerNumber(){
+	public static int getActiveLayerNumber(){
 		return activeLayer;
 	}
 	
-	public LayerInterface getActiveLayer(){
+	public static LayerInterface getActiveLayer(){
 		if (layers.size() <= 0) return null;
 		return layers.get(activeLayer);
 	}
 	
-	public void setActiveLayer(int activeLayer){
-		if (this.activeLayer != activeLayer){
-			this.activeLayer = activeLayer;
-			this.layerChanged();
+	public static void setActiveLayer(int activeLayer){
+		if (Layers.activeLayer != activeLayer){
+			Layers.activeLayer = activeLayer;
+			Layers.layerChanged();
 		}
 	}
 	
-	public CopyOnWriteArrayList<LayerInterface> getLayers(){
+	public static CopyOnWriteArrayList<LayerInterface> getLayers(){
 		return layers;
 	}
 
-	public void toggleCoronaVisibility() {
-		this.coronaVisibility = !this.coronaVisibility;
+	public static void toggleCoronaVisibility() {
+		coronaVisibility = !coronaVisibility;
 	}
 	
-	public boolean getCoronaVisibility(){
-		return this.coronaVisibility;
+	public static boolean getCoronaVisibility(){
+		return coronaVisibility;
 	}
 }

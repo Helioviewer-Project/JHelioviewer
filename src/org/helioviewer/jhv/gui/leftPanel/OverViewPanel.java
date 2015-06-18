@@ -8,7 +8,7 @@ import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.Layers;
-import org.helioviewer.jhv.layers.NewLayer;
+import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.opengl.camera.CameraInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraPanInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraRotationInteraction;
@@ -95,7 +95,7 @@ public class OverViewPanel extends MainPanel{
 	}
 	
 	@Override
-	public boolean displayLayer(GL2 gl, NewLayer layer) {
+	public boolean displayLayer(GL2 gl, ImageLayer layer) {
 		this.rotation = MainFrame.MAIN_PANEL.getRotation();
 		return super.displayLayer(gl, layer);
 	}

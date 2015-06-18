@@ -9,9 +9,9 @@ import javax.swing.Timer;
 
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.Layers;
-import org.helioviewer.jhv.layers.NewLayerListener;
+import org.helioviewer.jhv.layers.LayerListener;
 
-public class TimeLine implements NewLayerListener {
+public class TimeLine implements LayerListener {
 
 	private LocalDateTime start;
 	private LocalDateTime end;

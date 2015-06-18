@@ -18,7 +18,7 @@ public class PfssPlugin extends NewPlugin
 {
 	private static final String NAME = "PFSS plugin";
     private static int threadNumber=0;
-    public static final ExecutorService pool = Executors.newFixedThreadPool(8,new ThreadFactory()
+    public static final ExecutorService pool = Executors.newFixedThreadPool(2,new ThreadFactory()
     {
         @Override
         public Thread newThread(Runnable _r)

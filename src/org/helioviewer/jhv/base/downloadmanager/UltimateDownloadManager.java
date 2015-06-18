@@ -15,13 +15,6 @@ public class UltimateDownloadManager {
 		}
 	};
 	
-	public static void main(String[] args) {
-		new UltimateDownloadManager();
-		
-		while (true) {
-		}
-	}
-	
 	private static PriorityBlockingQueue<AbstractRequest> taskDeque = null;
 	
 	private static final int NUMBER_OF_THREAD = 6;
@@ -30,34 +23,6 @@ public class UltimateDownloadManager {
 	
 	static{
 		taskDeque = new PriorityBlockingQueue<AbstractRequest>(1000, COMPARATOR);
-		/*
-		UltimateDownloadManager.addRequest(new Ttttt(PRIORITY.HIGH, "a"));
-		UltimateDownloadManager.addRequest(new Ttttt(PRIORITY.HIGH, "b"));
-		UltimateDownloadManager.addRequest(new Ttttt(PRIORITY.MEDIUM, "f"));
-		UltimateDownloadManager.addRequest(new Ttttt(PRIORITY.MEDIUM, "g"));
-		UltimateDownloadManager.addRequest(new Ttttt(PRIORITY.LOW, "k"));
-		UltimateDownloadManager.addRequest(new Ttttt(PRIORITY.LOW, "l"));
-		UltimateDownloadManager.addRequest(new Ttttt(PRIORITY.HIGH, "c"));
-		UltimateDownloadManager.addRequest(new Ttttt(PRIORITY.HIGH, "d"));
-		UltimateDownloadManager.addRequest(new Ttttt(PRIORITY.MEDIUM, "h"));
-		UltimateDownloadManager.addRequest(new Ttttt(PRIORITY.MEDIUM, "i"));
-		UltimateDownloadManager.addRequest(new Ttttt(PRIORITY.LOW, "m"));
-		UltimateDownloadManager.addRequest(new Ttttt(PRIORITY.LOW, "n"));
-		UltimateDownloadManager.addRequest(new Ttttt(PRIORITY.MEDIUM, "j"));
-		UltimateDownloadManager.addRequest(new Ttttt(PRIORITY.HIGH, "e"));
-		UltimateDownloadManager.addRequest(new Ttttt(PRIORITY.LOW, "o"));
-		UltimateDownloadManager.addRequest(new Ttttt(PRIORITY.LOW, "p"));
-		UltimateDownloadManager.addRequest(new Ttttt(PRIORITY.LOW, "q"));
-		UltimateDownloadManager.addRequest(new Ttttt(PRIORITY.LOW, "r"));
-		UltimateDownloadManager.addRequest(new Ttttt(PRIORITY.LOW, "s"));
-		UltimateDownloadManager.addRequest(new Ttttt(PRIORITY.LOW, "t"));
-		UltimateDownloadManager.addRequest(new Ttttt(PRIORITY.LOW, "u"));
-		UltimateDownloadManager.addRequest(new Ttttt(PRIORITY.LOW, "v"));
-		UltimateDownloadManager.addRequest(new Ttttt(PRIORITY.LOW, "w"));
-		UltimateDownloadManager.addRequest(new Ttttt(PRIORITY.LOW, "x"));
-		UltimateDownloadManager.addRequest(new Ttttt(PRIORITY.LOW, "y"));
-		UltimateDownloadManager.addRequest(new Ttttt(PRIORITY.LOW, "z"));
-		*/
 		
 		for (int i = 0; i < NUMBER_OF_THREAD; i++){
 			UltimateDownloadManager.DownloadThread thread = new UltimateDownloadManager.DownloadThread();

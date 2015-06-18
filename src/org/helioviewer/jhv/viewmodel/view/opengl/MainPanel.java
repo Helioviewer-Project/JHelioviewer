@@ -42,8 +42,8 @@ import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelMou
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.LayerInterface.COLOR_CHANNEL_TYPE;
 import org.helioviewer.jhv.layers.Layers;
-import org.helioviewer.jhv.layers.NewLayer;
-import org.helioviewer.jhv.layers.NewLayerListener;
+import org.helioviewer.jhv.layers.ImageLayer;
+import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.filter.LUT;
 import org.helioviewer.jhv.opengl.LoadingScreen;
 import org.helioviewer.jhv.opengl.NoImageScreen;
@@ -87,7 +87,7 @@ import com.jogamp.opengl.util.awt.TextRenderer;
 
 public class MainPanel extends GLCanvas implements GLEventListener,
 		MouseListener, MouseMotionListener, MouseWheelListener,
-		NewLayerListener, TimeLineListener, Camera {
+		LayerListener, TimeLineListener, Camera {
 
 	/**
 	 * 
@@ -119,7 +119,6 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	private int nextAvaibleLut = 0;
 	
 	protected CameraInteraction[] cameraInteractions;
-	public boolean fullScreenMode;
 
 	private boolean track = false;
 
@@ -296,7 +295,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		return shaderCode.toString();
 	}
 
-	public boolean displayLayer(GL2 gl, NewLayer layer) {
+	public boolean displayLayer(GL2 gl, ImageLayer layer) {
 
 		int layerTexture = layer.getTexture(this, false, size);
 		if (layerTexture > 0) {
@@ -467,7 +466,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 			boolean notCenterAnimation = false;
 			for (LayerInterface layer : layers.getLayers()) {
 				if (layer.isVisible()) {
-					boolean visibleLayer = this.displayLayer(gl, (NewLayer) layer);
+					boolean visibleLayer = this.displayLayer(gl, (ImageLayer) layer);
 					layerLoaded &= visibleLayer;
 					notCenterAnimation |= visibleLayer;
 				}
@@ -494,7 +493,14 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 			gl.glLoadIdentity();
 			gl.glScaled(aspect, aspect, 1);
 			
+			if (CameraMode.mode == CameraMode.MODE.MODE_3D){
 			glu.gluPerspective(MainPanel.FOV, this.aspect, clipNear, this.translation.z + 4 * Constants.SUN_RADIUS);
+			}
+			else {
+				double width = Math.tan(Math.toRadians(FOV)/2) * translation.z;
+				gl.glOrtho(-width, width, -width, width, clipNear, this.translation.z + 4 * Constants.SUN_RADIUS);
+				gl.glScalef((float)(1/aspect), 1, 1);
+			}
 			/*gl.glFrustum(-width + this.translation.x, width + this.translation.x,
 					-width + this.translation.y, width + this.translation.y,
 					CLIP_NEAR, CLIP_FAR);*/

@@ -29,7 +29,7 @@ import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.Layers;
-import org.helioviewer.jhv.layers.NewLayerListener;
+import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine.TimeLineListener;
 
@@ -38,7 +38,7 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
-public class MoviePanel extends JPanel implements TimeLineListener, NewLayerListener{
+public class MoviePanel extends JPanel implements TimeLineListener, LayerListener{
 	
 	/**
 	 * 

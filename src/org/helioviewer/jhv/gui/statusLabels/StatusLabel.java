@@ -9,12 +9,12 @@ import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelCam
 import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelMouse;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.Layers;
-import org.helioviewer.jhv.layers.NewLayerListener;
+import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace.Ray;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine.TimeLineListener;
 
-public class StatusLabel extends JLabel implements TimeLineListener, StatusLabelMouse, StatusLabelCamera, NewLayerListener{
+public class StatusLabel extends JLabel implements TimeLineListener, StatusLabelMouse, StatusLabelCamera, LayerListener{
 	
 	public StatusLabel() {
 		TimeLine.SINGLETON.addListener(this);

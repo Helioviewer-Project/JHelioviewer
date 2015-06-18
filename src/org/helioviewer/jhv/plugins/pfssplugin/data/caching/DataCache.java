@@ -75,7 +75,7 @@ public class DataCache {
 				+ desc.getFileName();
 
 		final PfssCompressed d = new PfssCompressed(desc, url);
-		d.loadDataAsync();
+		d.loadDataAsync();				
 		return d;
 	}
 }

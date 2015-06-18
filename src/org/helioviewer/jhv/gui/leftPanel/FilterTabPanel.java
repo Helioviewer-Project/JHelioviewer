@@ -20,7 +20,7 @@ import org.helioviewer.jhv.gui.components.WheelSupport;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.LayerInterface.COLOR_CHANNEL_TYPE;
 import org.helioviewer.jhv.layers.Layers;
-import org.helioviewer.jhv.layers.NewLayerListener;
+import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
 
 import com.jgoodies.forms.factories.FormFactory;
@@ -28,7 +28,7 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
-public class FilterTabPanel extends JPanel implements NewLayerListener{
+public class FilterTabPanel extends JPanel implements LayerListener{
 
 	/**
 	 * 

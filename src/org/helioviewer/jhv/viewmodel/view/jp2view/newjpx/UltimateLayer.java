@@ -22,7 +22,7 @@ import org.helioviewer.jhv.base.downloadmanager.JPIPRequest;
 import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.layers.CacheableImageData;
-import org.helioviewer.jhv.layers.NewLayer;
+import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
@@ -51,14 +51,14 @@ public class UltimateLayer {
 	private String fileName = null;
 	private LocalDateTime[] localDateTimes;
 	private TreeSet<LocalDateTime> treeSet;
-	private NewLayer newLayer;
+	private ImageLayer newLayer;
 
 	private ImageRegion imageRegion;
 
 	private int id;
 
 	public UltimateLayer(int id, int sourceID,
-			KakaduRender render, NewLayer newLayer) {
+			KakaduRender render, ImageLayer newLayer) {
 		treeSet = new TreeSet<LocalDateTime>();
 		this.id = id;
 		this.newLayer = newLayer;
@@ -67,7 +67,7 @@ public class UltimateLayer {
 	}
 
 	public UltimateLayer(int id, String filename, KakaduRender render,
-			NewLayer newLayer) {
+			ImageLayer newLayer) {
 		treeSet = new TreeSet<LocalDateTime>();
 		this.id = id;
 		this.newLayer = newLayer;

@@ -15,27 +15,27 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.KakaduRender;
 import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.UltimateLayer;
 import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 
-public class NewLayer extends LayerInterface{
+public class ImageLayer extends LayerInterface{
 	
 	
 	private UltimateLayer ultimateLayer;
 			
 	private LayerRayTrace layerRayTrace;
 	
-	public NewLayer(int sourceID, KakaduRender newRender) {
+	public ImageLayer(int sourceID, KakaduRender newRender) {
 		super();
 		this.ultimateLayer = new UltimateLayer(id, sourceID, newRender, this);
 		layerRayTrace = new LayerRayTrace(this);
 	}
 	
-	public NewLayer(int sourceID, KakaduRender newRender, LocalDateTime start, LocalDateTime end, int cadence) {
+	public ImageLayer(int sourceID, KakaduRender newRender, LocalDateTime start, LocalDateTime end, int cadence) {
 		super();
 		this.ultimateLayer = new UltimateLayer(id, sourceID, newRender, this);
 		this.ultimateLayer.setTimeRange(start, end, cadence);
 		layerRayTrace = new LayerRayTrace(this);
 	}
 	
-	public NewLayer(String uri, KakaduRender newRender) {
+	public ImageLayer(String uri, KakaduRender newRender) {
 		super();
 		this.ultimateLayer = new UltimateLayer(id, uri, newRender, this);
 		layerRayTrace = new LayerRayTrace(this);
