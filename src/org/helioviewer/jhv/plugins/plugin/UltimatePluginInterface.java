@@ -31,7 +31,7 @@ public class UltimatePluginInterface implements TimeLineListener, MouseListener,
 	
 	private ArrayList<NewPlugin> plugins;
 	
-	public static final UltimatePluginInterface SIGLETON = new UltimatePluginInterface();
+	public static final UltimatePluginInterface SINGLETON = new UltimatePluginInterface();
 	
 	private UltimatePluginInterface() {
 		plugins = new ArrayList<NewPlugin>();
@@ -194,12 +194,6 @@ public class UltimatePluginInterface implements TimeLineListener, MouseListener,
 	
 	public static HTTPRequest generateAndStartHTPPRequest(String uri, PRIORITY priority){
 		HTTPRequest httpRequest = new HTTPRequest(uri, priority);
-		UltimateDownloadManager.addRequest(httpRequest);
-		return httpRequest;
-	}
-	
-	public static HTTPRequest generateAndStartHTPPRequest(String uri, int port, PRIORITY priority){
-		HTTPRequest httpRequest = new HTTPRequest(uri, port, priority);
 		UltimateDownloadManager.addRequest(httpRequest);
 		return httpRequest;
 	}

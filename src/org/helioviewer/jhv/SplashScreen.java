@@ -307,7 +307,7 @@ public class SplashScreen extends JFrame {
 		 *            Graphics object where image shall be drawn.
 		 */
 		protected void paintComponent(Graphics g) {
-
+			super.paintComponent(g);
 			if (image != null)
 				g.drawImage(image, 0, 0, null);
 		}

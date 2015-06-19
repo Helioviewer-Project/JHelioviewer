@@ -40,10 +40,9 @@ public class Settings
      * Method loads the settings from a user file or the default settings file
      * */
     public static void load() {
-        try {
-            DEFAULT_PROPERTIES.clear();
-
-            InputStream defaultPropStream = FileUtils.getResourceInputStream("/settings/defaults.properties");
+        DEFAULT_PROPERTIES.clear();
+        try (InputStream defaultPropStream = FileUtils.getResourceInputStream("/settings/defaults.properties"))
+        {
             DEFAULT_PROPERTIES.load(defaultPropStream);
             DEFAULT_PROPERTIES.setProperty("default.local.path",Directories.REMOTEFILES.getPath());
             

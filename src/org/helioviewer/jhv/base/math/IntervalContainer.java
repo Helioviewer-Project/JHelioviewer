@@ -1,6 +1,7 @@
 package org.helioviewer.jhv.base.math;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 public class IntervalContainer<TimeFormat extends Comparable<TimeFormat>, ItemFormat extends IntervalComparison<TimeFormat>> {
 
@@ -15,16 +16,16 @@ public class IntervalContainer<TimeFormat extends Comparable<TimeFormat>, ItemFo
         this.partial = partial;
     }
 
-    Vector<ItemFormat> items = new Vector<ItemFormat>();
+    List<ItemFormat> items = new ArrayList<ItemFormat>();
 
-    public IntervalContainer(Vector<ItemFormat> newItems) {
+    public IntervalContainer(List<ItemFormat> newItems) {
         items = newItems;
     }
 
     public IntervalContainer() {
     }
 
-    public Vector<ItemFormat> getItems() {
+    public List<ItemFormat> getItems() {
         return items;
     }
 

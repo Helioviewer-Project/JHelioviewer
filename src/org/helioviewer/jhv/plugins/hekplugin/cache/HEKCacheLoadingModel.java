@@ -2,8 +2,8 @@ package org.helioviewer.jhv.plugins.hekplugin.cache;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
-import java.util.Vector;
 
 import org.helioviewer.jhv.base.math.Interval;
 
@@ -50,7 +50,7 @@ public class HEKCacheLoadingModel {
         int state = PATH_NOTHING;
 
         if (belowHidden) { // || !getExpansionState(p)) {
-            Vector<HEKPath> childs = cacheModel.getChildren(p, true);
+        	List<HEKPath> childs = cacheModel.getChildren(p, true);
             for (HEKPath c : childs) {
                 int current_state = getState(c, true);
                 state = state | current_state;
@@ -60,11 +60,11 @@ public class HEKCacheLoadingModel {
         return state;
     }
 
-    public HashMap<HEKPath, Vector<Interval<Date>>> filterState(HashMap<HEKPath, Vector<Interval<Date>>> needed, int state) {
+    public HashMap<HEKPath, List<Interval<Date>>> filterState(HashMap<HEKPath, List<Interval<Date>>> needed, int state) {
 
-        HashMap<HEKPath, Vector<Interval<Date>>> result = new HashMap<HEKPath, Vector<Interval<Date>>>();
+        HashMap<HEKPath, List<Interval<Date>>> result = new HashMap<HEKPath, List<Interval<Date>>>();
 
-        for (Entry<HEKPath,Vector<Interval<Date>>> e : needed.entrySet()) {
+        for (Entry<HEKPath,List<Interval<Date>>> e : needed.entrySet()) {
             if (getState(e.getKey(), false) == state) {
                 result.put(e.getKey(), e.getValue());
             }

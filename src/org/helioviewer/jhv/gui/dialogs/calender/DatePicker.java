@@ -38,9 +38,9 @@ public class DatePicker extends JPanel{
 	private JTextField txtFieldDate, txtFieldTime;
 	private DatePickerPopup newDatePickerPopup;
 	private LocalDateTime dateTime;
-	private final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss");
-	private final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-	private final long MAX_TIME_STEPS = 3600 * 24 * 30; 
+	private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss");
+	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	private static final long MAX_TIME_STEPS = 3600 * 24 * 30; 
 	
 	public DatePicker(LocalDateTime dateTime) {
 		this.dateTime = dateTime;

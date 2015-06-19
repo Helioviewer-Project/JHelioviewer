@@ -274,7 +274,7 @@ class DatePickerPopup extends JDialog {
 		lblMonth.setText(currentDate.getMonth().name());
 		lblYear.setText(currentDate.getYear() + "");
 	}
-	private class CalenderTableModel extends DefaultTableModel {
+	private static class CalenderTableModel extends DefaultTableModel {
 
 		/**
 		 * 

@@ -33,5 +33,10 @@ public class SphericalCoord {
             return false;
         }
     }
-
+    
+    @Override
+    public int hashCode()
+    {
+    	return Double.hashCode(theta)^(Double.hashCode(phi)<<4)^(Double.hashCode(r)<<8);
+    }
 }

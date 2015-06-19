@@ -1,7 +1,8 @@
 package org.helioviewer.jhv.plugins.hekplugin.cache;
 
 import java.awt.EventQueue;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
@@ -20,7 +21,7 @@ public class HEKCacheTreeModel implements TreeModel, HEKCacheListener {
         cacheModel.addCacheListener(this);
     }
 
-    private Vector<TreeModelListener> treeModelListeners = new Vector<TreeModelListener>();
+    private List<TreeModelListener> treeModelListeners = new ArrayList<TreeModelListener>();
 
     /**
      * @inheritDoc
@@ -33,7 +34,7 @@ public class HEKCacheTreeModel implements TreeModel, HEKCacheListener {
         try {
             if (obj instanceof HEKPath) {
                 HEKPath path = (HEKPath) obj;
-                Vector<HEKPath> children = cacheModel.getChildren(path, true);
+                List<HEKPath> children = cacheModel.getChildren(path, true);
                 if (index > children.size()) {
                     result = null;
                 } else {
@@ -61,7 +62,7 @@ public class HEKCacheTreeModel implements TreeModel, HEKCacheListener {
 
             if (obj instanceof HEKPath) {
                 HEKPath path = (HEKPath) obj;
-                Vector<HEKPath> children = cacheModel.getChildren(path, true);
+                List<HEKPath> children = cacheModel.getChildren(path, true);
                 result = children.size();
             }
 

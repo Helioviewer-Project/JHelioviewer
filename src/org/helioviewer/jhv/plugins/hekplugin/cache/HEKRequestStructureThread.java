@@ -1,8 +1,7 @@
 package org.helioviewer.jhv.plugins.hekplugin.cache;
 
-import java.io.IOException;
 import java.util.Date;
-import java.util.Vector;
+import java.util.List;
 
 import org.helioviewer.jhv.base.downloadmanager.AbstractRequest.PRIORITY;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
@@ -24,13 +23,6 @@ public class HEKRequestStructureThread extends HEKRequest implements Runnable {
 
     public void cancel() {
         cancel = true;
-        if (inputStream != null) {
-            try {
-                inputStream.close();
-            } catch (IOException e) {
-                // ignore
-            }
-        }
 
         // we are not loading anymore
         this.finishRequest();
@@ -116,7 +108,7 @@ public class HEKRequestStructureThread extends HEKRequest implements Runnable {
 
     public void parseFeedAndUpdateGUI(JSONObject json, Interval<Date> timeRange) {
         // this code might need to change if requestStructure changes
-        Vector<HEKPath> paths = HEKEventFactory.getSingletonInstance().parseStructure(json);
+        List<HEKPath> paths = HEKEventFactory.getSingletonInstance().parseStructure(json);
         cacheController.feedStructure(paths, timeRange);
     }
 

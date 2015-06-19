@@ -4,11 +4,6 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-import org.helioviewer.jhv.layers.LayerInterface;
-import org.helioviewer.jhv.layers.Layers;
-import org.helioviewer.jhv.layers.ImageLayer;
-import org.helioviewer.jhv.viewmodel.metadata.MetaDataAIA;
-
 public class SDOCutOutAction extends AbstractAction {
 	
 	private static final long serialVersionUID = 1L;

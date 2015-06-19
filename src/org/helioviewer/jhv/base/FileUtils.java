@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,8 +67,8 @@ public class FileUtils {
      * @throws IOException
      */
     public static void logProcessOutput(final Process process, final String processName, boolean blockUntilFinished) throws IOException {
-        final BufferedReader stdout = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        final BufferedReader stderr = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+        final BufferedReader stdout = new BufferedReader(new InputStreamReader(process.getInputStream(),StandardCharsets.UTF_8));
+        final BufferedReader stderr = new BufferedReader(new InputStreamReader(process.getErrorStream(),StandardCharsets.UTF_8));
         Thread threadStdout = new Thread(new Runnable() {
             public void run() {
                 try {

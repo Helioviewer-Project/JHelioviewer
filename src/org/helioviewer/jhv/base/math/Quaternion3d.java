@@ -139,7 +139,7 @@ public class Quaternion3d {
     public Quaternion3d normalize() {
         double l = this.length();
         a /= l;
-        u.scale(1/l);
+        u = u.scale(1/l);
         
         return this;
     }
@@ -172,7 +172,7 @@ public class Quaternion3d {
     	double length = a*a + u.x*u.x + u.y * u.y + u.z*u.z;
     	
     	a /= length;
-    	u.scale(1/length);
+    	u = u.scale(1/length);
     	
     	return this;
     }

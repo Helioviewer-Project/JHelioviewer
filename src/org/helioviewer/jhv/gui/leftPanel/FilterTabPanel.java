@@ -19,8 +19,8 @@ import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.components.WheelSupport;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.LayerInterface.COLOR_CHANNEL_TYPE;
-import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.LayerListener;
+import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
 
 import com.jgoodies.forms.factories.FormFactory;

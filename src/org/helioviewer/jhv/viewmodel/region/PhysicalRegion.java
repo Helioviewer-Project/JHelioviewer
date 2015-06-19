@@ -1,6 +1,5 @@
 package org.helioviewer.jhv.viewmodel.region;
 
-import org.helioviewer.jhv.base.math.RectangleDouble;
 import org.helioviewer.jhv.base.math.Vector2d;
 
 /**
@@ -70,13 +69,6 @@ public class PhysicalRegion implements BasicRegion {
     /**
      * {@inheritDoc}
      * */
-    public RectangleDouble getRectangle() {
-        return new RectangleDouble(region.getLowerLeftCorner(), region.getSize());
-    }
-
-    /**
-     * {@inheritDoc}
-     * */
     public Vector2d getLowerRightCorner() {
         return region.getLowerLeftCorner().add(region.getSize().getXVector());
     }
@@ -107,12 +99,18 @@ public class PhysicalRegion implements BasicRegion {
         return r.getSize().equals(getSize()) && r.getLowerLeftCorner().equals(getLowerLeftCorner());
 
     }
+    
+    @Override
+    public int hashCode()
+    {
+    	return region.getLowerLeftCorner().hashCode() ^ (region.getSize().hashCode()<<2);
+    }
 
     /**
      * {@inheritDoc}
      */
 
     public String toString() {
-        return "[RegionAdapter: Rectangle " + this.getRectangle() + "]";
+        return "[PhysicalRegion: Lower left corner: " + region.getLowerLeftCorner() + ", Size: "+region.getSize() + "]";
     }
 }

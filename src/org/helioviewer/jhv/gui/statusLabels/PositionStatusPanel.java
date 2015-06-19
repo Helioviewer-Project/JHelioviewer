@@ -14,7 +14,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
 import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.opengl.raytrace.RayTrace.HITPOINT_TYPE;
+import org.helioviewer.jhv.opengl.raytrace.RayTrace.HitpointType;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace.Ray;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 import org.joda.time.DateTime;
@@ -119,7 +119,7 @@ public class PositionStatusPanel extends StatusLabel implements MouseListener {
 			Hcc2HgConverter converter1 = new Hcc2HgConverter();
 			HeliographicCoordinate newCoord = converter1.convert(cart);
 			df = new DecimalFormat("#.##");
-			if (!(ray.getHitpointType() == HITPOINT_TYPE.PLANE))
+			if (!(ray.getHitpointType() == HitpointType.PLANE))
 				point = "(" + df.format(newCoord.getHgLongitude().degValue())
 						+ DEGREE + " ,"
 						+ df.format(newCoord.getHgLatitude().degValue())

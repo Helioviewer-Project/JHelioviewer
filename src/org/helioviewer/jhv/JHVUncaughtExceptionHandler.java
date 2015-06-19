@@ -19,8 +19,8 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import javax.swing.Box;
 import javax.swing.Icon;
@@ -74,7 +74,7 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
      */
     private static void showErrorDialog(final String title, final String msg, final Throwable e,final String log)
     {
-        Vector<Object> objects = new Vector<Object>();
+        List<Object> objects = new ArrayList<Object>();
         
         JLabel head=new JLabel("Dang! You hit a bug in JHelioviewer.");
         head.setFont(head.getFont().deriveFont(Font.BOLD));
@@ -82,9 +82,6 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
         objects.add(head);
         objects.add(Box.createVerticalStrut(10));
         objects.add(new JLabel("Here are some technical details about the problem:"));
-
-        Font font = new JLabel().getFont();
-        font = font.deriveFont(font.getStyle() ^ Font.ITALIC);
 
         JTextArea textArea = new JTextArea();
         textArea.setMargin(new Insets(5, 5, 5, 5));

@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -39,11 +40,11 @@ import org.helioviewer.jhv.base.physics.DifferentialRotation;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelCamera;
 import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelMouse;
+import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.LayerInterface.COLOR_CHANNEL_TYPE;
-import org.helioviewer.jhv.layers.Layers;
-import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.LayerListener;
+import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.filter.LUT;
 import org.helioviewer.jhv.opengl.LoadingScreen;
 import org.helioviewer.jhv.opengl.NoImageScreen;
@@ -274,7 +275,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 			} else {
 				System.out.println("Unknown");
 			}
-			System.exit(1);
+			throw new RuntimeException("Could not compile shader.");
 		}
 		gl.glUseProgram(0);
 	}
@@ -284,7 +285,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		String line = null;
 
 		try (BufferedReader br = new BufferedReader(new InputStreamReader(
-				MainPanel.class.getResourceAsStream(shaderName)))) {
+				MainPanel.class.getResourceAsStream(shaderName),StandardCharsets.UTF_8))) {
 			while ((line = br.readLine()) != null) {
 				shaderCode.append(line + "\n");
 			}
@@ -564,7 +565,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		gl.glEnable(GL2.GL_DEPTH_TEST);
 		gl.glDepthFunc(GL2.GL_LESS);
 		gl.glDepthMask(true);
-		UltimatePluginInterface.SIGLETON.renderPlugin(gl);		
+		UltimatePluginInterface.SINGLETON.renderPlugin(gl);		
 		gl.glDepthMask(false);
 	}
 	

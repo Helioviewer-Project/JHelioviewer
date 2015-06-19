@@ -1,9 +1,10 @@
 package org.helioviewer.jhv.plugins.hekplugin.cache;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
 import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.gui.components.TristateCheckBox;
@@ -25,10 +26,10 @@ public class HEKCacheSelectionModel implements HEKCacheListener {
      * Return a hashmap of keys and simple interval to be requested, based on
      * the current tree selection
      */
-    public HashMap<HEKPath, Vector<Interval<Date>>> getSelection(Interval<Date> curInterval) {
+    public HashMap<HEKPath, List<Interval<Date>>> getSelection(Interval<Date> curInterval) {
 
         // TODO: Malte Nuhn - Implement the CacheModelLOCK
-        HashMap<HEKPath, Vector<Interval<Date>>> result = new HashMap<HEKPath, Vector<Interval<Date>>>();
+        HashMap<HEKPath, List<Interval<Date>>> result = new HashMap<HEKPath, List<Interval<Date>>>();
 
         result.putAll(getSelection(cache.getTrackPaths().iterator(), curInterval));
 
@@ -100,9 +101,9 @@ public class HEKCacheSelectionModel implements HEKCacheListener {
      * @param keyIterator
      * @param timeRange
      */
-    private HashMap<HEKPath, Vector<Interval<Date>>> getSelection(Iterator<HEKPath> keyIterator, Interval<Date> timeRange) {
+    private HashMap<HEKPath, List<Interval<Date>>> getSelection(Iterator<HEKPath> keyIterator, Interval<Date> timeRange) {
 
-        HashMap<HEKPath, Vector<Interval<Date>>> result = new HashMap<HEKPath, Vector<Interval<Date>>>();
+        HashMap<HEKPath, List<Interval<Date>>> result = new HashMap<HEKPath, List<Interval<Date>>>();
 
         while (keyIterator.hasNext()) {
 
@@ -111,7 +112,7 @@ public class HEKCacheSelectionModel implements HEKCacheListener {
             if (selectionState.containsKey(key) && selectionState.get(key) == TristateCheckBox.CHECKED) {
 
                 if (!result.containsKey(key)) {
-                    result.put(key, new Vector<Interval<Date>>());
+                    result.put(key, new ArrayList<Interval<Date>>());
                 }
 
                 result.get(key).add(timeRange);
@@ -133,7 +134,7 @@ public class HEKCacheSelectionModel implements HEKCacheListener {
      */
     public void setState(HEKPath path, int state) {
         // TODO: Malte Nuhn - Implement the CacheModelLOCK
-        Vector<HEKPath> children = cacheModel.getChildren(path, true);
+    	List<HEKPath> children = cacheModel.getChildren(path, true);
         for (HEKPath child : children) {
             setState(child, state);
         }
@@ -168,7 +169,7 @@ public class HEKCacheSelectionModel implements HEKCacheListener {
      */
     public int getState(HEKPath path) {
 
-        Vector<HEKPath> children = cacheModel.getChildren(path, true);
+    	List<HEKPath> children = cacheModel.getChildren(path, true);
 
         // this is a virtual path, that does not exist in the cache
         if (path.isVirtual() && children.size() > 0) {
@@ -231,7 +232,7 @@ public class HEKCacheSelectionModel implements HEKCacheListener {
      * @param activeEventCandidates
      * @return only those items that are NOT UNCHECKED
      */
-    public void filterSelectedEvents(Vector<HEKEvent> activeEventCandidates) {
+    public void filterSelectedEvents(List<HEKEvent> activeEventCandidates) {
         Iterator<HEKEvent> activeEventCandidatesIterator = activeEventCandidates.iterator();
         while (activeEventCandidatesIterator.hasNext()) {
             HEKEvent activeEventCandidate = activeEventCandidatesIterator.next();
@@ -242,7 +243,7 @@ public class HEKCacheSelectionModel implements HEKCacheListener {
         }
     }
 
-    public void filterSelectedPaths(Vector<HEKPath> activeEventCandidates) {
+    public void filterSelectedPaths(List<HEKPath> activeEventCandidates) {
         Iterator<HEKPath> activeEventCandidatesIterator = activeEventCandidates.iterator();
         while (activeEventCandidatesIterator.hasNext()) {
             HEKPath activePathCandidate = activeEventCandidatesIterator.next();

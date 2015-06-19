@@ -1,12 +1,12 @@
 package org.helioviewer.jhv.base.math;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.Vector;
 
 /**
  * Relationship: Interval <--> Items during that Interval
@@ -70,7 +70,7 @@ public class IntervalStore<TimeFormat extends Comparable<TimeFormat>, ItemFormat
         int newItems = newIntervalContainer.getItems().size();
 
         // TODO WORK ON PARAMETERS OF THIS METHOD
-        Vector<Interval<TimeFormat>> overlappingIntervals = this.getOverlappingIntervals(newInterval);
+        List<Interval<TimeFormat>> overlappingIntervals = this.getOverlappingIntervals(newInterval);
 
         // Melt new interval with all existing ones
         for (Interval<TimeFormat> overlappingInterval : overlappingIntervals) {
@@ -148,8 +148,8 @@ public class IntervalStore<TimeFormat extends Comparable<TimeFormat>, ItemFormat
      * @param interval
      * @return list of overlapping intervals
      */
-    public Vector<Interval<TimeFormat>> getOverlappingIntervals(Interval<TimeFormat> interval) {
-        Vector<Interval<TimeFormat>> result = new Vector<Interval<TimeFormat>>();
+    public List<Interval<TimeFormat>> getOverlappingIntervals(Interval<TimeFormat> interval) {
+    	ArrayList<Interval<TimeFormat>> result = new ArrayList<Interval<TimeFormat>>();
 
         Iterator<Interval<TimeFormat>> iter = this.data.keySet().iterator();
         while (iter.hasNext()) {
@@ -168,8 +168,8 @@ public class IntervalStore<TimeFormat extends Comparable<TimeFormat>, ItemFormat
      * @param interval
      * @return list of overlapping intervals
      */
-    public Vector<Interval<TimeFormat>> getCoveringIntervals(Interval<TimeFormat> interval) {
-        Vector<Interval<TimeFormat>> result = new Vector<Interval<TimeFormat>>();
+    public List<Interval<TimeFormat>> getCoveringIntervals(Interval<TimeFormat> interval) {
+        ArrayList<Interval<TimeFormat>> result = new ArrayList<Interval<TimeFormat>>();
 
         Iterator<Interval<TimeFormat>> iter = this.data.keySet().iterator();
         while (iter.hasNext()) {
@@ -189,10 +189,10 @@ public class IntervalStore<TimeFormat extends Comparable<TimeFormat>, ItemFormat
      * @param interval
      * @return intervals needed
      */
-    public Vector<Interval<TimeFormat>> needed(Interval<TimeFormat> interval) {
+    public List<Interval<TimeFormat>> needed(Interval<TimeFormat> interval) {
 
         // linked list needed
-        LinkedList<Interval<TimeFormat>> result = new LinkedList<Interval<TimeFormat>>();
+        List<Interval<TimeFormat>> result = new ArrayList<Interval<TimeFormat>>();
 
         result.add(interval);
 
@@ -223,7 +223,7 @@ public class IntervalStore<TimeFormat extends Comparable<TimeFormat>, ItemFormat
                 // we only remove those intervals that have already been loaded
                 if (curStoreInterval.overlaps(curResultInterval) || curStoreInterval.equals(curResultInterval)) {
                     resultIntervalsIterator.remove(); // result.remove(checkInterval);
-                    Vector<Interval<TimeFormat>> toAdd = curResultInterval.exclude(curStoreInterval);
+                    List<Interval<TimeFormat>> toAdd = curResultInterval.exclude(curStoreInterval);
                     for (Interval<TimeFormat> add : toAdd) {
                         resultIntervalsIterator.add(add);
                     }
@@ -233,25 +233,22 @@ public class IntervalStore<TimeFormat extends Comparable<TimeFormat>, ItemFormat
 
         }
 
-        // convert to vector
-        Vector<Interval<TimeFormat>> resultVector = new Vector<Interval<TimeFormat>>();
-        resultVector.addAll(result);
-        return resultVector;
+        return result;
     }
 
     /**
      * Return the set of intervals which is to be requested in order to have the
      * given intervals(!) cached, too
      * 
-     * The Items of the given Vector need to be pairwise non overlapping
+     * The Items of the given List need to be pairwise non overlapping
      * 
      * @param requestIntervals
      * @return intervals needed
      */
-    public Vector<Interval<TimeFormat>> needed(Vector<Interval<TimeFormat>> requestIntervals) {
-        Vector<Interval<TimeFormat>> result = new Vector<Interval<TimeFormat>>();
+    public List<Interval<TimeFormat>> needed(List<Interval<TimeFormat>> requestIntervals) {
+        List<Interval<TimeFormat>> result = new ArrayList<Interval<TimeFormat>>();
         for (Interval<TimeFormat> requestInterval : requestIntervals) {
-            Vector<Interval<TimeFormat>> neededIntervals = this.needed(requestInterval);
+            List<Interval<TimeFormat>> neededIntervals = this.needed(requestInterval);
             result.addAll(neededIntervals);
         }
         return result;
@@ -395,8 +392,8 @@ public class IntervalStore<TimeFormat extends Comparable<TimeFormat>, ItemFormat
      *            - event to be asked for
      * @return - list of intervals
      */
-    public Vector<Interval<TimeFormat>> findItem(ItemFormat item) {
-        Vector<Interval<TimeFormat>> result = new Vector<Interval<TimeFormat>>();
+    public List<Interval<TimeFormat>> findItem(ItemFormat item) {
+        List<Interval<TimeFormat>> result = new ArrayList<Interval<TimeFormat>>();
 
         Iterator<Interval<TimeFormat>> iter = this.data.keySet().iterator();
         while (iter.hasNext()) {
@@ -430,8 +427,8 @@ public class IntervalStore<TimeFormat extends Comparable<TimeFormat>, ItemFormat
     /**
      * This IntervalCache has a couple of Request Buckets!
      */
-    public Vector<Interval<TimeFormat>> getIntervals() {
-        Vector<Interval<TimeFormat>> result = new Vector<Interval<TimeFormat>>();
+    public List<Interval<TimeFormat>> getIntervals() {
+        List<Interval<TimeFormat>> result = new ArrayList<Interval<TimeFormat>>();
         Iterator<Interval<TimeFormat>> iter = this.data.keySet().iterator();
         while (iter.hasNext()) {
             result.add(iter.next());

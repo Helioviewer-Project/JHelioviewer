@@ -1,7 +1,8 @@
 package org.helioviewer.jhv.plugins.hekplugin.cache;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.List;
 
 public class HEKCacheExpansionModel {
     HEKCache cache;
@@ -13,11 +14,11 @@ public class HEKCacheExpansionModel {
         this.cacheModel = cache.getModel();
     }
 
-    public Vector<HEKPath> getExpandedPaths(boolean type) {
+    public List<HEKPath> getExpandedPaths(boolean type) {
 
         // TODO Malte Nuhn - Implement the CacheModelLock
 
-        Vector<HEKPath> result = new Vector<HEKPath>();
+    	List<HEKPath> result = new ArrayList<HEKPath>();
 
         result.add(new HEKPath(this.cache));
 
@@ -58,7 +59,7 @@ public class HEKCacheExpansionModel {
     private void expandToLevel(HEKPath node, int level, boolean overwrite, boolean collapsebelow) {
         if (level < 0)
             return;
-        Vector<HEKPath> children = cacheModel.getChildren(node, true);
+        List<HEKPath> children = cacheModel.getChildren(node, true);
         for (HEKPath child : children) {
             boolean curExpanded = level > 0; // expand if level > 0, else
                                              // collapse

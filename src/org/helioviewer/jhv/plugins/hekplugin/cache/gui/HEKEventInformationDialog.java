@@ -402,7 +402,7 @@ public class HEKEventInformationDialog extends JDialog implements ActionListener
         infoTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         //TableColumnResizer.autoResizeTable(infoTable, true);
 
-        LocalDateTime in = UltimatePluginInterface.SIGLETON
+        LocalDateTime in = UltimatePluginInterface.SINGLETON
 				.getCurrentDateTime();
 		
         Date currentDate = Date.from(in.atZone(ZoneId.systemDefault())

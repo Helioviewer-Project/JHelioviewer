@@ -10,7 +10,7 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
@@ -61,9 +61,6 @@ public class HEKCacheTreeView extends JTree implements TreeModelListener {
     private HEKCacheLoadingModel loadingModel;
     private HEKCacheModel cacheModel;
     private HEKCacheController cacheController;
-
-    // private Vector<HEKTreeListener> treeListeners = new
-    // Vector<HEKTreeListener>();
 
     JCheckBoxTreeRenderer checkBoxCellRenderer;
 
@@ -203,7 +200,7 @@ public class HEKCacheTreeView extends JTree implements TreeModelListener {
 
                 int downloadableEvents = HEKCache.getSingletonInstance().getModel().getDownloadableChildrenEventsRecursive(path, cacheModel.getCurInterval(), true);
 
-                Vector<HEKPath> downloadedEvents = HEKCache.getSingletonInstance().getModel().getChildrenEventsRecursive(path, cacheModel.getCurInterval(), true);
+                List<HEKPath> downloadedEvents = HEKCache.getSingletonInstance().getModel().getChildrenEventsRecursive(path, cacheModel.getCurInterval(), true);
                 int numDownloadedEvents = downloadedEvents.size();
 
                 HEKCache.getSingletonInstance().getSelectionModel().filterSelectedPaths(downloadedEvents);
@@ -359,9 +356,9 @@ public class HEKCacheTreeView extends JTree implements TreeModelListener {
 
                     // move into controller
                     // TODO move into loading watcher
-                    HashMap<HEKPath, Vector<Interval<Date>>> selected = selectionModel.getSelection(cacheModel.getCurInterval());
-                    HashMap<HEKPath, Vector<Interval<Date>>> needed = HEKCache.getSingletonInstance().needed(selected);
-                    HashMap<HEKPath, Vector<Interval<Date>>> nonQueued = HEKCache.getSingletonInstance().getLoadingModel().filterState(needed, HEKCacheLoadingModel.PATH_NOTHING);
+                    HashMap<HEKPath, List<Interval<Date>>> selected = selectionModel.getSelection(cacheModel.getCurInterval());
+                    HashMap<HEKPath, List<Interval<Date>>> needed = HEKCache.getSingletonInstance().needed(selected);
+                    HashMap<HEKPath, List<Interval<Date>>> nonQueued = HEKCache.getSingletonInstance().getLoadingModel().filterState(needed, HEKCacheLoadingModel.PATH_NOTHING);
                     cacheController.requestEvents(nonQueued);
 
                 }
@@ -391,8 +388,8 @@ public class HEKCacheTreeView extends JTree implements TreeModelListener {
 
     private void syncExpandedState(HEKPath root) {
         // the root is currently ignored, and the whole state is refreshed
-        Vector<HEKPath> expanded = expansionModel.getExpandedPaths(true);
-        Vector<HEKPath> closed = expansionModel.getExpandedPaths(false);
+        List<HEKPath> expanded = expansionModel.getExpandedPaths(true);
+        List<HEKPath> closed = expansionModel.getExpandedPaths(false);
 
         // find the maximum depth available
 

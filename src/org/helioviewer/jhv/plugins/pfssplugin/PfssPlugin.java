@@ -43,7 +43,7 @@ public class PfssPlugin extends NewPlugin
 	@Override
 	public void render(GL2 gl) {
 		if (isVisible){
-			LocalDateTime localDateTime = UltimatePluginInterface.SIGLETON.getCurrentDateTime();
+			LocalDateTime localDateTime = UltimatePluginInterface.SINGLETON.getCurrentDateTime();
 			PfssDecompressed frame = manager.getFrame(gl,localDateTime);
 			if(frame != null)
 				frame.display(gl, localDateTime);			

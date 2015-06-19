@@ -9,16 +9,15 @@ import java.time.LocalDateTime;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JPanel;
 
-import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
-import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayPanel;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 
 /**
  * Panel of Pfss-Plugin
  * */
-public class PfssPluginPanel extends OverlayPanel implements ActionListener{
+public class PfssPluginPanel extends JPanel implements ActionListener{
 
 	private static final long serialVersionUID = 1L;
 

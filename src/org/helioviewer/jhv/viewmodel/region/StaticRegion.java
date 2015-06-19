@@ -1,6 +1,5 @@
 package org.helioviewer.jhv.viewmodel.region;
 
-import org.helioviewer.jhv.base.math.RectangleDouble;
 import org.helioviewer.jhv.base.math.Vector2d;
 
 /**
@@ -79,18 +78,6 @@ public class StaticRegion implements BasicRegion {
     }
 
     /**
-     * Constructor where to pass the region information by a rectangle.
-     * 
-     * @param newRectangle
-     *            RectangleDouble object which represents the basic information
-     *            of a region.
-     * */
-    public StaticRegion(final RectangleDouble newRectangle) {
-        lowerLeftCorner = newRectangle.getLowerLeftCorner();
-        sizeVector = newRectangle.getSize();
-    }
-
-    /**
      * {@inheritDoc}
      * */
     public Vector2d getLowerLeftCorner() {
@@ -165,17 +152,4 @@ public class StaticRegion implements BasicRegion {
     public static PhysicalRegion createAdaptedRegion(final Vector2d newLowerLeftCorner, final double newWidth, final double newHeight) {
         return new PhysicalRegion(new StaticRegion(newLowerLeftCorner, newWidth, newHeight));
     }
-
-    /**
-     * Creates a RegionAdapter object by using the passed region information.
-     * 
-     * @param newRectangle
-     *            RectangleDouble object which represents the basic information
-     *            of a region.
-     * @return a new RegionAdapter object.
-     * */
-    public static PhysicalRegion createAdaptedRegion(final RectangleDouble newRectangle) {
-        return new PhysicalRegion(new StaticRegion(newRectangle));
-    }
-
 }

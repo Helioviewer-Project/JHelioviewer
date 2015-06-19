@@ -7,6 +7,7 @@ import java.net.InetSocketAddress;
 import java.net.ProtocolException;
 import java.net.Socket;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.LineReader;
 
@@ -44,7 +45,7 @@ public class HTTPSocket extends Socket {
     static private final byte CRLFBytes[] = { 13, 10 };
 
     /** The string representation of the CRLF codes */
-    static public final String CRLF = new String(CRLFBytes);
+    static public final String CRLF = new String(CRLFBytes,StandardCharsets.UTF_8);
 
     /** Default constructor */
     public HTTPSocket() {
@@ -100,7 +101,7 @@ public class HTTPSocket extends Socket {
 
             // Sets the content length header if its a POST
             if (req.getMethod() == HTTPRequest.Method.POST)
-                req.setHeader(HTTPHeaderKey.CONTENT_LENGTH.toString(), String.valueOf(msgBody.getBytes().length));
+                req.setHeader(HTTPHeaderKey.CONTENT_LENGTH.toString(), String.valueOf(msgBody.getBytes(StandardCharsets.UTF_8).length));
 
             // Adds the headers
             for (String key : req.getHeaders())
@@ -112,7 +113,7 @@ public class HTTPSocket extends Socket {
                 str.append(msgBody);
 
             // Writes the result to the output stream.
-            getOutputStream().write(str.toString().getBytes());
+            getOutputStream().write(str.toString().getBytes(StandardCharsets.UTF_8));
 
         } else {
             throw new ProtocolException("Responses sending not yet supported!");

@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -19,7 +19,6 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 
 import org.helioviewer.jhv.base.math.Interval;
-import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheListener;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheLoadingModel;
@@ -31,14 +30,13 @@ import org.helioviewer.jhv.plugins.hekplugin.cache.HEKStupidDownloader;
 import org.helioviewer.jhv.plugins.hekplugin.cache.gui.HEKCacheTreeView;
 import org.helioviewer.jhv.plugins.hekplugin.cache.gui.HEKCacheTreeViewContainer;
 import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
-import org.helioviewer.jhv.plugins.viewmodelplugin.overlay.OverlayPanel;
 
 /**
  * Represents the UI components which manage the HEK event catalog.
  * 
  * @author Malte Nuhn
  * */
-public class HEKPluginPanel extends OverlayPanel implements ActionListener, HEKCacheListener {
+public class HEKPluginPanel extends JPanel implements ActionListener, HEKCacheListener {
 
     private static final long serialVersionUID = 1L;
 
@@ -193,9 +191,9 @@ public class HEKPluginPanel extends OverlayPanel implements ActionListener, HEKC
         if (act.getActionCommand().equals("request")) {
             // move into controller
             // TODO move into loading watcher
-            HashMap<HEKPath, Vector<Interval<Date>>> selected = selectionModel.getSelection(cacheModel.getCurInterval());
-            HashMap<HEKPath, Vector<Interval<Date>>> needed = cache.needed(selected);
-            HashMap<HEKPath, Vector<Interval<Date>>> nonQueued = HEKCache.getSingletonInstance().getLoadingModel().filterState(needed, HEKCacheLoadingModel.PATH_NOTHING);
+            HashMap<HEKPath, List<Interval<Date>>> selected = selectionModel.getSelection(cacheModel.getCurInterval());
+            HashMap<HEKPath, List<Interval<Date>>> needed = cache.needed(selected);
+            HashMap<HEKPath, List<Interval<Date>>> nonQueued = HEKCache.getSingletonInstance().getLoadingModel().filterState(needed, HEKCacheLoadingModel.PATH_NOTHING);
             HEKCache.getSingletonInstance().getController().requestEvents(nonQueued);
         }
 

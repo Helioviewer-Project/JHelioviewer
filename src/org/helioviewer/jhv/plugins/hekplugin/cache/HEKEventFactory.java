@@ -2,9 +2,10 @@ package org.helioviewer.jhv.plugins.hekplugin.cache;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.List;
 
 import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKSettings;
@@ -235,10 +236,10 @@ public class HEKEventFactory {
      *            - Response to parse
      * @return Map: HEKPath - HEKEvent
      */
-    public Vector<HEKPath> parseStructure(JSONObject json) {
+    public List<HEKPath> parseStructure(JSONObject json) {
         HEKCache cache = HEKCache.getSingletonInstance();
 
-        Vector<HEKPath> result = new Vector<HEKPath>();
+        List<HEKPath> result = new ArrayList<HEKPath>();
 
         try {
             JSONArray jsonEvents = json.getJSONArray("result");

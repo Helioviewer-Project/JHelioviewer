@@ -26,6 +26,8 @@ public class CameraRotationInteraction extends CameraInteraction {
 		if (yAxisBlocked) {
 			this.currentRotationEndPoint = new Vector3d(currentRotationEndPoint.x, currentRotationStartPoint.y, currentRotationEndPoint.z);
 		} 
+		
+		//TODO: are the parameters in the correct order? Quaternion3d.calcRotation expects (startPoint,endPoint)
 		currentDragRotation = Quaternion3d.calcRotation(
 					currentRotationEndPoint, currentRotationStartPoint);
 		currentDragRotation.rotate(mainPanel.getRotation());

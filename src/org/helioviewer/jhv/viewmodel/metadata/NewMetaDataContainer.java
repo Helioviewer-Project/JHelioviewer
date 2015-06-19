@@ -22,7 +22,6 @@ public class NewMetaDataContainer implements MetaDataContainer{
 
 	private String getValueFromXML(String key, String string) {
 		NodeList current = document.getElementsByTagName("meta");
-		Element element = (Element) current.item(0);
 		NodeList nodes = ((Element) current.item(0)).getElementsByTagName(string);
 		NodeList value = ((Element) nodes.item(0)).getElementsByTagName(key);
 		Element line = (Element) value.item(0);

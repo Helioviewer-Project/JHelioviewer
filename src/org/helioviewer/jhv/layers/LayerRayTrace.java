@@ -12,8 +12,8 @@ import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 public class LayerRayTrace{
 	private RayTrace rayTrace;
 	
-	private final int MAX_X_POINTS = 11;
-	private final int MAX_Y_POINTS = 11;
+	private static final int MAX_X_POINTS = 11;
+	private static final int MAX_Y_POINTS = 11;
 	
 	private LayerInterface layer;
 	

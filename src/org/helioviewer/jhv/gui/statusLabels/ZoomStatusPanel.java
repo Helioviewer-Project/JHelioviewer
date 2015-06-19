@@ -8,7 +8,6 @@ import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 
 /**
@@ -53,7 +52,7 @@ public class ZoomStatusPanel extends StatusLabel{
 
     		double unitsPerPixel = metaData.getUnitsPerPixel();
 			double minCanvasDimension = MainFrame.MAIN_PANEL.getCanavasSize().getHeight();
-			PhysicalRegion region = metaData.getPhysicalRegion();
+			//PhysicalRegion region = metaData.getPhysicalRegion();
     		double halfFOVRad = Math.toRadians(MainPanel.FOV / 2.0);
             double distance = (minCanvasDimension/2.0 * unitsPerPixel) / Math.tan(halfFOVRad);
             long zoom = Math.round(distance / MainFrame.MAIN_PANEL.getTranslation().z * 100);

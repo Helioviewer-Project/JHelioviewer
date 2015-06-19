@@ -2,7 +2,7 @@ package org.helioviewer.jhv.plugins.hekplugin.cache;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.List;
 
 import org.helioviewer.jhv.base.math.Interval;
 
@@ -29,8 +29,8 @@ public class HEKCacheController {
      * @param needed
      *            - hashmap of HEKPath, Interval tuples
      */
-    public void requestEvents(final HashMap<HEKPath, Vector<Interval<Date>>> needed) {
-        HashMap<HEKPath, Vector<Interval<Date>>> reallyneeded = cache.needed(needed);
+    public void requestEvents(final HashMap<HEKPath, List<Interval<Date>>> needed) {
+        HashMap<HEKPath, List<Interval<Date>>> reallyneeded = cache.needed(needed);
         HEKStupidDownloader.getSingletonInstance().requestEvents(cache.getController(), reallyneeded);
     }
 
@@ -56,13 +56,13 @@ public class HEKCacheController {
         cache.getLoadingModel().setState(rootPath, state);
     }
 
-    public void feedStructure(Vector<HEKPath> paths, Interval<Date> timeRange) {
+    public void feedStructure(List<HEKPath> paths, Interval<Date> timeRange) {
         cache.getModel().feedStructure(paths, timeRange);
         cache.getModel().fireStructureChanged(cache.getModel().getRoot());
     }
 
     public void feedEvents(HashMap<HEKPath, HEKEvent> events, Interval<Date> interval) {
-        Vector<HEKPath> changedPaths = cache.getModel().feedEvents(events, interval);
+    	List<HEKPath> changedPaths = cache.getModel().feedEvents(events, interval);
         for (HEKPath changedPath : changedPaths) {
             cache.getModel().fireEventsChanged(changedPath);
         }

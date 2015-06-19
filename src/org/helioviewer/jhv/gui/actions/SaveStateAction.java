@@ -2,11 +2,10 @@ package org.helioviewer.jhv.gui.actions;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -72,28 +71,17 @@ public class SaveStateAction extends AbstractAction {
      *            - the data to write to disk
      * @return true if the operation was successful, false if an error occured
      */
-    private boolean writeXML(File selectedFile, String xmlData) {
-        boolean success = true;
-        Writer xmlWriter = null;
-
-        try {
-            xmlWriter = new OutputStreamWriter(new FileOutputStream(selectedFile));
+    private boolean writeXML(File selectedFile, String xmlData)
+    {
+        try(Writer xmlWriter = new OutputStreamWriter(new FileOutputStream(selectedFile),StandardCharsets.UTF_8))
+        {
             xmlWriter.write(xmlData);
-        } catch (FileNotFoundException fileNotFoundException) {
-            success = false;
-        } catch (IOException ioException) {
-            success = false;
-        } finally {
-            // in any case, try to close the xmlWriter
-            try {
-                if (xmlWriter != null) {
-                    xmlWriter.close();
-                }
-            } catch (IOException ioException) {
-                // ignore this exception
-            }
+            return true;
         }
-        return success;
+        catch (Exception _e)
+        {
+        	return false;
+        }
     }
 
     /**

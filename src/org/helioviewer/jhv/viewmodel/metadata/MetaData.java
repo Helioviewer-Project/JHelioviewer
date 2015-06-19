@@ -5,7 +5,6 @@ import java.time.format.DateTimeFormatter;
 
 import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.base.math.Quaternion3d;
-import org.helioviewer.jhv.base.math.RectangleDouble;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.math.Vector3d;
@@ -135,13 +134,6 @@ public abstract class MetaData {
      */
     public synchronized Vector2d getPhysicalUpperRight() {
         return lowerLeftCorner.add(sizeVector);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public synchronized RectangleDouble getPhysicalRectangle() {
-        return new RectangleDouble(lowerLeftCorner, sizeVector);
     }
 
     /**

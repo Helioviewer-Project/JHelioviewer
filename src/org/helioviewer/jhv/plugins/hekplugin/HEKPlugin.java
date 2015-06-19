@@ -8,7 +8,7 @@ import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.Vector;
+import java.util.List;
 
 import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.base.math.Matrix4d;
@@ -61,12 +61,12 @@ public class HEKPlugin extends NewPlugin {
 
 	@Override
 	public void render(GL2 gl) {
-		LocalDateTime in = UltimatePluginInterface.SIGLETON
+		LocalDateTime in = UltimatePluginInterface.SINGLETON
 				.getCurrentDateTime();
 		if (in != null) {
 			Date currentDate = Date.from(in.atZone(ZoneId.systemDefault())
 					.toInstant());
-			Vector<HEKEvent> toDraw = HEKCache.getSingletonInstance()
+			List<HEKEvent> toDraw = HEKCache.getSingletonInstance()
 					.getModel().getActiveEvents(currentDate);
 			if (toDraw != null && toDraw.size() > 0) {
 
@@ -181,9 +181,9 @@ public class HEKPlugin extends NewPlugin {
 		if (evt == null || !evt.isVisible(now))
 			return;
 
-		Vector<HEKEvent.GenericTriangle<Vector3d>> triangles = evt
+		List<HEKEvent.GenericTriangle<Vector3d>> triangles = evt
 				.getTriangulation3D(now);
-		Vector<SphericalCoord> outerBound = evt.getStonyBound(now);
+		List<SphericalCoord> outerBound = evt.getStonyBound(now);
 		if (outerBound == null && triangles == null)
 			return;
 
@@ -192,6 +192,8 @@ public class HEKPlugin extends NewPlugin {
 				type, 128);
 
 		SphericalCoord stony = evt.getStony(now);
+		if(stony==null)
+			return;
 		double latitude = stony.theta / 180.0 * Math.PI;
 
 		gl.glPushMatrix();
@@ -325,7 +327,7 @@ public class HEKPlugin extends NewPlugin {
 	public void mouseMoved(MouseEvent e, Vector3d point) {
 		HEKEvent lastHEKEvent = mouseOverHEKEvent;
 
-		LocalDateTime in = UltimatePluginInterface.SIGLETON
+		LocalDateTime in = UltimatePluginInterface.SINGLETON
 				.getCurrentDateTime();
 		if (in != null) {
 			Date currentDate = Date.from(in.atZone(ZoneId.systemDefault())
@@ -334,7 +336,7 @@ public class HEKPlugin extends NewPlugin {
 			mouseOverHEKEvent = null;
 			mouseOverPosition = null;
 
-			Vector<HEKEvent> toDraw = HEKCache.getSingletonInstance()
+			List<HEKEvent> toDraw = HEKCache.getSingletonInstance()
 					.getModel().getActiveEvents(currentDate);
 			if (toDraw.size() > 0) {
 				for (HEKEvent evt : toDraw) {

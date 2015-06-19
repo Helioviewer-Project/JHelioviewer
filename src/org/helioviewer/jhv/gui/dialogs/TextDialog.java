@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -29,7 +30,7 @@ public class TextDialog extends JDialog implements ActionListener, ShowableDialo
         setResizable(false);
 
         StringBuffer text = new StringBuffer();
-        try(BufferedReader br = new BufferedReader(new InputStreamReader(textFile.openStream())))
+        try(BufferedReader br = new BufferedReader(new InputStreamReader(textFile.openStream(),StandardCharsets.UTF_8)))
         {
             String line;
             while ((line=br.readLine())!=null)

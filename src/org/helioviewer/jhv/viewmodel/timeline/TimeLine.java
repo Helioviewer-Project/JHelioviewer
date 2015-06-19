@@ -8,8 +8,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.swing.Timer;
 
 import org.helioviewer.jhv.layers.LayerInterface;
-import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.LayerListener;
+import org.helioviewer.jhv.layers.Layers;
 
 public class TimeLine implements LayerListener {
 

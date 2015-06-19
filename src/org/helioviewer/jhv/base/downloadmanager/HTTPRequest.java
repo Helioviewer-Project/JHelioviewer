@@ -5,27 +5,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 public class HTTPRequest extends AbstractRequest {
-	private static final int DEFAULT_PORT = 80;
 	private static final int DEFAULT_TIMEOUT = 10000;
 
 	private static final int DEFAULT_BUFFER_SIZE = 16384;
 
 	public String uri;
-	public int port;
 
 	private byte[] rawData;
 
-	public HTTPRequest(String uri, int port, PRIORITY priority) {
+	public HTTPRequest(String uri, PRIORITY priority) {
 		super(priority);
 		System.out.println("connect to : " + uri);
 		this.uri = uri;
-		this.port = port;
-	}
-
-	public HTTPRequest(String uri, PRIORITY priority) {
-		this(uri, DEFAULT_PORT, priority);
 	}
 
 	public void execute() throws IOException {
@@ -46,10 +40,7 @@ public class HTTPRequest extends AbstractRequest {
 		int response = httpURLConnection.getResponseCode();
 
 		if (response == HttpURLConnection.HTTP_OK) {
-			int contentLength = httpURLConnection.getContentLength();
-
 			inputStream = httpURLConnection.getInputStream();
-			int bytesRead = 0;
 			int length = 0;
 			byteArrayOutputStream = new ByteArrayOutputStream(
 					DEFAULT_BUFFER_SIZE);
@@ -71,7 +62,7 @@ public class HTTPRequest extends AbstractRequest {
 	}
 
 	public String getDataAsString() {
-		return new String(rawData);
+		return new String(rawData,StandardCharsets.UTF_8);
 	}
 
 	public byte[] getData() {

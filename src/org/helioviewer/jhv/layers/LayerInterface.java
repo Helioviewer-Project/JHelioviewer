@@ -19,7 +19,7 @@ public abstract class LayerInterface {
 	}
 	
 	// Channelfilter
-	public class ColorChannel{
+	public static class ColorChannel{
 		private SHADER_STATE status = SHADER_STATE.TRUE;
 		private String name;
 		
@@ -48,7 +48,6 @@ public abstract class LayerInterface {
 	private ColorChannel redChannel = new ColorChannel("red");
 	private ColorChannel greenChannel = new ColorChannel("green");
 	private ColorChannel blueChannel = new ColorChannel("blue");
-	public int textureOverview;
 	private boolean visible = true;
 	protected boolean invertedLut = false;
 

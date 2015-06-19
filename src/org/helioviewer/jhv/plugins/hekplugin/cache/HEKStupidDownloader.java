@@ -1,9 +1,10 @@
 package org.helioviewer.jhv.plugins.hekplugin.cache;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
-import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -39,7 +40,7 @@ public class HEKStupidDownloader {
     /**
      * Store all requests so that they can be canceled later on
      */
-    private Vector<HEKRequest> downloadRequests = new Vector<HEKRequest>();
+    private List<HEKRequest> downloadRequests = new ArrayList<HEKRequest>();
 
     // the sole instance of this class
     private static final HEKStupidDownloader SINGLETON = new HEKStupidDownloader();
@@ -89,7 +90,7 @@ public class HEKStupidDownloader {
         });
 
         // clear all downloadRequests
-        downloadRequests = new Vector<HEKRequest>();
+        downloadRequests = new ArrayList<HEKRequest>();
 
         // update the treeview
         HEKCache.getSingletonInstance().getController().fireEventsChanged(HEKCache.getSingletonInstance().getController().getRootPath());// cacheModel.getFirstVisiblePath(path));
@@ -104,9 +105,9 @@ public class HEKStupidDownloader {
      * @param request
      *            - (HEKPath,Intervals) tuples
      */
-    public void requestEvents(final HEKCacheController cacheController, HashMap<HEKPath, Vector<Interval<Date>>> request) {
+    public void requestEvents(final HEKCacheController cacheController, HashMap<HEKPath, List<Interval<Date>>> request) {
 
-        for(Entry<HEKPath,Vector<Interval<Date>>> cur:request.entrySet())
+        for(Entry<HEKPath,List<Interval<Date>>> cur:request.entrySet())
         {
             HEKPath key = cur.getKey();
 

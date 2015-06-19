@@ -30,8 +30,8 @@ import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.dialogs.AddLayerPanel;
 import org.helioviewer.jhv.gui.dialogs.InstrumentModel;
 import org.helioviewer.jhv.layers.LayerInterface;
-import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.LayerListener;
+import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine.TimeLineListener;
 
@@ -114,6 +114,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 					updateData();
 				}
 				else if (column == 0){
+					//TODO: potential null pointer exception? other callers of getActiveLayer() check for != null...
 					Layers.LAYERS.getActiveLayer().setVisible((boolean) table.getModel().getValueAt(row, column));
 				}
 
@@ -211,7 +212,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
         table.getColumnModel().getColumn(column).setPreferredWidth(width);
 	}
 	
-	private class LayerTableModel extends DefaultTableModel {
+	private static class LayerTableModel extends DefaultTableModel {
 
 		/**
 		 * 
@@ -243,7 +244,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 	}
 	
 	
-	private class ImageIconCellRenderer extends DefaultTableCellRenderer{
+	private static class ImageIconCellRenderer extends DefaultTableCellRenderer{
 
 		/**
 		 * 

@@ -227,46 +227,38 @@ public class FileDownloader {
 		finalDest.createNewFile();
 
 		URLConnection conn = null;
-		FileOutputStream out = null;
-		InputStream in = null;
 
 		try {
 			conn = finalSource.toURL().openConnection();
-			in = conn.getInputStream();
-			out = new FileOutputStream(finalDest);
-
-			if (progressBar != null) {
-				progressBar.setMaximum(conn.getContentLength());
-			}
-
-			byte[] buffer = new byte[1024];
-			int numCurrentRead;
-			int numTotalRead = 0;
-
-			while (!Thread.interrupted() && !dialog.wasInterrupted
-					&& (numCurrentRead = in.read(buffer)) != -1) {
-				out.write(buffer, 0, numCurrentRead);
-
-				if (progressBar != null) {
-					numTotalRead += numCurrentRead;
-					progressBar.setValue(numTotalRead);
+			try(InputStream in = conn.getInputStream())
+			{
+				try(FileOutputStream out = new FileOutputStream(finalDest))
+				{
+		
+					if (progressBar != null) {
+						progressBar.setMaximum(conn.getContentLength());
+					}
+		
+					byte[] buffer = new byte[1024];
+					int numCurrentRead;
+					int numTotalRead = 0;
+		
+					while (!Thread.interrupted() && !dialog.wasInterrupted
+							&& (numCurrentRead = in.read(buffer)) != -1) {
+						out.write(buffer, 0, numCurrentRead);
+		
+						if (progressBar != null) {
+							numTotalRead += numCurrentRead;
+							progressBar.setValue(numTotalRead);
+						}
+					}
+					if (dialog.wasInterrupted){
+						Files.deleteIfExists(finalDest.toPath());
+					}
 				}
 			}
-			if (dialog.wasInterrupted){
-				Files.deleteIfExists(finalDest.toPath());
-			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			try {
-				in.close();
-			} catch (Exception e) {
-			}
-			try {
-				out.close();
-			} catch (Exception e) {
-			}
 		}
 
 		boolean result = true;

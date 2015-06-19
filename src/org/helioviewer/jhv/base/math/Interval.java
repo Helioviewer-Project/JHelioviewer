@@ -1,7 +1,8 @@
 package org.helioviewer.jhv.base.math;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
 /**
  * A generic Interval class, used for any type of ranges. Different types of
@@ -251,8 +252,8 @@ public class Interval<TimeFormat extends Comparable<TimeFormat>> implements Inte
      * @param other
      * @return result of the exclusion
      */
-    public Vector<Interval<TimeFormat>> exclude(Interval<TimeFormat> other) {
-        Vector<Interval<TimeFormat>> result = new Vector<Interval<TimeFormat>>();
+    public List<Interval<TimeFormat>> exclude(Interval<TimeFormat> other) {
+        List<Interval<TimeFormat>> result = new ArrayList<Interval<TimeFormat>>();
 
         if (this.equals(other))
             return result;
@@ -295,7 +296,7 @@ public class Interval<TimeFormat extends Comparable<TimeFormat>> implements Inte
      * 
      * @param toClean
      */
-    private void removeDegenerated(Vector<Interval<TimeFormat>> toClean) {
+    private void removeDegenerated(List<Interval<TimeFormat>> toClean) {
 
         Iterator<Interval<TimeFormat>> intIterator = toClean.iterator();
         while (intIterator.hasNext()) {

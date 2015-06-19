@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.ChunkedInputStream;
@@ -158,7 +159,7 @@ public class JPIPSocket extends HTTPSocket {
             if (!_req.headerExists(HTTPHeaderKey.CONTENT_TYPE.toString()))
                 _req.setHeader(HTTPHeaderKey.CONTENT_TYPE.toString(), "application/x-www-form-urlencoded");
             if (!_req.headerExists(HTTPHeaderKey.CONTENT_LENGTH.toString()))
-                _req.setHeader(HTTPHeaderKey.CONTENT_LENGTH.toString(), String.valueOf(queryStr.getBytes().length));
+                _req.setHeader(HTTPHeaderKey.CONTENT_LENGTH.toString(), String.valueOf(queryStr.getBytes(StandardCharsets.UTF_8).length));
         }
 
         StringBuilder str = new StringBuilder();
@@ -193,7 +194,7 @@ public class JPIPSocket extends HTTPSocket {
             System.err.println(str.toString());
             _re.printStackTrace();
         }*/
-        getOutputStream().write(str.toString().getBytes());
+        getOutputStream().write(str.toString().getBytes(StandardCharsets.UTF_8));
     }
 
     private String getResponseHeadersAsString(HTTPResponse res) {
@@ -235,7 +236,7 @@ public class JPIPSocket extends HTTPSocket {
             {
             }
             
-            throw new IOException("Invalid status code returned (" + res.getCode() + ") " + res.getReason() + "\n" + new String(buf).trim());
+            throw new IOException("Invalid status code returned (" + res.getCode() + ") " + res.getReason() + "\n" + new String(buf,StandardCharsets.UTF_8).trim());
         }
         if (res.getHeader("Content-Type") != null && !res.getHeader("Content-Type").equals("image/jpp-stream"))
             throw new IOException("Expected image/jpp-stream content!\n" + getResponseHeadersAsString(res));

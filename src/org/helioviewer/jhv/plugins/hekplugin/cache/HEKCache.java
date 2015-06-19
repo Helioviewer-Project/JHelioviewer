@@ -3,9 +3,9 @@ package org.helioviewer.jhv.plugins.hekplugin.cache;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.Vector;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.helioviewer.jhv.base.math.Interval;
@@ -125,7 +125,7 @@ public class HEKCache {
      * @param events
      *            - events to be stored
      */
-    public void addToTrack(HEKPath trackPath, Interval<Date> newInterval, Vector<HEKEvent> events) {
+    public void addToTrack(HEKPath trackPath, Interval<Date> newInterval, List<HEKEvent> events) {
         // Log.info("Adding to track " + trackPath + " interval " + newInterval
         // + " events " + events);
         addTrack(trackPath);
@@ -157,17 +157,17 @@ public class HEKCache {
      * Return all intervals that are needed to have the requested interval
      * available
      */
-    public HashMap<HEKPath, Vector<Interval<Date>>> needed(HashMap<HEKPath, Vector<Interval<Date>>> request) {
-        HashMap<HEKPath, Vector<Interval<Date>>> result = new HashMap<HEKPath, Vector<Interval<Date>>>();
+    public HashMap<HEKPath, List<Interval<Date>>> needed(HashMap<HEKPath, List<Interval<Date>>> request) {
+        HashMap<HEKPath, List<Interval<Date>>> result = new HashMap<HEKPath, List<Interval<Date>>>();
 
-        for(Entry<HEKPath,Vector<Interval<Date>>> cur:request.entrySet())
+        for(Entry<HEKPath,List<Interval<Date>>> cur:request.entrySet())
         {
             if (!this.getTracks().containsKey(cur.getKey())) {
                 this.tracks.put(cur.getKey(), new IntervalStore<Date, HEKEvent>());
             }
 
-            Vector<Interval<Date>> requestIntervals = cur.getValue();
-            Vector<Interval<Date>> neededIntervals = this.getTracks().get(cur.getKey()).needed(requestIntervals);
+            List<Interval<Date>> requestIntervals = cur.getValue();
+            List<Interval<Date>> neededIntervals = this.getTracks().get(cur.getKey()).needed(requestIntervals);
 
             if (neededIntervals.size() > 0) {
                 result.put(cur.getKey(), neededIntervals);
@@ -189,9 +189,9 @@ public class HEKCache {
      *            - Interval pointing to the intervalstore where the data is to
      *            be stored
      */
-    public void addMultiple(HashMap<HEKPath, Vector<HEKEvent>> toAdd, Interval<Date> curInterval) {
+    public void addMultiple(HashMap<HEKPath, List<HEKEvent>> toAdd, Interval<Date> curInterval) {
 
-        for(Entry<HEKPath,Vector<HEKEvent>> cur:toAdd.entrySet())
+        for(Entry<HEKPath,List<HEKEvent>> cur:toAdd.entrySet())
             addToTrack(cur.getKey(), curInterval, cur.getValue());
     }
 

@@ -1,7 +1,6 @@
 package org.helioviewer.jhv;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -214,7 +213,8 @@ public class JHelioviewer {
 
 			System.out.println("Add internal plugin: " + "FilterPlugin");
 
-			UltimatePluginInterface.SIGLETON.getClass();
+			//force initialization of UltimatePluginInterface
+			UltimatePluginInterface.SINGLETON.getClass();
 			
 			splash.setProgressText("Showing main window...");
 			splash.nextStep();
@@ -274,31 +274,24 @@ public class JHelioviewer {
 	}
 
 	private static void loadExecuteLibary(Path tmpPath, String directory,
-			String name, String executableName) {
-		InputStream in = JHelioviewer.class.getResourceAsStream(directory
-				+ name);
-		byte[] buffer = new byte[1024];
-		int read = -1;
-		File tmp = new File(tmpPath.toFile(), name);
-		FileOutputStream fos;
-		try {
-			fos = new FileOutputStream(tmp);
-			while ((read = in.read(buffer)) != -1) {
-				fos.write(buffer, 0, read);
+			String name, String executableName) throws IOException {
+		try(InputStream in = JHelioviewer.class.getResourceAsStream(directory
+				+ name))
+		{
+			byte[] buffer = new byte[1024];
+			int read = -1;
+			File tmp = new File(tmpPath.toFile(), name);
+			try(FileOutputStream fos = new FileOutputStream(tmp)) {
+				while ((read = in.read(buffer)) != -1) {
+					fos.write(buffer, 0, read);
+				}
+				fos.close();
+				in.close();
+				tmp.setExecutable(true);
+				FileUtils.registerExecutable(executableName, tmp.getAbsolutePath());
+				tmp.deleteOnExit();
 			}
-			fos.close();
-			in.close();
-			tmp.setExecutable(true);
-			FileUtils.registerExecutable(executableName, tmp.getAbsolutePath());
-			tmp.deleteOnExit();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
-
 	}
 
 	private static void setupOSXApplicationListener() {

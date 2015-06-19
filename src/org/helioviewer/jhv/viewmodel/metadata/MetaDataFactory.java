@@ -55,6 +55,7 @@ public class MetaDataFactory {
 			return metaData;
 		}
 		
+		//FIXME: error handling should be done in calling code instead!!!
 		JOptionPane.showMessageDialog(MainFrame.MAIN_PANEL, "This data source's metadata could not be read.");
 		return null;
 		

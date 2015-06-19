@@ -1,11 +1,12 @@
 package org.helioviewer.jhv.plugins.hekplugin.cache;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
-import java.util.Vector;
 
 import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.base.math.IntervalContainer;
@@ -34,7 +35,7 @@ public class HEKCacheModel {
 
     private Interval<Date> curInterval;
 
-    private Vector<HEKCacheListener> cacheModelListeners = new Vector<HEKCacheListener>();
+    private List<HEKCacheListener> cacheModelListeners = new ArrayList<HEKCacheListener>();
     
     public HEKCacheModel(HEKCache cache) {
         this.cache = cache;
@@ -88,7 +89,7 @@ public class HEKCacheModel {
         // recursively calculate duration of virutal paths
         if (path.isVirtual()) {
 
-            Vector<HEKPath> children = getChildren(path, overlapmode);
+        	List<HEKPath> children = getChildren(path, overlapmode);
 
             for (HEKPath child : children) {
                 if (pathValidInInterval(child, duration, overlapmode)) {
@@ -106,7 +107,7 @@ public class HEKCacheModel {
 
                 @SuppressWarnings("unchecked")
                 IntervalStore<Date, ?> intervalCache = (IntervalStore<Date, ?>) path.getParent().getObject();
-                Vector<Interval<Date>> intervals = (Vector<Interval<Date>>) intervalCache.getIntervals();
+                List<Interval<Date>> intervals = (List<Interval<Date>>) intervalCache.getIntervals();
 
                 for (Interval<Date> interval : intervals) {
 
@@ -128,7 +129,7 @@ public class HEKCacheModel {
 
             @SuppressWarnings("unchecked")
             IntervalStore<Date, ?> intervalStore = (IntervalStore<Date, ?>) path.getObject();
-            Vector<Interval<Date>> intervals = (Vector<Interval<Date>>) intervalStore.getIntervals();
+            List<Interval<Date>> intervals = (List<Interval<Date>>) intervalStore.getIntervals();
 
             for (Interval<Date> interval : intervals) {
                 if (interval.containsInclusive(duration))
@@ -151,7 +152,7 @@ public class HEKCacheModel {
      * 
      * @see org.helioviewer.jhv.plugins.overlay.hek.cache.HEKCacheModel#filter
      */
-    private void filterChildren(Vector<HEKPath> toFilter, Interval<Date> timeRange, boolean overlapmode) {
+    private void filterChildren(List<HEKPath> toFilter, Interval<Date> timeRange, boolean overlapmode) {
         // make sure we do not display events that do not exist in the current
         // interval
         // make sure we do not display any events if we do not know the whole
@@ -180,7 +181,7 @@ public class HEKCacheModel {
      *            - time range that children need to contain
      * @return
      */
-    private void getChildren(Vector<HEKPath> resultList, HEKPath parentPath, Iterator<HEKPath> possibleChildrenIterator, Interval<Date> timeRange, boolean overlapmode) {
+    private void getChildren(List<HEKPath> resultList, HEKPath parentPath, Iterator<HEKPath> possibleChildrenIterator, Interval<Date> timeRange, boolean overlapmode) {
 
         // loop over the children in question
         while (possibleChildrenIterator.hasNext()) {
@@ -252,9 +253,9 @@ public class HEKCacheModel {
      * @param path
      * @return
      */
-    private Vector<HEKPath> getChildrenEvents(HEKPath path, Interval<Date> timeRange, boolean overlapmode) {
+    private List<HEKPath> getChildrenEvents(HEKPath path, Interval<Date> timeRange, boolean overlapmode) {
 
-        Vector<HEKPath> result = new Vector<HEKPath>();
+    	List<HEKPath> result = new ArrayList<HEKPath>();
 
         // this only works if the path is known to the cache
         if (cache.getTrack(path) != null) {
@@ -265,13 +266,13 @@ public class HEKCacheModel {
 
             // get the overlaping container if we are in overlapmode
             if (container == null && overlapmode) {
-                Vector<Interval<Date>> overlappingIntervals = intervalStore.getCoveringIntervals(timeRange);
+            	List<Interval<Date>> overlappingIntervals = intervalStore.getCoveringIntervals(timeRange);
                 if (overlappingIntervals.size() > 0) {
                     container = intervalStore.getItem(overlappingIntervals.get(0));
                 }
             }
 
-            Vector<HEKEvent> currentEvents = container.getItems();
+            List<HEKEvent> currentEvents = container.getItems();
 
             // and finally loop over all events in this interval
             for (HEKEvent evt : currentEvents) {
@@ -321,9 +322,9 @@ public class HEKCacheModel {
      *            - path in which the children have to be stored in
      * @return
      */
-    public Vector<HEKPath> getChildren(HEKPath path, boolean overlapmode) {
+    public List<HEKPath> getChildren(HEKPath path, boolean overlapmode) {
 
-        Vector<HEKPath> result = new Vector<HEKPath>();
+    	List<HEKPath> result = new ArrayList<HEKPath>();
         cache.lockRead();
         try {
             // find all paths that are subdirectories of "path"
@@ -360,9 +361,9 @@ public class HEKCacheModel {
      *            - path in which the children have to be stored in
      * @return
      */
-    public Vector<HEKPath> getChildrenEventsRecursive(HEKPath path, Interval<Date> timeRange, boolean overlapmode) {
-        Vector<HEKPath> childrenEvents = new Vector<HEKPath>();
-        Vector<HEKPath> childrenPaths = new Vector<HEKPath>();
+    public List<HEKPath> getChildrenEventsRecursive(HEKPath path, Interval<Date> timeRange, boolean overlapmode) {
+    	List<HEKPath> childrenEvents = new ArrayList<HEKPath>();
+    	List<HEKPath> childrenPaths = new ArrayList<HEKPath>();
 
         cache.lockRead();
 
@@ -389,12 +390,12 @@ public class HEKCacheModel {
      * @param interval
      * @return - all events stored in the cache, that last in the given interval
      */
-    public Vector<HEKEvent> getEventsIn(Interval<Date> interval) {
+    public List<HEKEvent> getEventsIn(Interval<Date> interval) {
 
         cache.lockRead();
 
         try {
-            Vector<HEKEvent> result = new Vector<HEKEvent>();
+        	List<HEKEvent> result = new ArrayList<HEKEvent>();
 
             Iterator<Entry<HEKPath, IntervalStore<Date, HEKEvent>>> iter = cache.getTracks().entrySet().iterator();
 
@@ -434,11 +435,11 @@ public class HEKCacheModel {
      * @see HEKCacheSelectionModel
      * @return All currently active events
      */
-    public Vector<HEKEvent> getActiveEvents(Date curPos) {
+    public List<HEKEvent> getActiveEvents(Date curPos) {
 
         // Log.info("Get Active Events " + curPos);
 
-        Vector<HEKEvent> result = new Vector<HEKEvent>();
+        List<HEKEvent> result = new ArrayList<HEKEvent>();
 
         cache.lockRead();
         try {
@@ -449,7 +450,7 @@ public class HEKCacheModel {
                 Date curPosStart = new Date(curPos.getTime() - HEKSettings.MODEL_EXPAND_DURATION); // need
                 Date curPosEnd = new Date(curPos.getTime() + HEKSettings.MODEL_EXPAND_DURATION); // need
                 Interval<Date> drawInterval = new Interval<Date>(curPosStart, curPosEnd);
-                Vector<HEKEvent> activeEvents = getEventsIn(drawInterval);
+                List<HEKEvent> activeEvents = getEventsIn(drawInterval);
                 // works IN PLACE
                 cache.getSelectionModel().filterSelectedEvents(activeEvents);
                 result.addAll(activeEvents);
@@ -471,7 +472,7 @@ public class HEKCacheModel {
      * @param curInterval
      *            - interval for which the given paths are valid
      */
-    public void feedStructure(Vector<HEKPath> availablePaths, Interval<Date> curInterval) {
+    public void feedStructure(List<HEKPath> availablePaths, Interval<Date> curInterval) {
 
         cache.lockWrite();
 
@@ -493,7 +494,7 @@ public class HEKCacheModel {
                 IntervalContainer<Date, HEKEvent> intervalContainer = null;
 
                 // get a covering interval
-                Vector<Interval<Date>> coveringIntervals = intervalStore.getCoveringIntervals(curInterval);
+                List<Interval<Date>> coveringIntervals = intervalStore.getCoveringIntervals(curInterval);
                 if (coveringIntervals.size() != 0) {
                     // overwrite curInterval
                     curInterval = coveringIntervals.get(0);
@@ -512,7 +513,7 @@ public class HEKCacheModel {
                 // interval, create one
                 if (intervalContainer == null) {
                     intervalContainer = new IntervalContainer<Date, HEKEvent>();
-                    Vector<Interval<Date>> overlapping = intervalStore.getOverlappingIntervals(curInterval);
+                    List<Interval<Date>> overlapping = intervalStore.getOverlappingIntervals(curInterval);
                     for (Interval<Date> overlapInterval : overlapping) {
                         intervalStore.removeInterval(overlapInterval);
                     }
@@ -544,10 +545,10 @@ public class HEKCacheModel {
      * @param curInterval
      *            - interval for which the given paths are valid
      */
-    protected Vector<HEKPath> feedEvents(HashMap<HEKPath, HEKEvent> eventsToFeed, Interval<Date> curInterval) {
+    protected List<HEKPath> feedEvents(HashMap<HEKPath, HEKEvent> eventsToFeed, Interval<Date> curInterval) {
 
         // parse all events
-        HashMap<HEKPath, Vector<HEKEvent>> toAdd = new HashMap<HEKPath, Vector<HEKEvent>>();
+        HashMap<HEKPath, List<HEKEvent>> toAdd = new HashMap<HEKPath, List<HEKEvent>>();
 
         for (Entry<HEKPath,HEKEvent> eventPath : eventsToFeed.entrySet()) {
             HEKEvent event = eventPath.getValue();
@@ -556,7 +557,7 @@ public class HEKCacheModel {
 
             // if we do not yet have that track, create it
             if (!toAdd.containsKey(trackPath)) {
-                toAdd.put(trackPath, new Vector<HEKEvent>());
+                toAdd.put(trackPath, new ArrayList<HEKEvent>());
             }
 
             toAdd.get(trackPath).add(event);
@@ -575,7 +576,7 @@ public class HEKCacheModel {
             cache.unlockWrite();
         }
 
-        return new Vector<HEKPath>(toAdd.keySet());
+        return new ArrayList<HEKPath>(toAdd.keySet());
 
     }
 
@@ -642,7 +643,7 @@ public class HEKCacheModel {
         cache.lockRead();
         try {
             int result = 0;
-            Vector<HEKPath> childrenPaths = new Vector<HEKPath>();
+            List<HEKPath> childrenPaths = new ArrayList<HEKPath>();
 
             // get all childrenPaths
             getChildren(childrenPaths, path, cache.getTrackPaths().iterator(), timeRange, overlapmode);
@@ -652,7 +653,7 @@ public class HEKCacheModel {
                 IntervalStore<Date, HEKEvent> intervalStore = cache.getTrack(path);
                 IntervalContainer<Date, HEKEvent> intervalContainer = intervalStore.getItem(timeRange);
                 if (overlapmode) {
-                    Vector<Interval<Date>> overlappingIntervals = intervalStore.getCoveringIntervals(timeRange);
+                	List<Interval<Date>> overlappingIntervals = intervalStore.getCoveringIntervals(timeRange);
                     if (overlappingIntervals.size() > 0) {
                         intervalContainer = intervalStore.getItem(overlappingIntervals.get(0));
                     }

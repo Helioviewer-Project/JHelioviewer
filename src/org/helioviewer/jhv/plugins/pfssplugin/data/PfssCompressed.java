@@ -1,20 +1,12 @@
 package org.helioviewer.jhv.plugins.pfssplugin.data;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 
-import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
-import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
 import org.helioviewer.jhv.base.downloadmanager.AbstractRequest.PRIORITY;
-import org.helioviewer.jhv.gui.MainFrame;
+import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
 import org.helioviewer.jhv.plugins.pfssplugin.data.caching.Cacheable;
 import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
-import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 
 import com.github.junrar.Archive;
 import com.github.junrar.Volume;
@@ -32,7 +24,6 @@ public class PfssCompressed implements Cacheable
     private volatile boolean isLoading = false;
 	private volatile boolean isLoaded = false;
 	private volatile byte[] rawData;
-	private final String url;
 	private final FileDescriptor descriptor;
 	private final HTTPRequest httpRequest;
 	/**
@@ -43,7 +34,6 @@ public class PfssCompressed implements Cacheable
 	public PfssCompressed(FileDescriptor descriptor, String url)
 	{
 		this.descriptor = descriptor;
-		this.url = url;
 		httpRequest = UltimatePluginInterface.generateAndStartHTPPRequest(url, PRIORITY.MEDIUM);
 		
 	}
@@ -59,6 +49,7 @@ public class PfssCompressed implements Cacheable
 	        return true;
 	    }
 	    
+	    //TODO: make async
 	    while (!httpRequest.isFinished()) {
 	    	try {
 				Thread.sleep(20);
@@ -142,7 +133,7 @@ public class PfssCompressed implements Cacheable
         }
     }
     
-    public class ByteArrayVolume implements Volume {
+    public static class ByteArrayVolume implements Volume {
         private final Archive archive;
         private final byte [] bytes;
 

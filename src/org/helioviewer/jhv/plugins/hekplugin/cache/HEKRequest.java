@@ -1,7 +1,5 @@
 package org.helioviewer.jhv.plugins.hekplugin.cache;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Date;
 
 import org.helioviewer.jhv.base.math.Interval;
@@ -19,11 +17,6 @@ public abstract class HEKRequest {
     protected Interval<Date> interval;
 
     /**
-     * Instance of an InputStream in order to be able to cancel downloads
-     */
-    protected InputStream inputStream;
-
-    /**
      * Flag showing if this request should be canceled
      */
     protected boolean cancel = false;
@@ -34,14 +27,6 @@ public abstract class HEKRequest {
     public void cancel() {
 
         cancel = true;
-
-        if (inputStream != null) {
-            try {
-                inputStream.close();
-            } catch (IOException e) {
-                // ignore
-            }
-        }
 
         // we are not loading anymore
         this.finishRequest();

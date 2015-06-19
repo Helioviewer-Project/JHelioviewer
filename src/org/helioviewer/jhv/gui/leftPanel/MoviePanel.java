@@ -27,9 +27,10 @@ import javax.swing.plaf.basic.BasicSliderUI;
 
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
+import org.helioviewer.jhv.gui.components.MenuBar;
 import org.helioviewer.jhv.layers.LayerInterface;
-import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.LayerListener;
+import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine.TimeLineListener;
 
@@ -313,7 +314,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		
 	}
 	
-	private class TimeSliderUI extends BasicSliderUI{
+	private static class TimeSliderUI extends BasicSliderUI{
 		public TimeSliderUI(JSlider slider) {
 			super(slider);
 		}

@@ -10,13 +10,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -32,7 +32,6 @@ import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.interfaces.ShowableDialog;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -49,9 +48,8 @@ public class MetaDataDialog extends JDialog implements ActionListener, ShowableD
     private final JButton closeButton = new JButton("Close");
     private final JButton exportFitsButton = new JButton("Export FITS header as XML");
 
-    private Vector<String> infoList = new Vector<String>();
+    private List<String> infoList = new ArrayList<String>();
     private JList<String> listBox = new JList<String>();
-    private Document xmlDoc = null;
     private boolean metaDataOK;
     private String outFileName;
     JScrollPane listScroller;
@@ -98,10 +96,10 @@ public class MetaDataDialog extends JDialog implements ActionListener, ShowableD
      * Resets the list.
      */
     public void resetData() {
-        infoList.removeAllElements();
+    	infoList.clear();
 
         // update the listBox
-        listBox.setListData(this.infoList);
+        listBox.setListData(infoList.toArray(new String[0]));
 
         // set the status of export button
         if (!metaDataOK) {
@@ -122,7 +120,7 @@ public class MetaDataDialog extends JDialog implements ActionListener, ShowableD
         infoList.add(_item);
 
         // update the listBox
-        listBox.setListData(this.infoList);
+        listBox.setListData(infoList.toArray(new String[0]));
     }
 
     /**
@@ -144,13 +142,13 @@ public class MetaDataDialog extends JDialog implements ActionListener, ShowableD
      */
     public void actionPerformed(ActionEvent _a) {
         if (_a.getSource() == closeButton) {
-            xmlDoc = null;
-            infoList.removeAllElements();
+            infoList.clear();
             resetData();
             dispose();
 
         } else if (_a.getSource() == exportFitsButton) {
-            DOMSource source = new DOMSource(xmlDoc.getDocumentElement().getElementsByTagName("fits").item(0));
+        	//FIXME: this code never worked, because xmlDoc was always null... :(
+            /*DOMSource source = new DOMSource(xmlDoc.getDocumentElement().getElementsByTagName("fits").item(0));
 
             
             String fn=openFileChooser(outFileName);
@@ -159,7 +157,7 @@ public class MetaDataDialog extends JDialog implements ActionListener, ShowableD
                 boolean saveSuccessful = saveXMLDocument(source, outFileName);
                 if (!saveSuccessful)
                     JOptionPane.showMessageDialog(this, "Could not save document.");
-            }
+            }*/
         }
     }
     

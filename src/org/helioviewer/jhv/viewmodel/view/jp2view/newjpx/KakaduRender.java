@@ -31,9 +31,6 @@ import org.w3c.dom.Document;
 
 public class KakaduRender {
 	
-    // The amount of cache to allocate to each codestream
-    private final int CODESTREAM_CACHE_THRESHOLD = 1024 * 256;
-
     /**
      * The this extended version of Jp2_threadsafe_family_src can open any file
      * conforming to the jp2 specifications (.jp2, .jpx, .mj2, etc). The reason

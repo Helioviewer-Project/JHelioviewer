@@ -1,7 +1,8 @@
 package org.helioviewer.jhv.plugins.hekplugin.cache;
 
+import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Vector;
+import java.util.List;
 
 /**
  * Class used to categorize events
@@ -33,7 +34,7 @@ public class HEKPath {
     /**
      * List of Subdirectories
      */
-    private Vector<String> path = new Vector<String>();
+    private List<String> path = new ArrayList<String>();
 
     /**
      * Flag if this path directly exists in the cache, or if it is an
@@ -216,7 +217,7 @@ public class HEKPath {
 
         HEKPath result = new HEKPath(this.cache);
         result.path.addAll(path);
-        result.path.removeElementAt(result.path.size() - 1);
+        result.path.remove(result.path.size() - 1);
         result.virtual = !this.cache.getTrackPaths().contains(result); // if the
                                                                        // cache
         result.object = this.cache.getTrack(result); // try to get the object
@@ -246,7 +247,7 @@ public class HEKPath {
         if (this.path.size() == 0) {
             return "ROOT";
         } else {
-            return this.path.lastElement();
+            return this.path.get(this.path.size()-1);
         }
     }
 
@@ -269,7 +270,7 @@ public class HEKPath {
     public HEKPath truncate(int len) {
         HEKPath result = new HEKPath(this);
         for (int i = len; i < this.path.size(); i++) {
-            result.path.removeElementAt(result.path.size() - 1);
+            result.path.remove(result.path.size() - 1);
         }
         return result;
     }
@@ -283,12 +284,12 @@ public class HEKPath {
     }
 
     public Object[] getTreePath() {
-        Vector<HEKPath> result = new Vector<HEKPath>();
+    	List<HEKPath> result = new ArrayList<HEKPath>();
         getTreePath(result);
         return result.toArray();
     }
 
-    private void getTreePath(Vector<HEKPath> result) {
+    private void getTreePath(List<HEKPath> result) {
         HEKPath parent = this.getParent();
         if (parent != null)
             parent.getTreePath(result);

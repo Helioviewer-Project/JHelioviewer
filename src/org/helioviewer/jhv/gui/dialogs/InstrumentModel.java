@@ -2,7 +2,6 @@ package org.helioviewer.jhv.gui.dialogs;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -206,8 +205,6 @@ public class InstrumentModel {
 		private String name;
 		
 		public Boolean hasDates = false;
-		public Date start;
-		public Date end;
 		public int layeringOrder;
 		public String nickname;
 		public int sourceId;

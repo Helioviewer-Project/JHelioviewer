@@ -10,7 +10,7 @@ import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 
 public class RayTrace {
-	public enum HITPOINT_TYPE{
+	public enum HitpointType{
 		SPHERE, PLANE, SPHERE_PLANE;
 	}
 	
@@ -77,7 +77,7 @@ public class RayTrace {
 		Ray ray = new Ray(rayORot, rayDRot);
 		ray = intersect(ray);
 		rayOriginal.t = ray.t;
-		if (ray.hitpointType == HITPOINT_TYPE.SPHERE && ray.getHitpoint().z < 0){
+		if (ray.hitpointType == HitpointType.SPHERE && ray.getHitpoint().z < 0){
 			return null;
 		}
 		
@@ -91,27 +91,27 @@ public class RayTrace {
 		double tSphere = sphere.intersect(ray);
 		double tPlane = plane.intersect(ray);
 		if (tSphere > 0){
-			ray.hitpointType = HITPOINT_TYPE.SPHERE;
+			ray.hitpointType = HitpointType.SPHERE;
 			ray.tSphere = tSphere;
 		}
 		if (tPlane > 0.0 && tSphere < 0.){
-			ray.hitpointType = HITPOINT_TYPE.PLANE;
+			ray.hitpointType = HitpointType.PLANE;
 			ray.tPlane = tPlane;
 		}
 		else if (tPlane > 0.0 && (tSphere < 0.)){
-			ray.hitpointType = HITPOINT_TYPE.SPHERE_PLANE;
+			ray.hitpointType = HitpointType.SPHERE_PLANE;
 			ray.tPlane = tPlane;
 		}
 		return ray;
 	}
 	
-	public class Ray{
+	public static class Ray{
 		private Vector3d origin;
 		private Vector3d direction;
 		private double t = -1;
 		private double tSphere = -1;
 		private double tPlane = -1;
-		private HITPOINT_TYPE hitpointType;
+		private HitpointType hitpointType;
 		
 		private Ray(Vector3d origin, Vector3d direction) {
 			this.origin = origin;
@@ -119,15 +119,15 @@ public class RayTrace {
 		}
 		
 		public Vector3d getHitpoint(){
-			if (this.hitpointType == HITPOINT_TYPE.SPHERE || this.hitpointType == HITPOINT_TYPE.SPHERE_PLANE){
+			if (this.hitpointType == HitpointType.SPHERE || this.hitpointType == HitpointType.SPHERE_PLANE){
 				return this.getHitpointOnSphere();
 			}
 			else {
-				return this.getHipointOnPlane();
+				return this.getHitpointOnPlane();
 			}
 		}
 		
-		public HITPOINT_TYPE getHitpointType(){
+		public HitpointType getHitpointType(){
 			return hitpointType;
 		}
 		
@@ -135,7 +135,7 @@ public class RayTrace {
 			return this.origin.add(this.direction.scale(this.tSphere));
 		}
 		
-		public Vector3d getHipointOnPlane(){
+		public Vector3d getHitpointOnPlane(){
 			return this.origin.add(this.direction.scale(this.tPlane));
 		}
 		

@@ -133,8 +133,7 @@ public class OpenGLHelper {
 			break;
 
 		default:
-			new NotImplementedException();
-			break;
+			throw new NotImplementedException();
 		}
 				
 		gl.glEnable(GL2.GL_TEXTURE_2D);			
@@ -170,8 +169,7 @@ public class OpenGLHelper {
 			break;
 
 		default:
-			new NotImplementedException();
-			break;
+			throw new NotImplementedException();
 		}
 		
 		ByteBuffer buffer = readPixels(bufferedImage, alpha, switchChannel);

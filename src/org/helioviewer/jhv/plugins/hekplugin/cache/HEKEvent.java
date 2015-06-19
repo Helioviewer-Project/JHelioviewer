@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Vector;
 
 import org.helioviewer.jhv.base.math.CartesianCoord;
 import org.helioviewer.jhv.base.math.Interval;
@@ -69,7 +68,7 @@ public class HEKEvent implements IntervalComparison<Date> {
     /**
      * Cache boundary triangulation
      */
-    private Vector<GenericTriangle<SphericalCoord>> cachedTriangles = null;
+    private List<GenericTriangle<SphericalCoord>> cachedTriangles = null;
 
     /**
      * This field is used as a unique identifier of the event
@@ -516,9 +515,9 @@ public class HEKEvent implements IntervalComparison<Date> {
     }
     
 
-    private Vector<SphericalCoord> toStonyPolyon(String poly, Date now) {
+    private List<SphericalCoord> toStonyPolyon(String poly, Date now) {
 
-        Vector<SphericalCoord> result = new Vector<SphericalCoord>();
+    	List<SphericalCoord> result = new ArrayList<SphericalCoord>();
         poly = poly.trim();
 
         if (!(poly.startsWith("POLYGON((") && poly.endsWith(")"))) {
@@ -546,8 +545,8 @@ public class HEKEvent implements IntervalComparison<Date> {
         
         if(result.size()>MAX_OUTLINE_POINTS)
         {
-            Vector<SphericalCoord> oldResult = result;
-            result = new Vector<SphericalCoord>(MAX_OUTLINE_POINTS);
+        	List<SphericalCoord> oldResult = result;
+            result = new ArrayList<SphericalCoord>(MAX_OUTLINE_POINTS);
             for(int i=0;i<MAX_OUTLINE_POINTS-1;i++)
                 result.add(oldResult.get((int)(i/(double)MAX_OUTLINE_POINTS*(oldResult.size()-1))));
             result.add(result.get(0));
@@ -557,8 +556,8 @@ public class HEKEvent implements IntervalComparison<Date> {
     }
 
     private Date oldStonyBoundDate;
-    private Vector<SphericalCoord> oldStonyBound;
-    public Vector<SphericalCoord> getStonyBound(Date now)
+    private List<SphericalCoord> oldStonyBound;
+    public List<SphericalCoord> getStonyBound(Date now)
     {
         if(now.equals(oldStonyBoundDate))
             return oldStonyBound;
@@ -620,14 +619,14 @@ public class HEKEvent implements IntervalComparison<Date> {
      * @param now
      * @return
      */
-    public Vector<GenericTriangle<Vector3d>> getTriangulation3D(Date now) {
+    public List<GenericTriangle<Vector3d>> getTriangulation3D(Date now) {
         if (!cacheValid)
             return null;
 
         if (cachedTriangles == null)
             return null;
 
-        Vector<GenericTriangle<Vector3d>> result = new Vector<GenericTriangle<Vector3d>>();
+        List<GenericTriangle<Vector3d>> result = new ArrayList<GenericTriangle<Vector3d>>();
         for (GenericTriangle<SphericalCoord> triangle : cachedTriangles)
         {
         	Vector3d A = convertToSceneCoordinates(triangle.A, now).scale(1.005);
@@ -643,7 +642,7 @@ public class HEKEvent implements IntervalComparison<Date> {
         Date now = this.getStart();
 
         if (now != null) {
-            Vector<SphericalCoord> outerBound = this.getStonyBound(now);
+            List<SphericalCoord> outerBound = this.getStonyBound(now);
 
             if (outerBound != null) {
                 // if we have less than three points, do nothing
@@ -656,7 +655,7 @@ public class HEKEvent implements IntervalComparison<Date> {
                 Vector2d[] coordinates=new Vector2d[outerBound.size()];
                 
                 // needed to map back triangles
-                Vector<Vector3d> outerBoundCartesian = new Vector<Vector3d>();
+                List<Vector3d> outerBoundCartesian = new ArrayList<Vector3d>();
 
                 {
                     int i=0;
@@ -668,18 +667,18 @@ public class HEKEvent implements IntervalComparison<Date> {
                 }
                 
                 // add sun border points
-                Vector<SphericalCoord> sunBorder = generateSunBorder();
+                List<SphericalCoord> sunBorder = generateSunBorder();
 
                 // needed to map back triangles
-                Vector<Vector3d> sunBorderCartesian = new Vector<Vector3d>();
+                List<Vector3d> sunBorderCartesian = new ArrayList<Vector3d>();
                 for (SphericalCoord sunBoundaryPoint : sunBorder)
                 {
                     Vector3d sunBoundaryPointCartesian = HEKEvent.convertToSceneCoordinates(sunBoundaryPoint, now);
                     sunBorderCartesian.add(sunBoundaryPointCartesian);
                 }
                 
-                Vector<SphericalCoord> lookupSpherical = new Vector<SphericalCoord>();
-                Vector<Vector3d> lookupCartesian = new Vector<Vector3d>();
+                List<SphericalCoord> lookupSpherical = new ArrayList<SphericalCoord>();
+                List<Vector3d> lookupCartesian = new ArrayList<Vector3d>();
 
                 lookupSpherical.addAll(sunBorder);
                 lookupCartesian.addAll(sunBorderCartesian);
@@ -687,7 +686,7 @@ public class HEKEvent implements IntervalComparison<Date> {
                 lookupSpherical.addAll(outerBound);
                 lookupCartesian.addAll(outerBoundCartesian);
 
-                cachedTriangles = new Vector<GenericTriangle<SphericalCoord>>();
+                cachedTriangles = new ArrayList<GenericTriangle<SphericalCoord>>();
                 for (Triangle triangle : triangulate(coordinates)) {
                     Vector2d A2 = new Vector2d(triangle.x1*Constants.SUN_RADIUS, triangle.y1*Constants.SUN_RADIUS);
                     Vector2d B2 = new Vector2d(triangle.x2*Constants.SUN_RADIUS, triangle.y2*Constants.SUN_RADIUS);
@@ -770,7 +769,7 @@ public class HEKEvent implements IntervalComparison<Date> {
         return res;
     }
 
-    private SphericalCoord findClosest(Vector2d toFind, Vector<Vector3d> lookupCartesian, Vector<SphericalCoord> lookupSpherical) {
+    private SphericalCoord findClosest(Vector2d toFind, List<Vector3d> lookupCartesian, List<SphericalCoord> lookupSpherical) {
         double closest = Double.POSITIVE_INFINITY;
         int closest_index = -1;
         
@@ -812,8 +811,8 @@ public class HEKEvent implements IntervalComparison<Date> {
         return toDraw;
     }
 
-    private Vector<SphericalCoord> generateSunBorder() {
-        Vector<SphericalCoord> borderPoints = new Vector<SphericalCoord>();
+    private List<SphericalCoord> generateSunBorder() {
+    	List<SphericalCoord> borderPoints = new ArrayList<SphericalCoord>();
 
         for (double theta = 0.0; theta < 90; theta += 2) {
             borderPoints.add(new SphericalCoord(theta, 89.9, Constants.SUN_RADIUS));

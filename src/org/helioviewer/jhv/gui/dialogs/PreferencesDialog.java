@@ -389,7 +389,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 		return panel;
 	}
 
-	private class MovieExportPanel extends JPanel {
+	private static class MovieExportPanel extends JPanel {
 
 		private JComboBox<AspectRatio> movieAspectRatioSelection;
 		private JFormattedTextField txtMovieImageWidth, txtMovieImageHeight;
@@ -603,7 +603,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 		return panel;
 	}
 
-	private class ScreenshotExportPanel extends JPanel {
+	private static class ScreenshotExportPanel extends JPanel {
 		private JComboBox<AspectRatio> screenshotAspectRatioSelection;
 		private JFormattedTextField txtScreenshotImageWidth,
 				txtScreenshotImageHeight;
@@ -808,7 +808,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 
 	}
 
-	private class DefaultsSelectionPanel extends JPanel {
+	private static class DefaultsSelectionPanel extends JPanel {
 
 		private static final long serialVersionUID = 1L;
 
