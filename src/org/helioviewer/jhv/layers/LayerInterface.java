@@ -4,9 +4,9 @@ import java.awt.Dimension;
 import java.time.LocalDateTime;
 
 import org.helioviewer.jhv.gui.MainFrame;
+import org.helioviewer.jhv.gui.opengl.MainPanel;
 import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 
 public abstract class LayerInterface {
 		
@@ -66,6 +66,7 @@ public abstract class LayerInterface {
 	public abstract LocalDateTime getTime();
 	public abstract LocalDateTime[] getLocalDateTime();
 	public abstract MetaData getMetaData();
+	public abstract void cancelDownload();
 	
 	public boolean isVisible(){
 		return visible;

@@ -1,6 +1,7 @@
 package org.helioviewer.jhv.viewmodel.view.jp2view.newjpx;
 
 import java.awt.Rectangle;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -12,10 +13,13 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.swing.JOptionPane;
+
 import kdu_jni.KduException;
 import kdu_jni.Kdu_cache;
 
 import org.helioviewer.jhv.base.ImageRegion;
+import org.helioviewer.jhv.base.downloadmanager.AbstractRequest;
 import org.helioviewer.jhv.base.downloadmanager.AbstractRequest.PRIORITY;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.base.downloadmanager.JPIPRequest;
@@ -23,11 +27,11 @@ import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.layers.CacheableImageData;
 import org.helioviewer.jhv.layers.ImageLayer;
+import org.helioviewer.jhv.opengl.texture.TextureCache;
+import org.helioviewer.jhv.opengl.texture.TextureCache.CachableTexture;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
-import org.helioviewer.jhv.viewmodel.view.opengl.texture.TextureCache;
-import org.helioviewer.jhv.viewmodel.view.opengl.texture.TextureCache.CachableTexture;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,8 +48,7 @@ public class UltimateLayer {
 	private static final String URL = "http://api.helioviewer.org/v2/getJPX/?";
 	private static final int MAX_THREAD_PER_LAYER = 2;
 	private static final int MAX_THREAD_PER_LOAD_JPIP_URLS = 4;
-	public static final int RESOLUTION_LEVEL_COUNT = 8;
-
+	
 	private KakaduRender render;
 
 	private String fileName = null;
@@ -54,8 +57,11 @@ public class UltimateLayer {
 	private ImageLayer newLayer;
 
 	private ImageRegion imageRegion;
-
+	private Thread jpipURLLoader;
+	
 	private int id;
+
+	private ArrayList<AbstractRequest> requests = new ArrayList<AbstractRequest>();
 
 	public UltimateLayer(int id, int sourceID,
 			KakaduRender render, ImageLayer newLayer) {
@@ -118,7 +124,7 @@ public class UltimateLayer {
 		LocalDateTime tmp = LocalDateTime.MIN;
 		LocalDateTime currentStart = start;
 
-		Thread jpipURLLoader = new Thread(new Runnable() {
+		jpipURLLoader = new Thread(new Runnable() {
 			private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 			private ArrayList<HTTPRequest> httpRequests = new ArrayList<HTTPRequest>();
 
@@ -130,18 +136,19 @@ public class UltimateLayer {
 				while (tmp.isBefore(end)) {
 					tmp = currentStart.plusSeconds(cadence
 							* (MAX_FRAME_SIZE - 1));
-					MainFrame.MAIN_PANEL.setLoading(true);
 					String request = "startTime="
 							+ currentStart.format(formatter) + "&endTime="
 							+ tmp.format(formatter) + "&sourceId=" + sourceID
 							+ "&jpip=true&verbose=true&cadence=" + cadence;
 					HTTPRequest httpRequest = new HTTPRequest(URL + request,
 							PRIORITY.HIGH);
+					requests.add(httpRequest);
 					UltimateDownloadManager.addRequest(httpRequest);
 					httpRequests.add(httpRequest);
 					currentStart = tmp;
 				}
-
+				if (Thread.interrupted()) return;
+				
 				for (HTTPRequest httpRequest : httpRequests) {
 					while (!httpRequest.isFinished()) {
 						try {
@@ -152,7 +159,6 @@ public class UltimateLayer {
 						}
 					}
 
-					System.out.println(httpRequest.getDataAsString());
 
 					JSONObject jsonObject;
 					try {
@@ -185,16 +191,20 @@ public class UltimateLayer {
 						JPIPRequest jpipRequestLow = new JPIPRequest(jpipURI, PRIORITY.HIGH, 0, frames.length(), new Rectangle(256, 256), kduCache, cacheableImageData);
 						JPIPRequest jpipRequestMiddle = new JPIPRequest(jpipURI, PRIORITY.MEDIUM, 0, frames.length(), new Rectangle(2048, 2048), kduCache, cacheableImageData);
 						JPIPRequest jpipRequestHigh = new JPIPRequest(jpipURI, PRIORITY.LOW, 0, frames.length(), new Rectangle(4096, 4096), kduCache, cacheableImageData);
+						requests.add(jpipRequestLow);
+						requests.add(jpipRequestMiddle);
+						requests.add(jpipRequestHigh);
 						UltimateDownloadManager.addRequest(jpipRequestLow);
 						UltimateDownloadManager.addRequest(jpipRequestMiddle);
 						UltimateDownloadManager.addRequest(jpipRequestHigh);
 					} catch (JSONException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
+					} catch (IOException e) {
+						JOptionPane.showConfirmDialog(MainFrame.SINGLETON, "No connection available from " + httpRequest, "Error during connection", JOptionPane.OK_OPTION, JOptionPane.ERROR_MESSAGE);
 					}
 					
 				}
-				MainFrame.MAIN_PANEL.setLoading(false);
 
 			}
 		}, "JPIP_URI_LOADER");
@@ -314,6 +324,14 @@ public class UltimateLayer {
 		LocalDateTime[] localDateTimes = new LocalDateTime[treeSet.size()];
 		TimeLine.SINGLETON.updateLocalDateTimes(this.treeSet
 				.toArray(localDateTimes));
+	}
+
+	public void cancelDownload() {
+		if (jpipURLLoader != null && jpipURLLoader.isAlive())
+			jpipURLLoader.interrupt();
+		for (AbstractRequest request : requests){
+			UltimateDownloadManager.remove(request);
+		}
 	}
 
 }

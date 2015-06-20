@@ -23,8 +23,6 @@ public class NoImageScreen{
 	}
 
 	public static void render(GL2 gl) {
-		System.out.println("renderSplashscreen");
-
 		gl.glUseProgram(0);
 		gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
 		gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);

@@ -59,7 +59,11 @@ public class PfssCompressed implements Cacheable
 			}
 		}
 	    
-	    rawData = httpRequest.getData();
+	    try {
+			rawData = httpRequest.getData();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	    isLoaded = true;
 	    return true;
 	}

@@ -1,8 +1,8 @@
 package org.helioviewer.jhv.opengl.camera.animation;
 
 import org.helioviewer.jhv.base.math.Vector3d;
+import org.helioviewer.jhv.gui.opengl.MainPanel;
 import org.helioviewer.jhv.opengl.camera.Camera;
-import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 
 public class CameraTranslationAnimation implements CameraAnimation {
 

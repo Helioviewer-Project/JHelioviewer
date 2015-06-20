@@ -2,7 +2,7 @@ package org.helioviewer.jhv.opengl.camera;
 
 import java.awt.event.MouseWheelEvent;
 
-import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
+import org.helioviewer.jhv.gui.opengl.MainPanel;
 
 
 public class CameraZoomInteraction extends CameraInteraction{

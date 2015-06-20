@@ -19,8 +19,6 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPSocket;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
 
 public class JPIPRequest extends AbstractRequest{
-
-	private final String url;
 	
 	private JPIPSocket jpipSocket;
 	private final Kdu_cache kduCache;
@@ -56,13 +54,11 @@ public class JPIPRequest extends AbstractRequest{
 	}
 
 	@Override
-	void execute() {
+	void execute() throws IOException{
 		receiveData();
-		cacheableImageData.markAsChanged();
-		finished = true;
 	}
 	
-	private void receiveData(){
+	private void receiveData() throws IOException{
 		try {
 			openSocket();
 			org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPRequest request = new org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPRequest(Method.GET);
@@ -85,13 +81,9 @@ public class JPIPRequest extends AbstractRequest{
 				} catch (JHV_KduException e) {
 					e.printStackTrace();
 				}
-
-				System.out.println("size : " + cacheSize);
-
 			} while (!(complete));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			cacheableImageData.markAsChanged();
+			finished = true;
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

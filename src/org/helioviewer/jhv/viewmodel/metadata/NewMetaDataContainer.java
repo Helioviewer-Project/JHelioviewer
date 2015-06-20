@@ -7,14 +7,13 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 
-public class NewMetaDataContainer implements MetaDataContainer{
+public class NewMetaDataContainer{
 	private Document document;
 	
 	public NewMetaDataContainer(Document document) {
 		this.document = document;
 	}
 	
-	@Override
 	public String get(String key) {
         String value = getValueFromXML(key, "fits");
         return value;
@@ -35,7 +34,6 @@ public class NewMetaDataContainer implements MetaDataContainer{
 		return null;
 	}
 
-	@Override
 	public int tryGetInt(String key) {
 		String string = get(key);
         if (string != null) {
@@ -49,7 +47,6 @@ public class NewMetaDataContainer implements MetaDataContainer{
         return 0;
     }
 
-	@Override
 	public double tryGetDouble(String key) {
 
         String string = get(key);
@@ -65,13 +62,11 @@ public class NewMetaDataContainer implements MetaDataContainer{
     }
 	
 
-	@Override
 	public int getPixelWidth() {
 		// TODO Auto-generated method stub
 		return 4096;
 	}
 
-	@Override
 	public int getPixelHeight() {
 		// TODO Auto-generated method stub
 		return 4096;

@@ -23,8 +23,8 @@ import kdu_jni.Kdu_region_compositor;
 import kdu_jni.Kdu_thread_env;
 
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
+import org.helioviewer.jhv.viewmodel.metadata.MetaDataContainer;
 import org.helioviewer.jhv.viewmodel.metadata.MetaDataFactory;
-import org.helioviewer.jhv.viewmodel.metadata.NewMetaDataContainer;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.KakaduUtils;
 import org.w3c.dom.Document;
@@ -184,7 +184,7 @@ public class KakaduRender {
                 Document doc = builder.parse(in);
                 doc.getDocumentElement().normalize();
                 
-                MetaData metaData = MetaDataFactory.getMetaData(new NewMetaDataContainer(doc));
+                MetaData metaData = MetaDataFactory.getMetaData(new MetaDataContainer(doc));
         		try {
         			Jp2_dimensions dim = jpxSrc.Access_codestream(0,true).Access_dimensions();
         			Kdu_coords size = dim.Get_size();

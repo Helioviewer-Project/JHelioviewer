@@ -1,67 +1,76 @@
 package org.helioviewer.jhv.viewmodel.metadata;
 
-/**
- * Object containing the raw meta data.
- * 
- * <p>
- * Usually, this is the image itself. This interface provides the capability to
- * read the meta data, assuming it is given as pairs of key and value.
- * 
- * <p>
- * Apart from that, a MetaDataContainer provides access to its dimensions in
- * pixel.
- * 
- * @author Ludwig Schmidt
- * 
- */
-public interface MetaDataContainer {
+import org.w3c.dom.CharacterData;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
-    /**
-     * Gets the value for a given key as a string.
-     * 
-     * If the key does not exist, returns null.
-     * 
-     * @param key
-     *            Search for this key
-     * @return value corresponding to the key, null if the key does not exist
-     */
-    public String get(String key);
 
-    /**
-     * Gets the value for a given key as an integer value.
-     * 
-     * If the key does not exist or is not an integer value , returns 0.
-     * 
-     * @param key
-     *            Search for this key
-     * @return value corresponding to the key, if it is an integer value, 0
-     *         otherwise
-     */
-    public int tryGetInt(String key);
+public class MetaDataContainer{
+	private Document document;
+	
+	public MetaDataContainer(Document document) {
+		this.document = document;
+	}
+	
+	public String get(String key) {
+        String value = getValueFromXML(key, "fits");
+        return value;
+	}
 
-    /**
-     * Gets the value for a given key as a double value.
-     * 
-     * If the key does not exist or is not a double value , returns 0.
-     * 
-     * @param key
-     *            Search for this key
-     * @return value corresponding to the key, if it is a double value, 0
-     *         otherwise
-     */
-    public double tryGetDouble(String key);
+	private String getValueFromXML(String key, String string) {
+		NodeList current = document.getElementsByTagName("meta");
+		Element element = (Element) current.item(0);
+		NodeList nodes = ((Element) current.item(0)).getElementsByTagName(string);
+		NodeList value = ((Element) nodes.item(0)).getElementsByTagName(key);
+		Element line = (Element) value.item(0);
+		if (line != null){
+		Node child = line.getFirstChild();
+		if (child instanceof CharacterData){
+			CharacterData cd = (CharacterData) child;
+			return cd.getData();
+		}
+		}
+		return null;
+	}
 
-    /**
-     * Returns the width of the image in pixels.
-     * 
-     * @return width of the image in pixels
-     */
-    public int getPixelWidth();
+	public int tryGetInt(String key) {
+		String string = get(key);
+        if (string != null) {
+            try {
+                return Integer.parseInt(string);
+            } catch (NumberFormatException e) {
+                System.out.println("NumberFormatException while trying to parse value \"" + string + "\" of key " + key + " from meta data of");
+                return 0;
+            }
+        }
+        return 0;
+    }
 
-    /**
-     * Returns the height of the image in pixels.
-     * 
-     * @return height of the image in pixels
-     */
-    public int getPixelHeight();
+	public double tryGetDouble(String key) {
+
+        String string = get(key);
+        if (string != null) {
+            try {
+                return Double.parseDouble(string);
+            } catch (NumberFormatException e) {
+                System.out.println("NumberFormatException while trying to parse value \"" + string + "\" of key " + key + " from meta data of");
+                return Double.NaN;
+            }
+        }
+        return 0.0;
+    }
+	
+
+	public int getPixelWidth() {
+		// TODO Auto-generated method stub
+		return 4096;
+	}
+
+	public int getPixelHeight() {
+		// TODO Auto-generated method stub
+		return 4096;
+	}
+
 }

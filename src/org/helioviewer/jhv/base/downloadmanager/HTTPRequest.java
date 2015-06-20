@@ -16,6 +16,17 @@ public class HTTPRequest extends AbstractRequest {
 
 	private byte[] rawData;
 
+	public HTTPRequest(String uri, PRIORITY priority, int timeOut, int retries){
+		this(uri, priority);
+		this.retries = retries;
+		this.timeOut = timeOut;
+	}
+
+	public HTTPRequest(String uri, PRIORITY priority, int retries){
+		this(uri, priority);
+		this.retries = retries;
+	}
+
 	public HTTPRequest(String uri, PRIORITY priority) {
 		super(priority);
 		System.out.println("connect to : " + uri);
@@ -24,8 +35,7 @@ public class HTTPRequest extends AbstractRequest {
 
 	public void execute() throws IOException {
 			receiveData();
-			finished = true;
-		
+			
 	}
 
 	private void receiveData() throws IOException {
@@ -33,8 +43,9 @@ public class HTTPRequest extends AbstractRequest {
 		InputStream inputStream = null;
 		ByteArrayOutputStream byteArrayOutputStream = null;
 		URL url;
-		url = new URL(uri);
+		url = new URL(this.url);
 		httpURLConnection = (HttpURLConnection) url.openConnection();
+		httpURLConnection.setReadTimeout(timeOut);
 		httpURLConnection.setRequestMethod("GET");
 		httpURLConnection.connect();
 		int response = httpURLConnection.getResponseCode();
@@ -58,28 +69,15 @@ public class HTTPRequest extends AbstractRequest {
 			inputStream.close();
 			httpURLConnection.disconnect();
 		}
-
+		finished = true;
 	}
 
-	public String getDataAsString() {
-		return new String(rawData,StandardCharsets.UTF_8);
+	public String getDataAsString() throws IOException {
+		return new String(getData(),StandardCharsets.UTF_8);
 	}
 
-	public byte[] getData() {
+	public byte[] getData() throws IOException {
+		if (ioException != null) throw ioException;
 		return rawData;
-	}
-
-	public static void main(String[] args) {
-		HTTPRequest request = new HTTPRequest(
-				"http://api.helioviewer.org/v2/getJPX/?startTime=2014-04-04T19:46:37Z&endTime=2014-04-04T21:26:17Z&sourceId=9&jpip=true&verbose=true&cadence=20",
-				PRIORITY.HIGH);
-		try {
-			request.receiveData();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.out.println(request.getDataAsString());
-
 	}
 }

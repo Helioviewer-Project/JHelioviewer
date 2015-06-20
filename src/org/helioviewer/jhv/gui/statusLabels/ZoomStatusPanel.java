@@ -5,10 +5,10 @@ import java.awt.Dimension;
 import javax.swing.BorderFactory;
 
 import org.helioviewer.jhv.gui.MainFrame;
+import org.helioviewer.jhv.gui.opengl.MainPanel;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 
 /**
  * Status panel for displaying the current zoom.

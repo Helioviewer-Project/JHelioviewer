@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.viewmodel.view.opengl;
+package org.helioviewer.jhv.gui.opengl;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -31,6 +31,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
+import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
+import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
 import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.Vector2d;
@@ -61,15 +64,11 @@ import org.helioviewer.jhv.opengl.camera.animation.CameraAnimation;
 import org.helioviewer.jhv.opengl.camera.animation.CameraTransformationAnimation;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace.Ray;
+import org.helioviewer.jhv.opengl.texture.TextureCache;
 import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine.TimeLineListener;
-import org.helioviewer.jhv.viewmodel.view.opengl.texture.TextureCache;
-
-import ch.fhnw.i4ds.helio.coordinate.converter.Hcc2HgConverter;
-import ch.fhnw.i4ds.helio.coordinate.coord.HeliocentricCartesianCoordinate;
-import ch.fhnw.i4ds.helio.coordinate.coord.HeliographicCoordinate;
 
 import com.jogamp.opengl.DebugGL2;
 import com.jogamp.opengl.GL;
@@ -469,7 +468,6 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 				if (layer.isVisible()) {
 					boolean visibleLayer = this.displayLayer(gl, (ImageLayer) layer);
 					layerLoaded &= visibleLayer;
-					notCenterAnimation |= visibleLayer;
 				}
 			}
 			
@@ -486,9 +484,6 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 			transformation.addTranslation(new Vector3d(-translation.x, translation.y, -translation.z));
 			gl.glMultMatrixd(transformation.m, 0);
 			
-			/*gl.glOrtho(-width + this.translation.x, width + this.translation.x,
-					width + this.translation.y, -width + this.translation.y,
-					CLIP_NEAR, CLIP_FAR);*/
 			GLU glu = new GLU();
 			gl.glMatrixMode(GL2.GL_PROJECTION);
 			gl.glLoadIdentity();
@@ -502,15 +497,6 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 				gl.glOrtho(-width, width, -width, width, clipNear, this.translation.z + 4 * Constants.SUN_RADIUS);
 				gl.glScalef((float)(1/aspect), 1, 1);
 			}
-			/*gl.glFrustum(-width + this.translation.x, width + this.translation.x,
-					-width + this.translation.y, width + this.translation.y,
-					CLIP_NEAR, CLIP_FAR);*/
-			//if (CameraMode.mode == MODE.MODE_2D) {
-			//	gl.glOrtho(-1, 1, 1, -1, 10, -10);
-			//} else {
-				//gl.glFrustum(-1, 1, -1, 1, 10, 20);
-				//gl.glTranslated(0, 0, -10);
-			//}
 
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
 			calculateBounds();
@@ -529,20 +515,12 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 			double yScale = aspect < 1 ? aspect : 1;
 			gl.glScaled(xScale, yScale, 1);
 			gl.glMatrixMode(GL2.GL_MODELVIEW);		
-			if (!layerLoaded || loading){
-				int xOffset, yOffset, width, height;
-				if (notCenterAnimation){
-					xOffset = (int)(getSurfaceWidth() * 0.9);
-					width = (int)(getSurfaceWidth() * 0.1);
-					yOffset = (int)(getSurfaceHeight() * 0.9);
-					height = (int)(getSurfaceHeight() * 0.1);
-				}
-				else {
-					xOffset = (int)(getSurfaceWidth() * 0.425);
-					width = (int)(getSurfaceWidth() * 0.15);
-					yOffset = (int)(getSurfaceHeight() * 0.425);
-					height = (int)(getSurfaceHeight() * 0.15);					
-				}
+			boolean loading = UltimateDownloadManager.checkLoading();
+			if (loading){				
+				int xOffset = (int)(getSurfaceWidth() * 0.85);
+				int width = (int)(getSurfaceWidth() * 0.15);
+				int yOffset = (int)(getSurfaceHeight() * 0.85);
+				int height = (int)(getSurfaceHeight() * 0.15);
 				gl.glViewport(xOffset, yOffset, width, height);
 				LoadingScreen.render(gl);
 				gl.glViewport(0, 0, getSurfaceWidth(), getSurfaceHeight());
@@ -689,10 +667,9 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 					this).getHitpoint();
 			HeliocentricCartesianCoordinate cart = new HeliocentricCartesianCoordinate(
 					hitPoint.x, hitPoint.y, hitPoint.z);
-			Hcc2HgConverter converter = new Hcc2HgConverter();
-			HeliographicCoordinate newCoord = converter.convert(cart);
+			HeliographicCoordinate newCoord = cart.toHeliographicCoordinate();
 			double angle = DifferentialRotation.calculateRotationInRadians(
-					newCoord.getHgLatitude().radValue(), seconds);
+					newCoord.latitude, seconds);
 
 			Quaternion3d rotation = Quaternion3d.createRotation(angle,
 					new Vector3d(0, 1, 0));
@@ -1112,8 +1089,8 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		statusLabelCameras.add(statusLabelCamera);
 	}
 
-	public void setLoading(boolean state) {
-		this.loading = state;
+	public void setLoading() {
+		this.loading = true;
 	}
 
 }

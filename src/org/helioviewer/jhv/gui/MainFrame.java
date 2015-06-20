@@ -26,12 +26,12 @@ import org.helioviewer.jhv.gui.components.TopToolBar;
 import org.helioviewer.jhv.gui.leftPanel.FilterTabPanel;
 import org.helioviewer.jhv.gui.leftPanel.LayerPanel;
 import org.helioviewer.jhv.gui.leftPanel.MoviePanel;
-import org.helioviewer.jhv.gui.leftPanel.OverViewPanel;
+import org.helioviewer.jhv.gui.opengl.MainPanel;
+import org.helioviewer.jhv.gui.opengl.OverViewPanel;
 import org.helioviewer.jhv.gui.statusLabels.CurrentTimeLabel;
 import org.helioviewer.jhv.gui.statusLabels.FramerateStatusPanel;
 import org.helioviewer.jhv.gui.statusLabels.PositionStatusPanel;
 import org.helioviewer.jhv.gui.statusLabels.ZoomStatusPanel;
-import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;

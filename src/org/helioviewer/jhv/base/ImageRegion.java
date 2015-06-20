@@ -6,10 +6,10 @@ import java.awt.geom.Rectangle2D;
 import java.time.LocalDateTime;
 
 import org.helioviewer.jhv.base.math.Vector2i;
+import org.helioviewer.jhv.gui.opengl.MainPanel;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 
 /**
  * Class to find the current ImageRegion that's needed to decode

@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.gui.leftPanel;
+package org.helioviewer.jhv.gui.opengl;
 
 import java.awt.Dimension;
 import java.util.ArrayList;
@@ -15,7 +15,6 @@ import org.helioviewer.jhv.opengl.camera.CameraRotationInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraZoomBoxInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraZoomInteraction;
 import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
-import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;

@@ -9,8 +9,8 @@ import javax.swing.KeyStroke;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MainFrame;
+import org.helioviewer.jhv.gui.opengl.MainPanel;
 import org.helioviewer.jhv.opengl.camera.animation.CameraZoomAnimation;
-import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 
 public class ZoomOutAction  extends AbstractAction {
 

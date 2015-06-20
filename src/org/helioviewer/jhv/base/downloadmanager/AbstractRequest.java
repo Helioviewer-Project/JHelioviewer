@@ -10,9 +10,12 @@ import java.io.IOException;
  *
  */
 public abstract class AbstractRequest {
-	
+	public static final int INFINITE = -1;
 	protected boolean finished = false;
-	private int retries = 3;
+	protected int retries = 3;
+	protected IOException ioException = null;
+	protected int timeOut = 2000;
+	protected String url;
 	
 	/**
 	 * PRIORITY are used for the Downloadmanager
@@ -43,10 +46,20 @@ public abstract class AbstractRequest {
 	public boolean isFinished(){
 		return finished;
 	}
-	
-	public int decrementRetries(){
-		return retries--;
+		
+	public boolean hasRetry(){
+		finished = --retries > 0 ? false : retries < 0 ? false : true;
+		return !finished; 
 	}
 	
 	abstract void execute() throws IOException;
+
+	public void addError(IOException ioException) {
+		this.ioException = ioException;
+	}
+	
+	@Override
+	public String toString() {
+		return url;
+	}
 }

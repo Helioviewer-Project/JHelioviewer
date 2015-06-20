@@ -7,13 +7,13 @@ import java.util.concurrent.ExecutionException;
 
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.gui.MainFrame;
+import org.helioviewer.jhv.gui.opengl.MainPanel;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
 import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.KakaduRender;
 import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.UltimateLayer;
-import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 
 public class ImageLayer extends LayerInterface{
 	
@@ -21,12 +21,6 @@ public class ImageLayer extends LayerInterface{
 	private UltimateLayer ultimateLayer;
 			
 	private LayerRayTrace layerRayTrace;
-	
-	public ImageLayer(int sourceID, KakaduRender newRender) {
-		super();
-		this.ultimateLayer = new UltimateLayer(id, sourceID, newRender, this);
-		layerRayTrace = new LayerRayTrace(this);
-	}
 	
 	public ImageLayer(int sourceID, KakaduRender newRender, LocalDateTime start, LocalDateTime end, int cadence) {
 		super();
@@ -99,5 +93,9 @@ public class ImageLayer extends LayerInterface{
 	public ImageRegion getLastDecodedImageRegion(){
 		return ultimateLayer.getImageRegion();
 	}
-
+	
+	public void cancelDownload(){
+		ultimateLayer.cancelDownload();
+	}
+	
 }

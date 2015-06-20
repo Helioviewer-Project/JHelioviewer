@@ -1,11 +1,12 @@
 package org.helioviewer.jhv.gui.dialogs;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
+import org.helioviewer.jhv.base.downloadmanager.AbstractRequest;
 import org.helioviewer.jhv.base.downloadmanager.AbstractRequest.PRIORITY;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
@@ -24,7 +25,7 @@ public class InstrumentModel {
 		Thread thread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				HTTPRequest httpRequest = new HTTPRequest(URL_DATASOURCE, PRIORITY.HIGH);
+				HTTPRequest httpRequest = new HTTPRequest(URL_DATASOURCE, PRIORITY.LOW, AbstractRequest.INFINITE);
 				UltimateDownloadManager.addRequest(httpRequest);
 				
 				while (!httpRequest.isFinished()) {
@@ -36,9 +37,15 @@ public class InstrumentModel {
 					}
 				}
 				try {
-					JSONObject jsonObject = new JSONObject(httpRequest.getDataAsString());
-					addObservatories(jsonObject);
-					addLayerPanel.updateGUI();
+					JSONObject jsonObject;
+					try {
+						jsonObject = new JSONObject(httpRequest.getDataAsString());
+						addObservatories(jsonObject);
+						addLayerPanel.updateGUI();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -128,7 +135,6 @@ public class InstrumentModel {
 				uiLabel.add(obj.getString("label"));
 				observatory.uiLabels = uiLabel;
 			}
-			System.out.println(uiLabels);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -150,8 +156,8 @@ public class InstrumentModel {
 		}
 	}
 	
-	public static class Observatory {
-		LinkedHashMap<String, Instrument> instruments = new LinkedHashMap<String, InstrumentModel.Instrument>(); 
+	static class Observatory {
+		private LinkedHashMap<String, Instrument> instruments = new LinkedHashMap<String, InstrumentModel.Instrument>(); 
 		private String name;
 		private ArrayList<String> uiLabels;
 		
@@ -159,7 +165,7 @@ public class InstrumentModel {
 			this.name = name;
 		}
 		
-		public void addInstrument(String name, Instrument instrument){
+		private void addInstrument(String name, Instrument instrument){
 			instruments.put(name, instrument);
 		}
 		
@@ -177,15 +183,15 @@ public class InstrumentModel {
 		}
 	}
 	
-	public static class Instrument{
+	static class Instrument{
 		private LinkedHashMap<String, Filter> filters = new LinkedHashMap<String, InstrumentModel.Filter>();
 		private String name;
 		
-		public Instrument(String name) {
+		private Instrument(String name) {
 			this.name = name;
 		}
 		
-		public void addFilter(String name, Filter detector){
+		private void addFilter(String name, Filter detector){
 			filters.put(name, detector);
 		}
 		
@@ -200,21 +206,20 @@ public class InstrumentModel {
 		}
 	}
 		
-	public static class Filter{
+	static class Filter{
 		private LinkedHashMap<String, Filter> filters = new LinkedHashMap<String, InstrumentModel.Filter>();
 		private String name;
 		
-		public Boolean hasDates = false;
-		public int layeringOrder;
-		public String nickname;
-		public int sourceId;
-		public HashMap<String, String> uiLabels = new HashMap<String, String>();
-		
-		public Filter(String name) {
+		private Boolean hasDates = false;
+		private int layeringOrder;
+		private String nickname;
+		int sourceId;
+				
+		private Filter(String name) {
 			this.name = name;
 		}
 
-		public void addFilter(String name, Filter filter){
+		private void addFilter(String name, Filter filter){
 			filters.put(name, filter);
 		}
 		

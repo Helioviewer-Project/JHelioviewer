@@ -33,6 +33,8 @@ public class LoadingScreen{
 	private static OpenGLHelper openGLHelper;
 	private static int texture;
 
+	private static long time;
+	
 	static{
 		openGLHelper = new OpenGLHelper();
 				texture = openGLHelper.createTextureID();
@@ -42,7 +44,7 @@ public class LoadingScreen{
 	}
 
 	public static void render(GL2 gl) {
-
+		
 		gl.glUseProgram(0);
 		gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
 		gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
@@ -65,22 +67,23 @@ public class LoadingScreen{
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER,
 				GL2.GL_LINEAR);
 		// gl.glColor3f(1, 0, 0);
+		time = System.currentTimeMillis();
+		long counter = (time / 600) % 4;
 		gl.glBegin(GL2.GL_QUADS);
-		gl.glTexCoord2f(0, 0);
-		gl.glVertex2d(-0.4, 0.4);
-		gl.glTexCoord2f(1, 0);
-		gl.glVertex2d(0.4, 0.4);
-		gl.glTexCoord2f(1, 1);
-		gl.glVertex2d(0.4, -0.4);
-		gl.glTexCoord2f(0, 1);
-		gl.glVertex2d(-0.4, -0.4);
+		gl.glTexCoord2f(0, counter * 0.25f);
+		gl.glVertex2d(-0.2, 0.5);
+		gl.glTexCoord2f(1, counter * 0.25f);
+		gl.glVertex2d(0.8, 0.5);
+		gl.glTexCoord2f(1, (counter + 1) * 0.25f);
+		gl.glVertex2d(0.8, 0.25);
+		gl.glTexCoord2f(0, (counter + 1) * 0.25f);
+		gl.glVertex2d(-0.2, 0.25);
 		gl.glEnd();
-
 		gl.glDisable(GL2.GL_DEPTH_TEST);
 		gl.glDisable(GL2.GL_BLEND);
 		gl.glDisable(GL2.GL_TEXTURE_2D);
 
-		renderCircles(gl);
+		//renderCircles(gl);
 
 	}
 

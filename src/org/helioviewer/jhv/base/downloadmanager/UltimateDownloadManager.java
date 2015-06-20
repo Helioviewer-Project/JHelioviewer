@@ -1,63 +1,82 @@
 package org.helioviewer.jhv.base.downloadmanager;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.Comparator;
 import java.util.concurrent.PriorityBlockingQueue;
 
-public class UltimateDownloadManager {	
-	
-		
-	private static final Comparator<AbstractRequest> COMPARATOR = new Comparator<AbstractRequest>() {
+import org.helioviewer.jhv.JHVGlobals;
+import org.helioviewer.jhv.base.downloadmanager.AbstractRequest.PRIORITY;
+import org.helioviewer.jhv.gui.MainFrame;
+
+public class UltimateDownloadManager {
+
+	private static final Comparator<WeakReference<AbstractRequest>> COMPARATOR = new Comparator<WeakReference<AbstractRequest>>() {
 		@Override
-		public int compare(AbstractRequest o1, AbstractRequest o2) {
-			if (o1.getPriority() == o2.getPriority()) return 0;
-			return o2.getPriority().ordinal() < o1.getPriority().ordinal() ? 1 : -1;
+		public int compare(WeakReference<AbstractRequest> o1,
+				WeakReference<AbstractRequest> o2) {
+			AbstractRequest oo1 = o1.get();
+			AbstractRequest oo2 = o2.get();
+			if (oo1.getPriority() == oo2.getPriority())
+				return 0;
+			return oo2.getPriority().ordinal() < oo1.getPriority().ordinal() ? 1
+					: -1;
 		}
 	};
-	
-	private static PriorityBlockingQueue<AbstractRequest> taskDeque = null;
-	
+
+	private static PriorityBlockingQueue<WeakReference<AbstractRequest>> taskDeque = null;
+
 	private static final int NUMBER_OF_THREAD = 6;
-	
-	
-	
-	static{
-		taskDeque = new PriorityBlockingQueue<AbstractRequest>(1000, COMPARATOR);
-		
-		for (int i = 0; i < NUMBER_OF_THREAD; i++){
+
+	static {
+		taskDeque = new PriorityBlockingQueue<WeakReference<AbstractRequest>>(
+				1000, COMPARATOR);
+
+		for (int i = 0; i < NUMBER_OF_THREAD; i++) {
 			UltimateDownloadManager.DownloadThread thread = new UltimateDownloadManager.DownloadThread();
 			thread.setName("Download-Thread-" + i);
 			thread.start();
-		}		
-		
+		}
+
 	}
-	
-	public static void addRequest(AbstractRequest request){
-		//taskDeque.offer(request);
-		taskDeque.put(request);
-	}	
-	
-	private static class DownloadThread extends Thread{
-		
+
+	public static void addRequest(AbstractRequest request) {
+		if (request.getPriority().ordinal() < PRIORITY.LOW.ordinal()) MainFrame.MAIN_PANEL.setLoading();
+		WeakReference<AbstractRequest> weakRequest = new WeakReference<AbstractRequest>(
+				request);
+		// taskDeque.offer(request);
+		taskDeque.put(weakRequest);
+	}
+
+	public static void remove(AbstractRequest request) {
+		taskDeque.remove(request);
+	}
+
+	private static class DownloadThread extends Thread {
+
 		private boolean stopped = false;
-		
+
 		public DownloadThread() {
 		}
-		
+
 		@Override
 		public void run() {
-			while (!isStopped()){
+			while (!isStopped()) {
 				try {
-					AbstractRequest request = taskDeque.take();
+					AbstractRequest request = taskDeque.take().get();
+					if (request != null)
 					try {
 						request.execute();
 					} catch (IOException e) {
-						if (request.decrementRetries() > 0){
-							System.out.println("retry");
+						if (request.hasRetry()) {
 							addRequest(request);
 						}
-						else
-							e.printStackTrace();
+						else{
+							request.addError(e);
+						}
+					}
+					else if(!JHVGlobals.isReleaseVersion()){
+						throw new RuntimeException("Request is not canceled");
 					}
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
@@ -66,30 +85,23 @@ public class UltimateDownloadManager {
 			}
 		}
 
-		public synchronized void doStop(){
+		public synchronized void doStop() {
 			stopped = true;
 			this.interrupt();
 		}
-		
+
 		private boolean isStopped() {
 			return stopped;
 		}
-		
-	}
-	
-	private static class Ttttt extends AbstractRequest{
-		private String name;
-		
-		public Ttttt(PRIORITY priority, String name) {
-			super(priority);
-			this.name = name;
-		}
 
-		@Override
-		void execute() {
-			System.out.println(name);
-		}
-		
 	}
 
+	public static boolean checkLoading() {
+		for (WeakReference<AbstractRequest> request : taskDeque){
+			if (request.get().getPriority().ordinal() < PRIORITY.LOW.ordinal()){
+				return true;
+			}
+		}
+		return false;
+	}
 }

@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.viewmodel.view.opengl.texture;
+package org.helioviewer.jhv.opengl.texture;
 
 import java.time.LocalDateTime;
 import java.util.ArrayDeque;

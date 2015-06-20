@@ -2,16 +2,12 @@ package org.helioviewer.jhv.viewmodel.metadata;
 
 import java.time.LocalDateTime;
 
+import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
+import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
 import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
-
-import ch.fhnw.i4ds.helio.coordinate.api.Angle;
-import ch.fhnw.i4ds.helio.coordinate.api.CoordConverter;
-import ch.fhnw.i4ds.helio.coordinate.converter.Hg2HccConverter;
-import ch.fhnw.i4ds.helio.coordinate.coord.HeliocentricCartesianCoordinate;
-import ch.fhnw.i4ds.helio.coordinate.coord.HeliographicCoordinate;
 
 public class MetaDataStereo extends MetaData{
 
@@ -84,13 +80,9 @@ public class MetaDataStereo extends MetaData{
         this.stonyhurstLongitude = metaDataContainer.tryGetDouble("HGLN_OBS");
         this.stonyhurstAvailable = this.stonyhurstLatitude != 0.0 || this.stonyhurstLongitude != 0.0;
         if (stonyhurstAvailable){
-        	CoordConverter<HeliographicCoordinate, HeliocentricCartesianCoordinate> converter = new Hg2HccConverter();
-        	Angle hgLongitude = new Angle(stonyhurstLongitude);
-        	Angle hgLatitude = new Angle(stonyhurstLatitude);
-        	HeliographicCoordinate hgc = new HeliographicCoordinate(hgLongitude, hgLatitude);
-        	
-        	HeliocentricCartesianCoordinate hcc = converter.convert(hgc);
-        	this.orientation = new Vector3d(hcc.getX(), hcc.getY(), hcc.getZ());
+        	HeliographicCoordinate hgc = new HeliographicCoordinate(stonyhurstLongitude, stonyhurstLatitude);        	
+        	HeliocentricCartesianCoordinate hcc = hgc.toHeliocentricCartesianCoordinate();
+        	this.orientation = new Vector3d(hcc.x, hcc.y, hcc.z);
         }
         this.calcDefaultRotation();
    }

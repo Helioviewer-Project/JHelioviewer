@@ -1,10 +1,13 @@
 package org.helioviewer.jhv.plugins.pfssplugin.data.managers;
 
+
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.base.downloadmanager.AbstractRequest.PRIORITY;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
@@ -104,30 +107,41 @@ public class FileDescriptorManager {
 						}
 					}
 
-					String lines[] = httpRequest.getDataAsString().split(
-							"\\r?\\n");
-					for (String line : lines) {
-						int split = line.indexOf(' ');
-						String dateString = line.substring(0, split);
-						String fileName = line.substring(split + 1,
-								line.length());
+					String lines[];
+					try {
+						lines = httpRequest.getDataAsString().split("\\r?\\n");
+						for (String line : lines) {
+							int split = line.indexOf(' ');
+							String dateString = line.substring(0, split);
+							String fileName = line.substring(split + 1,
+									line.length());
 
-						LocalDateTime end = LocalDateTime.parse(dateString,
-								dateTimeFormatter);
-						LocalDateTime start = end
-								.minusHours(PfssSettings.FITS_FILE_D_HOUR)
-								.minusMinutes(PfssSettings.FITS_FILE_D_MINUTES)
-								.plusNanos(1);
+							LocalDateTime end = LocalDateTime.parse(dateString,
+									dateTimeFormatter);
+							LocalDateTime start = end
+									.minusHours(PfssSettings.FITS_FILE_D_HOUR)
+									.minusMinutes(
+											PfssSettings.FITS_FILE_D_MINUTES)
+									.plusNanos(1);
 
-						if (!(end.isBefore(from) || start.isAfter(to))) {
-							synchronized (descriptors) {
-								if (curEpoch != epoch)
-									return;
+							if (!(end.isBefore(from) || start.isAfter(to))) {
+								synchronized (descriptors) {
+									if (curEpoch != epoch)
+										return;
 
-								descriptors.add(new FileDescriptor(start, end,
-										fileName));
+									descriptors.add(new FileDescriptor(start,
+											end, fileName));
+								}
 							}
 						}
+					} catch (IOException e) {
+						 errorMessage="There was no PFSS data available for the selected time range.";
+						 SwingUtilities.invokeLater(new Runnable() {		
+							@Override
+							public void run() {
+								showErrorMessages();								
+							}
+						});
 					}
 					UltimatePluginInterface.repaintMainPanel();
 				}

@@ -48,6 +48,7 @@ public class Layers {
 	}
 	
 	public static void removeLayer(int idx){
+		layers.get(idx).cancelDownload();
 		layers.remove(idx);
 		activeLayer = 0;
 		for (LayerListener renderListener : layerListeners){
@@ -79,7 +80,7 @@ public class Layers {
 	}
 	
 	public static void setActiveLayer(int activeLayer){
-		if (Layers.activeLayer != activeLayer){
+		if (Layers.activeLayer != activeLayer && getLayerCount() > 0){
 			Layers.activeLayer = activeLayer;
 			Layers.layerChanged();
 		}

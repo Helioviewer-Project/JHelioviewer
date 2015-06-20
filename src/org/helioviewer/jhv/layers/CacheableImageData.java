@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 
 import kdu_jni.Kdu_cache;
 
-import org.helioviewer.jhv.viewmodel.view.opengl.texture.TextureCache;
-import org.helioviewer.jhv.viewmodel.view.opengl.texture.TextureCache.CachableTexture;
+import org.helioviewer.jhv.opengl.texture.TextureCache;
+import org.helioviewer.jhv.opengl.texture.TextureCache.CachableTexture;
 
 public class CacheableImageData {
 

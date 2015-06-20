@@ -24,8 +24,6 @@
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="JHelioviewer/lib/native"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/helio-coordinate-converter-0.0.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/joda-time-2.4.jar"/>
 	<classpathentry kind="lib" path="lib/junrar-0.7.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/core-2.0.0.jar"/>

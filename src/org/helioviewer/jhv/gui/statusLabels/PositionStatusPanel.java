@@ -13,22 +13,14 @@ import javax.swing.BorderFactory;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
+import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
+import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
+import org.helioviewer.jhv.base.coordinates.HelioprojectiveCartesianCoordinate;
+import org.helioviewer.jhv.base.coordinates.SunDistance;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace.HitpointType;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace.Ray;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
-import org.joda.time.DateTime;
-
-import ch.fhnw.i4ds.helio.coordinate.converter.Hcc2HgConverter;
-import ch.fhnw.i4ds.helio.coordinate.converter.Hcc2HpcConverter;
-import ch.fhnw.i4ds.helio.coordinate.converter.option.ConverterOption;
-import ch.fhnw.i4ds.helio.coordinate.converter.option.ConverterOptions;
-import ch.fhnw.i4ds.helio.coordinate.coord.HeliocentricCartesianCoordinate;
-import ch.fhnw.i4ds.helio.coordinate.coord.HeliographicCoordinate;
-import ch.fhnw.i4ds.helio.coordinate.coord.HelioprojectiveCartesianCoordinate;
-import ch.fhnw.i4ds.helio.coordinate.sundist.Pb0rSunDistanceAlgo;
-import ch.fhnw.i4ds.helio.coordinate.sundist.SunDistance;
-import ch.fhnw.i4ds.helio.coordinate.sundist.SunDistanceAlgo;
 
 /**
  * Status panel for displaying the current mouse position.
@@ -99,30 +91,19 @@ public class PositionStatusPanel extends StatusLabel implements MouseListener {
 				this.setText(title);
 				return;
 			}
-			DateTime dateTime = new DateTime(current.getYear(),
-					current.getMonthValue(), current.getDayOfMonth(),
-					current.getHour(), current.getMinute(),
-					current.getSecond(), 0);
-			SunDistanceAlgo sunDistAlgo = new Pb0rSunDistanceAlgo();
-			SunDistance sunDistance = sunDistAlgo.computeDistance(dateTime);
-			Hcc2HpcConverter converter = new Hcc2HpcConverter();
-			Map<ConverterOption<?>, Object> opt = converter.getCustomOptions();
-			opt.put(ConverterOptions.SUN_DISTANCE, sunDistance.getSunDistance());
-
-			HelioprojectiveCartesianCoordinate hpc = converter.convert(cart,
-					opt);
+			
+			HelioprojectiveCartesianCoordinate hpc = cart.toHelioprojectiveCartesianCoordinate(current);
 			df = new DecimalFormat("#");
-			point = "(" + df.format(hpc.getThetaX().arcsecValue()) + "\" ,"
-					+ df.format(hpc.getThetaY().arcsecValue()) + "\")";
+			point = "(" + df.format(hpc.getThetaXAsArcSec()) + "\" ,"
+					+ df.format(hpc.getThetaYAsArcSec()) + "\")";
 			break;
 		case DEGREE:
-			Hcc2HgConverter converter1 = new Hcc2HgConverter();
-			HeliographicCoordinate newCoord = converter1.convert(cart);
+			HeliographicCoordinate newCoord = cart.toHeliographicCoordinate();
 			df = new DecimalFormat("#.##");
 			if (!(ray.getHitpointType() == HitpointType.PLANE))
-				point = "(" + df.format(newCoord.getHgLongitude().degValue())
+				point = "(" + df.format(newCoord.getHgLongitudeAsDeg())
 						+ DEGREE + " ,"
-						+ df.format(newCoord.getHgLatitude().degValue())
+						+ df.format(newCoord.getHgLatitudeAsDeg())
 						+ DEGREE + ") ";
 			else
 				point = "";

@@ -93,7 +93,7 @@ public class IconBank {
 
         SHOW_LESS("1uparrow1.png"), SHOW_MORE("1downarrow1.png"),
 
-        INVERT("invert.png"), LOADING_BIG("Loading_256x256.png"), LOADING_SMALL("Loading_219x50.png"),
+        INVERT("invert.png"), LOADING_BIG("NEW_Loading_256x256.png"), LOADING_SMALL("Loading_219x50.png"),
 
         // 3D Icons
         MODE_3D("3D_24x24.png"), MODE_2D("2D_24x24.png"), MODE_3D_SELECTED("3D_selected_24x24.png"), MODE_2D_SELECTED("2D_selected_24x24.png"), RESET("Reset_24x24.png"), ROTATE("Rotate_24x24.png"), ROTATE_SELECTED("Rotate_selected_24x24.png"), ROTATE_ALL_AXIS("Rotate_both_24x24.png"), ROTATE_ALL_AXIS_SELECTED("Rotate_both_selected_24x24.png"),

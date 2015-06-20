@@ -1,5 +1,6 @@
 package org.helioviewer.jhv.plugins.hekplugin.cache;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -89,12 +90,18 @@ public class HEKRequestStructureThread extends HEKRequest implements Runnable {
 					}
                 }
 
-                JSONObject json = new JSONObject(httpRequest.getDataAsString());
+                JSONObject json;
+				try {
+					json = new JSONObject(httpRequest.getDataAsString());
+	                parseFeedAndUpdateGUI(json, interval);
 
-                parseFeedAndUpdateGUI(json, interval);
+	                hasMorePages = json.getBoolean("overmax");
+	                page++;
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
-                hasMorePages = json.getBoolean("overmax");
-                page++;
 
             }
 

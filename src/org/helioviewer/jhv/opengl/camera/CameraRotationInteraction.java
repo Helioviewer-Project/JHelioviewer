@@ -4,8 +4,8 @@ import java.awt.event.MouseEvent;
 
 import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.Vector3d;
+import org.helioviewer.jhv.gui.opengl.MainPanel;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace;
-import org.helioviewer.jhv.viewmodel.view.opengl.MainPanel;
 
 public class CameraRotationInteraction extends CameraInteraction {
 
