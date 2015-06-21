@@ -14,8 +14,8 @@ public abstract class AbstractRequest {
 	protected boolean finished = false;
 	protected int retries = 3;
 	protected IOException ioException = null;
-	protected int timeOut = 2000;
-	protected String url;
+	protected int timeOut = 10000;
+	protected final String url;
 	
 	/**
 	 * PRIORITY are used for the Downloadmanager
@@ -31,11 +31,13 @@ public abstract class AbstractRequest {
 
 	private PRIORITY priority;
 
-	public AbstractRequest(PRIORITY priority) {
+	public AbstractRequest(String url, PRIORITY priority) {
+		this.url = url;
 		this.priority = priority;
 	}
 	
-	public AbstractRequest(PRIORITY priority, int retries) {
+	public AbstractRequest(String url, PRIORITY priority, int retries) {
+		this.url = url;
 		this.priority = priority;
 	}
 	

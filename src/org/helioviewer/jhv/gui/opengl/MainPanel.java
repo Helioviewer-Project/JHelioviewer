@@ -542,7 +542,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	protected void renderPlugins(GL2 gl){
 		gl.glEnable(GL2.GL_DEPTH_TEST);
 		gl.glDepthFunc(GL2.GL_LESS);
-		gl.glDepthMask(true);
+		gl.glDepthMask(false);
 		UltimatePluginInterface.SINGLETON.renderPlugin(gl);		
 		gl.glDepthMask(false);
 	}

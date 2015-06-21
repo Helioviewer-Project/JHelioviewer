@@ -37,8 +37,8 @@ public class UltimatePluginInterface implements TimeLineListener, MouseListener,
 		plugins = new ArrayList<NewPlugin>();
 		TimeLine.SINGLETON.addListener(this);
 		plugins.add(new SDOCutOutPlugin3D());
-		plugins.add(new PfssPlugin());
 		plugins.add(new HEKPlugin());
+		plugins.add(new PfssPlugin());
 		MainFrame.MAIN_PANEL.addMouseListener(this);
 		MainFrame.MAIN_PANEL.addMouseMotionListener(this);
 	}
@@ -75,8 +75,16 @@ public class UltimatePluginInterface implements TimeLineListener, MouseListener,
 	
 	public void renderPlugin(GL2 gl){
 		for (NewPlugin plugin : plugins){
+			gl.glMatrixMode(GL2.GL_PROJECTION);
+			gl.glPushMatrix();
+			gl.glMatrixMode(GL2.GL_MODELVIEW);
+			gl.glPushMatrix();
 			plugin.render(gl);
-		}
+			gl.glMatrixMode(GL2.GL_PROJECTION);
+			gl.glPopMatrix();
+			gl.glMatrixMode(GL2.GL_MODELVIEW);
+			gl.glPopMatrix();
+		}		
 	}
 	
 	public String[] getAboutLicenseTexts(){

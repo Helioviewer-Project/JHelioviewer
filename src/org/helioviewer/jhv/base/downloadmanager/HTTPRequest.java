@@ -8,11 +8,9 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 public class HTTPRequest extends AbstractRequest {
-	private static final int DEFAULT_TIMEOUT = 10000;
+	private static final int DEFAULT_TIMEOUT = 40000;
 
 	private static final int DEFAULT_BUFFER_SIZE = 16384;
-
-	public String uri;
 
 	private byte[] rawData;
 
@@ -27,10 +25,9 @@ public class HTTPRequest extends AbstractRequest {
 		this.retries = retries;
 	}
 
-	public HTTPRequest(String uri, PRIORITY priority) {
-		super(priority);
-		System.out.println("connect to : " + uri);
-		this.uri = uri;
+	public HTTPRequest(String url, PRIORITY priority) {
+		super(url, priority);
+		System.out.println("connect to : " + url);
 	}
 
 	public void execute() throws IOException {

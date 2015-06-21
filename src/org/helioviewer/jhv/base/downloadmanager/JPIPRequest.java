@@ -32,8 +32,7 @@ public class JPIPRequest extends AbstractRequest{
 	private final CacheableImageData cacheableImageData;
 	
 	public JPIPRequest(String url, PRIORITY priority, int startFrame, int endFrame, Rectangle size, Kdu_cache kduCache, CacheableImageData cacheableImageData) {
-		super(priority);
-		this.url = url;
+		super(url, priority);
 		this.kduCache = kduCache;
 		this.cacheableImageData = cacheableImageData;
 		jpipSocket = new JPIPSocket();

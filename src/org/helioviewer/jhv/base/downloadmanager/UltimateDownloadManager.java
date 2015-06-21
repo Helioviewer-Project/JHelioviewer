@@ -69,9 +69,11 @@ public class UltimateDownloadManager {
 						request.execute();
 					} catch (IOException e) {
 						if (request.hasRetry()) {
+							System.out.println("couldn't connect to : " + request.url);
 							addRequest(request);
 						}
 						else{
+							System.out.println("couldn't connect to : " + request.url);
 							request.addError(e);
 						}
 					}
