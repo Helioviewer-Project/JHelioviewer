@@ -97,7 +97,7 @@ public class UILatencyWatchdog
                             //only report hangs to raygun in release builds
                             if(JHVGlobals.isReleaseVersion())
                             {
-                                RaygunClient client = new RaygunClient("KHbza8sFEOIj9No3aKzzhw==");
+                                RaygunClient client = new RaygunClient("QXtNXLEKWBfClhyteqov4w==");
                                 client.SetVersion(JHVGlobals.VERSION);
                                 Map<String, String> customData = new HashMap<String, String>();
                                 customData.put("Log",Log.GetLastFewLines(6));

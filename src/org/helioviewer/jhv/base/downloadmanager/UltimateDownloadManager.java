@@ -41,7 +41,6 @@ public class UltimateDownloadManager {
 	}
 
 	public static void addRequest(AbstractRequest request) {
-		if (request.getPriority().ordinal() < PRIORITY.LOW.ordinal()) MainFrame.MAIN_PANEL.setLoading();
 		WeakReference<AbstractRequest> weakRequest = new WeakReference<AbstractRequest>(
 				request);
 		// taskDeque.offer(request);

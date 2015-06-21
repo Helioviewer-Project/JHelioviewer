@@ -31,6 +31,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
 import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
 import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
@@ -86,8 +87,8 @@ import com.jogamp.opengl.util.awt.ImageUtil;
 import com.jogamp.opengl.util.awt.TextRenderer;
 
 public class MainPanel extends GLCanvas implements GLEventListener,
-		MouseListener, MouseMotionListener, MouseWheelListener,
-		LayerListener, TimeLineListener, Camera {
+		MouseListener, MouseMotionListener, MouseWheelListener, LayerListener,
+		TimeLineListener, Camera {
 
 	/**
 	 * 
@@ -108,7 +109,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	protected Quaternion3d rotation;
 	protected Vector3d translation;
 	private ArrayList<MainPanel> synchronizedViews;
-	
+
 	private ArrayList<StatusLabelMouse> statusLabelsMouses;
 	private ArrayList<StatusLabelCamera> statusLabelCameras;
 	private CopyOnWriteArrayList<CameraAnimation> cameraAnimations;
@@ -117,7 +118,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	private int shaderprogram;
 	private HashMap<String, Integer> lutMap;
 	private int nextAvaibleLut = 0;
-	
+
 	protected CameraInteraction[] cameraInteractions;
 
 	private boolean track = false;
@@ -132,8 +133,6 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 
 	private Dimension size;
 
-	private boolean loading = false;
-
 	private static int DEFAULT_TILE_WIDTH = 2048;
 	private static int DEFAULT_TILE_HEIGHT = 2048;
 
@@ -143,7 +142,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		statusLabelsMouses = new ArrayList<StatusLabelMouse>();
 		statusLabelCameras = new ArrayList<StatusLabelCamera>();
 		this.setSharedContext(OpenGLHelper.glContext);
-		
+
 		Layers.LAYERS.addNewLayerListener(this);
 		TimeLine.SINGLETON.addListener(this);
 		this.addMouseListener(this);
@@ -151,7 +150,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		this.addGLEventListener(this);
 		this.addMouseWheelListener(this);
 		layers = Layers.LAYERS;
-		
+
 		this.rotation = Quaternion3d.createRotation(0.0, new Vector3d(0, 1, 0));
 		this.translation = new Vector3d(0, 0, DEFAULT_CAMERA_DISTANCE);
 
@@ -169,7 +168,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	public void setRotation(Quaternion3d rotation) {
 		this.rotation = rotation;
 		this.repaintViewAndSynchronizedViews();
-		for (StatusLabelCamera statusLabelCamera : statusLabelCameras){
+		for (StatusLabelCamera statusLabelCamera : statusLabelCameras) {
 			statusLabelCamera.cameraChanged();
 		}
 	}
@@ -182,7 +181,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		if (!translation.isApproxEqual(this.translation, 0)) {
 			this.translation = translation;
 			this.repaintViewAndSynchronizedViews();
-			for (StatusLabelCamera statusLabelCamera : statusLabelCameras){
+			for (StatusLabelCamera statusLabelCamera : statusLabelCameras) {
 				statusLabelCamera.cameraChanged();
 			}
 		}
@@ -209,7 +208,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		if (!translation.isApproxEqual(this.translation, 0)) {
 			this.translation = translation;
 			this.repaintViewAndSynchronizedViews();
-			for (StatusLabelCamera statusLabelCamera : statusLabelCameras){
+			for (StatusLabelCamera statusLabelCamera : statusLabelCameras) {
 				statusLabelCamera.cameraChanged();
 			}
 		}
@@ -220,7 +219,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		this.rotation = rotation;
 		this.translation = translation;
 		repaintViewAndSynchronizedViews();
-		for (StatusLabelCamera statusLabelCamera : statusLabelCameras){
+		for (StatusLabelCamera statusLabelCamera : statusLabelCameras) {
 			statusLabelCamera.cameraChanged();
 		}
 	}
@@ -284,7 +283,8 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		String line = null;
 
 		try (BufferedReader br = new BufferedReader(new InputStreamReader(
-				MainPanel.class.getResourceAsStream(shaderName),StandardCharsets.UTF_8))) {
+				MainPanel.class.getResourceAsStream(shaderName),
+				StandardCharsets.UTF_8))) {
 			while ((line = br.readLine()) != null) {
 				shaderCode.append(line + "\n");
 			}
@@ -326,7 +326,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 				opacityCorona = 0;
 			gl.glEnable(GL2.GL_DEPTH_TEST);
 			gl.glDepthFunc(GL2.GL_LEQUAL);
-			gl.glDepthMask(true);  
+			gl.glDepthMask(true);
 			gl.glColor4f(1, 1, 1, 1);
 			gl.glEnable(GL2.GL_BLEND);
 			gl.glEnable(GL2.GL_TEXTURE_2D);
@@ -334,7 +334,6 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 			gl.glActiveTexture(GL.GL_TEXTURE0);
 			gl.glBindTexture(GL2.GL_TEXTURE_2D, layerTexture);
 
-			
 			gl.glEnable(GL2.GL_VERTEX_PROGRAM_ARB);
 			gl.glEnable(GL2.GL_FRAGMENT_PROGRAM_ARB);
 
@@ -387,10 +386,13 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 					CameraMode.getCameraMode());
 			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "contrast"),
 					(float) layer.getContrast());
-			
-			float clipNear = (float)Math.max(this.translation.z - 4 * Constants.SUN_RADIUS, CLIP_NEAR);
-			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "near"), clipNear);
-			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "far"), (float)(this.translation.z + 4 * Constants.SUN_RADIUS));
+
+			float clipNear = (float) Math.max(this.translation.z - 4
+					* Constants.SUN_RADIUS, CLIP_NEAR);
+			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "near"),
+					clipNear);
+			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "far"),
+					(float) (this.translation.z + 4 * Constants.SUN_RADIUS));
 			float[] transformation = getTransformation().toFloatArray();
 			float[] layerTransformation = layer.getMetaData().getRotation()
 					.toMatrix().toFloatArray();
@@ -404,9 +406,9 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 					gl.glGetUniformLocation(shaderprogram, "imageResolution"),
 					layer.getLastDecodedImageRegion().textureHeight,
 					layer.getLastDecodedImageRegion().textureHeight);
-					
+
 			gl.glBegin(GL2.GL_QUADS);
-			
+
 			gl.glTexCoord2f(0.0f, 1.0f);
 			gl.glVertex2d(-1, -1);
 			gl.glTexCoord2f(1.0f, 1.0f);
@@ -418,18 +420,18 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 
 			gl.glEnd();
 			gl.glUseProgram(0);
-			//gl.glBindTexture(GL2.GL_TEXTURE_2D, 0);
+			// gl.glBindTexture(GL2.GL_TEXTURE_2D, 0);
 			gl.glActiveTexture(GL.GL_TEXTURE0);
-			//gl.glBindTexture(GL2.GL_TEXTURE_2D, 0);
+			// gl.glBindTexture(GL2.GL_TEXTURE_2D, 0);
 			gl.glDisable(GL2.GL_BLEND);
 			gl.glDisable(GL2.GL_TEXTURE_2D);
 			gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
 			gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
 			gl.glEnable(GL2.GL_DEPTH_TEST);
-			gl.glDepthMask(false);  
+			gl.glDepthMask(false);
 			return true;
 
-		} else{
+		} else {
 			return false;
 		}
 	}
@@ -440,7 +442,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT);
 		gl.glClear(GL2.GL_DEPTH_BUFFER_BIT);
 		gl.glDepthMask(false);
-		
+
 		// Calculate Track
 		if (track)
 			calculateTrackRotation();
@@ -448,12 +450,14 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 			gl.glMatrixMode(GL2.GL_PROJECTION);
 			gl.glPushMatrix();
 
-			double clipNear = Math.max(this.translation.z - 4 * Constants.SUN_RADIUS, CLIP_NEAR);
-			gl.glOrtho(-1, 1, -1, 1, clipNear, this.translation.z + 4 * Constants.SUN_RADIUS);
+			double clipNear = Math.max(this.translation.z - 4
+					* Constants.SUN_RADIUS, CLIP_NEAR);
+			gl.glOrtho(-1, 1, -1, 1, clipNear, this.translation.z + 4
+					* Constants.SUN_RADIUS);
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
 			gl.glLoadIdentity();
 			gl.glPushMatrix();
-			
+
 			Matrix4d mat = Matrix4d.identity();
 			mat.setTranslation(0, 0, -translation.z);
 			gl.glMultMatrixd(mat.m, 0);
@@ -461,41 +465,45 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 				this.rotation = layers.getActiveLayer().getMetaData()
 						.getRotation().copy();
 			}
-			
+
 			boolean layerLoaded = true;
 			boolean notCenterAnimation = false;
 			for (LayerInterface layer : layers.getLayers()) {
 				if (layer.isVisible()) {
-					boolean visibleLayer = this.displayLayer(gl, (ImageLayer) layer);
+					boolean visibleLayer = this.displayLayer(gl,
+							(ImageLayer) layer);
 					layerLoaded &= visibleLayer;
 				}
 			}
-			
+
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
 			gl.glPopMatrix();
 			gl.glMatrixMode(GL2.GL_PROJECTION);
-			gl.glPopMatrix();			
+			gl.glPopMatrix();
 			gl.glPushMatrix();
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
 
-			
-			Quaternion3d rotation = new Quaternion3d(this.rotation.getAngle(), this.rotation.getRotationAxis().negateY());
+			Quaternion3d rotation = new Quaternion3d(this.rotation.getAngle(),
+					this.rotation.getRotationAxis().negateY());
 			Matrix4d transformation = rotation.toMatrix();
-			transformation.addTranslation(new Vector3d(-translation.x, translation.y, -translation.z));
+			transformation.addTranslation(new Vector3d(-translation.x,
+					translation.y, -translation.z));
 			gl.glMultMatrixd(transformation.m, 0);
-			
+
 			GLU glu = new GLU();
 			gl.glMatrixMode(GL2.GL_PROJECTION);
 			gl.glLoadIdentity();
 			gl.glScaled(aspect, aspect, 1);
-			
-			if (CameraMode.mode == CameraMode.MODE.MODE_3D){
-			glu.gluPerspective(MainPanel.FOV, this.aspect, clipNear, this.translation.z + 4 * Constants.SUN_RADIUS);
-			}
-			else {
-				double width = Math.tan(Math.toRadians(FOV)/2) * translation.z;
-				gl.glOrtho(-width, width, -width, width, clipNear, this.translation.z + 4 * Constants.SUN_RADIUS);
-				gl.glScalef((float)(1/aspect), 1, 1);
+
+			if (CameraMode.mode == CameraMode.MODE.MODE_3D) {
+				glu.gluPerspective(MainPanel.FOV, this.aspect, clipNear,
+						this.translation.z + 4 * Constants.SUN_RADIUS);
+			} else {
+				double width = Math.tan(Math.toRadians(FOV) / 2)
+						* translation.z;
+				gl.glOrtho(-width, width, -width, width, clipNear,
+						this.translation.z + 4 * Constants.SUN_RADIUS);
+				gl.glScalef((float) (1 / aspect), 1, 1);
 			}
 
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
@@ -503,28 +511,28 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 			for (CameraInteraction cameraInteraction : cameraInteractions) {
 				cameraInteraction.renderInteraction(gl);
 			}
-			
+
 			renderPlugins(gl);
 			gl.glMatrixMode(GL2.GL_PROJECTION);
 			gl.glPopMatrix();
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
-			
+
 			gl.glMatrixMode(GL2.GL_PROJECTION);
 			gl.glLoadIdentity();
-			double xScale = aspect > 1 ? 1/aspect : 1;
+			double xScale = aspect > 1 ? 1 / aspect : 1;
 			double yScale = aspect < 1 ? aspect : 1;
 			gl.glScaled(xScale, yScale, 1);
-			gl.glMatrixMode(GL2.GL_MODELVIEW);		
+			gl.glMatrixMode(GL2.GL_MODELVIEW);
 			boolean loading = UltimateDownloadManager.checkLoading();
-			if (loading){				
-				int xOffset = (int)(getSurfaceWidth() * 0.85);
-				int width = (int)(getSurfaceWidth() * 0.15);
-				int yOffset = (int)(getSurfaceHeight() * 0.85);
-				int height = (int)(getSurfaceHeight() * 0.15);
+			if (loading) {
+				int xOffset = (int) (getSurfaceWidth() * 0.85);
+				int width = (int) (getSurfaceWidth() * 0.15);
+				int yOffset = (int) (getSurfaceHeight() * 0.85);
+				int height = (int) (getSurfaceHeight() * 0.15);
 				gl.glViewport(xOffset, yOffset, width, height);
 				LoadingScreen.render(gl);
 				gl.glViewport(0, 0, getSurfaceWidth(), getSurfaceHeight());
-				repaint(20);
+				repaint(1000);
 			}
 		}
 
@@ -539,14 +547,14 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		}
 	}
 
-	protected void renderPlugins(GL2 gl){
+	protected void renderPlugins(GL2 gl) {
 		gl.glEnable(GL2.GL_DEPTH_TEST);
 		gl.glDepthFunc(GL2.GL_LESS);
 		gl.glDepthMask(false);
-		UltimatePluginInterface.SINGLETON.renderPlugin(gl);		
+		UltimatePluginInterface.SINGLETON.renderPlugin(gl);
 		gl.glDepthMask(false);
 	}
-	
+
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		this.size = getCanavasSize();
@@ -564,30 +572,28 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glPopMatrix();
 		gl.glLoadIdentity();
-		//gl.glScaled(1, aspect, 1);
-		gl.glMatrixMode(GL2.GL_MODELVIEW);		
-		
-		
+		// gl.glScaled(1, aspect, 1);
+		gl.glMatrixMode(GL2.GL_MODELVIEW);
+
 		gl.glDisable(GL2.GL_BLEND);
 		gl.glDisable(GL2.GL_TEXTURE_2D);
 		gl.glUseProgram(0);
 		gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
 		gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
 		gl.glDisable(GL2.GL_DEPTH_TEST);
-		
-		if (Layers.LAYERS.getLayerCount() == 0){
+
+		if (Layers.LAYERS.getLayerCount() == 0) {
 			double dim = Math.max(getSurfaceHeight(), getSurfaceWidth()) * 0.15;
-			
-			int xOffset = (int)(getSurfaceWidth() / 2 - dim / 2);
-			int width = (int)(dim);
-			int yOffset = (int)(getSurfaceHeight() / 2 - dim / 2);
-			int height = (int)(dim);
+
+			int xOffset = (int) (getSurfaceWidth() / 2 - dim / 2);
+			int width = (int) (dim);
+			int yOffset = (int) (getSurfaceHeight() / 2 - dim / 2);
+			int height = (int) (dim);
 			gl.glViewport(xOffset, yOffset, width, height);
 			NoImageScreen.render(gl);
 			gl.glViewport(0, 0, getSurfaceWidth(), getSurfaceHeight());
 		}
 
-		
 		gl.glEnable(GL2.GL_TEXTURE_2D);
 		gl.glActiveTexture(GL.GL_TEXTURE0);
 		gl.glDisable(GL2.GL_BLEND);
@@ -600,59 +606,54 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 
 		gl.glEnable(GL2.GL_BLEND);
 		gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
-		
-		
-		
-		gl.glEnable(GL2.GL_TEXTURE_2D);
-		
-		
-		gl.glColor4d(1, 1, 1, 1);
-		gl.glEnable(GL2.GL_DEPTH_TEST);
-		
-		
-		int tmp[] = new int[1];
-		gl.glGenTextures(1, tmp, 0);
-		gl.glBindTexture(GL2.GL_TEXTURE_2D, tmp[0]);
-		gl.glCopyTexImage2D(GL2.GL_TEXTURE_2D, 0, GL2.GL_DEPTH_COMPONENT24, 0, 0, this.getSurfaceWidth(), this.getSurfaceHeight(), 0);
-		
-		gl.glDisable(GL2.GL_DEPTH_TEST);
 
-		gl.glDisable(GL2.GL_BLEND);
-		
-		//gl.glBindTexture(GL2.GL_TEXTURE_2D, HEKIcon.getTexture());
-		
-		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER,
-				GL2.GL_LINEAR);
-		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER,
-				GL2.GL_LINEAR);
-		
-		gl.glDepthMask(true);
-	    
-		gl.glDisable(GL2.GL_BLEND);
-		
-		gl.glMatrixMode(GL2.GL_PROJECTION);
-		gl.glLoadIdentity();
-		gl.glPushMatrix();
-		gl.glOrtho(0, 1, 0, 1, 10, -10);
-		gl.glViewport(0, 0, (int)(this.getSurfaceWidth() * 0.3), (int)(this.getSurfaceHeight() * 0.3));
-		gl.glMatrixMode(GL2.GL_MODELVIEW );
-		gl.glLoadIdentity();
-		gl.glBegin( GL2.GL_QUADS );
-		gl.glTexCoord2f(0, 0);
-		gl.glVertex2d(0, 1);
-		gl.glTexCoord2f(1, 0);
-		gl.glVertex2d(1, 1);
-		gl.glTexCoord2f(1, 1);
-		gl.glVertex2d(1, 0);
-		gl.glTexCoord2f(0, 1);
-		gl.glVertex2d(0, 0);
-	    gl.glEnd();
-	    gl.glBindTexture(GL2.GL_TEXTURE_2D, 0);
-	    gl.glDisable(GL2.GL_TEXTURE_2D);
-	    
-		gl.glMatrixMode(GL2.GL_PROJECTION);
-		gl.glPopMatrix();
-		gl.glMatrixMode(GL2.GL_MODELVIEW );		
+		if (!JHVGlobals.isReleaseVersion()) {
+			gl.glEnable(GL2.GL_TEXTURE_2D);
+			gl.glColor4d(1, 1, 1, 1);
+			gl.glEnable(GL2.GL_DEPTH_TEST);
+
+			int tmp[] = new int[1];
+			gl.glGenTextures(1, tmp, 0);
+			gl.glBindTexture(GL2.GL_TEXTURE_2D, tmp[0]);
+			gl.glCopyTexImage2D(GL2.GL_TEXTURE_2D, 0, GL2.GL_DEPTH_COMPONENT24,
+					0, 0, this.getSurfaceWidth(), this.getSurfaceHeight(), 0);
+
+			gl.glDisable(GL2.GL_DEPTH_TEST);
+
+			gl.glDisable(GL2.GL_BLEND);
+			gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER,
+					GL2.GL_LINEAR);
+			gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER,
+					GL2.GL_LINEAR);
+
+			gl.glDepthMask(true);
+
+			gl.glDisable(GL2.GL_BLEND);
+
+			gl.glMatrixMode(GL2.GL_PROJECTION);
+			gl.glLoadIdentity();
+			gl.glPushMatrix();
+			gl.glOrtho(0, 1, 0, 1, 10, -10);
+			gl.glViewport(0, 0, (int) (this.getSurfaceWidth() * 0.3),
+					(int) (this.getSurfaceHeight() * 0.3));
+			gl.glMatrixMode(GL2.GL_MODELVIEW);
+			gl.glLoadIdentity();
+			gl.glBegin(GL2.GL_QUADS);
+			gl.glTexCoord2f(0, 0);
+			gl.glVertex2d(0, 1);
+			gl.glTexCoord2f(1, 0);
+			gl.glVertex2d(1, 1);
+			gl.glTexCoord2f(1, 1);
+			gl.glVertex2d(1, 0);
+			gl.glTexCoord2f(0, 1);
+			gl.glVertex2d(0, 0);
+			gl.glEnd();
+			gl.glBindTexture(GL2.GL_TEXTURE_2D, 0);
+			gl.glDisable(GL2.GL_TEXTURE_2D);
+			gl.glMatrixMode(GL2.GL_PROJECTION);
+			gl.glPopMatrix();
+			gl.glMatrixMode(GL2.GL_MODELVIEW);
+		}
 	}
 
 	protected void calculateTrackRotation() {
@@ -743,7 +744,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		gl.glEnable(GL2.GL_TEXTURE_2D);
 
 		this.initShaders(gl);
-		
+
 		gl.glDisable(GL2.GL_TEXTURE_2D);
 
 	}
@@ -793,7 +794,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	public void mouseMoved(MouseEvent e) {
 		RayTrace rayTrace = new RayTrace();
 		Ray ray = rayTrace.cast(e.getX(), e.getY(), this);
-		for (StatusLabelMouse statusLabel : statusLabelsMouses){
+		for (StatusLabelMouse statusLabel : statusLabelsMouses) {
 			statusLabel.mouseMoved(e, ray);
 		}
 	}
@@ -826,7 +827,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	public void mouseExited(MouseEvent e) {
 		RayTrace rayTrace = new RayTrace();
 		Ray ray = rayTrace.cast(e.getX(), e.getY(), this);
-		for (StatusLabelMouse statusLabel : statusLabelsMouses){
+		for (StatusLabelMouse statusLabel : statusLabelsMouses) {
 			statusLabel.mouseExited(e, ray);
 		}
 	}
@@ -990,9 +991,9 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	}
 
 	public void repaintViewAndSynchronizedViews() {
-		this.repaint();
+		this.repaint(20);
 		for (MainPanel compenentView : synchronizedViews) {
-			compenentView.repaint();
+			compenentView.repaint(20);
 		}
 	}
 
@@ -1080,17 +1081,13 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	public boolean getTrack() {
 		return track;
 	}
-	
-	public void addStatusLabelMouse(StatusLabelMouse statusLabelMouse){
+
+	public void addStatusLabelMouse(StatusLabelMouse statusLabelMouse) {
 		statusLabelsMouses.add(statusLabelMouse);
 	}
-	
-	public void addStatusLabelCamera(StatusLabelCamera statusLabelCamera){
-		statusLabelCameras.add(statusLabelCamera);
-	}
 
-	public void setLoading() {
-		this.loading = true;
+	public void addStatusLabelCamera(StatusLabelCamera statusLabelCamera) {
+		statusLabelCameras.add(statusLabelCamera);
 	}
 
 }

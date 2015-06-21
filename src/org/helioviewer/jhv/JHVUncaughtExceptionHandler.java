@@ -117,7 +117,7 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
         
         if(allowCrashReport.isSelected())
         {
-            RaygunClient client = new RaygunClient("SchjoS2BvfVnUCdQ098hEA==");
+            RaygunClient client = new RaygunClient("iZK0JDVPkd3OgEwgDibzQw==");
             client.SetVersion(JHVGlobals.VERSION);
             Map<String, String> customData = new HashMap<String, String>();
             customData.put("Log",log);
