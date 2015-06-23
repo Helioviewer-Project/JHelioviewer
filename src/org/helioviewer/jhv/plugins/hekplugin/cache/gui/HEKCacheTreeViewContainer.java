@@ -75,7 +75,7 @@ public class HEKCacheTreeViewContainer extends JPanel implements HEKCacheListene
         boolean rootLoading = HEKCache.getSingletonInstance().getLoadingModel().getState(HEKCache.getSingletonInstance().getModel().getRoot(), false) != HEKCacheLoadingModel.PATH_NOTHING;
         // boolean anyLoading =
         // HEKCache.getSingletonInstance().getModel().isLoading();
-        boolean layersAvailable = Layers.LAYERS.getLayerCount() > 0;
+        boolean layersAvailable = Layers.getLayerCount() > 0;
 
         boolean show = !rootLoading && layersAvailable && wasLoaded;
 

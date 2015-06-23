@@ -5,6 +5,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.time.LocalDateTime;
 
 import javax.swing.ImageIcon;
@@ -36,6 +38,13 @@ public class PfssPluginPanel extends JPanel implements ActionListener{
 		initVisualComponents();
 		// register as layers listener
 		this.renderer = renderer;
+		
+		this.addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentShown(ComponentEvent e) {
+				reload();
+			}
+		});
 	}
 
 	/**

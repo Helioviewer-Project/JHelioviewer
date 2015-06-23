@@ -7,7 +7,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
-import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JMenuItem;
@@ -16,7 +15,6 @@ import javax.swing.JPopupMenu;
 import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
 import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
 import org.helioviewer.jhv.base.coordinates.HelioprojectiveCartesianCoordinate;
-import org.helioviewer.jhv.base.coordinates.SunDistance;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace.HitpointType;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace.Ray;

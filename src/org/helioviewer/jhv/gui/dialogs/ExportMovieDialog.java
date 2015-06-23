@@ -90,7 +90,7 @@ public class ExportMovieDialog implements ActionListener {
 							descriptions = null;
 							if (textEnabled) {
 								descriptions = new ArrayList<String>();
-								for (LayerInterface layer : Layers.LAYERS.getLayers()) {
+								for (LayerInterface layer : Layers.getLayers()) {
 									if (layer.isVisible()) {
 										descriptions.add(layer.getMetaData().getFullName()
 												+ " - "

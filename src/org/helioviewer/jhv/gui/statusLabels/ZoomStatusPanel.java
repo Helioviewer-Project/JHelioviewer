@@ -45,7 +45,7 @@ public class ZoomStatusPanel extends StatusLabel{
      * Updates the displayed zoom.
      */
     private synchronized void updateZoomLevel() {
-    	LayerInterface activeLayer = Layers.LAYERS.getActiveLayer();
+    	LayerInterface activeLayer = Layers.getActiveLayer();
         
     	if (activeLayer != null && activeLayer.getMetaData() != null){
     		MetaData metaData = activeLayer.getMetaData();

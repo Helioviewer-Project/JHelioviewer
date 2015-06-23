@@ -1,8 +1,8 @@
 package org.helioviewer.jhv.opengl.texture;
 
 import java.time.LocalDateTime;
-import java.util.ArrayDeque;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.gui.MainFrame;
@@ -12,20 +12,20 @@ import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 public class TextureCache {
 
 	private static final int SIZE_TEXTURE_CACHE = 10;
-	private static Queue<CachableTexture> queue;
+	private static ConcurrentLinkedQueue<CachableTexture> queue;
 
 	static {
 		int[] textures = OpenGLHelper.createTextureIDs(SIZE_TEXTURE_CACHE);
-		queue = new ArrayDeque<TextureCache.CachableTexture>(SIZE_TEXTURE_CACHE);
+		queue = new ConcurrentLinkedQueue<TextureCache.CachableTexture>();
 
 		for (int texture : textures) {
 			queue.add(new CachableTexture(texture));
 		}
 
 	}
-	
-	public static void init(){
-		
+
+	public static void init() {
+
 	}
 
 	public static Queue<CachableTexture> getCacheableTextures() {
@@ -79,9 +79,13 @@ public class TextureCache {
 
 		public boolean compareTexture(int id2, LocalDateTime[] localDateTimes) {
 			boolean retVal = false;
-			for (LocalDateTime localDateTime : localDateTimes){
-				if (this.imageRegion != null && localDateTime.equals(this.imageRegion.getDateTime()))
+			if (localDateTimes != null) {
+				for (LocalDateTime localDateTime : localDateTimes) {
+					if (this.imageRegion != null
+							&& localDateTime.equals(this.imageRegion
+									.getDateTime()))
 						return true;
+				}
 			}
 			return retVal;
 		}
@@ -95,7 +99,9 @@ public class TextureCache {
 		}
 
 		public void markAsChanged() {
-			if (TimeLine.SINGLETON.getCurrentDateTime().equals(imageRegion.getDateTime())) MainFrame.MAIN_PANEL.repaintViewAndSynchronizedViews();
+			if (TimeLine.SINGLETON.getCurrentDateTime().equals(
+					imageRegion.getDateTime()))
+				MainFrame.MAIN_PANEL.repaintViewAndSynchronizedViews();
 			changed = true;
 		}
 

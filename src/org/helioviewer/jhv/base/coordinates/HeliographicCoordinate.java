@@ -14,15 +14,15 @@ public class HeliographicCoordinate {
 		this.longitude = hgLongitude;
 		this.latitude = hgLatitude;
 		this.radius = radius;
+		System.out.println(this.longitude);
+		System.out.println(this.latitude);
 	}
 	
 	public HeliographicCoordinate(double hgLongitude, double hgLatitude) {
 		this(hgLongitude, hgLatitude, Constants.SUN_RADIUS);
 	}
 	
-	public HeliocentricCartesianCoordinate toHeliocentricCartesianCoordinate(){
-		double b0 = 0;
-		double l0 = 0;
+	public HeliocentricCartesianCoordinate toHeliocentricCartesianCoordinate(double b0, double l0){
 		
 		double cosb = Math.cos(b0);
 		double sinb = Math.sin(b0);
@@ -41,6 +41,11 @@ public class HeliographicCoordinate {
 		return new HeliocentricCartesianCoordinate(x, y, z);
 	}
 	
+	public HeliocentricCartesianCoordinate toHeliocentricCartesianCoordinate(){
+		return toHeliocentricCartesianCoordinate(0, 0);
+	}
+	
+	
 	public HelioprojectiveCartesianCoordinate toHelioprojectiveCartesianCoordinate(LocalDateTime localDateTime){
 		return toHeliocentricCartesianCoordinate().toHelioprojectiveCartesianCoordinate(localDateTime);
 	}
@@ -52,4 +57,5 @@ public class HeliographicCoordinate {
 	public double getHgLatitudeAsDeg() {
 		return Math.toDegrees(latitude);
 	}
+	
 }

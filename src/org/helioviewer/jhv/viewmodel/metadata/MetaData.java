@@ -12,6 +12,7 @@ import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
 import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 import org.helioviewer.jhv.viewmodel.region.StaticRegion;
+import org.w3c.dom.Document;
 
 public abstract class MetaData {
   private Vector2d lowerLeftCorner;
@@ -64,6 +65,7 @@ public abstract class MetaData {
 	protected final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_DATE_TIME;
     
 	protected LUT_ENTRY defaultLUT = LUT_ENTRY.GRAY;
+	protected Document document;
 	
     /**
      * Default constructor, does not set size or position.
@@ -84,6 +86,8 @@ public abstract class MetaData {
         if (instrument == null) {
             instrument = " ";
         }
+        
+        this.document = metaDataContainer.getDocument();
 
     }
 
@@ -340,4 +344,7 @@ public abstract class MetaData {
 		pixelImageSize = new Vector2i(width, height);
 	}
 	
+	public Document getDocument(){
+		return document;
+	}
 }

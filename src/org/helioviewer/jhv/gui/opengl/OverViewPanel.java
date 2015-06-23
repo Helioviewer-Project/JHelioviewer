@@ -56,7 +56,7 @@ public class OverViewPanel extends MainPanel{
 
 	
 	private void zoomToFit(){
-    	LayerInterface activeLayer = Layers.LAYERS.getActiveLayer();
+    	LayerInterface activeLayer = Layers.getActiveLayer();
         if (activeLayer != null && activeLayer.getMetaData() != null){
         	PhysicalRegion region = activeLayer.getMetaData().getPhysicalRegion();
             if (region != null) {

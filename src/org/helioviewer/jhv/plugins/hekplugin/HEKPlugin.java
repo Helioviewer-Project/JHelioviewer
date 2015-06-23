@@ -10,6 +10,7 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
+import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
 import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.SphericalCoord;
@@ -122,8 +123,8 @@ public class HEKPlugin extends NewPlugin {
 			}
 		}
 		if (offSetFactor >= 0) {
-			SphericalCoord stony = evt.getStony(now);
-			Vector3d coords = HEKEvent.convertToSceneCoordinates(stony, now);
+			SphericalCoord heliographicCoordinate = evt.getStony(now);
+			Vector3d coords = HEKEvent.convertToSceneCoordinates(heliographicCoordinate, now);
 			double x = coords.x;
 			double y = coords.y;
 			double z = coords.z;
@@ -191,14 +192,13 @@ public class HEKPlugin extends NewPlugin {
 		Color eventColor = HEKConstants.getSingletonInstance().acronymToColor(
 				type, 128);
 
-		SphericalCoord stony = evt.getStony(now);
-		if(stony==null)
+		HeliographicCoordinate heliographicCoordinate = evt.getHeliographicCoordinate(now);
+		if(heliographicCoordinate == null)
 			return;
-		double latitude = stony.theta / 180.0 * Math.PI;
 
 		gl.glPushMatrix();
 		gl.glRotated(
-				DifferentialRotation.calculateRotationInDegrees(latitude,
+				DifferentialRotation.calculateRotationInDegrees(heliographicCoordinate.latitude,
 						(now.getTime() - evt.getStart().getTime()) / 1000d), 0,
 				1, 0);
 

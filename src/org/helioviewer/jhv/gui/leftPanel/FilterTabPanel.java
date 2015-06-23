@@ -51,7 +51,7 @@ public class FilterTabPanel extends JPanel implements LayerListener{
 
 	public FilterTabPanel() {
 		initGui();
-		Layers.LAYERS.addNewLayerListener(this);
+		Layers.addNewLayerListener(this);
 	}
 	
 	private void initGui(){
@@ -280,7 +280,7 @@ public class FilterTabPanel extends JPanel implements LayerListener{
 	
 	@Override
 	public void newlayerAdded() {
-		LayerInterface activeLayer = Layers.LAYERS.getActiveLayer();
+		LayerInterface activeLayer = Layers.getActiveLayer();
 		if (activeLayer != null)
 			this.updateLayer(activeLayer);
 	}

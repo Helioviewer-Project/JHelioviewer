@@ -26,7 +26,7 @@ public abstract class AbstractRequest {
 	 *
 	 */
 	public enum PRIORITY{
-		HIGH, MEDIUM, LOW, TIMEDEPEND;
+		URGENT, HIGH, MEDIUM, LOW, TIMEDEPEND;
 	}
 
 	private PRIORITY priority;
@@ -63,5 +63,9 @@ public abstract class AbstractRequest {
 	@Override
 	public String toString() {
 		return url;
+	}
+
+	public void setPriority(PRIORITY priority) {
+		this.priority = priority;
 	}
 }

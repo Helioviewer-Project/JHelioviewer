@@ -4,39 +4,39 @@ import java.time.LocalDateTime;
 
 import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.base.math.Vector2d;
+import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.physics.Constants;
+import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
 
-public class MetaDataSWAP extends MetaData{
-
-	public MetaDataSWAP(MetaDataContainer metaDataContainer) {
+public class MetaDataSXT extends MetaData{
+  public MetaDataSXT(MetaDataContainer metaDataContainer){
         super(metaDataContainer);
-        instrument = "SWAP";
+        
         measurement = metaDataContainer.get("WAVELNTH");
         observatory = metaDataContainer.get("TELESCOP");
-        fullName = "SWAP " + measurement;
-        
-        if (!(instrument.contains("SWAP"))){
-        	throw new NonSuitableMetaDataException("invalid instrument: "+observatory+"/"+instrument+"/"+detector);
+        if (!(instrument.equalsIgnoreCase("SXT"))){
+        	throw new NonSuitableMetaDataException("invalid instrument: "+instrument);
         }
-        hasSphere = true;
-        hasCorona = true;
-        
+
+        this.hasCorona = true;
+        this.hasSphere = true;
+
         this.metaDataContainer = metaDataContainer;
- 
-        String observedDate = metaDataContainer.get("DATE-OBS");
+        this.pixelImageSize = new Vector2i(1024, 1024);
+        this.instrument = "SXT";
+        fullName = "SXT " + measurement;
+        
+        String observedDate = metaDataContainer.get("DATE_OBS");
         localDateTime = LocalDateTime.parse(observedDate, DATE_FORMAT);
 
         updatePixelParameters();
 
-        setPhysicalLowerLeftCorner(sunPixelPosition.scale(-meterPerPixel));
-        setPhysicalImageSize(new Vector2d(pixelImageSize.getX() * meterPerPixel, pixelImageSize.getY() * meterPerPixel));
-        
         double arcsecPerPixelX = metaDataContainer.tryGetDouble("CDELT1");
         double arcsecPerPixelY = metaDataContainer.tryGetDouble("CDELT2");
         if (Double.isNaN(arcsecPerPixelX)) {
             if (Double.isNaN(arcsecPerPixelY)) {
                 System.out.println(">> HelioviewerMetaData.readPixelParamters() > Both CDELT1 and CDELT2 are NaN. Use 0.6 as default value.");
-                arcsecPerPixelX = 3.162;
+                arcsecPerPixelX = 2.46;
             } else {
                 System.out.println(">> HelioviewerMetaData.readPixelParamters() > CDELT1 is NaN. CDELT2 is used.");
                 arcsecPerPixelX = arcsecPerPixelY;
@@ -77,11 +77,36 @@ public class MetaDataSWAP extends MetaData{
    }
 
 	@Override
+	// TODO: rework
 	public boolean updatePixelParameters() {
-		boolean changed = true;
+        boolean changed = false;
+
+        if (pixelImageSize.getX() != metaDataContainer.getPixelWidth() || pixelImageSize.getY() != metaDataContainer.getPixelHeight()) {
+            pixelImageSize = new Vector2i(metaDataContainer.getPixelWidth(), metaDataContainer.getPixelHeight());
+            changed = true;
+        }
 
         double newSolarPixelRadius = -1.0;
         double allowedRelativeDifference = 0.01;
+
+        double arcsecPerPixelX = metaDataContainer.tryGetDouble("CDELT1");
+        double arcsecPerPixelY = metaDataContainer.tryGetDouble("CDELT2");
+        if (Double.isNaN(arcsecPerPixelX)) {
+            if (Double.isNaN(arcsecPerPixelY)) {
+                System.out.println(">> HelioviewerMetaData.readPixelParamters() > Both CDELT1 and CDELT2 are NaN. Use 0.6 as default value.");
+                arcsecPerPixelX = 2.46;
+            } else {
+                System.out.println(">> HelioviewerMetaData.readPixelParamters() > CDELT1 is NaN. CDELT2 is used.");
+                arcsecPerPixelX = arcsecPerPixelY;
+            }
+        }
+        if (Math.abs(arcsecPerPixelX - arcsecPerPixelY) > arcsecPerPixelX * 0.0001) {
+            System.out.println(">> HelioviewerMetaData.readPixelParamters() > CDELT1 and CDELT2 have different values. CDELT1 is used.");
+        }
+        // distance to sun in meters
+        double distanceToSun = metaDataContainer.tryGetDouble("DSUN_OBS");
+        double radiusSunInArcsec = Math.atan(Constants.SUN_RADIUS / distanceToSun) * MathUtils.RAD_TO_DEG * 3600;
+        newSolarPixelRadius = radiusSunInArcsec / arcsecPerPixelX;
 
         if (newSolarPixelRadius > 0) {
             double allowedAbsoluteDifference = newSolarPixelRadius * allowedRelativeDifference;

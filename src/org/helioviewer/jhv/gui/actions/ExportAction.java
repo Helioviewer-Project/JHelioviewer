@@ -25,7 +25,7 @@ public class ExportAction extends AbstractAction{
 	     * {@inheritDoc}
 	     */
 	    public void actionPerformed(ActionEvent e) {
-          if(Layers.LAYERS.getLayerCount() > 0)
+          if(Layers.getLayerCount() > 0)
         	  new ExportMovieDialog();
           else
             JOptionPane.showMessageDialog(MainFrame.MAIN_PANEL, "At least one active layer must be visible.\n\nPlease add a layer before exporting movies.", "Error", JOptionPane.ERROR_MESSAGE);

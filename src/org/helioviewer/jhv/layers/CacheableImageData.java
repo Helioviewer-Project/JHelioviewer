@@ -16,7 +16,9 @@ public class CacheableImageData {
 	
 	private int id;
 	private final Kdu_cache kduCache;
-	private int lastDetectedDate;	
+	private int lastDetectedDate;
+	
+	private String fileName = null;
 	
 	public CacheableImageData(int id, LocalDateTime[] localDateTimes, Kdu_cache kduCache) {
 		this.kduCache = kduCache;
@@ -27,6 +29,31 @@ public class CacheableImageData {
 			lastDate = localDateTime.isAfter(lastDate) ? localDateTime : lastDate;
 		}
 		
+	}
+	
+	public CacheableImageData(int id, Kdu_cache kduCache) {
+		this.kduCache = kduCache;
+		this.id = id;
+	}
+	
+	
+	public CacheableImageData(int id, LocalDateTime[] localDateTimes, String fileName){
+		this.kduCache = null;
+		this.id = id;
+		this.localDateTimes = localDateTimes;
+		this.fileName = fileName;
+		for (LocalDateTime localDateTime : this.localDateTimes){
+			firstDate = localDateTime.isBefore(firstDate) ? localDateTime : firstDate;
+			lastDate = localDateTime.isAfter(lastDate) ? localDateTime : lastDate;
+		}
+	}
+	
+	public void setLocalDateTimes(LocalDateTime[] localDateTimes){
+		this.localDateTimes = localDateTimes;
+		for (LocalDateTime localDateTime : this.localDateTimes){
+			firstDate = localDateTime.isBefore(firstDate) ? localDateTime : firstDate;
+			lastDate = localDateTime.isAfter(lastDate) ? localDateTime : lastDate;
+		}	
 	}
 
 	public boolean contains(int id, LocalDateTime currentDate) {
@@ -45,6 +72,10 @@ public class CacheableImageData {
 		return kduCache;
 	}
 	
+	public String getImageFile(){
+		return fileName;
+	}
+	
 	public int getLstDetectedDate(){
 		return lastDetectedDate;
 	}
@@ -55,6 +86,20 @@ public class CacheableImageData {
 				cacheableTexture.markAsChanged();
 			}
 		}
+	}
+
+	public void setFile(String fileName) {
+		this.fileName = fileName;
+		kduCache.Native_destroy();
+		markAsChanged();
+	}
+
+	public int getIdx(LocalDateTime localDateTime) {
+		int i;
+		for (i = 0; i < localDateTimes.length; i++){
+			if (localDateTime.isEqual(localDateTimes[i])) break;
+		}
+		return i;
 	}
 	
 }

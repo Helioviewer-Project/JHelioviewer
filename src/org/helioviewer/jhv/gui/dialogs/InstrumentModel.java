@@ -32,7 +32,6 @@ public class InstrumentModel {
 					try {
 						Thread.sleep(20);
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -43,11 +42,9 @@ public class InstrumentModel {
 						addObservatories(jsonObject);
 						addLayerPanel.updateGUI();
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				} catch (JSONException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}

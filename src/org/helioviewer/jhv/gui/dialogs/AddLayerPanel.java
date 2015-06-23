@@ -7,15 +7,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JSpinner;
+import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 
 import org.helioviewer.jhv.gui.MainFrame;
@@ -66,6 +69,15 @@ public class AddLayerPanel extends JDialog {
 		setLocationRelativeTo(MainFrame.SINGLETON);
 		initGui();
 		addData();
+
+		getRootPane().registerKeyboardAction(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				setVisible(false);
+			}
+		}, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+        JComponent.WHEN_IN_FOCUSED_WINDOW);
 	}
 
 	private void addData() {
@@ -278,7 +290,7 @@ public class AddLayerPanel extends JDialog {
 						}
 
 						if (filter != null) {
-							Layers.LAYERS.addLayer(filter.sourceId,
+							Layers.addLayer(filter.sourceId,
 									datePickerStartDate.getDateTime(),
 									datePickerEndDate.getDateTime(),
 									(int) candence.getValue());

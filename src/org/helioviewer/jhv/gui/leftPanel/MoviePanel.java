@@ -131,7 +131,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
     private JButton btnPrevious, btnPlayPause, btnForward;
 	public MoviePanel() {
 		TimeLine.SINGLETON.addListener(this);
-		Layers.LAYERS.addNewLayerListener(this);
+		Layers.addNewLayerListener(this);
 		this.setLayout(new BorderLayout());
 		this.add(initGUI(), BorderLayout.CENTER);
 		optionPane = initOptionPane();
@@ -335,7 +335,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 
 	@Override
 	public void newlayerRemoved(int idx) {
-		setEnableButtons(Layers.LAYERS.getLayerCount() > 0);
+		setEnableButtons(Layers.getLayerCount() > 0);
 	}
 
 	@Override

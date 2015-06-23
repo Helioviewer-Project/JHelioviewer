@@ -29,7 +29,7 @@ public class ZoomFitAction extends AbstractAction {
 
     public void actionPerformed(ActionEvent e) {
     	MainPanel compenentView = MainFrame.MAIN_PANEL;
-    	LayerInterface activeLayer = Layers.LAYERS.getActiveLayer();
+    	LayerInterface activeLayer = Layers.getActiveLayer();
         if (activeLayer != null && activeLayer.getMetaData() != null){
         	PhysicalRegion region = activeLayer.getMetaData().getPhysicalRegion();
             if (region != null) {

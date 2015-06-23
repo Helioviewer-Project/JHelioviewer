@@ -21,4 +21,22 @@ public class CoordinateHelper {
 		return dd;
 	}
 	
+    public static double calculateRotationInDegrees(double latitude, double timeDifferenceInSeconds) {
+        return calculateRotationInRadians(latitude, timeDifferenceInSeconds) * 180.0 / Math.PI;
+    }
+
+    public static HeliographicCoordinate calculateNextPosition(HeliographicCoordinate currentPosition, double timeDifferenceInSeconds) {
+        double rotation = calculateRotationInDegrees(currentPosition.latitude, timeDifferenceInSeconds);
+        double longitude = currentPosition.longitude + rotation;
+        longitude %= 360.0;
+        return new HeliographicCoordinate(longitude, currentPosition.latitude, currentPosition.radius);
+    }
+    
+    public static double calculateRotationInRadians(double latitude, double timeDifferenceInSeconds) {
+        double sin2l = Math.sin(latitude);
+        sin2l = sin2l * sin2l;
+        double sin4l = sin2l * sin2l;
+        return 1.0e-6 * timeDifferenceInSeconds * (2.894 - 0.428 * sin2l - 0.37 * sin4l);
+    }
+	
 }

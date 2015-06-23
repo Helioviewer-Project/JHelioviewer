@@ -32,7 +32,7 @@ public class Zoom1To1Action extends AbstractAction {
 
 	public void actionPerformed(ActionEvent e) {
 		MainPanel compenentView = MainFrame.MAIN_PANEL;
-    	LayerInterface activeLayer = Layers.LAYERS.getActiveLayer();
+    	LayerInterface activeLayer = Layers.getActiveLayer();
         
     	if (activeLayer != null && activeLayer.getMetaData() != null){
     		MetaData metaData = activeLayer.getMetaData();

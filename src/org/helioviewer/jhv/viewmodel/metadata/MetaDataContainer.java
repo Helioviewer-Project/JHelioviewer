@@ -72,5 +72,9 @@ public class MetaDataContainer{
 		// TODO Auto-generated method stub
 		return 4096;
 	}
+	
+	public Document getDocument(){
+		return document;
+	}
 
 }

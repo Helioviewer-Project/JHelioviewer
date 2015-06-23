@@ -41,7 +41,7 @@ public class TimeLine implements LayerListener {
 	});
 
 	private TimeLine() {
-		Layers.LAYERS.addNewLayerListener(this);
+		Layers.addNewLayerListener(this);
 		timeLineListeners = new CopyOnWriteArrayList<TimeLine.TimeLineListener>();
 	}
 

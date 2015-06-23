@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.helioviewer.jhv.base.coordinates.CoordinateHelper;
+import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
 import org.helioviewer.jhv.base.math.CartesianCoord;
 import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.base.math.IntervalComparison;
@@ -400,6 +402,22 @@ public class HEKEvent implements IntervalComparison<Date> {
         return null;
 
     }
+    
+    public HeliographicCoordinate getHeliographicCoordinate(Date now){
+    	int timeDifferenceInSeconds = (int) ((now.getTime() - this.getStart().getTime()) / 1000);
+
+    	double longitute;
+		try {
+			longitute = Math.toRadians(this.getDouble("hgs_x"));
+	    	double latitude = Math.toRadians(this.getDouble("hgs_y"));
+	        HeliographicCoordinate result = new HeliographicCoordinate(longitute, latitude);
+	    	return CoordinateHelper.calculateNextPosition(result, timeDifferenceInSeconds);
+		} catch (HEKEventException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+    }
 
     /**
      * Check whether the event is on the visible side of the sun Internally
@@ -484,6 +502,7 @@ public class HEKEvent implements IntervalComparison<Date> {
         CartesianCoord result = HEKCoordinateTransform.StonyhurstToHeliocentricCartesian(normalizedStony, bzero, phizero);
         return new Vector3d(result.x, result.y, result.z);
     }
+    
 
     /**
      * @param path

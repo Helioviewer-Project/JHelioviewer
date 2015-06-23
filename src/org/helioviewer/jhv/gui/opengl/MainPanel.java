@@ -114,7 +114,6 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	private ArrayList<StatusLabelCamera> statusLabelCameras;
 	private CopyOnWriteArrayList<CameraAnimation> cameraAnimations;
 
-	private Layers layers;
 	private int shaderprogram;
 	private HashMap<String, Integer> lutMap;
 	private int nextAvaibleLut = 0;
@@ -143,13 +142,12 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		statusLabelCameras = new ArrayList<StatusLabelCamera>();
 		this.setSharedContext(OpenGLHelper.glContext);
 
-		Layers.LAYERS.addNewLayerListener(this);
+		Layers.addNewLayerListener(this);
 		TimeLine.SINGLETON.addListener(this);
 		this.addMouseListener(this);
 		this.addMouseMotionListener(this);
 		this.addGLEventListener(this);
 		this.addMouseWheelListener(this);
-		layers = Layers.LAYERS;
 
 		this.rotation = Quaternion3d.createRotation(0.0, new Vector3d(0, 1, 0));
 		this.translation = new Vector3d(0, 0, DEFAULT_CAMERA_DISTANCE);
@@ -322,7 +320,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 			double minAngle = 30;
 			float opacityCorona = (float) ((Math.abs(90 - angle) - minAngle) / (maxAngle - minAngle));
 			opacityCorona = opacityCorona > 1 ? 1f : opacityCorona;
-			if (!Layers.LAYERS.getCoronaVisibility())
+			if (!Layers.getCoronaVisibility())
 				opacityCorona = 0;
 			gl.glEnable(GL2.GL_DEPTH_TEST);
 			gl.glDepthFunc(GL2.GL_LEQUAL);
@@ -446,7 +444,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		// Calculate Track
 		if (track)
 			calculateTrackRotation();
-		if (layers != null && layers.getLayerCount() > 0) {
+		if (Layers.getLayerCount() > 0) {
 			gl.glMatrixMode(GL2.GL_PROJECTION);
 			gl.glPushMatrix();
 
@@ -462,13 +460,13 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 			mat.setTranslation(0, 0, -translation.z);
 			gl.glMultMatrixd(mat.m, 0);
 			if (CameraMode.mode == MODE.MODE_2D) {
-				this.rotation = layers.getActiveLayer().getMetaData()
+				this.rotation = Layers.getActiveLayer().getMetaData()
 						.getRotation().copy();
 			}
 
 			boolean layerLoaded = true;
 			boolean notCenterAnimation = false;
-			for (LayerInterface layer : layers.getLayers()) {
+			for (LayerInterface layer : Layers.getLayers()) {
 				if (layer.isVisible()) {
 					boolean visibleLayer = this.displayLayer(gl,
 							(ImageLayer) layer);
@@ -582,7 +580,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
 		gl.glDisable(GL2.GL_DEPTH_TEST);
 
-		if (Layers.LAYERS.getLayerCount() == 0) {
+		if (Layers.getLayerCount() == 0) {
 			double dim = Math.max(getSurfaceHeight(), getSurfaceWidth()) * 0.15;
 
 			int xOffset = (int) (getSurfaceWidth() / 2 - dim / 2);

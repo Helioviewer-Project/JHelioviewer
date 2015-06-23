@@ -91,7 +91,6 @@ public class KakaduRender {
 			Kdu_dims newRegion = new Kdu_dims();
 	        int region_buf_size = 0;
 	        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(imageSize.height * imageSize.width *4);
-	        System.out.println("imageSize : " + imageSize);
 	        IntBuffer intBuffer = byteBuffer.asIntBuffer();
 	        
 			while (compositor.Process(MAX_RENDER_SAMPLES, newRegion)){

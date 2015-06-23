@@ -35,7 +35,7 @@ public class ExitProgramAction extends AbstractAction {
 	 */
 	public void actionPerformed(ActionEvent e) {
 
-		if (Layers.LAYERS.getLayerCount() > 0) {
+		if (Layers.getLayerCount() > 0) {
 			int option = JOptionPane.showConfirmDialog(
 					MainFrame.SINGLETON,
 					"Are you sure you want to quit?", "Confirm",

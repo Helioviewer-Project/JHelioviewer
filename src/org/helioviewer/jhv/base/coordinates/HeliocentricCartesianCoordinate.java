@@ -2,6 +2,8 @@ package org.helioviewer.jhv.base.coordinates;
 
 import java.time.LocalDateTime;
 
+import org.helioviewer.jhv.base.math.Vector3d;
+
 public class HeliocentricCartesianCoordinate {
 	public final double x;
 	public final double y;
@@ -41,5 +43,9 @@ public class HeliocentricCartesianCoordinate {
 	double hpcy = Math.asin(y / distance);
 
 	return new HelioprojectiveCartesianCoordinate(hpcx, hpcy, sunDistance);
+	}
+
+	public Vector3d toVector3d() {
+		return new Vector3d(x,y,z);
 	}
 }

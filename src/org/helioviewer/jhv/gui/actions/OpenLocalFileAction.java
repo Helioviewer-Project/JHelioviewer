@@ -115,7 +115,7 @@ public class OpenLocalFileAction extends AbstractAction {
                 //ImageViewerGui.getSingletonInstance().getMainImagePanel().setLoading(true);
 
                 // Load image in new thread
-                	Layers.LAYERS.addLayer(fileChooser.getSelectedFile().toString());
+                	Layers.addLayer(fileChooser.getSelectedFile().toString());
             }
         }
     }

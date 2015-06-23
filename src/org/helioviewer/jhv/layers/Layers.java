@@ -13,8 +13,6 @@ public class Layers {
 	private static KakaduRender renderer = new KakaduRender();
 	private static boolean coronaVisibility = true;
 	
-	public static final Layers LAYERS = new Layers();
-	
 	static {
 		layers = new CopyOnWriteArrayList<LayerInterface>();
 		layerListeners = new CopyOnWriteArrayList<LayerListener>();

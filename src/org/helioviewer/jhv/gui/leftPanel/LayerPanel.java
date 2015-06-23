@@ -29,6 +29,7 @@ import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.dialogs.AddLayerPanel;
 import org.helioviewer.jhv.gui.dialogs.InstrumentModel;
+import org.helioviewer.jhv.gui.dialogs.MetaDataDialog;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
@@ -49,6 +50,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 	private static final long serialVersionUID = 6800340702841902680L;
 	
 	private final AddLayerPanel addLayerPanel = new AddLayerPanel();
+	private final MetaDataDialog metaDataDialog = new MetaDataDialog();
 	private JTable table;
 	private Object columnNames[] = { "Column One", "Column Two", "Column Three", "Column Four"};
 	private LayerTableModel tableModel;
@@ -61,7 +63,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		InstrumentModel.addAddLayerPanel(addLayerPanel);
 		this.setMinimumSize(new Dimension(200, 200));
 		this.setPreferredSize(new Dimension(200, 200));
-		Layers.LAYERS.addNewLayerListener(this);
+		Layers.addNewLayerListener(this);
 		TimeLine.SINGLETON.addListener(this);
 	}
 
@@ -97,8 +99,8 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 					@Override
 					public void run() {
 						int row = table.getSelectedRow();
-						if (row != Layers.LAYERS.getActiveLayerNumber()){
-							Layers.LAYERS.setActiveLayer(row);
+						if (row != Layers.getActiveLayerNumber()){
+							Layers.setActiveLayer(row);
 						}				
 					}
 				});
@@ -110,12 +112,12 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 				int row = table.getSelectedRow();
 				int column = table.getSelectedColumn();
 				if (column == 3){
-					Layers.LAYERS.removeLayer(row);
+					Layers.removeLayer(row);
 					updateData();
 				}
 				else if (column == 0){
 					//TODO: potential null pointer exception? other callers of getActiveLayer() check for != null...
-					Layers.LAYERS.getActiveLayer().setVisible((boolean) table.getModel().getValueAt(row, column));
+					Layers.getActiveLayer().setVisible((boolean) table.getModel().getValueAt(row, column));
 				}
 
 			}
@@ -137,36 +139,43 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		gbl_panel.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
 		panel.setLayout(gbl_panel);
 
-		JButton btnNewButton_2 = new JButton(IconBank.getIcon(JHVIcon.INFO_NEW, 16, 16));
-		btnNewButton_2.setToolTipText("Show the Metainformation of the currently selected Layer");
-		GridBagConstraints gbc_btnNewButton_2 = new GridBagConstraints();
-		gbc_btnNewButton_2.insets = new Insets(0, 0, 0, 5);
-		gbc_btnNewButton_2.gridx = 9;
-		gbc_btnNewButton_2.gridy = 0;
-		panel.add(btnNewButton_2, gbc_btnNewButton_2);
+		JButton btnShowInfo = new JButton(IconBank.getIcon(JHVIcon.INFO_NEW, 16, 16));
+		btnShowInfo.setToolTipText("Show the Metainformation of the currently selected Layer");
+		btnShowInfo.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				metaDataDialog.showDialog();
+			}
+		});
+		GridBagConstraints gbcBtnShowInfo = new GridBagConstraints();
+		gbcBtnShowInfo.insets = new Insets(0, 0, 0, 5);
+		gbcBtnShowInfo.gridx = 9;
+		gbcBtnShowInfo.gridy = 0;
+		panel.add(btnShowInfo, gbcBtnShowInfo);
 
-		JButton btnNewButton_1 = new JButton(IconBank.getIcon(JHVIcon.DOWNLOAD_NEW, 16, 16));
-		btnNewButton_1.setToolTipText("Download the currently selected Layer");
-		GridBagConstraints gbc_btnNewButton_1 = new GridBagConstraints();
-		gbc_btnNewButton_1.insets = new Insets(0, 0, 0, 5);
-		gbc_btnNewButton_1.gridx = 10;
-		gbc_btnNewButton_1.gridy = 0;
-		panel.add(btnNewButton_1, gbc_btnNewButton_1);
+		JButton btnDownloadLayer = new JButton(IconBank.getIcon(JHVIcon.DOWNLOAD_NEW, 16, 16));
+		btnDownloadLayer.setToolTipText("Download the currently selected Layer");
+		GridBagConstraints gbcBtnDownloadLayer = new GridBagConstraints();
+		gbcBtnDownloadLayer.insets = new Insets(0, 0, 0, 5);
+		gbcBtnDownloadLayer.gridx = 10;
+		gbcBtnDownloadLayer.gridy = 0;
+		panel.add(btnDownloadLayer, gbcBtnDownloadLayer);
 
-		JButton btnNewButton = new JButton("Add Layer", IconBank.getIcon(JHVIcon.ADD_NEW, 16, 16));
-		btnNewButton.addActionListener(new ActionListener() {
+		JButton btnAddLayer = new JButton("Add Layer", IconBank.getIcon(JHVIcon.ADD_NEW, 16, 16));
+		btnAddLayer.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				addLayerPanel.setVisible(true);
 			}
 		});
-		btnNewButton.setToolTipText("Add a new Layer");
-		GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
-		gbc_btnNewButton.anchor = GridBagConstraints.EAST;
-		gbc_btnNewButton.gridx = 11;
-		gbc_btnNewButton.gridy = 0;
-		panel.add(btnNewButton, gbc_btnNewButton);
+		btnAddLayer.setToolTipText("Add a new Layer");
+		GridBagConstraints gbcBtnAddLayer = new GridBagConstraints();
+		gbcBtnAddLayer.anchor = GridBagConstraints.EAST;
+		gbcBtnAddLayer.gridx = 11;
+		gbcBtnAddLayer.gridy = 0;
+		panel.add(btnAddLayer, gbcBtnAddLayer);
 
 	}
 
@@ -176,9 +185,9 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			
 			@Override
 			public void run() {
-				Object[][] data = new Object[Layers.LAYERS.getLayerCount()][4];
+				Object[][] data = new Object[Layers.getLayerCount()][4];
 				int count = 0;
-				for (LayerInterface layer : Layers.LAYERS.getLayers()){
+				for (LayerInterface layer : Layers.getLayers()){
 					data[count][0] = layer.isVisible();
 					data[count][1] = layer.getName();
 					data[count][2] = layer.getTime() == null ? null : layer.getTime();
@@ -198,9 +207,9 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		        table.setShowGrid(false);
 		        table.setIntercellSpacing(new Dimension(0, 0));
 		        
-				if (Layers.LAYERS.getLayerCount() > 0){
-					System.out.println(Layers.LAYERS.getActiveLayerNumber());
-					table.setRowSelectionInterval(Layers.LAYERS.getActiveLayerNumber(), Layers.LAYERS.getActiveLayerNumber());
+				if (Layers.getLayerCount() > 0){
+					System.out.println(Layers.getActiveLayerNumber());
+					table.setRowSelectionInterval(Layers.getActiveLayerNumber(), Layers.getActiveLayerNumber());
 				}	
 			}
 		});

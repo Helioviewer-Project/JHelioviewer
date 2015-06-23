@@ -7,7 +7,7 @@ import java.util.concurrent.PriorityBlockingQueue;
 
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.base.downloadmanager.AbstractRequest.PRIORITY;
-import org.helioviewer.jhv.gui.MainFrame;
+import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.Cache;
 
 public class UltimateDownloadManager {
 
@@ -17,6 +17,7 @@ public class UltimateDownloadManager {
 				WeakReference<AbstractRequest> o2) {
 			AbstractRequest oo1 = o1.get();
 			AbstractRequest oo2 = o2.get();
+			if (oo1 == null || oo2 == null) return 0;
 			if (oo1.getPriority() == oo2.getPriority())
 				return 0;
 			return oo2.getPriority().ordinal() < oo1.getPriority().ordinal() ? 1
@@ -79,6 +80,9 @@ public class UltimateDownloadManager {
 					else if(!JHVGlobals.isReleaseVersion()){
 						throw new RuntimeException("Request is not canceled");
 					}
+					if (Cache.checkSize()){
+						switchJpipDownloadRequest();
+					}
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -95,6 +99,15 @@ public class UltimateDownloadManager {
 			return stopped;
 		}
 
+	}
+	
+	private static void switchJpipDownloadRequest(){
+		for (WeakReference<AbstractRequest> weakRequest : taskDeque){
+			AbstractRequest request = weakRequest.get();
+			if (request != null && request.getPriority() == PRIORITY.LOW){
+				request.setPriority(PRIORITY.URGENT);
+			}
+		}
 	}
 
 	public static boolean checkLoading() {
