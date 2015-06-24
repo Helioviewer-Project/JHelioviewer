@@ -19,6 +19,7 @@ public class JHVGlobals {
     public static String RAYGUN_TAG;
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
     
+    public static final int STARTUP_LAYER_ID = 10;
     private JHVGlobals()
     {
     }

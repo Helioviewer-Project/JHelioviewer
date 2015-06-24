@@ -73,13 +73,13 @@ public class AddLayerPanel extends JDialog {
 		addData();
 
 		getRootPane().registerKeyboardAction(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				setVisible(false);
 			}
 		}, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
-        JComponent.WHEN_IN_FOCUSED_WINDOW);
+				JComponent.WHEN_IN_FOCUSED_WINDOW);
 	}
 
 	private void addData() {
@@ -158,6 +158,17 @@ public class AddLayerPanel extends JDialog {
 						.getItem()).getFilters()) {
 					cmbbxFilter1.addItem(filter);
 				}
+
+				InstrumentModel.Filter filter = (InstrumentModel.Filter) cmbbxFilter2
+						.getSelectedItem();
+				if (filter == null) {
+					filter = (InstrumentModel.Filter) cmbbxFilter1
+							.getSelectedItem();
+				}
+				if (filter != null && filter.getStart() != null) {
+					datePickerStartDate.setToolTip("Data available after : " + filter.getStart());
+					datePickerEndDate.setToolTip("Data available before : " + filter.getEnd());
+				}
 			}
 		});
 
@@ -169,6 +180,17 @@ public class AddLayerPanel extends JDialog {
 				for (InstrumentModel.Filter filter : ((InstrumentModel.Filter) e
 						.getItem()).getFilters()) {
 					cmbbxFilter2.addItem(filter);
+				}
+
+				InstrumentModel.Filter filter = (InstrumentModel.Filter) cmbbxFilter2
+						.getSelectedItem();
+				if (filter == null) {
+					filter = (InstrumentModel.Filter) cmbbxFilter1
+							.getSelectedItem();
+				}
+				if (filter != null && filter.getStart() != null) {
+					datePickerStartDate.setToolTip("Data available after : " + filter.getStart());
+					datePickerEndDate.setToolTip("Data available before : " + filter.getEnd());
 				}
 			}
 		});
@@ -208,8 +230,8 @@ public class AddLayerPanel extends JDialog {
 						FormFactory.DEFAULT_ROWSPEC, }));
 
 		{
-			datePickerStartDate = new DatePicker(LocalDateTime.now()
-					.minusDays(1));
+			datePickerStartDate = new DatePicker(LocalDateTime.now().minusDays(
+					1));
 			contentPanel.add(datePickerStartDate, "2, 2, 5, 1, fill, top");
 		}
 		{
@@ -316,8 +338,8 @@ public class AddLayerPanel extends JDialog {
 			}
 		}
 	}
-	
-	public void updateGUI(){
+
+	public void updateGUI() {
 		this.addData();
 	}
 }

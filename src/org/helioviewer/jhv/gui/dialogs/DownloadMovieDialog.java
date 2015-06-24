@@ -12,7 +12,7 @@ public class DownloadMovieDialog extends JDialog{
 	private JProgressBar progressBar;
 	
 	public DownloadMovieDialog() {
-		super(MainFrame.SINGLETON, "Download movie");
+		super(MainFrame.SINGLETON, "Download movie", true);
 		setLocationRelativeTo(MainFrame.SINGLETON);
 		setAlwaysOnTop(true);
 		setLayout(new BorderLayout());
@@ -24,7 +24,6 @@ public class DownloadMovieDialog extends JDialog{
 	private void initGUI(){
 		progressBar = new JProgressBar();
 	}
-	
 	
 	
 }

@@ -10,6 +10,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -22,12 +24,18 @@ import javax.swing.UIManager;
 import org.helioviewer.jhv.base.FileUtils;
 import org.helioviewer.jhv.base.Log;
 import org.helioviewer.jhv.base.Message;
+import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
+import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
+import org.helioviewer.jhv.base.downloadmanager.AbstractRequest.PRIORITY;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.dialogs.AboutDialog;
 import org.helioviewer.jhv.io.CommandLineProcessor;
+import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.install4j.api.launcher.ApplicationLauncher;
 import com.install4j.api.update.UpdateScheduleRegistry;
@@ -49,12 +57,12 @@ import com.jogamp.opengl.GLProfile;
  * 
  */
 public class JHelioviewer {
-	
-	public static void main(String[] args){		
-				
+
+	public static void main(String[] args) {
+
 		// Uncaught runtime errors are displayed in a dialog box in addition
 		JHVUncaughtExceptionHandler.setupHandlerForThread();
-	
+
 		try {
 			Log.redirectStdOutErr();
 			if (System.getProperty("raygunTag") != null) {
@@ -78,14 +86,14 @@ public class JHelioviewer {
 			}
 			JHVGlobals.RAYGUN_TAG = System.getProperty("raygunTag");
 
-			
-			if (args.length == 1 && (args[0].equals("-h") || args[0].equals("--help"))) {
-	            System.out.println(CommandLineProcessor.getUsageMessage());
-	            return;
-	        }
-			
+			if (args.length == 1
+					&& (args[0].equals("-h") || args[0].equals("--help"))) {
+				System.out.println(CommandLineProcessor.getUsageMessage());
+				return;
+			}
+
 			CommandLineProcessor.setArguments(args);
-			
+
 			// Setup Swing
 			try {
 				UIManager.setLookAndFeel(UIManager
@@ -115,8 +123,7 @@ public class JHelioviewer {
 			for (int i = 0; i < args.length; ++i) {
 				argString += " " + args[i];
 			}
-			System.out.println(GLProfile
-					.getDefault());
+			System.out.println(GLProfile.getDefault());
 			GLProfile.initSingleton();
 			GLDrawableFactory factory = GLDrawableFactory.getFactory(GLProfile
 					.getDefault());
@@ -133,7 +140,7 @@ public class JHelioviewer {
 						.getGL2()));
 
 			OpenGLHelper.glContext = sharedDrawable.getContext();
-			
+
 			System.out
 					.println("JHelioviewer started with command-line options:"
 							+ argString);
@@ -200,7 +207,7 @@ public class JHelioviewer {
 			/* ----------Setup OpenGL ----------- */
 			splash.setProgressText("Setting up the UI...");
 			splash.nextStep();
-			//ImageViewerGui.getMainFrame();
+			// ImageViewerGui.getMainFrame();
 
 			/* ----------Setup Plug-ins ----------- */
 
@@ -213,20 +220,20 @@ public class JHelioviewer {
 
 			System.out.println("Add internal plugin: " + "FilterPlugin");
 
-			//force initialization of UltimatePluginInterface
+			// force initialization of UltimatePluginInterface
 			UltimatePluginInterface.SINGLETON.getClass();
-			
+
 			splash.setProgressText("Showing main window...");
 			splash.nextStep();
 			// Create main view chain and display main window
 			System.out.println("Start main window");
 			// splash.initializeViewchain();
-			//ImageViewerGui.getSingletonInstance().createViewchains();
+			// ImageViewerGui.getSingletonInstance().createViewchains();
 			SwingUtilities.invokeLater(new Runnable() {
-				
+
 				@Override
 				public void run() {
-					
+
 					MainFrame.SINGLETON.setVisible(true);
 					splash.dispose();
 					UILatencyWatchdog.startWatchdog();
@@ -275,20 +282,20 @@ public class JHelioviewer {
 
 	private static void loadExecuteLibary(Path tmpPath, String directory,
 			String name, String executableName) throws IOException {
-		try(InputStream in = JHelioviewer.class.getResourceAsStream(directory
-				+ name))
-		{
+		try (InputStream in = JHelioviewer.class.getResourceAsStream(directory
+				+ name)) {
 			byte[] buffer = new byte[1024];
 			int read = -1;
 			File tmp = new File(tmpPath.toFile(), name);
-			try(FileOutputStream fos = new FileOutputStream(tmp)) {
+			try (FileOutputStream fos = new FileOutputStream(tmp)) {
 				while ((read = in.read(buffer)) != -1) {
 					fos.write(buffer, 0, read);
 				}
 				fos.close();
 				in.close();
 				tmp.setExecutable(true);
-				FileUtils.registerExecutable(executableName, tmp.getAbsolutePath());
+				FileUtils.registerExecutable(executableName,
+						tmp.getAbsolutePath());
 				tmp.deleteOnExit();
 			}
 		}
