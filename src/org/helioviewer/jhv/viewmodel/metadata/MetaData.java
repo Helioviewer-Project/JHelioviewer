@@ -231,8 +231,47 @@ public abstract class MetaData {
     	return localDateTime;
     }
     
-    public abstract boolean updatePixelParameters();
+    public boolean updatePixelParameters() {
+		boolean changed = true;
 
+        double newSolarPixelRadius = -1.0;
+        double allowedRelativeDifference = 0.01;
+
+        newSolarPixelRadius = metaDataContainer.tryGetDouble("SOLAR_R");
+
+        if (newSolarPixelRadius == 0) {
+            if (pixelImageSize.getX() == 1024) {
+                newSolarPixelRadius = 360;
+            } else if (pixelImageSize.getX() == 512) {
+                newSolarPixelRadius = 180;
+            }
+        }
+
+        if (newSolarPixelRadius > 0) {
+            double allowedAbsoluteDifference = newSolarPixelRadius * allowedRelativeDifference;
+            if (Math.abs(solarPixelRadius - newSolarPixelRadius) > allowedAbsoluteDifference) {
+                changed = true;
+            }
+
+            double sunX = metaDataContainer.tryGetDouble("CRPIX1");
+            double sunY = metaDataContainer.tryGetDouble("CRPIX2");
+
+            if (changed || Math.abs(sunPixelPosition.x - sunX) > allowedAbsoluteDifference || Math.abs(sunPixelPosition.y - sunY) > allowedAbsoluteDifference) {
+                sunPixelPosition = new Vector2d(sunX, sunY);
+                changed = true;
+            }
+        }
+
+        if (changed) {
+            solarPixelRadius = newSolarPixelRadius;
+            meterPerPixel = Constants.SUN_RADIUS / solarPixelRadius;
+            setPhysicalLowerLeftCorner(sunPixelPosition.scale(-meterPerPixel));
+            setPhysicalImageSize(new Vector2d(pixelImageSize.getX() * meterPerPixel, pixelImageSize.getY() * meterPerPixel));
+        }
+
+        return changed;
+	}
+	
 	public double getHEEX() {
         return heeX;
     }

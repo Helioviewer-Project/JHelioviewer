@@ -2,6 +2,7 @@ package org.helioviewer.jhv.layers;
 
 import java.time.LocalDateTime;
 
+import kdu_jni.KduException;
 import kdu_jni.Kdu_cache;
 
 import org.helioviewer.jhv.opengl.texture.TextureCache;
@@ -15,7 +16,7 @@ public class CacheableImageData {
 	private LocalDateTime lastDate = LocalDateTime.MIN;
 	
 	private int id;
-	private final Kdu_cache kduCache;
+	private Kdu_cache kduCache;
 	private int lastDetectedDate;
 	
 	private String fileName = null;
@@ -91,6 +92,7 @@ public class CacheableImageData {
 	public void setFile(String fileName) {
 		this.fileName = fileName;
 		kduCache.Native_destroy();
+		kduCache = null;
 		markAsChanged();
 	}
 

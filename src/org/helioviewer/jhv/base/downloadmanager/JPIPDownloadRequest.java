@@ -16,7 +16,7 @@ public class JPIPDownloadRequest extends HTTPRequest{
 	private final ArrayList<AbstractRequest> requests; 
 	
 	public JPIPDownloadRequest(String url, PRIORITY priority, CacheableImageData cacheableImageData, ArrayList<AbstractRequest> requests) {
-		super(url, priority, -1);
+		super(url, priority, 60000, -1);
 		this.cacheableImageData = cacheableImageData;
 		this.requests = requests;
 	}
@@ -26,6 +26,7 @@ public class JPIPDownloadRequest extends HTTPRequest{
 	public void execute() throws IOException {
 		super.execute();
 		if (finished){
+			System.out.println("url : " +url);
 			String fileName = CACHE_PATH + url.substring(url.lastIndexOf("/"));
 			System.out.println(fileName);
 			File file = new File(fileName);
@@ -34,6 +35,8 @@ public class JPIPDownloadRequest extends HTTPRequest{
 			fos.close();		
 			cacheableImageData.setFile(fileName);
 			requests.remove(this);
+			file = null;
+			rawData = null;
 		}
 	}
 	

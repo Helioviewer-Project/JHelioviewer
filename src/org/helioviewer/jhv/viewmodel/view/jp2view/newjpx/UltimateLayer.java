@@ -45,7 +45,7 @@ public class UltimateLayer {
 	public int sourceID;
 
 	public static final int MAX_FRAME_SIZE = 10;
-	private static final String URL = "http://api.helioviewer.org/v2/getJPX/?";
+	private static final String URL = "http://api.helioviewer.org/v1/getJPX/?";
 	private static final String URL_MOVIES = "http://api.helioviewer.org/jp2";
 	private static final int MAX_THREAD_PER_LAYER = 2;
 	private static final int MAX_THREAD_PER_LOAD_JPIP_URLS = 4;
@@ -112,11 +112,13 @@ public class UltimateLayer {
 			private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 			private ArrayList<HTTPRequest> httpRequests = new ArrayList<HTTPRequest>();
 			private HashMap<HTTPRequest, JPIPDownloadRequest> jpipDownloadRequests = new HashMap<HTTPRequest, JPIPDownloadRequest>();
+
 			@Override
 			public void run() {
 				LocalDateTime tmp = LocalDateTime.MIN;
 				LocalDateTime currentStart = start;
-
+				int counter = 0;
+				CacheableImageData[] cacheableImageDatas;
 				while (tmp.isBefore(end)) {
 					tmp = currentStart.plusSeconds(cadence
 							* (MAX_FRAME_SIZE - 1));
@@ -125,19 +127,19 @@ public class UltimateLayer {
 							+ tmp.format(formatter) + "&sourceId=" + sourceID
 							+ "&jpip=true&verbose=true&cadence=" + cadence;
 					HTTPRequest httpRequest = new HTTPRequest(URL + request,
-							PRIORITY.HIGH);
+							PRIORITY.URGENT);
 					requests.add(httpRequest);
 					UltimateDownloadManager.addRequest(httpRequest);
 					httpRequests.add(httpRequest);
-					
-					request = "startTime="
-							+ currentStart.format(formatter) + "&endTime="
-							+ tmp.format(formatter) + "&sourceId=" + sourceID
-							+ "&cadence=" + cadence;
-					
+
+					request = "startTime=" + currentStart.format(formatter)
+							+ "&endTime=" + tmp.format(formatter)
+							+ "&sourceId=" + sourceID + "&cadence=" + cadence;
+
 					CacheableImageData cacheableImageData = new CacheableImageData(
 							id, new Kdu_cache());
-					JPIPDownloadRequest jpipDownloadRequest = new JPIPDownloadRequest(URL + request, PRIORITY.LOW, cacheableImageData, requests);
+					JPIPDownloadRequest jpipDownloadRequest = new JPIPDownloadRequest(
+							URL + request, PRIORITY.LOW, cacheableImageData, requests);
 					jpipDownloadRequests.put(httpRequest, jpipDownloadRequest);
 					requests.add(jpipDownloadRequest);
 					UltimateDownloadManager.addRequest(jpipDownloadRequest);
@@ -145,12 +147,14 @@ public class UltimateLayer {
 				}
 
 				boolean finished = false;
+				
 				while (!finished) {
 					if (Thread.interrupted())
 						return;
 					for (HTTPRequest httpRequest : httpRequests) {
 						finished = false;
 						finished &= httpRequest.isFinished();
+						JPIPDownloadRequest jpipDownloadRequest = jpipDownloadRequests.get(httpRequest);
 						if (httpRequest.isFinished()
 								&& requests.contains(httpRequest)) {
 							JSONObject jsonObject;
@@ -159,7 +163,8 @@ public class UltimateLayer {
 										.getDataAsString());
 
 								if (jsonObject.has("error")) {
-									System.out.println("error during : " + httpRequest);
+									System.out.println("error during : "
+											+ httpRequest);
 									requests.remove(httpRequest);
 									break;
 								}
@@ -174,12 +179,13 @@ public class UltimateLayer {
 									localDateTimes[i] = timestamp
 											.toLocalDateTime();
 								}
-								JPIPDownloadRequest jpipDownloadRequest = jpipDownloadRequests.get(httpRequest);
+								
 								String jpipURI = jsonObject.getString("uri");
-								System.out.println("jpipURL : " + jpipURI);
 
-								CacheableImageData cacheableImageData = jpipDownloadRequest.getCachaableImageData();
-								cacheableImageData.setLocalDateTimes(localDateTimes);
+								CacheableImageData cacheableImageData = jpipDownloadRequest
+										.getCachaableImageData();
+								cacheableImageData
+										.setLocalDateTimes(localDateTimes);
 								jpipDownloadRequests.remove(httpRequest);
 								Cache.addCacheElement(cacheableImageData);
 								addFramedates(localDateTimes);
@@ -187,8 +193,7 @@ public class UltimateLayer {
 								JPIPRequest jpipRequestLow = new JPIPRequest(
 										jpipURI, PRIORITY.HIGH, 0, frames
 												.length(), new Rectangle(256,
-												256), cacheableImageData.getImageData(),
-										cacheableImageData);
+												256), cacheableImageData);
 								// JPIPRequest jpipRequestMiddle = new
 								// JPIPRequest(
 								// jpipURI, PRIORITY.MEDIUM, 0, frames.length(),
@@ -210,12 +215,14 @@ public class UltimateLayer {
 										+ jpipURI.substring(
 												jpipURI.indexOf(":8090") + 5,
 												jpipURI.length());
-								/*JPIPDownloadRequest jpipDownloadRequest = new JPIPDownloadRequest(
-										downloadURL, PRIORITY.LOW,
-										cacheableImageData, requests);
-								requests.add(jpipDownloadRequest);
-								UltimateDownloadManager
-										.addRequest(jpipDownloadRequest);*/
+								/*
+								 * JPIPDownloadRequest jpipDownloadRequest = new
+								 * JPIPDownloadRequest( downloadURL,
+								 * PRIORITY.LOW, cacheableImageData, requests);
+								 * requests.add(jpipDownloadRequest);
+								 * UltimateDownloadManager
+								 * .addRequest(jpipDownloadRequest);
+								 */
 							} catch (JSONException e1) {
 								// TODO Auto-generated catch block
 								e1.printStackTrace();
@@ -245,7 +252,7 @@ public class UltimateLayer {
 		return 1;
 	}
 
-	public void addFramedates(LocalDateTime[] localDateTimes) {
+	private void addFramedates(LocalDateTime[] localDateTimes) {
 		for (LocalDateTime localDateTime : localDateTimes)
 			treeSet.add(localDateTime);
 		LocalDateTime[] allLocalDateTimes = treeSet
@@ -281,7 +288,7 @@ public class UltimateLayer {
 			metaData = render.getMetadata(index);
 		} catch (JHV_KduException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		render.closeImage();
 		return metaData;
@@ -309,7 +316,6 @@ public class UltimateLayer {
 	public ByteBuffer getImageData(LocalDateTime currentDateTime,
 			ImageRegion imageRegion, MetaData metaData, boolean highResolution)
 			throws InterruptedException, ExecutionException, JHV_KduException {
-		// newLayer.getImageRegion().calculateScaleFactor(newLayer, camera);
 		Queue<CachableTexture> textures = TextureCache.getCacheableTextures();
 		for (CachableTexture texture : textures) {
 			if (texture.compareRegion(id, imageRegion, currentDateTime)

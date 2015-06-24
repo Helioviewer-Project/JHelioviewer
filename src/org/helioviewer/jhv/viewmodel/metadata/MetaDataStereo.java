@@ -6,11 +6,14 @@ import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
 import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
 import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.base.math.Vector2d;
+import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 
 public class MetaDataStereo extends MetaData{
 
+	private final Vector2i RESOLUTION = new Vector2i(2048, 2048);
+	private final double IMAGE_SCALE = 1.588;
 
 	public MetaDataStereo(MetaDataContainer metaDataContainer) {
         super(metaDataContainer);

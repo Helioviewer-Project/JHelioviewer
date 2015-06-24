@@ -2,7 +2,7 @@ package org.helioviewer.jhv.opengl.texture;
 
 import java.time.LocalDateTime;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.gui.MainFrame;
@@ -12,11 +12,11 @@ import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 public class TextureCache {
 
 	private static final int SIZE_TEXTURE_CACHE = 10;
-	private static ConcurrentLinkedQueue<CachableTexture> queue;
+	private static Queue<CachableTexture> queue;
 
 	static {
 		int[] textures = OpenGLHelper.createTextureIDs(SIZE_TEXTURE_CACHE);
-		queue = new ConcurrentLinkedQueue<TextureCache.CachableTexture>();
+		queue = new ArrayBlockingQueue<TextureCache.CachableTexture>(SIZE_TEXTURE_CACHE);
 
 		for (int texture : textures) {
 			queue.add(new CachableTexture(texture));
@@ -34,7 +34,7 @@ public class TextureCache {
 
 	public static ImageRegion addElement(ImageRegion imageRegion, int id) {
 		// CachableTexture texture = concurrentLinkedDeque.peekLast();
-		CachableTexture texture = queue.peek();
+		CachableTexture texture = queue.poll();
 		texture.setNewImageRegion(id, imageRegion);
 		queue.add(texture);
 		// concurrentLinkedDeque.addFirst(texture);

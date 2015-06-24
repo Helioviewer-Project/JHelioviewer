@@ -21,7 +21,9 @@ import javax.swing.JSpinner;
 import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 
+import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.MainFrame;
+import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.dialogs.calender.DatePicker;
 import org.helioviewer.jhv.layers.Layers;
 
@@ -62,6 +64,7 @@ public class AddLayerPanel extends JDialog {
 	 */
 	public AddLayerPanel() {
 		super(MainFrame.SINGLETON, "Add Layer");
+		setIconImage(IconBank.getIcon(JHVIcon.HVLOGO_SMALL).getImage());
 		this.setResizable(false);
 		this.setAlwaysOnTop(true);
 		setMinimumSize(new Dimension(450, 310));

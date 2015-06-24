@@ -5,9 +5,13 @@ import java.time.format.DateTimeFormatter;
 
 import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.base.math.Vector2d;
+import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.physics.Constants;
 
 public class MetaDataLASCO_C3 extends MetaData{
+
+	private final Vector2i RESOLUTION = new Vector2i(1024, 1024);
+	private final double IMAGE_SCALE = 56.0;
 
 	public MetaDataLASCO_C3(MetaDataContainer metaDataContainer) {
         super(metaDataContainer);

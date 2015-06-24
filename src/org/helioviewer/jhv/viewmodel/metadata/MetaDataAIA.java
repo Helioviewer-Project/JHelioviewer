@@ -9,6 +9,11 @@ import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
 
 public class MetaDataAIA extends MetaData{
+	
+	private final Vector2i RESOLUTION = new Vector2i(4096, 4096);
+	private final double IMAGE_SCALE = 0.6;
+	
+	
   public MetaDataAIA(MetaDataContainer metaDataContainer){
         super(metaDataContainer);
         

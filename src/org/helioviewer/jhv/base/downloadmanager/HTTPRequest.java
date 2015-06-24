@@ -12,7 +12,7 @@ public class HTTPRequest extends AbstractRequest {
 
 	private static final int DEFAULT_BUFFER_SIZE = 16384;
 
-	private byte[] rawData;
+	protected byte[] rawData;
 
 	public HTTPRequest(String uri, PRIORITY priority, int timeOut, int retries){
 		this(uri, priority);

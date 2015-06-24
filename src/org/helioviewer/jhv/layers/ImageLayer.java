@@ -58,9 +58,10 @@ public class ImageLayer extends LayerInterface{
 			}
 			return true;
 			}
-		} catch (InterruptedException | ExecutionException | JHV_KduException e) {
+		} catch (InterruptedException | ExecutionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (JHV_KduException e) {
 		}
 		return false;
 	}

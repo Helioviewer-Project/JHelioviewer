@@ -18,58 +18,63 @@ import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPResponse;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPSocket;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
 
-public class JPIPRequest extends AbstractRequest{
-	
+public class JPIPRequest extends AbstractRequest {
+
 	private JPIPSocket jpipSocket;
-	private final Kdu_cache kduCache;
-	
+
 	private int cacheSize = 0;
-	
+
 	private final JPIPQuery query;
-	
+
 	private int JpipRequestLen = JPIPConstants.MIN_REQUEST_LEN;
 	private volatile long lastResponseTime = -1;
 	private final CacheableImageData cacheableImageData;
-	
-	public JPIPRequest(String url, PRIORITY priority, int startFrame, int endFrame, Rectangle size, Kdu_cache kduCache, CacheableImageData cacheableImageData) {
+
+	public JPIPRequest(String url, PRIORITY priority, int startFrame,
+			int endFrame, Rectangle size,
+			CacheableImageData cacheableImageData) {
 		super(url, priority);
-		this.kduCache = kduCache;
 		this.cacheableImageData = cacheableImageData;
 		jpipSocket = new JPIPSocket();
-		
-		query = new JPIPQuery();
-		query.setField(JPIPRequestField.CONTEXT.toString(), "jpxl<" + startFrame
-				+ "-" + endFrame + ">");
-		query.setField(JPIPRequestField.LAYERS.toString(),
-				String.valueOf(8));
 
-		query.setField(JPIPRequestField.FSIZ.toString(), String.valueOf(size.width)
-				+ "," + String.valueOf(size.height) + "," + "closest");
+		query = new JPIPQuery();
+		query.setField(JPIPRequestField.CONTEXT.toString(), "jpxl<"
+				+ startFrame + "-" + endFrame + ">");
+		query.setField(JPIPRequestField.LAYERS.toString(), String.valueOf(8));
+
+		query.setField(JPIPRequestField.FSIZ.toString(),
+				String.valueOf(size.width) + "," + String.valueOf(size.height)
+						+ "," + "closest");
 		query.setField(JPIPRequestField.ROFF.toString(), String.valueOf(0)
 				+ "," + String.valueOf(0));
-		query.setField(JPIPRequestField.RSIZ.toString(), String.valueOf(size.width)
-				+ "," + String.valueOf(size.height));
+		query.setField(JPIPRequestField.RSIZ.toString(),
+				String.valueOf(size.width) + "," + String.valueOf(size.height));
 
 	}
 
 	@Override
-	void execute() throws IOException{
-		receiveData();
+	void execute() throws IOException {
+		if (cacheableImageData.getImageFile() != null) {
+			finished = true;
+		} else {
+			receiveData();
+		}
 	}
-	
-	private void receiveData() throws IOException{
+
+	private void receiveData() throws IOException {
 		try {
 			openSocket();
-			org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPRequest request = new org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPRequest(Method.GET);
+			org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPRequest request = new org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPRequest(
+					Method.GET);
 			boolean complete = false;
 			do {
+				System.out.println("receiveData");
 				if (jpipSocket.isClosed())
 					openSocket();
-
+				if (cacheableImageData.getImageFile() != null) break;
 				query.setField(JPIPRequestField.LEN.toString(),
 						String.valueOf(JpipRequestLen));
 
-				// System.out.println("query : " + query);
 				request.setQuery(query);
 				jpipSocket.send(request);
 				JPIPResponse response = jpipSocket.receive();
@@ -89,8 +94,7 @@ public class JPIPRequest extends AbstractRequest{
 		} catch (JHV_KduException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		finally{
+		} finally {
 			try {
 				jpipSocket.close();
 			} catch (IOException e) {
@@ -99,22 +103,25 @@ public class JPIPRequest extends AbstractRequest{
 			}
 		}
 	}
-	
-	private void openSocket() throws IOException, URISyntaxException, JHV_KduException{
-		JPIPResponse jpipResponse = (JPIPResponse) jpipSocket.connect(new URI(url));
+
+	private void openSocket() throws IOException, URISyntaxException,
+			JHV_KduException {
+		JPIPResponse jpipResponse = (JPIPResponse) jpipSocket.connect(new URI(
+				url));
 		addJPIPResponseData(jpipResponse);
 	}
-		
+
 	private boolean addJPIPResponseData(JPIPResponse jRes)
 			throws JHV_KduException {
 		JPIPDataSegment data;
 		while ((data = jRes.removeJpipDataSegment()) != null && !data.isEOR)
 			try {
-				kduCache.Add_to_databin(
-						data.classID.getKakaduClassID(), data.codestreamID,
-						data.binID, data.data, data.offset, data.length,
-						data.isFinal, true, false);
+				if (cacheableImageData.getImageFile() == null){
+				cacheableImageData.getImageData().Add_to_databin(data.classID.getKakaduClassID(),
+						data.codestreamID, data.binID, data.data, data.offset,
+						data.length, data.isFinal, true, false);
 				cacheSize += data.length;
+				}
 			} catch (KduException ex) {
 				throw new JHV_KduException("Internal Kakadu error: "
 						+ ex.getMessage());
@@ -122,7 +129,6 @@ public class JPIPRequest extends AbstractRequest{
 		return jRes.isResponseComplete();
 	}
 
-	
 	private void flowControl() {
 		int adjust = 0;
 		int receivedBytes = jpipSocket.getReceivedData();

@@ -605,6 +605,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		gl.glEnable(GL2.GL_BLEND);
 		gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
 
+		/*
 		if (!JHVGlobals.isReleaseVersion()) {
 			gl.glEnable(GL2.GL_TEXTURE_2D);
 			gl.glColor4d(1, 1, 1, 1);
@@ -627,6 +628,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 			gl.glDepthMask(true);
 
 			gl.glDisable(GL2.GL_BLEND);
+
 
 			gl.glMatrixMode(GL2.GL_PROJECTION);
 			gl.glLoadIdentity();
@@ -652,6 +654,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 			gl.glPopMatrix();
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
 		}
+		*/
 	}
 
 	protected void calculateTrackRotation() {

@@ -4,9 +4,14 @@ import java.time.LocalDateTime;
 
 import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.base.math.Vector2d;
+import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.physics.Constants;
 
 public class MetaDataHinode extends MetaData{
+	
+	private final Vector2i RESOLUTION = new Vector2i(4096, 4096);
+	private final double IMAGE_SCALE = 0.6;
+
   public MetaDataHinode(MetaDataContainer metaDataContainer){
         super(metaDataContainer);
         

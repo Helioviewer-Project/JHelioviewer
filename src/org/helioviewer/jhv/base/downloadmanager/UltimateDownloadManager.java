@@ -80,9 +80,6 @@ public class UltimateDownloadManager {
 					else if(!JHVGlobals.isReleaseVersion()){
 						throw new RuntimeException("Request is not canceled");
 					}
-					if (Cache.checkSize()){
-						switchJpipDownloadRequest();
-					}
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

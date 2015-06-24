@@ -9,6 +9,10 @@ import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
 
 public class MetaDataSXT extends MetaData{
+	
+	private final Vector2i RESOLUTION = new Vector2i(1024, 1024);
+	private final double IMAGE_SCALE = 2.46;
+
   public MetaDataSXT(MetaDataContainer metaDataContainer){
         super(metaDataContainer);
         
@@ -81,11 +85,6 @@ public class MetaDataSXT extends MetaData{
 	public boolean updatePixelParameters() {
         boolean changed = false;
 
-        if (pixelImageSize.getX() != metaDataContainer.getPixelWidth() || pixelImageSize.getY() != metaDataContainer.getPixelHeight()) {
-            pixelImageSize = new Vector2i(metaDataContainer.getPixelWidth(), metaDataContainer.getPixelHeight());
-            changed = true;
-        }
-
         double newSolarPixelRadius = -1.0;
         double allowedRelativeDifference = 0.01;
 
@@ -93,8 +92,8 @@ public class MetaDataSXT extends MetaData{
         double arcsecPerPixelY = metaDataContainer.tryGetDouble("CDELT2");
         if (Double.isNaN(arcsecPerPixelX)) {
             if (Double.isNaN(arcsecPerPixelY)) {
-                System.out.println(">> HelioviewerMetaData.readPixelParamters() > Both CDELT1 and CDELT2 are NaN. Use 0.6 as default value.");
-                arcsecPerPixelX = 2.46;
+                System.out.println(">> HelioviewerMetaData.readPixelParamters() > Both CDELT1 and CDELT2 are NaN. Use default value.");
+                arcsecPerPixelX = IMAGE_SCALE;
             } else {
                 System.out.println(">> HelioviewerMetaData.readPixelParamters() > CDELT1 is NaN. CDELT2 is used.");
                 arcsecPerPixelX = arcsecPerPixelY;
@@ -119,7 +118,6 @@ public class MetaDataSXT extends MetaData{
 
             if (changed || Math.abs(sunPixelPosition.x - sunX) > allowedAbsoluteDifference || Math.abs(sunPixelPosition.y - sunY) > allowedAbsoluteDifference) {
                 sunPixelPosition = new Vector2d(sunX, sunY);
-                changed = true;
             }
         }
 

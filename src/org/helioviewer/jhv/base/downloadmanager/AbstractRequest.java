@@ -14,7 +14,7 @@ public abstract class AbstractRequest {
 	protected boolean finished = false;
 	protected int retries = 3;
 	protected IOException ioException = null;
-	protected int timeOut = 10000;
+	protected int timeOut = 20000;
 	protected final String url;
 	
 	/**

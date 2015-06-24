@@ -4,13 +4,13 @@ import java.time.LocalDateTime;
 
 import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.base.math.Vector2d;
+import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.physics.Constants;
 
 public class MetaDataStereoA_COR2 extends MetaData{
 
-	public enum Type{
-		STEREO_A, STEREO_A_COR_1, STEREO_A_COR_2, STEREO_B, STEREO_B_COR_1, STEREO_B_COR_2 
-	}
+	private final Vector2i RESOLUTION = new Vector2i(2048, 2048);
+	private final double IMAGE_SCALE = 14.7;
 
 	public MetaDataStereoA_COR2(MetaDataContainer metaDataContainer) {
         super(metaDataContainer);
