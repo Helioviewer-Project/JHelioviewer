@@ -63,8 +63,7 @@ public class AddLayerPanel extends JDialog {
 	 * Create the dialog.
 	 */
 	public AddLayerPanel() {
-		super(MainFrame.SINGLETON, "Add Layer");
-		setIconImage(IconBank.getIcon(JHVIcon.HVLOGO_SMALL).getImage());
+		super(MainFrame.SINGLETON, "Add Layer", true);
 		this.setResizable(false);
 		this.setAlwaysOnTop(true);
 		setMinimumSize(new Dimension(450, 310));
