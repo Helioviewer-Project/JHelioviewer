@@ -3,8 +3,6 @@ package org.helioviewer.jhv.viewmodel.view.jp2view.newjpx;
 import java.time.LocalDateTime;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
-import kdu_jni.KduException;
-
 import org.helioviewer.jhv.layers.CacheableImageData;
 
 public class Cache {

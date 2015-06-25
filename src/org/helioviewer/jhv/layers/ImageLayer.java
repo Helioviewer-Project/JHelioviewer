@@ -3,8 +3,10 @@ package org.helioviewer.jhv.layers;
 import java.awt.Dimension;
 import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
+import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
 
+import org.helioviewer.jhv.MetaDataException;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.opengl.MainPanel;
@@ -23,14 +25,17 @@ public class ImageLayer extends LayerInterface{
 	private LayerRayTrace layerRayTrace;
 	
 	public ImageLayer(int sourceID, KakaduRender newRender, LocalDateTime start, LocalDateTime end, int cadence) {
-		super();
+		this.id = sourceID;
+		this.start = start;
+		this.end = end;
+		this.cadence = cadence;
 		this.ultimateLayer = new UltimateLayer(id, sourceID, newRender, this);
 		this.ultimateLayer.setTimeRange(start, end, cadence);
 		layerRayTrace = new LayerRayTrace(this);
 	}
 	
 	public ImageLayer(String uri, KakaduRender newRender) {
-		super();
+		this.localPath = uri;
 		this.ultimateLayer = new UltimateLayer(id, uri, newRender, this);
 		layerRayTrace = new LayerRayTrace(this);
 	}
@@ -79,16 +84,14 @@ public class ImageLayer extends LayerInterface{
 	}
 	
 	@Deprecated
-	public LocalDateTime[] getLocalDateTime(){
+	public TreeSet<LocalDateTime> getLocalDateTime(){
 		return ultimateLayer.getLocalDateTimes();
 	}
 
 	@Override
-	public MetaData getMetaData() {
-		if (getLastDecodedImageRegion() != null) {
-			return this.getLastDecodedImageRegion().getMetaData();
-		}
-		return null;
+	public MetaData getMetaData() throws MetaDataException {
+		if (getLastDecodedImageRegion() == null || getLastDecodedImageRegion().getMetaData() == null) throw new MetaDataException("No imagedata available");
+		return this.getLastDecodedImageRegion().getMetaData();
 	}
 
 	public ImageRegion getLastDecodedImageRegion(){
@@ -98,5 +101,9 @@ public class ImageLayer extends LayerInterface{
 	public void cancelDownload(){
 		ultimateLayer.cancelDownload();
 	}
-	
+
+	@Override
+	public String getURL() throws LocalFileException {
+		return ultimateLayer.getURL();
+	}
 }

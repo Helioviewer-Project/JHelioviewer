@@ -16,6 +16,7 @@ import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.SphericalCoord;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.DifferentialRotation;
+import org.helioviewer.jhv.layers.LocalFileException;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKEvent;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKEvent.GenericTriangle;
@@ -312,16 +313,22 @@ public class HEKPlugin extends NewPlugin {
 	}
 
 	public void dateTimesChanged(int framecount) {
-		LocalDateTime startDateTime = UltimatePluginInterface
-				.getStartDateTime();
-		LocalDateTime endDateTime = UltimatePluginInterface.getEndDateTime();
-		Date start = Date.from(startDateTime.atZone(ZoneId.systemDefault())
-				.toInstant());
-		Date end = Date.from(endDateTime.atZone(ZoneId.systemDefault())
-				.toInstant());
+		LocalDateTime startDateTime;
+		try {
+			startDateTime = UltimatePluginInterface
+					.getStartDateTime();
+			LocalDateTime endDateTime = UltimatePluginInterface.getEndDateTime();
+			Date start = Date.from(startDateTime.atZone(ZoneId.systemDefault())
+					.toInstant());
+			Date end = Date.from(endDateTime.atZone(ZoneId.systemDefault())
+					.toInstant());
 
-		Interval<Date> newInterval = new Interval<Date>(start, end);
-		hekPluginPanel.setCurInterval(newInterval);
+			Interval<Date> newInterval = new Interval<Date>(start, end);
+			hekPluginPanel.setCurInterval(newInterval);
+		} catch (LocalFileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	};
 
 	public void mouseMoved(MouseEvent e, Vector3d point) {

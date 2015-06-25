@@ -6,6 +6,7 @@ import java.nio.ByteBuffer;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Queue;
@@ -27,6 +28,7 @@ import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.layers.CacheableImageData;
 import org.helioviewer.jhv.layers.ImageLayer;
+import org.helioviewer.jhv.layers.LocalFileException;
 import org.helioviewer.jhv.opengl.texture.TextureCache;
 import org.helioviewer.jhv.opengl.texture.TextureCache.CachableTexture;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
@@ -45,7 +47,7 @@ public class UltimateLayer {
 	public int sourceID;
 
 	public static final int MAX_FRAME_SIZE = 10;
-	private static final String URL = "http://api.helioviewer.org/v1/getJPX/?";
+	private static final String URL = "http://api.helioviewer.org/v2/getJPX/?";
 	private static final String URL_MOVIES = "http://api.helioviewer.org/jp2";
 	private static final int MAX_THREAD_PER_LAYER = 2;
 	private static final int MAX_THREAD_PER_LOAD_JPIP_URLS = 4;
@@ -59,7 +61,7 @@ public class UltimateLayer {
 
 	private ImageRegion imageRegion;
 	private Thread jpipURLLoader;
-
+	private boolean localFile = false;
 	private int id;
 
 	private ArrayList<AbstractRequest> requests = new ArrayList<AbstractRequest>();
@@ -80,6 +82,7 @@ public class UltimateLayer {
 		this.newLayer = newLayer;
 		this.sourceID = 0;
 		this.render = render;
+		this.localFile = true;
 		this.fileName = filename;
 		try {
 			this.render.closeImage();
@@ -257,7 +260,7 @@ public class UltimateLayer {
 			treeSet.add(localDateTime);
 		LocalDateTime[] allLocalDateTimes = treeSet
 				.toArray(new LocalDateTime[treeSet.size()]);
-		TimeLine.SINGLETON.setFrames(allLocalDateTimes);
+		TimeLine.SINGLETON.updateLocalDateTimes(treeSet);
 	}
 
 	public MetaData getMetaData(LocalDateTime currentDateTime)
@@ -294,14 +297,9 @@ public class UltimateLayer {
 		return metaData;
 	}
 
-	public LocalDateTime getLocalDateTime(int index) {
-		return localDateTimes[index];
-	}
-
 	@Deprecated
-	public LocalDateTime[] getLocalDateTimes() {
-		LocalDateTime[] localDateTimes = new LocalDateTime[treeSet.size()];
-		return this.treeSet.toArray(localDateTimes);
+	public TreeSet<LocalDateTime> getLocalDateTimes() {
+		return this.treeSet;
 	}
 
 	private ByteBuffer getImageFromLocalFile(int idx, float zoomFactor,
@@ -359,9 +357,10 @@ public class UltimateLayer {
 
 	@Deprecated
 	private void timeArrayChanged() {
+		TimeLine.SINGLETON.updateLocalDateTimes(treeSet);
 		LocalDateTime[] localDateTimes = new LocalDateTime[treeSet.size()];
-		TimeLine.SINGLETON.updateLocalDateTimes(this.treeSet
-				.toArray(localDateTimes));
+		//TimeLine.SINGLETON.updateLocalDateTimes(this.treeSet
+		//		.toArray(localDateTimes));
 	}
 
 	public void cancelDownload() {
@@ -370,6 +369,29 @@ public class UltimateLayer {
 		for (AbstractRequest request : requests) {
 			UltimateDownloadManager.remove(request);
 		}
+	}
+
+	public String getURL() throws LocalFileException {
+		if (localFile) throw new LocalFileException("Couldn't download a local file");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+		LocalDateTime start = treeSet.first();
+		LocalDateTime end = treeSet.last();
+		int cadence = 0;
+		LocalDateTime last = null;
+		for (LocalDateTime localDateTime : treeSet){
+			if (last != null){
+				cadence += ChronoUnit.SECONDS.between(last, localDateTime);
+			}
+			last = localDateTime;
+			System.out.println(last);
+		}
+		cadence /= (treeSet.size() - 1);
+		String request = "startTime="
+				+ start.format(formatter) + "&endTime="
+				+ end.format(formatter) + "&sourceId=" + sourceID
+				+ "&cadence=" + cadence;
+		
+		return URL + request;
 	}
 
 }

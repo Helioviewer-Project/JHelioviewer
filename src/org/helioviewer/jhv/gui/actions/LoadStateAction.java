@@ -2,15 +2,21 @@ package org.helioviewer.jhv.gui.actions;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 import org.helioviewer.jhv.JHVGlobals;
+import org.helioviewer.jhv.base.StateParser;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.actions.filefilters.JHVStateFilter;
+import org.json.JSONException;
+import org.xml.sax.InputSource;
 
 public class LoadStateAction extends AbstractAction {
 
@@ -62,47 +68,13 @@ public class LoadStateAction extends AbstractAction {
      * {@inheritDoc}
      */
     public void actionPerformed(ActionEvent e) {
-
-        final URL selectedLocation;
-
-        if (stateLocation == null) {
-            final JFileChooser fileChooser = JHVGlobals.getJFileChooser();
-            fileChooser.setAcceptAllFileFilterUsed(false);
-            fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-            fileChooser.addChoosableFileFilter(new JHVStateFilter());
-            fileChooser.setMultiSelectionEnabled(false);
-
-            int retVal = fileChooser.showOpenDialog(MainFrame.SINGLETON);
-
-            if (retVal != JFileChooser.APPROVE_OPTION) {
-                return;
-            }
-
-            File selectedFile = fileChooser.getSelectedFile();
-
-            if (selectedFile.exists() && selectedFile.isFile()) {
-                try {
-                    selectedLocation = selectedFile.toURI().toURL();
-                } catch (MalformedURLException e1) {
-                    System.err.println("Error while opening state " + selectedFile);
-                    e1.printStackTrace();
-                    return;
-                }
-            } else {
-                return;
-            }
-        } else {
-            selectedLocation = stateLocation;
-        }
-
-        // If the function reaches this point, it is guaranteed that
-        // stateLocation is not null.
-        new Thread(new Runnable() {
-            public void run() {
-                //ImageViewerGui.getSingletonInstance().getMainImagePanel().setLoading(true);
-                //LayersModel.getSingletonInstance().loadState(selectedLocation);
-                //ImageViewerGui.getSingletonInstance().getMainImagePanel().setLoading(false);
-            }
-        }, "LoadStateThread").start();
+    	try {
+			StateParser.loadStateFile();
+		} catch (IOException e1) {
+			JOptionPane.showMessageDialog(MainFrame.MAIN_PANEL, "No file founded \n" + e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+		} catch (JSONException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
     }
 }

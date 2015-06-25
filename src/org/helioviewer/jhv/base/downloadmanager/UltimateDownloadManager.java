@@ -7,7 +7,6 @@ import java.util.concurrent.PriorityBlockingQueue;
 
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.base.downloadmanager.AbstractRequest.PRIORITY;
-import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.Cache;
 
 public class UltimateDownloadManager {
 

@@ -2,7 +2,6 @@ package org.helioviewer.jhv.layers;
 
 import java.time.LocalDateTime;
 
-import kdu_jni.KduException;
 import kdu_jni.Kdu_cache;
 
 import org.helioviewer.jhv.opengl.texture.TextureCache;

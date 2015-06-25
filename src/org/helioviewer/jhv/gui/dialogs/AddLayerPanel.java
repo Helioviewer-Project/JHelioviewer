@@ -21,9 +21,7 @@ import javax.swing.JSpinner;
 import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 
-import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.dialogs.calender.DatePicker;
 import org.helioviewer.jhv.layers.Layers;
 
@@ -191,6 +189,10 @@ public class AddLayerPanel extends JDialog {
 				if (filter != null && filter.getStart() != null) {
 					datePickerStartDate.setToolTip("Data available after : " + filter.getStart());
 					datePickerEndDate.setToolTip("Data available before : " + filter.getEnd());
+				}
+				else {
+					datePickerStartDate.setToolTip("");
+					datePickerEndDate.setToolTip("");
 				}
 			}
 		});

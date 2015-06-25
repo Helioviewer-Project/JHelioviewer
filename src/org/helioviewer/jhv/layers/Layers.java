@@ -18,7 +18,7 @@ public class Layers {
 		layerListeners = new CopyOnWriteArrayList<LayerListener>();
 	}
 		
-	public static void addLayer(String uri){
+	public static LayerInterface addLayer(String uri){
 		ImageLayer layer = new ImageLayer(uri, renderer);
 		layers.add(layer);
 		for (LayerListener renderListener : layerListeners){
@@ -27,6 +27,7 @@ public class Layers {
 		if (layers.size() == 1){
 			layerChanged();
 		}
+		return layer;
 	}
 	
 	public static ImageLayer addLayer(int id, LocalDateTime start, LocalDateTime end, int cadence){
@@ -94,5 +95,9 @@ public class Layers {
 	
 	public static boolean getCoronaVisibility(){
 		return coronaVisibility;
+	}
+
+	public static void removeAllLayers() {
+		layers.clear();
 	}
 }

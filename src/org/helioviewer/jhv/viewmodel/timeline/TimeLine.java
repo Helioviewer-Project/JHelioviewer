@@ -3,6 +3,8 @@ package org.helioviewer.jhv.viewmodel.timeline;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDateTime;
+import java.util.Iterator;
+import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.Timer;
@@ -10,23 +12,18 @@ import javax.swing.Timer;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
+import org.helioviewer.jhv.layers.LocalFileException;
 
 public class TimeLine implements LayerListener {
 
-	private LocalDateTime start;
-	private LocalDateTime end;
-	private LocalDateTime current;
+	private LocalDateTime current = LocalDateTime.now();
 
-	private int frameCount;
 	private boolean isPlaying = false;
 
 	private CopyOnWriteArrayList<TimeLineListener> timeLineListeners;
 
-	@Deprecated
-	private LocalDateTime[] frames;
-	@Deprecated
-	private int frame = 0;
-
+	private TreeSet<LocalDateTime> localDateTimes = null;
+	
 	private int speedFactor;
 
 	public static TimeLine SINGLETON = new TimeLine();
@@ -41,12 +38,9 @@ public class TimeLine implements LayerListener {
 	});
 
 	private TimeLine() {
+		localDateTimes = new TreeSet<LocalDateTime>();
 		Layers.addNewLayerListener(this);
 		timeLineListeners = new CopyOnWriteArrayList<TimeLine.TimeLineListener>();
-	}
-
-	public void setFrameCount(int frameCount) {
-		this.frameCount = frameCount;
 	}
 
 	public boolean isPlaying() {
@@ -62,44 +56,35 @@ public class TimeLine implements LayerListener {
 		}
 	}
 
-	public LocalDateTime nextFrame() {
+	public LocalDateTime nextFrame() {		
+		LocalDateTime next = localDateTimes.higher(current.plusNanos(1));
 		LocalDateTime last = current;
-		current = frames[frame++];
-		frame = frame > frameCount ? 0 : frame;
+		if (next == null){
+			next = localDateTimes.first();
+		}
+		current = next;
 		dateTimeChanged(last);
 		return current;
 	}
 	
 	public LocalDateTime previousFrame(){
-		LocalDateTime last = current;
-		current = frames[frame--];
-		frame = frame < 0 ? frameCount : frame;
-		dateTimeChanged(last);
+		LocalDateTime next = localDateTimes.lower(current.minusNanos(1));
+		if (next == null){
+			next = localDateTimes.last();
+		}
+		current = next;
+		dateTimeChanged(current);
 		return current;
 	}
 
 	@Deprecated
-	public void setFrames(LocalDateTime[] frames) {
-		this.frames = frames;
-		this.frame = 0;
-		if (frames != null && frames.length > 0) {
-			start = frames[0];
-			current = start;
-			this.frameCount = frames.length - 1;
-			end = frames[frameCount];
-			this.notifyUpdateDateTimes();
-		}
-
-	}
-
-	@Deprecated
 	public int getMaxFrames() {
-		return frameCount;
+		return localDateTimes.size();
 	}
 
 	@Deprecated
 	public int getCurrentFrame() {
-		return frame;
+		return localDateTimes.headSet(current).size();
 	}
 
 	public LocalDateTime getCurrentDateTime() {
@@ -122,7 +107,7 @@ public class TimeLine implements LayerListener {
 
 	private void notifyUpdateDateTimes() {
 		for (TimeLine.TimeLineListener timeLineListener : timeLineListeners) {
-			timeLineListener.dateTimesChanged(frameCount);
+			timeLineListener.dateTimesChanged(localDateTimes.size());
 		}
 	}
 
@@ -147,14 +132,21 @@ public class TimeLine implements LayerListener {
 
 	@Override
 	public void activeLayerChanged(LayerInterface layer) {
-		this.setFrames(layer.getLocalDateTime());
+		updateLocalDateTimes(layer.getLocalDateTime());
 	}
 
 	public void setCurrentFrame(int value) {
-		if (value != frame) {
-			this.frame = value;
-			LocalDateTime last = current;
-			current = frames[frame];
+		Iterator<LocalDateTime> it = localDateTimes.iterator();
+		int i = 0;
+		LocalDateTime current = null;
+		while(it.hasNext() && i <= value){
+			current = it.next();
+			i++;
+		}
+		if (current != null && !current.isEqual(this.current)) {			
+			LocalDateTime last = this.current;
+			System.out.println("current");
+			this.current = current;
 			dateTimeChanged(last);
 		}
 	}
@@ -165,19 +157,21 @@ public class TimeLine implements LayerListener {
 		@Deprecated
 		void dateTimesChanged(int framecount);
 	}
-
-	@Deprecated
-	public void updateLocalDateTimes(LocalDateTime[] localDateTimes) {
-		this.setFrames(localDateTimes);
+	
+	public void updateLocalDateTimes(TreeSet<LocalDateTime> localDateTimes){
+		this.localDateTimes = localDateTimes;
+		notifyUpdateDateTimes();
 	}
 
-	public LocalDateTime getFirstDateTime() {
-		if (frames == null) return null;
-		return frames[0];
+	public LocalDateTime getFirstDateTime() throws LocalFileException {
+		if (localDateTimes.size() <= 0) throw new LocalFileException("No dates are loaded");
+		if (localDateTimes.first() == null) throw new LocalFileException("no first date is available");
+		return localDateTimes.first();
 	}
 
-	public LocalDateTime getLastDateTime() {
-		if (frames == null) return null;
-		return frames[frames.length - 1];
+	public LocalDateTime getLastDateTime() throws LocalFileException {
+		if (localDateTimes.size() <= 0) throw new LocalFileException("No dates are loaded");
+		if (localDateTimes.last() == null) throw new LocalFileException("no first date is available");
+		return localDateTimes.last();
 	}
 }

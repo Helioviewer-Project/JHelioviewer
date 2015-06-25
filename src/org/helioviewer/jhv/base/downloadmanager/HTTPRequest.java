@@ -11,7 +11,7 @@ public class HTTPRequest extends AbstractRequest {
 	private static final int DEFAULT_TIMEOUT = 40000;
 
 	private static final int DEFAULT_BUFFER_SIZE = 16384;
-
+	
 	protected byte[] rawData;
 
 	public HTTPRequest(String uri, PRIORITY priority, int timeOut, int retries){
@@ -46,16 +46,16 @@ public class HTTPRequest extends AbstractRequest {
 		httpURLConnection.setRequestMethod("GET");
 		httpURLConnection.connect();
 		int response = httpURLConnection.getResponseCode();
-
+		totalLength = httpURLConnection.getContentLength();
 		if (response == HttpURLConnection.HTTP_OK) {
 			inputStream = httpURLConnection.getInputStream();
-			int length = 0;
+			receivedLength = 0;
 			byteArrayOutputStream = new ByteArrayOutputStream(
 					DEFAULT_BUFFER_SIZE);
 			byte[] buf = new byte[DEFAULT_BUFFER_SIZE];
 
-			while ((length = inputStream.read(buf)) > 0) {
-				byteArrayOutputStream.write(buf, 0, length);
+			while ((receivedLength = inputStream.read(buf)) > 0) {
+				byteArrayOutputStream.write(buf, 0, receivedLength);
 			}
 			rawData = byteArrayOutputStream.toByteArray();
 			byteArrayOutputStream.close();

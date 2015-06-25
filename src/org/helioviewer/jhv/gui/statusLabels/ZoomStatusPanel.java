@@ -4,6 +4,7 @@ import java.awt.Dimension;
 
 import javax.swing.BorderFactory;
 
+import org.helioviewer.jhv.MetaDataException;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.opengl.MainPanel;
 import org.helioviewer.jhv.layers.LayerInterface;
@@ -47,16 +48,22 @@ public class ZoomStatusPanel extends StatusLabel{
     private synchronized void updateZoomLevel() {
     	LayerInterface activeLayer = Layers.getActiveLayer();
         
-    	if (activeLayer != null && activeLayer.getMetaData() != null){
-    		MetaData metaData = activeLayer.getMetaData();
+    	if (activeLayer != null){
+    		MetaData metaData;
+			try {
+				metaData = activeLayer.getMetaData();
+	    		double unitsPerPixel = metaData.getUnitsPerPixel();
+				double minCanvasDimension = MainFrame.MAIN_PANEL.getCanavasSize().getHeight();
+				//PhysicalRegion region = metaData.getPhysicalRegion();
+	    		double halfFOVRad = Math.toRadians(MainPanel.FOV / 2.0);
+	            double distance = (minCanvasDimension/2.0 * unitsPerPixel) / Math.tan(halfFOVRad);
+	            long zoom = Math.round(distance / MainFrame.MAIN_PANEL.getTranslation().z * 100);
+	            setText("Zoom: " + zoom + "%");
+			} catch (MetaDataException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
-    		double unitsPerPixel = metaData.getUnitsPerPixel();
-			double minCanvasDimension = MainFrame.MAIN_PANEL.getCanavasSize().getHeight();
-			//PhysicalRegion region = metaData.getPhysicalRegion();
-    		double halfFOVRad = Math.toRadians(MainPanel.FOV / 2.0);
-            double distance = (minCanvasDimension/2.0 * unitsPerPixel) / Math.tan(halfFOVRad);
-            long zoom = Math.round(distance / MainFrame.MAIN_PANEL.getTranslation().z * 100);
-            setText("Zoom: " + zoom + "%");
     	}
     	else setText(TITLE);
     }

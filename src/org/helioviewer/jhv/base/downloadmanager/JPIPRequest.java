@@ -6,7 +6,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import kdu_jni.KduException;
-import kdu_jni.Kdu_cache;
 
 import org.helioviewer.jhv.layers.CacheableImageData;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.http.HTTPRequest.Method;

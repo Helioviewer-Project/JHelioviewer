@@ -15,6 +15,7 @@ import javax.swing.JFileChooser;
 import javax.swing.KeyStroke;
 
 import org.helioviewer.jhv.JHVGlobals;
+import org.helioviewer.jhv.MetaDataException;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.actions.filefilters.ExtensionFileFilter;
@@ -92,9 +93,14 @@ public class SaveScreenshotAsAction extends AbstractAction {
 				descriptions = new ArrayList<String>();
 				for (LayerInterface layer : Layers.getLayers()) {
 					if (layer.isVisible()) {
-						descriptions.add(layer.getMetaData().getFullName()
-								+ " - "
-								+ layer.getTime().format(JHVGlobals.DATE_TIME_FORMATTER));
+						try {
+							descriptions.add(layer.getMetaData().getFullName()
+									+ " - "
+									+ layer.getTime().format(JHVGlobals.DATE_TIME_FORMATTER));
+						} catch (MetaDataException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 					}
 				}
 			}

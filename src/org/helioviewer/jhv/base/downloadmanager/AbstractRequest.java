@@ -16,6 +16,8 @@ public abstract class AbstractRequest {
 	protected IOException ioException = null;
 	protected int timeOut = 20000;
 	protected final String url;
+	protected int totalLength = -1;
+	protected int receivedLength = 0;
 	
 	/**
 	 * PRIORITY are used for the Downloadmanager
@@ -67,5 +69,13 @@ public abstract class AbstractRequest {
 
 	public void setPriority(PRIORITY priority) {
 		this.priority = priority;
+	}
+	
+	public int getTotalLength(){
+		return totalLength;
+	}
+	
+	public int getReceivedLength(){
+		return receivedLength;
 	}
 }

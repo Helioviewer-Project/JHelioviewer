@@ -18,21 +18,25 @@ import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.opengl.MainPanel;
+import org.helioviewer.jhv.layers.LocalFileException;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace;
 import org.helioviewer.jhv.plugins.hekplugin.HEKPlugin;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
+import org.helioviewer.jhv.plugins.plugin.NewPlugin.RENDER_MODE;
 import org.helioviewer.jhv.plugins.sdocutoutplugin.SDOCutOutPlugin3D;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine.TimeLineListener;
+import org.json.JSONObject;
 
 import com.jogamp.opengl.GL2;
 
-public class UltimatePluginInterface implements TimeLineListener, MouseListener, MouseMotionListener{
-	
+public class UltimatePluginInterface implements TimeLineListener,
+		MouseListener, MouseMotionListener {
+
 	private ArrayList<NewPlugin> plugins;
-	
+
 	public static final UltimatePluginInterface SINGLETON = new UltimatePluginInterface();
-	
+
 	private UltimatePluginInterface() {
 		plugins = new ArrayList<NewPlugin>();
 		TimeLine.SINGLETON.addListener(this);
@@ -42,55 +46,58 @@ public class UltimatePluginInterface implements TimeLineListener, MouseListener,
 		MainFrame.MAIN_PANEL.addMouseListener(this);
 		MainFrame.MAIN_PANEL.addMouseMotionListener(this);
 	}
-	
-	public void addPlugin(NewPlugin plugin){
+
+	public void addPlugin(NewPlugin plugin) {
 		plugins.add(plugin);
 	}
-	
-	public void removePlugin(NewPlugin plugin){
+
+	public void removePlugin(NewPlugin plugin) {
 		plugins.remove(plugin);
 	}
-	
-	public static void addButtonToToolbar(AbstractButton button){
+
+	public static void addButtonToToolbar(AbstractButton button) {
 		MainFrame.TOP_TOOL_BAR.addButton(button);
 	}
-	
-	public static void addPanelToLeftControllPanel(String title, JPanel panel, boolean startExpanded){
+
+	public static void addPanelToLeftControllPanel(String title, JPanel panel,
+			boolean startExpanded) {
 		MainFrame.LEFT_PANE.add(title, panel, startExpanded);
 	}
 
 	@Override
 	public void timeStampChanged(LocalDateTime current, LocalDateTime last) {
-		for (NewPlugin plugin : plugins){
+		for (NewPlugin plugin : plugins) {
 			plugin.timeStampChanged(current, last);
 		}
 	}
 
 	@Override
 	public void dateTimesChanged(int framecount) {
-		for (NewPlugin plugin : plugins){
+		for (NewPlugin plugin : plugins) {
 			plugin.dateTimesChanged(framecount);
-		}		
+		}
 	}
-	
-	public void renderPlugin(GL2 gl){
-		for (NewPlugin plugin : plugins){
-			gl.glMatrixMode(GL2.GL_PROJECTION);
-			gl.glPushMatrix();
-			gl.glMatrixMode(GL2.GL_MODELVIEW);
-			gl.glPushMatrix();
-			plugin.render(gl);
-			gl.glMatrixMode(GL2.GL_PROJECTION);
-			gl.glPopMatrix();
-			gl.glMatrixMode(GL2.GL_MODELVIEW);
-			gl.glPopMatrix();
-		}		
+
+	public void renderPlugin(GL2 gl, RENDER_MODE renderMode) {
+		for (NewPlugin plugin : plugins) {
+			if (plugin.getRenderMode() == renderMode || plugin.getRenderMode() == RENDER_MODE.ALL_PANEL) {
+				gl.glMatrixMode(GL2.GL_PROJECTION);
+				gl.glPushMatrix();
+				gl.glMatrixMode(GL2.GL_MODELVIEW);
+				gl.glPushMatrix();
+				plugin.render(gl);
+				gl.glMatrixMode(GL2.GL_PROJECTION);
+				gl.glPopMatrix();
+				gl.glMatrixMode(GL2.GL_MODELVIEW);
+				gl.glPopMatrix();
+			}
+		}
 	}
-	
-	public String[] getAboutLicenseTexts(){
+
+	public String[] getAboutLicenseTexts() {
 		String[] licenseTexts = new String[plugins.size()];
 		int index = 0;
-		for (NewPlugin plugin : plugins){
+		for (NewPlugin plugin : plugins) {
 			String licenseText = plugin.getAboutLicenseText();
 			licenseTexts[index++] = licenseText != null ? licenseText : "";
 		}
@@ -104,8 +111,9 @@ public class UltimatePluginInterface implements TimeLineListener, MouseListener,
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		RayTrace rayTrace = new RayTrace();
-		Vector3d hitpoint = rayTrace.cast(e.getX(), e.getY(), MainFrame.MAIN_PANEL).getHitpoint();
-		for (NewPlugin plugin : plugins){
+		Vector3d hitpoint = rayTrace.cast(e.getX(), e.getY(),
+				MainFrame.MAIN_PANEL).getHitpoint();
+		for (NewPlugin plugin : plugins) {
 			plugin.mouseDragged(e, hitpoint);
 		}
 	}
@@ -113,8 +121,9 @@ public class UltimatePluginInterface implements TimeLineListener, MouseListener,
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		RayTrace rayTrace = new RayTrace();
-		Vector3d hitpoint = rayTrace.cast(e.getX(), e.getY(), MainFrame.MAIN_PANEL).getHitpoint();
-		for (NewPlugin plugin : plugins){
+		Vector3d hitpoint = rayTrace.cast(e.getX(), e.getY(),
+				MainFrame.MAIN_PANEL).getHitpoint();
+		for (NewPlugin plugin : plugins) {
 			plugin.mouseMoved(e, hitpoint);
 		}
 	}
@@ -122,8 +131,9 @@ public class UltimatePluginInterface implements TimeLineListener, MouseListener,
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		RayTrace rayTrace = new RayTrace();
-		Vector3d hitpoint = rayTrace.cast(e.getX(), e.getY(), MainFrame.MAIN_PANEL).getHitpoint();
-		for (NewPlugin plugin : plugins){
+		Vector3d hitpoint = rayTrace.cast(e.getX(), e.getY(),
+				MainFrame.MAIN_PANEL).getHitpoint();
+		for (NewPlugin plugin : plugins) {
 			plugin.mouseClicked(e, hitpoint);
 		}
 	}
@@ -131,17 +141,19 @@ public class UltimatePluginInterface implements TimeLineListener, MouseListener,
 	@Override
 	public void mousePressed(MouseEvent e) {
 		RayTrace rayTrace = new RayTrace();
-		Vector3d hitpoint = rayTrace.cast(e.getX(), e.getY(), MainFrame.MAIN_PANEL).getHitpoint();
-		for (NewPlugin plugin : plugins){
+		Vector3d hitpoint = rayTrace.cast(e.getX(), e.getY(),
+				MainFrame.MAIN_PANEL).getHitpoint();
+		for (NewPlugin plugin : plugins) {
 			plugin.mousePressed(e, hitpoint);
-		}	
+		}
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		RayTrace rayTrace = new RayTrace();
-		Vector3d hitpoint = rayTrace.cast(e.getX(), e.getY(), MainFrame.MAIN_PANEL).getHitpoint();
-		for (NewPlugin plugin : plugins){
+		Vector3d hitpoint = rayTrace.cast(e.getX(), e.getY(),
+				MainFrame.MAIN_PANEL).getHitpoint();
+		for (NewPlugin plugin : plugins) {
 			plugin.mouseReleased(e, hitpoint);
 		}
 	}
@@ -149,8 +161,9 @@ public class UltimatePluginInterface implements TimeLineListener, MouseListener,
 	@Override
 	public void mouseEntered(MouseEvent e) {
 		RayTrace rayTrace = new RayTrace();
-		Vector3d hitpoint = rayTrace.cast(e.getX(), e.getY(), MainFrame.MAIN_PANEL).getHitpoint();
-		for (NewPlugin plugin : plugins){
+		Vector3d hitpoint = rayTrace.cast(e.getX(), e.getY(),
+				MainFrame.MAIN_PANEL).getHitpoint();
+		for (NewPlugin plugin : plugins) {
 			plugin.mouseEntered(e, hitpoint);
 		}
 	}
@@ -158,51 +171,64 @@ public class UltimatePluginInterface implements TimeLineListener, MouseListener,
 	@Override
 	public void mouseExited(MouseEvent e) {
 		RayTrace rayTrace = new RayTrace();
-		Vector3d hitpoint = rayTrace.cast(e.getX(), e.getY(), MainFrame.MAIN_PANEL).getHitpoint();
-		for (NewPlugin plugin : plugins){
+		Vector3d hitpoint = rayTrace.cast(e.getX(), e.getY(),
+				MainFrame.MAIN_PANEL).getHitpoint();
+		for (NewPlugin plugin : plugins) {
 			plugin.mouseExited(e, hitpoint);
 		}
 	}
-	
-	public static void setCursor(Cursor cursor){
+
+	public static void setCursor(Cursor cursor) {
 		MainFrame.MAIN_PANEL.setCursor(cursor);
 	}
 
-	public static Cursor getCursor(){
+	public static Cursor getCursor() {
 		return MainFrame.MAIN_PANEL.getCursor();
 	}
 
-	public static Point mainPanelGetLocationOnScreen(){
+	public static Point mainPanelGetLocationOnScreen() {
 		return MainFrame.MAIN_PANEL.getLocationOnScreen();
 	}
-	
-	public static Dimension mainPanelGetSize(){
+
+	public static Dimension mainPanelGetSize() {
 		return MainFrame.MAIN_PANEL.getSize();
 	}
 
-	public static LocalDateTime getStartDateTime() {
+	public static LocalDateTime getStartDateTime() throws LocalFileException {
 		return TimeLine.SINGLETON.getFirstDateTime();
 	}
-	
-	public static LocalDateTime getEndDateTime() {
+
+	public static LocalDateTime getEndDateTime() throws LocalFileException {
 		return TimeLine.SINGLETON.getLastDateTime();
 	}
 
-	public static Dimension getMainPanelSize(){
+	public static Dimension getMainPanelSize() {
 		return MainFrame.MAIN_PANEL.getSize();
 	}
-	
-	public static double getViewPortSize(){
-		return MainFrame.MAIN_PANEL.getTranslation().z * Math.tan(MainPanel.FOV / 2) * 2;
+
+	public static double getViewPortSize() {
+		return MainFrame.MAIN_PANEL.getTranslation().z
+				* Math.tan(MainPanel.FOV / 2) * 2;
 	}
 
 	public static void repaintMainPanel() {
 		MainFrame.MAIN_PANEL.repaintViewAndSynchronizedViews();
 	}
-	
-	public static HTTPRequest generateAndStartHTPPRequest(String uri, PRIORITY priority){
+
+	public static HTTPRequest generateAndStartHTPPRequest(String uri,
+			PRIORITY priority) {
 		HTTPRequest httpRequest = new HTTPRequest(uri, priority);
 		UltimateDownloadManager.addRequest(httpRequest);
 		return httpRequest;
+	}
+
+	public static void writeStateFile(JSONObject jsonPlugins) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public static void loadStateFile(JSONObject jsonPlugin) {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -27,12 +28,15 @@ import javax.swing.table.DefaultTableModel;
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
+import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.dialogs.AddLayerPanel;
+import org.helioviewer.jhv.gui.dialogs.DownloadMovieDialog;
 import org.helioviewer.jhv.gui.dialogs.InstrumentModel;
 import org.helioviewer.jhv.gui.dialogs.MetaDataDialog;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
+import org.helioviewer.jhv.layers.LocalFileException;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine.TimeLineListener;
 
@@ -51,6 +55,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 	
 	private final AddLayerPanel addLayerPanel = new AddLayerPanel();
 	private final MetaDataDialog metaDataDialog = new MetaDataDialog();
+	private final DownloadMovieDialog downloadMovieDialog = new DownloadMovieDialog();
 	private JTable table;
 	private Object columnNames[] = { "Column One", "Column Two", "Column Three", "Column Four"};
 	private LayerTableModel tableModel;
@@ -156,6 +161,19 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 
 		JButton btnDownloadLayer = new JButton(IconBank.getIcon(JHVIcon.DOWNLOAD_NEW, 16, 16));
 		btnDownloadLayer.setToolTipText("Download the currently selected Layer");
+		btnDownloadLayer.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (Layers.getActiveLayer() != null){
+					try {
+						downloadMovieDialog.startDownload(Layers.getActiveLayer().getURL());
+					} catch (LocalFileException e1) {
+						JOptionPane.showConfirmDialog(MainFrame.SINGLETON, e1.getMessage(), "Error during get URL", JOptionPane.CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
+					}
+				}
+			}
+		});
 		GridBagConstraints gbcBtnDownloadLayer = new GridBagConstraints();
 		gbcBtnDownloadLayer.insets = new Insets(0, 0, 0, 5);
 		gbcBtnDownloadLayer.gridx = 10;

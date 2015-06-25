@@ -36,6 +36,7 @@ public class PfssPlugin extends NewPlugin
 
 	public PfssPlugin()
 	{
+		renderMode = RENDER_MODE.MAIN_PANEL;
 		manager = new FrameManager(this);
 		UltimatePluginInterface.addPanelToLeftControllPanel(NAME, new PfssPluginPanel(this), false);
 	}

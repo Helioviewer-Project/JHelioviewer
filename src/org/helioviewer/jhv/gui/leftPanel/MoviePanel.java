@@ -354,9 +354,8 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 
 	@Override
 	public void dateTimesChanged(int framecount) {
-		System.out.println("dateTimesChanged");
-		this.slider.setMaximum(framecount);
-		lblFrames.setText(slider.getValue() + "/" + framecount);
+		this.slider.setMaximum(framecount-1);
+		lblFrames.setText(slider.getValue() + "/" + (framecount-1));
 		this.repaint();
 	}
 	

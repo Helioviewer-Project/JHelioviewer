@@ -13,6 +13,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import org.helioviewer.jhv.layers.LocalFileException;
 import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 
@@ -127,10 +128,14 @@ public class PfssPluginPanel extends JPanel implements ActionListener{
 	
 	public void reload()
 	{
-		LocalDateTime startLocalDateTime = TimeLine.SINGLETON.getFirstDateTime();
-		LocalDateTime endLocalDateTime = TimeLine.SINGLETON.getLastDateTime();
-		if (startLocalDateTime != null && endLocalDateTime != null)
+		LocalDateTime startLocalDateTime;
+		try {
+			startLocalDateTime = UltimatePluginInterface.getStartDateTime();
+			LocalDateTime endLocalDateTime = UltimatePluginInterface.getEndDateTime();
 			renderer.setDisplayRange(startLocalDateTime, endLocalDateTime);
-		
+		} catch (LocalFileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
 	}
 }

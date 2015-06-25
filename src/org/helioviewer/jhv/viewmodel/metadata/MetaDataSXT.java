@@ -6,7 +6,6 @@ import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.physics.Constants;
-import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
 
 public class MetaDataSXT extends MetaData{
 	

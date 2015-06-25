@@ -34,6 +34,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.helioviewer.jhv.JHVGlobals;
+import org.helioviewer.jhv.MetaDataException;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.interfaces.ShowableDialog;
 import org.helioviewer.jhv.layers.LayerInterface;
@@ -384,7 +385,12 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 
 	@Override
 	public void timeStampChanged(LocalDateTime current, LocalDateTime last) {
-		setMetaData(Layers.getActiveLayer().getMetaData());
+		try {
+			setMetaData(Layers.getActiveLayer().getMetaData());
+		} catch (MetaDataException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override

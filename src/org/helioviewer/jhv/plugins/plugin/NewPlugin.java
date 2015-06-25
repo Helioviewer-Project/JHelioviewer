@@ -8,6 +8,10 @@ import org.helioviewer.jhv.base.math.Vector3d;
 import com.jogamp.opengl.GL2;
 
 public abstract class NewPlugin {
+	public enum RENDER_MODE {
+		MAIN_PANEL, OVERVIEW_PANEL, ALL_PANEL;
+	};
+	protected RENDER_MODE renderMode = RENDER_MODE.ALL_PANEL;
 	
 	public void timeStampChanged(LocalDateTime current, LocalDateTime last){
 		
@@ -44,5 +48,9 @@ public abstract class NewPlugin {
 	}
 
 	public void mouseExited(MouseEvent e, Vector3d point) {
+	}
+	
+	public RENDER_MODE getRenderMode(){
+		return this.renderMode;
 	}
 }

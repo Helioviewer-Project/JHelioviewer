@@ -3,6 +3,7 @@ package org.helioviewer.jhv.gui.actions;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
@@ -14,9 +15,11 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import org.helioviewer.jhv.JHVGlobals;
+import org.helioviewer.jhv.base.StateParser;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.actions.filefilters.ExtensionFileFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.JHVStateFilter;
+import org.json.JSONException;
 
 public class SaveStateAction extends AbstractAction {
 
@@ -34,32 +37,14 @@ public class SaveStateAction extends AbstractAction {
      * {@inheritDoc}
      */
     public void actionPerformed(ActionEvent e) {
-
-        // prompt user to choose filename
-        File selectedFile = chooseFile();
-
-        // if the user selected a filename
-        if (selectedFile != null) {
-        	/*
-            // get layer XML representation
-            //String layerRepresentation = LayersModel.getSingletonInstance().getXMLRepresentation("\t");
-
-            // TODO Malte Nuhn : get Plugin XML representation
-
-            // merge all XML blocks together
-            String xmlRepresentation = "<jhvstate>\n" + layerRepresentation + "\n</jhvstate>";
-
-            // write to disk
-            boolean success = writeXML(selectedFile, xmlRepresentation);
-
-            // check if an error occured
-            if (!success) {
-                Message.err(null, "An error occured while writing the JHV state to disk.", false);
-            }
-            */
-
-        }
-
+    	try {
+			StateParser.writeStateFile();
+		} catch (JSONException e1) {
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			JOptionPane.showMessageDialog(MainFrame.MAIN_PANEL, "No file founded \n" + e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+		}
+        
     }
 
     /**

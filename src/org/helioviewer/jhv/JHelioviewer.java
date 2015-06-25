@@ -10,8 +10,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -24,18 +22,12 @@ import javax.swing.UIManager;
 import org.helioviewer.jhv.base.FileUtils;
 import org.helioviewer.jhv.base.Log;
 import org.helioviewer.jhv.base.Message;
-import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
-import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
-import org.helioviewer.jhv.base.downloadmanager.AbstractRequest.PRIORITY;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.dialogs.AboutDialog;
 import org.helioviewer.jhv.io.CommandLineProcessor;
-import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import com.install4j.api.launcher.ApplicationLauncher;
 import com.install4j.api.update.UpdateScheduleRegistry;

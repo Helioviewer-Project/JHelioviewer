@@ -21,6 +21,7 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 
 import org.helioviewer.jhv.base.math.Interval;
+import org.helioviewer.jhv.layers.LocalFileException;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheListener;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheLoadingModel;
@@ -230,37 +231,49 @@ public class HEKPluginPanel extends JPanel implements ActionListener,
 
 	public void reload() {
 
-		LocalDateTime startDateTime = UltimatePluginInterface
-				.getStartDateTime();
-		LocalDateTime endDateTime = UltimatePluginInterface.getEndDateTime();
+		LocalDateTime startDateTime;
+		try {
+			startDateTime = UltimatePluginInterface.getStartDateTime();
+			LocalDateTime endDateTime = UltimatePluginInterface
+					.getEndDateTime();
+			if (startDateTime != null
+					&& endDateTime != null
+					&& (start == null || (startDateTime.isBefore(start) || endDateTime
+							.isAfter(end)))) {
 
-		if (startDateTime != null
-				&& endDateTime != null
-				&& (start == null || (startDateTime.isBefore(start) || endDateTime
-						.isAfter(end)))) {
-
-			Thread threadUpdate = new Thread(new Runnable() {
-				public void run() {
-					LocalDateTime startDateTime = UltimatePluginInterface
-							.getStartDateTime();
-					LocalDateTime endDateTime = UltimatePluginInterface
-							.getEndDateTime();
-					Date start = Date.from(startDateTime.atZone(
-							ZoneId.systemDefault()).toInstant());
-					Date end = Date.from(endDateTime.atZone(
-							ZoneId.systemDefault()).toInstant());
-					if (start != null && end != null) {
-						Interval<Date> range = new Interval<Date>(start, end);
-						HEKCache.getSingletonInstance().getController()
-								.setCurInterval(range);
-						getStructure();
+				Thread threadUpdate = new Thread(new Runnable() {
+					public void run() {
+						LocalDateTime startDateTime;
+						try {
+							startDateTime = UltimatePluginInterface
+									.getStartDateTime();
+							LocalDateTime endDateTime = UltimatePluginInterface
+									.getEndDateTime();
+							Date start = Date.from(startDateTime.atZone(
+									ZoneId.systemDefault()).toInstant());
+							Date end = Date.from(endDateTime.atZone(
+									ZoneId.systemDefault()).toInstant());
+							if (start != null && end != null) {
+								Interval<Date> range = new Interval<Date>(start,
+										end);
+								HEKCache.getSingletonInstance().getController()
+										.setCurInterval(range);
+								getStructure();
+							}
+							HEKPluginPanel.this.start = startDateTime;
+							HEKPluginPanel.this.end = endDateTime;
+						} catch (LocalFileException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
-					HEKPluginPanel.this.start = startDateTime;
-					HEKPluginPanel.this.end = endDateTime;
-				}
-			});
-			threadUpdate.setDaemon(true);
-			threadUpdate.start();
+				});
+				threadUpdate.setDaemon(true);
+				threadUpdate.start();
+			}
+		} catch (LocalFileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 	}
