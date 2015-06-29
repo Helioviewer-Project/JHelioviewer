@@ -15,7 +15,6 @@ import javax.swing.JPanel;
 
 import org.helioviewer.jhv.layers.LocalFileException;
 import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
-import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 
 /**
  * Panel of Pfss-Plugin
@@ -92,8 +91,8 @@ public class PfssPluginPanel extends JPanel implements ActionListener{
 		reloadButton.setToolTipText("reload PFSS data");
 	}
 
-	public void actionPerformed(ActionEvent act) {
-		if (act.getSource().equals(visibleButton)) {
+	public void setVisibleBtn(boolean visible){
+		if (visible != renderer.isVisible()){
 			if (renderer.isVisible()) {
 				renderer.setVisible(false);
 				visibleButton.setIcon(new ImageIcon(PfssPlugin
@@ -107,6 +106,12 @@ public class PfssPluginPanel extends JPanel implements ActionListener{
 			}
 			
 			fireRedraw();
+		}
+	}
+	
+	public void actionPerformed(ActionEvent act) {
+		if (act.getSource().equals(visibleButton)) {
+			setVisible(!renderer.isVisible());
 		}
 
 		if (act.getSource().equals(reloadButton))

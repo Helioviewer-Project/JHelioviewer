@@ -33,6 +33,7 @@ import org.helioviewer.jhv.gui.dialogs.AddLayerPanel;
 import org.helioviewer.jhv.gui.dialogs.DownloadMovieDialog;
 import org.helioviewer.jhv.gui.dialogs.InstrumentModel;
 import org.helioviewer.jhv.gui.dialogs.MetaDataDialog;
+import org.helioviewer.jhv.layers.JHVException.LayerException;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
@@ -122,7 +123,12 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 				}
 				else if (column == 0){
 					//TODO: potential null pointer exception? other callers of getActiveLayer() check for != null...
-					Layers.getActiveLayer().setVisible((boolean) table.getModel().getValueAt(row, column));
+					try {
+						Layers.getActiveLayer().setVisible((boolean) table.getModel().getValueAt(row, column));
+					} catch (LayerException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 				}
 
 			}
@@ -165,13 +171,14 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (Layers.getActiveLayer() != null){
 					try {
 						downloadMovieDialog.startDownload(Layers.getActiveLayer().getURL());
 					} catch (LocalFileException e1) {
 						JOptionPane.showConfirmDialog(MainFrame.SINGLETON, e1.getMessage(), "Error during get URL", JOptionPane.CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
+					} catch (LayerException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
 					}
-				}
 			}
 		});
 		GridBagConstraints gbcBtnDownloadLayer = new GridBagConstraints();
@@ -208,7 +215,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 				for (LayerInterface layer : Layers.getLayers()){
 					data[count][0] = layer.isVisible();
 					data[count][1] = layer.getName();
-					data[count][2] = layer.getTime() == null ? null : layer.getTime();
+					data[count][2] = layer.getTime() == null ? null : TimeLine.SINGLETON.getCurrentDateTime();
 					data[count][3] = IconBank.getIcon(JHVIcon.CANCEL_NEW, 16, 16);
 					count++;
 				}

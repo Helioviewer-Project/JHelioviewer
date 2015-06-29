@@ -9,45 +9,51 @@ import java.util.concurrent.ThreadFactory;
 
 import org.helioviewer.jhv.plugins.pfssplugin.data.PfssDecompressed;
 import org.helioviewer.jhv.plugins.pfssplugin.data.managers.FrameManager;
-import org.helioviewer.jhv.plugins.plugin.NewPlugin;
+import org.helioviewer.jhv.plugins.plugin.AbstractPlugin;
 import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.jogamp.opengl.GL2;
 
-public class PfssPlugin extends NewPlugin
-{
-	private static final String NAME = "PFSS plugin";
-    private static int threadNumber=0;
-    public static final ExecutorService pool = Executors.newFixedThreadPool(2,new ThreadFactory()
-    {
-        @Override
-        public Thread newThread(Runnable _r)
-        {
-            Thread t=Executors.defaultThreadFactory().newThread(_r);
-            t.setName("PFSS-"+(threadNumber++));
-            t.setDaemon(true);
-            return t;
-        }
-    });
+public class PfssPlugin extends AbstractPlugin {
+	private static final String JSON_NAME = "pfss";
+	private static final String JSON_OPEN = "pfssOpen";
+	private static final String JSON_VISIBLE = "pfssVisible";
 
-    
+	private static final String NAME = "PFSS plugin";
+	private static int threadNumber = 0;
+	public static final ExecutorService pool = Executors.newFixedThreadPool(2,
+			new ThreadFactory() {
+				@Override
+				public Thread newThread(Runnable _r) {
+					Thread t = Executors.defaultThreadFactory().newThread(_r);
+					t.setName("PFSS-" + (threadNumber++));
+					t.setDaemon(true);
+					return t;
+				}
+			});
+
 	private FrameManager manager;
 	private boolean isVisible = false;
+	private PfssPluginPanel pfssPluginPanel;
 
-	public PfssPlugin()
-	{
+	public PfssPlugin() {
 		renderMode = RENDER_MODE.MAIN_PANEL;
 		manager = new FrameManager(this);
-		UltimatePluginInterface.addPanelToLeftControllPanel(NAME, new PfssPluginPanel(this), false);
+		pfssPluginPanel = new PfssPluginPanel(this);
+		UltimatePluginInterface.addPanelToLeftControllPanel(NAME,
+				pfssPluginPanel, false);
 	}
-	
+
 	@Override
 	public void render(GL2 gl) {
-		if (isVisible){
-			LocalDateTime localDateTime = UltimatePluginInterface.SINGLETON.getCurrentDateTime();
-			PfssDecompressed frame = manager.getFrame(gl,localDateTime);
-			if(frame != null)
-				frame.display(gl, localDateTime);			
+		if (isVisible) {
+			LocalDateTime localDateTime = UltimatePluginInterface.SINGLETON
+					.getCurrentDateTime();
+			PfssDecompressed frame = manager.getFrame(gl, localDateTime);
+			if (frame != null)
+				frame.display(gl, localDateTime);
 		}
 	}
 
@@ -65,34 +71,64 @@ public class PfssPlugin extends NewPlugin
 
 		return description;
 	}
-	
-	public static URL getResourceUrl(String name)
-	{
+
+	public static URL getResourceUrl(String name) {
 		return PfssPlugin.class.getResource(name);
 	}
-	
+
 	/**
 	 * sets the dates which the renderer should display
-	 * @param start first date inclusive
-	 * @param end last date inclusive
-	 * @throws IOException if the dates are not present+
+	 * 
+	 * @param start
+	 *            first date inclusive
+	 * @param end
+	 *            last date inclusive
+	 * @throws IOException
+	 *             if the dates are not present+
 	 */
-	public void setDisplayRange(LocalDateTime start, LocalDateTime end)
-	{
+	public void setDisplayRange(LocalDateTime start, LocalDateTime end) {
 		manager.setDateRange(start, end);
 	}
 
-	public void setVisible(boolean visible)
-	{
+	public void setVisible(boolean visible) {
 		isVisible = visible;
-		
-		if(visible)
-		    manager.showErrorMessages();
+
+		if (visible)
+			manager.showErrorMessages();
 	}
-	
-	public boolean isVisible()
-	{
+
+	public boolean isVisible() {
 		return isVisible;
+	}
+
+	@Override
+	public void loadStateFile(JSONObject jsonObject) {
+		if (jsonObject.has(JSON_NAME)) {
+			try {
+				JSONObject jsonPfss = jsonObject.getJSONObject(JSON_NAME);
+				boolean visible = jsonPfss.getBoolean(JSON_VISIBLE);
+				boolean open = jsonPfss.getBoolean(JSON_OPEN);
+				UltimatePluginInterface.expandPanel(pfssPluginPanel, open);
+				pfssPluginPanel.setVisibleBtn(visible);
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+	}
+
+	@Override
+	public void writeStateFile(JSONObject jsonObject) {
+		try {
+			JSONObject jsonPfss = new JSONObject();
+			jsonPfss.put(JSON_OPEN, pfssPluginPanel.isVisible());
+			jsonPfss.put(JSON_VISIBLE, isVisible());
+			jsonObject.put(JSON_NAME, jsonPfss);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

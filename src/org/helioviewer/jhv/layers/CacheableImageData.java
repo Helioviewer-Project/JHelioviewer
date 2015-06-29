@@ -100,7 +100,7 @@ public class CacheableImageData {
 		for (i = 0; i < localDateTimes.length; i++){
 			if (localDateTime.isEqual(localDateTimes[i])) break;
 		}
-		return i;
+		return i+1;
 	}
 	
 }

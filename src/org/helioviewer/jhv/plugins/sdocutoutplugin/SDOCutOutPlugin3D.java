@@ -3,10 +3,11 @@ package org.helioviewer.jhv.plugins.sdocutoutplugin;
 import java.net.URI;
 import java.net.URL;
 
-import org.helioviewer.jhv.plugins.plugin.NewPlugin;
+import org.helioviewer.jhv.plugins.plugin.AbstractPlugin;
 import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
+import org.json.JSONObject;
 
-public class SDOCutOutPlugin3D extends NewPlugin {
+public class SDOCutOutPlugin3D extends AbstractPlugin {
 
 	/**
      * Sets up the visual sub components and the visual part of the component
@@ -38,6 +39,16 @@ public class SDOCutOutPlugin3D extends NewPlugin {
 	
 	public static URL getResourceUrl(String name) {
 		return SDOCutOutPlugin3D.class.getResource(name);
+	}
+
+	@Override
+	public void loadStateFile(JSONObject jsonObject) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void writeStateFile(JSONObject jsonObject) {
 	}
 	
 }

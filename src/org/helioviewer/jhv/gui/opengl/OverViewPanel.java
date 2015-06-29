@@ -1,6 +1,7 @@
 package org.helioviewer.jhv.gui.opengl;
 
 import java.awt.Dimension;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import org.helioviewer.jhv.MetaDataException;
@@ -8,6 +9,7 @@ import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.layers.ImageLayer;
+import org.helioviewer.jhv.layers.JHVException.LayerException;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.opengl.camera.CameraInteraction;
@@ -15,9 +17,10 @@ import org.helioviewer.jhv.opengl.camera.CameraPanInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraRotationInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraZoomBoxInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraZoomInteraction;
-import org.helioviewer.jhv.plugins.plugin.NewPlugin.RENDER_MODE;
+import org.helioviewer.jhv.plugins.plugin.AbstractPlugin.RENDER_MODE;
 import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
 import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
+import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
@@ -62,11 +65,13 @@ public class OverViewPanel extends MainPanel {
 	}
 
 	private void zoomToFit() {
-		LayerInterface activeLayer = Layers.getActiveLayer();
-		if (activeLayer != null) {
+		LayerInterface activeLayer;
+		try {
+			activeLayer = Layers.getActiveLayer();
 			PhysicalRegion region;
 			try {
-				region = activeLayer.getMetaData().getPhysicalRegion();
+				LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
+				region = activeLayer.getMetaData(currentDateTime).getPhysicalRegion();
 				if (region != null) {
 					double halfWidth = region.getHeight() / 2;
 					Dimension canvasSize = this.getSize();
@@ -83,7 +88,9 @@ public class OverViewPanel extends MainPanel {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
+		} catch (LayerException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 	}
 

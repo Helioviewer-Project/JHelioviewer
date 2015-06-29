@@ -146,7 +146,7 @@ public class UltimateLayer {
 					jpipDownloadRequests.put(httpRequest, jpipDownloadRequest);
 					requests.add(jpipDownloadRequest);
 					UltimateDownloadManager.addRequest(jpipDownloadRequest);
-					currentStart = tmp;
+					currentStart = tmp.plusSeconds(1);
 				}
 
 				boolean finished = false;

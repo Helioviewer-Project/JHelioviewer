@@ -17,6 +17,7 @@ import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.components.WheelSupport;
+import org.helioviewer.jhv.layers.JHVException.LayerException;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.LayerInterface.COLOR_CHANNEL_TYPE;
 import org.helioviewer.jhv.layers.LayerListener;
@@ -280,9 +281,14 @@ public class FilterTabPanel extends JPanel implements LayerListener{
 	
 	@Override
 	public void newlayerAdded() {
-		LayerInterface activeLayer = Layers.getActiveLayer();
-		if (activeLayer != null)
+		LayerInterface activeLayer;
+		try {
+			activeLayer = Layers.getActiveLayer();
 			this.updateLayer(activeLayer);
+		} catch (LayerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override

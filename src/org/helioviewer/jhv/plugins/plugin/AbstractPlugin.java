@@ -4,10 +4,11 @@ import java.awt.event.MouseEvent;
 import java.time.LocalDateTime;
 
 import org.helioviewer.jhv.base.math.Vector3d;
+import org.json.JSONObject;
 
 import com.jogamp.opengl.GL2;
 
-public abstract class NewPlugin {
+public abstract class AbstractPlugin {
 	public enum RENDER_MODE {
 		MAIN_PANEL, OVERVIEW_PANEL, ALL_PANEL;
 	};
@@ -53,4 +54,7 @@ public abstract class NewPlugin {
 	public RENDER_MODE getRenderMode(){
 		return this.renderMode;
 	}
+	
+	abstract public void loadStateFile(JSONObject jsonObject);
+	abstract public void writeStateFile(JSONObject jsonObject);
 }

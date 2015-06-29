@@ -3,6 +3,7 @@ package org.helioviewer.jhv.layers;
 import java.time.LocalDateTime;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.helioviewer.jhv.layers.JHVException.LayerException;
 import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.KakaduRender;
 
 public class Layers {
@@ -73,8 +74,8 @@ public class Layers {
 		return activeLayer;
 	}
 	
-	public static LayerInterface getActiveLayer(){
-		if (layers.size() <= 0) return null;
+	public static LayerInterface getActiveLayer() throws LayerException {
+		if (layers.size() <= 0) throw new JHVException.LayerException("no active layer is available");
 		return layers.get(activeLayer);
 	}
 	
@@ -99,5 +100,9 @@ public class Layers {
 
 	public static void removeAllLayers() {
 		layers.clear();
+		activeLayer = 0;
+		for (LayerListener renderListener : layerListeners){
+			renderListener.newlayerRemoved(0);
+		}
 	}
 }

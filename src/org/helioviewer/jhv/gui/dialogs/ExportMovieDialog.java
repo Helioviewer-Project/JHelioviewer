@@ -94,7 +94,8 @@ public class ExportMovieDialog implements ActionListener {
 								for (LayerInterface layer : Layers.getLayers()) {
 									if (layer.isVisible()) {
 										try {
-											descriptions.add(layer.getMetaData().getFullName()
+											LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
+											descriptions.add(layer.getMetaData(currentDateTime).getFullName()
 													+ " - "
 													+ layer.getTime().format(JHVGlobals.DATE_TIME_FORMATTER));
 										} catch (MetaDataException e) {

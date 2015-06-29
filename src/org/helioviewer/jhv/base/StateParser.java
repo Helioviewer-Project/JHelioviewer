@@ -3,17 +3,12 @@ package org.helioviewer.jhv.base;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Vector;
 
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.base.math.Quaternion3d;
@@ -23,18 +18,12 @@ import org.helioviewer.jhv.gui.actions.filefilters.ExtensionFileFilter;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.LocalFileException;
-import org.helioviewer.jhv.layers.LayerInterface.ColorChannel;
 import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
 import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 public class StateParser extends DefaultHandler {
 
@@ -151,7 +140,7 @@ public class StateParser extends DefaultHandler {
 				MainFrame.MAIN_PANEL.setTransformation(rotation, translation);
 				
 				JSONObject jsonPlugin = jsonObject.getJSONObject(PLUGINS);
-				UltimatePluginInterface.loadStateFile(jsonPlugin);
+				UltimatePluginInterface.SINGLETON.loadStateFile(jsonPlugin);
 				
 			}
 
@@ -162,15 +151,33 @@ public class StateParser extends DefaultHandler {
 		String lastPath = Settings.getProperty(SAVE_PATH_SETTINGS);
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setDialogTitle("Download imagedata");
+		fileChooser.setMultiSelectionEnabled(false);
+
 		if (lastPath != null) {
 			fileChooser.setCurrentDirectory(new File(lastPath));
 		}
 		fileChooser.setFileFilter(new StateParser.JHVStateFilter());
 		int retVal = fileChooser.showSaveDialog(MainFrame.SINGLETON);
+		
+		if (fileChooser.getSelectedFile().exists()) {
+			// ask if the user wants to overwrite
+			int response = JOptionPane.showConfirmDialog(null,
+					"Overwrite existing file?", "Confirm Overwrite",
+					JOptionPane.OK_CANCEL_OPTION,
+					JOptionPane.QUESTION_MESSAGE);
+
+			// if the user doesn't want to overwrite, simply return null
+			if (response == JOptionPane.CANCEL_OPTION) {
+				return;
+			}
+		}
+		
 		if (retVal == JFileChooser.APPROVE_OPTION) {
 			Settings.setProperty(SAVE_PATH_SETTINGS, fileChooser
 					.getCurrentDirectory().getAbsolutePath());
 			String fileName = fileChooser.getSelectedFile().toString();
+			JHVStateFilter fileFilter = (JHVStateFilter)fileChooser.getFileFilter();
+			fileName = fileName.endsWith(fileFilter.getDefaultExtension()) ? fileName : fileName + fileFilter.getDefaultExtension();
 			JSONObject jsonObject = new JSONObject();
 			JSONArray jsonArray = new JSONArray();
 			for (LayerInterface layer : Layers.getLayers()) {
@@ -226,10 +233,10 @@ public class StateParser extends DefaultHandler {
 			jsonRotation.put(axis.z);
 			jsonCamera.put(CAMERA_ROTATION, jsonRotation);
 
-			jsonCamera.put(CAMERA, jsonCamera);
+			jsonObject.put(CAMERA, jsonCamera);
 
 			JSONObject jsonPlugins = new JSONObject();
-			UltimatePluginInterface.writeStateFile(jsonPlugins);
+			UltimatePluginInterface.SINGLETON.writeStateFile(jsonPlugins);
 			jsonObject.put(PLUGINS, jsonPlugins);
 
 			FileWriter file = new FileWriter(fileName);

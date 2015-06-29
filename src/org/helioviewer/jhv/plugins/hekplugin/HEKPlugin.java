@@ -18,12 +18,17 @@ import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.DifferentialRotation;
 import org.helioviewer.jhv.layers.LocalFileException;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;
+import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheSelectionModel;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKEvent;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKEvent.GenericTriangle;
+import org.helioviewer.jhv.plugins.hekplugin.cache.HEKPath;
 import org.helioviewer.jhv.plugins.hekplugin.cache.gui.HEKEventInformationDialog;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
-import org.helioviewer.jhv.plugins.plugin.NewPlugin;
+import org.helioviewer.jhv.plugins.plugin.AbstractPlugin;
 import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
@@ -31,10 +36,14 @@ import com.jogamp.opengl.GL2;
 /**
  * @author Malte Nuhn
  * */
-public class HEKPlugin extends NewPlugin {
+public class HEKPlugin extends AbstractPlugin {
 	/**
 	 * Reference to the eventPlugin
 	 */
+	private static final String JSON_NAME = "hek";
+	private static final String JSON_VISIBLE = "visible";
+	private static final String JSON_EVENTS = "events";
+	
 	private boolean visible = false;
 	private static final String NAME = "HEK Overlay Plugin";
 
@@ -396,6 +405,44 @@ public class HEKPlugin extends NewPlugin {
 
 	public boolean isVisible() {
 		return this.visible;
+	}
+
+	@Override
+	public void loadStateFile(JSONObject jsonObject) {
+		if (jsonObject.has(JSON_NAME)){
+			try {
+				JSONObject jsonHek = jsonObject.getJSONObject(JSON_NAME);
+				boolean visible = jsonHek.getBoolean(JSON_VISIBLE);
+				if (visible) UltimatePluginInterface.expandPanel(hekPluginPanel, visible);
+				setVisible(visible);
+				for (HEKPath hekPath : HEKCache.getSingletonInstance().getTrackPaths()){
+					System.out.println(hekPath);
+				}
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	@Override
+	public void writeStateFile(JSONObject jsonObject) {
+		JSONObject jsonHek = new JSONObject();
+		JSONArray jsonHekEvents = new JSONArray();
+		try {
+			jsonHek.put(JSON_VISIBLE, isVisible());
+			for (HEKPath hekPath : HEKCache.getSingletonInstance().getTrackPaths()){
+				int state = HEKCache.getSingletonInstance().getSelectionModel().getState(hekPath);
+				System.out.println(state);
+				jsonHekEvents.put(state);
+				System.out.println("test");
+			}
+			jsonHek.put(JSON_EVENTS, jsonHekEvents);
+			jsonObject.put(JSON_NAME, jsonHek);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

@@ -6,6 +6,7 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -23,6 +24,7 @@ import org.helioviewer.jhv.gui.actions.filefilters.JPGFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.PNGFilter;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.Layers;
+import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 
 /**
  * Action to save a screenshot in desired image format at desired location.
@@ -94,7 +96,8 @@ public class SaveScreenshotAsAction extends AbstractAction {
 				for (LayerInterface layer : Layers.getLayers()) {
 					if (layer.isVisible()) {
 						try {
-							descriptions.add(layer.getMetaData().getFullName()
+							LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
+							descriptions.add(layer.getMetaData(currentDateTime).getFullName()
 									+ " - "
 									+ layer.getTime().format(JHVGlobals.DATE_TIME_FORMATTER));
 						} catch (MetaDataException e1) {

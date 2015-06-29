@@ -45,6 +45,8 @@ import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelCamera;
 import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelMouse;
 import org.helioviewer.jhv.layers.ImageLayer;
+import org.helioviewer.jhv.layers.JHVException.LayerException;
+import org.helioviewer.jhv.layers.JHVException.TextureException;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.LayerInterface.COLOR_CHANNEL_TYPE;
 import org.helioviewer.jhv.layers.LayerListener;
@@ -66,7 +68,7 @@ import org.helioviewer.jhv.opengl.camera.animation.CameraTransformationAnimation
 import org.helioviewer.jhv.opengl.raytrace.RayTrace;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace.Ray;
 import org.helioviewer.jhv.opengl.texture.TextureCache;
-import org.helioviewer.jhv.plugins.plugin.NewPlugin.RENDER_MODE;
+import org.helioviewer.jhv.plugins.plugin.AbstractPlugin.RENDER_MODE;
 import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
@@ -296,16 +298,16 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 
 	public boolean displayLayer(GL2 gl, ImageLayer layer) {
 
-		int layerTexture = layer.getTexture(this, false, size);
-		if (layerTexture > 0) {
-			Vector2d size;
 			try {
-				size = layer.getMetaData().getPhysicalRegion().getSize();
+				int layerTexture = layer.getTexture(this, false, this.size);
+				Vector2d size;
+				LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
+				size = layer.getMetaData(currentDateTime).getPhysicalRegion().getSize();
 				if (size.x <= 0 || size.y <= 0) {
 					return false;
 				}
 
-				MetaData metaData = layer.getMetaData();
+				MetaData metaData = layer.getMetaData(currentDateTime);
 				float xSunOffset = (float) ((metaData.getSunPixelPosition().x - metaData
 						.getResolution().getX() / 2.0) / (float) metaData
 						.getResolution().getX());
@@ -404,7 +406,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 				gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "far"),
 						(float) (this.translation.z + 4 * Constants.SUN_RADIUS));
 				float[] transformation = getTransformation().toFloatArray();
-				float[] layerTransformation = layer.getMetaData().getRotation()
+				float[] layerTransformation = layer.getMetaData(currentDateTime).getRotation()
 						.toMatrix().toFloatArray();
 				gl.glUniformMatrix4fv(gl.glGetUniformLocation(shaderprogram,
 						"transformation"), 1, true, transformation, 0);
@@ -439,16 +441,14 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 				gl.glEnable(GL2.GL_DEPTH_TEST);
 				gl.glDepthMask(false);
 				return true;
-			} catch (MetaDataException e) {
+			} catch (MetaDataException | TextureException e) {
 				return false;
 			}
 
-		} else {
-			return false;
-		}
 	}
 
 	protected void render(GL2 gl) {
+		LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
 		gl.glClearDepth(1);
 		gl.glDepthMask(true);
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT);
@@ -475,9 +475,12 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 			gl.glMultMatrixd(mat.m, 0);
 			if (CameraMode.mode == MODE.MODE_2D) {
 				try {
-					this.rotation = Layers.getActiveLayer().getMetaData()
+					this.rotation = Layers.getActiveLayer().getMetaData(currentDateTime)
 							.getRotation().copy();
 				} catch (MetaDataException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (LayerException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}

@@ -1,5 +1,6 @@
 package org.helioviewer.jhv.plugins.plugin;
 
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
@@ -22,7 +23,8 @@ import org.helioviewer.jhv.layers.LocalFileException;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace;
 import org.helioviewer.jhv.plugins.hekplugin.HEKPlugin;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
-import org.helioviewer.jhv.plugins.plugin.NewPlugin.RENDER_MODE;
+import org.helioviewer.jhv.plugins.pfssplugin.PfssPluginPanel;
+import org.helioviewer.jhv.plugins.plugin.AbstractPlugin.RENDER_MODE;
 import org.helioviewer.jhv.plugins.sdocutoutplugin.SDOCutOutPlugin3D;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine.TimeLineListener;
@@ -33,12 +35,12 @@ import com.jogamp.opengl.GL2;
 public class UltimatePluginInterface implements TimeLineListener,
 		MouseListener, MouseMotionListener {
 
-	private ArrayList<NewPlugin> plugins;
+	private ArrayList<AbstractPlugin> plugins;
 
 	public static final UltimatePluginInterface SINGLETON = new UltimatePluginInterface();
 
 	private UltimatePluginInterface() {
-		plugins = new ArrayList<NewPlugin>();
+		plugins = new ArrayList<AbstractPlugin>();
 		TimeLine.SINGLETON.addListener(this);
 		plugins.add(new SDOCutOutPlugin3D());
 		plugins.add(new HEKPlugin());
@@ -47,11 +49,11 @@ public class UltimatePluginInterface implements TimeLineListener,
 		MainFrame.MAIN_PANEL.addMouseMotionListener(this);
 	}
 
-	public void addPlugin(NewPlugin plugin) {
+	public void addPlugin(AbstractPlugin plugin) {
 		plugins.add(plugin);
 	}
 
-	public void removePlugin(NewPlugin plugin) {
+	public void removePlugin(AbstractPlugin plugin) {
 		plugins.remove(plugin);
 	}
 
@@ -66,20 +68,20 @@ public class UltimatePluginInterface implements TimeLineListener,
 
 	@Override
 	public void timeStampChanged(LocalDateTime current, LocalDateTime last) {
-		for (NewPlugin plugin : plugins) {
+		for (AbstractPlugin plugin : plugins) {
 			plugin.timeStampChanged(current, last);
 		}
 	}
 
 	@Override
 	public void dateTimesChanged(int framecount) {
-		for (NewPlugin plugin : plugins) {
+		for (AbstractPlugin plugin : plugins) {
 			plugin.dateTimesChanged(framecount);
 		}
 	}
 
 	public void renderPlugin(GL2 gl, RENDER_MODE renderMode) {
-		for (NewPlugin plugin : plugins) {
+		for (AbstractPlugin plugin : plugins) {
 			if (plugin.getRenderMode() == renderMode || plugin.getRenderMode() == RENDER_MODE.ALL_PANEL) {
 				gl.glMatrixMode(GL2.GL_PROJECTION);
 				gl.glPushMatrix();
@@ -97,7 +99,7 @@ public class UltimatePluginInterface implements TimeLineListener,
 	public String[] getAboutLicenseTexts() {
 		String[] licenseTexts = new String[plugins.size()];
 		int index = 0;
-		for (NewPlugin plugin : plugins) {
+		for (AbstractPlugin plugin : plugins) {
 			String licenseText = plugin.getAboutLicenseText();
 			licenseTexts[index++] = licenseText != null ? licenseText : "";
 		}
@@ -113,7 +115,7 @@ public class UltimatePluginInterface implements TimeLineListener,
 		RayTrace rayTrace = new RayTrace();
 		Vector3d hitpoint = rayTrace.cast(e.getX(), e.getY(),
 				MainFrame.MAIN_PANEL).getHitpoint();
-		for (NewPlugin plugin : plugins) {
+		for (AbstractPlugin plugin : plugins) {
 			plugin.mouseDragged(e, hitpoint);
 		}
 	}
@@ -123,7 +125,7 @@ public class UltimatePluginInterface implements TimeLineListener,
 		RayTrace rayTrace = new RayTrace();
 		Vector3d hitpoint = rayTrace.cast(e.getX(), e.getY(),
 				MainFrame.MAIN_PANEL).getHitpoint();
-		for (NewPlugin plugin : plugins) {
+		for (AbstractPlugin plugin : plugins) {
 			plugin.mouseMoved(e, hitpoint);
 		}
 	}
@@ -133,7 +135,7 @@ public class UltimatePluginInterface implements TimeLineListener,
 		RayTrace rayTrace = new RayTrace();
 		Vector3d hitpoint = rayTrace.cast(e.getX(), e.getY(),
 				MainFrame.MAIN_PANEL).getHitpoint();
-		for (NewPlugin plugin : plugins) {
+		for (AbstractPlugin plugin : plugins) {
 			plugin.mouseClicked(e, hitpoint);
 		}
 	}
@@ -143,7 +145,7 @@ public class UltimatePluginInterface implements TimeLineListener,
 		RayTrace rayTrace = new RayTrace();
 		Vector3d hitpoint = rayTrace.cast(e.getX(), e.getY(),
 				MainFrame.MAIN_PANEL).getHitpoint();
-		for (NewPlugin plugin : plugins) {
+		for (AbstractPlugin plugin : plugins) {
 			plugin.mousePressed(e, hitpoint);
 		}
 	}
@@ -153,7 +155,7 @@ public class UltimatePluginInterface implements TimeLineListener,
 		RayTrace rayTrace = new RayTrace();
 		Vector3d hitpoint = rayTrace.cast(e.getX(), e.getY(),
 				MainFrame.MAIN_PANEL).getHitpoint();
-		for (NewPlugin plugin : plugins) {
+		for (AbstractPlugin plugin : plugins) {
 			plugin.mouseReleased(e, hitpoint);
 		}
 	}
@@ -163,7 +165,7 @@ public class UltimatePluginInterface implements TimeLineListener,
 		RayTrace rayTrace = new RayTrace();
 		Vector3d hitpoint = rayTrace.cast(e.getX(), e.getY(),
 				MainFrame.MAIN_PANEL).getHitpoint();
-		for (NewPlugin plugin : plugins) {
+		for (AbstractPlugin plugin : plugins) {
 			plugin.mouseEntered(e, hitpoint);
 		}
 	}
@@ -173,7 +175,7 @@ public class UltimatePluginInterface implements TimeLineListener,
 		RayTrace rayTrace = new RayTrace();
 		Vector3d hitpoint = rayTrace.cast(e.getX(), e.getY(),
 				MainFrame.MAIN_PANEL).getHitpoint();
-		for (NewPlugin plugin : plugins) {
+		for (AbstractPlugin plugin : plugins) {
 			plugin.mouseExited(e, hitpoint);
 		}
 	}
@@ -222,13 +224,23 @@ public class UltimatePluginInterface implements TimeLineListener,
 		return httpRequest;
 	}
 
-	public static void writeStateFile(JSONObject jsonPlugins) {
-		// TODO Auto-generated method stub
-		
+	public void writeStateFile(JSONObject jsonPlugins) {
+		for (AbstractPlugin plugin : plugins) {
+			plugin.writeStateFile(jsonPlugins);
+		}
 	}
 
-	public static void loadStateFile(JSONObject jsonPlugin) {
-		// TODO Auto-generated method stub
-		
+	public void loadStateFile(JSONObject jsonPlugins) {
+		for (AbstractPlugin plugin : plugins) {
+			plugin.loadStateFile(jsonPlugins);
+		}
+	}
+
+	public static void expandPanel(Component component, boolean open) {
+		if (open){
+			MainFrame.LEFT_PANE.expand(component);
+			MainFrame.LEFT_PANE.revalidate();
+			component.repaint();
+		}
 	}
 }

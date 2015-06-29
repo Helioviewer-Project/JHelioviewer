@@ -37,6 +37,7 @@ import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.MetaDataException;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.interfaces.ShowableDialog;
+import org.helioviewer.jhv.layers.JHVException.LayerException;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
@@ -159,10 +160,7 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 	 */
 	public void showDialog() {
 		pack();
-		if (!metaDataOK)
-			setSize(450, 200);
-		else
-			setSize(450, 600);
+		setSize(450, 600);
 
 		setLocationRelativeTo(MainFrame.SINGLETON);
 		setVisible(true);
@@ -386,10 +384,10 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 	@Override
 	public void timeStampChanged(LocalDateTime current, LocalDateTime last) {
 		try {
-			setMetaData(Layers.getActiveLayer().getMetaData());
-		} catch (MetaDataException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			setMetaData(Layers.getActiveLayer().getMetaData(TimeLine.SINGLETON.getCurrentDateTime()));
+		} catch (MetaDataException | LayerException e) {
+			resetData();
+			addDataItem(e.getMessage());
 		}
 	}
 

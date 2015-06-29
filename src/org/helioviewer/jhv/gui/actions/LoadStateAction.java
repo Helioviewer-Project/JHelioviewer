@@ -1,22 +1,15 @@
 package org.helioviewer.jhv.gui.actions;
 
 import java.awt.event.ActionEvent;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.swing.AbstractAction;
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
-import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.base.StateParser;
 import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.gui.actions.filefilters.JHVStateFilter;
 import org.json.JSONException;
-import org.xml.sax.InputSource;
 
 public class LoadStateAction extends AbstractAction {
 
