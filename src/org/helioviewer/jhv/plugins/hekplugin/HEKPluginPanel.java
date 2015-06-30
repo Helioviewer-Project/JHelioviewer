@@ -14,14 +14,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 
+import org.helioviewer.jhv.JHVException;
+import org.helioviewer.jhv.JHVException.LocalFileException;
 import org.helioviewer.jhv.base.math.Interval;
-import org.helioviewer.jhv.layers.LocalFileException;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheListener;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheLoadingModel;
@@ -33,6 +33,7 @@ import org.helioviewer.jhv.plugins.hekplugin.cache.HEKStupidDownloader;
 import org.helioviewer.jhv.plugins.hekplugin.cache.gui.HEKCacheTreeView;
 import org.helioviewer.jhv.plugins.hekplugin.cache.gui.HEKCacheTreeViewContainer;
 import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
+import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface.PLUGIN_ICON;
 
 /**
  * Represents the UI components which manage the HEK event catalog.
@@ -44,16 +45,15 @@ public class HEKPluginPanel extends JPanel implements ActionListener,
 
 	private static final long serialVersionUID = 1L;
 
+	
 	// UI Components
 	private JPanel buttonPanel = new JPanel(new BorderLayout());
 	private JProgressBar progressBar = new JProgressBar();
 	private HEKCacheTreeView tree = new HEKCacheTreeView(
 			HEKCache.getSingletonInstance());
 	private JScrollPane treeView = new JScrollPane(tree);
-	private JButton cancelButton = new JButton(new ImageIcon(
-			HEKPlugin.getResourceUrl("/images/hekCancel.png")));
-	private JButton reloadButton = new JButton(new ImageIcon(
-			HEKPlugin.getResourceUrl("/images/hekReload.png")));
+	private JButton cancelButton = new JButton(UltimatePluginInterface.getIcon(PLUGIN_ICON.CANCEL, 16, 16));
+	private JButton reloadButton = new JButton(UltimatePluginInterface.getIcon(PLUGIN_ICON.REFRESH, 16, 16));
 	private HEKCacheTreeViewContainer container = new HEKCacheTreeViewContainer();
 
 	private HEKCacheModel cacheModel;
@@ -262,7 +262,7 @@ public class HEKPluginPanel extends JPanel implements ActionListener,
 							}
 							HEKPluginPanel.this.start = startDateTime;
 							HEKPluginPanel.this.end = endDateTime;
-						} catch (LocalFileException e) {
+						} catch (JHVException.TimeLineException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
@@ -271,7 +271,7 @@ public class HEKPluginPanel extends JPanel implements ActionListener,
 				threadUpdate.setDaemon(true);
 				threadUpdate.start();
 			}
-		} catch (LocalFileException e) {
+		} catch (JHVException.TimeLineException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

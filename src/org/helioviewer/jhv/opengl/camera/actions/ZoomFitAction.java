@@ -8,12 +8,12 @@ import java.time.LocalDateTime;
 import javax.swing.AbstractAction;
 import javax.swing.KeyStroke;
 
-import org.helioviewer.jhv.MetaDataException;
+import org.helioviewer.jhv.JHVException.LayerException;
+import org.helioviewer.jhv.JHVException.MetaDataException;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.opengl.MainPanel;
-import org.helioviewer.jhv.layers.JHVException.LayerException;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.opengl.camera.animation.CameraZoomAnimation;

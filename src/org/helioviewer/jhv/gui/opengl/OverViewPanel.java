@@ -4,12 +4,12 @@ import java.awt.Dimension;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-import org.helioviewer.jhv.MetaDataException;
+import org.helioviewer.jhv.JHVException.LayerException;
+import org.helioviewer.jhv.JHVException.MetaDataException;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.layers.ImageLayer;
-import org.helioviewer.jhv.layers.JHVException.LayerException;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.opengl.camera.CameraInteraction;

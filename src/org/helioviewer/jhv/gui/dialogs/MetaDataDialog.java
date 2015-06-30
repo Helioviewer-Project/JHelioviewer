@@ -33,11 +33,11 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.helioviewer.jhv.JHVException.LayerException;
+import org.helioviewer.jhv.JHVException.MetaDataException;
 import org.helioviewer.jhv.JHVGlobals;
-import org.helioviewer.jhv.MetaDataException;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.interfaces.ShowableDialog;
-import org.helioviewer.jhv.layers.JHVException.LayerException;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;

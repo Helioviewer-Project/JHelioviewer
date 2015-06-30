@@ -10,15 +10,15 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
+import org.helioviewer.jhv.JHVException;
+import org.helioviewer.jhv.JHVException.LocalFileException;
 import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
 import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.SphericalCoord;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.DifferentialRotation;
-import org.helioviewer.jhv.layers.LocalFileException;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;
-import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheSelectionModel;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKEvent;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKEvent.GenericTriangle;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKPath;
@@ -37,7 +37,8 @@ import com.jogamp.opengl.GL2;
  * @author Malte Nuhn
  * */
 public class HEKPlugin extends AbstractPlugin {
-	/**
+	
+    /**
 	 * Reference to the eventPlugin
 	 */
 	private static final String JSON_NAME = "hek";
@@ -334,7 +335,7 @@ public class HEKPlugin extends AbstractPlugin {
 
 			Interval<Date> newInterval = new Interval<Date>(start, end);
 			hekPluginPanel.setCurInterval(newInterval);
-		} catch (LocalFileException e) {
+		} catch (JHVException.TimeLineException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -444,5 +445,4 @@ public class HEKPlugin extends AbstractPlugin {
 			e.printStackTrace();
 		}
 	}
-
 }

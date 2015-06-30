@@ -3,6 +3,7 @@ package org.helioviewer.jhv.layers;
 import java.awt.Dimension;
 import java.awt.geom.Rectangle2D;
 
+import org.helioviewer.jhv.JHVException.MetaDataException;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.gui.opengl.MainPanel;
@@ -27,11 +28,11 @@ public class LayerRayTrace{
 		*/
 	}
 	
-	public ImageRegion getCurrentRegion(MainPanel mainPanel, MetaData metaData){
+	public ImageRegion getCurrentRegion(MainPanel mainPanel, MetaData metaData) throws MetaDataException{
 		return getCurrentRegion(mainPanel, metaData, mainPanel.getCanavasSize());
 	}
 	
-	public ImageRegion getCurrentRegion(MainPanel mainPanel, MetaData metaData, Dimension size){
+	public ImageRegion getCurrentRegion(MainPanel mainPanel, MetaData metaData, Dimension size) throws MetaDataException{
 		/*if (!(compenentView instanceof OverViewPanel)){
 			contentPanel.removeAll();
 			contentPanel.setLayout(null);

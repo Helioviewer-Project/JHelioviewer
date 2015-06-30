@@ -22,8 +22,8 @@ public class MetaDataFactory {
 		MetaDataStereoB_COR1.class,
 		MetaDataStereoB_COR2.class,
 		MetaDataHinode.class,
-		MetaDataSXT.class//,
-		//MetaDataSWAP.class
+		MetaDataSXT.class,
+		MetaDataSWAP.class
 	};
 	
 	

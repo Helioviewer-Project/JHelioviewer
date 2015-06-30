@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
+import org.helioviewer.jhv.JHVException.LocalFileException;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.Vector3d;
@@ -17,7 +18,6 @@ import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.actions.filefilters.ExtensionFileFilter;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.Layers;
-import org.helioviewer.jhv.layers.LocalFileException;
 import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
 import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
 import org.json.JSONArray;
@@ -62,7 +62,7 @@ public class StateParser extends DefaultHandler {
 		 * Default Constructor.
 		 */
 		public JHVStateFilter() {
-			extensions = new String[] { "jhv" };
+			extensions = new String[] { ".jhv" };
 		}
 
 		/**

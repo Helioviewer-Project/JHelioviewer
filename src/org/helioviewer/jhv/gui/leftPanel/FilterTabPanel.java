@@ -13,11 +13,11 @@ import javax.swing.JToggleButton;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.helioviewer.jhv.JHVException.LayerException;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.components.WheelSupport;
-import org.helioviewer.jhv.layers.JHVException.LayerException;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.LayerInterface.COLOR_CHANNEL_TYPE;
 import org.helioviewer.jhv.layers.LayerListener;
@@ -48,7 +48,7 @@ public class FilterTabPanel extends JPanel implements LayerListener{
 	private LayerInterface activeLayer;
 	private static final double GAMMA_FACTOR = 0.01 * Math.log(10);
 	
-    private static final Icon ICON_INVERT = IconBank.getIcon(JHVIcon.INVERT);
+    private static final Icon ICON_INVERT = IconBank.getIcon(JHVIcon.INVERT, 16, 16);
 
 	public FilterTabPanel() {
 		initGui();

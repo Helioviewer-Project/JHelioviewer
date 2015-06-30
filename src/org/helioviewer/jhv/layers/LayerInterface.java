@@ -4,10 +4,11 @@ import java.awt.Dimension;
 import java.time.LocalDateTime;
 import java.util.TreeSet;
 
-import org.helioviewer.jhv.MetaDataException;
+import org.helioviewer.jhv.JHVException;
+import org.helioviewer.jhv.JHVException.LocalFileException;
+import org.helioviewer.jhv.JHVException.TextureException;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.opengl.MainPanel;
-import org.helioviewer.jhv.layers.JHVException.TextureException;
 import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 
@@ -57,7 +58,7 @@ public abstract class LayerInterface {
 
 	protected boolean firstRun = true;
 
-	private static int idCounter;
+	private static int idCounter = 0;
 	protected int id;
 	protected LocalDateTime start;
 	protected LocalDateTime end;
@@ -67,18 +68,22 @@ public abstract class LayerInterface {
 	public abstract int getTexture(MainPanel compenentView,
 			boolean highResolution, Dimension size) throws TextureException;
 
-	public abstract String getName();
+	public abstract String getName() throws JHVException.MetaDataException;
 
-	public abstract LocalDateTime getTime();
+	public abstract LocalDateTime getTime() throws JHVException.MetaDataException;
 
 	public abstract TreeSet<LocalDateTime> getLocalDateTime();
 
-	protected abstract MetaData getMetaData() throws MetaDataException;
+	protected abstract MetaData getMetaData() throws JHVException.MetaDataException;
 
 	public abstract void cancelDownload();
 
 	public boolean isVisible() {
 		return visible;
+	}
+	
+	public LayerInterface() {
+		id = idCounter++;
 	}
 
 	public void setVisible(boolean visible) {
@@ -214,5 +219,5 @@ public abstract class LayerInterface {
 		coronaVisibility = value;
 	}
 
-	public abstract MetaData getMetaData(LocalDateTime currentDateTime) throws MetaDataException;
+	public abstract MetaData getMetaData(LocalDateTime currentDateTime) throws JHVException.MetaDataException;
 }

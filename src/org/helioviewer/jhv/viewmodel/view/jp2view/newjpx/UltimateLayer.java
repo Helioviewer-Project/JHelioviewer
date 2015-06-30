@@ -18,6 +18,9 @@ import javax.swing.JOptionPane;
 import kdu_jni.KduException;
 import kdu_jni.Kdu_cache;
 
+import org.helioviewer.jhv.JHVException;
+import org.helioviewer.jhv.JHVException.CacheException;
+import org.helioviewer.jhv.JHVException.LocalFileException;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.downloadmanager.AbstractRequest;
 import org.helioviewer.jhv.base.downloadmanager.AbstractRequest.PRIORITY;
@@ -28,7 +31,6 @@ import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.layers.CacheableImageData;
 import org.helioviewer.jhv.layers.ImageLayer;
-import org.helioviewer.jhv.layers.LocalFileException;
 import org.helioviewer.jhv.opengl.texture.TextureCache;
 import org.helioviewer.jhv.opengl.texture.TextureCache.CachableTexture;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
@@ -264,31 +266,26 @@ public class UltimateLayer {
 	}
 
 	public MetaData getMetaData(LocalDateTime currentDateTime)
-			throws InterruptedException, ExecutionException, JHV_KduException {
+			throws InterruptedException, ExecutionException, JHV_KduException, CacheException {
 
 		CacheableImageData cacheObject = null;
+		if (treeSet.size() == 0) throw new JHVException.CacheException("no layer is loaded");
+		LocalDateTime localDateTime = this.treeSet.ceiling(currentDateTime);
+		if (localDateTime == null) localDateTime = treeSet.last();
 
-		cacheObject = Cache.getCacheElement(id, currentDateTime);
-		if (Cache.getCacheElement(this.id, currentDateTime) == null)
-			return null;
+		cacheObject = Cache.getCacheElement(id, localDateTime);
+		if (Cache.getCacheElement(this.id, localDateTime) == null) throw new JHVException.CacheException("no cache at this time available");
 		fileName = cacheObject.getImageFile();
-
-		if (fileName != null)
-			return this.getMetaData(cacheObject.getIdx(currentDateTime));
-
-		cacheObject = Cache.getCacheElement(id, currentDateTime);
-
-		render.openImage(cacheObject.getImageData());
-		MetaData metaData = this.render.getMetadata(0);
-		render.closeImage();
-		return metaData;
+		return this.getMetaData(localDateTime, cacheObject);
 	}
 
-	public MetaData getMetaData(int index) {
-		render.openImage(fileName);
+	public MetaData getMetaData(LocalDateTime localDateTime, CacheableImageData cacheableImageData) {
+		if (cacheableImageData.getImageFile() != null)
+			render.openImage(cacheableImageData.getImageFile());
+		else render.openImage(cacheableImageData.getImageData());
 		MetaData metaData = null;
 		try {
-			metaData = render.getMetadata(index);
+			metaData = render.getMetadata(cacheableImageData.getIdx(localDateTime) + 1);
 		} catch (JHV_KduException e) {
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
@@ -315,8 +312,11 @@ public class UltimateLayer {
 			ImageRegion imageRegion, MetaData metaData, boolean highResolution)
 			throws InterruptedException, ExecutionException, JHV_KduException {
 		Queue<CachableTexture> textures = TextureCache.getCacheableTextures();
+		LocalDateTime localDateTime = this.treeSet.ceiling(currentDateTime);
+		if (localDateTime == null) localDateTime = treeSet.last();
+
 		for (CachableTexture texture : textures) {
-			if (texture.compareRegion(id, imageRegion, currentDateTime)
+			if (texture.compareRegion(id, imageRegion, localDateTime)
 					&& !texture.hasChanged()) {
 				this.imageRegion = texture.getImageRegion();
 				TextureCache.setElementAsFist(texture);
@@ -325,26 +325,24 @@ public class UltimateLayer {
 		}
 		CacheableImageData cacheObject = null;
 
-		cacheObject = Cache.getCacheElement(id, currentDateTime);
+		cacheObject = Cache.getCacheElement(id, localDateTime);
 		fileName = cacheObject.getImageFile();
 
+		this.imageRegion = imageRegion;
+		this.imageRegion.setLocalDateTime(localDateTime);
+		this.imageRegion = TextureCache.addElement(imageRegion, id);
+		this.imageRegion.setMetaData(metaData);
+		this.imageRegion.setID(id);
 		if (fileName != null) {
-			imageRegion.setLocalDateTime(currentDateTime);
-			this.imageRegion = TextureCache.addElement(imageRegion, id);
-			this.imageRegion.setMetaData(metaData);
-			return getImageFromLocalFile(cacheObject.getIdx(currentDateTime),
+			return getImageFromLocalFile(cacheObject.getIdx(localDateTime),
 					this.imageRegion.getZoomFactor(),
 					this.imageRegion.getImageSize());
 		}
 
-		imageRegion.setLocalDateTime(currentDateTime);
-		this.imageRegion = TextureCache.addElement(imageRegion, id);
-		this.imageRegion.setMetaData(metaData);
-
 		render.openImage(cacheObject.getImageData());
 
 		ByteBuffer intBuffer = render.getImage(
-				cacheObject.getLstDetectedDate(), 8,
+				cacheObject.getIdx(localDateTime), 8,
 				this.imageRegion.getZoomFactor(),
 				this.imageRegion.getImageSize());
 		render.closeImage();

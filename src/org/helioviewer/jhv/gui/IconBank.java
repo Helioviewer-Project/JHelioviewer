@@ -56,13 +56,13 @@ public class IconBank {
         
         // ARROWS
         LEFT("arrow_left.gif"), RIGHT("arrow_right.gif"), UP("1uparrow1.png"), DOWN("1downarrow1.png"), RIGHT2("arrow.plain.right.gif"), DOWN2("arrow.plain.down.gif"),
-
+        NEW_DOWN("arrow_down_128x128.png"), NEW_RIGHT("arrow_right_128x128.png"),
         // MOUSE POINTERS
 
         OPEN_HAND("OpenedHand.gif"), CLOSED_HAND("ClosedHand.gif"),
 
         PAN("pan24x24.png"), PAN_SELECTED("pan_selected24x24.png"),
-        NEW_PAN("pan_128x128.png"),
+        NEW_PAN("pan_arrow_128x128.png"),
         SELECT("select24x24.png"), SELECT_SELECTED("select_selected24x24.png"),
 
         FOCUS("crosshairs24x24.png"), FOCUS_SELECTED("crosshairs_checked24x24.png"),
@@ -93,7 +93,7 @@ public class IconBank {
 
         SHOW_LESS("1uparrow1.png"), SHOW_MORE("1downarrow1.png"),
 
-        INVERT("invert.png"), LOADING_BIG("NEW_Loading_256x256.png"), LOADING_SMALL("Loading_219x50.png"),
+        INVERT("invert_128x128.png"), LOADING_BIG("NEW_Loading_256x256.png"), LOADING_SMALL("Loading_219x50.png"),
 
         // 3D Icons
         MODE_3D("3D_24x24.png"), MODE_2D("2D_24x24.png"), MODE_3D_SELECTED("3D_selected_24x24.png"), MODE_2D_SELECTED("2D_selected_24x24.png"), RESET("Reset_24x24.png"), ROTATE("Rotate_24x24.png"), ROTATE_SELECTED("Rotate_selected_24x24.png"), ROTATE_ALL_AXIS("Rotate_both_24x24.png"), ROTATE_ALL_AXIS_SELECTED("Rotate_both_selected_24x24.png"),

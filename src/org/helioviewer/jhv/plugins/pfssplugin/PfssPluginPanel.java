@@ -9,12 +9,13 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.time.LocalDateTime;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-import org.helioviewer.jhv.layers.LocalFileException;
+import org.helioviewer.jhv.JHVException;
+import org.helioviewer.jhv.JHVException.LocalFileException;
 import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
+import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface.PLUGIN_ICON;
 
 /**
  * Panel of Pfss-Plugin
@@ -24,8 +25,8 @@ public class PfssPluginPanel extends JPanel implements ActionListener{
 	private static final long serialVersionUID = 1L;
 
 	// UI Components
-	private JButton visibleButton = new JButton(new ImageIcon(PfssPlugin.getResourceUrl("/images/invisible_dm.png")));
-	private JButton reloadButton = new JButton(new ImageIcon(PfssPlugin.getResourceUrl("/images/reload.png")));
+	private JButton visibleButton = new JButton(UltimatePluginInterface.getIcon(PLUGIN_ICON.INVISIBLE, 16, 16));
+	private JButton reloadButton = new JButton(UltimatePluginInterface.getIcon(PLUGIN_ICON.REFRESH, 16, 16));
 	private PfssPlugin renderer;
 	
 	/**
@@ -95,14 +96,12 @@ public class PfssPluginPanel extends JPanel implements ActionListener{
 		if (visible != renderer.isVisible()){
 			if (renderer.isVisible()) {
 				renderer.setVisible(false);
-				visibleButton.setIcon(new ImageIcon(PfssPlugin
-						.getResourceUrl("/images/invisible_dm.png")));
+				visibleButton.setIcon(UltimatePluginInterface.getIcon(PLUGIN_ICON.INVISIBLE, 16, 16));
 			}
 			else
 			{
 				renderer.setVisible(true);
-				visibleButton.setIcon(new ImageIcon(PfssPlugin
-						.getResourceUrl("/images/visible_dm.png")));
+				visibleButton.setIcon(UltimatePluginInterface.getIcon(PLUGIN_ICON.VISIBLE, 16, 16));
 			}
 			
 			fireRedraw();
@@ -138,7 +137,7 @@ public class PfssPluginPanel extends JPanel implements ActionListener{
 			startLocalDateTime = UltimatePluginInterface.getStartDateTime();
 			LocalDateTime endLocalDateTime = UltimatePluginInterface.getEndDateTime();
 			renderer.setDisplayRange(startLocalDateTime, endLocalDateTime);
-		} catch (LocalFileException e) {
+		} catch (JHVException.TimeLineException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}		

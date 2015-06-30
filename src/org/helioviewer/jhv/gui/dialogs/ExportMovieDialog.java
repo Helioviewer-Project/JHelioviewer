@@ -27,8 +27,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileFilter;
 
+import org.helioviewer.jhv.JHVException;
 import org.helioviewer.jhv.JHVGlobals;
-import org.helioviewer.jhv.MetaDataException;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.layers.LayerInterface;
@@ -98,7 +98,7 @@ public class ExportMovieDialog implements ActionListener {
 											descriptions.add(layer.getMetaData(currentDateTime).getFullName()
 													+ " - "
 													+ layer.getTime().format(JHVGlobals.DATE_TIME_FORMATTER));
-										} catch (MetaDataException e) {
+										} catch (JHVException.MetaDataException e) {
 											// TODO Auto-generated catch block
 											e.printStackTrace();
 										}

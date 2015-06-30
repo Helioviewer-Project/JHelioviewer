@@ -42,7 +42,8 @@ public class ImageRegion {
 	private float yTextureScale = 1;
 	
 	private MetaData metaData;
-	
+	private String fileName;
+	private int id;
 	
 	public ImageRegion(LocalDateTime localDateTime) {
 		imageData = new Rectangle();
@@ -203,6 +204,14 @@ public class ImageRegion {
 	
 	public MetaData getMetaData(){
 		return metaData;
+	}
+
+	public void setID(int id) {
+		this.id = id;
+	}
+
+	public int getID() {
+		return id;
 	}
 }
 

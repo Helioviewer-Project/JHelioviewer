@@ -228,7 +228,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 			
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				lblFrames.setText(slider.getValue() + "/" + timeLine.getMaxFrames());
+				lblFrames.setText(slider.getValue() + "/" + slider.getMaximum());
 				timeLine.setCurrentFrame(slider.getValue());
 			}
 		});
@@ -297,7 +297,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 	
 	@Override
 	public void timeStampChanged(LocalDateTime current, LocalDateTime last) {
-		slider.setValue(timeLine.getCurrentFrame());
+		slider.setValue(timeLine.getCurrentFrame() < 0 ? 0 : timeLine.getCurrentFrame());
 	}
 	
 	private class TimeSlider extends JSlider{
@@ -340,8 +340,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 
 	@Override
 	public void activeLayerChanged(LayerInterface layer) {
-		slider.setValue(slider.getValue()-1);
-		slider.setValue(slider.getValue());
+		slider.setMaximum(layer.getLocalDateTime().size() - 1);
 	}
 
 	private void setEnableButtons(boolean enable){
@@ -355,7 +354,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 	@Override
 	public void dateTimesChanged(int framecount) {
 		this.slider.setMaximum(framecount-1);
-		lblFrames.setText(slider.getValue() + "/" + (framecount-1));
+		lblFrames.setText(slider.getValue() + "/" + slider.getMaximum());
 		this.repaint();
 	}
 	

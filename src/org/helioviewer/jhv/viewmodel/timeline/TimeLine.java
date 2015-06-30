@@ -9,10 +9,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.Timer;
 
+import org.helioviewer.jhv.JHVException;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
-import org.helioviewer.jhv.layers.LocalFileException;
 
 public class TimeLine implements LayerListener {
 
@@ -56,7 +56,8 @@ public class TimeLine implements LayerListener {
 		}
 	}
 
-	public LocalDateTime nextFrame() {		
+	public LocalDateTime nextFrame() {
+		if (localDateTimes.isEmpty()) return null;
 		LocalDateTime next = localDateTimes.higher(current.plusNanos(1));
 		LocalDateTime last = current;
 		if (next == null){
@@ -68,6 +69,7 @@ public class TimeLine implements LayerListener {
 	}
 	
 	public LocalDateTime previousFrame(){
+		if (localDateTimes.isEmpty()) return null;
 		LocalDateTime next = localDateTimes.lower(current.minusNanos(1));
 		if (next == null){
 			next = localDateTimes.last();
@@ -163,15 +165,15 @@ public class TimeLine implements LayerListener {
 		notifyUpdateDateTimes();
 	}
 
-	public LocalDateTime getFirstDateTime() throws LocalFileException {
-		if (localDateTimes.size() <= 0) throw new LocalFileException("No dates are loaded");
-		if (localDateTimes.first() == null) throw new LocalFileException("no first date is available");
+	public LocalDateTime getFirstDateTime() throws JHVException.TimeLineException {
+		if (localDateTimes.size() <= 0) throw new JHVException.TimeLineException("No dates are loaded");
+		if (localDateTimes.first() == null) throw new JHVException.TimeLineException("no first date is available");
 		return localDateTimes.first();
 	}
 
-	public LocalDateTime getLastDateTime() throws LocalFileException {
-		if (localDateTimes.size() <= 0) throw new LocalFileException("No dates are loaded");
-		if (localDateTimes.last() == null) throw new LocalFileException("no first date is available");
+	public LocalDateTime getLastDateTime() throws JHVException.TimeLineException {
+		if (localDateTimes.size() <= 0) throw new JHVException.TimeLineException("No dates are loaded");
+		if (localDateTimes.last() == null) throw new JHVException.TimeLineException("no first date is available");
 		return localDateTimes.last();
 	}
 }

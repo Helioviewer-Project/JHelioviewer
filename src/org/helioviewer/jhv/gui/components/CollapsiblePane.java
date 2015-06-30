@@ -29,8 +29,8 @@ public class CollapsiblePane extends JComponent implements ActionListener {
 
     private static final long serialVersionUID = 1L;
 
-    private static final ImageIcon ICON_EXPANDED = IconBank.getIcon(JHVIcon.DOWN2);
-    private static final ImageIcon ICON_COLLAPSED = IconBank.getIcon(JHVIcon.RIGHT2);
+    private static final ImageIcon ICON_EXPANDED = IconBank.getIcon(JHVIcon.NEW_DOWN, 16, 16);
+    private static final ImageIcon ICON_COLLAPSED = IconBank.getIcon(JHVIcon.NEW_RIGHT, 16, 16);
 
     private JToggleButton toggleButton;
     private Component component;
@@ -53,7 +53,7 @@ public class CollapsiblePane extends JComponent implements ActionListener {
         toggleButton.setSelected(startExpanded);
         toggleButton.setFont(new Font("SansSerif", Font.BOLD, 12));
         if (startExpanded) {
-            toggleButton.setIcon(IconBank.getIcon(JHVIcon.DOWN2));
+            toggleButton.setIcon(IconBank.getIcon(JHVIcon.NEW_DOWN, 16, 16));
         } else {
             toggleButton.setIcon(IconBank.getIcon(JHVIcon.RIGHT2));
         }

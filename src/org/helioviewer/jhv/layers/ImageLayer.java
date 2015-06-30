@@ -6,11 +6,14 @@ import java.time.LocalDateTime;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
 
-import org.helioviewer.jhv.MetaDataException;
+import org.helioviewer.jhv.JHVException;
+import org.helioviewer.jhv.JHVException.CacheException;
+import org.helioviewer.jhv.JHVException.LocalFileException;
+import org.helioviewer.jhv.JHVException.MetaDataException;
+import org.helioviewer.jhv.JHVException.TextureException;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.opengl.MainPanel;
-import org.helioviewer.jhv.layers.JHVException.TextureException;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
@@ -26,7 +29,7 @@ public class ImageLayer extends LayerInterface {
 
 	public ImageLayer(int sourceID, KakaduRender newRender,
 			LocalDateTime start, LocalDateTime end, int cadence) {
-		this.id = sourceID;
+		super();
 		this.start = start;
 		this.end = end;
 		this.cadence = cadence;
@@ -36,6 +39,7 @@ public class ImageLayer extends LayerInterface {
 	}
 
 	public ImageLayer(String uri, KakaduRender newRender) {
+		super();
 		this.localPath = uri;
 		this.ultimateLayer = new UltimateLayer(id, uri, newRender, this);
 		layerRayTrace = new LayerRayTrace(this);
@@ -77,22 +81,27 @@ public class ImageLayer extends LayerInterface {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (JHV_KduException e) {
+		} catch (MetaDataException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (CacheException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return false;
 	}
 
 	@Override
-	public String getName() {
+	public String getName() throws MetaDataException {
 		if (this.getLastDecodedImageRegion() == null)
 			return "";
-		return this.getLastDecodedImageRegion().getMetaData().getFullName();
+		return this.getMetaData(TimeLine.SINGLETON.getCurrentDateTime()).getFullName();
 	}
 
 	@Override
-	public LocalDateTime getTime() {
-		if (getLastDecodedImageRegion() == null)
-			return null;
-		return getLastDecodedImageRegion().getDateTime();
+	public LocalDateTime getTime() throws MetaDataException {
+		System.out.println("time : " + TimeLine.SINGLETON.getCurrentDateTime());
+		return getMetaData(TimeLine.SINGLETON.getCurrentDateTime()).getLocalDateTime();
 	}
 
 	@Deprecated
@@ -101,10 +110,10 @@ public class ImageLayer extends LayerInterface {
 	}
 
 	@Override
-	protected MetaData getMetaData() throws MetaDataException {
+	protected MetaData getMetaData() throws JHVException.MetaDataException {
 		if (getLastDecodedImageRegion() == null
 				|| getLastDecodedImageRegion().getMetaData() == null)
-			throw new MetaDataException("No imagedata available");
+			throw new JHVException.MetaDataException("No imagedata available");
 		return this.getLastDecodedImageRegion().getMetaData();
 	}
 
@@ -126,9 +135,11 @@ public class ImageLayer extends LayerInterface {
 			throws MetaDataException {
 		MetaData metaData = null;
 		try {
-			if (getMetaData().getLocalDateTime().isEqual(currentDateTime))
+			if (getMetaData().getLocalDateTime().isEqual(currentDateTime) && getLastDecodedImageRegion().getID() == this.id)
 				return getMetaData();
 			metaData = ultimateLayer.getMetaData(currentDateTime);
+			if (metaData == null)
+				throw new JHVException.MetaDataException("No metadata available");
 		} catch (InterruptedException e) {
 			throw new MetaDataException("No metadata available \nbecause :"
 					+ e.getMessage());
@@ -138,14 +149,17 @@ public class ImageLayer extends LayerInterface {
 		} catch (JHV_KduException e) {
 			throw new MetaDataException("No metadata available \nbecause :"
 					+ e.getMessage());
-		} catch (MetaDataException e) {
+		} catch (CacheException e) {
+			throw new MetaDataException("No metadata available \nbecause :"
+					+ e.getMessage());
+		} catch (JHVException.MetaDataException e) {
 			try {
 				metaData = ultimateLayer.getMetaData(currentDateTime);
 				if (metaData == null)
 					throw new MetaDataException("No metadata available");
 			} catch (InterruptedException | ExecutionException
-					| JHV_KduException e1) {
-				throw new MetaDataException("No metadata available \nbecause :"
+					| JHV_KduException | CacheException e1) {
+				throw new JHVException.MetaDataException("No metadata available \nbecause :"
 						+ e1.getMessage());
 			}
 		}

@@ -3,27 +3,31 @@ package org.helioviewer.jhv.plugins.plugin;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import javax.swing.AbstractButton;
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
+import org.helioviewer.jhv.JHVException;
+import org.helioviewer.jhv.JHVException.LocalFileException;
+import org.helioviewer.jhv.base.FileUtils;
 import org.helioviewer.jhv.base.downloadmanager.AbstractRequest.PRIORITY;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.opengl.MainPanel;
-import org.helioviewer.jhv.layers.LocalFileException;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace;
 import org.helioviewer.jhv.plugins.hekplugin.HEKPlugin;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
-import org.helioviewer.jhv.plugins.pfssplugin.PfssPluginPanel;
 import org.helioviewer.jhv.plugins.plugin.AbstractPlugin.RENDER_MODE;
 import org.helioviewer.jhv.plugins.sdocutoutplugin.SDOCutOutPlugin3D;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
@@ -35,6 +39,26 @@ import com.jogamp.opengl.GL2;
 public class UltimatePluginInterface implements TimeLineListener,
 		MouseListener, MouseMotionListener {
 
+	public enum PLUGIN_ICON{
+		REFRESH("refresh_128x128.png"),
+		VISIBLE("visible_128x128.png"),
+		INVISIBLE("invisible_128x128.png"),
+		CANCEL("Cancel_128x128.png");
+		
+		private final String fname;
+		PLUGIN_ICON(String _fname) {
+            fname = _fname;
+        }
+
+        String getFilename() {
+            return fname;
+        }
+
+	}
+
+	/** The location of the image files relative to this folder. */
+    private static final String RESOURCE_PATH = "/images/";
+	
 	private ArrayList<AbstractPlugin> plugins;
 
 	public static final UltimatePluginInterface SINGLETON = new UltimatePluginInterface();
@@ -196,11 +220,11 @@ public class UltimatePluginInterface implements TimeLineListener,
 		return MainFrame.MAIN_PANEL.getSize();
 	}
 
-	public static LocalDateTime getStartDateTime() throws LocalFileException {
+	public static LocalDateTime getStartDateTime() throws JHVException.TimeLineException {
 		return TimeLine.SINGLETON.getFirstDateTime();
 	}
 
-	public static LocalDateTime getEndDateTime() throws LocalFileException {
+	public static LocalDateTime getEndDateTime() throws JHVException.TimeLineException {
 		return TimeLine.SINGLETON.getLastDateTime();
 	}
 
@@ -243,4 +267,13 @@ public class UltimatePluginInterface implements TimeLineListener,
 			component.repaint();
 		}
 	}
+	
+	public static ImageIcon getIcon(PLUGIN_ICON icon, int width, int height){
+        URL imgURL = FileUtils.getResourceUrl(RESOURCE_PATH + icon.getFilename());
+        ImageIcon imageIcon = new ImageIcon(imgURL);
+        Image image = imageIcon.getImage();
+        image = image.getScaledInstance(width, height, Image.SCALE_AREA_AVERAGING);
+        imageIcon.setImage(image);
+        return imageIcon;	
+    }
 }

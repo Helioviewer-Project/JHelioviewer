@@ -3,7 +3,8 @@ package org.helioviewer.jhv.layers;
 import java.time.LocalDateTime;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.helioviewer.jhv.layers.JHVException.LayerException;
+import org.helioviewer.jhv.JHVException;
+import org.helioviewer.jhv.JHVException.LayerException;
 import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.KakaduRender;
 
 public class Layers {

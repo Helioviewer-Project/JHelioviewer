@@ -25,6 +25,9 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+import org.helioviewer.jhv.JHVException;
+import org.helioviewer.jhv.JHVException.LayerException;
+import org.helioviewer.jhv.JHVException.LocalFileException;
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
@@ -33,37 +36,38 @@ import org.helioviewer.jhv.gui.dialogs.AddLayerPanel;
 import org.helioviewer.jhv.gui.dialogs.DownloadMovieDialog;
 import org.helioviewer.jhv.gui.dialogs.InstrumentModel;
 import org.helioviewer.jhv.gui.dialogs.MetaDataDialog;
-import org.helioviewer.jhv.layers.JHVException.LayerException;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
-import org.helioviewer.jhv.layers.LocalFileException;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine.TimeLineListener;
 
-
 /**
  * The new LayerPanel, include a JTable for the current added layers
+ * 
  * @author stefanmeier
  *
  */
-public class LayerPanel extends JPanel implements LayerListener, TimeLineListener{
+public class LayerPanel extends JPanel implements LayerListener,
+		TimeLineListener {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 6800340702841902680L;
-	
+
 	private final AddLayerPanel addLayerPanel = new AddLayerPanel();
 	private final MetaDataDialog metaDataDialog = new MetaDataDialog();
 	private final DownloadMovieDialog downloadMovieDialog = new DownloadMovieDialog();
 	private JTable table;
-	private Object columnNames[] = { "Column One", "Column Two", "Column Three", "Column Four"};
+	private Object columnNames[] = { "Column One", "Column Two",
+			"Column Three", "Column Four" };
 	private LayerTableModel tableModel;
-	private Object rowData[][] = { { "Row1-Column1", "Row1-Column2", "Row1-Column3"},
-            { "Row2-Column1", "Row2-Column2", "Row2-Column3"} };
-	
-	public LayerPanel(){
+	private Object rowData[][] = {
+			{ "Row1-Column1", "Row1-Column2", "Row1-Column3" },
+			{ "Row2-Column1", "Row2-Column2", "Row2-Column3" } };
+
+	public LayerPanel() {
 		initGUI();
 		updateData();
 		InstrumentModel.addAddLayerPanel(addLayerPanel);
@@ -86,45 +90,52 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		table = new JTable(tableModel);
 		table = new JTable(rowData, columnNames);
 		table.setTableHeader(null);
-        table.getColumnModel().getColumn(0).setCellRenderer(new ImageIconCellRenderer());
-		table.getColumnModel().getColumn(1).setCellRenderer(new ImageIconCellRenderer());
-		table.getColumnModel().getColumn(2).setCellRenderer(new ImageIconCellRenderer());
-		table.getColumnModel().getColumn(3).setCellRenderer(new ImageIconCellRenderer());
-        table.getColumnModel().getColumn(0).setPreferredWidth(35);
-        table.getColumnModel().getColumn(0).setWidth(35);
+		table.getColumnModel().getColumn(0)
+				.setCellRenderer(new ImageIconCellRenderer());
+		table.getColumnModel().getColumn(1)
+				.setCellRenderer(new ImageIconCellRenderer());
+		table.getColumnModel().getColumn(2)
+				.setCellRenderer(new ImageIconCellRenderer());
+		table.getColumnModel().getColumn(3)
+				.setCellRenderer(new ImageIconCellRenderer());
+		table.getColumnModel().getColumn(0).setPreferredWidth(35);
+		table.getColumnModel().getColumn(0).setWidth(35);
 		table.getColumnModel().getColumn(0).setResizable(false);
-        table.getColumnModel().getColumn(3).setResizable(false);
-        table.setShowGrid(false);
-        table.setIntercellSpacing(new Dimension(0, 0));
-        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-			
-			@Override
-			public void valueChanged(ListSelectionEvent e) {
-				SwingUtilities.invokeLater(new Runnable() {
-					
+		table.getColumnModel().getColumn(3).setResizable(false);
+		table.setShowGrid(false);
+		table.setIntercellSpacing(new Dimension(0, 0));
+		table.getSelectionModel().addListSelectionListener(
+				new ListSelectionListener() {
+
 					@Override
-					public void run() {
-						int row = table.getSelectedRow();
-						if (row != Layers.getActiveLayerNumber()){
-							Layers.setActiveLayer(row);
-						}				
+					public void valueChanged(ListSelectionEvent e) {
+						SwingUtilities.invokeLater(new Runnable() {
+
+							@Override
+							public void run() {
+								int row = table.getSelectedRow();
+								if (row != Layers.getActiveLayerNumber()) {
+									Layers.setActiveLayer(row);
+								}
+							}
+						});
 					}
 				});
-			}
-		});
 		table.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				int row = table.getSelectedRow();
 				int column = table.getSelectedColumn();
-				if (column == 3){
+				if (column == 3) {
 					Layers.removeLayer(row);
 					updateData();
-				}
-				else if (column == 0){
-					//TODO: potential null pointer exception? other callers of getActiveLayer() check for != null...
+				} else if (column == 0) {
+					// TODO: potential null pointer exception? other callers of
+					// getActiveLayer() check for != null...
 					try {
-						Layers.getActiveLayer().setVisible((boolean) table.getModel().getValueAt(row, column));
+						Layers.getActiveLayer().setVisible(
+								(boolean) table.getModel().getValueAt(row,
+										column));
 					} catch (LayerException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -135,10 +146,11 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		});
 		scrollPane.setViewportView(table);
 
-		/*for (int i = 0; i <  table.getColumnCount(); i++){
-			table.getColumnModel().getColumn(i)
-			.setCellRenderer(new LayerCellRenderer());
-			}*/
+		/*
+		 * for (int i = 0; i < table.getColumnCount(); i++){
+		 * table.getColumnModel().getColumn(i) .setCellRenderer(new
+		 * LayerCellRenderer()); }
+		 */
 		JPanel panel = new JPanel();
 		add(panel, BorderLayout.SOUTH);
 		GridBagLayout gbl_panel = new GridBagLayout();
@@ -150,10 +162,12 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		gbl_panel.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
 		panel.setLayout(gbl_panel);
 
-		JButton btnShowInfo = new JButton(IconBank.getIcon(JHVIcon.INFO_NEW, 16, 16));
-		btnShowInfo.setToolTipText("Show the Metainformation of the currently selected Layer");
+		JButton btnShowInfo = new JButton(IconBank.getIcon(JHVIcon.INFO_NEW,
+				16, 16));
+		btnShowInfo
+				.setToolTipText("Show the Metainformation of the currently selected Layer");
 		btnShowInfo.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				metaDataDialog.showDialog();
@@ -165,20 +179,26 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		gbcBtnShowInfo.gridy = 0;
 		panel.add(btnShowInfo, gbcBtnShowInfo);
 
-		JButton btnDownloadLayer = new JButton(IconBank.getIcon(JHVIcon.DOWNLOAD_NEW, 16, 16));
-		btnDownloadLayer.setToolTipText("Download the currently selected Layer");
+		JButton btnDownloadLayer = new JButton(IconBank.getIcon(
+				JHVIcon.DOWNLOAD_NEW, 16, 16));
+		btnDownloadLayer
+				.setToolTipText("Download the currently selected Layer");
 		btnDownloadLayer.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
-					try {
-						downloadMovieDialog.startDownload(Layers.getActiveLayer().getURL());
-					} catch (LocalFileException e1) {
-						JOptionPane.showConfirmDialog(MainFrame.SINGLETON, e1.getMessage(), "Error during get URL", JOptionPane.CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
-					} catch (LayerException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
+				try {
+					downloadMovieDialog.startDownload(Layers.getActiveLayer()
+							.getURL());
+				} catch (LocalFileException e1) {
+					JOptionPane.showConfirmDialog(MainFrame.SINGLETON,
+							e1.getMessage(), "Error during get URL",
+							JOptionPane.CANCEL_OPTION,
+							JOptionPane.ERROR_MESSAGE);
+				} catch (LayerException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});
 		GridBagConstraints gbcBtnDownloadLayer = new GridBagConstraints();
@@ -187,9 +207,10 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		gbcBtnDownloadLayer.gridy = 0;
 		panel.add(btnDownloadLayer, gbcBtnDownloadLayer);
 
-		JButton btnAddLayer = new JButton("Add Layer", IconBank.getIcon(JHVIcon.ADD_NEW, 16, 16));
+		JButton btnAddLayer = new JButton("Add Layer", IconBank.getIcon(
+				JHVIcon.ADD_NEW, 16, 16));
 		btnAddLayer.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				addLayerPanel.setVisible(true);
@@ -204,48 +225,60 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 
 	}
 
-	
-	private synchronized void updateData(){
+	private synchronized void updateData() {
 		SwingUtilities.invokeLater(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				Object[][] data = new Object[Layers.getLayerCount()][4];
 				int count = 0;
-				for (LayerInterface layer : Layers.getLayers()){
+				for (LayerInterface layer : Layers.getLayers()) {
 					data[count][0] = layer.isVisible();
-					data[count][1] = layer.getName();
-					data[count][2] = layer.getTime() == null ? null : TimeLine.SINGLETON.getCurrentDateTime();
-					data[count][3] = IconBank.getIcon(JHVIcon.CANCEL_NEW, 16, 16);
+					try {
+						data[count][1] = layer.getName();
+						data[count][2] = layer.getTime() == null ? null : layer
+								.getTime();
+					} catch (JHVException.MetaDataException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					data[count][3] = IconBank.getIcon(JHVIcon.CANCEL_NEW, 16,
+							16);
 					count++;
 				}
 				tableModel.setDataVector(data, columnNames);
 				table.setModel(tableModel);
-				
-		        //table.getColumnModel().getColumn(0).setCellRenderer(new ImageIconCellRenderer());
-		        table.getColumnModel().getColumn(1).setCellRenderer(new ImageIconCellRenderer());
-		        table.getColumnModel().getColumn(2).setCellRenderer(new ImageIconCellRenderer());
-		        table.getColumnModel().getColumn(3).setCellRenderer(new ImageIconCellRenderer());
+
+				// table.getColumnModel().getColumn(0).setCellRenderer(new
+				// ImageIconCellRenderer());
+				table.getColumnModel().getColumn(1)
+						.setCellRenderer(new ImageIconCellRenderer());
+				table.getColumnModel().getColumn(2)
+						.setCellRenderer(new ImageIconCellRenderer());
+				table.getColumnModel().getColumn(3)
+						.setCellRenderer(new ImageIconCellRenderer());
 				setFixedWidth(20, 0);
 				setFixedWidth(16, 3);
-		        //table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		        table.setShowGrid(false);
-		        table.setIntercellSpacing(new Dimension(0, 0));
-		        
-				if (Layers.getLayerCount() > 0){
+				// table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+				table.setShowGrid(false);
+				table.setIntercellSpacing(new Dimension(0, 0));
+
+				if (Layers.getLayerCount() > 0) {
 					System.out.println(Layers.getActiveLayerNumber());
-					table.setRowSelectionInterval(Layers.getActiveLayerNumber(), Layers.getActiveLayerNumber());
-				}	
+					table.setRowSelectionInterval(
+							Layers.getActiveLayerNumber(),
+							Layers.getActiveLayerNumber());
+				}
 			}
 		});
 	}
-	
-	private void setFixedWidth(int width, int column){
+
+	private void setFixedWidth(int width, int column) {
 		table.getColumnModel().getColumn(column).setMinWidth(width);
-        table.getColumnModel().getColumn(column).setMaxWidth(width);
-        table.getColumnModel().getColumn(column).setPreferredWidth(width);
+		table.getColumnModel().getColumn(column).setMaxWidth(width);
+		table.getColumnModel().getColumn(column).setPreferredWidth(width);
 	}
-	
+
 	private static class LayerTableModel extends DefaultTableModel {
 
 		/**
@@ -256,29 +289,26 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		public LayerTableModel(Object[][] data, String[] columnNames) {
 			super(data, columnNames);
 		}
-		
-		
+
 		@Override
 		public Class<?> getColumnClass(int columnIndex) {
-			if (columnIndex == 0){
+			if (columnIndex == 0) {
 				return Boolean.class;
 			}
-			
+
 			return super.getColumnClass(columnIndex);
 		}
-		
 
 		@Override
 		public boolean isCellEditable(int row, int column) {
-			if (column == 0){
+			if (column == 0) {
 				return true;
 			}
 			return false;
 		}
 	}
-	
-	
-	private static class ImageIconCellRenderer extends DefaultTableCellRenderer{
+
+	private static class ImageIconCellRenderer extends DefaultTableCellRenderer {
 
 		/**
 		 * 
@@ -286,30 +316,35 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		private static final long serialVersionUID = -2552431402411803683L;
 
 		public ImageIconCellRenderer() {
-			//setOpaque(true);
+			// setOpaque(true);
 			setHorizontalAlignment(CENTER);
-			//setBackground(Color.WHITE);			
+			// setBackground(Color.WHITE);
 		}
-		
+
 		@Override
 		public Component getTableCellRendererComponent(JTable table,
-				Object value, boolean isSelected, boolean hasFocus, final int row,
-				int column) {
+				Object value, boolean isSelected, boolean hasFocus,
+				final int row, int column) {
 			switch (column) {
-			case 0:				
-				super.getTableCellRendererComponent(table, null, isSelected, hasFocus, row, column);
+			case 0:
+				super.getTableCellRendererComponent(table, null, isSelected,
+						hasFocus, row, column);
 				break;
-			case 1:		
-				super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+			case 1:
+				super.getTableCellRendererComponent(table, value, isSelected,
+						hasFocus, row, column);
 				break;
 			case 2:
 				LocalDateTime localDateTime = (LocalDateTime) value;
-				String date = localDateTime != null ? localDateTime.format(JHVGlobals.DATE_TIME_FORMATTER) : "";
-				super.getTableCellRendererComponent(table, date, isSelected, hasFocus, row, column);
+				String date = localDateTime != null ? localDateTime
+						.format(JHVGlobals.DATE_TIME_FORMATTER) : "";
+				super.getTableCellRendererComponent(table, date, isSelected,
+						hasFocus, row, column);
 				break;
-			case 3:				
-				JLabel label = (JLabel) super.getTableCellRendererComponent(table, null, isSelected, hasFocus, row, column);
-				label.setIcon((ImageIcon)value);
+			case 3:
+				JLabel label = (JLabel) super.getTableCellRendererComponent(
+						table, null, isSelected, hasFocus, row, column);
+				label.setIcon((ImageIcon) value);
 				label.setPreferredSize(new Dimension(20, 20));
 				return label;
 			default:
@@ -317,9 +352,8 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			}
 			return this;
 		}
-		
-	}
 
+	}
 
 	@Override
 	public void newlayerAdded() {
@@ -329,13 +363,13 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 	@Override
 	public void newlayerRemoved(int idx) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void activeLayerChanged(LayerInterface layer) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
