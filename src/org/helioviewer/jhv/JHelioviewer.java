@@ -19,15 +19,17 @@ import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 
+import kdu_jni.Kdu_global;
+import kdu_jni.Kdu_message_formatter;
+
 import org.helioviewer.jhv.base.FileUtils;
 import org.helioviewer.jhv.base.Log;
-import org.helioviewer.jhv.base.Message;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.dialogs.AboutDialog;
 import org.helioviewer.jhv.io.CommandLineProcessor;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
-import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
+import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_Kdu_message;
 
 import com.install4j.api.launcher.ApplicationLauncher;
 import com.install4j.api.update.UpdateScheduleRegistry;
@@ -159,10 +161,8 @@ public class JHelioviewer {
 			splash.nextStep();
 
 			/* ----------Setup kakadu ----------- */
-			System.out.println("Instantiate Kakadu engine");
-			KakaduEngine engine = new KakaduEngine();
-
 			splash.nextStep();
+			
 			splash.setProgressText("Initializing Kakadu libraries...");
 
 			try {
@@ -185,16 +185,9 @@ public class JHelioviewer {
 			// The following code-block attempts to start the native message
 			// handling
 			splash.nextStep();
-			try {
-				System.out.println("Setup Kakadu message handlers.");
-				engine.startKduMessageSystem();
-			} catch (JHV_KduException e) {
-				System.err.println("Failed to setup Kakadu message handlers.");
-				e.printStackTrace();
-				Message.err("Error starting Kakadu message handler",
-						e.getMessage(), true);
-				return;
-			}
+			System.out.println("Setup Kakadu message handlers.");
+            Kdu_global.Kdu_customize_warnings(new Kdu_message_formatter(new JHV_Kdu_message(false), 80));
+            Kdu_global.Kdu_customize_errors(new Kdu_message_formatter(new JHV_Kdu_message(true), 80));
 
 			/* ----------Setup OpenGL ----------- */
 			splash.setProgressText("Setting up the UI...");
