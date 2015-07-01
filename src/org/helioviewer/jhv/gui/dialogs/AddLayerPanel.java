@@ -38,10 +38,9 @@ public class AddLayerPanel extends JDialog {
 	private static final long serialVersionUID = 5707539021281900015L;
 	private final JPanel contentPanel = new JPanel();
 
-	private JLabel lblFilter1, lblFilter2, lblInstrument;
+	private JLabel lblFilter, lblFilter1, lblFilter2;
 	private JComboBox<InstrumentModel.Observatory> cmbbxObservatory;
-	private JComboBox<InstrumentModel.Instrument> cmbbxInstrument;
-	private JComboBox<InstrumentModel.Filter> cmbbxFilter1, cmbbxFilter2;
+	private JComboBox<InstrumentModel.Filter> cmbbxFilter, cmbbxFilter1, cmbbxFilter2;
 	private DatePicker datePickerStartDate;
 	private DatePicker datePickerEndDate;
 	private JSpinner candence;
@@ -94,19 +93,19 @@ public class AddLayerPanel extends JDialog {
 			public void itemStateChanged(ItemEvent e) {
 				InstrumentModel.Observatory observatory = ((InstrumentModel.Observatory) e
 						.getItem());
-				lblInstrument.setText("");
+				lblFilter.setText("");
 				lblFilter1.setText("");
 				lblFilter2.setText("");
-				lblInstrument.setVisible(true);
+				lblFilter.setVisible(true);
 				lblFilter1.setVisible(true);
 				lblFilter2.setVisible(true);
-				cmbbxInstrument.setVisible(true);
+				cmbbxFilter.setVisible(true);
 				cmbbxFilter1.setVisible(true);
 				cmbbxFilter2.setVisible(true);
 				switch (observatory.getUiLabels().size()) {
 				case 0:
-					lblInstrument.setVisible(false);
-					cmbbxInstrument.setVisible(false);
+					lblFilter.setVisible(false);
+					cmbbxFilter.setVisible(false);
 				case 1:
 					lblFilter1.setVisible(false);
 					cmbbxFilter1.setVisible(false);
@@ -119,7 +118,7 @@ public class AddLayerPanel extends JDialog {
 					break;
 				}
 				try {
-					lblInstrument.setText(observatory.getUiLabels().get(0));
+					lblFilter.setText(observatory.getUiLabels().get(0));
 					try {
 						lblFilter1.setText(observatory.getUiLabels().get(1));
 						try {
@@ -135,24 +134,24 @@ public class AddLayerPanel extends JDialog {
 					System.out.println("Insturment not available");
 				}
 
-				cmbbxInstrument.removeAllItems();
+				cmbbxFilter.removeAllItems();
 				cmbbxFilter1.removeAllItems();
 				cmbbxFilter2.removeAllItems();
-				for (InstrumentModel.Instrument instrument : observatory
+				for (InstrumentModel.Filter instrument : observatory
 						.getInstruments()) {
-					cmbbxInstrument.addItem(instrument);
+					cmbbxFilter.addItem(instrument);
 				}
 			}
 		});
 
-		cmbbxInstrument.addItemListener(new ItemListener() {
+		cmbbxFilter.addItemListener(new ItemListener() {
 
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				System.out.println(e.getItem());
 				cmbbxFilter1.removeAllItems();
 				cmbbxFilter2.removeAllItems();
-				for (InstrumentModel.Filter filter : ((InstrumentModel.Instrument) e
+				for (InstrumentModel.Filter filter : ((InstrumentModel.Filter) e
 						.getItem()).getFilters()) {
 					cmbbxFilter1.addItem(filter);
 				}
@@ -270,12 +269,12 @@ public class AddLayerPanel extends JDialog {
 			contentPanel.add(cmbbxObservatory, "6, 10, fill, default");
 		}
 		{
-			lblInstrument = new JLabel("Instrument");
-			contentPanel.add(lblInstrument, "2, 12");
+			lblFilter = new JLabel("Instrument");
+			contentPanel.add(lblFilter, "2, 12");
 		}
 		{
-			cmbbxInstrument = new JComboBox<InstrumentModel.Instrument>();
-			contentPanel.add(cmbbxInstrument, "6, 12, fill, default");
+			cmbbxFilter = new JComboBox<InstrumentModel.Filter>();
+			contentPanel.add(cmbbxFilter, "6, 12, fill, default");
 		}
 		{
 			lblFilter1 = new JLabel("");
@@ -313,6 +312,9 @@ public class AddLayerPanel extends JDialog {
 						if (filter == null) {
 							filter = (InstrumentModel.Filter) cmbbxFilter1
 									.getSelectedItem();
+						}
+						if (filter == null){
+							filter = (InstrumentModel.Filter) cmbbxFilter.getSelectedItem();
 						}
 
 						if (filter != null) {

@@ -11,7 +11,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.helioviewer.jhv.JHVException;
-import org.helioviewer.jhv.JHVException.LocalFileException;
 import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
 import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.base.math.Matrix4d;

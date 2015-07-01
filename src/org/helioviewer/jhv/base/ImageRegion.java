@@ -5,7 +5,6 @@ import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.time.LocalDateTime;
 
-import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.gui.opengl.MainPanel;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
@@ -86,13 +85,13 @@ public class ImageRegion {
 
 	public void calculateScaleFactor(LayerInterface layerInterface, MainPanel mainPanel, MetaData metaData, Dimension size) {
 		// Get the image resolution
-		Vector2i resolution = metaData.getResolution();
+		Rectangle resolution = metaData.getResolution();
 		
 		// Calculate the current texelCount
-		int textureMaxX = getNextInt(resolution.getX() * (imageData.getX() + imageData.getWidth()));
-		int textureMaxY = getNextInt(resolution.getY() * (imageData.getY() + imageData.getHeight()));
-		int textureMinX = (int)(resolution.getX() * imageData.getX());
-		int textureMinY = (int)(resolution.getY() * imageData.getY());
+		int textureMaxX = getNextInt(resolution.getWidth() * (imageData.getX() + imageData.getWidth()));
+		int textureMaxY = getNextInt(resolution.getHeight() * (imageData.getY() + imageData.getHeight()));
+		int textureMinX = (int)(resolution.getWidth() * imageData.getX());
+		int textureMinY = (int)(resolution.getHeight() * imageData.getY());
 		int textureWidth = textureMaxX - textureMinX;
 		int textureHeight = textureMaxY - textureMinY;
 		double texelCount = textureWidth * textureHeight;
@@ -138,19 +137,19 @@ public class ImageRegion {
 	 * Function to calculate the current image size
 	 * @param resolution
 	 */
-	private void calculateImageSize(Vector2i resolution){
-		int textureMaxX = getNextInt(resolution.getX() * (imageData.getX() + imageData.getWidth()) * imageScaleFactor);
-		int textureMaxY = getNextInt(resolution.getY() * (imageData.getY() + imageData.getHeight()) * imageScaleFactor);
-		int textureMinX = (int)(resolution.getX() * imageData.getX() * imageScaleFactor);
-		int textureMinY = (int)(resolution.getY() * imageData.getY() * imageScaleFactor);
+	private void calculateImageSize(Rectangle resolution){
+		int textureMaxX = getNextInt(resolution.getWidth() * (imageData.getX() + imageData.getWidth()) * imageScaleFactor);
+		int textureMaxY = getNextInt(resolution.getHeight() * (imageData.getY() + imageData.getHeight()) * imageScaleFactor);
+		int textureMinX = (int)(resolution.getWidth() * imageData.getX() * imageScaleFactor);
+		int textureMinY = (int)(resolution.getHeight() * imageData.getY() * imageScaleFactor);
 		int textureWidth = textureMaxX - textureMinX;
 		int textureHeight = textureMaxY - textureMinY;
 		this.imageSize = new Rectangle(textureMinX, textureMinY, textureWidth, textureHeight);
 		
-		this.textureOffsetX = textureMinX / (float)(resolution.getX() * imageScaleFactor);
-		this.textureOffsetY = textureMinY / (float)(resolution.getY() * imageScaleFactor);
-		this.textureScaleWidth = imageSize.width / (float)(resolution.getX() * imageScaleFactor);
-		this.textureScaleHeight = imageSize.height / (float)(resolution.getY() * imageScaleFactor);
+		this.textureOffsetX = textureMinX / (float)(resolution.getWidth() * imageScaleFactor);
+		this.textureOffsetY = textureMinY / (float)(resolution.getHeight() * imageScaleFactor);
+		this.textureScaleWidth = imageSize.width / (float)(resolution.getWidth() * imageScaleFactor);
+		this.textureScaleHeight = imageSize.height / (float)(resolution.getHeight() * imageScaleFactor);
 	}
 	
 	public Rectangle getImageSize(){

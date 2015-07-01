@@ -17,7 +17,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 import org.helioviewer.jhv.JHVException;
-import org.helioviewer.jhv.JHVException.LocalFileException;
 import org.helioviewer.jhv.base.FileUtils;
 import org.helioviewer.jhv.base.downloadmanager.AbstractRequest.PRIORITY;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;

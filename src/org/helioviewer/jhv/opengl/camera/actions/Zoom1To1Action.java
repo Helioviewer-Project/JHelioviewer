@@ -3,6 +3,7 @@ package org.helioviewer.jhv.opengl.camera.actions;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.geom.Rectangle2D;
 import java.time.LocalDateTime;
 
 import javax.swing.AbstractAction;
@@ -18,7 +19,6 @@ import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.opengl.camera.animation.CameraZoomAnimation;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 
 public class Zoom1To1Action extends AbstractAction {
@@ -44,7 +44,7 @@ public class Zoom1To1Action extends AbstractAction {
 				LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
 				metaData = activeLayer.getMetaData(currentDateTime);
 				double unitsPerPixel = metaData.getUnitsPerPixel();
-				PhysicalRegion region = metaData.getPhysicalRegion();
+				Rectangle2D region = metaData.getPhysicalImageSize();
 
 				if (region != null) {
 					Dimension dimension = MainFrame.MAIN_PANEL.getCanavasSize();

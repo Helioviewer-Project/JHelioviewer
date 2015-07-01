@@ -14,6 +14,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.BufferedReader;
@@ -39,7 +40,6 @@ import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
 import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
 import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.Quaternion3d;
-import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.base.physics.DifferentialRotation;
@@ -300,20 +300,19 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 
 			try {
 				int layerTexture = layer.getTexture(this, false, this.size);
-				Vector2d size;
 				LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
-				size = layer.getMetaData(currentDateTime).getPhysicalRegion().getSize();
-				if (size.x <= 0 || size.y <= 0) {
+				Rectangle2D size = layer.getMetaData(currentDateTime).getPhysicalImageSize();
+				if (size.getWidth() <= 0 || size.getHeight() <= 0) {
 					return false;
 				}
 
 				MetaData metaData = layer.getMetaData(currentDateTime);
 				float xSunOffset = (float) ((metaData.getSunPixelPosition().x - metaData
-						.getResolution().getX() / 2.0) / (float) metaData
-						.getResolution().getX());
+						.getResolution().getWidth() / 2.0) / (float) metaData
+						.getResolution().getWidth());
 				float ySunOffset = -(float) ((metaData.getSunPixelPosition().y - metaData
-						.getResolution().getY() / 2.0) / (float) metaData
-						.getResolution().getY());
+						.getResolution().getHeight() / 2.0) / (float) metaData
+						.getResolution().getHeight());
 
 				Vector3d currentPos = getRotation().toMatrix().multiply(
 						new Vector3d(0, 0, 1));
@@ -516,7 +515,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 			gl.glScaled(aspect, aspect, 1);
 
 			if (CameraMode.mode == CameraMode.MODE.MODE_3D) {
-				glu.gluPerspective(MainPanel.FOV, this.aspect, clipNear,
+ 				glu.gluPerspective(MainPanel.FOV, this.aspect, clipNear,
 						this.translation.z + 4 * Constants.SUN_RADIUS);
 			} else {
 				double width = Math.tan(Math.toRadians(FOV) / 2)

@@ -1,5 +1,7 @@
 package org.helioviewer.jhv.viewmodel.metadata;
 
+import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -10,14 +12,11 @@ import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
-import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
-import org.helioviewer.jhv.viewmodel.region.StaticRegion;
 import org.w3c.dom.Document;
 
 public abstract class MetaData {
-  private Vector2d lowerLeftCorner;
-    private Vector2d sizeVector;
-
+    private Rectangle2D physicalImageSize;
+    
     protected MetaDataContainer metaDataContainer = null;
     protected String instrument = "";
     protected String detector = "";
@@ -56,23 +55,27 @@ public abstract class MetaData {
     protected double stonyhurstLongitude;
     protected double stonyhurstLatitude;
     protected boolean stonyhurstAvailable = false;
-
     
-    protected boolean hasCorona = false;
-    protected boolean hasSphere = false;
-    protected boolean hasRotation = false;
     protected LocalDateTime localDateTime;
 	protected final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_DATE_TIME;
     
 	protected LUT_ENTRY defaultLUT = LUT_ENTRY.GRAY;
 	protected Document document;
 	
+	protected Rectangle newResolution;
+	
     /**
      * Default constructor, does not set size or position.
      */
-    public MetaData(MetaDataContainer metaDataContainer) {
-        lowerLeftCorner = null;
-        sizeVector = null;
+    public MetaData(MetaDataContainer metaDataContainer, Rectangle resolution) {
+    	int width = metaDataContainer.tryGetInt("NAXIS1");
+    	int height = metaDataContainer.tryGetInt("NAXIS2");
+    	if (width > 0 && height > 0){
+    		this.newResolution = new Rectangle(width, height);
+    	}
+    	else{
+    		this.newResolution = resolution;
+    	}
         
         if (metaDataContainer.get("INSTRUME") == null)
             return;
@@ -94,57 +97,22 @@ public abstract class MetaData {
     /**
      * {@inheritDoc}
      */
-    public synchronized Vector2d getPhysicalImageSize() {
-        return sizeVector;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public synchronized Vector2d getPhysicalLowerLeft() {
-        return lowerLeftCorner;
+    public synchronized Rectangle2D getPhysicalImageSize() {
+        return physicalImageSize;
     }
 
     /**
      * {@inheritDoc}
      */
     public synchronized double getPhysicalImageHeight() {
-        return this.getResolution().getY() * this.getUnitsPerPixel();
+        return this.getResolution().getHeight() * this.getUnitsPerPixel();
     }
 
     /**
      * {@inheritDoc}
      */
     public synchronized double getPhysicalImageWidth() {
-        return this.getResolution().getX() * this.getUnitsPerPixel();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public synchronized Vector2d getPhysicalLowerRight() {
-        return lowerLeftCorner.add(sizeVector.getXVector());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public synchronized Vector2d getPhysicalUpperLeft() {
-        return lowerLeftCorner.add(sizeVector.getYVector());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public synchronized Vector2d getPhysicalUpperRight() {
-        return lowerLeftCorner.add(sizeVector);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public synchronized PhysicalRegion getPhysicalRegion() {
-        return StaticRegion.createAdaptedRegion(lowerLeftCorner, sizeVector);
+        return this.getResolution().getWidth() * this.getUnitsPerPixel();
     }
 
     /**
@@ -153,18 +121,8 @@ public abstract class MetaData {
      * @param newImageSize
      *            Physical size of the corresponding image
      */
-    protected synchronized void setPhysicalImageSize(Vector2d newImageSize) {
-        sizeVector = newImageSize;
-    }
-
-    /**
-     * Sets the physical lower left corner the corresponding image.
-     * 
-     * @param newlLowerLeftCorner
-     *            Physical lower left corner the corresponding image
-     */
-    protected synchronized void setPhysicalLowerLeftCorner(Vector2d newlLowerLeftCorner) {
-        lowerLeftCorner = newlLowerLeftCorner;
+    protected synchronized void setPhysicalImageSize(double x, double y, double width, double height) {
+    	physicalImageSize = new Rectangle2D.Double(x, y, width, height);
     }
     
     /**
@@ -216,8 +174,8 @@ public abstract class MetaData {
     /**
      * {@inheritDoc}
      */
-    public Vector2i getResolution() {
-        return pixelImageSize;
+    public Rectangle getResolution() {
+        return newResolution;
     }
 
     /**
@@ -231,45 +189,44 @@ public abstract class MetaData {
     	return localDateTime;
     }
     
-    public boolean updatePixelParameters() {
-		boolean changed = true;
+	protected void updatePixelParameters() {
 
         double newSolarPixelRadius = -1.0;
         double allowedRelativeDifference = 0.01;
+        
+        double sunX = metaDataContainer.tryGetDouble("CRPIX1");
+        double sunY = metaDataContainer.tryGetDouble("CRPIX2");
+        sunPixelPosition = new Vector2d(sunX, sunY);
 
-        newSolarPixelRadius = metaDataContainer.tryGetDouble("SOLAR_R");
+        double arcsecPerPixelX = metaDataContainer.tryGetDouble("CDELT1");
+        double arcsecPerPixelY = metaDataContainer.tryGetDouble("CDELT2");
+        
+        double distanceToSun = metaDataContainer.tryGetDouble("DSUN_OBS");
+        double radiusSunInArcsec = Math.atan(Constants.SUN_RADIUS / distanceToSun) * MathUtils.RAD_TO_DEG * 3600;
 
-        if (newSolarPixelRadius == 0) {
-            if (pixelImageSize.getX() == 1024) {
-                newSolarPixelRadius = 360;
-            } else if (pixelImageSize.getX() == 512) {
-                newSolarPixelRadius = 180;
-            }
+        if (distanceToSun > 0){
+            newSolarPixelRadius = radiusSunInArcsec / arcsecPerPixelX;        	
+        }
+        else {
+        	if (detector.equals("C2")){
+        		newSolarPixelRadius = 80.814221;
+        	}
+        	else if (detector.equals("C3")){
+        		newSolarPixelRadius = 17.173021;
+        	}
+        	else if (newResolution.getWidth() == 1024){
+        		newSolarPixelRadius = 360;
+        	}
+        	else if(newResolution.getWidth() == 512){
+        		newSolarPixelRadius = 180;
+        	}
         }
 
-        if (newSolarPixelRadius > 0) {
-            double allowedAbsoluteDifference = newSolarPixelRadius * allowedRelativeDifference;
-            if (Math.abs(solarPixelRadius - newSolarPixelRadius) > allowedAbsoluteDifference) {
-                changed = true;
-            }
-
-            double sunX = metaDataContainer.tryGetDouble("CRPIX1");
-            double sunY = metaDataContainer.tryGetDouble("CRPIX2");
-
-            if (changed || Math.abs(sunPixelPosition.x - sunX) > allowedAbsoluteDifference || Math.abs(sunPixelPosition.y - sunY) > allowedAbsoluteDifference) {
-                sunPixelPosition = new Vector2d(sunX, sunY);
-                changed = true;
-            }
-        }
-
-        if (changed) {
-            solarPixelRadius = newSolarPixelRadius;
-            meterPerPixel = Constants.SUN_RADIUS / solarPixelRadius;
-            setPhysicalLowerLeftCorner(sunPixelPosition.scale(-meterPerPixel));
-            setPhysicalImageSize(new Vector2d(pixelImageSize.getX() * meterPerPixel, pixelImageSize.getY() * meterPerPixel));
-        }
-
-        return changed;
+        solarPixelRadius = newSolarPixelRadius;
+        meterPerPixel = Constants.SUN_RADIUS / solarPixelRadius;
+        
+        
+        setPhysicalImageSize(sunPixelPosition.x * -meterPerPixel, sunPixelPosition.y * -meterPerPixel, newResolution.getWidth() * meterPerPixel, newResolution.getHeight() * meterPerPixel);
 	}
 	
 	public double getHEEX() {
@@ -377,10 +334,6 @@ public abstract class MetaData {
 	
 	public LUT_ENTRY getDefaultLUT(){
 		return defaultLUT;
-	}
-
-	public void setDimension(int width, int height) {
-		pixelImageSize = new Vector2i(width, height);
 	}
 	
 	public Document getDocument(){

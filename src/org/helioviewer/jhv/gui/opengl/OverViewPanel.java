@@ -1,6 +1,7 @@
 package org.helioviewer.jhv.gui.opengl;
 
 import java.awt.Dimension;
+import java.awt.geom.Rectangle2D;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -19,7 +20,6 @@ import org.helioviewer.jhv.opengl.camera.CameraZoomBoxInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraZoomInteraction;
 import org.helioviewer.jhv.plugins.plugin.AbstractPlugin.RENDER_MODE;
 import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
-import org.helioviewer.jhv.viewmodel.region.PhysicalRegion;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 
 import com.jogamp.opengl.GL2;
@@ -68,10 +68,10 @@ public class OverViewPanel extends MainPanel {
 		LayerInterface activeLayer;
 		try {
 			activeLayer = Layers.getActiveLayer();
-			PhysicalRegion region;
+			Rectangle2D region;
 			try {
 				LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
-				region = activeLayer.getMetaData(currentDateTime).getPhysicalRegion();
+				region = activeLayer.getMetaData(currentDateTime).getPhysicalImageSize();
 				if (region != null) {
 					double halfWidth = region.getHeight() / 2;
 					Dimension canvasSize = this.getSize();

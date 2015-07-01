@@ -49,7 +49,7 @@ public class InstrumentModel {
 						boolean startUpMovie = Boolean.parseBoolean(Settings
 								.getProperty("startup.loadmovie"));
 						if (startUpMovie) {
-							Filter instrument = observatories.get("SDO").instruments.get("AIA").filters.get("171");
+							Filter instrument = observatories.get("SDO").filters.get("AIA").filters.get("171");
 							LocalDateTime start = instrument.end.minusDays(1);
 							Layers.addLayer(instrument.sourceId, start,
 									instrument.end, 1728);
@@ -79,7 +79,7 @@ public class InstrumentModel {
 			try {
 				JSONObject jsonObservatory = observatories
 						.getJSONObject(observatoryName);
-				addInstrument(jsonObservatory, observatory);
+				addFilter(jsonObservatory, observatory);
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -87,42 +87,23 @@ public class InstrumentModel {
 		}
 	}
 
-	private static void addInstrument(JSONObject jsonObservatory,
-			Observatory observatory) {
+	private static void addFilter(JSONObject jsonFilter, Observatory observatory){
 		@SuppressWarnings("unchecked")
-		Iterator<String> iterator = jsonObservatory.sortedKeys();
-		while (iterator.hasNext()) {
-			String instrumentName = iterator.next();
-			Instrument instrument = new Instrument(instrumentName);
-			observatory.addInstrument(instrumentName, instrument);
-			try {
-				JSONObject jsonInstrument = jsonObservatory
-						.getJSONObject(instrumentName);
-				addFilter(jsonInstrument, instrument, observatory);
-			} catch (JSONException e) {
-				addUILabel(jsonObservatory, observatory);
-			}
-		}
-	}
-
-	private static void addFilter(JSONObject jsonInstrument,
-			Instrument instrument, Observatory observatory) {
-		@SuppressWarnings("unchecked")
-		Iterator<String> iterator = jsonInstrument.sortedKeys();
+		Iterator<String> iterator = jsonFilter.sortedKeys();
 		while (iterator.hasNext()) {
 			String filterName = iterator.next();
-			Filter filter = new Filter(filterName);
-			instrument.addFilter(filterName, filter);
 			try {
-				JSONObject jsonFilter = jsonInstrument
-						.getJSONObject(filterName);
-				addFilter(jsonFilter, filter, observatory);
+				JSONObject jsonFilter1 = jsonFilter.getJSONObject(filterName);
+				Filter detector1 = new Filter(filterName);
+				observatory.addFilter(filterName, detector1);
+				addFilter(jsonFilter1, detector1, observatory);
 			} catch (Exception e) {
-				addUILabel(jsonInstrument, observatory);
+				addUILabel(jsonFilter, observatory);
+				return;
 			}
 		}
 	}
-
+	
 	private static void addFilter(JSONObject jsonFilter, Filter filter,
 			Observatory observatory) {
 		@SuppressWarnings("unchecked")
@@ -166,24 +147,24 @@ public class InstrumentModel {
 					.ofPattern("yyyy-MM-dd HH:mm:ss");
 			String end = jsonObject.getString("end");
 			String start = jsonObject.getString("start");
-			LocalDateTime endDateTime = LocalDateTime.parse(end, reader);
-			LocalDateTime startDateTime = LocalDateTime.parse(start, reader);
-			if (start != null && end != null) {
+			if (start != null && end != null && end != "null" && start != "null") {
+				LocalDateTime endDateTime = LocalDateTime.parse(end, reader);
+				LocalDateTime startDateTime = LocalDateTime.parse(start, reader);
 				filter.start = startDateTime;
 				filter.end = endDateTime;
 				filter.hasDates = true;
 			}
-			filter.layeringOrder = Integer.parseInt((String) jsonObject
-					.getString("layeringOrder"));
-			filter.nickname = (String) jsonObject.get("nickname");
-			filter.sourceId = Integer.parseInt((String) jsonObject
-					.getString("sourceId"));
+			filter.layeringOrder = jsonObject
+					.getInt("layeringOrder");
+			filter.nickname = (String) jsonObject.getString("nickname");
+			filter.sourceId = jsonObject
+					.getInt("sourceId");
 		} catch (JSONException e) {
 		}
 	}
 
 	static class Observatory {
-		private LinkedHashMap<String, Instrument> instruments = new LinkedHashMap<String, InstrumentModel.Instrument>();
+		private LinkedHashMap<String, Filter> filters = new LinkedHashMap<String, Filter>();
 		private String name;
 		private ArrayList<String> uiLabels;
 
@@ -191,12 +172,12 @@ public class InstrumentModel {
 			this.name = name;
 		}
 
-		private void addInstrument(String name, Instrument instrument) {
-			instruments.put(name, instrument);
+		private void addFilter(String name, Filter filter) {
+			filters.put(name, filter);
 		}
 
-		public Collection<Instrument> getInstruments() {
-			return this.instruments.values();
+		public Collection<Filter> getInstruments() {
+			return this.filters.values();
 		}
 
 		public ArrayList<String> getUiLabels() {
@@ -205,29 +186,6 @@ public class InstrumentModel {
 
 		@Override
 		public String toString() {
-			return this.name;
-		}
-	}
-
-	static class Instrument {
-		private LinkedHashMap<String, Filter> filters = new LinkedHashMap<String, InstrumentModel.Filter>();
-		private String name;
-
-		private Instrument(String name) {
-			this.name = name;
-		}
-
-		private void addFilter(String name, Filter detector) {
-			filters.put(name, detector);
-		}
-
-		public Collection<Filter> getFilters() {
-			return this.filters.values();
-		}
-
-		@Override
-		public String toString() {
-			// TODO Auto-generated method stub
 			return this.name;
 		}
 	}

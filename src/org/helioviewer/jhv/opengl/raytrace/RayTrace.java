@@ -1,5 +1,7 @@
 package org.helioviewer.jhv.opengl.raytrace;
 
+import java.awt.geom.Rectangle2D;
+
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.math.Vector4d;
@@ -119,8 +121,9 @@ public class RayTrace {
 		}
 		
 		Vector3d original = ray.getHitpoint();
-		double imageX = (Math.max(Math.min(original.x, metaData.getPhysicalUpperRight().x), metaData.getPhysicalLowerLeft().x) - metaData.getPhysicalLowerLeft().x) / metaData.getPhysicalImageWidth();
-		double imageY = (Math.max(Math.min(original.y, metaData.getPhysicalUpperRight().y), metaData.getPhysicalLowerLeft().y) - metaData.getPhysicalLowerLeft().y) / metaData.getPhysicalImageHeight();
+		Rectangle2D physicalImageSize = metaData.getPhysicalImageSize();
+		double imageX = (Math.max(Math.min(original.x, physicalImageSize.getX() + physicalImageSize.getWidth()), physicalImageSize.getX()) - physicalImageSize.getX()) / physicalImageSize.getWidth();
+		double imageY = (Math.max(Math.min(original.y, physicalImageSize.getY() + physicalImageSize.getHeight()), physicalImageSize.getY()) - physicalImageSize.getY()) / physicalImageSize.getHeight();
 		return new Vector2d(imageX, imageY);
 	}
 	

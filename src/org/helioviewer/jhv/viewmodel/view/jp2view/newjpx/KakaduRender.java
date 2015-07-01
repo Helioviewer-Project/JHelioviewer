@@ -187,8 +187,7 @@ public class KakaduRender {
         		try {
         			Jp2_dimensions dim = jpxSrc.Access_codestream(0,true).Access_dimensions();
         			Kdu_coords size = dim.Get_size();
-        			metaData.setDimension(size.Get_x(), size.Get_y());
-        			metaData.updatePixelParameters();
+        			//metaData.setDimension(size.Get_x(), size.Get_y());
         			return metaData;
         		} catch (KduException e) {
         			// TODO Auto-generated catch block
