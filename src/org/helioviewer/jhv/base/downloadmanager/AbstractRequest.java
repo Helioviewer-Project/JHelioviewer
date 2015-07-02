@@ -78,4 +78,8 @@ public abstract class AbstractRequest {
 	public int getReceivedLength(){
 		return receivedLength;
 	}
+	
+	public void checkException() throws IOException{
+		if (ioException != null) throw ioException;
+	}
 }

@@ -35,17 +35,6 @@ public class JHVException {
 		public CacheException(Throwable cause) {super(cause);}		
 	}
 
-	public static class LocalFileException extends Exception{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 5583436004421680892L;
-		public LocalFileException() { super(); }
-		public LocalFileException(String message) { super(message); }
-		public LocalFileException(String message, Throwable cause) { super(message, cause); }
-		public LocalFileException(Throwable cause) { super(cause); }
-	}
-
 	public static class MetaDataException extends Exception{
 		private static final long serialVersionUID=1489762423742402867L;
 		public MetaDataException() { super(); }
@@ -54,15 +43,4 @@ public class JHVException {
 		public MetaDataException(Throwable cause) { super(cause); }
 	}
 	
-	public static class TimeLineException extends Exception{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = -2821652073166401086L;
-		public TimeLineException() { super(); }
-		public TimeLineException(String message) { super(message); }
-		public TimeLineException(String message, Throwable cause) { super(message, cause); }
-		public TimeLineException(Throwable cause) { super(cause); }
-	}
-
 }

@@ -41,19 +41,30 @@ public class AddLayerPanel extends JDialog {
 	private JLabel lblFilter, lblFilter1, lblFilter2;
 	private JComboBox<InstrumentModel.Observatory> cmbbxObservatory;
 	private JComboBox<InstrumentModel.Filter> cmbbxFilter, cmbbxFilter1, cmbbxFilter2;
+	private JComboBox<TIME_STEPS> cmbbxTimeSteps;
 	private DatePicker datePickerStartDate;
 	private DatePicker datePickerEndDate;
 	private JSpinner candence;
 
 	private enum TIME_STEPS {
-		SEC("sec"), MIN("min"), HOUR("hour"), DAY("day"), GET_ALL("get all");
+		SEC("sec", 1), MIN("min", 60), HOUR("hour", 3600), DAY("day", 3600*24), GET_ALL("get all", 0);
 
 		private String name;
-
-		TIME_STEPS(String name) {
+		private int factor;
+		
+		TIME_STEPS(String name, int factor) {
 			this.name = name;
+			this.factor = factor;
+		}
+		
+		public int getFactor(){
+			return factor;
 		}
 
+		@Override
+		public String toString() {
+			return name;
+		}
 	}
 
 	/**
@@ -62,7 +73,6 @@ public class AddLayerPanel extends JDialog {
 	public AddLayerPanel() {
 		super(MainFrame.SINGLETON, "Add Layer", true);
 		this.setResizable(false);
-		this.setAlwaysOnTop(true);
 		setMinimumSize(new Dimension(450, 310));
 		setPreferredSize(new Dimension(450, 310));
 		setLocationRelativeTo(MainFrame.SINGLETON);
@@ -250,11 +260,8 @@ public class AddLayerPanel extends JDialog {
 			contentPanel.add(candence, "4, 6");
 		}
 		{
-			JComboBox<String> comboBox = new JComboBox<String>();
-			for (TIME_STEPS timeStep : TIME_STEPS.values()) {
-				comboBox.addItem(timeStep.name);
-			}
-			contentPanel.add(comboBox, "6, 6, fill, default");
+			cmbbxTimeSteps = new JComboBox<TIME_STEPS>(TIME_STEPS.values());
+			contentPanel.add(cmbbxTimeSteps, "6, 6, fill, default");
 		}
 		{
 			JSeparator separator = new JSeparator();
@@ -318,10 +325,12 @@ public class AddLayerPanel extends JDialog {
 						}
 
 						if (filter != null) {
+							int candence = (int)AddLayerPanel.this.candence.getValue() * ((TIME_STEPS)cmbbxTimeSteps.getSelectedItem()).getFactor();
+							candence = candence > 0 ? candence : 1;
 							Layers.addLayer(filter.sourceId,
 									datePickerStartDate.getDateTime(),
 									datePickerEndDate.getDateTime(),
-									(int) candence.getValue());
+									candence , filter.getNickname());
 						}
 
 						setVisible(false);

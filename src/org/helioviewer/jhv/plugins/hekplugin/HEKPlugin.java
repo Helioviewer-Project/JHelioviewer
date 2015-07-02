@@ -36,14 +36,14 @@ import com.jogamp.opengl.GL2;
  * @author Malte Nuhn
  * */
 public class HEKPlugin extends AbstractPlugin {
-	
-    /**
+
+	/**
 	 * Reference to the eventPlugin
 	 */
 	private static final String JSON_NAME = "hek";
 	private static final String JSON_VISIBLE = "visible";
 	private static final String JSON_EVENTS = "events";
-	
+
 	private boolean visible = false;
 	private static final String NAME = "HEK Overlay Plugin";
 
@@ -77,8 +77,8 @@ public class HEKPlugin extends AbstractPlugin {
 		if (in != null) {
 			Date currentDate = Date.from(in.atZone(ZoneId.systemDefault())
 					.toInstant());
-			List<HEKEvent> toDraw = HEKCache.getSingletonInstance()
-					.getModel().getActiveEvents(currentDate);
+			List<HEKEvent> toDraw = HEKCache.getSingletonInstance().getModel()
+					.getActiveEvents(currentDate);
 			if (toDraw != null && toDraw.size() > 0) {
 
 				gl.glDisable(GL2.GL_TEXTURE_2D);
@@ -124,7 +124,6 @@ public class HEKPlugin extends AbstractPlugin {
 
 		boolean large = evt.getShowEventInfo();
 		String type = evt.getString("event_type");
-		System.out.println("large : " + large);
 		int offSetFactor = -1;
 		for (HEKIcon.HEKICONS hekIcon : HEKIcon.HEKICONS.values()) {
 			if (hekIcon.name().startsWith(type)) {
@@ -134,7 +133,8 @@ public class HEKPlugin extends AbstractPlugin {
 		}
 		if (offSetFactor >= 0) {
 			SphericalCoord heliographicCoordinate = evt.getStony(now);
-			Vector3d coords = HEKEvent.convertToSceneCoordinates(heliographicCoordinate, now);
+			Vector3d coords = HEKEvent.convertToSceneCoordinates(
+					heliographicCoordinate, now);
 			double x = coords.x;
 			double y = coords.y;
 			double z = coords.z;
@@ -202,15 +202,15 @@ public class HEKPlugin extends AbstractPlugin {
 		Color eventColor = HEKConstants.getSingletonInstance().acronymToColor(
 				type, 128);
 
-		HeliographicCoordinate heliographicCoordinate = evt.getHeliographicCoordinate(now);
-		if(heliographicCoordinate == null)
+		HeliographicCoordinate heliographicCoordinate = evt
+				.getHeliographicCoordinate(now);
+		if (heliographicCoordinate == null)
 			return;
 
 		gl.glPushMatrix();
-		gl.glRotated(
-				DifferentialRotation.calculateRotationInDegrees(heliographicCoordinate.latitude,
-						(now.getTime() - evt.getStart().getTime()) / 1000d), 0,
-				1, 0);
+		gl.glRotated(DifferentialRotation.calculateRotationInDegrees(
+				heliographicCoordinate.latitude, (now.getTime() - evt
+						.getStart().getTime()) / 1000d), 0, 1, 0);
 
 		if (triangles != null) {
 			gl.glColor4ub((byte) eventColor.getRed(),
@@ -323,10 +323,9 @@ public class HEKPlugin extends AbstractPlugin {
 
 	public void dateTimesChanged(int framecount) {
 		LocalDateTime startDateTime;
-		try {
-			startDateTime = UltimatePluginInterface
-					.getStartDateTime();
-			LocalDateTime endDateTime = UltimatePluginInterface.getEndDateTime();
+		startDateTime = UltimatePluginInterface.getStartDateTime();
+		LocalDateTime endDateTime = UltimatePluginInterface.getEndDateTime();
+		if (startDateTime != null && endDateTime != null) {
 			Date start = Date.from(startDateTime.atZone(ZoneId.systemDefault())
 					.toInstant());
 			Date end = Date.from(endDateTime.atZone(ZoneId.systemDefault())
@@ -334,9 +333,6 @@ public class HEKPlugin extends AbstractPlugin {
 
 			Interval<Date> newInterval = new Interval<Date>(start, end);
 			hekPluginPanel.setCurInterval(newInterval);
-		} catch (JHVException.TimeLineException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	};
 
@@ -352,8 +348,8 @@ public class HEKPlugin extends AbstractPlugin {
 			mouseOverHEKEvent = null;
 			mouseOverPosition = null;
 
-			List<HEKEvent> toDraw = HEKCache.getSingletonInstance()
-					.getModel().getActiveEvents(currentDate);
+			List<HEKEvent> toDraw = HEKCache.getSingletonInstance().getModel()
+					.getActiveEvents(currentDate);
 			if (toDraw.size() > 0) {
 				for (HEKEvent evt : toDraw) {
 					SphericalCoord stony = evt.getStony(currentDate);
@@ -409,13 +405,16 @@ public class HEKPlugin extends AbstractPlugin {
 
 	@Override
 	public void loadStateFile(JSONObject jsonObject) {
-		if (jsonObject.has(JSON_NAME)){
+		if (jsonObject.has(JSON_NAME)) {
 			try {
 				JSONObject jsonHek = jsonObject.getJSONObject(JSON_NAME);
 				boolean visible = jsonHek.getBoolean(JSON_VISIBLE);
-				if (visible) UltimatePluginInterface.expandPanel(hekPluginPanel, visible);
+				if (visible)
+					UltimatePluginInterface
+							.expandPanel(hekPluginPanel, visible);
 				setVisible(visible);
-				for (HEKPath hekPath : HEKCache.getSingletonInstance().getTrackPaths()){
+				for (HEKPath hekPath : HEKCache.getSingletonInstance()
+						.getTrackPaths()) {
 					System.out.println(hekPath);
 				}
 			} catch (JSONException e) {
@@ -431,8 +430,10 @@ public class HEKPlugin extends AbstractPlugin {
 		JSONArray jsonHekEvents = new JSONArray();
 		try {
 			jsonHek.put(JSON_VISIBLE, isVisible());
-			for (HEKPath hekPath : HEKCache.getSingletonInstance().getTrackPaths()){
-				int state = HEKCache.getSingletonInstance().getSelectionModel().getState(hekPath);
+			for (HEKPath hekPath : HEKCache.getSingletonInstance()
+					.getTrackPaths()) {
+				int state = HEKCache.getSingletonInstance().getSelectionModel()
+						.getState(hekPath);
 				System.out.println(state);
 				jsonHekEvents.put(state);
 				System.out.println("test");

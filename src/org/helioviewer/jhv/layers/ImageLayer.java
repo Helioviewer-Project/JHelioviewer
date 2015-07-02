@@ -8,7 +8,6 @@ import java.util.concurrent.ExecutionException;
 
 import org.helioviewer.jhv.JHVException;
 import org.helioviewer.jhv.JHVException.CacheException;
-import org.helioviewer.jhv.JHVException.LocalFileException;
 import org.helioviewer.jhv.JHVException.MetaDataException;
 import org.helioviewer.jhv.JHVException.TextureException;
 import org.helioviewer.jhv.base.ImageRegion;
@@ -20,19 +19,33 @@ import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
 import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.KakaduRender;
 import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.UltimateLayer;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class ImageLayer extends LayerInterface {
+
+	private static final String LAYERS = "layers";
+	private static final String IS_LOCALFILE = "isLocalFile";
+	private static final String LOCAL_PATH = "localPath";
+	private static final String ID = "id";
+	private static final String CADENCE = "cadence";
+	private static final String START_DATE_TIME = "startDateTime";
+	private static final String END_DATE_TIME = "endDateTime";
 
 	private UltimateLayer ultimateLayer;
 
 	private LayerRayTrace layerRayTrace;
-
+	private int sourceID;
+	
 	public ImageLayer(int sourceID, KakaduRender newRender,
-			LocalDateTime start, LocalDateTime end, int cadence) {
+			LocalDateTime start, LocalDateTime end, int cadence, String name) {
 		super();
+		this.downloadable = true;
+		this.sourceID = sourceID;
 		this.start = start;
 		this.end = end;
 		this.cadence = cadence;
+		this.name = name;
 		this.ultimateLayer = new UltimateLayer(id, sourceID, newRender, this);
 		this.ultimateLayer.setTimeRange(start, end, cadence);
 		layerRayTrace = new LayerRayTrace(this);
@@ -42,6 +55,7 @@ public class ImageLayer extends LayerInterface {
 		super();
 		this.localPath = uri;
 		this.ultimateLayer = new UltimateLayer(id, uri, newRender, this);
+		this.name = ultimateLayer.getMetaData(0, uri).getFullName();
 		layerRayTrace = new LayerRayTrace(this);
 	}
 
@@ -92,15 +106,7 @@ public class ImageLayer extends LayerInterface {
 	}
 
 	@Override
-	public String getName() throws MetaDataException {
-		if (this.getLastDecodedImageRegion() == null)
-			return "";
-		return this.getMetaData(TimeLine.SINGLETON.getCurrentDateTime()).getFullName();
-	}
-
-	@Override
 	public LocalDateTime getTime() throws MetaDataException {
-		System.out.println("time : " + TimeLine.SINGLETON.getCurrentDateTime());
 		return getMetaData(TimeLine.SINGLETON.getCurrentDateTime()).getLocalDateTime();
 	}
 
@@ -126,7 +132,7 @@ public class ImageLayer extends LayerInterface {
 	}
 
 	@Override
-	public String getURL() throws LocalFileException {
+	public String getURL(){
 		return ultimateLayer.getURL();
 	}
 
@@ -164,5 +170,20 @@ public class ImageLayer extends LayerInterface {
 			}
 		}
 		return metaData;
+	}
+
+	public void writeStateFile(JSONObject jsonLayer) {
+		try {
+			jsonLayer.put(IS_LOCALFILE, ultimateLayer.isLocalFile());
+			jsonLayer.put(LOCAL_PATH, getLocalFilePath());
+			jsonLayer.put(ID, sourceID);
+			jsonLayer.put(CADENCE, cadence);
+			jsonLayer.put(START_DATE_TIME, start);
+			jsonLayer.put(END_DATE_TIME, end);
+			super.writeStateFile(jsonLayer);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

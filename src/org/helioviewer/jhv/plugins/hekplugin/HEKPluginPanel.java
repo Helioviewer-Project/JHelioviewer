@@ -44,15 +44,16 @@ public class HEKPluginPanel extends JPanel implements ActionListener,
 
 	private static final long serialVersionUID = 1L;
 
-	
 	// UI Components
 	private JPanel buttonPanel = new JPanel(new BorderLayout());
 	private JProgressBar progressBar = new JProgressBar();
 	private HEKCacheTreeView tree = new HEKCacheTreeView(
 			HEKCache.getSingletonInstance());
 	private JScrollPane treeView = new JScrollPane(tree);
-	private JButton cancelButton = new JButton(UltimatePluginInterface.getIcon(PLUGIN_ICON.CANCEL, 16, 16));
-	private JButton reloadButton = new JButton(UltimatePluginInterface.getIcon(PLUGIN_ICON.REFRESH, 16, 16));
+	private JButton cancelButton = new JButton(UltimatePluginInterface.getIcon(
+			PLUGIN_ICON.CANCEL, 16, 16));
+	private JButton reloadButton = new JButton(UltimatePluginInterface.getIcon(
+			PLUGIN_ICON.REFRESH, 16, 16));
 	private HEKCacheTreeViewContainer container = new HEKCacheTreeViewContainer();
 
 	private HEKCacheModel cacheModel;
@@ -231,48 +232,38 @@ public class HEKPluginPanel extends JPanel implements ActionListener,
 	public void reload() {
 
 		LocalDateTime startDateTime;
-		try {
-			startDateTime = UltimatePluginInterface.getStartDateTime();
-			LocalDateTime endDateTime = UltimatePluginInterface
-					.getEndDateTime();
-			if (startDateTime != null
-					&& endDateTime != null
-					&& (start == null || (startDateTime.isBefore(start) || endDateTime
-							.isAfter(end)))) {
+		startDateTime = UltimatePluginInterface.getStartDateTime();
+		LocalDateTime endDateTime = UltimatePluginInterface.getEndDateTime();
+		if (startDateTime != null
+				&& endDateTime != null
+				&& (start == null || (startDateTime.isBefore(start) || endDateTime
+						.isAfter(end)))) {
 
-				Thread threadUpdate = new Thread(new Runnable() {
-					public void run() {
-						LocalDateTime startDateTime;
-						try {
-							startDateTime = UltimatePluginInterface
-									.getStartDateTime();
-							LocalDateTime endDateTime = UltimatePluginInterface
-									.getEndDateTime();
-							Date start = Date.from(startDateTime.atZone(
-									ZoneId.systemDefault()).toInstant());
-							Date end = Date.from(endDateTime.atZone(
-									ZoneId.systemDefault()).toInstant());
-							if (start != null && end != null) {
-								Interval<Date> range = new Interval<Date>(start,
-										end);
-								HEKCache.getSingletonInstance().getController()
-										.setCurInterval(range);
-								getStructure();
-							}
-							HEKPluginPanel.this.start = startDateTime;
-							HEKPluginPanel.this.end = endDateTime;
-						} catch (JHVException.TimeLineException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+			Thread threadUpdate = new Thread(new Runnable() {
+				public void run() {
+					LocalDateTime startDateTime;
+					startDateTime = UltimatePluginInterface.getStartDateTime();
+					LocalDateTime endDateTime = UltimatePluginInterface
+							.getEndDateTime();
+					if (startDateTime != null && endDateTime != null) {
+						Date start = Date.from(startDateTime.atZone(
+								ZoneId.systemDefault()).toInstant());
+						Date end = Date.from(endDateTime.atZone(
+								ZoneId.systemDefault()).toInstant());
+						if (start != null && end != null) {
+							Interval<Date> range = new Interval<Date>(start,
+									end);
+							HEKCache.getSingletonInstance().getController()
+									.setCurInterval(range);
+							getStructure();
 						}
+						HEKPluginPanel.this.start = startDateTime;
+						HEKPluginPanel.this.end = endDateTime;
 					}
-				});
-				threadUpdate.setDaemon(true);
-				threadUpdate.start();
-			}
-		} catch (JHVException.TimeLineException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+				}
+			});
+			threadUpdate.setDaemon(true);
+			threadUpdate.start();
 		}
 
 	}

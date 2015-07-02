@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
-import org.helioviewer.jhv.JHVException.LocalFileException;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.Vector3d;
@@ -20,6 +19,7 @@ import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
 import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
+import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -54,6 +54,9 @@ public class StateParser extends DefaultHandler {
 	private static final String CAMERA_TRANSLATION = "translation";
 	private static final String CAMERA_ROTATION = "rotation";
 
+	private static final String TIME = "time";
+	private static final String ACTIVE_LAYER = "activeLayer";
+	
 	private static final String PLUGINS = "plugins";
 
 	private static class JHVStateFilter extends ExtensionFileFilter {
@@ -105,7 +108,7 @@ public class StateParser extends DefaultHandler {
 						LocalDateTime end = LocalDateTime.parse(jsonLayer
 								.getString(END_DATE_TIME));
 						int cadence = jsonLayer.getInt(CADENCE);
-						layer = Layers.addLayer(id, start, end, cadence);
+						layer = Layers.addLayer(id, start, end, cadence, "test");
 					}
 					layer.setOpacity(jsonLayer.getDouble(OPACITY));
 					layer.setSharpen(jsonLayer.getDouble(SHARPEN));
@@ -138,6 +141,10 @@ public class StateParser extends DefaultHandler {
 						jsonRotation.getDouble(3));
 				Quaternion3d rotation = new Quaternion3d(angle, axis);
 				MainFrame.MAIN_PANEL.setTransformation(rotation, translation);
+				
+				Layers.setActiveLayer(jsonObject.getInt(ACTIVE_LAYER));
+				LocalDateTime currentDateTime = LocalDateTime.parse(jsonObject.getString(TIME));
+				TimeLine.SINGLETON.setCurrentDate(currentDateTime);
 				
 				JSONObject jsonPlugin = jsonObject.getJSONObject(PLUGINS);
 				UltimatePluginInterface.SINGLETON.loadStateFile(jsonPlugin);
@@ -181,10 +188,12 @@ public class StateParser extends DefaultHandler {
 			JSONObject jsonObject = new JSONObject();
 			JSONArray jsonArray = new JSONArray();
 			for (LayerInterface layer : Layers.getLayers()) {
+				//layer.writeStateFile(jsonArray);
 				JSONObject jsonLayer = new JSONObject();
+				/*
 				jsonArray.put(jsonLayer);
-				try {
-					jsonLayer.put(LOCAL_PATH, layer.getLocalFilePath());
+				try {					
+					jsonLayer.put(LOCAL_PATH, layer.isLocalFilePath());
 				} catch (LocalFileException e) {
 					System.out.println("Statefile include no local file");
 				}
@@ -211,7 +220,7 @@ public class StateParser extends DefaultHandler {
 				jsonLayer.put(VISIBILITY, layer.isVisible());
 				jsonLayer.put(INVERTED_LUT, layer.isLutInverted());
 				jsonLayer.put(CORONA_VISIBILITY, layer.isCoronaVisible());
-
+				*/
 			}
 			jsonObject.put(LAYERS, jsonArray);
 
@@ -234,7 +243,9 @@ public class StateParser extends DefaultHandler {
 			jsonCamera.put(CAMERA_ROTATION, jsonRotation);
 
 			jsonObject.put(CAMERA, jsonCamera);
-
+			jsonObject.put(ACTIVE_LAYER, Layers.getActiveLayerNumber());
+			jsonObject.put(TIME, TimeLine.SINGLETON.getCurrentDateTime());
+			
 			JSONObject jsonPlugins = new JSONObject();
 			UltimatePluginInterface.SINGLETON.writeStateFile(jsonPlugins);
 			jsonObject.put(PLUGINS, jsonPlugins);

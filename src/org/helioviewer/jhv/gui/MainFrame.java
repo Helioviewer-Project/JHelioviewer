@@ -23,7 +23,7 @@ import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.components.MenuBar;
 import org.helioviewer.jhv.gui.components.SideContentPane;
 import org.helioviewer.jhv.gui.components.TopToolBar;
-import org.helioviewer.jhv.gui.leftPanel.FilterTabPanel;
+import org.helioviewer.jhv.gui.leftPanel.FilterPanel;
 import org.helioviewer.jhv.gui.leftPanel.LayerPanel;
 import org.helioviewer.jhv.gui.leftPanel.MoviePanel;
 import org.helioviewer.jhv.gui.opengl.MainPanel;
@@ -57,10 +57,10 @@ public class MainFrame extends JFrame{
 	public static final MainFrame SINGLETON = new MainFrame();
 	public static final int SIDE_PANEL_WIDTH = 320;
 	public static SideContentPane LEFT_PANE;
-
+	public static MoviePanel MOVIE_PANEL;
 	private JSplitPane splitPane;
 
-	public FilterTabPanel filterTabPanel;
+	public FilterPanel filterTabPanel;
 
 
 	
@@ -208,15 +208,15 @@ public class MainFrame extends JFrame{
 	private SideContentPane getSideBar(){
 		LEFT_PANE = new SideContentPane();
 		// Movie control
-		MoviePanel moviePanel = new MoviePanel();
-		LEFT_PANE.add("Movie Controls", moviePanel, true);
+		MOVIE_PANEL = new MoviePanel();
+		LEFT_PANE.add("Movie Controls", MOVIE_PANEL, true);
 		
 		// Layer control
 		LayerPanel newLayerPanel = new LayerPanel();
 		LEFT_PANE.add("Layers", newLayerPanel, true);
 
 		// Filter control
-		filterTabPanel = new FilterTabPanel();
+		filterTabPanel = new FilterPanel();
 		LEFT_PANE.add("Adjustments", filterTabPanel , true);
 		
 		return LEFT_PANE;

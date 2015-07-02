@@ -13,14 +13,11 @@ import java.util.Queue;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
 
-import javax.swing.JOptionPane;
-
 import kdu_jni.KduException;
 import kdu_jni.Kdu_cache;
 
 import org.helioviewer.jhv.JHVException;
 import org.helioviewer.jhv.JHVException.CacheException;
-import org.helioviewer.jhv.JHVException.LocalFileException;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.downloadmanager.AbstractRequest;
 import org.helioviewer.jhv.base.downloadmanager.AbstractRequest.PRIORITY;
@@ -28,7 +25,6 @@ import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.base.downloadmanager.JPIPDownloadRequest;
 import org.helioviewer.jhv.base.downloadmanager.JPIPRequest;
 import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
-import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.layers.CacheableImageData;
 import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.opengl.texture.TextureCache;
@@ -65,9 +61,11 @@ public class UltimateLayer {
 	private Thread jpipURLLoader;
 	private boolean localFile = false;
 	private int id;
-
+	
 	private ArrayList<AbstractRequest> requests = new ArrayList<AbstractRequest>();
 
+	private ArrayList<AbstractRequest> badRequests = new ArrayList<AbstractRequest>();
+	
 	public UltimateLayer(int id, int sourceID, KakaduRender render,
 			ImageLayer newLayer) {
 		treeSet = new TreeSet<LocalDateTime>();
@@ -117,7 +115,8 @@ public class UltimateLayer {
 			private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 			private ArrayList<HTTPRequest> httpRequests = new ArrayList<HTTPRequest>();
 			private HashMap<HTTPRequest, JPIPDownloadRequest> jpipDownloadRequests = new HashMap<HTTPRequest, JPIPDownloadRequest>();
-
+			private ArrayList<JPIPDownloadRequest> downloadRequests = new ArrayList<JPIPDownloadRequest>();
+			
 			@Override
 			public void run() {
 				LocalDateTime tmp = LocalDateTime.MIN;
@@ -144,22 +143,25 @@ public class UltimateLayer {
 					CacheableImageData cacheableImageData = new CacheableImageData(
 							id, new Kdu_cache());
 					JPIPDownloadRequest jpipDownloadRequest = new JPIPDownloadRequest(
-							URL + request, PRIORITY.LOW, cacheableImageData, requests);
+							URL + request, PRIORITY.LOW, cacheableImageData,
+							requests);
 					jpipDownloadRequests.put(httpRequest, jpipDownloadRequest);
+					downloadRequests.add(jpipDownloadRequest);
 					requests.add(jpipDownloadRequest);
 					UltimateDownloadManager.addRequest(jpipDownloadRequest);
 					currentStart = tmp.plusSeconds(1);
 				}
 
 				boolean finished = false;
-				
+
 				while (!finished) {
 					if (Thread.interrupted())
 						return;
 					for (HTTPRequest httpRequest : httpRequests) {
 						finished = false;
 						finished &= httpRequest.isFinished();
-						JPIPDownloadRequest jpipDownloadRequest = jpipDownloadRequests.get(httpRequest);
+						JPIPDownloadRequest jpipDownloadRequest = jpipDownloadRequests
+								.get(httpRequest);
 						if (httpRequest.isFinished()
 								&& requests.contains(httpRequest)) {
 							JSONObject jsonObject;
@@ -184,7 +186,7 @@ public class UltimateLayer {
 									localDateTimes[i] = timestamp
 											.toLocalDateTime();
 								}
-								
+
 								String jpipURI = jsonObject.getString("uri");
 
 								CacheableImageData cacheableImageData = jpipDownloadRequest
@@ -199,51 +201,42 @@ public class UltimateLayer {
 										jpipURI, PRIORITY.HIGH, 0, frames
 												.length(), new Rectangle(256,
 												256), cacheableImageData);
-								// JPIPRequest jpipRequestMiddle = new
-								// JPIPRequest(
-								// jpipURI, PRIORITY.MEDIUM, 0, frames.length(),
-								// new Rectangle(1024, 1024), kduCache,
-								// cacheableImageData);
-								// JPIPRequest jpipRequestHigh = new
-								// JPIPRequest(jpipURI, PRIORITY.LOW, 0,
-								// frames.length(), new Rectangle(4096, 4096),
-								// kduCache,
-								// cacheableImageData);
+
 								requests.add(jpipRequestLow);
-								// requests.add(jpipRequestMiddle);
-								// requests.add(jpipRequestHigh);
+
 								UltimateDownloadManager
 										.addRequest(jpipRequestLow);
-								// UltimateDownloadManager.addRequest(jpipRequestMiddle);
-								// UltimateDownloadManager.addRequest(jpipRequestHigh);
-								String downloadURL = URL_MOVIES
-										+ jpipURI.substring(
-												jpipURI.indexOf(":8090") + 5,
-												jpipURI.length());
-								/*
-								 * JPIPDownloadRequest jpipDownloadRequest = new
-								 * JPIPDownloadRequest( downloadURL,
-								 * PRIORITY.LOW, cacheableImageData, requests);
-								 * requests.add(jpipDownloadRequest);
-								 * UltimateDownloadManager
-								 * .addRequest(jpipDownloadRequest);
-								 */
+
+
 							} catch (JSONException e1) {
 								// TODO Auto-generated catch block
 								e1.printStackTrace();
 							} catch (IOException e) {
-								JOptionPane.showConfirmDialog(
-										MainFrame.SINGLETON,
-										"No connection available from "
-												+ httpRequest,
-										"Error during connection",
-										JOptionPane.OK_OPTION,
-										JOptionPane.ERROR_MESSAGE);
+								badRequests.add(httpRequest);
 							}
 							requests.remove(httpRequest);
 						}
 					}
 				}
+				httpRequests.clear();
+				
+				finished = false;
+				while (!finished) {
+					for (JPIPDownloadRequest request : downloadRequests){
+						if (Thread.interrupted())
+							return;
+						if (request.isFinished()){
+							try {
+								request.checkException();
+							} catch (IOException e) {
+								badRequests.add(request);
+							}
+							requests.remove(request);
+						}
+						
+					}
+				}
+				downloadRequests.clear();
 
 			}
 		}, "JPIP_URI_LOADER");
@@ -266,29 +259,37 @@ public class UltimateLayer {
 	}
 
 	public MetaData getMetaData(LocalDateTime currentDateTime)
-			throws InterruptedException, ExecutionException, JHV_KduException, CacheException {
+			throws InterruptedException, ExecutionException, JHV_KduException,
+			CacheException {
 
 		CacheableImageData cacheObject = null;
-		if (treeSet.size() == 0) throw new JHVException.CacheException("no layer is loaded");
+		if (treeSet.size() == 0)
+			throw new JHVException.CacheException("no layer is loaded");
 		LocalDateTime localDateTime = this.treeSet.ceiling(currentDateTime);
-		if (localDateTime == null) localDateTime = treeSet.last();
+		if (localDateTime == null)
+			localDateTime = treeSet.last();
 
 		cacheObject = Cache.getCacheElement(id, localDateTime);
-		if (Cache.getCacheElement(this.id, localDateTime) == null) throw new JHVException.CacheException("no cache at this time available");
+		if (Cache.getCacheElement(this.id, localDateTime) == null)
+			throw new JHVException.CacheException(
+					"no cache at this time available");
 		fileName = cacheObject.getImageFile();
 		return this.getMetaData(localDateTime, cacheObject);
 	}
 
-	public MetaData getMetaData(LocalDateTime localDateTime, CacheableImageData cacheableImageData) {
+	public MetaData getMetaData(LocalDateTime localDateTime,
+			CacheableImageData cacheableImageData) {
 		if (cacheableImageData.getImageFile() != null)
 			render.openImage(cacheableImageData.getImageFile());
-		else render.openImage(cacheableImageData.getImageData());
+		else
+			render.openImage(cacheableImageData.getImageData());
 		MetaData metaData = null;
 		try {
-			metaData = render.getMetadata(cacheableImageData.getIdx(localDateTime) + 1);
+			metaData = render.getMetadata(cacheableImageData
+					.getIdx(localDateTime) + 1);
 		} catch (JHV_KduException e) {
 			// TODO Auto-generated catch block
-			//e.printStackTrace();
+			// e.printStackTrace();
 		}
 		render.closeImage();
 		return metaData;
@@ -313,7 +314,8 @@ public class UltimateLayer {
 			throws InterruptedException, ExecutionException, JHV_KduException {
 		Queue<CachableTexture> textures = TextureCache.getCacheableTextures();
 		LocalDateTime localDateTime = this.treeSet.ceiling(currentDateTime);
-		if (localDateTime == null) localDateTime = treeSet.last();
+		if (localDateTime == null)
+			localDateTime = treeSet.last();
 
 		for (CachableTexture texture : textures) {
 			if (texture.compareRegion(id, imageRegion, localDateTime)
@@ -357,8 +359,8 @@ public class UltimateLayer {
 	private void timeArrayChanged() {
 		TimeLine.SINGLETON.updateLocalDateTimes(treeSet);
 		LocalDateTime[] localDateTimes = new LocalDateTime[treeSet.size()];
-		//TimeLine.SINGLETON.updateLocalDateTimes(this.treeSet
-		//		.toArray(localDateTimes));
+		// TimeLine.SINGLETON.updateLocalDateTimes(this.treeSet
+		// .toArray(localDateTimes));
 	}
 
 	public void cancelDownload() {
@@ -369,27 +371,45 @@ public class UltimateLayer {
 		}
 	}
 
-	public String getURL() throws LocalFileException {
-		if (localFile) throw new LocalFileException("Couldn't download a local file");
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+	public String getURL(){
+		if (localFile)
+			return null;
+		DateTimeFormatter formatter = DateTimeFormatter
+				.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 		LocalDateTime start = treeSet.first();
 		LocalDateTime end = treeSet.last();
 		int cadence = 0;
 		LocalDateTime last = null;
-		for (LocalDateTime localDateTime : treeSet){
-			if (last != null){
+		for (LocalDateTime localDateTime : treeSet) {
+			if (last != null) {
 				cadence += ChronoUnit.SECONDS.between(last, localDateTime);
 			}
 			last = localDateTime;
 			System.out.println(last);
 		}
 		cadence /= (treeSet.size() - 1);
-		String request = "startTime="
-				+ start.format(formatter) + "&endTime="
-				+ end.format(formatter) + "&sourceId=" + sourceID
-				+ "&cadence=" + cadence;
-		
+		String request = "startTime=" + start.format(formatter) + "&endTime="
+				+ end.format(formatter) + "&sourceId=" + sourceID + "&cadence="
+				+ cadence;
+
 		return URL + request;
+	}
+
+	public boolean isLocalFile() {
+		return isLocalFile();
+	}
+
+	public MetaData getMetaData(int i, String path) {
+		render.openImage(path);
+		MetaData metaData = null;
+		try {
+			metaData = render.getMetadata(0);
+		} catch (JHV_KduException e) {
+			// TODO Auto-generated catch block
+			// e.printStackTrace();
+		}
+		render.closeImage();
+		return metaData;
 	}
 
 }

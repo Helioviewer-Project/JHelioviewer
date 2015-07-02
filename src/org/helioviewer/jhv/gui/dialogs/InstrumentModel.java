@@ -52,7 +52,7 @@ public class InstrumentModel {
 							Filter instrument = observatories.get("SDO").filters.get("AIA").filters.get("171");
 							LocalDateTime start = instrument.end.minusDays(1);
 							Layers.addLayer(instrument.sourceId, start,
-									instrument.end, 1728);
+									instrument.end, 1728, "AIA 171");
 							System.out.println(instrument.start);
 						}
 					} catch (IOException e) {
@@ -193,7 +193,7 @@ public class InstrumentModel {
 	static class Filter {
 		private LinkedHashMap<String, Filter> filters = new LinkedHashMap<String, InstrumentModel.Filter>();
 		private String name;
-
+		
 		private Boolean hasDates = false;
 		private LocalDateTime start;
 		private LocalDateTime end;
@@ -225,7 +225,10 @@ public class InstrumentModel {
 		public LocalDateTime getEnd(){
 			return end;
 		}
-
+		
+		public String getNickname(){
+			return this.nickname;
+		}
 	}
 
 	public static void addAddLayerPanel(AddLayerPanel addLayerPanel) {

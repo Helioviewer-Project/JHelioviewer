@@ -8,6 +8,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.LocalDateTime;
@@ -27,7 +29,6 @@ import javax.swing.table.DefaultTableModel;
 
 import org.helioviewer.jhv.JHVException;
 import org.helioviewer.jhv.JHVException.LayerException;
-import org.helioviewer.jhv.JHVException.LocalFileException;
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
@@ -67,6 +68,8 @@ public class LayerPanel extends JPanel implements LayerListener,
 			{ "Row1-Column1", "Row1-Column2", "Row1-Column3" },
 			{ "Row2-Column1", "Row2-Column2", "Row2-Column3" } };
 
+	private JButton btnDownloadLayer;
+	
 	public LayerPanel() {
 		initGUI();
 		updateData();
@@ -144,7 +147,18 @@ public class LayerPanel extends JPanel implements LayerListener,
 
 			}
 		});
-		scrollPane.setViewportView(table);
+		
+		table.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_DELETE || e.getKeyCode() == KeyEvent.VK_BACK_SPACE){
+					int row = table.getSelectedRow();
+					Layers.removeLayer(row);
+					updateData();
+				}
+			}
+		});
+	scrollPane.setViewportView(table);
 
 		/*
 		 * for (int i = 0; i < table.getColumnCount(); i++){
@@ -179,10 +193,11 @@ public class LayerPanel extends JPanel implements LayerListener,
 		gbcBtnShowInfo.gridy = 0;
 		panel.add(btnShowInfo, gbcBtnShowInfo);
 
-		JButton btnDownloadLayer = new JButton(IconBank.getIcon(
+		btnDownloadLayer = new JButton(IconBank.getIcon(
 				JHVIcon.DOWNLOAD_NEW, 16, 16));
 		btnDownloadLayer
 				.setToolTipText("Download the currently selected Layer");
+		btnDownloadLayer.setEnabled(false);
 		btnDownloadLayer.addActionListener(new ActionListener() {
 
 			@Override
@@ -190,11 +205,6 @@ public class LayerPanel extends JPanel implements LayerListener,
 				try {
 					downloadMovieDialog.startDownload(Layers.getActiveLayer()
 							.getURL());
-				} catch (LocalFileException e1) {
-					JOptionPane.showConfirmDialog(MainFrame.SINGLETON,
-							e1.getMessage(), "Error during get URL",
-							JOptionPane.CANCEL_OPTION,
-							JOptionPane.ERROR_MESSAGE);
 				} catch (LayerException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -368,8 +378,7 @@ public class LayerPanel extends JPanel implements LayerListener,
 
 	@Override
 	public void activeLayerChanged(LayerInterface layer) {
-		// TODO Auto-generated method stub
-
+		btnDownloadLayer.setEnabled(layer.isDownloadable());
 	}
 
 	@Override

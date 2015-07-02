@@ -10,6 +10,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.swing.Timer;
 
 import org.helioviewer.jhv.JHVException;
+import org.helioviewer.jhv.gui.MainFrame;
+import org.helioviewer.jhv.gui.leftPanel.MoviePanel.ANIMATION_MODE;
 import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
@@ -23,16 +25,38 @@ public class TimeLine implements LayerListener {
 	private CopyOnWriteArrayList<TimeLineListener> timeLineListeners;
 
 	private TreeSet<LocalDateTime> localDateTimes = null;
-	
+
 	private int speedFactor;
+	private ANIMATION_MODE animationMode = ANIMATION_MODE.LOOP;
+	private boolean foreward = true;
 
 	public static TimeLine SINGLETON = new TimeLine();
 
-	private Timer timer = new Timer(20, new ActionListener() {
+	private Timer timer = new Timer(60, new ActionListener() {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			nextFrame();
+			if (animationMode == ANIMATION_MODE.LOOP) {
+				nextFrame();
+			}
+			if (animationMode == ANIMATION_MODE.STOP) {
+				nextFrame();
+				if (timer.isRunning()) {
+					if (current.isEqual(getFirstDateTime()))
+						MainFrame.MOVIE_PANEL.setPlaying(false);
+				}
+			}
+			if (animationMode == ANIMATION_MODE.SWING) {
+				if (current.isEqual(getLastDateTime()))
+					foreward = false;
+				else if (current.isEqual(getFirstDateTime()))
+					foreward = true;
+
+				if (foreward)
+					nextFrame();
+				else
+					previousFrame();
+			}
 
 		}
 	});
@@ -57,21 +81,23 @@ public class TimeLine implements LayerListener {
 	}
 
 	public LocalDateTime nextFrame() {
-		if (localDateTimes.isEmpty()) return null;
+		if (localDateTimes.isEmpty())
+			return null;
 		LocalDateTime next = localDateTimes.higher(current.plusNanos(1));
 		LocalDateTime last = current;
-		if (next == null){
+		if (next == null) {
 			next = localDateTimes.first();
 		}
 		current = next;
 		dateTimeChanged(last);
 		return current;
 	}
-	
-	public LocalDateTime previousFrame(){
-		if (localDateTimes.isEmpty()) return null;
+
+	public LocalDateTime previousFrame() {
+		if (localDateTimes.isEmpty())
+			return null;
 		LocalDateTime next = localDateTimes.lower(current.minusNanos(1));
-		if (next == null){
+		if (next == null) {
 			next = localDateTimes.last();
 		}
 		current = next;
@@ -117,8 +143,8 @@ public class TimeLine implements LayerListener {
 		this.speedFactor = 1000 / speedFactor;
 		timer.setDelay(this.speedFactor);
 	}
-	
-	public int getSpeedFactor(){
+
+	public int getSpeedFactor() {
 		return timer.getDelay();
 	}
 
@@ -135,17 +161,18 @@ public class TimeLine implements LayerListener {
 	@Override
 	public void activeLayerChanged(LayerInterface layer) {
 		updateLocalDateTimes(layer.getLocalDateTime());
+		MainFrame.MOVIE_PANEL.setEnableButtons(!localDateTimes.isEmpty());
 	}
 
 	public void setCurrentFrame(int value) {
 		Iterator<LocalDateTime> it = localDateTimes.iterator();
 		int i = 0;
 		LocalDateTime current = null;
-		while(it.hasNext() && i <= value){
+		while (it.hasNext() && i <= value) {
 			current = it.next();
 			i++;
 		}
-		if (current != null && !current.isEqual(this.current)) {			
+		if (current != null && !current.isEqual(this.current)) {
 			LocalDateTime last = this.current;
 			System.out.println("current");
 			this.current = current;
@@ -159,21 +186,32 @@ public class TimeLine implements LayerListener {
 		@Deprecated
 		void dateTimesChanged(int framecount);
 	}
-	
-	public void updateLocalDateTimes(TreeSet<LocalDateTime> localDateTimes){
+
+	public void updateLocalDateTimes(TreeSet<LocalDateTime> localDateTimes) {
 		this.localDateTimes = localDateTimes;
 		notifyUpdateDateTimes();
 	}
 
-	public LocalDateTime getFirstDateTime() throws JHVException.TimeLineException {
-		if (localDateTimes.size() <= 0) throw new JHVException.TimeLineException("No dates are loaded");
-		if (localDateTimes.first() == null) throw new JHVException.TimeLineException("no first date is available");
+	public LocalDateTime getFirstDateTime() {
+		if (localDateTimes == null || localDateTimes.isEmpty())
+			return null;
 		return localDateTimes.first();
 	}
 
-	public LocalDateTime getLastDateTime() throws JHVException.TimeLineException {
-		if (localDateTimes.size() <= 0) throw new JHVException.TimeLineException("No dates are loaded");
-		if (localDateTimes.last() == null) throw new JHVException.TimeLineException("no first date is available");
+	public LocalDateTime getLastDateTime() {
+		if (localDateTimes == null || localDateTimes.isEmpty())
+			return null;
 		return localDateTimes.last();
+	}
+
+	public void setCurrentDate(LocalDateTime currentDateTime) {
+		LocalDateTime last = current;
+		this.current = currentDateTime;
+		dateTimeChanged(last);
+	}
+
+	public void setAnimationMode(ANIMATION_MODE animationMode) {
+		this.animationMode = animationMode;
+		this.foreward = true;
 	}
 }

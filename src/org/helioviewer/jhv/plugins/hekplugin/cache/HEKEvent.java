@@ -8,8 +8,8 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.helioviewer.jhv.base.coordinates.CoordinateHelper;
+import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
 import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
-import org.helioviewer.jhv.base.math.CartesianCoord;
 import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.base.math.IntervalComparison;
 import org.helioviewer.jhv.base.math.SphericalCoord;
@@ -455,7 +455,7 @@ public class HEKEvent implements IntervalComparison<Date> {
         c.setTime(now);
         double bzero = Astronomy.getB0InDegree(c);
         double phizero = 0.0; // do we have a value for this?
-        CartesianCoord result = HEKCoordinateTransform.StonyhurstToHeliocentricCartesian(stony, bzero, phizero);
+        HeliocentricCartesianCoordinate result = HEKCoordinateTransform.StonyhurstToHeliocentricCartesian(stony, bzero, phizero);
 
         // TODO: Malte Nuhn - Why does the sign of the y-coordinate need to be
         // flipped? However, it works like this
@@ -499,8 +499,8 @@ public class HEKEvent implements IntervalComparison<Date> {
         SphericalCoord normalizedStony = new SphericalCoord(stony);
         normalizedStony.r = Constants.SUN_RADIUS;
 
-        CartesianCoord result = HEKCoordinateTransform.StonyhurstToHeliocentricCartesian(normalizedStony, bzero, phizero);
-        return new Vector3d(result.x, result.y, result.z);
+        HeliocentricCartesianCoordinate result = HEKCoordinateTransform.StonyhurstToHeliocentricCartesian(normalizedStony, bzero, phizero);
+        return result.toVector3d();
     }
     
 

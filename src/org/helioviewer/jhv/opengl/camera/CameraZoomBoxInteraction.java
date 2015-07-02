@@ -24,12 +24,14 @@ public class CameraZoomBoxInteraction extends CameraInteraction {
 	@Override
 	public void mousePressed(MouseEvent e) {
 		start = rayTrace.cast(e.getX(), e.getY(), mainPanel).getHitpoint();
+		start = start.scale(new Vector3d(1, -1, 1));
 		camera.repaintViewAndSynchronizedViews();
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		end = rayTrace.cast(e.getX(), e.getY(), mainPanel).getHitpoint();
+		end = end.scale(new Vector3d(1, -1, 1));
 		camera.repaintViewAndSynchronizedViews();
 	}
 
@@ -81,10 +83,6 @@ public class CameraZoomBoxInteraction extends CameraInteraction {
 
 			gl.glLineWidth(1.0f);
 			gl.glDisable(GL2.GL_LINE_STIPPLE);
-
-			//gl.glEnable(GL2.GL_LIGHTING);
-			//gl.glEnable(GL2.GL_DEPTH_TEST);
-			//gl.glEnable(GL2.GL_TEXTURE_2D);
 		}
 	}
 }

@@ -219,11 +219,11 @@ public class UltimatePluginInterface implements TimeLineListener,
 		return MainFrame.MAIN_PANEL.getSize();
 	}
 
-	public static LocalDateTime getStartDateTime() throws JHVException.TimeLineException {
+	public static LocalDateTime getStartDateTime(){
 		return TimeLine.SINGLETON.getFirstDateTime();
 	}
 
-	public static LocalDateTime getEndDateTime() throws JHVException.TimeLineException {
+	public static LocalDateTime getEndDateTime(){
 		return TimeLine.SINGLETON.getLastDateTime();
 	}
 

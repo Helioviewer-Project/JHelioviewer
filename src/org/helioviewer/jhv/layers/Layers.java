@@ -11,53 +11,56 @@ public class Layers {
 	private static CopyOnWriteArrayList<LayerInterface> layers;
 	private static CopyOnWriteArrayList<LayerListener> layerListeners;
 	private static int activeLayer = 0;
-	
+
 	private static KakaduRender renderer = new KakaduRender();
 	private static boolean coronaVisibility = true;
-	
+
 	static {
 		layers = new CopyOnWriteArrayList<LayerInterface>();
 		layerListeners = new CopyOnWriteArrayList<LayerListener>();
 	}
-		
-	public static LayerInterface addLayer(String uri){
+
+	public static LayerInterface addLayer(String uri) {
 		ImageLayer layer = new ImageLayer(uri, renderer);
 		layers.add(layer);
-		for (LayerListener renderListener : layerListeners){
+		for (LayerListener renderListener : layerListeners) {
 			renderListener.newlayerAdded();
 		}
-		if (layers.size() == 1){
+		if (layers.size() == 1) {
 			layerChanged();
 		}
 		return layer;
 	}
-	
-	public static ImageLayer addLayer(int id, LocalDateTime start, LocalDateTime end, int cadence){
-		ImageLayer layer = new ImageLayer(id, renderer, start, end, cadence);
+
+	public static ImageLayer addLayer(int id, LocalDateTime start,
+			LocalDateTime end, int cadence, String name) {
+		ImageLayer layer = new ImageLayer(id, renderer, start, end, cadence, name);
 		layers.add(layer);
-		for (LayerListener renderListener : layerListeners){
+		for (LayerListener renderListener : layerListeners) {
 			renderListener.newlayerAdded();
 		}
-		if (layers.size() == 1){
+		if (layers.size() == 1) {
 			layerChanged();
 		}
 		return layer;
 	}
-	
-	private static LayerInterface getLayer(int idx){
+
+	private static LayerInterface getLayer(int idx) {
 		return layers.get(idx);
 	}
-	
-	public static void removeLayer(int idx){
-		layers.get(idx).cancelDownload();
-		layers.remove(idx);
-		activeLayer = 0;
-		for (LayerListener renderListener : layerListeners){
-			renderListener.newlayerRemoved(idx);
+
+	public static void removeLayer(int idx) {
+		if (!layers.isEmpty()) {
+			layers.get(idx).cancelDownload();
+			layers.remove(idx);
+			activeLayer = 0;
+			for (LayerListener renderListener : layerListeners) {
+				renderListener.newlayerRemoved(idx);
+			}
 		}
 	}
-		
-	public static void addNewLayerListener(LayerListener renderListener){
+
+	public static void addNewLayerListener(LayerListener renderListener) {
 		layerListeners.add(renderListener);
 	}
 
@@ -66,43 +69,45 @@ public class Layers {
 	}
 
 	private static void layerChanged() {
-		for (LayerListener renderListener : layerListeners){
+		for (LayerListener renderListener : layerListeners) {
 			renderListener.activeLayerChanged(getLayer(activeLayer));
 		}
 	}
-	
-	public static int getActiveLayerNumber(){
+
+	public static int getActiveLayerNumber() {
 		return activeLayer;
 	}
-	
+
 	public static LayerInterface getActiveLayer() throws LayerException {
-		if (layers.size() <= 0) throw new JHVException.LayerException("no active layer is available");
+		if (layers.size() <= 0)
+			throw new JHVException.LayerException(
+					"no active layer is available");
 		return layers.get(activeLayer);
 	}
-	
-	public static void setActiveLayer(int activeLayer){
-		if (Layers.activeLayer != activeLayer && getLayerCount() > 0){
+
+	public static void setActiveLayer(int activeLayer) {
+		if (Layers.activeLayer != activeLayer && getLayerCount() > 0) {
 			Layers.activeLayer = activeLayer;
 			Layers.layerChanged();
 		}
 	}
-	
-	public static CopyOnWriteArrayList<LayerInterface> getLayers(){
+
+	public static CopyOnWriteArrayList<LayerInterface> getLayers() {
 		return layers;
 	}
 
 	public static void toggleCoronaVisibility() {
 		coronaVisibility = !coronaVisibility;
 	}
-	
-	public static boolean getCoronaVisibility(){
+
+	public static boolean getCoronaVisibility() {
 		return coronaVisibility;
 	}
 
 	public static void removeAllLayers() {
 		layers.clear();
 		activeLayer = 0;
-		for (LayerListener renderListener : layerListeners){
+		for (LayerListener renderListener : layerListeners) {
 			renderListener.newlayerRemoved(0);
 		}
 	}

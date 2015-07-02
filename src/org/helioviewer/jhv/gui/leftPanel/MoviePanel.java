@@ -26,6 +26,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicSliderUI;
 
 import org.helioviewer.jhv.gui.IconBank;
+import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.components.MenuBar;
 import org.helioviewer.jhv.layers.LayerInterface;
@@ -47,69 +48,34 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 	private static final long serialVersionUID = 3837685812219375888L;
 
 	// different animation speeds
-    private enum SpeedUnit {
-        FRAMESPERSECOND {
-            public String toString() {
-                return "Frames/sec";
-            }
-
-            public int getSecondsPerSecond() {
-                return 0;
-            }
-        },
-        MINUTESPERSECOND {
-            public String toString() {
-                return "Solar minutes/sec";
-            }
-
-            public int getSecondsPerSecond() {
-                return 60;
-            }
-        },
-        HOURSPERSECOND {
-            public String toString() {
-                return "Solar hours/sec";
-            }
-
-            public int getSecondsPerSecond() {
-                return 3600;
-            }
-        },
-        DAYSPERSECOND {
-            public String toString() {
-                return "Solar days/sec";
-            }
-
-            public int getSecondsPerSecond() {
-                return 86400;
-            }
-        };
-
-        public abstract int getSecondsPerSecond();
+    private enum SPEED_UNIT {
+    	FRAMES_PER_SECOND("Frames/sec", 1), MINUTES_PER_SECOND("Solar minutes/sec", 60),
+    	HOURS_PER_SECOND("Solar hours/sec", 3600), DAYS_PER_SECOND("Solar days/sec", 864000);
+    	private String text;
+    	private int factor;
+    	private SPEED_UNIT(String text, int factor){
+    		this.text = text;
+    		this.factor = factor;
+    	}
+    	
+    	@Override
+    	public String toString() {
+    		return text;
+    	}
+ 
     }
     
-    private enum AnimationMode
+    public enum ANIMATION_MODE
     {
-        LOOP
-        {
-            public String toString()
-            {
-                return "Loop";
-            }
-        },
-        STOP
-        {
-            public String toString()
-            {
-                return "Stop";
-            }
-        },
-        SWING
-        {
-            public String toString()
-            {
-                return "Swing";
-            }
+    	LOOP("loop"), STOP("Stop"), SWING("swing");
+    	private String text;
+    	private ANIMATION_MODE(String text) {
+    		this.text = text;
+		}
+    	
+        @Override
+        public String toString() {
+        	return text;
         }
     }
 	
@@ -159,24 +125,24 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		contentPanel.add(lblSpeed, "2, 2");
 		
 
-		SpinnerNumberModel spinnerNumberModel = new SpinnerNumberModel(20, 1, 300, 1);
+		SpinnerNumberModel spinnerNumberModel = new SpinnerNumberModel(60, 1, 300, 1);
 		final JSpinner spinner = new JSpinner(spinnerNumberModel);
 		contentPanel.add(spinner, "4, 2");
 		
-		final JComboBox<SpeedUnit> speedUnitComboBox = new JComboBox<SpeedUnit>(SpeedUnit.values());
+		final JComboBox<SPEED_UNIT> speedUnitComboBox = new JComboBox<SPEED_UNIT>(SPEED_UNIT.values());
 
 		spinner.addChangeListener(new ChangeListener() {
 			
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				timeLine.setSpeedFactor((int)spinner.getValue());
+				timeLine.setSpeedFactor((int)spinner.getValue() * ((SPEED_UNIT)speedUnitComboBox.getSelectedItem()).factor);
 			}
 		});
 		speedUnitComboBox.addItemListener(new ItemListener() {
 			
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				timeLine.setSpeedFactor((int)spinner.getValue());
+				timeLine.setSpeedFactor((int)spinner.getValue() * ((SPEED_UNIT)speedUnitComboBox.getSelectedItem()).factor);
 			}
 		});
 		contentPanel.add(speedUnitComboBox, "6, 2, fill, default");
@@ -184,7 +150,14 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		JLabel lblAnimationMode = new JLabel("Animation Mode:");
 		contentPanel.add(lblAnimationMode, "2, 4, 3, 1");
 		
-		JComboBox<AnimationMode> animationModeComboBox = new JComboBox<AnimationMode>(AnimationMode.values());
+		final JComboBox<ANIMATION_MODE> animationModeComboBox = new JComboBox<ANIMATION_MODE>(ANIMATION_MODE.values());
+		animationModeComboBox.addItemListener(new ItemListener() {
+			
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				timeLine.setAnimationMode((ANIMATION_MODE)animationModeComboBox.getSelectedItem());
+			}
+		});
 		contentPanel.add(animationModeComboBox, "6, 4, fill, default");
 		contentPanel.setVisible(false);
 		return contentPanel;
@@ -292,9 +265,16 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		
 		
 		contentPanel.setPreferredSize(new Dimension(300, 300));
+		setEnableButtons(false);
 		return contentPanel;
 	}
 	
+	public void setPlaying(boolean playing){
+		if (!playing) btnPlayPause.setIcon(ICON_PLAY);
+		else btnPlayPause.setIcon(ICON_PAUSE);
+		TimeLine.SINGLETON.setPlaying(playing);
+	}
+		
 	@Override
 	public void timeStampChanged(LocalDateTime current, LocalDateTime last) {
 		slider.setValue(timeLine.getCurrentFrame() < 0 ? 0 : timeLine.getCurrentFrame());
@@ -343,7 +323,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		slider.setMaximum(layer.getLocalDateTime().size() - 1);
 	}
 
-	private void setEnableButtons(boolean enable){
+	public void setEnableButtons(boolean enable){
 		slider.setEnabled(enable);
 		btnPrevious.setEnabled(enable);
 		btnPlayPause.setEnabled(enable);
@@ -353,7 +333,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 
 	@Override
 	public void dateTimesChanged(int framecount) {
-		this.slider.setMaximum(framecount-1);
+		this.slider.setMaximum(framecount > 0 ? framecount - 1 : 0);
 		lblFrames.setText(slider.getValue() + "/" + slider.getMaximum());
 		this.repaint();
 	}
@@ -384,7 +364,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
          * {@inheritDoc}
          */
         public void actionPerformed(ActionEvent e) {
-            TimeLine.SINGLETON.setPlaying(!TimeLine.SINGLETON.isPlaying());
+            MainFrame.MOVIE_PANEL.setPlaying(!TimeLine.SINGLETON.isPlaying());
         }
     }
 

@@ -5,15 +5,30 @@ import java.time.LocalDateTime;
 import java.util.TreeSet;
 
 import org.helioviewer.jhv.JHVException;
-import org.helioviewer.jhv.JHVException.LocalFileException;
 import org.helioviewer.jhv.JHVException.TextureException;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.opengl.MainPanel;
 import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public abstract class LayerInterface {
 
+	private static final String OPACITY = "opacity";
+	private static final String SHARPEN = "sharpen";
+	private static final String GAMMA = "gamma";
+	private static final String CONTRAST = "contrast";
+	private static final String LUT = "lut";
+	private static final String RED_CHANNEL = "redChannel";
+	private static final String GREEN_CHANNEL = "greenChannel";
+	private static final String BLUE_CHANNEL = "blueChannel";
+
+	private static final String VISIBILITY = "visibility";
+	private static final String INVERTED_LUT = "invertedLut";
+	private static final String CORONA_VISIBILITY = "coronaVisiblity";
+	protected boolean downloadable = false;
+	
 	public enum SHADER_STATE {
 		FALSE, TRUE;
 	}
@@ -65,10 +80,14 @@ public abstract class LayerInterface {
 	protected int cadence = -1;
 	protected String localPath;
 
+	protected String name;
+	
 	public abstract int getTexture(MainPanel compenentView,
 			boolean highResolution, Dimension size) throws TextureException;
 
-	public abstract String getName() throws JHVException.MetaDataException;
+	public String getName(){
+		return name;
+	}
 
 	public abstract LocalDateTime getTime() throws JHVException.MetaDataException;
 
@@ -161,30 +180,10 @@ public abstract class LayerInterface {
 		return invertedLut ? 1 : 0;
 	}
 
-	abstract public String getURL() throws LocalFileException;
+	abstract public String getURL();
 
-	public String getLocalFilePath() throws LocalFileException {
-		if (localPath == null)
-			throw new LocalFileException("No filepath, that are remote data");
+	public String getLocalFilePath(){
 		return localPath;
-	}
-
-	public int getCadence() throws LocalFileException {
-		if (cadence < 0)
-			throw new LocalFileException("No remote connection available");
-		return cadence;
-	}
-
-	public LocalDateTime getStartDateTime() throws LocalFileException {
-		if (start == null)
-			throw new LocalFileException("No remote connection available");
-		return start;
-	}
-
-	public LocalDateTime getEndDateTime() throws LocalFileException {
-		if (end == null)
-			throw new LocalFileException("No remote connection available");
-		return end;
 	}
 
 	public boolean isRedChannelActive() {
@@ -220,4 +219,28 @@ public abstract class LayerInterface {
 	}
 
 	public abstract MetaData getMetaData(LocalDateTime currentDateTime) throws JHVException.MetaDataException;
+
+	public void writeStateFile(JSONObject jsonLayer){
+		try {
+			jsonLayer.put(OPACITY, getOpacity());
+			jsonLayer.put(SHARPEN, getSharpen());
+			jsonLayer.put(GAMMA, getGamma());
+			jsonLayer.put(CONTRAST, getContrast());
+			jsonLayer.put(LUT, getLut().ordinal());
+			jsonLayer.put(RED_CHANNEL, isRedChannelActive());
+			jsonLayer.put(GREEN_CHANNEL, isGreenChannelActive());
+			jsonLayer.put(BLUE_CHANNEL, isBlueChannelActive());
+
+			jsonLayer.put(VISIBILITY, isVisible());
+			jsonLayer.put(INVERTED_LUT, isLutInverted());
+			jsonLayer.put(CORONA_VISIBILITY, isCoronaVisible());
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public boolean isDownloadable() {
+		return downloadable;
+	}
 }

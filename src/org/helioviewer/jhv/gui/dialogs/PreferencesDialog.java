@@ -79,8 +79,6 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 	private JButton acceptBtn;
     private JButton cancelBtn;
     private JButton resetBtn;
-
-	private JCheckBox highDPISupport;
 	
 	private static final int MAX_SIZE_SCREENSHOT = 4096;
 	private static final int MAX_SIZE_MOVIE_EXPORT = 4096;
@@ -261,7 +259,6 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 				.getProperty("startup.loadmovie")));
 		doNothingOnStartUp.setSelected(!Boolean.parseBoolean(Settings
 				.getProperty("startup.loadmovie")));
-		highDPISupport.setSelected(Boolean.parseBoolean(Settings.getProperty("default.display.highDPI")));
 		// Default date format
 		String fmt = Settings.getProperty("default.date.format");
 
@@ -289,7 +286,6 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 
 		// Default date format
 		Settings.setProperty("default.date.format", dateFormatField.getText());
-		Settings.setProperty("default.display.highDPI", highDPISupport.isSelected() + "");
 		// Default values
 		defaultsPanel.saveSettings();
 		movieExportPanel.saveSettings();
@@ -345,8 +341,6 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 
 		row2.add(dateFormatInfo);
 		paramsPanel.add(row2);
-
-		paramsPanel.add(highDPISupport = new JCheckBox("Use high-resolution textures"));
 		
 		return paramsPanel;
 	}

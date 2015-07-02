@@ -29,7 +29,7 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
-public class FilterTabPanel extends JPanel implements LayerListener{
+public class FilterPanel extends JPanel implements LayerListener{
 
 	/**
 	 * 
@@ -50,7 +50,7 @@ public class FilterTabPanel extends JPanel implements LayerListener{
 	
     private static final Icon ICON_INVERT = IconBank.getIcon(JHVIcon.INVERT, 16, 16);
 
-	public FilterTabPanel() {
+	public FilterPanel() {
 		initGui();
 		Layers.addNewLayerListener(this);
 	}

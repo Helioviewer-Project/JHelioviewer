@@ -19,26 +19,27 @@ import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface.PLUGIN_ICON;
 /**
  * Panel of Pfss-Plugin
  * */
-public class PfssPluginPanel extends JPanel implements ActionListener{
+public class PfssPluginPanel extends JPanel implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
 
 	// UI Components
-	private JButton visibleButton = new JButton(UltimatePluginInterface.getIcon(PLUGIN_ICON.INVISIBLE, 16, 16));
-	private JButton reloadButton = new JButton(UltimatePluginInterface.getIcon(PLUGIN_ICON.REFRESH, 16, 16));
+	private JButton visibleButton = new JButton(
+			UltimatePluginInterface.getIcon(PLUGIN_ICON.INVISIBLE, 16, 16));
+	private JButton reloadButton = new JButton(UltimatePluginInterface.getIcon(
+			PLUGIN_ICON.REFRESH, 16, 16));
 	private PfssPlugin renderer;
-	
+
 	/**
 	 * Default constructor
 	 * 
 	 * */
-	public PfssPluginPanel(PfssPlugin renderer)
-	{
+	public PfssPluginPanel(PfssPlugin renderer) {
 		// set up visual components
 		initVisualComponents();
 		// register as layers listener
 		this.renderer = renderer;
-		
+
 		this.addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentShown(ComponentEvent e) {
@@ -50,8 +51,7 @@ public class PfssPluginPanel extends JPanel implements ActionListener{
 	/**
 	 * Force a redraw of the main window
 	 */
-	private void fireRedraw()
-	{
+	private void fireRedraw() {
 		UltimatePluginInterface.repaintMainPanel();
 	}
 
@@ -59,8 +59,7 @@ public class PfssPluginPanel extends JPanel implements ActionListener{
 	 * Sets up the visual sub components and the visual part of the component
 	 * itself.
 	 * */
-	private void initVisualComponents()
-	{
+	private void initVisualComponents() {
 		// set general appearance
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 0, 0, 0 };
@@ -91,22 +90,22 @@ public class PfssPluginPanel extends JPanel implements ActionListener{
 		reloadButton.setToolTipText("reload PFSS data");
 	}
 
-	public void setVisibleBtn(boolean visible){
-		if (visible != renderer.isVisible()){
+	public void setVisibleBtn(boolean visible) {
+		if (visible != renderer.isVisible()) {
 			if (renderer.isVisible()) {
 				renderer.setVisible(false);
-				visibleButton.setIcon(UltimatePluginInterface.getIcon(PLUGIN_ICON.INVISIBLE, 16, 16));
-			}
-			else
-			{
+				visibleButton.setIcon(UltimatePluginInterface.getIcon(
+						PLUGIN_ICON.INVISIBLE, 16, 16));
+			} else {
 				renderer.setVisible(true);
-				visibleButton.setIcon(UltimatePluginInterface.getIcon(PLUGIN_ICON.VISIBLE, 16, 16));
+				visibleButton.setIcon(UltimatePluginInterface.getIcon(
+						PLUGIN_ICON.VISIBLE, 16, 16));
 			}
-			
+
 			fireRedraw();
 		}
 	}
-	
+
 	public void actionPerformed(ActionEvent act) {
 		if (act.getSource().equals(visibleButton)) {
 			setVisible(!renderer.isVisible());
@@ -116,29 +115,22 @@ public class PfssPluginPanel extends JPanel implements ActionListener{
 			reload();
 	}
 
-	public void setEnabled(boolean b)
-	{
+	public void setEnabled(boolean b) {
 	}
 
-	public void activeLayerChanged(int idx)
-	{
+	public void activeLayerChanged(int idx) {
 	}
 
-	public void layerAdded(int idx)
-	{
+	public void layerAdded(int idx) {
 		reload();
 	}
-	
-	public void reload()
-	{
+
+	public void reload() {
 		LocalDateTime startLocalDateTime;
-		try {
-			startLocalDateTime = UltimatePluginInterface.getStartDateTime();
-			LocalDateTime endLocalDateTime = UltimatePluginInterface.getEndDateTime();
+		startLocalDateTime = UltimatePluginInterface.getStartDateTime();
+		LocalDateTime endLocalDateTime = UltimatePluginInterface
+				.getEndDateTime();
+		if (startLocalDateTime != null && endLocalDateTime != null)
 			renderer.setDisplayRange(startLocalDateTime, endLocalDateTime);
-		} catch (JHVException.TimeLineException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}		
 	}
 }
