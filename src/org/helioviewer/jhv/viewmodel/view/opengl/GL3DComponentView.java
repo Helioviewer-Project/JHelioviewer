@@ -43,9 +43,11 @@ import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.base.GL3DKeyController;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.physics.Constants;
+import org.helioviewer.jhv.gui.GL3DCameraSelectorModel;
 import org.helioviewer.jhv.gui.GuiState3DWCS;
 import org.helioviewer.jhv.gui.ImageViewerGui;
 import org.helioviewer.jhv.gui.actions.View2DAction;
+import org.helioviewer.jhv.gui.controller.Camera;
 import org.helioviewer.jhv.layers.LayersListener;
 import org.helioviewer.jhv.layers.LayersModel;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
@@ -534,6 +536,7 @@ public class GL3DComponentView extends AbstractBasicView implements
 				tileHeight);
 		this.getAdapter(ViewportView.class).setViewport(viewport,
 				new ChangeEvent());
+		this.canvas.repaint();
 
 		System.out
 				.println(">> GLComponentView.display() > Start taking screenshot");
@@ -610,7 +613,8 @@ public class GL3DComponentView extends AbstractBasicView implements
 
 				GL3DState.get().checkGLErrors(
 						"GL3DComponentView.beforeTileRenderer");
-
+				GL3DCameraSelectorModel.getInstance().getCurrentCamera().updateCameraTransformation();
+				this.canvas.repaint();
 				displayBody(offscreenGL);
 
 				if (descriptions != null && x == 0 && y == 0) {

@@ -22,22 +22,22 @@ import org.helioviewer.jhv.viewmodel.view.ViewListener;
  * Panel of Pfss-Plugin
  * */
 public class PfssPluginPanel extends OverlayPanel implements ActionListener,
-		LayersListener, ViewListener
-{
+		LayersListener, ViewListener {
 
 	private static final long serialVersionUID = 1L;
 	private PfssPlugin3dRenderer renderer;
 
 	// UI Components
-	private JButton visibleButton = new JButton(new ImageIcon(PfssPlugin.getResourceUrl("/images/invisible_dm.png")));
-	private JButton reloadButton = new JButton(new ImageIcon(PfssPlugin.getResourceUrl("/images/reload.png")));
+	private JButton visibleButton = new JButton(new ImageIcon(
+			PfssPlugin.getResourceUrl("/images/invisible_dm.png")));
+	private JButton reloadButton = new JButton(new ImageIcon(
+			PfssPlugin.getResourceUrl("/images/reload.png")));
 
 	/**
 	 * Default constructor
 	 * 
 	 * */
-	public PfssPluginPanel(PfssPlugin3dRenderer renderer)
-	{
+	public PfssPluginPanel(PfssPlugin3dRenderer renderer) {
 		// set up visual components
 		initVisualComponents();
 		// register as layers listener
@@ -48,17 +48,15 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 	/**
 	 * Force a redraw of the main window
 	 */
-	private void fireRedraw()
-	{
-	    GuiState3DWCS.mainComponentView.getComponent().repaint();
+	private void fireRedraw() {
+		GuiState3DWCS.mainComponentView.getComponent().repaint();
 	}
 
 	/**
 	 * Sets up the visual sub components and the visual part of the component
 	 * itself.
 	 * */
-	private void initVisualComponents()
-	{
+	private void initVisualComponents() {
 		// set general appearance
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 0, 0, 0 };
@@ -101,14 +99,12 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 				renderer.setVisible(false);
 				visibleButton.setIcon(new ImageIcon(PfssPlugin
 						.getResourceUrl("/images/invisible_dm.png")));
-			}
-			else
-			{
+			} else {
 				renderer.setVisible(true);
 				visibleButton.setIcon(new ImageIcon(PfssPlugin
 						.getResourceUrl("/images/visible_dm.png")));
 			}
-			
+
 			fireRedraw();
 		}
 
@@ -116,38 +112,37 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 			reload();
 	}
 
-	public void setEnabled(boolean b)
-	{
+	public void setEnabled(boolean b) {
 	}
 
-	public void activeLayerChanged(int idx)
-	{
+	public void activeLayerChanged(int idx) {
 	}
 
-	public void layerAdded(int idx)
-	{
+	public void layerAdded(int idx) {
 		reload();
 	}
-	
-	public void reload()
-	{
+
+	public void reload() {
 		int master = -1000;
-		for (int i = 0; i < LayersModel.getSingletonInstance().getNumLayers(); i++){
+		for (int i = 0; i < LayersModel.getSingletonInstance().getNumLayers(); i++) {
 			if (LayersModel.getSingletonInstance().isMaster(i))
 				master = i;
 		}
-		Date start;
-		Date end;
-		if (master >=0)
-		{
-			start = LayersModel.getSingletonInstance().getStartDate(master).getTime();
-			end = LayersModel.getSingletonInstance().getEndDate(master).getTime();
-		}
-		else {
+		Date start = null;
+		Date end = null;
+		if (master >= 0) {
+			if (LayersModel.getSingletonInstance().getStartDate(master) != null
+					&& LayersModel.getSingletonInstance().getEndDate(master) != null) {
+				start = LayersModel.getSingletonInstance().getStartDate(master)
+						.getTime();
+				end = LayersModel.getSingletonInstance().getEndDate(master)
+						.getTime();
+			}
+		} else {
 			start = LayersModel.getSingletonInstance().getFirstDate();
 			end = LayersModel.getSingletonInstance().getLastDate();
 		}
-		
+
 		if (start != null && end != null)
 			renderer.setDisplayRange(start, end);
 	}
@@ -165,8 +160,8 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 
 	public void timestampChanged(int idx) {
 		// Not used anymore
-		//handled in renderer
-		
+		// handled in renderer
+
 	}
 
 	public void viewportGeometryChanged() {
