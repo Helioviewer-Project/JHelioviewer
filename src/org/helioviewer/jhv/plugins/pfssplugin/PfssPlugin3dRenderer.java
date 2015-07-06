@@ -30,7 +30,7 @@ public class PfssPlugin3dRenderer extends PhysicalRenderer3d {
 	public void render(GLPhysicalRenderGraphics g)
 	{
 		JHVJPXView masterView = LinkedMovieManager.getActiveInstance().getMasterMovie();;
-		if (isVisible)
+		if (isVisible && masterView != null && masterView.getCurrentFrameDateTime() != null)
 		{
 			Date date = masterView.getCurrentFrameDateTime().getTime();
 			PfssDecompressed frame = manager.getFrame(g.gl,date);

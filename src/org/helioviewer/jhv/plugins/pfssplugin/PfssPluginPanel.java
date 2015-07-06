@@ -123,28 +123,34 @@ public class PfssPluginPanel extends OverlayPanel implements ActionListener,
 	}
 
 	public void reload() {
-		int master = -1000;
-		for (int i = 0; i < LayersModel.getSingletonInstance().getNumLayers(); i++) {
-			if (LayersModel.getSingletonInstance().isMaster(i))
-				master = i;
-		}
-		Date start = null;
-		Date end = null;
-		if (master >= 0) {
-			if (LayersModel.getSingletonInstance().getStartDate(master) != null
-					&& LayersModel.getSingletonInstance().getEndDate(master) != null) {
-				start = LayersModel.getSingletonInstance().getStartDate(master)
-						.getTime();
-				end = LayersModel.getSingletonInstance().getEndDate(master)
-						.getTime();
-			}
-		} else {
-			start = LayersModel.getSingletonInstance().getFirstDate();
-			end = LayersModel.getSingletonInstance().getLastDate();
-		}
+		Thread thread = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				int master = -1000;
+				for (int i = 0; i < LayersModel.getSingletonInstance().getNumLayers(); i++) {
+					if (LayersModel.getSingletonInstance().isMaster(i))
+						master = i;
+				}
+				Date start = null;
+				Date end = null;
+				if (master >= 0) {
+					if (LayersModel.getSingletonInstance().getStartDate(master) != null
+							&& LayersModel.getSingletonInstance().getEndDate(master) != null) {
+						start = LayersModel.getSingletonInstance().getStartDate(master)
+								.getTime();
+						end = LayersModel.getSingletonInstance().getEndDate(master)
+								.getTime();
+					}
+				} else {
+					start = LayersModel.getSingletonInstance().getFirstDate();
+					end = LayersModel.getSingletonInstance().getLastDate();
+				}
 
-		if (start != null && end != null)
-			renderer.setDisplayRange(start, end);
+				if (start != null && end != null)
+					renderer.setDisplayRange(start, end);			}
+		}, "RELOAD-PFSS");
+		thread.start();
 	}
 
 	public void layerChanged(int idx) {

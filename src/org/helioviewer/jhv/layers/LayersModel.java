@@ -1355,10 +1355,17 @@ public class LayersModel implements ViewListener
      */
     private void fireLayerAdded(final int newIndex)
     {
-        for(LayersListener ll:layerListeners)
-        {
-            ll.layerAdded(newIndex);
-        }
+    	Thread thread = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+		        for(LayersListener ll:layerListeners)
+		        {
+		            ll.layerAdded(newIndex);
+		        }
+			}
+		}, "Add-Layer");
+    	thread.start();
     }
 
     /**
