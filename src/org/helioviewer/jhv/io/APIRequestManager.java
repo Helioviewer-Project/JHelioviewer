@@ -179,7 +179,9 @@ public class APIRequestManager {
             } else {
                 System.out.println(">> APIRequestManager.loadImageSeries(boolean,String,String,String,String,String,String,String)  > Error will be throw");
                 e.printStackTrace();
-                throw new IOException("Error in the server communication:" + e.getMessage());
+                String format = "api/index.php?";
+                String server = jpipRequest.substring(0, jpipRequest.lastIndexOf(format));
+                throw new IOException("Error in the server (" + server + ") communication:" + e.getMessage());
             }
         } catch (URISyntaxException e) {
             System.err.println("Error creating jpip request");
