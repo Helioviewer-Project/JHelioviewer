@@ -95,8 +95,10 @@ public class MenuBar extends JMenuBar {
 
 		fileMenu.add(new ExportAction());
 
-		fileMenu.addSeparator();
-		fileMenu.add(new ExitProgramAction());
+		if (!JHVGlobals.isOSX()) {
+			fileMenu.addSeparator();
+			fileMenu.add(new ExitProgramAction());
+		}
 		add(fileMenu);
 
 		JMenu viewMenu = new JMenu("View");

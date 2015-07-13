@@ -333,6 +333,9 @@ public class JHelioviewer {
 								aboutDialog.showDialog();
 								setHandled(args[0], Boolean.TRUE);
 							}
+							else if("handleQuit".equals(method.getName())){
+								System.exit(0);
+							}
 							// TODO Auto-generated method stub
 							return null;
 						}
