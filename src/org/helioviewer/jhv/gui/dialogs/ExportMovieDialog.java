@@ -240,11 +240,6 @@ public class ExportMovieDialog implements ActionListener {
 				long max = timedJHVJPXView.getFrameDateTime(1).getMillis();
 				speed = (max - min) / timedJHVJPXView.getDesiredSpeed();
 			}
-			if (this.textEnabled) {
-				Dimension dimension = this.mainComponentView.getCanavasSize();
-				this.imageWidth = dimension.width;
-				this.imageHeight = dimension.height;
-			}
 			writer.addVideoStream(0, 0, this.selectedOutputFormat.getCodec(),
 					this.imageWidth, this.imageHeight);
 		}
