@@ -49,13 +49,14 @@ public class HTTPRequest extends AbstractRequest {
 		totalLength = httpURLConnection.getContentLength();
 		if (response == HttpURLConnection.HTTP_OK) {
 			inputStream = httpURLConnection.getInputStream();
-			receivedLength = 0;
+			int receivedLength = 0;
 			byteArrayOutputStream = new ByteArrayOutputStream(
 					DEFAULT_BUFFER_SIZE);
 			byte[] buf = new byte[DEFAULT_BUFFER_SIZE];
 
 			while ((receivedLength = inputStream.read(buf)) > 0) {
 				byteArrayOutputStream.write(buf, 0, receivedLength);
+				this.receivedLength += receivedLength;
 			}
 			rawData = byteArrayOutputStream.toByteArray();
 			byteArrayOutputStream.close();
