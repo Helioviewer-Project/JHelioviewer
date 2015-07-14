@@ -6,6 +6,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.helioviewer.jhv.JHVException;
 import org.helioviewer.jhv.JHVException.LayerException;
 import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.KakaduRender;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class Layers {
 	private static CopyOnWriteArrayList<LayerInterface> layers;
@@ -31,10 +34,21 @@ public class Layers {
 		}
 		return layer;
 	}
+	
+	private static void addLayer(LayerInterface layer){
+		layers.add(layer);
+		for (LayerListener renderListener : layerListeners) {
+			renderListener.newlayerAdded();
+		}
+		if (layers.size() == 1) {
+			layerChanged();
+		}
+	}
 
 	public static ImageLayer addLayer(int id, LocalDateTime start,
 			LocalDateTime end, int cadence, String name) {
-		ImageLayer layer = new ImageLayer(id, renderer, start, end, cadence, name);
+		ImageLayer layer = new ImageLayer(id, renderer, start, end, cadence,
+				name);
 		layers.add(layer);
 		for (LayerListener renderListener : layerListeners) {
 			renderListener.newlayerAdded();
@@ -45,7 +59,7 @@ public class Layers {
 		return layer;
 	}
 
-	private static LayerInterface getLayer(int idx) {
+	public static LayerInterface getLayer(int idx) {
 		return layers.get(idx);
 	}
 
@@ -109,6 +123,30 @@ public class Layers {
 		activeLayer = 0;
 		for (LayerListener renderListener : layerListeners) {
 			renderListener.newlayerRemoved(0);
+		}
+	}
+
+	public static void writeStatefile(JSONArray jsonLayers) {
+		for (LayerInterface layer : layers) {
+			JSONObject jsonLayer = new JSONObject();
+			layer.writeStateFile(jsonLayer);
+			jsonLayers.put(jsonLayer);
+		}
+	}
+
+	public static void readStatefile(JSONArray jsonLayers) {
+		for (int i = 0; i < jsonLayers.length(); i++){
+			try {
+				JSONObject jsonLayer = jsonLayers.getJSONObject(i);
+				LayerInterface layer = ImageLayer.readStateFile(jsonLayer, renderer);
+				if (layer != null){
+					Layers.addLayer(layer);
+					layer.readStateFile(jsonLayer);
+				}
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 }

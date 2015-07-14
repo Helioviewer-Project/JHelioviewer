@@ -3,6 +3,7 @@ package org.helioviewer.jhv.layers;
 import java.awt.Dimension;
 import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
 
@@ -11,16 +12,23 @@ import org.helioviewer.jhv.JHVException.CacheException;
 import org.helioviewer.jhv.JHVException.MetaDataException;
 import org.helioviewer.jhv.JHVException.TextureException;
 import org.helioviewer.jhv.base.ImageRegion;
+import org.helioviewer.jhv.base.downloadmanager.AbstractRequest;
+import org.helioviewer.jhv.base.downloadmanager.AbstractRequest.PRIORITY;
+import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.opengl.MainPanel;
+import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
+import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.Cache;
 import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.KakaduRender;
 import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.UltimateLayer;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.jogamp.opengl.GL2;
 
 public class ImageLayer extends LayerInterface {
 
@@ -31,6 +39,7 @@ public class ImageLayer extends LayerInterface {
 	private static final String CADENCE = "cadence";
 	private static final String START_DATE_TIME = "startDateTime";
 	private static final String END_DATE_TIME = "endDateTime";
+	private static final String NAME = "name";
 
 	private UltimateLayer ultimateLayer;
 
@@ -57,6 +66,9 @@ public class ImageLayer extends LayerInterface {
 		this.ultimateLayer = new UltimateLayer(id, uri, newRender, this);
 		this.name = ultimateLayer.getMetaData(0, uri).getFullName();
 		layerRayTrace = new LayerRayTrace(this);
+		ArrayList<AbstractRequest> badRequests = new ArrayList<AbstractRequest>();
+		badRequests.add(new HTTPRequest("test", PRIORITY.HIGH));
+		this.addBadRequest(badRequests);
 	}
 
 	@Override
@@ -75,10 +87,12 @@ public class ImageLayer extends LayerInterface {
 			MetaData metaData = ultimateLayer.getMetaData(currentDateTime);
 			if (metaData != null) {
 				if (firstRun) {
-					this.lut = metaData.getDefaultLUT();
 					firstRun = false;
-					MainFrame.SINGLETON.filterTabPanel.updateLayer(this);
+					if (lut == LUT_ENTRY.GRAY){
+						this.lut = metaData.getDefaultLUT();
+					MainFrame.FILTER_PANEL.updateLayer(this);
 					MainFrame.MAIN_PANEL.repaintViewAndSynchronizedViews();
+					}
 				}
 				ByteBuffer byteBuffer = ultimateLayer.getImageData(
 						currentDateTime, layerRayTrace.getCurrentRegion(
@@ -97,7 +111,7 @@ public class ImageLayer extends LayerInterface {
 		} catch (JHV_KduException e) {
 		} catch (MetaDataException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		} catch (CacheException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -180,10 +194,39 @@ public class ImageLayer extends LayerInterface {
 			jsonLayer.put(CADENCE, cadence);
 			jsonLayer.put(START_DATE_TIME, start);
 			jsonLayer.put(END_DATE_TIME, end);
+			jsonLayer.put(NAME, name);
 			super.writeStateFile(jsonLayer);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
+
+
+	public static ImageLayer readStateFile(JSONObject jsonLayer, KakaduRender kakaduRender){
+		try {
+			if (jsonLayer.getBoolean(IS_LOCALFILE)){
+				return new ImageLayer(jsonLayer.getString(LOCAL_PATH), kakaduRender);
+			}
+			else if (jsonLayer.getInt(CADENCE) >= 0){
+				LocalDateTime start = LocalDateTime.parse(jsonLayer.getString(START_DATE_TIME));
+				LocalDateTime end = LocalDateTime.parse(jsonLayer.getString(END_DATE_TIME));
+				return new ImageLayer(jsonLayer.getInt(ID), kakaduRender, start, end, jsonLayer.getInt(CADENCE), jsonLayer.getString(NAME));
+			}
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	@Override
+	public CacheableImageData getCacheStatus(LocalDateTime localDateTime) {
+		return Cache.getCacheElement(id, localDateTime);
+	}
+	
+	public void renderLayer(GL2 gl){
+		
+	}
+
 }

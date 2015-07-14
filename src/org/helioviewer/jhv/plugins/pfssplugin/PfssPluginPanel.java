@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-import org.helioviewer.jhv.JHVException;
 import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
 import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface.PLUGIN_ICON;
 

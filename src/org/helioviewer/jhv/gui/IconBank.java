@@ -69,12 +69,12 @@ public class IconBank {
 
         // MISC ICONS
 
-        VISIBLE("layer_visible_dm.png"), HIDDEN("layer_invisible_dm.png"),
+        VISIBLE("visible_128x128.png"), HIDDEN("invisible_128x128.png"),
 
         REMOVE_LAYER("button_cancel.png"), INFO("info.png"),
         CANCEL_NEW("Cancel_128x128.png"),
         CHECK("button_ok.png"), EX("button_cancel.png"), RUBBERBAND("rubberband.gif"), NOIMAGE("NoImageLoaded_256x256.png"),
-
+        WARNING("Warning_128x128.png"),
         CONNECTED("connected_dm.png"), DISCONNECTED("not_connected_dm.png"),
 
         MOVIE_LINK("unlocked.png"), MOVIE_UNLINK("locked.png"),

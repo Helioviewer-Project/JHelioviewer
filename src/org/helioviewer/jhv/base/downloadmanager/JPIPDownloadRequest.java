@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.layers.CacheableImageData;
 
 public class JPIPDownloadRequest extends HTTPRequest {
@@ -37,6 +38,7 @@ public class JPIPDownloadRequest extends HTTPRequest {
 			requests.remove(this);
 			file = null;
 			rawData = null;
+			MainFrame.MOVIE_PANEL.repaintSlider();
 		}
 	}
 

@@ -7,6 +7,7 @@ import java.net.URISyntaxException;
 
 import kdu_jni.KduException;
 
+import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.layers.CacheableImageData;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.http.HTTPRequest.Method;
 import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPConstants;
@@ -85,8 +86,9 @@ public class JPIPRequest extends AbstractRequest {
 					e.printStackTrace();
 				}
 			} while (!(complete));
-			cacheableImageData.markAsChanged();
+			cacheableImageData.markAsChanged(true);
 			finished = true;
+			MainFrame.MOVIE_PANEL.repaintSlider();
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -8,8 +8,8 @@ import com.xuggle.xuggler.ICodec;
 
 public class MovieFileFilter extends FileFilter{
 	public enum ImplementedMovieFilter{	
-		MOV(".mov", "Quicktime (.mov)", MovieTypes.MOV, ICodec.ID.CODEC_ID_MPEG4), 
 		MP4(".mp4","MPEG-4 (.mp4)", MovieTypes.MP4, ICodec.ID.CODEC_ID_MPEG4), 
+		MOV(".mov", "Quicktime (.mov)", MovieTypes.MOV, ICodec.ID.CODEC_ID_MPEG4), 
 		JPG(".jpg", "Set of JPG images (.jpg)", ImageTypes.JPG, "jpg"), 
 		JPEG(".jpeg", "Set of JPEG images (.jpeg)", ImageTypes.JPEG, "jpeg"), 
 		PNG(".png", "Set of PNG images (.png)", ImageTypes.PNG, "png"), 

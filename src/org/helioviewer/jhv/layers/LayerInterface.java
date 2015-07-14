@@ -2,10 +2,12 @@ package org.helioviewer.jhv.layers;
 
 import java.awt.Dimension;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.TreeSet;
 
 import org.helioviewer.jhv.JHVException;
 import org.helioviewer.jhv.JHVException.TextureException;
+import org.helioviewer.jhv.base.downloadmanager.AbstractRequest;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.opengl.MainPanel;
 import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
@@ -29,12 +31,17 @@ public abstract class LayerInterface {
 	private static final String CORONA_VISIBILITY = "coronaVisiblity";
 	protected boolean downloadable = false;
 	
+	private ArrayList<AbstractRequest> badRequests;
 	public enum SHADER_STATE {
 		FALSE, TRUE;
 	}
 
 	public enum COLOR_CHANNEL_TYPE {
 		RED, GREEN, BLUE;
+	}
+	
+	public enum CACHE_STATUS{
+		FILE, KDU, NONE;
 	}
 
 	// Channelfilter
@@ -239,8 +246,41 @@ public abstract class LayerInterface {
 			e.printStackTrace();
 		}
 	}
+	
+	public void readStateFile(JSONObject jsonLayer){
+		try {
+			setOpacity(jsonLayer.getDouble(OPACITY));
+			setSharpen(jsonLayer.getDouble(SHARPEN));
+			setGamma(jsonLayer.getDouble(GAMMA));
+			setContrast(jsonLayer.getDouble(CONTRAST));
+			setLut(LUT_ENTRY.values()[jsonLayer.getInt(LUT)]);
+			setRedChannel(jsonLayer.getBoolean(RED_CHANNEL));
+			setGreenChannel(jsonLayer.getBoolean(GREEN_CHANNEL));
+			setBlueChannel(jsonLayer.getBoolean(BLUE_CHANNEL));
+			
+			visible = jsonLayer.getBoolean(VISIBILITY);
+			setLutInverted(jsonLayer.getBoolean(INVERTED_LUT));
+			setCoronaVisibility(jsonLayer.getBoolean(CORONA_VISIBILITY));
+			MainFrame.FILTER_PANEL.updateLayer(this);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	public boolean isDownloadable() {
 		return downloadable;
 	}
+	
+	public void addBadRequest(ArrayList<AbstractRequest> badRequests) {
+		this.badRequests = badRequests;
+		MainFrame.LAYER_PANEL.repaintPanel();
+	}
+
+	public boolean checkBadRequest() {
+		return badRequests != null && !badRequests.isEmpty();
+	}
+
+	public abstract CacheableImageData getCacheStatus(LocalDateTime localDateTime);
+
 }

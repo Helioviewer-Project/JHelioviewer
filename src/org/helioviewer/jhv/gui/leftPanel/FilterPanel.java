@@ -268,10 +268,10 @@ public class FilterPanel extends JPanel implements LayerListener{
 
 	public void updateLayer(LayerInterface layer){
 		this.activeLayer = layer;
-		this.contrastSlider.setValue((int)layer.getContrast() * 10);
+		this.contrastSlider.setValue((int)(layer.getContrast() * 10));
 		this.gammaSlider.setValue((int) (Math.log(layer.getGamma()) / GAMMA_FACTOR));
-		this.opacitySlider.setValue((int) layer.getOpacity() * 100);
-		this.sharpenSlider.setValue((int) layer.getSharpen() * 100);
+		this.opacitySlider.setValue((int) (layer.getOpacity() * 100));
+		this.sharpenSlider.setValue((int) (layer.getSharpen() * 100));
 		this.comboBoxColorTable.setSelectedItem(layer.getLut());
 		this.btnInverseColorTable.setSelected(layer.isLutInverted());
 		this.chckbxRed.setSelected(layer.getColorChannel(COLOR_CHANNEL_TYPE.RED).isActivated());

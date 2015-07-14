@@ -53,13 +53,12 @@ public class UltimateLayer {
 	private KakaduRender render;
 
 	private String fileName = null;
-	private LocalDateTime[] localDateTimes;
 	private TreeSet<LocalDateTime> treeSet;
-	private ImageLayer newLayer;
 
 	private ImageRegion imageRegion;
 	private Thread jpipURLLoader;
 	private boolean localFile = false;
+	private ImageLayer imageLayer;
 	private int id;
 	
 	private ArrayList<AbstractRequest> requests = new ArrayList<AbstractRequest>();
@@ -70,7 +69,7 @@ public class UltimateLayer {
 			ImageLayer newLayer) {
 		treeSet = new TreeSet<LocalDateTime>();
 		this.id = id;
-		this.newLayer = newLayer;
+		this.imageLayer = newLayer;
 		this.sourceID = sourceID;
 		this.render = render;
 	}
@@ -79,8 +78,8 @@ public class UltimateLayer {
 			ImageLayer newLayer) {
 		treeSet = new TreeSet<LocalDateTime>();
 		this.id = id;
-		this.newLayer = newLayer;
 		this.sourceID = 0;
+		this.imageLayer = newLayer;
 		this.render = render;
 		this.localFile = true;
 		this.fileName = filename;
@@ -237,17 +236,11 @@ public class UltimateLayer {
 					}
 				}
 				downloadRequests.clear();
-
+				imageLayer.addBadRequest(badRequests);
 			}
 		}, "JPIP_URI_LOADER");
 
 		jpipURLLoader.start();
-	}
-
-	public int getFrameCount() {
-		if (fileName != null)
-			return localDateTimes.length;
-		return 1;
 	}
 
 	private void addFramedates(LocalDateTime[] localDateTimes) {
@@ -265,7 +258,8 @@ public class UltimateLayer {
 		CacheableImageData cacheObject = null;
 		if (treeSet.size() == 0)
 			throw new JHVException.CacheException("no layer is loaded");
-		LocalDateTime localDateTime = this.treeSet.ceiling(currentDateTime);
+		
+		LocalDateTime localDateTime = this.getNextLocalDateTime(currentDateTime);
 		if (localDateTime == null)
 			localDateTime = treeSet.last();
 
@@ -275,6 +269,14 @@ public class UltimateLayer {
 					"no cache at this time available");
 		fileName = cacheObject.getImageFile();
 		return this.getMetaData(localDateTime, cacheObject);
+	}
+	
+	private LocalDateTime getNextLocalDateTime(LocalDateTime currentDateTime){
+		LocalDateTime after = treeSet.ceiling(currentDateTime);
+		LocalDateTime before = treeSet.floor(currentDateTime);
+		long beforeValue = before != null ? ChronoUnit.SECONDS.between(before, currentDateTime) : Long.MAX_VALUE;
+		long afterValue = after != null ? ChronoUnit.SECONDS.between(currentDateTime, after) : Long.MAX_VALUE;
+		return beforeValue > afterValue ? after : before;
 	}
 
 	public MetaData getMetaData(LocalDateTime localDateTime,
@@ -313,7 +315,7 @@ public class UltimateLayer {
 			ImageRegion imageRegion, MetaData metaData, boolean highResolution)
 			throws InterruptedException, ExecutionException, JHV_KduException {
 		Queue<CachableTexture> textures = TextureCache.getCacheableTextures();
-		LocalDateTime localDateTime = this.treeSet.ceiling(currentDateTime);
+		LocalDateTime localDateTime = this.getNextLocalDateTime(currentDateTime);
 		if (localDateTime == null)
 			localDateTime = treeSet.last();
 
@@ -396,7 +398,7 @@ public class UltimateLayer {
 	}
 
 	public boolean isLocalFile() {
-		return isLocalFile();
+		return localFile;
 	}
 
 	public MetaData getMetaData(int i, String path) {

@@ -28,13 +28,6 @@ public class StonyhurstHeliographicCoordinates implements SolarCoordinates {
         r = newR;
     }
 
-    public StonyhurstHeliographicCoordinates(SolarCoordinates solarCoordinates) {
-        HeliocentricEarthEquatorialCoordinates coordinates = solarCoordinates.convertToHeliocentricEarthEquatorialCoordinates();
-        r = Math.sqrt(coordinates.x * coordinates.x + coordinates.y * coordinates.y + coordinates.z * coordinates.z);
-        theta = Math.atan(coordinates.z / Math.sqrt(coordinates.x * coordinates.x + coordinates.y * coordinates.y)) * MathUtils.RAD_TO_DEG;
-        phi = Math.atan2(coordinates.y, coordinates.x) * MathUtils.RAD_TO_DEG;
-    }
-
     public HeliocentricEarthEquatorialCoordinates convertToHeliocentricEarthEquatorialCoordinates() {
         double heeqX = r * Math.cos(theta / MathUtils.RAD_TO_DEG) * Math.cos(phi / MathUtils.RAD_TO_DEG);
         double heeqY = r * Math.cos(theta / MathUtils.RAD_TO_DEG) * Math.sin(phi / MathUtils.RAD_TO_DEG);

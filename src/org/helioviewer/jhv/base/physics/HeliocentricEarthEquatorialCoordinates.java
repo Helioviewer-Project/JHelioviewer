@@ -22,13 +22,6 @@ public class HeliocentricEarthEquatorialCoordinates implements SolarCoordinates 
         z = newZ;
     }
 
-    public HeliocentricEarthEquatorialCoordinates(SolarCoordinates coordinates) {
-        HeliocentricEarthEquatorialCoordinates tmpCoordinates = coordinates.convertToHeliocentricEarthEquatorialCoordinates();
-        x = tmpCoordinates.x;
-        y = tmpCoordinates.y;
-        z = tmpCoordinates.z;
-    }
-
     public HeliocentricEarthEquatorialCoordinates convertToHeliocentricEarthEquatorialCoordinates() {
         return this;
     }

@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import kdu_jni.Kdu_cache;
 
+import org.helioviewer.jhv.layers.LayerInterface.CACHE_STATUS;
 import org.helioviewer.jhv.opengl.texture.TextureCache;
 import org.helioviewer.jhv.opengl.texture.TextureCache.CachableTexture;
 
@@ -19,6 +20,8 @@ public class CacheableImageData {
 	private int lastDetectedDate;
 	
 	private String fileName = null;
+	
+	private CACHE_STATUS cacheStatus = CACHE_STATUS.NONE;
 	
 	public CacheableImageData(int id, LocalDateTime[] localDateTimes, Kdu_cache kduCache) {
 		this.kduCache = kduCache;
@@ -80,7 +83,8 @@ public class CacheableImageData {
 		return lastDetectedDate;
 	}
 	
-	public void markAsChanged(){
+	public void markAsChanged(boolean kdu){
+		if (kdu) cacheStatus = CACHE_STATUS.KDU;
 		for (CachableTexture cacheableTexture : TextureCache.getCacheableTextures()){
 			if (cacheableTexture.compareTexture(this.id, localDateTimes)){
 				cacheableTexture.markAsChanged();
@@ -92,7 +96,7 @@ public class CacheableImageData {
 		this.fileName = fileName;
 		kduCache.Native_destroy();
 		kduCache = null;
-		markAsChanged();
+		markAsChanged(false);
 	}
 
 	public int getIdx(LocalDateTime localDateTime) {
@@ -101,6 +105,15 @@ public class CacheableImageData {
 			if (localDateTime.isEqual(localDateTimes[i])) break;
 		}
 		return i;
+	}
+
+	public CACHE_STATUS getCacheStatus() {
+		if (fileName != null) return CACHE_STATUS.FILE;
+		return cacheStatus;
+	}
+
+	public int getSize() {
+		return localDateTimes.length;
 	}
 	
 }

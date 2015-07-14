@@ -58,9 +58,10 @@ public class MainFrame extends JFrame{
 	public static final int SIDE_PANEL_WIDTH = 320;
 	public static SideContentPane LEFT_PANE;
 	public static MoviePanel MOVIE_PANEL;
+	public static LayerPanel LAYER_PANEL;
 	private JSplitPane splitPane;
 
-	public FilterPanel filterTabPanel;
+	public static FilterPanel FILTER_PANEL;
 
 
 	
@@ -111,8 +112,8 @@ public class MainFrame extends JFrame{
 		contentPane.add(splitPane, BorderLayout.CENTER);
 					
 		MAIN_PANEL.setMinimumSize(new Dimension());
-		OVERVIEW_PANEL.setMinimumSize(new Dimension(200, 200));
-		OVERVIEW_PANEL.setPreferredSize(new Dimension(200, 200));
+		OVERVIEW_PANEL.setMinimumSize(new Dimension(240, 200));
+		OVERVIEW_PANEL.setPreferredSize(new Dimension(240, 200));
 
 		splitPane.setRightComponent(MAIN_PANEL);		
 		splitPane.setLeftComponent(getLeftPane());
@@ -136,11 +137,12 @@ public class MainFrame extends JFrame{
 		gbc_overViewPane.gridy = 0;
 		
 		left.add(OVERVIEW_PANEL, gbc_overViewPane);
+		OVERVIEW_PANEL.setMinimumSize(new Dimension(370, 200));
 		OVERVIEW_PANEL.addMainView(MAIN_PANEL);
 		MAIN_PANEL.addSynchronizedView(OVERVIEW_PANEL);
 		
 		JPanel scrollContentPane = new JPanel(new BorderLayout());
-		scrollContentPane.setMinimumSize(new Dimension(200,40));
+		scrollContentPane.setMinimumSize(new Dimension(300,40));
 		JScrollPane scrollPane = new JScrollPane(scrollContentPane);
 		scrollPane.setMinimumSize(new Dimension());
 		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
@@ -207,17 +209,18 @@ public class MainFrame extends JFrame{
 	
 	private SideContentPane getSideBar(){
 		LEFT_PANE = new SideContentPane();
+		LEFT_PANE.setMinimumSize(new Dimension(300, 200));
 		// Movie control
 		MOVIE_PANEL = new MoviePanel();
 		LEFT_PANE.add("Movie Controls", MOVIE_PANEL, true);
 		
 		// Layer control
-		LayerPanel newLayerPanel = new LayerPanel();
-		LEFT_PANE.add("Layers", newLayerPanel, true);
+		LAYER_PANEL = new LayerPanel();
+		LEFT_PANE.add("Layers", LAYER_PANEL, true);
 
 		// Filter control
-		filterTabPanel = new FilterPanel();
-		LEFT_PANE.add("Adjustments", filterTabPanel , true);
+		FILTER_PANEL = new FilterPanel();
+		LEFT_PANE.add("Adjustments", FILTER_PANEL , true);
 		
 		return LEFT_PANE;
 	}

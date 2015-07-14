@@ -95,35 +95,7 @@ public class StateParser extends DefaultHandler {
 				String content = new String(data, StandardCharsets.UTF_8);
 				JSONObject jsonObject = new JSONObject(content);
 				JSONArray layers = jsonObject.getJSONArray(LAYERS);
-				for (int i = 0; i < layers.length(); i++) {
-					LayerInterface layer;
-					JSONObject jsonLayer = layers.getJSONObject(i);
-					if (jsonLayer.has(LOCAL_PATH)) {
-						layer = Layers
-								.addLayer(jsonLayer.getString(LOCAL_PATH));
-					} else {
-						int id = jsonLayer.getInt(ID);
-						LocalDateTime start = LocalDateTime.parse(jsonLayer
-								.getString(START_DATE_TIME));
-						LocalDateTime end = LocalDateTime.parse(jsonLayer
-								.getString(END_DATE_TIME));
-						int cadence = jsonLayer.getInt(CADENCE);
-						layer = Layers.addLayer(id, start, end, cadence, "test");
-					}
-					layer.setOpacity(jsonLayer.getDouble(OPACITY));
-					layer.setSharpen(jsonLayer.getDouble(SHARPEN));
-					layer.setGamma(jsonLayer.getDouble(GAMMA));
-					layer.setContrast(jsonLayer.getDouble(CONTRAST));
-					layer.setLut(LUT_ENTRY.values()[jsonLayer.getInt(LUT)]);
-					layer.setRedChannel(jsonLayer.getBoolean(RED_CHANNEL));
-					layer.setGreenChannel(jsonLayer.getBoolean(GREEN_CHANNEL));
-					layer.setBlueChannel(jsonLayer.getBoolean(BLUE_CHANNEL));
-
-					layer.setVisible(jsonLayer.getBoolean(VISIBILITY));
-					layer.setLutInverted(jsonLayer.getBoolean(INVERTED_LUT));
-					layer.setCoronaVisibility(jsonLayer
-							.getBoolean(CORONA_VISIBILITY));
-				}
+				Layers.readStatefile(layers);
 
 				JSONObject jsonCamera = jsonObject.getJSONObject(CAMERA);
 				JSONArray jsonTranslation = jsonCamera
@@ -186,43 +158,10 @@ public class StateParser extends DefaultHandler {
 			JHVStateFilter fileFilter = (JHVStateFilter)fileChooser.getFileFilter();
 			fileName = fileName.endsWith(fileFilter.getDefaultExtension()) ? fileName : fileName + fileFilter.getDefaultExtension();
 			JSONObject jsonObject = new JSONObject();
-			JSONArray jsonArray = new JSONArray();
-			for (LayerInterface layer : Layers.getLayers()) {
-				//layer.writeStateFile(jsonArray);
-				JSONObject jsonLayer = new JSONObject();
-				/*
-				jsonArray.put(jsonLayer);
-				try {					
-					jsonLayer.put(LOCAL_PATH, layer.isLocalFilePath());
-				} catch (LocalFileException e) {
-					System.out.println("Statefile include no local file");
-				}
-
-				try {
-					jsonLayer.put(ID, layer.getID());
-					jsonLayer.put(CADENCE, layer.getCadence());
-					jsonLayer.put(START_DATE_TIME, layer.getStartDateTime());
-					jsonLayer.put(END_DATE_TIME, layer.getEndDateTime());
-				} catch (LocalFileException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-				jsonLayer.put(OPACITY, layer.getOpacity());
-				jsonLayer.put(SHARPEN, layer.getSharpen());
-				jsonLayer.put(GAMMA, layer.getGamma());
-				jsonLayer.put(CONTRAST, layer.getContrast());
-				jsonLayer.put(LUT, layer.getLut().ordinal());
-				jsonLayer.put(RED_CHANNEL, layer.isRedChannelActive());
-				jsonLayer.put(GREEN_CHANNEL, layer.isGreenChannelActive());
-				jsonLayer.put(BLUE_CHANNEL, layer.isBlueChannelActive());
-
-				jsonLayer.put(VISIBILITY, layer.isVisible());
-				jsonLayer.put(INVERTED_LUT, layer.isLutInverted());
-				jsonLayer.put(CORONA_VISIBILITY, layer.isCoronaVisible());
-				*/
-			}
-			jsonObject.put(LAYERS, jsonArray);
+			
+			JSONArray jsonLayers = new JSONArray();
+			Layers.writeStatefile(jsonLayers);
+			jsonObject.put(LAYERS, jsonLayers);
 
 			JSONObject jsonCamera = new JSONObject();
 

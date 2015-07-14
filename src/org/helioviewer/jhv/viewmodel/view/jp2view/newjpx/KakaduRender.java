@@ -173,7 +173,7 @@ public class KakaduRender {
 
 	public MetaData getMetadata(int index) throws JHV_KduException{
 			String xmlText = KakaduUtils.getXml(family_src, index);
-
+			if (xmlText == null) return null;
             xmlText = xmlText.trim().replace("&", "&amp;").replace("$OBS", "");
 
             InputStream in = null;

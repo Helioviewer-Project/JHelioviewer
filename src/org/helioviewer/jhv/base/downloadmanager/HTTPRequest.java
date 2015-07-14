@@ -70,7 +70,8 @@ public class HTTPRequest extends AbstractRequest {
 	}
 
 	public String getDataAsString() throws IOException {
-		return new String(getData(),StandardCharsets.UTF_8);
+		byte[] data = getData();
+		return new String(data,StandardCharsets.UTF_8);
 	}
 
 	public byte[] getData() throws IOException {

@@ -6,6 +6,8 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -113,7 +115,19 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 		Layers.addNewLayerListener(this);
 		TimeLine.SINGLETON.addListener(this);
 		setLocationRelativeTo(MainFrame.SINGLETON);
-
+		
+		addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentShown(ComponentEvent e) {
+				try {
+					setMetaData(Layers.getActiveLayer().getMetaData(TimeLine.SINGLETON.getCurrentDateTime()));
+				} catch (MetaDataException | LayerException e1) {
+					resetData();
+					addDataItem(e1.getMessage());
+				}
+			}
+		});
+		
 		getRootPane().registerKeyboardAction(new ActionListener() {
 
 			@Override

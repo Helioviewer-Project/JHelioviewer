@@ -9,7 +9,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.Timer;
 
-import org.helioviewer.jhv.JHVException;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.leftPanel.MoviePanel.ANIMATION_MODE;
 import org.helioviewer.jhv.layers.LayerInterface;
@@ -134,6 +133,7 @@ public class TimeLine implements LayerListener {
 	}
 
 	private void notifyUpdateDateTimes() {
+		MainFrame.MOVIE_PANEL.setEnableButtons(!localDateTimes.isEmpty());
 		for (TimeLine.TimeLineListener timeLineListener : timeLineListeners) {
 			timeLineListener.dateTimesChanged(localDateTimes.size());
 		}

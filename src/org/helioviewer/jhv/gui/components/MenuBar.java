@@ -5,6 +5,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 
+import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.base.FileUtils;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
@@ -48,8 +49,10 @@ public class MenuBar extends JMenuBar {
 		JMenu fileMenu = new JMenu("File");
 		fileMenu.setMnemonic(KeyEvent.VK_F);
 		fileMenu.add(new OpenLocalFileAction());
-		/*fileMenu.add(new ShowDialogAction("Open remote image...",
-				OpenRemoteFileDialog.class));*/
+		/*
+		 * fileMenu.add(new ShowDialogAction("Open remote image...",
+		 * OpenRemoteFileDialog.class));
+		 */
 		fileMenu.addSeparator();
 
 		JMenu exampleMenu = new JMenu("Load examples");
@@ -94,13 +97,15 @@ public class MenuBar extends JMenuBar {
 
 		fileMenu.add(new ExportAction());
 
-		fileMenu.addSeparator();
-		fileMenu.add(new ExitProgramAction());
+		if (!JHVGlobals.isOSX()) {
+			fileMenu.addSeparator();
+			fileMenu.add(new ExitProgramAction());
+		}
 		add(fileMenu);
 
 		JMenu viewMenu = new JMenu("View");
 		viewMenu.setMnemonic(KeyEvent.VK_V);
-		//viewMenu.add(new GL3DCenterImageAction());
+		// viewMenu.add(new GL3DCenterImageAction());
 		viewMenu.add(new ToggleFullscreenAction());
 		viewMenu.addSeparator();
 		viewMenu.add(new ZoomInAction(true));
@@ -112,16 +117,16 @@ public class MenuBar extends JMenuBar {
 		JMenu movieMenu = new JMenu("Movie");
 		movieMenu.setMnemonic(KeyEvent.VK_A);
 
-			movieMenu.add(new MoviePanel.StaticPlayPauseAction());
-			movieMenu.add(new MoviePanel.StaticPreviousFrameAction());
-			movieMenu.add(new MoviePanel.StaticNextFrameAction());
-		
-			add(movieMenu);
+		movieMenu.add(new MoviePanel.StaticPlayPauseAction());
+		movieMenu.add(new MoviePanel.StaticPreviousFrameAction());
+		movieMenu.add(new MoviePanel.StaticNextFrameAction());
+
+		add(movieMenu);
 
 		JMenu optionsMenu = new JMenu("Options");
 		optionsMenu.setMnemonic(KeyEvent.VK_O);
-		optionsMenu.add(new ShowDialogAction("Preferences...", IconBank.getIcon(JHVIcon.SETTINGS, 16, 16),
-				PreferencesDialog.class));
+		optionsMenu.add(new ShowDialogAction("Preferences...", IconBank
+				.getIcon(JHVIcon.SETTINGS, 16, 16), PreferencesDialog.class));
 		add(optionsMenu);
 
 		JMenu helpMenu = new JMenu("Help");

@@ -19,7 +19,6 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 
-import org.helioviewer.jhv.JHVException;
 import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheListener;
