@@ -5,11 +5,11 @@ import java.time.LocalDateTime;
 
 import javax.swing.BorderFactory;
 
-import org.helioviewer.jhv.JHVException.LayerException;
 import org.helioviewer.jhv.JHVException.MetaDataException;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.opengl.MainPanel;
-import org.helioviewer.jhv.layers.LayerInterface;
+import org.helioviewer.jhv.layers.AbstractImageLayer;
+import org.helioviewer.jhv.layers.AbstractLayer;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
@@ -49,38 +49,35 @@ public class ZoomStatusPanel extends StatusLabel {
 	 * Updates the displayed zoom.
 	 */
 	private synchronized void updateZoomLevel() {
-		LayerInterface activeLayer;
-		try {
-			activeLayer = Layers.getActiveLayer();
-			if (activeLayer != null) {
-				MetaData metaData;
-				try {
-					LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
-					metaData = activeLayer.getMetaData(currentDateTime);
-					double unitsPerPixel = metaData.getUnitsPerPixel();
-					double minCanvasDimension = MainFrame.MAIN_PANEL
-							.getCanavasSize().getHeight();
-					// PhysicalRegion region = metaData.getPhysicalRegion();
-					double halfFOVRad = Math.toRadians(MainPanel.FOV / 2.0);
-					double distance = (minCanvasDimension / 2.0 * unitsPerPixel)
-							/ Math.tan(halfFOVRad);
-					long zoom = Math.round(distance
-							/ MainFrame.MAIN_PANEL.getTranslation().z * 100);
-					setText("Zoom: " + zoom + "%");
-				} catch (MetaDataException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
+		AbstractImageLayer activeLayer = Layers.getActiveImageLayer();
+		if (activeLayer != null) {
+			MetaData metaData;
+			try {
+				LocalDateTime currentDateTime = TimeLine.SINGLETON
+						.getCurrentDateTime();
+				metaData = activeLayer.getMetaData(currentDateTime);
+				double unitsPerPixel = metaData.getUnitsPerPixel();
+				double minCanvasDimension = MainFrame.MAIN_PANEL
+						.getCanavasSize().getHeight();
+				// PhysicalRegion region = metaData.getPhysicalRegion();
+				double halfFOVRad = Math.toRadians(MainPanel.FOV / 2.0);
+				double distance = (minCanvasDimension / 2.0 * unitsPerPixel)
+						/ Math.tan(halfFOVRad);
+				long zoom = Math.round(distance
+						/ MainFrame.MAIN_PANEL.getTranslation().z * 100);
+				setText("Zoom: " + zoom + "%");
+			} catch (MetaDataException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-		} catch (LayerException e1) {
+
+		} else
 			setText(TITLE);
-		}
 
 	}
 
 	@Override
-	public void activeLayerChanged(LayerInterface layer) {
+	public void activeLayerChanged(AbstractLayer layer) {
 		updateZoomLevel();
 	}
 

@@ -72,6 +72,7 @@ public class HTTPRequest extends AbstractRequest {
 
 	public String getDataAsString() throws IOException {
 		byte[] data = getData();
+		if (data == null) throw new IOException();
 		return new String(data,StandardCharsets.UTF_8);
 	}
 

@@ -16,6 +16,7 @@ import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
 import org.helioviewer.jhv.Settings;
+import org.helioviewer.jhv.base.sdocutout.SDOCutOutButton;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.actions.SetCameraPanInteractionAction;
@@ -210,7 +211,10 @@ public class TopToolBar extends JToolBar implements MouseListener {
 		addButton(view2d);
 		addButton(view3d);
 		addSeparator();
-
+		
+		addButton(new SDOCutOutButton());
+		addSeparator();
+		
 		set3DMode();
 
 	}

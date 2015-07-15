@@ -35,12 +35,11 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.helioviewer.jhv.JHVException.LayerException;
 import org.helioviewer.jhv.JHVException.MetaDataException;
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.interfaces.ShowableDialog;
-import org.helioviewer.jhv.layers.LayerInterface;
+import org.helioviewer.jhv.layers.AbstractLayer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
@@ -119,11 +118,15 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 		addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentShown(ComponentEvent e) {
+				if (Layers.getActiveImageLayer() != null){
 				try {
-					setMetaData(Layers.getActiveLayer().getMetaData(TimeLine.SINGLETON.getCurrentDateTime()));
-				} catch (MetaDataException | LayerException e1) {
+					setMetaData(Layers.getActiveImageLayer().getMetaData(TimeLine.SINGLETON.getCurrentDateTime()));
+				} catch (MetaDataException e1) {
 					resetData();
 					addDataItem(e1.getMessage());
+				}}
+				else{
+					resetData();
 				}
 			}
 		});
@@ -397,11 +400,16 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 
 	@Override
 	public void timeStampChanged(LocalDateTime current, LocalDateTime last) {
+		if (Layers.getActiveImageLayer() != null){
 		try {
-			setMetaData(Layers.getActiveLayer().getMetaData(TimeLine.SINGLETON.getCurrentDateTime()));
-		} catch (MetaDataException | LayerException e) {
+			setMetaData(Layers.getActiveImageLayer().getMetaData(TimeLine.SINGLETON.getCurrentDateTime()));
+		} catch (MetaDataException e) {
 			resetData();
 			addDataItem(e.getMessage());
+		}
+		}
+		else {
+			resetData();
 		}
 	}
 
@@ -422,7 +430,7 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 	}
 
 	@Override
-	public void activeLayerChanged(LayerInterface layer) {
+	public void activeLayerChanged(AbstractLayer layer) {
 		// setMetaData(layer.getMetaData());
 	}
 }

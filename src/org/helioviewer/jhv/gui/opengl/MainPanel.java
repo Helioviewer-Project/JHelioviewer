@@ -46,9 +46,9 @@ import org.helioviewer.jhv.base.physics.DifferentialRotation;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelCamera;
 import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelMouse;
+import org.helioviewer.jhv.layers.AbstractImageLayer.COLOR_CHANNEL_TYPE;
+import org.helioviewer.jhv.layers.AbstractLayer;
 import org.helioviewer.jhv.layers.ImageLayer;
-import org.helioviewer.jhv.layers.LayerInterface;
-import org.helioviewer.jhv.layers.LayerInterface.COLOR_CHANNEL_TYPE;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.filter.LUT;
@@ -474,12 +474,9 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 			gl.glMultMatrixd(mat.m, 0);
 			if (CameraMode.mode == MODE.MODE_2D) {
 				try {
-					this.rotation = Layers.getActiveLayer().getMetaData(currentDateTime)
+					this.rotation = Layers.getActiveImageLayer().getMetaData(currentDateTime)
 							.getRotation().copy();
 				} catch (MetaDataException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (LayerException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -487,8 +484,8 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 
 			boolean layerLoaded = true;
 			boolean notCenterAnimation = false;
-			for (LayerInterface layer : Layers.getLayers()) {
-				if (layer.isVisible()) {
+			for (AbstractLayer layer : Layers.getLayers()) {
+				if (layer.isVisible() && layer.isImageLayer()) {
 					boolean visibleLayer = this.displayLayer(gl,
 							(ImageLayer) layer);
 					layerLoaded &= visibleLayer;
@@ -979,7 +976,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	}
 
 	@Override
-	public void activeLayerChanged(LayerInterface layer) {
+	public void activeLayerChanged(AbstractLayer layer) {
 		repaintViewAndSynchronizedViews();
 	}
 

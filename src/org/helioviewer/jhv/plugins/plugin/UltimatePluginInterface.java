@@ -23,11 +23,12 @@ import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.opengl.MainPanel;
+import org.helioviewer.jhv.layers.Layers;
+import org.helioviewer.jhv.layers.PluginLayer;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace;
 import org.helioviewer.jhv.plugins.hekplugin.HEKPlugin;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
 import org.helioviewer.jhv.plugins.plugin.AbstractPlugin.RENDER_MODE;
-import org.helioviewer.jhv.plugins.sdocutoutplugin.SDOCutOutPlugin3D;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine.TimeLineListener;
 import org.json.JSONObject;
@@ -64,7 +65,6 @@ public class UltimatePluginInterface implements TimeLineListener,
 	private UltimatePluginInterface() {
 		plugins = new ArrayList<AbstractPlugin>();
 		TimeLine.SINGLETON.addListener(this);
-		plugins.add(new SDOCutOutPlugin3D());
 		plugins.add(new HEKPlugin());
 		plugins.add(new PfssPlugin());
 		MainFrame.MAIN_PANEL.addMouseListener(this);
@@ -274,4 +274,9 @@ public class UltimatePluginInterface implements TimeLineListener,
         imageIcon.setImage(image);
         return imageIcon;	
     }
+	
+	public static void AddPluginLayer(AbstractPlugin plugin, String name){
+		PluginLayer pluginLayer = new PluginLayer(name, plugin);
+		Layers.addLayer(pluginLayer);
+	}
 }

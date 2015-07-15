@@ -67,6 +67,7 @@ public class HEKPlugin extends AbstractPlugin {
 		hekPluginPanel = new HEKPluginPanel(HEKCache.getSingletonInstance());
 		UltimatePluginInterface.addPanelToLeftControllPanel(NAME,
 				hekPluginPanel, false);
+		UltimatePluginInterface.AddPluginLayer(this, "HEK");
 	}
 
 	@Override

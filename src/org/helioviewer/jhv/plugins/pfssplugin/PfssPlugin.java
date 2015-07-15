@@ -44,6 +44,7 @@ public class PfssPlugin extends AbstractPlugin {
 		pfssPluginPanel = new PfssPluginPanel(this);
 		UltimatePluginInterface.addPanelToLeftControllPanel(NAME,
 				pfssPluginPanel, false);
+		UltimatePluginInterface.AddPluginLayer(this, "PFSS");
 	}
 
 	@Override

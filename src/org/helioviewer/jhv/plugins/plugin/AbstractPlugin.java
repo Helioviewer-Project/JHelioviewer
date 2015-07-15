@@ -57,4 +57,7 @@ public abstract class AbstractPlugin {
 	
 	abstract public void loadStateFile(JSONObject jsonObject);
 	abstract public void writeStateFile(JSONObject jsonObject);
+
+	public abstract void setVisible(boolean visible);
+	public abstract boolean isVisible();
 }

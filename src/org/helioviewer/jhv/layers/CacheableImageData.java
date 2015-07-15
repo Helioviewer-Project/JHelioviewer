@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 import kdu_jni.Kdu_cache;
 
-import org.helioviewer.jhv.layers.LayerInterface.CACHE_STATUS;
+import org.helioviewer.jhv.layers.AbstractImageLayer.CACHE_STATUS;
 import org.helioviewer.jhv.opengl.texture.TextureCache;
 import org.helioviewer.jhv.opengl.texture.TextureCache.CachableTexture;
 

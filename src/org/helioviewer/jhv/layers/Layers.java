@@ -1,31 +1,44 @@
 package org.helioviewer.jhv.layers;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.helioviewer.jhv.JHVException;
-import org.helioviewer.jhv.JHVException.LayerException;
 import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.KakaduRender;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Layers {
-	private static CopyOnWriteArrayList<LayerInterface> layers;
 	private static CopyOnWriteArrayList<LayerListener> layerListeners;
-	private static int activeLayer = 0;
+	private static CopyOnWriteArrayList<AbstractLayer> layers;
+	private static int activeLayer = -1;
+	private static int activeImageLayer = -1;
 
 	private static KakaduRender renderer = new KakaduRender();
 	private static boolean coronaVisibility = true;
 
+	private static final Comparator<AbstractLayer> COMPARATOR = new Comparator<AbstractLayer>() {
+
+		@Override
+		public int compare(AbstractLayer o1, AbstractLayer o2) {
+			if (!o1.isImageLayer && o2.isImageLayer) return 1;
+			else if (o1.isImageLayer && !o2.isImageLayer) return -1;
+			return 0;
+		}
+	};
+
+	
 	static {
-		layers = new CopyOnWriteArrayList<LayerInterface>();
+		layers = new CopyOnWriteArrayList<AbstractLayer>();
 		layerListeners = new CopyOnWriteArrayList<LayerListener>();
 	}
 
-	public static LayerInterface addLayer(String uri) {
+	public static AbstractLayer addLayer(String uri) {
 		ImageLayer layer = new ImageLayer(uri, renderer);
 		layers.add(layer);
+		layers.sort(COMPARATOR);
+		if (layers.size() == 1) setActiveLayer(0);
 		for (LayerListener renderListener : layerListeners) {
 			renderListener.newlayerAdded();
 		}
@@ -34,9 +47,11 @@ public class Layers {
 		}
 		return layer;
 	}
-	
-	private static void addLayer(LayerInterface layer){
+
+	public static void addLayer(AbstractLayer layer) {
 		layers.add(layer);
+		layers.sort(COMPARATOR);
+		if (layers.size() == 1) setActiveLayer(0);
 		for (LayerListener renderListener : layerListeners) {
 			renderListener.newlayerAdded();
 		}
@@ -50,6 +65,8 @@ public class Layers {
 		ImageLayer layer = new ImageLayer(id, renderer, start, end, cadence,
 				name);
 		layers.add(layer);
+		layers.sort(COMPARATOR);
+		if (layers.size() == 1) setActiveLayer(0);
 		for (LayerListener renderListener : layerListeners) {
 			renderListener.newlayerAdded();
 		}
@@ -59,15 +76,29 @@ public class Layers {
 		return layer;
 	}
 
-	public static LayerInterface getLayer(int idx) {
-		return layers.get(idx);
+	public static AbstractLayer getLayer(int idx) {
+		if (idx >= 0 && idx < layers.size())
+			return layers.get(idx);
+		return null;
 	}
 
 	public static void removeLayer(int idx) {
 		if (!layers.isEmpty()) {
 			layers.get(idx).cancelDownload();
 			layers.remove(idx);
-			activeLayer = 0;
+			if (layers.isEmpty())
+				activeLayer = -1;
+			int counter = 0;
+			for (AbstractLayer layer : layers){
+				if (layer.isImageLayer()){
+					activeImageLayer = counter;					
+					break;
+				}
+				counter++;
+			}
+			if (counter != activeImageLayer){
+				activeImageLayer = -1;
+			}
 			for (LayerListener renderListener : layerListeners) {
 				renderListener.newlayerRemoved(idx);
 			}
@@ -83,8 +114,10 @@ public class Layers {
 	}
 
 	private static void layerChanged() {
-		for (LayerListener renderListener : layerListeners) {
-			renderListener.activeLayerChanged(getLayer(activeLayer));
+		if (activeLayer >= 0) {
+			for (LayerListener renderListener : layerListeners) {
+				renderListener.activeLayerChanged(getLayer(activeLayer));
+			}
 		}
 	}
 
@@ -92,21 +125,22 @@ public class Layers {
 		return activeLayer;
 	}
 
-	public static LayerInterface getActiveLayer() throws LayerException {
-		if (layers.size() <= 0)
-			throw new JHVException.LayerException(
-					"no active layer is available");
-		return layers.get(activeLayer);
+	public static AbstractLayer getActiveLayer() {
+		if (layers.size() > 0 && activeLayer >= 0)
+			return layers.get(activeLayer);
+		return null;
 	}
 
 	public static void setActiveLayer(int activeLayer) {
 		if (Layers.activeLayer != activeLayer && getLayerCount() > 0) {
 			Layers.activeLayer = activeLayer;
+			if (getActiveLayer().isImageLayer())
+				Layers.activeImageLayer = activeLayer;
 			Layers.layerChanged();
 		}
 	}
 
-	public static CopyOnWriteArrayList<LayerInterface> getLayers() {
+	public static CopyOnWriteArrayList<AbstractLayer> getLayers() {
 		return layers;
 	}
 
@@ -127,7 +161,7 @@ public class Layers {
 	}
 
 	public static void writeStatefile(JSONArray jsonLayers) {
-		for (LayerInterface layer : layers) {
+		for (AbstractLayer layer : layers) {
 			JSONObject jsonLayer = new JSONObject();
 			layer.writeStateFile(jsonLayer);
 			jsonLayers.put(jsonLayer);
@@ -135,11 +169,12 @@ public class Layers {
 	}
 
 	public static void readStatefile(JSONArray jsonLayers) {
-		for (int i = 0; i < jsonLayers.length(); i++){
+		for (int i = 0; i < jsonLayers.length(); i++) {
 			try {
 				JSONObject jsonLayer = jsonLayers.getJSONObject(i);
-				LayerInterface layer = ImageLayer.readStateFile(jsonLayer, renderer);
-				if (layer != null){
+				AbstractImageLayer layer = ImageLayer.readStateFile(jsonLayer,
+						renderer);
+				if (layer != null) {
 					Layers.addLayer(layer);
 					layer.readStateFile(jsonLayer);
 				}
@@ -148,5 +183,11 @@ public class Layers {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public static AbstractImageLayer getActiveImageLayer() {
+		if (activeImageLayer >= 0)
+			return (AbstractImageLayer) layers.get(activeImageLayer);
+		return null;
 	}
 }

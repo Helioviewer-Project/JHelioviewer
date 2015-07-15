@@ -3,6 +3,7 @@ package org.helioviewer.jhv.layers;
 import java.awt.Dimension;
 import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
@@ -30,7 +31,7 @@ import org.json.JSONObject;
 
 import com.jogamp.opengl.GL2;
 
-public class ImageLayer extends LayerInterface {
+public class ImageLayer extends AbstractImageLayer {
 
 	private static final String LAYERS = "layers";
 	private static final String IS_LOCALFILE = "isLocalFile";
@@ -69,6 +70,10 @@ public class ImageLayer extends LayerInterface {
 		ArrayList<AbstractRequest> badRequests = new ArrayList<AbstractRequest>();
 		badRequests.add(new HTTPRequest("test", PRIORITY.HIGH));
 		this.addBadRequest(badRequests);
+		LocalDateTime start = ultimateLayer.getLocalDateTimes().first();
+		LocalDateTime end = ultimateLayer.getLocalDateTimes().last();
+		this.cadence = (int) (ChronoUnit.SECONDS.between(start, end) / ultimateLayer.getLocalDateTimes().size());
+		 
 	}
 
 	@Override
@@ -120,8 +125,14 @@ public class ImageLayer extends LayerInterface {
 	}
 
 	@Override
-	public LocalDateTime getTime() throws MetaDataException {
-		return getMetaData(TimeLine.SINGLETON.getCurrentDateTime()).getLocalDateTime();
+	public LocalDateTime getTime(){
+		try {
+			return getMetaData(TimeLine.SINGLETON.getCurrentDateTime()).getLocalDateTime();
+		} catch (MetaDataException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@Deprecated
@@ -228,5 +239,15 @@ public class ImageLayer extends LayerInterface {
 	public void renderLayer(GL2 gl){
 		
 	}
-
+	
+	@Override
+	public String getFullName() {
+		try {
+			return getMetaData(TimeLine.SINGLETON.getCurrentDateTime()).getFullName();
+		} catch (MetaDataException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 }

@@ -27,11 +27,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileFilter;
 
-import org.helioviewer.jhv.JHVException;
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.layers.LayerInterface;
+import org.helioviewer.jhv.layers.AbstractLayer;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 
@@ -82,93 +81,106 @@ public class ExportMovieDialog implements ActionListener {
 
 			this.initExportMovie();
 			thread = new Thread(new Runnable() {
-				
+
 				@Override
 				public void run() {
-						TimeLine.SINGLETON.setCurrentFrame(0);
-						for (int i = 0; i < TimeLine.SINGLETON.getMaxFrames(); i++){
-							
-							descriptions = null;
-							if (textEnabled) {
-								descriptions = new ArrayList<String>();
-								for (LayerInterface layer : Layers.getLayers()) {
-									if (layer.isVisible()) {
-										try {
-											LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
-											descriptions.add(layer.getMetaData(currentDateTime).getFullName()
+					TimeLine.SINGLETON.setCurrentFrame(0);
+					for (int i = 0; i < TimeLine.SINGLETON.getMaxFrames(); i++) {
+
+						descriptions = null;
+						if (textEnabled) {
+							descriptions = new ArrayList<String>();
+							for (AbstractLayer layer : Layers.getLayers()) {
+								if (layer.isVisible()) {
+
+									LocalDateTime currentDateTime = TimeLine.SINGLETON
+											.getCurrentDateTime();
+									descriptions
+											.add(layer.getFullName()
 													+ " - "
-													+ layer.getTime().format(JHVGlobals.DATE_TIME_FORMATTER));
-										} catch (JHVException.MetaDataException e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
-										}
-									}
-								}
-							}
+													+ layer.getTime()
+															.format(JHVGlobals.DATE_TIME_FORMATTER));
 
-							bufferedImage = null;
-							progressDialog.setDescription("Rendering images");
-							SwingUtilities.invokeLater(new Runnable() {
-								
-								@Override
-								public void run() {
-									bufferedImage = MainFrame.MAIN_PANEL.getBufferedImage(
-											imageWidth, imageHeight, descriptions);
-								}
-							});
-							
-							while (bufferedImage == null){
-								try {
-									if(!started) break;
-									Thread.sleep(20);
-								} catch (InterruptedException e) {
-									break;
 								}
 							}
-							if(!started) break;
-							
-							progressDialog.updateProgressBar(i);
-							
-							if (selectedOutputFormat.isMovieFile() && started) {
-									writer.encodeVideo(0, bufferedImage, speed
-										* i, TimeUnit.MILLISECONDS);
-							}
-
-							else if (selectedOutputFormat.isCompressedFile() && started) {
-								String number = String.format("%04d", i);
-								try {
-									zipOutputStream.putNextEntry(new ZipEntry(filename
-											+ "/"
-											+ filename
-											+ "-"
-											+ number
-											+ selectedOutputFormat.getInnerMovieFilter()
-													.getExtension()));
-									ImageIO.write(bufferedImage, selectedOutputFormat
-											.getInnerMovieFilter().getFileType(),
-											zipOutputStream);
-									zipOutputStream.closeEntry();
-								} catch (IOException e) {
-									e.printStackTrace();
-								}
-							}
-
-							else if (selectedOutputFormat.isImageFile() && started) {
-								String number = String.format("%04d", i);
-								try {
-									ImageIO.write(bufferedImage, selectedOutputFormat
-											.getFileType(), new File(directory + filename
-											+ filename + "-" + number
-											+ selectedOutputFormat.getExtension()));
-								} catch (IOException e) {
-									e.printStackTrace();
-								}
-							}
-							TimeLine.SINGLETON.nextFrame();
 						}
-						stopExportMovie();
+
+						bufferedImage = null;
+						progressDialog.setDescription("Rendering images");
+						SwingUtilities.invokeLater(new Runnable() {
+
+							@Override
+							public void run() {
+								bufferedImage = MainFrame.MAIN_PANEL
+										.getBufferedImage(imageWidth,
+												imageHeight, descriptions);
+							}
+						});
+
+						while (bufferedImage == null) {
+							try {
+								if (!started)
+									break;
+								Thread.sleep(20);
+							} catch (InterruptedException e) {
+								break;
+							}
+						}
+						if (!started)
+							break;
+
+						progressDialog.updateProgressBar(i);
+
+						if (selectedOutputFormat.isMovieFile() && started) {
+							writer.encodeVideo(0, bufferedImage, speed * i,
+									TimeUnit.MILLISECONDS);
+						}
+
+						else if (selectedOutputFormat.isCompressedFile()
+								&& started) {
+							String number = String.format("%04d", i);
+							try {
+								zipOutputStream.putNextEntry(new ZipEntry(
+										filename
+												+ "/"
+												+ filename
+												+ "-"
+												+ number
+												+ selectedOutputFormat
+														.getInnerMovieFilter()
+														.getExtension()));
+								ImageIO.write(bufferedImage,
+										selectedOutputFormat
+												.getInnerMovieFilter()
+												.getFileType(), zipOutputStream);
+								zipOutputStream.closeEntry();
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						}
+
+						else if (selectedOutputFormat.isImageFile() && started) {
+							String number = String.format("%04d", i);
+							try {
+								ImageIO.write(
+										bufferedImage,
+										selectedOutputFormat.getFileType(),
+										new File(directory
+												+ filename
+												+ filename
+												+ "-"
+												+ number
+												+ selectedOutputFormat
+														.getExtension()));
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						}
+						TimeLine.SINGLETON.nextFrame();
 					}
-					
+					stopExportMovie();
+				}
+
 			}, "Movie Export");
 			thread.start();
 		}
@@ -417,13 +429,14 @@ public class ExportMovieDialog implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent ae) {
 			if (ae.getSource() == btnCancel) {
-				this.exportMovieDialog.cancelMovie();;
+				this.exportMovieDialog.cancelMovie();
+				;
 				dispose();
 			}
 
 		}
 	}
-	
+
 	public void cancelMovie() {
 		started = false;
 	}

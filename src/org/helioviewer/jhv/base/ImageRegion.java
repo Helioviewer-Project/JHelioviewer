@@ -6,7 +6,7 @@ import java.awt.geom.Rectangle2D;
 import java.time.LocalDateTime;
 
 import org.helioviewer.jhv.gui.opengl.MainPanel;
-import org.helioviewer.jhv.layers.LayerInterface;
+import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 
@@ -83,7 +83,7 @@ public class ImageRegion {
 		return this.imageScaleFactor >= imageRegion.getScaleFactor();
 	}
 
-	public void calculateScaleFactor(LayerInterface layerInterface, MainPanel mainPanel, MetaData metaData, Dimension size) {
+	public void calculateScaleFactor(AbstractImageLayer layerInterface, MainPanel mainPanel, MetaData metaData, Dimension size) {
 		// Get the image resolution
 		Rectangle resolution = metaData.getResolution();
 		

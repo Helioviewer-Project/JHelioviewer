@@ -7,7 +7,7 @@ import javax.swing.JLabel;
 
 import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelCamera;
 import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelMouse;
-import org.helioviewer.jhv.layers.LayerInterface;
+import org.helioviewer.jhv.layers.AbstractLayer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace.Ray;
@@ -61,6 +61,6 @@ public abstract class StatusLabel extends JLabel implements TimeLineListener, St
 	}
 
 	@Override
-	public void activeLayerChanged(LayerInterface layer) {
+	public void activeLayerChanged(AbstractLayer layer) {
 	}	
 }

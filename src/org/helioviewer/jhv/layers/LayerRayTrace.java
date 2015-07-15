@@ -16,9 +16,9 @@ public class LayerRayTrace{
 	private static final int MAX_X_POINTS = 11;
 	private static final int MAX_Y_POINTS = 11;
 	
-	private LayerInterface layer;
+	private AbstractImageLayer layer;
 	
-	public LayerRayTrace(LayerInterface layer) {
+	public LayerRayTrace(AbstractImageLayer layer) {
 		this.layer = layer;
 		rayTrace = new RayTrace();
 		/*contentPanel.setBackground(Color.BLACK);

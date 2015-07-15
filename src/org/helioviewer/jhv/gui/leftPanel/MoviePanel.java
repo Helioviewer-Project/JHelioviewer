@@ -30,13 +30,14 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicSliderUI;
 
-import org.helioviewer.jhv.JHVException.LayerException;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.components.MenuBar;
+import org.helioviewer.jhv.layers.AbstractImageLayer;
+import org.helioviewer.jhv.layers.AbstractLayer;
 import org.helioviewer.jhv.layers.CacheableImageData;
-import org.helioviewer.jhv.layers.LayerInterface;
+import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
@@ -299,8 +300,8 @@ public class MoviePanel extends JPanel implements TimeLineListener,
 		slider.setValue(timeLine.getCurrentFrame() < 0 ? 0 : timeLine
 				.getCurrentFrame());
 	}
-	
-	public void repaintSlider(){
+
+	public void repaintSlider() {
 		slider.repaint();
 	}
 
@@ -322,132 +323,147 @@ public class MoviePanel extends JPanel implements TimeLineListener,
 		private final Color COLOR_PARTIALLY_CACHED = new Color(0x8080FF);
 		private final Color COLOR_COMPLETELY_CACHED = new Color(0x4040FF);
 		private final Color COLOR_GRAY = new Color(0xEEEEEE);
-		
+
 		private static final double SCALE_FACTOR = 1000000;
-		private static final double INVERSE_SCALE_FACTOR = 1/SCALE_FACTOR;
-		
+		private static final double INVERSE_SCALE_FACTOR = 1 / SCALE_FACTOR;
+
 		public TimeSliderUI(JSlider slider) {
 			super(slider);
 		}
 
 		@Override
 		public void paintThumb(Graphics g) {
-			
+
 			Rectangle knobBounds = thumbRect;
-	        int w = knobBounds.width;
-	        int h = knobBounds.height - 2;
-	        g.setColor(COLOR_GRAY);
-	        g.translate(knobBounds.x, knobBounds.y);
+			int w = knobBounds.width;
+			int h = knobBounds.height - 2;
+			g.setColor(COLOR_GRAY);
+			g.translate(knobBounds.x, knobBounds.y);
 
-	           int cw = w / 2;
-	            g.fillRect(1, 1, w-3, h-1-cw);
-	            Polygon p = new Polygon();
-	            p.addPoint(1, h-cw);
-	            p.addPoint(cw-1, h-1);
-	            p.addPoint(w-2, h-1-cw);
-	            g.fillPolygon(p);
+			int cw = w / 2;
+			g.fillRect(1, 1, w - 3, h - 1 - cw);
+			Polygon p = new Polygon();
+			p.addPoint(1, h - cw);
+			p.addPoint(cw - 1, h - 1);
+			p.addPoint(w - 2, h - 1 - cw);
+			g.fillPolygon(p);
 
-	            g.setColor(getHighlightColor());
-	            g.drawLine(0, 0, w-2, 0);
-	            g.drawLine(0, 1, 0, h-1-cw);
-	            g.drawLine(0, h-cw, cw-1, h-1);
+			g.setColor(getHighlightColor());
+			g.drawLine(0, 0, w - 2, 0);
+			g.drawLine(0, 1, 0, h - 1 - cw);
+			g.drawLine(0, h - cw, cw - 1, h - 1);
 
-	            g.setColor(Color.black);
-	            g.drawLine(w-1, 0, w-1, h-2-cw);
-	            g.drawLine(w-1, h-1-cw, w-1-cw, h-1);
+			g.setColor(Color.black);
+			g.drawLine(w - 1, 0, w - 1, h - 2 - cw);
+			g.drawLine(w - 1, h - 1 - cw, w - 1 - cw, h - 1);
 
-	            g.setColor(getShadowColor());
-	            g.drawLine(w-2, 1, w-2, h-2-cw);
-	            g.drawLine(w-2, h-1-cw, w-1-cw, h-2);		
-	            g.translate(-knobBounds.x, -knobBounds.y);
-        
+			g.setColor(getShadowColor());
+			g.drawLine(w - 2, 1, w - 2, h - 2 - cw);
+			g.drawLine(w - 2, h - 1 - cw, w - 1 - cw, h - 2);
+			g.translate(-knobBounds.x, -knobBounds.y);
+
 		}
 
 		@Override
 		public void paintTrack(Graphics g) {
-	        Rectangle trackBounds = trackRect;
+			Rectangle trackBounds = trackRect;
 
 			int cy = (trackBounds.height / 2) - 2;
-            int cw = trackBounds.width;
+			int cw = trackBounds.width;
 
-            g.translate(trackBounds.x, 0);
-            Graphics2D g2 = (Graphics2D) g;
-            g2.scale(INVERSE_SCALE_FACTOR, 1);
-			int offset = trackRect.height -3 ;
+			g.translate(trackBounds.x, 0);
+			Graphics2D g2 = (Graphics2D) g;
+			g2.scale(INVERSE_SCALE_FACTOR, 1);
+			int offset = trackRect.height - 3;
 			int height = 2;
-	
-	        try {
-				LayerInterface layer = Layers.getActiveLayer();
-				TreeSet<LocalDateTime> localDateTimes = layer.getLocalDateTime();
-				int total = localDateTimes.size();
-				Color[] colors = new Color[localDateTimes.size()];
+
+			if (Layers.getActiveLayer() != null) {
+				if (!Layers.getActiveLayer().isImageLayer())
+					return;
+				AbstractImageLayer layer = (AbstractImageLayer) Layers
+						.getActiveLayer();
+				TreeSet<LocalDateTime> treeSet = layer.getLocalDateTime();
+				int total = treeSet.size();
+				Color[] colors = new Color[treeSet.size()];
 				int counter = 0;
 				int totalSize = 0;
-				TreeSet<LocalDateTime> treeSet = Layers.getActiveLayer().getLocalDateTime();
-				for (LocalDateTime localDateTime : treeSet){
-					CacheableImageData cacheableImageData = layer.getCacheStatus(localDateTime);
+				for (LocalDateTime localDateTime : treeSet) {
+					CacheableImageData cacheableImageData = layer
+							.getCacheStatus(localDateTime);
 					switch (cacheableImageData.getCacheStatus()) {
 					case FILE:
-						colors[counter++] = COLOR_COMPLETELY_CACHED;				
+						colors[counter++] = COLOR_COMPLETELY_CACHED;
 						break;
 					case KDU:
-						colors[counter++] = COLOR_PARTIALLY_CACHED;				
+						colors[counter++] = COLOR_PARTIALLY_CACHED;
 						break;
 					default:
 						colors[counter++] = COLOR_NOT_CACHED;
 						break;
 					}
 				}
-				
+
 				int currentSize = 0;
 				int trackWidth = (int) (trackRect.getWidth());
-				double partPerDate = 1 / (double)treeSet.size();
-				int delta = (int)(partPerDate * trackWidth * SCALE_FACTOR);
-				for (int i = 0; i < colors.length; i++){
+				double partPerDate = 1 / (double) treeSet.size();
+				int delta = (int) (partPerDate * trackWidth * SCALE_FACTOR);
+				for (int i = 0; i < colors.length; i++) {
 					g.setColor(colors[i]);
 					g2.fillRect(currentSize, offset, delta, height);
 					currentSize += delta;
 				}
-			} catch (LayerException e) {
+			}
+			else {
 				g.setColor(COLOR_NOT_CACHED);
-				g2.fillRect(0, offset, (int)(trackRect.getWidth() * SCALE_FACTOR), height);
+				g2.fillRect(0, offset,
+						(int) (trackRect.getWidth() * SCALE_FACTOR), height);
 			}
 			Dimension sliderSize = super.slider.getSize();
-			
-            g2.scale(SCALE_FACTOR, 1);
-            g.translate(-trackBounds.x, 0);
 
-			int partialCachedOffset = sliderSize.width/2;
+			g2.scale(SCALE_FACTOR, 1);
+			g.translate(-trackBounds.x, 0);
 
-			int completeCachedOffset = sliderSize.width/4;
+			int partialCachedOffset = sliderSize.width / 2;
+
+			int completeCachedOffset = sliderSize.width / 4;
 			/*
-			g.setColor(COLOR_NOT_CACHED);
-			g.fillRect(trackRect.x + partialCachedOffset, offset,
-					trackRect.width - partialCachedOffset, height);
-
-			g.setColor(COLOR_PARTIALLY_CACHED);
-			g.fillRect(trackRect.x + completeCachedOffset, offset,
-					partialCachedOffset - completeCachedOffset, height);
-
-			g.setColor(COLOR_COMPLETELY_CACHED);
-			g.fillRect(trackRect.x, offset, completeCachedOffset, height);
-			*/
+			 * g.setColor(COLOR_NOT_CACHED); g.fillRect(trackRect.x +
+			 * partialCachedOffset, offset, trackRect.width -
+			 * partialCachedOffset, height);
+			 * 
+			 * g.setColor(COLOR_PARTIALLY_CACHED); g.fillRect(trackRect.x +
+			 * completeCachedOffset, offset, partialCachedOffset -
+			 * completeCachedOffset, height);
+			 * 
+			 * g.setColor(COLOR_COMPLETELY_CACHED); g.fillRect(trackRect.x,
+			 * offset, completeCachedOffset, height);
+			 */
 		}
 	}
 
 	@Override
 	public void newlayerAdded() {
-		setEnableButtons(true);
+		boolean enable = false;
+		for (AbstractLayer layer : Layers.getLayers()){
+			enable |= layer.isImageLayer();
+		}
+		setEnableButtons(enable);
 	}
 
 	@Override
 	public void newlayerRemoved(int idx) {
-		setEnableButtons(Layers.getLayerCount() > 0);
+		boolean enable = false;
+		for (AbstractLayer layer : Layers.getLayers()){
+			enable |= layer.isImageLayer();
+		}
+		setEnableButtons(enable);
 	}
 
 	@Override
-	public void activeLayerChanged(LayerInterface layer) {
-		slider.setMaximum(layer.getLocalDateTime().size() > 0 ? layer.getLocalDateTime().size() - 1 : 0);
+	public void activeLayerChanged(AbstractLayer layer) {
+		if (layer != null && layer.isImageLayer())
+			slider.setMaximum(((ImageLayer) layer).getLocalDateTime().size() > 0 ? ((ImageLayer) layer)
+					.getLocalDateTime().size() - 1 : 0);
 	}
 
 	public void setEnableButtons(boolean enable) {

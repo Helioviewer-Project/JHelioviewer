@@ -3,9 +3,9 @@ package org.helioviewer.jhv.base.math;
 public class Quaternion3d {
     private static final double EPSILON = 0.000001;
 
-    protected double a;
+    private double a;
 
-    protected Vector3d u;
+    private Vector3d u;
 
     public static Quaternion3d createRotation(double angle, Vector3d axis) {
         double halfAngle = angle / 2;

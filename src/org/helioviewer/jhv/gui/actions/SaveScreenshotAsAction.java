@@ -15,14 +15,13 @@ import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 import javax.swing.KeyStroke;
 
-import org.helioviewer.jhv.JHVException.MetaDataException;
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.actions.filefilters.ExtensionFileFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.JPGFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.PNGFilter;
-import org.helioviewer.jhv.layers.LayerInterface;
+import org.helioviewer.jhv.layers.AbstractLayer;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 
@@ -93,17 +92,13 @@ public class SaveScreenshotAsAction extends AbstractAction {
             ArrayList<String> descriptions = null;
 			if (textEnabled) {
 				descriptions = new ArrayList<String>();
-				for (LayerInterface layer : Layers.getLayers()) {
+				for (AbstractLayer layer : Layers.getLayers()) {
 					if (layer.isVisible()) {
-						try {
 							LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
-							descriptions.add(layer.getMetaData(currentDateTime).getFullName()
+							descriptions.add(layer.getFullName()
 									+ " - "
 									+ layer.getTime().format(JHVGlobals.DATE_TIME_FORMATTER));
-						} catch (MetaDataException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
+						
 					}
 				}
 			}

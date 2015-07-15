@@ -63,6 +63,10 @@ public abstract class MetaData {
 	protected Document document;
 	
 	protected Rectangle newResolution;
+
+	private double arcsecPerPixelX;
+
+	private double arcsecPerPixelY;
 	
     /**
      * Default constructor, does not set size or position.
@@ -198,8 +202,8 @@ public abstract class MetaData {
         double sunY = metaDataContainer.tryGetDouble("CRPIX2");
         sunPixelPosition = new Vector2d(sunX, sunY);
 
-        double arcsecPerPixelX = metaDataContainer.tryGetDouble("CDELT1");
-        double arcsecPerPixelY = metaDataContainer.tryGetDouble("CDELT2");
+        arcsecPerPixelX = metaDataContainer.tryGetDouble("CDELT1");
+        arcsecPerPixelY = metaDataContainer.tryGetDouble("CDELT2");
         
         double distanceToSun = metaDataContainer.tryGetDouble("DSUN_OBS");
         double radiusSunInArcsec = Math.atan(Constants.SUN_RADIUS / distanceToSun) * MathUtils.RAD_TO_DEG * 3600;
@@ -338,5 +342,9 @@ public abstract class MetaData {
 	
 	public Document getDocument(){
 		return document;
+	}
+	
+	public double getArcsecPerPixel(){
+		return arcsecPerPixelX;
 	}
 }

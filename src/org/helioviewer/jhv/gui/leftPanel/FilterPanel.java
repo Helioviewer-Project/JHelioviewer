@@ -13,13 +13,13 @@ import javax.swing.JToggleButton;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.helioviewer.jhv.JHVException.LayerException;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.components.WheelSupport;
-import org.helioviewer.jhv.layers.LayerInterface;
-import org.helioviewer.jhv.layers.LayerInterface.COLOR_CHANNEL_TYPE;
+import org.helioviewer.jhv.layers.AbstractImageLayer;
+import org.helioviewer.jhv.layers.AbstractImageLayer.COLOR_CHANNEL_TYPE;
+import org.helioviewer.jhv.layers.AbstractLayer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
@@ -45,7 +45,7 @@ public class FilterPanel extends JPanel implements LayerListener{
 	private JCheckBox chckbxBlue;
 	private JToggleButton btnInverseColorTable;
 	private JLabel lblOpacity, lblSharpen, lblGamma, lblContrast;
-	private LayerInterface activeLayer;
+	private AbstractImageLayer activeLayer;
 	private static final double GAMMA_FACTOR = 0.01 * Math.log(10);
 	
     private static final Icon ICON_INVERT = IconBank.getIcon(JHVIcon.INVERT, 16, 16);
@@ -266,7 +266,7 @@ public class FilterPanel extends JPanel implements LayerListener{
 
 	}
 
-	public void updateLayer(LayerInterface layer){
+	public void updateLayer(AbstractImageLayer layer){
 		this.activeLayer = layer;
 		this.contrastSlider.setValue((int)(layer.getContrast() * 10));
 		this.gammaSlider.setValue((int) (Math.log(layer.getGamma()) / GAMMA_FACTOR));
@@ -281,14 +281,8 @@ public class FilterPanel extends JPanel implements LayerListener{
 	
 	@Override
 	public void newlayerAdded() {
-		LayerInterface activeLayer;
-		try {
-			activeLayer = Layers.getActiveLayer();
-			this.updateLayer(activeLayer);
-		} catch (LayerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		AbstractImageLayer activeLayer = Layers.getActiveImageLayer();
+		if (activeLayer != null) this.updateLayer(activeLayer);
 	}
 
 	@Override
@@ -296,8 +290,8 @@ public class FilterPanel extends JPanel implements LayerListener{
 	}
 
 	@Override
-	public void activeLayerChanged(LayerInterface layer) {
-		this.updateLayer(layer);
+	public void activeLayerChanged(AbstractLayer layer) {
+		if (layer.isImageLayer()) this.updateLayer((AbstractImageLayer) layer);
 	}
 	
 	private void repaintComponent(){

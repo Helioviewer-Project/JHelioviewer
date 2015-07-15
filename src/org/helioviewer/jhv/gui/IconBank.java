@@ -89,6 +89,8 @@ public class IconBank {
 
         SIMPLE_DOUBLEARROW_LEFT("DoubleArrow-Left.png"),
 
+        SDO_CUT_OUT("sdo_128x128.png"),
+        
         DATE("date.png"), CALENDER("Calendar_16x16.png"),
 
         SHOW_LESS("1uparrow1.png"), SHOW_MORE("1downarrow1.png"),

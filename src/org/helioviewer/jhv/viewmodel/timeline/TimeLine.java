@@ -11,7 +11,8 @@ import javax.swing.Timer;
 
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.leftPanel.MoviePanel.ANIMATION_MODE;
-import org.helioviewer.jhv.layers.LayerInterface;
+import org.helioviewer.jhv.layers.AbstractImageLayer;
+import org.helioviewer.jhv.layers.AbstractLayer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
 
@@ -159,9 +160,11 @@ public class TimeLine implements LayerListener {
 	}
 
 	@Override
-	public void activeLayerChanged(LayerInterface layer) {
-		updateLocalDateTimes(layer.getLocalDateTime());
-		MainFrame.MOVIE_PANEL.setEnableButtons(!localDateTimes.isEmpty());
+	public void activeLayerChanged(AbstractLayer layer) {
+		if (layer != null && layer.isImageLayer()){
+			updateLocalDateTimes(((AbstractImageLayer)layer).getLocalDateTime());
+			MainFrame.MOVIE_PANEL.setEnableButtons(!localDateTimes.isEmpty());
+		}
 	}
 
 	public void setCurrentFrame(int value) {

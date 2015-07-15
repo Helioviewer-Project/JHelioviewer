@@ -5,13 +5,12 @@ import java.awt.geom.Rectangle2D;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-import org.helioviewer.jhv.JHVException.LayerException;
 import org.helioviewer.jhv.JHVException.MetaDataException;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.gui.MainFrame;
+import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.layers.ImageLayer;
-import org.helioviewer.jhv.layers.LayerInterface;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.opengl.camera.CameraInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraPanInteraction;
@@ -65,9 +64,8 @@ public class OverViewPanel extends MainPanel {
 	}
 
 	private void zoomToFit() {
-		LayerInterface activeLayer;
-		try {
-			activeLayer = Layers.getActiveLayer();
+		AbstractImageLayer activeLayer = Layers.getActiveImageLayer();
+		if (activeLayer != null){
 			Rectangle2D region;
 			try {
 				LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
@@ -88,9 +86,6 @@ public class OverViewPanel extends MainPanel {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		} catch (LayerException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
 		}
 	}
 
@@ -106,14 +101,16 @@ public class OverViewPanel extends MainPanel {
 		super.render(gl);
 		gl.glPushMatrix();
 		gl.glMatrixMode(GL2.GL_PROJECTION);
+		gl.glLoadIdentity();
+		gl.glScaled(1, this.getAspect(), 1);
 		double width = Math.tan(Math.toRadians(FOV / 2.0)) * this.translation.z;
 		gl.glOrtho(-width, width, width, -width, -Constants.SUN_RADIUS,
 				Constants.SUN_RADIUS);
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		gl.glLoadIdentity();
 		gl.glEnable(GL2.GL_DEPTH_TEST);
-
-		displayRect(gl, width / 100.0);
+		if (Layers.getActiveImageLayer() != null)
+			displayRect(gl, width / 100.0);
 		gl.glPopMatrix();
 	}
 

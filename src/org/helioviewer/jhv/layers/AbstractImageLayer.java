@@ -7,6 +7,7 @@ import java.util.TreeSet;
 
 import org.helioviewer.jhv.JHVException;
 import org.helioviewer.jhv.JHVException.TextureException;
+import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.downloadmanager.AbstractRequest;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.opengl.MainPanel;
@@ -15,7 +16,7 @@ import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public abstract class LayerInterface {
+public abstract class AbstractImageLayer extends AbstractLayer{
 
 	private static final String OPACITY = "opacity";
 	private static final String SHARPEN = "sharpen";
@@ -96,7 +97,7 @@ public abstract class LayerInterface {
 		return name;
 	}
 
-	public abstract LocalDateTime getTime() throws JHVException.MetaDataException;
+	public abstract LocalDateTime getTime();
 
 	public abstract TreeSet<LocalDateTime> getLocalDateTime();
 
@@ -108,8 +109,9 @@ public abstract class LayerInterface {
 		return visible;
 	}
 	
-	public LayerInterface() {
+	public AbstractImageLayer() {
 		id = idCounter++;
+		isImageLayer = true;
 	}
 
 	public void setVisible(boolean visible) {
@@ -282,5 +284,9 @@ public abstract class LayerInterface {
 	}
 
 	public abstract CacheableImageData getCacheStatus(LocalDateTime localDateTime);
+	public abstract ImageRegion getLastDecodedImageRegion();
 
+	public int getCadence(){
+		return cadence;
+	}
 }
