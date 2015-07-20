@@ -32,7 +32,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import org.helioviewer.jhv.JHVException.LayerException;
 import org.helioviewer.jhv.JHVException.MetaDataException;
 import org.helioviewer.jhv.JHVException.TextureException;
 import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
@@ -196,7 +195,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 
 	public Matrix4d getTransformation(Quaternion3d rotation) {
 		Quaternion3d newRotation = this.rotation.copy();
-		newRotation.rotate(rotation);
+		newRotation = newRotation.rotate(rotation);
 		Matrix4d transformation = newRotation.toMatrix();
 		transformation.addTranslation(translation);
 		return transformation;
@@ -407,11 +406,16 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 				float[] transformation = getTransformation().toFloatArray();
 				float[] layerTransformation = layer.getMetaData(currentDateTime).getRotation()
 						.toMatrix().toFloatArray();
+				float[] layerInv = layer.getMetaData(currentDateTime).getRotation().inverse()
+						.toMatrix().toFloatArray();
 				gl.glUniformMatrix4fv(gl.glGetUniformLocation(shaderprogram,
 						"transformation"), 1, true, transformation, 0);
 
 				gl.glUniformMatrix4fv(gl.glGetUniformLocation(shaderprogram,
 						"layerTransformation"), 1, true, layerTransformation, 0);
+				gl.glUniformMatrix4fv(gl.glGetUniformLocation(shaderprogram,
+						"layerInv"), 1, true, layerInv, 0);
+				
 				gl.glUniform2f(gl.glGetUniformLocation(shaderprogram,
 						"imageResolution"),
 						layer.getLastDecodedImageRegion().textureHeight, layer
@@ -678,7 +682,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 			Quaternion3d rotation = Quaternion3d.createRotation(angle,
 					new Vector3d(0, 1, 0));
 
-			rotation.rotate(this.rotation);
+			rotation = rotation.rotate(this.rotation);
 			if (CameraMode.mode == MODE.MODE_3D)
 				this.rotation = rotation;
 			else {

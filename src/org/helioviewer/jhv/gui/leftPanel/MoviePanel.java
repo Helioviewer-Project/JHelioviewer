@@ -13,7 +13,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
-import java.util.TreeSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
@@ -377,12 +377,10 @@ public class MoviePanel extends JPanel implements TimeLineListener,
 			int offset = trackRect.height - 3;
 			int height = 2;
 
-			if (Layers.getActiveLayer() != null) {
-				if (!Layers.getActiveLayer().isImageLayer())
-					return;
+			if (Layers.getActiveImageLayer() != null) {
 				AbstractImageLayer layer = (AbstractImageLayer) Layers
-						.getActiveLayer();
-				TreeSet<LocalDateTime> treeSet = layer.getLocalDateTime();
+						.getActiveImageLayer();
+				ConcurrentSkipListSet<LocalDateTime> treeSet = layer.getLocalDateTime().clone();
 				int total = treeSet.size();
 				Color[] colors = new Color[treeSet.size()];
 				int counter = 0;

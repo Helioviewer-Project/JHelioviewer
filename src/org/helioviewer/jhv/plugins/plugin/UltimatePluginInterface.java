@@ -61,22 +61,48 @@ public class UltimatePluginInterface implements TimeLineListener,
 	private ArrayList<AbstractPlugin> plugins;
 
 	public static final UltimatePluginInterface SINGLETON = new UltimatePluginInterface();
-
+	
+	private final AbstractPlugin[] allPlugins;
+		
 	private UltimatePluginInterface() {
+		allPlugins = new AbstractPlugin[]{new HEKPlugin(), new PfssPlugin()};
 		plugins = new ArrayList<AbstractPlugin>();
 		TimeLine.SINGLETON.addListener(this);
-		plugins.add(new HEKPlugin());
-		plugins.add(new PfssPlugin());
+		for (AbstractPlugin plugin : allPlugins){
+			if (plugin.loadOnStartup) {
+				addPlugin(plugin);
+			}
+		}
 		MainFrame.MAIN_PANEL.addMouseListener(this);
 		MainFrame.MAIN_PANEL.addMouseMotionListener(this);
 	}
+	
+	public ArrayList<AbstractPlugin> getInactivePlugins(){
+		ArrayList<AbstractPlugin> inactivePlugins = new ArrayList<AbstractPlugin>();
+		for (AbstractPlugin plugin : allPlugins){
+			boolean active = false;
+			for (AbstractPlugin activePlugin : plugins){
+				active |= plugin == activePlugin;
+			}
+			if (!active){
+				inactivePlugins.add(plugin);
+			}
+		}
+		return inactivePlugins;
+	}
 
 	public void addPlugin(AbstractPlugin plugin) {
+		plugin.load();
 		plugins.add(plugin);
 	}
 
 	public void removePlugin(AbstractPlugin plugin) {
+		plugin.remove();
 		plugins.remove(plugin);
+	}
+	
+	public ArrayList<AbstractPlugin> getPlugins(){
+		return plugins;
 	}
 
 	public static void addButtonToToolbar(AbstractButton button) {
@@ -275,8 +301,13 @@ public class UltimatePluginInterface implements TimeLineListener,
         return imageIcon;	
     }
 	
-	public static void AddPluginLayer(AbstractPlugin plugin, String name){
+	public static void addPluginLayer(AbstractPlugin plugin, String name){
 		PluginLayer pluginLayer = new PluginLayer(name, plugin);
 		Layers.addLayer(pluginLayer);
+	}
+
+	public static void removePanelOnLeftControllPanel(
+			JPanel jPanel) {
+		MainFrame.LEFT_PANE.remove(jPanel);
 	}
 }

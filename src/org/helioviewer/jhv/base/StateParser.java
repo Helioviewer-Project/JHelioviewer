@@ -88,7 +88,7 @@ public class StateParser extends DefaultHandler {
 			Settings.setProperty(LOAD_PATH_SETTINGS, fileChooser
 					.getCurrentDirectory().getAbsolutePath());
 			if (selectedFile.exists() && selectedFile.isFile()) {
-				Layers.removeAllLayers();
+				Layers.removeAllImageLayers();
 				byte[] data = Files.readAllBytes(selectedFile.toPath());
 				String content = new String(data, StandardCharsets.UTF_8);
 				JSONObject jsonObject = new JSONObject(content);

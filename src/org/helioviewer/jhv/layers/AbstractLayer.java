@@ -39,9 +39,6 @@ public abstract class AbstractLayer {
 	
 	abstract void renderLayer(GL2 gl);
 
-	public void cancelDownload() {
-	}
-
 	public boolean isDownloadable() {
 		return isDownloadable;
 	}
@@ -65,4 +62,6 @@ public abstract class AbstractLayer {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	abstract void remove();
 }

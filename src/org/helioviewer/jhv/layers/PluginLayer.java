@@ -1,6 +1,7 @@
 package org.helioviewer.jhv.layers;
 
 import org.helioviewer.jhv.plugins.plugin.AbstractPlugin;
+import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
 
 import com.jogamp.opengl.GL2;
 
@@ -25,4 +26,9 @@ public class PluginLayer extends AbstractLayer{
 		super.setVisible(visible);
 		plugin.setVisible(visible);
 	}
+
+	@Override
+	void remove() {
+		UltimatePluginInterface.SINGLETON.removePlugin(plugin);
+	}	
 }

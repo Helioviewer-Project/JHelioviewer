@@ -22,6 +22,7 @@ public class PfssPlugin extends AbstractPlugin {
 	private static final String JSON_VISIBLE = "pfssVisible";
 
 	private static final String NAME = "PFSS plugin";
+	private static final String PLUGIN_NAME = "PFSS";
 	private static int threadNumber = 0;
 	public static final ExecutorService pool = Executors.newFixedThreadPool(2,
 			new ThreadFactory() {
@@ -39,12 +40,10 @@ public class PfssPlugin extends AbstractPlugin {
 	private PfssPluginPanel pfssPluginPanel;
 
 	public PfssPlugin() {
+		super(PLUGIN_NAME);
 		renderMode = RENDER_MODE.MAIN_PANEL;
 		manager = new FrameManager(this);
 		pfssPluginPanel = new PfssPluginPanel(this);
-		UltimatePluginInterface.addPanelToLeftControllPanel(NAME,
-				pfssPluginPanel, false);
-		UltimatePluginInterface.AddPluginLayer(this, "PFSS");
 	}
 
 	@Override
@@ -130,6 +129,18 @@ public class PfssPlugin extends AbstractPlugin {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void load() {
+		UltimatePluginInterface.addPanelToLeftControllPanel(NAME,
+				pfssPluginPanel, false);
+		UltimatePluginInterface.addPluginLayer(this, PLUGIN_NAME);
+	}
+
+	@Override
+	public void remove() {
+		UltimatePluginInterface.removePanelOnLeftControllPanel(pfssPluginPanel);
 	}
 
 }

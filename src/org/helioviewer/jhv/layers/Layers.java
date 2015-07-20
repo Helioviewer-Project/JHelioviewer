@@ -38,7 +38,7 @@ public class Layers {
 		ImageLayer layer = new ImageLayer(uri, renderer);
 		layers.add(layer);
 		layers.sort(COMPARATOR);
-		if (layers.size() == 1) setActiveLayer(0);
+		if (layers.size() == 1 || activeImageLayer < 0) setActiveLayer(0);
 		for (LayerListener renderListener : layerListeners) {
 			renderListener.newlayerAdded();
 		}
@@ -51,7 +51,7 @@ public class Layers {
 	public static void addLayer(AbstractLayer layer) {
 		layers.add(layer);
 		layers.sort(COMPARATOR);
-		if (layers.size() == 1) setActiveLayer(0);
+		if (layers.size() == 1 || activeImageLayer < 0) setActiveLayer(0);
 		for (LayerListener renderListener : layerListeners) {
 			renderListener.newlayerAdded();
 		}
@@ -66,7 +66,9 @@ public class Layers {
 				name);
 		layers.add(layer);
 		layers.sort(COMPARATOR);
-		if (layers.size() == 1) setActiveLayer(0);
+		boolean imageLayer = false;
+		
+		if (layers.size() == 1 || activeImageLayer < 0) setActiveLayer(0);
 		for (LayerListener renderListener : layerListeners) {
 			renderListener.newlayerAdded();
 		}
@@ -84,7 +86,7 @@ public class Layers {
 
 	public static void removeLayer(int idx) {
 		if (!layers.isEmpty()) {
-			layers.get(idx).cancelDownload();
+			layers.get(idx).remove();
 			layers.remove(idx);
 			if (layers.isEmpty())
 				activeLayer = -1;
@@ -132,7 +134,7 @@ public class Layers {
 	}
 
 	public static void setActiveLayer(int activeLayer) {
-		if (Layers.activeLayer != activeLayer && getLayerCount() > 0) {
+		if ((Layers.activeLayer != activeLayer || Layers.activeImageLayer < 0) && getLayerCount() > 0) {
 			Layers.activeLayer = activeLayer;
 			if (getActiveLayer().isImageLayer())
 				Layers.activeImageLayer = activeLayer;
@@ -152,8 +154,13 @@ public class Layers {
 		return coronaVisibility;
 	}
 
-	public static void removeAllLayers() {
-		layers.clear();
+	public static void removeAllImageLayers() {
+		for (AbstractLayer layer : layers){
+			if (layer.isImageLayer){
+				layer.remove();
+				layers.remove(layer);
+			}
+		}
 		activeLayer = 0;
 		for (LayerListener renderListener : layerListeners) {
 			renderListener.newlayerRemoved(0);

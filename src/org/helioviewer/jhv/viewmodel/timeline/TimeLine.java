@@ -4,7 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDateTime;
 import java.util.Iterator;
-import java.util.TreeSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.Timer;
@@ -24,7 +24,7 @@ public class TimeLine implements LayerListener {
 
 	private CopyOnWriteArrayList<TimeLineListener> timeLineListeners;
 
-	private TreeSet<LocalDateTime> localDateTimes = null;
+	private ConcurrentSkipListSet<LocalDateTime> localDateTimes = null;
 
 	private int speedFactor;
 	private ANIMATION_MODE animationMode = ANIMATION_MODE.LOOP;
@@ -62,7 +62,7 @@ public class TimeLine implements LayerListener {
 	});
 
 	private TimeLine() {
-		localDateTimes = new TreeSet<LocalDateTime>();
+		localDateTimes = new ConcurrentSkipListSet<LocalDateTime>();
 		Layers.addNewLayerListener(this);
 		timeLineListeners = new CopyOnWriteArrayList<TimeLine.TimeLineListener>();
 	}
@@ -190,7 +190,7 @@ public class TimeLine implements LayerListener {
 		void dateTimesChanged(int framecount);
 	}
 
-	public void updateLocalDateTimes(TreeSet<LocalDateTime> localDateTimes) {
+	public void updateLocalDateTimes(ConcurrentSkipListSet<LocalDateTime> localDateTimes) {
 		this.localDateTimes = localDateTimes;
 		notifyUpdateDateTimes();
 	}

@@ -2,6 +2,7 @@ package org.helioviewer.jhv.opengl.raytrace;
 
 import java.awt.geom.Rectangle2D;
 
+import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.math.Vector4d;
@@ -22,6 +23,11 @@ public class RayTrace {
 	public RayTrace() {
 		sphere = new Sphere(new Vector3d(0, 0, 0), Constants.SUN_RADIUS);
 		plane = new Plane(new Vector3d(1, 0, 0).cross(new Vector3d(0, 1, 0)), 0);
+	}
+	
+	public RayTrace(Matrix4d rotation){
+		sphere = new Sphere(new Vector3d(0, 0, 0), Constants.SUN_RADIUS);
+		plane = new Plane(rotation.multiply(new Vector3d(0, 0, 1)), 0);
 	}
 	
 	public Ray cast(int x, int y, MainPanel mainPanel){
@@ -84,7 +90,7 @@ public class RayTrace {
 	}
 	
 	public Vector2d castTexturepos(int x, int y, MetaData metaData, MainPanel mainPanel){		
-		
+		plane = new Plane(metaData.getRotation().toMatrix().multiply(new Vector3d(0, 0, 1)), 0);
 		double newX = (x-mainPanel.getWidth()/2.)/ mainPanel.getWidth();
 		double newY = (y-mainPanel.getHeight()/2.)/ mainPanel.getWidth();
 		double width = Math.tan(Math.toRadians(MainPanel.FOV/2.0)) * 2;
@@ -116,11 +122,11 @@ public class RayTrace {
 		Ray ray = new Ray(rayORot, rayDRot);
 		ray = intersect(ray);
 		rayOriginal.t = ray.t;
-		if (ray.hitpointType == HitpointType.SPHERE && ray.getHitpoint().z < 0){
+		if (ray.hitpointType == HitpointType.SPHERE && metaData.getRotation().inverse().toMatrix().multiply(ray.getHitpoint()).z < 0){
 			return null;
 		}
-		
-		Vector3d original = ray.getHitpoint();
+
+		Vector3d original = metaData.getRotation().inverse().toMatrix().multiply(ray.getHitpoint());
 		Rectangle2D physicalImageSize = metaData.getPhysicalImageSize();
 		double imageX = (Math.max(Math.min(original.x, physicalImageSize.getX() + physicalImageSize.getWidth()), physicalImageSize.getX()) - physicalImageSize.getX()) / physicalImageSize.getWidth();
 		double imageY = (Math.max(Math.min(original.y, physicalImageSize.getY() + physicalImageSize.getHeight()), physicalImageSize.getY()) - physicalImageSize.getY()) / physicalImageSize.getHeight();

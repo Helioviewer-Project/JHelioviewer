@@ -15,6 +15,7 @@ import org.helioviewer.jhv.base.downloadmanager.HTTPDownloadRequest;
 import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.actions.filefilters.ExtensionFileFilter;
+import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 
 public class DownloadMovieDialog extends JDialog {
 
@@ -58,6 +59,16 @@ public class DownloadMovieDialog extends JDialog {
 	}
 
 	public void startDownload(String url) {
+		if (TimeLine.SINGLETON.getMaxFrames() >= 1000){
+			SwingUtilities.invokeLater(new Runnable() {
+				
+				@Override
+				public void run() {
+					JOptionPane.showMessageDialog(MainFrame.SINGLETON, "More then 1000 frames aren't available to downlaod", "Not supported framecount",JOptionPane.ERROR_MESSAGE);
+				}
+			});
+			return;
+		}
 		String lastPath = Settings.getProperty(PATH_SETTINGS);
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setDialogTitle("Download imagedata");
@@ -66,7 +77,11 @@ public class DownloadMovieDialog extends JDialog {
 		}
 		fileChooser.setFileFilter(new JPXFilter());
 		int retVal = fileChooser.showSaveDialog(MainFrame.SINGLETON);
-		
+
+		if (retVal == JFileChooser.CANCEL_OPTION) {
+			return;
+		}
+
 		if (fileChooser.getSelectedFile().exists()) {
 			// ask if the user wants to overwrite
 			int response = JOptionPane.showConfirmDialog(null,

@@ -27,6 +27,8 @@ import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
@@ -80,6 +82,12 @@ public class LayerPanel extends JPanel implements LayerListener,
 
 	private JMenuItem hideLayer;
 
+	private JMenuItem showMetaView;
+
+	private JMenuItem downloadLayer;
+
+	private JButton btnShowInfo;
+
 	public LayerPanel() {
 		initPopup();
 		initGUI();
@@ -93,7 +101,7 @@ public class LayerPanel extends JPanel implements LayerListener,
 
 	private void initPopup() {
 		popupMenu = new JPopupMenu();
-		JMenuItem showMetaView = new JMenuItem("Show metainfo...",
+		showMetaView = new JMenuItem("Show metainfo...",
 				IconBank.getIcon(JHVIcon.INFO_NEW, 16, 16));
 		showMetaView.addActionListener(new ActionListener() {
 			@Override
@@ -101,7 +109,7 @@ public class LayerPanel extends JPanel implements LayerListener,
 				metaDataDialog.showDialog();
 			}
 		});
-		JMenuItem downloadLayer = new JMenuItem("Download movie",
+		downloadLayer = new JMenuItem("Download movie",
 				IconBank.getIcon(JHVIcon.DOWNLOAD_NEW, 16, 16));
 		downloadLayer.addActionListener(new ActionListener() {
 			@Override
@@ -147,6 +155,33 @@ public class LayerPanel extends JPanel implements LayerListener,
 		popupMenu.add(showLayer);
 		popupMenu.add(removeLayer);
 
+		popupMenu.addPopupMenuListener(new PopupMenuListener() {
+			
+			@Override
+			public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+				if (Layers.getLayer(activePopupLayer).isImageLayer()){
+					showMetaView.setEnabled(true);
+					downloadLayer.setEnabled(Layers.getLayer(activePopupLayer).isDownloadable());
+				}
+				else {
+					showMetaView.setEnabled(false);
+					downloadLayer.setEnabled(false);
+				}
+			}
+			
+			@Override
+			public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void popupMenuCanceled(PopupMenuEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
 	}
 
 	/**
@@ -281,7 +316,7 @@ public class LayerPanel extends JPanel implements LayerListener,
 		gbl_panel.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
 		panel.setLayout(gbl_panel);
 
-		JButton btnShowInfo = new JButton(IconBank.getIcon(JHVIcon.INFO_NEW,
+		btnShowInfo = new JButton(IconBank.getIcon(JHVIcon.INFO_NEW,
 				16, 16));
 		btnShowInfo
 				.setToolTipText("Show the Metainformation of the currently selected Layer");
@@ -493,7 +528,10 @@ public class LayerPanel extends JPanel implements LayerListener,
 
 	@Override
 	public void activeLayerChanged(AbstractLayer layer) {
-		if (layer != null) btnDownloadLayer.setEnabled(layer.isDownloadable());
+		if (layer != null){
+			btnDownloadLayer.setEnabled(layer.isDownloadable());
+			btnShowInfo.setEnabled(layer.isImageLayer());
+		}
 	}
 
 	@Override

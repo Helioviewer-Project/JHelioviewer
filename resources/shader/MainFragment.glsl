@@ -6,6 +6,7 @@ uniform sampler2D lut;
 uniform mat4 modelView;
 uniform mat4 transformation;
 uniform mat4 layerTransformation;
+uniform mat4 layerInv;
 uniform float physicalImageWidth;
 uniform float opacity;
 uniform float sharpen;
@@ -41,7 +42,8 @@ struct Plane{
 };
 
 Sphere sphere = Sphere(vec3(0,0,0),695700000);
-Plane plane = Plane(cross(vec3(1,0,0),vec3(0,1.,0)),-0.);
+Plane plane = Plane((vec4(0,0,1,0) * layerTransformation).xyz,-0.);
+//Plane plane = Plane(cross(vec3(1,0,0),vec3(0,1.,0)),-0.);
 
 float intersectSphere(in Ray ray, in Sphere sphere)
 {
@@ -179,13 +181,13 @@ void main(void)
     
    	if (tSphere > 0.){
         vec3 posOri = rayRot.origin + tSphere*rayRot.direction;
-        vec3 posRot = (vec4(posOri, 1) * layerTransformation).xyz;
+        vec3 posRot = (vec4(posOri, 0) * (layerInv)).xyz;
         
         vec3 ray = ray1.origin + tSphere * ray1.direction;
         if (posRot.z >= 0.0){
             vec2 texPos = (posRot.xy/physicalImageWidth + 0.5) *vec2(1.,1.) + sunOffset;
             if (texPos.x > 1.0 || texPos.x < 0.0 || texPos.y > 1.0 || texPos.y < 0.0) {
-                discard;
+               discard;
             }
             texPos = (texPos - imageOffset.xy) / imageOffset.zw;
             imageColor = sharpenValue(texPos);
@@ -203,7 +205,9 @@ void main(void)
     
    	if (tPlane > 0. && (tPlane < tSphere|| tSphere < 0.)){
         vec3 posOri = rayRot.origin + tPlane*rayRot.direction;
-        vec2 texPos = (posOri.xy/physicalImageWidth + 0.5) *vec2(1.,1.) + sunOffset;
+        vec3 posRot = (vec4(posOri, 0) * (layerInv)).xyz;
+        
+        vec2 texPos = (posRot.xy/physicalImageWidth + 0.5) *vec2(1.,1.) + sunOffset;
         if ((texPos.x > 1.0 || texPos.x < 0.0 || texPos.y > 1.0 || texPos.y < 0.0) && tSphere < 0.) {
             discard;
         }

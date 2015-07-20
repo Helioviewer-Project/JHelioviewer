@@ -34,7 +34,7 @@ public abstract class MetaData {
     protected double flatDistance;
     protected double maskRotation;
     protected Vector2d occulterCenter;
-    protected Vector3d orientation = new Vector3d(0.00,0.00,1.00);
+    protected Vector3d orientation = new Vector3d(0.00,0.00, Constants.SUN_RADIUS);
     private Quaternion3d defaultRotation = new Quaternion3d();
     
     protected double heeqX;
@@ -328,8 +328,8 @@ public abstract class MetaData {
 	}
 
 	protected void calcDefaultRotation() {
-		defaultRotation = Quaternion3d.calcRotation(orientation,
-				new Vector3d(0, 0, 1));
+		System.out.println(orientation.normalize());
+		defaultRotation = Quaternion3d.calcRotation(new Vector3d(0, 0, Constants.SUN_RADIUS), orientation);
 	}
 	
 	public Quaternion3d getRotation(){

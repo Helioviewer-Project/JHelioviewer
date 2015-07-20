@@ -29,9 +29,8 @@ public class CameraRotationInteraction extends CameraInteraction {
 		
 		//TODO: are the parameters in the correct order? Quaternion3d.calcRotation expects (startPoint,endPoint)
 		currentDragRotation = Quaternion3d.calcRotation(
-					currentRotationEndPoint, currentRotationStartPoint);
-		Quaternion3d currentCam = mainPanel.getRotation().copy();
-		currentCam.rotate(currentDragRotation);
+					currentRotationEndPoint.normalize(), currentRotationStartPoint.normalize());
+		Quaternion3d currentCam = mainPanel.getRotation().rotate(currentDragRotation);
 		//currentDragRotation.rotate(mainPanel.getRotation());
 		camera.setRotation(currentCam);
 		currentRotationStartPoint = currentRotationEndPoint;		

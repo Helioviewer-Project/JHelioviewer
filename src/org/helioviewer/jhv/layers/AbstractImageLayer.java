@@ -3,7 +3,7 @@ package org.helioviewer.jhv.layers;
 import java.awt.Dimension;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.TreeSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.helioviewer.jhv.JHVException;
 import org.helioviewer.jhv.JHVException.TextureException;
@@ -30,7 +30,6 @@ public abstract class AbstractImageLayer extends AbstractLayer{
 	private static final String VISIBILITY = "visibility";
 	private static final String INVERTED_LUT = "invertedLut";
 	private static final String CORONA_VISIBILITY = "coronaVisiblity";
-	protected boolean downloadable = false;
 	
 	private ArrayList<AbstractRequest> badRequests;
 	public enum SHADER_STATE {
@@ -99,11 +98,9 @@ public abstract class AbstractImageLayer extends AbstractLayer{
 
 	public abstract LocalDateTime getTime();
 
-	public abstract TreeSet<LocalDateTime> getLocalDateTime();
+	public abstract ConcurrentSkipListSet<LocalDateTime> getLocalDateTime();
 
 	protected abstract MetaData getMetaData() throws JHVException.MetaDataException;
-
-	public abstract void cancelDownload();
 
 	public boolean isVisible() {
 		return visible;
@@ -268,10 +265,6 @@ public abstract class AbstractImageLayer extends AbstractLayer{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-
-	public boolean isDownloadable() {
-		return downloadable;
 	}
 	
 	public void addBadRequest(ArrayList<AbstractRequest> badRequests) {

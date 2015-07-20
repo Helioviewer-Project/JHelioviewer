@@ -10,7 +10,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Queue;
-import java.util.TreeSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.ExecutionException;
 
 import kdu_jni.KduException;
@@ -53,8 +53,8 @@ public class UltimateLayer {
 	private KakaduRender render;
 
 	private String fileName = null;
-	private TreeSet<LocalDateTime> treeSet;
-
+	private ConcurrentSkipListSet<LocalDateTime> localDateTimes = new ConcurrentSkipListSet<LocalDateTime>();
+	
 	private ImageRegion imageRegion;
 	private Thread jpipURLLoader;
 	private boolean localFile = false;
@@ -67,7 +67,6 @@ public class UltimateLayer {
 	
 	public UltimateLayer(int id, int sourceID, KakaduRender render,
 			ImageLayer newLayer) {
-		treeSet = new TreeSet<LocalDateTime>();
 		this.id = id;
 		this.imageLayer = newLayer;
 		this.sourceID = sourceID;
@@ -76,7 +75,6 @@ public class UltimateLayer {
 
 	public UltimateLayer(int id, String filename, KakaduRender render,
 			ImageLayer newLayer) {
-		treeSet = new TreeSet<LocalDateTime>();
 		this.id = id;
 		this.sourceID = 0;
 		this.imageLayer = newLayer;
@@ -90,8 +88,8 @@ public class UltimateLayer {
 			LocalDateTime[] localDateTimes = new LocalDateTime[framecount];
 			for (int i = 1; i <= framecount; i++) {
 				MetaData metaData = render.getMetadata(i);
-				treeSet.add(metaData.getLocalDateTime());
-				localDateTimes[i - 1] = metaData.getLocalDateTime();
+				this.localDateTimes.add(metaData.getLocalDateTime());
+				localDateTimes[i-1] = metaData.getLocalDateTime();
 			}
 			Cache.addCacheElement(new CacheableImageData(id, localDateTimes,
 					filename));
@@ -244,11 +242,10 @@ public class UltimateLayer {
 	}
 
 	private void addFramedates(LocalDateTime[] localDateTimes) {
-		for (LocalDateTime localDateTime : localDateTimes)
-			treeSet.add(localDateTime);
-		LocalDateTime[] allLocalDateTimes = treeSet
-				.toArray(new LocalDateTime[treeSet.size()]);
-		TimeLine.SINGLETON.updateLocalDateTimes(treeSet);
+		for (LocalDateTime localDateTime : localDateTimes){
+			this.localDateTimes.add(localDateTime);
+		}
+		TimeLine.SINGLETON.updateLocalDateTimes(this.localDateTimes);
 	}
 
 	public MetaData getMetaData(LocalDateTime currentDateTime)
@@ -256,12 +253,12 @@ public class UltimateLayer {
 			CacheException {
 
 		CacheableImageData cacheObject = null;
-		if (treeSet.size() == 0)
+		if (this.localDateTimes.size() == 0)
 			throw new JHVException.CacheException("no layer is loaded");
 		
 		LocalDateTime localDateTime = this.getNextLocalDateTime(currentDateTime);
 		if (localDateTime == null)
-			localDateTime = treeSet.last();
+			localDateTime = this.localDateTimes.last();
 
 		cacheObject = Cache.getCacheElement(id, localDateTime);
 		if (Cache.getCacheElement(this.id, localDateTime) == null)
@@ -272,8 +269,8 @@ public class UltimateLayer {
 	}
 	
 	private LocalDateTime getNextLocalDateTime(LocalDateTime currentDateTime){
-		LocalDateTime after = treeSet.ceiling(currentDateTime);
-		LocalDateTime before = treeSet.floor(currentDateTime);
+		LocalDateTime after = this.localDateTimes.ceiling(currentDateTime);
+		LocalDateTime before = this.localDateTimes.floor(currentDateTime);
 		long beforeValue = before != null ? ChronoUnit.SECONDS.between(before, currentDateTime) : Long.MAX_VALUE;
 		long afterValue = after != null ? ChronoUnit.SECONDS.between(currentDateTime, after) : Long.MAX_VALUE;
 		return beforeValue > afterValue ? after : before;
@@ -298,8 +295,8 @@ public class UltimateLayer {
 	}
 
 	@Deprecated
-	public TreeSet<LocalDateTime> getLocalDateTimes() {
-		return this.treeSet;
+	public ConcurrentSkipListSet<LocalDateTime> getLocalDateTimes() {
+		return this.localDateTimes;
 	}
 
 	private ByteBuffer getImageFromLocalFile(int idx, float zoomFactor,
@@ -317,7 +314,7 @@ public class UltimateLayer {
 		Queue<CachableTexture> textures = TextureCache.getCacheableTextures();
 		LocalDateTime localDateTime = this.getNextLocalDateTime(currentDateTime);
 		if (localDateTime == null)
-			localDateTime = treeSet.last();
+			localDateTime = this.localDateTimes.last();
 
 		for (CachableTexture texture : textures) {
 			if (texture.compareRegion(id, imageRegion, localDateTime)
@@ -359,8 +356,8 @@ public class UltimateLayer {
 
 	@Deprecated
 	private void timeArrayChanged() {
-		TimeLine.SINGLETON.updateLocalDateTimes(treeSet);
-		LocalDateTime[] localDateTimes = new LocalDateTime[treeSet.size()];
+		TimeLine.SINGLETON.updateLocalDateTimes(this.localDateTimes);
+		LocalDateTime[] localDateTimes = new LocalDateTime[this.localDateTimes.size()];
 		// TimeLine.SINGLETON.updateLocalDateTimes(this.treeSet
 		// .toArray(localDateTimes));
 	}
@@ -378,18 +375,18 @@ public class UltimateLayer {
 			return null;
 		DateTimeFormatter formatter = DateTimeFormatter
 				.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-		LocalDateTime start = treeSet.first();
-		LocalDateTime end = treeSet.last();
+		LocalDateTime start = this.localDateTimes.first();
+		LocalDateTime end = this.localDateTimes.last();
 		int cadence = 0;
 		LocalDateTime last = null;
-		for (LocalDateTime localDateTime : treeSet) {
+		for (LocalDateTime localDateTime : this.localDateTimes) {
 			if (last != null) {
 				cadence += ChronoUnit.SECONDS.between(last, localDateTime);
 			}
 			last = localDateTime;
 			System.out.println(last);
 		}
-		cadence /= (treeSet.size() - 1);
+		cadence /= (this.localDateTimes.size() - 1);
 		String request = "startTime=" + start.format(formatter) + "&endTime="
 				+ end.format(formatter) + "&sourceId=" + sourceID + "&cadence="
 				+ cadence;

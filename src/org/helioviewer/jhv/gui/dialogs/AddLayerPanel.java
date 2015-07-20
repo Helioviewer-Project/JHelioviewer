@@ -5,9 +5,13 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.time.LocalDateTime;
 
 import javax.swing.JButton;
@@ -18,12 +22,15 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JSpinner;
+import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.dialogs.calender.DatePicker;
 import org.helioviewer.jhv.layers.Layers;
+import org.helioviewer.jhv.plugins.plugin.AbstractPlugin;
+import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -40,24 +47,30 @@ public class AddLayerPanel extends JDialog {
 
 	private JLabel lblFilter, lblFilter1, lblFilter2;
 	private JComboBox<InstrumentModel.Observatory> cmbbxObservatory;
-	private JComboBox<InstrumentModel.Filter> cmbbxFilter, cmbbxFilter1, cmbbxFilter2;
+	private JComboBox<InstrumentModel.Filter> cmbbxFilter, cmbbxFilter1,
+			cmbbxFilter2;
 	private JComboBox<TIME_STEPS> cmbbxTimeSteps;
 	private DatePicker datePickerStartDate;
 	private DatePicker datePickerEndDate;
 	private JSpinner candence;
+	private JComboBox<AbstractPlugin> cmbbxPlugin;
+	private JTabbedPane tabbedPane;
+	private JPanel layerPanel;
+	private JPanel pluginPanel;
 
 	private enum TIME_STEPS {
-		SEC("sec", 1), MIN("min", 60), HOUR("hour", 3600), DAY("day", 3600*24), GET_ALL("get all", 0);
+		SEC("sec", 1), MIN("min", 60), HOUR("hour", 3600), DAY("day", 3600 * 24), GET_ALL(
+				"get all", 0);
 
 		private String name;
 		private int factor;
-		
+
 		TIME_STEPS(String name, int factor) {
 			this.name = name;
 			this.factor = factor;
 		}
-		
-		public int getFactor(){
+
+		public int getFactor() {
 			return factor;
 		}
 
@@ -73,8 +86,8 @@ public class AddLayerPanel extends JDialog {
 	public AddLayerPanel() {
 		super(MainFrame.SINGLETON, "Add Layer", true);
 		this.setResizable(false);
-		setMinimumSize(new Dimension(450, 310));
-		setPreferredSize(new Dimension(450, 310));
+		setMinimumSize(new Dimension(450, 370));
+		setPreferredSize(new Dimension(450, 370));
 		setLocationRelativeTo(MainFrame.SINGLETON);
 		initGui();
 		addData();
@@ -87,6 +100,19 @@ public class AddLayerPanel extends JDialog {
 			}
 		}, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
 				JComponent.WHEN_IN_FOCUSED_WINDOW);
+
+		this.addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentShown(ComponentEvent e) {
+				if (tabbedPane.getSelectedComponent() == pluginPanel) {
+					tabbedPane.setSelectedComponent(layerPanel);
+				}
+				tabbedPane.setEnabledAt(tabbedPane
+						.indexOfComponent(pluginPanel),
+						!UltimatePluginInterface.SINGLETON.getInactivePlugins()
+								.isEmpty());
+			}
+		});
 	}
 
 	private void addData() {
@@ -173,8 +199,10 @@ public class AddLayerPanel extends JDialog {
 							.getSelectedItem();
 				}
 				if (filter != null && filter.getStart() != null) {
-					datePickerStartDate.setToolTip("Data available after : " + filter.getStart());
-					datePickerEndDate.setToolTip("Data available before : " + filter.getEnd());
+					datePickerStartDate.setToolTip("Data available after : "
+							+ filter.getStart());
+					datePickerEndDate.setToolTip("Data available before : "
+							+ filter.getEnd());
 				}
 			}
 		});
@@ -196,10 +224,11 @@ public class AddLayerPanel extends JDialog {
 							.getSelectedItem();
 				}
 				if (filter != null && filter.getStart() != null) {
-					datePickerStartDate.setToolTip("Data available after : " + filter.getStart());
-					datePickerEndDate.setToolTip("Data available before : " + filter.getEnd());
-				}
-				else {
+					datePickerStartDate.setToolTip("Data available after : "
+							+ filter.getStart());
+					datePickerEndDate.setToolTip("Data available before : "
+							+ filter.getEnd());
+				} else {
 					datePickerStartDate.setToolTip("");
 					datePickerEndDate.setToolTip("");
 				}
@@ -215,6 +244,20 @@ public class AddLayerPanel extends JDialog {
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
+		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		contentPanel.setLayout(new BorderLayout());
+		contentPanel.add(tabbedPane, BorderLayout.CENTER);
+
+		layerPanel = new JPanel();
+		initLayerGui(layerPanel);
+		tabbedPane.addTab("Layers", null, layerPanel, "Add an imagelayer");
+
+		pluginPanel = new JPanel();
+		initPluginGui(pluginPanel);
+		tabbedPane.addTab("Plugins", null, pluginPanel, "Add a plugin");
+	}
+
+	private void initLayerGui(JPanel contentPanel) {
 		contentPanel
 				.setLayout(new FormLayout(new ColumnSpec[] {
 						FormFactory.RELATED_GAP_COLSPEC,
@@ -314,23 +357,32 @@ public class AddLayerPanel extends JDialog {
 
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						InstrumentModel.Filter filter = (InstrumentModel.Filter) cmbbxFilter2
-								.getSelectedItem();
-						if (filter == null) {
-							filter = (InstrumentModel.Filter) cmbbxFilter1
+						if (tabbedPane.getSelectedComponent() == layerPanel) {
+							InstrumentModel.Filter filter = (InstrumentModel.Filter) cmbbxFilter2
 									.getSelectedItem();
-						}
-						if (filter == null){
-							filter = (InstrumentModel.Filter) cmbbxFilter.getSelectedItem();
-						}
+							if (filter == null) {
+								filter = (InstrumentModel.Filter) cmbbxFilter1
+										.getSelectedItem();
+							}
+							if (filter == null) {
+								filter = (InstrumentModel.Filter) cmbbxFilter
+										.getSelectedItem();
+							}
 
-						if (filter != null) {
-							int candence = (int)AddLayerPanel.this.candence.getValue() * ((TIME_STEPS)cmbbxTimeSteps.getSelectedItem()).getFactor();
-							candence = candence > 0 ? candence : 1;
-							Layers.addLayer(filter.sourceId,
-									datePickerStartDate.getDateTime(),
-									datePickerEndDate.getDateTime(),
-									candence , filter.getNickname());
+							if (filter != null) {
+								int candence = (int) AddLayerPanel.this.candence
+										.getValue()
+										* ((TIME_STEPS) cmbbxTimeSteps
+												.getSelectedItem()).getFactor();
+								candence = candence > 0 ? candence : 1;
+								Layers.addLayer(filter.sourceId,
+										datePickerStartDate.getDateTime(),
+										datePickerEndDate.getDateTime(),
+										candence, filter.getNickname());
+							}
+						}
+						else if (tabbedPane.getSelectedComponent() == pluginPanel){
+							UltimatePluginInterface.SINGLETON.addPlugin((AbstractPlugin)cmbbxPlugin.getSelectedItem());
 						}
 
 						setVisible(false);
@@ -350,6 +402,36 @@ public class AddLayerPanel extends JDialog {
 				});
 			}
 		}
+	}
+
+	private void initPluginGui(JPanel contentPanel) {
+		contentPanel
+				.setLayout(new FormLayout(new ColumnSpec[] {
+						FormFactory.RELATED_GAP_COLSPEC,
+						FormFactory.DEFAULT_COLSPEC,
+						FormFactory.RELATED_GAP_COLSPEC,
+						ColumnSpec.decode("default:grow"), }, new RowSpec[] {
+						FormFactory.RELATED_GAP_ROWSPEC,
+						FormFactory.DEFAULT_ROWSPEC, }));
+
+		JLabel lblName = new JLabel("Plugin");
+		contentPanel.add(lblName, "2, 2, right, default");
+
+		cmbbxPlugin = new JComboBox<AbstractPlugin>();
+		contentPanel.add(cmbbxPlugin, "4, 2, fill, default");
+
+		contentPanel.addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentShown(ComponentEvent e) {
+				cmbbxPlugin.removeAllItems();
+				for (AbstractPlugin plugin : UltimatePluginInterface.SINGLETON
+						.getInactivePlugins()) {
+					cmbbxPlugin.addItem(plugin);
+				}
+
+			}
+		});
+
 	}
 
 	public void updateGUI() {

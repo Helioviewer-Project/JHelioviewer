@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 
 import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
 import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
+import org.helioviewer.jhv.base.coordinates.HelioprojectiveCartesianCoordinate;
+import org.helioviewer.jhv.base.coordinates.SunDistance;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
 
@@ -69,10 +71,28 @@ public class MetaDataStereo extends MetaData{
         this.stonyhurstLongitude = metaDataContainer.tryGetDouble("HGLN_OBS");
         this.stonyhurstAvailable = this.stonyhurstLatitude != 0.0 || this.stonyhurstLongitude != 0.0;
         if (stonyhurstAvailable){
-        	HeliographicCoordinate hgc = new HeliographicCoordinate(stonyhurstLongitude, stonyhurstLatitude);        	
+        	SunDistance sunDistance = SunDistance.computePb0rSunDistance(getLocalDateTime());
+        	HelioprojectiveCartesianCoordinate hpcc = new HelioprojectiveCartesianCoordinate(Math.toRadians(stonyhurstLongitude), Math.toRadians(stonyhurstLatitude), sunDistance.getSunDistance());
+        	HeliographicCoordinate hgc = new HeliographicCoordinate(Math.toRadians(stonyhurstLongitude), Math.toRadians(stonyhurstLatitude));        	
         	HeliocentricCartesianCoordinate hcc = hgc.toHeliocentricCartesianCoordinate();
         	this.orientation = new Vector3d(hcc.x, hcc.y, hcc.z);
         }
         this.calcDefaultRotation();
+        
+        /*
+        this.stonyhurstLatitude = metaDataContainer.tryGetDouble("HGLT_OBS");
+        this.stonyhurstLongitude = metaDataContainer.tryGetDouble("HGLN_OBS");
+        this.stonyhurstAvailable = this.stonyhurstLatitude != 0.0 || this.stonyhurstLongitude != 0.0;
+        if (stonyhurstAvailable){
+        	CoordConverter<HeliographicCoordinate, HeliocentricCartesianCoordinate> converter = new Hg2HccConverter();
+        	Angle hgLongitude = new Angle(stonyhurstLongitude);
+        	Angle hgLatitude = new Angle(stonyhurstLatitude);
+        	HeliographicCoordinate hgc = new HeliographicCoordinate(hgLongitude, hgLatitude);
+        	
+        	HeliocentricCartesianCoordinate hcc = converter.convert(hgc);
+        	this.orientation = new Vector3d(hcc.getX(), hcc.getY(), hcc.getZ());
+        }
+        this.calcDefaultRotation(); 
+         */
    }
 }

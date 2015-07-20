@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.TreeSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.ExecutionException;
 
 import org.helioviewer.jhv.JHVException;
@@ -14,8 +14,6 @@ import org.helioviewer.jhv.JHVException.MetaDataException;
 import org.helioviewer.jhv.JHVException.TextureException;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.downloadmanager.AbstractRequest;
-import org.helioviewer.jhv.base.downloadmanager.AbstractRequest.PRIORITY;
-import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.opengl.MainPanel;
 import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
@@ -50,12 +48,12 @@ public class ImageLayer extends AbstractImageLayer {
 	public ImageLayer(int sourceID, KakaduRender newRender,
 			LocalDateTime start, LocalDateTime end, int cadence, String name) {
 		super();
-		this.downloadable = true;
 		this.sourceID = sourceID;
 		this.start = start;
 		this.end = end;
 		this.cadence = cadence;
 		this.name = name;
+		this.isDownloadable = ChronoUnit.SECONDS.between(start, end) / cadence < 1000;
 		this.ultimateLayer = new UltimateLayer(id, sourceID, newRender, this);
 		this.ultimateLayer.setTimeRange(start, end, cadence);
 		layerRayTrace = new LayerRayTrace(this);
@@ -68,8 +66,7 @@ public class ImageLayer extends AbstractImageLayer {
 		this.name = ultimateLayer.getMetaData(0, uri).getFullName();
 		layerRayTrace = new LayerRayTrace(this);
 		ArrayList<AbstractRequest> badRequests = new ArrayList<AbstractRequest>();
-		badRequests.add(new HTTPRequest("test", PRIORITY.HIGH));
-		this.addBadRequest(badRequests);
+		
 		LocalDateTime start = ultimateLayer.getLocalDateTimes().first();
 		LocalDateTime end = ultimateLayer.getLocalDateTimes().last();
 		this.cadence = (int) (ChronoUnit.SECONDS.between(start, end) / ultimateLayer.getLocalDateTimes().size());
@@ -136,7 +133,7 @@ public class ImageLayer extends AbstractImageLayer {
 	}
 
 	@Deprecated
-	public TreeSet<LocalDateTime> getLocalDateTime() {
+	public ConcurrentSkipListSet<LocalDateTime> getLocalDateTime() {
 		return ultimateLayer.getLocalDateTimes();
 	}
 
@@ -150,10 +147,6 @@ public class ImageLayer extends AbstractImageLayer {
 
 	public ImageRegion getLastDecodedImageRegion() {
 		return ultimateLayer.getImageRegion();
-	}
-
-	public void cancelDownload() {
-		ultimateLayer.cancelDownload();
 	}
 
 	@Override
@@ -249,5 +242,10 @@ public class ImageLayer extends AbstractImageLayer {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	@Override
+	void remove() {
+		ultimateLayer.cancelDownload();
 	}
 }

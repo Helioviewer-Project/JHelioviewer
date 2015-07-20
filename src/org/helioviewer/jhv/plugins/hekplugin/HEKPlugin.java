@@ -45,7 +45,8 @@ public class HEKPlugin extends AbstractPlugin {
 
 	private boolean visible = false;
 	private static final String NAME = "HEK Overlay Plugin";
-
+	private static final String PLUGIN_NAME = "HEK";
+	
 	private static final Cursor CURSOR_HELP = Cursor
 			.getPredefinedCursor(Cursor.HAND_CURSOR);
 
@@ -59,50 +60,50 @@ public class HEKPlugin extends AbstractPlugin {
 	private static final int Y_OFFSET = 12;
 
 	private HEKPluginPanel hekPluginPanel;
-
+	
 	/**
 	 * Default constructor.
 	 */
 	public HEKPlugin() {
+		super(PLUGIN_NAME);
 		hekPluginPanel = new HEKPluginPanel(HEKCache.getSingletonInstance());
-		UltimatePluginInterface.addPanelToLeftControllPanel(NAME,
-				hekPluginPanel, false);
-		UltimatePluginInterface.AddPluginLayer(this, "HEK");
 	}
 
 	@Override
 	public void render(GL2 gl) {
-		LocalDateTime in = UltimatePluginInterface.SINGLETON
-				.getCurrentDateTime();
-		if (in != null) {
-			Date currentDate = Date.from(in.atZone(ZoneId.systemDefault())
-					.toInstant());
-			List<HEKEvent> toDraw = HEKCache.getSingletonInstance().getModel()
-					.getActiveEvents(currentDate);
-			if (toDraw != null && toDraw.size() > 0) {
+		if (visible) {
+			LocalDateTime in = UltimatePluginInterface.SINGLETON
+					.getCurrentDateTime();
+			if (in != null) {
+				Date currentDate = Date.from(in.atZone(ZoneId.systemDefault())
+						.toInstant());
+				List<HEKEvent> toDraw = HEKCache.getSingletonInstance()
+						.getModel().getActiveEvents(currentDate);
+				if (toDraw != null && toDraw.size() > 0) {
 
-				gl.glDisable(GL2.GL_TEXTURE_2D);
-				gl.glEnable(GL2.GL_CULL_FACE);
-				gl.glEnable(GL2.GL_LINE_SMOOTH);
-				gl.glEnable(GL2.GL_BLEND);
+					gl.glDisable(GL2.GL_TEXTURE_2D);
+					gl.glEnable(GL2.GL_CULL_FACE);
+					gl.glEnable(GL2.GL_LINE_SMOOTH);
+					gl.glEnable(GL2.GL_BLEND);
 
-				for (HEKEvent evt : toDraw)
-					drawPolygon(gl, evt, currentDate);
+					for (HEKEvent evt : toDraw)
+						drawPolygon(gl, evt, currentDate);
 
-				gl.glDisable(GL2.GL_LINE_SMOOTH);
+					gl.glDisable(GL2.GL_LINE_SMOOTH);
 
-				gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
-				gl.glDisable(GL2.GL_DEPTH_TEST);
-				gl.glEnable(GL2.GL_TEXTURE_2D);
-				gl.glColor4f(1.0f, 1.0f, 1.0f, 1);
+					gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
+					gl.glDisable(GL2.GL_DEPTH_TEST);
+					gl.glEnable(GL2.GL_TEXTURE_2D);
+					gl.glColor4f(1.0f, 1.0f, 1.0f, 1);
 
-				for (HEKEvent evt : toDraw)
-					drawIcon(gl, evt, currentDate);
+					for (HEKEvent evt : toDraw)
+						drawIcon(gl, evt, currentDate);
 
-				gl.glDisable(GL2.GL_TEXTURE_2D);
-				gl.glDisable(GL2.GL_BLEND);
-				gl.glEnable(GL2.GL_DEPTH_TEST);
-				gl.glDisable(GL2.GL_CULL_FACE);
+					gl.glDisable(GL2.GL_TEXTURE_2D);
+					gl.glDisable(GL2.GL_BLEND);
+					gl.glEnable(GL2.GL_DEPTH_TEST);
+					gl.glDisable(GL2.GL_CULL_FACE);
+				}
 			}
 		}
 	}
@@ -445,4 +446,16 @@ public class HEKPlugin extends AbstractPlugin {
 			e.printStackTrace();
 		}
 	}
+
+	@Override
+	public void load() {
+		UltimatePluginInterface.addPanelToLeftControllPanel(NAME,
+				hekPluginPanel, false);
+		UltimatePluginInterface.addPluginLayer(this, PLUGIN_NAME);
+	}
+
+	@Override
+	public void remove() {
+		UltimatePluginInterface.removePanelOnLeftControllPanel(hekPluginPanel);
+	}	
 }

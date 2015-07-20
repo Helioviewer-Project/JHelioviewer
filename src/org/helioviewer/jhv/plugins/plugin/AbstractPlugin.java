@@ -9,14 +9,21 @@ import org.json.JSONObject;
 import com.jogamp.opengl.GL2;
 
 public abstract class AbstractPlugin {
+	protected final String pluginName;
+	protected boolean loadOnStartup = true;
 	public enum RENDER_MODE {
 		MAIN_PANEL, OVERVIEW_PANEL, ALL_PANEL;
 	};
 	protected RENDER_MODE renderMode = RENDER_MODE.ALL_PANEL;
 	
+	public AbstractPlugin(String name) {
+		pluginName = name;
+	}
+	
 	public void timeStampChanged(LocalDateTime current, LocalDateTime last){
 		
 	}
+	
 	
 	public void dateTimesChanged(int framecount) {
 		// TODO Auto-generated method stub
@@ -60,4 +67,16 @@ public abstract class AbstractPlugin {
 
 	public abstract void setVisible(boolean visible);
 	public abstract boolean isVisible();
+	
+	public String getName(){
+		return pluginName;
+	}
+
+	abstract public void load();
+	abstract public void remove();
+
+	@Override
+	public String toString() {
+		return pluginName;
+	}
 }
