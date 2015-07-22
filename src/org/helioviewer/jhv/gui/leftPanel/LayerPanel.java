@@ -20,6 +20,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -34,6 +35,7 @@ import javax.swing.table.DefaultTableModel;
 
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.gui.IconBank;
+import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.dialogs.AddLayerPanel;
 import org.helioviewer.jhv.gui.dialogs.DownloadMovieDialog;
@@ -250,7 +252,22 @@ public class LayerPanel extends JPanel implements LayerListener,
 				} else if (column == 1) {
 					boolean value = (boolean) table.getValueAt(row, column);
 					if (value) {
-						System.out.println("show option pane");
+						Object[] options = {"Retry failed downloads", "Remove layer", "Ignore"};
+
+						int n = JOptionPane.showOptionDialog(MainFrame.SINGLETON, "Images could not be downloaded. Server didn't replied. This happened with "+ Layers.getLayer(row).getBadRequestCount() +" other requests as well.", "Images could not be downloaded", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
+						switch (n) {
+						case 0:
+							Layers.getLayer(row).retryBadRequest();
+							break;
+						case 1:
+							Layers.removeLayer(row);
+							break;
+						case 2:
+							Layers.getLayer(row).clearBadRequests();
+							break;
+						default:
+							break;
+						}
 					}
 				}
 
@@ -278,10 +295,17 @@ public class LayerPanel extends JPanel implements LayerListener,
 			public void mouseMoved(MouseEvent e) {
 				JTable jTable = (JTable) e.getSource();
 				int row = jTable.rowAtPoint(e.getPoint());
-				System.out.println("row : " + row);
 				int column = table.columnAtPoint(e.getPoint());
-				if (column == 0 || column == 1 || column == 4)
+				if (column == 0 || column == 4)
 					table.setCursor(HAND_CURSOR);
+				else if (column == 1){
+					boolean value = (boolean) table.getValueAt(row, column);
+					if (value){
+						table.setCursor(HAND_CURSOR);						
+					}
+					else 
+						table.setCursor(Cursor.getDefaultCursor());
+				}
 				else
 					table.setCursor(Cursor.getDefaultCursor());
 			}
@@ -411,8 +435,7 @@ public class LayerPanel extends JPanel implements LayerListener,
 				table.setShowGrid(false);
 				table.setIntercellSpacing(new Dimension(0, 0));
 
-				if (Layers.getLayerCount() > 0) {
-					System.out.println(Layers.getActiveLayerNumber());
+				if (Layers.getLayerCount() > 0 && Layers.getLayerCount() > Layers.getActiveLayerNumber()) {
 					table.setRowSelectionInterval(
 							Layers.getActiveLayerNumber(),
 							Layers.getActiveLayerNumber());
@@ -479,16 +502,15 @@ public class LayerPanel extends JPanel implements LayerListener,
 						hasFocus, row, column);
 				break;
 			case 1:
-				if ((Boolean) value == true && isSelected) {
-					JLabel label = (JLabel) super
-							.getTableCellRendererComponent(table, null,
-									isSelected, hasFocus, row, column);
+				JLabel label = (JLabel) super
+				.getTableCellRendererComponent(table, null,
+						isSelected, hasFocus, row, column);
+				if ((Boolean) value == true) {
 					label.setIcon(WARNING_BAD_REQUEST);
 					label.setPreferredSize(new Dimension(20, 20));
-					// return label;
+					
 				}
-				super.getTableCellRendererComponent(table, null, isSelected,
-						hasFocus, row, column);
+				else label.setIcon(null);;
 				break;
 			case 2:
 				super.getTableCellRendererComponent(table, value, isSelected,

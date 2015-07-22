@@ -310,4 +310,8 @@ public class UltimatePluginInterface implements TimeLineListener,
 			JPanel jPanel) {
 		MainFrame.LEFT_PANE.remove(jPanel);
 	}
+
+	public static void repaintLayerPanel() {
+		MainFrame.LAYER_PANEL.repaintPanel();
+	}
 }

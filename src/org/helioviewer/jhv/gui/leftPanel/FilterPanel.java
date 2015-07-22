@@ -291,7 +291,9 @@ public class FilterPanel extends JPanel implements LayerListener{
 
 	@Override
 	public void activeLayerChanged(AbstractLayer layer) {
-		if (layer.isImageLayer()) this.updateLayer((AbstractImageLayer) layer);
+		if (layer != null && layer.isImageLayer()) {
+			this.updateLayer((AbstractImageLayer) layer);
+		}
 	}
 	
 	private void repaintComponent(){

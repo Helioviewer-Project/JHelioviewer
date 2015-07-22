@@ -135,13 +135,7 @@ public class FileDescriptorManager {
 							}
 						}
 					} catch (IOException e) {
-						 errorMessage="There was no PFSS data available for the selected time range.";
-						 SwingUtilities.invokeLater(new Runnable() {		
-							@Override
-							public void run() {
-								showErrorMessages();								
-							}
-						});
+						 parent.addBadRequest(httpRequest);
 					}
 					UltimatePluginInterface.repaintMainPanel();
 				}
@@ -202,5 +196,18 @@ public class FileDescriptorManager {
 
 		if (n == 0)
 			readFileDescriptors(loadingFrom, loadingTo);
+	}
+
+	public LocalDateTime getStartDate() {
+		return firstDate;
+	}
+	
+	public LocalDateTime getEndDate() {
+		return endDate;
+	}
+
+	public void retryBadReqeuest() {
+		// TODO Auto-generated method stub
+		
 	}
 }

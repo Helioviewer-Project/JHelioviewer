@@ -7,6 +7,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
+import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.plugins.pfssplugin.data.PfssDecompressed;
 import org.helioviewer.jhv.plugins.pfssplugin.data.managers.FrameManager;
 import org.helioviewer.jhv.plugins.plugin.AbstractPlugin;
@@ -143,4 +144,23 @@ public class PfssPlugin extends AbstractPlugin {
 		UltimatePluginInterface.removePanelOnLeftControllPanel(pfssPluginPanel);
 	}
 
+	@Override
+	public boolean checkBadRequests(LocalDateTime start, LocalDateTime end) {
+		if (start == null || end == null) return false;
+		else if (manager.getStartDate() == null || manager.getEndDate() == null) return true;
+		return manager.getStartDate().isAfter(start) && manager.getEndDate().isBefore(end);
+	}
+
+	@Override
+	public int getBadRequestCount() {
+		return badRequests.size() > 0 ? badRequests.size() : 1;
+	}
+
+	@Override
+	public void retryBadReqeuest() {
+		badRequests.clear();
+		if (manager.getStartDate() == null || manager.getEndDate() == null) pfssPluginPanel.reload();
+		else manager.retryBadReqeuest();
+		UltimatePluginInterface.repaintLayerPanel();
+	}
 }

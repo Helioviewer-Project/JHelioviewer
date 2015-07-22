@@ -26,7 +26,7 @@ public class FrameManager
 	public FrameManager(PfssPlugin _parent)
 	{
 		descriptorManager = new FileDescriptorManager(_parent);
-		dataCache = new DataCache(descriptorManager);
+		dataCache = new DataCache(descriptorManager, _parent);
 	}
 
 	/**
@@ -90,4 +90,16 @@ public class FrameManager
     {
         descriptorManager.showErrorMessages();
     }
+    
+    public LocalDateTime getStartDate(){
+    	return descriptorManager.getStartDate();
+    }
+    
+    public LocalDateTime getEndDate(){
+    	return descriptorManager.getEndDate();
+    }
+
+	public void retryBadReqeuest() {
+		descriptorManager.retryBadReqeuest();
+	}
 }

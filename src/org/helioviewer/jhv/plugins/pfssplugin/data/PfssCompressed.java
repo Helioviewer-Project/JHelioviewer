@@ -26,16 +26,17 @@ public class PfssCompressed implements Cacheable
 	private volatile byte[] rawData;
 	private final FileDescriptor descriptor;
 	private final HTTPRequest httpRequest;
+	private final PfssPlugin parent;
 	/**
 	 * 
 	 * @param descriptor File Descriptor representing the file on the server
 	 * @param url file url to load
 	 */
-	public PfssCompressed(FileDescriptor descriptor, String url)
+	public PfssCompressed(FileDescriptor descriptor, String url, PfssPlugin parent)
 	{
 		this.descriptor = descriptor;
 		httpRequest = UltimatePluginInterface.generateAndStartHTPPRequest(url, PRIORITY.MEDIUM);
-		
+		this.parent = parent;
 	}
 	
 	/**
@@ -62,7 +63,7 @@ public class PfssCompressed implements Cacheable
 	    try {
 			rawData = httpRequest.getData();
 		} catch (IOException e) {
-			e.printStackTrace();
+			parent.addBadRequest(httpRequest);
 		}
 	    isLoaded = true;
 	    return true;

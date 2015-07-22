@@ -3,6 +3,7 @@ package org.helioviewer.jhv.plugins.pfssplugin.data.caching;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssSettings;
 import org.helioviewer.jhv.plugins.pfssplugin.data.FileDescriptor;
 import org.helioviewer.jhv.plugins.pfssplugin.data.PfssCompressed;
@@ -17,9 +18,10 @@ public class DataCache {
 
 	private final LRUCache<PfssCompressed> readAheadCache;
 	private final LRUCache<PfssCompressed> cache;
-
-	public DataCache(FileDescriptorManager descriptors) {
+	private final PfssPlugin parent;
+	public DataCache(FileDescriptorManager descriptors, PfssPlugin parent) {
 		this.descriptorManager = descriptors;
+		this.parent = parent;
 		this.cache = new LRUCache<>(PfssSettings.DATA_CACHE_SIZE);
 		this.readAheadCache = new LRUCache<>(PfssSettings.DATA_READ_AHEAD_SIZE);
 	}
@@ -66,7 +68,7 @@ public class DataCache {
 	 * @param desc
 	 * @return PfssData object which will be loaded in the future
 	 */
-	public static PfssCompressed getDataAsync(FileDescriptor desc) {
+	public PfssCompressed getDataAsync(FileDescriptor desc) {
 		DateTimeFormatter monthFormatter = DateTimeFormatter.ofPattern("MM");
 		DateTimeFormatter yearFormatter = DateTimeFormatter.ofPattern("YYYY");
 		LocalDateTime current = desc.getDateTime();
@@ -74,7 +76,7 @@ public class DataCache {
 				+ "/" + current.format(monthFormatter) + "/"
 				+ desc.getFileName();
 
-		final PfssCompressed d = new PfssCompressed(desc, url);
+		final PfssCompressed d = new PfssCompressed(desc, url, parent);
 		d.loadDataAsync();				
 		return d;
 	}

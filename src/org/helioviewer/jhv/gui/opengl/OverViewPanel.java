@@ -98,6 +98,7 @@ public class OverViewPanel extends MainPanel {
 
 	@Override
 	protected void render(GL2 gl) {
+		this.rotation = MainFrame.MAIN_PANEL.getRotation();
 		super.render(gl);
 		gl.glPushMatrix();
 		gl.glMatrixMode(GL2.GL_PROJECTION);
@@ -112,12 +113,6 @@ public class OverViewPanel extends MainPanel {
 		if (Layers.getActiveImageLayer() != null)
 			displayRect(gl, width / 100.0);
 		gl.glPopMatrix();
-	}
-
-	@Override
-	public boolean displayLayer(GL2 gl, ImageLayer layer) {
-		this.rotation = MainFrame.MAIN_PANEL.getRotation();
-		return super.displayLayer(gl, layer);
 	}
 
 	@Override

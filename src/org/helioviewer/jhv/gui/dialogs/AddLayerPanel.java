@@ -285,11 +285,11 @@ public class AddLayerPanel extends JDialog {
 
 		{
 			datePickerStartDate = new DatePicker(LocalDateTime.now().minusDays(
-					1));
+					1), this);
 			contentPanel.add(datePickerStartDate, "2, 2, 5, 1, fill, top");
 		}
 		{
-			datePickerEndDate = new DatePicker(LocalDateTime.now());
+			datePickerEndDate = new DatePicker(LocalDateTime.now(), this);
 			contentPanel.add(datePickerEndDate, "2, 4, 5, 1, fill, top");
 		}
 		{

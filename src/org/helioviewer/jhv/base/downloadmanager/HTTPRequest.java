@@ -27,7 +27,6 @@ public class HTTPRequest extends AbstractRequest {
 
 	public HTTPRequest(String url, PRIORITY priority) {
 		super(url, priority);
-		System.out.println("connect to : " + url);
 	}
 
 	public void execute() throws IOException {
@@ -61,6 +60,7 @@ public class HTTPRequest extends AbstractRequest {
 			rawData = byteArrayOutputStream.toByteArray();
 			byteArrayOutputStream.close();
 		}
+		else throw new IOException();
 
 		if (inputStream != null) {
 			byteArrayOutputStream.close();

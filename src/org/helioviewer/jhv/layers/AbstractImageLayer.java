@@ -31,7 +31,6 @@ public abstract class AbstractImageLayer extends AbstractLayer{
 	private static final String INVERTED_LUT = "invertedLut";
 	private static final String CORONA_VISIBILITY = "coronaVisiblity";
 	
-	private ArrayList<AbstractRequest> badRequests;
 	public enum SHADER_STATE {
 		FALSE, TRUE;
 	}
@@ -267,15 +266,6 @@ public abstract class AbstractImageLayer extends AbstractLayer{
 		}
 	}
 	
-	public void addBadRequest(ArrayList<AbstractRequest> badRequests) {
-		this.badRequests = badRequests;
-		MainFrame.LAYER_PANEL.repaintPanel();
-	}
-
-	public boolean checkBadRequest() {
-		return badRequests != null && !badRequests.isEmpty();
-	}
-
 	public abstract CacheableImageData getCacheStatus(LocalDateTime localDateTime);
 	public abstract ImageRegion getLastDecodedImageRegion();
 

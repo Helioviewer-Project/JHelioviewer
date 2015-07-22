@@ -446,6 +446,9 @@ public class MoviePanel extends JPanel implements TimeLineListener,
 			enable |= layer.isImageLayer();
 		}
 		setEnableButtons(enable);
+		if (Layers.getActiveImageLayer() != null){
+			lblFrames.setText(slider.getValue() + "/" + slider.getMaximum());
+		}
 	}
 
 	@Override
@@ -459,9 +462,11 @@ public class MoviePanel extends JPanel implements TimeLineListener,
 
 	@Override
 	public void activeLayerChanged(AbstractLayer layer) {
-		if (layer != null && layer.isImageLayer())
+		if (layer != null && layer.isImageLayer()){
 			slider.setMaximum(((ImageLayer) layer).getLocalDateTime().size() > 0 ? ((ImageLayer) layer)
 					.getLocalDateTime().size() - 1 : 0);
+			lblFrames.setText(slider.getValue() + "/" + slider.getMaximum());
+		}
 	}
 
 	public void setEnableButtons(boolean enable) {

@@ -52,14 +52,14 @@ public abstract class AbstractRequest {
 	}
 		
 	public boolean hasRetry(){
-		finished = --retries > 0 ? false : retries < 0 ? false : true;
-		return !finished; 
+		return !(--retries > 0 ? false : retries < 0 ? false : true); 
 	}
 	
 	abstract void execute() throws IOException;
 
 	public void addError(IOException ioException) {
 		this.ioException = ioException;
+		finished = true;
 	}
 	
 	@Override
@@ -81,5 +81,11 @@ public abstract class AbstractRequest {
 	
 	public void checkException() throws IOException{
 		if (ioException != null) throw ioException;
+	}
+
+	public void setRetries(int i) {
+		this.ioException = null;
+		retries = 3;
+		finished = false;
 	}
 }

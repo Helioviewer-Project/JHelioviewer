@@ -457,5 +457,23 @@ public class HEKPlugin extends AbstractPlugin {
 	@Override
 	public void remove() {
 		UltimatePluginInterface.removePanelOnLeftControllPanel(hekPluginPanel);
+	}
+
+	@Override
+	public boolean checkBadRequests(LocalDateTime start, LocalDateTime end) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public int getBadRequestCount() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void retryBadReqeuest() {
+		// TODO Auto-generated method stub
+		
 	}	
 }

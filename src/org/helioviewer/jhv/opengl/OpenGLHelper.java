@@ -2,9 +2,14 @@ package org.helioviewer.jhv.opengl;
 
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 import org.helioviewer.jhv.base.ImageRegion;
+import org.helioviewer.jhv.gui.opengl.MainPanel;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -257,5 +262,23 @@ public class OpenGLHelper {
         buffer.flip(); 
         
 	    return buffer;
+	}
+	
+	
+	public static String loadShaderFromFile(String shaderName) {
+		StringBuilder shaderCode = new StringBuilder();
+		String line = null;
+
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(
+				MainPanel.class.getResourceAsStream(shaderName),
+				StandardCharsets.UTF_8))) {
+			while ((line = br.readLine()) != null) {
+				shaderCode.append(line + "\n");
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return shaderCode.toString();
 	}
 }

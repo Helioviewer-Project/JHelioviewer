@@ -11,6 +11,10 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -32,6 +36,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+
+import org.helioviewer.jhv.gui.MainFrame;
 
 class DatePickerPopup extends JDialog {
 
@@ -63,15 +69,24 @@ class DatePickerPopup extends JDialog {
 		}
 	};
 
-	DatePickerPopup(final DatePicker newDatePicker) {
+	DatePickerPopup(final DatePicker newDatePicker, JDialog dialog) {
+		super(dialog);
 		this.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowDeactivated(WindowEvent e) {
 				newDatePicker.hidePopup();
 			}
 		});
+		
+		this.addFocusListener(new FocusAdapter() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				newDatePicker.hidePopup();
+			}			
+		});
+		
 		this.setUndecorated(true);
-		this.setAlwaysOnTop(true);
 		this.setPreferredSize(new Dimension(250, 180));
 		this.setMinimumSize(new Dimension(250, 180));
 		this.newDatePicker = newDatePicker;

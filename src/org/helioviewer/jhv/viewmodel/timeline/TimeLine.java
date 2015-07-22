@@ -157,6 +157,8 @@ public class TimeLine implements LayerListener {
 
 	@Override
 	public void newlayerRemoved(int idx) {
+		if (Layers.getActiveImageLayer() == null)
+			localDateTimes = null;
 	}
 
 	@Override

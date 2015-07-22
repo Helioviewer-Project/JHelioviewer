@@ -36,6 +36,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.jogamp.opengl.math.geom.AABBox;
+
 public class UltimateLayer {
 
 	public String observatory;
@@ -141,7 +143,7 @@ public class UltimateLayer {
 							id, new Kdu_cache());
 					JPIPDownloadRequest jpipDownloadRequest = new JPIPDownloadRequest(
 							URL + request, PRIORITY.LOW, cacheableImageData,
-							requests);
+							requests, httpRequest);
 					jpipDownloadRequests.put(httpRequest, jpipDownloadRequest);
 					downloadRequests.add(jpipDownloadRequest);
 					requests.add(jpipDownloadRequest);
@@ -150,12 +152,12 @@ public class UltimateLayer {
 				}
 
 				boolean finished = false;
-
+				
 				while (!finished) {
 					if (Thread.interrupted())
 						return;
 					for (HTTPRequest httpRequest : httpRequests) {
-						finished = false;
+						finished = true;
 						finished &= httpRequest.isFinished();
 						JPIPDownloadRequest jpipDownloadRequest = jpipDownloadRequests
 								.get(httpRequest);
@@ -219,22 +221,41 @@ public class UltimateLayer {
 				
 				finished = false;
 				while (!finished) {
-					for (JPIPDownloadRequest request : downloadRequests){
+					finished = true;
+					for (AbstractRequest request : requests){
+						finished &= request.isFinished();
+					}
+					try {
+						Thread.sleep(20);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				
+				finished = false;
+				while (!finished) {
+					AbstractRequest[] requests = new AbstractRequest[UltimateLayer.this.requests.size()];
+					UltimateLayer.this.requests.toArray(requests);
+					for (AbstractRequest request : requests){
+						System.out.println("request: " + request);
 						if (Thread.interrupted())
 							return;
 						if (request.isFinished()){
 							try {
 								request.checkException();
 							} catch (IOException e) {
+								System.out.println("badRequest");
 								badRequests.add(request);
 							}
-							requests.remove(request);
-						}
-						
+							UltimateLayer.this.requests.remove(request);
+						}	
 					}
+					finished = UltimateLayer.this.requests.isEmpty();
 				}
 				downloadRequests.clear();
-				imageLayer.addBadRequest(badRequests);
+				imageLayer.addBadRequests(badRequests);
+				System.out.println("finished");
 			}
 		}, "JPIP_URI_LOADER");
 
@@ -313,6 +334,7 @@ public class UltimateLayer {
 			throws InterruptedException, ExecutionException, JHV_KduException {
 		Queue<CachableTexture> textures = TextureCache.getCacheableTextures();
 		LocalDateTime localDateTime = this.getNextLocalDateTime(currentDateTime);
+		if (imageRegion.getImageSize().getWidth() < 0 || imageRegion.getImageSize().getHeight() < 0) return null;
 		if (localDateTime == null)
 			localDateTime = this.localDateTimes.last();
 
@@ -368,6 +390,7 @@ public class UltimateLayer {
 		for (AbstractRequest request : requests) {
 			UltimateDownloadManager.remove(request);
 		}
+		requests.clear();
 	}
 
 	public String getURL(){
@@ -409,6 +432,147 @@ public class UltimateLayer {
 		}
 		render.closeImage();
 		return metaData;
+	}
+
+	public void retryBadRequest(final AbstractRequest[] requests) {
+		Thread thread = new Thread(new Runnable() {
+			private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+			private ArrayList<HTTPRequest> httpRequests = new ArrayList<HTTPRequest>();
+			private HashMap<HTTPRequest, JPIPDownloadRequest> jpipDownloadRequests = new HashMap<HTTPRequest, JPIPDownloadRequest>();
+			private ArrayList<JPIPDownloadRequest> downloadRequests = new ArrayList<JPIPDownloadRequest>();
+						
+			@Override
+			public void run() {
+				boolean finished = false;
+				
+				
+				for (AbstractRequest request : requests){
+					request.setRetries(3);;
+					if (request instanceof JPIPDownloadRequest){
+						downloadRequests.add((JPIPDownloadRequest) request);
+						UltimateLayer.this.requests.add(request);
+					}
+					else if (request instanceof JPIPRequest){
+						UltimateLayer.this.requests.add(request);
+					}
+					else {
+						httpRequests.add((HTTPRequest) request);
+						UltimateLayer.this.requests.add(request);
+					}
+					UltimateDownloadManager.addRequest(request);
+				}
+				
+				for (HTTPRequest httpRequest : httpRequests){
+					for (JPIPDownloadRequest downloadRequest : downloadRequests){
+						if (downloadRequest.getEqualJPIPRequest() == httpRequest){
+							jpipDownloadRequests.put(httpRequest, downloadRequest);
+						}
+					}
+				}
+				
+				while (!finished) {
+					if (Thread.interrupted())
+						return;
+					for (HTTPRequest httpRequest : httpRequests) {
+						finished = true;
+						finished &= httpRequest.isFinished();
+						JPIPDownloadRequest jpipDownloadRequest = jpipDownloadRequests
+								.get(httpRequest);
+						if (httpRequest.isFinished()
+								&& UltimateLayer.this.requests.contains(httpRequest)) {
+							JSONObject jsonObject;
+							try {
+								jsonObject = new JSONObject(httpRequest
+										.getDataAsString());
+
+								if (jsonObject.has("error")) {
+									System.out.println("error during : "
+											+ httpRequest);
+									UltimateLayer.this.requests.remove(httpRequest);
+									break;
+								}
+
+								JSONArray frames = ((JSONArray) jsonObject
+										.get("frames"));
+								LocalDateTime[] localDateTimes = new LocalDateTime[frames
+										.length()];
+								for (int i = 0; i < frames.length(); i++) {
+									Timestamp timestamp = new Timestamp(frames
+											.getLong(i) * 1000L);
+									localDateTimes[i] = timestamp
+											.toLocalDateTime();
+								}
+
+								String jpipURI = jsonObject.getString("uri");
+
+								CacheableImageData cacheableImageData = jpipDownloadRequest
+										.getCachaableImageData();
+								cacheableImageData
+										.setLocalDateTimes(localDateTimes);
+								jpipDownloadRequests.remove(httpRequest);
+								Cache.addCacheElement(cacheableImageData);
+								addFramedates(localDateTimes);
+
+								JPIPRequest jpipRequestLow = new JPIPRequest(
+										jpipURI, PRIORITY.HIGH, 0, frames
+												.length(), new Rectangle(256,
+												256), cacheableImageData);
+
+								UltimateLayer.this.requests.add(jpipRequestLow);
+
+								UltimateDownloadManager
+										.addRequest(jpipRequestLow);
+
+
+							} catch (JSONException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							} catch (IOException e) {
+								badRequests.add(httpRequest);
+							}
+							UltimateLayer.this.requests.remove(httpRequest);
+						}
+					}
+				}
+				httpRequests.clear();
+				
+				finished = false;
+				while (!finished) {
+					finished = true;
+					for (AbstractRequest request : requests){
+						finished &= request.isFinished();
+					}
+					try {
+						Thread.sleep(20);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				
+				finished = false;
+				while (!finished) {
+					AbstractRequest[] requests = new AbstractRequest[UltimateLayer.this.requests.size()];
+					UltimateLayer.this.requests.toArray(requests);
+					for (AbstractRequest request : requests){
+						System.out.println("request: " + request);
+						if (Thread.interrupted())
+							return;
+						if (request.isFinished()){
+							try {
+								request.checkException();
+							} catch (IOException e) {
+								System.out.println("badRequest");
+								badRequests.add(request);
+							}
+							UltimateLayer.this.requests.remove(request);
+						}	
+					}
+					finished = UltimateLayer.this.requests.isEmpty();
+				}				
+			}
+		}, "RETRY-DOWNLAOD-REQUESTS");
+		thread.start();
 	}
 
 }

@@ -16,6 +16,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -42,9 +43,9 @@ public class DatePicker extends JPanel{
 	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	private static final long MAX_TIME_STEPS = 3600 * 24 * 30; 
 	
-	public DatePicker(LocalDateTime dateTime) {
+	public DatePicker(LocalDateTime dateTime, JDialog dialog) {
 		this.dateTime = dateTime;
-		newDatePickerPopup = new DatePickerPopup(this);
+		newDatePickerPopup = new DatePickerPopup(this, dialog);
 		initGUI();
 		initData();
 	}

@@ -100,6 +100,7 @@ public class Layers {
 			}
 			if (counter != activeImageLayer){
 				activeImageLayer = -1;
+				layerChanged();
 			}
 			for (LayerListener renderListener : layerListeners) {
 				renderListener.newlayerRemoved(idx);
@@ -136,7 +137,7 @@ public class Layers {
 	public static void setActiveLayer(int activeLayer) {
 		if ((Layers.activeLayer != activeLayer || Layers.activeImageLayer < 0) && getLayerCount() > 0) {
 			Layers.activeLayer = activeLayer;
-			if (getActiveLayer().isImageLayer())
+			if (getActiveLayer() != null && getActiveLayer().isImageLayer())
 				Layers.activeImageLayer = activeLayer;
 			Layers.layerChanged();
 		}

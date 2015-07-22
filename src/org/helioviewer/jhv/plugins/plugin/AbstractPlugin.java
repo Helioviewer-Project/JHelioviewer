@@ -2,7 +2,10 @@ package org.helioviewer.jhv.plugins.plugin;
 
 import java.awt.event.MouseEvent;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
+import org.helioviewer.jhv.base.downloadmanager.AbstractRequest;
+import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.json.JSONObject;
 
@@ -11,6 +14,8 @@ import com.jogamp.opengl.GL2;
 public abstract class AbstractPlugin {
 	protected final String pluginName;
 	protected boolean loadOnStartup = true;
+	protected ArrayList<AbstractRequest> badRequests = new ArrayList<AbstractRequest>();
+	
 	public enum RENDER_MODE {
 		MAIN_PANEL, OVERVIEW_PANEL, ALL_PANEL;
 	};
@@ -79,4 +84,13 @@ public abstract class AbstractPlugin {
 	public String toString() {
 		return pluginName;
 	}
+	
+	abstract public boolean checkBadRequests(LocalDateTime firstDate, LocalDateTime lastDate);
+	abstract public int getBadRequestCount();
+	abstract public void retryBadReqeuest();
+	
+	public void addBadRequest(AbstractRequest request) {
+		badRequests.add(request);
+	}
+
 }
