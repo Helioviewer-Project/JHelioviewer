@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
@@ -53,7 +54,20 @@ import com.jogamp.opengl.GLProfile;
 public class JHelioviewer {
 
 	public static void main(String[] args) {
+		boolean agreeMent = Settings.getProperty(JHVGlobals.AGREEMENT_VALUE) != null ? Boolean.parseBoolean(Settings.getProperty(JHVGlobals.AGREEMENT_VALUE)) : false;
+		boolean remindMe = Settings.getProperty(JHVGlobals.AGREEMENT_REMIND_ME) != null ? Boolean.parseBoolean(Settings.getProperty(JHVGlobals.AGREEMENT_REMIND_ME)) : false;
+		if (!remindMe || !agreeMent){
+			PrivacyAgreementDialog privacyAgreementDialog = new PrivacyAgreementDialog(args);			
+			privacyAgreementDialog.setLocationRelativeTo(null);
+			privacyAgreementDialog.setVisible(true);
+		}
+		
+		else {
+			JHelioviewer.startUpJHelioviewer(args);
+		}
+	}
 
+	public static void startUpJHelioviewer(String[] args) {
 		// Uncaught runtime errors are displayed in a dialog box in addition
 		JHVUncaughtExceptionHandler.setupHandlerForThread();
 
