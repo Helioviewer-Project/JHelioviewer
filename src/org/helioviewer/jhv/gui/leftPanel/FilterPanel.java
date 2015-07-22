@@ -1,7 +1,9 @@
 package org.helioviewer.jhv.gui.leftPanel;
 
+import java.awt.Toolkit;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
 
 import javax.swing.Icon;
 import javax.swing.JCheckBox;
@@ -13,6 +15,7 @@ import javax.swing.JToggleButton;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.helioviewer.jhv.base.MultiClickListener;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MainFrame;
@@ -56,6 +59,10 @@ public class FilterPanel extends JPanel implements LayerListener{
 	}
 	
 	private void initGui(){
+        Object clickInterval = Toolkit.getDefaultToolkit().
+                getDesktopProperty("awt.multiClickInterval");
+        int delay = clickInterval != null ? (int)clickInterval : 200;
+
 		FormLayout formLayout = new FormLayout(new ColumnSpec[] {
 				FormFactory.RELATED_GAP_COLSPEC,
 				FormFactory.DEFAULT_COLSPEC,
@@ -97,7 +104,6 @@ public class FilterPanel extends JPanel implements LayerListener{
 		opacitySlider.setPaintTicks(true);
 		add(opacitySlider, "4,2,5,1");
 		WheelSupport.installMouseWheelSupport(opacitySlider);
-
 		lblOpacity = new JLabel("%");
 		add(lblOpacity, "10, 2");
 
@@ -110,6 +116,12 @@ public class FilterPanel extends JPanel implements LayerListener{
 					activeLayer.setOpacity(opacitySlider.getValue() / 100.0);
 					repaintComponent();
 				}
+			}
+		});
+		opacitySlider.addMouseListener(new MultiClickListener(delay){
+			@Override
+			public void doubleClick(MouseEvent e) {
+				opacitySlider.setValue(100);
 			}
 		});
 		
@@ -131,6 +143,12 @@ public class FilterPanel extends JPanel implements LayerListener{
 					activeLayer.setSharpen(sharpenSlider.getValue()/100.0);
 					repaintComponent();
 				}
+			}
+		});
+		sharpenSlider.addMouseListener(new MultiClickListener(delay){
+			@Override
+			public void doubleClick(MouseEvent e) {
+				sharpenSlider.setValue(0);
 			}
 		});
 		
@@ -163,6 +181,12 @@ public class FilterPanel extends JPanel implements LayerListener{
 				}
 			}
 		});
+		gammaSlider.addMouseListener(new MultiClickListener(delay){
+			@Override
+			public void doubleClick(MouseEvent e) {
+				gammaSlider.setValue((int)(Math.log(1) / GAMMA_FACTOR));
+			}
+		});
 		
 		JLabel lblContrastTitle = new JLabel("Contrast");
 		add(lblContrastTitle, "2, 8");
@@ -187,6 +211,12 @@ public class FilterPanel extends JPanel implements LayerListener{
 					activeLayer.setContrast(contrastSlider.getValue() / 10.0);
 					repaintComponent();
 				}
+			}
+		});
+		contrastSlider.addMouseListener(new MultiClickListener(delay){
+			@Override
+			public void doubleClick(MouseEvent e) {
+				contrastSlider.setValue(0);
 			}
 		});
 		
