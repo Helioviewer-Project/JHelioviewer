@@ -35,8 +35,8 @@ import javax.swing.table.DefaultTableModel;
 
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.gui.IconBank;
-import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
+import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.dialogs.AddLayerPanel;
 import org.helioviewer.jhv.gui.dialogs.DownloadMovieDialog;
 import org.helioviewer.jhv.gui.dialogs.InstrumentModel;
@@ -117,7 +117,7 @@ public class LayerPanel extends JPanel implements LayerListener,
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				downloadMovieDialog.startDownload(Layers.getLayer(
-						activePopupLayer).getURL());
+						activePopupLayer).getURL(), Layers.getLayer(activePopupLayer));
 			}
 		});
 		hideLayer = new JMenuItem("Hide layer", IconBank.getIcon(
@@ -368,7 +368,7 @@ public class LayerPanel extends JPanel implements LayerListener,
 			public void actionPerformed(ActionEvent e) {
 				if (Layers.getActiveImageLayer() != null) {
 					downloadMovieDialog.startDownload(Layers.getActiveLayer()
-							.getURL());
+							.getURL(), Layers.getActiveLayer());
 				}
 			}
 		});

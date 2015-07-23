@@ -17,6 +17,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.application.Platform;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -28,6 +32,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.ListCellRenderer;
+import javax.swing.SwingUtilities;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -37,7 +42,9 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.helioviewer.jhv.JHVException.MetaDataException;
 import org.helioviewer.jhv.JHVGlobals;
+import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.gui.MainFrame;
+import org.helioviewer.jhv.gui.actions.filefilters.FileFilter;
 import org.helioviewer.jhv.gui.interfaces.ShowableDialog;
 import org.helioviewer.jhv.layers.AbstractLayer;
 import org.helioviewer.jhv.layers.LayerListener;
@@ -71,13 +78,12 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 	JScrollPane listScroller;
 
 	private Document xmlDoc;
-
+		private static final String LAST_DIRECTORY = "metadata.save.lastPath";
 	/**
 	 * The private constructor that sets the fields and the dialog.
 	 */
 	public MetaDataDialog() {
 		super(MainFrame.SINGLETON, "Image metainfo");
-		setAlwaysOnTop(true);
 		setLayout(new BorderLayout());
 		setResizable(false);
 
@@ -193,38 +199,78 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 			dispose();
 
 		} else if (_a.getSource() == exportFitsButton) {
-			// FIXME: this code never worked, because xmlDoc was always null...
-			// :(
-			DOMSource source = new DOMSource(xmlDoc.getDocumentElement()
-					.getElementsByTagName("fits").item(0));
-			
-			setAlwaysOnTop(false);
-			String fn = openFileChooser(outFileName);
-			setAlwaysOnTop(true);
-			if (fn != null) {
-				boolean saveSuccessful = saveXMLDocument(source, fn
-						+ outFileName);
-				if (!saveSuccessful)
-					JOptionPane.showMessageDialog(this,
-							"Could not save document.");
+			if (JHVGlobals.isFXAvailable()){
+				openFileChooserFX(outFileName);
+			}
+			else {
+				openFileChooser(outFileName);
 			}
 		}
 	}
+	
+	private void saveFits(String fn){
+			DOMSource source = new DOMSource(xmlDoc.getDocumentElement()
+					.getElementsByTagName("fits").item(0));
+			
+			boolean saveSuccessful = saveXMLDocument(source, fn
+					+ outFileName);
+			if (!saveSuccessful)
+				JOptionPane.showMessageDialog(this,
+						"Could not save document.");
+	}
 
-	private String openFileChooser(String _filename) {
+	private void openFileChooserFX(final String fileName){
+		Platform.runLater(new Runnable() {
+
+			@Override
+			public void run() {
+				FileChooser fileChooser = new FileChooser();
+				fileChooser.setTitle("Save metadata");
+				fileChooser.setInitialFileName(fileName);
+				String val = Settings.getProperty(LAST_DIRECTORY);
+				if (val != null){
+					File lastPath = new File(val);
+					if (lastPath.exists())
+				fileChooser.setInitialDirectory(new File(Settings
+						.getProperty("default.local.path")));
+				}
+				
+				fileChooser.getExtensionFilters().addAll(FileFilter.IMPLEMENTED_FILE_FILTER.XML.getFileFilter().getExtensionFilter());
+				final File selectedFile = fileChooser
+						.showSaveDialog(new Stage());
+				
+				if (selectedFile != null) {
+					// remember the current directory for future
+					Settings.setProperty(LAST_DIRECTORY,
+							selectedFile.getParent());
+					saveFits(selectedFile.toString());
+				}
+			}
+
+		});
+	}
+	
+	private void openFileChooser(String _filename) {
 		// Open save-dialog
 		final JFileChooser fileChooser = JHVGlobals.getJFileChooser();
+		fileChooser.setDialogTitle("Save metadata");
 		fileChooser.setFileHidingEnabled(false);
 		fileChooser.setMultiSelectionEnabled(false);
 		fileChooser.setAcceptAllFileFilterUsed(true);
+		fileChooser.setFileFilter(FileFilter.IMPLEMENTED_FILE_FILTER.XML.getFileFilter());
+		String val = Settings.getProperty(LAST_DIRECTORY);
+		String fileName = "";
+		if (val != null){
+			File lastPath = new File(val);
+			if (lastPath.exists())
+			fileName += val + "/";
+		}
 
-		fileChooser.setSelectedFile(new File(_filename));
-
+		fileChooser.setSelectedFile(new File(fileName + _filename));
+		
 		int retVal = fileChooser.showDialog(MainFrame.SINGLETON, "OK");
 		if (retVal == JFileChooser.APPROVE_OPTION)
-			return fileChooser.getSelectedFile().getPath();
-		else
-			return null;
+			saveFits(fileChooser.getSelectedFile().getPath());
 	}
 
 	/**
@@ -269,7 +315,7 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 		outFileName = metaData.getFullName().replace(" ", "_")
 				+ " "
 				+ metaData.getLocalDateTime().format(
-						JHVGlobals.DATE_TIME_FORMATTER) + ".fits.xml";
+						JHVGlobals.FILE_DATE_TIME_FORMATTER) + ".fits.xml";
 
 	}
 
@@ -401,12 +447,18 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 	@Override
 	public void timeStampChanged(LocalDateTime current, LocalDateTime last) {
 		if (Layers.getActiveImageLayer() != null){
-		try {
-			setMetaData(Layers.getActiveImageLayer().getMetaData(TimeLine.SINGLETON.getCurrentDateTime()));
-		} catch (MetaDataException e) {
-			resetData();
-			addDataItem(e.getMessage());
-		}
+			SwingUtilities.invokeLater(new Runnable() {
+				
+				@Override
+				public void run() {
+					try {
+						setMetaData(Layers.getActiveImageLayer().getMetaData(TimeLine.SINGLETON.getCurrentDateTime()));
+					} catch (MetaDataException e) {
+						resetData();
+						addDataItem(e.getMessage());
+					}
+				}
+			});
 		}
 		else {
 			resetData();

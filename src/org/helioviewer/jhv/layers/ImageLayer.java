@@ -20,11 +20,9 @@ import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.opengl.MainPanel;
-import org.helioviewer.jhv.layers.AbstractImageLayer.COLOR_CHANNEL_TYPE;
 import org.helioviewer.jhv.layers.filter.LUT;
 import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
-import org.helioviewer.jhv.opengl.camera.Camera;
 import org.helioviewer.jhv.opengl.camera.CameraMode;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
@@ -79,8 +77,8 @@ public class ImageLayer extends AbstractImageLayer {
 		layerRayTrace = new LayerRayTrace(this);
 		ArrayList<AbstractRequest> badRequests = new ArrayList<AbstractRequest>();
 		
-		LocalDateTime start = ultimateLayer.getLocalDateTimes().first();
-		LocalDateTime end = ultimateLayer.getLocalDateTimes().last();
+		start = ultimateLayer.getLocalDateTimes().first();
+		end = ultimateLayer.getLocalDateTimes().last();
 		this.cadence = (int) (ChronoUnit.SECONDS.between(start, end) / ultimateLayer.getLocalDateTimes().size());
 		 
 	}
@@ -462,4 +460,14 @@ public class ImageLayer extends AbstractImageLayer {
 		ultimateLayer.retryBadRequest(requests);
 		MainFrame.LAYER_PANEL.repaintPanel();
 	}
+
+	@Override
+	public LocalDateTime getFirstLocalDateTime() {
+		return start;
+	}
+
+	@Override
+	public LocalDateTime getLastLocalDateTime() {
+		return end;
+	}	
 }

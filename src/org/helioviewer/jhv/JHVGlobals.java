@@ -24,6 +24,7 @@ public class JHVGlobals {
     public static final String VERSION = System.getProperty("jhvVersion") == null ? "developer" : System.getProperty("jhvVersion");
     public static String RAYGUN_TAG;
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    public static final DateTimeFormatter FILE_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH.mm.ss'Z'");
     
     public static final String AGREEMENT_REMIND_ME = "startup.agreement.remindMe";
 	public static final String AGREEMENT_VALUE = "startup.agreement.value";
@@ -33,6 +34,8 @@ public class JHVGlobals {
 	 * AIA 193
 	 */
     public static final int STARTUP_LAYER_ID = 10;
+
+	private static boolean JAVA_FX = false;
 
     private JHVGlobals()
     {
@@ -171,5 +174,14 @@ public class JHVGlobals {
 			e.printStackTrace();
 		}
 		return retVal.toString();
+	}
+
+
+	public static void enableJavaFX() {
+		JAVA_FX = true;
+	}
+	
+	public static boolean isFXAvailable(){
+		return JAVA_FX;
 	}
 }

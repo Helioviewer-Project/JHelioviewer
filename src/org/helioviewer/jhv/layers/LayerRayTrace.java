@@ -1,17 +1,12 @@
 package org.helioviewer.jhv.layers;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.geom.Rectangle2D;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 import org.helioviewer.jhv.JHVException.MetaDataException;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.gui.opengl.MainPanel;
-import org.helioviewer.jhv.gui.opengl.OverViewPanel;
 import org.helioviewer.jhv.opengl.raytrace.RayTrace;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 

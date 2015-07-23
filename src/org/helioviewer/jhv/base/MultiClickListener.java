@@ -1,12 +1,10 @@
 package org.helioviewer.jhv.base;
 
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import javax.swing.JFrame;
 import javax.swing.Timer;
 
 public class MultiClickListener extends MouseAdapter implements ActionListener

@@ -10,10 +10,13 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import javafx.application.Platform;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
@@ -30,8 +33,6 @@ import javax.swing.filechooser.FileFilter;
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.layers.AbstractLayer;
-import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 
 import com.xuggle.mediatool.IMediaWriter;
@@ -66,207 +67,236 @@ public class ExportMovieDialog implements ActionListener {
 	private int imageWidth;
 	private int imageHeight;
 	private Thread thread;
-	private ArrayList<String> descriptions;
 	private BufferedImage bufferedImage;
 
 	public ExportMovieDialog() {
-		if (openFileChooser() == JFileChooser.APPROVE_OPTION) {
-
-			this.loadSettings();
-			Settings.setProperty(SETTING_MOVIE_EXPORT_LAST_DIRECTORY, directory);
-			MainFrame.SINGLETON.setEnabled(false);
-
-			progressDialog = new ProgressDialog(this);
-			progressDialog.setVisible(true);
-
-			this.initExportMovie();
-			thread = new Thread(new Runnable() {
-
-				@Override
-				public void run() {
-					TimeLine.SINGLETON.setCurrentFrame(0);
-					for (int i = 0; i < TimeLine.SINGLETON.getMaxFrames(); i++) {
-
-						descriptions = null;
-						if (textEnabled) {
-							descriptions = new ArrayList<String>();
-							for (AbstractLayer layer : Layers.getLayers()) {
-								if (layer.isVisible()) {
-
-									LocalDateTime currentDateTime = TimeLine.SINGLETON
-											.getCurrentDateTime();
-									descriptions
-											.add(layer.getFullName()
-													+ " - "
-													+ layer.getTime()
-															.format(JHVGlobals.DATE_TIME_FORMATTER));
-
-								}
-							}
-						}
-
-						bufferedImage = null;
-						progressDialog.setDescription("Rendering images");
-						SwingUtilities.invokeLater(new Runnable() {
-
-							@Override
-							public void run() {
-								bufferedImage = MainFrame.MAIN_PANEL
-										.getBufferedImage(imageWidth,
-												imageHeight, descriptions);
-							}
-						});
-
-						while (bufferedImage == null) {
-							try {
-								if (!started)
-									break;
-								Thread.sleep(20);
-							} catch (InterruptedException e) {
-								break;
-							}
-						}
-						if (!started)
-							break;
-
-						progressDialog.updateProgressBar(i);
-
-						if (selectedOutputFormat.isMovieFile() && started) {
-							writer.encodeVideo(0, bufferedImage, speed * i,
-									TimeUnit.MILLISECONDS);
-						}
-
-						else if (selectedOutputFormat.isCompressedFile()
-								&& started) {
-							String number = String.format("%04d", i);
-							try {
-								zipOutputStream.putNextEntry(new ZipEntry(
-										filename
-												+ "/"
-												+ filename
-												+ "-"
-												+ number
-												+ selectedOutputFormat
-														.getInnerMovieFilter()
-														.getExtension()));
-								ImageIO.write(bufferedImage,
-										selectedOutputFormat
-												.getInnerMovieFilter()
-												.getFileType(), zipOutputStream);
-								zipOutputStream.closeEntry();
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
-						}
-
-						else if (selectedOutputFormat.isImageFile() && started) {
-							String number = String.format("%04d", i);
-							try {
-								ImageIO.write(
-										bufferedImage,
-										selectedOutputFormat.getFileType(),
-										new File(directory
-												+ filename
-												+ filename
-												+ "-"
-												+ number
-												+ selectedOutputFormat
-														.getExtension()));
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
-						}
-						TimeLine.SINGLETON.nextFrame();
-					}
-					stopExportMovie();
-				}
-
-			}, "Movie Export");
-			thread.start();
-		}
+		openFileChooser();
 	}
 
-	private int openFileChooser() {
-		txtTargetFile = "";
+	private void startMovieExport() {
+		this.loadSettings();
+		Settings.setProperty(SETTING_MOVIE_EXPORT_LAST_DIRECTORY, directory);
+		MainFrame.SINGLETON.setEnabled(false);
 
-		txtTargetFile += LocalDateTime.now().format(
-				JHVGlobals.DATE_TIME_FORMATTER);
-		txtTargetFile += selectedOutputFormat.getExtension();
+		progressDialog = new ProgressDialog(this);
+		progressDialog.setVisible(true);
 
-		// Open save-dialog
-		final JFileChooser fileChooser = JHVGlobals.getJFileChooser();
-		fileChooser.setFileHidingEnabled(false);
-		fileChooser.setMultiSelectionEnabled(false);
-		fileChooser.setAcceptAllFileFilterUsed(false);
+		this.initExportMovie();
+		thread = new Thread(new Runnable() {
 
-		String val;
-		try {
+			@Override
+			public void run() {
+				TimeLine.SINGLETON.setCurrentFrame(0);
+				for (int i = 0; i < TimeLine.SINGLETON.getMaxFrames(); i++) {
+
+					SwingUtilities.invokeLater(new Runnable() {
+
+						@Override
+						public void run() {
+							
+							bufferedImage = null;
+							progressDialog.setDescription("Rendering images");
+							bufferedImage = MainFrame.MAIN_PANEL
+									.getBufferedImage(imageWidth, imageHeight,
+											textEnabled);
+						}
+					});
+
+					while (bufferedImage == null) {
+						try {
+							if (!started)
+								break;
+							Thread.sleep(20);
+						} catch (InterruptedException e) {
+							break;
+						}
+					}
+					if (!started)
+						break;
+
+					progressDialog.updateProgressBar(i);
+
+					if (selectedOutputFormat.isMovieFile() && started) {
+						writer.encodeVideo(0, bufferedImage, speed * i,
+								TimeUnit.MILLISECONDS);
+					}
+
+					else if (selectedOutputFormat.isCompressedFile() && started) {
+						String number = String.format("%04d", i);
+						try {
+							zipOutputStream.putNextEntry(new ZipEntry(filename
+									+ "/"
+									+ filename
+									+ "-"
+									+ number
+									+ selectedOutputFormat
+											.getInnerMovieFilter()
+											.getExtension()));
+							ImageIO.write(bufferedImage, selectedOutputFormat
+									.getInnerMovieFilter().getFileType(),
+									zipOutputStream);
+							zipOutputStream.closeEntry();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+
+					else if (selectedOutputFormat.isImageFile() && started) {
+						String number = String.format("%04d", i);
+						try {
+							ImageIO.write(
+									bufferedImage,
+									selectedOutputFormat.getFileType(),
+									new File(directory
+											+ filename
+											+ filename
+											+ "-"
+											+ number
+											+ selectedOutputFormat
+													.getExtension()));
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+					TimeLine.SINGLETON.nextFrame();
+				}
+				stopExportMovie();
+			}
+
+		}, "Movie Export");
+		thread.start();
+	}
+
+	private void openFXFileChooser() {
+		Platform.runLater(new Runnable() {
+
+			@Override
+			public void run() {
+				FileChooser fileChooser = new FileChooser();
+				fileChooser.setTitle("Export movie");
+
+				txtTargetFile = "";
+
+				txtTargetFile += LocalDateTime.now().format(
+						JHVGlobals.DATE_TIME_FORMATTER);
+
+				String val = Settings
+						.getProperty(SETTING_MOVIE_EXPORT_LAST_DIRECTORY);
+				if (val != null && !(val.length() == 0)) {
+					fileChooser.setInitialDirectory(new File(val));
+				}
+				fileChooser.setInitialFileName(txtTargetFile);
+				for (MovieFileFilter.ImplementedMovieFilter movieFilter : MovieFileFilter.ImplementedMovieFilter
+						.values()) {
+					fileChooser.getExtensionFilters().addAll(
+							movieFilter.getExtensionFilter());
+				}
+
+				final File selectedFile = fileChooser
+						.showSaveDialog(new Stage());
+
+				if (selectedFile != null) {
+					for (MovieFileFilter.ImplementedMovieFilter filter : MovieFileFilter.ImplementedMovieFilter.values()){
+						if (filter.isEqual(fileChooser.getSelectedExtensionFilter())){
+							selectedOutputFormat = filter.getMovieFilter();
+							break;
+						}
+					}
+					directory = selectedFile.getAbsolutePath().substring(0, selectedFile.getAbsolutePath().lastIndexOf(File.separator) + 1);
+					filename = selectedFile.getName().substring(0, selectedFile.getName().lastIndexOf(selectedOutputFormat.getExtension()));
+					//directory = fileChooser.getCurrentDirectory().getPath() + "/";
+					//filename = fileChooser.getSelectedFile().getName();
+					startMovieExport();
+				}
+			}
+
+		});
+
+	}
+
+	private void openFileChooser() {
+		if (JHVGlobals.isFXAvailable())
+			openFXFileChooser();
+		else {
+			txtTargetFile = "";
+
+			txtTargetFile += LocalDateTime.now().format(
+					JHVGlobals.DATE_TIME_FORMATTER);
+			txtTargetFile += selectedOutputFormat.getExtension();
+
+			// Open save-dialog
+			final JFileChooser fileChooser = JHVGlobals.getJFileChooser();
+			fileChooser.setFileHidingEnabled(false);
+			fileChooser.setMultiSelectionEnabled(false);
+			fileChooser.setAcceptAllFileFilterUsed(false);
+
+			String val;
+
 			val = Settings.getProperty(SETTING_MOVIE_EXPORT_LAST_DIRECTORY);
 			if (val != null && !(val.length() == 0)) {
 				fileChooser.setCurrentDirectory(new File(val));
 			}
-		} catch (Throwable t) {
-			System.err.println(t);
-		}
 
-		// add Filter
-		for (MovieFileFilter.ImplementedMovieFilter movieFilter : MovieFileFilter.ImplementedMovieFilter
-				.values()) {
-			fileChooser.addChoosableFileFilter(movieFilter.getMovieFilter());
-		}
-
-		// if txtTargetFile's set the selectedOutputFormat and fileChooser's
-		// filter according to txtTargetFile's extension
-
-		for (FileFilter fileFilter : fileChooser.getChoosableFileFilters()) {
-			if (txtTargetFile.endsWith(((MovieFileFilter) fileFilter)
-					.getExtension())) {
-				fileChooser.setFileFilter(fileFilter);
-				selectedOutputFormat = (MovieFileFilter) fileFilter;
+			// add Filter
+			for (MovieFileFilter.ImplementedMovieFilter movieFilter : MovieFileFilter.ImplementedMovieFilter
+					.values()) {
+				fileChooser
+						.addChoosableFileFilter(movieFilter.getMovieFilter());
 			}
-		}
 
-		txtTargetFile = txtTargetFile.substring(0,
-				txtTargetFile.lastIndexOf(selectedOutputFormat.getExtension()));
-
-		fileChooser.setSelectedFile(new File(txtTargetFile));
-
-		int retVal = fileChooser
-				.showDialog(MainFrame.SINGLETON, "Export movie");
-
-		if (retVal != JFileChooser.CANCEL_OPTION) {
-
-			selectedOutputFormat = (MovieFileFilter) fileChooser
-					.getFileFilter();
-			directory = fileChooser.getCurrentDirectory().getPath() + "/";
-			filename = fileChooser.getSelectedFile().getName();
-
-			if (fileChooser.getSelectedFile().exists()) {
-				// ask if the user wants to overwrite
-				int response = JOptionPane.showConfirmDialog(null,
-						"Overwrite existing file?", "Confirm Overwrite",
-						JOptionPane.OK_CANCEL_OPTION,
-						JOptionPane.QUESTION_MESSAGE);
-
-				// if the user doesn't want to overwrite, simply return null
-				if (response == JOptionPane.CANCEL_OPTION) {
-					return JFileChooser.CANCEL_OPTION;
-				}
-			}
+			// if txtTargetFile's set the selectedOutputFormat and fileChooser's
+			// filter according to txtTargetFile's extension
 
 			for (FileFilter fileFilter : fileChooser.getChoosableFileFilters()) {
 				if (txtTargetFile.endsWith(((MovieFileFilter) fileFilter)
 						.getExtension())) {
-					// does the file already exist?
+					fileChooser.setFileFilter(fileFilter);
 					selectedOutputFormat = (MovieFileFilter) fileFilter;
-					filename = filename.substring(0, filename
-							.lastIndexOf(selectedOutputFormat.getExtension()));
-					return retVal;
 				}
 			}
-		}
 
-		return retVal;
+			txtTargetFile = txtTargetFile.substring(0, txtTargetFile
+					.lastIndexOf(selectedOutputFormat.getExtension()));
+
+			fileChooser.setSelectedFile(new File(txtTargetFile));
+
+			int retVal = fileChooser.showDialog(MainFrame.SINGLETON,
+					"Export movie");
+
+			if (retVal != JFileChooser.CANCEL_OPTION) {
+
+				selectedOutputFormat = (MovieFileFilter) fileChooser
+						.getFileFilter();
+				directory = fileChooser.getCurrentDirectory().getPath() + "/";
+				filename = fileChooser.getSelectedFile().getName();
+
+				if (fileChooser.getSelectedFile().exists()) {
+					// ask if the user wants to overwrite
+					int response = JOptionPane.showConfirmDialog(null,
+							"Overwrite existing file?", "Confirm Overwrite",
+							JOptionPane.OK_CANCEL_OPTION,
+							JOptionPane.QUESTION_MESSAGE);
+
+					// if the user doesn't want to overwrite, simply return null
+					if (response == JOptionPane.CANCEL_OPTION) {
+					}
+				}
+
+				for (FileFilter fileFilter : fileChooser
+						.getChoosableFileFilters()) {
+					if (txtTargetFile.endsWith(((MovieFileFilter) fileFilter)
+							.getExtension())) {
+						// does the file already exist?
+						selectedOutputFormat = (MovieFileFilter) fileFilter;
+						filename = filename.substring(0, filename
+								.lastIndexOf(selectedOutputFormat
+										.getExtension()));
+					}
+				}
+				startMovieExport();
+			}
+
+		}
 	}
 
 	private void loadSettings() {

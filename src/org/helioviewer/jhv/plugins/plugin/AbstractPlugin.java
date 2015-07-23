@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import org.helioviewer.jhv.base.downloadmanager.AbstractRequest;
-import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.json.JSONObject;
 

@@ -14,15 +14,9 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -33,7 +27,7 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.JHVException.MetaDataException;
-import org.helioviewer.jhv.JHVException.TextureException;
+import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
 import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
 import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
@@ -45,12 +39,9 @@ import org.helioviewer.jhv.base.physics.DifferentialRotation;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelCamera;
 import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelMouse;
-import org.helioviewer.jhv.layers.AbstractImageLayer.COLOR_CHANNEL_TYPE;
 import org.helioviewer.jhv.layers.AbstractLayer;
-import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
-import org.helioviewer.jhv.layers.filter.LUT;
 import org.helioviewer.jhv.opengl.LoadingScreen;
 import org.helioviewer.jhv.opengl.NoImageScreen;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
@@ -69,7 +60,6 @@ import org.helioviewer.jhv.opengl.raytrace.RayTrace.Ray;
 import org.helioviewer.jhv.opengl.texture.TextureCache;
 import org.helioviewer.jhv.plugins.plugin.AbstractPlugin.RENDER_MODE;
 import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
-import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine.TimeLineListener;
 
@@ -632,13 +622,29 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	}
 
 	public BufferedImage getBufferedImage(int imageWidth, int imageHeight,
-			ArrayList<String> descriptions) {
+			boolean textEnabled) {
 
+		ArrayList<String> descriptions = null;
+			if (textEnabled) {
+				descriptions = new ArrayList<String>();
+				for (AbstractLayer layer : Layers.getLayers()) {
+					if (layer.isVisible()) {
+
+						LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
+						descriptions
+								.add(layer.getFullName()
+										+ " - "
+										+ layer.getTime()
+												.format(JHVGlobals.DATE_TIME_FORMATTER));
+
+					}
+				}
+			}
 		int tileWidth = imageWidth < DEFAULT_TILE_WIDTH ? imageWidth
 				: DEFAULT_TILE_WIDTH;
 		int tileHeight = imageHeight < DEFAULT_TILE_HEIGHT ? imageHeight
 				: DEFAULT_TILE_HEIGHT;
-
+		this.repaintViewAndSynchronizedViews();
 		double xTiles = imageWidth / (double) tileWidth;
 		double yTiles = imageHeight / (double) tileHeight;
 		int countXTiles = imageWidth % tileWidth == 0 ? (int) xTiles
@@ -715,7 +721,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 				int destX = tileWidth * x;
 				int destY = tileHeight * y;
 				render(offscreenGL);
-
+				
 				if (descriptions != null && x == 0 && y == 0) {
 					int counter = 0;
 					textRenderer.beginRendering(this.getSurfaceWidth(),

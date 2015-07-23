@@ -2,13 +2,11 @@ package org.helioviewer.jhv.layers;
 
 import java.awt.Dimension;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.helioviewer.jhv.JHVException;
 import org.helioviewer.jhv.JHVException.TextureException;
 import org.helioviewer.jhv.base.ImageRegion;
-import org.helioviewer.jhv.base.downloadmanager.AbstractRequest;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.opengl.MainPanel;
 import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
@@ -272,4 +270,7 @@ public abstract class AbstractImageLayer extends AbstractLayer{
 	public int getCadence(){
 		return cadence;
 	}
+
+	public abstract LocalDateTime getFirstLocalDateTime();
+	public abstract LocalDateTime getLastLocalDateTime();
 }

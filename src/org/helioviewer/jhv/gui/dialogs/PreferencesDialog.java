@@ -12,7 +12,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.text.NumberFormat;
+
+import javafx.application.Platform;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Stage;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -60,7 +65,7 @@ import com.jgoodies.forms.layout.RowSpec;
  * @author Markus Langenberg
  * @author Andre Dau
  */
-public class PreferencesDialog extends JDialog implements ShowableDialog{
+public class PreferencesDialog extends JDialog implements ShowableDialog {
 
 	private static final long serialVersionUID = 1L;
 
@@ -77,16 +82,16 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 
 	private ScreenshotExportPanel screenshotExportPanel;
 	private MovieExportPanel movieExportPanel;
-	
+
 	private JButton acceptBtn;
-    private JButton cancelBtn;
-    private JButton resetBtn;
+	private JButton cancelBtn;
+	private JButton resetBtn;
 
 	private AgreementPanel agreementPanel;
-	
+
 	private static final int MAX_SIZE_SCREENSHOT = 4096;
 	private static final int MAX_SIZE_MOVIE_EXPORT = 4096;
-	
+
 	private static final AspectRatio[] MOVIE_ASPECT_RATIO_PRESETS = {
 			new AspectRatio(1, 1), new AspectRatio(4, 3),
 			new AspectRatio(16, 9), new AspectRatio(16, 10),
@@ -139,7 +144,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 		panel.add(exportSettings, BorderLayout.SOUTH);
 
 		mainPanel.add(panel, BorderLayout.CENTER);
-				
+
 		JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		btnPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
 
@@ -182,26 +187,22 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 			}
 		});
 
-		if (JHVGlobals.isWindows())
-		{
+		if (JHVGlobals.isWindows()) {
 			btnPanel.add(acceptBtn);
 			btnPanel.add(resetBtn);
 			btnPanel.add(cancelBtn);
-		}
-		else
-		{
+		} else {
 			btnPanel.add(resetBtn);
 			btnPanel.add(cancelBtn);
 			btnPanel.add(acceptBtn);
 		}
 
 		mainPanel.add(btnPanel, BorderLayout.SOUTH);
-		
+
 		getContentPane().add(mainPanel);
 		pack();
 	}
-	
-	
+
 	/**
 	 * Checks the passed pattern if it is a supported date pattern. The pattern
 	 * could contain defined letters and special characters. The method checks
@@ -235,15 +236,14 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 	/**
 	 * {@inheritDoc}
 	 */
-	public void showDialog()
-	{
+	public void showDialog() {
 		loadSettings();
 
 		pack();
 		setSize(getPreferredSize());
 		setLocationRelativeTo(MainFrame.SINGLETON);
-		DialogTools.setDefaultButtons(acceptBtn,cancelBtn);
-		
+		DialogTools.setDefaultButtons(acceptBtn, cancelBtn);
+
 		setVisible(true);
 	}
 
@@ -331,7 +331,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 		row2.add(new JLabel("Default date format:  "));
 		row2.add(dateFormatField);
 		Icon infoIcon = IconBank.getIcon(JHVIcon.INFO);
-		
+
 		dateFormatInfo = new JButton(infoIcon);
 		dateFormatInfo.setBorder(BorderFactory.createEtchedBorder());
 		dateFormatInfo.setPreferredSize(new Dimension(
@@ -346,7 +346,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 
 		row2.add(dateFormatInfo);
 		paramsPanel.add(row2);
-		
+
 		return paramsPanel;
 	}
 
@@ -387,8 +387,8 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 
 		return panel;
 	}
-	
-	private JPanel createAgreementPanel(){
+
+	private JPanel createAgreementPanel() {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.setBorder(BorderFactory.createTitledBorder(" Agreement "));
 
@@ -401,13 +401,13 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 		return panel;
 	}
 
-	private static class AgreementPanel extends JPanel{
+	private static class AgreementPanel extends JPanel {
 
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = -6968907816252313137L;
-		
+
 		private final AgreementReadMeDialog agreementReadMeDialog;
 
 		private JRadioButton rdbtnAgree;
@@ -415,7 +415,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 		private JRadioButton rdbtnDisagree;
 
 		private JCheckBox chckbxRemindMe;
-		
+
 		private AgreementPanel(JDialog dialog) {
 			agreementReadMeDialog = new AgreementReadMeDialog(dialog);
 			setLayout(new FormLayout(new ColumnSpec[] {
@@ -424,62 +424,72 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 					FormFactory.RELATED_GAP_COLSPEC,
 					FormFactory.GROWING_BUTTON_COLSPEC,
 					FormFactory.RELATED_GAP_COLSPEC,
-					FormFactory.DEFAULT_COLSPEC,},
-				new RowSpec[] {
+					FormFactory.DEFAULT_COLSPEC, }, new RowSpec[] {
 					FormFactory.RELATED_GAP_ROWSPEC,
 					FormFactory.DEFAULT_ROWSPEC,
 					FormFactory.RELATED_GAP_ROWSPEC,
-					FormFactory.DEFAULT_ROWSPEC,}));
-			
+					FormFactory.DEFAULT_ROWSPEC, }));
+
 			ButtonGroup btnGroup = new ButtonGroup();
 			rdbtnDisagree = new JRadioButton("Disagree");
 			btnGroup.add(rdbtnDisagree);
 			add(rdbtnDisagree, "2, 2");
-			
+
 			rdbtnAgree = new JRadioButton("Agree");
 			btnGroup.add(rdbtnAgree);
 			add(rdbtnAgree, "4, 2");
-			
-			boolean value = Boolean.parseBoolean(Settings.getProperty(JHVGlobals.AGREEMENT_VALUE));
-			if (value) rdbtnAgree.setSelected(true);
-			else rdbtnDisagree.setSelected(true);
-			
+
+			boolean value = Boolean.parseBoolean(Settings
+					.getProperty(JHVGlobals.AGREEMENT_VALUE));
+			if (value)
+				rdbtnAgree.setSelected(true);
+			else
+				rdbtnDisagree.setSelected(true);
+
 			JButton btnReadMe = new JButton("Read me");
 			btnReadMe.addActionListener(new ActionListener() {
-				
+
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					agreementReadMeDialog.setVisible(true);
 				}
 			});
 			add(btnReadMe, "6, 2");
-			
+
 			chckbxRemindMe = new JCheckBox("Remind agreement");
 			add(chckbxRemindMe, "6, 4");
-			
-			boolean remindMe = Boolean.parseBoolean(Settings.getProperty(JHVGlobals.AGREEMENT_REMIND_ME));
+
+			boolean remindMe = Boolean.parseBoolean(Settings
+					.getProperty(JHVGlobals.AGREEMENT_REMIND_ME));
 			chckbxRemindMe.setSelected(remindMe);
 		}
 
 		public void saveSettings() {
-			Settings.setProperty(JHVGlobals.AGREEMENT_REMIND_ME, Boolean.toString(chckbxRemindMe.isSelected()));
-			Settings.setProperty(JHVGlobals.AGREEMENT_VALUE, Boolean.toString(rdbtnAgree.isSelected()));
-			if (!rdbtnAgree.isSelected()) System.exit(0);
+			Settings.setProperty(JHVGlobals.AGREEMENT_REMIND_ME,
+					Boolean.toString(chckbxRemindMe.isSelected()));
+			Settings.setProperty(JHVGlobals.AGREEMENT_VALUE,
+					Boolean.toString(rdbtnAgree.isSelected()));
+			if (!rdbtnAgree.isSelected())
+				System.exit(0);
 		}
 
 		public void loadStettings() {
-			boolean value = Boolean.parseBoolean(Settings.getProperty(JHVGlobals.AGREEMENT_VALUE));
-			if (value) rdbtnAgree.setSelected(true);
-			else rdbtnDisagree.setSelected(true);
-			
-			boolean remindMe = Boolean.parseBoolean(Settings.getProperty(JHVGlobals.AGREEMENT_REMIND_ME));
+			boolean value = Boolean.parseBoolean(Settings
+					.getProperty(JHVGlobals.AGREEMENT_VALUE));
+			if (value)
+				rdbtnAgree.setSelected(true);
+			else
+				rdbtnDisagree.setSelected(true);
+
+			boolean remindMe = Boolean.parseBoolean(Settings
+					.getProperty(JHVGlobals.AGREEMENT_REMIND_ME));
 			chckbxRemindMe.setSelected(remindMe);
 
 		}
 	}
-	
-	private static class AgreementReadMeDialog extends JDialog{
-	
+
+	private static class AgreementReadMeDialog extends JDialog {
+
 		/**
 		 * 
 		 */
@@ -503,7 +513,8 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 				{
 					JTextArea textArea = new JTextArea();
 					textArea.setEditable(false);
-					textArea.setText(JHVGlobals.loadFileAsString(JHVGlobals.AGREEMENT_FILE));
+					textArea.setText(JHVGlobals
+							.loadFileAsString(JHVGlobals.AGREEMENT_FILE));
 					scrollPane.setViewportView(textArea);
 				}
 			}
@@ -517,7 +528,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 					buttonPane.add(okButton);
 					getRootPane().setDefaultButton(okButton);
 					okButton.addActionListener(new ActionListener() {
-						
+
 						@Override
 						public void actionPerformed(ActionEvent e) {
 							dispose();
@@ -525,12 +536,11 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 					});
 					DialogTools.setDefaultButtons(okButton, okButton);
 				}
-				
-				
+
 			}
 		}
 	}
-	
+
 	private static class MovieExportPanel extends JPanel {
 
 		private JComboBox<AspectRatio> movieAspectRatioSelection;
@@ -538,8 +548,8 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 		private JCheckBox isTextEnabled;
 		private static final String SETTING_MOVIE_IMG_WIDTH = "export.movie.image.width";
 		private static final String SETTING_MOVIE_IMG_HEIGHT = "export.movie.image.height";
-	    private static final String SETTING_MOVIE_TEXT = "export.movie.text";
-	    private boolean hasChanged = false;
+		private static final String SETTING_MOVIE_TEXT = "export.movie.text";
+		private boolean hasChanged = false;
 		/**
 		 * 
 		 */
@@ -622,7 +632,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 									.getSelectedItem();
 									if (aspectRatio.getHeight() != 0) {
 										int width = (int) txtMovieImageWidth
-														.getValue();
+												.getValue();
 										hasChanged = true;
 										txtMovieImageHeight.setValue(width
 												* aspectRatio.getHeight()
@@ -653,8 +663,8 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 
 									.getSelectedItem();
 									if (aspectRatio.getHeight() != 0) {
-										int heigth = (int)txtMovieImageHeight
-														.getValue();
+										int heigth = (int) txtMovieImageHeight
+												.getValue();
 										hasChanged = true;
 										txtMovieImageWidth.setValue(heigth
 												* aspectRatio.getWidth()
@@ -672,7 +682,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 		}
 
 		public void loadSettings() {
-			String val;			
+			String val;
 			try {
 				val = Settings.getProperty(SETTING_MOVIE_TEXT);
 				if (val != null && !(val.length() == 0)) {
@@ -721,7 +731,8 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 		}
 
 		public void saveSettings() {
-			Settings.setProperty(SETTING_MOVIE_TEXT, isTextEnabled.isSelected()+ "");
+			Settings.setProperty(SETTING_MOVIE_TEXT, isTextEnabled.isSelected()
+					+ "");
 			Settings.setProperty(SETTING_MOVIE_IMG_WIDTH, txtMovieImageWidth
 					.getValue().toString());
 			Settings.setProperty(SETTING_MOVIE_IMG_HEIGHT, txtMovieImageHeight
@@ -752,7 +763,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 		private JCheckBox isTextEnabled;
 		private static final String SETTING_SCREENSHOT_IMG_WIDTH = "export.screenshot.image.width";
 		private static final String SETTING_SCREENSHOT_IMG_HEIGHT = "export.screenshot.image.height";
-	    private static final String SETTING_SCREENSHOT_TEXT = "export.screenshot.text";
+		private static final String SETTING_SCREENSHOT_TEXT = "export.screenshot.text";
 		private boolean hasChanged = false;
 		/**
 		 * 
@@ -846,7 +857,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 									}
 								} else
 									hasChanged = false;
-								}
+							}
 						});
 				this.add(txtScreenshotImageWidth, "4, 6, left, default");
 				txtScreenshotImageWidth.setColumns(10);
@@ -880,7 +891,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 									}
 								} else
 									hasChanged = false;
-								}
+							}
 						});
 				this.add(txtScreenshotImageHeight, "4, 8, left, default");
 				txtScreenshotImageHeight.setColumns(10);
@@ -941,7 +952,8 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 		}
 
 		public void saveSettings() {
-			Settings.setProperty(SETTING_SCREENSHOT_TEXT, isTextEnabled.isSelected() + "");
+			Settings.setProperty(SETTING_SCREENSHOT_TEXT,
+					isTextEnabled.isSelected() + "");
 			Settings.setProperty(SETTING_SCREENSHOT_IMG_WIDTH,
 					txtScreenshotImageWidth.getValue().toString());
 			Settings.setProperty(SETTING_SCREENSHOT_IMG_HEIGHT,
@@ -991,13 +1003,11 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 					if (row >= 2)
 						return;
 
-					JFileChooser chooser = JHVGlobals.getJFileChooser((String) table
-							.getModel().getValueAt(row, 1));
-					chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-
-					if (chooser.showDialog(null, "Select") == JFileChooser.APPROVE_OPTION)
-						table.getModel().setValueAt(
-								chooser.getSelectedFile().toString(), row, 1);
+					if (JHVGlobals.isFXAvailable()) {
+						openFileChooserFX(row);
+					} else {
+						openFileChooser(row);
+					}
 				}
 			});
 
@@ -1006,6 +1016,34 @@ public class PreferencesDialog extends JDialog implements ShowableDialog{
 			col.setMinWidth(150);
 
 			add(scrollPane, BorderLayout.CENTER);
+		}
+
+		private void openFileChooser(int row) {
+			JFileChooser chooser = JHVGlobals.getJFileChooser((String) table
+					.getModel().getValueAt(row, 1));
+			chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+			if (chooser.showDialog(null, "Select") == JFileChooser.APPROVE_OPTION)
+				setPath(chooser.getSelectedFile().toString(), row);
+		}
+
+		private void openFileChooserFX(final int row) {
+			Platform.runLater(new Runnable() {
+
+				@Override
+				public void run() {
+					DirectoryChooser chooser = new DirectoryChooser();
+					chooser.setTitle("Set default remote path");
+					File selectedDirectory = chooser.showDialog(new Stage());
+					if (selectedDirectory != null) {
+						setPath(selectedDirectory.toString(), row);
+					}
+				}
+			});
+		}
+
+		private void setPath(String fileName, int row) {
+			table.getModel().setValueAt(fileName, row, 1);
 		}
 
 		public void loadSettings() {

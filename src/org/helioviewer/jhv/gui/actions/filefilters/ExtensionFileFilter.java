@@ -39,10 +39,6 @@ public abstract class ExtensionFileFilter extends FileFilter {
      * @return The default extension
      */
     public String getDefaultExtension() {
-        if (extensions.length > 0) {
-            return extensions[0];
-        }
-
-        return null;
+            return extensions[0].substring(1);
     }
 }

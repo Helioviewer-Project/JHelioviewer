@@ -36,8 +36,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.jogamp.opengl.math.geom.AABBox;
-
 public class UltimateLayer {
 
 	public String observatory;
@@ -425,7 +423,7 @@ public class UltimateLayer {
 		render.openImage(path);
 		MetaData metaData = null;
 		try {
-			metaData = render.getMetadata(0);
+			metaData = render.getMetadata(i);
 		} catch (JHV_KduException e) {
 			// TODO Auto-generated catch block
 			// e.printStackTrace();

@@ -13,7 +13,8 @@ import java.nio.file.Path;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import javax.swing.JDialog;
+import javafx.embed.swing.JFXPanel;
+
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
@@ -54,6 +55,16 @@ import com.jogamp.opengl.GLProfile;
 public class JHelioviewer {
 
 	public static void main(String[] args) {
+		
+		try {
+			Class<?> applicationClass = Class.forName("com.sun.javafx.runtime.VersionInfo");
+			JHVGlobals.enableJavaFX();
+		} catch (ClassNotFoundException e) {
+			System.out.println("No JavaFX detected. Please install a Java 1.8 with JavaFX");
+			//JOptionPane.showMessageDialog(null, "No JavaFX detected. Please install a Java 1.8 with JavaFX", "No JavaFX detected", JOptionPane.ERROR_MESSAGE);
+			//System.exit(0);
+		}
+		
 		boolean agreeMent = Settings.getProperty(JHVGlobals.AGREEMENT_VALUE) != null ? Boolean.parseBoolean(Settings.getProperty(JHVGlobals.AGREEMENT_VALUE)) : false;
 		boolean remindMe = Settings.getProperty(JHVGlobals.AGREEMENT_REMIND_ME) != null ? Boolean.parseBoolean(Settings.getProperty(JHVGlobals.AGREEMENT_REMIND_ME)) : false;
 		if (!remindMe || !agreeMent){
@@ -68,6 +79,12 @@ public class JHelioviewer {
 	}
 
 	public static void startUpJHelioviewer(String[] args) {
+
+		SwingUtilities.invokeLater(new Runnable() {
+		    public void run() {
+		        new JFXPanel(); // initializes JavaFX environment
+		    }
+		});		
 		// Uncaught runtime errors are displayed in a dialog box in addition
 		JHVUncaughtExceptionHandler.setupHandlerForThread();
 
