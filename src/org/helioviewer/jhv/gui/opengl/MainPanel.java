@@ -442,6 +442,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	}
 
 	protected void calculateTrackRotation() {
+		if (lastDate == null) lastDate = TimeLine.SINGLETON.getCurrentDateTime();
 		if (!lastDate.isEqual(TimeLine.SINGLETON.getCurrentDateTime())) {
 			Duration difference = Duration.between(lastDate,
 					TimeLine.SINGLETON.getCurrentDateTime());
@@ -775,6 +776,8 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 
 	@Override
 	public void activeLayerChanged(AbstractLayer layer) {
+		if (Layers.getActiveImageLayer() != null)
+			lastDate = null;
 		repaintViewAndSynchronizedViews();
 	}
 

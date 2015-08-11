@@ -30,6 +30,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
@@ -138,6 +140,7 @@ public class LayerPanel extends JPanel implements LayerListener,
 				updateData();
 			}
 		});
+				
 		JMenuItem removeLayer = new JMenuItem("Close layer", IconBank.getIcon(
 				JHVIcon.CANCEL_NEW, 16, 16));
 		removeLayer.addActionListener(new ActionListener() {
@@ -246,9 +249,6 @@ public class LayerPanel extends JPanel implements LayerListener,
 					if (layer != null) {
 						layer.setVisible(!layer.isVisible());
 					}
-
-					Layers.getActiveLayer().setVisible(
-							(boolean) table.getModel().getValueAt(row, column));
 				} else if (column == 1) {
 					boolean value = (boolean) table.getValueAt(row, column);
 					if (value) {
