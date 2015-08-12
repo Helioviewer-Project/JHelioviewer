@@ -41,7 +41,6 @@ public class CameraZoomBoxInteraction extends CameraInteraction {
 		Vector3d newPoint = start.add(end).scale(0.5);
 		newPoint = new Vector3d(newPoint.x, newPoint.y, camera.getTranslation().z);
 		Vector3d rect = start.add(end.negate());
-		System.out.println("rect : " + rect);
 		double width;
 		if (rect.x > rect.y){
 			width = Math.abs(rect.x) / 2.0;
@@ -63,15 +62,12 @@ public class CameraZoomBoxInteraction extends CameraInteraction {
 	@Override
 	public void renderInteraction(GL2 gl) {
 		if (start != null && end != null) {
-			System.out.println("renderZoombox");
 			gl.glColor3d(1, 1, 1);
 			gl.glEnable(GL2.GL_LINE_STIPPLE);
 			gl.glDisable(GL2.GL_DEPTH_TEST);
 			gl.glDisable(GL2.GL_LIGHTING);
 			gl.glDisable(GL2.GL_TEXTURE_2D);
 
-			System.out.println("start : " + start);
-			System.out.println("end   : " + end);
 			gl.glLineWidth(2.0f);
 			gl.glLineStipple(1, (short) 255);
 			gl.glBegin(GL2.GL_LINE_LOOP);

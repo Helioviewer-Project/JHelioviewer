@@ -5,12 +5,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.helioviewer.jhv.Directories;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.layers.CacheableImageData;
 
 public class JPIPDownloadRequest extends HTTPRequest {
 
-	private static final String CACHE_PATH = "/Users/stefanmeier/Documents/FHNW/JHelioviewer/screenies/";
+	private static final String CACHE_PATH = Directories.CACHE.getPath();
 
 	private final CacheableImageData cacheableImageData;
 	private final ArrayList<AbstractRequest> requests;
@@ -28,6 +29,7 @@ public class JPIPDownloadRequest extends HTTPRequest {
 	public void execute() throws IOException {
 		super.execute();
 		if (finished) {
+			System.out.println("cachePath : " + CACHE_PATH);
 			String fileName = CACHE_PATH + url.substring(url.lastIndexOf("/"));
 			File file = new File(fileName);
 			FileOutputStream fos = new FileOutputStream(file);

@@ -414,10 +414,6 @@ public class HEKPlugin extends AbstractPlugin {
 					UltimatePluginInterface
 							.expandPanel(hekPluginPanel, visible);
 				setVisible(visible);
-				for (HEKPath hekPath : HEKCache.getSingletonInstance()
-						.getTrackPaths()) {
-					System.out.println(hekPath);
-				}
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -435,9 +431,7 @@ public class HEKPlugin extends AbstractPlugin {
 					.getTrackPaths()) {
 				int state = HEKCache.getSingletonInstance().getSelectionModel()
 						.getState(hekPath);
-				System.out.println(state);
 				jsonHekEvents.put(state);
-				System.out.println("test");
 			}
 			jsonHek.put(JSON_EVENTS, jsonHekEvents);
 			jsonObject.put(JSON_NAME, jsonHek);

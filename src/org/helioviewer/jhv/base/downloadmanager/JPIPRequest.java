@@ -22,8 +22,6 @@ public class JPIPRequest extends AbstractRequest {
 
 	private JPIPSocket jpipSocket;
 
-	private int cacheSize = 0;
-
 	private final JPIPQuery query;
 
 	private int JpipRequestLen = JPIPConstants.MIN_REQUEST_LEN;
@@ -68,7 +66,6 @@ public class JPIPRequest extends AbstractRequest {
 					Method.GET);
 			boolean complete = false;
 			do {
-				System.out.println("receiveData");
 				if (jpipSocket.isClosed())
 					openSocket();
 				if (cacheableImageData.getImageFile() != null) break;
@@ -121,7 +118,6 @@ public class JPIPRequest extends AbstractRequest {
 				cacheableImageData.getImageData().Add_to_databin(data.classID.getKakaduClassID(),
 						data.codestreamID, data.binID, data.data, data.offset,
 						data.length, data.isFinal, true, false);
-				cacheSize += data.length;
 				}
 			} catch (KduException ex) {
 				throw new JHV_KduException("Internal Kakadu error: "

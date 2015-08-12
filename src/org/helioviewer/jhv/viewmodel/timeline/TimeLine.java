@@ -179,7 +179,6 @@ public class TimeLine implements LayerListener {
 		}
 		if (current != null && !current.isEqual(this.current)) {
 			LocalDateTime last = this.current;
-			System.out.println("current");
 			this.current = current;
 			dateTimeChanged(last);
 		}

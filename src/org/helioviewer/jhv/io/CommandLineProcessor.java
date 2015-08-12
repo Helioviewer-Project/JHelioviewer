@@ -163,7 +163,7 @@ public class CommandLineProcessor {
      *            name of the option.
      * @return the values associated to the option.
      * */
-    public static AbstractList<String> getOptionValues(String param) {
+    private static AbstractList<String> getOptionValues(String param) {
         param = "-" + param;
         LinkedList<String> values = new LinkedList<String>();
 
@@ -201,7 +201,7 @@ public class CommandLineProcessor {
      * @throws IllegalArgumentException
      */
 
-    public static JHVRequest parseJHVRequest(String _data) throws IllegalArgumentException {
+    private static JHVRequest parseJHVRequest(String _data) throws IllegalArgumentException {
 
         JHVRequest request = new JHVRequest();
         String[] fields = null;

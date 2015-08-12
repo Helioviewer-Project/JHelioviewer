@@ -140,7 +140,6 @@ public class DownloadMovieDialog extends JDialog {
 
 		final HTTPDownloadRequest httpDownloadRequest = new HTTPDownloadRequest(
 				url, PRIORITY.URGENT, fileName);
-		System.out.println(url);
 		SwingUtilities.invokeLater(new Runnable() {
 			
 			@Override

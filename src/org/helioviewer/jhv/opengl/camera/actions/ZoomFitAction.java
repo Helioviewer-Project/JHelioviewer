@@ -53,11 +53,6 @@ public class ZoomFitAction extends AbstractAction {
 					distance = distance - compenentView.getTranslation().z;
 					compenentView.addCameraAnimation(new CameraZoomAnimation(
 							distance, 500));
-					// System.out.println("GL3DZoomFitAction: Distance = " +
-					// distance + " Existing Distance: " +
-					// camera.getZTranslation());
-					// compenentView.addCameraAnimation(new
-					// GL3DCameraZoomAnimation(distance, 500));
 				}
 			} catch (MetaDataException e1) {
 				// TODO Auto-generated catch block

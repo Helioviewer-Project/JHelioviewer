@@ -328,7 +328,6 @@ public abstract class MetaData {
 	}
 
 	protected void calcDefaultRotation() {
-		System.out.println(orientation.normalize());
 		defaultRotation = Quaternion3d.calcRotation(new Vector3d(0, 0, Constants.SUN_RADIUS), orientation);
 	}
 	

@@ -72,7 +72,6 @@ public class SDOCutOutAction extends AbstractAction {
 				url.append("&xCen=" + centerOffsetArcSec.x + "&yCen=" + centerOffsetArcSec.y);
 				
 				url.append("&cadence=" + mainSDOLayer.getCadence() + "&cadenceUnits=s");
-				System.out.println(url);
 				JHVGlobals.openURL(url.toString());
 			} catch (MetaDataException e1) {
 				// TODO Auto-generated catch block

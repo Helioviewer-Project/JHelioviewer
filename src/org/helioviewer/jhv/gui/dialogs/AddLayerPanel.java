@@ -159,13 +159,10 @@ public class AddLayerPanel extends JDialog {
 							lblFilter2
 									.setText(observatory.getUiLabels().get(2));
 						} catch (Exception e2) {
-							System.out.println("Filter2 not available");
 						}
 					} catch (Exception e2) {
-						System.out.println("Filter1 not available");
 					}
 				} catch (Exception e2) {
-					System.out.println("Insturment not available");
 				}
 
 				cmbbxFilter.removeAllItems();
@@ -182,7 +179,6 @@ public class AddLayerPanel extends JDialog {
 
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				System.out.println(e.getItem());
 				cmbbxFilter1.removeAllItems();
 				cmbbxFilter2.removeAllItems();
 				for (InstrumentModel.Filter filter : ((InstrumentModel.Filter) e

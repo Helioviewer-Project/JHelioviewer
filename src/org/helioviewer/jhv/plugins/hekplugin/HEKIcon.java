@@ -49,7 +49,6 @@ public class HEKIcon {
 		openGLHelper = new OpenGLHelper();
 		texture = openGLHelper.createTextureID();
 		for (HEKICONS hekIcon : HEKICONS.values()) {
-			System.out.println("name : " + PATH + hekIcon.getName());
 			BufferedImage bufferedImage = getImage(hekIcon);
 			openGLHelper.bindBufferedImageToGLTexture(bufferedImage, 0,
 					hekIcon.ordinal() * bufferedImage.getHeight(),

@@ -52,8 +52,6 @@ public class CameraPanInteraction extends CameraInteraction {
 	public void mouseReleased(MouseEvent e) {
 		// If never dragged, pan to the point where should be clicked
 		if (!dragged){
-			System.out.println("drag");
-			System.out.println(lastPosition);
 			double xTranslation = (lastPosition.getX() - mainPanel.getWidth() / 2) * meterPerPixelWidth;
 			double yTranslation = (lastPosition.getY() - mainPanel.getHeight() / 2) * meterPerPixelHeight;
 			Vector3d translation = mainPanel.getTranslation();

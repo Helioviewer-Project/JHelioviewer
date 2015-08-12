@@ -30,8 +30,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
@@ -324,11 +322,6 @@ public class LayerPanel extends JPanel implements LayerListener,
 		});
 		scrollPane.setViewportView(table);
 
-		/*
-		 * for (int i = 0; i < table.getColumnCount(); i++){
-		 * table.getColumnModel().getColumn(i) .setCellRenderer(new
-		 * LayerCellRenderer()); }
-		 */
 		JPanel panel = new JPanel();
 		add(panel, BorderLayout.SOUTH);
 		GridBagLayout gbl_panel = new GridBagLayout();

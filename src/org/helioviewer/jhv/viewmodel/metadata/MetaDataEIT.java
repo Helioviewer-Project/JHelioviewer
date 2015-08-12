@@ -21,9 +21,7 @@ public class MetaDataEIT extends MetaData{
         if (!(instrument.equalsIgnoreCase("EIT"))){
         	throw new NonSuitableMetaDataException("invalid instrument: "+instrument);
         }
-        
-        System.out.println("measurement: " + measurement);
-        
+                
         this.metaDataContainer = metaDataContainer;
         
         fullName = "EIT " + measurement;

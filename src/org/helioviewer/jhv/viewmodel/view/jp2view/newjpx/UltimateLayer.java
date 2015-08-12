@@ -167,8 +167,6 @@ public class UltimateLayer {
 										.getDataAsString());
 
 								if (jsonObject.has("error")) {
-									System.out.println("error during : "
-											+ httpRequest);
 									requests.remove(httpRequest);
 									break;
 								}
@@ -236,14 +234,12 @@ public class UltimateLayer {
 					AbstractRequest[] requests = new AbstractRequest[UltimateLayer.this.requests.size()];
 					UltimateLayer.this.requests.toArray(requests);
 					for (AbstractRequest request : requests){
-						System.out.println("request: " + request);
 						if (Thread.interrupted())
 							return;
 						if (request.isFinished()){
 							try {
 								request.checkException();
 							} catch (IOException e) {
-								System.out.println("badRequest");
 								badRequests.add(request);
 							}
 							UltimateLayer.this.requests.remove(request);
@@ -253,7 +249,6 @@ public class UltimateLayer {
 				}
 				downloadRequests.clear();
 				imageLayer.addBadRequests(badRequests);
-				System.out.println("finished");
 			}
 		}, "JPIP_URI_LOADER");
 
@@ -405,7 +400,6 @@ public class UltimateLayer {
 				cadence += ChronoUnit.SECONDS.between(last, localDateTime);
 			}
 			last = localDateTime;
-			System.out.println(last);
 		}
 		cadence /= (this.localDateTimes.size() - 1);
 		String request = "startTime=" + start.format(formatter) + "&endTime="
@@ -560,7 +554,6 @@ public class UltimateLayer {
 							try {
 								request.checkException();
 							} catch (IOException e) {
-								System.out.println("badRequest");
 								badRequests.add(request);
 							}
 							UltimateLayer.this.requests.remove(request);

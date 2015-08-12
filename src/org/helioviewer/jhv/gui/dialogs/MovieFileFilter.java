@@ -38,7 +38,6 @@ public class MovieFileFilter extends FileFilter{
 		}
 		
 		public ExtensionFilter getExtensionFilter(){
-			System.out.println("ext : " + movieFilter.extension);
 			return new ExtensionFilter(movieFilter.description, movieFilter.extension);
 		}
 

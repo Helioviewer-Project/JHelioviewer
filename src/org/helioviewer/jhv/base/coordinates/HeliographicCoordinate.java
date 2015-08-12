@@ -14,8 +14,6 @@ public class HeliographicCoordinate {
 		this.longitude = hgLongitude;
 		this.latitude = hgLatitude;
 		this.radius = radius;
-		System.out.println(this.longitude);
-		System.out.println(this.latitude);
 	}
 	
 	public HeliographicCoordinate(double hgLongitude, double hgLatitude) {
