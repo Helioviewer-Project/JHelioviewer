@@ -128,7 +128,7 @@ public class UltimateLayer {
 							+ tmp.format(formatter) + "&sourceId=" + sourceID
 							+ "&jpip=true&verbose=true&cadence=" + cadence;
 					HTTPRequest httpRequest = new HTTPRequest(URL + request,
-							PRIORITY.URGENT);
+							PRIORITY.HIGH);
 					requests.add(httpRequest);
 					UltimateDownloadManager.addRequest(httpRequest);
 					httpRequests.add(httpRequest);
@@ -193,7 +193,7 @@ public class UltimateLayer {
 								addFramedates(localDateTimes);
 
 								JPIPRequest jpipRequestLow = new JPIPRequest(
-										jpipURI, PRIORITY.HIGH, 0, frames
+										jpipURI, PRIORITY.URGENT, 0, frames
 												.length(), new Rectangle(256,
 												256), cacheableImageData);
 
