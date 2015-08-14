@@ -106,7 +106,7 @@ public class UltimateDownloadManager {
 
 	public static boolean checkLoading() {
 		for (WeakReference<AbstractRequest> request : taskDeque){
-			if (request.get().getPriority().ordinal() < PRIORITY.LOW.ordinal()){
+			if (request.get() != null && request.get().getPriority().ordinal() < PRIORITY.LOW.ordinal()){
 				return true;
 			}
 		}
