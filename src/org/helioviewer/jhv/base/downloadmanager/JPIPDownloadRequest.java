@@ -30,7 +30,7 @@ public class JPIPDownloadRequest extends HTTPRequest {
 		super.execute();
 		if (finished) {
 			System.out.println("cachePath : " + CACHE_PATH);
-			String fileName = CACHE_PATH + url.substring(url.lastIndexOf("/"));
+			String fileName = CACHE_PATH + url.substring(url.lastIndexOf("/?")+2).replace(':', '.').replace('?', '_').replace('/', '-').replace('\\', '-').replace('*', '-').replace('<', '-').replace('>', '-').replace('|', '-');
 			File file = new File(fileName);
 			FileOutputStream fos = new FileOutputStream(file);
 			fos.write(this.getData());
