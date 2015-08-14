@@ -65,21 +65,14 @@ public class JHelioviewer {
 			//System.exit(0);
 		}
 		
-		boolean agreeMent = Settings.getProperty(JHVGlobals.AGREEMENT_VALUE) != null ? Boolean.parseBoolean(Settings.getProperty(JHVGlobals.AGREEMENT_VALUE)) : false;
-		boolean remindMe = Settings.getProperty(JHVGlobals.AGREEMENT_REMIND_ME) != null ? Boolean.parseBoolean(Settings.getProperty(JHVGlobals.AGREEMENT_REMIND_ME)) : false;
-		if (!remindMe || !agreeMent){
-			PrivacyAgreementDialog privacyAgreementDialog = new PrivacyAgreementDialog(args);			
-			privacyAgreementDialog.setLocationRelativeTo(null);
-			privacyAgreementDialog.setVisible(true);
-		}
+		JHelioviewer.startUpJHelioviewer(args);
 		
-		else {
-			JHelioviewer.startUpJHelioviewer(args);
-		}
 	}
 
 	public static void startUpJHelioviewer(String[] args) {
-
+		
+		PrivacyAgreementDialog.showDialog(null);
+		
 		SwingUtilities.invokeLater(new Runnable() {
 		    public void run() {
 		        new JFXPanel(); // initializes JavaFX environment
@@ -148,7 +141,7 @@ public class JHelioviewer {
 			for (int i = 0; i < args.length; ++i) {
 				argString += " " + args[i];
 			}
-			System.out.println(GLProfile.getDefault());
+			
 			GLProfile.initSingleton();
 			GLDrawableFactory factory = GLDrawableFactory.getFactory(GLProfile
 					.getDefault());
@@ -249,7 +242,6 @@ public class JHelioviewer {
 
 				@Override
 				public void run() {
-
 					MainFrame.SINGLETON.setVisible(true);
 					splash.dispose();
 					UILatencyWatchdog.startWatchdog();

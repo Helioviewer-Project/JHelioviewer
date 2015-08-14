@@ -62,8 +62,6 @@ public class MainFrame extends JFrame{
 	private JSplitPane splitPane;
 
 	public static FilterPanel FILTER_PANEL;
-
-
 	
 	public MainFrame() {
 		super("ESA JHelioviewer");

@@ -28,7 +28,6 @@ public class JHVGlobals {
     
     public static final String AGREEMENT_REMIND_ME = "startup.agreement.remindMe";
 	public static final String AGREEMENT_VALUE = "startup.agreement.value";
-	public static final String AGREEMENT_FILE = "/Agreement.txt";
 	
 	/**
 	 * AIA 193

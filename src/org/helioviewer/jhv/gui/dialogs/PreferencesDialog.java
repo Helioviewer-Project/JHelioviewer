@@ -34,16 +34,15 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
-import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.text.NumberFormatter;
 
 import org.helioviewer.jhv.JHVGlobals;
+import org.helioviewer.jhv.PrivacyAgreementDialog;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.base.Message;
 import org.helioviewer.jhv.gui.IconBank;
@@ -275,7 +274,6 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
 		defaultsPanel.loadSettings();
 		movieExportPanel.loadSettings();
 		screenshotExportPanel.loadSettings();
-		agreementPanel.loadStettings();
 	}
 
 	/**
@@ -295,7 +293,6 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
 		defaultsPanel.saveSettings();
 		movieExportPanel.saveSettings();
 		screenshotExportPanel.saveSettings();
-		agreementPanel.saveSettings();
 	}
 
 	/**
@@ -408,136 +405,23 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
 		 */
 		private static final long serialVersionUID = -6968907816252313137L;
 
-		private final AgreementReadMeDialog agreementReadMeDialog;
-
-		private JRadioButton rdbtnAgree;
-
-		private JRadioButton rdbtnDisagree;
-
-		private JCheckBox chckbxRemindMe;
-
 		private AgreementPanel(JDialog dialog) {
-			agreementReadMeDialog = new AgreementReadMeDialog(dialog);
 			setLayout(new FormLayout(new ColumnSpec[] {
 					FormFactory.RELATED_GAP_COLSPEC,
-					FormFactory.GROWING_BUTTON_COLSPEC,
-					FormFactory.RELATED_GAP_COLSPEC,
-					FormFactory.GROWING_BUTTON_COLSPEC,
-					FormFactory.RELATED_GAP_COLSPEC,
-					FormFactory.DEFAULT_COLSPEC, }, new RowSpec[] {
+					FormFactory.DEFAULT_COLSPEC,},
+				new RowSpec[] {
 					FormFactory.RELATED_GAP_ROWSPEC,
-					FormFactory.DEFAULT_ROWSPEC,
-					FormFactory.RELATED_GAP_ROWSPEC,
-					FormFactory.DEFAULT_ROWSPEC, }));
-
-			ButtonGroup btnGroup = new ButtonGroup();
-			rdbtnDisagree = new JRadioButton("Disagree");
-			btnGroup.add(rdbtnDisagree);
-			add(rdbtnDisagree, "2, 2");
-
-			rdbtnAgree = new JRadioButton("Agree");
-			btnGroup.add(rdbtnAgree);
-			add(rdbtnAgree, "4, 2");
-
-			boolean value = Boolean.parseBoolean(Settings
-					.getProperty(JHVGlobals.AGREEMENT_VALUE));
-			if (value)
-				rdbtnAgree.setSelected(true);
-			else
-				rdbtnDisagree.setSelected(true);
-
-			JButton btnReadMe = new JButton("Read me");
-			btnReadMe.addActionListener(new ActionListener() {
+					FormFactory.DEFAULT_ROWSPEC,}));
+			
+			JButton btnLicenseAgreement = new JButton("License Agreement");
+			btnLicenseAgreement.addActionListener(new ActionListener() {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					agreementReadMeDialog.setVisible(true);
+					PrivacyAgreementDialog.showDialog(MainFrame.SINGLETON);
 				}
 			});
-			add(btnReadMe, "6, 2");
-
-			chckbxRemindMe = new JCheckBox("Remind agreement");
-			add(chckbxRemindMe, "6, 4");
-
-			boolean remindMe = Boolean.parseBoolean(Settings
-					.getProperty(JHVGlobals.AGREEMENT_REMIND_ME));
-			chckbxRemindMe.setSelected(remindMe);
-		}
-
-		public void saveSettings() {
-			Settings.setProperty(JHVGlobals.AGREEMENT_REMIND_ME,
-					Boolean.toString(chckbxRemindMe.isSelected()));
-			Settings.setProperty(JHVGlobals.AGREEMENT_VALUE,
-					Boolean.toString(rdbtnAgree.isSelected()));
-			if (!rdbtnAgree.isSelected())
-				System.exit(0);
-		}
-
-		public void loadStettings() {
-			boolean value = Boolean.parseBoolean(Settings
-					.getProperty(JHVGlobals.AGREEMENT_VALUE));
-			if (value)
-				rdbtnAgree.setSelected(true);
-			else
-				rdbtnDisagree.setSelected(true);
-
-			boolean remindMe = Boolean.parseBoolean(Settings
-					.getProperty(JHVGlobals.AGREEMENT_REMIND_ME));
-			chckbxRemindMe.setSelected(remindMe);
-
-		}
-	}
-
-	private static class AgreementReadMeDialog extends JDialog {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 2216946611108118172L;
-
-		JPanel contentPanel = new JPanel();
-
-		private AgreementReadMeDialog(JDialog dialog) {
-			super(dialog);
-			setPreferredSize(new Dimension(450, 300));
-			setBounds(100, 100, 450, 300);
-			setResizable(false);
-			setLocationRelativeTo(dialog);
-			getContentPane().setLayout(new BorderLayout());
-			contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-			getContentPane().add(contentPanel, BorderLayout.CENTER);
-			contentPanel.setLayout(new BorderLayout(0, 0));
-			{
-				JScrollPane scrollPane = new JScrollPane();
-				contentPanel.add(scrollPane, BorderLayout.CENTER);
-				{
-					JTextArea textArea = new JTextArea();
-					textArea.setEditable(false);
-					textArea.setText(JHVGlobals
-							.loadFileAsString(JHVGlobals.AGREEMENT_FILE));
-					scrollPane.setViewportView(textArea);
-				}
-			}
-			{
-				JPanel buttonPane = new JPanel();
-				buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-				getContentPane().add(buttonPane, BorderLayout.SOUTH);
-				{
-					JButton okButton = new JButton("OK");
-					okButton.setActionCommand("OK");
-					buttonPane.add(okButton);
-					getRootPane().setDefaultButton(okButton);
-					okButton.addActionListener(new ActionListener() {
-
-						@Override
-						public void actionPerformed(ActionEvent e) {
-							dispose();
-						}
-					});
-					DialogTools.setDefaultButtons(okButton, okButton);
-				}
-
-			}
+			add(btnLicenseAgreement, "2, 2");
 		}
 	}
 
