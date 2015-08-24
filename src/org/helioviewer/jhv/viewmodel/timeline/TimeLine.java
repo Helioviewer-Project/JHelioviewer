@@ -28,38 +28,9 @@ public class TimeLine implements LayerListener {
 
 	private int speedFactor;
 	private ANIMATION_MODE animationMode = ANIMATION_MODE.LOOP;
-	private boolean foreward = true;
 
 	public static TimeLine SINGLETON = new TimeLine();
 
-	private Timer timer = new Timer(60, new ActionListener() {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (animationMode == ANIMATION_MODE.LOOP) {
-				nextFrame();
-			}
-			if (animationMode == ANIMATION_MODE.STOP) {
-				nextFrame();
-				if (timer.isRunning()) {
-					if (current.isEqual(getFirstDateTime()))
-						MainFrame.MOVIE_PANEL.setPlaying(false);
-				}
-			}
-			if (animationMode == ANIMATION_MODE.SWING) {
-				if (current.isEqual(getLastDateTime()))
-					foreward = false;
-				else if (current.isEqual(getFirstDateTime()))
-					foreward = true;
-
-				if (foreward)
-					nextFrame();
-				else
-					previousFrame();
-			}
-
-		}
-	});
 
 	private TimeLine() {
 		localDateTimes = new ConcurrentSkipListSet<LocalDateTime>();
@@ -73,11 +44,6 @@ public class TimeLine implements LayerListener {
 
 	public void setPlaying(boolean playing) {
 		this.isPlaying = playing;
-		if (isPlaying) {
-			timer.start();
-		} else {
-			timer.stop();
-		}
 	}
 
 	public LocalDateTime nextFrame() {
@@ -142,11 +108,10 @@ public class TimeLine implements LayerListener {
 
 	public void setSpeedFactor(int speedFactor) {
 		this.speedFactor = 1000 / speedFactor;
-		timer.setDelay(this.speedFactor);
 	}
 
 	public int getSpeedFactor() {
-		return timer.getDelay();
+		return speedFactor;
 	}
 
 	@Override
@@ -216,6 +181,9 @@ public class TimeLine implements LayerListener {
 
 	public void setAnimationMode(ANIMATION_MODE animationMode) {
 		this.animationMode = animationMode;
-		this.foreward = true;
+	}
+	
+	public void calculateNextFrameDate(long time){
+		//nextFrame();
 	}
 }

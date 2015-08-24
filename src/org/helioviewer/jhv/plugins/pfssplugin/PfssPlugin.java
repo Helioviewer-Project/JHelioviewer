@@ -133,8 +133,6 @@ public class PfssPlugin extends AbstractPlugin {
 
 	@Override
 	public void load() {
-		UltimatePluginInterface.addPanelToLeftControllPanel(NAME,
-				pfssPluginPanel, false);
 		UltimatePluginInterface.addPluginLayer(this, PLUGIN_NAME);
 	}
 

@@ -25,21 +25,21 @@ public class CameraZoomBoxInteraction extends CameraInteraction {
 	public void mousePressed(MouseEvent e) {
 		start = rayTrace.cast(e.getX(), e.getY(), mainPanel).getHitpoint();
 		start = start.scale(new Vector3d(1, -1, 1));
-		camera.repaintViewAndSynchronizedViews();
+		camera.repaintViewAndSynchronizedViews(20);
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		end = rayTrace.cast(e.getX(), e.getY(), mainPanel).getHitpoint();
 		end = end.scale(new Vector3d(1, -1, 1));
-		camera.repaintViewAndSynchronizedViews();
+		camera.repaintViewAndSynchronizedViews(20);
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		if (start != null && end != null){
 		Vector3d newPoint = start.add(end).scale(0.5);
-		newPoint = new Vector3d(newPoint.x, newPoint.y, camera.getTranslation().z);
+		newPoint = new Vector3d(newPoint.x, -newPoint.y, camera.getTranslation().z);
 		Vector3d rect = start.add(end.negate());
 		double width;
 		if (rect.x > rect.y){

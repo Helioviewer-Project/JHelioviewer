@@ -327,7 +327,7 @@ public class FilterPanel extends JPanel implements LayerListener{
 	}
 	
 	private void repaintComponent(){
-		MainFrame.MAIN_PANEL.repaintViewAndSynchronizedViews();
+		MainFrame.MAIN_PANEL.repaintViewAndSynchronizedViews(20);
 	}
 	
 }

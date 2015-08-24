@@ -21,24 +21,33 @@ public class CameraRotationInteraction extends CameraInteraction {
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		RayTrace rayTrace = new RayTrace();
-		this.currentRotationEndPoint = rayTrace.cast(e.getX(), e.getY(), mainPanel).getHitpoint();
-		if (yAxisBlocked) {
-			this.currentRotationEndPoint = new Vector3d(currentRotationEndPoint.x, currentRotationStartPoint.y, currentRotationEndPoint.z);
-		} 
-		
-		//TODO: are the parameters in the correct order? Quaternion3d.calcRotation expects (startPoint,endPoint)
-		currentDragRotation = Quaternion3d.calcRotation(
-					currentRotationEndPoint.normalize(), currentRotationStartPoint.normalize());
-		Quaternion3d currentCam = mainPanel.getRotation().rotate(currentDragRotation);
-		//currentDragRotation.rotate(mainPanel.getRotation());
-		camera.setRotation(currentCam);
-		currentRotationStartPoint = currentRotationEndPoint;		
+		if (currentRotationStartPoint != null) {
+			RayTrace rayTrace = new RayTrace();
+			this.currentRotationEndPoint = rayTrace.cast(e.getX(), e.getY(),
+					mainPanel).getHitpoint();
+			if (yAxisBlocked) {
+				this.currentRotationEndPoint = new Vector3d(
+						currentRotationEndPoint.x, currentRotationStartPoint.y,
+						currentRotationEndPoint.z);
+			}
+
+			// TODO: are the parameters in the correct order?
+			// Quaternion3d.calcRotation expects (startPoint,endPoint)
+			currentDragRotation = Quaternion3d.calcRotation(
+					currentRotationEndPoint.normalize(),
+					currentRotationStartPoint.normalize());
+			Quaternion3d currentCam = mainPanel.getRotation().rotate(
+					currentDragRotation);
+			// currentDragRotation.rotate(mainPanel.getRotation());
+			camera.setRotation(currentCam);
+			currentRotationStartPoint = currentRotationEndPoint;
+		}
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
 		RayTrace rayTrace = new RayTrace();
-		this.currentRotationStartPoint = rayTrace.cast(e.getX(), e.getY(), mainPanel).getHitpoint();
+		this.currentRotationStartPoint = rayTrace.cast(e.getX(), e.getY(),
+				mainPanel).getHitpoint();
 	}
 }

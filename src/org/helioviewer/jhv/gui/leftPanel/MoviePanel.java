@@ -113,6 +113,25 @@ public class MoviePanel extends JPanel implements TimeLineListener,
 	private JSlider slider;
 	private JButton btnPrevious, btnPlayPause, btnForward;
 
+	private static int size;
+	private static int buttonSize;
+	private static int width;
+	private static int optionPaneSize;
+	
+	static{
+		JSlider slider = new JSlider();		
+		JButton button = new JButton(ICON_PLAY);
+		JLabel label = new JLabel("test");
+		size = slider.getPreferredSize().height + label.getPreferredSize().height + 10 + 20;
+		System.out.println("tt");
+		JComboBox<String> comboBox = new JComboBox<String>();
+		JSpinner spinner = new JSpinner();
+	
+		buttonSize = button.getPreferredSize().height;
+		int tmpSize = Math.max(Math.max(label.getPreferredSize().height, spinner.getPreferredSize().height), comboBox.getPreferredSize().height);
+		optionPaneSize = size + tmpSize * 2;
+	}
+
 	public MoviePanel() {
 		setBorder(new EmptyBorder(0, 2, 0, 10));
 		TimeLine.SINGLETON.addListener(this);
@@ -121,8 +140,10 @@ public class MoviePanel extends JPanel implements TimeLineListener,
 		this.add(initGUI(), BorderLayout.CENTER);
 		optionPane = initOptionPane();
 		this.add(optionPane, BorderLayout.SOUTH);
-		this.setMinimumSize(new Dimension(240, 60));
-		this.setPreferredSize(new Dimension(240, 60));
+		width = slider.getPreferredSize().width;
+		this.setMinimumSize(new Dimension(width, size));
+		this.setPreferredSize(new Dimension(width, size));
+		System.out.println(getSize().height);
 	}
 
 	private JPanel initOptionPane() {
@@ -130,9 +151,9 @@ public class MoviePanel extends JPanel implements TimeLineListener,
 		contentPanel
 				.setLayout(new FormLayout(new ColumnSpec[] {
 						FormFactory.RELATED_GAP_COLSPEC,
-						ColumnSpec.decode("max(28dlu;default)"),
+						ColumnSpec.decode("max(5px;default)"),
 						FormFactory.RELATED_GAP_COLSPEC,
-						ColumnSpec.decode("max(33dlu;default)"),
+						ColumnSpec.decode("max(5px;default)"),
 						FormFactory.RELATED_GAP_COLSPEC,
 						ColumnSpec.decode("default:grow"), }, new RowSpec[] {
 						FormFactory.RELATED_GAP_ROWSPEC,
@@ -234,6 +255,7 @@ public class MoviePanel extends JPanel implements TimeLineListener,
 				timeLine.previousFrame();
 			}
 		});
+		btnPrevious.setPreferredSize(new Dimension(btnPrevious.getPreferredSize().width, buttonSize));
 		contentPanel.add(btnPrevious, "2, 4");
 
 		btnPlayPause = new JButton(ICON_PLAY);
@@ -249,6 +271,7 @@ public class MoviePanel extends JPanel implements TimeLineListener,
 				timeLine.setPlaying(!timeLine.isPlaying());
 			}
 		});
+		btnPlayPause.setPreferredSize(new Dimension(btnPlayPause.getPreferredSize().width, buttonSize));
 		contentPanel.add(btnPlayPause, "4, 4");
 
 		btnForward = new JButton(ICON_FORWARD);
@@ -260,6 +283,8 @@ public class MoviePanel extends JPanel implements TimeLineListener,
 				timeLine.nextFrame();
 			}
 		});
+		btnForward.setPreferredSize(new Dimension(btnForward.getPreferredSize().width, buttonSize));
+		
 		contentPanel.add(btnForward, "6, 4");
 		final JButton btnOptionPane = new JButton("More Options", ICON_OPEN);
 		btnOptionPane.setToolTipText("More Options to Control Playback");
@@ -269,20 +294,22 @@ public class MoviePanel extends JPanel implements TimeLineListener,
 			public void actionPerformed(ActionEvent e) {
 				if (showMore) {
 					btnOptionPane.setIcon(ICON_OPEN);
-					setPreferredSize(new Dimension(300, 60));
+					setPreferredSize(new Dimension(300, size));
 				} else {
 					btnOptionPane.setIcon(ICON_CLOSE);
-					setPreferredSize(new Dimension(300, 130));
+					setPreferredSize(new Dimension(300, optionPaneSize));
 				}
 				showMore = !showMore;
 				optionPane.setVisible(showMore);
 			}
 		});
+		btnOptionPane.setPreferredSize(new Dimension(btnOptionPane.getPreferredSize().width, buttonSize));
+		
 		contentPanel.add(btnOptionPane, "8, 4");
 		lblFrames = new JLabel();
 		contentPanel.add(lblFrames, "12, 4");
 
-		contentPanel.setPreferredSize(new Dimension(300, 300));
+		contentPanel.setPreferredSize(new Dimension(300, size));
 		setEnableButtons(false);
 		return contentPanel;
 	}

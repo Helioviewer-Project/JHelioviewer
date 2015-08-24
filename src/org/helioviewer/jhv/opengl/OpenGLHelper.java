@@ -66,7 +66,6 @@ public class OpenGLHelper {
 	public static void bindByteBufferToGLTexture(ImageRegion region, final ByteBuffer byteBuffer, final Rectangle imageSize){
 				int width2 = nextPowerOfTwo(imageSize.width);
 				int height2 = nextPowerOfTwo(imageSize.height);
-				
 				if (region.textureHeight != height2 && region.textureWidth != width2){
 					OpenGLHelper.createTexture(region, width2, height2);
 				}

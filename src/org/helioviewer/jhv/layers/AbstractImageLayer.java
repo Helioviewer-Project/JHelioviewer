@@ -1,8 +1,10 @@
 package org.helioviewer.jhv.layers;
 
 import java.awt.Dimension;
+import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.CountDownLatch;
 
 import org.helioviewer.jhv.JHVException;
 import org.helioviewer.jhv.JHVException.TextureException;
@@ -28,7 +30,7 @@ public abstract class AbstractImageLayer extends AbstractLayer{
 	private static final String VISIBILITY = "visibility";
 	private static final String INVERTED_LUT = "invertedLut";
 	private static final String CORONA_VISIBILITY = "coronaVisiblity";
-	
+	protected ByteBuffer imageData = null;
 	public enum SHADER_STATE {
 		FALSE, TRUE;
 	}
@@ -110,7 +112,7 @@ public abstract class AbstractImageLayer extends AbstractLayer{
 
 	public void setVisible(boolean visible) {
 		this.visible = visible;
-		MainFrame.MAIN_PANEL.repaintViewAndSynchronizedViews();
+		MainFrame.MAIN_PANEL.repaintViewAndSynchronizedViews(20);
 	}
 
 	public double getContrast() {
@@ -273,4 +275,8 @@ public abstract class AbstractImageLayer extends AbstractLayer{
 
 	public abstract LocalDateTime getFirstLocalDateTime();
 	public abstract LocalDateTime getLastLocalDateTime();
+	
+	public abstract void updateImageData(final CountDownLatch latchCounter, final MainPanel mainPanel,
+			final Dimension size, final boolean highResolution);
+
 }

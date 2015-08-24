@@ -60,7 +60,11 @@ public class LayerPanel extends JPanel implements LayerListener,
 	 * 
 	 */
 	private static final long serialVersionUID = 6800340702841902680L;
-
+	private static int size;
+	static{
+		JLabel label = new JLabel("size");
+		size = label.getPreferredSize().height;
+	}
 	private final AddLayerPanel addLayerPanel = new AddLayerPanel();
 	private final MetaDataDialog metaDataDialog = new MetaDataDialog();
 	private final DownloadMovieDialog downloadMovieDialog = new DownloadMovieDialog();
@@ -75,22 +79,31 @@ public class LayerPanel extends JPanel implements LayerListener,
 	private JButton btnDownloadLayer;
 	private static final Cursor HAND_CURSOR = new Cursor(Cursor.HAND_CURSOR);
 	private static final ImageIcon WARNING_BAD_REQUEST = IconBank.getIcon(
-			JHVIcon.WARNING, 16, 16);
+			JHVIcon.WARNING, size, size);
 	private int activePopupLayer = 0;
 
 	private JPopupMenu popupMenu;
 
 	private JMenuItem showLayer;
-
 	private JMenuItem hideLayer;
-
 	private JMenuItem showMetaView;
-
 	private JMenuItem downloadLayer;
-
+	private JMenuItem removeLayer;
+	
 	private JButton btnShowInfo;
+	private static final int lblHeight;
+	private static final int btnHeight;
 
+	static{
+		JLabel lblTest = new JLabel("test");
+		JButton btnTest = new JButton();
+		lblHeight = lblTest.getPreferredSize().height;
+		btnHeight = btnTest.getPreferredSize().height;
+	}
+	
 	public LayerPanel() {
+		JLabel size = new JLabel("size");
+		double x = size.getPreferredSize().getHeight();
 		initPopup();
 		initGUI();
 		updateData();
@@ -104,7 +117,7 @@ public class LayerPanel extends JPanel implements LayerListener,
 	private void initPopup() {
 		popupMenu = new JPopupMenu();
 		showMetaView = new JMenuItem("Show metainfo...",
-				IconBank.getIcon(JHVIcon.INFO_NEW, 16, 16));
+				IconBank.getIcon(JHVIcon.INFO_NEW, size, size));
 		showMetaView.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -112,7 +125,7 @@ public class LayerPanel extends JPanel implements LayerListener,
 			}
 		});
 		downloadLayer = new JMenuItem("Download movie",
-				IconBank.getIcon(JHVIcon.DOWNLOAD_NEW, 16, 16));
+				IconBank.getIcon(JHVIcon.DOWNLOAD_NEW, size, size));
 		downloadLayer.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -121,7 +134,7 @@ public class LayerPanel extends JPanel implements LayerListener,
 			}
 		});
 		hideLayer = new JMenuItem("Hide layer", IconBank.getIcon(
-				JHVIcon.HIDDEN, 16, 16));
+				JHVIcon.HIDDEN, size, size));
 		hideLayer.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -130,7 +143,7 @@ public class LayerPanel extends JPanel implements LayerListener,
 			}
 		});
 		showLayer = new JMenuItem("Show layer", IconBank.getIcon(
-				JHVIcon.VISIBLE, 16, 16));
+				JHVIcon.VISIBLE, size, size));
 		showLayer.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -139,8 +152,8 @@ public class LayerPanel extends JPanel implements LayerListener,
 			}
 		});
 				
-		JMenuItem removeLayer = new JMenuItem("Close layer", IconBank.getIcon(
-				JHVIcon.CANCEL_NEW, 16, 16));
+		removeLayer = new JMenuItem("Close layer", IconBank.getIcon(
+				JHVIcon.REMOVE_NEW, size, size));
 		removeLayer.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -165,10 +178,12 @@ public class LayerPanel extends JPanel implements LayerListener,
 				if (Layers.getLayer(activePopupLayer).isImageLayer()){
 					showMetaView.setEnabled(true);
 					downloadLayer.setEnabled(Layers.getLayer(activePopupLayer).isDownloadable());
+					removeLayer.setEnabled(false);
 				}
 				else {
 					showMetaView.setEnabled(false);
 					downloadLayer.setEnabled(false);
+					removeLayer.setEnabled(false);
 				}
 			}
 			
@@ -186,7 +201,7 @@ public class LayerPanel extends JPanel implements LayerListener,
 		});
 		
 	}
-
+	
 	/**
 	 * Create the panel.
 	 */
@@ -334,7 +349,7 @@ public class LayerPanel extends JPanel implements LayerListener,
 		panel.setLayout(gbl_panel);
 
 		btnShowInfo = new JButton(IconBank.getIcon(JHVIcon.INFO_NEW,
-				16, 16));
+				size, size));
 		btnShowInfo
 				.setToolTipText("Show the Metainformation of the currently selected Layer");
 		btnShowInfo.addActionListener(new ActionListener() {
@@ -351,7 +366,7 @@ public class LayerPanel extends JPanel implements LayerListener,
 		panel.add(btnShowInfo, gbcBtnShowInfo);
 
 		btnDownloadLayer = new JButton(IconBank.getIcon(JHVIcon.DOWNLOAD_NEW,
-				16, 16));
+				size, size));
 		btnDownloadLayer
 				.setToolTipText("Download the currently selected Layer");
 		btnDownloadLayer.setEnabled(false);
@@ -372,7 +387,7 @@ public class LayerPanel extends JPanel implements LayerListener,
 		panel.add(btnDownloadLayer, gbcBtnDownloadLayer);
 
 		JButton btnAddLayer = new JButton("Add Layer", IconBank.getIcon(
-				JHVIcon.ADD_NEW, 16, 16));
+				JHVIcon.ADD_NEW, size, size));
 		btnAddLayer.addActionListener(new ActionListener() {
 
 			@Override
@@ -404,8 +419,8 @@ public class LayerPanel extends JPanel implements LayerListener,
 					data[count][2] = layer.getName();
 					data[count][3] = layer.getTime() == null ? null : layer
 							.getTime();
-					data[count][4] = IconBank.getIcon(JHVIcon.CANCEL_NEW, 16,
-							16);
+					data[count][4] = IconBank.getIcon(JHVIcon.REMOVE_NEW, size,
+							size);
 					count++;
 				}
 				tableModel.setDataVector(data, columnNames);
@@ -421,9 +436,9 @@ public class LayerPanel extends JPanel implements LayerListener,
 						.setCellRenderer(new ImageIconCellRenderer());
 				table.getColumnModel().getColumn(4)
 						.setCellRenderer(new ImageIconCellRenderer());
-				setFixedWidth(20, 0);
-				setFixedWidth(16, 1);
-				setFixedWidth(16, 4);
+				setFixedWidth(size+4, 0);
+				setFixedWidth(size, 1);
+				setFixedWidth(size, 4);
 				// table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 				table.setShowGrid(false);
 				table.setIntercellSpacing(new Dimension(0, 0));
@@ -519,8 +534,13 @@ public class LayerPanel extends JPanel implements LayerListener,
 			case 4:
 				JLabel label4 = (JLabel) super.getTableCellRendererComponent(
 						table, null, isSelected, hasFocus, row, column);
+				if (Layers.getLayer(row).isImageLayer()){
 				label4.setIcon((ImageIcon) value);
 				label4.setPreferredSize(new Dimension(20, 20));
+				}
+				else{
+					label4.setIcon(null);
+				}
 				return label4;
 			default:
 				break;
@@ -532,7 +552,7 @@ public class LayerPanel extends JPanel implements LayerListener,
 
 	@Override
 	public void newlayerAdded() {
-		this.updateData();
+			updateData();			
 	}
 
 	@Override
@@ -551,15 +571,14 @@ public class LayerPanel extends JPanel implements LayerListener,
 
 	@Override
 	public void timeStampChanged(LocalDateTime current, LocalDateTime last) {
-		updateData();
+			updateData();			
 	}
 
 	@Override
 	public void dateTimesChanged(int framecount) {
-		updateData();
 	}
 
 	public void repaintPanel() {
-		updateData();
+			updateData();			
 	}
 }

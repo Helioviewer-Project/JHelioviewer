@@ -20,7 +20,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JSpinner;
-import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 
@@ -52,7 +51,7 @@ public class AddLayerPanel extends JDialog {
 	private DatePicker datePickerEndDate;
 	private JSpinner candence;
 	private JComboBox<AbstractPlugin> cmbbxPlugin;
-	private JTabbedPane tabbedPane;
+	//private JTabbedPane tabbedPane;
 	private JPanel layerPanel;
 	private JPanel pluginPanel;
 
@@ -102,13 +101,14 @@ public class AddLayerPanel extends JDialog {
 		this.addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentShown(ComponentEvent e) {
-				if (tabbedPane.getSelectedComponent() == pluginPanel) {
+				/*if (tabbedPane.getSelectedComponent() == pluginPanel) {
 					tabbedPane.setSelectedComponent(layerPanel);
 				}
 				tabbedPane.setEnabledAt(tabbedPane
 						.indexOfComponent(pluginPanel),
 						!UltimatePluginInterface.SINGLETON.getInactivePlugins()
 								.isEmpty());
+								*/
 			}
 		});
 	}
@@ -238,17 +238,17 @@ public class AddLayerPanel extends JDialog {
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		//tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		contentPanel.setLayout(new BorderLayout());
-		contentPanel.add(tabbedPane, BorderLayout.CENTER);
-
+		//contentPanel.add(tabbedPane, BorderLayout.CENTER);
 		layerPanel = new JPanel();
 		initLayerGui(layerPanel);
-		tabbedPane.addTab("Layers", null, layerPanel, "Add an imagelayer");
-
-		pluginPanel = new JPanel();
-		initPluginGui(pluginPanel);
-		tabbedPane.addTab("Plugins", null, pluginPanel, "Add a plugin");
+		contentPanel.add(layerPanel, BorderLayout.CENTER);
+		//tabbedPane.addTab("Layers", null, layerPanel, "Add an imagelayer");
+		
+		//pluginPanel = new JPanel();
+		//initPluginGui(pluginPanel);
+		//tabbedPane.addTab("Plugins", null, pluginPanel, "Add a plugin");
 	}
 
 	private void initLayerGui(JPanel contentPanel) {
@@ -351,7 +351,7 @@ public class AddLayerPanel extends JDialog {
 
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						if (tabbedPane.getSelectedComponent() == layerPanel) {
+						//if (tabbedPane.getSelectedComponent() == layerPanel) {
 							InstrumentModel.Filter filter = (InstrumentModel.Filter) cmbbxFilter2
 									.getSelectedItem();
 							if (filter == null) {
@@ -374,10 +374,10 @@ public class AddLayerPanel extends JDialog {
 										datePickerEndDate.getDateTime(),
 										candence, filter.getNickname());
 							}
-						}
+						/*}
 						else if (tabbedPane.getSelectedComponent() == pluginPanel){
 							UltimatePluginInterface.SINGLETON.addPlugin((AbstractPlugin)cmbbxPlugin.getSelectedItem());
-						}
+						}*/
 
 						setVisible(false);
 					}
