@@ -60,7 +60,6 @@ public abstract class MetaData {
 	protected final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_DATE_TIME;
     
 	protected LUT_ENTRY defaultLUT = LUT_ENTRY.GRAY;
-	protected Document document;
 	
 	protected Rectangle newResolution;
 
@@ -93,9 +92,6 @@ public abstract class MetaData {
         if (instrument == null) {
             instrument = " ";
         }
-        
-        this.document = metaDataContainer.getDocument();
-
     }
 
     /**
@@ -338,11 +334,7 @@ public abstract class MetaData {
 	public LUT_ENTRY getDefaultLUT(){
 		return defaultLUT;
 	}
-	
-	public Document getDocument(){
-		return document;
-	}
-	
+		
 	public double getArcsecPerPixel(){
 		return arcsecPerPixelX;
 	}

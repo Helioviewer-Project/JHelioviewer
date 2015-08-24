@@ -12,8 +12,8 @@ import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.opengl.camera.CameraInteraction;
-import org.helioviewer.jhv.opengl.camera.CameraPanInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraRotationInteraction;
+import org.helioviewer.jhv.opengl.camera.CameraViewportPanInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraZoomBoxInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraZoomInteraction;
 import org.helioviewer.jhv.plugins.plugin.AbstractPlugin.RENDER_MODE;
@@ -53,7 +53,7 @@ public class OverViewPanel extends MainPanel {
 
 	@Override
 	public void setPanInteraction() {
-		this.cameraInteractions[1] = new CameraPanInteraction(this,
+		this.cameraInteractions[1] = new CameraViewportPanInteraction(this,
 				mainViews.get(0));
 	}
 
@@ -68,6 +68,7 @@ public class OverViewPanel extends MainPanel {
 			Rectangle2D region;
 			try {
 				LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
+				if (activeLayer.getMetaData(currentDateTime) != null){
 				region = activeLayer.getMetaData(currentDateTime).getPhysicalImageSize();
 				if (region != null) {
 					double halfWidth = region.getHeight() / 2;
@@ -80,6 +81,7 @@ public class OverViewPanel extends MainPanel {
 							* Math.sin(Math.PI / 2 - halfFOVRad)
 							/ Math.sin(halfFOVRad);
 					this.translation = new Vector3d(0, 0, distance);
+				}
 				}
 			} catch (MetaDataException e) {
 				// TODO Auto-generated catch block

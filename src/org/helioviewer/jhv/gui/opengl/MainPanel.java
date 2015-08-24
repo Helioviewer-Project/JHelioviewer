@@ -22,6 +22,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -39,6 +41,7 @@ import org.helioviewer.jhv.base.physics.DifferentialRotation;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelCamera;
 import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelMouse;
+import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.layers.AbstractLayer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
@@ -106,10 +109,6 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	private ArrayList<StatusLabelCamera> statusLabelCameras;
 	private CopyOnWriteArrayList<CameraAnimation> cameraAnimations;
 
-	private int shaderprogram;
-	private HashMap<String, Integer> lutMap;
-	private int nextAvaibleLut = 0;
-
 	protected CameraInteraction[] cameraInteractions;
 
 	private boolean track = false;
@@ -122,7 +121,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 
 	private int[] renderBufferColor;
 
-	private Dimension size;
+	protected Dimension size;
 
 	private static int DEFAULT_TILE_WIDTH = 2048;
 	private static int DEFAULT_TILE_HEIGHT = 2048;
@@ -157,7 +156,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 
 	public void setRotation(Quaternion3d rotation) {
 		this.rotation = rotation;
-		this.repaintViewAndSynchronizedViews();
+		this.repaintViewAndSynchronizedViews(20);
 		for (StatusLabelCamera statusLabelCamera : statusLabelCameras) {
 			statusLabelCamera.cameraChanged();
 		}
@@ -170,7 +169,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	public void setTranslation(Vector3d translation) {
 		if (!translation.isApproxEqual(this.translation, 0)) {
 			this.translation = translation;
-			this.repaintViewAndSynchronizedViews();
+			this.repaintViewAndSynchronizedViews(20);
 			for (StatusLabelCamera statusLabelCamera : statusLabelCameras) {
 				statusLabelCamera.cameraChanged();
 			}
@@ -197,7 +196,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 						Math.min(MAX_DISTANCE, z)));
 		if (!translation.isApproxEqual(this.translation, 0)) {
 			this.translation = translation;
-			this.repaintViewAndSynchronizedViews();
+			this.repaintViewAndSynchronizedViews(20);
 			for (StatusLabelCamera statusLabelCamera : statusLabelCameras) {
 				statusLabelCamera.cameraChanged();
 			}
@@ -208,7 +207,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	public void setTransformation(Quaternion3d rotation, Vector3d translation) {
 		this.rotation = rotation;
 		this.translation = translation;
-		repaintViewAndSynchronizedViews();
+		repaintViewAndSynchronizedViews(20);
 		for (StatusLabelCamera statusLabelCamera : statusLabelCameras) {
 			statusLabelCamera.cameraChanged();
 		}
@@ -227,6 +226,8 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	}
 
 	protected void render(GL2 gl) {
+		//this.size = getCanavasSize();
+		this.size = getSize();
 		LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
 		gl.glClearDepth(1);
 		gl.glDepthMask(true);
@@ -263,6 +264,27 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 			}
 
 			boolean layerLoaded = true;
+			int latchCount = 0;
+			for (AbstractLayer layer : Layers.getLayers()) {
+				if (layer.isVisible() && layer.isImageLayer()) {
+					latchCount++;
+				}
+			}
+			CountDownLatch latchCounter = new CountDownLatch(latchCount);
+			for (AbstractLayer layer : Layers.getLayers()) {
+				if (layer.isVisible() && layer.isImageLayer()) {
+					((AbstractImageLayer)layer).updateImageData(latchCounter, this, size, false);
+				}
+			}
+
+			try {
+				latchCounter.await(200, TimeUnit.MILLISECONDS);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
 			for (AbstractLayer layer : Layers.getLayers()) {
 				if (layer.isVisible() && layer.isImageLayer()) {
 					boolean visibleLayer = layer.renderLayer(gl, size, this);
@@ -339,6 +361,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		if (!cameraAnimations.isEmpty()) {
 			cameraAnimations.get(0).animate(this);
 		}
+		TimeLine.SINGLETON.calculateNextFrameDate(0);
 	}
 
 	protected void renderPlugins(GL2 gl) {
@@ -352,7 +375,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 
 	@Override
 	public void display(GLAutoDrawable drawable) {
-		this.size = getCanavasSize();
+		//this.size = getCanavasSize();
 		GL2 gl = drawable.getGL().getGL2();
 
 		gl.glViewport(0, 0, this.getSurfaceWidth(), this.getSurfaceHeight());
@@ -512,8 +535,8 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 
 	@Override
 	public void init(GLAutoDrawable drawable) {
-		if (System.getProperty("jhvVersion") == null)
-			drawable.setGL(new DebugGL2(drawable.getGL().getGL2()));
+		//if (System.getProperty("jhvVersion") == null)
+		//	drawable.setGL(new DebugGL2(drawable.getGL().getGL2()));
 		// GuiState3DWCS.overViewPanel.activate(drawable.getContext());
 		aspect = this.getSize().getWidth() / this.getSize().getHeight();
 		GL2 gl = drawable.getGL().getGL2();
@@ -645,7 +668,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 				: DEFAULT_TILE_WIDTH;
 		int tileHeight = imageHeight < DEFAULT_TILE_HEIGHT ? imageHeight
 				: DEFAULT_TILE_HEIGHT;
-		this.repaintViewAndSynchronizedViews();
+		this.repaintViewAndSynchronizedViews(20);
 		double xTiles = imageWidth / (double) tileWidth;
 		double yTiles = imageHeight / (double) tileHeight;
 		int countXTiles = imageWidth % tileWidth == 0 ? (int) xTiles
@@ -778,7 +801,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	public void activeLayerChanged(AbstractLayer layer) {
 		if (Layers.getActiveImageLayer() != null)
 			lastDate = null;
-		repaintViewAndSynchronizedViews();
+		repaintViewAndSynchronizedViews(20);
 	}
 
 	@Override
@@ -794,10 +817,10 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		this.synchronizedViews.add(compenentView);
 	}
 
-	public void repaintViewAndSynchronizedViews() {
-		this.repaint(20);
+	public void repaintViewAndSynchronizedViews(int millis) {
+		this.repaint(millis);
 		for (MainPanel compenentView : synchronizedViews) {
-			compenentView.repaint(20);
+			compenentView.repaint(millis);
 		}
 	}
 
@@ -820,7 +843,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		Vector3d translation = new Vector3d(0, 0, DEFAULT_CAMERA_DISTANCE);
 		this.addCameraAnimation(new CameraTransformationAnimation(rotation,
 				translation, this));
-		this.repaintViewAndSynchronizedViews();
+		this.repaintViewAndSynchronizedViews(20);
 	}
 
 	public void toFullscreen() {

@@ -33,7 +33,7 @@ public abstract class AbstractLayer {
 
 	public void setVisible(boolean visible) {
 		this.visible = visible;
-		MainFrame.MAIN_PANEL.repaintViewAndSynchronizedViews();
+		MainFrame.MAIN_PANEL.repaintViewAndSynchronizedViews(20);
 	}
 
 	public boolean isImageLayer() {

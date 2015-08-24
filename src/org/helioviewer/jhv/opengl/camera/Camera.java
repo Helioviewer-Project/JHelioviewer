@@ -12,7 +12,7 @@ public interface Camera {
 	public void setTranslation(Vector3d translation);
 	public Matrix4d getTransformation();
 	public void setZTranslation(double z);
-	public void repaintViewAndSynchronizedViews();
+	public void repaintViewAndSynchronizedViews(int millis);
 	public void addCameraAnimation(CameraAnimation cameraAnimation);
 	public double getAspect();
 	public void setTransformation(Quaternion3d rotation, Vector3d translation);

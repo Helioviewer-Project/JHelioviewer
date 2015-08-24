@@ -56,7 +56,7 @@ public class KakaduRender {
 			numberThreads = Kdu_global.Kdu_get_num_processors();
 			this.threadEnviroment = new Kdu_thread_env();
 			threadEnviroment.Create();
-			for (int i = 1; i < numberThreads; i++)
+			for (int i = 0; i < numberThreads; i++)
 				threadEnviroment.Add_thread();
 
 		} catch (KduException e) {
@@ -142,14 +142,19 @@ public class KakaduRender {
 			e.printStackTrace();
 		}
 	}
-
-	public void closeImage() {
+	
+	public void openImage(Kdu_region_compositor compositor){
 		try {
-			family_src.Close();
+			compositor.Set_thread_env(threadEnviroment, null);
 		} catch (KduException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		this.compositor = compositor;
+	}
+
+	public void closeImage() {
+		compositor = null;
 	}
 
 	public void openImage(Kdu_cache cache) {
@@ -169,8 +174,10 @@ public class KakaduRender {
 			e.printStackTrace();
 		}
 	}
+	
 
-	public MetaData getMetadata(int index) throws JHV_KduException {
+
+	public MetaData getMetadata(int index, Jp2_threadsafe_family_src family_src) throws JHV_KduException {
 		String xmlText = KakaduUtils.getXml(family_src, index);
 		if (xmlText == null)
 			return null;

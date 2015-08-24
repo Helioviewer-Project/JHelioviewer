@@ -281,7 +281,7 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 	 * @see #addDataItem(String)
 	 */
 	public void setMetaData(MetaData metaData) {
-
+		if (metaData == null) return;
 		metaDataOK = true;
 		resetData();
 		addDataItem("-------------------------------");
@@ -294,8 +294,9 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 		addDataItem("Date        : " + metaData.getLocalDateTime());
 		addDataItem("Time        : " + metaData.getLocalDateTime());
 
-		Document doc = metaData.getDocument();
-
+		//Document doc = metaData.getDocument();
+		Document doc = null;
+		if (doc == null) return;
 		// Send xml data to meta data dialog box
 		Node root = doc.getDocumentElement().getElementsByTagName("fits")
 				.item(0);

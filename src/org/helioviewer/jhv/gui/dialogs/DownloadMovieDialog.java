@@ -120,8 +120,10 @@ public class DownloadMovieDialog extends JDialog {
 				fileChooser.setInitialFileName(defaultName);
 				
 				String lastPath = Settings.getProperty(PATH_SETTINGS);
-				File file = new File(lastPath);
-				if (lastPath != null && file.exists()) {
+				
+				if (lastPath != null) {
+					File file = new File(lastPath);
+					if (file.exists())
 					fileChooser.setInitialDirectory(file);
 				}
 

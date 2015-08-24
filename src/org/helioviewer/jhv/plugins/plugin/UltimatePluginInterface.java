@@ -262,7 +262,7 @@ public class UltimatePluginInterface implements TimeLineListener,
 	}
 
 	public static void repaintMainPanel() {
-		MainFrame.MAIN_PANEL.repaintViewAndSynchronizedViews();
+		MainFrame.MAIN_PANEL.repaintViewAndSynchronizedViews(20);
 	}
 
 	public static HTTPRequest generateAndStartHTPPRequest(String uri,
@@ -305,7 +305,7 @@ public class UltimatePluginInterface implements TimeLineListener,
 		PluginLayer pluginLayer = new PluginLayer(name, plugin);
 		Layers.addLayer(pluginLayer);
 	}
-
+	
 	public static void removePanelOnLeftControllPanel(
 			JPanel jPanel) {
 		MainFrame.LEFT_PANE.remove(jPanel);
