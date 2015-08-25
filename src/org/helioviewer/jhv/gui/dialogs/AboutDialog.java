@@ -18,7 +18,6 @@ import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
@@ -146,12 +145,6 @@ public final class AboutDialog extends JDialog implements ActionListener, Showab
         pack();
         setSize(getPreferredSize());
         setLocationRelativeTo(MainFrame.SINGLETON);
-
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                scrollPane.getVerticalScrollBar().setValue(0);
-            }
-        });
 
         DialogTools.setDefaultButtons(closeButton,closeButton);
         

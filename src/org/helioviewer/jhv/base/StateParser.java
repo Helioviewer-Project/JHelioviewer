@@ -128,7 +128,7 @@ public class StateParser extends DefaultHandler {
 
 	public static void loadStateFile() throws IOException, JSONException {
 		String lastPath = Settings.getProperty(LOAD_PATH_SETTINGS);
-		if (JHVGlobals.isFXAvailable()) {
+		if (JHVGlobals.USE_JAVA_FX) {
 			openLoadFileChooserFX();
 		} else {
 			JFileChooser fileChooser = new JFileChooser();
@@ -261,7 +261,7 @@ public class StateParser extends DefaultHandler {
 	}
 
 	public static void writeStateFile() throws JSONException, IOException {
-		if (JHVGlobals.isFXAvailable()) {
+		if (JHVGlobals.USE_JAVA_FX) {
 			openSaveFileChooserFX();
 		} else {
 			String lastPath = Settings.getProperty(SAVE_PATH_SETTINGS);

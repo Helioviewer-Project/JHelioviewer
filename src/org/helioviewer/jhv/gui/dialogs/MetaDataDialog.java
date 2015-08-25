@@ -199,7 +199,7 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 			dispose();
 
 		} else if (_a.getSource() == exportFitsButton) {
-			if (JHVGlobals.isFXAvailable()){
+			if (JHVGlobals.USE_JAVA_FX){
 				openFileChooserFX(outFileName);
 			}
 			else {

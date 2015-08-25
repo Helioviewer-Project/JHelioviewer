@@ -17,8 +17,6 @@ import org.helioviewer.jhv.gui.opengl.MainPanel;
 /**
  * Intended to be a class for static functions and fields relevant to the
  * application as a whole.
- * 
- * @author caplins
  */
 public class JHVGlobals {
     public static final String VERSION = System.getProperty("jhvVersion") == null ? "developer" : System.getProperty("jhvVersion");
@@ -26,14 +24,12 @@ public class JHVGlobals {
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
     public static final DateTimeFormatter FILE_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH.mm.ss'Z'");
     
-	public static final String AGREEMENT_VALUE = "startup.agreement.value";
-	
 	/**
 	 * AIA 193
 	 */
     public static final int STARTUP_LAYER_ID = 10;
 
-	private static boolean JAVA_FX = false;
+	public static boolean USE_JAVA_FX = false;
 
     private JHVGlobals()
     {
@@ -172,14 +168,5 @@ public class JHVGlobals {
 			e.printStackTrace();
 		}
 		return retVal.toString();
-	}
-
-
-	public static void enableJavaFX() {
-		JAVA_FX = true;
-	}
-	
-	public static boolean isFXAvailable(){
-		return JAVA_FX;
 	}
 }

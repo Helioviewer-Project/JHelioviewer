@@ -53,7 +53,7 @@ public class OpenLocalFileAction extends AbstractAction {
 		/**
 		 * Native filechooser with JavaFX
 		 */
-		if (JHVGlobals.isFXAvailable()){
+		if (JHVGlobals.USE_JAVA_FX){
 		Platform.runLater(new Runnable() {
 
 			@Override

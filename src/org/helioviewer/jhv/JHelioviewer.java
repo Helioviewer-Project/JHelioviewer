@@ -1,9 +1,6 @@
 package org.helioviewer.jhv;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -24,7 +21,6 @@ import javax.swing.UIManager;
 import kdu_jni.Kdu_global;
 import kdu_jni.Kdu_message_formatter;
 
-import org.helioviewer.jhv.base.FileUtils;
 import org.helioviewer.jhv.base.Log;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.dialogs.AboutDialog;
@@ -57,8 +53,8 @@ public class JHelioviewer {
 	public static void main(String[] args) {
 		
 		try {
-			Class<?> applicationClass = Class.forName("com.sun.javafx.runtime.VersionInfo");
-			JHVGlobals.enableJavaFX();
+			Class.forName("com.sun.javafx.runtime.VersionInfo");
+			JHVGlobals.USE_JAVA_FX = true;
 		} catch (ClassNotFoundException e) {
 			System.out.println("No JavaFX detected. Please install a Java 1.8 with JavaFX");
 			//JOptionPane.showMessageDialog(null, "No JavaFX detected. Please install a Java 1.8 with JavaFX", "No JavaFX detected", JOptionPane.ERROR_MESSAGE);
@@ -70,10 +66,6 @@ public class JHelioviewer {
 	}
 
 	public static void startUpJHelioviewer(String[] args) {
-		boolean agree = Boolean.parseBoolean(Settings.getProperty(JHVGlobals.AGREEMENT_VALUE));
-		if (!agree)
-			PrivacyAgreementDialog.showDialog(null);
-		
 		SwingUtilities.invokeLater(new Runnable() {
 		    public void run() {
 		        new JFXPanel(); // initializes JavaFX environment
@@ -266,47 +258,8 @@ public class JHelioviewer {
 			}
 
 			System.loadLibrary("kdu_jni");
-
-			if (JHVGlobals.isWindows()) {
-				if (JHVGlobals.is64Bit())
-					loadExecuteLibary(tmpLibDir, "/libs/windows/64/",
-							"cgc-windows-x86-64.exe", "cgc");
-				else
-					throw new RuntimeException("Could not determine OS/arch");
-			} else if (JHVGlobals.isLinux()) {
-				if (JHVGlobals.is64Bit())
-					loadExecuteLibary(tmpLibDir, "/libs/linux/64/",
-							"cgc-linux-x86-64", "cgc");
-				else
-					throw new RuntimeException("Could not determine OS/arch");
-			} else if (JHVGlobals.isOSX()) {
-				loadExecuteLibary(tmpLibDir, "/libs/mac/", "cgc-mac", "cgc");
-				setupOSXApplicationListener();
-			} else
-				throw new RuntimeException("Could not determine OS/arch");
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-	}
-
-	private static void loadExecuteLibary(Path tmpPath, String directory,
-			String name, String executableName) throws IOException {
-		try (InputStream in = JHelioviewer.class.getResourceAsStream(directory
-				+ name)) {
-			byte[] buffer = new byte[1024];
-			int read = -1;
-			File tmp = new File(tmpPath.toFile(), name);
-			try (FileOutputStream fos = new FileOutputStream(tmp)) {
-				while ((read = in.read(buffer)) != -1) {
-					fos.write(buffer, 0, read);
-				}
-				fos.close();
-				in.close();
-				tmp.setExecutable(true);
-				FileUtils.registerExecutable(executableName,
-						tmp.getAbsolutePath());
-				tmp.deleteOnExit();
-			}
 		}
 	}
 

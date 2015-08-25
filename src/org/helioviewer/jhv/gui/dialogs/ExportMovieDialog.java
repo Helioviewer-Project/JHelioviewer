@@ -215,7 +215,7 @@ public class ExportMovieDialog implements ActionListener {
 	}
 
 	private void openFileChooser() {
-		if (JHVGlobals.isFXAvailable())
+		if (JHVGlobals.USE_JAVA_FX)
 			openFXFileChooser();
 		else {
 			txtTargetFile = "";

@@ -42,7 +42,6 @@ import javax.swing.table.TableModel;
 import javax.swing.text.NumberFormatter;
 
 import org.helioviewer.jhv.JHVGlobals;
-import org.helioviewer.jhv.PrivacyAgreementDialog;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.base.Message;
 import org.helioviewer.jhv.gui.IconBank;
@@ -86,8 +85,6 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
 	private JButton cancelBtn;
 	private JButton resetBtn;
 
-	private AgreementPanel agreementPanel;
-
 	private static final int MAX_SIZE_SCREENSHOT = 4096;
 	private static final int MAX_SIZE_MOVIE_EXPORT = 4096;
 
@@ -116,7 +113,6 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
 		JPanel paramsSubPanel = new JPanel(new BorderLayout());
 		paramsSubPanel.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
 		paramsSubPanel.add(createParametersPanel(), BorderLayout.CENTER);
-		paramsSubPanel.add(createAgreementPanel(), BorderLayout.NORTH);
 
 		JPanel defaultsSubPanel = new JPanel(new BorderLayout());
 		defaultsSubPanel.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
@@ -147,7 +143,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
 		JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		btnPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
 
-		acceptBtn = new JButton("Accept");
+		acceptBtn = new JButton("OK");
 		cancelBtn = new JButton("Cancel");
 		resetBtn = new JButton("Reset");
 
@@ -383,46 +379,6 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
 		panel.add(movieExportPanel, BorderLayout.CENTER);
 
 		return panel;
-	}
-
-	private JPanel createAgreementPanel() {
-		JPanel panel = new JPanel(new BorderLayout());
-		panel.setBorder(BorderFactory.createTitledBorder(" Agreement "));
-
-		agreementPanel = new AgreementPanel(this);
-		agreementPanel.setPreferredSize(new Dimension(400, 70));
-		agreementPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-
-		panel.add(agreementPanel, BorderLayout.CENTER);
-
-		return panel;
-	}
-
-	private static class AgreementPanel extends JPanel {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = -6968907816252313137L;
-
-		private AgreementPanel(JDialog dialog) {
-			setLayout(new FormLayout(new ColumnSpec[] {
-					FormFactory.RELATED_GAP_COLSPEC,
-					FormFactory.DEFAULT_COLSPEC,},
-				new RowSpec[] {
-					FormFactory.RELATED_GAP_ROWSPEC,
-					FormFactory.DEFAULT_ROWSPEC,}));
-			
-			JButton btnLicenseAgreement = new JButton("License Agreement");
-			btnLicenseAgreement.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					PrivacyAgreementDialog.showDialog(MainFrame.SINGLETON);
-				}
-			});
-			add(btnLicenseAgreement, "2, 2");
-		}
 	}
 
 	private static class MovieExportPanel extends JPanel {
@@ -887,7 +843,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
 					if (row >= 2)
 						return;
 
-					if (JHVGlobals.isFXAvailable()) {
+					if (JHVGlobals.USE_JAVA_FX) {
 						openFileChooserFX(row);
 					} else {
 						openFileChooser(row);

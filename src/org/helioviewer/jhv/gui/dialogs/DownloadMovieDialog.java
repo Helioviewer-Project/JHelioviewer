@@ -186,7 +186,7 @@ public class DownloadMovieDialog extends JDialog {
 		}
 		this.defaultName = layer.getFullName() + "_F" + JHVGlobals.FILE_DATE_TIME_FORMATTER.format(((AbstractImageLayer)layer).getFirstLocalDateTime()) + "_T" + JHVGlobals.FILE_DATE_TIME_FORMATTER.format(((AbstractImageLayer)layer).getLastLocalDateTime());
 		this.url = url;
-		if (JHVGlobals.isFXAvailable()){
+		if (JHVGlobals.USE_JAVA_FX){
 			openFileChooserFX();
 		}
 		else {

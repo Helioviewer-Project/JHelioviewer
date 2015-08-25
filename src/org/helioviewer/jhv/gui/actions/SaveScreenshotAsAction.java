@@ -156,7 +156,7 @@ public class SaveScreenshotAsAction extends AbstractAction {
 	 * {@inheritDoc}
 	 */
 	public void actionPerformed(ActionEvent e) {
-		if (JHVGlobals.isFXAvailable()){
+		if (JHVGlobals.USE_JAVA_FX){
 			openFileChooserFX();
 		}
 		else {
