@@ -101,7 +101,7 @@ public class TextureCache {
 		public void markAsChanged() {
 			if (TimeLine.SINGLETON.getCurrentDateTime().equals(
 					imageRegion.getDateTime()))
-				MainFrame.MAIN_PANEL.repaintViewAndSynchronizedViews(20);
+				MainFrame.MAIN_PANEL.repaintMain(20);
 			changed = true;
 		}
 

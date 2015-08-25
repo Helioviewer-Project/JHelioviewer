@@ -412,6 +412,7 @@ public class LayerPanel extends JPanel implements LayerListener,
 				Object[][] data = new Object[Layers.getLayerCount()][5];
 				int count = 0;
 				for (AbstractLayer layer : Layers.getLayers()) {
+					if (data.length <= count) break;
 					data[count][0] = layer.isVisible();
 
 					data[count][1] = layer.checkBadRequest();
@@ -534,7 +535,7 @@ public class LayerPanel extends JPanel implements LayerListener,
 			case 4:
 				JLabel label4 = (JLabel) super.getTableCellRendererComponent(
 						table, null, isSelected, hasFocus, row, column);
-				if (Layers.getLayer(row).isImageLayer()){
+				if (Layers.getLayer(row) != null && Layers.getLayer(row).isImageLayer()){
 				label4.setIcon((ImageIcon) value);
 				label4.setPreferredSize(new Dimension(20, 20));
 				}

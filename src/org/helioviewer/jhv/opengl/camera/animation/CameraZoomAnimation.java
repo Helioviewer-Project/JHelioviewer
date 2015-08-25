@@ -34,7 +34,6 @@ public class CameraZoomAnimation implements CameraAnimation {
     
 
     public void animate(MainPanel compenentView) {
-    	System.out.println("startTime : " + startTime);
         if (this.startTime < 0) {
             this.startTime = System.currentTimeMillis();
             this.lastAnimationTime = System.currentTimeMillis();

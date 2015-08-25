@@ -6,6 +6,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import kdu_jni.KduException;
+import kdu_jni.Kdu_cache;
 
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.layers.CacheableImageData;
@@ -27,12 +28,14 @@ public class JPIPRequest extends AbstractRequest {
 	private int JpipRequestLen = JPIPConstants.MIN_REQUEST_LEN;
 	private volatile long lastResponseTime = -1;
 	private final CacheableImageData cacheableImageData;
-
+	private final Kdu_cache kduCache = new Kdu_cache();
+	
 	public JPIPRequest(String url, PRIORITY priority, int startFrame,
 			int endFrame, Rectangle size,
 			CacheableImageData cacheableImageData) {
 		super(url, priority);
 		this.cacheableImageData = cacheableImageData;
+		
 		jpipSocket = new JPIPSocket();
 
 		query = new JPIPQuery();
@@ -83,6 +86,7 @@ public class JPIPRequest extends AbstractRequest {
 					e.printStackTrace();
 				}
 			} while (!(complete));
+			cacheableImageData.setKDUCache(kduCache);
 			cacheableImageData.markAsChanged(true);
 			finished = true;
 			MainFrame.MOVIE_PANEL.repaintSlider();
@@ -115,7 +119,7 @@ public class JPIPRequest extends AbstractRequest {
 		while ((data = jRes.removeJpipDataSegment()) != null && !data.isEOR)
 			try {
 				if (cacheableImageData.getImageFile() == null){
-				cacheableImageData.getImageData().Add_to_databin(data.classID.getKakaduClassID(),
+				kduCache.Add_to_databin(data.classID.getKakaduClassID(),
 						data.codestreamID, data.binID, data.data, data.offset,
 						data.length, data.isFinal, true, false);
 				}

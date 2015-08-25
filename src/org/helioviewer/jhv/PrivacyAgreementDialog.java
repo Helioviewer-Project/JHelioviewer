@@ -34,6 +34,8 @@ public class PrivacyAgreementDialog {
 						Boolean.toString(false));
 				System.exit(0);
 			}
+			Settings.setProperty(JHVGlobals.AGREEMENT_VALUE,
+					Boolean.toString(true));
 			return showDialog(component);
 		}
 		Settings.setProperty(JHVGlobals.AGREEMENT_VALUE,

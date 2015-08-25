@@ -12,7 +12,6 @@ import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
-import org.w3c.dom.Document;
 
 public abstract class MetaData {
     private Rectangle2D physicalImageSize;

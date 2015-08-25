@@ -15,7 +15,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import kdu_jni.KduException;
-import kdu_jni.Kdu_cache;
 
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.downloadmanager.AbstractRequest;
@@ -29,7 +28,6 @@ import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.opengl.texture.TextureCache;
 import org.helioviewer.jhv.opengl.texture.TextureCache.CachableTexture;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.helioviewer.jhv.viewmodel.metadata.MetaDataStereo;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
 import org.json.JSONArray;
@@ -63,7 +61,7 @@ public class UltimateLayer {
 
 	private ArrayList<AbstractRequest> badRequests = new ArrayList<AbstractRequest>();
 
-	private static final int NUMBER_OF_KAKADU_RENDERERS = 4;
+	private static final int NUMBER_OF_KAKADU_RENDERERS = 20;
 	private static final BlockingQueue<KakaduRender> kakaduRenders = new ArrayBlockingQueue<KakaduRender>(NUMBER_OF_KAKADU_RENDERERS);;
 
 	static{
@@ -110,7 +108,7 @@ public class UltimateLayer {
 		}
 		this.timeArrayChanged();
 	}
-
+	
 	public void setTimeRange(final LocalDateTime start,
 			final LocalDateTime end, final int cadence) {
 
@@ -142,7 +140,7 @@ public class UltimateLayer {
 							+ "&sourceId=" + sourceID + "&cadence=" + cadence;
 
 					CacheableImageData cacheableImageData = new CacheableImageData(
-							id, new Kdu_cache());
+							id);
 					JPIPDownloadRequest jpipDownloadRequest = new JPIPDownloadRequest(
 							URL + request, PRIORITY.LOW, cacheableImageData,
 							requests, httpRequest);
@@ -467,7 +465,6 @@ public class UltimateLayer {
 							.size()];
 					UltimateLayer.this.requests.toArray(requests);
 					for (AbstractRequest request : requests) {
-						System.out.println("request: " + request);
 						if (Thread.interrupted())
 							return;
 						if (request.isFinished()) {

@@ -48,5 +48,5 @@ public class FramerateStatusPanel extends StatusLabel{
 		if ((System.currentTimeMillis() - currentMillis) >= 1000)
            updateFramerate();
 		counter++;
-	}
+	}	
 }

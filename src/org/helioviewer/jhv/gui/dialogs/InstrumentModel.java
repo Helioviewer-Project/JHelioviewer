@@ -53,7 +53,6 @@ public class InstrumentModel {
 							LocalDateTime start = instrument.end.minusDays(1);
 							Layers.addLayer(instrument.sourceId, start,
 									instrument.end, 1728, "AIA 171");
-							System.out.println(instrument.start);
 						}
 					} catch (IOException e) {
 						e.printStackTrace();

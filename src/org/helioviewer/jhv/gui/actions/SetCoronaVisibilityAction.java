@@ -21,6 +21,6 @@ public class SetCoronaVisibilityAction extends AbstractAction{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Layers.toggleCoronaVisibility();
-		MainFrame.MAIN_PANEL.repaintViewAndSynchronizedViews(20);
+		MainFrame.MAIN_PANEL.repaintMain(20);
 	}
 }
