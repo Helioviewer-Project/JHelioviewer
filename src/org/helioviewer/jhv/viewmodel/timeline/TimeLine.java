@@ -198,7 +198,6 @@ public class TimeLine implements LayerListener {
 	
 	public boolean calculateNextFrameDate(long time){
 		if (time <= 0) return true;
-		System.out.println("time : " + time);
 		int nextSteps = (int)time / speedFactor;
 		if (nextSteps <= 0){
 			timer.setDelay((int) (speedFactor - time));

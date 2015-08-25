@@ -74,7 +74,6 @@ public class HEKRequestStructureThread extends HEKRequest implements Runnable {
                 fields = fields.substring(0, fields.length() - 1);
 
                 String uri = "http://www.lmsal.com/hek/her?cosec=2&cmd=search&type=column&event_type=**&event_starttime=" + startDate + "&event_endtime=" + endDate + "&event_coordsys=helioprojective&x1=-1200&x2=1200&y1=-1200&y2=1200&return=" + fields + "&temporalmode=overlap&result_limit=" + HEKSettings.REQUEST_STRUCTURE_PAGESIZE + "&page=" + page;
-                System.out.println("Requesting Page " + page + " of Max " + HEKSettings.REQUEST_STRUCTURE_MAXPAGES + " HEK Event Structure: " + uri);
 
                 HTTPRequest httpRequest = UltimatePluginInterface.generateAndStartHTPPRequest(uri, PRIORITY.MEDIUM);
 

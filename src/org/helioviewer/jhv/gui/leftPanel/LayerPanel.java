@@ -412,6 +412,7 @@ public class LayerPanel extends JPanel implements LayerListener,
 				Object[][] data = new Object[Layers.getLayerCount()][5];
 				int count = 0;
 				for (AbstractLayer layer : Layers.getLayers()) {
+					if (data.length <= count) break;
 					data[count][0] = layer.isVisible();
 
 					data[count][1] = layer.checkBadRequest();

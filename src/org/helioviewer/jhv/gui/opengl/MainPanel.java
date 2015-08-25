@@ -230,14 +230,19 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		long time = System.currentTimeMillis();
 		if (TimeLine.SINGLETON.isPlaying())
 			timeOverride = TimeLine.SINGLETON.calculateNextFrameDate(time - this.time);
-		if (timeOverride) this.time = time;		
+
+		if (TimeLine.SINGLETON.isPlaying()){
+			 int delay = (int) Math.floor((time - this.time)/ (double)TimeLine.SINGLETON.getSpeedFactor());
+			 int factor = Math.min(Math.max(1, delay), 3);
+			 this.size = new Dimension(this.size.width / factor, this.size.height / factor);
+		}
+
+		if (timeOverride) this.time = time;				
 	}
 	
 	protected void render(GL2 gl) {		
 		nextTime();
 		
-		//this.size = getCanavasSize();
-		this.size = getSize();
 		LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
 		gl.glClearDepth(1);
 		gl.glDepthMask(true);
@@ -389,7 +394,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 
 	@Override
 	public void display(GLAutoDrawable drawable) {
-		//this.size = getCanavasSize();
+		this.size = getCanavasSize();
 		GL2 gl = drawable.getGL().getGL2();
 
 		gl.glViewport(0, 0, this.getSurfaceWidth(), this.getSurfaceHeight());

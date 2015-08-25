@@ -465,7 +465,6 @@ public class UltimateLayer {
 							.size()];
 					UltimateLayer.this.requests.toArray(requests);
 					for (AbstractRequest request : requests) {
-						System.out.println("request: " + request);
 						if (Thread.interrupted())
 							return;
 						if (request.isFinished()) {

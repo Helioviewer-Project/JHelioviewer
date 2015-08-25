@@ -123,7 +123,6 @@ public class MoviePanel extends JPanel implements TimeLineListener,
 		JButton button = new JButton(ICON_PLAY);
 		JLabel label = new JLabel("test");
 		size = slider.getPreferredSize().height + label.getPreferredSize().height + 10 + 20;
-		System.out.println("tt");
 		JComboBox<String> comboBox = new JComboBox<String>();
 		JSpinner spinner = new JSpinner();
 	
@@ -143,7 +142,6 @@ public class MoviePanel extends JPanel implements TimeLineListener,
 		width = slider.getPreferredSize().width;
 		this.setMinimumSize(new Dimension(width, size));
 		this.setPreferredSize(new Dimension(width, size));
-		System.out.println(getSize().height);
 	}
 
 	private JPanel initOptionPane() {

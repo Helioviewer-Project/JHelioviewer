@@ -37,9 +37,6 @@ public class CameraRotationAnimation implements CameraAnimation{
 		else {
 			double time = (1-Math.cos((System.currentTimeMillis() - startTime)/(double)this.timeLeft*Math.PI)) / 2.0;
 			Quaternion3d rotation = camera.getRotation().slerp(this.rotation, time);
-			System.out.println("rotation : " + rotation);
-			System.out.println("carot    : " + camera.getRotation());
-			System.out.println("rot      : " + this.rotation);
 			camera.setRotation(rotation);
 		}
 		

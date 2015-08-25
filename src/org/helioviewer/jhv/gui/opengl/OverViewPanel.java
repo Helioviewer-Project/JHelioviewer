@@ -103,6 +103,7 @@ public class OverViewPanel extends MainPanel {
 
 	@Override
 	protected void render(GL2 gl) {
+		this.size = getSize();
 		this.rotation = MainFrame.MAIN_PANEL.getRotation();
 		super.render(gl);
 		gl.glPushMatrix();

@@ -93,7 +93,6 @@ public class ImageLayer extends AbstractImageLayer {
 	public int getTexture(MainPanel compenentView, boolean highResolution,
 			Dimension size) throws TextureException {
 		if (imageData != null) {
-			System.out.println("new ImageData : ");
 			updateTexture();
 		}
 		if (this.getLastDecodedImageRegion() != null) {

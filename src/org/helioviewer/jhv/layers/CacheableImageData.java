@@ -58,27 +58,29 @@ public class CacheableImageData {
 	}
 
 	public void setKDUCache(Kdu_cache kduCache) {
-		this.kduCache = kduCache;
-		try {
-			Kdu_region_compositor compositor = new Kdu_region_compositor();
-			Jp2_threadsafe_family_src family_src = new Jp2_threadsafe_family_src();
-			Jpx_source jpxSrc = new Jpx_source();
-			family_src.Open(kduCache);
-			jpxSrc.Open(family_src, true);
-			compositor.Create(jpxSrc, CODESTREAM_CACHE_THRESHOLD);
-			this.compositor = compositor;
-			this.family_src = family_src;
-			this.jpxSrc = jpxSrc;
+		if (fileName != null) {
+			this.kduCache = kduCache;
+			try {
+				Kdu_region_compositor compositor = new Kdu_region_compositor();
+				Jp2_threadsafe_family_src family_src = new Jp2_threadsafe_family_src();
+				Jpx_source jpxSrc = new Jpx_source();
+				family_src.Open(kduCache);
+				jpxSrc.Open(family_src, true);
+				compositor.Create(jpxSrc, CODESTREAM_CACHE_THRESHOLD);
+				this.compositor = compositor;
+				this.family_src = family_src;
+				this.jpxSrc = jpxSrc;
 
-			if (metaDatas == null)
-				initMetaData();
-		} catch (KduException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+				if (metaDatas == null)
+					initMetaData();
+			} catch (KduException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
-	public void initMetaData() {
+	private void initMetaData() {
 		try {
 			KakaduRender kakaduRender = new KakaduRender();
 			kakaduRender.openImage(getSource());
