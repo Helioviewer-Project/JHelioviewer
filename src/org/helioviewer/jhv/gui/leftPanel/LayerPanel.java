@@ -535,7 +535,7 @@ public class LayerPanel extends JPanel implements LayerListener,
 			case 4:
 				JLabel label4 = (JLabel) super.getTableCellRendererComponent(
 						table, null, isSelected, hasFocus, row, column);
-				if (Layers.getLayer(row).isImageLayer()){
+				if (Layers.getLayer(row) != null && Layers.getLayer(row).isImageLayer()){
 				label4.setIcon((ImageIcon) value);
 				label4.setPreferredSize(new Dimension(20, 20));
 				}

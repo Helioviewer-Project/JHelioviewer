@@ -228,11 +228,11 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	protected void nextTime(){
 		boolean timeOverride = true;
 		long time = System.currentTimeMillis();
-		if (TimeLine.SINGLETON.isPlaying())
-			timeOverride = TimeLine.SINGLETON.calculateNextFrameDate(time - this.time);
 
 		if (TimeLine.SINGLETON.isPlaying()){
-			 int delay = (int) Math.floor((time - this.time)/ (double)TimeLine.SINGLETON.getSpeedFactor());
+			timeOverride = TimeLine.SINGLETON.calculateNextFrameDate(time - this.time);
+
+			int delay = (int) ((time - this.time)/ (double)TimeLine.SINGLETON.getSpeedFactor() + 0.5);
 			 int factor = Math.min(Math.max(1, delay), 3);
 			 this.size = new Dimension(this.size.width / factor, this.size.height / factor);
 		}
@@ -293,7 +293,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 			}
 
 			try {
-				latchCounter.await(200, TimeUnit.MILLISECONDS);
+				latchCounter.await();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

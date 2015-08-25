@@ -36,7 +36,7 @@ public class TimeLine implements LayerListener {
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			MainFrame.MAIN_PANEL.repaint();
+			MainFrame.MAIN_PANEL.display();
 			timer.stop();
 		}
 	});
@@ -52,6 +52,7 @@ public class TimeLine implements LayerListener {
 	}
 
 	public void setPlaying(boolean playing) {
+		System.out.println("time : " + System.currentTimeMillis());
 		this.isPlaying = playing;
 		forward = true;
 		MainFrame.MAIN_PANEL.resetTime();

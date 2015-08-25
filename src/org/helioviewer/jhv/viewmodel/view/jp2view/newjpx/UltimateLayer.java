@@ -61,7 +61,7 @@ public class UltimateLayer {
 
 	private ArrayList<AbstractRequest> badRequests = new ArrayList<AbstractRequest>();
 
-	private static final int NUMBER_OF_KAKADU_RENDERERS = 4;
+	private static final int NUMBER_OF_KAKADU_RENDERERS = 20;
 	private static final BlockingQueue<KakaduRender> kakaduRenders = new ArrayBlockingQueue<KakaduRender>(NUMBER_OF_KAKADU_RENDERERS);;
 
 	static{
