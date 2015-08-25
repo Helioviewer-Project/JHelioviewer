@@ -38,7 +38,7 @@ public class Layers {
 		ImageLayer layer = new ImageLayer(uri, renderer);
 		layers.add(layer);
 		layers.sort(COMPARATOR);
-		updateOpacity(layer);
+		updateOpacity(layer, false);
 		if (layers.size() == 1 || activeImageLayer < 0) setActiveLayer(0);
 		for (LayerListener renderListener : layerListeners) {
 			renderListener.newlayerAdded();
@@ -49,7 +49,7 @@ public class Layers {
 		return layer;
 	}
 	
-	private static void updateOpacity(AbstractImageLayer imageLayer){
+	private static void updateOpacity(AbstractImageLayer imageLayer, boolean remove){
 		double counter = 0;
 		for (AbstractLayer tmpLayer : layers){
 			if (tmpLayer.isImageLayer()) counter++;
@@ -58,7 +58,12 @@ public class Layers {
 			if (tmpLayer.isImageLayer()){
 				AbstractImageLayer tmpImageLayer = (AbstractImageLayer) tmpLayer;
 				if (tmpImageLayer == imageLayer) tmpImageLayer.setOpacity(1/counter);
-				else tmpImageLayer.setOpacity(tmpImageLayer.getOpacity() * (counter-1) / counter);
+				else {
+					if (remove)
+						tmpImageLayer.setOpacity(tmpImageLayer.getOpacity() / ((counter-1) / counter));
+					else
+						tmpImageLayer.setOpacity(tmpImageLayer.getOpacity() * ((counter-1) / counter));
+				}
 			}
 		}
 	}
@@ -67,7 +72,7 @@ public class Layers {
 		layers.add(layer);
 		layers.sort(COMPARATOR);
 		if (layers.size() == 1 || activeImageLayer < 0) setActiveLayer(0);
-		if (layer.isImageLayer()) updateOpacity((AbstractImageLayer)layer);
+		if (layer.isImageLayer()) updateOpacity((AbstractImageLayer)layer, false);
 		for (LayerListener renderListener : layerListeners) {
 			renderListener.newlayerAdded();
 		}
@@ -83,7 +88,7 @@ public class Layers {
 		layers.add(layer);
 		layers.sort(COMPARATOR);
 		boolean imageLayer = false;
-		updateOpacity(layer);
+		updateOpacity(layer, false);
 		
 		if (layers.size() == 1 || activeImageLayer < 0) setActiveLayer(0);
 		for (LayerListener renderListener : layerListeners) {
@@ -104,7 +109,7 @@ public class Layers {
 	public static void removeLayer(int idx) {
 		if (!layers.isEmpty()) {
 			if (layers.get(idx).isImageLayer()){
-				updateOpacity((AbstractImageLayer)layers.get(idx));				
+				updateOpacity((AbstractImageLayer)layers.get(idx), true);				
 			}
 			layers.get(idx).remove();
 			layers.remove(idx);
