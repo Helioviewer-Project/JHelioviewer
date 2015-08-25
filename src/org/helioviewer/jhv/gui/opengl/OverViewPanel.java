@@ -96,6 +96,10 @@ public class OverViewPanel extends MainPanel {
 		super.display(drawable);
 
 	}
+	
+	@Override
+	protected void nextTime() {
+	}
 
 	@Override
 	protected void render(GL2 gl) {

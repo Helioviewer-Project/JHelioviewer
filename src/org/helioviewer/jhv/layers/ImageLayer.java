@@ -25,14 +25,12 @@ import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.opengl.camera.CameraMode;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
-import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
 import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.Cache;
 import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.KakaduRender;
 import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.UltimateLayer;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.install4j.runtime.installer.helper.comm.actions.RunAction;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 

@@ -262,7 +262,7 @@ public class UltimatePluginInterface implements TimeLineListener,
 	}
 
 	public static void repaintMainPanel() {
-		MainFrame.MAIN_PANEL.repaintViewAndSynchronizedViews(20);
+		MainFrame.MAIN_PANEL.repaintMain(20);
 	}
 
 	public static HTTPRequest generateAndStartHTPPRequest(String uri,

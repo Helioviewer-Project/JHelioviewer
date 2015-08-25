@@ -6,14 +6,14 @@ import kdu_jni.Jp2_threadsafe_family_src;
 import kdu_jni.Jpx_source;
 import kdu_jni.KduException;
 import kdu_jni.Kdu_cache;
-import kdu_jni.Kdu_global;
 import kdu_jni.Kdu_region_compositor;
-import kdu_jni.Kdu_thread_env;
 
 import org.helioviewer.jhv.layers.AbstractImageLayer.CACHE_STATUS;
 import org.helioviewer.jhv.opengl.texture.TextureCache;
 import org.helioviewer.jhv.opengl.texture.TextureCache.CachableTexture;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
+import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
+import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.KakaduRender;
 
 public class CacheableImageData {
 
@@ -38,19 +38,9 @@ public class CacheableImageData {
 	private static final int CODESTREAM_CACHE_THRESHOLD = 1024 * 256;
 
 	private MetaData[] metaDatas;
-	
-	public CacheableImageData(int id, Kdu_cache kduCache) {
-		this.kduCache = kduCache;
+
+	public CacheableImageData(int id) {
 		this.id = id;
-		try {
-			family_src.Open(kduCache);
-			jpxSrc.Open(family_src, true);
-			compositor.Create(jpxSrc, CODESTREAM_CACHE_THRESHOLD);
-		} catch (KduException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
 	}
 
 	public CacheableImageData(int id, String fileName) {
@@ -66,8 +56,48 @@ public class CacheableImageData {
 			e.printStackTrace();
 		}
 	}
-	
-	public void setMetadatas(MetaData[] metaDatas){
+
+	public void setKDUCache(Kdu_cache kduCache) {
+		this.kduCache = kduCache;
+		try {
+			Kdu_region_compositor compositor = new Kdu_region_compositor();
+			Jp2_threadsafe_family_src family_src = new Jp2_threadsafe_family_src();
+			Jpx_source jpxSrc = new Jpx_source();
+			family_src.Open(kduCache);
+			jpxSrc.Open(family_src, true);
+			compositor.Create(jpxSrc, CODESTREAM_CACHE_THRESHOLD);
+			this.compositor = compositor;
+			this.family_src = family_src;
+			this.jpxSrc = jpxSrc;
+
+			if (metaDatas == null)
+				initMetaData();
+		} catch (KduException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void initMetaData() {
+		try {
+			KakaduRender kakaduRender = new KakaduRender();
+			kakaduRender.openImage(getSource());
+			int framecount = getFrameCount();
+			MetaData[] metaDatas = new MetaData[framecount];
+			for (int i = 1; i <= framecount; i++) {
+				metaDatas[i - 1] = kakaduRender.getMetadata(i, getFamilySrc());
+			}
+			this.metaDatas = metaDatas;
+		} catch (KduException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JHV_KduException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void setMetadatas(MetaData[] metaDatas) {
 		this.metaDatas = metaDatas;
 	}
 
@@ -134,7 +164,8 @@ public class CacheableImageData {
 
 	public void setFile(String fileName) {
 		this.fileName = fileName;
-		kduCache.Native_destroy();
+		if (kduCache != null)
+			kduCache.Native_destroy();
 		kduCache = null;
 		markAsChanged(false);
 		try {
@@ -147,6 +178,8 @@ public class CacheableImageData {
 			this.compositor = compositor;
 			this.family_src = family_src;
 			this.jpxSrc = jpxSrc;
+			if (metaDatas == null)
+				initMetaData();
 		} catch (KduException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -183,6 +216,8 @@ public class CacheableImageData {
 	}
 
 	public MetaData getMetaData(int idx) {
+		if (metaDatas == null)
+			return null;
 		return metaDatas[idx];
 	}
 

@@ -71,7 +71,9 @@ public class JHelioviewer {
 
 	public static void startUpJHelioviewer(String[] args) {
 		
-		PrivacyAgreementDialog.showDialog(null);
+		boolean agree = Boolean.getBoolean(Settings.getProperty(JHVGlobals.AGREEMENT_VALUE));
+		if (!agree)
+			PrivacyAgreementDialog.showDialog(null);
 		
 		SwingUtilities.invokeLater(new Runnable() {
 		    public void run() {

@@ -26,7 +26,6 @@ public class JHVGlobals {
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
     public static final DateTimeFormatter FILE_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH.mm.ss'Z'");
     
-    public static final String AGREEMENT_REMIND_ME = "startup.agreement.remindMe";
 	public static final String AGREEMENT_VALUE = "startup.agreement.value";
 	
 	/**

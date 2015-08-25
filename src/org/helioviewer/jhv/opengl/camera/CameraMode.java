@@ -17,7 +17,7 @@ public class CameraMode {
         MainFrame.TOP_TOOL_BAR.set3DMode();
         MainFrame.MAIN_PANEL.setRotationInteraction();
         //MainFrame.OVERVIEW_PANEL.setRotationInteraction();
-        MainFrame.MAIN_PANEL.repaintViewAndSynchronizedViews(20);
+        MainFrame.MAIN_PANEL.repaintMain(20);
 	}
 
 	public static void set2DMode(){
@@ -26,7 +26,7 @@ public class CameraMode {
         MainFrame.TOP_TOOL_BAR.set2DMode();
         MainFrame.MAIN_PANEL.setPanInteraction();
         //MainFrame.OVERVIEW_PANEL.setPanInteraction();
-        MainFrame.MAIN_PANEL.repaintViewAndSynchronizedViews(20);
+        MainFrame.MAIN_PANEL.repaintMain(20);
 	}
 	
 	public static int getCameraMode(){

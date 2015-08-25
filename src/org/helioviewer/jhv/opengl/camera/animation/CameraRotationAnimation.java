@@ -28,7 +28,7 @@ public class CameraRotationAnimation implements CameraAnimation{
 	public void animate(MainPanel compenentView) {
 		if (startTime < 1){
 			startTime = System.currentTimeMillis();
-			camera.repaintViewAndSynchronizedViews(20);
+			camera.repaintMain(20);;
 		}
 		else if (timeLeft < System.currentTimeMillis() - startTime){
 			this.finished = true;

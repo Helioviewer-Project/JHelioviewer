@@ -26,12 +26,21 @@ public class TimeLine implements LayerListener {
 
 	private ConcurrentSkipListSet<LocalDateTime> localDateTimes = null;
 
-	private int speedFactor;
+	private int speedFactor = 16;
 	private ANIMATION_MODE animationMode = ANIMATION_MODE.LOOP;
 
 	public static TimeLine SINGLETON = new TimeLine();
-
-
+	private boolean forward = true;
+	
+	private static final Timer timer = new Timer(0, new ActionListener() {
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			MainFrame.MAIN_PANEL.repaint();
+			timer.stop();
+		}
+	});
+	
 	private TimeLine() {
 		localDateTimes = new ConcurrentSkipListSet<LocalDateTime>();
 		Layers.addNewLayerListener(this);
@@ -44,6 +53,9 @@ public class TimeLine implements LayerListener {
 
 	public void setPlaying(boolean playing) {
 		this.isPlaying = playing;
+		forward = true;
+		MainFrame.MAIN_PANEL.resetTime();
+		MainFrame.MAIN_PANEL.repaint();
 	}
 
 	public LocalDateTime nextFrame() {
@@ -147,6 +159,7 @@ public class TimeLine implements LayerListener {
 			this.current = current;
 			dateTimeChanged(last);
 		}
+		MainFrame.MAIN_PANEL.repaint();
 	}
 
 	public interface TimeLineListener {
@@ -183,7 +196,68 @@ public class TimeLine implements LayerListener {
 		this.animationMode = animationMode;
 	}
 	
-	public void calculateNextFrameDate(long time){
-		//nextFrame();
+	public boolean calculateNextFrameDate(long time){
+		if (time <= 0) return true;
+		System.out.println("time : " + time);
+		int nextSteps = (int)time / speedFactor;
+		if (nextSteps <= 0){
+			timer.setDelay((int) (speedFactor - time));
+			timer.start();
+			return false;
+		}
+		while (nextSteps > 0){
+			nextSteps--;
+			switch (animationMode) {
+			case LOOP:
+				loop();
+				break;
+			case STOP:
+				stop();
+				break;
+			case SWING:
+				swing();
+				break;
+			default:
+				break;
+			}
+			if (!isPlaying){
+				dateTimeChanged(current);
+				return true;
+			}
+		}
+		dateTimeChanged(current);
+		return true;
+	}
+	
+	private void loop(){
+		current = localDateTimes.higher(current.plusNanos(1));
+		if (current == null) current = localDateTimes.first();
+	}
+	
+	private void stop(){
+		current = localDateTimes.higher(current.plusNanos(1));
+		if (current == null) {
+			current = localDateTimes.first();		
+			MainFrame.MOVIE_PANEL.setPlaying(false);
+		}
+	}
+	
+	private void swing(){
+		LocalDateTime current;
+		if (forward){
+			current = localDateTimes.higher(this.current.plusNanos(1));
+			if (current == null) {
+				forward = false;
+				current = localDateTimes.lower(this.current.minusNanos(1));
+			}
+		}
+		else{
+			current = localDateTimes.lower(this.current.minusNanos(1));
+			if (current == null) {
+				forward = true;
+				current = localDateTimes.higher(this.current.plusNanos(1));
+			}
+		}
+		this.current = current;
 	}
 }
