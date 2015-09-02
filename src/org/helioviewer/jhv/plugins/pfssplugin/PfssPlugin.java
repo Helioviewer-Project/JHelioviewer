@@ -49,8 +49,7 @@ public class PfssPlugin extends AbstractPlugin {
 	@Override
 	public void render(GL2 gl) {
 		if (isVisible) {
-			LocalDateTime localDateTime = Plugins.SINGLETON
-					.getCurrentDateTime();
+			LocalDateTime localDateTime = Plugins.SINGLETON.getCurrentDateTime();
 			PfssDecompressed frame = manager.getFrame(gl, localDateTime);
 			if (frame != null)
 				frame.display(gl, localDateTime);

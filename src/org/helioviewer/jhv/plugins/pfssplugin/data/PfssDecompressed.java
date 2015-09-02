@@ -3,8 +3,11 @@ package org.helioviewer.jhv.plugins.pfssplugin.data;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 
 import org.helioviewer.jhv.base.math.Vector3d;
+import org.helioviewer.jhv.base.physics.DifferentialRotation;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssSettings;
 
 import com.jogamp.common.nio.Buffers;
@@ -167,7 +170,7 @@ public class PfssDecompressed
 		Vector3d color;
 
         //see http://jgiesen.de/sunrot/index.html and http://www.petermeadows.com/stonyhurst/sdisk6in7.gif
-		//gl2.glRotated(DifferentialRotation.calculateRotationInDegrees(0,(currentDate.getTime()-descriptor.getStartDate().getTime())/1000d-60*60*6),0,1,0);
+		gl2.glRotated(DifferentialRotation.calculateRotationInDegrees(0,descriptor.getStartDate().until(localDateTime, ChronoUnit.MILLIS)/1000d-60*60*6),0,1,0);
         gl2.glRotated(b0,1,0,0);
 		gl2.glRotated(-l0,0,1,0);
 		
