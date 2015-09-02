@@ -15,8 +15,8 @@ import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.layers.AbstractLayer;
 import org.helioviewer.jhv.layers.Layers;
+import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 
 public class SDOCutOutAction extends AbstractAction {
 	

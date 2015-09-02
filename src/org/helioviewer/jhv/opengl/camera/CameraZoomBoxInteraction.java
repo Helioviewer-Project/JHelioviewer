@@ -4,8 +4,8 @@ import java.awt.event.MouseEvent;
 
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.gui.opengl.MainPanel;
+import org.helioviewer.jhv.opengl.RayTrace;
 import org.helioviewer.jhv.opengl.camera.animation.CameraTranslationAnimation;
-import org.helioviewer.jhv.opengl.raytrace.RayTrace;
 
 import com.jogamp.opengl.GL2;
 
@@ -25,14 +25,14 @@ public class CameraZoomBoxInteraction extends CameraInteraction {
 	public void mousePressed(MouseEvent e) {
 		start = rayTrace.cast(e.getX(), e.getY(), mainPanel).getHitpoint();
 		start = start.scale(new Vector3d(1, -1, 1));
-		camera.repaintMain(20);
+		camera.repaint();
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		end = rayTrace.cast(e.getX(), e.getY(), mainPanel).getHitpoint();
 		end = end.scale(new Vector3d(1, -1, 1));
-		camera.repaintMain(20);
+		camera.repaint();
 	}
 
 	@Override

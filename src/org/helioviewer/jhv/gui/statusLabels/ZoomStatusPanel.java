@@ -11,8 +11,8 @@ import org.helioviewer.jhv.gui.opengl.MainPanel;
 import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.layers.AbstractLayer;
 import org.helioviewer.jhv.layers.Layers;
+import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
 
 /**
  * Status panel for displaying the current zoom.
@@ -38,7 +38,7 @@ public class ZoomStatusPanel extends StatusLabel {
 	 */
 	public ZoomStatusPanel() {
 		super();
-		MainFrame.MAIN_PANEL.addStatusLabelCamera(this);
+		MainFrame.MAIN_PANEL.addStatusLabelCameraListener(this);
 		setBorder(BorderFactory.createEtchedBorder());
 
 		setPreferredSize(new Dimension(100, 20));

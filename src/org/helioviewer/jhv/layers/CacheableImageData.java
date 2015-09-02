@@ -9,11 +9,11 @@ import kdu_jni.Kdu_cache;
 import kdu_jni.Kdu_region_compositor;
 
 import org.helioviewer.jhv.layers.AbstractImageLayer.CACHE_STATUS;
-import org.helioviewer.jhv.opengl.texture.TextureCache;
-import org.helioviewer.jhv.opengl.texture.TextureCache.CachableTexture;
+import org.helioviewer.jhv.opengl.TextureCache;
+import org.helioviewer.jhv.opengl.TextureCache.CachedTexture;
+import org.helioviewer.jhv.viewmodel.jp2view.kakadu.JHV_KduException;
+import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduRender;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
-import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.KakaduRender;
 
 public class CacheableImageData {
 
@@ -80,26 +80,34 @@ public class CacheableImageData {
 		}
 	}
 
-	private void initMetaData() {
-		try {
+	private void initMetaData()
+	{
+		try
+		{
 			KakaduRender kakaduRender = new KakaduRender();
 			kakaduRender.openImage(getSource());
 			int framecount = getFrameCount();
 			MetaData[] metaDatas = new MetaData[framecount];
-			for (int i = 1; i <= framecount; i++) {
+			for (int i = 1; i <= framecount; i++)
+			{
 				metaDatas[i - 1] = kakaduRender.getMetadata(i, getFamilySrc());
 			}
 			this.metaDatas = metaDatas;
-		} catch (KduException e) {
+		}
+		catch (KduException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (JHV_KduException e) {
+		}
+		catch (JHV_KduException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	public void setMetadatas(MetaData[] metaDatas) {
+	public void setMetadatas(MetaData[] metaDatas)
+	{
 		this.metaDatas = metaDatas;
 	}
 
@@ -153,18 +161,16 @@ public class CacheableImageData {
 		return lastDetectedDate;
 	}
 
-	public void markAsChanged(boolean kdu) {
+	public void markAsChanged(boolean kdu)
+	{
 		if (kdu)
 			cacheStatus = CACHE_STATUS.KDU;
-		for (CachableTexture cacheableTexture : TextureCache
-				.getCacheableTextures()) {
-			if (cacheableTexture.compareTexture(this.id, localDateTimes)) {
-				cacheableTexture.markAsChanged();
-			}
-		}
+		
+		TextureCache.markChanged(this.id, localDateTimes);
 	}
 
-	public void setFile(String fileName) {
+	public void setFile(String fileName)
+	{
 		this.fileName = fileName;
 		if (kduCache != null)
 			kduCache.Native_destroy();

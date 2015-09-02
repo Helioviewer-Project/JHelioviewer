@@ -40,8 +40,8 @@ import org.helioviewer.jhv.layers.CacheableImageData;
 import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
-import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
-import org.helioviewer.jhv.viewmodel.timeline.TimeLine.TimeLineListener;
+import org.helioviewer.jhv.viewmodel.TimeLine;
+import org.helioviewer.jhv.viewmodel.TimeLine.TimeLineListener;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -162,7 +162,7 @@ public class MoviePanel extends JPanel implements TimeLineListener,
 		JLabel lblSpeed = new JLabel("Speed:");
 		contentPanel.add(lblSpeed, "2, 2");
 
-		SpinnerNumberModel spinnerNumberModel = new SpinnerNumberModel(60, 1,
+		SpinnerNumberModel spinnerNumberModel = new SpinnerNumberModel(20, 1,
 				300, 1);
 		final JSpinner spinner = new JSpinner(spinnerNumberModel);
 		contentPanel.add(spinner, "4, 2");
@@ -174,7 +174,7 @@ public class MoviePanel extends JPanel implements TimeLineListener,
 
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				timeLine.setSpeedFactor((int) spinner.getValue()
+				timeLine.setFPS((int) spinner.getValue()
 						* ((SPEED_UNIT) speedUnitComboBox.getSelectedItem()).factor);
 			}
 		});
@@ -182,7 +182,7 @@ public class MoviePanel extends JPanel implements TimeLineListener,
 
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				timeLine.setSpeedFactor((int) spinner.getValue()
+				timeLine.setFPS((int) spinner.getValue()
 						* ((SPEED_UNIT) speedUnitComboBox.getSelectedItem()).factor);
 			}
 		});
@@ -406,10 +406,8 @@ public class MoviePanel extends JPanel implements TimeLineListener,
 				AbstractImageLayer layer = (AbstractImageLayer) Layers
 						.getActiveImageLayer();
 				ConcurrentSkipListSet<LocalDateTime> treeSet = layer.getLocalDateTime().clone();
-				int total = treeSet.size();
 				Color[] colors = new Color[treeSet.size()];
 				int counter = 0;
-				int totalSize = 0;
 				for (LocalDateTime localDateTime : treeSet) {
 					CacheableImageData cacheableImageData = layer
 							.getCacheStatus(localDateTime);
@@ -441,26 +439,9 @@ public class MoviePanel extends JPanel implements TimeLineListener,
 				g2.fillRect(0, offset,
 						(int) (trackRect.getWidth() * SCALE_FACTOR), height);
 			}
-			Dimension sliderSize = super.slider.getSize();
 
 			g2.scale(SCALE_FACTOR, 1);
 			g.translate(-trackBounds.x, 0);
-
-			int partialCachedOffset = sliderSize.width / 2;
-
-			int completeCachedOffset = sliderSize.width / 4;
-			/*
-			 * g.setColor(COLOR_NOT_CACHED); g.fillRect(trackRect.x +
-			 * partialCachedOffset, offset, trackRect.width -
-			 * partialCachedOffset, height);
-			 * 
-			 * g.setColor(COLOR_PARTIALLY_CACHED); g.fillRect(trackRect.x +
-			 * completeCachedOffset, offset, partialCachedOffset -
-			 * completeCachedOffset, height);
-			 * 
-			 * g.setColor(COLOR_COMPLETELY_CACHED); g.fillRect(trackRect.x,
-			 * offset, completeCachedOffset, height);
-			 */
 		}
 	}
 

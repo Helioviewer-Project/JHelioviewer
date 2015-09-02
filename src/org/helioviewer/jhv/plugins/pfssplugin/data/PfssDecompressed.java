@@ -142,7 +142,7 @@ public class PfssDecompressed
 	 * Displays the Fieldlines at the exact time
 	 * 
 	 * @param gl
-	 * @param time
+	 * @param localDateTime
 	 */
 	public void display(GL gl, LocalDateTime localDateTime)
 	{

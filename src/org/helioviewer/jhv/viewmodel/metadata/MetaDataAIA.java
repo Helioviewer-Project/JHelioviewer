@@ -11,7 +11,8 @@ public class MetaDataAIA extends MetaData{
 	private final double IMAGE_SCALE = 0.6;
 	
 	
-  public MetaDataAIA(MetaDataContainer metaDataContainer){
+  public MetaDataAIA(MetaDataContainer metaDataContainer)
+  {
         super(metaDataContainer, RESOLUTION);
         
         measurement = metaDataContainer.get("WAVELNTH");
@@ -25,7 +26,8 @@ public class MetaDataAIA extends MetaData{
         this.instrument = "AIA";
         fullName = "AIA " + measurement;
         
-        switch (measurement) {
+        switch (measurement)
+        {
 		case "131":
 			defaultLUT = LUT_ENTRY.SDO_AIA_131;
 			break;

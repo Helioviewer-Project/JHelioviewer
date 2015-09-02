@@ -14,7 +14,7 @@ import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssSettings;
 import org.helioviewer.jhv.plugins.pfssplugin.data.FileDescriptor;
-import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
+import org.helioviewer.jhv.plugins.plugin.Plugins;
 
 /**
  * Manages loading and accessing of FileDescriptor Objects
@@ -91,7 +91,7 @@ public class FileDescriptorManager {
 					final String url = PfssSettings.SERVER_URL
 							+ currentDate.format(yearFormatter) + "/"
 							+ currentDate.format(monthFormatter) + "/list.txt";
-					httpRequests.add(UltimatePluginInterface
+					httpRequests.add(Plugins
 							.generateAndStartHTPPRequest(url, PRIORITY.MEDIUM));
 					currentDate = currentDate.plusMonths(1);
 				}
@@ -136,7 +136,7 @@ public class FileDescriptorManager {
 					} catch (IOException e) {
 						 parent.addBadRequest(httpRequest);
 					}
-					UltimatePluginInterface.repaintMainPanel();
+					Plugins.repaintMainPanel();
 				}
 			}
 		}, "PFSS-DESCRIPTION-LOADER");

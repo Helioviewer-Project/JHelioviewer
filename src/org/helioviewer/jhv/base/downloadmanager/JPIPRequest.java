@@ -10,14 +10,14 @@ import kdu_jni.Kdu_cache;
 
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.layers.CacheableImageData;
-import org.helioviewer.jhv.viewmodel.view.jp2view.io.http.HTTPRequest.Method;
-import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPConstants;
-import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPDataSegment;
-import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPQuery;
-import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPRequestField;
-import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPResponse;
-import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPSocket;
-import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_KduException;
+import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPRequest.Method;
+import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPConstants;
+import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPDataSegment;
+import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPQuery;
+import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPRequestField;
+import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPResponse;
+import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPSocket;
+import org.helioviewer.jhv.viewmodel.jp2view.kakadu.JHV_KduException;
 
 public class JPIPRequest extends AbstractRequest {
 
@@ -65,7 +65,7 @@ public class JPIPRequest extends AbstractRequest {
 	private void receiveData() throws IOException {
 		try {
 			openSocket();
-			org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPRequest request = new org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPRequest(
+			org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPRequest request = new org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPRequest(
 					Method.GET);
 			boolean complete = false;
 			do {

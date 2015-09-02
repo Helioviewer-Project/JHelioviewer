@@ -21,7 +21,7 @@ public class SetCameraZoomBoxInteractionAction  extends AbstractAction{
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		MainFrame.MAIN_PANEL.setZoomBoxInteraction();
-		MainFrame.OVERVIEW_PANEL.setZoomBoxInteraction();
+		MainFrame.MAIN_PANEL.activateZoomBoxInteraction();
+		MainFrame.OVERVIEW_PANEL.activateZoomBoxInteraction();
 	}
 }

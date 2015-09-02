@@ -1,11 +1,12 @@
 package org.helioviewer.jhv.layers;
 
 import java.awt.Dimension;
+import java.nio.ByteBuffer;
 
 import org.helioviewer.jhv.gui.opengl.MainPanel;
 import org.helioviewer.jhv.plugins.plugin.AbstractPlugin;
-import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
-import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
+import org.helioviewer.jhv.plugins.plugin.Plugins;
+import org.helioviewer.jhv.viewmodel.TimeLine;
 
 import com.jogamp.opengl.GL2;
 
@@ -21,9 +22,10 @@ public class PluginLayer extends AbstractLayer{
 	}
 
 	@Override
-	public boolean renderLayer(GL2 gl, Dimension canvasSize, MainPanel mainPanel) {
+	public RenderResult renderLayer(GL2 gl, Dimension canvasSize, MainPanel mainPanel,ByteBuffer _imageData)
+	{
 		plugin.render(gl);
-		return true;
+		return RenderResult.OK;
 	}
 	
 	@Override
@@ -34,7 +36,7 @@ public class PluginLayer extends AbstractLayer{
 
 	@Override
 	void remove() {
-		UltimatePluginInterface.SINGLETON.removePlugin(plugin);
+		Plugins.SINGLETON.removePlugin(plugin);
 	}	
 	
 	@Override
@@ -48,7 +50,7 @@ public class PluginLayer extends AbstractLayer{
 	}
 	
 	@Override
-	public void retryBadRequest() {
+	public void retryFailedRequests() {
 		plugin.retryBadReqeuest();
 	}
 }

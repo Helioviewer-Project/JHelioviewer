@@ -23,7 +23,7 @@ import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.actions.filefilters.ExtensionFileFilter;
 import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.layers.AbstractLayer;
-import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
+import org.helioviewer.jhv.viewmodel.TimeLine;
 
 public class DownloadMovieDialog extends JDialog {
 
@@ -174,7 +174,7 @@ public class DownloadMovieDialog extends JDialog {
 	}
 	
 	public void startDownload(String url, AbstractLayer layer) {
-		if (TimeLine.SINGLETON.getMaxFrames() >= 1000){
+		if (TimeLine.SINGLETON.getFrameCount() >= 1000){
 			SwingUtilities.invokeLater(new Runnable() {
 				
 				@Override

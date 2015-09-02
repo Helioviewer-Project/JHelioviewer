@@ -17,15 +17,14 @@ import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.gui.IconBank;
+import org.helioviewer.jhv.gui.ShowableDialog;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.gui.interfaces.ShowableDialog;
 
 
 /**
@@ -42,7 +41,6 @@ public final class AboutDialog extends JDialog implements ActionListener, Showab
     private static final long serialVersionUID = 1L;
 
     private final JButton closeButton = new JButton("Close");
-    private JScrollPane scrollPane;
 
     /**
      * Default constructor.

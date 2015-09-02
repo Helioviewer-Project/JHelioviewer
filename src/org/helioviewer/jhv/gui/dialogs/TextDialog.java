@@ -18,7 +18,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.gui.interfaces.ShowableDialog;
+import org.helioviewer.jhv.gui.ShowableDialog;
 
 public class TextDialog extends JDialog implements ActionListener, ShowableDialog {
 

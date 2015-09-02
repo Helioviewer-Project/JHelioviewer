@@ -43,7 +43,7 @@ import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKEvent;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKEventTableModel;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
-import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
+import org.helioviewer.jhv.plugins.plugin.Plugins;
 
 /**
  * Popup displaying informations about a HEK event.
@@ -173,7 +173,7 @@ public class HEKEventInformationDialog extends JDialog implements ActionListener
                 // store information to not display the event anymore
                 if (event != null) {
                     event.setShowEventInfo(false);
-                    UltimatePluginInterface.repaintMainPanel();
+                    Plugins.repaintMainPanel();
                     event = null;
                 }
             }
@@ -182,7 +182,7 @@ public class HEKEventInformationDialog extends JDialog implements ActionListener
                 // store information to not display the event anymore
                 if (event != null) {
                     event.setShowEventInfo(false);
-                    UltimatePluginInterface.repaintMainPanel();
+                    Plugins.repaintMainPanel();
                     event = null;
                 }
             }
@@ -402,7 +402,7 @@ public class HEKEventInformationDialog extends JDialog implements ActionListener
         infoTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         //TableColumnResizer.autoResizeTable(infoTable, true);
 
-        LocalDateTime in = UltimatePluginInterface.SINGLETON
+        LocalDateTime in = Plugins.SINGLETON
 				.getCurrentDateTime();
 		
         Date currentDate = Date.from(in.atZone(ZoneId.systemDefault())

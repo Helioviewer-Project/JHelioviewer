@@ -5,16 +5,16 @@ import java.time.LocalDateTime;
 
 import javax.swing.JLabel;
 
-import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelCamera;
-import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelMouse;
+import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelCameraListener;
+import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelMouseListener;
 import org.helioviewer.jhv.layers.AbstractLayer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
-import org.helioviewer.jhv.opengl.raytrace.RayTrace.Ray;
-import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
-import org.helioviewer.jhv.viewmodel.timeline.TimeLine.TimeLineListener;
+import org.helioviewer.jhv.opengl.RayTrace.Ray;
+import org.helioviewer.jhv.viewmodel.TimeLine;
+import org.helioviewer.jhv.viewmodel.TimeLine.TimeLineListener;
 
-public abstract class StatusLabel extends JLabel implements TimeLineListener, StatusLabelMouse, StatusLabelCamera, LayerListener{
+public abstract class StatusLabel extends JLabel implements TimeLineListener, StatusLabelMouseListener, StatusLabelCameraListener, LayerListener{
 	
 	/**
 	 * 

@@ -33,7 +33,7 @@ import javax.swing.filechooser.FileFilter;
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
+import org.helioviewer.jhv.viewmodel.TimeLine;
 
 import com.xuggle.mediatool.IMediaWriter;
 import com.xuggle.mediatool.ToolFactory;
@@ -73,7 +73,8 @@ public class ExportMovieDialog implements ActionListener {
 		openFileChooser();
 	}
 
-	private void startMovieExport() {
+	private void startMovieExport()
+	{
 		this.loadSettings();
 		Settings.setProperty(SETTING_MOVIE_EXPORT_LAST_DIRECTORY, directory);
 		MainFrame.SINGLETON.setEnabled(false);
@@ -82,18 +83,20 @@ public class ExportMovieDialog implements ActionListener {
 		progressDialog.setVisible(true);
 
 		this.initExportMovie();
-		thread = new Thread(new Runnable() {
-
+		thread = new Thread(new Runnable()
+		{
 			@Override
-			public void run() {
+			public void run()
+			{
 				TimeLine.SINGLETON.setCurrentFrame(0);
-				for (int i = 0; i < TimeLine.SINGLETON.getMaxFrames(); i++) {
-
-					SwingUtilities.invokeLater(new Runnable() {
-
+				for (int i = 0; i < TimeLine.SINGLETON.getFrameCount(); i++)
+				{
+					//FIXME: invokeLATER?!!?!
+					SwingUtilities.invokeLater(new Runnable()
+					{
 						@Override
-						public void run() {
-							
+						public void run()
+						{
 							bufferedImage = null;
 							progressDialog.setDescription("Rendering images");
 							bufferedImage = MainFrame.MAIN_PANEL
@@ -102,7 +105,8 @@ public class ExportMovieDialog implements ActionListener {
 						}
 					});
 
-					while (bufferedImage == null) {
+					while (bufferedImage == null)
+					{
 						try {
 							if (!started)
 								break;
@@ -116,12 +120,12 @@ public class ExportMovieDialog implements ActionListener {
 
 					progressDialog.updateProgressBar(i);
 
-					if (selectedOutputFormat.isMovieFile() && started) {
-						writer.encodeVideo(0, bufferedImage, speed * i,
-								TimeUnit.MILLISECONDS);
+					if (selectedOutputFormat.isMovieFile() && started)
+					{
+						writer.encodeVideo(0, bufferedImage, speed * i, TimeUnit.MILLISECONDS);
 					}
-
-					else if (selectedOutputFormat.isCompressedFile() && started) {
+					else if (selectedOutputFormat.isCompressedFile() && started)
+					{
 						String number = String.format("%04d", i);
 						try {
 							zipOutputStream.putNextEntry(new ZipEntry(filename
@@ -342,7 +346,7 @@ public class ExportMovieDialog implements ActionListener {
 			writer = ToolFactory.makeWriter(directory + filename
 					+ this.selectedOutputFormat.getExtension());
 
-			speed = 1000 / TimeLine.SINGLETON.getSpeedFactor();
+			speed = 1000 / TimeLine.SINGLETON.getMillisecondsPerFrame();
 
 			writer.addVideoStream(0, 0, this.selectedOutputFormat.getCodec(),
 					this.imageWidth, this.imageHeight);
@@ -365,8 +369,7 @@ public class ExportMovieDialog implements ActionListener {
 			directory += this.filename + "/";
 		}
 
-		progressDialog.setMaximumOfProgressBar(TimeLine.SINGLETON
-				.getMaxFrames());
+		progressDialog.setMaximumOfProgressBar(TimeLine.SINGLETON.getFrameCount());
 		TimeLine.SINGLETON.setCurrentFrame(0);
 	}
 

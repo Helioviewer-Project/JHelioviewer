@@ -30,8 +30,8 @@ import org.helioviewer.jhv.plugins.hekplugin.cache.HEKPath;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKStupidDownloader;
 import org.helioviewer.jhv.plugins.hekplugin.cache.gui.HEKCacheTreeView;
 import org.helioviewer.jhv.plugins.hekplugin.cache.gui.HEKCacheTreeViewContainer;
-import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
-import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface.PLUGIN_ICON;
+import org.helioviewer.jhv.plugins.plugin.Plugins;
+import org.helioviewer.jhv.plugins.plugin.Plugins.PLUGIN_ICON;
 
 /**
  * Represents the UI components which manage the HEK event catalog.
@@ -49,9 +49,9 @@ public class HEKPluginPanel extends JPanel implements ActionListener,
 	private HEKCacheTreeView tree = new HEKCacheTreeView(
 			HEKCache.getSingletonInstance());
 	private JScrollPane treeView = new JScrollPane(tree);
-	private JButton cancelButton = new JButton(UltimatePluginInterface.getIcon(
+	private JButton cancelButton = new JButton(Plugins.getIcon(
 			PLUGIN_ICON.CANCEL, 16, 16));
-	private JButton reloadButton = new JButton(UltimatePluginInterface.getIcon(
+	private JButton reloadButton = new JButton(Plugins.getIcon(
 			PLUGIN_ICON.REFRESH, 16, 16));
 	private HEKCacheTreeViewContainer container = new HEKCacheTreeViewContainer();
 
@@ -96,7 +96,7 @@ public class HEKPluginPanel extends JPanel implements ActionListener,
 	 * Force a redraw of the main window
 	 */
 	private void fireRedraw() {
-		UltimatePluginInterface.repaintMainPanel();
+		Plugins.repaintMainPanel();
 	}
 
 	/**
@@ -231,8 +231,8 @@ public class HEKPluginPanel extends JPanel implements ActionListener,
 	public void reload() {
 
 		LocalDateTime startDateTime;
-		startDateTime = UltimatePluginInterface.getStartDateTime();
-		LocalDateTime endDateTime = UltimatePluginInterface.getEndDateTime();
+		startDateTime = Plugins.getStartDateTime();
+		LocalDateTime endDateTime = Plugins.getEndDateTime();
 		if (startDateTime != null
 				&& endDateTime != null
 				&& (start == null || (startDateTime.isBefore(start) || endDateTime
@@ -241,8 +241,8 @@ public class HEKPluginPanel extends JPanel implements ActionListener,
 			Thread threadUpdate = new Thread(new Runnable() {
 				public void run() {
 					LocalDateTime startDateTime;
-					startDateTime = UltimatePluginInterface.getStartDateTime();
-					LocalDateTime endDateTime = UltimatePluginInterface
+					startDateTime = Plugins.getStartDateTime();
+					LocalDateTime endDateTime = Plugins
 							.getEndDateTime();
 					if (startDateTime != null && endDateTime != null) {
 						Date start = Date.from(startDateTime.atZone(

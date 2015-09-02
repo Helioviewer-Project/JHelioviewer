@@ -26,8 +26,8 @@ import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.dialogs.AboutDialog;
 import org.helioviewer.jhv.io.CommandLineProcessor;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
-import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
-import org.helioviewer.jhv.viewmodel.view.jp2view.kakadu.JHV_Kdu_message;
+import org.helioviewer.jhv.plugins.plugin.Plugins;
+import org.helioviewer.jhv.viewmodel.jp2view.kakadu.JHV_Kdu_message;
 
 import com.install4j.api.launcher.ApplicationLauncher;
 import com.install4j.api.update.UpdateScheduleRegistry;
@@ -37,21 +37,10 @@ import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLDrawableFactory;
 import com.jogamp.opengl.GLProfile;
 
-/**
- * This class starts the applications.
- * 
- * @author caplins
- * @author Benjamin Wamsler
- * @author Markus Langenberg
- * @author Stephan Pagel
- * @author Andre Dau
- * @author Helge Dietert
- * 
- */
-public class JHelioviewer {
-
-	public static void main(String[] args) {
-		
+public class JHelioviewer
+{
+	public static void main(String[] args)
+	{
 		try {
 			Class.forName("com.sun.javafx.runtime.VersionInfo");
 			JHVGlobals.USE_JAVA_FX = true;
@@ -61,16 +50,13 @@ public class JHelioviewer {
 			//System.exit(0);
 		}
 		
-		JHelioviewer.startUpJHelioviewer(args);
-		
-	}
-
-	public static void startUpJHelioviewer(String[] args) {
-		SwingUtilities.invokeLater(new Runnable() {
+		SwingUtilities.invokeLater(new Runnable()
+		{
 		    public void run() {
 		        new JFXPanel(); // initializes JavaFX environment
 		    }
-		});		
+		});
+		
 		// Uncaught runtime errors are displayed in a dialog box in addition
 		JHVUncaughtExceptionHandler.setupHandlerForThread();
 
@@ -152,9 +138,7 @@ public class JHelioviewer {
 
 			OpenGLHelper.glContext = sharedDrawable.getContext();
 
-			System.out
-					.println("JHelioviewer started with command-line options:"
-							+ argString);
+			System.out.println("JHelioviewer started with command-line options:" + argString);
 			System.out.println("Initializing JHelioviewer");
 
 			// display the splash screen
@@ -178,18 +162,19 @@ public class JHelioviewer {
 			splash.nextStep();
 
 			/* ----------Setup kakadu ----------- */
-			splash.nextStep();
-			
+			splash.nextStep();			
 			splash.setProgressText("Initializing Kakadu libraries...");
 
-			try {
+			try
+			{
 				loadLibraries();
-			} catch (UnsatisfiedLinkError _ule) {
-				if (JHVGlobals.isLinux() && _ule.getMessage().contains("GLIBC")) {
+			}
+			catch (UnsatisfiedLinkError _ule)
+			{
+				if (JHVGlobals.isLinux() && _ule.getMessage().contains("GLIBC"))
+				{
 					splash.setVisible(false);
-					JOptionPane
-							.showMessageDialog(
-									null,
+					JOptionPane.showMessageDialog(null,
 									"JHelioviewer requires a more recent version of GLIBC. Please update your distribution.\n\n"
 											+ _ule.getMessage(),
 									"JHelioviewer", JOptionPane.ERROR_MESSAGE);
@@ -206,35 +191,19 @@ public class JHelioviewer {
             Kdu_global.Kdu_customize_warnings(new Kdu_message_formatter(new JHV_Kdu_message(false), 80));
             Kdu_global.Kdu_customize_errors(new Kdu_message_formatter(new JHV_Kdu_message(true), 80));
 
-			/* ----------Setup OpenGL ----------- */
-			splash.setProgressText("Setting up the UI...");
-			splash.nextStep();
-			// ImageViewerGui.getMainFrame();
-
-			/* ----------Setup Plug-ins ----------- */
-
-			splash.setProgressText("Loading plugins...");
-			splash.nextStep();
-
-			// Load Plug ins at the very last point
-			System.out.println("Load plugin settings");
-			// PluginManager.getSingeltonInstance().loadSettings(JHVDirectorie.HOME.getPath());
-
-			System.out.println("Add internal plugin: " + "FilterPlugin");
-
 			// force initialization of UltimatePluginInterface
-			UltimatePluginInterface.SINGLETON.getClass();
+			Plugins.SINGLETON.getClass();
 
 			splash.setProgressText("Showing main window...");
 			splash.nextStep();
+			
 			// Create main view chain and display main window
 			System.out.println("Start main window");
-			// splash.initializeViewchain();
-			// ImageViewerGui.getSingletonInstance().createViewchains();
-			SwingUtilities.invokeLater(new Runnable() {
-
+			SwingUtilities.invokeLater(new Runnable()
+			{
 				@Override
-				public void run() {
+				public void run()
+				{
 					MainFrame.SINGLETON.setVisible(true);
 					splash.dispose();
 					UILatencyWatchdog.startWatchdog();

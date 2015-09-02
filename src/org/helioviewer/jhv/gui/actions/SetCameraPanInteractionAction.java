@@ -19,8 +19,8 @@ public class SetCameraPanInteractionAction extends AbstractAction{
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		MainFrame.MAIN_PANEL.setPanInteraction();
-		MainFrame.OVERVIEW_PANEL.setPanInteraction();
+		MainFrame.MAIN_PANEL.activatePanInteraction();
+		MainFrame.OVERVIEW_PANEL.activatePanInteraction();
 	}
 
 }

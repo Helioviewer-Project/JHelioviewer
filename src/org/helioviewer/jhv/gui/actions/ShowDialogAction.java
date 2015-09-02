@@ -7,8 +7,8 @@ import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 
+import org.helioviewer.jhv.gui.ShowableDialog;
 import org.helioviewer.jhv.gui.dialogs.HelpDialog;
-import org.helioviewer.jhv.gui.interfaces.ShowableDialog;
 
 /**
  * Action to show any given dialog.

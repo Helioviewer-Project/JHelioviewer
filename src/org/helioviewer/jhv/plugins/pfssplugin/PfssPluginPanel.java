@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
-import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface.PLUGIN_ICON;
+import org.helioviewer.jhv.plugins.plugin.Plugins;
+import org.helioviewer.jhv.plugins.plugin.Plugins.PLUGIN_ICON;
 
 /**
  * Panel of Pfss-Plugin
@@ -24,8 +24,8 @@ public class PfssPluginPanel extends JPanel implements ActionListener {
 
 	// UI Components
 	private JButton visibleButton = new JButton(
-			UltimatePluginInterface.getIcon(PLUGIN_ICON.INVISIBLE, 16, 16));
-	private JButton reloadButton = new JButton(UltimatePluginInterface.getIcon(
+			Plugins.getIcon(PLUGIN_ICON.INVISIBLE, 16, 16));
+	private JButton reloadButton = new JButton(Plugins.getIcon(
 			PLUGIN_ICON.REFRESH, 16, 16));
 	private PfssPlugin renderer;
 
@@ -51,7 +51,7 @@ public class PfssPluginPanel extends JPanel implements ActionListener {
 	 * Force a redraw of the main window
 	 */
 	private void fireRedraw() {
-		UltimatePluginInterface.repaintMainPanel();
+		Plugins.repaintMainPanel();
 	}
 
 	/**
@@ -93,11 +93,11 @@ public class PfssPluginPanel extends JPanel implements ActionListener {
 		if (visible != renderer.isVisible()) {
 			if (renderer.isVisible()) {
 				renderer.setVisible(false);
-				visibleButton.setIcon(UltimatePluginInterface.getIcon(
+				visibleButton.setIcon(Plugins.getIcon(
 						PLUGIN_ICON.INVISIBLE, 16, 16));
 			} else {
 				renderer.setVisible(true);
-				visibleButton.setIcon(UltimatePluginInterface.getIcon(
+				visibleButton.setIcon(Plugins.getIcon(
 						PLUGIN_ICON.VISIBLE, 16, 16));
 			}
 
@@ -126,8 +126,8 @@ public class PfssPluginPanel extends JPanel implements ActionListener {
 
 	public void reload() {
 		LocalDateTime startLocalDateTime;
-		startLocalDateTime = UltimatePluginInterface.getStartDateTime();
-		LocalDateTime endLocalDateTime = UltimatePluginInterface
+		startLocalDateTime = Plugins.getStartDateTime();
+		LocalDateTime endLocalDateTime = Plugins
 				.getEndDateTime();
 		if (startLocalDateTime != null && endLocalDateTime != null)
 			renderer.setDisplayRange(startLocalDateTime, endLocalDateTime);

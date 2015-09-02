@@ -19,8 +19,8 @@ public class SetCameraRotationInteractionAction extends AbstractAction{
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		MainFrame.MAIN_PANEL.setRotationInteraction();
-		MainFrame.OVERVIEW_PANEL.setRotationInteraction();
+		MainFrame.MAIN_PANEL.activateRotationInteraction();
+		MainFrame.OVERVIEW_PANEL.activateRotationInteraction();
 	}
 
 }

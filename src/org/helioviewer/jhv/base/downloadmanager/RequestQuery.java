@@ -2,7 +2,7 @@ package org.helioviewer.jhv.base.downloadmanager;
 
 import java.util.Hashtable;
 
-import org.helioviewer.jhv.viewmodel.view.jp2view.io.jpip.JPIPConstants;
+import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPConstants;
 
 public class RequestQuery {
     private Hashtable<String, String> fields = new Hashtable<String, String>();

@@ -29,23 +29,23 @@ public class HeliocentricCartesianCoordinate {
 		return new HeliographicCoordinate(hgLongitude, hgLatitude, hecRadius);
 	}
 
-	public HelioprojectiveCartesianCoordinate toHelioprojectiveCartesianCoordinate(LocalDateTime localDateTime) {
+	public HelioprojectiveCartesianCoordinate toHelioprojectiveCartesianCoordinate(LocalDateTime localDateTime)
+	{
 		return toHelioprojectiveCartesianCoordinate(SunDistance.computePb0rSunDistance(localDateTime).getSunDistance());
 	}
 	
-	public HelioprojectiveCartesianCoordinate toHelioprojectiveCartesianCoordinate(double sunDistance) {	
-	double b0 = 0;
-	double l0 = 0;
-
-	double zeta = sunDistance - z;
-	double distance = Math.sqrt(x * x + y * y + zeta * zeta);
-	double hpcx = Math.atan2(x, zeta);
-	double hpcy = Math.asin(y / distance);
-
-	return new HelioprojectiveCartesianCoordinate(hpcx, hpcy, sunDistance);
+	public HelioprojectiveCartesianCoordinate toHelioprojectiveCartesianCoordinate(double sunDistance)
+	{
+		double zeta = sunDistance - z;
+		double distance = Math.sqrt(x * x + y * y + zeta * zeta);
+		double hpcx = Math.atan2(x, zeta);
+		double hpcy = Math.asin(y / distance);
+	
+		return new HelioprojectiveCartesianCoordinate(hpcx, hpcy, sunDistance);
 	}
 
-	public Vector3d toVector3d() {
+	public Vector3d toVector3d()
+	{
 		return new Vector3d(x,y,z);
 	}
 }

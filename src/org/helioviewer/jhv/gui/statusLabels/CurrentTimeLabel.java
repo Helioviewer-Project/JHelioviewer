@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import javax.swing.BorderFactory;
 
 import org.helioviewer.jhv.JHVGlobals;
-import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
+import org.helioviewer.jhv.viewmodel.TimeLine;
 
 
 public class CurrentTimeLabel extends StatusLabel{

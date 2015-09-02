@@ -16,9 +16,9 @@ import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
 import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
 import org.helioviewer.jhv.base.coordinates.HelioprojectiveCartesianCoordinate;
 import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.opengl.raytrace.RayTrace.HitpointType;
-import org.helioviewer.jhv.opengl.raytrace.RayTrace.Ray;
-import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
+import org.helioviewer.jhv.opengl.RayTrace.HitpointType;
+import org.helioviewer.jhv.opengl.RayTrace.Ray;
+import org.helioviewer.jhv.viewmodel.TimeLine;
 
 /**
  * Status panel for displaying the current mouse position.
@@ -55,8 +55,8 @@ public class PositionStatusPanel extends StatusLabel implements MouseListener {
 		setBorder(BorderFactory.createEtchedBorder());
 
 		popupState = new PopupState();
-		MainFrame.MAIN_PANEL.addStatusLabelMouse(this);
-		MainFrame.OVERVIEW_PANEL.addStatusLabelMouse(this);
+		MainFrame.MAIN_PANEL.addStatusLabelMouseListener(this);
+		MainFrame.OVERVIEW_PANEL.addStatusLabelMouseListener(this);
 		this.addMouseListener(this);
 		this.setComponentPopupMenu(popupState);
 

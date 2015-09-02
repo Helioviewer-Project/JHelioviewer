@@ -15,5 +15,5 @@ public interface Camera {
 	public void addCameraAnimation(CameraAnimation cameraAnimation);
 	public double getAspect();
 	public void setTransformation(Quaternion3d rotation, Vector3d translation);
-	public void repaintMain(long millis);
+	public void repaint();
 }

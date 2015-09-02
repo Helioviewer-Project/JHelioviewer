@@ -7,9 +7,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
-public class HTTPRequest extends AbstractRequest {
-	private static final int DEFAULT_TIMEOUT = 40000;
-
+public class HTTPRequest extends AbstractRequest
+{
 	private static final int DEFAULT_BUFFER_SIZE = 16384;
 	
 	protected byte[] rawData;

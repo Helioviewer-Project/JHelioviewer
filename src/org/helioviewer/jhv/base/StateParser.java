@@ -22,8 +22,8 @@ import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.actions.filefilters.ExtensionFileFilter;
 import org.helioviewer.jhv.layers.Layers;
-import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
-import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
+import org.helioviewer.jhv.plugins.plugin.Plugins;
+import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -176,7 +176,7 @@ public class StateParser extends DefaultHandler {
 		TimeLine.SINGLETON.setCurrentDate(currentDateTime);
 
 		JSONObject jsonPlugin = jsonObject.getJSONObject(PLUGINS);
-		UltimatePluginInterface.SINGLETON.loadStateFile(jsonPlugin);
+		Plugins.SINGLETON.loadStateFile(jsonPlugin);
 	}
 
 	private static void startSavingStateFile(File selectedFile)
@@ -215,7 +215,7 @@ public class StateParser extends DefaultHandler {
 		jsonObject.put(TIME, TimeLine.SINGLETON.getCurrentDateTime());
 
 		JSONObject jsonPlugins = new JSONObject();
-		UltimatePluginInterface.SINGLETON.writeStateFile(jsonPlugins);
+		Plugins.SINGLETON.writeStateFile(jsonPlugins);
 		jsonObject.put(PLUGINS, jsonPlugins);
 
 		FileWriter file = new FileWriter(fileName);

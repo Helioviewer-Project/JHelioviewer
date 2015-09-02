@@ -20,13 +20,16 @@ import java.nio.ByteBuffer;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import javax.swing.JFrame;
 import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
+import javax.tools.Tool;
 
 import org.helioviewer.jhv.JHVException.MetaDataException;
 import org.helioviewer.jhv.JHVGlobals;
@@ -39,15 +42,19 @@ import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.base.physics.DifferentialRotation;
 import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelCamera;
-import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelMouse;
+import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelCameraListener;
+import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelMouseListener;
 import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.layers.AbstractLayer;
+import org.helioviewer.jhv.layers.AbstractLayer.RenderResult;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.opengl.LoadingScreen;
 import org.helioviewer.jhv.opengl.NoImageScreen;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
+import org.helioviewer.jhv.opengl.RayTrace;
+import org.helioviewer.jhv.opengl.TextureCache;
+import org.helioviewer.jhv.opengl.RayTrace.Ray;
 import org.helioviewer.jhv.opengl.camera.Camera;
 import org.helioviewer.jhv.opengl.camera.CameraInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraMode;
@@ -58,13 +65,10 @@ import org.helioviewer.jhv.opengl.camera.CameraZoomBoxInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraZoomInteraction;
 import org.helioviewer.jhv.opengl.camera.animation.CameraAnimation;
 import org.helioviewer.jhv.opengl.camera.animation.CameraTransformationAnimation;
-import org.helioviewer.jhv.opengl.raytrace.RayTrace;
-import org.helioviewer.jhv.opengl.raytrace.RayTrace.Ray;
-import org.helioviewer.jhv.opengl.texture.TextureCache;
 import org.helioviewer.jhv.plugins.plugin.AbstractPlugin.RENDER_MODE;
-import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
-import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
-import org.helioviewer.jhv.viewmodel.timeline.TimeLine.TimeLineListener;
+import org.helioviewer.jhv.plugins.plugin.Plugins;
+import org.helioviewer.jhv.viewmodel.TimeLine;
+import org.helioviewer.jhv.viewmodel.TimeLine.TimeLineListener;
 
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
@@ -80,13 +84,8 @@ import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.util.awt.ImageUtil;
 import com.jogamp.opengl.util.awt.TextRenderer;
 
-public class MainPanel extends GLCanvas implements GLEventListener,
-		MouseListener, MouseMotionListener, MouseWheelListener, LayerListener,
-		TimeLineListener, Camera {
-
-	/**
-	 * 
-	 */
+public class MainPanel extends GLCanvas implements GLEventListener, MouseListener, MouseMotionListener, MouseWheelListener, LayerListener, TimeLineListener, Camera
+{
 	private static final long serialVersionUID = 6714893614985558471L;
 
 	public static final double MAX_DISTANCE = Constants.SUN_MEAN_DISTANCE_TO_EARTH * 1.8;
@@ -98,21 +97,21 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	public static final double FOV = 10;
 	private double aspect = 0.0;
 
-	private double[][] rectBounds;
+	private double[][] visibleAreaOutline;
 
 	protected Quaternion3d rotation;
 	protected Vector3d translation;
 	private ArrayList<MainPanel> synchronizedViews;
 
-	private ArrayList<StatusLabelMouse> statusLabelsMouses;
-	private ArrayList<StatusLabelCamera> statusLabelCameras;
+	private ArrayList<StatusLabelMouseListener> statusLabelsMouseListeners;
+	private ArrayList<StatusLabelCameraListener> statusLabelCameraListeners;
 	private CopyOnWriteArrayList<CameraAnimation> cameraAnimations;
 
 	protected CameraInteraction[] cameraInteractions;
 
-	private boolean track = false;
+	private boolean cameraTrackingEnabled = false;
 
-	private long time = -1;
+	private long lastFrameChangeTime = -1;
 	private LocalDateTime lastDate;
 
 	private int[] frameBufferObject;
@@ -122,15 +121,17 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	private int[] renderBufferColor;
 
 	protected Dimension size;
+	private float resolutionDivisor=1;
 
 	private static int DEFAULT_TILE_WIDTH = 2048;
 	private static int DEFAULT_TILE_HEIGHT = 2048;
 
-	public MainPanel() {
+	public MainPanel()
+	{
 		this.cameraAnimations = new CopyOnWriteArrayList<CameraAnimation>();
 		this.synchronizedViews = new ArrayList<MainPanel>();
-		statusLabelsMouses = new ArrayList<StatusLabelMouse>();
-		statusLabelCameras = new ArrayList<StatusLabelCamera>();
+		statusLabelsMouseListeners = new ArrayList<StatusLabelMouseListener>();
+		statusLabelCameraListeners = new ArrayList<StatusLabelCameraListener>();
 		this.setSharedContext(OpenGLHelper.glContext);
 
 		Layers.addNewLayerListener(this);
@@ -147,57 +148,54 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		cameraInteractions[0] = new CameraZoomInteraction(this, this);
 		cameraInteractions[1] = new CameraRotationInteraction(this, this);
 
-		rectBounds = new double[40][3];
+		visibleAreaOutline = new double[40][3];
 	}
 
 	public Quaternion3d getRotation() {
 		return rotation;
 	}
 
-	public void setRotation(Quaternion3d rotation) {
+	public void setRotation(Quaternion3d rotation)
+	{
 		this.rotation = rotation;
-		this.repaintMain(20);
-		for (StatusLabelCamera statusLabelCamera : statusLabelCameras) {
+		repaint();
+		for (StatusLabelCameraListener statusLabelCamera : statusLabelCameraListeners)
 			statusLabelCamera.cameraChanged();
-		}
 	}
 
 	public Vector3d getTranslation() {
 		return translation;
 	}
 
-	public void setTranslation(Vector3d translation) {
+	public void setTranslation(Vector3d translation)
+	{
 		if (!translation.isApproxEqual(this.translation, 0)) {
 			this.translation = translation;
-			this.repaintMain(20);
-			for (StatusLabelCamera statusLabelCamera : statusLabelCameras) {
+			repaint();
+			for (StatusLabelCameraListener statusLabelCamera : statusLabelCameraListeners)
 				statusLabelCamera.cameraChanged();
-			}
 		}
 	}
 
-	public Matrix4d getTransformation() {
-		Matrix4d transformation = this.rotation.toMatrix();
-		transformation.addTranslation(translation);
-		return transformation;
+	public Matrix4d getTransformation()
+	{
+		return rotation.toMatrix().translated(translation);
 	}
 
-	public Matrix4d getTransformation(Quaternion3d rotation) {
-		Quaternion3d newRotation = this.rotation.copy();
-		newRotation = newRotation.rotate(rotation);
-		Matrix4d transformation = newRotation.toMatrix();
-		transformation.addTranslation(translation);
-		return transformation;
+	public Matrix4d getTransformation(Quaternion3d _rotation)
+	{
+		return rotation.rotate(_rotation).toMatrix().translated(translation);
 	}
 
-	public void setZTranslation(double z) {
+	public void setZTranslation(double z)
+	{
 		Vector3d translation = new Vector3d(this.translation.x,
 				this.translation.y, Math.max(MIN_DISTANCE,
 						Math.min(MAX_DISTANCE, z)));
 		if (!translation.isApproxEqual(this.translation, 0)) {
 			this.translation = translation;
-			this.repaintMain(20);
-			for (StatusLabelCamera statusLabelCamera : statusLabelCameras) {
+			repaint();
+			for (StatusLabelCameraListener statusLabelCamera : statusLabelCameraListeners) {
 				statusLabelCamera.cameraChanged();
 			}
 		}
@@ -207,41 +205,48 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	public void setTransformation(Quaternion3d rotation, Vector3d translation) {
 		this.rotation = rotation;
 		this.translation = translation;
-		repaintMain(20);
-		for (StatusLabelCamera statusLabelCamera : statusLabelCameras) {
+		repaint();
+		for (StatusLabelCameraListener statusLabelCamera : statusLabelCameraListeners) {
 			statusLabelCamera.cameraChanged();
 		}
 	}
 
-	public void setRotationInteraction() {
+	public void activateRotationInteraction() {
 		this.cameraInteractions[1] = new CameraRotationInteraction(this, this);
 	}
 
-	public void setPanInteraction() {
+	public void activatePanInteraction() {
 		this.cameraInteractions[1] = new CameraPanInteraction(this, this);
 	}
 
-	public void setZoomBoxInteraction() {
+	public void activateZoomBoxInteraction() {
 		this.cameraInteractions[1] = new CameraZoomBoxInteraction(this, this);
 	}
 
-	protected void nextTime(){
-		boolean timeOverride = true;
-		long time = System.currentTimeMillis();
+	protected void advanceFrame()
+	{
+		long now = System.currentTimeMillis();
+		long frameDuration = now-lastFrameChangeTime;
 
-		if (TimeLine.SINGLETON.isPlaying()){
-			timeOverride = TimeLine.SINGLETON.calculateNextFrameDate(time - this.time);
+		if (TimeLine.SINGLETON.isPlaying())
+		{
+			if(TimeLine.SINGLETON.processElapsedAnimationTime(frameDuration))
+				lastFrameChangeTime = now;
 
-			int delay = (int) ((time - this.time)/ (double)TimeLine.SINGLETON.getSpeedFactor() + 0.5);
-			 int factor = Math.min(Math.max(1, delay), 3);
-			 this.size = new Dimension(this.size.width / factor, this.size.height / factor);
+			if(frameDuration > TimeLine.SINGLETON.getMillisecondsPerFrame())
+				resolutionDivisor += 1;
+			if(frameDuration < TimeLine.SINGLETON.getMillisecondsPerFrame())
+				resolutionDivisor -= 0.05;
+			
+			resolutionDivisor = Math.min(Math.max(resolutionDivisor, 1), 4);
 		}
-
-		if (timeOverride) this.time = time;				
+		else
+			lastFrameChangeTime = now;
 	}
 	
-	protected void render(GL2 gl) {		
-		nextTime();
+	protected void render(GL2 gl)
+	{
+		advanceFrame();
 		
 		LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
 		gl.glClearDepth(1);
@@ -251,74 +256,68 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		gl.glDepthMask(false);
 
 		// Calculate Track
-		if (track)
-			calculateTrackRotation();
-		if (Layers.getLayerCount() > 0) {
+		if (cameraTrackingEnabled)
+			updateTrackRotation();
+		
+		if (Layers.getLayerCount() > 0)
+		{
 			gl.glMatrixMode(GL2.GL_PROJECTION);
 			gl.glPushMatrix();
 
-			double clipNear = Math.max(this.translation.z - 4
-					* Constants.SUN_RADIUS, CLIP_NEAR);
-			gl.glOrtho(-1, 1, -1, 1, clipNear, this.translation.z + 4
-					* Constants.SUN_RADIUS);
+			double clipNear = Math.max(this.translation.z - 4 * Constants.SUN_RADIUS, CLIP_NEAR);
+			gl.glOrtho(-1, 1, -1, 1, clipNear, this.translation.z + 4 * Constants.SUN_RADIUS);
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
 			gl.glLoadIdentity();
-			gl.glPushMatrix();
 
-			Matrix4d mat = Matrix4d.identity();
-			mat.setTranslation(0, 0, -translation.z);
-			gl.glMultMatrixd(mat.m, 0);
-			if (CameraMode.mode == MODE.MODE_2D) {
-				try {
-					this.rotation = Layers.getActiveImageLayer().getMetaData(currentDateTime)
-							.getRotation().copy();
-				} catch (MetaDataException e) {
-					// TODO Auto-generated catch block
+			gl.glTranslated(0, 0, -translation.z);
+			if (CameraMode.mode == MODE.MODE_2D)
+			{
+				try
+				{
+					this.rotation = Layers.getActiveImageLayer().getMetaData(currentDateTime).getRotation();
+				}
+				catch (MetaDataException e)
+				{
 					e.printStackTrace();
 				}
 			}
-
-			boolean layerLoaded = true;
-			int latchCount = 0;
-			for (AbstractLayer layer : Layers.getLayers()) {
-				if (layer.isVisible() && layer.isImageLayer()) {
-					latchCount++;
-				}
-			}
-			CountDownLatch latchCounter = new CountDownLatch(latchCount);
-			for (AbstractLayer layer : Layers.getLayers()) {
-				if (layer.isVisible() && layer.isImageLayer()) {
-					((AbstractImageLayer)layer).updateImageData(latchCounter, this, size, false);
-				}
-			}
-
-			try {
-				latchCounter.await();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 			
-			
-			for (AbstractLayer layer : Layers.getLayers()) {
-				if (layer.isVisible() && layer.isImageLayer()) {
-					boolean visibleLayer = layer.renderLayer(gl, size, this);
-					layerLoaded &= visibleLayer;
+			//make sure texturePool is initialized
+			//FIXME: should not be necessary. ideally TP interaction should all happen from
+			//gl thread
+			TextureCache.init();
+
+			LinkedHashMap<AbstractLayer, Future<ByteBuffer>> layers=new LinkedHashMap<AbstractLayer, Future<ByteBuffer>>();
+			for (AbstractLayer layer : Layers.getLayers())
+				if (layer.isVisible() && layer.isImageLayer())
+					try
+					{
+						layers.put(layer,((AbstractImageLayer)layer).prepareImageData(this, size));
+					}
+					catch(MetaDataException _mde)
+					{
+						_mde.printStackTrace();
+					}
+
+			for(Entry<AbstractLayer, Future<ByteBuffer>> l:layers.entrySet())
+				try
+				{
+					RenderResult r = l.getKey().renderLayer(gl, size, this, l.getValue().get());
 				}
-			}
+				catch(ExecutionException|InterruptedException _e)
+				{
+					_e.printStackTrace();
+				}
 
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
-			gl.glPopMatrix();
+			gl.glLoadIdentity();
 			gl.glMatrixMode(GL2.GL_PROJECTION);
 			gl.glPopMatrix();
 			gl.glPushMatrix();
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
 
-			Quaternion3d rotation = new Quaternion3d(this.rotation.getAngle(),
-					this.rotation.getRotationAxis().negateY());
-			Matrix4d transformation = rotation.toMatrix();
-			transformation.addTranslation(new Vector3d(-translation.x,
-					translation.y, -translation.z));
+			Quaternion3d rotation = new Quaternion3d(this.rotation.getAngle(), this.rotation.getRotationAxis().negateY());
+			Matrix4d transformation = rotation.toMatrix().translated(-translation.x, translation.y, -translation.z);
 			gl.glMultMatrixd(transformation.m, 0);
 
 			GLU glu = new GLU();
@@ -326,22 +325,21 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 			gl.glLoadIdentity();
 			gl.glScaled(aspect, aspect, 1);
 
-			if (CameraMode.mode == CameraMode.MODE.MODE_3D) {
- 				glu.gluPerspective(MainPanel.FOV, this.aspect, clipNear,
-						this.translation.z + 4 * Constants.SUN_RADIUS);
-			} else {
-				double width = Math.tan(Math.toRadians(FOV) / 2)
-						* translation.z;
-				gl.glOrtho(-width, width, -width, width, clipNear,
-						this.translation.z + 4 * Constants.SUN_RADIUS);
+			if (CameraMode.mode == CameraMode.MODE.MODE_3D)
+			{
+ 				glu.gluPerspective(MainPanel.FOV, this.aspect, clipNear, this.translation.z + 4 * Constants.SUN_RADIUS);
+			}
+			else
+			{
+				double width = Math.tan(Math.toRadians(FOV) / 2) * translation.z;
+				gl.glOrtho(-width, width, -width, width, clipNear, this.translation.z + 4 * Constants.SUN_RADIUS);
 				gl.glScalef((float) (1 / aspect), 1, 1);
 			}
 
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
 			calculateBounds();
-			for (CameraInteraction cameraInteraction : cameraInteractions) {
+			for (CameraInteraction cameraInteraction : cameraInteractions)
 				cameraInteraction.renderInteraction(gl);
-			}
 
 			renderPlugins(gl);
 			gl.glMatrixMode(GL2.GL_PROJECTION);
@@ -371,12 +369,13 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
 		gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
 
-		if (!cameraAnimations.isEmpty() && cameraAnimations.get(0).isFinished())
+		while (!cameraAnimations.isEmpty() && cameraAnimations.get(0).isFinished())
 			cameraAnimations.remove(0);
-		if (!cameraAnimations.isEmpty()) {
+		if (!cameraAnimations.isEmpty())
 			cameraAnimations.get(0).animate(this);
-		}
-		displaySynchronizedCompenents();
+		
+		for (MainPanel compenentView : synchronizedViews)
+		compenentView.repaint();
 		RepaintManager.currentManager(MainFrame.SINGLETON).paintDirtyRegions();
 		
 		if (TimeLine.SINGLETON.isPlaying())
@@ -387,14 +386,19 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		gl.glEnable(GL2.GL_DEPTH_TEST);
 		gl.glDepthFunc(GL2.GL_LESS);
 		gl.glDepthMask(false);
-		UltimatePluginInterface.SINGLETON.renderPlugin(gl,
+		Plugins.SINGLETON.renderPlugin(gl,
 				RENDER_MODE.MAIN_PANEL);
 		gl.glDepthMask(false);
 	}
 
 	@Override
-	public void display(GLAutoDrawable drawable) {
-		this.size = getCanavasSize();
+	public void display(GLAutoDrawable drawable)
+	{
+		size = getCanavasSize();
+		
+		if(TimeLine.SINGLETON.isPlaying())
+			size = new Dimension((int)(size.width/resolutionDivisor), (int)(size.height/resolutionDivisor));
+		
 		GL2 gl = drawable.getGL().getGL2();
 
 		gl.glViewport(0, 0, this.getSurfaceWidth(), this.getSurfaceHeight());
@@ -405,7 +409,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		gl.glPushMatrix();
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		gl.glLoadIdentity();
-		this.render(gl);
+		render(gl);
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glPopMatrix();
 		gl.glLoadIdentity();
@@ -483,7 +487,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		 */
 	}
 
-	protected void calculateTrackRotation() {
+	protected void updateTrackRotation() {
 		if (lastDate == null) lastDate = TimeLine.SINGLETON.getCurrentDateTime();
 		if (!lastDate.isEqual(TimeLine.SINGLETON.getCurrentDateTime())) {
 			Duration difference = Duration.between(lastDate,
@@ -521,27 +525,27 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 			if (i < 10) {
 				Vector3d hitpoint = rayTrace.cast(i * width, 0, this)
 						.getHitpoint();
-				rectBounds[i][0] = hitpoint.x;
-				rectBounds[i][1] = hitpoint.y;
-				rectBounds[i][2] = hitpoint.z;
+				visibleAreaOutline[i][0] = hitpoint.x;
+				visibleAreaOutline[i][1] = hitpoint.y;
+				visibleAreaOutline[i][2] = hitpoint.z;
 			} else if (i < 20) {
 				Vector3d hitpoint = rayTrace.cast(this.getWidth(),
 						(i - 10) * height, this).getHitpoint();
-				rectBounds[i][0] = hitpoint.x;
-				rectBounds[i][1] = hitpoint.y;
-				rectBounds[i][2] = hitpoint.z;
+				visibleAreaOutline[i][0] = hitpoint.x;
+				visibleAreaOutline[i][1] = hitpoint.y;
+				visibleAreaOutline[i][2] = hitpoint.z;
 			} else if (i < 30) {
 				Vector3d hitpoint = rayTrace.cast((29 - i) * width,
 						getHeight(), this).getHitpoint();
-				rectBounds[i][0] = hitpoint.x;
-				rectBounds[i][1] = hitpoint.y;
-				rectBounds[i][2] = hitpoint.z;
+				visibleAreaOutline[i][0] = hitpoint.x;
+				visibleAreaOutline[i][1] = hitpoint.y;
+				visibleAreaOutline[i][2] = hitpoint.z;
 			} else if (i < 40) {
 				Vector3d hitpoint = rayTrace.cast(0, (39 - i) * height, this)
 						.getHitpoint();
-				rectBounds[i][0] = hitpoint.x;
-				rectBounds[i][1] = hitpoint.y;
-				rectBounds[i][2] = hitpoint.z;
+				visibleAreaOutline[i][0] = hitpoint.x;
+				visibleAreaOutline[i][1] = hitpoint.y;
+				visibleAreaOutline[i][2] = hitpoint.z;
 			}
 		}
 	}
@@ -559,7 +563,6 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		// GuiState3DWCS.overViewPanel.activate(drawable.getContext());
 		aspect = this.getSize().getWidth() / this.getSize().getHeight();
 		GL2 gl = drawable.getGL().getGL2();
-		TextureCache.init();
 		// splashScreen = new NoImageScreen(gl);
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 
@@ -577,126 +580,118 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 
 	}
 
-	private void generateNewRenderBuffers(GL2 gl, int width, int height) {
-		// tileWidth = defaultTileWidth;
-		// tileHeight = defaultTileHeight;
-		if (renderBufferDepth != null) {
+	private void generateNewRenderBuffers(GL2 gl, int width, int height)
+	{
+		if (renderBufferDepth != null)
+		{
 			gl.glDeleteRenderbuffers(1, renderBufferDepth, 0);
 		}
 		renderBufferDepth = new int[1];
 		gl.glGenRenderbuffers(1, renderBufferDepth, 0);
 		gl.glBindRenderbuffer(GL2.GL_RENDERBUFFER, renderBufferDepth[0]);
-		gl.glRenderbufferStorage(GL2.GL_RENDERBUFFER, GL2.GL_DEPTH_COMPONENT,
-				width, height);
+		gl.glRenderbufferStorage(GL2.GL_RENDERBUFFER, GL2.GL_DEPTH_COMPONENT, width, height);
 		gl.glFramebufferRenderbuffer(GL2.GL_FRAMEBUFFER,
 				GL2.GL_DEPTH_ATTACHMENT, GL2.GL_RENDERBUFFER,
 				renderBufferDepth[0]);
 
-		if (renderBufferColor != null) {
+		if (renderBufferColor != null)
+		{
 			gl.glDeleteRenderbuffers(1, renderBufferColor, 0);
 		}
 		renderBufferColor = new int[1];
 		gl.glGenRenderbuffers(1, renderBufferColor, 0);
 		gl.glBindRenderbuffer(GL2.GL_RENDERBUFFER, renderBufferColor[0]);
-		gl.glRenderbufferStorage(GL2.GL_RENDERBUFFER, GL2.GL_RGBA8, width,
-				height);
+		gl.glRenderbufferStorage(GL2.GL_RENDERBUFFER, GL2.GL_RGBA8, width, height);
 		gl.glFramebufferRenderbuffer(GL2.GL_FRAMEBUFFER,
 				GL2.GL_COLOR_ATTACHMENT0, GL2.GL_RENDERBUFFER,
 				renderBufferColor[0]);
 	}
 
 	@Override
-	public void reshape(GLAutoDrawable drawable, int x, int y, int width,
-			int height) {
+	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height)
+	{
 		aspect = this.getSize().getWidth() / this.getSize().getHeight();
+		repaint();
 	}
 
 	@Override
-	public void mouseDragged(MouseEvent e) {
-		for (CameraInteraction cameraInteraction : cameraInteractions) {
+	public void mouseDragged(MouseEvent e)
+	{
+		for (CameraInteraction cameraInteraction : cameraInteractions)
 			cameraInteraction.mouseDragged(e);
-		}
 	}
 
 	@Override
-	public void mouseMoved(MouseEvent e) {
+	public void mouseMoved(MouseEvent e)
+	{
 		RayTrace rayTrace = new RayTrace();
 		Ray ray = rayTrace.cast(e.getX(), e.getY(), this);
-		for (StatusLabelMouse statusLabel : statusLabelsMouses) {
+		for (StatusLabelMouseListener statusLabel : statusLabelsMouseListeners)
 			statusLabel.mouseMoved(e, ray);
-		}
 	}
 
 	@Override
-	public void mouseClicked(MouseEvent e) {
+	public void mouseClicked(MouseEvent e)
+	{
 	}
 
 	@Override
-	public void mousePressed(MouseEvent e) {
-		for (CameraInteraction cameraInteraction : cameraInteractions) {
+	public void mousePressed(MouseEvent e)
+	{
+		for (CameraInteraction cameraInteraction : cameraInteractions)
 			cameraInteraction.mousePressed(e);
-		}
 	}
 
 	@Override
-	public void mouseReleased(MouseEvent e) {
-		for (CameraInteraction cameraInteraction : cameraInteractions) {
+	public void mouseReleased(MouseEvent e)
+	{
+		for (CameraInteraction cameraInteraction : cameraInteractions)
 			cameraInteraction.mouseReleased(e);
-		}
 	}
 
 	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-
+	public void mouseEntered(MouseEvent e)
+	{
 	}
 
 	@Override
-	public void mouseExited(MouseEvent e) {
+	public void mouseExited(MouseEvent e)
+	{
 		RayTrace rayTrace = new RayTrace();
 		Ray ray = rayTrace.cast(e.getX(), e.getY(), this);
-		for (StatusLabelMouse statusLabel : statusLabelsMouses) {
+		for (StatusLabelMouseListener statusLabel : statusLabelsMouseListeners)
 			statusLabel.mouseExited(e, ray);
-		}
 	}
 
 	public Dimension getCanavasSize() {
 		return new Dimension(this.getSurfaceWidth(), this.getSurfaceHeight());
 	}
 
-	public BufferedImage getBufferedImage(int imageWidth, int imageHeight,
-			boolean textEnabled) {
-
+	public BufferedImage getBufferedImage(int imageWidth, int imageHeight, boolean textEnabled)
+	{
 		ArrayList<String> descriptions = null;
-			if (textEnabled) {
-				descriptions = new ArrayList<String>();
-				for (AbstractLayer layer : Layers.getLayers()) {
-					if (layer.isVisible()) {
-
-						LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
-						descriptions
-								.add(layer.getFullName()
-										+ " - "
-										+ layer.getTime()
-												.format(JHVGlobals.DATE_TIME_FORMATTER));
-
-					}
+		if (textEnabled)
+		{
+			descriptions = new ArrayList<String>();
+			for (AbstractLayer layer : Layers.getLayers())
+			{
+				if (layer.isVisible())
+				{
+					descriptions.add(layer.getFullName() + " - "
+									+ layer.getTime().format(JHVGlobals.DATE_TIME_FORMATTER));
 				}
 			}
-		int tileWidth = imageWidth < DEFAULT_TILE_WIDTH ? imageWidth
-				: DEFAULT_TILE_WIDTH;
-		int tileHeight = imageHeight < DEFAULT_TILE_HEIGHT ? imageHeight
-				: DEFAULT_TILE_HEIGHT;
-		this.repaintMain(20);
+		}
+		
+		int tileWidth = imageWidth < DEFAULT_TILE_WIDTH ? imageWidth : DEFAULT_TILE_WIDTH;
+		int tileHeight = imageHeight < DEFAULT_TILE_HEIGHT ? imageHeight : DEFAULT_TILE_HEIGHT;
+		repaint();
 		double xTiles = imageWidth / (double) tileWidth;
 		double yTiles = imageHeight / (double) tileHeight;
-		int countXTiles = imageWidth % tileWidth == 0 ? (int) xTiles
-				: (int) xTiles + 1;
-		int countYTiles = imageHeight % tileHeight == 0 ? (int) yTiles
-				: (int) yTiles + 1;
+		int countXTiles = imageWidth % tileWidth == 0 ? (int) xTiles : (int) xTiles + 1;
+		int countYTiles = imageHeight % tileHeight == 0 ? (int) yTiles : (int) yTiles + 1;
 
-		GLDrawableFactory factory = GLDrawableFactory.getFactory(GLProfile
-				.getDefault());
+		GLDrawableFactory factory = GLDrawableFactory.getFactory(GLProfile.getDefault());
 		GLProfile profile = GLProfile.get(GLProfile.GL2);
 		profile = GLProfile.getDefault();
 		GLCapabilities capabilities = new GLCapabilities(profile);
@@ -705,8 +700,7 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		capabilities.setHardwareAccelerated(true);
 		capabilities.setFBO(true);
 
-		GLDrawable offscreenDrawable = factory.createOffscreenDrawable(null,
-				capabilities, null, tileWidth, tileHeight);
+		GLDrawable offscreenDrawable = factory.createOffscreenDrawable(null, capabilities, null, tileWidth, tileHeight);
 
 		offscreenDrawable.setRealized(true);
 		GLContext offscreenContext = this.getContext();
@@ -717,24 +711,19 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		offscreenGL.glBindFramebuffer(GL2.GL_FRAMEBUFFER, frameBufferObject[0]);
 		generateNewRenderBuffers(offscreenGL, tileWidth, tileHeight);
 
-		BufferedImage screenshot = new BufferedImage(imageWidth, imageHeight,
-				BufferedImage.TYPE_3BYTE_BGR);
-		ByteBuffer.wrap(((DataBufferByte) screenshot.getRaster()
-				.getDataBuffer()).getData());
+		BufferedImage screenshot = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_3BYTE_BGR);
+		ByteBuffer.wrap(((DataBufferByte) screenshot.getRaster().getDataBuffer()).getData());
 
 		offscreenGL.glViewport(0, 0, tileWidth, tileHeight);
 		offscreenGL.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 		double aspect = imageWidth / (double) imageHeight;
-		double top = Math.tan(MainPanel.FOV / 360.0 * Math.PI)
-				* MainPanel.CLIP_NEAR;
+		double top = Math.tan(MainPanel.FOV / 360.0 * Math.PI) * MainPanel.CLIP_NEAR;
 		double right = top * aspect;
 		double left = -right;
 		double bottom = -top;
 
-		double tileLeft, tileRight, tileBottom, tileTop;
-		TextRenderer textRenderer = new TextRenderer(new Font("SansSerif",
-				Font.BOLD, 24));
+		TextRenderer textRenderer = new TextRenderer(new Font("SansSerif", Font.BOLD, 24));
 		textRenderer.setColor(1f, 1f, 1f, 1f);
 
 		offscreenGL.glViewport(0, 0, tileWidth, tileHeight);
@@ -745,15 +734,13 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 		offscreenGL.glScaled(1, aspect, 1);
 		offscreenGL.glMatrixMode(GL2.GL_MODELVIEW);
 
-		for (int x = 0; x < countXTiles; x++) {
-			for (int y = 0; y < countYTiles; y++) {
+		for (int x = 0; x < countXTiles; x++)
+		{
+			for (int y = 0; y < countYTiles; y++)
+			{
 				offscreenGL.glMatrixMode(GL2.GL_PROJECTION);
 				offscreenGL.glPushMatrix();
 				offscreenGL.glMatrixMode(GL2.GL_MODELVIEW);
-				tileLeft = left + (right - left) / xTiles * x;
-				tileRight = left + (right - left) / xTiles * (x + 1);
-				tileBottom = bottom + (top - bottom) / yTiles * y;
-				tileTop = bottom + (top - bottom) / yTiles * (y + 1);
 
 				offscreenGL.glMatrixMode(GL2.GL_PROJECTION);
 				offscreenGL.glViewport(0, 0, imageWidth, imageHeight);
@@ -765,13 +752,13 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 				int destY = tileHeight * y;
 				render(offscreenGL);
 				
-				if (descriptions != null && x == 0 && y == 0) {
+				if (descriptions != null && x == 0 && y == 0)
+				{
 					int counter = 0;
-					textRenderer.beginRendering(this.getSurfaceWidth(),
-							this.getSurfaceHeight());
-					for (String description : descriptions) {
+					textRenderer.beginRendering(this.getSurfaceWidth(), this.getSurfaceHeight());
+					for (String description : descriptions)
 						textRenderer.draw(description, 5, 5 + 40 * counter++);
-					}
+
 					textRenderer.endRendering();
 				}
 				offscreenGL.glPixelStorei(GL2.GL_PACK_ROW_LENGTH, imageWidth);
@@ -779,10 +766,8 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 				offscreenGL.glPixelStorei(GL2.GL_PACK_SKIP_PIXELS, destX);
 				offscreenGL.glPixelStorei(GL2.GL_PACK_ALIGNMENT, 1);
 
-				int cutOffX = imageWidth >= (x + 1) * tileWidth ? tileWidth
-						: tileWidth - x * tileWidth;
-				int cutOffY = imageHeight >= (y + 1) * tileHeight ? tileHeight
-						: tileHeight - y * tileHeight;
+				int cutOffX = imageWidth >= (x + 1) * tileWidth ? tileWidth : tileWidth - x * tileWidth;
+				int cutOffY = imageHeight >= (y + 1) * tileHeight ? tileHeight : tileHeight - y * tileHeight;
 
 				offscreenGL.glReadPixels(0, 0, cutOffX, cutOffY, GL2.GL_BGR,
 						GL2.GL_UNSIGNED_BYTE, ByteBuffer
@@ -791,7 +776,6 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 				offscreenGL.glMatrixMode(GL2.GL_PROJECTION);
 				offscreenGL.glPopMatrix();
 				offscreenGL.glMatrixMode(GL2.GL_MODELVIEW);
-
 			}
 		}
 
@@ -800,86 +784,85 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 	}
 
 	@Override
-	public void newlayerAdded() {
+	public void newlayerAdded()
+	{
 		this.repaint();
 	}
 
 	@Override
-	public void newlayerRemoved(int idx) {
+	public void newlayerRemoved(int idx)
+	{
 		this.repaint();
 	}
 
 	@Override
-	public void mouseWheelMoved(MouseWheelEvent e) {
-		for (CameraInteraction cameraInteraction : cameraInteractions) {
+	public void mouseWheelMoved(MouseWheelEvent e)
+	{
+		for (CameraInteraction cameraInteraction : cameraInteractions)
 			cameraInteraction.mouseWheelMoved(e);
-		}
 	}
 
 	@Override
-	public void activeLayerChanged(AbstractLayer layer) {
+	public void activeLayerChanged(AbstractLayer layer)
+	{
 		if (Layers.getActiveImageLayer() != null)
 			lastDate = null;
-		repaintMain(20);
+		repaint();
 	}
 
 	@Override
-	public void timeStampChanged(LocalDateTime current, LocalDateTime last) {
+	public void timeStampChanged(LocalDateTime current, LocalDateTime last)
+	{
 		//this.repaint();
 	}
 
-	public double getAspect() {
+	public double getAspect()
+	{
 		return this.aspect;
 	}
 
-	public void addSynchronizedView(MainPanel compenentView) {
+	public void addSynchronizedView(MainPanel compenentView)
+	{
 		this.synchronizedViews.add(compenentView);
 	}
 
-	private void displaySynchronizedCompenents() {
-		for (MainPanel compenentView : synchronizedViews) {
-			compenentView.repaint();
-		}
-	}
-
 	@Override
-	public void dateTimesChanged(int framecount) {
+	public void dateTimesChanged(int framecount)
+	{
 	}
 
-	public double[][] getRectBounds() {
-		return rectBounds;
+	public double[][] getVisibleAreaOutline()
+	{
+		return visibleAreaOutline;
 	}
 
-	public void addCameraAnimation(CameraAnimation cameraAnimation) {
+	public void addCameraAnimation(CameraAnimation cameraAnimation)
+	{
 		this.cameraAnimations.add(cameraAnimation);
 		this.repaint();
 	}
 
-	public void resetCamera() {
-		Quaternion3d rotation = Quaternion3d.createRotation(0.0, new Vector3d(
-				0, 1, 0));
+	public void resetCamera()
+	{
+		Quaternion3d rotation = Quaternion3d.createRotation(0.0, new Vector3d(0, 1, 0));
 		Vector3d translation = new Vector3d(0, 0, DEFAULT_CAMERA_DISTANCE);
-		this.addCameraAnimation(new CameraTransformationAnimation(rotation,
-				translation, this));
-		this.repaintMain(20);
+		addCameraAnimation(new CameraTransformationAnimation(rotation, translation, this));
+		repaint();
 	}
 
-	public void toFullscreen() {
-		SwingUtilities.invokeLater(new Runnable() {
-
+	public void switchToFullscreen()
+	{
+		SwingUtilities.invokeLater(new Runnable()
+		{
 			@Override
-			public void run() {
-
-				GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment
-						.getLocalGraphicsEnvironment();
-				GraphicsDevice graphicsDevice = MainFrame.SINGLETON
-						.getGraphicsConfiguration().getDevice();
+			public void run()
+			{
+				GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
+				GraphicsDevice graphicsDevice = MainFrame.SINGLETON.getGraphicsConfiguration().getDevice();
 				if (graphicsDevice == null)
-					graphicsDevice = graphicsEnvironment
-							.getDefaultScreenDevice();
+					graphicsDevice = graphicsEnvironment.getDefaultScreenDevice();
 
-				final JFrame fullscreenFrame = new JFrame(graphicsDevice
-						.getDefaultConfiguration());
+				final JFrame fullscreenFrame = new JFrame(graphicsDevice.getDefaultConfiguration());
 
 				fullscreenFrame.getContentPane().setLayout(new BorderLayout());
 				final Container lastParent = MainPanel.this.getParent();
@@ -889,13 +872,13 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 				fullscreenFrame.setUndecorated(true);
 				fullscreenFrame.setResizable(false);
 
-				if (graphicsDevice.isFullScreenSupported()) {
+				if (graphicsDevice.isFullScreenSupported())
 					graphicsDevice.setFullScreenWindow(fullscreenFrame);
-				}
 
 				fullscreenFrame.setVisible(true);
 
-				final KeyAdapter keyAdapter = new KeyAdapter() {
+				final KeyAdapter keyAdapter = new KeyAdapter()
+				{
 					@Override
 					public void keyPressed(KeyEvent e) {
 						if (e.getKeyCode() == KeyEvent.VK_ESCAPE
@@ -918,30 +901,25 @@ public class MainPanel extends GLCanvas implements GLEventListener,
 
 	}
 
-	public void toggleTrack() {
-		this.track = !track;
+	public void toggleCameraTracking()
+	{
+		this.cameraTrackingEnabled = !cameraTrackingEnabled;
 		this.lastDate = TimeLine.SINGLETON.getCurrentDateTime();
 	}
 
-	public boolean getTrack() {
-		return track;
+	public void addStatusLabelMouseListener(StatusLabelMouseListener statusLabelMouse)
+	{
+		statusLabelsMouseListeners.add(statusLabelMouse);
 	}
 
-	public void addStatusLabelMouse(StatusLabelMouse statusLabelMouse) {
-		statusLabelsMouses.add(statusLabelMouse);
+	public void addStatusLabelCameraListener(StatusLabelCameraListener statusLabelCamera)
+	{
+		statusLabelCameraListeners.add(statusLabelCamera);
 	}
 
-	public void addStatusLabelCamera(StatusLabelCamera statusLabelCamera) {
-		statusLabelCameras.add(statusLabelCamera);
+	
+	public void resetLastFrameChangeTime()
+	{
+		lastFrameChangeTime = System.currentTimeMillis();
 	}
-
-	@Override
-	public void repaintMain(long millis) {
-		repaint(millis);
-	}
-
-	public void resetTime() {
-		time = System.currentTimeMillis();
-	}
-
 }

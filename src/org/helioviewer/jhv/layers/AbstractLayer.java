@@ -1,6 +1,7 @@
 package org.helioviewer.jhv.layers;
 
 import java.awt.Dimension;
+import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -12,35 +13,48 @@ import org.json.JSONObject;
 
 import com.jogamp.opengl.GL2;
 
-public abstract class AbstractLayer {
+public abstract class AbstractLayer
+{
 	protected boolean visible;
 	protected String name;
-	protected ArrayList<AbstractRequest> badRequests;
+	
+	//FIXME: synchronization not done properly
+	protected ArrayList<AbstractRequest> failedRequests;
+	
 	protected boolean isImageLayer = false;
 	protected boolean isDownloadable = false;
 
-	public String getName() {
+	public String getName()
+	{
 		return name;
 	}
 
-	public boolean isVisible() {
+	public boolean isVisible()
+	{
 		return visible;
 	}
 
 	public boolean checkBadRequest() {
-		return badRequests != null && !badRequests.isEmpty();
+		return failedRequests != null && !failedRequests.isEmpty();
 	}
 
 	public void setVisible(boolean visible) {
 		this.visible = visible;
-		MainFrame.MAIN_PANEL.repaintMain(20);
+		MainFrame.MAIN_PANEL.repaint();
 	}
 
 	public boolean isImageLayer() {
 		return isImageLayer;
 	}
+	
+	public enum RenderResult
+	{
+		RETRY_LATER,
+		ERROR,
+		OK
+	}
 
-	abstract public boolean renderLayer(GL2 gl, Dimension canvasSize, MainPanel mainPanel);
+	abstract public RenderResult renderLayer(GL2 gl, Dimension canvasSize, MainPanel mainPanel, ByteBuffer _imageData);
 
 	public boolean isDownloadable() {
 		return isDownloadable;
@@ -68,28 +82,39 @@ public abstract class AbstractLayer {
 
 	abstract void remove();
 
-	public int getBadRequestCount() {
-		return badRequests.size();
+	public int getBadRequestCount()
+	{
+		return failedRequests.size();
 	}
 
-	public void addBadRequests(ArrayList<AbstractRequest> badRequests) {
-		this.badRequests = badRequests;
+	public void addBadRequests(ArrayList<AbstractRequest> badRequests)
+	{
+		synchronized(failedRequests)
+		{
+			this.failedRequests = badRequests;
+		}
 		MainFrame.LAYER_PANEL.repaintPanel();
 	}
 
 	public void clearBadRequests() {
-		badRequests.clear();
+		failedRequests.clear();
 		MainFrame.LAYER_PANEL.repaintPanel();
 	}
 
-	public void retryBadRequest() {
-		Thread thread = new Thread(new Runnable() {
-			
+	public void retryFailedRequests()
+	{
+		Thread thread = new Thread(new Runnable()
+		{
 			@Override
-			public void run() {
-				AbstractRequest[] requests = new AbstractRequest[badRequests.size()];
-				badRequests.toArray(requests);
-				badRequests.clear();
+			public void run()
+			{
+				AbstractRequest[] requests;
+				synchronized(failedRequests)
+				{
+					requests = new AbstractRequest[failedRequests.size()];
+					failedRequests.toArray(requests);
+					failedRequests.clear();
+				}
 				MainFrame.LAYER_PANEL.repaintPanel();
 				for (AbstractRequest request : requests){
 					request.setRetries(3);
@@ -97,6 +122,7 @@ public abstract class AbstractLayer {
 				}
 			}
 		}, "RETRY-REQUESTS");
+		thread.setDaemon(true);
 		thread.start();
 	}
 }

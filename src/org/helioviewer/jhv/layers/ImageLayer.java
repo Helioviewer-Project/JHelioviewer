@@ -6,9 +6,11 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.helioviewer.jhv.JHVException;
 import org.helioviewer.jhv.JHVException.MetaDataException;
@@ -20,23 +22,21 @@ import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.opengl.MainPanel;
 import org.helioviewer.jhv.layers.filter.LUT;
-import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.opengl.camera.CameraMode;
+import org.helioviewer.jhv.viewmodel.TimeLine;
+import org.helioviewer.jhv.viewmodel.jp2view.newjpx.Cache;
+import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduRender;
+import org.helioviewer.jhv.viewmodel.jp2view.newjpx.UltimateLayer;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
-import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.Cache;
-import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.KakaduRender;
-import org.helioviewer.jhv.viewmodel.view.jp2view.newjpx.UltimateLayer;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 
-public class ImageLayer extends AbstractImageLayer {
-
-	private static final String LAYERS = "layers";
+public class ImageLayer extends AbstractImageLayer
+{
 	private static final String IS_LOCALFILE = "isLocalFile";
 	private static final String LOCAL_PATH = "localPath";
 	private static final String ID = "id";
@@ -45,110 +45,102 @@ public class ImageLayer extends AbstractImageLayer {
 	private static final String END_DATE_TIME = "endDateTime";
 	private static final String NAME = "name";
 
-	private UltimateLayer ultimateLayer;
+	private static final ExecutorService exDecoder = Executors.newWorkStealingPool();
 
 	private LayerRayTrace layerRayTrace;
 	private int sourceID;
+	
+	private UltimateLayer ultimateLayer;
 
 	private static int shaderprogram = -1;
 
-	private int glTextureMain;
-	private int glTextureOverview;
-
-	private ImageDecodingThread imageDecodingThread = new ImageDecodingThread();
-	private Thread thread = new Thread(imageDecodingThread, "Image-Decoding");
-
-	public ImageLayer(int sourceID, KakaduRender newRender,
-			LocalDateTime start, LocalDateTime end, int cadence, String name) {
+	public ImageLayer(int sourceID, LocalDateTime start, LocalDateTime end, int cadence, String name)
+	{
 		super();
-		thread.start();
 		this.sourceID = sourceID;
 		this.start = start;
 		this.end = end;
 		this.cadence = cadence;
 		this.name = name;
 		this.isDownloadable = ChronoUnit.SECONDS.between(start, end) / cadence < 1000;
-		this.ultimateLayer = new UltimateLayer(id, sourceID, newRender, this);
+		this.ultimateLayer = new UltimateLayer(id, sourceID, this);
 		this.ultimateLayer.setTimeRange(start, end, cadence);
 		layerRayTrace = new LayerRayTrace(this);
 	}
 
-	public ImageLayer(String uri, KakaduRender newRender) {
+	public ImageLayer(String uri, KakaduRender newRender)
+	{
 		super();
-		thread.start();
 		this.localPath = uri;
 		this.ultimateLayer = new UltimateLayer(id, uri, newRender, this);
 		this.name = ultimateLayer.getMetaData(0, uri).getFullName();
 		layerRayTrace = new LayerRayTrace(this);
-		ArrayList<AbstractRequest> badRequests = new ArrayList<AbstractRequest>();
 
 		start = ultimateLayer.getLocalDateTimes().first();
 		end = ultimateLayer.getLocalDateTimes().last();
-		this.cadence = (int) (ChronoUnit.SECONDS.between(start, end) / ultimateLayer
-				.getLocalDateTimes().size());
-
+		this.cadence = (int) (ChronoUnit.SECONDS.between(start, end) / ultimateLayer.getLocalDateTimes().size());
 	}
 
 	@Override
-	public int getTexture(MainPanel compenentView, boolean highResolution,
-			Dimension size) throws TextureException {
-		if (imageData != null) {
-			updateTexture();
+	public int getTexture(MainPanel compenentView, ByteBuffer _imageData, Dimension size) throws TextureException
+	{
+		//FIXME: is _imageData ever null?!
+		if (_imageData != null)
+		{
+			OpenGLHelper.bindByteBufferToGLTexture(this.getLastDecodedImageRegion(), _imageData, this.getLastDecodedImageRegion().getImageSize());
 		}
-		if (this.getLastDecodedImageRegion() != null) {
-			return this.getLastDecodedImageRegion().getTextureID();
-		}
+
+		if (this.getLastDecodedImageRegion() != null)
+			return getLastDecodedImageRegion().getTextureID();
+
 		return -1;
 	}
 
-	private void updateTexture() {
-		OpenGLHelper.bindByteBufferToGLTexture(
-				this.getLastDecodedImageRegion(), imageData, this
-						.getLastDecodedImageRegion().getImageSize());
-		imageData = null;
-	}
-
 	@Override
-	public LocalDateTime getTime() {
-		try {
+	public LocalDateTime getTime()
+	{
+		try
+		{
 			if (getMetaData(TimeLine.SINGLETON.getCurrentDateTime()) != null)
-				return getMetaData(TimeLine.SINGLETON.getCurrentDateTime())
-						.getLocalDateTime();
-		} catch (MetaDataException e) {
-			// TODO Auto-generated catch block
+				return getMetaData(TimeLine.SINGLETON.getCurrentDateTime()).getLocalDateTime();
+		}
+		catch (MetaDataException e)
+		{
 			e.printStackTrace();
 		}
 		return null;
 	}
 
 	@Deprecated
-	public ConcurrentSkipListSet<LocalDateTime> getLocalDateTime() {
+	public ConcurrentSkipListSet<LocalDateTime> getLocalDateTime()
+	{
 		return ultimateLayer.getLocalDateTimes();
 	}
 
 	@Override
-	protected MetaData getMetaData() throws JHVException.MetaDataException {
-		if (getLastDecodedImageRegion() == null
-				|| getLastDecodedImageRegion().getMetaData() == null)
+	protected MetaData getMetaData() throws JHVException.MetaDataException
+	{
+		if (getLastDecodedImageRegion() == null	|| getLastDecodedImageRegion().getMetaData() == null)
 			throw new JHVException.MetaDataException("No imagedata available");
 		return this.getLastDecodedImageRegion().getMetaData();
 	}
 
-	public ImageRegion getLastDecodedImageRegion() {
+	public ImageRegion getLastDecodedImageRegion()
+	{
 		return ultimateLayer.getImageRegion();
 	}
 
 	@Override
-	public String getURL() {
+	public String getURL()
+	{
 		return ultimateLayer.getURL();
 	}
 
 	@Override
-	public MetaData getMetaData(LocalDateTime currentDateTime)
-			throws MetaDataException {
+	public MetaData getMetaData(LocalDateTime currentDateTime) throws MetaDataException
+	{
 		MetaData metaData = null;
-		if (getMetaData().getLocalDateTime().isEqual(currentDateTime)
-				&& getLastDecodedImageRegion().getID() == this.id)
+		if (getMetaData().getLocalDateTime().isEqual(currentDateTime) && getLastDecodedImageRegion().getID() == this.id)
 			return getMetaData();
 		metaData = ultimateLayer.getMetaData(currentDateTime);
 		if (metaData == null)
@@ -157,8 +149,10 @@ public class ImageLayer extends AbstractImageLayer {
 		return metaData;
 	}
 
-	public void writeStateFile(JSONObject jsonLayer) {
-		try {
+	public void writeStateFile(JSONObject jsonLayer)
+	{
+		try
+		{
 			jsonLayer.put(IS_LOCALFILE, ultimateLayer.isLocalFile());
 			jsonLayer.put(LOCAL_PATH, getLocalFilePath());
 			jsonLayer.put(ID, sourceID);
@@ -167,28 +161,31 @@ public class ImageLayer extends AbstractImageLayer {
 			jsonLayer.put(END_DATE_TIME, end);
 			jsonLayer.put(NAME, name);
 			super.writeStateFile(jsonLayer);
-		} catch (JSONException e) {
+		}
+		catch (JSONException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	public static ImageLayer readStateFile(JSONObject jsonLayer,
-			KakaduRender kakaduRender) {
-		try {
-			if (jsonLayer.getBoolean(IS_LOCALFILE)) {
-				return new ImageLayer(jsonLayer.getString(LOCAL_PATH),
-						kakaduRender);
-			} else if (jsonLayer.getInt(CADENCE) >= 0) {
-				LocalDateTime start = LocalDateTime.parse(jsonLayer
-						.getString(START_DATE_TIME));
-				LocalDateTime end = LocalDateTime.parse(jsonLayer
-						.getString(END_DATE_TIME));
-				return new ImageLayer(jsonLayer.getInt(ID), kakaduRender,
-						start, end, jsonLayer.getInt(CADENCE),
-						jsonLayer.getString(NAME));
+	public static ImageLayer readStateFile(JSONObject jsonLayer, KakaduRender kakaduRender)
+	{
+		try
+		{
+			if (jsonLayer.getBoolean(IS_LOCALFILE))
+			{
+				return new ImageLayer(jsonLayer.getString(LOCAL_PATH), kakaduRender);
 			}
-		} catch (JSONException e) {
+			else if (jsonLayer.getInt(CADENCE) >= 0)
+			{
+				LocalDateTime start = LocalDateTime.parse(jsonLayer.getString(START_DATE_TIME));
+				LocalDateTime end = LocalDateTime.parse(jsonLayer.getString(END_DATE_TIME));
+				return new ImageLayer(jsonLayer.getInt(ID), start, end, jsonLayer.getInt(CADENCE), jsonLayer.getString(NAME));
+			}
+		}
+		catch (JSONException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -196,26 +193,26 @@ public class ImageLayer extends AbstractImageLayer {
 	}
 
 	@Override
-	public CacheableImageData getCacheStatus(LocalDateTime localDateTime) {
+	public CacheableImageData getCacheStatus(LocalDateTime localDateTime)
+	{
 		return Cache.getCacheElement(id, localDateTime);
 	}
 
-	public boolean renderLayer(GL2 gl, Dimension canvasSize, MainPanel mainPanel) {
-		if (shaderprogram < 0) {
+	public RenderResult renderLayer(GL2 gl, Dimension canvasSize, MainPanel mainPanel, ByteBuffer _imageData)
+	{
+		if (shaderprogram < 0)
 			initShaders(gl);
-		}
-		try {
-
-			int layerTexture = getTexture(mainPanel, false, canvasSize);
+		
+		try
+		{
+			int layerTexture = getTexture(mainPanel, _imageData, canvasSize);
 			if (layerTexture < 0)
-				return false;
-			LocalDateTime currentDateTime = TimeLine.SINGLETON
-					.getCurrentDateTime();
-			Rectangle2D physicalSize = getMetaData(currentDateTime)
-					.getPhysicalImageSize();
-			if (physicalSize.getWidth() <= 0 || physicalSize.getHeight() <= 0) {
-				return false;
-			}
+				return RenderResult.RETRY_LATER;
+			
+			LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
+			Rectangle2D physicalSize = getMetaData(currentDateTime).getPhysicalImageSize();
+			if (physicalSize.getWidth() <= 0 || physicalSize.getHeight() <= 0)
+				return RenderResult.RETRY_LATER;
 
 			MetaData metaData = getMetaData(currentDateTime);
 			float xSunOffset = (float) ((metaData.getSunPixelPosition().x - metaData
@@ -225,10 +222,8 @@ public class ImageLayer extends AbstractImageLayer {
 					.getResolution().getHeight() / 2.0) / (float) metaData
 					.getResolution().getHeight());
 
-			Vector3d currentPos = mainPanel.getRotation().toMatrix()
-					.multiply(new Vector3d(0, 0, 1));
-			Vector3d startPos = metaData.getRotation().toMatrix()
-					.multiply(new Vector3d(0, 0, 1));
+			Vector3d currentPos = mainPanel.getRotation().toMatrix().multiply(new Vector3d(0, 0, 1));
+			Vector3d startPos = metaData.getRotation().toMatrix().multiply(new Vector3d(0, 0, 1));
 
 			double angle = Math.toDegrees(Math.acos(currentPos.dot(startPos)));
 			double maxAngle = 60;
@@ -257,71 +252,41 @@ public class ImageLayer extends AbstractImageLayer {
 
 			gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "texture"), 0);
 			gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "lut"), 1);
-			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "fov"),
-					(float) Math.toRadians(MainPanel.FOV / 2.0));
-			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram,
-					"physicalImageWidth"), (float) metaData
+			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "fov"), (float) Math.toRadians(MainPanel.FOV / 2.0));
+			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "physicalImageWidth"), (float) metaData
 					.getPhysicalImageWidth());
-			gl.glUniform2f(gl.glGetUniformLocation(shaderprogram, "sunOffset"),
-					xSunOffset, ySunOffset);
+			gl.glUniform2f(gl.glGetUniformLocation(shaderprogram, "sunOffset"), xSunOffset, ySunOffset);
 			gl.glUniform4f(
 					gl.glGetUniformLocation(shaderprogram, "imageOffset"),
 					getLastDecodedImageRegion().getTextureOffsetX(),
 					getLastDecodedImageRegion().getTextureOffsetY(),
 					getLastDecodedImageRegion().getTextureScaleWidth(),
 					getLastDecodedImageRegion().getTextureScaleHeight());
-			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "opacity"),
-					(float) getOpacity());
-			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "gamma"),
-					(float) getGamma());
-			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "sharpen"),
-					(float) getSharpen());
-			gl.glUniform1f(
-					gl.glGetUniformLocation(shaderprogram, "lutPosition"),
-					getLut().ordinal());
-			gl.glUniform1i(
-					gl.glGetUniformLocation(shaderprogram, "lutInverted"),
-					getLutState());
-			gl.glUniform1i(
-					gl.glGetUniformLocation(shaderprogram, "redChannel"),
-					getColorChannel(COLOR_CHANNEL_TYPE.RED).getState());
-			gl.glUniform1i(
-					gl.glGetUniformLocation(shaderprogram, "greenChannel"),
-					getColorChannel(COLOR_CHANNEL_TYPE.GREEN).getState());
-			gl.glUniform1i(
-					gl.glGetUniformLocation(shaderprogram, "blueChannel"),
-					getColorChannel(COLOR_CHANNEL_TYPE.BLUE).getState());
-			gl.glUniform1f(
-					gl.glGetUniformLocation(shaderprogram, "opacityCorona"),
-					opacityCorona);
-			gl.glUniform1i(
-					gl.glGetUniformLocation(shaderprogram, "cameraMode"),
-					CameraMode.getCameraMode());
-			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "contrast"),
-					(float) getContrast());
+			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "opacity"), (float) opacity);
+			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "gamma"), (float) gamma);
+			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "sharpen"), (float) sharpness);
+			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "lutPosition"), getLut().ordinal());
+			gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "lutInverted"), invertedLut ? 1:0);
+			gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "redChannel"), redChannel ? 1:0);
+			gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "greenChannel"), greenChannel ? 1:0);
+			gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "blueChannel"), blueChannel ? 1:0);
+			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "opacityCorona"), opacityCorona);
+			gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "cameraMode"), CameraMode.getCameraMode());
+			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "contrast"), (float) contrast);
 
-			float clipNear = (float) Math.max(mainPanel.getTranslation().z - 4
-					* Constants.SUN_RADIUS, MainPanel.CLIP_NEAR);
-			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "near"),
-					clipNear);
+			float clipNear = (float) Math.max(mainPanel.getTranslation().z - 4 * Constants.SUN_RADIUS, MainPanel.CLIP_NEAR);
+			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "near"), clipNear);
 			gl.glUniform1f(
 					gl.glGetUniformLocation(shaderprogram, "far"),
 					(float) (mainPanel.getTranslation().z + 4 * Constants.SUN_RADIUS));
-			float[] transformation = mainPanel.getTransformation()
-					.toFloatArray();
-			float[] layerTransformation = getMetaData(currentDateTime)
-					.getRotation().toMatrix().toFloatArray();
-			float[] layerInv = getMetaData(currentDateTime).getRotation()
-					.inverse().toMatrix().toFloatArray();
-			gl.glUniformMatrix4fv(
-					gl.glGetUniformLocation(shaderprogram, "transformation"),
-					1, true, transformation, 0);
+			float[] transformation = mainPanel.getTransformation().toFloatArray();
+			gl.glUniformMatrix4fv(gl.glGetUniformLocation(shaderprogram, "transformation"), 1, true, transformation, 0);
 
-			gl.glUniformMatrix4fv(gl.glGetUniformLocation(shaderprogram,
-					"layerTransformation"), 1, true, layerTransformation, 0);
-			gl.glUniformMatrix4fv(
-					gl.glGetUniformLocation(shaderprogram, "layerInv"), 1,
-					true, layerInv, 0);
+			float[] layerTransformation = getMetaData(currentDateTime).getRotation().toMatrix().toFloatArray();
+			gl.glUniformMatrix4fv(gl.glGetUniformLocation(shaderprogram, "layerTransformation"), 1, true, layerTransformation, 0);
+			
+			float[] layerInv = getMetaData(currentDateTime).getRotation().inversed().toMatrix().toFloatArray();
+			gl.glUniformMatrix4fv(gl.glGetUniformLocation(shaderprogram, "layerInv"), 1, true, layerInv, 0);
 
 			gl.glUniform2f(
 					gl.glGetUniformLocation(shaderprogram, "imageResolution"),
@@ -350,28 +315,27 @@ public class ImageLayer extends AbstractImageLayer {
 			gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
 			gl.glEnable(GL2.GL_DEPTH_TEST);
 			gl.glDepthMask(false);
-			return true;
-		} catch (MetaDataException | TextureException e) {
-			return false;
+			return RenderResult.OK;
+		}
+		catch (MetaDataException | TextureException e)
+		{
+			return RenderResult.RETRY_LATER;
 		}
 
 	}
 
-	private void initShaders(GL2 gl) {
+	private void initShaders(GL2 gl)
+	{
 		int vertexShader = gl.glCreateShader(GL2.GL_VERTEX_SHADER);
 		int fragmentShader = gl.glCreateShader(GL2.GL_FRAGMENT_SHADER);
 
-		String vertexShaderSrc = OpenGLHelper
-				.loadShaderFromFile("/shader/MainVertex.glsl");
-		String fragmentShaderSrc = OpenGLHelper
-				.loadShaderFromFile("/shader/MainFragment.glsl");
+		String vertexShaderSrc = OpenGLHelper.loadShaderFromFile("/shader/MainVertex.glsl");
+		String fragmentShaderSrc = OpenGLHelper.loadShaderFromFile("/shader/MainFragment.glsl");
 
-		gl.glShaderSource(vertexShader, 1, new String[] { vertexShaderSrc },
-				(int[]) null, 0);
+		gl.glShaderSource(vertexShader, 1, new String[] { vertexShaderSrc }, (int[]) null, 0);
 		gl.glCompileShader(vertexShader);
 
-		gl.glShaderSource(fragmentShader, 1,
-				new String[] { fragmentShaderSrc }, (int[]) null, 0);
+		gl.glShaderSource(fragmentShader, 1, new String[] { fragmentShaderSrc }, (int[]) null, 0);
 		gl.glCompileShader(fragmentShader);
 
 		shaderprogram = gl.glCreateProgram();
@@ -382,18 +346,21 @@ public class ImageLayer extends AbstractImageLayer {
 
 		IntBuffer intBuffer = IntBuffer.allocate(1);
 		gl.glGetProgramiv(shaderprogram, GL2.GL_LINK_STATUS, intBuffer);
-		if (intBuffer.get(0) != 1) {
+		if (intBuffer.get(0) != 1)
+		{
 			gl.glGetProgramiv(shaderprogram, GL2.GL_INFO_LOG_LENGTH, intBuffer);
 			int size = intBuffer.get(0);
 			System.err.println("Program link error: ");
-			if (size > 0) {
+			if (size > 0)
+			{
 				ByteBuffer byteBuffer = ByteBuffer.allocate(size);
-				gl.glGetProgramInfoLog(shaderprogram, size, intBuffer,
-						byteBuffer);
-				for (byte b : byteBuffer.array()) {
+				gl.glGetProgramInfoLog(shaderprogram, size, intBuffer, byteBuffer);
+				for (byte b : byteBuffer.array())
 					System.err.print((char) b);
-				}
-			} else {
+
+			}
+			else
+			{
 				System.out.println("Unknown");
 			}
 			throw new RuntimeException("Could not compile shader.");
@@ -402,110 +369,70 @@ public class ImageLayer extends AbstractImageLayer {
 	}
 
 	@Override
-	public String getFullName() {
-		try {
-			return getMetaData(TimeLine.SINGLETON.getCurrentDateTime())
-					.getFullName();
-		} catch (MetaDataException e) {
-			// TODO Auto-generated catch block
+	public String getFullName()
+	{
+		try
+		{
+			return getMetaData(TimeLine.SINGLETON.getCurrentDateTime()).getFullName();
+		}
+		catch (MetaDataException e)
+		{
 			e.printStackTrace();
 		}
 		return null;
 	}
 
 	@Override
-	void remove() {
+	void remove()
+	{
 		ultimateLayer.cancelDownload();
 	}
 
 	@Override
-	public void retryBadRequest() {
-		AbstractRequest[] requests = new AbstractRequest[badRequests.size()];
-		badRequests.toArray(requests);
-		badRequests.clear();
-		ultimateLayer.retryBadRequest(requests);
+	public void retryFailedRequests()
+	{
+		AbstractRequest[] requests;
+		synchronized(failedRequests)
+		{
+			requests = new AbstractRequest[failedRequests.size()];
+			failedRequests.toArray(requests);
+			failedRequests.clear();
+		}
+		ultimateLayer.retryFailedRequests(requests);
 		MainFrame.LAYER_PANEL.repaintPanel();
 	}
 
 	@Override
-	public LocalDateTime getFirstLocalDateTime() {
+	public LocalDateTime getFirstLocalDateTime()
+	{
 		return start;
 	}
 
 	@Override
-	public LocalDateTime getLastLocalDateTime() {
+	public LocalDateTime getLastLocalDateTime()
+	{
 		return end;
 	}
 
 	@Override
-	public void updateImageData(final CountDownLatch latchCounter,
-			final MainPanel mainPanel, final Dimension size,
-			final boolean highResolution) {
-		imageDecodingThread.updateImageData(latchCounter, mainPanel, size,
-				highResolution);
-	}
-
-	private class ImageDecodingThread implements Runnable {
-
-		private boolean runing = true;
-		private CountDownLatch latchCounter = null;
-		private MainPanel mainPanel = null;
-		private Dimension size;
-		private boolean highResolution;
-
-		@Override
-		public void run() {
-			while (runing) {
-				if (latchCounter != null) {
-					LocalDateTime currentDateTime = TimeLine.SINGLETON
-							.getCurrentDateTime();
-					ultimateLayer.getMetaData(currentDateTime);
-					MetaData metaData = ultimateLayer
-							.getMetaData(currentDateTime);
-					if (metaData != null) {
-						if (firstRun) {
-							firstRun = false;
-							if (lut == LUT_ENTRY.GRAY) {
-								lut = metaData.getDefaultLUT();
-								MainFrame.FILTER_PANEL
-										.updateLayer(ImageLayer.this);
-							}
-						}
-						ImageRegion imageRegion;
-						try {
-							imageRegion = layerRayTrace.getCurrentRegion(
-									mainPanel, metaData, size);
-							imageData = ultimateLayer.getImageData(
-									currentDateTime, imageRegion, metaData,
-									highResolution);
-						} catch (MetaDataException e) {
-							latchCounter.countDown();
-							e.printStackTrace();
-						}
-
-					}
-
-					latchCounter.countDown();
-					latchCounter = null;
-				} else {
-					try {
-						Thread.sleep(20);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
+	public Future<ByteBuffer> prepareImageData(final MainPanel mainPanel, final Dimension size) throws MetaDataException
+	{
+		final LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
+		final MetaData metaData = ultimateLayer.getMetaData(currentDateTime);
+		if (metaData == null)
+			throw new MetaDataException();
+		
+		if(lut==null)
+			lut=metaData.getDefaultLUT();
+		
+		return exDecoder.submit(new Callable<ByteBuffer>()
+		{
+			@Override
+			public ByteBuffer call() throws Exception
+			{
+				ImageRegion imageRegion = layerRayTrace.getCurrentRegion(mainPanel, metaData, size);
+				return ultimateLayer.getImageData(currentDateTime, imageRegion, metaData);
 			}
-
-		}
-
-		private void updateImageData(final CountDownLatch latchCounter,
-				final MainPanel mainPanel, final Dimension size,
-				final boolean highResolution) {
-			this.mainPanel = mainPanel;
-			this.size = size;
-			this.highResolution = highResolution;
-			this.latchCounter = latchCounter;
-		}
+		});
 	}
 }

@@ -9,7 +9,7 @@ import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKSettings;
-import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
+import org.helioviewer.jhv.plugins.plugin.Plugins;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -75,7 +75,7 @@ public class HEKRequestStructureThread extends HEKRequest implements Runnable {
 
                 String uri = "http://www.lmsal.com/hek/her?cosec=2&cmd=search&type=column&event_type=**&event_starttime=" + startDate + "&event_endtime=" + endDate + "&event_coordsys=helioprojective&x1=-1200&x2=1200&y1=-1200&y2=1200&return=" + fields + "&temporalmode=overlap&result_limit=" + HEKSettings.REQUEST_STRUCTURE_PAGESIZE + "&page=" + page;
 
-                HTTPRequest httpRequest = UltimatePluginInterface.generateAndStartHTPPRequest(uri, PRIORITY.MEDIUM);
+                HTTPRequest httpRequest = Plugins.generateAndStartHTPPRequest(uri, PRIORITY.MEDIUM);
 
                 while (!httpRequest.isFinished()) {
                 	try {

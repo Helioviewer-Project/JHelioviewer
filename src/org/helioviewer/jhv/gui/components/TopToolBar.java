@@ -42,15 +42,12 @@ import org.helioviewer.jhv.opengl.camera.actions.ZoomOutAction;
  * @author Markus Langenberg
  * @author Andre Dau
  */
-public class TopToolBar extends JToolBar implements MouseListener {
-
+public class TopToolBar extends JToolBar implements MouseListener
+{
 	private static final long serialVersionUID = 1L;
 
-	private enum SelectionMode {
-		ZOOMBOX, ROTATE
-	};
-
-	private enum DisplayMode {
+	private enum DisplayMode
+	{
 		ICONANDTEXT, ICONONLY, TEXTONLY
 	};
 

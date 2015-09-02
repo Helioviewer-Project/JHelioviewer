@@ -13,7 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
 import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.gui.interfaces.ShowableDialog;
+import org.helioviewer.jhv.gui.ShowableDialog;
 
 /**
  * Dialog used to display all supported characters for a date pattern. It also

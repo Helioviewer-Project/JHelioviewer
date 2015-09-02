@@ -10,7 +10,7 @@ import java.util.concurrent.ThreadFactory;
 import org.helioviewer.jhv.plugins.pfssplugin.data.PfssDecompressed;
 import org.helioviewer.jhv.plugins.pfssplugin.data.managers.FrameManager;
 import org.helioviewer.jhv.plugins.plugin.AbstractPlugin;
-import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
+import org.helioviewer.jhv.plugins.plugin.Plugins;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -49,7 +49,7 @@ public class PfssPlugin extends AbstractPlugin {
 	@Override
 	public void render(GL2 gl) {
 		if (isVisible) {
-			LocalDateTime localDateTime = UltimatePluginInterface.SINGLETON
+			LocalDateTime localDateTime = Plugins.SINGLETON
 					.getCurrentDateTime();
 			PfssDecompressed frame = manager.getFrame(gl, localDateTime);
 			if (frame != null)
@@ -108,7 +108,7 @@ public class PfssPlugin extends AbstractPlugin {
 				JSONObject jsonPfss = jsonObject.getJSONObject(JSON_NAME);
 				boolean visible = jsonPfss.getBoolean(JSON_VISIBLE);
 				boolean open = jsonPfss.getBoolean(JSON_OPEN);
-				UltimatePluginInterface.expandPanel(pfssPluginPanel, open);
+				Plugins.expandPanel(pfssPluginPanel, open);
 				pfssPluginPanel.setVisibleBtn(visible);
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
@@ -133,12 +133,12 @@ public class PfssPlugin extends AbstractPlugin {
 
 	@Override
 	public void load() {
-		UltimatePluginInterface.addPluginLayer(this, PLUGIN_NAME);
+		Plugins.addPluginLayer(this, PLUGIN_NAME);
 	}
 
 	@Override
 	public void remove() {
-		UltimatePluginInterface.removePanelOnLeftControllPanel(pfssPluginPanel);
+		Plugins.removePanelOnLeftControllPanel(pfssPluginPanel);
 	}
 
 	@Override
@@ -158,6 +158,6 @@ public class PfssPlugin extends AbstractPlugin {
 		badRequests.clear();
 		if (manager.getStartDate() == null || manager.getEndDate() == null) pfssPluginPanel.reload();
 		else manager.retryBadReqeuest();
-		UltimatePluginInterface.repaintLayerPanel();
+		Plugins.repaintLayerPanel();
 	}
 }

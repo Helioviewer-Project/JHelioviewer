@@ -23,7 +23,7 @@ import org.helioviewer.jhv.plugins.hekplugin.cache.HEKPath;
 import org.helioviewer.jhv.plugins.hekplugin.cache.gui.HEKEventInformationDialog;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
 import org.helioviewer.jhv.plugins.plugin.AbstractPlugin;
-import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
+import org.helioviewer.jhv.plugins.plugin.Plugins;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -72,7 +72,7 @@ public class HEKPlugin extends AbstractPlugin {
 	@Override
 	public void render(GL2 gl) {
 		if (visible) {
-			LocalDateTime in = UltimatePluginInterface.SINGLETON
+			LocalDateTime in = Plugins.SINGLETON
 					.getCurrentDateTime();
 			if (in != null) {
 				Date currentDate = Date.from(in.atZone(ZoneId.systemDefault())
@@ -149,8 +149,8 @@ public class HEKPlugin extends AbstractPlugin {
 			float imageScaleFactor = HEKIcon.getImageScaleFactorHeight();
 
 			double scale = large ? 0.0004 : 0.0002;
-			double width2 = UltimatePluginInterface.getViewPortSize() * scale;
-			double height2 = UltimatePluginInterface.getViewPortSize() * scale;
+			double width2 = Plugins.getViewPortSize() * scale;
+			double height2 = Plugins.getViewPortSize() * scale;
 
 			Vector3d sourceDir = new Vector3d(0, 0, -1);
 			Vector3d targetDir = new Vector3d(x, y, z);
@@ -158,8 +158,7 @@ public class HEKPlugin extends AbstractPlugin {
 			double angle = Math.acos(sourceDir.dot(targetDir)
 					/ (sourceDir.length() * targetDir.length()));
 			Vector3d axis = sourceDir.cross(targetDir);
-			Matrix4d r = Matrix4d.rotation(angle, axis.normalize());
-			r.setTranslation(x, y, z);
+			Matrix4d r = Matrix4d.createRotationMatrix(angle, axis.normalize()).translatedAbsolute(x, y, z);
 
 			Vector3d p0 = new Vector3d(-width2, -height2, 0);
 			Vector3d p1 = new Vector3d(-width2, height2, 0);
@@ -267,32 +266,32 @@ public class HEKPlugin extends AbstractPlugin {
 			hekPopUp.setLocation(windowPosition);
 			hekPopUp.setVisible(true);
 			hekPopUp.pack();
-			UltimatePluginInterface.setCursor(CURSOR_HELP);
+			Plugins.setCursor(CURSOR_HELP);
 
-			UltimatePluginInterface.repaintMainPanel();
+			Plugins.repaintMainPanel();
 		}
 	}
 
 	private Point calcWindowPosition(Point p) {
 		int yCoord = 0;
 		boolean yCoordInMiddle = false;
-		if (p.y + hekPopUp.getSize().height + Y_OFFSET < UltimatePluginInterface
+		if (p.y + hekPopUp.getSize().height + Y_OFFSET < Plugins
 				.mainPanelGetSize().height) {
 			yCoord = p.y
-					+ UltimatePluginInterface.mainPanelGetLocationOnScreen().y
+					+ Plugins.mainPanelGetLocationOnScreen().y
 					+ Y_OFFSET;
 		} else {
 			yCoord = p.y
-					+ UltimatePluginInterface.mainPanelGetLocationOnScreen().y
+					+ Plugins.mainPanelGetLocationOnScreen().y
 					- hekPopUp.getSize().height - Y_OFFSET;
-			if (yCoord < UltimatePluginInterface.mainPanelGetLocationOnScreen().y) {
-				yCoord = UltimatePluginInterface.mainPanelGetLocationOnScreen().y
-						+ UltimatePluginInterface.mainPanelGetSize().height
+			if (yCoord < Plugins.mainPanelGetLocationOnScreen().y) {
+				yCoord = Plugins.mainPanelGetLocationOnScreen().y
+						+ Plugins.mainPanelGetSize().height
 						- hekPopUp.getSize().height;
 
-				if (yCoord < UltimatePluginInterface
+				if (yCoord < Plugins
 						.mainPanelGetLocationOnScreen().y) {
-					yCoord = UltimatePluginInterface
+					yCoord = Plugins
 							.mainPanelGetLocationOnScreen().y;
 				}
 
@@ -301,19 +300,19 @@ public class HEKPlugin extends AbstractPlugin {
 		}
 
 		int xCoord = 0;
-		if (p.x + hekPopUp.getSize().width + X_OFFSET < UltimatePluginInterface
+		if (p.x + hekPopUp.getSize().width + X_OFFSET < Plugins
 				.mainPanelGetSize().width) {
 			xCoord = p.x
-					+ UltimatePluginInterface.mainPanelGetLocationOnScreen().x
+					+ Plugins.mainPanelGetLocationOnScreen().x
 					+ X_OFFSET;
 		} else {
 			xCoord = p.x
-					+ UltimatePluginInterface.mainPanelGetLocationOnScreen().x
+					+ Plugins.mainPanelGetLocationOnScreen().x
 					- hekPopUp.getSize().width - X_OFFSET;
-			if (xCoord < UltimatePluginInterface.mainPanelGetLocationOnScreen().x
+			if (xCoord < Plugins.mainPanelGetLocationOnScreen().x
 					&& !yCoordInMiddle) {
-				xCoord = UltimatePluginInterface.mainPanelGetLocationOnScreen().x
-						+ UltimatePluginInterface.mainPanelGetSize().width
+				xCoord = Plugins.mainPanelGetLocationOnScreen().x
+						+ Plugins.mainPanelGetSize().width
 						- hekPopUp.getSize().width;
 			}
 		}
@@ -324,8 +323,8 @@ public class HEKPlugin extends AbstractPlugin {
 
 	public void dateTimesChanged(int framecount) {
 		LocalDateTime startDateTime;
-		startDateTime = UltimatePluginInterface.getStartDateTime();
-		LocalDateTime endDateTime = UltimatePluginInterface.getEndDateTime();
+		startDateTime = Plugins.getStartDateTime();
+		LocalDateTime endDateTime = Plugins.getEndDateTime();
 		if (startDateTime != null && endDateTime != null) {
 			Date start = Date.from(startDateTime.atZone(ZoneId.systemDefault())
 					.toInstant());
@@ -340,7 +339,7 @@ public class HEKPlugin extends AbstractPlugin {
 	public void mouseMoved(MouseEvent e, Vector3d point) {
 		HEKEvent lastHEKEvent = mouseOverHEKEvent;
 
-		LocalDateTime in = UltimatePluginInterface.SINGLETON
+		LocalDateTime in = Plugins.SINGLETON
 				.getCurrentDateTime();
 		if (in != null) {
 			Date currentDate = Date.from(in.atZone(ZoneId.systemDefault())
@@ -369,10 +368,10 @@ public class HEKPlugin extends AbstractPlugin {
 				}
 
 				if (lastHEKEvent == null && mouseOverHEKEvent != null) {
-					lastCursor = UltimatePluginInterface.getCursor();
-					UltimatePluginInterface.setCursor(CURSOR_HELP);
+					lastCursor = Plugins.getCursor();
+					Plugins.setCursor(CURSOR_HELP);
 				} else if (lastHEKEvent != null && mouseOverHEKEvent == null) {
-					UltimatePluginInterface.setCursor(lastCursor);
+					Plugins.setCursor(lastCursor);
 				}
 			}
 		}
@@ -411,7 +410,7 @@ public class HEKPlugin extends AbstractPlugin {
 				JSONObject jsonHek = jsonObject.getJSONObject(JSON_NAME);
 				boolean visible = jsonHek.getBoolean(JSON_VISIBLE);
 				if (visible)
-					UltimatePluginInterface
+					Plugins
 							.expandPanel(hekPluginPanel, visible);
 				setVisible(visible);
 			} catch (JSONException e) {
@@ -443,14 +442,14 @@ public class HEKPlugin extends AbstractPlugin {
 
 	@Override
 	public void load() {
-		UltimatePluginInterface.addPanelToLeftControllPanel(NAME,
+		Plugins.addPanelToLeftControllPanel(NAME,
 				hekPluginPanel, false);
-		UltimatePluginInterface.addPluginLayer(this, PLUGIN_NAME);
+		Plugins.addPluginLayer(this, PLUGIN_NAME);
 	}
 
 	@Override
 	public void remove() {
-		UltimatePluginInterface.removePanelOnLeftControllPanel(hekPluginPanel);
+		Plugins.removePanelOnLeftControllPanel(hekPluginPanel);
 	}
 
 	@Override

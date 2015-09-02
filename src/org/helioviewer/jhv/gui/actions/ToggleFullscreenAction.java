@@ -36,7 +36,7 @@ public class ToggleFullscreenAction extends AbstractAction {
      * {@inheritDoc}
      */
     public void actionPerformed(ActionEvent e) {
-    	MainFrame.MAIN_PANEL.toFullscreen();
+    	MainFrame.MAIN_PANEL.switchToFullscreen();
     }
 
 }

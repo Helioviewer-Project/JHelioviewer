@@ -17,7 +17,7 @@ import org.helioviewer.jhv.gui.opengl.MainPanel;
 import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.opengl.camera.animation.CameraZoomAnimation;
-import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
+import org.helioviewer.jhv.viewmodel.TimeLine;
 
 public class ZoomFitAction extends AbstractAction {
 

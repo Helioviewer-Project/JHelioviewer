@@ -151,13 +151,10 @@ public class InstrumentModel {
 				LocalDateTime startDateTime = LocalDateTime.parse(start, reader);
 				filter.start = startDateTime;
 				filter.end = endDateTime;
-				filter.hasDates = true;
 			}
-			filter.layeringOrder = jsonObject
-					.getInt("layeringOrder");
+			//filter.layeringOrder = jsonObject.getInt("layeringOrder");
 			filter.nickname = (String) jsonObject.getString("nickname");
-			filter.sourceId = jsonObject
-					.getInt("sourceId");
+			filter.sourceId = jsonObject.getInt("sourceId");
 		} catch (JSONException e) {
 		}
 	}
@@ -193,10 +190,8 @@ public class InstrumentModel {
 		private LinkedHashMap<String, Filter> filters = new LinkedHashMap<String, InstrumentModel.Filter>();
 		private String name;
 		
-		private Boolean hasDates = false;
 		private LocalDateTime start;
 		private LocalDateTime end;
-		private int layeringOrder;
 		private String nickname;
 		int sourceId;
 

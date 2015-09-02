@@ -66,12 +66,16 @@ public class OpenGLHelper {
 	public static void bindByteBufferToGLTexture(ImageRegion region, final ByteBuffer byteBuffer, final Rectangle imageSize){
 				int width2 = nextPowerOfTwo(imageSize.width);
 				int height2 = nextPowerOfTwo(imageSize.height);
-				if (region.textureHeight != height2 && region.textureWidth != width2){
+				
+				//FIXME: avoid redundant recreation of textures
+				if (region.textureHeight < height2 || region.textureWidth < width2)
+				{
+					System.out.println("Recreating texture "+region+" "+width2+" x "+height2);
 					OpenGLHelper.createTexture(region, width2, height2);
 				}
 
 				OpenGLHelper.updateTexture(region, byteBuffer, imageSize.width, imageSize.height);
-				region.setTextureScaleFactor(width2 / (float)imageSize.width, height2 / (float)imageSize.height);
+				region.setTextureScaleFactor(region.textureWidth / (float)imageSize.width, region.textureHeight / (float)imageSize.height);
 	}
 	
 	public float getScaleFactorWidth(){
@@ -194,26 +198,23 @@ public class OpenGLHelper {
 				GL2.GL_CLAMP);
 	}
 		
-	private static void createTexture(ImageRegion imageRegion, int width, int height){
+	private static void createTexture(ImageRegion imageRegion, int width, int height)
+	{
 		GL2 gl = GLContext.getCurrentGL().getGL2();
-		ByteBuffer b = ByteBuffer.allocate(width * height);
-		b.limit(width * height);
 		gl.glEnable(GL2.GL_TEXTURE_2D);			
 		gl.glBindTexture(GL2.GL_TEXTURE_2D, imageRegion.getTextureID());
-		gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL2.GL_LUMINANCE8, width,
-				height, 0, GL2.GL_LUMINANCE, GL2.GL_UNSIGNED_BYTE, b);
+		
+		ByteBuffer b = ByteBuffer.allocate(width * height);
+		b.limit(width * height);
+		gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL2.GL_LUMINANCE8, width, height, 0, GL2.GL_LUMINANCE, GL2.GL_UNSIGNED_BYTE, b);
 
 		imageRegion.textureWidth = width;
 		imageRegion.textureHeight = height;
 		
-		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER,
-				GL2.GL_LINEAR);
-		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER,
-				GL2.GL_LINEAR);
-		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S,
-				GL2.GL_CLAMP_TO_BORDER);
-		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T,
-				GL2.GL_CLAMP_TO_BORDER);
+		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_LINEAR);
+		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_LINEAR);
+		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP_TO_BORDER);
+		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP_TO_BORDER);
 	}
 	
 	private static void updateTexture(ImageRegion imageRegion, ByteBuffer byteBuffer, int width, int height){

@@ -19,6 +19,6 @@ public class SetCameraTrackAction extends AbstractAction{
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		MainFrame.MAIN_PANEL.toggleTrack();
+		MainFrame.MAIN_PANEL.toggleCameraTracking();
 	}
 }

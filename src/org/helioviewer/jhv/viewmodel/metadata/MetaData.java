@@ -13,7 +13,8 @@ import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
 
-public abstract class MetaData {
+public abstract class MetaData
+{
     private Rectangle2D physicalImageSize;
     
     protected MetaDataContainer metaDataContainer = null;
@@ -188,10 +189,9 @@ public abstract class MetaData {
     	return localDateTime;
     }
     
-	protected void updatePixelParameters() {
-
+	protected void updatePixelParameters()
+	{
         double newSolarPixelRadius = -1.0;
-        double allowedRelativeDifference = 0.01;
         
         double sunX = metaDataContainer.tryGetDouble("CRPIX1");
         double sunY = metaDataContainer.tryGetDouble("CRPIX2");
@@ -203,20 +203,26 @@ public abstract class MetaData {
         double distanceToSun = metaDataContainer.tryGetDouble("DSUN_OBS");
         double radiusSunInArcsec = Math.atan(Constants.SUN_RADIUS / distanceToSun) * MathUtils.RAD_TO_DEG * 3600;
 
-        if (distanceToSun > 0){
+        if (distanceToSun > 0)
+        {
             newSolarPixelRadius = radiusSunInArcsec / arcsecPerPixelX;        	
         }
-        else {
-        	if (detector.equals("C2")){
+        else
+        {
+        	if (detector.equals("C2"))
+        	{
         		newSolarPixelRadius = 80.814221;
         	}
-        	else if (detector.equals("C3")){
+        	else if (detector.equals("C3"))
+        	{
         		newSolarPixelRadius = 17.173021;
         	}
-        	else if (newResolution.getWidth() == 1024){
+        	else if (newResolution.getWidth() == 1024)
+        	{
         		newSolarPixelRadius = 360;
         	}
-        	else if(newResolution.getWidth() == 512){
+        	else if(newResolution.getWidth() == 512)
+        	{
         		newSolarPixelRadius = 180;
         	}
         }
@@ -326,14 +332,17 @@ public abstract class MetaData {
 		defaultRotation = Quaternion3d.calcRotation(new Vector3d(0, 0, Constants.SUN_RADIUS), orientation);
 	}
 	
-	public Quaternion3d getRotation(){
+	public Quaternion3d getRotation()
+	{
 		return this.defaultRotation;
 	}
 	
-	public LUT_ENTRY getDefaultLUT(){
+	public LUT_ENTRY getDefaultLUT()
+	{
 		return defaultLUT;
 	}
 		
+	//FIXME: don't assume that appX == appY
 	public double getArcsecPerPixel(){
 		return arcsecPerPixelX;
 	}

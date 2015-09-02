@@ -10,7 +10,7 @@ import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKSettings;
-import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
+import org.helioviewer.jhv.plugins.plugin.Plugins;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -104,7 +104,7 @@ public class HEKRequestThread extends HEKRequest implements Runnable {
                 System.out.println("Requesting Page " + page + " of HEK Events: " + uri);
 
                 // this might take a while
-                HTTPRequest httpRequest = UltimatePluginInterface.generateAndStartHTPPRequest(uri, PRIORITY.MEDIUM);
+                HTTPRequest httpRequest = Plugins.generateAndStartHTPPRequest(uri, PRIORITY.MEDIUM);
                 // return if the current operation was canceled
 
                 while (!httpRequest.isFinished()) {

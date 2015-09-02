@@ -44,8 +44,8 @@ import org.helioviewer.jhv.gui.dialogs.MetaDataDialog;
 import org.helioviewer.jhv.layers.AbstractLayer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
-import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
-import org.helioviewer.jhv.viewmodel.timeline.TimeLine.TimeLineListener;
+import org.helioviewer.jhv.viewmodel.TimeLine;
+import org.helioviewer.jhv.viewmodel.TimeLine.TimeLineListener;
 
 /**
  * The new LayerPanel, include a JTable for the current added layers
@@ -91,19 +91,9 @@ public class LayerPanel extends JPanel implements LayerListener,
 	private JMenuItem removeLayer;
 	
 	private JButton btnShowInfo;
-	private static final int lblHeight;
-	private static final int btnHeight;
 
-	static{
-		JLabel lblTest = new JLabel("test");
-		JButton btnTest = new JButton();
-		lblHeight = lblTest.getPreferredSize().height;
-		btnHeight = btnTest.getPreferredSize().height;
-	}
-	
-	public LayerPanel() {
-		JLabel size = new JLabel("size");
-		double x = size.getPreferredSize().getHeight();
+	public LayerPanel()
+	{
 		initPopup();
 		initGUI();
 		updateData();
@@ -114,7 +104,8 @@ public class LayerPanel extends JPanel implements LayerListener,
 		TimeLine.SINGLETON.addListener(this);
 	}
 
-	private void initPopup() {
+	private void initPopup()
+	{
 		popupMenu = new JPopupMenu();
 		showMetaView = new JMenuItem("Show metainfo...",
 				IconBank.getIcon(JHVIcon.INFO_NEW, size, size));
@@ -270,7 +261,7 @@ public class LayerPanel extends JPanel implements LayerListener,
 						int n = JOptionPane.showOptionDialog(MainFrame.SINGLETON, "Images could not be downloaded. Server didn't replied. This happened with "+ Layers.getLayer(row).getBadRequestCount() +" other requests as well.", "Images could not be downloaded", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
 						switch (n) {
 						case 0:
-							Layers.getLayer(row).retryBadRequest();
+							Layers.getLayer(row).retryFailedRequests();
 							break;
 						case 1:
 							Layers.removeLayer(row);

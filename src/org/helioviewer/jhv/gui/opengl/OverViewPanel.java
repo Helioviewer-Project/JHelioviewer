@@ -17,47 +17,39 @@ import org.helioviewer.jhv.opengl.camera.CameraViewportPanInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraZoomBoxInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraZoomInteraction;
 import org.helioviewer.jhv.plugins.plugin.AbstractPlugin.RENDER_MODE;
-import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
-import org.helioviewer.jhv.viewmodel.timeline.TimeLine;
+import org.helioviewer.jhv.plugins.plugin.Plugins;
+import org.helioviewer.jhv.viewmodel.TimeLine;
 
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 
-/**
- * The OverViewPanel is used for the current overviewpanel. It extend the
- * MainPanel to used the same renderloop
- * 
- * @author stefanmeier
- *
- */
-public class OverViewPanel extends MainPanel {
-
-	/**
-	 * 
-	 */
+public class OverViewPanel extends MainPanel
+{
 	private static final long serialVersionUID = 2662016428464982455L;
 	private ArrayList<MainPanel> mainViews;
 
-	public OverViewPanel() {
+	public OverViewPanel()
+	{
 		super();
 		mainViews = new ArrayList<MainPanel>();
 
-		this.cameraInteractions = new CameraInteraction[2];
+		cameraInteractions = new CameraInteraction[2];
 	}
 
 	@Override
-	public void setRotationInteraction() {
-		this.cameraInteractions[1] = new CameraRotationInteraction(this,
+	public void activateRotationInteraction()
+	{
+		cameraInteractions[1] = new CameraRotationInteraction(this,
 				mainViews.get(0));
 	}
 
 	@Override
-	public void setPanInteraction() {
+	public void activatePanInteraction() {
 		this.cameraInteractions[1] = new CameraViewportPanInteraction(this,
 				mainViews.get(0));
 	}
 
-	public void setZoomBoxInteraction() {
+	public void activateZoomBoxInteraction() {
 		this.cameraInteractions[1] = new CameraZoomBoxInteraction(this,
 				mainViews.get(0));
 	}
@@ -94,11 +86,10 @@ public class OverViewPanel extends MainPanel {
 	public void display(GLAutoDrawable drawable) {
 		this.zoomToFit();
 		super.display(drawable);
-
 	}
 	
 	@Override
-	protected void nextTime() {
+	protected void advanceFrame() {
 	}
 
 	@Override
@@ -126,31 +117,29 @@ public class OverViewPanel extends MainPanel {
 		gl.glEnable(GL2.GL_DEPTH_TEST);
 		gl.glDepthFunc(GL2.GL_LESS);
 		gl.glDepthMask(false);
-		UltimatePluginInterface.SINGLETON.renderPlugin(gl,
+		Plugins.SINGLETON.renderPlugin(gl,
 				RENDER_MODE.OVERVIEW_PANEL);
 		gl.glDepthMask(false);
 	}
 
 	private void displayRect(GL2 gl, double radius) {
 		gl.glDisable(GL2.GL_DEPTH_TEST);
-		for (MainPanel mainView : mainViews) {
-			double[][] bounds = mainView.getRectBounds();
+		for (MainPanel mainView : mainViews)
+		{
+			double[][] bounds = mainView.getVisibleAreaOutline();
 			gl.glColor4f(0, 1, 0, 1);
 			gl.glDisable(GL2.GL_TEXTURE_2D);
 			gl.glEnable(GL2.GL_BLEND);
 			gl.glEnable(GL2.GL_LINE_SMOOTH);
 			gl.glBegin(GL2.GL_LINE_LOOP);
-			for (double[] bound : bounds) {
+			for (double[] bound : bounds)
 				gl.glVertex3d(bound[0], bound[1], bound[2]);
-			}
 			gl.glEnd();
 
 			gl.glBegin(GL2.GL_LINE_LOOP);
 			for (int i = 0; i < 30; i++) {
-				double x = Math.cos(i / 30.0 * 2 * Math.PI) * radius
-						+ mainView.getTranslation().x;
-				double y = Math.sin(i / 30.0 * 2 * Math.PI) * radius
-						+ mainView.getTranslation().y;
+				double x = Math.cos(i / 30.0 * 2 * Math.PI) * radius + mainView.getTranslation().x;
+				double y = Math.sin(i / 30.0 * 2 * Math.PI) * radius + mainView.getTranslation().y;
 				gl.glVertex2d(x, y);
 			}
 			gl.glEnd();
@@ -160,19 +149,20 @@ public class OverViewPanel extends MainPanel {
 
 	}
 
-	public void addMainView(MainPanel compenentView) {
+	public void addMainView(MainPanel compenentView)
+	{
 		mainViews.add(compenentView);
-		this.cameraInteractions[0] = new CameraZoomInteraction(this,
-				compenentView);
-		this.cameraInteractions[1] = new CameraRotationInteraction(this,
-				compenentView);
+		this.cameraInteractions[0] = new CameraZoomInteraction(this, compenentView);
+		this.cameraInteractions[1] = new CameraRotationInteraction(this, compenentView);
 	}
 
 	@Override
-	protected void calculateTrackRotation() {
+	protected void updateTrackRotation()
+	{
 	}
 
 	@Override
-	protected void calculateBounds() {
+	protected void calculateBounds()
+	{
 	}
 }

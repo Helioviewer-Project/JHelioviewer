@@ -27,7 +27,7 @@ import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.dialogs.calender.DatePicker;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.plugins.plugin.AbstractPlugin;
-import org.helioviewer.jhv.plugins.plugin.UltimatePluginInterface;
+import org.helioviewer.jhv.plugins.plugin.Plugins;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -53,7 +53,6 @@ public class AddLayerPanel extends JDialog {
 	private JComboBox<AbstractPlugin> cmbbxPlugin;
 	//private JTabbedPane tabbedPane;
 	private JPanel layerPanel;
-	private JPanel pluginPanel;
 
 	private enum TIME_STEPS {
 		SEC("sec", 1), MIN("min", 60), HOUR("hour", 3600), DAY("day", 3600 * 24), GET_ALL(
@@ -418,7 +417,7 @@ public class AddLayerPanel extends JDialog {
 			@Override
 			public void componentShown(ComponentEvent e) {
 				cmbbxPlugin.removeAllItems();
-				for (AbstractPlugin plugin : UltimatePluginInterface.SINGLETON
+				for (AbstractPlugin plugin : Plugins.SINGLETON
 						.getInactivePlugins()) {
 					cmbbxPlugin.addItem(plugin);
 				}

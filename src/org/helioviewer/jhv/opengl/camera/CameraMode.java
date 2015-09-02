@@ -15,18 +15,18 @@ public class CameraMode {
         Settings.setProperty("startup.cameramode","3D");
         mode = MODE.MODE_3D;
         MainFrame.TOP_TOOL_BAR.set3DMode();
-        MainFrame.MAIN_PANEL.setRotationInteraction();
+        MainFrame.MAIN_PANEL.activateRotationInteraction();
         //MainFrame.OVERVIEW_PANEL.setRotationInteraction();
-        MainFrame.MAIN_PANEL.repaintMain(20);
+        MainFrame.MAIN_PANEL.repaint();
 	}
 
 	public static void set2DMode(){
         mode = MODE.MODE_2D;
         Settings.setProperty("startup.cameramode", "2D");        
         MainFrame.TOP_TOOL_BAR.set2DMode();
-        MainFrame.MAIN_PANEL.setPanInteraction();
+        MainFrame.MAIN_PANEL.activatePanInteraction();
         //MainFrame.OVERVIEW_PANEL.setPanInteraction();
-        MainFrame.MAIN_PANEL.repaintMain(20);
+        MainFrame.MAIN_PANEL.repaint();
 	}
 	
 	public static int getCameraMode(){
