@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.Settings;
@@ -53,39 +54,41 @@ public class OpenLocalFileAction extends AbstractAction {
 		/**
 		 * Native filechooser with JavaFX
 		 */
-		if (JHVGlobals.USE_JAVA_FX){
-		Platform.runLater(new Runnable() {
-
-			@Override
-			public void run() {
-				FileChooser fileChooser = new FileChooser();
-				fileChooser.setTitle("Open local file");
-				fileChooser.setInitialDirectory(new File(Settings
-						.getProperty("default.local.path")));
-				ExtensionFilter extensionFilter = new ExtensionFilter(
-						"JPEG 2000", "*.jpx", "*.jp2");
-				ExtensionFilter extensionFilter1 = new ExtensionFilter(
-						"All Files", "*.*");
-				fileChooser.getExtensionFilters().addAll(extensionFilter,
-						extensionFilter1);
-				final File selectedFile = fileChooser
-						.showOpenDialog(new Stage());
-				
-				if (selectedFile != null && selectedFile.exists() && selectedFile.isFile()) {
-
-					// remember the current directory for future
-					Settings.setProperty("default.local.path",
-							selectedFile.getParent());
-					Layers.addLayer(selectedFile.toString());
+		if (JHVGlobals.USE_JAVA_FX)
+		{
+			Platform.runLater(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					FileChooser fileChooser = new FileChooser();
+					fileChooser.setTitle("Open local file");
+					fileChooser.setInitialDirectory(new File(Settings.getProperty("default.local.path")));
+					ExtensionFilter extensionFilter = new ExtensionFilter("JPEG 2000", "*.jpx", "*.jp2");
+					ExtensionFilter extensionFilter1 = new ExtensionFilter("All Files", "*.*");
+					fileChooser.getExtensionFilters().addAll(extensionFilter, extensionFilter1);
+					final File selectedFile = fileChooser.showOpenDialog(new Stage());
+					
+					if (selectedFile != null && selectedFile.exists() && selectedFile.isFile())
+					{
+						SwingUtilities.invokeLater(new Runnable()
+						{
+							@Override
+							public void run()
+							{
+								// remember the current directory for future
+								Settings.setProperty("default.local.path", selectedFile.getParent());
+								Layers.addLayer(selectedFile.toString());
+							}
+						});
+					}
 				}
-			}
-
-		});
+	
+			});
 		}
-		else {
-			
-			final JFileChooser fileChooser = JHVGlobals.getJFileChooser(Settings
-					.getProperty("default.local.path"));
+		else
+		{
+			final JFileChooser fileChooser = JHVGlobals.getJFileChooser(Settings.getProperty("default.local.path"));
 			fileChooser.setAcceptAllFileFilterUsed(false);
 			fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 			fileChooser.addChoosableFileFilter(FileFilter.IMPLEMENTED_FILE_FILTER.JP2.getFileFilter());
@@ -96,20 +99,19 @@ public class OpenLocalFileAction extends AbstractAction {
 			fileChooser.setMultiSelectionEnabled(false);
 
 			int retVal = fileChooser.showOpenDialog(MainFrame.SINGLETON);
-		if (retVal == JFileChooser.APPROVE_OPTION) {
-			File selectedFile = fileChooser.getSelectedFile();
-
-			if (selectedFile.exists() && selectedFile.isFile()) {
-
-				// remember the current directory for future
-				Settings.setProperty("default.local.path", fileChooser
-						.getSelectedFile().getParent());
-
-				// ImageViewerGui.getSingletonInstance().getMainImagePanel().setLoading(true);
-
-				// Load image in new thread
-				Layers.addLayer(fileChooser.getSelectedFile().toString());
+			if (retVal == JFileChooser.APPROVE_OPTION)
+			{
+				File selectedFile = fileChooser.getSelectedFile();
+	
+				if (selectedFile.exists() && selectedFile.isFile()) {
+	
+					// remember the current directory for future
+					Settings.setProperty("default.local.path", fileChooser.getSelectedFile().getParent());
+	
+					// Load image in new thread
+					Layers.addLayer(fileChooser.getSelectedFile().toString());
+				}
 			}
-		}}
+		}
 	}
 }

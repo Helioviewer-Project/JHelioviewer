@@ -60,31 +60,35 @@ public class JHelioviewer
 		// Uncaught runtime errors are displayed in a dialog box in addition
 		JHVUncaughtExceptionHandler.setupHandlerForThread();
 
-		try {
+		try
+		{
 			Log.redirectStdOutErr();
-			if (System.getProperty("raygunTag") != null) {
-				if (UpdateScheduleRegistry.checkAndReset()) {
+			if (System.getProperty("raygunTag") != null)
+			{
+				if (UpdateScheduleRegistry.checkAndReset())
+				{
 					// This will return immediately if you call it from the EDT,
 					// otherwise it will block until the installer application
 					// exits
 					ApplicationLauncher.launchApplicationInProcess("366", null,
-							new ApplicationLauncher.Callback() {
-								public void exited(int exitValue) {
-									// TODO add your code here (not invoked on
-									// event dispatch thread)
+							new ApplicationLauncher.Callback()
+							{
+								public void exited(int exitValue)
+								{
+									// add your code here (not invoked on event dispatch thread)
 								}
 
-								public void prepareShutdown() {
-									// TODO add your code here (not invoked on
-									// event dispatch thread)
+								public void prepareShutdown()
+								{
+									// add your code here (not invoked on event dispatch thread)
 								}
 							}, ApplicationLauncher.WindowMode.FRAME, null);
 				}
 			}
 			JHVGlobals.RAYGUN_TAG = System.getProperty("raygunTag");
 
-			if (args.length == 1
-					&& (args[0].equals("-h") || args[0].equals("--help"))) {
+			if (args.length == 1 && (args[0].equals("-h") || args[0].equals("--help")))
+			{
 				System.out.println(CommandLineProcessor.getUsageMessage());
 				return;
 			}
@@ -92,10 +96,13 @@ public class JHelioviewer
 			CommandLineProcessor.setArguments(args);
 
 			// Setup Swing
-			try {
-				UIManager.setLookAndFeel(UIManager
-						.getSystemLookAndFeelClassName());
-			} catch (Exception e2) {
+			try
+			{
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			}
+			catch (Exception e2)
+			{
+				e2.printStackTrace();
 			}
 			ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
 			JPopupMenu.setDefaultLightWeightPopupEnabled(false);
@@ -117,24 +124,19 @@ public class JHelioviewer
 
 			// Information log message
 			String argString = "";
-			for (int i = 0; i < args.length; ++i) {
+			for (int i = 0; i < args.length; ++i)
 				argString += " " + args[i];
-			}
 			
 			GLProfile.initSingleton();
-			GLDrawableFactory factory = GLDrawableFactory.getFactory(GLProfile
-					.getDefault());
+			GLDrawableFactory factory = GLDrawableFactory.getFactory(GLProfile.getDefault());
 			GLProfile profile = GLProfile.get(GLProfile.GL2);
 			profile = GLProfile.getDefault();
 			GLCapabilities capabilities = new GLCapabilities(profile);
 			final boolean createNewDevice = true;
-			final GLAutoDrawable sharedDrawable = factory
-					.createDummyAutoDrawable(null, createNewDevice,
-							capabilities, null);
+			final GLAutoDrawable sharedDrawable = factory.createDummyAutoDrawable(null, createNewDevice, capabilities, null);
 			sharedDrawable.display();
 			if (System.getProperty("jhvVersion") == null)
-				sharedDrawable.setGL(new DebugGL2(sharedDrawable.getGL()
-						.getGL2()));
+				sharedDrawable.setGL(new DebugGL2(sharedDrawable.getGL().getGL2()));
 
 			OpenGLHelper.glContext = sharedDrawable.getContext();
 
@@ -144,8 +146,7 @@ public class JHelioviewer
 			// display the splash screen
 			final SplashScreen splash = SplashScreen.getSingletonInstance();
 
-			int numProgressSteps = 10;
-			splash.setProgressSteps(numProgressSteps);
+			splash.setProgressSteps(4);
 
 			JHVGlobals.initFileChooserAsync();
 
@@ -153,17 +154,11 @@ public class JHelioviewer
 			// The settings must not be applied before the kakadu engine has
 			// been
 			// initialized
-			splash.setProgressText("Loading settings...");
-			splash.nextStep();
-			System.out.println("Load settings");
+			splash.progressTo("Loading settings...");
 			Settings.load();
 
-			// Set the platform system propertiess
-			splash.nextStep();
-
 			/* ----------Setup kakadu ----------- */
-			splash.nextStep();			
-			splash.setProgressText("Initializing Kakadu libraries...");
+			splash.progressTo("Initializing Kakadu libraries...");
 
 			try
 			{
@@ -176,7 +171,7 @@ public class JHelioviewer
 					splash.setVisible(false);
 					JOptionPane.showMessageDialog(null,
 									"JHelioviewer requires a more recent version of GLIBC. Please update your distribution.\n\n"
-											+ _ule.getMessage(),
+									+ _ule.getMessage(),
 									"JHelioviewer", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
@@ -184,99 +179,102 @@ public class JHelioviewer
 				throw _ule;
 			}
 
-			// The following code-block attempts to start the native message
-			// handling
-			splash.nextStep();
-			System.out.println("Setup Kakadu message handlers.");
+			// The following code-block attempts to start the native message handling
+			splash.progressTo("Setup Kakadu message handlers");
             Kdu_global.Kdu_customize_warnings(new Kdu_message_formatter(new JHV_Kdu_message(false), 80));
             Kdu_global.Kdu_customize_errors(new Kdu_message_formatter(new JHV_Kdu_message(true), 80));
 
-			// force initialization of UltimatePluginInterface
-			Plugins.SINGLETON.getClass();
-
-			splash.setProgressText("Showing main window...");
-			splash.nextStep();
-			
 			// Create main view chain and display main window
-			System.out.println("Start main window");
+            splash.progressTo("Start Swing");
 			SwingUtilities.invokeLater(new Runnable()
 			{
 				@Override
 				public void run()
 				{
+					splash.progressTo("Initialize plugins");
+					
+					// force initialization of UltimatePluginInterface
+					Plugins.SINGLETON.getClass();
+					
+					
+					splash.progressTo("Open main window");
+
 					MainFrame.SINGLETON.setVisible(true);
 					splash.dispose();
 					UILatencyWatchdog.startWatchdog();
 				}
 			});
-		} catch (Throwable _t) {
-			JHVUncaughtExceptionHandler.getSingletonInstance()
-					.uncaughtException(Thread.currentThread(), _t);
+		}
+		catch (Throwable _t)
+		{
+			JHVUncaughtExceptionHandler.getSingletonInstance().uncaughtException(Thread.currentThread(), _t);
 		}
 	}
 
-	private static void loadLibraries() {
-		try {
+	private static void loadLibraries()
+	{
+		try
+		{
 			Path tmpLibDir = Files.createTempDirectory("jhv-libs");
 			tmpLibDir.toFile().deleteOnExit();
 
-			if (JHVGlobals.isWindows()) {
+			if (JHVGlobals.isWindows())
+			{
 				System.loadLibrary("msvcr120");
 				System.loadLibrary("kdu_v75R");
 				System.loadLibrary("kdu_a75R");
 			}
 
 			System.loadLibrary("kdu_jni");
-		} catch (IOException e) {
+		}
+		catch (IOException e)
+		{
 			e.printStackTrace();
 		}
 	}
 
-	private static void setupOSXApplicationListener() {
+	private static void setupOSXApplicationListener()
+	{
 		final AboutDialog aboutDialog = new AboutDialog();
-		try {
-			Class<?> applicationClass = Class
-					.forName("com.apple.eawt.Application");
+		try
+		{
+			Class<?> applicationClass = Class.forName("com.apple.eawt.Application");
 			Object application = applicationClass.newInstance();
-			Class<?> applicationListener = Class
-					.forName("com.apple.eawt.ApplicationListener");
+			Class<?> applicationListener = Class.forName("com.apple.eawt.ApplicationListener");
 			Object listenerProxy = Proxy.newProxyInstance(
 					applicationListener.getClassLoader(),
 					new Class[] { applicationListener },
-					new InvocationHandler() {
-
+					new InvocationHandler()
+					{
 						@Override
-						public Object invoke(Object proxy, Method method,
-								Object[] args) throws Throwable {
-							if ("handleAbout".equals(method.getName())) {
+						public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
+						{
+							if ("handleAbout".equals(method.getName()))
+							{
 								aboutDialog.showDialog();
 								setHandled(args[0], Boolean.TRUE);
 							}
-							else if ("handleQuit".equals(method.getName())){
+							else if ("handleQuit".equals(method.getName()))
+							{
 								System.exit(0);
 							}
-							// TODO Auto-generated method stub
+							
 							return null;
 						}
 
-						private void setHandled(Object event, Boolean val)
-								throws NoSuchMethodException,
-								IllegalAccessException,
-								InvocationTargetException {
-							Method handleMethod = event.getClass()
-									.getMethod("setHandled",
-											new Class[] { boolean.class });
+						private void setHandled(Object event, Boolean val) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException
+						{
+							Method handleMethod = event.getClass().getMethod("setHandled", new Class[] { boolean.class });
 							handleMethod.invoke(event, new Object[] { val });
 						}
 					});
-			Method registerListenerMethod = applicationClass.getMethod(
-					"addApplicationListener",
-					new Class[] { applicationListener });
-			registerListenerMethod.invoke(application,
-					new Object[] { listenerProxy });
-
-		} catch (Exception e) {
-			System.err.println("Failed to load native menuitems of Mac OSX");
+			
+			Method registerListenerMethod = applicationClass.getMethod("addApplicationListener", new Class[] { applicationListener });
+			registerListenerMethod.invoke(application, new Object[] { listenerProxy });
+		}
+		catch (Exception e)
+		{
+			System.err.println("Failed to create native menuitems for Mac OSX");
 		}
 	}
 }

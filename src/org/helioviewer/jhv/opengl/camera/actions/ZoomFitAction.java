@@ -55,7 +55,7 @@ public class ZoomFitAction extends AbstractAction {
 							distance, 500));
 				}
 			} catch (MetaDataException e1) {
-				// TODO Auto-generated catch block
+				
 				e1.printStackTrace();
 			}
 		} 

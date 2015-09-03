@@ -207,7 +207,7 @@ void main(void)
         vec3 posOri = rayRot.origin + tPlane*rayRot.direction;
         vec3 posRot = (vec4(posOri, 0) * (layerInv)).xyz;
         
-        vec2 texPos = (posRot.xy/physicalImageWidth + 0.5) *vec2(1.,1.) + sunOffset;
+        vec2 texPos = (posRot.xy/physicalImageWidth + 0.5) + sunOffset;
         if ((texPos.x > 1.0 || texPos.x < 0.0 || texPos.y > 1.0 || texPos.y < 0.0) && tSphere < 0.) {
             discard;
         }

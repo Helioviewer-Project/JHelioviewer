@@ -22,14 +22,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import javax.swing.JFrame;
 import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
-import javax.tools.Tool;
 
 import org.helioviewer.jhv.JHVException.MetaDataException;
 import org.helioviewer.jhv.JHVGlobals;
@@ -53,8 +51,8 @@ import org.helioviewer.jhv.opengl.LoadingScreen;
 import org.helioviewer.jhv.opengl.NoImageScreen;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.opengl.RayTrace;
-import org.helioviewer.jhv.opengl.TextureCache;
 import org.helioviewer.jhv.opengl.RayTrace.Ray;
+import org.helioviewer.jhv.opengl.TextureCache;
 import org.helioviewer.jhv.opengl.camera.Camera;
 import org.helioviewer.jhv.opengl.camera.CameraInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraMode;
@@ -105,7 +103,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 
 	private ArrayList<StatusLabelMouseListener> statusLabelsMouseListeners;
 	private ArrayList<StatusLabelCameraListener> statusLabelCameraListeners;
-	private CopyOnWriteArrayList<CameraAnimation> cameraAnimations;
+	private ArrayList<CameraAnimation> cameraAnimations;
 
 	protected CameraInteraction[] cameraInteractions;
 
@@ -128,7 +126,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 
 	public MainPanel()
 	{
-		this.cameraAnimations = new CopyOnWriteArrayList<CameraAnimation>();
+		this.cameraAnimations = new ArrayList<CameraAnimation>();
 		this.synchronizedViews = new ArrayList<MainPanel>();
 		statusLabelsMouseListeners = new ArrayList<StatusLabelMouseListener>();
 		statusLabelCameraListeners = new ArrayList<StatusLabelCameraListener>();
@@ -283,8 +281,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 			}
 			
 			//make sure texturePool is initialized
-			//FIXME: should not be necessary. ideally TP interaction should all happen from
-			//gl thread
+			//FIXME: should not be necessary. ideally TP interaction should all happen from gl thread
 			TextureCache.init();
 
 			LinkedHashMap<AbstractLayer, Future<ByteBuffer>> layers=new LinkedHashMap<AbstractLayer, Future<ByteBuffer>>();
@@ -352,8 +349,9 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 			double yScale = aspect < 1 ? aspect : 1;
 			gl.glScaled(xScale, yScale, 1);
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
-			boolean loading = UltimateDownloadManager.checkLoading();
-			if (loading) {
+			boolean loading = UltimateDownloadManager.areDownloadsActive();
+			if (loading)
+			{
 				int xOffset = (int) (getSurfaceWidth() * 0.85);
 				int width = (int) (getSurfaceWidth() * 0.15);
 				int yOffset = (int) (getSurfaceHeight() * 0.85);
@@ -375,7 +373,8 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 			cameraAnimations.get(0).animate(this);
 		
 		for (MainPanel compenentView : synchronizedViews)
-		compenentView.repaint();
+			compenentView.repaint();
+		
 		RepaintManager.currentManager(MainFrame.SINGLETON).paintDirtyRegions();
 		
 		if (TimeLine.SINGLETON.isPlaying())
@@ -552,7 +551,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 
 	@Override
 	public void dispose(GLAutoDrawable arg0) {
-		// TODO Auto-generated method stub
+		
 
 	}
 
@@ -674,13 +673,8 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		{
 			descriptions = new ArrayList<String>();
 			for (AbstractLayer layer : Layers.getLayers())
-			{
 				if (layer.isVisible())
-				{
-					descriptions.add(layer.getFullName() + " - "
-									+ layer.getTime().format(JHVGlobals.DATE_TIME_FORMATTER));
-				}
-			}
+					descriptions.add(layer.getFullName() + " - " + layer.getTime().format(JHVGlobals.DATE_TIME_FORMATTER));
 		}
 		
 		int tileWidth = imageWidth < DEFAULT_TILE_WIDTH ? imageWidth : DEFAULT_TILE_WIDTH;

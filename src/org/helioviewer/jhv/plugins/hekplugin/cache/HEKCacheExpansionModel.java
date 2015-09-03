@@ -16,7 +16,7 @@ public class HEKCacheExpansionModel {
 
     public List<HEKPath> getExpandedPaths(boolean type) {
 
-        // TODO Malte Nuhn - Implement the CacheModelLock
+        // td Malte Nuhn - Implement the CacheModelLock
 
     	List<HEKPath> result = new ArrayList<HEKPath>();
 
@@ -32,7 +32,7 @@ public class HEKCacheExpansionModel {
 
     public void setExpandedState(HEKPath p, boolean b, boolean overwrite) {
 
-        // TODO Malte Nuhn - Implement the CacheModelLock
+        // td Malte Nuhn - Implement the CacheModelLock
         if (!expansionState.containsKey(p) || overwrite) {
             expansionState.put(p, b);
         }
@@ -41,7 +41,7 @@ public class HEKCacheExpansionModel {
 
     public boolean getExpansionState(HEKPath p) {
 
-        // TODO Malte Nuhn - Implement the CacheModelLock
+        // td Malte Nuhn - Implement the CacheModelLock
 
         if (!expansionState.containsKey(p)) {
             return false;

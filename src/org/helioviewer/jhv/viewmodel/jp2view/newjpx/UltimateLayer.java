@@ -14,8 +14,8 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import kdu_jni.KduException;
 
 import org.helioviewer.jhv.base.ImageRegion;
-import org.helioviewer.jhv.base.downloadmanager.AbstractRequest;
-import org.helioviewer.jhv.base.downloadmanager.AbstractRequest.PRIORITY;
+import org.helioviewer.jhv.base.downloadmanager.AbstractDownloadRequest;
+import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.base.downloadmanager.JPIPDownloadRequest;
 import org.helioviewer.jhv.base.downloadmanager.JPIPRequest;
@@ -44,15 +44,15 @@ public class UltimateLayer
 	private ConcurrentSkipListSet<LocalDateTime> localDateTimes = new ConcurrentSkipListSet<LocalDateTime>();
 
 	private ImageRegion imageRegion;
-	private Thread jpipURLLoader;
+	private Thread jpipLoader;
 	private boolean localFile = false;
 	private ImageLayer imageLayer;
 	private int id;
 	
 	private CacheableImageData cacheableImageData;
 
-	private ArrayList<AbstractRequest> requests = new ArrayList<AbstractRequest>();
-	private ArrayList<AbstractRequest> failedRequests = new ArrayList<AbstractRequest>();
+	private ArrayList<AbstractDownloadRequest> requests = new ArrayList<AbstractDownloadRequest>();
+	private ArrayList<AbstractDownloadRequest> failedRequests = new ArrayList<AbstractDownloadRequest>();
 
 	ThreadLocal<KakaduRender> kakaduRenders = new ThreadLocal<KakaduRender>()
 			{
@@ -96,12 +96,12 @@ public class UltimateLayer
 		}
 		catch (KduException e)
 		{
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		catch (JHV_KduException e)
 		{
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		this.timeArrayChanged();
@@ -109,7 +109,7 @@ public class UltimateLayer
 	
 	public void setTimeRange(final LocalDateTime start, final LocalDateTime end, final int cadence)
 	{
-		jpipURLLoader = new Thread(new Runnable()
+		jpipLoader = new Thread(new Runnable()
 		{
 			private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 			private ArrayList<HTTPRequest> httpRequests = new ArrayList<HTTPRequest>();
@@ -129,7 +129,7 @@ public class UltimateLayer
 							+ tmp.format(formatter) + "&sourceId=" + sourceID
 							+ "&jpip=true&verbose=true&cadence=" + cadence;
 					HTTPRequest httpRequest = new HTTPRequest(URL + request,
-							PRIORITY.HIGH);
+							DownloadPriority.HIGH);
 					requests.add(httpRequest);
 					UltimateDownloadManager.addRequest(httpRequest);
 					httpRequests.add(httpRequest);
@@ -141,7 +141,7 @@ public class UltimateLayer
 					CacheableImageData cacheableImageData = new CacheableImageData(
 							id);
 					JPIPDownloadRequest jpipDownloadRequest = new JPIPDownloadRequest(
-							URL + request, PRIORITY.LOW, cacheableImageData,
+							URL + request, DownloadPriority.LOW, cacheableImageData,
 							requests, httpRequest);
 					jpipDownloadRequests.put(httpRequest, jpipDownloadRequest);
 					downloadRequests.add(jpipDownloadRequest);
@@ -195,7 +195,7 @@ public class UltimateLayer
 								addFramedates(localDateTimes);
 
 								JPIPRequest jpipRequestLow = new JPIPRequest(
-										jpipURI, PRIORITY.URGENT, 0, frames
+										jpipURI, DownloadPriority.URGENT, 0, frames
 												.length(), new Rectangle(256,
 												256), cacheableImageData);
 
@@ -205,7 +205,7 @@ public class UltimateLayer
 										.addRequest(jpipRequestLow);
 
 							} catch (JSONException e1) {
-								// TODO Auto-generated catch block
+								
 								e1.printStackTrace();
 							} catch (IOException e) {
 								failedRequests.add(httpRequest);
@@ -219,7 +219,8 @@ public class UltimateLayer
 				finished = false;
 				while (!finished) {
 					finished = true;
-					for (AbstractRequest request : requests) {
+					//FIXME: concurrent modification exception
+					for (AbstractDownloadRequest request : requests) {
 						if (request != null) {
 							finished &= request.isFinished();
 						}
@@ -227,23 +228,27 @@ public class UltimateLayer
 					try {
 						Thread.sleep(20);
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
+						
 						e.printStackTrace();
 					}
 				}
 
 				finished = false;
 				while (!finished) {
-					AbstractRequest[] requests = new AbstractRequest[UltimateLayer.this.requests
-							.size()];
+					AbstractDownloadRequest[] requests = new AbstractDownloadRequest[UltimateLayer.this.requests.size()];
 					UltimateLayer.this.requests.toArray(requests);
-					for (AbstractRequest request : requests) {
+					for (AbstractDownloadRequest request : requests)
+					{
 						if (Thread.interrupted())
 							return;
-						if (request.isFinished()) {
-							try {
+						if (request.isFinished())
+						{
+							try
+							{
 								request.checkException();
-							} catch (IOException e) {
+							}
+							catch (IOException e)
+							{
 								failedRequests.add(request);
 							}
 							UltimateLayer.this.requests.remove(request);
@@ -252,12 +257,12 @@ public class UltimateLayer
 					finished = UltimateLayer.this.requests.isEmpty();
 				}
 				downloadRequests.clear();
-				imageLayer.addBadRequests(failedRequests);
+				imageLayer.addFailedRequests(failedRequests);
 			}
 		}, "JPIP_URI_LOADER");
 
-		jpipURLLoader.setDaemon(true);
-		jpipURLLoader.start();
+		jpipLoader.setDaemon(true);
+		jpipLoader.start();
 	}
 
 	private void addFramedates(LocalDateTime[] localDateTimes)
@@ -297,40 +302,42 @@ public class UltimateLayer
 		TimeLine.SINGLETON.updateLocalDateTimes(this.localDateTimes);
 	}
 
-	public void cancelDownload()
+	public void cancelAllDownloadsForThisLayer()
 	{
-		if (jpipURLLoader != null && jpipURLLoader.isAlive())
-			jpipURLLoader.interrupt();
-		for (AbstractRequest request : requests) {
+		if (jpipLoader != null && jpipLoader.isAlive())
+			jpipLoader.interrupt();
+		
+		for (AbstractDownloadRequest request : requests)
 			UltimateDownloadManager.remove(request);
-		}
+		
 		requests.clear();
 	}
 
-	public String getURL() {
+	public String getURL()
+	{
 		if (localFile)
 			return null;
-		DateTimeFormatter formatter = DateTimeFormatter
-				.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 		LocalDateTime start = this.localDateTimes.first();
 		LocalDateTime end = this.localDateTimes.last();
 		int cadence = 0;
 		LocalDateTime last = null;
-		for (LocalDateTime localDateTime : this.localDateTimes) {
-			if (last != null) {
+		for (LocalDateTime localDateTime : this.localDateTimes)
+		{
+			if (last != null)
+			{
 				cadence += ChronoUnit.SECONDS.between(last, localDateTime);
 			}
 			last = localDateTime;
 		}
 		cadence /= (this.localDateTimes.size() - 1);
-		String request = "startTime=" + start.format(formatter) + "&endTime="
-				+ end.format(formatter) + "&sourceId=" + sourceID + "&cadence="
-				+ cadence;
+		String request = "startTime=" + start.format(formatter) + "&endTime=" + end.format(formatter) + "&sourceId=" + sourceID + "&cadence=" + cadence;
 
 		return URL + request;
 	}
 
-	public boolean isLocalFile() {
+	public boolean isLocalFile()
+	{
 		return localFile;
 	}
 
@@ -350,7 +357,7 @@ public class UltimateLayer
 		return metaData;
 	}
 
-	public void retryFailedRequests(final AbstractRequest[] requests)
+	public void retryFailedRequests(final AbstractDownloadRequest[] requests)
 	{
 		Thread thread = new Thread(new Runnable()
 		{
@@ -359,94 +366,91 @@ public class UltimateLayer
 			private ArrayList<JPIPDownloadRequest> downloadRequests = new ArrayList<JPIPDownloadRequest>();
 
 			@Override
-			public void run() {
+			public void run()
+			{
 				boolean finished = false;
 
-				for (AbstractRequest request : requests) {
+				for (AbstractDownloadRequest request : requests)
+				{
 					request.setRetries(3);
-					;
-					if (request instanceof JPIPDownloadRequest) {
+					
+					//FIXME: type code stinks
+					if (request instanceof JPIPDownloadRequest)
+					{
 						downloadRequests.add((JPIPDownloadRequest) request);
 						UltimateLayer.this.requests.add(request);
-					} else if (request instanceof JPIPRequest) {
+					}
+					else if (request instanceof JPIPRequest)
+					{
 						UltimateLayer.this.requests.add(request);
-					} else {
+					}
+					else
+					{
 						httpRequests.add((HTTPRequest) request);
 						UltimateLayer.this.requests.add(request);
 					}
+					
 					UltimateDownloadManager.addRequest(request);
 				}
 
-				for (HTTPRequest httpRequest : httpRequests) {
-					for (JPIPDownloadRequest downloadRequest : downloadRequests) {
-						if (downloadRequest.getEqualJPIPRequest() == httpRequest) {
-							jpipDownloadRequests.put(httpRequest,
-									downloadRequest);
-						}
-					}
-				}
+				for (HTTPRequest httpRequest : httpRequests)
+					for (JPIPDownloadRequest downloadRequest : downloadRequests)
+						if (downloadRequest.getEqualJPIPRequest() == httpRequest)
+							jpipDownloadRequests.put(httpRequest, downloadRequest);
 
-				while (!finished) {
+				while (!finished)
+				{
 					if (Thread.interrupted())
 						return;
-					for (HTTPRequest httpRequest : httpRequests) {
+					for (HTTPRequest httpRequest : httpRequests)
+					{
 						finished = true;
 						finished &= httpRequest.isFinished();
-						JPIPDownloadRequest jpipDownloadRequest = jpipDownloadRequests
-								.get(httpRequest);
-						if (httpRequest.isFinished()
-								&& UltimateLayer.this.requests
-										.contains(httpRequest)) {
+						JPIPDownloadRequest jpipDownloadRequest = jpipDownloadRequests.get(httpRequest);
+						if (httpRequest.isFinished() && UltimateLayer.this.requests.contains(httpRequest))
+						{
 							JSONObject jsonObject;
-							try {
-								jsonObject = new JSONObject(httpRequest
-										.getDataAsString());
+							try
+							{
+								jsonObject = new JSONObject(httpRequest.getDataAsString());
 
-								if (jsonObject.has("error")) {
-									System.out.println("error during : "
-											+ httpRequest);
-									UltimateLayer.this.requests
-											.remove(httpRequest);
+								if (jsonObject.has("error"))
+								{
+									System.out.println("error during : " + httpRequest);
+									UltimateLayer.this.requests.remove(httpRequest);
 									break;
 								}
 
-								JSONArray frames = ((JSONArray) jsonObject
-										.get("frames"));
-								LocalDateTime[] localDateTimes = new LocalDateTime[frames
-										.length()];
-								for (int i = 0; i < frames.length(); i++) {
-									Timestamp timestamp = new Timestamp(frames
-											.getLong(i) * 1000L);
-									localDateTimes[i] = timestamp
-											.toLocalDateTime();
+								JSONArray frames = ((JSONArray) jsonObject.get("frames"));
+								LocalDateTime[] localDateTimes = new LocalDateTime[frames.length()];
+								for (int i = 0; i < frames.length(); i++)
+								{
+									Timestamp timestamp = new Timestamp(frames.getLong(i) * 1000L);
+									localDateTimes[i] = timestamp.toLocalDateTime();
 								}
 
 								String jpipURI = jsonObject.getString("uri");
-
-								CacheableImageData cacheableImageData = jpipDownloadRequest
-										.getCachaableImageData();
-								cacheableImageData
-										.setLocalDateTimes(localDateTimes);
+								
+								CacheableImageData cacheableImageData = jpipDownloadRequest.getCachaableImageData();
+								cacheableImageData.setLocalDateTimes(localDateTimes);
 								jpipDownloadRequests.remove(httpRequest);
 								Cache.addCacheElement(cacheableImageData);
 								addFramedates(localDateTimes);
 
-								JPIPRequest jpipRequestLow = new JPIPRequest(
-										jpipURI, PRIORITY.HIGH, 0, frames
-												.length(), new Rectangle(256,
-												256), cacheableImageData);
+								JPIPRequest lowResolutionPreview = new JPIPRequest(jpipURI, DownloadPriority.HIGH, 0, frames.length(), new Rectangle(128, 128), cacheableImageData);
 
-								UltimateLayer.this.requests.add(jpipRequestLow);
-
-								UltimateDownloadManager
-										.addRequest(jpipRequestLow);
-
-							} catch (JSONException e1) {
-								// TODO Auto-generated catch block
+								UltimateLayer.this.requests.add(lowResolutionPreview);
+								UltimateDownloadManager.addRequest(lowResolutionPreview);
+							}
+							catch (JSONException e1)
+							{
 								e1.printStackTrace();
-							} catch (IOException e) {
+							}
+							catch (IOException e)
+							{
 								failedRequests.add(httpRequest);
 							}
+							
 							UltimateLayer.this.requests.remove(httpRequest);
 						}
 					}
@@ -454,33 +458,42 @@ public class UltimateLayer
 				httpRequests.clear();
 
 				finished = false;
-				while (!finished) {
+				while (!finished)
+				{
 					finished = true;
-					for (AbstractRequest request : requests) {
+					for (AbstractDownloadRequest request : requests)
 						finished &= request.isFinished();
-					}
-					try {
+
+					try
+					{
 						Thread.sleep(20);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
+					}
+					catch (InterruptedException e)
+					{
 						e.printStackTrace();
 					}
 				}
 
 				finished = false;
-				while (!finished) {
-					AbstractRequest[] requests = new AbstractRequest[UltimateLayer.this.requests
-							.size()];
+				while (!finished)
+				{
+					AbstractDownloadRequest[] requests = new AbstractDownloadRequest[UltimateLayer.this.requests.size()];
 					UltimateLayer.this.requests.toArray(requests);
-					for (AbstractRequest request : requests) {
+					for (AbstractDownloadRequest request : requests)
+					{
 						if (Thread.interrupted())
 							return;
-						if (request.isFinished()) {
-							try {
+						if (request.isFinished())
+						{
+							try
+							{
 								request.checkException();
-							} catch (IOException e) {
+							}
+							catch (IOException e)
+							{
 								failedRequests.add(request);
 							}
+							
 							UltimateLayer.this.requests.remove(request);
 						}
 					}
@@ -532,17 +545,17 @@ public class UltimateLayer
 	
 	public MetaData getMetaData(LocalDateTime currentDateTime)
 	{
-		CacheableImageData cacheObject = null;
-		if (this.localDateTimes.size() == 0)
+		if (this.localDateTimes.isEmpty())
 			return null;
 		
 		LocalDateTime localDateTime = this.getNextLocalDateTime(currentDateTime);
 		if (localDateTime == null)
 			localDateTime = this.localDateTimes.last();
 
-		cacheObject = Cache.getCacheElement(id, localDateTime);
-		if (Cache.getCacheElement(this.id, localDateTime) == null)
-			return null;			
+		CacheableImageData cacheObject = Cache.getCacheElement(id, localDateTime);
+		System.out.println(cacheObject);
+		if (cacheObject == null)
+			return null;
 		
 		return cacheObject.getMetaData(cacheObject.getIdx(localDateTime));
 	}

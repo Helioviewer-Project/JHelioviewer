@@ -57,7 +57,7 @@ public class Zoom1To1Action extends AbstractAction {
 							distance));
 				}
 			} catch (MetaDataException e1) {
-				// TODO Auto-generated catch block
+				
 				e1.printStackTrace();
 			}
 		}

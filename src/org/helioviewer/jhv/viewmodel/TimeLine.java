@@ -3,9 +3,9 @@ package org.helioviewer.jhv.viewmodel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.Timer;
 
@@ -22,7 +22,7 @@ public class TimeLine implements LayerListener {
 
 	private boolean isPlaying = false;
 
-	private CopyOnWriteArrayList<TimeLineListener> timeLineListeners;
+	private ArrayList<TimeLineListener> timeLineListeners;
 
 	private ConcurrentSkipListSet<LocalDateTime> localDateTimes = null;
 
@@ -44,7 +44,7 @@ public class TimeLine implements LayerListener {
 	private TimeLine() {
 		localDateTimes = new ConcurrentSkipListSet<LocalDateTime>();
 		Layers.addNewLayerListener(this);
-		timeLineListeners = new CopyOnWriteArrayList<TimeLine.TimeLineListener>();
+		timeLineListeners = new ArrayList<TimeLine.TimeLineListener>();
 	}
 
 	public boolean isPlaying() {

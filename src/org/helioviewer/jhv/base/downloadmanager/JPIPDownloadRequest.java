@@ -14,11 +14,11 @@ public class JPIPDownloadRequest extends HTTPRequest {
 	private static final String CACHE_PATH = Directories.CACHE.getPath();
 
 	private final CacheableImageData cacheableImageData;
-	private final ArrayList<AbstractRequest> requests;
+	private final ArrayList<AbstractDownloadRequest> requests;
 	private final HTTPRequest httpRequest;
-	public JPIPDownloadRequest(String url, PRIORITY priority,
+	public JPIPDownloadRequest(String url, DownloadPriority priority,
 			CacheableImageData cacheableImageData,
-			ArrayList<AbstractRequest> requests, HTTPRequest httpRequest) {
+			ArrayList<AbstractDownloadRequest> requests, HTTPRequest httpRequest) {
 		super(url, priority, 60000, 3);
 		this.cacheableImageData = cacheableImageData;
 		this.requests = requests;

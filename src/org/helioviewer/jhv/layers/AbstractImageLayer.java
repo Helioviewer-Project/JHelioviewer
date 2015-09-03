@@ -125,8 +125,9 @@ public abstract class AbstractImageLayer extends AbstractLayer
 			jsonLayer.put(VISIBILITY, isVisible());
 			jsonLayer.put(INVERTED_LUT, invertedLut);
 			jsonLayer.put(CORONA_VISIBILITY, coronaVisible);
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
+		}
+		catch (JSONException e)
+		{
 			e.printStackTrace();
 		}
 	}
@@ -148,8 +149,9 @@ public abstract class AbstractImageLayer extends AbstractLayer
 			invertedLut = jsonLayer.getBoolean(INVERTED_LUT);
 			coronaVisible=jsonLayer.getBoolean(CORONA_VISIBILITY);
 			MainFrame.FILTER_PANEL.updateUIElements(this);
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
+		}
+		catch (JSONException e)
+		{
 			e.printStackTrace();
 		}
 	}

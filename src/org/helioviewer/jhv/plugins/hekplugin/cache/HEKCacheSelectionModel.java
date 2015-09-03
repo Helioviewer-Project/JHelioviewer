@@ -28,7 +28,7 @@ public class HEKCacheSelectionModel implements HEKCacheListener {
      */
     public HashMap<HEKPath, List<Interval<Date>>> getSelection(Interval<Date> curInterval) {
 
-        // TODO: Malte Nuhn - Implement the CacheModelLOCK
+        // td: Malte Nuhn - Implement the CacheModelLOCK
         HashMap<HEKPath, List<Interval<Date>>> result = new HashMap<HEKPath, List<Interval<Date>>>();
 
         result.putAll(getSelection(cache.getTrackPaths().iterator(), curInterval));
@@ -133,7 +133,7 @@ public class HEKCacheSelectionModel implements HEKCacheListener {
      *            - new selection state
      */
     public void setState(HEKPath path, int state) {
-        // TODO: Malte Nuhn - Implement the CacheModelLOCK
+        // td: Malte Nuhn - Implement the CacheModelLOCK
     	List<HEKPath> children = cacheModel.getChildren(path, true);
         for (HEKPath child : children) {
             setState(child, state);

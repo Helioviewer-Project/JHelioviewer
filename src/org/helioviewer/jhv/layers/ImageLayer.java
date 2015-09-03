@@ -16,7 +16,7 @@ import org.helioviewer.jhv.JHVException;
 import org.helioviewer.jhv.JHVException.MetaDataException;
 import org.helioviewer.jhv.JHVException.TextureException;
 import org.helioviewer.jhv.base.ImageRegion;
-import org.helioviewer.jhv.base.downloadmanager.AbstractRequest;
+import org.helioviewer.jhv.base.downloadmanager.AbstractDownloadRequest;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.gui.MainFrame;
@@ -164,7 +164,7 @@ public class ImageLayer extends AbstractImageLayer
 		}
 		catch (JSONException e)
 		{
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 	}
@@ -186,7 +186,7 @@ public class ImageLayer extends AbstractImageLayer
 		}
 		catch (JSONException e)
 		{
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		return null;
@@ -385,16 +385,16 @@ public class ImageLayer extends AbstractImageLayer
 	@Override
 	void remove()
 	{
-		ultimateLayer.cancelDownload();
+		ultimateLayer.cancelAllDownloadsForThisLayer();
 	}
 
 	@Override
 	public void retryFailedRequests()
 	{
-		AbstractRequest[] requests;
+		AbstractDownloadRequest[] requests;
 		synchronized(failedRequests)
 		{
-			requests = new AbstractRequest[failedRequests.size()];
+			requests = new AbstractDownloadRequest[failedRequests.size()];
 			failedRequests.toArray(requests);
 			failedRequests.clear();
 		}

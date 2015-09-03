@@ -72,9 +72,6 @@ public class LayerPanel extends JPanel implements LayerListener,
 	private Object columnNames[] = { "Column One", "Column Two",
 			"Column Three", "Column Four", "Column Five" };
 	private LayerTableModel tableModel;
-	private Object rowData[][] = {
-			{ "Row1-Column1", "Row1-Column2", "Row1-Column3" },
-			{ "Row2-Column1", "Row2-Column2", "Row2-Column3" } };
 
 	private JButton btnDownloadLayer;
 	private static final Cursor HAND_CURSOR = new Cursor(Cursor.HAND_CURSOR);
@@ -180,13 +177,13 @@ public class LayerPanel extends JPanel implements LayerListener,
 			
 			@Override
 			public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-				// TODO Auto-generated method stub
+				
 				
 			}
 			
 			@Override
 			public void popupMenuCanceled(PopupMenuEvent e) {
-				// TODO Auto-generated method stub
+				
 				
 			}
 		});
@@ -196,35 +193,29 @@ public class LayerPanel extends JPanel implements LayerListener,
 	/**
 	 * Create the panel.
 	 */
-	private void initGUI() {
+	private void initGUI()
+	{
 		setLayout(new BorderLayout(0, 0));
 
 		JScrollPane scrollPane = new JScrollPane();
 		add(scrollPane, BorderLayout.CENTER);
 
 		tableModel = new LayerTableModel(null, null);
-		table = new JTable(tableModel);
-		table = new JTable(rowData, columnNames);
+		table = new JTable(new Object[0][0], columnNames);
 		table.setTableHeader(null);
-		table.getColumnModel().getColumn(0)
-				.setCellRenderer(new ImageIconCellRenderer());
-		table.getColumnModel().getColumn(1)
-				.setCellRenderer(new ImageIconCellRenderer());
-		table.getColumnModel().getColumn(2)
-				.setCellRenderer(new ImageIconCellRenderer());
-		table.getColumnModel().getColumn(3)
-				.setCellRenderer(new ImageIconCellRenderer());
-		table.getColumnModel().getColumn(4)
-				.setCellRenderer(new ImageIconCellRenderer());
+		table.getColumnModel().getColumn(0).setCellRenderer(new ImageIconCellRenderer());
+		table.getColumnModel().getColumn(1).setCellRenderer(new ImageIconCellRenderer());
+		table.getColumnModel().getColumn(2).setCellRenderer(new ImageIconCellRenderer());
+		table.getColumnModel().getColumn(3).setCellRenderer(new ImageIconCellRenderer());
+		table.getColumnModel().getColumn(4).setCellRenderer(new ImageIconCellRenderer());
 		table.getColumnModel().getColumn(0).setPreferredWidth(35);
 		table.getColumnModel().getColumn(0).setWidth(35);
 		table.getColumnModel().getColumn(0).setResizable(false);
 		table.getColumnModel().getColumn(3).setResizable(false);
 		table.setShowGrid(false);
 		table.setIntercellSpacing(new Dimension(0, 0));
-		table.getSelectionModel().addListSelectionListener(
-				new ListSelectionListener() {
-
+		table.getSelectionModel().addListSelectionListener(new ListSelectionListener()
+				{
 					@Override
 					public void valueChanged(ListSelectionEvent e) {
 						SwingUtilities.invokeLater(new Runnable() {
@@ -239,7 +230,8 @@ public class LayerPanel extends JPanel implements LayerListener,
 						});
 					}
 				});
-		table.addMouseListener(new MouseAdapter() {
+		table.addMouseListener(new MouseAdapter()
+		{
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				JTable jTable = (JTable) e.getSource();
@@ -392,42 +384,36 @@ public class LayerPanel extends JPanel implements LayerListener,
 		gbcBtnAddLayer.gridx = 11;
 		gbcBtnAddLayer.gridy = 0;
 		panel.add(btnAddLayer, gbcBtnAddLayer);
-
 	}
 
-	private synchronized void updateData() {
-		SwingUtilities.invokeLater(new Runnable() {
-
+	private synchronized void updateData()
+	{
+		SwingUtilities.invokeLater(new Runnable()
+		{
 			@Override
-			public void run() {
+			public void run()
+			{
 				Object[][] data = new Object[Layers.getLayerCount()][5];
 				int count = 0;
-				for (AbstractLayer layer : Layers.getLayers()) {
-					if (data.length <= count) break;
+				for (AbstractLayer layer : Layers.getLayers())
+				{
+					if (data.length <= count)
+						break;
+					
 					data[count][0] = layer.isVisible();
-
 					data[count][1] = layer.checkBadRequest();
-
 					data[count][2] = layer.getName();
-					data[count][3] = layer.getTime() == null ? null : layer
-							.getTime();
-					data[count][4] = IconBank.getIcon(JHVIcon.REMOVE_NEW, size,
-							size);
+					data[count][3] = layer.getTime() == null ? null : layer.getTime();
+					data[count][4] = IconBank.getIcon(JHVIcon.REMOVE_NEW, size, size);
 					count++;
 				}
 				tableModel.setDataVector(data, columnNames);
 				table.setModel(tableModel);
 
-				// table.getColumnModel().getColumn(0).setCellRenderer(new
-				// ImageIconCellRenderer());
-				table.getColumnModel().getColumn(1)
-						.setCellRenderer(new ImageIconCellRenderer());
-				table.getColumnModel().getColumn(2)
-						.setCellRenderer(new ImageIconCellRenderer());
-				table.getColumnModel().getColumn(3)
-						.setCellRenderer(new ImageIconCellRenderer());
-				table.getColumnModel().getColumn(4)
-						.setCellRenderer(new ImageIconCellRenderer());
+				table.getColumnModel().getColumn(1).setCellRenderer(new ImageIconCellRenderer());
+				table.getColumnModel().getColumn(2).setCellRenderer(new ImageIconCellRenderer());
+				table.getColumnModel().getColumn(3).setCellRenderer(new ImageIconCellRenderer());
+				table.getColumnModel().getColumn(4).setCellRenderer(new ImageIconCellRenderer());
 				setFixedWidth(size+4, 0);
 				setFixedWidth(size, 1);
 				setFixedWidth(size, 4);
@@ -435,7 +421,8 @@ public class LayerPanel extends JPanel implements LayerListener,
 				table.setShowGrid(false);
 				table.setIntercellSpacing(new Dimension(0, 0));
 
-				if (Layers.getLayerCount() > 0 && Layers.getLayerCount() > Layers.getActiveLayerNumber()) {
+				if (Layers.getLayerCount() > 0 && Layers.getLayerCount() > Layers.getActiveLayerNumber())
+				{
 					table.setRowSelectionInterval(
 							Layers.getActiveLayerNumber(),
 							Layers.getActiveLayerNumber());
@@ -493,22 +480,19 @@ public class LayerPanel extends JPanel implements LayerListener,
 		}
 
 		@Override
-		public Component getTableCellRendererComponent(JTable table,
-				Object value, boolean isSelected, boolean hasFocus,
-				final int row, int column) {
-			switch (column) {
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, final int row, int column)
+		{
+			switch (column)
+			{
 			case 0:
-				super.getTableCellRendererComponent(table, null, isSelected,
-						hasFocus, row, column);
+				super.getTableCellRendererComponent(table, null, isSelected, hasFocus, row, column);
 				break;
 			case 1:
-				JLabel label = (JLabel) super
-				.getTableCellRendererComponent(table, null,
-						isSelected, hasFocus, row, column);
-				if ((Boolean) value == true) {
+				JLabel label = (JLabel) super.getTableCellRendererComponent(table, null, isSelected, hasFocus, row, column);
+				if ((Boolean) value)
+				{
 					label.setIcon(WARNING_BAD_REQUEST);
 					label.setPreferredSize(new Dimension(20, 20));
-					
 				}
 				else label.setIcon(null);;
 				break;
@@ -549,7 +533,7 @@ public class LayerPanel extends JPanel implements LayerListener,
 
 	@Override
 	public void newlayerRemoved(int idx) {
-		// TODO Auto-generated method stub
+		
 
 	}
 

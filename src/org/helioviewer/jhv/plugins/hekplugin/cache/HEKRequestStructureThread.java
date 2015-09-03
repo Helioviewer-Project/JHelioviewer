@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-import org.helioviewer.jhv.base.downloadmanager.AbstractRequest.PRIORITY;
+import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
@@ -75,7 +75,7 @@ public class HEKRequestStructureThread extends HEKRequest implements Runnable {
 
                 String uri = "http://www.lmsal.com/hek/her?cosec=2&cmd=search&type=column&event_type=**&event_starttime=" + startDate + "&event_endtime=" + endDate + "&event_coordsys=helioprojective&x1=-1200&x2=1200&y1=-1200&y2=1200&return=" + fields + "&temporalmode=overlap&result_limit=" + HEKSettings.REQUEST_STRUCTURE_PAGESIZE + "&page=" + page;
 
-                HTTPRequest httpRequest = Plugins.generateAndStartHTPPRequest(uri, PRIORITY.MEDIUM);
+                HTTPRequest httpRequest = Plugins.generateAndStartHTPPRequest(uri, DownloadPriority.MEDIUM);
 
                 while (!httpRequest.isFinished()) {
                 	try {
@@ -84,7 +84,7 @@ public class HEKRequestStructureThread extends HEKRequest implements Runnable {
 	                    if (cancel)
 	                        return;
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
+						
 						e.printStackTrace();
 					}
                 }
@@ -97,7 +97,7 @@ public class HEKRequestStructureThread extends HEKRequest implements Runnable {
 	                hasMorePages = json.getBoolean("overmax");
 	                page++;
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
+					
 					e.printStackTrace();
 				}
 
@@ -112,7 +112,8 @@ public class HEKRequestStructureThread extends HEKRequest implements Runnable {
 
     }
 
-    public void parseFeedAndUpdateGUI(JSONObject json, Interval<Date> timeRange) {
+    public void parseFeedAndUpdateGUI(JSONObject json, Interval<Date> timeRange)
+    {
         // this code might need to change if requestStructure changes
         List<HEKPath> paths = HEKEventFactory.getSingletonInstance().parseStructure(json);
         cacheController.feedStructure(paths, timeRange);

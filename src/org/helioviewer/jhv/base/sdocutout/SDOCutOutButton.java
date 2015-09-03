@@ -56,13 +56,13 @@ public class SDOCutOutButton extends JButton implements
 
 	@Override
 	public void newlayerRemoved(int idx) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
 	@Override
 	public void activeLayerChanged(AbstractLayer layer) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 }

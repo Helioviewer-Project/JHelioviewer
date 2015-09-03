@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-import org.helioviewer.jhv.base.downloadmanager.AbstractRequest;
+import org.helioviewer.jhv.base.downloadmanager.AbstractDownloadRequest;
 import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.opengl.MainPanel;
@@ -19,7 +19,7 @@ public abstract class AbstractLayer
 	protected String name;
 	
 	//FIXME: synchronization not done properly
-	protected ArrayList<AbstractRequest> failedRequests;
+	protected ArrayList<AbstractDownloadRequest> failedRequests;
 	
 	protected boolean isImageLayer = false;
 	protected boolean isDownloadable = false;
@@ -61,22 +61,22 @@ public abstract class AbstractLayer
 	}
 
 	public void writeStateFile(JSONObject jsonLayer) {
-		// TODO Auto-generated method stub
+		
 
 	}
 
 	public String getURL() {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
 	public String getFullName() {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
 	public LocalDateTime getTime() {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
@@ -87,12 +87,15 @@ public abstract class AbstractLayer
 		return failedRequests.size();
 	}
 
-	public void addBadRequests(ArrayList<AbstractRequest> badRequests)
+	public void addFailedRequests(ArrayList<AbstractDownloadRequest> _failedRequests)
 	{
-		synchronized(failedRequests)
-		{
-			this.failedRequests = badRequests;
-		}
+		if(failedRequests!=null)
+			synchronized(failedRequests)
+			{
+				this.failedRequests = _failedRequests;
+			}
+		else
+			this.failedRequests = _failedRequests;
 		MainFrame.LAYER_PANEL.repaintPanel();
 	}
 
@@ -108,15 +111,15 @@ public abstract class AbstractLayer
 			@Override
 			public void run()
 			{
-				AbstractRequest[] requests;
+				AbstractDownloadRequest[] requests;
 				synchronized(failedRequests)
 				{
-					requests = new AbstractRequest[failedRequests.size()];
+					requests = new AbstractDownloadRequest[failedRequests.size()];
 					failedRequests.toArray(requests);
 					failedRequests.clear();
 				}
 				MainFrame.LAYER_PANEL.repaintPanel();
-				for (AbstractRequest request : requests){
+				for (AbstractDownloadRequest request : requests){
 					request.setRetries(3);
 					UltimateDownloadManager.addRequest(request);
 				}

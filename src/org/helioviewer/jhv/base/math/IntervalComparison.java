@@ -3,9 +3,6 @@ package org.helioviewer.jhv.base.math;
 /**
  * This Interface defines methods needed for camparison of intervals.
  * 
- * TODO Malte Nuhn - Why do JavaDocs write intervals always as '[A,B)'
- * (==half-open), if generic methods exist for all types of intervals?
- * 
  * @author Malte Nuhn
  * 
  * @param <TimeFormat>

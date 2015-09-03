@@ -10,12 +10,13 @@ import org.helioviewer.jhv.base.coordinates.SunDistance;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
 
-public class MetaDataStereo extends MetaData{
-
+public class MetaDataStereo extends MetaData
+{
 	private final static Rectangle RESOLUTION = new Rectangle(2048, 2048);
 	private final double IMAGE_SCALE = 1.588;
 
-	public MetaDataStereo(MetaDataContainer metaDataContainer) {
+	public MetaDataStereo(MetaDataContainer metaDataContainer)
+	{
         super(metaDataContainer, RESOLUTION);
 
         observatory = metaDataContainer.get("OBSRVTRY");
@@ -70,29 +71,11 @@ public class MetaDataStereo extends MetaData{
         this.stonyhurstLatitude = metaDataContainer.tryGetDouble("HGLT_OBS");
         this.stonyhurstLongitude = metaDataContainer.tryGetDouble("HGLN_OBS");
         this.stonyhurstAvailable = this.stonyhurstLatitude != 0.0 || this.stonyhurstLongitude != 0.0;
-        if (stonyhurstAvailable){
-        	SunDistance sunDistance = SunDistance.computePb0rSunDistance(getLocalDateTime());
-        	HelioprojectiveCartesianCoordinate hpcc = new HelioprojectiveCartesianCoordinate(Math.toRadians(stonyhurstLongitude), Math.toRadians(stonyhurstLatitude), sunDistance.getSunDistance());
-        	HeliographicCoordinate hgc = new HeliographicCoordinate(Math.toRadians(stonyhurstLongitude), Math.toRadians(stonyhurstLatitude));        	
-        	HeliocentricCartesianCoordinate hcc = hgc.toHeliocentricCartesianCoordinate();
+        if (stonyhurstAvailable)
+        {
+        	HeliocentricCartesianCoordinate hcc = new HeliographicCoordinate(Math.toRadians(stonyhurstLongitude), Math.toRadians(stonyhurstLatitude)).toHeliocentricCartesianCoordinate();
         	this.orientation = new Vector3d(hcc.x, hcc.y, hcc.z);
         }
         this.calcDefaultRotation();
-        
-        /*
-        this.stonyhurstLatitude = metaDataContainer.tryGetDouble("HGLT_OBS");
-        this.stonyhurstLongitude = metaDataContainer.tryGetDouble("HGLN_OBS");
-        this.stonyhurstAvailable = this.stonyhurstLatitude != 0.0 || this.stonyhurstLongitude != 0.0;
-        if (stonyhurstAvailable){
-        	CoordConverter<HeliographicCoordinate, HeliocentricCartesianCoordinate> converter = new Hg2HccConverter();
-        	Angle hgLongitude = new Angle(stonyhurstLongitude);
-        	Angle hgLatitude = new Angle(stonyhurstLatitude);
-        	HeliographicCoordinate hgc = new HeliographicCoordinate(hgLongitude, hgLatitude);
-        	
-        	HeliocentricCartesianCoordinate hcc = converter.convert(hgc);
-        	this.orientation = new Vector3d(hcc.getX(), hcc.getY(), hcc.getZ());
-        }
-        this.calcDefaultRotation(); 
-         */
    }
 }

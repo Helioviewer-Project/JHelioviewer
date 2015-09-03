@@ -66,7 +66,7 @@ public class LoadStateAction extends AbstractAction {
 		} catch (IOException e1) {
 			JOptionPane.showMessageDialog(MainFrame.MAIN_PANEL, "No file founded \n" + e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 		} catch (JSONException e1) {
-			// TODO Auto-generated catch block
+			
 			e1.printStackTrace();
 		}
     }

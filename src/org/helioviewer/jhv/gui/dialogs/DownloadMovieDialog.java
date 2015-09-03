@@ -16,7 +16,7 @@ import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.Settings;
-import org.helioviewer.jhv.base.downloadmanager.AbstractRequest.PRIORITY;
+import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPDownloadRequest;
 import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
 import org.helioviewer.jhv.gui.MainFrame;
@@ -109,61 +109,65 @@ public class DownloadMovieDialog extends JDialog {
 		}
 	}
 	
-	private void openFileChooserFX(){
-		Platform.runLater(new Runnable() {
-
+	private void openFileChooserFX()
+	{
+		Platform.runLater(new Runnable()
+		{
 			@Override
-			public void run() {
-
+			public void run()
+			{
 				FileChooser fileChooser = new FileChooser();
 				fileChooser.setTitle("Downlaod imagedata");
 				fileChooser.setInitialFileName(defaultName);
 				
 				String lastPath = Settings.getProperty(PATH_SETTINGS);
 				
-				if (lastPath != null) {
+				if (lastPath != null)
+				{
 					File file = new File(lastPath);
 					if (file.exists())
-					fileChooser.setInitialDirectory(file);
+						fileChooser.setInitialDirectory(file);
 				}
 
 				fileChooser.getExtensionFilters().addAll(JPXFilter.getExtensionFilter());
-				final File selectedFile = fileChooser
-						.showSaveDialog(new Stage());
+				final File selectedFile = fileChooser.showSaveDialog(new Stage());
 
-				if (selectedFile != null) {
+				if (selectedFile != null)
 					start(selectedFile.toString());
-				}
 			}
 		});
 	}
 	
-	private void start(String fileName){
-
-		final HTTPDownloadRequest httpDownloadRequest = new HTTPDownloadRequest(
-				url, PRIORITY.URGENT, fileName);
-		SwingUtilities.invokeLater(new Runnable() {
-			
+	private void start(String fileName)
+	{
+		final HTTPDownloadRequest httpDownloadRequest = new HTTPDownloadRequest(url, DownloadPriority.URGENT, fileName);
+		SwingUtilities.invokeLater(new Runnable()
+		{
 			@Override
-			public void run() {
+			public void run()
+			{
 				setVisible(true);
 				progressBar.setValue(0);
 				progressBar.setMaximum(Integer.MAX_VALUE);
-				
 			}
 		});
-		UltimateDownloadManager.addRequest(httpDownloadRequest);
-		Thread downloadMovieThread = new Thread(new Runnable() {
 		
+		UltimateDownloadManager.addRequest(httpDownloadRequest);
+		Thread downloadMovieThread = new Thread(new Runnable()
+		{
 			@Override
-			public void run() {
-				while (!httpDownloadRequest.isFinished()){
+			public void run()
+			{
+				while (!httpDownloadRequest.isFinished())
+				{
 					progressBar.setValue(httpDownloadRequest.getReceivedLength());
 					progressBar.setMaximum(httpDownloadRequest.getTotalLength());
-					try {
+					try
+					{
 						Thread.sleep(20);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
+					}
+					catch (InterruptedException e)
+					{
 						e.printStackTrace();
 					}
 				}
@@ -173,24 +177,26 @@ public class DownloadMovieDialog extends JDialog {
 		downloadMovieThread.start();
 	}
 	
-	public void startDownload(String url, AbstractLayer layer) {
-		if (TimeLine.SINGLETON.getFrameCount() >= 1000){
-			SwingUtilities.invokeLater(new Runnable() {
-				
+	public void startDownload(String url, AbstractLayer layer)
+	{
+		if (TimeLine.SINGLETON.getFrameCount() >= 1000)
+		{
+			SwingUtilities.invokeLater(new Runnable()
+			{
 				@Override
-				public void run() {
-					JOptionPane.showMessageDialog(MainFrame.SINGLETON, "More then 1000 frames aren't available to downlaod", "Not supported framecount",JOptionPane.ERROR_MESSAGE);
+				public void run()
+				{
+					JOptionPane.showMessageDialog(MainFrame.SINGLETON, "You cannot download more than 1000 frames at once.", "Error", JOptionPane.ERROR_MESSAGE);
 				}
 			});
 			return;
 		}
 		this.defaultName = layer.getFullName() + "_F" + JHVGlobals.FILE_DATE_TIME_FORMATTER.format(((AbstractImageLayer)layer).getFirstLocalDateTime()) + "_T" + JHVGlobals.FILE_DATE_TIME_FORMATTER.format(((AbstractImageLayer)layer).getLastLocalDateTime());
 		this.url = url;
-		if (JHVGlobals.USE_JAVA_FX){
+		
+		if (JHVGlobals.USE_JAVA_FX)
 			openFileChooserFX();
-		}
-		else {
+		else
 			openFileChooser();
-		}
 	}
 }

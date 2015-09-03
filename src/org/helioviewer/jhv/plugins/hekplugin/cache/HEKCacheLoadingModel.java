@@ -31,7 +31,7 @@ public class HEKCacheLoadingModel {
      * @param belowHidden
      *            - if true, the path will be seen as loading if any of its
      *            children is loading. Even if p has been explicitly set to
-     *            "non-loading"! GEFH�RLICH! TODO
+     *            "non-loading"! GEFH�RLICH! td
      * @return
      */
     public int getState(HEKPath p, boolean belowHidden) {

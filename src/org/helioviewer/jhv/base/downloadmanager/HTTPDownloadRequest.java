@@ -8,7 +8,7 @@ public class HTTPDownloadRequest extends HTTPRequest{
 	
 	private final String fileName;
 	
-	public HTTPDownloadRequest(String url, PRIORITY priority, String fileName) {
+	public HTTPDownloadRequest(String url, DownloadPriority priority, String fileName) {
 		super(url, priority, 60000, -1);
 		this.fileName = fileName;
 	}

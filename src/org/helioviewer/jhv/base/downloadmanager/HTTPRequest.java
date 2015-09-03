@@ -7,24 +7,24 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
-public class HTTPRequest extends AbstractRequest
+public class HTTPRequest extends AbstractDownloadRequest
 {
 	private static final int DEFAULT_BUFFER_SIZE = 16384;
 	
 	protected byte[] rawData;
 
-	public HTTPRequest(String uri, PRIORITY priority, int timeOut, int retries){
+	public HTTPRequest(String uri, DownloadPriority priority, int timeOut, int retries){
 		this(uri, priority);
 		this.retries = retries;
 		this.timeOut = timeOut;
 	}
 
-	public HTTPRequest(String uri, PRIORITY priority, int retries){
+	public HTTPRequest(String uri, DownloadPriority priority, int retries){
 		this(uri, priority);
 		this.retries = retries;
 	}
 
-	public HTTPRequest(String url, PRIORITY priority) {
+	public HTTPRequest(String url, DownloadPriority priority) {
 		super(url, priority);
 	}
 
@@ -42,6 +42,7 @@ public class HTTPRequest extends AbstractRequest
 		httpURLConnection = (HttpURLConnection) url.openConnection();
 		httpURLConnection.setReadTimeout(timeOut);
 		httpURLConnection.setRequestMethod("GET");
+		//TODO: accept-encoding: GZIP && GZIPInputStream
 		httpURLConnection.connect();
 		int response = httpURLConnection.getResponseCode();
 		totalLength = httpURLConnection.getContentLength();

@@ -1,8 +1,8 @@
 package org.helioviewer.jhv.layers;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduRender;
 import org.json.JSONArray;
@@ -11,8 +11,8 @@ import org.json.JSONObject;
 
 public class Layers
 {
-	private static CopyOnWriteArrayList<LayerListener> layerListeners;
-	private static CopyOnWriteArrayList<AbstractLayer> layers;
+	private static ArrayList<LayerListener> layerListeners;
+	private static ArrayList<AbstractLayer> layers;
 	private static int activeLayer = -1;
 	private static int activeImageLayer = -1;
 
@@ -29,9 +29,10 @@ public class Layers
 	};
 
 	
-	static {
-		layers = new CopyOnWriteArrayList<AbstractLayer>();
-		layerListeners = new CopyOnWriteArrayList<LayerListener>();
+	static
+	{
+		layers = new ArrayList<AbstractLayer>();
+		layerListeners = new ArrayList<LayerListener>();
 	}
 
 	public static AbstractLayer addLayer(String uri)
@@ -54,20 +55,24 @@ public class Layers
 	}
 	
 	private static void updateOpacity(AbstractImageLayer imageLayer, boolean remove){
-		double counter = 0;
-		for (AbstractLayer tmpLayer : layers){
-			if (tmpLayer.isImageLayer()) counter++;
-		}
-		for (AbstractLayer tmpLayer : layers){
-			if (tmpLayer.isImageLayer()){
+		int counter = 0;
+		for (AbstractLayer tmpLayer : layers)
+			if (tmpLayer.isImageLayer())
+				counter++;
+		
+		for (AbstractLayer tmpLayer : layers)
+		{
+			if (tmpLayer.isImageLayer())
+			{
 				AbstractImageLayer tmpImageLayer = (AbstractImageLayer) tmpLayer;
 				if (tmpImageLayer == imageLayer)
-					tmpImageLayer.opacity = 1/counter;
-				else {
+					tmpImageLayer.opacity = 1d/counter;
+				else
+				{
 					if (remove)
-						tmpImageLayer.opacity /= ((counter-1) / counter);
+						tmpImageLayer.opacity /= ((counter-1d) / counter);
 					else
-						tmpImageLayer.opacity *= ((counter-1) / counter);
+						tmpImageLayer.opacity *= ((counter-1d) / counter);
 				}
 			}
 		}
@@ -171,7 +176,7 @@ public class Layers
 		}
 	}
 
-	public static CopyOnWriteArrayList<AbstractLayer> getLayers() {
+	public static ArrayList<AbstractLayer> getLayers() {
 		return layers;
 	}
 
@@ -214,7 +219,7 @@ public class Layers
 					layer.readStateFile(jsonLayer);
 				}
 			} catch (JSONException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			}
 		}

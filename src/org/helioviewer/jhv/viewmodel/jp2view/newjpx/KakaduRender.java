@@ -63,7 +63,7 @@ public class KakaduRender
 		}
 		catch (KduException e)
 		{
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 	}
@@ -79,7 +79,9 @@ public class KakaduRender
 
 			compositor.Add_ilayer(layerNumber, dimsRef1, dimsRef2);
 
+			//FIXME: downgrade quality first, before resolution when having speed problems
 			compositor.Set_max_quality_layers(quality);
+			
 			compositor.Set_scale(false, false, false, zoomPercent);
 			Kdu_dims requestedBufferedRegion = KakaduUtils.rectangleToKdu_dims(imageSize);
 
@@ -122,7 +124,7 @@ public class KakaduRender
 		}
 		catch (KduException e)
 		{
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		return null;
@@ -141,7 +143,7 @@ public class KakaduRender
 			compositor.Create(jpxSrc, CODESTREAM_CACHE_THRESHOLD);
 			compositor.Set_thread_env(threadEnviroment, null);
 		} catch (KduException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 	}
@@ -151,7 +153,7 @@ public class KakaduRender
 		try {
 			compositor.Set_thread_env(threadEnviroment, null);
 		} catch (KduException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		this.compositor = compositor;
@@ -178,7 +180,7 @@ public class KakaduRender
 			compositor.Create(jpxSrc, CODESTREAM_CACHE_THRESHOLD);
 			compositor.Set_thread_env(threadEnviroment, null);
 		} catch (KduException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 	}

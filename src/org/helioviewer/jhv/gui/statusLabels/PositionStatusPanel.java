@@ -139,7 +139,7 @@ public class PositionStatusPanel extends StatusLabel implements MouseListener {
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
+		
 
 	}
 
@@ -152,13 +152,13 @@ public class PositionStatusPanel extends StatusLabel implements MouseListener {
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
+		
 
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
+		
 
 	}
 

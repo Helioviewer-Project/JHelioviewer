@@ -47,7 +47,7 @@ public class CameraTranslationAnimation implements CameraAnimation {
 
 	@Override
 	public void updateWithAnimation(CameraAnimation animation) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 

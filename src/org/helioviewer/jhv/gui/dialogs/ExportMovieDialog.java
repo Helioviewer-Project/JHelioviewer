@@ -99,19 +99,20 @@ public class ExportMovieDialog implements ActionListener {
 						{
 							bufferedImage = null;
 							progressDialog.setDescription("Rendering images");
-							bufferedImage = MainFrame.MAIN_PANEL
-									.getBufferedImage(imageWidth, imageHeight,
-											textEnabled);
+							bufferedImage = MainFrame.MAIN_PANEL.getBufferedImage(imageWidth, imageHeight, textEnabled);
 						}
 					});
 
 					while (bufferedImage == null)
 					{
-						try {
+						try
+						{
 							if (!started)
 								break;
 							Thread.sleep(20);
-						} catch (InterruptedException e) {
+						}
+						catch (InterruptedException e)
+						{
 							break;
 						}
 					}
@@ -127,38 +128,30 @@ public class ExportMovieDialog implements ActionListener {
 					else if (selectedOutputFormat.isCompressedFile() && started)
 					{
 						String number = String.format("%04d", i);
-						try {
-							zipOutputStream.putNextEntry(new ZipEntry(filename
-									+ "/"
-									+ filename
-									+ "-"
-									+ number
-									+ selectedOutputFormat
-											.getInnerMovieFilter()
-											.getExtension()));
-							ImageIO.write(bufferedImage, selectedOutputFormat
-									.getInnerMovieFilter().getFileType(),
-									zipOutputStream);
+						try
+						{
+							zipOutputStream.putNextEntry(new ZipEntry(filename + "/" + filename + "-" + number
+									+ selectedOutputFormat.getInnerMovieFilter().getExtension()));
+							ImageIO.write(bufferedImage, selectedOutputFormat.getInnerMovieFilter().getFileType(), zipOutputStream);
 							zipOutputStream.closeEntry();
-						} catch (IOException e) {
+						}
+						catch (IOException e)
+						{
 							e.printStackTrace();
 						}
 					}
-
-					else if (selectedOutputFormat.isImageFile() && started) {
+					else if (selectedOutputFormat.isImageFile() && started)
+					{
 						String number = String.format("%04d", i);
-						try {
+						try
+						{
 							ImageIO.write(
 									bufferedImage,
 									selectedOutputFormat.getFileType(),
-									new File(directory
-											+ filename
-											+ filename
-											+ "-"
-											+ number
-											+ selectedOutputFormat
-													.getExtension()));
-						} catch (IOException e) {
+									new File(directory + filename + "-" + number + selectedOutputFormat.getExtension()));
+						}
+						catch (IOException e)
+						{
 							e.printStackTrace();
 						}
 					}
@@ -171,11 +164,13 @@ public class ExportMovieDialog implements ActionListener {
 		thread.start();
 	}
 
-	private void openFXFileChooser() {
-		Platform.runLater(new Runnable() {
-
+	private void openFXFileChooser()
+	{
+		Platform.runLater(new Runnable()
+		{
 			@Override
-			public void run() {
+			public void run()
+			{
 				FileChooser fileChooser = new FileChooser();
 				fileChooser.setTitle("Export movie");
 
@@ -218,7 +213,8 @@ public class ExportMovieDialog implements ActionListener {
 
 	}
 
-	private void openFileChooser() {
+	private void openFileChooser()
+	{
 		if (JHVGlobals.USE_JAVA_FX)
 			openFXFileChooser();
 		else {

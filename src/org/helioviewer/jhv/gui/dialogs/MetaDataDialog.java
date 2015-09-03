@@ -441,7 +441,7 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 
 	@Override
 	public void init() {
-		// TODO Auto-generated method stub
+		
 
 	}
 
@@ -468,7 +468,7 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 
 	@Override
 	public void dateTimesChanged(int framecount) {
-		// TODO Auto-generated method stub
+		
 
 	}
 
@@ -478,7 +478,7 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 
 	@Override
 	public void newlayerRemoved(int idx) {
-		// TODO Auto-generated method stub
+		
 
 	}
 

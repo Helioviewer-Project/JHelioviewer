@@ -205,8 +205,7 @@ public class HEKCacheTreeView extends JTree implements TreeModelListener {
 
                 HEKCache.getSingletonInstance().getSelectionModel().filterSelectedPaths(downloadedEvents);
                 int numSelectedEvents = downloadedEvents.size();
-                // TODO Malte Nuhn - Implement the total number of downloadable
-                // events
+                // td Malte Nuhn - Implement the total number of downloadable events
                 toRender = toRender + " (" + numSelectedEvents + "/" + (numDownloadedEvents + downloadableEvents) + ")";
 
                 comp = super.getTreeCellRendererComponent(tree, toRender, selected, expanded, leaf, row, hasFocus);
@@ -355,7 +354,7 @@ public class HEKCacheTreeView extends JTree implements TreeModelListener {
                     cacheController.fireEventsChanged(selPath);
 
                     // move into controller
-                    // TODO move into loading watcher
+                    // td move into loading watcher
                     HashMap<HEKPath, List<Interval<Date>>> selected = selectionModel.getSelection(cacheModel.getCurInterval());
                     HashMap<HEKPath, List<Interval<Date>>> needed = HEKCache.getSingletonInstance().needed(selected);
                     HashMap<HEKPath, List<Interval<Date>>> nonQueued = HEKCache.getSingletonInstance().getLoadingModel().filterState(needed, HEKCacheLoadingModel.PATH_NOTHING);
@@ -432,12 +431,12 @@ public class HEKCacheTreeView extends JTree implements TreeModelListener {
         }
         catch(NullPointerException _npe)
         {
-          //TODO: find out how this could happen? according to swing javadoc
+          //td: find out how this could happen? according to swing javadoc
           //the method call above won't throw a npe ever... ?!?
           _npe.printStackTrace();
         }
         
-        // TODO: REALLY OVERWRITE == TRUE?
+        // td: REALLY OVERWRITE == TRUE?
         expansionModel.setExpandedState(p, state, true);
 
     }

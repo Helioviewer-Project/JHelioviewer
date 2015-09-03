@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 
 import org.helioviewer.jhv.layers.CacheableImageData;
 
+//FIXME: clean out cache eventually
 public class Cache {
 	private static ConcurrentLinkedDeque<CacheableImageData> ramCache;
 

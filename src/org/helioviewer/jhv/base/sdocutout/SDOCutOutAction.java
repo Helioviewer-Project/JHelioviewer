@@ -40,6 +40,7 @@ public class SDOCutOutAction extends AbstractAction {
 			if (layer != null){
 			ArrayList<AbstractImageLayer> sdoLayers = new ArrayList<AbstractImageLayer>();
 			for (AbstractLayer layerInterface : Layers.getLayers()){
+				//FIXME: don't search by comparing string
 				if (layerInterface.getName().contains("AIA")){
 					sdoLayers.add((AbstractImageLayer)layerInterface);
 				}
@@ -74,7 +75,7 @@ public class SDOCutOutAction extends AbstractAction {
 				url.append("&cadence=" + mainSDOLayer.getCadence() + "&cadenceUnits=s");
 				JHVGlobals.openURL(url.toString());
 			} catch (MetaDataException e1) {
-				// TODO Auto-generated catch block
+				
 				e1.printStackTrace();
 			}
 			

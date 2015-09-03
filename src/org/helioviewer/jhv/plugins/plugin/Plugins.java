@@ -17,7 +17,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 import org.helioviewer.jhv.base.FileUtils;
-import org.helioviewer.jhv.base.downloadmanager.AbstractRequest.PRIORITY;
+import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
 import org.helioviewer.jhv.base.math.Vector3d;
@@ -266,7 +266,7 @@ public class Plugins implements TimeLineListener,
 	}
 
 	public static HTTPRequest generateAndStartHTPPRequest(String uri,
-			PRIORITY priority) {
+			DownloadPriority priority) {
 		HTTPRequest httpRequest = new HTTPRequest(uri, priority);
 		UltimateDownloadManager.addRequest(httpRequest);
 		return httpRequest;

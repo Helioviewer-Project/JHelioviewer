@@ -67,7 +67,7 @@ public class ZoomStatusPanel extends StatusLabel {
 						/ MainFrame.MAIN_PANEL.getTranslation().z * 100);
 				setText("Zoom: " + zoom + "%");
 			} catch (MetaDataException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			}
 

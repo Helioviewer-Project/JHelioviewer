@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
-import org.helioviewer.jhv.base.downloadmanager.AbstractRequest.PRIORITY;
+import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
@@ -19,7 +19,8 @@ import org.helioviewer.jhv.plugins.plugin.Plugins;
 /**
  * Manages loading and accessing of FileDescriptor Objects
  */
-public class FileDescriptorManager {
+public class FileDescriptorManager
+{
 	private ArrayList<FileDescriptor> descriptors = new ArrayList<>();
 	private LocalDateTime firstDate;
 	private LocalDateTime endDate;
@@ -31,7 +32,8 @@ public class FileDescriptorManager {
 
 	private PfssPlugin parent;
 
-	public FileDescriptorManager(PfssPlugin _parent) {
+	public FileDescriptorManager(PfssPlugin _parent)
+	{
 		parent = _parent;
 	}
 
@@ -59,8 +61,8 @@ public class FileDescriptorManager {
 	 * @param to
 	 *            date of last file description to read
 	 */
-	public synchronized void readFileDescriptors(final LocalDateTime from,
-			final LocalDateTime to) {
+	public synchronized void readFileDescriptors(final LocalDateTime from, final LocalDateTime to)
+	{
 		epoch++;
 		final int curEpoch = epoch;
 		errorMessage = null;
@@ -71,60 +73,65 @@ public class FileDescriptorManager {
 		this.firstDate = from;
 		this.endDate = to;
 
-		synchronized (descriptors) {
+		synchronized (descriptors)
+		{
 			descriptors.clear();
 		}
 
-		Thread thread = new Thread(new Runnable() {
-
+		Thread thread = new Thread(new Runnable()
+		{
 			@Override
-			public void run() {
+			public void run()
+			{
 				LocalDateTime currentDate = from;
 				DateTimeFormatter monthFormatter = DateTimeFormatter.ofPattern("MM");
-				DateTimeFormatter yearFormatter = DateTimeFormatter
-						.ofPattern("YYYY");
-				DateTimeFormatter dateTimeFormatter = DateTimeFormatter
-						.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+				DateTimeFormatter yearFormatter = DateTimeFormatter.ofPattern("YYYY");
+				DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
 				ArrayList<HTTPRequest> httpRequests = new ArrayList<HTTPRequest>();
-				while (currentDate.isBefore(to)) {
+				while (currentDate.isBefore(to))
+				{
 					final String url = PfssSettings.SERVER_URL
 							+ currentDate.format(yearFormatter) + "/"
 							+ currentDate.format(monthFormatter) + "/list.txt";
-					httpRequests.add(Plugins
-							.generateAndStartHTPPRequest(url, PRIORITY.MEDIUM));
+					httpRequests.add(Plugins.generateAndStartHTPPRequest(url, DownloadPriority.MEDIUM));
 					currentDate = currentDate.plusMonths(1);
 				}
 
-				for (HTTPRequest httpRequest : httpRequests) {
-					while (!httpRequest.isFinished()) {
-						try {
+				for (HTTPRequest httpRequest : httpRequests)
+				{
+					while (!httpRequest.isFinished())
+					{
+						try
+						{
 							Thread.sleep(20);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
+						}
+						catch (InterruptedException e)
+						{
 							e.printStackTrace();
 						}
 					}
 
 					String lines[];
-					try {
+					try
+					{
 						lines = httpRequest.getDataAsString().split("\\r?\\n");
-						for (String line : lines) {
+						for (String line : lines) 
+						{
 							int split = line.indexOf(' ');
 							String dateString = line.substring(0, split);
-							String fileName = line.substring(split + 1,
-									line.length());
+							String fileName = line.substring(split + 1, line.length());
 
-							LocalDateTime end = LocalDateTime.parse(dateString,
-									dateTimeFormatter);
+							LocalDateTime end = LocalDateTime.parse(dateString, dateTimeFormatter);
 							LocalDateTime start = end
 									.minusHours(PfssSettings.FITS_FILE_D_HOUR)
-									.minusMinutes(
-											PfssSettings.FITS_FILE_D_MINUTES)
+									.minusMinutes(PfssSettings.FITS_FILE_D_MINUTES)
 									.plusNanos(1);
 
-							if (!(end.isBefore(from) || start.isAfter(to))) {
-								synchronized (descriptors) {
+							if (!(end.isBefore(from) || start.isAfter(to)))
+							{
+								synchronized (descriptors)
+								{
 									if (curEpoch != epoch)
 										return;
 
@@ -133,13 +140,16 @@ public class FileDescriptorManager {
 								}
 							}
 						}
-					} catch (IOException e) {
+					}
+					catch (IOException e)
+					{
 						 parent.addBadRequest(httpRequest);
 					}
 					Plugins.repaintMainPanel();
 				}
 			}
 		}, "PFSS-DESCRIPTION-LOADER");
+		thread.setDaemon(true);
 		thread.start();
 
 	}
@@ -150,8 +160,10 @@ public class FileDescriptorManager {
 	 * @param index
 	 * @return
 	 */
-	public FileDescriptor getFileDescriptor(LocalDateTime localDateTime) {
-		synchronized (descriptors) {
+	public FileDescriptor getFileDescriptor(LocalDateTime localDateTime)
+	{
+		synchronized (descriptors)
+		{
 			for (FileDescriptor fd : descriptors)
 				if (fd.isDateInRange(localDateTime))
 					return fd;
@@ -206,7 +218,7 @@ public class FileDescriptorManager {
 	}
 
 	public void retryBadReqeuest() {
-		// TODO Auto-generated method stub
+		
 		
 	}
 }

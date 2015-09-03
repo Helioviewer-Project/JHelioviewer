@@ -5,7 +5,7 @@ import java.net.URLEncoder;
 import java.util.Date;
 import java.util.HashMap;
 
-import org.helioviewer.jhv.base.downloadmanager.AbstractRequest.PRIORITY;
+import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
@@ -104,7 +104,7 @@ public class HEKRequestThread extends HEKRequest implements Runnable {
                 System.out.println("Requesting Page " + page + " of HEK Events: " + uri);
 
                 // this might take a while
-                HTTPRequest httpRequest = Plugins.generateAndStartHTPPRequest(uri, PRIORITY.MEDIUM);
+                HTTPRequest httpRequest = Plugins.generateAndStartHTPPRequest(uri, DownloadPriority.MEDIUM);
                 // return if the current operation was canceled
 
                 while (!httpRequest.isFinished()) {
@@ -113,7 +113,7 @@ public class HEKRequestThread extends HEKRequest implements Runnable {
 	                    if (cancel)
 	                        return;
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
+						
 						e.printStackTrace();
 					}
 				}

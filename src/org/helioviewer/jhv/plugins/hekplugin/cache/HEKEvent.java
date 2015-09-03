@@ -403,17 +403,20 @@ public class HEKEvent implements IntervalComparison<Date> {
 
     }
     
-    public HeliographicCoordinate getHeliographicCoordinate(Date now){
+    public HeliographicCoordinate getHeliographicCoordinate(Date now)
+    {
     	int timeDifferenceInSeconds = (int) ((now.getTime() - this.getStart().getTime()) / 1000);
 
     	double longitute;
-		try {
+		try
+		{
 			longitute = Math.toRadians(this.getDouble("hgs_x"));
 	    	double latitude = Math.toRadians(this.getDouble("hgs_y"));
 	        HeliographicCoordinate result = new HeliographicCoordinate(longitute, latitude);
 	    	return CoordinateHelper.calculateNextPosition(result, timeDifferenceInSeconds);
-		} catch (HEKEventException e) {
-			// TODO Auto-generated catch block
+		}
+		catch (HEKEventException e)
+		{
 			e.printStackTrace();
 		}
 		return null;
@@ -457,8 +460,6 @@ public class HEKEvent implements IntervalComparison<Date> {
         double phizero = 0.0; // do we have a value for this?
         HeliocentricCartesianCoordinate result = HEKCoordinateTransform.StonyhurstToHeliocentricCartesian(stony, bzero, phizero);
 
-        // TODO: Malte Nuhn - Why does the sign of the y-coordinate need to be
-        // flipped? However, it works like this
         return new Vector2d(result.x, -result.y);
     }
 
@@ -591,7 +592,7 @@ public class HEKEvent implements IntervalComparison<Date> {
                     oldStonyBound.add(oldStonyBound.get(0));
                 }
                 
-                //TODO: fix coordinate conversion
+                //td: fix coordinate conversion
                 for(int i=0;i<oldStonyBound.size()-1;i++)
                 {
                     SphericalCoord a=oldStonyBound.get(i);

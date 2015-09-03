@@ -88,7 +88,7 @@ public class DateFormatInfoDialog extends JDialog implements ActionListener, Sho
 
 	@Override
 	public void init() {
-		// TODO Auto-generated method stub
+		
 		
 	}
 

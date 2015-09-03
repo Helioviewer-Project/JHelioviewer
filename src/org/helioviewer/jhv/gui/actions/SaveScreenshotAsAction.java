@@ -145,7 +145,7 @@ public class SaveScreenshotAsAction extends AbstractAction {
 							imageWidth, imageHeight, textEnabled),
 							extension, selectedFile);
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
+					
 					e1.printStackTrace();
 				}
 			}

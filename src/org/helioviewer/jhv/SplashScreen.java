@@ -193,11 +193,13 @@ public class SplashScreen extends JFrame {
 	 * @param text
 	 *            new text which shall be displayed.
 	 * */
-	public void setProgressText(String text) {
-
-		if (text != null) {
+	public void progressTo(String text)
+	{
+		System.out.println(text);
+		if (text != null)
 			imagePanel.setText(text);
-		}
+		
+		nextStep();
 	}
 
 	/**

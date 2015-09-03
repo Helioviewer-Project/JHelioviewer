@@ -29,6 +29,7 @@ public class JHVGlobals {
 	 */
     public static final int STARTUP_LAYER_ID = 10;
 
+    //TODO check all invocations of file dialogs, should happen centralized
 	public static boolean USE_JAVA_FX = false;
 
     private JHVGlobals()
@@ -164,7 +165,7 @@ public class JHVGlobals {
 				retVal.append(line + "\n");
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		return retVal.toString();

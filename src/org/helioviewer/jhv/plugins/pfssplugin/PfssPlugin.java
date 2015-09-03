@@ -110,7 +110,7 @@ public class PfssPlugin extends AbstractPlugin {
 				Plugins.expandPanel(pfssPluginPanel, open);
 				pfssPluginPanel.setVisibleBtn(visible);
 			} catch (JSONException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			}
 
@@ -125,7 +125,7 @@ public class PfssPlugin extends AbstractPlugin {
 			jsonPfss.put(JSON_VISIBLE, isVisible());
 			jsonObject.put(JSON_NAME, jsonPfss);
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 	}

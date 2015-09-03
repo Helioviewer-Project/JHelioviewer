@@ -19,7 +19,7 @@ import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPResponse;
 import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPSocket;
 import org.helioviewer.jhv.viewmodel.jp2view.kakadu.JHV_KduException;
 
-public class JPIPRequest extends AbstractRequest {
+public class JPIPRequest extends AbstractDownloadRequest {
 
 	private JPIPSocket jpipSocket;
 
@@ -30,7 +30,7 @@ public class JPIPRequest extends AbstractRequest {
 	private final CacheableImageData cacheableImageData;
 	private final Kdu_cache kduCache = new Kdu_cache();
 	
-	public JPIPRequest(String url, PRIORITY priority, int startFrame,
+	public JPIPRequest(String url, DownloadPriority priority, int startFrame,
 			int endFrame, Rectangle size,
 			CacheableImageData cacheableImageData) {
 		super(url, priority);
@@ -91,16 +91,16 @@ public class JPIPRequest extends AbstractRequest {
 			finished = true;
 			MainFrame.MOVIE_PANEL.repaintSlider();
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		} catch (JHV_KduException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		} finally {
 			try {
 				jpipSocket.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			}
 		}

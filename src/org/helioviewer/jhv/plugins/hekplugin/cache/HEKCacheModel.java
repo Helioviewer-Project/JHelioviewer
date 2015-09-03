@@ -68,7 +68,7 @@ public class HEKCacheModel {
      * @return
      */
     public Interval<Date> getCurInterval() {
-        // TODO: Malte Nuhn - Implement the CacheModelLOCK
+        // td: Malte Nuhn - Implement the CacheModelLOCK
         return curInterval;
     }
 
@@ -82,7 +82,7 @@ public class HEKCacheModel {
      *            - Interval in which the path is asked to be valid
      */
     private boolean pathValidInInterval(HEKPath path, Interval<Date> duration, boolean overlapmode) {
-        // TODO: What to do with partial tracks
+        // td: What to do with partial tracks
         // if (this.downloadablePaths.contains(path))
         // return true;
 
@@ -537,7 +537,7 @@ public class HEKCacheModel {
 
     /**
      * Store the given Events - available in the given interval - in the cache.
-     * TODO Do not explicitly pass the eventpaths, use
+     * Do not explicitly pass the eventpaths, use
      * {@link HEKEvent#getPath()} instead
      * 
      * @param eventsToFeed

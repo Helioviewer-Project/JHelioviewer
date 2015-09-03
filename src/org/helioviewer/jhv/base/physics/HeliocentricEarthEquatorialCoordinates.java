@@ -1,9 +1,7 @@
 package org.helioviewer.jhv.base.physics;
 
-// TODO: Malte Nuhn - GET RID OF THESE CLASSES
-
-public class HeliocentricEarthEquatorialCoordinates implements SolarCoordinates {
-
+public class HeliocentricEarthEquatorialCoordinates implements SolarCoordinates
+{
     // the origin is at the center of the sun
 
     // solar rotation axis, positive direction to north pole
@@ -16,14 +14,15 @@ public class HeliocentricEarthEquatorialCoordinates implements SolarCoordinates 
     // s.t. it forms an orthonormal basis with x and z
     public final double y;
 
-    public HeliocentricEarthEquatorialCoordinates(double newX, double newY, double newZ) {
+    public HeliocentricEarthEquatorialCoordinates(double newX, double newY, double newZ)
+    {
         x = newX;
         y = newY;
         z = newZ;
     }
 
-    public HeliocentricEarthEquatorialCoordinates convertToHeliocentricEarthEquatorialCoordinates() {
+    public HeliocentricEarthEquatorialCoordinates convertToHeliocentricEarthEquatorialCoordinates()
+    {
         return this;
     }
-
 }

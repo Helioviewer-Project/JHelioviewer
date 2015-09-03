@@ -2,7 +2,7 @@ package org.helioviewer.jhv.plugins.pfssplugin.data;
 
 import java.io.IOException;
 
-import org.helioviewer.jhv.base.downloadmanager.AbstractRequest.PRIORITY;
+import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
 import org.helioviewer.jhv.plugins.pfssplugin.data.caching.Cacheable;
@@ -35,7 +35,7 @@ public class PfssCompressed implements Cacheable
 	public PfssCompressed(FileDescriptor descriptor, String url, PfssPlugin parent)
 	{
 		this.descriptor = descriptor;
-		httpRequest = Plugins.generateAndStartHTPPRequest(url, PRIORITY.MEDIUM);
+		httpRequest = Plugins.generateAndStartHTPPRequest(url, DownloadPriority.MEDIUM);
 		this.parent = parent;
 	}
 	
@@ -55,7 +55,7 @@ public class PfssCompressed implements Cacheable
 	    	try {
 				Thread.sleep(20);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			}
 		}

@@ -414,7 +414,7 @@ public class HEKPlugin extends AbstractPlugin {
 							.expandPanel(hekPluginPanel, visible);
 				setVisible(visible);
 			} catch (JSONException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			}
 		}
@@ -435,7 +435,7 @@ public class HEKPlugin extends AbstractPlugin {
 			jsonHek.put(JSON_EVENTS, jsonHekEvents);
 			jsonObject.put(JSON_NAME, jsonHek);
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 	}
@@ -454,19 +454,19 @@ public class HEKPlugin extends AbstractPlugin {
 
 	@Override
 	public boolean checkBadRequests(LocalDateTime start, LocalDateTime end) {
-		// TODO Auto-generated method stub
+		
 		return false;
 	}
 
 	@Override
 	public int getBadRequestCount() {
-		// TODO Auto-generated method stub
+		
 		return 0;
 	}
 
 	@Override
 	public void retryBadReqeuest() {
-		// TODO Auto-generated method stub
+		
 		
 	}	
 }

@@ -10,8 +10,6 @@ import java.util.List;
  * @author Malte Nuhn
  * 
  */
-
-// TODO JAVADOC
 public class HEKPath {
 
     public static final Comparator<HEKPath> LASTPARTCOMPARATOR = new Comparator<HEKPath>() {

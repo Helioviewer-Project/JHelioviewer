@@ -8,9 +8,11 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
+import javax.swing.SwingUtilities;
+
 import org.helioviewer.jhv.Settings;
-import org.helioviewer.jhv.base.downloadmanager.AbstractRequest;
-import org.helioviewer.jhv.base.downloadmanager.AbstractRequest.PRIORITY;
+import org.helioviewer.jhv.base.downloadmanager.AbstractDownloadRequest;
+import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
 import org.helioviewer.jhv.layers.Layers;
@@ -24,44 +26,57 @@ public class InstrumentModel {
 	private static LinkedHashMap<String, Observatory> observatories = new LinkedHashMap<String, InstrumentModel.Observatory>();
 	private static AddLayerPanel addLayerPanel;
 
-	static {
-		Thread thread = new Thread(new Runnable() {
+	static
+	{
+		Thread thread = new Thread(new Runnable()
+		{
 			@Override
-			public void run() {
-				HTTPRequest httpRequest = new HTTPRequest(URL_DATASOURCE,
-						PRIORITY.LOW, AbstractRequest.INFINITE);
+			public void run()
+			{
+				final HTTPRequest httpRequest = new HTTPRequest(URL_DATASOURCE, DownloadPriority.LOW, AbstractDownloadRequest.INFINITE_TIMEOUT);
 				UltimateDownloadManager.addRequest(httpRequest);
 
-				while (!httpRequest.isFinished()) {
-					try {
+				//FIXME: add error handling, in case download fails
+				while (!httpRequest.isFinished())
+				{
+					try
+					{
 						Thread.sleep(20);
-					} catch (InterruptedException e) {
+					}
+					catch (InterruptedException e)
+					{
 						e.printStackTrace();
 					}
 				}
-				try {
-					JSONObject jsonObject;
-					try {
-						jsonObject = new JSONObject(
-								httpRequest.getDataAsString());
-						addObservatories(jsonObject);
-						addLayerPanel.updateGUI();
-						boolean startUpMovie = Boolean.parseBoolean(Settings
-								.getProperty("startup.loadmovie"));
-						if (startUpMovie) {
-							Filter instrument = observatories.get("SDO").filters.get("AIA").filters.get("171");
-							LocalDateTime start = instrument.end.minusDays(1);
-							Layers.addLayer(instrument.sourceId, start,
-									instrument.end, 1728, "AIA 171");
+				
+				SwingUtilities.invokeLater(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						try
+						{
+							JSONObject jsonObject = new JSONObject(httpRequest.getDataAsString());
+							addObservatories(jsonObject);
+							addLayerPanel.updateGUI();
+							
+							boolean startUpMovie = Boolean.parseBoolean(Settings.getProperty("startup.loadmovie"));
+							if (startUpMovie)
+							{
+								Filter instrument = observatories.get("SDO").filters.get("AIA").filters.get("171");
+								LocalDateTime start = instrument.end.minusDays(1);
+								Layers.addLayer(instrument.sourceId, start, instrument.end, 1728, "AIA 171");
+							}
 						}
-					} catch (IOException e) {
-						e.printStackTrace();
+						catch (IOException | JSONException e)
+						{
+							e.printStackTrace();
+						}
 					}
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
+				});
 			}
 		}, "MODEL_LOAD");
+		thread.setDaemon(true);
 		thread.start();
 	}
 
@@ -134,7 +149,7 @@ public class InstrumentModel {
 				observatory.uiLabels = uiLabel;
 			}
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 

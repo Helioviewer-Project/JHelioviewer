@@ -94,7 +94,7 @@ public class HEKConstants {
      * @throws IOException
      */
     private void setupEventIcons() {
-        // TODO: Malte Nuhn - Use IconBank (wait for newest version)
+        // td: Malte Nuhn - Use IconBank (wait for newest version)
 
         System.out.println("HEKConstants -> Setting up event icons...");
 

@@ -10,7 +10,6 @@ import kdu_jni.Kdu_region_compositor;
 
 import org.helioviewer.jhv.layers.AbstractImageLayer.CACHE_STATUS;
 import org.helioviewer.jhv.opengl.TextureCache;
-import org.helioviewer.jhv.opengl.TextureCache.CachedTexture;
 import org.helioviewer.jhv.viewmodel.jp2view.kakadu.JHV_KduException;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduRender;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
@@ -43,24 +42,30 @@ public class CacheableImageData {
 		this.id = id;
 	}
 
-	public CacheableImageData(int id, String fileName) {
+	public CacheableImageData(int id, String fileName)
+	{
 		this.kduCache = null;
 		this.id = id;
 		this.fileName = fileName;
-		try {
+		try
+		{
 			family_src.Open(fileName);
 			jpxSrc.Open(family_src, true);
 			compositor.Create(jpxSrc, CODESTREAM_CACHE_THRESHOLD);
-		} catch (KduException e) {
-			// TODO Auto-generated catch block
+		}
+		catch (KduException e)
+		{
 			e.printStackTrace();
 		}
 	}
 
-	public void setKDUCache(Kdu_cache kduCache) {
-		if (fileName != null) {
+	public void setKDUCache(Kdu_cache kduCache)
+	{
+		if (fileName != null)
+		{
 			this.kduCache = kduCache;
-			try {
+			try
+			{
 				Kdu_region_compositor compositor = new Kdu_region_compositor();
 				Jp2_threadsafe_family_src family_src = new Jp2_threadsafe_family_src();
 				Jpx_source jpxSrc = new Jpx_source();
@@ -73,8 +78,9 @@ public class CacheableImageData {
 
 				if (metaDatas == null)
 					initMetaData();
-			} catch (KduException e) {
-				// TODO Auto-generated catch block
+			}
+			catch (KduException e)
+			{
 				e.printStackTrace();
 			}
 		}
@@ -94,14 +100,8 @@ public class CacheableImageData {
 			}
 			this.metaDatas = metaDatas;
 		}
-		catch (KduException e)
+		catch (JHV_KduException | KduException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		catch (JHV_KduException e)
-		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -176,7 +176,8 @@ public class CacheableImageData {
 			kduCache.Native_destroy();
 		kduCache = null;
 		markAsChanged(false);
-		try {
+		try
+		{
 			Kdu_region_compositor compositor = new Kdu_region_compositor();
 			Jp2_threadsafe_family_src family_src = new Jp2_threadsafe_family_src();
 			Jpx_source jpxSrc = new Jpx_source();
@@ -188,8 +189,9 @@ public class CacheableImageData {
 			this.jpxSrc = jpxSrc;
 			if (metaDatas == null)
 				initMetaData();
-		} catch (KduException e) {
-			// TODO Auto-generated catch block
+		}
+		catch (KduException e)
+		{
 			e.printStackTrace();
 		}
 	}

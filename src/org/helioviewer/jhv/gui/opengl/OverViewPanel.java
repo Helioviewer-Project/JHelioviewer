@@ -54,19 +54,23 @@ public class OverViewPanel extends MainPanel
 				mainViews.get(0));
 	}
 
-	private void zoomToFit() {
+	private void zoomToFit()
+	{
 		AbstractImageLayer activeLayer = Layers.getActiveImageLayer();
-		if (activeLayer != null){
-			Rectangle2D region;
-			try {
-				LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
-				if (activeLayer.getMetaData(currentDateTime) != null){
-				region = activeLayer.getMetaData(currentDateTime).getPhysicalImageSize();
-				if (region != null) {
+		if (activeLayer == null)
+			return;
+
+		try
+		{
+			LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
+			if (activeLayer.getMetaData(currentDateTime) != null)
+			{
+				Rectangle2D region = activeLayer.getMetaData(currentDateTime).getPhysicalImageSize();
+				if (region != null)
+				{
 					double halfWidth = region.getHeight() / 2;
 					Dimension canvasSize = this.getSize();
-					double aspect = canvasSize.getWidth()
-							/ canvasSize.getHeight();
+					double aspect = canvasSize.getWidth() / canvasSize.getHeight();
 					halfWidth = aspect > 1 ? halfWidth * aspect : halfWidth;
 					double halfFOVRad = Math.toRadians(OverViewPanel.FOV / 2.0);
 					double distance = halfWidth
@@ -74,16 +78,18 @@ public class OverViewPanel extends MainPanel
 							/ Math.sin(halfFOVRad);
 					this.translation = new Vector3d(0, 0, distance);
 				}
-				}
-			} catch (MetaDataException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
+		}
+		catch (MetaDataException e)
+		{
+			
+			e.printStackTrace();
 		}
 	}
 
 	@Override
-	public void display(GLAutoDrawable drawable) {
+	public void display(GLAutoDrawable drawable)
+	{
 		this.zoomToFit();
 		super.display(drawable);
 	}

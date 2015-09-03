@@ -26,27 +26,10 @@ public class IntervalStore<TimeFormat extends Comparable<TimeFormat>, ItemFormat
 
     }
 
-    public IntervalStore(Interval<TimeFormat> interval) {
+    public IntervalStore(Interval<TimeFormat> interval)
+    {
         data.put(interval, new IntervalContainer<TimeFormat, ItemFormat>());
     }
-
-    /**
-     * Constructor adding all of the array's intervals
-     * 
-     * @param intervals
-     */
-
-    // TODO: Malte Nuhn - For completeness implement constructor adding all of
-    // the array's intervals
-
-    /**
-     * Copyconstructor, deepcopying the contained intervals, too
-     * 
-     * @param intervals
-     */
-
-    // TODO: Malte Nuhn - For completeness implement copyconstructor deepcopying
-    // the contained intervals, too
 
     /**
      * Add/Merge the set of intervals given
@@ -69,7 +52,6 @@ public class IntervalStore<TimeFormat extends Comparable<TimeFormat>, ItemFormat
         boolean merged = false;
         int newItems = newIntervalContainer.getItems().size();
 
-        // TODO WORK ON PARAMETERS OF THIS METHOD
         List<Interval<TimeFormat>> overlappingIntervals = this.getOverlappingIntervals(newInterval);
 
         // Melt new interval with all existing ones
@@ -106,7 +88,6 @@ public class IntervalStore<TimeFormat extends Comparable<TimeFormat>, ItemFormat
         // Log.info("New Result of downloadable Paths is " +
         // newIntervalContainer.downloadableEvents);
 
-        // TODO GETTERSETTER, COMMENT THAT DOWNLOADABLE ARE DECREASED
         // and finally store the new interval
         data.put(newInterval, newIntervalContainer);
 

@@ -27,24 +27,24 @@ public abstract class StatusLabel extends JLabel implements TimeLineListener, St
 	}
 	
 	public void mouseExited(MouseEvent e, Ray ray) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
 	public void mouseMoved(MouseEvent e, Ray ray) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
 	@Override
 	public void timeStampChanged(LocalDateTime current, LocalDateTime last) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
 	@Override
 	public void dateTimesChanged(int framecount) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 	

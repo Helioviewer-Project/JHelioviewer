@@ -214,7 +214,7 @@ public class HEKPluginPanel extends JPanel implements ActionListener,
 
 		if (act.getActionCommand().equals("request")) {
 			// move into controller
-			// TODO move into loading watcher
+			// td move into loading watcher
 			HashMap<HEKPath, List<Interval<Date>>> selected = selectionModel
 					.getSelection(cacheModel.getCurInterval());
 			HashMap<HEKPath, List<Interval<Date>>> needed = cache

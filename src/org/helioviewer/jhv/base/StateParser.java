@@ -114,10 +114,10 @@ public class StateParser extends DefaultHandler {
 					try {
 						startLoadingStateFile(selectedFile);
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
+						
 						e.printStackTrace();
 					} catch (JSONException e) {
-						// TODO Auto-generated catch block
+						
 						e.printStackTrace();
 					}
 				}
@@ -249,10 +249,10 @@ public class StateParser extends DefaultHandler {
 					try {
 						startSavingStateFile(selectedFile);
 					} catch (JSONException e) {
-						// TODO Auto-generated catch block
+						
 						e.printStackTrace();
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
+						
 						e.printStackTrace();
 					}
 				}
