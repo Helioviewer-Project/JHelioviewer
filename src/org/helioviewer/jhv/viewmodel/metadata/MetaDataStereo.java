@@ -5,8 +5,6 @@ import java.time.LocalDateTime;
 
 import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
 import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
-import org.helioviewer.jhv.base.coordinates.HelioprojectiveCartesianCoordinate;
-import org.helioviewer.jhv.base.coordinates.SunDistance;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
 

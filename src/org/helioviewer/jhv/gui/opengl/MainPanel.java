@@ -52,7 +52,6 @@ import org.helioviewer.jhv.opengl.NoImageScreen;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.opengl.RayTrace;
 import org.helioviewer.jhv.opengl.RayTrace.Ray;
-import org.helioviewer.jhv.opengl.TextureCache;
 import org.helioviewer.jhv.opengl.camera.Camera;
 import org.helioviewer.jhv.opengl.camera.CameraInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraMode;
@@ -280,10 +279,6 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 				}
 			}
 			
-			//make sure texturePool is initialized
-			//FIXME: should not be necessary. ideally TP interaction should all happen from gl thread
-			TextureCache.init();
-
 			LinkedHashMap<AbstractLayer, Future<ByteBuffer>> layers=new LinkedHashMap<AbstractLayer, Future<ByteBuffer>>();
 			for (AbstractLayer layer : Layers.getLayers())
 				if (layer.isVisible() && layer.isImageLayer())

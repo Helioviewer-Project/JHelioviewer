@@ -15,6 +15,7 @@ import java.util.concurrent.Future;
 import org.helioviewer.jhv.JHVException;
 import org.helioviewer.jhv.JHVException.MetaDataException;
 import org.helioviewer.jhv.JHVException.TextureException;
+import org.helioviewer.jhv.base.FutureValue;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.downloadmanager.AbstractDownloadRequest;
 import org.helioviewer.jhv.base.math.Vector3d;
@@ -23,6 +24,7 @@ import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.opengl.MainPanel;
 import org.helioviewer.jhv.layers.filter.LUT;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
+import org.helioviewer.jhv.opengl.TextureCache;
 import org.helioviewer.jhv.opengl.camera.CameraMode;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.Cache;
@@ -425,13 +427,28 @@ public class ImageLayer extends AbstractImageLayer
 		if(lut==null)
 			lut=metaData.getDefaultLUT();
 		
+		final ImageRegion imageRegion = layerRayTrace.getCurrentRegion(mainPanel, metaData, size);
+		if (imageRegion.getImageSize().getWidth() < 0 || imageRegion.getImageSize().getHeight() < 0)
+			return new FutureValue<ByteBuffer>(null);
+		
+		LocalDateTime nextLocalDateTime = ultimateLayer.getNextLocalDateTime(currentDateTime);
+		if (nextLocalDateTime == null)
+			nextLocalDateTime = ultimateLayer.localDateTimes.last();
+		
+		ImageRegion cachedRegion = TextureCache.search(id, imageRegion, nextLocalDateTime);
+		if(cachedRegion != null)
+		{
+			ultimateLayer.imageRegion = cachedRegion;
+			return new FutureValue<ByteBuffer>(null);
+		}
+		
+		final LocalDateTime finalNextLocalDateTime = nextLocalDateTime;
 		return exDecoder.submit(new Callable<ByteBuffer>()
 		{
 			@Override
 			public ByteBuffer call() throws Exception
 			{
-				ImageRegion imageRegion = layerRayTrace.getCurrentRegion(mainPanel, metaData, size);
-				return ultimateLayer.getImageData(currentDateTime, imageRegion, metaData);
+				return ultimateLayer.getImageData(finalNextLocalDateTime, imageRegion, metaData);
 			}
 		});
 	}

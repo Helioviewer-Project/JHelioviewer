@@ -41,9 +41,11 @@ public class UltimateLayer
 	public static final int MAX_FRAME_SIZE = 10;
 	private static final String URL = "http://api.helioviewer.org/v2/getJPX/?";
 
-	private ConcurrentSkipListSet<LocalDateTime> localDateTimes = new ConcurrentSkipListSet<LocalDateTime>();
+	public ConcurrentSkipListSet<LocalDateTime> localDateTimes = new ConcurrentSkipListSet<LocalDateTime>();
 
-	private ImageRegion imageRegion;
+	//FIXME: should be passed as parameters, not as state
+	public ImageRegion imageRegion;
+	
 	private Thread jpipLoader;
 	private boolean localFile = false;
 	private ImageLayer imageLayer;
@@ -274,7 +276,7 @@ public class UltimateLayer
 	}
 
 
-	private LocalDateTime getNextLocalDateTime(LocalDateTime currentDateTime) {
+	public LocalDateTime getNextLocalDateTime(LocalDateTime currentDateTime) {
 		LocalDateTime after = this.localDateTimes.ceiling(currentDateTime);
 		LocalDateTime before = this.localDateTimes.floor(currentDateTime);
 		long beforeValue = before != null ? ChronoUnit.SECONDS.between(before,
@@ -505,24 +507,9 @@ public class UltimateLayer
 		thread.start();
 	}
 	
-	public ByteBuffer getImageData(LocalDateTime currentDateTime, ImageRegion imageRegion, MetaData metaData)
+	public ByteBuffer getImageData(LocalDateTime localDateTime, ImageRegion imageRegion, MetaData metaData)
 	{
-		LocalDateTime localDateTime = this.getNextLocalDateTime(currentDateTime);
-		if (imageRegion.getImageSize().getWidth() < 0 || imageRegion.getImageSize().getHeight() < 0)
-			return null;
-		
-		if (localDateTime == null)
-			localDateTime = this.localDateTimes.last();
-
-		ImageRegion cachedRegion = TextureCache.search(id, imageRegion, localDateTime);
-		if(cachedRegion != null)
-		{
-			this.imageRegion = cachedRegion;
-			return null;
-		}
-		
 		CacheableImageData cacheObject = null;
-
 		cacheObject = Cache.getCacheElement(id, localDateTime);
 
 		this.imageRegion = imageRegion;
