@@ -1,4 +1,18 @@
+sudo: false
+env:
+  global:
+    - secure: "Q9tIhaujmxm_7ZlA4jqWvA"
+addons:
+  coverity_scan:
+
+    project:
+      name: Helioviewer-Project/JHelioviewer
+      version: 1.0
+      description: JHelioviewer
+
+    notification_email: simon.felix@fhnw.ch
+    build_command: javac src/JHelioviewer.java
+    branch_pattern: master
+
 language: java
-os:
-  - linux
-  - osx
+script: 
