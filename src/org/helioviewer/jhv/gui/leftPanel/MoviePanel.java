@@ -55,17 +55,18 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 	// different animation speeds
 	private enum PlaybackSpeedUnit
 	{
-		FRAMES_PER_SECOND("Frames/sec", 1), MINUTES_PER_SECOND(
-				"Solar minutes/sec", 60), HOURS_PER_SECOND("Solar hours/sec",
-				3600), DAYS_PER_SECOND("Solar days/sec", 864000);
+		FRAMES_PER_SECOND("Frames/sec", 1),
+		MINUTES_PER_SECOND("Solar minutes/sec", 60),
+		HOURS_PER_SECOND("Solar hours/sec", 3600),
+		DAYS_PER_SECOND("Solar days/sec", 864000);
 		
 		private String text;
 		private int factor;
 
-		private PlaybackSpeedUnit(String text, int factor)
+		private PlaybackSpeedUnit(String _text, int _factor)
 		{
-			this.text = text;
-			this.factor = factor;
+			text = _text;
+			factor = _factor;
 		}
 
 		@Override
@@ -77,14 +78,14 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 
 	public enum AnimationMode
 	{
-		LOOP("loop"), STOP("Stop"), SWING("swing");
+		LOOP("Loop"), STOP("Stop"), SWING("Swing");
 		private String text;
-
-		private AnimationMode(String text)
+		
+		private AnimationMode(String _text)
 		{
-			this.text = text;
+			text = _text;
 		}
-
+		
 		@Override
 		public String toString()
 		{
@@ -109,41 +110,21 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 	private JSlider slider;
 	private JButton btnPrevious, btnPlayPause, btnForward;
 
-	private static int size;
-	private static int buttonSize;
-	private static int width;
-	private static int optionPaneSize;
-	
-	static{
-		JSlider slider = new JSlider();		
-		JButton button = new JButton(ICON_PLAY);
-		JLabel label = new JLabel("test");
-		size = slider.getPreferredSize().height + label.getPreferredSize().height + 10 + 20;
-		JComboBox<String> comboBox = new JComboBox<String>();
-		JSpinner spinner = new JSpinner();
-	
-		buttonSize = button.getPreferredSize().height;
-		int tmpSize = Math.max(Math.max(label.getPreferredSize().height, spinner.getPreferredSize().height), comboBox.getPreferredSize().height);
-		optionPaneSize = size + tmpSize * 2;
-	}
-
-	public MoviePanel() {
-		setBorder(new EmptyBorder(0, 2, 0, 10));
+	public MoviePanel()
+	{
+		setBorder(new EmptyBorder(0, 2, 10, 10));
 		TimeLine.SINGLETON.addListener(this);
 		Layers.addNewLayerListener(this);
-		this.setLayout(new BorderLayout());
-		this.add(initGUI(), BorderLayout.CENTER);
-		optionPane = initOptionPane();
-		this.add(optionPane, BorderLayout.SOUTH);
-		width = slider.getPreferredSize().width;
-		this.setMinimumSize(new Dimension(width, size));
-		this.setPreferredSize(new Dimension(width, size));
+		setLayout(new BorderLayout());
+		add(createMain(), BorderLayout.CENTER);
+		optionPane = createOptionPane();
+		add(optionPane, BorderLayout.SOUTH);
 	}
 
-	private JPanel initOptionPane() {
+	private JPanel createOptionPane()
+	{
 		JPanel contentPanel = new JPanel();
-		contentPanel
-				.setLayout(new FormLayout(new ColumnSpec[] {
+		contentPanel.setLayout(new FormLayout(new ColumnSpec[] {
 						FormFactory.RELATED_GAP_COLSPEC,
 						ColumnSpec.decode("max(5px;default)"),
 						FormFactory.RELATED_GAP_COLSPEC,
@@ -158,28 +139,29 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		JLabel lblSpeed = new JLabel("Speed:");
 		contentPanel.add(lblSpeed, "2, 2");
 
-		SpinnerNumberModel spinnerNumberModel = new SpinnerNumberModel(20, 1,
-				300, 1);
+		SpinnerNumberModel spinnerNumberModel = new SpinnerNumberModel(20, 1, 300, 1);
 		final JSpinner spinner = new JSpinner(spinnerNumberModel);
 		contentPanel.add(spinner, "4, 2");
 
 		final JComboBox<PlaybackSpeedUnit> speedUnitComboBox = new JComboBox<PlaybackSpeedUnit>(
 				PlaybackSpeedUnit.values());
 
-		spinner.addChangeListener(new ChangeListener() {
-
+		spinner.addChangeListener(new ChangeListener()
+		{
 			@Override
-			public void stateChanged(ChangeEvent e) {
-				timeLine.setFPS((int) spinner.getValue()
-						* ((PlaybackSpeedUnit) speedUnitComboBox.getSelectedItem()).factor);
+			public void stateChanged(ChangeEvent e)
+			{
+				timeLine.setFPS((int) spinner.getValue() * ((PlaybackSpeedUnit) speedUnitComboBox.getSelectedItem()).factor);
 			}
 		});
-		speedUnitComboBox.addItemListener(new ItemListener() {
-
+		
+		speedUnitComboBox.addItemListener(new ItemListener()
+		{
 			@Override
-			public void itemStateChanged(ItemEvent e) {
-				timeLine.setFPS((int) spinner.getValue()
-						* ((PlaybackSpeedUnit) speedUnitComboBox.getSelectedItem()).factor);
+			public void itemStateChanged(ItemEvent e)
+			{
+				//FIXME: switching to other units doesn't work --> crash
+				timeLine.setFPS((int) spinner.getValue() * ((PlaybackSpeedUnit) speedUnitComboBox.getSelectedItem()).factor);
 			}
 		});
 		contentPanel.add(speedUnitComboBox, "6, 2, fill, default");
@@ -187,14 +169,13 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		JLabel lblAnimationMode = new JLabel("Animation Mode:");
 		contentPanel.add(lblAnimationMode, "2, 4, 3, 1");
 
-		final JComboBox<AnimationMode> animationModeComboBox = new JComboBox<AnimationMode>(
-				AnimationMode.values());
-		animationModeComboBox.addItemListener(new ItemListener() {
-
+		final JComboBox<AnimationMode> animationModeComboBox = new JComboBox<AnimationMode>(AnimationMode.values());
+		animationModeComboBox.addItemListener(new ItemListener()
+		{
 			@Override
-			public void itemStateChanged(ItemEvent e) {
-				timeLine.setAnimationMode((AnimationMode) animationModeComboBox
-						.getSelectedItem());
+			public void itemStateChanged(ItemEvent e)
+			{
+				timeLine.setAnimationMode((AnimationMode) animationModeComboBox.getSelectedItem());
 			}
 		});
 		contentPanel.add(animationModeComboBox, "6, 4, fill, default");
@@ -202,26 +183,33 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		return contentPanel;
 	}
 
-	private JPanel initGUI() {
+	private JPanel createMain()
+	{
 		JPanel contentPanel = new JPanel();
 
 		contentPanel.setLayout(new FormLayout(
-				new ColumnSpec[] { FormFactory.RELATED_GAP_COLSPEC,
-						FormFactory.DEFAULT_COLSPEC,
-						FormFactory.RELATED_GAP_COLSPEC,
-						FormFactory.DEFAULT_COLSPEC,
-						FormFactory.RELATED_GAP_COLSPEC,
-						FormFactory.DEFAULT_COLSPEC,
-						FormFactory.RELATED_GAP_COLSPEC,
-						FormFactory.DEFAULT_COLSPEC,
-						FormFactory.RELATED_GAP_COLSPEC,
-						ColumnSpec.decode("pref:grow"),
-						FormFactory.RELATED_GAP_COLSPEC,
-						FormFactory.DEFAULT_COLSPEC, }, new RowSpec[] {
-						FormFactory.RELATED_GAP_ROWSPEC,
-						FormFactory.DEFAULT_ROWSPEC,
-						FormFactory.RELATED_GAP_ROWSPEC,
-						FormFactory.DEFAULT_ROWSPEC, }));
+				new ColumnSpec[]
+				{
+					FormFactory.RELATED_GAP_COLSPEC,
+					FormFactory.DEFAULT_COLSPEC,
+					FormFactory.RELATED_GAP_COLSPEC,
+					FormFactory.DEFAULT_COLSPEC,
+					FormFactory.RELATED_GAP_COLSPEC,
+					FormFactory.DEFAULT_COLSPEC,
+					FormFactory.RELATED_GAP_COLSPEC,
+					FormFactory.DEFAULT_COLSPEC,
+					FormFactory.RELATED_GAP_COLSPEC,
+					ColumnSpec.decode("pref:grow"),
+					FormFactory.RELATED_GAP_COLSPEC,
+					FormFactory.DEFAULT_COLSPEC
+				},
+				new RowSpec[]
+				{
+					FormFactory.RELATED_GAP_ROWSPEC,
+					FormFactory.PREF_ROWSPEC,
+					FormFactory.RELATED_GAP_ROWSPEC,
+					FormFactory.PREF_ROWSPEC
+				}));
 
 		slider = new TimeSlider();
 		slider.setValue(0);
@@ -230,10 +218,11 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		slider.setMaximum(49);
 		slider.setSnapToTicks(true);
 		slider.setEnabled(false);
-		slider.addChangeListener(new ChangeListener() {
-
+		slider.addChangeListener(new ChangeListener()
+		{
 			@Override
-			public void stateChanged(ChangeEvent e) {
+			public void stateChanged(ChangeEvent e)
+			{
 				lblFrames.setText(slider.getValue() + "/" + slider.getMaximum());
 				timeLine.setCurrentFrame(slider.getValue());
 			}
@@ -242,14 +231,17 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 
 		btnPrevious = new JButton(ICON_BACKWARD);
 		btnPrevious.setEnabled(false);
-		btnPrevious.addActionListener(new ActionListener() {
-
+		btnPrevious.addActionListener(new ActionListener()
+		{
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e)
+			{
 				timeLine.previousFrame();
 			}
 		});
-		btnPrevious.setPreferredSize(new Dimension(btnPrevious.getPreferredSize().width, buttonSize));
+		//final int buttonSize = new JButton(ICON_PLAY).getPreferredSize().height;
+		
+		//btnPrevious.setPreferredSize(new Dimension(btnPrevious.getPreferredSize().width, buttonSize));
 		contentPanel.add(btnPrevious, "2, 4");
 
 		btnPlayPause = new JButton(ICON_PLAY);
@@ -262,45 +254,42 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 				setPlaying(!timeLine.isPlaying());
 			}
 		});
-		btnPlayPause.setPreferredSize(new Dimension(btnPlayPause.getPreferredSize().width, buttonSize));
+		//btnPlayPause.setPreferredSize(new Dimension(btnPlayPause.getPreferredSize().width, buttonSize));
 		contentPanel.add(btnPlayPause, "4, 4");
 
 		btnForward = new JButton(ICON_FORWARD);
 		btnForward.setEnabled(false);
-		btnForward.addActionListener(new ActionListener() {
-
+		btnForward.addActionListener(new ActionListener()
+		{
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e)
+			{
 				timeLine.nextFrame();
 			}
 		});
-		btnForward.setPreferredSize(new Dimension(btnForward.getPreferredSize().width, buttonSize));
+		//btnForward.setPreferredSize(new Dimension(btnForward.getPreferredSize().width, buttonSize));
 		
 		contentPanel.add(btnForward, "6, 4");
-		final JButton btnOptionPane = new JButton("More Options", ICON_OPEN);
-		btnOptionPane.setToolTipText("More Options to Control Playback");
-		btnOptionPane.addActionListener(new ActionListener() {
-
+		final JButton btnMoreOptions = new JButton("More Options", ICON_OPEN);
+		btnMoreOptions.addActionListener(new ActionListener()
+		{
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (showMore) {
-					btnOptionPane.setIcon(ICON_OPEN);
-					setPreferredSize(new Dimension(300, size));
-				} else {
-					btnOptionPane.setIcon(ICON_CLOSE);
-					setPreferredSize(new Dimension(300, optionPaneSize));
-				}
+			public void actionPerformed(ActionEvent e)
+			{
+				if (showMore)
+					btnMoreOptions.setIcon(ICON_OPEN);
+				else
+					btnMoreOptions.setIcon(ICON_CLOSE);
+
 				showMore = !showMore;
 				optionPane.setVisible(showMore);
 			}
 		});
-		btnOptionPane.setPreferredSize(new Dimension(btnOptionPane.getPreferredSize().width, buttonSize));
 		
-		contentPanel.add(btnOptionPane, "8, 4");
+		contentPanel.add(btnMoreOptions, "8, 4");
 		lblFrames = new JLabel();
 		contentPanel.add(lblFrames, "12, 4");
 
-		contentPanel.setPreferredSize(new Dimension(300, size));
 		setButtonsEnabled(false);
 		return contentPanel;
 	}
@@ -345,13 +334,14 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		private static final double SCALE_FACTOR = 1000000;
 		private static final double INVERSE_SCALE_FACTOR = 1 / SCALE_FACTOR;
 
-		public TimeSliderUI(JSlider slider) {
+		public TimeSliderUI(JSlider slider)
+		{
 			super(slider);
 		}
 
 		@Override
-		public void paintThumb(Graphics g) {
-
+		public void paintThumb(Graphics g)
+		{
 			Rectangle knobBounds = thumbRect;
 			int w = knobBounds.width;
 			int h = knobBounds.height - 2;

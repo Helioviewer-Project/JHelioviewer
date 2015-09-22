@@ -23,7 +23,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
@@ -92,8 +91,6 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		initGUI();
 		updateData();
 		InstrumentModel.setAddLayerPanel(addLayerPanel);
-		this.setMinimumSize(new Dimension(240, 200));
-		this.setPreferredSize(new Dimension(240, 200));
 		Layers.addNewLayerListener(this);
 		TimeLine.SINGLETON.addListener(this);
 	}
@@ -199,9 +196,6 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 	private void initGUI()
 	{
 		setLayout(new BorderLayout(0, 0));
-
-		JScrollPane scrollPane = new JScrollPane();
-		add(scrollPane, BorderLayout.CENTER);
 
 		tableModel = new LayerTableModel(null, null);
 		table = new JTable(new Object[0][0], columnNames);
@@ -325,8 +319,9 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 				}
 			}
 		});
-		scrollPane.setViewportView(table);
-
+		
+		add(table, BorderLayout.CENTER);
+		
 		JPanel panel = new JPanel();
 		panel.setBorder(new EmptyBorder(10,10,10,10));
 		add(panel, BorderLayout.SOUTH);
@@ -400,7 +395,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			data[count][0] = layer.isVisible();
 			data[count][1] = layer.checkBadRequest();
 			data[count][2] = layer.getName();
-			data[count][3] = layer.getTime() == null ? null : layer.getTime();
+			data[count][3] = layer.getTime();
 			data[count][4] = IconBank.getIcon(JHVIcon.REMOVE_NEW, size, size);
 			count++;
 		}
@@ -461,14 +456,12 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		}
 	}
 
-	private static class ImageIconCellRenderer extends DefaultTableCellRenderer {
-
-		/**
-		 * 
-		 */
+	private static class ImageIconCellRenderer extends DefaultTableCellRenderer
+	{
 		private static final long serialVersionUID = -2552431402411803683L;
 
-		public ImageIconCellRenderer() {
+		public ImageIconCellRenderer()
+		{
 			// setOpaque(true);
 			setHorizontalAlignment(CENTER);
 			// setBackground(Color.WHITE);
@@ -479,39 +472,38 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		{
 			switch (column)
 			{
-			case 0:
-				super.getTableCellRendererComponent(table, null, isSelected, hasFocus, row, column);
-				break;
-			case 1:
-				JLabel label = (JLabel) super.getTableCellRendererComponent(table, null, isSelected, hasFocus, row, column);
-				if ((Boolean) value)
-				{
-					label.setIcon(WARNING_BAD_REQUEST);
-					label.setPreferredSize(new Dimension(20, 20));
-				}
-				else label.setIcon(null);;
-				break;
-			case 2:
-				super.getTableCellRendererComponent(table, value, isSelected,
-						hasFocus, row, column);
-				break;
-			case 3:
-				LocalDateTime localDateTime = (LocalDateTime) value;
-				String date = localDateTime != null ? localDateTime.format(JHVGlobals.DATE_TIME_FORMATTER) : "";
-				super.getTableCellRendererComponent(table, date, isSelected, hasFocus, row, column);
-				break;
-			case 4:
-				JLabel label4 = (JLabel) super.getTableCellRendererComponent(table, null, isSelected, hasFocus, row, column);
-				if (Layers.getLayer(row) != null && Layers.getLayer(row).isImageLayer())
-				{
-					label4.setIcon((ImageIcon) value);
-					label4.setPreferredSize(new Dimension(20, 20));
-				}
-				else
-					label4.setIcon(null);
-				return label4;
-			default:
-				break;
+				case 0:
+					super.getTableCellRendererComponent(table, null, isSelected, hasFocus, row, column);
+					break;
+				case 1:
+					JLabel label = (JLabel) super.getTableCellRendererComponent(table, null, isSelected, hasFocus, row, column);
+					if ((Boolean) value)
+					{
+						label.setIcon(WARNING_BAD_REQUEST);
+						label.setPreferredSize(new Dimension(20, 20));
+					}
+					else label.setIcon(null);;
+					break;
+				case 2:
+					super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+					break;
+				case 3:
+					LocalDateTime localDateTime = (LocalDateTime) value;
+					String date = localDateTime != null ? localDateTime.format(JHVGlobals.DATE_TIME_FORMATTER) : "";
+					super.getTableCellRendererComponent(table, date, isSelected, hasFocus, row, column);
+					break;
+				case 4:
+					JLabel label4 = (JLabel) super.getTableCellRendererComponent(table, null, isSelected, hasFocus, row, column);
+					if (Layers.getLayer(row) != null && Layers.getLayer(row).isImageLayer())
+					{
+						label4.setIcon((ImageIcon) value);
+						label4.setPreferredSize(new Dimension(20, 20));
+					}
+					else
+						label4.setIcon(null);
+					return label4;
+				default:
+					break;
 			}
 			return this;
 		}

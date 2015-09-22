@@ -70,13 +70,13 @@ public abstract class AbstractLayer
 		return null;
 	}
 
-	public String getFullName() {
-		
+	public String getFullName()
+	{
 		return null;
 	}
 
-	public LocalDateTime getTime() {
-		
+	public LocalDateTime getTime()
+	{
 		return null;
 	}
 

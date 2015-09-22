@@ -98,16 +98,7 @@ public class ImageLayer extends AbstractImageLayer
 	@Override
 	public LocalDateTime getTime()
 	{
-		try
-		{
-			MetaData md = getMetaData(TimeLine.SINGLETON.getCurrentDateTime());
-			if (md != null)
-				return md.getLocalDateTime();
-		}
-		catch (MetaDataException e)
-		{
-		}
-		return null;
+		return ultimateLayer.getClosestLocalDateTime(TimeLine.SINGLETON.getCurrentDateTime());
 	}
 
 	@Deprecated
