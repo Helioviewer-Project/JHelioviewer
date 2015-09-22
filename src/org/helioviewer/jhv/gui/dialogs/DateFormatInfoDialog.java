@@ -21,7 +21,7 @@ import org.helioviewer.jhv.gui.ShowableDialog;
  * 
  * @author Stephan Pagel
  */
-public class DateFormatInfoDialog extends JDialog implements ActionListener, ShowableDialog {
+class DateFormatInfoDialog extends JDialog implements ActionListener, ShowableDialog {
 
     // ////////////////////////////////////////////////////////////////////////////////
     // Definitions

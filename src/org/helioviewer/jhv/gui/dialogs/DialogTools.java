@@ -10,7 +10,7 @@ import javax.swing.JRootPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
-public class DialogTools
+class DialogTools
 {
     public static void setDefaultButtons(final JButton _acceptBtn,final JButton _cancelBtn)
     {

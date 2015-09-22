@@ -13,8 +13,6 @@ import org.helioviewer.jhv.opengl.TextureCache;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduRender;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 
-import com.google.common.cache.CacheStats;
-
 public class Movie
 {
 	protected LocalDateTime[] localDateTimes;

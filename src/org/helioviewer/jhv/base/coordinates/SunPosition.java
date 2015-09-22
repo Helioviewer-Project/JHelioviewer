@@ -8,7 +8,7 @@ import static java.lang.Math.toRadians;
 
 import java.time.LocalDateTime;
 
-public class SunPosition {
+class SunPosition {
 	
 	/**
 	 * Date for this position of the sun.

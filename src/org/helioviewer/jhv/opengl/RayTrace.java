@@ -194,7 +194,7 @@ public class RayTrace {
 		}
 	}
 	
-	private class Sphere{
+	static private class Sphere{
 		public Vector3d center;
 		public double radius;
 		
@@ -215,7 +215,7 @@ public class RayTrace {
 		}
 	}
 	
-	private class Plane{
+	static private class Plane{
 		public Vector3d normal;
 		public double distance;
 

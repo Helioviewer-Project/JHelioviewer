@@ -228,7 +228,7 @@ public class ImageLayer extends AbstractImageLayer
 			double minAngle = 30;
 			float opacityCorona = (float) ((Math.abs(90 - angle) - minAngle) / (maxAngle - minAngle));
 			opacityCorona = opacityCorona > 1 ? 1f : opacityCorona;
-			if (!Layers.getCoronaVisibility())
+			if (!coronaVisible)
 				opacityCorona = 0;
 			gl.glEnable(GL2.GL_DEPTH_TEST);
 			gl.glDepthFunc(GL2.GL_LEQUAL);

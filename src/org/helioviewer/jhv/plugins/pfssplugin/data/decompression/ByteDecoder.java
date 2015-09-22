@@ -3,7 +3,7 @@ package org.helioviewer.jhv.plugins.pfssplugin.data.decompression;
 /**
  * This class decodes the bytes of a PFSSData file.
  */
-public class ByteDecoder {
+class ByteDecoder {
 	private static final int FLAG_CONTINUE = 128;
 	private static final int FLAG_SIGN = 64;
 	private static final int DATA_BIT_COUNT = 7;

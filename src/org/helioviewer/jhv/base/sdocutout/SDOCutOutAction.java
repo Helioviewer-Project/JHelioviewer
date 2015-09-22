@@ -18,7 +18,7 @@ import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 
-public class SDOCutOutAction extends AbstractAction {
+class SDOCutOutAction extends AbstractAction {
 	
 	private static final long serialVersionUID = 1L;
 

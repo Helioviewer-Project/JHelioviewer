@@ -15,7 +15,7 @@ import org.helioviewer.jhv.base.math.Vector2d;
  * 
  * @author Ludwig Schmidt
  * */
-public interface BasicRegion {
+interface BasicRegion {
 
     /**
      * Returns the position of the lower left corner of the region.

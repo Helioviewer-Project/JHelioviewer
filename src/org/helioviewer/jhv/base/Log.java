@@ -52,11 +52,11 @@ public class Log
     public static String GetLastFewLines(int _numberOfLines)
     {
         String[] lines=log.toString().split("\\n");
-        String res="";
+        StringBuffer res=new StringBuffer();
         
         for(int i=Math.min(_numberOfLines, lines.length)-1;i>=0;i--)
-            res+=lines[lines.length-1-i]+"\n";
+            res.append(lines[lines.length-1-i]+"\n");
         
-        return res;
+        return res.toString();
     }
 }

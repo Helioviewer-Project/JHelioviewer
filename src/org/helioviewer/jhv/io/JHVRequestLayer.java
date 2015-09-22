@@ -6,7 +6,7 @@ package org.helioviewer.jhv.io;
  * @author Andre Dau
  * 
  */
-public class JHVRequestLayer {
+class JHVRequestLayer {
     public static final int numFields = 6;
 
     public static final int OBSERVATORY_INDEX = 0;

@@ -20,7 +20,7 @@ import org.json.JSONObject;
  * 
  * @author Malte Nuhn
  * */
-public class HEKEventFactory {
+class HEKEventFactory {
 
     // the sole instance of this class
     private static final HEKEventFactory SINGLETON = new HEKEventFactory();

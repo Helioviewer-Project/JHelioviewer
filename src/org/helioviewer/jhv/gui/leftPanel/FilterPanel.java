@@ -31,11 +31,8 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
-public class FilterPanel extends JPanel implements LayerListener{
-
-	/**
-	 * 
-	 */
+public class FilterPanel extends JPanel implements LayerListener
+{
 	private static final long serialVersionUID = 6032053412521027833L;
 	private JSlider opacitySlider;
 	private JSlider sharpenSlider;
@@ -202,19 +199,24 @@ public class FilterPanel extends JPanel implements LayerListener{
 		lblContrast = new JLabel("0");
 		add(lblContrast, "10,8");
 
-		contrastSlider.addChangeListener(new ChangeListener() {			
+		contrastSlider.addChangeListener(new ChangeListener()
+		{
 			@Override
-			public void stateChanged(ChangeEvent e) {
+			public void stateChanged(ChangeEvent e)
+			{
 				lblContrast.setText(contrastSlider.getValue() + "");
-				if (activeLayer != null &&  activeLayer.contrast != contrastSlider.getValue()/10.0){
+				if (activeLayer != null &&  activeLayer.contrast != contrastSlider.getValue() / 10.0)
+				{
 					activeLayer.contrast = contrastSlider.getValue() / 10.0;
 					repaintComponent();
 				}
 			}
 		});
-		contrastSlider.addMouseListener(new MultiClickListener(delay){
+		contrastSlider.addMouseListener(new MultiClickListener(delay)
+		{
 			@Override
-			public void doubleClick(MouseEvent e) {
+			public void doubleClick(MouseEvent e)
+			{
 				contrastSlider.setValue(0);
 			}
 		});

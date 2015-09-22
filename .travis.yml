@@ -7,12 +7,10 @@ addons:
 
     project:
       name: Helioviewer-Project/JHelioviewer
-      version: 1.0
-      description: JHelioviewer
 
     notification_email: simon.felix@fhnw.ch
     build_command: javac src/JHelioviewer.java
     branch_pattern: master
 
 language: java
-script: 
+script: javac src/JHelioviewer.java

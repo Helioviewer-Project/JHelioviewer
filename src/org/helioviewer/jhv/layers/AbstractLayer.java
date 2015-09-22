@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import org.helioviewer.jhv.base.downloadmanager.AbstractDownloadRequest;
-import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.opengl.MainPanel;
 import org.json.JSONObject;
@@ -15,7 +14,7 @@ import com.jogamp.opengl.GL2;
 
 public abstract class AbstractLayer
 {
-	protected boolean visible;
+	private boolean visible;
 	protected String name;
 	
 	//FIXME: synchronization not done properly
@@ -38,7 +37,8 @@ public abstract class AbstractLayer
 		return failedRequests != null && !failedRequests.isEmpty();
 	}
 
-	public void setVisible(boolean visible) {
+	public void setVisible(boolean visible)
+	{
 		this.visible = visible;
 		MainFrame.MAIN_PANEL.repaint();
 	}
@@ -95,7 +95,9 @@ public abstract class AbstractLayer
 
 	public void retryFailedRequests()
 	{
-		Thread thread = new Thread(new Runnable()
+		//FIXME
+		throw new RuntimeException("Not yet implemented");
+		/*Thread thread = new Thread(new Runnable()
 		{
 			@Override
 			public void run()
@@ -108,13 +110,14 @@ public abstract class AbstractLayer
 					failedRequests.clear();
 				}
 				MainFrame.LAYER_PANEL.repaintPanel();
-				for (AbstractDownloadRequest request : requests){
+				for (AbstractDownloadRequest request : requests)
+				{
 					request.setRetries(3);
 					UltimateDownloadManager.addRequest(request);
 				}
 			}
 		}, "RETRY-REQUESTS");
 		thread.setDaemon(true);
-		thread.start();
+		thread.start();*/
 	}
 }

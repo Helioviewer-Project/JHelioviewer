@@ -1,12 +1,13 @@
 package org.helioviewer.jhv.base.downloadmanager;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class AbstractDownloadRequest
 {
 	public static final int INFINITE_TIMEOUT = -1;
 	protected volatile boolean finished = false;
-	protected volatile int retries = 3;
+	protected final AtomicInteger retries = new AtomicInteger(3);
 	protected volatile IOException ioException = null;
 	protected volatile int timeOut = 20000;
 	protected final String url;
@@ -27,24 +28,14 @@ public abstract class AbstractDownloadRequest
 		this.priority = priority;
 	}
 	
-	public DownloadPriority getPriority()
-	{
-		return priority;
-	}
-	
 	public boolean isFinished()
 	{
 		return finished;
 	}
 		
-	public void justRetried()
+	public boolean justTriedShouldTryAgain()
 	{
-		retries--;
-	}
-	
-	public boolean shouldRetry()
-	{
-		return retries > 0; 
+		return retries.decrementAndGet()>0;
 	}
 	
 	abstract void execute() throws IOException, InterruptedException;
@@ -80,7 +71,7 @@ public abstract class AbstractDownloadRequest
 	public void setRetries(int i)
 	{
 		this.ioException = null;
-		retries = i;
+		retries.set(i);
 		finished = false;
 	}
 }

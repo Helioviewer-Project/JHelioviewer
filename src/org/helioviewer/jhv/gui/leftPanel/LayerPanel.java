@@ -25,6 +25,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.PopupMenuEvent;
@@ -327,6 +328,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		scrollPane.setViewportView(table);
 
 		JPanel panel = new JPanel();
+		panel.setBorder(new EmptyBorder(10,10,10,10));
 		add(panel, BorderLayout.SOUTH);
 		GridBagLayout gbl_panel = new GridBagLayout();
 		gbl_panel.columnWidths = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -334,7 +336,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		gbl_panel.columnWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		gbl_panel.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
 		panel.setLayout(gbl_panel);
-
+		
 		btnShowInfo = new JButton(IconBank.getIcon(JHVIcon.INFO_NEW, size, size));
 		btnShowInfo.setToolTipText("Show the Metainformation of the currently selected Layer");
 		btnShowInfo.addActionListener(new ActionListener()

@@ -8,7 +8,7 @@ import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
 
-public class MetaDataStereo extends MetaData
+class MetaDataStereo extends MetaData
 {
 	private final static Rectangle RESOLUTION = new Rectangle(2048, 2048);
 	private final double IMAGE_SCALE = 1.588;

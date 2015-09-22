@@ -10,7 +10,7 @@ import org.helioviewer.jhv.gui.opengl.MainPanel;
 import org.helioviewer.jhv.opengl.RayTrace;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 
-public class LayerRayTrace
+class LayerRayTrace
 {
 	private RayTrace rayTrace;
 

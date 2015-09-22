@@ -335,7 +335,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		}
 	}
 
-	private class TimeSliderUI extends BasicSliderUI
+	private static class TimeSliderUI extends BasicSliderUI
 	{
 		private final Color COLOR_NOT_CACHED = Color.LIGHT_GRAY;
 		private final Color COLOR_PARTIALLY_CACHED = new Color(0x8080FF);

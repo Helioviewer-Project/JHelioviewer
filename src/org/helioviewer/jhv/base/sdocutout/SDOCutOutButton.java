@@ -17,8 +17,8 @@ public class SDOCutOutButton extends JButton implements
 
 	private static final long serialVersionUID = 1L;
 
-	private static final String PATH = "/images/";
-	public SDOCutOutButton() {
+	public SDOCutOutButton()
+	{
 		super(new SDOCutOutAction());
 		initButton();
 		Layers.addNewLayerListener(this);

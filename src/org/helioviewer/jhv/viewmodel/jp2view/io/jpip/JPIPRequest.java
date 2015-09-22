@@ -8,14 +8,9 @@ import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPRequest;
  * @author caplins
  * @author Juan Pablo
  */
-public class JPIPRequest extends HTTPRequest {
-    /** The query in string form. */
+public class JPIPRequest extends HTTPRequest
+{
     private String query = null;
-    private Priority priority;
-    
-    private enum Priority{
-    	HIGH, LOW;
-    }
     
     /**
      * Default constructor.
@@ -52,13 +47,5 @@ public class JPIPRequest extends HTTPRequest {
      */
     public void setQuery(Object _query) {
         query = _query.toString();
-    }
-    
-    public void setPriority(Priority priority){
-    	this.priority = priority;
-    }
-    
-    public Priority getPriority(){
-    	return this.priority;
     }
 }

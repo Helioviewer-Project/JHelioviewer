@@ -5,6 +5,7 @@ import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.time.LocalDateTime;
 
+import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.gui.opengl.MainPanel;
 import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
@@ -166,7 +167,7 @@ public class ImageRegion {
 	
 	
 	private static float nextZoomFraction(double zoomFactor){
-		int powerOfTwo = OpenGLHelper.nextPowerOfTwo(getNextInt((1/zoomFactor)));
+		int powerOfTwo = MathUtils.nextPowerOfTwo(getNextInt((1/zoomFactor)));
 		powerOfTwo >>= 1;
 		return 1/(float)powerOfTwo;
 	}

@@ -20,7 +20,7 @@ public class UltimateDownloadManager
 			if (oo1 == null || oo2 == null)
 				return 0;
 			
-			return oo2.getPriority().ordinal() - oo1.getPriority().ordinal();
+			return oo2.priority.ordinal() - oo1.priority.ordinal();
 		}
 	});
 
@@ -44,22 +44,22 @@ public class UltimateDownloadManager
 							if (request != null)
 								try
 								{
-									if(request.getPriority().ordinal()>DownloadPriority.LOW.ordinal())
+									if(request.priority.ordinal()>DownloadPriority.LOW.ordinal())
 										activeNormalAndHighPrioDownloads.incrementAndGet();
 									request.execute();
 								}
 								catch (IOException e)
 								{
+									System.err.println(request.url);
 									e.printStackTrace();
-									request.justRetried();
-									if (request.shouldRetry())
+									if (request.justTriedShouldTryAgain())
 										addRequest(request);
 									else
 										request.setError(e);
 								}
 								finally
 								{
-									if(request.getPriority().ordinal()>DownloadPriority.LOW.ordinal())
+									if(request.priority.ordinal()>DownloadPriority.LOW.ordinal())
 										activeNormalAndHighPrioDownloads.decrementAndGet();
 								}
 							else if(!JHVGlobals.isReleaseVersion())

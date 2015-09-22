@@ -8,7 +8,7 @@ import java.util.UUID;
 
 import com.microsoft.applicationinsights.TelemetryClient;
 
-public class Telemetry
+class Telemetry
 {
 	private static final TelemetryClient client;
 	

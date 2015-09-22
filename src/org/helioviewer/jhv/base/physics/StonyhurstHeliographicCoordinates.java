@@ -4,7 +4,7 @@ import java.util.Locale;
 
 import org.helioviewer.jhv.base.math.MathUtils;
 
-public class StonyhurstHeliographicCoordinates implements SolarCoordinates
+class StonyhurstHeliographicCoordinates
 {
     // origin is at the center of the sun
     // the angles are measured on the sun relative to the intersection of the

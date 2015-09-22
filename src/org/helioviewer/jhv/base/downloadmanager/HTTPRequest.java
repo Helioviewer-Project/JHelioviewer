@@ -16,14 +16,14 @@ public class HTTPRequest extends AbstractDownloadRequest
 	public HTTPRequest(String uri, DownloadPriority priority, int timeOut, int retries)
 	{
 		this(uri, priority);
-		this.retries = retries;
+		this.retries.set(retries);
 		this.timeOut = timeOut;
 	}
 
 	public HTTPRequest(String uri, DownloadPriority priority, int retries)
 	{
 		this(uri, priority);
-		this.retries = retries;
+		this.retries.set(retries);
 	}
 
 	public HTTPRequest(String url, DownloadPriority priority)

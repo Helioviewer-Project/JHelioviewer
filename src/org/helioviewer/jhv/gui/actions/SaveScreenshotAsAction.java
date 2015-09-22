@@ -32,8 +32,8 @@ import org.helioviewer.jhv.gui.actions.filefilters.FileFilter;
  * 
  * @author Markus Langenberg
  */
-public class SaveScreenshotAsAction extends AbstractAction {
-
+public class SaveScreenshotAsAction extends AbstractAction
+{
 	private static final long serialVersionUID = 1L;
 
 	private static final String SETTING_SCREENSHOT_IMG_WIDTH = "export.screenshot.image.width";
@@ -107,29 +107,26 @@ public class SaveScreenshotAsAction extends AbstractAction {
 		Platform.runLater(new Runnable() {
 
 			@Override
-			public void run() {
-
+			public void run()
+			{
 				FileChooser fileChooser = new FileChooser();
 				fileChooser.setTitle("Save screenshot");
 				fileChooser.setInitialFileName(getDefaultFileName());
-				String val = Settings
-						.getProperty(SETTING_SCREENSHOT_EXPORT_LAST_DIRECTORY);
-				File file = new File(val);
-				if (val != null && !(val.length() == 0) && file.exists()) {
-					fileChooser.setInitialDirectory(file);
+				String val = Settings.getProperty(SETTING_SCREENSHOT_EXPORT_LAST_DIRECTORY);
+				if (val != null && val.length() != 0)
+				{
+					File file = new File(val);
+					if(file.exists())
+						fileChooser.setInitialDirectory(file);
 				}
 
 				fileChooser.getExtensionFilters().addAll(
-						FileFilter.IMPLEMENTED_FILE_FILTER.JPG.getFileFilter()
-								.getExtensionFilter(),
-						FileFilter.IMPLEMENTED_FILE_FILTER.PNG.getFileFilter()
-								.getExtensionFilter());
-				final File selectedFile = fileChooser
-						.showSaveDialog(new Stage());
+						FileFilter.IMPLEMENTED_FILE_FILTER.JPG.getFileFilter().getExtensionFilter(),
+						FileFilter.IMPLEMENTED_FILE_FILTER.PNG.getFileFilter().getExtensionFilter());
+				final File selectedFile = fileChooser.showSaveDialog(new Stage());
 
-				if (selectedFile != null) {
+				if (selectedFile != null)
 					startSavingScreenshot(selectedFile, selectedFile.getName().substring(selectedFile.getName().lastIndexOf(".")+1));
-				}
 			}
 		});
 	}

@@ -74,7 +74,8 @@ public class MathUtils {
         }
     }
     
-    public static int nextPowerOfTwo(int value){
+    public static int nextPowerOfTwo(int value)
+    {
     	value--;
     	value |= value >> 1;
     	value |= value >> 2;
@@ -84,4 +85,4 @@ public class MathUtils {
     	value++;
     	return value;
     }
-};
+}

@@ -116,11 +116,6 @@ public class JHelioviewer
 			// Per default, the us locale should be used
 			Locale.setDefault(Locale.US);
 			
-			// Information log message
-			String argString = "";
-			for (int i = 0; i < args.length; ++i)
-				argString += " " + args[i];
-			
 			GLProfile.initSingleton();
 			GLDrawableFactory factory = GLDrawableFactory.getFactory(GLProfile.getDefault());
 			GLProfile profile = GLProfile.get(GLProfile.GL2);
@@ -132,7 +127,7 @@ public class JHelioviewer
 			if (System.getProperty("jhvVersion") == null)
 				sharedDrawable.setGL(new DebugGL2(sharedDrawable.getGL().getGL2()));
 			
-			System.out.println("JHelioviewer started with command-line options:" + argString);
+			System.out.println("JHelioviewer started with command-line options:" + String.join(" ", args));
 			System.out.println("Initializing JHelioviewer");
 
 			// display the splash screen
@@ -265,7 +260,7 @@ public class JHelioviewer
 			Method registerListenerMethod = applicationClass.getMethod("addApplicationListener", new Class[] { applicationListener });
 			registerListenerMethod.invoke(application, new Object[] { listenerProxy });
 		}
-		catch (Exception e)
+		catch (Throwable e)
 		{
 			System.err.println("Failed to create native menuitems for Mac OSX");
 		}

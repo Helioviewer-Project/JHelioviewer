@@ -24,7 +24,7 @@ import org.helioviewer.jhv.gui.actions.SetCameraRotationInteractionAction;
 import org.helioviewer.jhv.gui.actions.SetCameraTrackAction;
 import org.helioviewer.jhv.gui.actions.SetCameraYAxisBlockedAction;
 import org.helioviewer.jhv.gui.actions.SetCameraZoomBoxInteractionAction;
-import org.helioviewer.jhv.gui.actions.SetCoronaVisibilityAction;
+import org.helioviewer.jhv.gui.actions.ToggleCoronaVisibilityAction;
 import org.helioviewer.jhv.gui.actions.View2DAction;
 import org.helioviewer.jhv.gui.actions.View3DAction;
 import org.helioviewer.jhv.opengl.camera.actions.ResetCameraAction;
@@ -174,7 +174,7 @@ public class TopToolBar extends JToolBar implements MouseListener
 				.setToolTipText("Enable Solar Rotation Tracking");
 		addButton(trackButton);
 
-		coronaVisibilityButton = new JToggleButton(new SetCoronaVisibilityAction());
+		coronaVisibilityButton = new JToggleButton(new ToggleCoronaVisibilityAction());
 		coronaVisibilityButton.setSelected(false);
 		coronaVisibilityButton.setIcon(IconBank
 				.getIcon(JHVIcon.SUN_WITH_128x128, 24 ,24));

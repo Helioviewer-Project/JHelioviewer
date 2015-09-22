@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.physics.Constants;
 
-public class MetaDataLASCO_C3 extends MetaData{
+class MetaDataLASCO_C3 extends MetaData{
 
 	private final static Rectangle RESOLUTION = new Rectangle(1024, 1024);
 	private final double IMAGE_SCALE = 56.0;

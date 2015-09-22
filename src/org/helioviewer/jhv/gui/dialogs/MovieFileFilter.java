@@ -8,8 +8,8 @@ import javax.swing.filechooser.FileFilter;
 
 import com.xuggle.xuggler.ICodec;
 
-public class MovieFileFilter extends FileFilter{
-	public enum ImplementedMovieFilter{	
+class MovieFileFilter extends FileFilter{
+	enum ImplementedMovieFilter{	
 		MP4("*.mp4","MPEG-4 (.mp4)", MovieTypes.MP4, ICodec.ID.CODEC_ID_MPEG4), 
 		MOV("*.mov", "Quicktime (.mov)", MovieTypes.MOV, ICodec.ID.CODEC_ID_MPEG4), 
 		JPG("*.jpg", "Set of JPG images (.jpg)", ImageTypes.JPG, "jpg"), 
@@ -41,20 +41,25 @@ public class MovieFileFilter extends FileFilter{
 			return new ExtensionFilter(movieFilter.description, movieFilter.extension);
 		}
 
-		public boolean isEqual(ExtensionFilter selectedExtensionFilter) {
-			return selectedExtensionFilter.getExtensions().equals(movieFilter.extension) && selectedExtensionFilter.getDescription().equals(movieFilter.description);
+		public boolean isEqual(ExtensionFilter selectedExtensionFilter)
+		{
+			return selectedExtensionFilter.getExtensions().contains(movieFilter.extension)
+				&& selectedExtensionFilter.getDescription().equals(movieFilter.description);
 		}
 	}
 	
-	public enum MovieTypes{
+	private enum MovieTypes
+	{	
 		MOV, MP4;
 	}
 	
-	public enum CompressedTypes{
+	private enum CompressedTypes
+	{
 		ZIP;
 	}
 	
-	public enum ImageTypes{
+	private enum ImageTypes
+	{
 		JPG, JPEG, PNG;
 	}
 

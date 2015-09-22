@@ -8,12 +8,14 @@ import java.util.Hashtable;
  * @author caplins
  * @author Juan Pablo
  */
-public class JPIPQuery implements Cloneable {
+public class JPIPQuery implements Cloneable
+{
     /** The hashtable holding the jpip-request-fields */
     private Hashtable<String, String> fields = new Hashtable<String, String>();
 
     /** Default constructor. */
-    public JPIPQuery() {
+    public JPIPQuery()
+    {
         fields.put("len", Integer.toString(JPIPConstants.MIN_REQUEST_LEN));
     }
 
@@ -62,12 +64,16 @@ public class JPIPQuery implements Cloneable {
     }
 
     /** Returns a String representing this query. */
-    public String toString() {
-        String ret = "";
+    public String toString()
+    {
+        StringBuffer ret = new StringBuffer();
         for (String field : fields.keySet())
-            ret += field + "=" + fields.get(field) + "&";
-        if (ret.length() > 0)
-            ret = ret.substring(0, ret.length() - 1);
-        return ret;
+        {
+        	if(ret.length()!=0)
+        		ret.append('&');
+            ret.append(field + "=" + fields.get(field));
+        }
+        
+        return ret.toString();
     }
 }

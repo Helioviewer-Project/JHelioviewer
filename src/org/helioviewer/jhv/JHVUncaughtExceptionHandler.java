@@ -42,7 +42,7 @@ import com.mindscapehq.raygun4java.core.messages.RaygunIdentifier;
 /**
  * Routines to catch and handle all runtime exceptions.
  */
-public class JHVUncaughtExceptionHandler implements
+class JHVUncaughtExceptionHandler implements
 		Thread.UncaughtExceptionHandler {
 
 	private static final JHVUncaughtExceptionHandler SINGLETON = new JHVUncaughtExceptionHandler();

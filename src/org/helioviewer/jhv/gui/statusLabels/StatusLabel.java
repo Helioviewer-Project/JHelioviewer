@@ -14,7 +14,7 @@ import org.helioviewer.jhv.opengl.RayTrace.Ray;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.TimeLine.TimeLineListener;
 
-public abstract class StatusLabel extends JLabel implements TimeLineListener, StatusLabelMouseListener, StatusLabelCameraListener, LayerListener{
+abstract class StatusLabel extends JLabel implements TimeLineListener, StatusLabelMouseListener, StatusLabelCameraListener, LayerListener{
 	
 	/**
 	 * 

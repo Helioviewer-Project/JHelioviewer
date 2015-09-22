@@ -18,7 +18,7 @@ import org.helioviewer.jhv.plugins.plugin.Plugins.PluginIcon;
 /**
  * Panel of Pfss-Plugin
  * */
-public class PfssPluginPanel extends JPanel implements ActionListener {
+class PfssPluginPanel extends JPanel implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
 

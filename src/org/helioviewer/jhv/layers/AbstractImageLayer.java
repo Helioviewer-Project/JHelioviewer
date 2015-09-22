@@ -57,14 +57,7 @@ public abstract class AbstractImageLayer extends AbstractLayer
 	protected int cadence = -1;
 	protected String localPath;
 
-	protected String name;
-	
 	public abstract int getTexture(MainPanel compenentView, ByteBuffer _imageData, Dimension size) throws TextureException;
-
-	public String getName()
-	{
-		return name;
-	}
 
 	public abstract LocalDateTime getTime();
 
@@ -171,4 +164,9 @@ public abstract class AbstractImageLayer extends AbstractLayer
 	public abstract LocalDateTime getLastLocalDateTime();
 	
 	public abstract Future<ByteBuffer> prepareImageData(final MainPanel mainPanel, final Dimension size) throws MetaDataException;
+
+	public void toggleCoronaVisibility()
+	{
+		coronaVisible=!coronaVisible;
+	}
 }

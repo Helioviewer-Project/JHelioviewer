@@ -3,7 +3,7 @@ package org.helioviewer.jhv.viewmodel.metadata;
 import java.awt.Rectangle;
 import java.time.LocalDateTime;
 
-public class MetaDataMDI extends MetaData{
+class MetaDataMDI extends MetaData{
 
 	private final static Rectangle RESOLUTION = new Rectangle(1024, 1024);
 	private final double IMAGE_SCALE = 1.986;

@@ -111,7 +111,6 @@ public class JPIPRequest extends AbstractDownloadRequest
 
 	private void openSocket(Kdu_cache _kduCache) throws IOException, URISyntaxException, KduException
 	{
-		System.out.println(url);
 		JPIPResponse jpipResponse = (JPIPResponse) jpipSocket.connect(new URI(url));
 		addJPIPResponseData(jpipResponse,_kduCache);
 	}

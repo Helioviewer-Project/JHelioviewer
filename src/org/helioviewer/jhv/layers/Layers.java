@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 
+import org.helioviewer.jhv.gui.MainFrame;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,15 +16,17 @@ public class Layers
 	private static int activeLayer = -1;
 	private static int activeImageLayer = -1;
 
-	private static boolean coronaVisibility = true;
-
-	private static final Comparator<AbstractLayer> COMPARATOR = new Comparator<AbstractLayer>() {
-
+	private static final Comparator<AbstractLayer> COMPARATOR = new Comparator<AbstractLayer>()
+	{
 		@Override
-		public int compare(AbstractLayer o1, AbstractLayer o2) {
-			if (!o1.isImageLayer && o2.isImageLayer) return 1;
-			else if (o1.isImageLayer && !o2.isImageLayer) return -1;
-			return 0;
+		public int compare(AbstractLayer o1, AbstractLayer o2)
+		{
+			if (!o1.isImageLayer && o2.isImageLayer)
+				return 1;
+			else if (o1.isImageLayer && !o2.isImageLayer)
+				return -1;
+			else
+				return 0;
 		}
 	};
 
@@ -176,46 +179,57 @@ public class Layers
 		return layers;
 	}
 
-	public static void toggleCoronaVisibility() {
-		coronaVisibility = !coronaVisibility;
+	public static void toggleCoronaVisibility()
+	{
+		AbstractLayer il = getActiveLayer();
+		if(il instanceof AbstractImageLayer)
+		{
+			((AbstractImageLayer)il).toggleCoronaVisibility();
+			MainFrame.MAIN_PANEL.repaint();
+		}
 	}
 
-	public static boolean getCoronaVisibility() {
-		return coronaVisibility;
-	}
-
-	public static void removeAllImageLayers() {
-		for (AbstractLayer layer : layers){
-			if (layer.isImageLayer){
+	public static void removeAllImageLayers()
+	{
+		for (AbstractLayer layer : layers)
+		{
+			if (layer.isImageLayer)
+			{
 				layer.remove();
 				layers.remove(layer);
 			}
 		}
 		activeLayer = 0;
-		for (LayerListener renderListener : layerListeners) {
+		for (LayerListener renderListener : layerListeners)
 			renderListener.newlayerRemoved(0);
-		}
 	}
 
-	public static void writeStatefile(JSONArray jsonLayers) {
-		for (AbstractLayer layer : layers) {
+	public static void writeStatefile(JSONArray jsonLayers)
+	{
+		for (AbstractLayer layer : layers)
+		{
 			JSONObject jsonLayer = new JSONObject();
 			layer.writeStateFile(jsonLayer);
 			jsonLayers.put(jsonLayer);
 		}
 	}
 
-	public static void readStatefile(JSONArray jsonLayers) {
-		for (int i = 0; i < jsonLayers.length(); i++) {
-			try {
+	public static void readStatefile(JSONArray jsonLayers)
+	{
+		for (int i = 0; i < jsonLayers.length(); i++)
+		{
+			try
+			{
 				JSONObject jsonLayer = jsonLayers.getJSONObject(i);
 				AbstractImageLayer layer = ImageLayer.createFromStateFile(jsonLayer);
-				if (layer != null) {
+				if (layer != null)
+				{
 					Layers.addLayer(layer);
 					layer.readStateFile(jsonLayer);
 				}
-			} catch (JSONException e) {
-				
+			}
+			catch (JSONException e)
+			{
 				e.printStackTrace();
 			}
 		}

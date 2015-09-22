@@ -9,7 +9,7 @@ import org.helioviewer.jhv.opengl.OpenGLHelper;
 
 import com.jogamp.opengl.GL2;
 
-public class RenderableEvents {
+class RenderableEvents {
 	private int textureID = -1;
 	private final String name;
 	private OpenGLHelper openGLHelper;
@@ -23,7 +23,7 @@ public class RenderableEvents {
 		VISIBLE, INVISIBLE, PREVIEW;
 	}
 	
-	enum RENDER_MODE{
+	private enum RENDER_MODE{
 		ALL_PANEL, OVERVIEW_PANEL, MAIN_PANEL;
 	}	
 	

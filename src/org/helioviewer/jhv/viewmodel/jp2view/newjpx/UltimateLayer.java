@@ -81,7 +81,7 @@ public class UltimateLayer
 	}
 	
 	
-	class MovieDownload
+	static class MovieDownload
 	{
 		HTTPRequest metadata;
 		JPIPRequest lq;

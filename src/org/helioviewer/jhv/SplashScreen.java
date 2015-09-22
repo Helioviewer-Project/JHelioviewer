@@ -29,7 +29,7 @@ import org.helioviewer.jhv.gui.IconBank.JHVIcon;
  * 
  * @author Stephan Pagel
  */
-public class SplashScreen extends JFrame {
+class SplashScreen extends JFrame {
 
 	// ////////////////////////////////////////////////////////////////
 	// Definitions
@@ -161,18 +161,6 @@ public class SplashScreen extends JFrame {
 	}
 
 	/**
-	 * Increments the current main progress step by one.
-	 */
-	public void nextStep() {
-
-		if (currentStep + 1 < steps) {
-			currentStep++;
-
-			progressBar.setValue(currentStep * 100);
-		}
-	}
-
-	/**
 	 * Sets the value of the progress bar which is displayed on the splash
 	 * screen. The value must be between 0 and 100 otherwise it will be ignored.
 	 * 
@@ -199,7 +187,11 @@ public class SplashScreen extends JFrame {
 		if (text != null)
 			imagePanel.setText(text);
 		
-		nextStep();
+		if (currentStep + 1 < steps) {
+			currentStep++;
+
+			progressBar.setValue(currentStep * 100);
+		}
 	}
 
 	/**

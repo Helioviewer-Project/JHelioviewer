@@ -9,9 +9,8 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
 import org.helioviewer.jhv.base.ImageRegion;
+import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.gui.opengl.MainPanel;
-
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
@@ -26,15 +25,8 @@ public class OpenGLHelper
 	private float scaleFactorHeight;
 	private float scaleFactorWidth;
 
-	public static int nextPowerOfTwo(int input) {
-		int output = 1;
-		while (output < input) {
-			output <<= 1;
-		}
-		return output;
-	}
-	
-	public int createTextureID(){
+	public int createTextureID()
+	{
 		GL2 gl = GLContext.getCurrentGL().getGL2();
         int tmp[] = new int[1];
 		gl.glGenTextures(1, tmp, 0);
@@ -51,8 +43,8 @@ public class OpenGLHelper
 	}
 	
 	public void bindBufferedImageToGLTexture(final BufferedImage bufferedImage){
-				int width2 = nextPowerOfTwo(bufferedImage.getWidth());
-				int height2 = nextPowerOfTwo(bufferedImage.getHeight());
+				int width2 = MathUtils.nextPowerOfTwo(bufferedImage.getWidth());
+				int height2 = MathUtils.nextPowerOfTwo(bufferedImage.getHeight());
 				
 				if (textureHeight != height2 && textureWidth != width2){
 					createTexture(bufferedImage, width2, height2);
@@ -65,8 +57,8 @@ public class OpenGLHelper
 	}
 	
 	public static void bindByteBufferToGLTexture(ImageRegion region, final ByteBuffer byteBuffer, final Rectangle imageSize){
-				int width2 = nextPowerOfTwo(imageSize.width);
-				int height2 = nextPowerOfTwo(imageSize.height);
+				int width2 = MathUtils.nextPowerOfTwo(imageSize.width);
+				int height2 = MathUtils.nextPowerOfTwo(imageSize.height);
 				
 				//FIXME: avoid redundant recreation of textures
 				if (region.textureHeight < height2 || region.textureWidth < width2)
@@ -88,8 +80,8 @@ public class OpenGLHelper
 	}
 	
 	public void bindBufferedImageToGLTexture(final BufferedImage bufferedImage, final int width, final int height){
-				int width2 = nextPowerOfTwo(width);
-				int height2 = nextPowerOfTwo(height);
+				int width2 = MathUtils.nextPowerOfTwo(width);
+				int height2 = MathUtils.nextPowerOfTwo(height);
 				
 				if (textureHeight != height2 && textureWidth != width2){
 					createTexture(bufferedImage, width2, height2);
@@ -102,12 +94,12 @@ public class OpenGLHelper
 	}
 	
 	public void bindBufferedImageToGLTexture(final BufferedImage bufferedImage, int xOffset, int yOffset, final int width, final int height){
-		int width2 = nextPowerOfTwo(width);
-		int height2 = nextPowerOfTwo(height);
+		int width2 = MathUtils.nextPowerOfTwo(width);
+		int height2 = MathUtils.nextPowerOfTwo(height);
 
-		if (textureHeight != height2 && textureWidth != width2){
-			createTexture(bufferedImage, width2, height2);			
-		}
+		if (textureHeight != height2 && textureWidth != width2)
+			createTexture(bufferedImage, width2, height2);
+
 		this.textureHeight = height2;
 		this.textureWidth = width2;
 		this.scaleFactorWidth = bufferedImage.getWidth() / (float)width2;
@@ -116,33 +108,35 @@ public class OpenGLHelper
 	}	
 	
 
-	private void createTexture(BufferedImage bufferedImage, int width, int height){
+	private void createTexture(BufferedImage bufferedImage, int width, int height)
+	{
 		GL2 gl = GLContext.getCurrentGL().getGL2();
 		
 		int internalFormat = GL2.GL_RGB;
 		int inputFormat = GL2.GL_RGB;
 		int inputType = GL2.GL_UNSIGNED_BYTE;
 		int bpp = 3;
-		switch (bufferedImage.getType()) {
-		case BufferedImage.TYPE_INT_ARGB:
-		case BufferedImage.TYPE_4BYTE_ABGR:
-			inputFormat = GL2.GL_RGBA;
-			internalFormat = GL2.GL_RGBA;
-			bpp = 4;
-			break;
-			
-		case BufferedImage.TYPE_3BYTE_BGR:
-		case BufferedImage.TYPE_INT_BGR:			
-			inputFormat = GL2.GL_RGB;
-			internalFormat = GL2.GL_RGB;
-			break;
-		case BufferedImage.TYPE_INT_RGB:
-			inputFormat = GL2.GL_RGB;
-			internalFormat = GL2.GL_RGB;
-			break;
-
-		default:
-			throw new NotImplementedException();
+		switch (bufferedImage.getType())
+		{
+			case BufferedImage.TYPE_INT_ARGB:
+			case BufferedImage.TYPE_4BYTE_ABGR:
+				inputFormat = GL2.GL_RGBA;
+				internalFormat = GL2.GL_RGBA;
+				bpp = 4;
+				break;
+				
+			case BufferedImage.TYPE_3BYTE_BGR:
+			case BufferedImage.TYPE_INT_BGR:			
+				inputFormat = GL2.GL_RGB;
+				internalFormat = GL2.GL_RGB;
+				break;
+			case BufferedImage.TYPE_INT_RGB:
+				inputFormat = GL2.GL_RGB;
+				internalFormat = GL2.GL_RGB;
+				break;
+	
+			default:
+				throw new RuntimeException("Unsupported image format: "+bufferedImage.getType());
 		}
 				
 		gl.glEnable(GL2.GL_TEXTURE_2D);			
@@ -154,31 +148,33 @@ public class OpenGLHelper
 				height, 0, inputFormat, inputType, b);
 	}
 	
-	private void updateTexture(BufferedImage bufferedImage, int xOffset, int yOffset){
+	private void updateTexture(BufferedImage bufferedImage, int xOffset, int yOffset)
+	{
 		GL2 gl = GLContext.getCurrentGL().getGL2();
 		boolean alpha = false;
 		boolean switchChannel = false;
 		int inputFormat = GL2.GL_RGB;
 		int inputType = GL2.GL_UNSIGNED_BYTE;
-		switch (bufferedImage.getType()) {
-		case BufferedImage.TYPE_4BYTE_ABGR:
-			switchChannel = true;
-		case BufferedImage.TYPE_INT_ARGB:
-			inputFormat = GL2.GL_RGBA;
-			alpha = true;			
-			break;
-			
-		case BufferedImage.TYPE_3BYTE_BGR:
-		case BufferedImage.TYPE_INT_BGR:			
-			switchChannel = true;
-			inputFormat = GL2.GL_RGB;
-			break;
-		case BufferedImage.TYPE_INT_RGB:
-			inputFormat = GL2.GL_RGB;
-			break;
-
-		default:
-			throw new NotImplementedException();
+		switch (bufferedImage.getType())
+		{
+			case BufferedImage.TYPE_4BYTE_ABGR:
+				switchChannel = true;
+			case BufferedImage.TYPE_INT_ARGB:
+				inputFormat = GL2.GL_RGBA;
+				alpha = true;			
+				break;
+				
+			case BufferedImage.TYPE_3BYTE_BGR:
+			case BufferedImage.TYPE_INT_BGR:			
+				switchChannel = true;
+				inputFormat = GL2.GL_RGB;
+				break;
+			case BufferedImage.TYPE_INT_RGB:
+				inputFormat = GL2.GL_RGB;
+				break;
+	
+			default:
+				throw new RuntimeException("Unsupported image format: "+bufferedImage.getType());
 		}
 		
 		ByteBuffer buffer = readPixels(bufferedImage, alpha, switchChannel);

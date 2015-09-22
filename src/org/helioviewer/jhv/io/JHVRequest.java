@@ -6,7 +6,7 @@ package org.helioviewer.jhv.io;
  * @author Andre Dau
  * 
  */
-public class JHVRequest {
+class JHVRequest {
     public String startTime = null;
     public String endTime = null;
     public double imageScale = -1;

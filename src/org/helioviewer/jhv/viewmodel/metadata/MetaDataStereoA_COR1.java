@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.physics.Constants;
 
-public class MetaDataStereoA_COR1 extends MetaData{
+class MetaDataStereoA_COR1 extends MetaData{
 
 	private final static Rectangle RESOLUTION = new Rectangle(512, 512);
 	private final double IMAGE_SCALE = 15.0;

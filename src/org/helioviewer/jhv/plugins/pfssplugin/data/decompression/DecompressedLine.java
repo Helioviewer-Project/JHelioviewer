@@ -7,7 +7,7 @@ import org.helioviewer.jhv.base.physics.Constants;
 /**
  * Immutable Class Representing a Decompressed Fieldline
  */
-public class DecompressedLine {
+class DecompressedLine {
 	public final ArrayList<DecompressedPoint> points;
 	private final LineType type;
 	

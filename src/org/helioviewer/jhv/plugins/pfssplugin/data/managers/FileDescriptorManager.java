@@ -6,11 +6,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-import javax.swing.JOptionPane;
-
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
-import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssSettings;
 import org.helioviewer.jhv.plugins.pfssplugin.data.FileDescriptor;
@@ -26,7 +23,6 @@ public class FileDescriptorManager
 	private LocalDateTime endDate;
 	private volatile int epoch = 0;
 
-	private volatile String errorMessage;
 	private LocalDateTime loadingFrom;
 	private LocalDateTime loadingTo;
 
@@ -65,7 +61,6 @@ public class FileDescriptorManager
 	{
 		epoch++;
 		final int curEpoch = epoch;
-		errorMessage = null;
 
 		this.loadingFrom = from;
 		this.loadingTo = to;
@@ -183,11 +178,13 @@ public class FileDescriptorManager
 		}
 	}
 
-	void showErrorMessages() {
+	void showErrorMessages()
+	{
 		if (!parent.isVisible())
 			return;
 
-		if (errorMessage == null)
+		//FIXME
+		/*if (errorMessage == null)
 			return;
 
 		Object[] options = { "Retry", "Cancel" };
@@ -197,7 +194,7 @@ public class FileDescriptorManager
 				JOptionPane.WARNING_MESSAGE, null, options, options[1]);
 
 		if (n == 0)
-			readFileDescriptors(loadingFrom, loadingTo);
+			readFileDescriptors(loadingFrom, loadingTo);*/
 	}
 
 	public LocalDateTime getStartDate() {

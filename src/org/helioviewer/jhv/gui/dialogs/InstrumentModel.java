@@ -6,11 +6,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
+import java.util.TreeMap;
 
 import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.Settings;
+import org.helioviewer.jhv.base.AlphanumComparator;
 import org.helioviewer.jhv.base.downloadmanager.AbstractDownloadRequest;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
@@ -23,7 +24,7 @@ import org.json.JSONObject;
 public class InstrumentModel
 {
 	private static final String URL_DATASOURCE = "http://api.helioviewer.org/v2/getDataSources/?";
-	private static LinkedHashMap<String, Observatory> observatories = new LinkedHashMap<String, InstrumentModel.Observatory>();
+	private static TreeMap<String, Observatory> observatories = new TreeMap<String, InstrumentModel.Observatory>(new AlphanumComparator());
 	private static AddLayerPanel addLayerPanel;
 
 	static
@@ -77,56 +78,70 @@ public class InstrumentModel
 		thread.start();
 	}
 
-	public static Collection<Observatory> getObservatories() {
+	public static Collection<Observatory> getObservatories()
+	{
 		return observatories.values();
 	}
 
-	private static void addObservatories(JSONObject observatories) {
+	private static void addObservatories(JSONObject _observatories)
+	{
 		@SuppressWarnings("unchecked")
-		Iterator<String> iterator = observatories.sortedKeys();
-		while (iterator.hasNext()) {
+		Iterator<String> iterator = _observatories.sortedKeys();
+		while (iterator.hasNext())
+		{
 			String observatoryName = iterator.next();
 			Observatory observatory = new Observatory(observatoryName);
-			try {
-				JSONObject jsonObservatory = observatories
-						.getJSONObject(observatoryName);
+			try
+			{
+				JSONObject jsonObservatory = _observatories.getJSONObject(observatoryName);
 				addFilter(jsonObservatory, observatory);
-			} catch (JSONException e) {
-				e.printStackTrace();
 			}
-			InstrumentModel.observatories.put(observatoryName, observatory);
+			catch (JSONException _e)
+			{
+				_e.printStackTrace();
+			}
+			observatories.put(observatoryName, observatory);
 		}
 	}
-
-	private static void addFilter(JSONObject jsonFilter, Observatory observatory){
+	
+	private static void addFilter(JSONObject jsonFilter, Observatory observatory)
+	{
 		@SuppressWarnings("unchecked")
 		Iterator<String> iterator = jsonFilter.sortedKeys();
-		while (iterator.hasNext()) {
+		while (iterator.hasNext())
+		{
 			String filterName = iterator.next();
-			try {
+			try
+			{
 				JSONObject jsonFilter1 = jsonFilter.getJSONObject(filterName);
 				Filter detector1 = new Filter(filterName);
 				observatory.addFilter(filterName, detector1);
 				addFilter(jsonFilter1, detector1, observatory);
-			} catch (Exception e) {
+			}
+			catch (Exception e)
+			{
 				addUILabel(jsonFilter, observatory);
 				return;
 			}
 		}
 	}
 	
-	private static void addFilter(JSONObject jsonFilter, Filter filter,
-			Observatory observatory) {
+	private static void addFilter(JSONObject jsonFilter, Filter filter, Observatory observatory)
+	{
 		@SuppressWarnings("unchecked")
 		Iterator<String> iterator = jsonFilter.sortedKeys();
-		while (iterator.hasNext()) {
+		while (iterator.hasNext())
+		{
 			String filterName = iterator.next();
-			try {
+			try
+			{
 				JSONObject jsonFilter1 = jsonFilter.getJSONObject(filterName);
 				Filter detector1 = new Filter(filterName);
 				filter.addFilter(filterName, detector1);
 				addFilter(jsonFilter1, detector1, observatory);
-			} catch (Exception e) {
+			}
+			catch (Exception e)
+			{
 				addUILabel(jsonFilter, observatory);
 				addData(jsonFilter, filter);
 				return;
@@ -134,31 +149,35 @@ public class InstrumentModel
 		}
 	}
 
-	private static void addUILabel(JSONObject jsonObject,
-			Observatory observatory) {
+	private static void addUILabel(JSONObject jsonObject, Observatory observatory)
+	{
 		JSONArray uiLabels;
-		try {
+		try
+		{
 			ArrayList<String> uiLabel = new ArrayList<String>();
 			uiLabels = (JSONArray) jsonObject.get("uiLabels");
-			for (int i = 1; i < uiLabels.length(); i++) {
+			for (int i = 1; i < uiLabels.length(); i++)
+			{
 				JSONObject obj = (JSONObject) uiLabels.get(i);
 				uiLabel.add(obj.getString("label"));
 				observatory.uiLabels = uiLabel;
 			}
-		} catch (JSONException e) {
-			
+		}
+		catch (JSONException e)
+		{
 			e.printStackTrace();
 		}
-
 	}
 
-	private static void addData(JSONObject jsonObject, Filter filter) {
-		try {
-			DateTimeFormatter reader = DateTimeFormatter
-					.ofPattern("yyyy-MM-dd HH:mm:ss");
+	private static void addData(JSONObject jsonObject, Filter filter)
+	{
+		try
+		{
+			DateTimeFormatter reader = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 			String end = jsonObject.getString("end");
 			String start = jsonObject.getString("start");
-			if (start != null && end != null && end != "null" && start != "null") {
+			if (start != null && end != null && end != "null" && start != "null")
+			{
 				LocalDateTime endDateTime = LocalDateTime.parse(end, reader);
 				LocalDateTime startDateTime = LocalDateTime.parse(start, reader);
 				filter.start = startDateTime;
@@ -167,12 +186,15 @@ public class InstrumentModel
 			//filter.layeringOrder = jsonObject.getInt("layeringOrder");
 			filter.nickname = (String) jsonObject.getString("nickname");
 			filter.sourceId = jsonObject.getInt("sourceId");
-		} catch (JSONException e) {
+		}
+		catch (JSONException e)
+		{
 		}
 	}
 
-	static class Observatory {
-		private LinkedHashMap<String, Filter> filters = new LinkedHashMap<String, Filter>();
+	static class Observatory
+	{
+		private TreeMap<String, Filter> filters = new TreeMap<String, Filter>(new AlphanumComparator());
 		private String name;
 		private ArrayList<String> uiLabels;
 
@@ -198,8 +220,9 @@ public class InstrumentModel
 		}
 	}
 
-	static class Filter {
-		private LinkedHashMap<String, Filter> filters = new LinkedHashMap<String, InstrumentModel.Filter>();
+	static class Filter
+	{
+		private TreeMap<String, Filter> filters = new TreeMap<String, InstrumentModel.Filter>(new AlphanumComparator());
 		private String name;
 		
 		private LocalDateTime start;

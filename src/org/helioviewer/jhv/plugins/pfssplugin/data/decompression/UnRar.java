@@ -12,7 +12,7 @@ import com.github.junrar.rarfile.FileHeader;
 /**
  * Wrapper class around the jUnrar library.
  */
-public class UnRar {
+class UnRar {
 
 	/**
 	 * Unrar PFSSData object

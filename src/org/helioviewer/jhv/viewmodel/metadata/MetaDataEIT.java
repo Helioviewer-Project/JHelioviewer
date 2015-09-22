@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 
 import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
 
-public class MetaDataEIT extends MetaData{
+class MetaDataEIT extends MetaData{
 
 	private final static Rectangle RESOLUTION = new Rectangle(1024, 1024);
 	private final double IMAGE_SCALE = 2.63;

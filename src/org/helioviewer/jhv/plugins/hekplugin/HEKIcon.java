@@ -10,7 +10,7 @@ import javax.swing.ImageIcon;
 import org.helioviewer.jhv.base.FileUtils;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
 
-public class HEKIcon {
+class HEKIcon {
 
 	private static final int IMAGE_HEIGHT = 1024;
 	private static final int IMAGE_WIDTH = 32;

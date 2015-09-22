@@ -6,7 +6,7 @@ import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 
-public class Texture
+class Texture
 {
 	private int sourceId = -1;
 	private ImageRegion imageRegion;

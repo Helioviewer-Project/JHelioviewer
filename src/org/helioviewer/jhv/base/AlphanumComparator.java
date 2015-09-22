@@ -43,8 +43,10 @@ import java.util.Comparator;
  * <p>
  * The change to java 1.5 has been done.
  */
-public class AlphanumComparator implements Comparator<String> {
-    private final boolean isDigit(char ch) {
+public class AlphanumComparator implements Comparator<String>
+{
+    private final boolean isDigit(char ch)
+    {
         return ch >= 48 && ch <= 57;
     }
 

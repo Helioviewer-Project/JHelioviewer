@@ -15,7 +15,7 @@ import java.util.Set;
  * @version 0.1
  * 
  */
-public abstract class HTTPMessage {
+abstract class HTTPMessage {
 
     /** A hash table with the headers of the message */
     private Hashtable<String, String> headers = new Hashtable<String, String>();

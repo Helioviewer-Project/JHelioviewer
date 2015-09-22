@@ -1,6 +1,6 @@
 package org.helioviewer.jhv.base.physics;
 
-public class HeliocentricEarthEquatorialCoordinates implements SolarCoordinates
+class HeliocentricEarthEquatorialCoordinates
 {
     // the origin is at the center of the sun
 

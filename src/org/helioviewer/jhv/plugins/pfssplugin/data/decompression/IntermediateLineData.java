@@ -5,7 +5,7 @@ import java.util.LinkedList;
 /**
  * This class is responsible for holding the intermediate data during decompression.
  */
-public class IntermediateLineData {
+class IntermediateLineData {
 	public float[][] channels;
 	public int size;
 	

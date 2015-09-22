@@ -4,7 +4,7 @@ import java.util.Date;
 
 import org.helioviewer.jhv.base.math.Interval;
 
-public abstract class HEKRequest {
+abstract class HEKRequest {
 
     /**
      * The path for which this request retrieves data

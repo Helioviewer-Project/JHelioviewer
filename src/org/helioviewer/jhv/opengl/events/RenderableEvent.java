@@ -2,7 +2,7 @@ package org.helioviewer.jhv.opengl.events;
 
 import java.time.LocalDateTime;
 
-public class RenderableEvent {
+class RenderableEvent {
 	
 	private final LocalDateTime startDateTime;
 	private final LocalDateTime endDateTime;

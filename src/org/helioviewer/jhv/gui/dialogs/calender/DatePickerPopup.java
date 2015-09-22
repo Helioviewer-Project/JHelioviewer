@@ -35,11 +35,8 @@ import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
-class DatePickerPopup extends JDialog {
-
-	/**
-	 * 
-	 */
+class DatePickerPopup extends JDialog
+{
 	private static final long serialVersionUID = -6010133370918805221L;
 	private LocalDate currentDate;
 	private CalenderCellRenderer calenderCellRenderer;
@@ -50,34 +47,24 @@ class DatePickerPopup extends JDialog {
 	private JPanel controlPanel;
 	private JLabel lblMonth, lblYear;
 	private JTable table;
-	private AWTEventListener awtEventListener = new AWTEventListener() {
 
-		@Override
-		public void eventDispatched(AWTEvent event) {
-			if (event instanceof KeyEvent) {
-				KeyEvent k = (KeyEvent) event;
-				if (k.getID() == KeyEvent.KEY_PRESSED) {
-					if (k.getKeyCode() == KeyEvent.VK_ESCAPE) {
-						newDatePicker.hidePopup();
-					}
-				}
-			}
-		}
-	};
-
-	DatePickerPopup(final DatePicker newDatePicker, JDialog dialog) {
+	DatePickerPopup(final DatePicker newDatePicker, JDialog dialog)
+	{
 		super(dialog);
-		this.addWindowListener(new WindowAdapter() {
+		this.addWindowListener(new WindowAdapter()
+		{
 			@Override
-			public void windowDeactivated(WindowEvent e) {
+			public void windowDeactivated(WindowEvent e)
+			{
 				newDatePicker.hidePopup();
 			}
 		});
 		
-		this.addFocusListener(new FocusAdapter() {
-			
+		this.addFocusListener(new FocusAdapter()
+		{
 			@Override
-			public void focusLost(FocusEvent e) {
+			public void focusLost(FocusEvent e)
+			{
 				newDatePicker.hidePopup();
 			}			
 		});
@@ -87,8 +74,20 @@ class DatePickerPopup extends JDialog {
 		this.setMinimumSize(new Dimension(250, 180));
 		this.newDatePicker = newDatePicker;
 
-		Toolkit.getDefaultToolkit().addAWTEventListener(awtEventListener,
-				AWTEvent.KEY_EVENT_MASK);
+		Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener()
+		{
+			@Override
+			public void eventDispatched(AWTEvent event)
+			{
+				if (event instanceof KeyEvent)
+				{
+					KeyEvent k = (KeyEvent) event;
+					if (k.getID() == KeyEvent.KEY_PRESSED)
+						if (k.getKeyCode() == KeyEvent.VK_ESCAPE)
+							newDatePicker.hidePopup();
+				}
+			}
+		}, AWTEvent.KEY_EVENT_MASK);
 
 		currentDate = LocalDate.now();
 		calenderCellRenderer = new CalenderCellRenderer();
@@ -302,11 +301,8 @@ class DatePickerPopup extends JDialog {
 		}
 	}
 
-	private class CalenderCellRenderer extends DefaultTableCellRenderer {
-
-		/**
-		 * 
-		 */
+	private static class CalenderCellRenderer extends DefaultTableCellRenderer
+	{
 		private static final long serialVersionUID = 1269766534482010809L;
 
 		private LocalDate currentMonth, currentDateTime;
@@ -314,7 +310,8 @@ class DatePickerPopup extends JDialog {
 		private final Color SELECTION_BACKGROUND = new Color(203, 233, 247);
 		private final Color SELECTION_BORDER = new Color(93, 184, 228);
 
-		public CalenderCellRenderer() {
+		public CalenderCellRenderer()
+		{
 			setHorizontalAlignment(CENTER);
 		}
 
@@ -348,23 +345,21 @@ class DatePickerPopup extends JDialog {
 
 	}
 
-	private class CalenderHeaderRenderer extends DefaultTableCellRenderer {
-
-		/**
-		 * 
-		 */
+	private static class CalenderHeaderRenderer extends DefaultTableCellRenderer
+	{
 		private static final long serialVersionUID = -3124760824900437244L;
 
-		public CalenderHeaderRenderer() {
+		public CalenderHeaderRenderer()
+		{
 			setHorizontalAlignment(CENTER);
 		}
 
 		@Override
 		public Component getTableCellRendererComponent(JTable table,
 				Object value, boolean isSelected, boolean hasFocus, int row,
-				int column) {
-			super.getTableCellRendererComponent(table, value, isSelected,
-					hasFocus, row, column);
+				int column)
+		{
+			super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 			super.setBackground(Color.WHITE);
 			return this;
 		}

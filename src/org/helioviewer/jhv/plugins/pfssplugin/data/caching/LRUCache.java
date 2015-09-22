@@ -10,7 +10,7 @@ import org.helioviewer.jhv.plugins.pfssplugin.data.FileDescriptor;
  * 
  * This class is not threadsafe
  */
-public class LRUCache<T extends Cacheable> {
+class LRUCache<T extends Cacheable> {
 	private final HashMap<FileDescriptor, Integer> cacheIndices;
 	private final ArrayList<T> cache;
 	private int oldestIndex;

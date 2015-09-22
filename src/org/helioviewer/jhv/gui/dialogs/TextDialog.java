@@ -20,7 +20,7 @@ import javax.swing.JTextArea;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.ShowableDialog;
 
-public class TextDialog extends JDialog implements ActionListener, ShowableDialog {
+class TextDialog extends JDialog implements ActionListener, ShowableDialog {
 
     private static final long serialVersionUID = 1L;
     private JButton closeButton;

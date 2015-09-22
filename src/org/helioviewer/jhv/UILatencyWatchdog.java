@@ -12,7 +12,7 @@ import org.helioviewer.jhv.base.Log;
 import com.mindscapehq.raygun4java.core.RaygunClient;
 import com.mindscapehq.raygun4java.core.messages.RaygunIdentifier;
 
-public class UILatencyWatchdog {
+class UILatencyWatchdog {
 	// maximum time the UI thread is allowed to block
 	private static final int MAX_LATENCY = 1500;
 
@@ -22,14 +22,20 @@ public class UILatencyWatchdog {
 	private static volatile Thread awtDispatcher;
 	private static volatile boolean setFlag;
 
-	public static void startWatchdog() {
-		Thread t = new Thread(new Runnable() {
+	public static void startWatchdog()
+	{
+		Thread t = new Thread(new Runnable()
+		{
 			@Override
-			public void run() {
-				try {
-					SwingUtilities.invokeAndWait(new Runnable() {
+			public void run()
+			{
+				try
+				{
+					SwingUtilities.invokeAndWait(new Runnable()
+					{
 						@Override
-						public void run() {
+						public void run()
+						{
 							awtDispatcher = Thread.currentThread();
 						}
 					});
@@ -38,11 +44,14 @@ public class UILatencyWatchdog {
 					// startup
 					Thread.sleep(7000);
 
-					for (;;) {
+					for (;;)
+					{
 						setFlag = false;
-						SwingUtilities.invokeLater(new Runnable() {
+						SwingUtilities.invokeLater(new Runnable()
+						{
 							@Override
-							public void run() {
+							public void run()
+							{
 								setFlag = true;
 							}
 						});
@@ -58,40 +67,38 @@ public class UILatencyWatchdog {
 							// this leads to better reporting since all
 							// exceptions will get grouped by raygun
 
-							String fullStackTrace = "";
-							StackTraceElement[] awtStackTrace = awtDispatcher
-									.getStackTrace();
+							StringBuffer fullStackTrace = new StringBuffer();
+							StackTraceElement[] awtStackTrace = awtDispatcher.getStackTrace();
 							List<StackTraceElement> limitedStackTrace = new ArrayList<>();
 							boolean jhvPartFound = false;
-							for (StackTraceElement ste : awtStackTrace) {
-								fullStackTrace += "  " + ste.toString() + "\n";
-
-								jhvPartFound |= ste.getClassName().startsWith(
-										"org.helioviewer.jhv.");
+							for (StackTraceElement ste : awtStackTrace)
+							{
+								fullStackTrace.append("  " + ste.toString() + "\n");
+								
+								jhvPartFound |= ste.getClassName().startsWith("org.helioviewer.jhv.");
 								if (jhvPartFound)
 									limitedStackTrace.add(ste);
 							}
 
 							// huh, jhv not even involved?! let's report the
 							// complete stack trace in that case...
-							if (!jhvPartFound) {
+							if (!jhvPartFound)
 								for (StackTraceElement ste : awtStackTrace)
 									limitedStackTrace.add(ste);
-							}
 
-							if (isRMIActive()) {
+							if (isRMIActive())
+							{
 								// it seems that someone is debugging this app
 								// --> leads to spurious alerts
 								// --> ignore & stop further processing
-								System.out
-										.println("UI latency watchdog: Debugger detected.");
+								System.out.println("UI latency watchdog: Debugger detected.");
 								return;
 							}
 
 							// only report hangs to raygun in release builds
-							if (JHVGlobals.isReleaseVersion()) {
-								RaygunClient client = new RaygunClient(
-										"QXtNXLEKWBfClhyteqov4w==");
+							if (JHVGlobals.isReleaseVersion())
+							{
+								RaygunClient client = new RaygunClient("QXtNXLEKWBfClhyteqov4w==");
 								client.SetVersion(JHVGlobals.VERSION);
 								Map<String, String> customData = new HashMap<String, String>();
 								customData.put("Log", Log.GetLastFewLines(6));
@@ -103,34 +110,28 @@ public class UILatencyWatchdog {
 												+ " (JRE "
 												+ System.getProperty("java.specification.version")
 												+ ")");
-								customData
-										.put("FullStackTrace", fullStackTrace);
+								customData.put("FullStackTrace", fullStackTrace.toString());
 
-								RaygunIdentifier user = new RaygunIdentifier(
-										Settings.getProperty("UUID"));
+								RaygunIdentifier user = new RaygunIdentifier(Settings.getProperty("UUID"));
 								client.SetUser(user);
 								ArrayList<String> tags = new ArrayList<String>();
 								tags.add(JHVGlobals.RAYGUN_TAG);
 								tags.add("latency-watchdog");
 
-								Throwable diagThrowable = new Throwable(
-										"UI latency watchdog - UI thread hang detected");
-								diagThrowable.setStackTrace(limitedStackTrace
-										.toArray(new StackTraceElement[0]));
-
+								Throwable diagThrowable = new Throwable("UI latency watchdog - UI thread hang detected");
+								diagThrowable.setStackTrace(limitedStackTrace.toArray(new StackTraceElement[0]));
 								client.Send(diagThrowable, tags, customData);
 							}
 
-							// log to the console in all cases, useful during
-							// development
-							System.err
-									.println("UI latency watchdog - UI thread hang detected in:\n"
-											+ fullStackTrace);
+							// log to the console in all cases, useful during development
+							System.err.println("UI latency watchdog - UI thread hang detected in:\n" + fullStackTrace);
 
 							Thread.sleep(COOLDOWN_AFTER_TIMEOUT);
 						}
 					}
-				} catch (Exception _ie) {
+				}
+				catch (Throwable _ie)
+				{
 				}
 			}
 		});

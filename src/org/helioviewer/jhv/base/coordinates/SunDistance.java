@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import org.helioviewer.jhv.base.physics.Constants;
 
 
-public class SunDistance {
+class SunDistance {
 
 	private final SunPosition sunPosition;
 

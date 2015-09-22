@@ -38,7 +38,7 @@ import org.helioviewer.jhv.plugins.plugin.Plugins.PluginIcon;
  * 
  * @author Malte Nuhn
  * */
-public class HEKPluginPanel extends JPanel implements ActionListener,
+class HEKPluginPanel extends JPanel implements ActionListener,
 		HEKCacheListener {
 
 	private static final long serialVersionUID = 1L;

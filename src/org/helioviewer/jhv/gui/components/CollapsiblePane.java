@@ -25,7 +25,7 @@ import org.helioviewer.jhv.gui.MainFrame;
  * 
  * @author Markus Langenberg
  */
-public class CollapsiblePane extends JComponent implements ActionListener {
+class CollapsiblePane extends JComponent implements ActionListener {
 
     private static final long serialVersionUID = 1L;
 

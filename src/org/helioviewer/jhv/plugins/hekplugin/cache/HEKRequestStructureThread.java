@@ -13,7 +13,7 @@ import org.helioviewer.jhv.plugins.plugin.Plugins;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class HEKRequestStructureThread extends HEKRequest implements Runnable {
+class HEKRequestStructureThread extends HEKRequest implements Runnable {
 
     private HEKCacheController cacheController;
 

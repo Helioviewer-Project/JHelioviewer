@@ -21,8 +21,8 @@ import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPSocket;
  * @author caplins
  * 
  */
-public class JPIPSocket extends HTTPSocket {
-
+public class JPIPSocket extends HTTPSocket
+{
     /**
      * The jpip channel ID for the connection (persistent)
      */
@@ -197,18 +197,19 @@ public class JPIPSocket extends HTTPSocket {
         getOutputStream().write(str.toString().getBytes(StandardCharsets.UTF_8));
     }
 
-    private String getResponseHeadersAsString(HTTPResponse res) {
-        String result = "Headers:";
-        if (res != null && res.getHeaders() != null) {
-            for (String header : res.getHeaders()) {
-                result += "\n" + header + ": " + res.getHeader(header);
-            }
-        }
-        return result;
+    private String getResponseHeadersAsString(HTTPResponse res)
+    {
+    	StringBuffer result = new StringBuffer("Headers:");
+        if (res != null && res.getHeaders() != null)
+            for (String header : res.getHeaders())
+                result.append("\n" + header + ": " + res.getHeader(header));
+        
+        return result.toString();
     }
 
     /** Receives a JPIPResponse returning null if EOS reached */
-    public JPIPResponse receive() throws IOException {
+    public JPIPResponse receive() throws IOException
+    {
         // long tini = System.currentTimeMillis();
 
         HTTPResponse httpRes = (HTTPResponse) super.receive();
@@ -242,17 +243,25 @@ public class JPIPSocket extends HTTPSocket {
             throw new IOException("Expected image/jpp-stream content!\n" + getResponseHeadersAsString(res));
 
         String transferEncoding = res.getHeader("Transfer-Encoding") == null ? "" : res.getHeader("Transfer-Encoding").trim();
-        if (transferEncoding.equals("") || transferEncoding.equals("identity")) {
+        if (transferEncoding.equals("") || transferEncoding.equals("identity"))
+        {
             String contentLengthString = res.getHeader("Content-Length") == null ? "" : res.getHeader("Content-Length").trim();
-            try {
+            try
+            {
                 int contentLength = Integer.parseInt(contentLengthString);
                 input = new FixedSizedInputStream(new BufferedInputStream(getInputStream(),65536), contentLength);
-            } catch (Exception e) {
+            }
+            catch (NumberFormatException _nfe)
+            {
                 throw new IOException("Invalid Content-Length header: " + contentLengthString + "\n" + getResponseHeadersAsString(res));
             }
-        } else if (transferEncoding.equals("chunked")) {
+        }
+        else if (transferEncoding.equals("chunked"))
+        {
             input = new ChunkedInputStream(new BufferedInputStream(getInputStream(),65536));
-        } else {
+        }
+        else
+        {
             throw new IOException("Unsupported transfer encoding: " + transferEncoding + "\n" + getResponseHeadersAsString(res));
         }
 
