@@ -17,8 +17,8 @@ import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLContext;
 
-public class OpenGLHelper {
-	public static GLContext glContext;
+public class OpenGLHelper
+{
 	private int textureID;
 	private int textureWidth = 0;
 	private int textureHeight = 0;
@@ -42,7 +42,8 @@ public class OpenGLHelper {
 		return tmp[0];
 	}
 	
-	public static int[] createTextureIDs(int countTexture){
+	public static int[] createTextureIDs(int countTexture)
+	{
 		GL2 gl = GLContext.getCurrentGL().getGL2();
 		int tmp[] = new int[countTexture];
 		gl.glGenTextures(countTexture, tmp, 0);

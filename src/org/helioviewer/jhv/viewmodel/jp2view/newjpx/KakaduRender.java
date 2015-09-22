@@ -21,7 +21,6 @@ import kdu_jni.Kdu_ilayer_ref;
 import kdu_jni.Kdu_region_compositor;
 import kdu_jni.Kdu_thread_env;
 
-import org.helioviewer.jhv.viewmodel.jp2view.kakadu.JHV_KduException;
 import org.helioviewer.jhv.viewmodel.jp2view.kakadu.KakaduUtils;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.metadata.MetaDataContainer;
@@ -187,7 +186,7 @@ public class KakaduRender
 	
 
 
-	public MetaData getMetadata(int index, Jp2_threadsafe_family_src family_src) throws JHV_KduException
+	public MetaData getMetadata(int index, Jp2_threadsafe_family_src family_src) throws KduException
 	{
 		String xmlText = KakaduUtils.getXml(family_src, index);
 		if (xmlText == null)

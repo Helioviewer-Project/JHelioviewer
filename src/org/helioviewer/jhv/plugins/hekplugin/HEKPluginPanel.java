@@ -31,7 +31,7 @@ import org.helioviewer.jhv.plugins.hekplugin.cache.HEKStupidDownloader;
 import org.helioviewer.jhv.plugins.hekplugin.cache.gui.HEKCacheTreeView;
 import org.helioviewer.jhv.plugins.hekplugin.cache.gui.HEKCacheTreeViewContainer;
 import org.helioviewer.jhv.plugins.plugin.Plugins;
-import org.helioviewer.jhv.plugins.plugin.Plugins.PLUGIN_ICON;
+import org.helioviewer.jhv.plugins.plugin.Plugins.PluginIcon;
 
 /**
  * Represents the UI components which manage the HEK event catalog.
@@ -50,9 +50,9 @@ public class HEKPluginPanel extends JPanel implements ActionListener,
 			HEKCache.getSingletonInstance());
 	private JScrollPane treeView = new JScrollPane(tree);
 	private JButton cancelButton = new JButton(Plugins.getIcon(
-			PLUGIN_ICON.CANCEL, 16, 16));
+			PluginIcon.CANCEL, 16, 16));
 	private JButton reloadButton = new JButton(Plugins.getIcon(
-			PLUGIN_ICON.REFRESH, 16, 16));
+			PluginIcon.REFRESH, 16, 16));
 	private HEKCacheTreeViewContainer container = new HEKCacheTreeViewContainer();
 
 	private HEKCacheModel cacheModel;

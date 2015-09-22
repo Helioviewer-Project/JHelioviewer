@@ -11,9 +11,9 @@ import org.helioviewer.jhv.viewmodel.jp2view.io.ChunkedInputStream;
 import org.helioviewer.jhv.viewmodel.jp2view.io.FixedSizedInputStream;
 import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPHeaderKey;
 import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPRequest;
+import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPRequest.Method;
 import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPResponse;
 import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPSocket;
-import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPRequest.Method;
 
 /**
  * Assumes a persistent HTTP connection.

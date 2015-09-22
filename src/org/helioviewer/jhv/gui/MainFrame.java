@@ -27,7 +27,7 @@ import org.helioviewer.jhv.gui.leftPanel.FilterPanel;
 import org.helioviewer.jhv.gui.leftPanel.LayerPanel;
 import org.helioviewer.jhv.gui.leftPanel.MoviePanel;
 import org.helioviewer.jhv.gui.opengl.MainPanel;
-import org.helioviewer.jhv.gui.opengl.OverViewPanel;
+import org.helioviewer.jhv.gui.opengl.OverviewPanel;
 import org.helioviewer.jhv.gui.statusLabels.CurrentTimeLabel;
 import org.helioviewer.jhv.gui.statusLabels.FramerateStatusPanel;
 import org.helioviewer.jhv.gui.statusLabels.PositionStatusPanel;
@@ -37,22 +37,14 @@ import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
+import com.jogamp.opengl.GLContext;
 
-
-/**
- * This class include the mainframe of the application
- * @author stefanmeier
- *
- */
-public class MainFrame extends JFrame{
-
-	/**
-	 * 
-	 */
+public class MainFrame extends JFrame
+{
 	private static final long serialVersionUID = 5593418566466319335L;
 	
-	public static final MainPanel MAIN_PANEL = new MainPanel();
-	public static final OverViewPanel OVERVIEW_PANEL = new OverViewPanel();
+	public static MainPanel MAIN_PANEL;
+	public static OverviewPanel OVERVIEW_PANEL;
 	public static final TopToolBar TOP_TOOL_BAR = new TopToolBar();
 	public static final MainFrame SINGLETON = new MainFrame();
 	public static final int SIDE_PANEL_WIDTH = 320;
@@ -63,15 +55,22 @@ public class MainFrame extends JFrame{
 
 	public static FilterPanel FILTER_PANEL;
 	
-	public MainFrame() {
+	private MainFrame()
+	{
 		super("ESA JHelioviewer");
+	}
+	
+	public void initSharedContext(GLContext _context)
+	{
+		MAIN_PANEL = new MainPanel(_context);
+		OVERVIEW_PANEL = new OverviewPanel(_context);
 		initMainFrame();
 		initMenuBar();
 		initGui();
-		
 	}
 	
-	private void initMainFrame(){
+	private void initMainFrame()
+	{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Dimension maxSize = Toolkit.getDefaultToolkit().getScreenSize();
 		Dimension minSize = new Dimension(800, 600);
@@ -96,7 +95,8 @@ public class MainFrame extends JFrame{
 		setLocationRelativeTo(null);
 	}
 	
-	private void initGui(){			
+	private void initGui()
+	{
 		JPanel contentPane = new JPanel();
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
@@ -108,18 +108,19 @@ public class MainFrame extends JFrame{
 		splitPane.setResizeWeight(0.0);
 		splitPane.setContinuousLayout(true);
 		contentPane.add(splitPane, BorderLayout.CENTER);
-					
+		
 		MAIN_PANEL.setMinimumSize(new Dimension());
 		OVERVIEW_PANEL.setMinimumSize(new Dimension(240, 200));
 		OVERVIEW_PANEL.setPreferredSize(new Dimension(240, 200));
 
 		splitPane.setRightComponent(MAIN_PANEL);		
-		splitPane.setLeftComponent(getLeftPane());
+		splitPane.setLeftComponent(createLeftPanel());
 		
 		contentPane.add(this.getStatusPane(), BorderLayout.SOUTH);		
 	}
 	
-	private JPanel getLeftPane(){
+	private JPanel createLeftPanel()
+	{
 		JPanel left = new JPanel();
 		GridBagLayout gbl_left = new GridBagLayout();
 		gbl_left.columnWidths = new int[]{0, 0};
@@ -135,14 +136,12 @@ public class MainFrame extends JFrame{
 		gbc_overViewPane.gridy = 0;
 		
 		left.add(OVERVIEW_PANEL, gbc_overViewPane);
-		OVERVIEW_PANEL.setMinimumSize(new Dimension(370, 200));
+		OVERVIEW_PANEL.setMinimumSize(new Dimension(450, 200));
 		OVERVIEW_PANEL.addMainView(MAIN_PANEL);
 		MAIN_PANEL.addSynchronizedView(OVERVIEW_PANEL);
 		
 		JPanel scrollContentPane = new JPanel(new BorderLayout());
-		scrollContentPane.setMinimumSize(new Dimension(300,40));
 		JScrollPane scrollPane = new JScrollPane(scrollContentPane);
-		scrollPane.setMinimumSize(new Dimension());
 		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
 		gbc_scrollPane.fill = GridBagConstraints.BOTH;
 		gbc_scrollPane.gridx = 0;
@@ -151,16 +150,19 @@ public class MainFrame extends JFrame{
 		
 		scrollContentPane.add(getSideBar());
 		
-		
-		this.addComponentListener(new ComponentAdapter() {
-						
+		//FIXME: still needed?
+		this.addComponentListener(new ComponentAdapter()
+		{
 			@Override
-			public void componentResized(ComponentEvent e) {
+			public void componentResized(ComponentEvent e)
+			{
 				// this is a hack to support GLCanvas as AWT in a splitpane
 				splitPane.setDividerLocation(splitPane.getDividerLocation()+1);
-				SwingUtilities.invokeLater(new Runnable() {	
+				SwingUtilities.invokeLater(new Runnable()
+				{
 					@Override
-					public void run() {
+					public void run()
+					{
 						splitPane.setDividerLocation(splitPane.getDividerLocation()-1);
 					}
 				});

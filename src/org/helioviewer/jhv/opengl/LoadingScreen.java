@@ -12,9 +12,8 @@ import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLContext;
 
-public class LoadingScreen{
-	
-	
+public class LoadingScreen
+{
 	private static final double TOTAL_SEC_4_ONE_ROTATION = 2;
 	private static final int NUMBER_OF_CIRCLE = 32;
 	private static final int NUMBER_OF_VISIBLE_CIRCLE = 12;
@@ -35,16 +34,17 @@ public class LoadingScreen{
 
 	private static long time;
 	
-	static{
+	static
+	{
 		openGLHelper = new OpenGLHelper();
-				texture = openGLHelper.createTextureID();
-				BufferedImage image = IconBank.getImage(JHVIcon.LOADING_BIG);
-				openGLHelper.bindBufferedImageToGLTexture(image);
-				initCircleVBO(GLContext.getCurrentGL().getGL2());
+		texture = openGLHelper.createTextureID();
+		BufferedImage image = IconBank.getImage(JHVIcon.LOADING_BIG);
+		openGLHelper.bindBufferedImageToGLTexture(image);
+		initCircleVBO(GLContext.getCurrentGL().getGL2());
 	}
 
-	public static void render(GL2 gl) {
-		
+	public static void render(GL2 gl)
+	{
 		gl.glUseProgram(0);
 		gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
 		gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
@@ -62,10 +62,8 @@ public class LoadingScreen{
 		gl.glActiveTexture(GL.GL_TEXTURE0);
 		
 		gl.glBindTexture(GL2.GL_TEXTURE_2D, texture);
-		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER,
-				GL2.GL_LINEAR);
-		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER,
-				GL2.GL_LINEAR);
+		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_LINEAR);
+		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_LINEAR);
 		// gl.glColor3f(1, 0, 0);
 		time = System.currentTimeMillis();
 		long counter = (time / 600) % 4;
@@ -84,10 +82,10 @@ public class LoadingScreen{
 		gl.glDisable(GL2.GL_TEXTURE_2D);
 
 		//renderCircles(gl);
-
 	}
 
-	private static void renderCircles(GL2 gl) {
+	private static void renderCircles(GL2 gl)
+	{
 		// gl.glPushMatrix();
 		double t = System.currentTimeMillis() / (TOTAL_SEC_4_ONE_ROTATION*1000.0);
 		t = t - (int) t;
@@ -188,5 +186,4 @@ public class LoadingScreen{
 				GL.GL_STATIC_DRAW);
 		
 	}
-
 }

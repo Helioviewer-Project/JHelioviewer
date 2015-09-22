@@ -5,80 +5,93 @@ import java.awt.event.ActionListener;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.NavigableSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import javax.swing.Timer;
 
 import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.gui.leftPanel.MoviePanel.ANIMATION_MODE;
+import org.helioviewer.jhv.gui.leftPanel.MoviePanel.AnimationMode;
 import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.layers.AbstractLayer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
 
-public class TimeLine implements LayerListener {
-
+public class TimeLine implements LayerListener
+{
 	private LocalDateTime current = LocalDateTime.now();
 
 	private boolean isPlaying = false;
 
 	private ArrayList<TimeLineListener> timeLineListeners;
 
-	private ConcurrentSkipListSet<LocalDateTime> localDateTimes = null;
+	private NavigableSet<LocalDateTime> localDateTimes = null;
 
 	private int millisecondsPerFrame = 50;
-	private ANIMATION_MODE animationMode = ANIMATION_MODE.LOOP;
+	private AnimationMode animationMode = AnimationMode.LOOP;
 
 	public static TimeLine SINGLETON = new TimeLine();
 	private boolean forward = true;
 	
-	private static final Timer timer = new Timer(0, new ActionListener() {
-		
+	private static final Timer timer = new Timer(0, new ActionListener()
+	{
 		@Override
-		public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e)
+		{
 			MainFrame.MAIN_PANEL.display();
 			timer.stop();
 		}
 	});
 	
-	private TimeLine() {
+	private TimeLine()
+	{
 		localDateTimes = new ConcurrentSkipListSet<LocalDateTime>();
 		Layers.addNewLayerListener(this);
 		timeLineListeners = new ArrayList<TimeLine.TimeLineListener>();
 	}
 
-	public boolean isPlaying() {
+	public boolean isPlaying()
+	{
 		return isPlaying;
 	}
 
-	public void setPlaying(boolean playing)
+	public void setPlaying(boolean _playing)
 	{
-		this.isPlaying = playing;
+		if(localDateTimes.isEmpty() && _playing)
+		{
+			System.out.println("TimeLine: There's nothing to play");
+			_playing=false;
+		}
+		
+		this.isPlaying = _playing;
 		forward = true;
 		MainFrame.MAIN_PANEL.resetLastFrameChangeTime();
 		MainFrame.MAIN_PANEL.repaint();
 	}
 
-	public LocalDateTime nextFrame() {
+	public LocalDateTime nextFrame()
+	{
 		if (localDateTimes.isEmpty())
 			return null;
-		LocalDateTime next = localDateTimes.higher(current.plusNanos(1));
+		
+		LocalDateTime next = localDateTimes.higher(current);
 		LocalDateTime last = current;
-		if (next == null) {
+		if (next == null)
 			next = localDateTimes.first();
-		}
+		
 		current = next;
 		dateTimeChanged(last);
 		return current;
 	}
 
-	public LocalDateTime previousFrame() {
+	public LocalDateTime previousFrame()
+	{
 		if (localDateTimes.isEmpty())
 			return null;
-		LocalDateTime next = localDateTimes.lower(current.minusNanos(1));
-		if (next == null) {
+		LocalDateTime next = localDateTimes.lower(current);
+		if (next == null)
 			next = localDateTimes.last();
-		}
+		
 		current = next;
 		dateTimeChanged(current);
 		return current;
@@ -112,9 +125,11 @@ public class TimeLine implements LayerListener {
 		}
 	}
 
-	private void notifyUpdateDateTimes() {
-		MainFrame.MOVIE_PANEL.setEnableButtons(!localDateTimes.isEmpty());
-		for (TimeLine.TimeLineListener timeLineListener : timeLineListeners) {
+	private void notifyUpdateDateTimes()
+	{
+		MainFrame.MOVIE_PANEL.setButtonsEnabled(!localDateTimes.isEmpty());
+		for (TimeLine.TimeLineListener timeLineListener : timeLineListeners)
+		{
 			timeLineListener.dateTimesChanged(localDateTimes.size());
 		}
 	}
@@ -130,7 +145,7 @@ public class TimeLine implements LayerListener {
 	}
 
 	@Override
-	public void newlayerAdded()
+	public void newLayerAdded()
 	{
 	}
 
@@ -146,8 +161,8 @@ public class TimeLine implements LayerListener {
 	{
 		if (layer != null && layer.isImageLayer())
 		{
-			updateLocalDateTimes(((AbstractImageLayer)layer).getLocalDateTime());
-			MainFrame.MOVIE_PANEL.setEnableButtons(!localDateTimes.isEmpty());
+			setLocalDateTimes(((AbstractImageLayer)layer).getLocalDateTime());
+			MainFrame.MOVIE_PANEL.setButtonsEnabled(!localDateTimes.isEmpty());
 		}
 	}
 
@@ -178,7 +193,7 @@ public class TimeLine implements LayerListener {
 		void dateTimesChanged(int framecount);
 	}
 
-	public void updateLocalDateTimes(ConcurrentSkipListSet<LocalDateTime> localDateTimes)
+	public void setLocalDateTimes(NavigableSet<LocalDateTime> localDateTimes)
 	{
 		this.localDateTimes = localDateTimes;
 		notifyUpdateDateTimes();
@@ -205,7 +220,7 @@ public class TimeLine implements LayerListener {
 		dateTimeChanged(last);
 	}
 
-	public void setAnimationMode(ANIMATION_MODE animationMode)
+	public void setAnimationMode(AnimationMode animationMode)
 	{
 		this.animationMode = animationMode;
 	}
@@ -259,14 +274,14 @@ public class TimeLine implements LayerListener {
 	
 	private void loop()
 	{
-		current = localDateTimes.higher(current.plusNanos(1));
+		current = localDateTimes.higher(current);
 		if (current == null)
 			current = localDateTimes.first();
 	}
 	
 	private void stop()
 	{
-		current = localDateTimes.higher(current.plusNanos(1));
+		current = localDateTimes.lower(current);
 		if (current == null)
 		{
 			current = localDateTimes.first();		
@@ -276,24 +291,25 @@ public class TimeLine implements LayerListener {
 	
 	private void swing()
 	{
-		LocalDateTime current;
+		LocalDateTime next;
 		if (forward)
 		{
-			current = localDateTimes.higher(this.current.plusNanos(1));
-			if (current == null) {
+			next = localDateTimes.higher(current);
+			if (next == null)
+			{
 				forward = false;
-				current = localDateTimes.lower(this.current.minusNanos(1));
+				next = localDateTimes.lower(current);
 			}
 		}
 		else
 		{
-			current = localDateTimes.lower(this.current.minusNanos(1));
-			if (current == null)
+			next = localDateTimes.lower(current);
+			if (next == null)
 			{
 				forward = true;
-				current = localDateTimes.higher(this.current.plusNanos(1));
+				next = localDateTimes.higher(current);
 			}
 		}
-		this.current = current;
+		current = next;
 	}
 }

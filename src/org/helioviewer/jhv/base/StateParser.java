@@ -176,7 +176,7 @@ public class StateParser extends DefaultHandler {
 		TimeLine.SINGLETON.setCurrentDate(currentDateTime);
 
 		JSONObject jsonPlugin = jsonObject.getJSONObject(PLUGINS);
-		Plugins.SINGLETON.loadStateFile(jsonPlugin);
+		Plugins.SINGLETON.restoreConfiguration(jsonPlugin);
 	}
 
 	private static void startSavingStateFile(File selectedFile)
@@ -215,7 +215,7 @@ public class StateParser extends DefaultHandler {
 		jsonObject.put(TIME, TimeLine.SINGLETON.getCurrentDateTime());
 
 		JSONObject jsonPlugins = new JSONObject();
-		Plugins.SINGLETON.writeStateFile(jsonPlugins);
+		Plugins.SINGLETON.storeConfiguration(jsonPlugins);
 		jsonObject.put(PLUGINS, jsonPlugins);
 
 		FileWriter file = new FileWriter(fileName);

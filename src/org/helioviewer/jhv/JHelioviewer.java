@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -25,7 +26,7 @@ import org.helioviewer.jhv.base.Log;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.dialogs.AboutDialog;
 import org.helioviewer.jhv.io.CommandLineProcessor;
-import org.helioviewer.jhv.opengl.OpenGLHelper;
+import org.helioviewer.jhv.opengl.TextureCache;
 import org.helioviewer.jhv.plugins.plugin.Plugins;
 import org.helioviewer.jhv.viewmodel.jp2view.kakadu.JHV_Kdu_message;
 
@@ -41,29 +42,23 @@ public class JHelioviewer
 {
 	public static void main(String[] args)
 	{
-		try {
-			Class.forName("com.sun.javafx.runtime.VersionInfo");
-			JHVGlobals.USE_JAVA_FX = true;
-		} catch (ClassNotFoundException e) {
-			System.out.println("No JavaFX detected. Please install a Java 1.8 with JavaFX");
-			//JOptionPane.showMessageDialog(null, "No JavaFX detected. Please install a Java 1.8 with JavaFX", "No JavaFX detected", JOptionPane.ERROR_MESSAGE);
-			//System.exit(0);
-		}
-		
-		SwingUtilities.invokeLater(new Runnable()
+		// Setup Swing
+		try
 		{
-		    public void run() {
-		        new JFXPanel(); // initializes JavaFX environment
-		    }
-		});
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		}
+		catch (Exception e2)
+		{
+			e2.printStackTrace();
+		}
 		
 		// Uncaught runtime errors are displayed in a dialog box in addition
 		JHVUncaughtExceptionHandler.setupHandlerForThread();
-
+		
 		try
 		{
 			Log.redirectStdOutErr();
-			if (System.getProperty("raygunTag") != null)
+			if (JHVGlobals.isReleaseVersion())
 			{
 				if (UpdateScheduleRegistry.checkAndReset())
 				{
@@ -75,17 +70,14 @@ public class JHelioviewer
 							{
 								public void exited(int exitValue)
 								{
-									// add your code here (not invoked on event dispatch thread)
 								}
 
 								public void prepareShutdown()
 								{
-									// add your code here (not invoked on event dispatch thread)
 								}
 							}, ApplicationLauncher.WindowMode.FRAME, null);
 				}
 			}
-			JHVGlobals.RAYGUN_TAG = System.getProperty("raygunTag");
 
 			if (args.length == 1 && (args[0].equals("-h") || args[0].equals("--help")))
 			{
@@ -93,20 +85,22 @@ public class JHelioviewer
 				return;
 			}
 
+			Telemetry.trackEvent("Startup","args",Arrays.toString(args));
 			CommandLineProcessor.setArguments(args);
 
-			// Setup Swing
-			try
-			{
-				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			}
-			catch (Exception e2)
-			{
-				e2.printStackTrace();
-			}
 			ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
 			JPopupMenu.setDefaultLightWeightPopupEnabled(false);
 
+			// initializes JavaFX environment
+			if(JHVGlobals.USE_JAVA_FX)
+				SwingUtilities.invokeLater(new Runnable()
+				{
+				    public void run()
+				    {
+				        new JFXPanel();
+				    }
+				});
+			
 			// Save command line arguments
 			CommandLineProcessor.setArguments(args);
 
@@ -118,10 +112,10 @@ public class JHelioviewer
 
 			// Save current default locale to user.locale
 			System.setProperty("user.locale", Locale.getDefault().toString());
-
+			
 			// Per default, the us locale should be used
 			Locale.setDefault(Locale.US);
-
+			
 			// Information log message
 			String argString = "";
 			for (int i = 0; i < args.length; ++i)
@@ -137,29 +131,24 @@ public class JHelioviewer
 			sharedDrawable.display();
 			if (System.getProperty("jhvVersion") == null)
 				sharedDrawable.setGL(new DebugGL2(sharedDrawable.getGL().getGL2()));
-
-			OpenGLHelper.glContext = sharedDrawable.getContext();
-
+			
 			System.out.println("JHelioviewer started with command-line options:" + argString);
 			System.out.println("Initializing JHelioviewer");
 
 			// display the splash screen
 			final SplashScreen splash = SplashScreen.getSingletonInstance();
 
-			splash.setProgressSteps(4);
+			splash.setProgressSteps(5);
 
 			JHVGlobals.initFileChooserAsync();
 
 			// Load settings from file but do not apply them yet
 			// The settings must not be applied before the kakadu engine has
-			// been
-			// initialized
+			// been initialized
 			splash.progressTo("Loading settings...");
 			Settings.load();
 
-			/* ----------Setup kakadu ----------- */
 			splash.progressTo("Initializing Kakadu libraries...");
-
 			try
 			{
 				loadLibraries();
@@ -180,26 +169,30 @@ public class JHelioviewer
 			}
 
 			// The following code-block attempts to start the native message handling
-			splash.progressTo("Setup Kakadu message handlers");
+			splash.progressTo("Setting up Kakadu message handlers");
             Kdu_global.Kdu_customize_warnings(new Kdu_message_formatter(new JHV_Kdu_message(false), 80));
             Kdu_global.Kdu_customize_errors(new Kdu_message_formatter(new JHV_Kdu_message(true), 80));
 
 			// Create main view chain and display main window
-            splash.progressTo("Start Swing");
+            splash.progressTo("Starting Swing");
 			SwingUtilities.invokeLater(new Runnable()
 			{
 				@Override
 				public void run()
 				{
-					splash.progressTo("Initialize plugins");
+					MainFrame.SINGLETON.initSharedContext(sharedDrawable.getContext());
 					
 					// force initialization of UltimatePluginInterface
+					splash.progressTo("Initialize plugins");
 					Plugins.SINGLETON.getClass();
 					
+					splash.progressTo("Setting up texture cache");
+					sharedDrawable.getContext().makeCurrent();
+					TextureCache.init();
 					
-					splash.progressTo("Open main window");
-
+					splash.progressTo("Opening main window");
 					MainFrame.SINGLETON.setVisible(true);
+					
 					splash.dispose();
 					UILatencyWatchdog.startWatchdog();
 				}

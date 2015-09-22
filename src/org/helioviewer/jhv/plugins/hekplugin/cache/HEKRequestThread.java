@@ -125,16 +125,12 @@ public class HEKRequestThread extends HEKRequest implements Runnable {
                 page++;
             }
 
-        } catch (IOException e) {
+        } catch (JSONException | IOException e) {
             System.err.println("Error Parsing the HEK Response.");
-            System.err.println("");
             e.printStackTrace();
-        } catch (JSONException e) {
-            System.err.println("Error Parsing the HEK Response.");
-            System.err.println("");
-            e.printStackTrace();
+        } catch (InterruptedException e)
+        {
         }
-
     }
 
     private void parseAndFeed(JSONObject json, Interval<Date> interval) {

@@ -41,7 +41,7 @@ public class PfssPlugin extends AbstractPlugin {
 
 	public PfssPlugin() {
 		super(PLUGIN_NAME);
-		renderMode = RENDER_MODE.MAIN_PANEL;
+		renderMode = RenderMode.MAIN_PANEL;
 		manager = new FrameManager(this);
 		pfssPluginPanel = new PfssPluginPanel(this);
 	}
@@ -101,13 +101,13 @@ public class PfssPlugin extends AbstractPlugin {
 	}
 
 	@Override
-	public void loadStateFile(JSONObject jsonObject) {
+	public void restoreConfiguration(JSONObject jsonObject) {
 		if (jsonObject.has(JSON_NAME)) {
 			try {
 				JSONObject jsonPfss = jsonObject.getJSONObject(JSON_NAME);
 				boolean visible = jsonPfss.getBoolean(JSON_VISIBLE);
 				boolean open = jsonPfss.getBoolean(JSON_OPEN);
-				Plugins.expandPanel(pfssPluginPanel, open);
+				Plugins.setPanelOpenCloseState(pfssPluginPanel, open);
 				pfssPluginPanel.setVisibleBtn(visible);
 			} catch (JSONException e) {
 				
@@ -118,7 +118,7 @@ public class PfssPlugin extends AbstractPlugin {
 	}
 
 	@Override
-	public void writeStateFile(JSONObject jsonObject) {
+	public void storeConfiguration(JSONObject jsonObject) {
 		try {
 			JSONObject jsonPfss = new JSONObject();
 			jsonPfss.put(JSON_OPEN, pfssPluginPanel.isVisible());
@@ -149,12 +149,12 @@ public class PfssPlugin extends AbstractPlugin {
 
 	@Override
 	public int getBadRequestCount() {
-		return badRequests.size() > 0 ? badRequests.size() : 1;
+		return failedRequests.size() > 0 ? failedRequests.size() : 1;
 	}
 
 	@Override
 	public void retryBadReqeuest() {
-		badRequests.clear();
+		failedRequests.clear();
 		if (manager.getStartDate() == null || manager.getEndDate() == null) pfssPluginPanel.reload();
 		else manager.retryBadReqeuest();
 		Plugins.repaintLayerPanel();

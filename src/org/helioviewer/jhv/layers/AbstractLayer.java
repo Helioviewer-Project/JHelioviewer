@@ -87,19 +87,8 @@ public abstract class AbstractLayer
 		return failedRequests.size();
 	}
 
-	public void addFailedRequests(ArrayList<AbstractDownloadRequest> _failedRequests)
+	public void clearBadRequests()
 	{
-		if(failedRequests!=null)
-			synchronized(failedRequests)
-			{
-				this.failedRequests = _failedRequests;
-			}
-		else
-			this.failedRequests = _failedRequests;
-		MainFrame.LAYER_PANEL.repaintPanel();
-	}
-
-	public void clearBadRequests() {
 		failedRequests.clear();
 		MainFrame.LAYER_PANEL.repaintPanel();
 	}

@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduRender;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,20 +36,17 @@ public class Layers
 
 	public static AbstractLayer addLayer(String uri)
 	{
-		ImageLayer layer = new ImageLayer(uri, new KakaduRender());
+		ImageLayer layer = new ImageLayer(uri);
 		layers.add(layer);
 		layers.sort(COMPARATOR);
 		updateOpacity(layer, false);
 		if (layers.size() == 1 || activeImageLayer < 0) setActiveLayer(0);
 		for (LayerListener renderListener : layerListeners)
-		{
-			renderListener.newlayerAdded();
-		}
+			renderListener.newLayerAdded();
 		
 		if (layers.size() == 1)
-		{
 			layerChanged();
-		}
+		
 		return layer;
 	}
 	
@@ -78,17 +74,17 @@ public class Layers
 		}
 	}
 
-	public static void addLayer(AbstractLayer layer) {
+	public static void addLayer(AbstractLayer layer)
+	{
 		layers.add(layer);
 		layers.sort(COMPARATOR);
 		if (layers.size() == 1 || activeImageLayer < 0) setActiveLayer(0);
 		if (layer.isImageLayer()) updateOpacity((AbstractImageLayer)layer, false);
-		for (LayerListener renderListener : layerListeners) {
-			renderListener.newlayerAdded();
-		}
-		if (layers.size() == 1) {
+		for (LayerListener renderListener : layerListeners)
+			renderListener.newLayerAdded();
+		
+		if (layers.size() == 1)
 			layerChanged();
-		}
 	}
 
 	public static ImageLayer addLayer(int id, LocalDateTime start, LocalDateTime end, int cadence, String name)
@@ -100,7 +96,7 @@ public class Layers
 		
 		if (layers.size() == 1 || activeImageLayer < 0) setActiveLayer(0);
 		for (LayerListener renderListener : layerListeners) {
-			renderListener.newlayerAdded();
+			renderListener.newLayerAdded();
 		}
 		if (layers.size() == 1) {
 			layerChanged();
@@ -213,7 +209,7 @@ public class Layers
 		for (int i = 0; i < jsonLayers.length(); i++) {
 			try {
 				JSONObject jsonLayer = jsonLayers.getJSONObject(i);
-				AbstractImageLayer layer = ImageLayer.readStateFile(jsonLayer, new KakaduRender());
+				AbstractImageLayer layer = ImageLayer.createFromStateFile(jsonLayer);
 				if (layer != null) {
 					Layers.addLayer(layer);
 					layer.readStateFile(jsonLayer);

@@ -13,7 +13,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import org.helioviewer.jhv.plugins.plugin.Plugins;
-import org.helioviewer.jhv.plugins.plugin.Plugins.PLUGIN_ICON;
+import org.helioviewer.jhv.plugins.plugin.Plugins.PluginIcon;
 
 /**
  * Panel of Pfss-Plugin
@@ -24,9 +24,9 @@ public class PfssPluginPanel extends JPanel implements ActionListener {
 
 	// UI Components
 	private JButton visibleButton = new JButton(
-			Plugins.getIcon(PLUGIN_ICON.INVISIBLE, 16, 16));
+			Plugins.getIcon(PluginIcon.INVISIBLE, 16, 16));
 	private JButton reloadButton = new JButton(Plugins.getIcon(
-			PLUGIN_ICON.REFRESH, 16, 16));
+			PluginIcon.REFRESH, 16, 16));
 	private PfssPlugin renderer;
 
 	/**
@@ -94,11 +94,11 @@ public class PfssPluginPanel extends JPanel implements ActionListener {
 			if (renderer.isVisible()) {
 				renderer.setVisible(false);
 				visibleButton.setIcon(Plugins.getIcon(
-						PLUGIN_ICON.INVISIBLE, 16, 16));
+						PluginIcon.INVISIBLE, 16, 16));
 			} else {
 				renderer.setVisible(true);
 				visibleButton.setIcon(Plugins.getIcon(
-						PLUGIN_ICON.VISIBLE, 16, 16));
+						PluginIcon.VISIBLE, 16, 16));
 			}
 
 			fireRedraw();

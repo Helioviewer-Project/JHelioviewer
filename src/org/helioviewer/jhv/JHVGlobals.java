@@ -1,18 +1,12 @@
 package org.helioviewer.jhv;
 
 import java.awt.Desktop;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.swing.JFileChooser;
-
-import org.helioviewer.jhv.gui.opengl.MainPanel;
 
 /**
  * Intended to be a class for static functions and fields relevant to the
@@ -20,7 +14,7 @@ import org.helioviewer.jhv.gui.opengl.MainPanel;
  */
 public class JHVGlobals {
     public static final String VERSION = System.getProperty("jhvVersion") == null ? "developer" : System.getProperty("jhvVersion");
-    public static String RAYGUN_TAG;
+    public static final String RAYGUN_TAG = System.getProperty("raygunTag");
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
     public static final DateTimeFormatter FILE_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH.mm.ss'Z'");
     
@@ -29,8 +23,24 @@ public class JHVGlobals {
 	 */
     public static final int STARTUP_LAYER_ID = 10;
 
-    //TODO check all invocations of file dialogs, should happen centralized
-	public static boolean USE_JAVA_FX = false;
+    //TODO check all invocations of file dialogs, check should happen centralized
+	public static final boolean USE_JAVA_FX;
+	
+	static
+	{
+		boolean javaFxAvailable = true;
+		try
+		{
+			Class.forName("com.sun.javafx.runtime.VersionInfo");
+		}
+		catch (ClassNotFoundException e)
+		{
+			javaFxAvailable = false;
+			System.err.println("No JavaFX detected. Please install a Java 1.8 with JavaFX");
+		}
+		
+		USE_JAVA_FX = javaFxAvailable;
+	}
 
     private JHVGlobals()
     {
@@ -63,27 +73,14 @@ public class JHVGlobals {
     }
 
     /**
-     * @return standard read timeout
-     */
-    public static int getStdReadTimeout() {
-        return Integer.parseInt(Settings.getProperty("connection.read.timeout"));
-    }
-
-    /**
-     * @return standard connect timeout
-     */
-    public static int getStdConnectTimeout() {
-        return Integer.parseInt(Settings.getProperty("connection.connect.timeout"));
-    }
-
-    /**
      * Opens the specified web page in the default web browser
      * 
      * @param url
      *            A web address (URL) of a web page (e.g
      *            "http://www.jhelioviewer.org/")
      */
-    public static void openURL(String url) {
+    public static void openURL(String url)
+    {
         try
         {
             Desktop.getDesktop().browse(new URI(url));
@@ -115,7 +112,6 @@ public class JHVGlobals {
         {
             JFileChooser instance=fileChooser.take();
             fileChooser.add(instance);
-            
             
             instance.setFileHidingEnabled(false);
             instance.setMultiSelectionEnabled(false);
@@ -152,22 +148,4 @@ public class JHVGlobals {
         t.setDaemon(true);
         t.start();
     }
-    
-    
-	public static String loadFileAsString(String fileName) {
-		StringBuilder retVal = new StringBuilder();
-		String line = null;
-
-		try (BufferedReader br = new BufferedReader(new InputStreamReader(
-				MainPanel.class.getResourceAsStream(fileName),
-				StandardCharsets.UTF_8))) {
-			while ((line = br.readLine()) != null) {
-				retVal.append(line + "\n");
-			}
-		} catch (IOException e) {
-			
-			e.printStackTrace();
-		}
-		return retVal.toString();
-	}
 }

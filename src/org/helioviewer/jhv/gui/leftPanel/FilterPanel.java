@@ -308,7 +308,7 @@ public class FilterPanel extends JPanel implements LayerListener{
 	}
 	
 	@Override
-	public void newlayerAdded() {
+	public void newLayerAdded() {
 		AbstractImageLayer activeLayer = Layers.getActiveImageLayer();
 		if (activeLayer != null) this.updateUIElements(activeLayer);
 	}

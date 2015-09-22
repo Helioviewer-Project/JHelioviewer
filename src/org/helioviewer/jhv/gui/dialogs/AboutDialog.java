@@ -22,9 +22,9 @@ import javax.swing.event.HyperlinkListener;
 
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.gui.IconBank;
-import org.helioviewer.jhv.gui.ShowableDialog;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MainFrame;
+import org.helioviewer.jhv.gui.ShowableDialog;
 
 
 /**

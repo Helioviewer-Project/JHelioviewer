@@ -473,7 +473,7 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 	}
 
 	@Override
-	public void newlayerAdded() {
+	public void newLayerAdded() {
 	}
 
 	@Override

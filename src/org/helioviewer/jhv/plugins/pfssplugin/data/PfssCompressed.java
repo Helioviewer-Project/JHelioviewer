@@ -42,31 +42,26 @@ public class PfssCompressed implements Cacheable
 	/**
 	 * Load the data into memory. this method signals all who are waiting on the condition "loaded"
 	 */
-	public synchronized boolean loadData()
+	public synchronized void loadData()
 	{
 	    if(isLoaded)
 	    {
 	        isLoading=false;
-	        return true;
+	        return;
 	    }
 	    
-	    //TODO: make async
-	    while (!httpRequest.isFinished()) {
-	    	try {
-				Thread.sleep(20);
-			} catch (InterruptedException e) {
-				
-				e.printStackTrace();
-			}
-		}
-	    
-	    try {
+	    try
+	    {
 			rawData = httpRequest.getData();
-		} catch (IOException e) {
+		    isLoaded = true;
+		}
+	    catch (IOException e)
+	    {
 			parent.addBadRequest(httpRequest);
 		}
-	    isLoaded = true;
-	    return true;
+	    catch(InterruptedException _ie)
+	    {
+	    }
 	}
 	
 	/**

@@ -100,22 +100,9 @@ public class FileDescriptorManager
 
 				for (HTTPRequest httpRequest : httpRequests)
 				{
-					while (!httpRequest.isFinished())
-					{
-						try
-						{
-							Thread.sleep(20);
-						}
-						catch (InterruptedException e)
-						{
-							e.printStackTrace();
-						}
-					}
-
-					String lines[];
 					try
 					{
-						lines = httpRequest.getDataAsString().split("\\r?\\n");
+						String[] lines = httpRequest.getDataAsString().split("\\r?\\n");
 						for (String line : lines) 
 						{
 							int split = line.indexOf(' ');
@@ -144,6 +131,10 @@ public class FileDescriptorManager
 					catch (IOException e)
 					{
 						 parent.addBadRequest(httpRequest);
+					}
+					catch(InterruptedException _ie)
+					{
+						return;
 					}
 					Plugins.repaintMainPanel();
 				}

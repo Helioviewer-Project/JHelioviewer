@@ -4,120 +4,55 @@ import java.time.LocalDateTime;
 import java.util.LinkedList;
 
 import org.helioviewer.jhv.base.ImageRegion;
-import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.viewmodel.TimeLine;
 
 //FIXME: handle concurrency, by using the cache only from awt/gl thread
 public class TextureCache
 {
 	//FIXME: handle pool running out
 	private static final int TEXTURE_CACHE_SIZE = 10;
-	private static LinkedList<CachedTexture> cache = new LinkedList<CachedTexture>();
+	private static LinkedList<Texture> cache = new LinkedList<Texture>();
 	
 	static
 	{
 		int[] textures = OpenGLHelper.createTextureIDs(TEXTURE_CACHE_SIZE);
 		for (int texture : textures)
-			cache.add(new CachedTexture(texture));
+			cache.add(new Texture(texture));
 	}
 	
 	public static void init()
 	{
 	}
 
-	public synchronized static ImageRegion addElement(ImageRegion imageRegion, int id)
+	public synchronized static ImageRegion add(ImageRegion imageRegion, int id)
 	{
-		CachedTexture texture = cache.removeFirst();
+		Texture texture = cache.removeFirst();
 		texture.setNewImageRegion(id, imageRegion);
 		cache.add(texture);
 		return imageRegion;
 	}
 
-	private static void moveElementToFront(CachedTexture texture)
+	private static void moveElementToFront(Texture texture)
 	{
 		cache.remove(texture);
 		cache.add(texture);
 	}
 	
-	public synchronized static void markChanged(int id2, LocalDateTime[] localDateTimes)
+	public synchronized static void invalidate(int _sourceId, LocalDateTime[] localDateTimes)
 	{
-		for (CachedTexture cacheableTexture : cache)
-			if (cacheableTexture.compareTexture(id2, localDateTimes))
-				cacheableTexture.markAsChanged();
+		for (Texture cacheableTexture : cache)
+			if (cacheableTexture.compareTexture(_sourceId, localDateTimes))
+				cacheableTexture.invalidate();
 	}
 
-	public synchronized static ImageRegion search(int id, ImageRegion imageRegion, LocalDateTime localDateTime)
+	public synchronized static ImageRegion get(int id, ImageRegion imageRegion, LocalDateTime localDateTime)
 	{
-		for (CachedTexture texture : cache)
-		{
-			if (texture.compareRegion(id, imageRegion, localDateTime) && !texture.hasChanged())
+		for (Texture texture : cache)
+			if (texture.compareRegion(id, imageRegion, localDateTime) && texture.isValid())
 			{
 				TextureCache.moveElementToFront(texture);
 				return texture.getImageRegion();
 			}
-		}
 		
 		return null;
-	}
-
-	public static class CachedTexture
-	{
-		private int id = -1;
-		private ImageRegion imageRegion;
-		private int textureID;
-		private boolean changed = false;
-
-		private CachedTexture(int textureID) {
-			this.textureID = textureID;
-		}
-
-		private void setNewImageRegion(int id, ImageRegion imageRegion) {
-			this.id = id;
-			this.changed = false;
-			imageRegion.setTextureID(this.textureID);
-			this.imageRegion = imageRegion;
-		}
-
-		public boolean compareRegion(int id, ImageRegion imageRegion, LocalDateTime localDateTime)
-		{
-			if (this.imageRegion != null)
-			{
-				return (this.id == id
-						&& this.imageRegion.contains(imageRegion)
-						&& this.imageRegion.compareScaleFactor(imageRegion) && localDateTime
-						.isEqual(this.imageRegion.getDateTime()));
-			}
-			return false;
-		}
-
-		public boolean compareTexture(int id2, LocalDateTime[] localDateTimes)
-		{
-			if (localDateTimes == null)
-				return false;
-
-			for (LocalDateTime localDateTime : localDateTimes)
-				if (this.imageRegion != null && localDateTime.equals(this.imageRegion.getDateTime()))
-					return true;
-			
-			return false;
-		}
-
-		public ImageRegion getImageRegion()
-		{
-			return this.imageRegion;
-		}
-
-		public boolean hasChanged()
-		{
-			return changed;
-		}
-
-		public void markAsChanged()
-		{
-			changed = true;
-			
-			if (TimeLine.SINGLETON.getCurrentDateTime().equals(imageRegion.getDateTime()))
-				MainFrame.MAIN_PANEL.repaint();
-		}
 	}
 }

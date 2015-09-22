@@ -6,8 +6,8 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.NavigableSet;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -27,8 +27,7 @@ import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.opengl.TextureCache;
 import org.helioviewer.jhv.opengl.camera.CameraMode;
 import org.helioviewer.jhv.viewmodel.TimeLine;
-import org.helioviewer.jhv.viewmodel.jp2view.newjpx.Cache;
-import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduRender;
+import org.helioviewer.jhv.viewmodel.jp2view.newjpx.MovieCache;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.UltimateLayer;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.json.JSONException;
@@ -50,7 +49,7 @@ public class ImageLayer extends AbstractImageLayer
 	private static final ExecutorService exDecoder = Executors.newWorkStealingPool();
 
 	private LayerRayTrace layerRayTrace;
-	private int sourceID;
+	private int sourceId;
 	
 	private UltimateLayer ultimateLayer;
 
@@ -59,22 +58,22 @@ public class ImageLayer extends AbstractImageLayer
 	public ImageLayer(int sourceID, LocalDateTime start, LocalDateTime end, int cadence, String name)
 	{
 		super();
-		this.sourceID = sourceID;
+		this.sourceId = sourceID;
 		this.start = start;
 		this.end = end;
 		this.cadence = cadence;
 		this.name = name;
 		this.isDownloadable = ChronoUnit.SECONDS.between(start, end) / cadence < 1000;
-		this.ultimateLayer = new UltimateLayer(id, sourceID, this);
+		this.ultimateLayer = new UltimateLayer(layerId, sourceID);
 		this.ultimateLayer.setTimeRange(start, end, cadence);
 		layerRayTrace = new LayerRayTrace(this);
 	}
 
-	public ImageLayer(String uri, KakaduRender newRender)
+	public ImageLayer(String uri)
 	{
 		super();
 		this.localPath = uri;
-		this.ultimateLayer = new UltimateLayer(id, uri, newRender, this);
+		this.ultimateLayer = new UltimateLayer(layerId, uri);
 		this.name = ultimateLayer.getMetaData(0, uri).getFullName();
 		layerRayTrace = new LayerRayTrace(this);
 
@@ -86,11 +85,9 @@ public class ImageLayer extends AbstractImageLayer
 	@Override
 	public int getTexture(MainPanel compenentView, ByteBuffer _imageData, Dimension size) throws TextureException
 	{
-		//FIXME: is _imageData ever null?!
+		//upload new texture, if something was decoded
 		if (_imageData != null)
-		{
 			OpenGLHelper.bindByteBufferToGLTexture(this.getLastDecodedImageRegion(), _imageData, this.getLastDecodedImageRegion().getImageSize());
-		}
 
 		if (this.getLastDecodedImageRegion() != null)
 			return getLastDecodedImageRegion().getTextureID();
@@ -103,18 +100,18 @@ public class ImageLayer extends AbstractImageLayer
 	{
 		try
 		{
-			if (getMetaData(TimeLine.SINGLETON.getCurrentDateTime()) != null)
-				return getMetaData(TimeLine.SINGLETON.getCurrentDateTime()).getLocalDateTime();
+			MetaData md = getMetaData(TimeLine.SINGLETON.getCurrentDateTime());
+			if (md != null)
+				return md.getLocalDateTime();
 		}
 		catch (MetaDataException e)
 		{
-			e.printStackTrace();
 		}
 		return null;
 	}
 
 	@Deprecated
-	public ConcurrentSkipListSet<LocalDateTime> getLocalDateTime()
+	public NavigableSet<LocalDateTime> getLocalDateTime()
 	{
 		return ultimateLayer.getLocalDateTimes();
 	}
@@ -141,10 +138,10 @@ public class ImageLayer extends AbstractImageLayer
 	@Override
 	public MetaData getMetaData(LocalDateTime currentDateTime) throws MetaDataException
 	{
-		MetaData metaData = null;
-		if (getMetaData().getLocalDateTime().isEqual(currentDateTime) && getLastDecodedImageRegion().getID() == this.id)
+		if (getMetaData().getLocalDateTime().isEqual(currentDateTime) && getLastDecodedImageRegion().getID() == this.layerId)
 			return getMetaData();
-		metaData = ultimateLayer.getMetaData(currentDateTime);
+		
+		MetaData metaData = ultimateLayer.getMetaData(currentDateTime);
 		if (metaData == null)
 			throw new JHVException.MetaDataException("No metadata available");
 
@@ -157,7 +154,7 @@ public class ImageLayer extends AbstractImageLayer
 		{
 			jsonLayer.put(IS_LOCALFILE, ultimateLayer.isLocalFile());
 			jsonLayer.put(LOCAL_PATH, getLocalFilePath());
-			jsonLayer.put(ID, sourceID);
+			jsonLayer.put(ID, sourceId);
 			jsonLayer.put(CADENCE, cadence);
 			jsonLayer.put(START_DATE_TIME, start);
 			jsonLayer.put(END_DATE_TIME, end);
@@ -171,13 +168,13 @@ public class ImageLayer extends AbstractImageLayer
 		}
 	}
 
-	public static ImageLayer readStateFile(JSONObject jsonLayer, KakaduRender kakaduRender)
+	public static ImageLayer createFromStateFile(JSONObject jsonLayer)
 	{
 		try
 		{
 			if (jsonLayer.getBoolean(IS_LOCALFILE))
 			{
-				return new ImageLayer(jsonLayer.getString(LOCAL_PATH), kakaduRender);
+				return new ImageLayer(jsonLayer.getString(LOCAL_PATH));
 			}
 			else if (jsonLayer.getInt(CADENCE) >= 0)
 			{
@@ -188,16 +185,15 @@ public class ImageLayer extends AbstractImageLayer
 		}
 		catch (JSONException e)
 		{
-			
 			e.printStackTrace();
 		}
 		return null;
 	}
 
 	@Override
-	public CacheableImageData getCacheStatus(LocalDateTime localDateTime)
+	public Movie getMovie(LocalDateTime localDateTime)
 	{
-		return Cache.getCacheElement(id, localDateTime);
+		return MovieCache.get(sourceId, localDateTime);
 	}
 
 	public RenderResult renderLayer(GL2 gl, Dimension canvasSize, MainPanel mainPanel, ByteBuffer _imageData)
@@ -359,11 +355,10 @@ public class ImageLayer extends AbstractImageLayer
 				gl.glGetProgramInfoLog(shaderprogram, size, intBuffer, byteBuffer);
 				for (byte b : byteBuffer.array())
 					System.err.print((char) b);
-
 			}
 			else
 			{
-				System.out.println("Unknown");
+				System.err.println("Unknown error during shader compilation.");
 			}
 			throw new RuntimeException("Could not compile shader.");
 		}
@@ -431,11 +426,11 @@ public class ImageLayer extends AbstractImageLayer
 		if (imageRegion.getImageSize().getWidth() < 0 || imageRegion.getImageSize().getHeight() < 0)
 			return new FutureValue<ByteBuffer>(null);
 		
-		LocalDateTime nextLocalDateTime = ultimateLayer.getNextLocalDateTime(currentDateTime);
+		LocalDateTime nextLocalDateTime = ultimateLayer.getClosestLocalDateTime(currentDateTime);
 		if (nextLocalDateTime == null)
 			nextLocalDateTime = ultimateLayer.localDateTimes.last();
 		
-		ImageRegion cachedRegion = TextureCache.search(id, imageRegion, nextLocalDateTime);
+		ImageRegion cachedRegion = TextureCache.get(layerId, imageRegion, nextLocalDateTime);
 		if(cachedRegion != null)
 		{
 			ultimateLayer.imageRegion = cachedRegion;

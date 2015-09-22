@@ -184,7 +184,7 @@ public class ImageRegion {
 		return this.textureID;
 	}
 	
-	public void setTextureID(int textureID){
+	public void setOpenGLTextureId(int textureID){
 		this.textureID = textureID;
 	}
 

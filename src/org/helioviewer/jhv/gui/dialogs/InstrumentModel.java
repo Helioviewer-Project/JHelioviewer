@@ -20,8 +20,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class InstrumentModel {
-
+public class InstrumentModel
+{
 	private static final String URL_DATASOURCE = "http://api.helioviewer.org/v2/getDataSources/?";
 	private static LinkedHashMap<String, Observatory> observatories = new LinkedHashMap<String, InstrumentModel.Observatory>();
 	private static AddLayerPanel addLayerPanel;
@@ -33,47 +33,44 @@ public class InstrumentModel {
 			@Override
 			public void run()
 			{
-				final HTTPRequest httpRequest = new HTTPRequest(URL_DATASOURCE, DownloadPriority.LOW, AbstractDownloadRequest.INFINITE_TIMEOUT);
+				final HTTPRequest httpRequest = new HTTPRequest(URL_DATASOURCE, DownloadPriority.HIGH, AbstractDownloadRequest.INFINITE_TIMEOUT);
 				UltimateDownloadManager.addRequest(httpRequest);
 
-				//FIXME: add error handling, in case download fails
-				while (!httpRequest.isFinished())
-				{
-					try
-					{
-						Thread.sleep(20);
-					}
-					catch (InterruptedException e)
-					{
-						e.printStackTrace();
-					}
-				}
 				
-				SwingUtilities.invokeLater(new Runnable()
+				//FIXME: add error handling, in case download fails
+				try
 				{
-					@Override
-					public void run()
+					final String json = httpRequest.getDataAsString();
+					
+					SwingUtilities.invokeLater(new Runnable()
 					{
-						try
+						@Override
+						public void run()
 						{
-							JSONObject jsonObject = new JSONObject(httpRequest.getDataAsString());
-							addObservatories(jsonObject);
-							addLayerPanel.updateGUI();
-							
-							boolean startUpMovie = Boolean.parseBoolean(Settings.getProperty("startup.loadmovie"));
-							if (startUpMovie)
+							try
 							{
-								Filter instrument = observatories.get("SDO").filters.get("AIA").filters.get("171");
-								LocalDateTime start = instrument.end.minusDays(1);
-								Layers.addLayer(instrument.sourceId, start, instrument.end, 1728, "AIA 171");
+								addObservatories(new JSONObject(json));
+								addLayerPanel.updateGUI();
+								
+								if (Boolean.parseBoolean(Settings.getProperty("startup.loadmovie")))
+								{
+									Filter instrument = observatories.get("SDO").filters.get("AIA").filters.get("171");
+									LocalDateTime start = instrument.end.minusDays(1);
+									Layers.addLayer(instrument.sourceId, start, instrument.end, 1728, "AIA 171");
+								}
+							}
+							catch (JSONException e)
+							{
+								e.printStackTrace();
 							}
 						}
-						catch (IOException | JSONException e)
-						{
-							e.printStackTrace();
-						}
-					}
-				});
+					});
+				}
+				catch (InterruptedException | IOException _e)
+				{
+					//FIXME: add proper error handling here, should retry etc.
+					_e.printStackTrace();
+				}
 			}
 		}, "MODEL_LOAD");
 		thread.setDaemon(true);
@@ -240,8 +237,8 @@ public class InstrumentModel {
 		}
 	}
 
-	public static void addAddLayerPanel(AddLayerPanel addLayerPanel) {
+	public static void setAddLayerPanel(AddLayerPanel addLayerPanel)
+	{
 		InstrumentModel.addLayerPanel = addLayerPanel;
 	}
-
 }

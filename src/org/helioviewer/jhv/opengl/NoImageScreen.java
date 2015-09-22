@@ -8,21 +8,22 @@ import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 
-public class NoImageScreen{
-
+public class NoImageScreen
+{
 	private static int texture = -1;
 
 	private static OpenGLHelper openGLHelper;
 
-	
-	static {
+	static
+	{
 		openGLHelper = new OpenGLHelper();
-				texture = openGLHelper.createTextureID();
-				BufferedImage image = IconBank.getImage(JHVIcon.NOIMAGE);
-				openGLHelper.bindBufferedImageToGLTexture(image);
+		texture = openGLHelper.createTextureID();
+		BufferedImage image = IconBank.getImage(JHVIcon.NOIMAGE);
+		openGLHelper.bindBufferedImageToGLTexture(image);
 	}
 
-	public static void render(GL2 gl) {
+	public static void render(GL2 gl)
+	{
 		gl.glUseProgram(0);
 		gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
 		gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
@@ -40,10 +41,8 @@ public class NoImageScreen{
 		gl.glActiveTexture(GL.GL_TEXTURE0);
 		
 		gl.glBindTexture(GL2.GL_TEXTURE_2D, texture);
-		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER,
-				GL2.GL_LINEAR);
-		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER,
-				GL2.GL_LINEAR);
+		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_LINEAR);
+		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_LINEAR);
 		gl.glBegin(GL2.GL_QUADS);
 		gl.glTexCoord2f(0, 0);
 		gl.glVertex2d(-0.4, 0.4);

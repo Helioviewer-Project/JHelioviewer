@@ -41,8 +41,6 @@ import com.mindscapehq.raygun4java.core.messages.RaygunIdentifier;
 
 /**
  * Routines to catch and handle all runtime exceptions.
- * 
- * @author Malte Nuhn
  */
 public class JHVUncaughtExceptionHandler implements
 		Thread.UncaughtExceptionHandler {
@@ -57,9 +55,9 @@ public class JHVUncaughtExceptionHandler implements
 	 * This method sets the default uncaught exception handler. Thus, this
 	 * method should be called once when the application starts.
 	 */
-	public static void setupHandlerForThread() {
-		Thread.setDefaultUncaughtExceptionHandler(JHVUncaughtExceptionHandler
-				.getSingletonInstance());
+	public static void setupHandlerForThread()
+	{
+		Thread.setDefaultUncaughtExceptionHandler(JHVUncaughtExceptionHandler.getSingletonInstance());
 	}
 
 	/**
@@ -74,8 +72,8 @@ public class JHVUncaughtExceptionHandler implements
 	 * @param msg
 	 *            Object to display in the main area of the dialog.
 	 */
-	private static void showErrorDialog(final String title, final String msg,
-			final Throwable e, final String log) {
+	private static void showErrorDialog(final String title, final String msg, final Throwable e, final String log)
+	{
 		List<Object> objects = new ArrayList<Object>();
 
 		JLabel head = new JLabel("Dang! You hit a bug in JHelioviewer.");
@@ -83,8 +81,7 @@ public class JHVUncaughtExceptionHandler implements
 
 		objects.add(head);
 		objects.add(Box.createVerticalStrut(10));
-		objects.add(new JLabel(
-				"Here are some technical details about the problem:"));
+		objects.add(new JLabel("Here are some technical details about the problem:"));
 
 		JTextArea textArea = new JTextArea();
 		textArea.setMargin(new Insets(5, 5, 5, 5));
@@ -94,9 +91,7 @@ public class JHVUncaughtExceptionHandler implements
 		sp.setPreferredSize(new Dimension(600, 400));
 
 		objects.add(sp);
-		JCheckBox allowCrashReport = new JCheckBox(
-				"Send this anonymous crash report to the developers.",
-				JHVGlobals.isReleaseVersion());
+		JCheckBox allowCrashReport = new JCheckBox("Send this anonymous crash report to the developers.", JHVGlobals.isReleaseVersion());
 		objects.add(allowCrashReport);
 		objects.add(Box.createVerticalStrut(10));
 
@@ -113,28 +108,28 @@ public class JHVUncaughtExceptionHandler implements
 
 		JDialog dialog = optionPane.createDialog(jf, title);
 		dialog.setAutoRequestFocus(true);
-		dialog.setIconImage(iconToImage(UIManager
-				.getIcon("OptionPane.errorIcon")));
+		dialog.setIconImage(iconToImage(UIManager.getIcon("OptionPane.errorIcon")));
 		dialog.setResizable(true);
 		dialog.setModalityType(ModalityType.TOOLKIT_MODAL);
 		dialog.setVisible(true);
 
 		jf.dispose();
 
-		if (allowCrashReport.isSelected()) {
+		if (allowCrashReport.isSelected())
+		{
+			Telemetry.trackException(e);
+			
 			RaygunClient client = new RaygunClient("iZK0JDVPkd3OgEwgDibzQw==");
 			client.SetVersion(JHVGlobals.VERSION);
 			Map<String, String> customData = new HashMap<String, String>();
 			customData.put("Log", log);
-			customData.put(
-					"JVM",
+			customData.put("JVM",
 					System.getProperty("java.vm.name") + " "
 							+ System.getProperty("java.vm.version") + " (JRE "
 							+ System.getProperty("java.specification.version")
 							+ ")");
 
-			RaygunIdentifier user = new RaygunIdentifier(
-					Settings.getProperty("UUID"));
+			RaygunIdentifier user = new RaygunIdentifier(Settings.getProperty("UUID"));
 			client.SetUser(user);
 			ArrayList<String> tags = new ArrayList<String>();
 			tags.add(JHVGlobals.RAYGUN_TAG);

@@ -25,7 +25,6 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.PopupMenuEvent;
@@ -53,30 +52,27 @@ import org.helioviewer.jhv.viewmodel.TimeLine.TimeLineListener;
  * @author stefanmeier
  *
  */
-public class LayerPanel extends JPanel implements LayerListener,
-		TimeLineListener {
-
-	/**
-	 * 
-	 */
+public class LayerPanel extends JPanel implements LayerListener, TimeLineListener
+{
 	private static final long serialVersionUID = 6800340702841902680L;
 	private static int size;
-	static{
+	
+	static
+	{
 		JLabel label = new JLabel("size");
 		size = label.getPreferredSize().height;
 	}
+	
 	private final AddLayerPanel addLayerPanel = new AddLayerPanel();
 	private final MetaDataDialog metaDataDialog = new MetaDataDialog();
 	private final DownloadMovieDialog downloadMovieDialog = new DownloadMovieDialog();
 	private JTable table;
-	private Object columnNames[] = { "Column One", "Column Two",
-			"Column Three", "Column Four", "Column Five" };
+	private static final Object columnNames[] = { "", "", "", "", "" };
 	private LayerTableModel tableModel;
 
 	private JButton btnDownloadLayer;
 	private static final Cursor HAND_CURSOR = new Cursor(Cursor.HAND_CURSOR);
-	private static final ImageIcon WARNING_BAD_REQUEST = IconBank.getIcon(
-			JHVIcon.WARNING, size, size);
+	private static final ImageIcon WARNING_BAD_REQUEST = IconBank.getIcon(JHVIcon.WARNING, size, size);
 	private int activePopupLayer = 0;
 
 	private JPopupMenu popupMenu;
@@ -94,7 +90,7 @@ public class LayerPanel extends JPanel implements LayerListener,
 		initPopup();
 		initGUI();
 		updateData();
-		InstrumentModel.addAddLayerPanel(addLayerPanel);
+		InstrumentModel.setAddLayerPanel(addLayerPanel);
 		this.setMinimumSize(new Dimension(240, 200));
 		this.setPreferredSize(new Dimension(240, 200));
 		Layers.addNewLayerListener(this);
@@ -104,47 +100,53 @@ public class LayerPanel extends JPanel implements LayerListener,
 	private void initPopup()
 	{
 		popupMenu = new JPopupMenu();
-		showMetaView = new JMenuItem("Show metainfo...",
-				IconBank.getIcon(JHVIcon.INFO_NEW, size, size));
-		showMetaView.addActionListener(new ActionListener() {
+		showMetaView = new JMenuItem("Show metainfo...", IconBank.getIcon(JHVIcon.INFO_NEW, size, size));
+		showMetaView.addActionListener(new ActionListener()
+		{
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e)
+			{
 				metaDataDialog.showDialog();
 			}
 		});
-		downloadLayer = new JMenuItem("Download movie",
-				IconBank.getIcon(JHVIcon.DOWNLOAD_NEW, size, size));
-		downloadLayer.addActionListener(new ActionListener() {
+		
+		downloadLayer = new JMenuItem("Download movie", IconBank.getIcon(JHVIcon.DOWNLOAD_NEW, size, size));
+		downloadLayer.addActionListener(new ActionListener()
+		{
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				downloadMovieDialog.startDownload(Layers.getLayer(
-						activePopupLayer).getURL(), Layers.getLayer(activePopupLayer));
+			public void actionPerformed(ActionEvent e)
+			{
+				downloadMovieDialog.startDownload(Layers.getLayer(activePopupLayer).getURL(), Layers.getLayer(activePopupLayer));
 			}
 		});
-		hideLayer = new JMenuItem("Hide layer", IconBank.getIcon(
-				JHVIcon.HIDDEN, size, size));
-		hideLayer.addActionListener(new ActionListener() {
+		
+		hideLayer = new JMenuItem("Hide layer", IconBank.getIcon(JHVIcon.HIDDEN, size, size));
+		hideLayer.addActionListener(new ActionListener()
+		{
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e)
+			{
 				Layers.getLayer(activePopupLayer).setVisible(false);
 				updateData();
 			}
 		});
-		showLayer = new JMenuItem("Show layer", IconBank.getIcon(
-				JHVIcon.VISIBLE, size, size));
-		showLayer.addActionListener(new ActionListener() {
+		showLayer = new JMenuItem("Show layer", IconBank.getIcon(JHVIcon.VISIBLE, size, size));
+		showLayer.addActionListener(new ActionListener()
+		{
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e)
+			{
 				Layers.getLayer(activePopupLayer).setVisible(true);
 				updateData();
 			}
 		});
 				
-		removeLayer = new JMenuItem("Close layer", IconBank.getIcon(
-				JHVIcon.REMOVE_NEW, size, size));
-		removeLayer.addActionListener(new ActionListener() {
+		removeLayer = new JMenuItem("Close layer", IconBank.getIcon(JHVIcon.REMOVE_NEW, size, size));
+		removeLayer.addActionListener(new ActionListener()
+		{
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e)
+			{
 				Layers.removeLayer(activePopupLayer);
 				updateData();
 			}
@@ -159,16 +161,19 @@ public class LayerPanel extends JPanel implements LayerListener,
 		popupMenu.add(showLayer);
 		popupMenu.add(removeLayer);
 
-		popupMenu.addPopupMenuListener(new PopupMenuListener() {
-			
+		popupMenu.addPopupMenuListener(new PopupMenuListener()
+		{
 			@Override
-			public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-				if (Layers.getLayer(activePopupLayer).isImageLayer()){
+			public void popupMenuWillBecomeVisible(PopupMenuEvent e)
+			{
+				if (Layers.getLayer(activePopupLayer).isImageLayer())
+				{
 					showMetaView.setEnabled(true);
 					downloadLayer.setEnabled(Layers.getLayer(activePopupLayer).isDownloadable());
 					removeLayer.setEnabled(false);
 				}
-				else {
+				else
+				{
 					showMetaView.setEnabled(false);
 					downloadLayer.setEnabled(false);
 					removeLayer.setEnabled(false);
@@ -176,18 +181,15 @@ public class LayerPanel extends JPanel implements LayerListener,
 			}
 			
 			@Override
-			public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-				
-				
+			public void popupMenuWillBecomeInvisible(PopupMenuEvent e)
+			{
 			}
 			
 			@Override
-			public void popupMenuCanceled(PopupMenuEvent e) {
-				
-				
+			public void popupMenuCanceled(PopupMenuEvent e)
+			{
 			}
 		});
-		
 	}
 	
 	/**
@@ -213,41 +215,42 @@ public class LayerPanel extends JPanel implements LayerListener,
 		table.getColumnModel().getColumn(0).setResizable(false);
 		table.getColumnModel().getColumn(3).setResizable(false);
 		table.setShowGrid(false);
-		table.setIntercellSpacing(new Dimension(0, 0));
+		table.setIntercellSpacing(new Dimension(1, 1));
 		table.getSelectionModel().addListSelectionListener(new ListSelectionListener()
 				{
 					@Override
-					public void valueChanged(ListSelectionEvent e) {
-						SwingUtilities.invokeLater(new Runnable() {
-
-							@Override
-							public void run() {
-								int row = table.getSelectedRow();
-								if (row != Layers.getActiveLayerNumber()) {
-									Layers.setActiveLayer(row);
-								}
-							}
-						});
+					public void valueChanged(ListSelectionEvent e)
+					{
+						int row = table.getSelectedRow();
+						if (row != Layers.getActiveLayerNumber())
+							Layers.setActiveLayer(row);
 					}
 				});
+		
 		table.addMouseListener(new MouseAdapter()
 		{
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseClicked(MouseEvent e)
+			{
 				JTable jTable = (JTable) e.getSource();
 				int row = jTable.rowAtPoint(e.getPoint());
 				int column = table.getSelectedColumn();
-				if (column == 4) {
+				if (column == 4)
+				{
 					Layers.removeLayer(row);
 					updateData();
-				} else if (column == 0) {
+				}
+				else if (column == 0)
+				{
 					AbstractLayer layer = Layers.getLayer(row);
-					if (layer != null) {
+					if (layer != null)
 						layer.setVisible(!layer.isVisible());
-					}
-				} else if (column == 1) {
+				}
+				else if (column == 1)
+				{
 					boolean value = (boolean) table.getValueAt(row, column);
-					if (value) {
+					if (value)
+					{
 						Object[] options = {"Retry failed downloads", "Remove layer", "Ignore"};
 
 						int n = JOptionPane.showOptionDialog(MainFrame.SINGLETON, "Images could not be downloaded. Server didn't replied. This happened with "+ Layers.getLayer(row).getBadRequestCount() +" other requests as well.", "Images could not be downloaded", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
@@ -266,39 +269,41 @@ public class LayerPanel extends JPanel implements LayerListener,
 						}
 					}
 				}
-
 			}
 
 			@Override
-			public void mousePressed(MouseEvent e) {
-				if (e.isPopupTrigger()) {
+			public void mousePressed(MouseEvent e)
+			{
+				if (e.isPopupTrigger())
+				{
 					JTable jTable = (JTable) e.getSource();
 					int row = jTable.rowAtPoint(e.getPoint());
-					if (row >= 0 && row < Layers.getLayerCount()) {
+					if (row >= 0 && row < Layers.getLayerCount())
+					{
 						activePopupLayer = row;
-						hideLayer.setVisible(Layers.getLayer(activePopupLayer)
-								.isVisible());
-						showLayer.setVisible(!Layers.getLayer(activePopupLayer)
-								.isVisible());
+						hideLayer.setVisible(Layers.getLayer(activePopupLayer).isVisible());
+						showLayer.setVisible(!Layers.getLayer(activePopupLayer).isVisible());
 						popupMenu.show(jTable, e.getX(), e.getY());
 					}
 				}
 			}
 		});
 
-		table.addMouseMotionListener(new MouseMotionAdapter() {
+		table.addMouseMotionListener(new MouseMotionAdapter()
+		{
 			@Override
-			public void mouseMoved(MouseEvent e) {
+			public void mouseMoved(MouseEvent e)
+			{
 				JTable jTable = (JTable) e.getSource();
 				int row = jTable.rowAtPoint(e.getPoint());
 				int column = table.columnAtPoint(e.getPoint());
 				if (column == 0 || column == 4)
 					table.setCursor(HAND_CURSOR);
-				else if (column == 1){
+				else if (column == 1)
+				{
 					boolean value = (boolean) table.getValueAt(row, column);
-					if (value){
+					if (value)
 						table.setCursor(HAND_CURSOR);						
-					}
 					else 
 						table.setCursor(Cursor.getDefaultCursor());
 				}
@@ -307,13 +312,14 @@ public class LayerPanel extends JPanel implements LayerListener,
 			}
 		});
 
-		table.addKeyListener(new KeyAdapter() {
+		table.addKeyListener(new KeyAdapter()
+		{
 			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_DELETE
-						|| e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
-					int row = table.getSelectedRow();
-					Layers.removeLayer(row);
+			public void keyPressed(KeyEvent e)
+			{
+				if (e.getKeyCode() == KeyEvent.VK_DELETE /*|| e.getKeyCode() == KeyEvent.VK_BACK_SPACE*/)
+				{
+					Layers.removeLayer(table.getSelectedRow());
 					updateData();
 				}
 			}
@@ -323,22 +329,19 @@ public class LayerPanel extends JPanel implements LayerListener,
 		JPanel panel = new JPanel();
 		add(panel, BorderLayout.SOUTH);
 		GridBagLayout gbl_panel = new GridBagLayout();
-		gbl_panel.columnWidths = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				0, 0 };
+		gbl_panel.columnWidths = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 		gbl_panel.rowHeights = new int[] { 0, 0 };
-		gbl_panel.columnWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-				0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
+		gbl_panel.columnWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		gbl_panel.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
 		panel.setLayout(gbl_panel);
 
-		btnShowInfo = new JButton(IconBank.getIcon(JHVIcon.INFO_NEW,
-				size, size));
-		btnShowInfo
-				.setToolTipText("Show the Metainformation of the currently selected Layer");
-		btnShowInfo.addActionListener(new ActionListener() {
-
+		btnShowInfo = new JButton(IconBank.getIcon(JHVIcon.INFO_NEW, size, size));
+		btnShowInfo.setToolTipText("Show the Metainformation of the currently selected Layer");
+		btnShowInfo.addActionListener(new ActionListener()
+		{
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e)
+			{
 				metaDataDialog.showDialog();
 			}
 		});
@@ -348,19 +351,16 @@ public class LayerPanel extends JPanel implements LayerListener,
 		gbcBtnShowInfo.gridy = 0;
 		panel.add(btnShowInfo, gbcBtnShowInfo);
 
-		btnDownloadLayer = new JButton(IconBank.getIcon(JHVIcon.DOWNLOAD_NEW,
-				size, size));
-		btnDownloadLayer
-				.setToolTipText("Download the currently selected Layer");
+		btnDownloadLayer = new JButton(IconBank.getIcon(JHVIcon.DOWNLOAD_NEW, size, size));
+		btnDownloadLayer.setToolTipText("Download the currently selected Layer");
 		btnDownloadLayer.setEnabled(false);
-		btnDownloadLayer.addActionListener(new ActionListener() {
-
+		btnDownloadLayer.addActionListener(new ActionListener()
+		{
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (Layers.getActiveImageLayer() != null) {
-					downloadMovieDialog.startDownload(Layers.getActiveLayer()
-							.getURL(), Layers.getActiveLayer());
-				}
+			public void actionPerformed(ActionEvent e)
+			{
+				if (Layers.getActiveImageLayer() != null)
+					downloadMovieDialog.startDownload(Layers.getActiveLayer().getURL(), Layers.getActiveLayer());
 			}
 		});
 		GridBagConstraints gbcBtnDownloadLayer = new GridBagConstraints();
@@ -369,12 +369,12 @@ public class LayerPanel extends JPanel implements LayerListener,
 		gbcBtnDownloadLayer.gridy = 0;
 		panel.add(btnDownloadLayer, gbcBtnDownloadLayer);
 
-		JButton btnAddLayer = new JButton("Add Layer", IconBank.getIcon(
-				JHVIcon.ADD_NEW, size, size));
-		btnAddLayer.addActionListener(new ActionListener() {
-
+		JButton btnAddLayer = new JButton("Add Layer", IconBank.getIcon(JHVIcon.ADD_NEW, size, size));
+		btnAddLayer.addActionListener(new ActionListener()
+		{
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e)
+			{
 				addLayerPanel.setVisible(true);
 			}
 		});
@@ -386,65 +386,58 @@ public class LayerPanel extends JPanel implements LayerListener,
 		panel.add(btnAddLayer, gbcBtnAddLayer);
 	}
 
-	private synchronized void updateData()
+	void updateData()
 	{
-		SwingUtilities.invokeLater(new Runnable()
+		Object[][] data = new Object[Layers.getLayerCount()][5];
+		int count = 0;
+		for (AbstractLayer layer : Layers.getLayers())
 		{
-			@Override
-			public void run()
-			{
-				Object[][] data = new Object[Layers.getLayerCount()][5];
-				int count = 0;
-				for (AbstractLayer layer : Layers.getLayers())
-				{
-					if (data.length <= count)
-						break;
-					
-					data[count][0] = layer.isVisible();
-					data[count][1] = layer.checkBadRequest();
-					data[count][2] = layer.getName();
-					data[count][3] = layer.getTime() == null ? null : layer.getTime();
-					data[count][4] = IconBank.getIcon(JHVIcon.REMOVE_NEW, size, size);
-					count++;
-				}
-				tableModel.setDataVector(data, columnNames);
-				table.setModel(tableModel);
+			if (data.length <= count)
+				break;
+			
+			data[count][0] = layer.isVisible();
+			data[count][1] = layer.checkBadRequest();
+			data[count][2] = layer.getName();
+			data[count][3] = layer.getTime() == null ? null : layer.getTime();
+			data[count][4] = IconBank.getIcon(JHVIcon.REMOVE_NEW, size, size);
+			count++;
+		}
+		tableModel.setDataVector(data, columnNames);
+		table.setModel(tableModel);
 
-				table.getColumnModel().getColumn(1).setCellRenderer(new ImageIconCellRenderer());
-				table.getColumnModel().getColumn(2).setCellRenderer(new ImageIconCellRenderer());
-				table.getColumnModel().getColumn(3).setCellRenderer(new ImageIconCellRenderer());
-				table.getColumnModel().getColumn(4).setCellRenderer(new ImageIconCellRenderer());
-				setFixedWidth(size+4, 0);
-				setFixedWidth(size, 1);
-				setFixedWidth(size, 4);
-				// table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-				table.setShowGrid(false);
-				table.setIntercellSpacing(new Dimension(0, 0));
+		table.getColumnModel().getColumn(1).setCellRenderer(new ImageIconCellRenderer());
+		table.getColumnModel().getColumn(2).setCellRenderer(new ImageIconCellRenderer());
+		table.getColumnModel().getColumn(3).setCellRenderer(new ImageIconCellRenderer());
+		table.getColumnModel().getColumn(4).setCellRenderer(new ImageIconCellRenderer());
+		setFixedWidth(size+4, 0);
+		setFixedWidth(size, 1);
+		setFixedWidth(size, 4);
+		// table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		table.setShowGrid(false);
+		table.setIntercellSpacing(new Dimension(0, 0));
+		table.setRowHeight(size + 4);
 
-				if (Layers.getLayerCount() > 0 && Layers.getLayerCount() > Layers.getActiveLayerNumber())
-				{
-					table.setRowSelectionInterval(
-							Layers.getActiveLayerNumber(),
-							Layers.getActiveLayerNumber());
-				}
-			}
-		});
+		if (Layers.getLayerCount() > 0 && Layers.getActiveLayerNumber()<Layers.getLayerCount() && Layers.getActiveLayerNumber()>=0)
+		{
+			table.setRowSelectionInterval(
+					Layers.getActiveLayerNumber(),
+					Layers.getActiveLayerNumber());
+		}
 	}
 
-	private void setFixedWidth(int width, int column) {
+	private void setFixedWidth(int width, int column)
+	{
 		table.getColumnModel().getColumn(column).setMinWidth(width);
 		table.getColumnModel().getColumn(column).setMaxWidth(width);
 		table.getColumnModel().getColumn(column).setPreferredWidth(width);
 	}
 
-	private static class LayerTableModel extends DefaultTableModel {
-
-		/**
-		 * 
-		 */
+	private static class LayerTableModel extends DefaultTableModel
+	{
 		private static final long serialVersionUID = 5224476911114851064L;
 
-		public LayerTableModel(Object[][] data, String[] columnNames) {
+		public LayerTableModel(Object[][] data, String[] columnNames)
+		{
 			super(data, columnNames);
 		}
 
@@ -502,21 +495,18 @@ public class LayerPanel extends JPanel implements LayerListener,
 				break;
 			case 3:
 				LocalDateTime localDateTime = (LocalDateTime) value;
-				String date = localDateTime != null ? localDateTime
-						.format(JHVGlobals.DATE_TIME_FORMATTER) : "";
-				super.getTableCellRendererComponent(table, date, isSelected,
-						hasFocus, row, column);
+				String date = localDateTime != null ? localDateTime.format(JHVGlobals.DATE_TIME_FORMATTER) : "";
+				super.getTableCellRendererComponent(table, date, isSelected, hasFocus, row, column);
 				break;
 			case 4:
-				JLabel label4 = (JLabel) super.getTableCellRendererComponent(
-						table, null, isSelected, hasFocus, row, column);
-				if (Layers.getLayer(row) != null && Layers.getLayer(row).isImageLayer()){
-				label4.setIcon((ImageIcon) value);
-				label4.setPreferredSize(new Dimension(20, 20));
+				JLabel label4 = (JLabel) super.getTableCellRendererComponent(table, null, isSelected, hasFocus, row, column);
+				if (Layers.getLayer(row) != null && Layers.getLayer(row).isImageLayer())
+				{
+					label4.setIcon((ImageIcon) value);
+					label4.setPreferredSize(new Dimension(20, 20));
 				}
-				else{
+				else
 					label4.setIcon(null);
-				}
 				return label4;
 			default:
 				break;
@@ -527,34 +517,39 @@ public class LayerPanel extends JPanel implements LayerListener,
 	}
 
 	@Override
-	public void newlayerAdded() {
-			updateData();			
+	public void newLayerAdded()
+	{
+		updateData();
 	}
 
 	@Override
-	public void newlayerRemoved(int idx) {
-		
-
+	public void newlayerRemoved(int idx)
+	{
 	}
 
 	@Override
-	public void activeLayerChanged(AbstractLayer layer) {
-		if (layer != null){
+	public void activeLayerChanged(AbstractLayer layer)
+	{
+		if (layer != null)
+		{
 			btnDownloadLayer.setEnabled(layer.isDownloadable());
 			btnShowInfo.setEnabled(layer.isImageLayer());
 		}
 	}
 
 	@Override
-	public void timeStampChanged(LocalDateTime current, LocalDateTime last) {
+	public void timeStampChanged(LocalDateTime current, LocalDateTime last)
+	{
 			updateData();			
 	}
 
 	@Override
-	public void dateTimesChanged(int framecount) {
+	public void dateTimesChanged(int framecount)
+	{
 	}
 
-	public void repaintPanel() {
-			updateData();			
+	public void repaintPanel()
+	{
+		updateData();
 	}
 }

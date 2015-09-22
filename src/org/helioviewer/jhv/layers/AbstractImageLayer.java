@@ -3,7 +3,7 @@ package org.helioviewer.jhv.layers;
 import java.awt.Dimension;
 import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
-import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.NavigableSet;
 import java.util.concurrent.Future;
 
 import org.helioviewer.jhv.JHVException;
@@ -17,6 +17,7 @@ import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+//FIXME: get rid of this
 public abstract class AbstractImageLayer extends AbstractLayer
 {
 	private static final String OPACITY = "opacity";
@@ -32,9 +33,9 @@ public abstract class AbstractImageLayer extends AbstractLayer
 	private static final String INVERTED_LUT = "invertedLut";
 	private static final String CORONA_VISIBILITY = "coronaVisiblity";
 	
-	public enum CACHE_STATUS
+	public enum CacheStatus
 	{
-		FILE, KDU, NONE;
+		FILE_FULL, KDU_PREVIEW, NONE;
 	}
 
 	public double opacity = 1;
@@ -50,7 +51,7 @@ public abstract class AbstractImageLayer extends AbstractLayer
 	protected boolean coronaVisible = true;
 
 	private static int idCounter = 0;
-	protected int id;
+	protected int layerId;
 	protected LocalDateTime start;
 	protected LocalDateTime end;
 	protected int cadence = -1;
@@ -67,7 +68,7 @@ public abstract class AbstractImageLayer extends AbstractLayer
 
 	public abstract LocalDateTime getTime();
 
-	public abstract ConcurrentSkipListSet<LocalDateTime> getLocalDateTime();
+	public abstract NavigableSet<LocalDateTime> getLocalDateTime();
 
 	protected abstract MetaData getMetaData() throws JHVException.MetaDataException;
 
@@ -78,7 +79,7 @@ public abstract class AbstractImageLayer extends AbstractLayer
 	
 	public AbstractImageLayer()
 	{
-		id = idCounter++;
+		layerId = idCounter++;
 		isImageLayer = true;
 	}
 
@@ -93,7 +94,7 @@ public abstract class AbstractImageLayer extends AbstractLayer
 	}
 
 	public int getID() {
-		return id;
+		return layerId;
 	}
 
 	public void setLut(LUT_ENTRY lutEntry) {
@@ -156,7 +157,9 @@ public abstract class AbstractImageLayer extends AbstractLayer
 		}
 	}
 	
-	public abstract CacheableImageData getCacheStatus(LocalDateTime localDateTime);
+	public abstract Movie getMovie(LocalDateTime localDateTime);
+	
+	//FIXME: remove
 	public abstract ImageRegion getLastDecodedImageRegion();
 
 	public int getCadence()

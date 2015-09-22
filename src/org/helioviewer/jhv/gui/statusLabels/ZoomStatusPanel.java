@@ -27,8 +27,8 @@ import org.helioviewer.jhv.viewmodel.metadata.MetaData;
  * <p>
  * If there is no layer present, this panel will be invisible.
  */
-public class ZoomStatusPanel extends StatusLabel {
-
+public class ZoomStatusPanel extends StatusLabel
+{
 	private static final long serialVersionUID = 1L;
 
 	private static final String TITLE = "Zoom: ";
@@ -36,7 +36,8 @@ public class ZoomStatusPanel extends StatusLabel {
 	/**
 	 * Default constructor.
 	 */
-	public ZoomStatusPanel() {
+	public ZoomStatusPanel()
+	{
 		super();
 		MainFrame.MAIN_PANEL.addStatusLabelCameraListener(this);
 		setBorder(BorderFactory.createEtchedBorder());
@@ -48,41 +49,41 @@ public class ZoomStatusPanel extends StatusLabel {
 	/**
 	 * Updates the displayed zoom.
 	 */
-	private synchronized void updateZoomLevel() {
+	private void updateZoomLevel()
+	{
 		AbstractImageLayer activeLayer = Layers.getActiveImageLayer();
-		if (activeLayer != null) {
-			MetaData metaData;
-			try {
-				LocalDateTime currentDateTime = TimeLine.SINGLETON
-						.getCurrentDateTime();
-				metaData = activeLayer.getMetaData(currentDateTime);
+		if (activeLayer != null)
+		{
+			try
+			{
+				LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
+				MetaData metaData = activeLayer.getMetaData(currentDateTime);
 				double unitsPerPixel = metaData.getUnitsPerPixel();
-				double minCanvasDimension = MainFrame.MAIN_PANEL
-						.getCanavasSize().getHeight();
-				// PhysicalRegion region = metaData.getPhysicalRegion();
-				double halfFOVRad = Math.toRadians(MainPanel.FOV / 2.0);
-				double distance = (minCanvasDimension / 2.0 * unitsPerPixel)
-						/ Math.tan(halfFOVRad);
-				long zoom = Math.round(distance
-						/ MainFrame.MAIN_PANEL.getTranslation().z * 100);
-				setText("Zoom: " + zoom + "%");
-			} catch (MetaDataException e) {
+				double minCanvasDimension = MainFrame.MAIN_PANEL.getCanavasSize().getHeight();
 				
-				e.printStackTrace();
+				double halfFOVRad = Math.toRadians(MainPanel.FOV / 2.0);
+				double distance = (minCanvasDimension / 2.0 * unitsPerPixel) / Math.tan(halfFOVRad);
+				long zoom = Math.round(distance	/ MainFrame.MAIN_PANEL.getTranslation().z * 100);
+				setText("Zoom: " + zoom + "%");
 			}
-
-		} else
+			catch (MetaDataException e)
+			{
+				setText(TITLE);
+			}
+		}
+		else
 			setText(TITLE);
-
 	}
 
 	@Override
-	public void activeLayerChanged(AbstractLayer layer) {
+	public void activeLayerChanged(AbstractLayer layer)
+	{
 		updateZoomLevel();
 	}
 
 	@Override
-	public void cameraChanged() {
+	public void cameraChanged()
+	{
 		updateZoomLevel();
 	}
 

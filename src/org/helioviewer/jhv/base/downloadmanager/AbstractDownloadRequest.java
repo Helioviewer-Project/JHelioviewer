@@ -5,31 +5,35 @@ import java.io.IOException;
 public abstract class AbstractDownloadRequest
 {
 	public static final int INFINITE_TIMEOUT = -1;
-	protected boolean finished = false;
-	protected int retries = 3;
-	protected IOException ioException = null;
-	protected int timeOut = 20000;
+	protected volatile boolean finished = false;
+	protected volatile int retries = 3;
+	protected volatile IOException ioException = null;
+	protected volatile int timeOut = 20000;
 	protected final String url;
-	protected int totalLength = -1;
-	protected int receivedLength = 0;
+	protected volatile int totalLength = -1;
+	protected volatile int receivedLength = 0;
 	
-	private DownloadPriority priority;
+	public final DownloadPriority priority;
 
-	public AbstractDownloadRequest(String url, DownloadPriority priority) {
+	public AbstractDownloadRequest(String url, DownloadPriority priority)
+	{
 		this.url = url;
 		this.priority = priority;
 	}
 	
-	public AbstractDownloadRequest(String url, DownloadPriority priority, int retries) {
+	public AbstractDownloadRequest(String url, DownloadPriority priority, int retries)
+	{
 		this.url = url;
 		this.priority = priority;
 	}
 	
-	public DownloadPriority getPriority(){
+	public DownloadPriority getPriority()
+	{
 		return priority;
 	}
 	
-	public boolean isFinished(){
+	public boolean isFinished()
+	{
 		return finished;
 	}
 		
@@ -43,27 +47,27 @@ public abstract class AbstractDownloadRequest
 		return retries > 0; 
 	}
 	
-	abstract void execute() throws IOException;
+	abstract void execute() throws IOException, InterruptedException;
 
-	public void addError(IOException ioException) {
+	public void setError(IOException ioException)
+	{
 		this.ioException = ioException;
 		finished = true;
 	}
 	
 	@Override
-	public String toString() {
+	public String toString()
+	{
 		return url;
 	}
 
-	public void setPriority(DownloadPriority priority) {
-		this.priority = priority;
-	}
-	
-	public int getTotalLength(){
+	public int getTotalLength()
+	{
 		return totalLength;
 	}
 	
-	public int getReceivedLength(){
+	public int getReceivedLength()
+	{
 		return receivedLength;
 	}
 	
@@ -76,7 +80,7 @@ public abstract class AbstractDownloadRequest
 	public void setRetries(int i)
 	{
 		this.ioException = null;
-		retries = 3;
+		retries = i;
 		finished = false;
 	}
 }

@@ -51,13 +51,14 @@ public class HEKRequestStructureThread extends HEKRequest implements Runnable {
 
     }
 
-    public void requestStructure(Interval<Date> interval) {
+    public void requestStructure(Interval<Date> interval)
+    {
         int page = 1;
         boolean hasMorePages = true;
-        try {
-
-            while (hasMorePages && page < (HEKSettings.REQUEST_STRUCTURE_MAXPAGES - 1)) {
-
+        try
+        {
+            while (hasMorePages && page < (HEKSettings.REQUEST_STRUCTURE_MAXPAGES - 1))
+            {
                 // return if the current operation was canceled
                 if (cancel)
                     return;
@@ -67,9 +68,8 @@ public class HEKRequestStructureThread extends HEKRequest implements Runnable {
 
                 String fields = "";
 
-                for (String field : HEKSettings.DOWNLOADER_DOWNLOAD_STRUCTURE_FIELDS) {
+                for (String field : HEKSettings.DOWNLOADER_DOWNLOAD_STRUCTURE_FIELDS)
                     fields = fields + field + ",";
-                }
 
                 fields = fields.substring(0, fields.length() - 1);
 
@@ -77,8 +77,10 @@ public class HEKRequestStructureThread extends HEKRequest implements Runnable {
 
                 HTTPRequest httpRequest = Plugins.generateAndStartHTPPRequest(uri, DownloadPriority.MEDIUM);
 
-                while (!httpRequest.isFinished()) {
-                	try {
+                while (!httpRequest.isFinished())
+                {
+                	try
+                	{
 						Thread.sleep(20);
 	                    // return if the current operation was canceled
 	                    if (cancel)
@@ -90,26 +92,30 @@ public class HEKRequestStructureThread extends HEKRequest implements Runnable {
                 }
 
                 JSONObject json;
-				try {
+				try
+				{
 					json = new JSONObject(httpRequest.getDataAsString());
 	                parseFeedAndUpdateGUI(json, interval);
 
 	                hasMorePages = json.getBoolean("overmax");
 	                page++;
-				} catch (IOException e) {
-					
+				}
+				catch (IOException e)
+				{
 					e.printStackTrace();
 				}
-
-
+				catch (InterruptedException _e)
+				{
+					_e.printStackTrace();
+				}
             }
-
-        } catch (JSONException e) {
+        }
+        catch (JSONException e)
+        {
             System.err.println("Error Parsing the HEK Response.");
             System.err.println("");
             e.printStackTrace();
         }
-
     }
 
     public void parseFeedAndUpdateGUI(JSONObject json, Interval<Date> timeRange)

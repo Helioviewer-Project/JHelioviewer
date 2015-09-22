@@ -20,17 +20,20 @@ public class RayTrace {
 	private Sphere sphere;
 	private Plane plane;
 	
-	public RayTrace() {
+	public RayTrace()
+	{
 		sphere = new Sphere(new Vector3d(0, 0, 0), Constants.SUN_RADIUS);
 		plane = new Plane(new Vector3d(1, 0, 0).cross(new Vector3d(0, 1, 0)), 0);
 	}
 	
-	public RayTrace(Matrix4d rotation){
+	public RayTrace(Matrix4d rotation)
+	{
 		sphere = new Sphere(new Vector3d(0, 0, 0), Constants.SUN_RADIUS);
 		plane = new Plane(rotation.multiply(new Vector3d(0, 0, 1)), 0);
 	}
 	
-	public Ray cast(int x, int y, MainPanel mainPanel){
+	public Ray cast(int x, int y, MainPanel mainPanel)
+	{
 		double newX = (x-mainPanel.getWidth()/2.)/ mainPanel.getWidth();
 		double newY = (y-mainPanel.getHeight()/2.)/ mainPanel.getWidth();
 

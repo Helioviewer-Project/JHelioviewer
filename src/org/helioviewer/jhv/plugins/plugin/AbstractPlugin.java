@@ -10,15 +10,16 @@ import org.json.JSONObject;
 
 import com.jogamp.opengl.GL2;
 
-public abstract class AbstractPlugin {
+public abstract class AbstractPlugin
+{
 	protected final String pluginName;
-	protected boolean loadOnStartup = true;
-	protected ArrayList<AbstractDownloadRequest> badRequests = new ArrayList<AbstractDownloadRequest>();
+	protected final boolean LOAD_ON_STARTUP = true;
+	protected ArrayList<AbstractDownloadRequest> failedRequests = new ArrayList<AbstractDownloadRequest>();
 	
-	public enum RENDER_MODE {
+	public enum RenderMode {
 		MAIN_PANEL, OVERVIEW_PANEL, ALL_PANEL;
 	};
-	protected RENDER_MODE renderMode = RENDER_MODE.ALL_PANEL;
+	protected RenderMode renderMode = RenderMode.ALL_PANEL;
 	
 	public AbstractPlugin(String name) {
 		pluginName = name;
@@ -37,9 +38,6 @@ public abstract class AbstractPlugin {
 	public void render(GL2 gl){
 		
 	}
-	
-	public abstract String getAboutLicenseText();	
-	
 	
 	public void mouseDragged(MouseEvent e, Vector3d point) {
 	}
@@ -62,12 +60,12 @@ public abstract class AbstractPlugin {
 	public void mouseExited(MouseEvent e, Vector3d point) {
 	}
 	
-	public RENDER_MODE getRenderMode(){
+	public RenderMode getRenderMode(){
 		return this.renderMode;
 	}
 	
-	abstract public void loadStateFile(JSONObject jsonObject);
-	abstract public void writeStateFile(JSONObject jsonObject);
+	abstract public void restoreConfiguration(JSONObject jsonObject);
+	abstract public void storeConfiguration(JSONObject jsonObject);
 
 	public abstract void setVisible(boolean visible);
 	public abstract boolean isVisible();
@@ -89,7 +87,7 @@ public abstract class AbstractPlugin {
 	abstract public void retryBadReqeuest();
 	
 	public void addBadRequest(AbstractDownloadRequest request) {
-		badRequests.add(request);
+		failedRequests.add(request);
 	}
 
 }

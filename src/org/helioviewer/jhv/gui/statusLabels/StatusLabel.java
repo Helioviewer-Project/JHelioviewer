@@ -53,7 +53,7 @@ public abstract class StatusLabel extends JLabel implements TimeLineListener, St
 	}
 
 	@Override
-	public void newlayerAdded() {
+	public void newLayerAdded() {
 	}
 
 	@Override

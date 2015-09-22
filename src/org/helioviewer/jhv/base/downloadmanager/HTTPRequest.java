@@ -13,27 +13,26 @@ public class HTTPRequest extends AbstractDownloadRequest
 	
 	protected byte[] rawData;
 
-	public HTTPRequest(String uri, DownloadPriority priority, int timeOut, int retries){
+	public HTTPRequest(String uri, DownloadPriority priority, int timeOut, int retries)
+	{
 		this(uri, priority);
 		this.retries = retries;
 		this.timeOut = timeOut;
 	}
 
-	public HTTPRequest(String uri, DownloadPriority priority, int retries){
+	public HTTPRequest(String uri, DownloadPriority priority, int retries)
+	{
 		this(uri, priority);
 		this.retries = retries;
 	}
 
-	public HTTPRequest(String url, DownloadPriority priority) {
+	public HTTPRequest(String url, DownloadPriority priority)
+	{
 		super(url, priority);
 	}
 
-	public void execute() throws IOException {
-			receiveData();
-			
-	}
-
-	private void receiveData() throws IOException {
+	public void execute() throws IOException, InterruptedException
+	{
 		HttpURLConnection httpURLConnection = null;
 		InputStream inputStream = null;
 		ByteArrayOutputStream byteArrayOutputStream = null;
@@ -49,20 +48,22 @@ public class HTTPRequest extends AbstractDownloadRequest
 		if (response == HttpURLConnection.HTTP_OK) {
 			inputStream = httpURLConnection.getInputStream();
 			int receivedLength = 0;
-			byteArrayOutputStream = new ByteArrayOutputStream(
-					DEFAULT_BUFFER_SIZE);
+			byteArrayOutputStream = new ByteArrayOutputStream(DEFAULT_BUFFER_SIZE);
 			byte[] buf = new byte[DEFAULT_BUFFER_SIZE];
 
-			while ((receivedLength = inputStream.read(buf)) > 0) {
+			while ((receivedLength = inputStream.read(buf)) > 0)
+			{
 				byteArrayOutputStream.write(buf, 0, receivedLength);
 				this.receivedLength += receivedLength;
 			}
 			rawData = byteArrayOutputStream.toByteArray();
 			byteArrayOutputStream.close();
 		}
-		else throw new IOException();
+		else
+			throw new IOException();
 
-		if (inputStream != null) {
+		if (inputStream != null)
+		{
 			byteArrayOutputStream.close();
 			inputStream.close();
 			httpURLConnection.disconnect();
@@ -70,14 +71,24 @@ public class HTTPRequest extends AbstractDownloadRequest
 		finished = true;
 	}
 
-	public String getDataAsString() throws IOException {
+	public String getDataAsString() throws IOException, InterruptedException
+	{
 		byte[] data = getData();
-		if (data == null) throw new IOException();
+		if (data == null)
+			throw new IOException();
+		
 		return new String(data,StandardCharsets.UTF_8);
 	}
 
-	public byte[] getData() throws IOException {
-		if (ioException != null) throw ioException;
+	public byte[] getData() throws IOException, InterruptedException
+	{
+		//TODO: proper synchronization
+		while(!isFinished())
+			Thread.sleep(20);
+		
+		if (ioException != null)
+			throw ioException;
+		
 		return rawData;
 	}
 }

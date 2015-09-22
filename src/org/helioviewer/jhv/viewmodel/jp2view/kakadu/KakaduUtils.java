@@ -57,7 +57,7 @@ public class KakaduUtils {
      * @return Box found and its superbox if one was opened
      * @throws JHV_KduException
      */
-    public static Jp2_input_box[] findBox(Jp2_threadsafe_family_src _familySrc, long _boxType, int _boxNumber) throws JHV_KduException {
+    public static Jp2_input_box[] findBox(Jp2_threadsafe_family_src _familySrc, long _boxType, int _boxNumber) throws KduException {
         Jp2_locator jp2Locator = null;
         Jp2_input_box box = null, box_final = null;
         Jp2_input_box result[] = { null, null };
@@ -68,7 +68,7 @@ public class KakaduUtils {
             jp2Locator = new Jp2_locator();
 
             if (!box.Open(_familySrc, jp2Locator)) {
-                throw new JHV_KduException("Box not open: " + _boxNumber);
+                throw new KduException("Box not open: " + _boxNumber);
             } else {
                 if (_boxType == Kdu_global.jp2_association_4cc) {
                     while (box.Get_box_type() != _boxType && box.Exists()) {
@@ -123,7 +123,7 @@ public class KakaduUtils {
             result[0] = box;
             return result;
         } catch (KduException ex) {
-            throw new JHV_KduException("Internal Kakadu Error (findBox " + _boxNumber + "): " + ex.getMessage(), ex);
+            throw ex;
         } finally {
             if (box_final != null) {
                 box_final.Native_destroy();
@@ -145,14 +145,14 @@ public class KakaduUtils {
      * @return Box found
      * @throws JHV_KduException
      */
-    public static Jp2_input_box findBox2(Jp2_input_box _supBox, long _boxType, int _boxNumber) throws JHV_KduException {
+    public static Jp2_input_box findBox2(Jp2_input_box _supBox, long _boxType, int _boxNumber) throws KduException {
         Jp2_input_box box = null;
 
         try {
             box = new Jp2_input_box();
 
             if (!box.Open(_supBox))
-                throw new JHV_KduException("Box not open: " + _boxNumber);
+                throw new KduException("Box not open: " + _boxNumber);
 
             else {
                 int i = 1;
@@ -171,7 +171,7 @@ public class KakaduUtils {
             }
 
         } catch (KduException ex) {
-            throw new JHV_KduException("Internal Kakadu Error(findBox2 " + _boxNumber + "): " + ex.getMessage(), ex);
+        	throw ex;
         }
 
         return box;
@@ -182,7 +182,7 @@ public class KakaduUtils {
      * 
      * @throws JHV_KduException
      */
-    public static String getXml(Jp2_threadsafe_family_src _familySrc, int _boxNumber) throws JHV_KduException {
+    public static String getXml(Jp2_threadsafe_family_src _familySrc, int _boxNumber) throws KduException {
         String xml = null;
         Jp2_input_box xmlBox = null;
         Jp2_input_box assocBox = null;
@@ -220,7 +220,7 @@ public class KakaduUtils {
                 xmlBox.Native_destroy();
 
             } catch (KduException ex) {
-                throw new JHV_KduException("Kakadu core error: " + ex.getMessage(), ex);
+                throw ex;
 
             } catch (UnsupportedEncodingException ex) {
                 ex.printStackTrace();
@@ -256,7 +256,7 @@ public class KakaduUtils {
                     xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + xml;
 
             } catch (Exception ex) {
-                throw new JHV_KduException("Failed parsing XML data", ex);
+                throw new KduException("Failed parsing XML data: "+ex.toString());
             }
 
         return xml;

@@ -64,7 +64,8 @@ public class HEKPlugin extends AbstractPlugin {
 	/**
 	 * Default constructor.
 	 */
-	public HEKPlugin() {
+	public HEKPlugin()
+	{
 		super(PLUGIN_NAME);
 		hekPluginPanel = new HEKPluginPanel(HEKCache.getSingletonInstance());
 	}
@@ -404,14 +405,12 @@ public class HEKPlugin extends AbstractPlugin {
 	}
 
 	@Override
-	public void loadStateFile(JSONObject jsonObject) {
+	public void restoreConfiguration(JSONObject jsonObject) {
 		if (jsonObject.has(JSON_NAME)) {
 			try {
 				JSONObject jsonHek = jsonObject.getJSONObject(JSON_NAME);
 				boolean visible = jsonHek.getBoolean(JSON_VISIBLE);
-				if (visible)
-					Plugins
-							.expandPanel(hekPluginPanel, visible);
+				Plugins.setPanelOpenCloseState(hekPluginPanel,visible);
 				setVisible(visible);
 			} catch (JSONException e) {
 				
@@ -421,7 +420,7 @@ public class HEKPlugin extends AbstractPlugin {
 	}
 
 	@Override
-	public void writeStateFile(JSONObject jsonObject) {
+	public void storeConfiguration(JSONObject jsonObject) {
 		JSONObject jsonHek = new JSONObject();
 		JSONArray jsonHekEvents = new JSONArray();
 		try {
