@@ -39,7 +39,7 @@ public class UltimateLayer
 	public String measurement2;
 	public int sourceId;
 	
-	public static final int MAX_FRAME_DOWNLOAD_BATCH = 10;
+	public static final int MAX_FRAME_DOWNLOAD_BATCH = 15;
 	private static final String URL = "http://api.helioviewer.org/v2/getJPX/?";
 	
 	public TreeSet<LocalDateTime> localDateTimes = new TreeSet<LocalDateTime>();

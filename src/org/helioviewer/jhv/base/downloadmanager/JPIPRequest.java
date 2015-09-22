@@ -26,7 +26,6 @@ public class JPIPRequest extends AbstractDownloadRequest
 	private int JpipRequestLen = JPIPConstants.MIN_REQUEST_LEN;
 	private volatile long lastResponseTime = -1;
 	private final Movie movie;
-	private final Kdu_cache kduCache = new Kdu_cache();
 	
 	public JPIPRequest(String url, DownloadPriority priority, int startFrame, int endFrame, Rectangle size, Movie _movie)
 	{
@@ -34,8 +33,6 @@ public class JPIPRequest extends AbstractDownloadRequest
 		
 		movie=_movie;
 		
-		jpipSocket = new JPIPSocket();
-
 		query = new JPIPQuery();
 		query.setField(JPIPRequestField.CONTEXT.toString(), "jpxl<" + startFrame + "-" + endFrame + ">");
 		query.setField(JPIPRequestField.LAYERS.toString(), String.valueOf(8));
@@ -54,9 +51,12 @@ public class JPIPRequest extends AbstractDownloadRequest
 			return;
 		}
 		
+		jpipSocket = new JPIPSocket();
+
 		try
 		{
-			openSocket();
+			final Kdu_cache kduCache = new Kdu_cache();
+			openSocket(kduCache);
 			org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPRequest request = new org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPRequest(Method.GET);
 			for(;;)
 			{
@@ -67,7 +67,7 @@ public class JPIPRequest extends AbstractDownloadRequest
 				}
 
 				if (jpipSocket.isClosed())
-					openSocket();
+					openSocket(kduCache);
 				
 				query.setField(JPIPRequestField.LEN.toString(), String.valueOf(JpipRequestLen));
 
@@ -79,7 +79,7 @@ public class JPIPRequest extends AbstractDownloadRequest
 				flowControl();
 				try
 				{
-					boolean complete = addJPIPResponseData(response);
+					boolean complete = addJPIPResponseData(response,kduCache);
 					if(complete)
 						break;
 				}
@@ -109,19 +109,20 @@ public class JPIPRequest extends AbstractDownloadRequest
 		}
 	}
 
-	private void openSocket() throws IOException, URISyntaxException, KduException
+	private void openSocket(Kdu_cache _kduCache) throws IOException, URISyntaxException, KduException
 	{
+		System.out.println(url);
 		JPIPResponse jpipResponse = (JPIPResponse) jpipSocket.connect(new URI(url));
-		addJPIPResponseData(jpipResponse);
+		addJPIPResponseData(jpipResponse,_kduCache);
 	}
 
-	private boolean addJPIPResponseData(JPIPResponse jRes) throws KduException
+	private boolean addJPIPResponseData(JPIPResponse jRes, Kdu_cache _kduCache) throws KduException
 	{
 		JPIPDataSegment data;
 		while ((data = jRes.removeJpipDataSegment()) != null && !data.isEOR)
 			try
 			{
-				kduCache.Add_to_databin(data.classID.getKakaduClassID(),
+				_kduCache.Add_to_databin(data.classID.getKakaduClassID(),
 					data.codestreamID, data.binID, data.data, data.offset,
 					data.length, data.isFinal, true, false);
 			}

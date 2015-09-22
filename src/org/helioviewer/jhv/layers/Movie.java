@@ -13,6 +13,8 @@ import org.helioviewer.jhv.opengl.TextureCache;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduRender;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 
+import com.google.common.cache.CacheStats;
+
 public class Movie
 {
 	protected LocalDateTime[] localDateTimes;
@@ -44,12 +46,12 @@ public class Movie
 		if(filename != null)
 			throw new IllegalStateException();
 		
-		filename = _filename;
-		
 		try
 		{
+			filename = _filename;
 			family_src.Open(filename);
 			processInput();
+			cacheStatus = CacheStatus.FILE_FULL;
 		}
 		catch (KduException e)
 		{
@@ -120,7 +122,7 @@ public class Movie
 	
 	public boolean contains(int _sourceId, LocalDateTime _currentDate)
 	{
-		if (this.sourceId != _sourceId || _currentDate.isBefore(firstDate) || _currentDate.isAfter(lastDate))
+		if (this.sourceId != _sourceId || cacheStatus==CacheStatus.NONE || _currentDate.isBefore(firstDate) || _currentDate.isAfter(lastDate))
 			return false;
 		
 		for (LocalDateTime localDateTime : localDateTimes)
@@ -151,8 +153,6 @@ public class Movie
 
 	public CacheStatus getCacheStatus()
 	{
-		if (filename != null)
-			return CacheStatus.FILE_FULL;
 		return cacheStatus;
 	}
 

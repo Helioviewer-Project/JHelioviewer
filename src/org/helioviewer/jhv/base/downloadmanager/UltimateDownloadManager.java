@@ -50,6 +50,7 @@ public class UltimateDownloadManager
 								}
 								catch (IOException e)
 								{
+									e.printStackTrace();
 									request.justRetried();
 									if (request.shouldRetry())
 										addRequest(request);
