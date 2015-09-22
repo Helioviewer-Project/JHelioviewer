@@ -7,19 +7,17 @@ import java.net.URL;
 
 import javax.swing.ImageIcon;
 
-import org.helioviewer.jhv.base.FileUtils;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
 
-class HEKIcon {
-
-	private static final int IMAGE_HEIGHT = 1024;
-	private static final int IMAGE_WIDTH = 32;
+class HEKIcon
+{
 	private static final String PATH = "/images/EventIcons/";
 
 	private static int texture = -1;
 	private static OpenGLHelper openGLHelper;
 
-	enum HEKICONS {
+	enum HEKICONS
+	{
 		AR_ICON("ar_icon.png"), PB_ICON("bp_icon.png"), CD_ICON("cd_icon.png"), CE_ICON(
 				"ce_icon.png"), CH_ICON("ch_icon.png"), CJ_ICON("cj_icon.png"), CW_ICON(
 				"cw_icon.png"), EF_ICON("ef_icon.png"), FA_ICON("fa_icon.png"), FE_ICON(
@@ -90,7 +88,7 @@ class HEKIcon {
 	}
 
 	private static ImageIcon getIcon(HEKICONS icon) {
-		URL imgURL = FileUtils.getResourceUrl(PATH + icon.getName());
+		URL imgURL = HEKIcon.class.getResource(PATH + icon.getName());
 		return new ImageIcon(imgURL);
 	}
 

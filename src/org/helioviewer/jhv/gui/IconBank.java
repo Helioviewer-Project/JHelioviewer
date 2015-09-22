@@ -11,8 +11,6 @@ import java.net.URL;
 
 import javax.swing.ImageIcon;
 
-import org.helioviewer.jhv.base.FileUtils;
-
 /**
  * This class provides access to all images, icons and cursors which are used by
  * the program.
@@ -132,12 +130,12 @@ public class IconBank {
      * @return the image icon of the given enum
      * */
     public static ImageIcon getIcon(JHVIcon _icon) {
-        URL imgURL = FileUtils.getResourceUrl(RESOURCE_PATH + _icon.getFilename());
+        URL imgURL = IconBank.class.getResource(RESOURCE_PATH + _icon.getFilename());
         return new ImageIcon(imgURL);
     }
 
     public static ImageIcon getIcon(JHVIcon icon, int width, int height){
-        URL imgURL = FileUtils.getResourceUrl(RESOURCE_PATH + icon.getFilename());
+        URL imgURL = IconBank.class.getResource(RESOURCE_PATH + icon.getFilename());
         ImageIcon imageIcon = new ImageIcon(imgURL);
         Image image = imageIcon.getImage();
         image = image.getScaledInstance(width, height, Image.SCALE_AREA_AVERAGING);

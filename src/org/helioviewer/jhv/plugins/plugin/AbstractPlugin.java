@@ -13,7 +13,7 @@ import com.jogamp.opengl.GL2;
 public abstract class AbstractPlugin
 {
 	protected final String pluginName;
-	protected static final boolean LOAD_ON_STARTUP = true;
+	protected final boolean LOAD_ON_STARTUP = true;
 	protected ArrayList<AbstractDownloadRequest> failedRequests = new ArrayList<AbstractDownloadRequest>();
 	
 	public enum RenderMode {

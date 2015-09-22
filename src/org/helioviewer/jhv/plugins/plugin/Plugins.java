@@ -16,11 +16,11 @@ import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
-import org.helioviewer.jhv.base.FileUtils;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
 import org.helioviewer.jhv.base.math.Vector3d;
+import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.opengl.MainPanel;
 import org.helioviewer.jhv.layers.Layers;
@@ -289,7 +289,7 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 	
 	public static ImageIcon getIcon(PluginIcon icon, int width, int height)
 	{
-        URL imgURL = FileUtils.getResourceUrl(RESOURCE_PATH + icon.getFilename());
+        URL imgURL = IconBank.class.getResource(RESOURCE_PATH + icon.getFilename());
         ImageIcon imageIcon = new ImageIcon(imgURL);
         Image image = imageIcon.getImage();
         image = image.getScaledInstance(width, height, Image.SCALE_AREA_AVERAGING);

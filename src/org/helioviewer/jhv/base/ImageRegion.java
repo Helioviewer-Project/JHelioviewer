@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.gui.opengl.MainPanel;
 import org.helioviewer.jhv.layers.AbstractImageLayer;
-import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 
 /**

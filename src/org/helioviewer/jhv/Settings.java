@@ -6,8 +6,6 @@ import java.util.UUID;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-import org.helioviewer.jhv.base.FileUtils;
-
 public class Settings
 {
     private static final Properties DEFAULT_PROPERTIES = new Properties();
@@ -39,9 +37,10 @@ public class Settings
     /**
      * Method loads the settings from a user file or the default settings file
      * */
-    public static void load() {
+    public static void load()
+    {
         DEFAULT_PROPERTIES.clear();
-        try (InputStream defaultPropStream = FileUtils.getResourceInputStream("/settings/defaults.properties"))
+        try (InputStream defaultPropStream = Settings.class.getResourceAsStream("/settings/defaults.properties"))
         {
             DEFAULT_PROPERTIES.load(defaultPropStream);
             DEFAULT_PROPERTIES.setProperty("default.local.path",Directories.REMOTEFILES.getPath());

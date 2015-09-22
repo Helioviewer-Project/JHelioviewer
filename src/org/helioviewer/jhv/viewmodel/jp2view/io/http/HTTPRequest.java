@@ -31,8 +31,6 @@ public class HTTPRequest extends HTTPMessage {
 
     /**
      * Constructs a new HTTP request indicating the request type.
-     * 
-     * @throws ProtocolException
      */
     public HTTPRequest(Method _method) {
         this.method = _method;
