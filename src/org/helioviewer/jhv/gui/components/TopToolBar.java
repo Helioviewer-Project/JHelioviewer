@@ -16,7 +16,6 @@ import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
 import org.helioviewer.jhv.Settings;
-import org.helioviewer.jhv.base.sdocutout.SDOCutOutButton;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.actions.SetCameraPanInteractionAction;
@@ -27,6 +26,7 @@ import org.helioviewer.jhv.gui.actions.SetCameraZoomBoxInteractionAction;
 import org.helioviewer.jhv.gui.actions.ToggleCoronaVisibilityAction;
 import org.helioviewer.jhv.gui.actions.View2DAction;
 import org.helioviewer.jhv.gui.actions.View3DAction;
+import org.helioviewer.jhv.gui.sdocutout.SDOCutOutButton;
 import org.helioviewer.jhv.opengl.camera.actions.ResetCameraAction;
 import org.helioviewer.jhv.opengl.camera.actions.Zoom1To1Action;
 import org.helioviewer.jhv.opengl.camera.actions.ZoomFitAction;

@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.base.sdocutout;
+package org.helioviewer.jhv.gui.sdocutout;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
