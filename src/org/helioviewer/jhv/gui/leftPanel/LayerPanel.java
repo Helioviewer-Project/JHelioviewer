@@ -38,7 +38,6 @@ import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.dialogs.AddLayerPanel;
 import org.helioviewer.jhv.gui.dialogs.DownloadMovieDialog;
-import org.helioviewer.jhv.gui.dialogs.InstrumentModel;
 import org.helioviewer.jhv.gui.dialogs.MetaDataDialog;
 import org.helioviewer.jhv.layers.AbstractLayer;
 import org.helioviewer.jhv.layers.LayerListener;
@@ -63,9 +62,6 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		size = label.getPreferredSize().height;
 	}
 	
-	private final AddLayerPanel addLayerPanel = new AddLayerPanel();
-	private final MetaDataDialog metaDataDialog = new MetaDataDialog();
-	private final DownloadMovieDialog downloadMovieDialog = new DownloadMovieDialog();
 	private JTable table;
 	private static final Object columnNames[] = { "", "", "", "", "" };
 	private LayerTableModel tableModel;
@@ -90,7 +86,6 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		initPopup();
 		initGUI();
 		updateData();
-		InstrumentModel.setAddLayerPanel(addLayerPanel);
 		Layers.addNewLayerListener(this);
 		TimeLine.SINGLETON.addListener(this);
 	}
@@ -104,7 +99,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				metaDataDialog.showDialog();
+				new MetaDataDialog().showDialog();
 			}
 		});
 		
@@ -114,7 +109,8 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				downloadMovieDialog.startDownload(Layers.getLayer(activePopupLayer).getURL(), Layers.getLayer(activePopupLayer));
+				if (Layers.getLayer(activePopupLayer) != null)
+					new DownloadMovieDialog().startDownload(Layers.getLayer(activePopupLayer).getURL(), Layers.getLayer(activePopupLayer));
 			}
 		});
 		
@@ -339,7 +335,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				metaDataDialog.showDialog();
+				new MetaDataDialog().showDialog();
 			}
 		});
 		GridBagConstraints gbcBtnShowInfo = new GridBagConstraints();
@@ -357,7 +353,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			public void actionPerformed(ActionEvent e)
 			{
 				if (Layers.getActiveImageLayer() != null)
-					downloadMovieDialog.startDownload(Layers.getActiveLayer().getURL(), Layers.getActiveLayer());
+					new DownloadMovieDialog().startDownload(Layers.getActiveLayer().getURL(), Layers.getActiveLayer());
 			}
 		});
 		GridBagConstraints gbcBtnDownloadLayer = new GridBagConstraints();
@@ -372,7 +368,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				addLayerPanel.setVisible(true);
+				new AddLayerPanel().setVisible(true);
 			}
 		});
 		btnAddLayer.setToolTipText("Add a new Layer");

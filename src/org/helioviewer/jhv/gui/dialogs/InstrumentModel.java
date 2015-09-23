@@ -24,9 +24,14 @@ import org.json.JSONObject;
 public class InstrumentModel
 {
 	private static final String URL_DATASOURCE = "http://api.helioviewer.org/v2/getDataSources/?";
-	private static TreeMap<String, Observatory> observatories = new TreeMap<String, InstrumentModel.Observatory>(new AlphanumComparator());
-	private static AddLayerPanel addLayerPanel;
-
+	private static TreeMap<String, Observatory> observatories = new TreeMap<String, InstrumentModel.Observatory>(new AlphanumComparator()); 
+	private static final ArrayList<Runnable> updateListeners = new ArrayList<Runnable>(); 
+	
+	public static void addUpdateListener(Runnable _listener)
+	{
+		updateListeners.add(_listener);
+	}
+	
 	static
 	{
 		Thread thread = new Thread(new Runnable()
@@ -51,7 +56,6 @@ public class InstrumentModel
 							try
 							{
 								addObservatories(new JSONObject(json));
-								addLayerPanel.updateGUI();
 								
 								if (Boolean.parseBoolean(Settings.getProperty("startup.loadmovie")))
 								{
@@ -59,6 +63,9 @@ public class InstrumentModel
 									LocalDateTime start = instrument.end.minusDays(1);
 									Layers.addLayer(instrument.sourceId, start, instrument.end, 1728, "AIA 171");
 								}
+								
+								for(Runnable ul:updateListeners)
+									ul.run();
 							}
 							catch (JSONException e)
 							{
@@ -258,10 +265,5 @@ public class InstrumentModel
 		public String getNickname(){
 			return this.nickname;
 		}
-	}
-
-	public static void setAddLayerPanel(AddLayerPanel addLayerPanel)
-	{
-		InstrumentModel.addLayerPanel = addLayerPanel;
 	}
 }
