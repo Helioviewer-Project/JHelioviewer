@@ -11,8 +11,8 @@ import javax.swing.AbstractAction;
 
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.base.math.Vector2d;
-import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.layers.AbstractLayer;
+import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
@@ -36,19 +36,19 @@ class SDOCutOutAction extends AbstractAction {
      */
     public void actionPerformed(ActionEvent e)
     {
-		AbstractImageLayer layer = Layers.getActiveImageLayer();
+		ImageLayer layer = Layers.getActiveImageLayer();
 		if (layer == null)
 			return;
 
-		ArrayList<AbstractImageLayer> sdoLayers = new ArrayList<AbstractImageLayer>();
+		ArrayList<ImageLayer> sdoLayers = new ArrayList<ImageLayer>();
 		for (AbstractLayer layerInterface : Layers.getLayers())
 		{
-			//FIXME: don't search by comparing strings
+			//FIXME: don't search by comparing strings, also improve logic
 			if (layerInterface.getName().contains("AIA"))
-				sdoLayers.add((AbstractImageLayer)layerInterface);
+				sdoLayers.add((ImageLayer)layerInterface);
 		}
-		AbstractImageLayer mainSDOLayer = layer.getName().contains("AIA") ? layer : sdoLayers.get(0);
-	
+		ImageLayer mainSDOLayer = layer.getName().contains("AIA") ? layer : sdoLayers.get(0);
+		
 		Rectangle2D size = mainSDOLayer.getLastDecodedImageRegion().getImageData();
 		LocalDateTime start = layer.getLocalDateTime().first();
 		LocalDateTime end = layer.getLocalDateTime().last();
@@ -62,7 +62,7 @@ class SDOCutOutAction extends AbstractAction {
 		url.append("&stopDate=" + end.format(DATE_FORMATTER) + "&stopTime=" + end.format(TIME_FORMATTER));
 
 		url.append("&wavelengths=");
-		for (AbstractImageLayer sdoLayer : sdoLayers)
+		for (ImageLayer sdoLayer : sdoLayers)
 			url.append("," + sdoLayer.getMetaData(TimeLine.SINGLETON.getCurrentDateTime()).getMeasurement());
 		
 		Rectangle resolution = metaData.getResolution();

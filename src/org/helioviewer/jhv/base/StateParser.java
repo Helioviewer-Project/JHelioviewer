@@ -29,56 +29,23 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.xml.sax.helpers.DefaultHandler;
 
-public class StateParser extends DefaultHandler {
-
+public class StateParser extends DefaultHandler
+{
 	private static final String LOAD_PATH_SETTINGS = "statefile.load.path";
 	private static final String SAVE_PATH_SETTINGS = "statefile.save.path";
-
-	private static final String LAYERS = "layers";
-	private static final String LOCAL_PATH = "localPath";
-	private static final String ID = "id";
-	private static final String CADENCE = "cadence";
-	private static final String START_DATE_TIME = "startDateTime";
-	private static final String END_DATE_TIME = "endDateTime";
-
-	private static final String OPACITY = "opacity";
-	private static final String SHARPEN = "sharpen";
-	private static final String GAMMA = "gamma";
-	private static final String CONTRAST = "contrast";
-	private static final String LUT = "lut";
-	private static final String RED_CHANNEL = "redChannel";
-	private static final String GREEN_CHANNEL = "greenChannel";
-	private static final String BLUE_CHANNEL = "blueChannel";
-
-	private static final String VISIBILITY = "visibility";
-	private static final String INVERTED_LUT = "invertedLut";
-	private static final String CORONA_VISIBILITY = "coronaVisiblity";
-
-	private static final String CAMERA = "camera";
-	private static final String CAMERA_TRANSLATION = "translation";
-	private static final String CAMERA_ROTATION = "rotation";
-
-	private static final String TIME = "time";
-	private static final String ACTIVE_LAYER = "activeLayer";
-
-	private static final String PLUGINS = "plugins";
-
-	private static class JHVStateFilter extends ExtensionFileFilter {
-
+	
+	private static class JHVStateFilter extends ExtensionFileFilter
+	{
 		private static final String DESCRIPTION = "JHelioviewer State files (\"*.jhv\")";
 		private static final String EXTENSION = ".jhv";
 
-		/**
-		 * Default Constructor.
-		 */
-		public JHVStateFilter() {
+		public JHVStateFilter()
+		{
 			extensions = new String[] { EXTENSION };
 		}
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public String getDescription() {
+		public String getDescription()
+		{
 			return DESCRIPTION;
 		}
 
@@ -87,23 +54,21 @@ public class StateParser extends DefaultHandler {
 		}
 	}
 
-	private static void openLoadFileChooserFX() {
-		Platform.runLater(new Runnable() {
-
+	//FIXME: move to a centralized location
+	private static void openLoadFileChooserFX()
+	{
+		Platform.runLater(new Runnable()
+		{
 			@Override
-			public void run() {
+			public void run()
+			{
 				FileChooser fileChooser = new FileChooser();
 				fileChooser.setTitle("Open state file");
-				fileChooser.setInitialDirectory(new File(Settings
-						.getProperty(LOAD_PATH_SETTINGS)));
+				fileChooser.setInitialDirectory(new File(Settings.getProperty(LOAD_PATH_SETTINGS)));
 
-				ExtensionFilter extensionFilter1 = new ExtensionFilter(
-						"All Files", "*.*");
-				fileChooser.getExtensionFilters().addAll(
-						StateParser.JHVStateFilter.getExtensionFilter(),
-						extensionFilter1);
-				final File selectedFile = fileChooser
-						.showOpenDialog(new Stage());
+				ExtensionFilter extensionFilter1 = new ExtensionFilter("All Files", "*.*");
+				fileChooser.getExtensionFilters().addAll(StateParser.JHVStateFilter.getExtensionFilter(),extensionFilter1);
+				final File selectedFile = fileChooser.showOpenDialog(new Stage());
 
 				if (selectedFile != null && selectedFile.exists()
 						&& selectedFile.isFile()) {
@@ -114,10 +79,8 @@ public class StateParser extends DefaultHandler {
 					try {
 						startLoadingStateFile(selectedFile);
 					} catch (IOException e) {
-						
 						e.printStackTrace();
 					} catch (JSONException e) {
-						
 						e.printStackTrace();
 					}
 				}
@@ -156,26 +119,26 @@ public class StateParser extends DefaultHandler {
 		byte[] data = Files.readAllBytes(selectedFile.toPath());
 		String content = new String(data, StandardCharsets.UTF_8);
 		JSONObject jsonObject = new JSONObject(content);
-		JSONArray layers = jsonObject.getJSONArray(LAYERS);
+		JSONArray layers = jsonObject.getJSONArray("layers");
 		Layers.readStatefile(layers);
 
-		JSONObject jsonCamera = jsonObject.getJSONObject(CAMERA);
-		JSONArray jsonTranslation = jsonCamera.getJSONArray(CAMERA_TRANSLATION);
+		JSONObject jsonCamera = jsonObject.getJSONObject("camera");
+		JSONArray jsonTranslation = jsonCamera.getJSONArray("translation");
 		Vector3d translation = new Vector3d(jsonTranslation.getDouble(0),
 				jsonTranslation.getDouble(1), jsonTranslation.getDouble(2));
-		JSONArray jsonRotation = jsonCamera.getJSONArray(CAMERA_ROTATION);
+		JSONArray jsonRotation = jsonCamera.getJSONArray("rotation");
 		double angle = jsonRotation.getDouble(0);
 		Vector3d axis = new Vector3d(jsonRotation.getDouble(1),
 				jsonRotation.getDouble(2), jsonRotation.getDouble(3));
 		Quaternion3d rotation = new Quaternion3d(angle, axis);
 		MainFrame.MAIN_PANEL.setTransformation(rotation, translation);
 
-		Layers.setActiveLayer(jsonObject.getInt(ACTIVE_LAYER));
+		Layers.setActiveLayer(jsonObject.getInt("activeLayer"));
 		LocalDateTime currentDateTime = LocalDateTime.parse(jsonObject
-				.getString(TIME));
+				.getString("time"));
 		TimeLine.SINGLETON.setCurrentDate(currentDateTime);
 
-		JSONObject jsonPlugin = jsonObject.getJSONObject(PLUGINS);
+		JSONObject jsonPlugin = jsonObject.getJSONObject("plugins");
 		Plugins.SINGLETON.restoreConfiguration(jsonPlugin);
 	}
 
@@ -190,7 +153,7 @@ public class StateParser extends DefaultHandler {
 
 		JSONArray jsonLayers = new JSONArray();
 		Layers.writeStatefile(jsonLayers);
-		jsonObject.put(LAYERS, jsonLayers);
+		jsonObject.put("layers", jsonLayers);
 
 		JSONObject jsonCamera = new JSONObject();
 
@@ -199,7 +162,7 @@ public class StateParser extends DefaultHandler {
 		jsonTranslation.put(translation.x);
 		jsonTranslation.put(translation.y);
 		jsonTranslation.put(translation.z);
-		jsonCamera.put(CAMERA_TRANSLATION, jsonTranslation);
+		jsonCamera.put("translation", jsonTranslation);
 
 		JSONArray jsonRotation = new JSONArray();
 		Quaternion3d rotation = MainFrame.MAIN_PANEL.getRotation();
@@ -208,15 +171,15 @@ public class StateParser extends DefaultHandler {
 		jsonRotation.put(axis.x);
 		jsonRotation.put(axis.y);
 		jsonRotation.put(axis.z);
-		jsonCamera.put(CAMERA_ROTATION, jsonRotation);
+		jsonCamera.put("rotation", jsonRotation);
 
-		jsonObject.put(CAMERA, jsonCamera);
-		jsonObject.put(ACTIVE_LAYER, Layers.getActiveLayerNumber());
-		jsonObject.put(TIME, TimeLine.SINGLETON.getCurrentDateTime());
+		jsonObject.put("camera", jsonCamera);
+		jsonObject.put("activeLayer", Layers.getActiveLayerNumber());
+		jsonObject.put("time", TimeLine.SINGLETON.getCurrentDateTime());
 
 		JSONObject jsonPlugins = new JSONObject();
 		Plugins.SINGLETON.storeConfiguration(jsonPlugins);
-		jsonObject.put(PLUGINS, jsonPlugins);
+		jsonObject.put("plugins", jsonPlugins);
 
 		FileWriter file = new FileWriter(fileName);
 		file.write(jsonObject.toString());

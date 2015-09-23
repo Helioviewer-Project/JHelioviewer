@@ -36,16 +36,14 @@ import org.helioviewer.jhv.gui.ShowableDialog;
  * @author Markus Langenberg
  * @author Andre Dau
  */
-public final class AboutDialog extends JDialog implements ActionListener, ShowableDialog, HyperlinkListener {
-
+public final class AboutDialog extends JDialog implements ShowableDialog, HyperlinkListener
+{
     private static final long serialVersionUID = 1L;
 
     private final JButton closeButton = new JButton("Close");
 
-    /**
-     * Default constructor.
-     */
-    public AboutDialog() {
+    public AboutDialog()
+    {
         super(MainFrame.SINGLETON, "About JHelioviewer", true);
         setResizable(false);
 
@@ -73,7 +71,8 @@ public final class AboutDialog extends JDialog implements ActionListener, Showab
         install4j.addMouseListener(new MouseAdapter()
         {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseClicked(MouseEvent e)
+			{
 				JHVGlobals.openURL("http://www.ej-technologies.com/products/install4j/overview.html");
 			}
 		});
@@ -82,7 +81,8 @@ public final class AboutDialog extends JDialog implements ActionListener, Showab
         raygunIo.addMouseListener(new MouseAdapter()
         {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseClicked(MouseEvent e)
+			{
 				JHVGlobals.openURL("https://raygun.io");
 			}
 		});
@@ -120,7 +120,13 @@ public final class AboutDialog extends JDialog implements ActionListener, Showab
         contentPane.add(boxPanel, BorderLayout.SOUTH);
 
         JPanel closeButtonContainer = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        closeButton.addActionListener(this);
+        closeButton.addActionListener(new ActionListener()
+        {
+			@Override
+			public void actionPerformed(ActionEvent _arg0)
+			{
+				dispose();
+			}});
         closeButtonContainer.add(closeButton);
         closeButtonContainer.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
         
@@ -139,7 +145,8 @@ public final class AboutDialog extends JDialog implements ActionListener, Showab
     /**
      * {@inheritDoc}
      */
-    public void showDialog() {
+    public void showDialog()
+    {
         pack();
         setSize(getPreferredSize());
         setLocationRelativeTo(MainFrame.SINGLETON);
@@ -150,30 +157,19 @@ public final class AboutDialog extends JDialog implements ActionListener, Showab
     }
 
     /**
-     * Closes the dialog.
-     */
-    public void actionPerformed(ActionEvent a) {
-        if (a.getSource() == this.closeButton) {
-            this.dispose();
-        }
-    }
-
-    /**
      * Opens a browser or email client after clicking on a hyperlink.
      */
-    public void hyperlinkUpdate(HyperlinkEvent e) {
-        if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-            if (e.getURL() == null) {
+    public void hyperlinkUpdate(HyperlinkEvent e)
+    {
+        if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED)
+        {
+            if (e.getURL() == null)
+            {
                 TextDialog textDialog = new TextDialog("License - " + e.getDescription().substring(0, e.getDescription().indexOf('.')), MainFrame.class.getResource("/licenses/" + e.getDescription()));
                 textDialog.showDialog();
-            } else {
-                JHVGlobals.openURL(e.getURL().toString());
             }
+            else
+                JHVGlobals.openURL(e.getURL().toString());
         }
     }
-
-    @Override
-	public void init()
-    {
-	}
 }

@@ -35,14 +35,12 @@ import org.helioviewer.jhv.opengl.camera.actions.ZoomOutAction;
  * @author Markus Langenberg
  * 
  */
-public class MenuBar extends JMenuBar {
-
+public class MenuBar extends JMenuBar
+{
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * Default constructor.
-	 */
-	public MenuBar() {
+	public MenuBar()
+	{
 		super();
 
 		JMenu fileMenu = new JMenu("File");
@@ -79,10 +77,12 @@ public class MenuBar extends JMenuBar {
 
 		fileMenu.add(new ExportAction());
 
-		if (!JHVGlobals.isOSX()) {
+		if (!JHVGlobals.isOSX())
+		{
 			fileMenu.addSeparator();
 			fileMenu.add(new ExitProgramAction());
 		}
+		
 		add(fileMenu);
 
 		JMenu viewMenu = new JMenu("View");
@@ -107,24 +107,18 @@ public class MenuBar extends JMenuBar {
 
 		JMenu optionsMenu = new JMenu("Options");
 		optionsMenu.setMnemonic(KeyEvent.VK_O);
-		optionsMenu.add(new ShowDialogAction("Preferences...", IconBank
-				.getIcon(JHVIcon.SETTINGS, 16, 16), PreferencesDialog.class));
+		optionsMenu.add(new ShowDialogAction("Preferences...", IconBank.getIcon(JHVIcon.SETTINGS, 16, 16), PreferencesDialog.class));
 		add(optionsMenu);
 
 		JMenu helpMenu = new JMenu("Help");
 		helpMenu.setMnemonic(KeyEvent.VK_H);
-		helpMenu.add(new OpenURLinBrowserAction("Open manual",
-				"http://www.helioviewer.org/wiki/index.php?title=JHelioviewer_Handbook"));
-		helpMenu.add(new ShowDialogAction("List of shortcuts...",
-				HelpDialog.class));
+		helpMenu.add(new OpenURLinBrowserAction("Open manual", "http://www.helioviewer.org/wiki/index.php?title=JHelioviewer_Handbook"));
+		helpMenu.add(new ShowDialogAction("List of shortcuts...", HelpDialog.class));
 		helpMenu.addSeparator();
-		helpMenu.add(new OpenURLinBrowserAction("Report a bug",
-				"https://github.com/Helioviewer-Project/JHelioViewer/issues"));
-		helpMenu.add(new OpenURLinBrowserAction("Submit a feature request",
-				"https://github.com/Helioviewer-Project/JHelioViewer/issues"));
+		helpMenu.add(new OpenURLinBrowserAction("Report a bug", "https://github.com/Helioviewer-Project/JHelioViewer/issues"));
+		helpMenu.add(new OpenURLinBrowserAction("Submit a feature request", "https://github.com/Helioviewer-Project/JHelioViewer/issues"));
 		helpMenu.addSeparator();
-		helpMenu.add(new ShowDialogAction("About JHelioviewer...",
-				AboutDialog.class));
+		helpMenu.add(new ShowDialogAction("About JHelioviewer...", AboutDialog.class));
 		add(helpMenu);
 	}
 }

@@ -21,8 +21,8 @@ import org.helioviewer.jhv.base.downloadmanager.HTTPDownloadRequest;
 import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.actions.filefilters.ExtensionFileFilter;
-import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.layers.AbstractLayer;
+import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 
 public class DownloadMovieDialog extends JDialog {
@@ -58,7 +58,9 @@ public class DownloadMovieDialog extends JDialog {
 		}
 	}
 
-	public DownloadMovieDialog() {
+	public DownloadMovieDialog()
+	{
+		//FIXME: looks bad (Windows), probably needs cancel, etc.
 		super(MainFrame.SINGLETON, "Download imagedata", true);
 		setLocationRelativeTo(MainFrame.SINGLETON);
 		setAlwaysOnTop(true);
@@ -177,7 +179,7 @@ public class DownloadMovieDialog extends JDialog {
 		downloadMovieThread.start();
 	}
 	
-	public void startDownload(String url, AbstractLayer layer)
+	public void startDownload(String _url, AbstractLayer _layer)
 	{
 		if (TimeLine.SINGLETON.getFrameCount() >= 1000)
 		{
@@ -191,8 +193,8 @@ public class DownloadMovieDialog extends JDialog {
 			});
 			return;
 		}
-		this.defaultName = layer.getFullName() + "_F" + JHVGlobals.FILE_DATE_TIME_FORMATTER.format(((AbstractImageLayer)layer).getFirstLocalDateTime()) + "_T" + JHVGlobals.FILE_DATE_TIME_FORMATTER.format(((AbstractImageLayer)layer).getLastLocalDateTime());
-		this.url = url;
+		defaultName = _layer.getFullName() + "_F" + JHVGlobals.FILE_DATE_TIME_FORMATTER.format(((ImageLayer)_layer).getFirstLocalDateTime()) + "_T" + JHVGlobals.FILE_DATE_TIME_FORMATTER.format(((ImageLayer)_layer).getLastLocalDateTime());
+		url = _url;
 		
 		if (JHVGlobals.USE_JAVA_FX)
 			openFileChooserFX();

@@ -204,6 +204,7 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 			dispose();
 
 		} else if (_a.getSource() == exportFitsButton) {
+			//FIXME: shouldn't happen here, instead in JHVGlobals or smth
 			if (JHVGlobals.USE_JAVA_FX){
 				openFileChooserFX(outFileName);
 			}
@@ -445,12 +446,6 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 	}
 
 	@Override
-	public void init() {
-		
-
-	}
-
-	@Override
 	public void timeStampChanged(LocalDateTime current, LocalDateTime last)
 	{
 		if (Layers.getActiveImageLayer() != null)
@@ -476,11 +471,11 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 	}
 
 	@Override
-	public void newLayerAdded() {
+	public void layerAdded() {
 	}
 
 	@Override
-	public void newlayerRemoved(int idx) {
+	public void layersRemoved() {
 		
 
 	}

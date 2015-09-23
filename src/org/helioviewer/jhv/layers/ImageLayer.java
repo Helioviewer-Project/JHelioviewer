@@ -16,12 +16,15 @@ import org.helioviewer.jhv.JHVException.TextureException;
 import org.helioviewer.jhv.base.FutureValue;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.downloadmanager.AbstractDownloadRequest;
+import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.MainPanel;
-import org.helioviewer.jhv.layers.filter.LUT;
+import org.helioviewer.jhv.layers.LUT.Lut;
+import org.helioviewer.jhv.layers.Movie.Match;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
+import org.helioviewer.jhv.opengl.RayTrace;
 import org.helioviewer.jhv.opengl.TextureCache;
 import org.helioviewer.jhv.opengl.camera.CameraMode;
 import org.helioviewer.jhv.viewmodel.TimeLine;
@@ -35,53 +38,132 @@ import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLContext;
 
-public class ImageLayer extends AbstractImageLayer
+public class ImageLayer extends AbstractLayer
 {
-	private static final String IS_LOCALFILE = "isLocalFile";
-	private static final String LOCAL_PATH = "localPath";
-	private static final String ID = "id";
-	private static final String CADENCE = "cadence";
-	private static final String START_DATE_TIME = "startDateTime";
-	private static final String END_DATE_TIME = "endDateTime";
-	private static final String NAME = "name";
+	public enum CacheStatus
+	{
+		FILE_FULL, KDU_PREVIEW, NONE;
+	}
 
+	public double opacity = 1;
+	public double sharpness = 0;
+	public double gamma = 1;
+	public double contrast = 1;
+	protected Lut lut = null;
+	public boolean redChannel = true;
+	public boolean greenChannel = true;
+	public boolean blueChannel = true;
+	private boolean visible = true;
+	public boolean invertedLut = false;
+	protected boolean coronaVisible = true;
+
+	private static int idCounter = 0;
+	protected int layerId;
+	protected LocalDateTime start;
+	protected LocalDateTime end;
+	protected int cadence = -1;
+	protected String localPath;
+
+	public boolean isVisible()
+	{
+		return visible;
+	}
+	
+	public void setVisible(boolean _visible)
+	{
+		visible = _visible;
+		MainFrame.MAIN_PANEL.repaint();
+	}
+	
+	public Lut getLut()
+	{
+		return lut;
+	}
+
+	public int getID()
+	{
+		return layerId;
+	}
+
+	public void setLut(Lut _lutEntry)
+	{
+		lut = _lutEntry;
+	}
+
+	public String getLocalFilePath()
+	{
+		return localPath;
+	}
+
+	public void readStateFile(JSONObject jsonLayer)
+	{
+		try
+		{
+			this.opacity = jsonLayer.getDouble("opa.city");
+			this.sharpness = jsonLayer.getDouble("sharpen");
+			this.gamma = jsonLayer.getDouble("gamma");
+			this.contrast = jsonLayer.getDouble("contrast");
+			setLut(Lut.values()[jsonLayer.getInt("lut")]);
+			redChannel=jsonLayer.getBoolean("redChannel");
+			greenChannel=jsonLayer.getBoolean("greenChannel");
+			blueChannel=jsonLayer.getBoolean("blueChannel");
+			
+			visible = jsonLayer.getBoolean("visibility");
+			invertedLut = jsonLayer.getBoolean("invertedLut");
+			coronaVisible=jsonLayer.getBoolean("coronaVisiblity");
+			MainFrame.FILTER_PANEL.updateUIElements((ImageLayer) this);
+		}
+		catch (JSONException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	public int getCadence()
+	{
+		return cadence;
+	}
+
+	public void toggleCoronaVisibility()
+	{
+		coronaVisible=!coronaVisible;
+	}
+	
 	private static final ExecutorService exDecoder = Executors.newWorkStealingPool();
 
-	private LayerRayTrace layerRayTrace;
 	private int sourceId;
 	
 	private UltimateLayer ultimateLayer;
 
 	private static int shaderprogram = -1;
 
-	public ImageLayer(int sourceID, LocalDateTime start, LocalDateTime end, int cadence, String name)
+	public ImageLayer(int _sourceId, LocalDateTime _start, LocalDateTime _end, int _cadence, String _name)
 	{
-		super();
-		this.sourceId = sourceID;
-		this.start = start;
-		this.end = end;
-		this.cadence = cadence;
-		this.name = name;
-		this.isDownloadable = ChronoUnit.SECONDS.between(start, end) / cadence < 1000;
-		this.ultimateLayer = new UltimateLayer(layerId, sourceID);
-		this.ultimateLayer.setTimeRange(start, end, cadence);
-		layerRayTrace = new LayerRayTrace(this);
+		layerId = idCounter++;
+		isImageLayer = true;
+		
+		sourceId = _sourceId;
+		start = _start;
+		end = _end;
+		cadence = _cadence;
+		name = _name;
+		isDownloadable = ChronoUnit.SECONDS.between(_start, _end) / _cadence < 1000;
+		
+		ultimateLayer = new UltimateLayer(layerId, _sourceId);
+		ultimateLayer.setTimeRange(_start, _end, _cadence);
 	}
 
 	public ImageLayer(String _filePath)
 	{
-		super();
-		this.localPath = _filePath;
-		this.ultimateLayer = new UltimateLayer(layerId, _filePath);
-		this.name = ultimateLayer.getMetaData(0).getFullName();
-		layerRayTrace = new LayerRayTrace(this);
-
+		localPath = _filePath;
+		ultimateLayer = new UltimateLayer(layerId, _filePath);
+		name = ultimateLayer.getMetaData(0).getFullName();
+		
 		start = ultimateLayer.getLocalDateTimes().first();
 		end = ultimateLayer.getLocalDateTimes().last();
-		this.cadence = (int) (ChronoUnit.SECONDS.between(start, end) / ultimateLayer.getLocalDateTimes().size());
+		cadence = (int) (ChronoUnit.SECONDS.between(start, end) / ultimateLayer.getLocalDateTimes().size());
 	}
 
-	@Override
 	public int getTexture(MainPanel compenentView, ByteBuffer _imageData, Dimension size) throws TextureException
 	{
 		//upload new texture, if something was decoded
@@ -106,6 +188,7 @@ public class ImageLayer extends AbstractImageLayer
 		return ultimateLayer.getLocalDateTimes();
 	}
 
+	//FIXME: get rid of
 	public ImageRegion getLastDecodedImageRegion()
 	{
 		return ultimateLayer.getImageRegion();
@@ -117,7 +200,6 @@ public class ImageLayer extends AbstractImageLayer
 		return ultimateLayer.getURL();
 	}
 
-	@Override
 	public MetaData getMetaData(LocalDateTime currentDateTime)
 	{
 		return ultimateLayer.getMetaData(currentDateTime);
@@ -127,14 +209,25 @@ public class ImageLayer extends AbstractImageLayer
 	{
 		try
 		{
-			jsonLayer.put(IS_LOCALFILE, ultimateLayer.isLocalFile());
-			jsonLayer.put(LOCAL_PATH, getLocalFilePath());
-			jsonLayer.put(ID, sourceId);
-			jsonLayer.put(CADENCE, cadence);
-			jsonLayer.put(START_DATE_TIME, start);
-			jsonLayer.put(END_DATE_TIME, end);
-			jsonLayer.put(NAME, name);
-			super.writeStateFile(jsonLayer);
+			jsonLayer.put("isLocalFile", ultimateLayer.isLocalFile());
+			jsonLayer.put("localPath", getLocalFilePath());
+			jsonLayer.put("id", sourceId);
+			jsonLayer.put("cadence", cadence);
+			jsonLayer.put("startDateTime", start);
+			jsonLayer.put("endDateTime", end);
+			jsonLayer.put("name", name);
+			jsonLayer.put("opa.city", opacity);
+			jsonLayer.put("sharpen", sharpness);
+			jsonLayer.put("gamma", gamma);
+			jsonLayer.put("contrast", contrast);
+			jsonLayer.put("lut", getLut().ordinal());
+			jsonLayer.put("redChannel", redChannel);
+			jsonLayer.put("greenChannel", greenChannel);
+			jsonLayer.put("blueChannel", blueChannel);
+
+			jsonLayer.put("visibility", isVisible());
+			jsonLayer.put("invertedLut", invertedLut);
+			jsonLayer.put("coronaVisiblity", coronaVisible);
 		}
 		catch (JSONException e)
 		{
@@ -147,15 +240,15 @@ public class ImageLayer extends AbstractImageLayer
 	{
 		try
 		{
-			if (jsonLayer.getBoolean(IS_LOCALFILE))
+			if (jsonLayer.getBoolean("isLocalFile"))
 			{
-				return new ImageLayer(jsonLayer.getString(LOCAL_PATH));
+				return new ImageLayer(jsonLayer.getString("localPath"));
 			}
-			else if (jsonLayer.getInt(CADENCE) >= 0)
+			else if (jsonLayer.getInt("cadence") >= 0)
 			{
-				LocalDateTime start = LocalDateTime.parse(jsonLayer.getString(START_DATE_TIME));
-				LocalDateTime end = LocalDateTime.parse(jsonLayer.getString(END_DATE_TIME));
-				return new ImageLayer(jsonLayer.getInt(ID), start, end, jsonLayer.getInt(CADENCE), jsonLayer.getString(NAME));
+				LocalDateTime start = LocalDateTime.parse(jsonLayer.getString("startDateTime"));
+				LocalDateTime end = LocalDateTime.parse(jsonLayer.getString("endDateTime"));
+				return new ImageLayer(jsonLayer.getInt("id"), start, end, jsonLayer.getInt("cadence"), jsonLayer.getString("name"));
 			}
 		}
 		catch (JSONException e)
@@ -165,10 +258,13 @@ public class ImageLayer extends AbstractImageLayer
 		return null;
 	}
 
-	@Override
-	public Movie getMovie(LocalDateTime localDateTime)
+	public Movie getMovie(LocalDateTime _currentDateTime)
 	{
-		return MovieCache.get(sourceId, localDateTime);
+		Match match=MovieCache.findBestFrame(sourceId, _currentDateTime);
+		if(match==null)
+			return null;
+		
+		return match.movie;
 	}
 
 	public RenderResult renderLayer(GL2 gl, Dimension canvasSize, MainPanel mainPanel, ByteBuffer _imageData)
@@ -223,7 +319,7 @@ public class ImageLayer extends AbstractImageLayer
 			gl.glUseProgram(shaderprogram);
 
 			gl.glActiveTexture(GL.GL_TEXTURE1);
-			gl.glBindTexture(GL2.GL_TEXTURE_2D, LUT.getTexture());
+			gl.glBindTexture(GL2.GL_TEXTURE_2D, org.helioviewer.jhv.layers.LUT.getTexture());
 
 			gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "texture"), 0);
 			gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "lut"), 1);
@@ -373,19 +469,16 @@ public class ImageLayer extends AbstractImageLayer
 		MainFrame.LAYER_PANEL.repaintPanel();
 	}
 
-	@Override
 	public LocalDateTime getFirstLocalDateTime()
 	{
 		return start;
 	}
 
-	@Override
 	public LocalDateTime getLastLocalDateTime()
 	{
 		return end;
 	}
 
-	@Override
 	public Future<ByteBuffer> prepareImageData(final MainPanel mainPanel, final Dimension size)
 	{
 		final LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
@@ -396,7 +489,7 @@ public class ImageLayer extends AbstractImageLayer
 		if(lut==null)
 			lut=metaData.getDefaultLUT();
 		
-		final ImageRegion imageRegion = layerRayTrace.getCurrentRegion(mainPanel, metaData, size);
+		final ImageRegion imageRegion = getCurrentRegion(mainPanel, metaData, size);
 		if (imageRegion.getImageSize().getWidth() < 0 || imageRegion.getImageSize().getHeight() < 0)
 			return new FutureValue<ByteBuffer>(null);
 		
@@ -420,5 +513,65 @@ public class ImageLayer extends AbstractImageLayer
 				return ultimateLayer.getImageData(finalNextLocalDateTime, imageRegion);
 			}
 		});
+	}
+	
+	private RayTrace rayTrace=new RayTrace();
+
+	private static final int MAX_X_POINTS = 11;
+	private static final int MAX_Y_POINTS = 11;
+
+	public ImageRegion getCurrentRegion(MainPanel mainPanel, MetaData metaData)
+	{
+		return getCurrentRegion(mainPanel, metaData, mainPanel.getCanavasSize());
+	}
+
+	public ImageRegion getCurrentRegion(MainPanel mainPanel, MetaData metaData, Dimension size)
+	{
+		rayTrace = new RayTrace(metaData.getRotation().toMatrix());
+
+		double partOfWidth = mainPanel.getWidth() / (double) (MAX_X_POINTS - 1);
+		double partOfHeight = mainPanel.getHeight() / (double) (MAX_Y_POINTS - 1);
+
+		double minX = Double.MAX_VALUE, minY = Double.MAX_VALUE, maxX = Double.MIN_VALUE, maxY = Double.MIN_VALUE;
+
+		for (int i = 0; i < MAX_X_POINTS; i++)
+		{
+			for (int j = 0; j < MAX_Y_POINTS; j++)
+			{
+				Vector2d imagePoint = rayTrace.castTexturepos((int) (i * partOfWidth), (int) (j * partOfHeight), metaData, mainPanel);
+
+				if (imagePoint != null)
+				{
+					/*
+					 * JPanel panel = null; if (!(mainPanel instanceof
+					 * OverViewPanel)){
+					 * 
+					 * panel = new JPanel(); panel.setBackground(Color.YELLOW);
+					 * }
+					 */
+					minX = Math.min(minX, imagePoint.x);
+					maxX = Math.max(maxX, imagePoint.x);
+					minY = Math.min(minY, imagePoint.y);
+					maxY = Math.max(maxY, imagePoint.y);
+
+					/*
+					 * if (!(mainPanel instanceof OverViewPanel)){
+					 * panel.setBounds((int) (imagePoint.x *
+					 * contentPanel.getWidth()) - 3,(int) (imagePoint.y *
+					 * contentPanel.getHeight()) - 3, 5, 5);
+					 * contentPanel.add(panel); }
+					 */
+				}
+			}
+		}
+		// frame.repaint();
+
+		Rectangle2D rectangle = new Rectangle2D.Double(minX, minY, maxX - minX, maxY - minY);
+		ImageRegion imageRegion = new ImageRegion(getTime());
+		imageRegion.setImageData(rectangle);
+		imageRegion.calculateScaleFactor(this, mainPanel, metaData, size);
+		return imageRegion;
+		// frame.repaint();
+		// frame.setVisible(true);
 	}
 }

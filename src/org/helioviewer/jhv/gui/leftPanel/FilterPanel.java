@@ -20,11 +20,11 @@ import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.components.WheelSupport;
-import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.layers.AbstractLayer;
+import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
-import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
+import org.helioviewer.jhv.layers.LUT.Lut;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -38,13 +38,13 @@ public class FilterPanel extends JPanel implements LayerListener
 	private JSlider sharpenSlider;
 	private JSlider gammaSlider;
 	private JSlider contrastSlider;
-	private JComboBox<LUT_ENTRY> comboBoxColorTable;
+	private JComboBox<Lut> comboBoxColorTable;
 	private JCheckBox chckbxRed;
 	private JCheckBox chckbxGreen;
 	private JCheckBox chckbxBlue;
 	private JToggleButton btnInverseColorTable;
 	private JLabel lblOpacity, lblSharpen, lblGamma, lblContrast;
-	private AbstractImageLayer activeLayer;
+	private ImageLayer activeLayer;
 	private static final double GAMMA_FACTOR = 0.01 * Math.log(10);
 	
     private static final Icon ICON_INVERT = IconBank.getIcon(JHVIcon.INVERT, 16, 16);
@@ -228,15 +228,15 @@ public class FilterPanel extends JPanel implements LayerListener
         lutMap.put("<Load new GIMP gradient file>", null);*/
         //comboBoxColorTable = new JComboBox<String>();
         //comboBoxColorTable = new JComboBox<String>(LUT.getNames());
-        comboBoxColorTable = new JComboBox<LUT_ENTRY>(LUT_ENTRY.values());
-        comboBoxColorTable.setSelectedItem(LUT_ENTRY.GRAY);
+        comboBoxColorTable = new JComboBox<Lut>(Lut.values());
+        comboBoxColorTable.setSelectedItem(Lut.GRAY);
 		add(comboBoxColorTable, "4, 10, 5, 1, fill, default");
 		comboBoxColorTable.addItemListener(new ItemListener() {
 			
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if (activeLayer != null && activeLayer.getLut() != comboBoxColorTable.getSelectedItem()){
-					activeLayer.setLut((LUT_ENTRY) comboBoxColorTable.getSelectedItem());
+					activeLayer.setLut((Lut) comboBoxColorTable.getSelectedItem());
 					repaintComponent();
 				}
 			}
@@ -287,7 +287,8 @@ public class FilterPanel extends JPanel implements LayerListener
 		chckbxBlue.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				if (activeLayer != null && activeLayer.blueChannel != chckbxBlue.isSelected()){
+				if (activeLayer != null && activeLayer.blueChannel != chckbxBlue.isSelected())
+				{
 					activeLayer.blueChannel=chckbxBlue.isSelected();
 					repaintComponent();
 				}
@@ -296,34 +297,37 @@ public class FilterPanel extends JPanel implements LayerListener
 
 	}
 
-	public void updateUIElements(AbstractImageLayer layer){
-		this.activeLayer = layer;
-		this.contrastSlider.setValue((int)(layer.contrast * 10));
-		this.gammaSlider.setValue((int) (Math.log(layer.gamma) / GAMMA_FACTOR));
-		this.opacitySlider.setValue((int) (layer.opacity * 100));
-		this.sharpenSlider.setValue((int) (layer.sharpness * 100));
-		this.comboBoxColorTable.setSelectedItem(layer.getLut());
-		this.btnInverseColorTable.setSelected(layer.invertedLut);
-		this.chckbxRed.setSelected(layer.redChannel);
-		this.chckbxGreen.setSelected(layer.greenChannel);
-		this.chckbxBlue.setSelected(layer.blueChannel);
+	public void updateUIElements(ImageLayer _imageLayer)
+	{
+		activeLayer = _imageLayer;
+		contrastSlider.setValue((int)(_imageLayer.contrast * 10));
+		gammaSlider.setValue((int) (Math.log(_imageLayer.gamma) / GAMMA_FACTOR));
+		opacitySlider.setValue((int) (_imageLayer.opacity * 100));
+		sharpenSlider.setValue((int) (_imageLayer.sharpness * 100));
+		comboBoxColorTable.setSelectedItem(_imageLayer.getLut());
+		btnInverseColorTable.setSelected(_imageLayer.invertedLut);
+		chckbxRed.setSelected(_imageLayer.redChannel);
+		chckbxGreen.setSelected(_imageLayer.greenChannel);
+		chckbxBlue.setSelected(_imageLayer.blueChannel);
 	}
 	
 	@Override
-	public void newLayerAdded() {
-		AbstractImageLayer activeLayer = Layers.getActiveImageLayer();
-		if (activeLayer != null) this.updateUIElements(activeLayer);
+	public void layerAdded()
+	{
+		ImageLayer activeLayer = Layers.getActiveImageLayer();
+		if (activeLayer != null)
+			updateUIElements(activeLayer);
 	}
 
 	@Override
-	public void newlayerRemoved(int idx) {
+	public void layersRemoved() {
 	}
 
 	@Override
-	public void activeLayerChanged(AbstractLayer layer) {
-		if (layer != null && layer.isImageLayer()) {
-			this.updateUIElements((AbstractImageLayer) layer);
-		}
+	public void activeLayerChanged(AbstractLayer layer)
+	{
+		if (layer != null && layer.isImageLayer())
+			updateUIElements((ImageLayer) layer);
 	}
 	
 	private void repaintComponent(){

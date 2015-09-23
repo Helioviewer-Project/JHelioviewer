@@ -10,10 +10,10 @@ import javax.swing.AbstractAction;
 import javax.swing.KeyStroke;
 
 import org.helioviewer.jhv.gui.IconBank;
-import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.layers.AbstractImageLayer;
+import org.helioviewer.jhv.gui.MainPanel;
+import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.opengl.camera.animation.CameraZoomAnimation;
 import org.helioviewer.jhv.viewmodel.TimeLine;
@@ -34,7 +34,7 @@ public class Zoom1To1Action extends AbstractAction
 	public void actionPerformed(ActionEvent e)
 	{
 		MainPanel compenentView = MainFrame.MAIN_PANEL;
-		AbstractImageLayer activeLayer = Layers.getActiveImageLayer();
+		ImageLayer activeLayer = Layers.getActiveImageLayer();
 		if (activeLayer == null)
 			return;
 		

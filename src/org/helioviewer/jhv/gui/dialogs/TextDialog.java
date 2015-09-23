@@ -75,8 +75,4 @@ class TextDialog extends JDialog implements ActionListener, ShowableDialog {
         
         setVisible(true);
     }
-
-	@Override
-	public void init() {
-	}
 }

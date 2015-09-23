@@ -87,7 +87,7 @@ public abstract class AbstractLayer
 		return failedRequests.size();
 	}
 
-	public void clearBadRequests()
+	public void ignoreFailedRequests()
 	{
 		failedRequests.clear();
 		MainFrame.LAYER_PANEL.repaintPanel();

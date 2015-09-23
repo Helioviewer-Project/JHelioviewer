@@ -11,9 +11,10 @@ import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
-import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
+import org.helioviewer.jhv.layers.LUT.Lut;
 
 //TODO: look at memory consumption and instance count of this class
+//TODO: make immutable
 public abstract class MetaData
 {
     private Rectangle2D physicalImageSize;
@@ -60,7 +61,7 @@ public abstract class MetaData
     protected LocalDateTime localDateTime;
 	protected final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_DATE_TIME;
     
-	protected LUT_ENTRY defaultLUT = LUT_ENTRY.GRAY;
+	protected Lut defaultLUT = Lut.GRAY;
 	
 	protected Rectangle newResolution;
 
@@ -337,7 +338,7 @@ public abstract class MetaData
 		return this.defaultRotation;
 	}
 	
-	public LUT_ENTRY getDefaultLUT()
+	public Lut getDefaultLUT()
 	{
 		return defaultLUT;
 	}

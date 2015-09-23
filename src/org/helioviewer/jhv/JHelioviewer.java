@@ -25,6 +25,7 @@ import kdu_jni.Kdu_message_formatter;
 import org.helioviewer.jhv.base.Log;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.dialogs.AboutDialog;
+import org.helioviewer.jhv.gui.dialogs.InstrumentModel;
 import org.helioviewer.jhv.io.CommandLineProcessor;
 import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.opengl.TextureCache;
@@ -41,7 +42,7 @@ import com.jogamp.opengl.GLProfile;
 
 public class JHelioviewer
 {
-	public static void main(String[] args)
+	public static void main(final String[] args)
 	{
 		// Setup Swing
 		try
@@ -53,12 +54,20 @@ public class JHelioviewer
 			e2.printStackTrace();
 		}
 		
+		// display the splash screen
+		final SplashScreen splash = new SplashScreen(19);
+		
+		splash.progressTo("Installing crash monitoring");
+		
 		// Uncaught runtime errors are displayed in a dialog box in addition
 		JHVUncaughtExceptionHandler.setupHandlerForThread();
 		
 		try
 		{
+			splash.progressTo("Redirecting standard streams");
 			Log.redirectStdOutErr();
+			
+			splash.progressTo("Checking for updates");
 			if (JHVGlobals.isReleaseVersion())
 			{
 				if (UpdateScheduleRegistry.checkAndReset())
@@ -80,19 +89,30 @@ public class JHelioviewer
 				}
 			}
 
+			CommandLineProcessor.setArguments(args);
 			if (args.length == 1 && (args[0].equals("-h") || args[0].equals("--help")))
 			{
 				System.out.println(CommandLineProcessor.getUsageMessage());
 				return;
 			}
 
-			Telemetry.trackEvent("Startup","args",Arrays.toString(args));
-			CommandLineProcessor.setArguments(args);
-
+			//start app insights on a separate thread, because it usually
+			//takes a while to load
+			splash.progressTo("Starting Application Insights");
+			new Thread(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					Telemetry.trackEvent("Startup","args",Arrays.toString(args));
+				}
+			}).start();
+			
 			ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
 			JPopupMenu.setDefaultLightWeightPopupEnabled(false);
 
 			// initializes JavaFX environment
+			splash.progressTo("Initializing JavaFX");
 			if(JHVGlobals.USE_JAVA_FX)
 				SwingUtilities.invokeLater(new Runnable()
 				{
@@ -102,47 +122,38 @@ public class JHelioviewer
 				    }
 				});
 			
-			// Save command line arguments
-			CommandLineProcessor.setArguments(args);
-
-			// Save current default system timezone in user.timezone
+			splash.progressTo("Installing universal locale");
 			System.setProperty("user.timezone", TimeZone.getDefault().getID());
-
-			// Per default all times should be given in GMT
 			TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
-
-			// Save current default locale to user.locale
 			System.setProperty("user.locale", Locale.getDefault().toString());
-			
-			// Per default, the us locale should be used
 			Locale.setDefault(Locale.US);
 			
+			splash.progressTo("Initializing OpenGL");
 			GLProfile.initSingleton();
 			GLDrawableFactory factory = GLDrawableFactory.getFactory(GLProfile.getDefault());
 			GLProfile profile = GLProfile.get(GLProfile.GL2);
 			profile = GLProfile.getDefault();
+			
+			splash.progressTo("Creating drawable");
 			GLCapabilities capabilities = new GLCapabilities(profile);
-			final boolean createNewDevice = true;
-			final GLAutoDrawable sharedDrawable = factory.createDummyAutoDrawable(null, createNewDevice, capabilities, null);
+			final GLAutoDrawable sharedDrawable = factory.createDummyAutoDrawable(null, true, capabilities, null);
 			sharedDrawable.display();
+			
 			if (System.getProperty("jhvVersion") == null)
 				sharedDrawable.setGL(new DebugGL2(sharedDrawable.getGL().getGL2()));
 			
 			System.out.println("JHelioviewer started with command-line options:" + String.join(" ", args));
 			System.out.println("Initializing JHelioviewer");
 
-			// display the splash screen
-			final SplashScreen splash = new SplashScreen(9);
-
 			JHVGlobals.initFileChooserAsync();
 
 			// Load settings from file but do not apply them yet
 			// The settings must not be applied before the kakadu engine has
 			// been initialized
-			splash.progressTo("Loading settings...");
+			splash.progressTo("Loading settings");
 			Settings.load();
 
-			splash.progressTo("Initializing Kakadu...");
+			splash.progressTo("Initializing Kakadu");
 			try
 			{
 				loadLibraries();
@@ -175,11 +186,12 @@ public class JHelioviewer
 				@Override
 				public void run()
 				{
+					sharedDrawable.getContext().makeCurrent();
+					
 					splash.progressTo("Creating OpenGL context");
-					MainFrame.SINGLETON.initSharedContext(sharedDrawable.getContext());
+					MainFrame.SINGLETON.initContext();
 					
 					splash.progressTo("Setting up texture cache");
-					sharedDrawable.getContext().makeCurrent();
 					TextureCache.init();
 					
 					splash.progressTo("Compiling shaders");
@@ -192,8 +204,34 @@ public class JHelioviewer
 					splash.progressTo("Opening main window");
 					MainFrame.SINGLETON.setVisible(true);
 					
-					splash.dispose();
-					UILatencyWatchdog.startWatchdog();
+		            splash.progressTo("Loading observatories");
+		            InstrumentModel.getObservatories();
+		            
+		            splash.progressTo("");
+					new Thread(new Runnable()
+					{
+						@Override
+						public void run()
+						{
+							try
+							{
+								Thread.sleep(1000);
+							}
+							catch (InterruptedException _e)
+							{
+								_e.printStackTrace();
+							}
+							SwingUtilities.invokeLater(new Runnable()
+							{
+								@Override
+								public void run()
+								{
+									splash.dispose();
+									UILatencyWatchdog.startWatchdog();
+								}
+							});
+						}
+					}).start();
 				}
 			});
 		}

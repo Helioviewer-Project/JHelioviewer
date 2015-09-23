@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
 import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
 import org.helioviewer.jhv.base.math.Vector3d;
-import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
+import org.helioviewer.jhv.layers.LUT.Lut;
 
 class MetaDataStereo extends MetaData
 {
@@ -31,16 +31,16 @@ class MetaDataStereo extends MetaData
         
         switch (measurement) {
 		case "171":
-			defaultLUT = LUT_ENTRY.STEREO_EUVI_171;
+			defaultLUT = Lut.STEREO_EUVI_171;
 			break;
 		case "195":
-			defaultLUT = LUT_ENTRY.STEREO_EUVI_195;
+			defaultLUT = Lut.STEREO_EUVI_195;
 			break;
 		case "284":
-			defaultLUT = LUT_ENTRY.STEREO_EUVI_284;
+			defaultLUT = Lut.STEREO_EUVI_284;
 			break;
 		case "304":
-			defaultLUT = LUT_ENTRY.STEREO_EUVI_304;
+			defaultLUT = Lut.STEREO_EUVI_304;
 			break;
 		default:
 			break;

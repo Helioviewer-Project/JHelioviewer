@@ -20,7 +20,7 @@ import kdu_jni.Kdu_coords;
 import kdu_jni.Kdu_dims;
 import kdu_jni.Kdu_region_compositor;
 
-import org.helioviewer.jhv.layers.AbstractImageLayer.CacheStatus;
+import org.helioviewer.jhv.layers.ImageLayer.CacheStatus;
 import org.helioviewer.jhv.opengl.TextureCache;
 import org.helioviewer.jhv.viewmodel.jp2view.kakadu.KakaduUtils;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
@@ -30,11 +30,8 @@ import org.w3c.dom.Document;
 
 public class Movie
 {
-	private LocalDateTime[] localDateTimes;
-
-	private LocalDateTime firstDate = LocalDateTime.MAX;
-	private LocalDateTime lastDate = LocalDateTime.MIN;
-
+	private MetaData[] metaDatas;
+	
 	public final int sourceId;
 	private String filename;
 
@@ -42,7 +39,6 @@ public class Movie
 
 	private Jp2_threadsafe_family_src family_src;
 	private Jpx_source jpxSrc;
-	private MetaData[] metaDatas;
 
 	public Movie(int _sourceId)
 	{
@@ -100,85 +96,77 @@ public class Movie
 			int framecount = tempVar[0];
 			
 			//load all metadata
-			LocalDateTime[] newLocalDateTimes = new LocalDateTime[framecount];
 			metaDatas = new MetaData[framecount];
-			for (int i = 1; i <= framecount; i++)
+			for (int i = 0; i < framecount; i++)
 			{
-				metaDatas[i - 1] = readMetadata(i, family_src);
-				newLocalDateTimes[i - 1] = metaDatas[i-1].getLocalDateTime();
+				metaDatas[i]=readMetadata(i+1, family_src);
+				TextureCache.invalidate(sourceId, metaDatas[i].getLocalDateTime());
 			}
-			
-			//don't overwrite times if we already parsed them from another source. usually
-			//the times from different sources differ by a couple of milliseconds. updating
-			//the localDateTimes would mean that later searches for an exact time wouldn't
-			//succeed
-			setLocalDateTimes(newLocalDateTimes);
 		}
 		catch (KduException e)
 		{
 			e.printStackTrace();
 		}
-		
-		TextureCache.invalidate(sourceId, localDateTimes);
 	}
 	
-	public void setLocalDateTimes(LocalDateTime[] _localDateTimes)
-	{
-		localDateTimes = _localDateTimes;
-		
-		firstDate = LocalDateTime.MAX;
-		lastDate = LocalDateTime.MIN;
-		for (LocalDateTime localDateTime : localDateTimes)
-		{
-			firstDate = localDateTime.isBefore(firstDate) ? localDateTime : firstDate;
-			lastDate = localDateTime.isAfter(lastDate) ? localDateTime : lastDate;
-		}
-	}
-	
-	public boolean contains(int _sourceId, LocalDateTime _currentDate)
-	{
-		return sourceId == _sourceId && cacheStatus!=CacheStatus.NONE && !_currentDate.isBefore(firstDate) && !_currentDate.isAfter(lastDate);
-	}
-
 	public String getBackingFile()
 	{
 		return filename;
 	}
 
-	public int findClosestIdx(LocalDateTime _localDateTime)
+	public class Match
+	{
+		public final int index;
+		public final long timeDifferenceNanos;
+		public final Movie movie;
+		
+		Match(int _index, long _timeDifferenceNanos)
+		{
+			index=_index;
+			timeDifferenceNanos=_timeDifferenceNanos;
+			movie=Movie.this;
+		}
+	}
+	
+	public Match findClosestIdx(LocalDateTime _currentDateTime)
 	{
 		int bestI=-1;
-		long minDiff = Long.MAX_VALUE; 
+		long minDiff = Long.MAX_VALUE;
 		
-		for (int i = 0; i < localDateTimes.length; i++)
+		for (int i = 0; i < metaDatas.length; i++)
 		{
-			long curDiff = Math.abs(ChronoUnit.NANOS.between(localDateTimes[i], _localDateTime));
+			MetaData md=metaDatas[i];
+			if(md==null)
+				continue;
+			
+			LocalDateTime ldt=md.getLocalDateTime();
+			if(ldt==null)
+				continue;
+			
+			long curDiff = Math.abs(ChronoUnit.NANOS.between(ldt, _currentDateTime));
 			if(curDiff<minDiff)
 			{
-				minDiff=i;
+				minDiff=curDiff;
 				bestI=i;
 			}
 		}
 		
-		return bestI;
+		if(bestI==-1)
+			return null;
+		else
+			return new Match(bestI,minDiff);
 	}
-
+	
 	public CacheStatus getCacheStatus()
 	{
 		return cacheStatus;
 	}
 	
-	@Deprecated
 	public MetaData getMetaData(int idx)
 	{
 		if (metaDatas == null)
 			return null;
 		return metaDatas[idx];
-	}
-	
-	public MetaData getMetaData(LocalDateTime _ldt)
-	{
-		return getMetaData(findClosestIdx(_ldt));
 	}
 	
 	private MetaData readMetadata(int index, Jp2_threadsafe_family_src family_src) throws KduException
@@ -187,7 +175,7 @@ public class Movie
 		if (xmlText == null)
 			return null;
 		xmlText = xmlText.trim().replace("&", "&amp;").replace("$OBS", "");
-
+		
 		InputStream in = null;
 		try
 		{
@@ -196,8 +184,7 @@ public class Movie
 			Document doc = builder.parse(in);
 			doc.getDocumentElement().normalize();
 
-			MetaData metaData = MetaDataFactory.getMetaData(new MetaDataContainer(doc));
-			return metaData;
+			return MetaDataFactory.getMetaData(new MetaDataContainer(doc));
 		}
 		catch (Exception ex)
 		{
@@ -217,8 +204,6 @@ public class Movie
 	
 	
 	
-	private static final int MAX_RENDER_SAMPLES = 128000;
-	
 	/*private Kdu_thread_env threadEnviroment;
 	public KakaduRender()
 	{
@@ -237,7 +222,7 @@ public class Movie
 		}
 	}*/
 
-	public ByteBuffer getImage(LocalDateTime _localDateTime, int quality, float zoomPercent, Rectangle imageSize)
+	public ByteBuffer getImage(int _index, int quality, float zoomPercent, Rectangle imageSize)
 	{
 		try
 		{
@@ -245,15 +230,13 @@ public class Movie
 			jpxSrc2.Open(family_src, true);
 			
 			Kdu_region_compositor compositor = new Kdu_region_compositor(jpxSrc2);
+			//TODO: perhaps enable multii-threaded decoding?
 			//compositor.Set_thread_env(threadEnviroment, null);
 			
-			/*compositor.Refresh();
-			compositor.Remove_ilayer(new Kdu_ilayer_ref(), true);*/
-
 			Kdu_dims dimsRef1 = new Kdu_dims();
 			Kdu_dims dimsRef2 = new Kdu_dims();
 
-			compositor.Add_ilayer(findClosestIdx(_localDateTime), dimsRef1, dimsRef2);
+			compositor.Add_ilayer(_index, dimsRef1, dimsRef2);
 
 			//FIXME: downgrade quality first, before resolution when having speed problems
 			compositor.Set_max_quality_layers(quality);
@@ -267,11 +250,12 @@ public class Movie
 			Kdu_coords actualOffset = new Kdu_coords();
 			actualOffset.Assign(actualBufferedRegion.Access_pos());
 
+			//TODO: don't reallocate buffers all the time
 			ByteBuffer byteBuffer = ByteBuffer.allocateDirect(imageSize.height * imageSize.width * 4);
 			IntBuffer intBuffer = byteBuffer.asIntBuffer();
 
 			Kdu_dims newRegion = new Kdu_dims();
-			while (compositor.Process(MAX_RENDER_SAMPLES, newRegion))
+			while (compositor.Process(128000 /* MAX_RENDER_SAMPLES */, newRegion))
 			{
 				Kdu_coords newOffset = newRegion.Access_pos();
 				Kdu_coords newSize = newRegion.Access_size();
@@ -282,7 +266,7 @@ public class Movie
 					continue;
 				if (newPixels > 0)
 				{
-					//FIXME: don't reallocate int-array
+					//TODO: don't reallocate int-array
 					int[] region_buf = new int[newPixels];
 					compositorBuf.Get_region(newRegion, region_buf);
 					intBuffer.put(region_buf);

@@ -21,25 +21,14 @@ import org.helioviewer.jhv.gui.ShowableDialog;
  * 
  * @author Stephan Pagel
  */
-class DateFormatInfoDialog extends JDialog implements ActionListener, ShowableDialog {
-
-    // ////////////////////////////////////////////////////////////////////////////////
-    // Definitions
-    // ////////////////////////////////////////////////////////////////////////////////
-
+class DateFormatInfoDialog extends JDialog implements ShowableDialog
+{
     private static final long serialVersionUID = 1L;
 
     private JButton closeButton = new JButton("Close");
 
-    // ////////////////////////////////////////////////////////////////////////////////
-    // Methods
-    // ////////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Default constructor.
-     */
-    public DateFormatInfoDialog() {
-
+    public DateFormatInfoDialog()
+    {
         super(MainFrame.SINGLETON, "Date format information", true);
         setLayout(new BorderLayout());
         setResizable(false);
@@ -61,22 +50,22 @@ class DateFormatInfoDialog extends JDialog implements ActionListener, ShowableDi
         buttonsPanel.add(closeButton);
 
         // add action listener to button
-        closeButton.addActionListener(this);
+        closeButton.addActionListener(new ActionListener()
+        {
+			public void actionPerformed(ActionEvent arg0)
+			{
+				dispose();
+			}
+        });
 
         add(buttonsPanel, BorderLayout.SOUTH);
     }
 
     /**
-     * Closes the dialog.
-     */
-    public void actionPerformed(ActionEvent arg0) {
-        dispose();
-    }
-
-    /**
      * {@inheritDoc}
      */
-    public void showDialog() {
+    public void showDialog()
+    {
         pack();
         setSize(getPreferredSize().width, getPreferredSize().height);
         setLocationRelativeTo(MainFrame.SINGLETON);
@@ -85,11 +74,4 @@ class DateFormatInfoDialog extends JDialog implements ActionListener, ShowableDi
         
         setVisible(true);
     }
-
-	@Override
-	public void init() {
-		
-		
-	}
-
 }

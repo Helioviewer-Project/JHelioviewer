@@ -34,7 +34,6 @@ import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.components.MenuBar;
-import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.layers.AbstractLayer;
 import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.LayerListener;
@@ -385,14 +384,14 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 
 			if (Layers.getActiveImageLayer() != null)
 			{
-				AbstractImageLayer layer = (AbstractImageLayer) Layers.getActiveImageLayer();
+				ImageLayer layer = (ImageLayer) Layers.getActiveImageLayer();
 				SortedSet<LocalDateTime> treeSet = layer.getLocalDateTime();
 				Color[] colors = new Color[treeSet.size()];
 				int counter = 0;
 				for (LocalDateTime localDateTime : treeSet)
 				{
 					Movie m = layer.getMovie(localDateTime);
-
+					
 					if(m==null)
 						colors[counter] = COLOR_NOT_CACHED;
 					else switch (m.getCacheStatus())
@@ -435,7 +434,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 	}
 
 	@Override
-	public void newLayerAdded()
+	public void layerAdded()
 	{
 		boolean enable = false;
 		for (AbstractLayer layer : Layers.getLayers())
@@ -447,7 +446,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 	}
 
 	@Override
-	public void newlayerRemoved(int idx)
+	public void layersRemoved()
 	{
 		boolean enable = false;
 		for (AbstractLayer layer : Layers.getLayers())

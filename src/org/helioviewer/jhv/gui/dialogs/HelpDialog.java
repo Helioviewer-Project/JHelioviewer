@@ -99,8 +99,4 @@ public class HelpDialog extends JDialog implements ActionListener, ShowableDialo
            * JHVGlobals.openURL("http://jhelioviewer.org");
            */
     }
-
-	@Override
-	public void init() {
-	}
 }

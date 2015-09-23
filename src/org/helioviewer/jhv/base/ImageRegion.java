@@ -7,13 +7,12 @@ import java.time.LocalDateTime;
 
 import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.gui.MainPanel;
-import org.helioviewer.jhv.layers.AbstractImageLayer;
+import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 
 /**
  * Class to find the current ImageRegion that's needed to decode
  * @author stefanmeier
- *
  */
 public class ImageRegion
 {
@@ -41,9 +40,6 @@ public class ImageRegion
 	private float xTextureScale = 1;
 	private float yTextureScale = 1;
 	
-	private String fileName;
-	private int id;
-	
 	public ImageRegion(LocalDateTime localDateTime)
 	{
 		imageData = new Rectangle();
@@ -60,11 +56,12 @@ public class ImageRegion
 	}
 
 	/**
-	 * Function to check, whether the last decoded ImageRegion contains the next ImageRegion
+	 * Function to check, whether the last decoded ImageRegion contains the given ImageRegion
 	 * @param imageRegion
 	 * @return TRUE --> contain, else FALSE
 	 */
-	public boolean contains(ImageRegion imageRegion) {
+	public boolean contains(ImageRegion imageRegion)
+	{
 		return imageSize.contains(imageRegion.imageSize);
 	}
 
@@ -85,13 +82,13 @@ public class ImageRegion
 		return this.imageScaleFactor >= imageRegion.getScaleFactor();
 	}
 
-	public void calculateScaleFactor(AbstractImageLayer layerInterface, MainPanel mainPanel, MetaData metaData, Dimension size) {
+	public void calculateScaleFactor(ImageLayer layerInterface, MainPanel mainPanel, MetaData metaData, Dimension size) {
 		// Get the image resolution
 		Rectangle resolution = metaData.getResolution();
 		
 		// Calculate the current texelCount
-		int textureMaxX = getNextInt(resolution.getWidth() * (imageData.getX() + imageData.getWidth()));
-		int textureMaxY = getNextInt(resolution.getHeight() * (imageData.getY() + imageData.getHeight()));
+		int textureMaxX = (int)Math.ceil(resolution.getWidth() * (imageData.getX() + imageData.getWidth()));
+		int textureMaxY = (int)Math.ceil(resolution.getHeight() * (imageData.getY() + imageData.getHeight()));
 		int textureMinX = (int)(resolution.getWidth() * imageData.getX());
 		int textureMinY = (int)(resolution.getHeight() * imageData.getY());
 		int textureWidth = textureMaxX - textureMinX;
@@ -101,8 +98,8 @@ public class ImageRegion
 		// Calculate the current pixelCount
 		double z = metaData.getPhysicalImageWidth() / Math.tan(Math.toRadians(MainPanel.FOV));
 		double zoom = mainPanel.getTranslation().z / z;
-		int screenMaxX = getNextInt(size.getWidth() * (imageData.getX() + imageData.getWidth()) /  zoom);
-		int screenMaxY = getNextInt(size.getHeight() * (imageData.getY() + imageData.getHeight()) / zoom);
+		int screenMaxX = (int)Math.ceil(size.getWidth() * (imageData.getX() + imageData.getWidth()) /  zoom);
+		int screenMaxY = (int)Math.ceil(size.getHeight() * (imageData.getY() + imageData.getHeight()) / zoom);
 		int screenMinX = (int)(size.getWidth() * imageData.getX() / zoom);
 		int screenMinY = (int)(size.getHeight() * imageData.getY() / zoom);
 		int screenWidth = screenMaxX - screenMinX;
@@ -139,9 +136,10 @@ public class ImageRegion
 	 * Function to calculate the current image size
 	 * @param resolution
 	 */
-	private void calculateImageSize(Rectangle resolution){
-		int textureMaxX = getNextInt(resolution.getWidth() * (imageData.getX() + imageData.getWidth()) * imageScaleFactor);
-		int textureMaxY = getNextInt(resolution.getHeight() * (imageData.getY() + imageData.getHeight()) * imageScaleFactor);
+	private void calculateImageSize(Rectangle resolution)
+	{
+		int textureMaxX = (int)Math.ceil(resolution.getWidth() * (imageData.getX() + imageData.getWidth()) * imageScaleFactor);
+		int textureMaxY = (int)Math.ceil(resolution.getHeight() * (imageData.getY() + imageData.getHeight()) * imageScaleFactor);
 		int textureMinX = (int)(resolution.getWidth() * imageData.getX() * imageScaleFactor);
 		int textureMinY = (int)(resolution.getHeight() * imageData.getY() * imageScaleFactor);
 		int textureWidth = textureMaxX - textureMinX;
@@ -154,53 +152,46 @@ public class ImageRegion
 		this.textureScaleHeight = imageSize.height / (float)(resolution.getHeight() * imageScaleFactor);
 	}
 	
-	public Rectangle getImageSize(){
+	public Rectangle getImageSize()
+	{
 		return imageSize;
 	}
 	
-	private static int getNextInt(double d){
-		return d % 1 == 0 ? (int) d : (int)(d - d % 1) + 1;
-	}
-	
-	public float getZoomFactor(){
+	public float getZoomFactor()
+	{
 		return imageScaleFactor;
 	}
 	
-	
-	private static float nextZoomFraction(double zoomFactor){
-		int powerOfTwo = MathUtils.nextPowerOfTwo(getNextInt((1/zoomFactor)));
+	private static float nextZoomFraction(double zoomFactor)
+	{
+		int powerOfTwo = MathUtils.nextPowerOfTwo((int)Math.ceil(1/zoomFactor));
 		powerOfTwo >>= 1;
 		return 1/(float)powerOfTwo;
 	}
 	
-
-	public LocalDateTime getDateTime() {
+	public LocalDateTime getDateTime()
+	{
 		return this.localDateTime;
 	}
 
-	public void setLocalDateTime(LocalDateTime currentDateTime) {
+	public void setLocalDateTime(LocalDateTime currentDateTime)
+	{
 		this.localDateTime = currentDateTime;
 	}	
 	
-	public int getTextureID(){
+	public int getTextureID()
+	{
 		return this.textureID;
 	}
 	
-	public void setOpenGLTextureId(int textureID){
-		this.textureID = textureID;
+	public void setOpenGLTextureId(int _textureID)
+	{
+		this.textureID = _textureID;
 	}
 
-	public void setTextureScaleFactor(float xScale, float yScale) {
+	public void setTextureScaleFactor(float xScale, float yScale)
+	{
 		this.xTextureScale = xScale;
 		this.yTextureScale = yScale;
 	}
-	
-	public void setID(int id) {
-		this.id = id;
-	}
-
-	public int getID() {
-		return id;
-	}
 }
-

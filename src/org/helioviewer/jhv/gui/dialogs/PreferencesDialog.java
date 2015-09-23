@@ -912,10 +912,6 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
 		}
 	}
 
-	@Override
-	public void init() {
-	}
-
 	/**
 	 * Class which stores aspect ratio information
 	 * 

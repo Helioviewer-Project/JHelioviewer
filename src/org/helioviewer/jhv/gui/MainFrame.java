@@ -58,10 +58,12 @@ public class MainFrame extends JFrame
 		super("ESA JHelioviewer");
 	}
 	
-	public void initSharedContext(GLContext _context)
+	public void initContext()
 	{
-		MAIN_PANEL = new MainPanel(_context);
-		OVERVIEW_PANEL = new OverviewPanel(_context);
+		GLContext context = GLContext.getCurrent();
+		
+		MAIN_PANEL = new MainPanel(context);
+		OVERVIEW_PANEL = new OverviewPanel(context);
 		initMainFrame();
 		initMenuBar();
 		initGui();

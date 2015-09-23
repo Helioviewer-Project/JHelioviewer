@@ -6,24 +6,23 @@ import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 
+//FIXME: combine with imageRegion
 class Texture
 {
-	private int sourceId = -1;
+	private int sourceId = 0;
 	private ImageRegion imageRegion;
-	private int openGLTextureId;
-	private boolean invalid = false;
+	private final int openGLTextureId;
 
 	Texture(int _openGLTextureId)
 	{
-		this.openGLTextureId = _openGLTextureId;
+		openGLTextureId = _openGLTextureId;
 	}
 
 	void setNewImageRegion(int _sourceId, ImageRegion _imageRegion)
 	{
-		this.sourceId = _sourceId;
-		this.invalid = false;
+		sourceId = _sourceId;
 		_imageRegion.setOpenGLTextureId(openGLTextureId);
-		this.imageRegion = _imageRegion;
+		imageRegion = _imageRegion;
 	}
 
 	public boolean compareRegion(int id, ImageRegion imageRegion, LocalDateTime localDateTime)
@@ -38,16 +37,9 @@ class Texture
 		return false;
 	}
 
-	public boolean compareTexture(int _sourceId, LocalDateTime[] localDateTimes)
+	public boolean compareTexture(int _sourceId, LocalDateTime ldt)
 	{
-		if (localDateTimes == null)
-			return false;
-
-		for (LocalDateTime localDateTime : localDateTimes)
-			if (imageRegion != null && localDateTime.equals(imageRegion.getDateTime()))
-				return true;
-		
-		return false;
+		return imageRegion != null && ldt.equals(imageRegion.getDateTime());
 	}
 
 	public ImageRegion getImageRegion()
@@ -55,14 +47,9 @@ class Texture
 		return imageRegion;
 	}
 
-	public boolean isValid()
-	{
-		return !invalid;
-	}
-
 	public void invalidate()
 	{
-		invalid = true;
+		imageRegion=null;
 		
 		if (TimeLine.SINGLETON.getCurrentDateTime().equals(imageRegion.getDateTime()))
 			MainFrame.MAIN_PANEL.repaint();

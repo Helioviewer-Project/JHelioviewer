@@ -11,12 +11,7 @@ package org.helioviewer.jhv.gui;
  * @author Markus Langenberg
  * 
  */
-public interface ShowableDialog {
-
-    /**
-     * Shows the dialog on the screen.
-     */
+public interface ShowableDialog
+{
     public void showDialog();
-    
-    public void init();
 }

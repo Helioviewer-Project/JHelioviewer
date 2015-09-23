@@ -20,7 +20,6 @@ public class ShowDialogAction extends AbstractAction {
 
     private static final long serialVersionUID = 1L;
     private Class<ShowableDialog> dialogToShow;
-    private ShowableDialog dialog;
 
     /**
      * Default constructor.
@@ -31,14 +30,14 @@ public class ShowDialogAction extends AbstractAction {
      *            Dialog to open on click
      */
     @SuppressWarnings("unchecked")
-    public <T extends ShowableDialog> ShowDialogAction(String name, Class<T> dialog) {
+    public <T extends ShowableDialog> ShowDialogAction(String name, Class<T> dialog)
+    {
         super(name);
 
         dialogToShow = (Class<ShowableDialog>) dialog;
 
-        if (dialog.isAssignableFrom(HelpDialog.class)) {
+        if (dialog.isAssignableFrom(HelpDialog.class))
             putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
-        }
     }
     
     /**
@@ -52,26 +51,27 @@ public class ShowDialogAction extends AbstractAction {
      *            Dialog to open on click
      */
     @SuppressWarnings("unchecked")
-    public <T extends ShowableDialog> ShowDialogAction(String name, ImageIcon icon, Class<T> dialog) {
+    public <T extends ShowableDialog> ShowDialogAction(String name, ImageIcon icon, Class<T> dialog)
+    {
         super(name, icon);
 
         dialogToShow = (Class<ShowableDialog>) dialog;
 
-        if (dialog.isAssignableFrom(HelpDialog.class)) {
+        if (dialog.isAssignableFrom(HelpDialog.class))
             putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
-        }
     }
 
     /**
      * {@inheritDoc}
      */
-    public void actionPerformed(ActionEvent e) {
-        try {
-            if (dialog == null)
-                dialog = dialogToShow.newInstance();
-            dialog.init();
-            dialog.showDialog();
-        } catch (Exception e1) {
+    public void actionPerformed(ActionEvent e)
+    {
+        try
+        {
+            dialogToShow.newInstance().showDialog();
+        }
+        catch (Exception e1)
+        {
             e1.printStackTrace();
         }
     }

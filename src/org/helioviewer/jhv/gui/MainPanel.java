@@ -40,9 +40,9 @@ import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.base.physics.DifferentialRotation;
 import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelCameraListener;
 import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelMouseListener;
-import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.layers.AbstractLayer;
 import org.helioviewer.jhv.layers.AbstractLayer.RenderResult;
+import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.opengl.LoadingScreen;
@@ -145,7 +145,8 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		visibleAreaOutline = new double[40][3];
 	}
 
-	public Quaternion3d getRotation() {
+	public Quaternion3d getRotation()
+	{
 		return rotation;
 	}
 
@@ -157,13 +158,15 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 			statusLabelCamera.cameraChanged();
 	}
 
-	public Vector3d getTranslation() {
+	public Vector3d getTranslation()
+	{
 		return translation;
 	}
 
 	public void setTranslation(Vector3d translation)
 	{
-		if (!translation.isApproxEqual(this.translation, 0)) {
+		if (!translation.isApproxEqual(this.translation, 0))
+		{
 			this.translation = translation;
 			repaint();
 			for (StatusLabelCameraListener statusLabelCamera : statusLabelCameraListeners)
@@ -186,26 +189,26 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		Vector3d translation = new Vector3d(this.translation.x,
 				this.translation.y, Math.max(MIN_DISTANCE,
 						Math.min(MAX_DISTANCE, z)));
-		if (!translation.isApproxEqual(this.translation, 0)) {
+		if (!translation.isApproxEqual(this.translation, 0))
+		{
 			this.translation = translation;
 			repaint();
-			for (StatusLabelCameraListener statusLabelCamera : statusLabelCameraListeners) {
+			for (StatusLabelCameraListener statusLabelCamera : statusLabelCameraListeners)
 				statusLabelCamera.cameraChanged();
-			}
 		}
-
 	}
 
-	public void setTransformation(Quaternion3d rotation, Vector3d translation) {
+	public void setTransformation(Quaternion3d rotation, Vector3d translation)
+	{
 		this.rotation = rotation;
 		this.translation = translation;
 		repaint();
-		for (StatusLabelCameraListener statusLabelCamera : statusLabelCameraListeners) {
+		for (StatusLabelCameraListener statusLabelCamera : statusLabelCameraListeners)
 			statusLabelCamera.cameraChanged();
-		}
 	}
 
-	public void activateRotationInteraction() {
+	public void activateRotationInteraction()
+	{
 		this.cameraInteractions[1] = new CameraRotationInteraction(this, this);
 	}
 
@@ -274,7 +277,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 			LinkedHashMap<AbstractLayer, Future<ByteBuffer>> layers=new LinkedHashMap<AbstractLayer, Future<ByteBuffer>>();
 			for (AbstractLayer layer : Layers.getLayers())
 				if (layer.isVisible() && layer.isImageLayer())
-					layers.put(layer,((AbstractImageLayer)layer).prepareImageData(this, size));
+					layers.put(layer,((ImageLayer)layer).prepareImageData(this, size));
 
 			for(Entry<AbstractLayer, Future<ByteBuffer>> l:layers.entrySet())
 				try
@@ -345,7 +348,8 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		
 		boolean noImageScreen = _showLoadingAnimation;
 		for (AbstractLayer layer : Layers.getLayers())
-			noImageScreen &= !layer.isVisible();
+			if(layer.isImageLayer())
+				noImageScreen &= !layer.isVisible();
 		
 		if (noImageScreen)
 		{
@@ -735,15 +739,15 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	}
 
 	@Override
-	public void newLayerAdded()
+	public void layerAdded()
 	{
-		this.repaint();
+		repaint();
 	}
 
 	@Override
-	public void newlayerRemoved(int idx)
+	public void layersRemoved()
 	{
-		this.repaint();
+		repaint();
 	}
 
 	@Override

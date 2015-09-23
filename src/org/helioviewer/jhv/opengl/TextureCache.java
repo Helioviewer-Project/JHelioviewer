@@ -37,17 +37,17 @@ public class TextureCache
 		cache.add(texture);
 	}
 	
-	public synchronized static void invalidate(int _sourceId, LocalDateTime[] localDateTimes)
+	public synchronized static void invalidate(int _sourceId, LocalDateTime _localDateTimes)
 	{
 		for (Texture cacheableTexture : cache)
-			if (cacheableTexture.compareTexture(_sourceId, localDateTimes))
+			if (cacheableTexture.compareTexture(_sourceId, _localDateTimes))
 				cacheableTexture.invalidate();
 	}
 
 	public synchronized static ImageRegion get(int id, ImageRegion imageRegion, LocalDateTime localDateTime)
 	{
 		for (Texture texture : cache)
-			if (texture.compareRegion(id, imageRegion, localDateTime) && texture.isValid())
+			if (texture.compareRegion(id, imageRegion, localDateTime))
 			{
 				TextureCache.moveElementToFront(texture);
 				return texture.getImageRegion();

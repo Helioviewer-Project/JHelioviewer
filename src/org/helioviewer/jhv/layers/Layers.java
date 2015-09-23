@@ -43,9 +43,11 @@ public class Layers
 		layers.add(layer);
 		layers.sort(COMPARATOR);
 		updateOpacity(layer, false);
-		if (layers.size() == 1 || activeImageLayer < 0) setActiveLayer(0);
+		if (layers.size() == 1 || activeImageLayer < 0)
+			setActiveLayer(0);
+		
 		for (LayerListener renderListener : layerListeners)
-			renderListener.newLayerAdded();
+			renderListener.layerAdded();
 		
 		if (layers.size() == 1)
 			layerChanged();
@@ -53,7 +55,7 @@ public class Layers
 		return layer;
 	}
 	
-	private static void updateOpacity(AbstractImageLayer imageLayer, boolean remove){
+	private static void updateOpacity(ImageLayer imageLayer, boolean remove){
 		int counter = 0;
 		for (AbstractLayer tmpLayer : layers)
 			if (tmpLayer.isImageLayer())
@@ -63,7 +65,7 @@ public class Layers
 		{
 			if (tmpLayer.isImageLayer())
 			{
-				AbstractImageLayer tmpImageLayer = (AbstractImageLayer) tmpLayer;
+				ImageLayer tmpImageLayer = (ImageLayer) tmpLayer;
 				if (tmpImageLayer == imageLayer)
 					tmpImageLayer.opacity = 1d/counter;
 				else
@@ -81,10 +83,13 @@ public class Layers
 	{
 		layers.add(layer);
 		layers.sort(COMPARATOR);
-		if (layers.size() == 1 || activeImageLayer < 0) setActiveLayer(0);
-		if (layer.isImageLayer()) updateOpacity((AbstractImageLayer)layer, false);
+		if (layers.size() == 1 || activeImageLayer < 0)
+			setActiveLayer(0);
+		if (layer.isImageLayer())
+			updateOpacity((ImageLayer)layer, false);
+		
 		for (LayerListener renderListener : layerListeners)
-			renderListener.newLayerAdded();
+			renderListener.layerAdded();
 		
 		if (layers.size() == 1)
 			layerChanged();
@@ -99,7 +104,7 @@ public class Layers
 		
 		if (layers.size() == 1 || activeImageLayer < 0) setActiveLayer(0);
 		for (LayerListener renderListener : layerListeners) {
-			renderListener.newLayerAdded();
+			renderListener.layerAdded();
 		}
 		if (layers.size() == 1) {
 			layerChanged();
@@ -113,31 +118,40 @@ public class Layers
 		return null;
 	}
 
-	public static void removeLayer(int idx) {
-		if (!layers.isEmpty()) {
-			if (layers.get(idx).isImageLayer()){
-				updateOpacity((AbstractImageLayer)layers.get(idx), true);				
+	public static void removeLayer(int idx)
+	{
+		if (layers.isEmpty())
+			return;
+		
+		if (!layers.get(idx).isImageLayer())
+			return;
+		
+		updateOpacity((ImageLayer)layers.get(idx), true);				
+		
+		layers.get(idx).remove();
+		layers.remove(idx);
+		if (layers.isEmpty())
+			activeLayer = -1;
+		
+		int counter = 0;
+		for (AbstractLayer layer : layers)
+		{
+			if (layer.isImageLayer())
+			{
+				activeImageLayer = counter;					
+				break;
 			}
-			layers.get(idx).remove();
-			layers.remove(idx);
-			if (layers.isEmpty())
-				activeLayer = -1;
-			int counter = 0;
-			for (AbstractLayer layer : layers){
-				if (layer.isImageLayer()){
-					activeImageLayer = counter;					
-					break;
-				}
-				counter++;
-			}
-			if (counter != activeImageLayer){
-				activeImageLayer = -1;
-				layerChanged();
-			}
-			for (LayerListener renderListener : layerListeners) {
-				renderListener.newlayerRemoved(idx);
-			}
+			counter++;
 		}
+		
+		if (counter != activeImageLayer)
+		{
+			activeImageLayer = -1;
+			layerChanged();
+		}
+		
+		for (LayerListener renderListener : layerListeners)
+			renderListener.layersRemoved();
 	}
 
 	public static void addNewLayerListener(LayerListener renderListener) {
@@ -182,9 +196,9 @@ public class Layers
 	public static void toggleCoronaVisibility()
 	{
 		AbstractLayer il = getActiveLayer();
-		if(il instanceof AbstractImageLayer)
+		if(il instanceof ImageLayer)
 		{
-			((AbstractImageLayer)il).toggleCoronaVisibility();
+			((ImageLayer)il).toggleCoronaVisibility();
 			MainFrame.MAIN_PANEL.repaint();
 		}
 	}
@@ -192,16 +206,15 @@ public class Layers
 	public static void removeAllImageLayers()
 	{
 		for (AbstractLayer layer : layers)
-		{
 			if (layer.isImageLayer)
 			{
 				layer.remove();
 				layers.remove(layer);
 			}
-		}
+		
 		activeLayer = 0;
 		for (LayerListener renderListener : layerListeners)
-			renderListener.newlayerRemoved(0);
+			renderListener.layersRemoved();
 	}
 
 	public static void writeStatefile(JSONArray jsonLayers)
@@ -221,7 +234,7 @@ public class Layers
 			try
 			{
 				JSONObject jsonLayer = jsonLayers.getJSONObject(i);
-				AbstractImageLayer layer = ImageLayer.createFromStateFile(jsonLayer);
+				ImageLayer layer = ImageLayer.createFromStateFile(jsonLayer);
 				if (layer != null)
 				{
 					Layers.addLayer(layer);
@@ -235,9 +248,10 @@ public class Layers
 		}
 	}
 
-	public static AbstractImageLayer getActiveImageLayer() {
+	public static ImageLayer getActiveImageLayer()
+	{
 		if (activeImageLayer >= 0)
-			return (AbstractImageLayer) layers.get(activeImageLayer);
+			return (ImageLayer) layers.get(activeImageLayer);
 		return null;
 	}
 }

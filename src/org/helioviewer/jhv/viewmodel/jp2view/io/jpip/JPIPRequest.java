@@ -16,7 +16,6 @@ public class JPIPRequest extends HTTPRequest
      * Default constructor.
      * 
      * @param _method
-     * @throws ProtocolException
      */
     public JPIPRequest(Method _method) {
         super(_method);

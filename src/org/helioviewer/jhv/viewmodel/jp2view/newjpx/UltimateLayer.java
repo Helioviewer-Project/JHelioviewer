@@ -196,8 +196,6 @@ public class UltimateLayer
 								for (int i = 0; i < frames.length(); i++)
 									localDateTimes[i] = new Timestamp(frames.getLong(i) * 1000L).toLocalDateTime();
 								
-								download.movie.setLocalDateTimes(localDateTimes);
-								
 								SwingUtilities.invokeLater(new Runnable()
 								{
 									@Override
@@ -362,7 +360,6 @@ public class UltimateLayer
 		imageRegion.setLocalDateTime(_localDateTime);
 		
 		imageRegion = TextureCache.add(_imageRegion, layerId);
-		imageRegion.setID(layerId);
 		
 		return MovieCache.getImage(sourceId, _localDateTime, 8, imageRegion.getZoomFactor(), imageRegion.getImageSize());
 	}

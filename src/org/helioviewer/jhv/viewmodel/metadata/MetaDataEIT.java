@@ -3,7 +3,7 @@ package org.helioviewer.jhv.viewmodel.metadata;
 import java.awt.Rectangle;
 import java.time.LocalDateTime;
 
-import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
+import org.helioviewer.jhv.layers.LUT.Lut;
 
 class MetaDataEIT extends MetaData{
 
@@ -28,16 +28,16 @@ class MetaDataEIT extends MetaData{
 
         switch (measurement) {
 		case "171":
-			defaultLUT = LUT_ENTRY.SOHO_EIT_171;
+			defaultLUT = Lut.SOHO_EIT_171;
 			break;
 		case "195":
-			defaultLUT = LUT_ENTRY.SOHO_EIT_195;
+			defaultLUT = Lut.SOHO_EIT_195;
 			break;
 		case "284":
-			defaultLUT = LUT_ENTRY.SOHO_EIT_284;
+			defaultLUT = Lut.SOHO_EIT_284;
 			break;
 		case "304":
-			defaultLUT = LUT_ENTRY.SOHO_EIT_304;
+			defaultLUT = Lut.SOHO_EIT_304;
 			break;
 		default:
 			break;

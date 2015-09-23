@@ -64,8 +64,8 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 	}
 	
 	private JTable table;
-	private static final Object columnNames[] = { "", "", "", "", "" };
 	private LayerTableModel tableModel;
+	private static final String[] COLUMN_TITLES=new String[]{ "", "", "", "", "" };
 
 	private JButton btnDownloadLayer;
 	private static final Cursor HAND_CURSOR = new Cursor(Cursor.HAND_CURSOR);
@@ -143,7 +143,6 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			public void actionPerformed(ActionEvent e)
 			{
 				Layers.removeLayer(activePopupLayer);
-				updateData();
 			}
 		});
 		showLayer.setVisible(false);
@@ -187,6 +186,15 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		});
 	}
 	
+	private void setFixedWidth(int width, int column)
+	{
+		table.getColumnModel().getColumn(column).setMinWidth(width);
+		table.getColumnModel().getColumn(column).setMaxWidth(width);
+		table.getColumnModel().getColumn(column).setPreferredWidth(width);
+		table.getColumnModel().getColumn(column).setWidth(width);
+		table.getColumnModel().getColumn(column).setResizable(false);
+	}
+	
 	/**
 	 * Create the panel.
 	 */
@@ -194,20 +202,34 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 	{
 		setLayout(new BorderLayout(0, 0));
 
-		tableModel = new LayerTableModel(null, null);
-		table = new JTable(new Object[0][0], columnNames);
+		tableModel = new LayerTableModel(new Object[1][5], COLUMN_TITLES);
+		table = new JTable(tableModel);
 		table.setTableHeader(null);
-		table.getColumnModel().getColumn(0).setCellRenderer(new ImageIconCellRenderer());
+		
+		//visible
+		setFixedWidth(SIZE+4, 0);
+		
+		//status (retry, ...)
 		table.getColumnModel().getColumn(1).setCellRenderer(new ImageIconCellRenderer());
-		table.getColumnModel().getColumn(2).setCellRenderer(new ImageIconCellRenderer());
+		setFixedWidth(SIZE, 1);
+		
+		//name
+		//table.getColumnModel().getColumn(2).setCellRenderer(new ImageIconCellRenderer());
+		
+		//date/time
 		table.getColumnModel().getColumn(3).setCellRenderer(new ImageIconCellRenderer());
-		table.getColumnModel().getColumn(4).setCellRenderer(new ImageIconCellRenderer());
-		table.getColumnModel().getColumn(0).setPreferredWidth(35);
-		table.getColumnModel().getColumn(0).setWidth(35);
-		table.getColumnModel().getColumn(0).setResizable(false);
 		table.getColumnModel().getColumn(3).setResizable(false);
+		
+		//delete
+		table.getColumnModel().getColumn(4).setCellRenderer(new ImageIconCellRenderer());
+		setFixedWidth(SIZE, 4);
+		
+		
+		//table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		table.setShowGrid(false);
-		table.setIntercellSpacing(new Dimension(1, 1));
+		table.setIntercellSpacing(new Dimension(0, 0));
+		table.setRowHeight(SIZE + 4);
+		
 		table.getSelectionModel().addListSelectionListener(new ListSelectionListener()
 				{
 					@Override
@@ -228,10 +250,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 				int row = jTable.rowAtPoint(e.getPoint());
 				int column = table.getSelectedColumn();
 				if (column == 4)
-				{
 					Layers.removeLayer(row);
-					updateData();
-				}
 				else if (column == 0)
 				{
 					AbstractLayer layer = Layers.getLayer(row);
@@ -246,18 +265,17 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 						Object[] options = {"Retry failed downloads", "Remove layer", "Ignore"};
 
 						int n = JOptionPane.showOptionDialog(MainFrame.SINGLETON, "Images could not be downloaded. Server didn't replied. This happened with "+ Layers.getLayer(row).getBadRequestCount() +" other requests as well.", "Images could not be downloaded", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
-						switch (n) {
-						case 0:
-							Layers.getLayer(row).retryFailedRequests();
-							break;
-						case 1:
-							Layers.removeLayer(row);
-							break;
-						case 2:
-							Layers.getLayer(row).clearBadRequests();
-							break;
-						default:
-							break;
+						switch (n)
+						{
+							case 0:
+								Layers.getLayer(row).retryFailedRequests();
+								break;
+							case 1:
+								Layers.removeLayer(row);
+								break;
+							case 2:
+								Layers.getLayer(row).ignoreFailedRequests();
+								break;
 						}
 					}
 				}
@@ -310,10 +328,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			public void keyPressed(KeyEvent e)
 			{
 				if (e.getKeyCode() == KeyEvent.VK_DELETE /*|| e.getKeyCode() == KeyEvent.VK_BACK_SPACE*/)
-				{
 					Layers.removeLayer(table.getSelectedRow());
-					updateData();
-				}
 			}
 		});
 		
@@ -372,7 +387,6 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 				new AddLayerPanel().setVisible(true);
 			}
 		});
-		btnAddLayer.setToolTipText("Add a new Layer");
 		GridBagConstraints gbcBtnAddLayer = new GridBagConstraints();
 		gbcBtnAddLayer.anchor = GridBagConstraints.EAST;
 		gbcBtnAddLayer.gridx = 11;
@@ -382,48 +396,22 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 
 	void updateData()
 	{
-		Object[][] data = new Object[Layers.getLayerCount()][5];
-		int count = 0;
+		tableModel.setRowCount(Layers.getLayerCount());
+		
+		int row = 0;
 		for (AbstractLayer layer : Layers.getLayers())
 		{
-			if (data.length <= count)
-				break;
-			
-			data[count][0] = layer.isVisible();
-			data[count][1] = layer.checkBadRequest();
-			data[count][2] = layer.getName();
-			data[count][3] = layer.getTime();
-			data[count][4] = ICON_REMOVE;
-			count++;
+			tableModel.setValueAt(layer.isVisible(), row, 0);
+			tableModel.setValueAt(layer.checkBadRequest(), row, 1);
+			tableModel.setValueAt(layer.getName(), row, 2);
+			tableModel.setValueAt(layer.getTime(), row, 3);
+			row++;
 		}
-		tableModel.setDataVector(data, columnNames);
-		table.setModel(tableModel);
-
-		table.getColumnModel().getColumn(1).setCellRenderer(new ImageIconCellRenderer());
-		table.getColumnModel().getColumn(2).setCellRenderer(new ImageIconCellRenderer());
-		table.getColumnModel().getColumn(3).setCellRenderer(new ImageIconCellRenderer());
-		table.getColumnModel().getColumn(4).setCellRenderer(new ImageIconCellRenderer());
-		setFixedWidth(SIZE+4, 0);
-		setFixedWidth(SIZE, 1);
-		setFixedWidth(SIZE, 4);
-		// table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		table.setShowGrid(false);
-		table.setIntercellSpacing(new Dimension(0, 0));
-		table.setRowHeight(SIZE + 4);
-
+		
 		if (Layers.getLayerCount() > 0 && Layers.getActiveLayerNumber()<Layers.getLayerCount() && Layers.getActiveLayerNumber()>=0)
-		{
 			table.setRowSelectionInterval(
 					Layers.getActiveLayerNumber(),
 					Layers.getActiveLayerNumber());
-		}
-	}
-
-	private void setFixedWidth(int width, int column)
-	{
-		table.getColumnModel().getColumn(column).setMinWidth(width);
-		table.getColumnModel().getColumn(column).setMaxWidth(width);
-		table.getColumnModel().getColumn(column).setPreferredWidth(width);
 	}
 
 	private static class LayerTableModel extends DefaultTableModel
@@ -436,20 +424,18 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		}
 
 		@Override
-		public Class<?> getColumnClass(int columnIndex) {
-			if (columnIndex == 0) {
+		public Class<?> getColumnClass(int columnIndex)
+		{
+			if (columnIndex == 0)
 				return Boolean.class;
-			}
 
 			return super.getColumnClass(columnIndex);
 		}
 
 		@Override
-		public boolean isCellEditable(int row, int column) {
-			if (column == 0) {
-				return true;
-			}
-			return false;
+		public boolean isCellEditable(int row, int column)
+		{
+			return column == 0;
 		}
 	}
 
@@ -479,7 +465,8 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 						label.setIcon(WARNING_BAD_REQUEST);
 						label.setPreferredSize(new Dimension(20, 20));
 					}
-					else label.setIcon(null);;
+					else
+						label.setIcon(null);;
 					break;
 				case 2:
 					super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
@@ -493,7 +480,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 					JLabel label4 = (JLabel) super.getTableCellRendererComponent(table, null, isSelected, hasFocus, row, column);
 					if (Layers.getLayer(row) != null && Layers.getLayer(row).isImageLayer())
 					{
-						label4.setIcon((ImageIcon) value);
+						label4.setIcon(ICON_REMOVE);
 						label4.setPreferredSize(new Dimension(20, 20));
 					}
 					else
@@ -508,13 +495,13 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 	}
 
 	@Override
-	public void newLayerAdded()
+	public void layerAdded()
 	{
 		updateData();
 	}
 
 	@Override
-	public void newlayerRemoved(int idx)
+	public void layersRemoved()
 	{
 	}
 
@@ -531,7 +518,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 	@Override
 	public void timeStampChanged(LocalDateTime current, LocalDateTime last)
 	{
-			updateData();			
+		updateData();			
 	}
 
 	@Override

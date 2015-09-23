@@ -46,7 +46,7 @@ public class AddLayerPanel extends JDialog
 	private JComboBox<TIME_STEPS> cmbbxTimeSteps;
 	private DatePicker datePickerStartDate;
 	private DatePicker datePickerEndDate;
-	private JSpinner candence;
+	private JSpinner cadence;
 	private JComboBox<AbstractPlugin> cmbbxPlugin;
 	//private JTabbedPane tabbedPane;
 	private JPanel layerPanel;
@@ -299,10 +299,10 @@ public class AddLayerPanel extends JDialog
 		contentPanel.add(datePickerEndDate, "2, 4, 5, 1, fill, top");
 		JLabel lblCadence = new JLabel("Time Step");
 		contentPanel.add(lblCadence, "2, 6");
-		candence = new JSpinner();
-		candence.setValue(20);
-		candence.setPreferredSize(new Dimension(80, 20));
-		contentPanel.add(candence, "4, 6");
+		cadence = new JSpinner();
+		cadence.setValue(20);
+		cadence.setPreferredSize(new Dimension(80, 20));
+		contentPanel.add(cadence, "4, 6");
 		cmbbxTimeSteps = new JComboBox<TIME_STEPS>(TIME_STEPS.values());
 		contentPanel.add(cmbbxTimeSteps, "6, 6, fill, default");
 		JSeparator separator = new JSeparator();
@@ -327,59 +327,55 @@ public class AddLayerPanel extends JDialog
 		JPanel buttonPane = new JPanel();
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
+
+		JButton okButton = new JButton("OK");
+		okButton.setActionCommand("OK");
+		buttonPane.add(okButton);
+		getRootPane().setDefaultButton(okButton);
+		okButton.addActionListener(new ActionListener()
 		{
-			JButton okButton = new JButton("OK");
-			okButton.setActionCommand("OK");
-			buttonPane.add(okButton);
-			getRootPane().setDefaultButton(okButton);
-			okButton.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					//if (tabbedPane.getSelectedComponent() == layerPanel) {
-						InstrumentModel.Filter filter = (InstrumentModel.Filter) cmbbxFilter2
-								.getSelectedItem();
-						if (filter == null) {
-							filter = (InstrumentModel.Filter) cmbbxFilter1
-									.getSelectedItem();
-						}
-						if (filter == null) {
-							filter = (InstrumentModel.Filter) cmbbxFilter
-									.getSelectedItem();
-						}
-
-						if (filter != null) {
-							int candence = (int) AddLayerPanel.this.candence
-									.getValue()
-									* ((TIME_STEPS) cmbbxTimeSteps
-											.getSelectedItem()).getFactor();
-							candence = candence > 0 ? candence : 1;
-							Layers.addLayer(filter.sourceId,
-									datePickerStartDate.getDateTime(),
-									datePickerEndDate.getDateTime(),
-									candence, filter.getNickname());
-						}
-					/*}
-					else if (tabbedPane.getSelectedComponent() == pluginPanel){
-						UltimatePluginInterface.SINGLETON.addPlugin((AbstractPlugin)cmbbxPlugin.getSelectedItem());
-					}*/
-
-					setVisible(false);
-				}
-			});
-			
-			JButton cancelButton = new JButton("Cancel");
-			cancelButton.setActionCommand("Cancel");
-			buttonPane.add(cancelButton);
-			cancelButton.addActionListener(new ActionListener()
+			@Override
+			public void actionPerformed(ActionEvent e)
 			{
-				@Override
-				public void actionPerformed(ActionEvent e)
-				{
-					setVisible(false);
-				}
-			});
-		}
+				//if (tabbedPane.getSelectedComponent() == layerPanel) {
+					InstrumentModel.Filter filter = (InstrumentModel.Filter) cmbbxFilter2.getSelectedItem();
+					if (filter == null)
+						filter = (InstrumentModel.Filter) cmbbxFilter1.getSelectedItem();
+					if (filter == null)
+						filter = (InstrumentModel.Filter) cmbbxFilter.getSelectedItem();
+
+					if (filter != null)
+					{
+						int cadence = (int) AddLayerPanel.this.cadence.getValue()
+								* ((TIME_STEPS) cmbbxTimeSteps.getSelectedItem()).getFactor();
+						cadence = Math.max(cadence, 1);
+						Layers.addLayer(filter.sourceId,
+								datePickerStartDate.getDateTime(),
+								datePickerEndDate.getDateTime(),
+								cadence, filter.getNickname());
+						
+						setVisible(false);
+					}
+				/*}
+				else if (tabbedPane.getSelectedComponent() == pluginPanel){
+					UltimatePluginInterface.SINGLETON.addPlugin((AbstractPlugin)cmbbxPlugin.getSelectedItem());
+				}*/
+			}
+		});
+		
+		JButton cancelButton = new JButton("Cancel");
+		cancelButton.setActionCommand("Cancel");
+		buttonPane.add(cancelButton);
+		cancelButton.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				setVisible(false);
+			}
+		});
+		
+		DialogTools.setDefaultButtons(okButton,cancelButton);
 	}
 
 	private void initPluginGui(JPanel contentPanel)

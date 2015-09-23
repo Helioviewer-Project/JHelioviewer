@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.layers.filter;
+package org.helioviewer.jhv.layers;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -17,7 +17,8 @@ import com.jogamp.opengl.GLContext;
 public class LUT
 {
 	private static final String ANGSTROM = "\u212B";
-	public enum LUT_ENTRY{
+	public enum Lut
+	{
 		BLUE_GREEN_RED_YELLOW("Blue/Green/Red/Yellow"), 
 		BLUE_RED("Blue/Red"),
 		BLUE_WHITE_LINEAR("Blue/White Linear"), 
@@ -52,18 +53,16 @@ public class LUT
 		YOHKOH_SXT_THIN_AL("YOHKOH SXT thin-Al"),
 		YOHKOH_SXT_WHITE_LIGHT("YOHKOH SXT white-light");
 
-		private String name;
+		private final String name;
 		
-		LUT_ENTRY(String name){
-			this.name = name;
-		}
-		
-		public String getName() {
-			return name;
+		Lut(String _name)
+		{
+			name = _name;
 		}
 		
 		@Override
-		public String toString() {
+		public String toString()
+		{
 			return name;
 		}
 	}

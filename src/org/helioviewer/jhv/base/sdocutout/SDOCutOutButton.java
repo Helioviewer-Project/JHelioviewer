@@ -44,7 +44,7 @@ public class SDOCutOutButton extends JButton implements
 	}
 
 	@Override
-	public void newLayerAdded() {
+	public void layerAdded() {
 		boolean enable = false;
 		for (AbstractLayer layer : Layers.getLayers()){
 			if (layer.getName().contains("AIA")){
@@ -55,7 +55,7 @@ public class SDOCutOutButton extends JButton implements
 	}
 
 	@Override
-	public void newlayerRemoved(int idx) {
+	public void layersRemoved() {
 		
 		
 	}

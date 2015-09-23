@@ -12,8 +12,10 @@ import org.helioviewer.jhv.opengl.camera.CameraMode;
 import org.helioviewer.jhv.opengl.camera.CameraMode.MODE;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 
-public class RayTrace {
-	public enum HitpointType{
+public class RayTrace
+{
+	public enum HitpointType
+	{
 		SPHERE, PLANE, SPHERE_PLANE;
 	}
 	
