@@ -34,6 +34,7 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
+//FIXME: remember last entered dates, times & instruments
 public class AddLayerPanel extends JDialog
 {
 	private static final long serialVersionUID = 5707539021281900015L;
@@ -153,42 +154,37 @@ public class AddLayerPanel extends JDialog
 				cmbbxFilter.setVisible(true);
 				cmbbxFilter1.setVisible(true);
 				cmbbxFilter2.setVisible(true);
-				switch (observatory.getUiLabels().size()) {
-				case 0:
-					lblFilter.setVisible(false);
-					cmbbxFilter.setVisible(false);
-				case 1:
-					lblFilter1.setVisible(false);
-					cmbbxFilter1.setVisible(false);
-				case 2:
-					lblFilter2.setVisible(false);
-					cmbbxFilter2.setVisible(false);
-					break;
-
-				default:
-					break;
+				switch (observatory.getUiLabels().size())
+				{
+					case 0:
+						lblFilter.setVisible(false);
+						cmbbxFilter.setVisible(false);
+					case 1:
+						lblFilter1.setVisible(false);
+						cmbbxFilter1.setVisible(false);
+					case 2:
+						lblFilter2.setVisible(false);
+						cmbbxFilter2.setVisible(false);
+						break;
+	
+					default:
+						break;
 				}
-				try {
+				try
+				{
 					lblFilter.setText(observatory.getUiLabels().get(0));
-					try {
-						lblFilter1.setText(observatory.getUiLabels().get(1));
-						try {
-							lblFilter2
-									.setText(observatory.getUiLabels().get(2));
-						} catch (Exception e2) {
-						}
-					} catch (Exception e2) {
-					}
-				} catch (Exception e2) {
+					lblFilter1.setText(observatory.getUiLabels().get(1));
+					lblFilter2.setText(observatory.getUiLabels().get(2));
 				}
-
+				catch (Exception e2)
+				{
+				}
+				
 				cmbbxFilter.removeAllItems();
 				cmbbxFilter1.removeAllItems();
 				cmbbxFilter2.removeAllItems();
-				for (InstrumentModel.Filter instrument : observatory
-						.getInstruments()) {
+				for (InstrumentModel.Filter instrument : observatory.getInstruments())
 					cmbbxFilter.addItem(instrument);
-				}
 			}
 		});
 

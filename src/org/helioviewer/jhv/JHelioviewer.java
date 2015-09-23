@@ -28,7 +28,7 @@ import org.helioviewer.jhv.gui.dialogs.AboutDialog;
 import org.helioviewer.jhv.io.CommandLineProcessor;
 import org.helioviewer.jhv.opengl.TextureCache;
 import org.helioviewer.jhv.plugins.plugin.Plugins;
-import org.helioviewer.jhv.viewmodel.jp2view.kakadu.JHV_Kdu_message;
+import org.helioviewer.jhv.viewmodel.jp2view.kakadu.KduErrorHandler;
 
 import com.install4j.api.launcher.ApplicationLauncher;
 import com.install4j.api.update.UpdateScheduleRegistry;
@@ -163,10 +163,11 @@ public class JHelioviewer
 				throw _ule;
 			}
 
-			// The following code-block attempts to start the native message handling
+			// The following code-block attempts to start the native message handling, otherwise
+			// KDU just terminates our process when something goes wrong... (!?!)
 			splash.progressTo("Setting up Kakadu message handlers");
-            Kdu_global.Kdu_customize_warnings(new Kdu_message_formatter(new JHV_Kdu_message(false), 80));
-            Kdu_global.Kdu_customize_errors(new Kdu_message_formatter(new JHV_Kdu_message(true), 80));
+            Kdu_global.Kdu_customize_warnings(new Kdu_message_formatter(new KduErrorHandler(false), 80));
+            Kdu_global.Kdu_customize_errors(new Kdu_message_formatter(new KduErrorHandler(true), 80));
 
 			// Create main view chain and display main window
             splash.progressTo("Starting Swing");

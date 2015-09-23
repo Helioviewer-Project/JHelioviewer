@@ -10,13 +10,20 @@ import org.helioviewer.jhv.JHVGlobals;
 
 public class UltimateDownloadManager
 {
-	private static PriorityBlockingQueue<WeakReference<AbstractDownloadRequest>> taskDeque = new PriorityBlockingQueue<WeakReference<AbstractDownloadRequest>>(100, new Comparator<WeakReference<AbstractDownloadRequest>>()
+	private static class Tuple
+	{
+		RuntimeException ex;
+		WeakReference<AbstractDownloadRequest> request;
+	}
+	
+	
+	private static PriorityBlockingQueue<Tuple> taskDeque = new PriorityBlockingQueue<Tuple>(100, new Comparator<Tuple>()
 	{
 		@Override
-		public int compare(WeakReference<AbstractDownloadRequest> o1, WeakReference<AbstractDownloadRequest> o2)
+		public int compare(Tuple o1, Tuple o2)
 		{
-			AbstractDownloadRequest oo1 = o1.get();
-			AbstractDownloadRequest oo2 = o2.get();
+			AbstractDownloadRequest oo1 = o1.request.get();
+			AbstractDownloadRequest oo2 = o2.request.get();
 			if (oo1 == null || oo2 == null)
 				return 0;
 			
@@ -40,7 +47,8 @@ public class UltimateDownloadManager
 					{
 						for(;;)
 						{
-							AbstractDownloadRequest request = taskDeque.take().get();
+							Tuple t = taskDeque.take();
+							AbstractDownloadRequest request = t.request.get();
 							if (request != null)
 								try
 								{
@@ -63,7 +71,7 @@ public class UltimateDownloadManager
 										activeNormalAndHighPrioDownloads.decrementAndGet();
 								}
 							else if(!JHVGlobals.isReleaseVersion())
-								throw new RuntimeException("Request was not canceled");
+								throw t.ex;
 						}
 					}
 					catch (InterruptedException e)
@@ -77,17 +85,29 @@ public class UltimateDownloadManager
 		}
 	}
 
-	public static void addRequest(AbstractDownloadRequest request)
+	public static void addRequest(AbstractDownloadRequest _request)
 	{
-		taskDeque.put(new WeakReference<>(request));
+		Tuple t=new Tuple();
+		t.request=new WeakReference<>(_request);
+		
+		try
+		{
+			throw new RuntimeException("Request for "+_request.url+" was not canceled properly");
+		}
+		catch(RuntimeException _t)
+		{
+			t.ex=_t;
+		}
+		
+		taskDeque.put(t);
 	}
 
 	public static void remove(AbstractDownloadRequest request)
 	{
-		for (WeakReference<AbstractDownloadRequest> r : taskDeque)
-			if(r.get()==request)
+		for (Tuple t : taskDeque)
+			if(t.request.get()==request)
 			{
-				taskDeque.remove(r);
+				taskDeque.remove(t);
 				return;
 			}
 	}

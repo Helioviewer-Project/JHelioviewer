@@ -23,12 +23,12 @@ public class TextureCache
 	{
 	}
 
-	public synchronized static ImageRegion add(ImageRegion imageRegion, int id)
+	public synchronized static ImageRegion add(ImageRegion _imageRegion, int _id)
 	{
 		Texture texture = cache.removeFirst();
-		texture.setNewImageRegion(id, imageRegion);
+		texture.setNewImageRegion(_id, _imageRegion);
 		cache.add(texture);
-		return imageRegion;
+		return _imageRegion;
 	}
 
 	private static void moveElementToFront(Texture texture)

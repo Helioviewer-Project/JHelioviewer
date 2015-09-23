@@ -21,8 +21,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+//FIXME: morph into general data object, not dialog-specific 
 public class InstrumentModel
 {
+	//FIXME: move to JHVGlobals
 	private static final String URL_DATASOURCE = "http://api.helioviewer.org/v2/getDataSources/?";
 	private static TreeMap<String, Observatory> observatories = new TreeMap<String, InstrumentModel.Observatory>(new AlphanumComparator()); 
 	private static final ArrayList<Runnable> updateListeners = new ArrayList<Runnable>(); 

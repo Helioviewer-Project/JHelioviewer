@@ -54,12 +54,13 @@ import org.helioviewer.jhv.viewmodel.TimeLine.TimeLineListener;
 public class LayerPanel extends JPanel implements LayerListener, TimeLineListener
 {
 	private static final long serialVersionUID = 6800340702841902680L;
-	private static int size;
+	private static final int SIZE;
+	private static final ImageIcon ICON_REMOVE;
 	
 	static
 	{
-		JLabel label = new JLabel("size");
-		size = label.getPreferredSize().height;
+		SIZE = new JLabel("Wy").getPreferredSize().height;
+		ICON_REMOVE = IconBank.getIcon(JHVIcon.REMOVE_NEW, SIZE, SIZE);
 	}
 	
 	private JTable table;
@@ -68,7 +69,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 
 	private JButton btnDownloadLayer;
 	private static final Cursor HAND_CURSOR = new Cursor(Cursor.HAND_CURSOR);
-	private static final ImageIcon WARNING_BAD_REQUEST = IconBank.getIcon(JHVIcon.WARNING, size, size);
+	private static final ImageIcon WARNING_BAD_REQUEST = IconBank.getIcon(JHVIcon.WARNING, SIZE, SIZE);
 	private int activePopupLayer = 0;
 
 	private JPopupMenu popupMenu;
@@ -93,7 +94,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 	private void initPopup()
 	{
 		popupMenu = new JPopupMenu();
-		showMetaView = new JMenuItem("Show metainfo...", IconBank.getIcon(JHVIcon.INFO_NEW, size, size));
+		showMetaView = new JMenuItem("Show metainfo...", IconBank.getIcon(JHVIcon.INFO_NEW, SIZE, SIZE));
 		showMetaView.addActionListener(new ActionListener()
 		{
 			@Override
@@ -103,7 +104,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			}
 		});
 		
-		downloadLayer = new JMenuItem("Download movie", IconBank.getIcon(JHVIcon.DOWNLOAD_NEW, size, size));
+		downloadLayer = new JMenuItem("Download movie", IconBank.getIcon(JHVIcon.DOWNLOAD_NEW, SIZE, SIZE));
 		downloadLayer.addActionListener(new ActionListener()
 		{
 			@Override
@@ -114,7 +115,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			}
 		});
 		
-		hideLayer = new JMenuItem("Hide layer", IconBank.getIcon(JHVIcon.HIDDEN, size, size));
+		hideLayer = new JMenuItem("Hide layer", IconBank.getIcon(JHVIcon.HIDDEN, SIZE, SIZE));
 		hideLayer.addActionListener(new ActionListener()
 		{
 			@Override
@@ -124,7 +125,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 				updateData();
 			}
 		});
-		showLayer = new JMenuItem("Show layer", IconBank.getIcon(JHVIcon.VISIBLE, size, size));
+		showLayer = new JMenuItem("Show layer", IconBank.getIcon(JHVIcon.VISIBLE, SIZE, SIZE));
 		showLayer.addActionListener(new ActionListener()
 		{
 			@Override
@@ -135,7 +136,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			}
 		});
 				
-		removeLayer = new JMenuItem("Close layer", IconBank.getIcon(JHVIcon.REMOVE_NEW, size, size));
+		removeLayer = new JMenuItem("Close layer", IconBank.getIcon(JHVIcon.REMOVE_NEW, SIZE, SIZE));
 		removeLayer.addActionListener(new ActionListener()
 		{
 			@Override
@@ -328,7 +329,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		gbl_panel.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
 		panel.setLayout(gbl_panel);
 		
-		btnShowInfo = new JButton(IconBank.getIcon(JHVIcon.INFO_NEW, size, size));
+		btnShowInfo = new JButton(IconBank.getIcon(JHVIcon.INFO_NEW, SIZE, SIZE));
 		btnShowInfo.setToolTipText("Show the Metainformation of the currently selected Layer");
 		btnShowInfo.addActionListener(new ActionListener()
 		{
@@ -344,7 +345,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		gbcBtnShowInfo.gridy = 0;
 		panel.add(btnShowInfo, gbcBtnShowInfo);
 
-		btnDownloadLayer = new JButton(IconBank.getIcon(JHVIcon.DOWNLOAD_NEW, size, size));
+		btnDownloadLayer = new JButton(IconBank.getIcon(JHVIcon.DOWNLOAD_NEW, SIZE, SIZE));
 		btnDownloadLayer.setToolTipText("Download the currently selected Layer");
 		btnDownloadLayer.setEnabled(false);
 		btnDownloadLayer.addActionListener(new ActionListener()
@@ -362,7 +363,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		gbcBtnDownloadLayer.gridy = 0;
 		panel.add(btnDownloadLayer, gbcBtnDownloadLayer);
 
-		JButton btnAddLayer = new JButton("Add Layer", IconBank.getIcon(JHVIcon.ADD_NEW, size, size));
+		JButton btnAddLayer = new JButton("Add Layer", IconBank.getIcon(JHVIcon.ADD_NEW, SIZE, SIZE));
 		btnAddLayer.addActionListener(new ActionListener()
 		{
 			@Override
@@ -392,7 +393,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			data[count][1] = layer.checkBadRequest();
 			data[count][2] = layer.getName();
 			data[count][3] = layer.getTime();
-			data[count][4] = IconBank.getIcon(JHVIcon.REMOVE_NEW, size, size);
+			data[count][4] = ICON_REMOVE;
 			count++;
 		}
 		tableModel.setDataVector(data, columnNames);
@@ -402,13 +403,13 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		table.getColumnModel().getColumn(2).setCellRenderer(new ImageIconCellRenderer());
 		table.getColumnModel().getColumn(3).setCellRenderer(new ImageIconCellRenderer());
 		table.getColumnModel().getColumn(4).setCellRenderer(new ImageIconCellRenderer());
-		setFixedWidth(size+4, 0);
-		setFixedWidth(size, 1);
-		setFixedWidth(size, 4);
+		setFixedWidth(SIZE+4, 0);
+		setFixedWidth(SIZE, 1);
+		setFixedWidth(SIZE, 4);
 		// table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		table.setShowGrid(false);
 		table.setIntercellSpacing(new Dimension(0, 0));
-		table.setRowHeight(size + 4);
+		table.setRowHeight(SIZE + 4);
 
 		if (Layers.getLayerCount() > 0 && Layers.getActiveLayerNumber()<Layers.getLayerCount() && Layers.getActiveLayerNumber()>=0)
 		{

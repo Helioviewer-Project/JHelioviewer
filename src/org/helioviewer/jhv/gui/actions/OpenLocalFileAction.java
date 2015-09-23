@@ -103,12 +103,10 @@ public class OpenLocalFileAction extends AbstractAction {
 			{
 				File selectedFile = fileChooser.getSelectedFile();
 	
-				if (selectedFile.exists() && selectedFile.isFile()) {
-	
+				if (selectedFile.exists() && selectedFile.isFile())
+				{
 					// remember the current directory for future
 					Settings.setProperty("default.local.path", fileChooser.getSelectedFile().getParent());
-	
-					// Load image in new thread
 					Layers.addLayer(fileChooser.getSelectedFile().toString());
 				}
 			}

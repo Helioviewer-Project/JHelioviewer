@@ -29,7 +29,6 @@ import javax.swing.JFrame;
 import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
 
-import org.helioviewer.jhv.JHVException.MetaDataException;
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
 import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
@@ -65,6 +64,7 @@ import org.helioviewer.jhv.plugins.plugin.AbstractPlugin.RenderMode;
 import org.helioviewer.jhv.plugins.plugin.Plugins;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.TimeLine.TimeLineListener;
+import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
@@ -267,26 +267,15 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 			gl.glTranslated(0, 0, -translation.z);
 			if (CameraMode.mode == MODE.MODE_2D)
 			{
-				try
-				{
-					this.rotation = Layers.getActiveImageLayer().getMetaData(currentDateTime).getRotation();
-				}
-				catch (MetaDataException e)
-				{
-					e.printStackTrace();
-				}
+				MetaData md=Layers.getActiveImageLayer().getMetaData(currentDateTime);
+				if(md!=null)
+					rotation = md.getRotation();
 			}
 			
 			LinkedHashMap<AbstractLayer, Future<ByteBuffer>> layers=new LinkedHashMap<AbstractLayer, Future<ByteBuffer>>();
 			for (AbstractLayer layer : Layers.getLayers())
 				if (layer.isVisible() && layer.isImageLayer())
-					try
-					{
-						layers.put(layer,((AbstractImageLayer)layer).prepareImageData(this, size));
-					}
-					catch(MetaDataException _mde)
-					{
-					}
+					layers.put(layer,((AbstractImageLayer)layer).prepareImageData(this, size));
 
 			for(Entry<AbstractLayer, Future<ByteBuffer>> l:layers.entrySet())
 				try

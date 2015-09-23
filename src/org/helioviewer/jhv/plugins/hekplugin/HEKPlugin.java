@@ -133,21 +133,19 @@ public class HEKPlugin extends AbstractPlugin {
 				break;
 			}
 		}
-		if (offSetFactor >= 0) {
+		if (offSetFactor >= 0)
+		{
 			SphericalCoord heliographicCoordinate = evt.getStony(now);
-			Vector3d coords = HEKEvent.convertToSceneCoordinates(
-					heliographicCoordinate, now);
+			Vector3d coords = HEKEvent.convertToSceneCoordinates(heliographicCoordinate, now);
 			double x = coords.x;
 			double y = coords.y;
 			double z = coords.z;
 
-			// gl.commonRenderGraphics.bindImage(icon);
 			gl.glEnable(GL2.GL_TEXTURE_2D);
 			gl.glBindTexture(GL2.GL_TEXTURE_2D, HEKIcon.getTexture());
-			gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER,
-					GL.GL_LINEAR);
+			gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
 
-			float imageScaleFactor = HEKIcon.getImageScaleFactorHeight();
+			float imageScaleFactorH = HEKIcon.getImageScaleFactorHeight();
 
 			double scale = large ? 0.0004 : 0.0002;
 			double width2 = Plugins.getViewPortSize() * scale;
@@ -156,8 +154,7 @@ public class HEKPlugin extends AbstractPlugin {
 			Vector3d sourceDir = new Vector3d(0, 0, -1);
 			Vector3d targetDir = new Vector3d(x, y, z);
 
-			double angle = Math.acos(sourceDir.dot(targetDir)
-					/ (sourceDir.length() * targetDir.length()));
+			double angle = Math.acos(sourceDir.dot(targetDir) / (sourceDir.length() * targetDir.length()));
 			Vector3d axis = sourceDir.cross(targetDir);
 			Matrix4d r = Matrix4d.createRotationMatrix(angle, axis.normalize()).translatedAbsolute(x, y, z);
 
@@ -175,13 +172,13 @@ public class HEKPlugin extends AbstractPlugin {
 
 			gl.glBegin(GL2.GL_QUADS);
 
-			gl.glTexCoord2f(0.0f, offSetFactor * imageScaleFactor);
+			gl.glTexCoord2f(0.0f, offSetFactor * imageScaleFactorH);
 			gl.glVertex3d(p0.x, p0.y, p0.z);
-			gl.glTexCoord2f(0.0f, (offSetFactor + 1) * imageScaleFactor);
+			gl.glTexCoord2f(0.0f, (offSetFactor + 1) * imageScaleFactorH);
 			gl.glVertex3d(p1.x, p1.y, p1.z);
-			gl.glTexCoord2f(1.0f, (offSetFactor + 1) * imageScaleFactor);
+			gl.glTexCoord2f(1.0f, (offSetFactor + 1) * imageScaleFactorH);
 			gl.glVertex3d(p2.x, p2.y, p2.z);
-			gl.glTexCoord2f(1.0f, offSetFactor * imageScaleFactor);
+			gl.glTexCoord2f(1.0f, offSetFactor * imageScaleFactorH);
 			gl.glVertex3d(p3.x, p3.y, p3.z);
 
 			gl.glEnd();
@@ -189,22 +186,20 @@ public class HEKPlugin extends AbstractPlugin {
 		}
 	}
 
-	public void drawPolygon(GL2 gl, HEKEvent evt, Date now) {
+	public void drawPolygon(GL2 gl, HEKEvent evt, Date now)
+	{
 		if (evt == null || !evt.isVisible(now))
 			return;
 
-		List<HEKEvent.GenericTriangle<Vector3d>> triangles = evt
-				.getTriangulation3D(now);
+		List<HEKEvent.GenericTriangle<Vector3d>> triangles = evt.getTriangulation3D(now);
 		List<SphericalCoord> outerBound = evt.getStonyBound(now);
 		if (outerBound == null && triangles == null)
 			return;
 
 		String type = evt.getString("event_type");
-		Color eventColor = HEKConstants.getSingletonInstance().acronymToColor(
-				type, 128);
+		Color eventColor = HEKConstants.getSingletonInstance().acronymToColor(type, 128);
 
-		HeliographicCoordinate heliographicCoordinate = evt
-				.getHeliographicCoordinate(now);
+		HeliographicCoordinate heliographicCoordinate = evt.getHeliographicCoordinate(now);
 		if (heliographicCoordinate == null)
 			return;
 
@@ -213,7 +208,8 @@ public class HEKPlugin extends AbstractPlugin {
 				heliographicCoordinate.latitude, (now.getTime() - evt
 						.getStart().getTime()) / 1000d), 0, 1, 0);
 
-		if (triangles != null) {
+		if (triangles != null)
+		{
 			gl.glColor4ub((byte) eventColor.getRed(),
 					(byte) eventColor.getGreen(), (byte) eventColor.getBlue(),
 					(byte) eventColor.getAlpha());
@@ -223,8 +219,8 @@ public class HEKPlugin extends AbstractPlugin {
 			gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
 
 			gl.glBegin(GL2.GL_TRIANGLES);
-			for (GenericTriangle<Vector3d> triangle : triangles) {
-				// gl.glColor3d(Math.random(),Math.random(),Math.random());
+			for (GenericTriangle<Vector3d> triangle : triangles)
+			{
 				gl.glVertex3d(triangle.A.x, triangle.A.y, triangle.A.z);
 				gl.glVertex3d(triangle.B.x, triangle.B.y, triangle.B.z);
 				gl.glVertex3d(triangle.C.x, triangle.C.y, triangle.C.z);
@@ -239,11 +235,10 @@ public class HEKPlugin extends AbstractPlugin {
 			gl.glEnable(GL2.GL_DEPTH_TEST);
 
 			gl.glBegin(GL.GL_LINE_LOOP);
-			for (SphericalCoord boundaryPoint : outerBound) {
-				Vector3d boundaryPoint3d = HEKEvent.convertToSceneCoordinates(
-						boundaryPoint, now).scale(1.005);
-				gl.glVertex3d(boundaryPoint3d.x, boundaryPoint3d.y,
-						boundaryPoint3d.z);
+			for (SphericalCoord boundaryPoint : outerBound)
+			{
+				Vector3d boundaryPoint3d = HEKEvent.convertToSceneCoordinates(boundaryPoint, now).scale(1.005);
+				gl.glVertex3d(boundaryPoint3d.x, boundaryPoint3d.y, boundaryPoint3d.z);
 			}
 			gl.glEnd();
 		}

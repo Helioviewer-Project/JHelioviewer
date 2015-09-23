@@ -6,8 +6,6 @@ import java.time.LocalDateTime;
 import java.util.NavigableSet;
 import java.util.concurrent.Future;
 
-import org.helioviewer.jhv.JHVException;
-import org.helioviewer.jhv.JHVException.MetaDataException;
 import org.helioviewer.jhv.JHVException.TextureException;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.gui.MainFrame;
@@ -63,8 +61,6 @@ public abstract class AbstractImageLayer extends AbstractLayer
 
 	public abstract NavigableSet<LocalDateTime> getLocalDateTime();
 
-	protected abstract MetaData getMetaData() throws JHVException.MetaDataException;
-
 	public boolean isVisible()
 	{
 		return visible;
@@ -101,7 +97,7 @@ public abstract class AbstractImageLayer extends AbstractLayer
 		return localPath;
 	}
 
-	public abstract MetaData getMetaData(LocalDateTime currentDateTime) throws JHVException.MetaDataException;
+	public abstract MetaData getMetaData(LocalDateTime currentDateTime);
 
 	public void writeStateFile(JSONObject jsonLayer)
 	{
@@ -163,7 +159,7 @@ public abstract class AbstractImageLayer extends AbstractLayer
 	public abstract LocalDateTime getFirstLocalDateTime();
 	public abstract LocalDateTime getLastLocalDateTime();
 	
-	public abstract Future<ByteBuffer> prepareImageData(final MainPanel mainPanel, final Dimension size) throws MetaDataException;
+	public abstract Future<ByteBuffer> prepareImageData(final MainPanel mainPanel, final Dimension size);
 
 	public void toggleCoronaVisibility()
 	{

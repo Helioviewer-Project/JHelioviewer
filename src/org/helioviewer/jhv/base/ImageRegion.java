@@ -15,10 +15,11 @@ import org.helioviewer.jhv.viewmodel.metadata.MetaData;
  * @author stefanmeier
  *
  */
-public class ImageRegion {
-	
+public class ImageRegion
+{
 	// relative image coordinates
 	private Rectangle2D imageData;
+	
 	// image size, which have been decoded
 	private Rectangle imageSize;
 	
@@ -40,16 +41,17 @@ public class ImageRegion {
 	private float xTextureScale = 1;
 	private float yTextureScale = 1;
 	
-	private MetaData metaData;
 	private String fileName;
 	private int id;
 	
-	public ImageRegion(LocalDateTime localDateTime) {
+	public ImageRegion(LocalDateTime localDateTime)
+	{
 		imageData = new Rectangle();
 		this.localDateTime = localDateTime;
 	}
 			
-	public void setImageData(Rectangle2D imageData){
+	public void setImageData(Rectangle2D imageData)
+	{
 		this.imageData = imageData;
 	}
 	
@@ -193,18 +195,6 @@ public class ImageRegion {
 		this.yTextureScale = yScale;
 	}
 	
-	/**
-	 * Set the last decoded MetaData
-	 * @param metaData
-	 */
-	public void setMetaData(MetaData metaData){
-		this.metaData = metaData;
-	}
-	
-	public MetaData getMetaData(){
-		return metaData;
-	}
-
 	public void setID(int id) {
 		this.id = id;
 	}

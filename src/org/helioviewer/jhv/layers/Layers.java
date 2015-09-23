@@ -37,9 +37,9 @@ public class Layers
 		layerListeners = new ArrayList<LayerListener>();
 	}
 
-	public static AbstractLayer addLayer(String uri)
+	public static AbstractLayer addLayer(String _filePath)
 	{
-		ImageLayer layer = new ImageLayer(uri);
+		ImageLayer layer = new ImageLayer(_filePath);
 		layers.add(layer);
 		layers.sort(COMPARATOR);
 		updateOpacity(layer, false);

@@ -32,7 +32,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.ListCellRenderer;
-import javax.swing.SwingUtilities;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -40,7 +39,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.helioviewer.jhv.JHVException.MetaDataException;
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.gui.MainFrame;
@@ -121,36 +119,43 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 		TimeLine.SINGLETON.addListener(this);
 		setLocationRelativeTo(MainFrame.SINGLETON);
 		
-		addComponentListener(new ComponentAdapter() {
+		addComponentListener(new ComponentAdapter()
+		{
 			@Override
-			public void componentShown(ComponentEvent e) {
-				if (Layers.getActiveImageLayer() != null){
-				try {
-					setMetaData(Layers.getActiveImageLayer().getMetaData(TimeLine.SINGLETON.getCurrentDateTime()));
-				} catch (MetaDataException e1) {
-					resetData();
-					addDataItem(e1.getMessage());
-				}}
-				else{
-					resetData();
+			public void componentShown(ComponentEvent e)
+			{
+				if (Layers.getActiveImageLayer() != null)
+				{
+					MetaData md=Layers.getActiveImageLayer().getMetaData(TimeLine.SINGLETON.getCurrentDateTime());
+					
+					if(md!=null)
+						setMetaData(md);
+					else
+					{
+						resetData();
+						addDataItem("Metadata not available.");
+					}
 				}
+				else
+					resetData();
 			}
 		});
 		
-		getRootPane().registerKeyboardAction(new ActionListener() {
-
+		getRootPane().registerKeyboardAction(new ActionListener()
+		{
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e)
+			{
 				setVisible(false);
 			}
-		}, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
-				JComponent.WHEN_IN_FOCUSED_WINDOW);
+		}, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
 	}
 
 	/**
 	 * Resets the list.
 	 */
-	public void resetData() {
+	public void resetData()
+	{
 		infoList.clear();
 
 		// update the listBox
@@ -446,24 +451,22 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 	}
 
 	@Override
-	public void timeStampChanged(LocalDateTime current, LocalDateTime last) {
-		if (Layers.getActiveImageLayer() != null){
-			SwingUtilities.invokeLater(new Runnable() {
-				
-				@Override
-				public void run() {
-					try {
-						setMetaData(Layers.getActiveImageLayer().getMetaData(TimeLine.SINGLETON.getCurrentDateTime()));
-					} catch (MetaDataException e) {
-						resetData();
-						addDataItem(e.getMessage());
-					}
-				}
-			});
+	public void timeStampChanged(LocalDateTime current, LocalDateTime last)
+	{
+		if (Layers.getActiveImageLayer() != null)
+		{
+			MetaData md=Layers.getActiveImageLayer().getMetaData(TimeLine.SINGLETON.getCurrentDateTime());
+			
+			if(md!=null)
+				setMetaData(md);
+			else
+			{
+				resetData();
+				addDataItem("Metadata not available.");
+			}
 		}
-		else {
+		else
 			resetData();
-		}
 	}
 
 	@Override

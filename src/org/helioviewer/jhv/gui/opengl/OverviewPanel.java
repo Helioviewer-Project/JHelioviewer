@@ -5,7 +5,6 @@ import java.awt.geom.Rectangle2D;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-import org.helioviewer.jhv.JHVException.MetaDataException;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.gui.MainFrame;
@@ -19,6 +18,7 @@ import org.helioviewer.jhv.opengl.camera.CameraZoomInteraction;
 import org.helioviewer.jhv.plugins.plugin.AbstractPlugin.RenderMode;
 import org.helioviewer.jhv.plugins.plugin.Plugins;
 import org.helioviewer.jhv.viewmodel.TimeLine;
+import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
@@ -54,16 +54,17 @@ public class OverviewPanel extends MainPanel
 		this.cameraInteractions[1] = new CameraZoomBoxInteraction(this, mainViews.get(0));
 	}
 
-	private void zoomToFit() throws MetaDataException
+	private void zoomToFit()
 	{
 		AbstractImageLayer activeLayer = Layers.getActiveImageLayer();
 		if (activeLayer == null)
 			return;
-
+		
 		LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
-		if (activeLayer.getMetaData(currentDateTime) != null)
+		MetaData md=activeLayer.getMetaData(currentDateTime);
+		if (md != null)
 		{
-			Rectangle2D region = activeLayer.getMetaData(currentDateTime).getPhysicalImageSize();
+			Rectangle2D region = md.getPhysicalImageSize();
 			if (region != null)
 			{
 				double halfWidth = region.getHeight() / 2;
@@ -82,14 +83,8 @@ public class OverviewPanel extends MainPanel
 	@Override
 	public void display(GLAutoDrawable drawable)
 	{
-		try
-		{
-			this.zoomToFit();
-			super.display(drawable);
-		}
-		catch(MetaDataException _mde)
-		{
-		}
+		zoomToFit();
+		super.display(drawable);
 	}
 	
 	@Override

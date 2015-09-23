@@ -187,78 +187,95 @@ public class KakaduUtils {
         Jp2_input_box xmlBox = null;
         Jp2_input_box assocBox = null;
         Jp2_input_box assoc2Box = null;
-        Jp2_input_box findBoxResult[];
-
-        findBoxResult = KakaduUtils.findBox(_familySrc, Kdu_global.jp2_xml_4cc, _boxNumber);
-        xmlBox = findBoxResult[0];
-
-        if (xmlBox == null) {
-            findBoxResult = KakaduUtils.findBox(_familySrc, Kdu_global.jp2_association_4cc, _boxNumber);
-            assocBox = findBoxResult[0];
-
-            if (assocBox != null) {
-                xmlBox = KakaduUtils.findBox2(assocBox, Kdu_global.jp2_xml_4cc, 1);
-
-                if (xmlBox == null) {
-                    assoc2Box = KakaduUtils.findBox2(assocBox, Kdu_global.jp2_association_4cc, _boxNumber);
-
-                    if (assoc2Box != null)
-                        xmlBox = KakaduUtils.findBox2(assoc2Box, Kdu_global.jp2_xml_4cc, 1);
-                }
-            }
+        Jp2_input_box findBoxResult[]=new Jp2_input_box[2];
+        
+        try
+        {
+	        findBoxResult = KakaduUtils.findBox(_familySrc, Kdu_global.jp2_xml_4cc, _boxNumber);
+	        xmlBox = findBoxResult[0];
+	
+	        if (xmlBox == null)
+	        {
+	            findBoxResult = KakaduUtils.findBox(_familySrc, Kdu_global.jp2_association_4cc, _boxNumber);
+	            assocBox = findBoxResult[0];
+	
+	            if (assocBox != null)
+	            {
+	                xmlBox = KakaduUtils.findBox2(assocBox, Kdu_global.jp2_xml_4cc, 1);
+	
+	                if (xmlBox == null)
+	                {
+	                    assoc2Box = KakaduUtils.findBox2(assocBox, Kdu_global.jp2_association_4cc, _boxNumber);
+	
+	                    if (assoc2Box != null)
+	                        xmlBox = KakaduUtils.findBox2(assoc2Box, Kdu_global.jp2_xml_4cc, 1);
+	                }
+	            }
+	        }
+	
+	        if (xmlBox != null)
+	        {
+	            try
+	            {
+	                // Grab the xml data if available
+	                if (xmlBox.Get_remaining_bytes() > 0)
+	                {
+	                    int len = (int) xmlBox.Get_remaining_bytes();
+	                    byte[] buf = new byte[len];
+	                    xmlBox.Read(buf, len);
+	                    xml = new String(buf, "UTF-8");
+	                }
+	                xmlBox.Native_destroy();
+	            }
+	            catch (KduException ex)
+	            {
+	                throw ex;
+	            }
+	            catch (UnsupportedEncodingException ex)
+	            {
+	                ex.printStackTrace();
+	                xml = null;
+	            }
+	        }
         }
-
-        if (xmlBox != null) {
-            try {
-                // Grab the xml data if available
-                if (xmlBox.Get_remaining_bytes() > 0) {
-                    int len = (int) xmlBox.Get_remaining_bytes();
-                    byte[] buf = new byte[len];
-                    xmlBox.Read(buf, len);
-                    xml = new String(buf, "UTF-8");
-                }
-                xmlBox.Native_destroy();
-
-            } catch (KduException ex) {
-                throw ex;
-
-            } catch (UnsupportedEncodingException ex) {
-                ex.printStackTrace();
-                xml = null;
-            }
-        }
-
-        if (assocBox != null) {
-            assocBox.Native_destroy();
-            assocBox = null;
-        }
-
-        if (assoc2Box != null) {
-            assoc2Box.Native_destroy();
-            assoc2Box = null;
-        }
-
-        if (findBoxResult[1] != null) {
-            findBoxResult[1].Native_destroy();
-            findBoxResult[1] = null;
-        }
-
-        if (findBoxResult[0] != null) {
-            findBoxResult[0].Native_destroy();
-            findBoxResult[0] = null;
+        finally
+        {
+	        if (assocBox != null)
+	        {
+	            assocBox.Native_destroy();
+	            assocBox = null;
+	        }
+	        if (assoc2Box != null)
+	        {
+	            assoc2Box.Native_destroy();
+	            assoc2Box = null;
+	        }
+	        if (findBoxResult[1] != null)
+	        {
+	            findBoxResult[1].Native_destroy();
+	            findBoxResult[1] = null;
+	        }
+	        if (findBoxResult[0] != null)
+	        {
+	            findBoxResult[0].Native_destroy();
+	            findBoxResult[0] = null;
+	        }
         }
 
         if (xml != null)
-            try {
+            try
+        	{
                 if (xml.indexOf("<?xml version=\"1.0\" encoding=\"UTF-8\"?>") != 0)
                     xml = xml.substring(xml.indexOf("<meta>"));
                 if (xml.indexOf("<?xml version=\"1.0\" encoding=\"UTF-8\"?>") != 0)
                     xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + xml;
 
-            } catch (Exception ex) {
+            }
+	        catch (Exception ex)
+	        {
                 throw new KduException("Failed parsing XML data: "+ex.toString());
             }
 
         return xml;
     }
-};
+}

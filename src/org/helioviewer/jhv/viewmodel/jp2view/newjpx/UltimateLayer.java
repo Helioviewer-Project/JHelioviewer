@@ -7,13 +7,12 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.NavigableSet;
 import java.util.TreeSet;
 
 import javax.swing.SwingUtilities;
-
-import kdu_jni.KduException;
 
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.downloadmanager.AbstractDownloadRequest;
@@ -33,12 +32,6 @@ import org.json.JSONObject;
 
 public class UltimateLayer
 {
-	public String observatory;
-	public String instrument;
-	public String measurement1;
-	public String measurement2;
-	public int sourceId;
-	
 	public static final int MAX_FRAME_DOWNLOAD_BATCH = 15;
 	private static final String URL = "http://api.helioviewer.org/v2/getJPX/?";
 	
@@ -49,35 +42,38 @@ public class UltimateLayer
 	
 	private volatile Thread loaderThread;
 	private boolean localFile = false;
+	private int sourceId;
 	private int layerId;
-	
 	private Movie movie;
-
-	ThreadLocal<KakaduRender> kakaduRenders = new ThreadLocal<KakaduRender>()
-			{
-				@Override
-				protected KakaduRender initialValue()
-				{
-					return new KakaduRender();
-				};
-			};
 
 	public UltimateLayer(int _layerId, int _sourceId)
 	{
-		this.layerId = _layerId;
-		this.sourceId = _sourceId;
+		layerId = _layerId;
+		sourceId = _sourceId;
 	}
-
+	
 	public UltimateLayer(int _layerId, String _filename)
 	{
-		this.layerId = _layerId;
-		this.sourceId = 0;
-		this.localFile = true;
+		layerId = _layerId;
+		sourceId = genSourceId(_filename);
+		localFile = true;
 		movie = new Movie(_layerId);
 		movie.setFile(_filename);
 		MovieCache.add(movie);
 		
-		TimeLine.SINGLETON.setLocalDateTimes(this.localDateTimes);
+		TimeLine.SINGLETON.setLocalDateTimes(localDateTimes);
+	}
+	
+	private static HashMap<String,Integer> usedIDs=new HashMap<>();
+	private static int unusedID=-1;
+	
+	//TODO: are negative sourceId's allowed?
+	private int genSourceId(String _filename)
+	{
+		if(!usedIDs.containsKey(_filename))
+			usedIDs.put(_filename, unusedID--);
+		
+		return usedIDs.get(_filename);
 	}
 	
 	
@@ -95,7 +91,7 @@ public class UltimateLayer
 		{
 			private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 			private LinkedList<MovieDownload> downloads = new LinkedList<MovieDownload>();
-			private boolean incomplete=false;
+			private boolean incomplete=false; //FIXME: should be respected by layer manager + retry logic
 			
 			@Override
 			public void run()
@@ -125,7 +121,7 @@ public class UltimateLayer
 							DownloadPriority.LOW);
 					
 					UltimateDownloadManager.addRequest(md.metadata);
-					//UltimateDownloadManager.addRequest(md.hq);
+					UltimateDownloadManager.addRequest(md.hq);
 					
 					downloads.add(md);
 					
@@ -278,7 +274,7 @@ public class UltimateLayer
 						UltimateDownloadManager.remove(md.metadata);
 				}
 			}
-		}, "Layer loader "+observatory+"-"+instrument+"-"+measurement1+"-"+measurement2);
+		}, "Layer loader "+sourceId);
 
 		loaderThread.setDaemon(true);
 		loaderThread.start();
@@ -295,12 +291,12 @@ public class UltimateLayer
 	}
 
 
-	public LocalDateTime getClosestLocalDateTime(LocalDateTime currentDateTime)
+	public LocalDateTime getClosestLocalDateTime(LocalDateTime _currentDateTime)
 	{
-		LocalDateTime after = this.localDateTimes.ceiling(currentDateTime);
-		LocalDateTime before = this.localDateTimes.floor(currentDateTime);
-		long beforeValue = before != null ? ChronoUnit.SECONDS.between(before, currentDateTime) : Long.MAX_VALUE;
-		long afterValue = after != null ? ChronoUnit.SECONDS.between(currentDateTime, after) : Long.MAX_VALUE;
+		LocalDateTime after = localDateTimes.ceiling(_currentDateTime);
+		LocalDateTime before = localDateTimes.floor(_currentDateTime);
+		long beforeValue = before != null ? ChronoUnit.NANOS.between(before, _currentDateTime) : Long.MAX_VALUE;
+		long afterValue = after != null ? ChronoUnit.NANOS.between(_currentDateTime, after) : Long.MAX_VALUE;
 		return beforeValue > afterValue ? after : before;
 	}
 
@@ -308,12 +304,12 @@ public class UltimateLayer
 	@Deprecated
 	public NavigableSet<LocalDateTime> getLocalDateTimes()
 	{
-		return this.localDateTimes;
+		return localDateTimes;
 	}
 
 	public ImageRegion getImageRegion()
 	{
-		return this.imageRegion;
+		return imageRegion;
 	}
 
 	public void cancelAllDownloadsForThisLayer()
@@ -349,23 +345,9 @@ public class UltimateLayer
 		return localFile;
 	}
 
-	public MetaData getMetaData(int i, String path)
+	public MetaData getMetaData(int i)
 	{
-		KakaduRender kakaduRender = new KakaduRender();
-		kakaduRender.openImage(movie.getSource());
-		try
-		{
-			return kakaduRender.getMetadata(i, movie.getFamilySrc());
-		}
-		catch (KduException e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			kakaduRender.closeImage();
-		}
-		return null;
+		return movie.getMetaData(i);
 	}
 
 	public void retryFailedRequests(final AbstractDownloadRequest[] requests)
@@ -374,38 +356,27 @@ public class UltimateLayer
 		throw new RuntimeException("TODO");
 	}
 	
-	public ByteBuffer getImageData(LocalDateTime localDateTime, ImageRegion imageRegion, MetaData metaData)
+	public ByteBuffer getImageData(LocalDateTime _localDateTime, ImageRegion _imageRegion)
 	{
-		Movie cacheObject = MovieCache.get(sourceId, localDateTime);
-
-		this.imageRegion = imageRegion;
-		this.imageRegion.setLocalDateTime(localDateTime);
-		this.imageRegion = TextureCache.add(imageRegion, layerId);
-		this.imageRegion.setMetaData(metaData);
-		this.imageRegion.setID(layerId);
-
-		ByteBuffer imageData = null;
-		KakaduRender kakaduRender = kakaduRenders.get();
-		kakaduRender.openImage(cacheObject.getSource());
-		imageData = kakaduRender.getImage(cacheObject.getIdx(localDateTime), 8, this.imageRegion.getZoomFactor(), this.imageRegion.getImageSize());
-		kakaduRender.closeImage();
+		imageRegion = _imageRegion;
+		imageRegion.setLocalDateTime(_localDateTime);
 		
-		return imageData;
+		imageRegion = TextureCache.add(_imageRegion, layerId);
+		imageRegion.setID(layerId);
+		
+		Movie movie = MovieCache.get(sourceId, _localDateTime);
+		return movie.getImage(_localDateTime, 8, imageRegion.getZoomFactor(), imageRegion.getImageSize());
 	}
 	
 	public MetaData getMetaData(LocalDateTime currentDateTime)
 	{
-		if (this.localDateTimes.isEmpty())
+		if (localDateTimes.isEmpty())
 			return null;
 		
-		LocalDateTime localDateTime = this.getClosestLocalDateTime(currentDateTime);
-		if (localDateTime == null)
-			localDateTime = this.localDateTimes.last();
-
-		Movie cacheObject = MovieCache.get(sourceId, localDateTime);
+		Movie cacheObject = MovieCache.get(sourceId, currentDateTime);
 		if (cacheObject == null)
 			return null;
 		
-		return cacheObject.getMetaData(cacheObject.getIdx(localDateTime));
+		return cacheObject.getMetaData(currentDateTime);
 	}
 }

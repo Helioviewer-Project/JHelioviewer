@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 
 import javax.swing.BorderFactory;
 
-import org.helioviewer.jhv.JHVException.MetaDataException;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.opengl.MainPanel;
 import org.helioviewer.jhv.layers.AbstractImageLayer;
@@ -31,11 +30,6 @@ public class ZoomStatusPanel extends StatusLabel
 {
 	private static final long serialVersionUID = 1L;
 
-	private static final String TITLE = "Zoom: ";
-
-	/**
-	 * Default constructor.
-	 */
 	public ZoomStatusPanel()
 	{
 		super();
@@ -43,7 +37,7 @@ public class ZoomStatusPanel extends StatusLabel
 		setBorder(BorderFactory.createEtchedBorder());
 
 		setPreferredSize(new Dimension(100, 20));
-		setText(TITLE);
+		setText("Zoom:");
 	}
 
 	/**
@@ -52,27 +46,27 @@ public class ZoomStatusPanel extends StatusLabel
 	private void updateZoomLevel()
 	{
 		AbstractImageLayer activeLayer = Layers.getActiveImageLayer();
-		if (activeLayer != null)
+		if (activeLayer == null)
 		{
-			try
-			{
-				LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
-				MetaData metaData = activeLayer.getMetaData(currentDateTime);
-				double unitsPerPixel = metaData.getUnitsPerPixel();
-				double minCanvasDimension = MainFrame.MAIN_PANEL.getCanavasSize().getHeight();
-				
-				double halfFOVRad = Math.toRadians(MainPanel.FOV / 2.0);
-				double distance = (minCanvasDimension / 2.0 * unitsPerPixel) / Math.tan(halfFOVRad);
-				long zoom = Math.round(distance	/ MainFrame.MAIN_PANEL.getTranslation().z * 100);
-				setText("Zoom: " + zoom + "%");
-			}
-			catch (MetaDataException e)
-			{
-				setText(TITLE);
-			}
+			setText("Zoom:");
+			return;
 		}
-		else
-			setText(TITLE);
+		
+		LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
+		MetaData metaData = activeLayer.getMetaData(currentDateTime);
+		if(metaData==null)
+		{
+			setText("Zoom:");
+			return;
+		}
+
+		double unitsPerPixel = metaData.getUnitsPerPixel();
+		double minCanvasDimension = MainFrame.MAIN_PANEL.getCanavasSize().getHeight();
+		
+		double halfFOVRad = Math.toRadians(MainPanel.FOV / 2.0);
+		double distance = (minCanvasDimension / 2.0 * unitsPerPixel) / Math.tan(halfFOVRad);
+		long zoom = Math.round(distance	/ MainFrame.MAIN_PANEL.getTranslation().z * 100);
+		setText("Zoom: " + zoom + "%");
 	}
 
 	@Override

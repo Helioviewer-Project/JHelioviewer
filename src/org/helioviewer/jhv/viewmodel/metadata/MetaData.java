@@ -13,6 +13,7 @@ import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
 
+//TODO: look at memory consumption and instance count of this class
 public abstract class MetaData
 {
     private Rectangle2D physicalImageSize;

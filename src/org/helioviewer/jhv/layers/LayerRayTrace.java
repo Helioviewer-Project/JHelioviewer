@@ -3,7 +3,6 @@ package org.helioviewer.jhv.layers;
 import java.awt.Dimension;
 import java.awt.geom.Rectangle2D;
 
-import org.helioviewer.jhv.JHVException.MetaDataException;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.gui.opengl.MainPanel;
@@ -24,12 +23,12 @@ class LayerRayTrace
 		this.layer = layer;
 	}
 
-	public ImageRegion getCurrentRegion(MainPanel mainPanel, MetaData metaData) throws MetaDataException
+	public ImageRegion getCurrentRegion(MainPanel mainPanel, MetaData metaData)
 	{
 		return getCurrentRegion(mainPanel, metaData, mainPanel.getCanavasSize());
 	}
 
-	public ImageRegion getCurrentRegion(MainPanel mainPanel, MetaData metaData, Dimension size) throws MetaDataException
+	public ImageRegion getCurrentRegion(MainPanel mainPanel, MetaData metaData, Dimension size)
 	{
 		rayTrace = new RayTrace(metaData.getRotation().toMatrix());
 
@@ -42,9 +41,7 @@ class LayerRayTrace
 		{
 			for (int j = 0; j < MAX_Y_POINTS; j++)
 			{
-				Vector2d imagePoint = rayTrace.castTexturepos(
-						(int) (i * partOfWidth), (int) (j * partOfHeight),
-						metaData, mainPanel);
+				Vector2d imagePoint = rayTrace.castTexturepos((int) (i * partOfWidth), (int) (j * partOfHeight), metaData, mainPanel);
 
 				if (imagePoint != null)
 				{

@@ -12,8 +12,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.helioviewer.jhv.JHVException;
-import org.helioviewer.jhv.JHVException.MetaDataException;
 import org.helioviewer.jhv.JHVException.TextureException;
 import org.helioviewer.jhv.base.FutureValue;
 import org.helioviewer.jhv.base.ImageRegion;
@@ -69,12 +67,12 @@ public class ImageLayer extends AbstractImageLayer
 		layerRayTrace = new LayerRayTrace(this);
 	}
 
-	public ImageLayer(String uri)
+	public ImageLayer(String _filePath)
 	{
 		super();
-		this.localPath = uri;
-		this.ultimateLayer = new UltimateLayer(layerId, uri);
-		this.name = ultimateLayer.getMetaData(0, uri).getFullName();
+		this.localPath = _filePath;
+		this.ultimateLayer = new UltimateLayer(layerId, _filePath);
+		this.name = ultimateLayer.getMetaData(0).getFullName();
 		layerRayTrace = new LayerRayTrace(this);
 
 		start = ultimateLayer.getLocalDateTimes().first();
@@ -87,9 +85,9 @@ public class ImageLayer extends AbstractImageLayer
 	{
 		//upload new texture, if something was decoded
 		if (_imageData != null)
-			OpenGLHelper.bindByteBufferToGLTexture(this.getLastDecodedImageRegion(), _imageData, this.getLastDecodedImageRegion().getImageSize());
-
-		if (this.getLastDecodedImageRegion() != null)
+			OpenGLHelper.bindByteBufferToGLTexture(getLastDecodedImageRegion(), _imageData, getLastDecodedImageRegion().getImageSize());
+		
+		if (getLastDecodedImageRegion() != null)
 			return getLastDecodedImageRegion().getTextureID();
 
 		return -1;
@@ -107,14 +105,6 @@ public class ImageLayer extends AbstractImageLayer
 		return ultimateLayer.getLocalDateTimes();
 	}
 
-	@Override
-	protected MetaData getMetaData() throws JHVException.MetaDataException
-	{
-		if (getLastDecodedImageRegion() == null	|| getLastDecodedImageRegion().getMetaData() == null)
-			throw new JHVException.MetaDataException("No imagedata available");
-		return this.getLastDecodedImageRegion().getMetaData();
-	}
-
 	public ImageRegion getLastDecodedImageRegion()
 	{
 		return ultimateLayer.getImageRegion();
@@ -127,16 +117,9 @@ public class ImageLayer extends AbstractImageLayer
 	}
 
 	@Override
-	public MetaData getMetaData(LocalDateTime currentDateTime) throws MetaDataException
+	public MetaData getMetaData(LocalDateTime currentDateTime)
 	{
-		if (getMetaData().getLocalDateTime().isEqual(currentDateTime) && getLastDecodedImageRegion().getID() == this.layerId)
-			return getMetaData();
-		
-		MetaData metaData = ultimateLayer.getMetaData(currentDateTime);
-		if (metaData == null)
-			throw new JHVException.MetaDataException("No metadata available");
-
-		return metaData;
+		return ultimateLayer.getMetaData(currentDateTime);
 	}
 
 	public void writeStateFile(JSONObject jsonLayer)
@@ -199,7 +182,12 @@ public class ImageLayer extends AbstractImageLayer
 				return RenderResult.RETRY_LATER;
 			
 			LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
-			Rectangle2D physicalSize = getMetaData(currentDateTime).getPhysicalImageSize();
+			
+			MetaData md=getMetaData(currentDateTime);
+			if(md==null)
+				return RenderResult.RETRY_LATER;
+			
+			Rectangle2D physicalSize = md.getPhysicalImageSize();
 			if (physicalSize.getWidth() <= 0 || physicalSize.getHeight() <= 0)
 				return RenderResult.RETRY_LATER;
 
@@ -306,11 +294,10 @@ public class ImageLayer extends AbstractImageLayer
 			gl.glDepthMask(false);
 			return RenderResult.OK;
 		}
-		catch (MetaDataException | TextureException e)
+		catch (TextureException e)
 		{
 			return RenderResult.RETRY_LATER;
 		}
-
 	}
 
 	private void initShaders(GL2 gl)
@@ -359,15 +346,11 @@ public class ImageLayer extends AbstractImageLayer
 	@Override
 	public String getFullName()
 	{
-		try
-		{
-			return getMetaData(TimeLine.SINGLETON.getCurrentDateTime()).getFullName();
-		}
-		catch (MetaDataException e)
-		{
-			e.printStackTrace();
-		}
-		return null;
+		MetaData md=getMetaData(TimeLine.SINGLETON.getCurrentDateTime());
+		if(md!=null)
+			return md.getFullName();
+		else
+			return null;
 	}
 
 	@Override
@@ -403,12 +386,12 @@ public class ImageLayer extends AbstractImageLayer
 	}
 
 	@Override
-	public Future<ByteBuffer> prepareImageData(final MainPanel mainPanel, final Dimension size) throws MetaDataException
+	public Future<ByteBuffer> prepareImageData(final MainPanel mainPanel, final Dimension size)
 	{
 		final LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
 		final MetaData metaData = ultimateLayer.getMetaData(currentDateTime);
 		if (metaData == null)
-			throw new MetaDataException();
+			return new FutureValue<ByteBuffer>(null);
 		
 		if(lut==null)
 			lut=metaData.getDefaultLUT();
@@ -434,7 +417,7 @@ public class ImageLayer extends AbstractImageLayer
 			@Override
 			public ByteBuffer call() throws Exception
 			{
-				return ultimateLayer.getImageData(finalNextLocalDateTime, imageRegion, metaData);
+				return ultimateLayer.getImageData(finalNextLocalDateTime, imageRegion);
 			}
 		});
 	}

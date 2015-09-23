@@ -196,13 +196,9 @@ public class HEKConstants {
         largeBufImgs.put("SS", ImageIO.read(HEKPlugin.getResourceUrl("/images/EventIcons/ss_icon.png")));
 
         // if we are missing some colors, take the average color of the icon
-        for (String key : smallBufImgs.keySet()) {
-
-            if (!colors.containsKey(key)) {
-
+        for (String key : smallBufImgs.keySet())
+            if (!colors.containsKey(key))
                 colors.put(key, IconBank.getAverageColor(smallBufImgs.get(key)));
-            }
-        }
 
         // eventIcons.put("PH",
         // ImageIO.read(HEKEventRenderer.class.getResource("./resources/big/ph_small.png")));

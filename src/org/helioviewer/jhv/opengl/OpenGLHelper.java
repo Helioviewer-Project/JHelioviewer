@@ -42,33 +42,34 @@ public class OpenGLHelper
 		return tmp;
 	}
 	
-	public void bindBufferedImageToGLTexture(final BufferedImage bufferedImage){
-				int width2 = MathUtils.nextPowerOfTwo(bufferedImage.getWidth());
-				int height2 = MathUtils.nextPowerOfTwo(bufferedImage.getHeight());
-				
-				if (textureHeight != height2 && textureWidth != width2){
-					createTexture(bufferedImage, width2, height2);
-				}
+	public void bindBufferedImageToGLTexture(final BufferedImage bufferedImage)
+	{
+		int width2 = MathUtils.nextPowerOfTwo(bufferedImage.getWidth());
+		int height2 = MathUtils.nextPowerOfTwo(bufferedImage.getHeight());
+		
+		if (textureHeight != height2 && textureWidth != width2)
+			createTexture(bufferedImage, width2, height2);
+		
+		textureHeight = height2;
+		textureWidth = width2;
 
-				this.textureHeight = height2;
-				this.textureWidth = width2;
-
-				updateTexture(bufferedImage,0,0);
+		updateTexture(bufferedImage,0,0);
 	}
 	
-	public static void bindByteBufferToGLTexture(ImageRegion region, final ByteBuffer byteBuffer, final Rectangle imageSize){
-				int width2 = MathUtils.nextPowerOfTwo(imageSize.width);
-				int height2 = MathUtils.nextPowerOfTwo(imageSize.height);
-				
-				//FIXME: avoid redundant recreation of textures
-				if (region.textureHeight < height2 || region.textureWidth < width2)
-				{
-					System.out.println("Recreating texture "+region+" "+width2+" x "+height2);
-					OpenGLHelper.createTexture(region, width2, height2);
-				}
+	public static void bindByteBufferToGLTexture(ImageRegion _region, final ByteBuffer byteBuffer, final Rectangle imageSize)
+	{
+		int width2 = MathUtils.nextPowerOfTwo(imageSize.width);
+		int height2 = MathUtils.nextPowerOfTwo(imageSize.height);
+		
+		//FIXME: avoid redundant recreation of textures
+		if (_region.textureHeight < height2 || _region.textureWidth < width2)
+		{
+			System.out.println("Recreating texture "+_region.textureWidth+"x"+_region.textureHeight+" --> "+width2+"x"+height2);
+			OpenGLHelper.createTexture(_region, width2, height2);
+		}
 
-				OpenGLHelper.updateTexture(region, byteBuffer, imageSize.width, imageSize.height);
-				region.setTextureScaleFactor(region.textureWidth / (float)imageSize.width, region.textureHeight / (float)imageSize.height);
+		OpenGLHelper.updateTexture(_region, byteBuffer, imageSize.width, imageSize.height);
+		_region.setTextureScaleFactor(_region.textureWidth / (float)imageSize.width, _region.textureHeight / (float)imageSize.height);
 	}
 	
 	public float getScaleFactorWidth(){
