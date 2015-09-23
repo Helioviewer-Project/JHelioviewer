@@ -26,8 +26,6 @@ import org.helioviewer.jhv.gui.components.TopToolBar;
 import org.helioviewer.jhv.gui.leftPanel.FilterPanel;
 import org.helioviewer.jhv.gui.leftPanel.LayerPanel;
 import org.helioviewer.jhv.gui.leftPanel.MoviePanel;
-import org.helioviewer.jhv.gui.opengl.MainPanel;
-import org.helioviewer.jhv.gui.opengl.OverviewPanel;
 import org.helioviewer.jhv.gui.statusLabels.CurrentTimeLabel;
 import org.helioviewer.jhv.gui.statusLabels.FramerateStatusPanel;
 import org.helioviewer.jhv.gui.statusLabels.PositionStatusPanel;

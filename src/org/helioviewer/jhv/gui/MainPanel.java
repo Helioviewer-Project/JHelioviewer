@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.gui.opengl;
+package org.helioviewer.jhv.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -38,7 +38,6 @@ import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.base.physics.DifferentialRotation;
-import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelCameraListener;
 import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelMouseListener;
 import org.helioviewer.jhv.layers.AbstractImageLayer;

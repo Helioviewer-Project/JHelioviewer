@@ -7,7 +7,7 @@ import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.math.Vector4d;
 import org.helioviewer.jhv.base.physics.Constants;
-import org.helioviewer.jhv.gui.opengl.MainPanel;
+import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.opengl.camera.CameraMode;
 import org.helioviewer.jhv.opengl.camera.CameraMode.MODE;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;

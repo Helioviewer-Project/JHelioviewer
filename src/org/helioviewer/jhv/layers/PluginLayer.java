@@ -3,7 +3,7 @@ package org.helioviewer.jhv.layers;
 import java.awt.Dimension;
 import java.nio.ByteBuffer;
 
-import org.helioviewer.jhv.gui.opengl.MainPanel;
+import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.plugins.plugin.AbstractPlugin;
 import org.helioviewer.jhv.plugins.plugin.Plugins;
 import org.helioviewer.jhv.viewmodel.TimeLine;

@@ -26,6 +26,7 @@ import org.helioviewer.jhv.base.Log;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.dialogs.AboutDialog;
 import org.helioviewer.jhv.io.CommandLineProcessor;
+import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.opengl.TextureCache;
 import org.helioviewer.jhv.plugins.plugin.Plugins;
 import org.helioviewer.jhv.viewmodel.jp2view.kakadu.KduErrorHandler;
@@ -131,9 +132,7 @@ public class JHelioviewer
 			System.out.println("Initializing JHelioviewer");
 
 			// display the splash screen
-			final SplashScreen splash = SplashScreen.getSingletonInstance();
-
-			splash.setProgressSteps(5);
+			final SplashScreen splash = new SplashScreen(9);
 
 			JHVGlobals.initFileChooserAsync();
 
@@ -143,7 +142,7 @@ public class JHelioviewer
 			splash.progressTo("Loading settings...");
 			Settings.load();
 
-			splash.progressTo("Initializing Kakadu libraries...");
+			splash.progressTo("Initializing Kakadu...");
 			try
 			{
 				loadLibraries();
@@ -176,15 +175,19 @@ public class JHelioviewer
 				@Override
 				public void run()
 				{
+					splash.progressTo("Creating OpenGL context");
 					MainFrame.SINGLETON.initSharedContext(sharedDrawable.getContext());
-					
-					// force initialization of UltimatePluginInterface
-					splash.progressTo("Initialize plugins");
-					Plugins.SINGLETON.getClass();
 					
 					splash.progressTo("Setting up texture cache");
 					sharedDrawable.getContext().makeCurrent();
 					TextureCache.init();
+					
+					splash.progressTo("Compiling shaders");
+					ImageLayer.init();
+					
+					// force initialization of UltimatePluginInterface
+					splash.progressTo("Initializing plugins");
+					Plugins.SINGLETON.getClass();
 					
 					splash.progressTo("Opening main window");
 					MainFrame.SINGLETON.setVisible(true);

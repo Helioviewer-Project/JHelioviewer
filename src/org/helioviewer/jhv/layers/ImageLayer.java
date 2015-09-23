@@ -19,7 +19,7 @@ import org.helioviewer.jhv.base.downloadmanager.AbstractDownloadRequest;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.gui.opengl.MainPanel;
+import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.layers.filter.LUT;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.opengl.TextureCache;
@@ -33,6 +33,7 @@ import org.json.JSONObject;
 
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLContext;
 
 public class ImageLayer extends AbstractImageLayer
 {
@@ -172,9 +173,6 @@ public class ImageLayer extends AbstractImageLayer
 
 	public RenderResult renderLayer(GL2 gl, Dimension canvasSize, MainPanel mainPanel, ByteBuffer _imageData)
 	{
-		if (shaderprogram < 0)
-			initShaders(gl);
-		
 		try
 		{
 			int layerTexture = getTexture(mainPanel, _imageData, canvasSize);
@@ -300,8 +298,10 @@ public class ImageLayer extends AbstractImageLayer
 		}
 	}
 
-	private void initShaders(GL2 gl)
+	public static void init()
 	{
+		GL2 gl = GLContext.getCurrentGL().getGL2();
+		
 		int vertexShader = gl.glCreateShader(GL2.GL_VERTEX_SHADER);
 		int fragmentShader = gl.glCreateShader(GL2.GL_FRAGMENT_SHADER);
 

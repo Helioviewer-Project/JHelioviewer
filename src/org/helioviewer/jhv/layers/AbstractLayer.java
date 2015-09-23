@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 import org.helioviewer.jhv.base.downloadmanager.AbstractDownloadRequest;
 import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.gui.opengl.MainPanel;
+import org.helioviewer.jhv.gui.MainPanel;
 import org.json.JSONObject;
 
 import com.jogamp.opengl.GL2;

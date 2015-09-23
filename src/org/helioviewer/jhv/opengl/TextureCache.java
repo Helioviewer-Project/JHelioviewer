@@ -30,7 +30,7 @@ public class TextureCache
 		cache.add(texture);
 		return _imageRegion;
 	}
-
+	
 	private static void moveElementToFront(Texture texture)
 	{
 		cache.remove(texture);

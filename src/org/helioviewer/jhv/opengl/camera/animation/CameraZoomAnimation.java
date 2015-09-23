@@ -1,6 +1,6 @@
 package org.helioviewer.jhv.opengl.camera.animation;
 
-import org.helioviewer.jhv.gui.opengl.MainPanel;
+import org.helioviewer.jhv.gui.MainPanel;
 
 /**
  * This animation zooms the camera by a given amount. Zooming only affects the

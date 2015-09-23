@@ -10,8 +10,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
@@ -29,56 +27,16 @@ import org.helioviewer.jhv.gui.IconBank.JHVIcon;
  * 
  * @author Stephan Pagel
  */
-class SplashScreen extends JFrame {
-
-	// ////////////////////////////////////////////////////////////////
-	// Definitions
-	// ////////////////////////////////////////////////////////////////
-
+class SplashScreen extends JFrame
+{
 	private static final long serialVersionUID = 1L;
-
-	private static final SplashScreen SINGLETON = new SplashScreen();
 
 	private SplashImagePanel imagePanel = new SplashImagePanel();
 	private JProgressBar progressBar = new JProgressBar(0, 100);
 
-	private int steps = 1;
-	private int currentStep = 1;
-
-	// ////////////////////////////////////////////////////////////////
-	// Methods
-	// ////////////////////////////////////////////////////////////////
-
-	/**
-	 * Default constructor.
-	 * */
-	private SplashScreen() {
-
+	public SplashScreen(int _steps)
+	{
 		// initialize the frame itself
-		initFrame();
-
-		// initialize the visual components
-		initVisualComponents();
-
-		// show the splash screen
-		setVisible(true);
-		
-		setAlwaysOnTop(true);
-	}
-
-	/**
-	 * Method returns the sole instance of this class.
-	 * 
-	 * @return the only instance of this class.
-	 * */
-	public static SplashScreen getSingletonInstance() {
-		return SINGLETON;
-	}
-
-	/**
-	 * Initializes the dialog controller itself.
-	 * */
-	private void initFrame() {
 		setTitle("ESA JHelioviewer");
 		setSize(new Dimension(400, 220));
 		setLocationRelativeTo(null);
@@ -86,92 +44,34 @@ class SplashScreen extends JFrame {
 		setFocusable(false);
 		setResizable(false);
 		setUndecorated(true);
-    setIconImage(IconBank.getIcon(JHVIcon.HVLOGO_SMALL).getImage());
-
-    //if(isWindows())
-      setType(java.awt.Window.Type.UTILITY);
-	}
+	    setIconImage(IconBank.getIcon(JHVIcon.HVLOGO_SMALL).getImage());
 	
-	/*private boolean isWindows()
-	{
-	  //should work, no matter what os/jdk release
-	  try
-	  {
-  	  String os=System.getProperty("os.name");
-  	  if(os==null)
-  	    return false;
-  	  
-  	  return os.startsWith("Windows");
-	  }
-	  catch(Exception _e)
-	  {
-	    return false;
-	  }
-	}*/
+	    //if(isWindows())
+	      setType(java.awt.Window.Type.UTILITY);
 
-	/**
-	 * Initializes all visual components on the controller.
-	 * */
-	private void initVisualComponents() {
+		// initialize the visual components
 		progressBar.setValue(0);
 		progressBar.setPreferredSize(new Dimension(progressBar.getWidth(), 20));
+		progressBar.setMaximum(_steps);
 		imagePanel.setText("");
 		add(imagePanel, BorderLayout.CENTER);
 		add(progressBar, BorderLayout.SOUTH);
+
+		// show the splash screen
+		setVisible(true);
+		
+		setAlwaysOnTop(true);
+	}
+	
+	@Override
+	public void dispose()
+	{
+		super.dispose();
+		
+		if(progressBar.getValue()!=progressBar.getMaximum())
+			throw new RuntimeException("Too many steps declared ("+progressBar.getMaximum()+" instead of "+progressBar.getValue()+")");
 	}
 
-	/**
-	 * Sets the number of main progress steps. The lowest allowed value is 1.
-	 * 
-	 * @param steps
-	 *            number of steps.
-	 */
-	public void setProgressSteps(int steps) {
-
-		if (steps >= 1) {
-			this.steps = steps;
-			progressBar.setMaximum(steps * 100);
-		}
-	}
-
-	/**
-	 * Sets the current main progress step. Future changes to the progress bar
-	 * value will be made inside the range of this step. The lowest allowed
-	 * value is 1 and the highest value is the number of main progress steps.
-	 * 
-	 * @param step
-	 *            current main progress step.
-	 */
-	public void setCurrentStep(int step) {
-
-		if (step >= 1 && step <= steps) {
-			this.currentStep = step - 1;
-
-			progressBar.setValue(currentStep * 100);
-		}
-	}
-
-	/**
-	 * Returns the current main progress step.
-	 * 
-	 * @return current main progress step.
-	 */
-	public int getCurrentStep() {
-		return currentStep + 1;
-	}
-
-	/**
-	 * Sets the value of the progress bar which is displayed on the splash
-	 * screen. The value must be between 0 and 100 otherwise it will be ignored.
-	 * 
-	 * @param value
-	 *            new value for the progress bar.
-	 * */
-	public void setProgressValue(int value) {
-
-		if (value >= 0 && value <= 100)
-			progressBar.setValue(currentStep * 100 + value);
-	}
 
 	/**
 	 * Sets the text which gives information about what actually happens. The
@@ -187,44 +87,10 @@ class SplashScreen extends JFrame {
 		if (text != null)
 			imagePanel.setText(text);
 		
-		if (currentStep + 1 < steps) {
-			currentStep++;
-
-			progressBar.setValue(currentStep * 100);
-		}
-	}
-
-	/**
-	 * Returns a progress bar object. The values which will be set to this
-	 * progress bar will be mapped to the progress bar which is displayed on the
-	 * splash screen.
-	 * 
-	 * @return progress bar object.
-	 * */
-	public JProgressBar getProgressBar() {
-
-		JProgressBar progressBar = new JProgressBar();
-
-		progressBar.addChangeListener(new ChangeListener() {
-
-			public void stateChanged(ChangeEvent e) {
-				int value = ((JProgressBar) e.getSource()).getValue();
-				int max = ((JProgressBar) e.getSource()).getMaximum();
-
-				setProgressValue((int) ((float) value / (float) max * 100.0f));
-			}
-		});
-
-		return progressBar;
-	}
-
-	/**
-	 * Returns the label which displays the current information text.
-	 * 
-	 * @return label instance which is displayed in the splash screen.
-	 * */
-	public JLabel getInfoLabel() {
-		return imagePanel.getLabel();
+		if (progressBar.getValue() == progressBar.getMaximum())
+			throw new RuntimeException("Too few steps declared (need >"+progressBar.getMaximum()+")");
+		
+		progressBar.setValue(progressBar.getValue()+1);
 	}
 
 	/**
@@ -281,16 +147,6 @@ class SplashScreen extends JFrame {
 		 */
 		public void setText(String text) {
 			label.setText(text);
-		}
-
-		/**
-		 * Returns the instance of the label which displays the current status
-		 * information.
-		 * 
-		 * @return label object which displays the current status information.
-		 * */
-		public JLabel getLabel() {
-			return label;
 		}
 
 		/**

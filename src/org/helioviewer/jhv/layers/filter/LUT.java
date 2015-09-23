@@ -8,7 +8,7 @@ import java.util.LinkedHashMap;
 
 import javax.imageio.ImageIO;
 
-import org.helioviewer.jhv.gui.opengl.MainPanel;
+import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
 
 import com.jogamp.opengl.GL2;

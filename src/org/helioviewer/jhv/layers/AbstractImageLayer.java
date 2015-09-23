@@ -9,7 +9,7 @@ import java.util.concurrent.Future;
 import org.helioviewer.jhv.JHVException.TextureException;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.gui.opengl.MainPanel;
+import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.layers.filter.LUT.LUT_ENTRY;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.json.JSONException;

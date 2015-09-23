@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.math.MathUtils;
-import org.helioviewer.jhv.gui.opengl.MainPanel;
+import org.helioviewer.jhv.gui.MainPanel;
 
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;

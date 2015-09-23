@@ -32,5 +32,4 @@ public class CoordinateHelper
         double sin4l = sin2l * sin2l;
         return 1.0e-6 * timeDifferenceInSeconds * (2.894 - 0.428 * sin2l - 0.37 * sin4l);
     }
-	
 }

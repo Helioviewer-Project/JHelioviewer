@@ -145,7 +145,7 @@ public class Movie
 		return filename;
 	}
 
-	public int getClosestIdx(LocalDateTime _localDateTime)
+	public int findClosestIdx(LocalDateTime _localDateTime)
 	{
 		int bestI=-1;
 		long minDiff = Long.MAX_VALUE; 
@@ -167,7 +167,7 @@ public class Movie
 	{
 		return cacheStatus;
 	}
-
+	
 	@Deprecated
 	public MetaData getMetaData(int idx)
 	{
@@ -178,7 +178,7 @@ public class Movie
 	
 	public MetaData getMetaData(LocalDateTime _ldt)
 	{
-		return getMetaData(getClosestIdx(_ldt));
+		return getMetaData(findClosestIdx(_ldt));
 	}
 	
 	private MetaData readMetadata(int index, Jp2_threadsafe_family_src family_src) throws KduException
@@ -253,7 +253,7 @@ public class Movie
 			Kdu_dims dimsRef1 = new Kdu_dims();
 			Kdu_dims dimsRef2 = new Kdu_dims();
 
-			compositor.Add_ilayer(getClosestIdx(_localDateTime), dimsRef1, dimsRef2);
+			compositor.Add_ilayer(findClosestIdx(_localDateTime), dimsRef1, dimsRef2);
 
 			//FIXME: downgrade quality first, before resolution when having speed problems
 			compositor.Set_max_quality_layers(quality);

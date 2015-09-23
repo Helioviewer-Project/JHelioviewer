@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.gui.opengl;
+package org.helioviewer.jhv.gui;
 
 import java.awt.Dimension;
 import java.awt.geom.Rectangle2D;
@@ -7,7 +7,6 @@ import java.util.ArrayList;
 
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
-import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.opengl.camera.CameraInteraction;

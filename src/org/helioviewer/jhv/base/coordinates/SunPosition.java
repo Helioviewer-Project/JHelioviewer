@@ -8,8 +8,8 @@ import static java.lang.Math.toRadians;
 
 import java.time.LocalDateTime;
 
-class SunPosition {
-	
+class SunPosition
+{
 	/**
 	 * Date for this position of the sun.
 	 */
@@ -40,7 +40,8 @@ class SunPosition {
 	 */
 	private final double obliquity;
 
-	private SunPosition(LocalDateTime localDateTime, double longitude, double ra, double dec, double apparentLongitude, double obliquity) {
+	private SunPosition(LocalDateTime localDateTime, double longitude, double ra, double dec, double apparentLongitude, double obliquity)
+	{
 		this.localDateTime = localDateTime;
 		this.longitude = longitude;
 		this.ra = ra;
@@ -49,32 +50,38 @@ class SunPosition {
 		this.obliquity = obliquity;
 	}
 
-	public double getLongitude() {
+	public double getLongitude()
+	{
 		return longitude;
 	}
 
-	public double getRa() {
+	public double getRa()
+	{
 		return ra;
 	}
 
-	public double getDec() {
+	public double getDec()
+	{
 		return dec;
 	}
 
-	public double getApparentLongitude() {
+	public double getApparentLongitude()
+	{
 		return apparentLongitude;
 	}
 
-	public double getObliquity() {
+	public double getObliquity()
+	{
 		return obliquity;
 	}
 
-	public LocalDateTime getDateTime() {
+	public LocalDateTime getDateTime()
+	{
 		return localDateTime;
 	}
-
 	
-	public static SunPosition computeSunPos(LocalDateTime localDateTime){
+	public static SunPosition computeSunPos(LocalDateTime localDateTime)
+	{
 		double dd = CoordinateHelper.julianDaySinceJ19000101(localDateTime);
 
 		// form time in Julian centuries from 1900.0
@@ -114,8 +121,7 @@ class SunPosition {
 		l = l + jupcorr;
 
 		// Allow for the Moons perturbations using the mean elongation of the
-		// Moon
-		// from the Sun D
+		// Moon from the Sun D
 		double d = 350.73768140 + (445267.114220 * t % 360.0);
 		double mooncorr = 6.50 * sin(toRadians(d));
 		l = l + mooncorr;
@@ -142,28 +148,24 @@ class SunPosition {
 
 		double ra = atan2(sin(toRadians(l)) * cos(toRadians(oblt)), cos(toRadians(l)));
 
-		if (ra < 0.0) {
+		if (ra < 0.0)
 			ra = ra + 360.0;
-		}
 
 		double dec = asin(sin(toRadians(l)) * sin(toRadians(oblt)));
 
 		// convert the internal variables to those required by the result.
-		SunPosition sunPosition = new SunPosition(localDateTime, Math.toRadians(longmed), ra, dec, Math.toRadians(l), Math.toRadians(oblt));
-
-		return sunPosition;
+		return new SunPosition(localDateTime, Math.toRadians(longmed), ra, dec, Math.toRadians(l), Math.toRadians(oblt));
 	}
 	
 	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("SunPosition [dateTime=").append(localDateTime).append(", longitude=").append(longitude)
-						.append("rad, ra=").append(ra).append("rad, dec=").append(dec)
-						.append("rad, apparentLongitude=").append(apparentLongitude).append("rad, obliquity=")
-						.append(obliquity).append("rad]");
-		return builder.toString();
+	public String toString()
+	{
+		return "SunPosition [dateTime="+localDateTime
+				+", longitude="+longitude
+				+"rad, ra="+ra
+				+"rad, dec="+dec
+				+"rad, apparentLongitude="+apparentLongitude
+				+"rad, obliquity="
+				+obliquity+"rad]";
 	}
-
-
-	
 }

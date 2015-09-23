@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import javax.swing.BorderFactory;
 
 import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.gui.opengl.MainPanel;
+import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.layers.AbstractLayer;
 import org.helioviewer.jhv.layers.Layers;

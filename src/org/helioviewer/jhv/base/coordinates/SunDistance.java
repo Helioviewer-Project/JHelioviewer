@@ -5,8 +5,8 @@ import java.time.LocalDateTime;
 import org.helioviewer.jhv.base.physics.Constants;
 
 
-class SunDistance {
-
+class SunDistance
+{
 	private final SunPosition sunPosition;
 
 	private final double p;
@@ -17,7 +17,8 @@ class SunDistance {
 
 	private final double sunDistance;
 
-	public SunDistance(SunPosition sunPosition, double p, double b0, double semiDiameter, double sunDistance) {
+	public SunDistance(SunPosition sunPosition, double p, double b0, double semiDiameter, double sunDistance)
+	{
 		this.sunPosition = sunPosition;
 		this.p = p;
 		this.b0 = b0;
@@ -30,7 +31,8 @@ class SunDistance {
 	 * 
 	 * @return the Sun's position
 	 */
-	public SunPosition getSunPosition() {
+	public SunPosition getSunPosition()
+	{
 		return sunPosition;
 	}
 
@@ -39,7 +41,8 @@ class SunDistance {
 	 * 
 	 * @return p
 	 */
-	public double getP() {
+	public double getP()
+	{
 		return p;
 	}
 
@@ -48,7 +51,8 @@ class SunDistance {
 	 * 
 	 * @return b0
 	 */
-	public double getB0() {
+	public double getB0()
+	{
 		return b0;
 	}
 
@@ -57,7 +61,8 @@ class SunDistance {
 	 * 
 	 * @return
 	 */
-	public double getSemiDiameter() {
+	public double getSemiDiameter()
+	{
 		return semiDiameter;
 	}
 
@@ -66,14 +71,13 @@ class SunDistance {
 	 * 
 	 * @return Sun distance.
 	 */
-	public double getSunDistance() {
+	public double getSunDistance()
+	{
 		return sunDistance;
 	}
-
-
 	
-	public static SunDistance computePb0rSunDistance(LocalDateTime localDateTime){
-		
+	public static SunDistance computePb0rSunDistance(LocalDateTime localDateTime)
+	{
 	    // number of Julian days since 2415020.0
 	    double de = CoordinateHelper.julianDaySinceJ19000101(localDateTime);
 
@@ -122,19 +126,12 @@ class SunDistance {
 	    double sd_const = Constants.SUN_RADIUS / Constants.AU;
 	    double sd = Math.asin(sd_const / r) * 10800.0 / Math.PI;
 
-	    SunDistance sunDistance = new SunDistance(sunPos, Math.toRadians(p), Math.toRadians(b), Math.toRadians(sd / Constants.ARCMIN_FACTOR), r * Constants.AU);
-		
-		return sunDistance;
+	    return new SunDistance(sunPos, Math.toRadians(p), Math.toRadians(b), Math.toRadians(sd / Constants.ARCMIN_FACTOR), r * Constants.AU);
 	}
 
-	
 	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("SunDistance [p=").append(p);
-		builder.append(", b0=").append(b0);
-		builder.append(", semiDiameter=").append(semiDiameter);
-		builder.append(", sunDistance=").append(sunDistance).append("]");
-		return builder.toString();
+	public String toString()
+	{
+		return "SunDistance [p="+p+", b0="+b0+", semiDiameter="+semiDiameter+", sunDistance="+sunDistance+"]";
 	}
 }

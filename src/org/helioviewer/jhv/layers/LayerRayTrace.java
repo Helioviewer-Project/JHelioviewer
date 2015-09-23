@@ -5,7 +5,7 @@ import java.awt.geom.Rectangle2D;
 
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.math.Vector2d;
-import org.helioviewer.jhv.gui.opengl.MainPanel;
+import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.opengl.RayTrace;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 

@@ -364,8 +364,7 @@ public class UltimateLayer
 		imageRegion = TextureCache.add(_imageRegion, layerId);
 		imageRegion.setID(layerId);
 		
-		Movie movie = MovieCache.get(sourceId, _localDateTime);
-		return movie.getImage(_localDateTime, 8, imageRegion.getZoomFactor(), imageRegion.getImageSize());
+		return MovieCache.getImage(sourceId, _localDateTime, 8, imageRegion.getZoomFactor(), imageRegion.getImageSize());
 	}
 	
 	public MetaData getMetaData(LocalDateTime currentDateTime)
@@ -373,10 +372,6 @@ public class UltimateLayer
 		if (localDateTimes.isEmpty())
 			return null;
 		
-		Movie cacheObject = MovieCache.get(sourceId, currentDateTime);
-		if (cacheObject == null)
-			return null;
-		
-		return cacheObject.getMetaData(currentDateTime);
+		return MovieCache.getMetaData(sourceId, currentDateTime);
 	}
 }
