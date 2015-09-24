@@ -21,8 +21,6 @@ class MetaDataAIA extends MetaData{
         	throw new NonSuitableMetaDataException("invalid instrument: "+instrument);
         }
 
-        this.metaDataContainer = metaDataContainer;
-
         this.instrument = "AIA";
         fullName = "AIA " + measurement;
         
@@ -65,7 +63,7 @@ class MetaDataAIA extends MetaData{
         String observedDate = metaDataContainer.get("DATE_OBS");
         localDateTime = LocalDateTime.parse(observedDate, DATE_FORMAT);
 
-        updatePixelParameters();
+        readPixelParameters(metaDataContainer);
         
         this.heeqX = metaDataContainer.tryGetDouble("HEQX_OBS");
         this.heeqY = metaDataContainer.tryGetDouble("HEQY_OBS");

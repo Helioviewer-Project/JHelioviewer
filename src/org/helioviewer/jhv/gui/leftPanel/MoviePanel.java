@@ -39,6 +39,7 @@ import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.Movie;
+import org.helioviewer.jhv.layers.Movie.Match;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.TimeLine.TimeLineListener;
 
@@ -330,9 +331,6 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		private final Color COLOR_COMPLETELY_CACHED = new Color(0x4040FF);
 		private final Color COLOR_GRAY = new Color(0xEEEEEE);
 
-		private static final double SCALE_FACTOR = 1000000;
-		private static final double INVERSE_SCALE_FACTOR = 1 / SCALE_FACTOR;
-
 		public TimeSliderUI(JSlider slider)
 		{
 			super(slider);
@@ -374,62 +372,65 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		@Override
 		public void paintTrack(Graphics g)
 		{
-			Rectangle trackBounds = trackRect;
-
-			g.translate(trackBounds.x, 0);
+			g.translate(trackRect.x, 0);
+			
 			Graphics2D g2 = (Graphics2D) g;
-			g2.scale(INVERSE_SCALE_FACTOR, 1);
-			int offset = trackRect.height - 3;
-			int height = 2;
+			
+			final int Y_OFFSET = trackRect.height - 4;
+			final int WIDTH = (int)trackRect.getWidth();
+			final int HEIGHT = 3;
 
+			//FIXME: this stuff is regenerated every frame --> should
+			//only be recreated when something has changed
+			
 			if (Layers.getActiveImageLayer() != null)
 			{
 				ImageLayer layer = (ImageLayer) Layers.getActiveImageLayer();
-				SortedSet<LocalDateTime> treeSet = layer.getLocalDateTime();
-				Color[] colors = new Color[treeSet.size()];
-				int counter = 0;
-				for (LocalDateTime localDateTime : treeSet)
-				{
-					Movie m = layer.getMovie(localDateTime);
-					
-					if(m==null)
-						colors[counter] = COLOR_NOT_CACHED;
-					else switch (m.getCacheStatus())
-					{
-						case FILE_FULL:
-							colors[counter] = COLOR_COMPLETELY_CACHED;
-							break;
-						case KDU_PREVIEW:
-							colors[counter] = COLOR_PARTIALLY_CACHED;
-							break;
-						case NONE:
-							colors[counter] = COLOR_NOT_CACHED;
-							break;
-						default:
-							throw new RuntimeException();
-					}
-					counter++;
-				}
 
-				int currentSize = 0;
-				int trackWidth = (int) (trackRect.getWidth());
-				double partPerDate = 1 / (double) treeSet.size();
-				int delta = (int) (partPerDate * trackWidth * SCALE_FACTOR);
-				for (int i = 0; i < colors.length; i++)
+				//FIXME: speed up!!!!!
+				LocalDateTime[] times=layer.getLocalDateTime().toArray(new LocalDateTime[0]);
+				int max=Math.min(times.length, (int)trackRect.getWidth());
+				Color[] colors = new Color[max];
+				
+				Match previousMatch = null;
+				for(int i=0;i<max;i++)
 				{
-					g.setColor(colors[i]);
-					g2.fillRect(currentSize, offset, delta, height);
-					currentSize += delta;
+					LocalDateTime localDateTime=times[(int)Math.round(i/(double)max*times.length)];
+					
+					Match currentMatch = layer.getMovie(localDateTime);
+					if(currentMatch==null || currentMatch.equals(previousMatch))
+						g.setColor(COLOR_NOT_CACHED);
+					else
+						switch (currentMatch.movie.getCacheStatus())
+						{
+							case FILE_FULL:
+								g.setColor(COLOR_COMPLETELY_CACHED);
+								break;
+							case KDU_PREVIEW:
+								g.setColor(COLOR_PARTIALLY_CACHED);
+								break;
+							case NONE:
+								g.setColor(COLOR_NOT_CACHED);
+								break;
+							default:
+								throw new RuntimeException();
+						}
+					
+					
+					int xa=(int)Math.round(i/(double)max*WIDTH);
+					int xb=(int)Math.round((i+1)/(double)max*WIDTH);
+					g2.fillRect(xa, Y_OFFSET, xb-xa, HEIGHT);
+					
+					previousMatch=currentMatch;
 				}
 			}
 			else
 			{
 				g.setColor(COLOR_NOT_CACHED);
-				g2.fillRect(0, offset, (int) (trackRect.getWidth() * SCALE_FACTOR), height);
+				g2.fillRect(0, Y_OFFSET, WIDTH, HEIGHT);
 			}
 
-			g2.scale(SCALE_FACTOR, 1);
-			g.translate(-trackBounds.x, 0);
+			g.translate(-trackRect.x, 0);
 		}
 	}
 

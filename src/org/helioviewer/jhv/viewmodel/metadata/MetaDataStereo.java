@@ -27,7 +27,6 @@ class MetaDataStereo extends MetaData
         }
 
         fullName = detector + " " + measurement;
-        this.metaDataContainer = metaDataContainer;
         
         switch (measurement) {
 		case "171":
@@ -49,7 +48,7 @@ class MetaDataStereo extends MetaData
         String observedDate = metaDataContainer.get("DATE_OBS");
         localDateTime = LocalDateTime.parse(observedDate, DATE_FORMAT);
 
-        updatePixelParameters();
+        readPixelParameters(metaDataContainer);
         
         this.heeqX = metaDataContainer.tryGetDouble("HEQX_OBS");
         this.heeqY = metaDataContainer.tryGetDouble("HEQY_OBS");

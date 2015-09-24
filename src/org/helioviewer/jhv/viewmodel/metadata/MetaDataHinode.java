@@ -17,14 +17,12 @@ class MetaDataHinode extends MetaData{
         	throw new NonSuitableMetaDataException("invalid instrument: "+instrument);
         }
 
-        this.metaDataContainer = metaDataContainer;
-
         this.instrument = "XRT";
         fullName = "XRT";
         String observedDate = metaDataContainer.get("DATE_OBS");
         localDateTime = LocalDateTime.parse(observedDate, DATE_FORMAT);
 
-        updatePixelParameters();
+        readPixelParameters(metaDataContainer);
 
         this.heeqX = metaDataContainer.tryGetDouble("HEQX_OBS");
         this.heeqY = metaDataContainer.tryGetDouble("HEQY_OBS");

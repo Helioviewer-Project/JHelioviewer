@@ -7,16 +7,18 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 
-public class MetaDataContainer{
-	private Document document;
+public class MetaDataContainer
+{
+	private final Document document;
 	
-	public MetaDataContainer(Document document) {
-		this.document = document;
+	public MetaDataContainer(Document _document)
+	{
+		document = _document;
 	}
 	
-	public String get(String key) {
-        String value = getValueFromXML(key, "fits");
-        return value;
+	public String get(String key)
+	{
+        return getValueFromXML(key, "fits");
 	}
 
 	private String getValueFromXML(String key, String string)
@@ -29,20 +31,22 @@ public class MetaDataContainer{
 		{
 			Node child = line.getFirstChild();
 			if (child instanceof CharacterData)
-			{
-				CharacterData cd = (CharacterData) child;
-				return cd.getData();
-			}
+				return ((CharacterData) child).getData();
 		}
 		return null;
 	}
 
-	public int tryGetInt(String key) {
+	public int tryGetInt(String key)
+	{
 		String string = get(key);
-        if (string != null) {
-            try {
+        if (string != null)
+        {
+            try
+            {
                 return Integer.parseInt(string);
-            } catch (NumberFormatException e) {
+            }
+            catch (NumberFormatException e)
+            {
                 System.err.println("NumberFormatException while trying to parse value \"" + string + "\" of key " + key + " from meta data of");
                 return 0;
             }
@@ -50,33 +54,20 @@ public class MetaDataContainer{
         return 0;
     }
 
-	public double tryGetDouble(String key) {
-
+	public double tryGetDouble(String key)
+	{
         String string = get(key);
-        if (string != null) {
-            try {
-                return Double.parseDouble(string);
-            } catch (NumberFormatException e) {
-                System.out.println("NumberFormatException while trying to parse value \"" + string + "\" of key " + key + " from meta data of");
-                return Double.NaN;
-            }
+        if (string == null)
+        	return 0.0; //TODO: should this be NaN too?
+
+        try
+        {
+            return Double.parseDouble(string);
         }
-        return 0.0;
+        catch (NumberFormatException e)
+        {
+            System.out.println("NumberFormatException while trying to parse value \"" + string + "\" of key " + key + " from meta data of");
+            return Double.NaN;
+        }
     }
-	
-
-	public int getPixelWidth() {
-		
-		return 4096;
-	}
-
-	public int getPixelHeight() {
-		
-		return 4096;
-	}
-	
-	public Document getDocument(){
-		return document;
-	}
-
 }

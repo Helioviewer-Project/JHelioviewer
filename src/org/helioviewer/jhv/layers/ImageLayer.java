@@ -258,13 +258,9 @@ public class ImageLayer extends AbstractLayer
 		return null;
 	}
 
-	public Movie getMovie(LocalDateTime _currentDateTime)
+	public Match getMovie(LocalDateTime _currentDateTime)
 	{
-		Match match=MovieCache.findBestFrame(sourceId, _currentDateTime);
-		if(match==null)
-			return null;
-		
-		return match.movie;
+		return MovieCache.findBestFrame(sourceId, _currentDateTime);
 	}
 
 	public RenderResult renderLayer(GL2 gl, Dimension canvasSize, MainPanel mainPanel, ByteBuffer _imageData)

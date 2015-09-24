@@ -18,13 +18,11 @@ class MetaDataHMI extends MetaData{
 
         instrument = "HMI";
         fullName = "HMI " + measurement.substring(0, 1) + measurement.substring(1, 3).toLowerCase();
-        this.metaDataContainer = metaDataContainer;
-        
 
         String observedDate = metaDataContainer.get("DATE_OBS");
         localDateTime = LocalDateTime.parse(observedDate, DATE_FORMAT);
 
-        updatePixelParameters();
+        readPixelParameters(metaDataContainer);
       
         this.heeqX = metaDataContainer.tryGetDouble("HEQX_OBS");
         this.heeqY = metaDataContainer.tryGetDouble("HEQY_OBS");

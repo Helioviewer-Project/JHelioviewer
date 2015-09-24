@@ -23,12 +23,11 @@ class MetaDataStereoB_COR2 extends MetaData{
         if (!(observatory.equalsIgnoreCase("STEREO_B") && detector.equalsIgnoreCase("COR2"))){
         	throw new NonSuitableMetaDataException("invalid instrument: "+observatory+"/"+detector);
         }
-        this.metaDataContainer = metaDataContainer;
 
         String observedDate = metaDataContainer.get("DATE_OBS");
         localDateTime = LocalDateTime.parse(observedDate, DATE_FORMAT);
 
-        updatePixelParameters();
+        readPixelParameters(metaDataContainer);
         
         innerRadius = metaDataContainer.tryGetDouble("HV_ROCC_INNER") * Constants.SUN_RADIUS;
         outerRadius = metaDataContainer.tryGetDouble("HV_ROCC_OUTER") * Constants.SUN_RADIUS;

@@ -126,6 +126,16 @@ public class Movie
 			timeDifferenceNanos=_timeDifferenceNanos;
 			movie=Movie.this;
 		}
+		
+		@Override
+		public boolean equals(Object _obj)
+		{
+			if(!(_obj instanceof Match))
+				return false;
+			
+			Match o=(Match)_obj;
+			return index==o.index && movie==o.movie;
+		}
 	}
 	
 	public Match findClosestIdx(LocalDateTime _currentDateTime)
@@ -183,8 +193,8 @@ public class Movie
 			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			Document doc = builder.parse(in);
 			doc.getDocumentElement().normalize();
-
-			return MetaDataFactory.getMetaData(new MetaDataContainer(doc));
+			
+			return MetaDataFactory.getMetaData(doc);
 		}
 		catch (Exception ex)
 		{

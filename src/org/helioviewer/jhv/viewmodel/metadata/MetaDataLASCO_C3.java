@@ -24,15 +24,13 @@ class MetaDataLASCO_C3 extends MetaData{
 
         observatory = metaDataContainer.get("TELESCOP");
         fullName = "LASCO " + detector;
-        this.metaDataContainer = metaDataContainer;
-
 
         String observedDate = metaDataContainer.get("DATE_OBS");
         observedDate += "T" + metaDataContainer.get("TIME_OBS");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd'T'HH:mm:ss.SSS");
         localDateTime = LocalDateTime.parse(observedDate, formatter);
 
-        updatePixelParameters();
+        readPixelParameters(metaDataContainer);
         
         innerRadius = metaDataContainer.tryGetDouble("HV_ROCC_INNER") * Constants.SUN_RADIUS;
         outerRadius = metaDataContainer.tryGetDouble("HV_ROCC_OUTER") * Constants.SUN_RADIUS;

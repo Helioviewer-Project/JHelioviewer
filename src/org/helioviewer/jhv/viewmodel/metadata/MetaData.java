@@ -19,7 +19,6 @@ public abstract class MetaData
 {
     private Rectangle2D physicalImageSize;
     
-    protected MetaDataContainer metaDataContainer = null;
     protected String instrument = "";
     protected String detector = "";
     protected String measurement = " ";
@@ -190,18 +189,18 @@ public abstract class MetaData
     	return localDateTime;
     }
     
-	protected void updatePixelParameters()
+	protected void readPixelParameters(MetaDataContainer _container)
 	{
         double newSolarPixelRadius = -1.0;
         
-        double sunX = metaDataContainer.tryGetDouble("CRPIX1");
-        double sunY = metaDataContainer.tryGetDouble("CRPIX2");
+        double sunX = _container.tryGetDouble("CRPIX1");
+        double sunY = _container.tryGetDouble("CRPIX2");
         sunPixelPosition = new Vector2d(sunX, sunY);
 
-        arcsecPerPixelX = metaDataContainer.tryGetDouble("CDELT1");
-        arcsecPerPixelY = metaDataContainer.tryGetDouble("CDELT2");
+        arcsecPerPixelX = _container.tryGetDouble("CDELT1");
+        arcsecPerPixelY = _container.tryGetDouble("CDELT2");
         
-        double distanceToSun = metaDataContainer.tryGetDouble("DSUN_OBS");
+        double distanceToSun = _container.tryGetDouble("DSUN_OBS");
         double radiusSunInArcsec = Math.atan(Constants.SUN_RADIUS / distanceToSun) * MathUtils.RAD_TO_DEG * 3600;
 
         if (distanceToSun > 0)
@@ -324,9 +323,15 @@ public abstract class MetaData
         return maskRotation;
 	}
 
-	public double getRadiusSuninArcsec() {
-        double distanceToSun = metaDataContainer.tryGetDouble("DSUN_OBS");
-        return Math.atan(Constants.SUN_RADIUS / distanceToSun) * MathUtils.RAD_TO_DEG * 3600;
+	public double getRadiusSuninArcsec()
+	{
+		throw new RuntimeException();
+		
+		//commented out, since metaDataContainer may be long gone by now. if this
+		//is really needed, DSUN_OBS should be cached in this class
+		
+        /*double distanceToSun = metaDataContainer.tryGetDouble("DSUN_OBS");
+        return Math.atan(Constants.SUN_RADIUS / distanceToSun) * MathUtils.RAD_TO_DEG * 3600;*/
 	}
 
 	protected void calcDefaultRotation() {

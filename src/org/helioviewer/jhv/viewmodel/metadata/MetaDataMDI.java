@@ -16,12 +16,11 @@ class MetaDataMDI extends MetaData{
         observatory = metaDataContainer.get("TELESCOP");
         measurement = metaDataContainer.get("DPC_OBSR");
         fullName = "MDI " + measurement.substring(3, 6);
-        this.metaDataContainer = metaDataContainer;
                 
         String observedDate = metaDataContainer.get("DATE_OBS");
         localDateTime = LocalDateTime.parse(observedDate, DATE_FORMAT);
 
-        updatePixelParameters();
+        readPixelParameters(metaDataContainer);
         
         this.heeqX = metaDataContainer.tryGetDouble("HEQX_OBS");
         this.heeqY = metaDataContainer.tryGetDouble("HEQY_OBS");

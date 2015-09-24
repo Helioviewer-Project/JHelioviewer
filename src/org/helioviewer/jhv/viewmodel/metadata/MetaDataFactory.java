@@ -6,6 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import javax.swing.JOptionPane;
 
 import org.helioviewer.jhv.gui.MainFrame;
+import org.w3c.dom.Document;
 
 public class MetaDataFactory {
 	@SuppressWarnings("unchecked")
@@ -27,14 +28,17 @@ public class MetaDataFactory {
 	};
 	
 	
-	public static MetaData getMetaData(MetaDataContainer metaDataContainer){
-		
+	public static MetaData getMetaData(Document doc)
+	{
+		MetaDataContainer metaDataContainer = new MetaDataContainer(doc);
 		MetaData metaData = null;
 		Object[] args = {metaDataContainer};
-		for (Class<MetaData> c : META_DATA_CLASSES){
-			try {
+		for (Class<MetaData> c : META_DATA_CLASSES)
+			try
+			{
 			    Constructor<MetaData> constructor = c.getDeclaredConstructor(MetaDataContainer.class);
 				metaData = constructor.newInstance(args);
+				break;
 			}
             catch(NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
             {
@@ -49,16 +53,14 @@ public class MetaDataFactory {
                     e.printStackTrace();
                 }
             }
-			if (metaData != null) break;
-		}
+
 		
-		if (metaData != null){
+		if (metaData != null)
 			return metaData;
-		}
 		
-		//FIXME: error handling should be done in calling code instead!!!
+		//FIXME: error handling should be done in calling code instead!!! this will
+		//crash, because its called from a non awt-thread (during loading of imgs)
 		JOptionPane.showMessageDialog(MainFrame.MAIN_PANEL, "This data source's metadata could not be read.");
 		return null;
-		
 	}
 }

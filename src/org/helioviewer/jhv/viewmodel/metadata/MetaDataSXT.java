@@ -3,12 +3,14 @@ package org.helioviewer.jhv.viewmodel.metadata;
 import java.awt.Rectangle;
 import java.time.LocalDateTime;
 
-class MetaDataSXT extends MetaData{
+class MetaDataSXT extends MetaData
+{
 	
 	private final static Rectangle RESOLUTION = new Rectangle(1024, 1024);
 	private final double IMAGE_SCALE = 2.46;
 
-  public MetaDataSXT(MetaDataContainer metaDataContainer){
+	public MetaDataSXT(MetaDataContainer metaDataContainer)
+	{
 	  	super(metaDataContainer, RESOLUTION);
 
         measurement = metaDataContainer.get("WAVELNTH");
@@ -17,14 +19,13 @@ class MetaDataSXT extends MetaData{
         	throw new NonSuitableMetaDataException("invalid instrument: "+instrument);
         }
 
-        this.metaDataContainer = metaDataContainer;
         this.instrument = "SXT";
         fullName = "SXT " + measurement;
         
         String observedDate = metaDataContainer.get("DATE_OBS");
         localDateTime = LocalDateTime.parse(observedDate, DATE_FORMAT);
 
-        updatePixelParameters();
+        readPixelParameters(metaDataContainer);
 
        
         this.heeqX = metaDataContainer.tryGetDouble("HEQX_OBS");
