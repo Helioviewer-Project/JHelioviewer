@@ -20,7 +20,6 @@ public abstract class AbstractLayer
 	//FIXME: synchronization not done properly
 	protected ArrayList<AbstractDownloadRequest> failedRequests;
 	
-	protected boolean isImageLayer = false;
 	protected boolean isDownloadable = false;
 
 	public String getName()
@@ -43,8 +42,9 @@ public abstract class AbstractLayer
 		MainFrame.MAIN_PANEL.repaint();
 	}
 
-	public boolean isImageLayer() {
-		return isImageLayer;
+	public final boolean isImageLayer()
+	{
+		return this instanceof ImageLayer;
 	}
 	
 	public enum RenderResult
@@ -90,7 +90,7 @@ public abstract class AbstractLayer
 	public void ignoreFailedRequests()
 	{
 		failedRequests.clear();
-		MainFrame.LAYER_PANEL.repaintPanel();
+		MainFrame.LAYER_PANEL.updateData();
 	}
 
 	public void retryFailedRequests()

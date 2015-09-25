@@ -5,11 +5,12 @@ import java.time.LocalDateTime;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.viewmodel.TimeLine;
+import org.helioviewer.jhv.viewmodel.jp2view.newjpx.UltimateLayer;
 
 //FIXME: combine with imageRegion
 class Texture
 {
-	private int sourceId = 0;
+	private UltimateLayer sourceId;
 	private ImageRegion imageRegion;
 	private final int openGLTextureId;
 
@@ -18,14 +19,14 @@ class Texture
 		openGLTextureId = _openGLTextureId;
 	}
 
-	void setNewImageRegion(int _sourceId, ImageRegion _imageRegion)
+	void setNewImageRegion(UltimateLayer _sourceId, ImageRegion _imageRegion)
 	{
 		sourceId = _sourceId;
 		_imageRegion.setOpenGLTextureId(openGLTextureId);
 		imageRegion = _imageRegion;
 	}
 
-	public boolean compareRegion(int id, ImageRegion imageRegion, LocalDateTime localDateTime)
+	public boolean compareRegion(UltimateLayer id, ImageRegion imageRegion, LocalDateTime localDateTime)
 	{
 		if (this.imageRegion != null)
 		{

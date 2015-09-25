@@ -70,7 +70,8 @@ public abstract class MetaData
     /**
      * Default constructor, does not set size or position.
      */
-    public MetaData(MetaDataContainer metaDataContainer, Rectangle resolution) {
+    public MetaData(MetaDataContainer metaDataContainer, Rectangle resolution)
+    {
     	int width = metaDataContainer.tryGetInt("NAXIS1");
     	int height = metaDataContainer.tryGetInt("NAXIS2");
     	if (width > 0 && height > 0){
@@ -86,12 +87,11 @@ public abstract class MetaData
         detector = metaDataContainer.get("DETECTOR");
         instrument = metaDataContainer.get("INSTRUME");
 
-        if (detector == null) {
-            detector = " ";
-        }
-        if (instrument == null) {
+        if (detector == null)
+            detector = " "; //TODO: a space? not "" or null?!
+        
+        if (instrument == null)
             instrument = " ";
-        }
     }
 
     /**
@@ -146,7 +146,7 @@ public abstract class MetaData
         return measurement;
     }
 
-    /**
+    /**<
      * {@inheritDoc}
      */
     public String getObservatory() {

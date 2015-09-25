@@ -394,7 +394,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		panel.add(btnAddLayer, gbcBtnAddLayer);
 	}
 
-	void updateData()
+	public void updateData()
 	{
 		tableModel.setRowCount(Layers.getLayerCount());
 		
@@ -518,16 +518,11 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 	@Override
 	public void timeStampChanged(LocalDateTime current, LocalDateTime last)
 	{
-		updateData();			
+		updateData();		
 	}
 
 	@Override
 	public void dateTimesChanged(int framecount)
 	{
-	}
-
-	public void repaintPanel()
-	{
-		updateData();
 	}
 }

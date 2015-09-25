@@ -83,6 +83,5 @@ class MetaDataAIA extends MetaData{
         this.stonyhurstLatitude = metaDataContainer.tryGetDouble("HGLT_OBS");
         this.stonyhurstLongitude = metaDataContainer.tryGetDouble("HGLN_OBS");
         this.stonyhurstAvailable = this.stonyhurstLatitude != 0.0 || this.stonyhurstLongitude != 0.0;
-        
    }
 }

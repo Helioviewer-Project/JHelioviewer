@@ -310,6 +310,6 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 
 	public static void repaintLayerPanel()
 	{
-		MainFrame.LAYER_PANEL.repaintPanel();
+		MainFrame.LAYER_PANEL.updateData();
 	}
 }

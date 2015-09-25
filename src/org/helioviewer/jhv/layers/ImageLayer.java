@@ -57,8 +57,6 @@ public class ImageLayer extends AbstractLayer
 	public boolean invertedLut = false;
 	protected boolean coronaVisible = true;
 
-	private static int idCounter = 0;
-	protected int layerId;
 	protected LocalDateTime start;
 	protected LocalDateTime end;
 	protected int cadence = -1;
@@ -80,14 +78,10 @@ public class ImageLayer extends AbstractLayer
 		return lut;
 	}
 
-	public int getID()
-	{
-		return layerId;
-	}
-
 	public void setLut(Lut _lutEntry)
 	{
 		lut = _lutEntry;
+		MainFrame.FILTER_PANEL.update();
 	}
 
 	public String getLocalFilePath()
@@ -111,7 +105,7 @@ public class ImageLayer extends AbstractLayer
 			visible = jsonLayer.getBoolean("visibility");
 			invertedLut = jsonLayer.getBoolean("invertedLut");
 			coronaVisible=jsonLayer.getBoolean("coronaVisiblity");
-			MainFrame.FILTER_PANEL.updateUIElements((ImageLayer) this);
+			MainFrame.FILTER_PANEL.update();
 		}
 		catch (JSONException e)
 		{
@@ -139,9 +133,6 @@ public class ImageLayer extends AbstractLayer
 
 	public ImageLayer(int _sourceId, LocalDateTime _start, LocalDateTime _end, int _cadence, String _name)
 	{
-		layerId = idCounter++;
-		isImageLayer = true;
-		
 		sourceId = _sourceId;
 		start = _start;
 		end = _end;
@@ -149,14 +140,16 @@ public class ImageLayer extends AbstractLayer
 		name = _name;
 		isDownloadable = ChronoUnit.SECONDS.between(_start, _end) / _cadence < 1000;
 		
-		ultimateLayer = new UltimateLayer(layerId, _sourceId);
+		ultimateLayer = new UltimateLayer(_sourceId,this);
 		ultimateLayer.setTimeRange(_start, _end, _cadence);
 	}
 
+	private static int freeSourceId=0;
+	
 	public ImageLayer(String _filePath)
 	{
 		localPath = _filePath;
-		ultimateLayer = new UltimateLayer(layerId, _filePath);
+		ultimateLayer = new UltimateLayer(this, --freeSourceId, _filePath);
 		name = ultimateLayer.getMetaData(0).getFullName();
 		
 		start = ultimateLayer.getLocalDateTimes().first();
@@ -462,7 +455,7 @@ public class ImageLayer extends AbstractLayer
 			failedRequests.clear();
 		}
 		ultimateLayer.retryFailedRequests(requests);
-		MainFrame.LAYER_PANEL.repaintPanel();
+		MainFrame.LAYER_PANEL.updateData();
 	}
 
 	public LocalDateTime getFirstLocalDateTime()
@@ -493,7 +486,7 @@ public class ImageLayer extends AbstractLayer
 		if (nextLocalDateTime == null)
 			nextLocalDateTime = ultimateLayer.localDateTimes.last();
 		
-		ImageRegion cachedRegion = TextureCache.get(layerId, imageRegion, nextLocalDateTime);
+		ImageRegion cachedRegion = TextureCache.get(ultimateLayer, imageRegion, nextLocalDateTime);
 		if(cachedRegion != null)
 		{
 			ultimateLayer.imageRegion = cachedRegion;

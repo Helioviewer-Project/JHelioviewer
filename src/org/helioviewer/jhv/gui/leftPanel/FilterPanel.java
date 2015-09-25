@@ -1,5 +1,6 @@
 package org.helioviewer.jhv.gui.leftPanel;
 
+import java.awt.Component;
 import java.awt.Toolkit;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -49,14 +50,15 @@ public class FilterPanel extends JPanel implements LayerListener
 	
     private static final Icon ICON_INVERT = IconBank.getIcon(JHVIcon.INVERT, 16, 16);
 
-	public FilterPanel() {
+	public FilterPanel()
+	{
 		initGui();
 		Layers.addNewLayerListener(this);
 	}
 	
-	private void initGui(){
-        Object clickInterval = Toolkit.getDefaultToolkit().
-                getDesktopProperty("awt.multiClickInterval");
+	private void initGui()
+	{
+        Object clickInterval = Toolkit.getDefaultToolkit().getDesktopProperty("awt.multiClickInterval");
         int delay = clickInterval != null ? (int)clickInterval : 200;
 
 		FormLayout formLayout = new FormLayout(new ColumnSpec[] {
@@ -104,19 +106,24 @@ public class FilterPanel extends JPanel implements LayerListener
 		add(lblOpacity, "10, 2");
 
 		
-		opacitySlider.addChangeListener(new ChangeListener() {			
+		opacitySlider.addChangeListener(new ChangeListener()
+		{
 			@Override
-			public void stateChanged(ChangeEvent e) {
+			public void stateChanged(ChangeEvent e)
+			{
 				lblOpacity.setText(opacitySlider.getValue() + "%");
-				if (activeLayer != null && activeLayer.opacity != opacitySlider.getValue() / 100.0){
+				if (activeLayer != null && activeLayer.opacity != opacitySlider.getValue() / 100.0)
+				{
 					activeLayer.opacity = opacitySlider.getValue() / 100.0;
-					repaintComponent();
+					MainFrame.MAIN_PANEL.repaint();
 				}
 			}
 		});
-		opacitySlider.addMouseListener(new MultiClickListener(delay){
+		opacitySlider.addMouseListener(new MultiClickListener(delay)
+		{
 			@Override
-			public void doubleClick(MouseEvent e) {
+			public void doubleClick(MouseEvent e)
+			{
 				opacitySlider.setValue(100);
 			}
 		});
@@ -131,13 +138,16 @@ public class FilterPanel extends JPanel implements LayerListener
 		WheelSupport.installMouseWheelSupport(sharpenSlider);
 		lblSharpen = new JLabel("%");
 		add(lblSharpen, "10, 4");
-		sharpenSlider.addChangeListener(new ChangeListener() {			
+		sharpenSlider.addChangeListener(new ChangeListener()
+		{
 			@Override
-			public void stateChanged(ChangeEvent e) {
+			public void stateChanged(ChangeEvent e)
+			{
 				lblSharpen.setText(sharpenSlider.getValue() + "%");
-				if (activeLayer != null && activeLayer.sharpness != sharpenSlider.getValue()/100.0){
+				if (activeLayer != null && activeLayer.sharpness != sharpenSlider.getValue()/100.0)
+				{
 					activeLayer.sharpness = sharpenSlider.getValue()/100.0;
-					repaintComponent();
+					MainFrame.MAIN_PANEL.repaint();
 				}
 			}
 		});
@@ -160,7 +170,8 @@ public class FilterPanel extends JPanel implements LayerListener
 		lblGamma = new JLabel("1.0");
 		add(lblGamma, "10, 6");
 		WheelSupport.installMouseWheelSupport(gammaSlider);
-		gammaSlider.addChangeListener(new ChangeListener() {			
+		gammaSlider.addChangeListener(new ChangeListener()
+		{
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				double gammaValue = Math.exp(gammaSlider.getValue() * GAMMA_FACTOR);
@@ -173,7 +184,7 @@ public class FilterPanel extends JPanel implements LayerListener
 				lblGamma.setText(label);
 				if (activeLayer != null && activeLayer.gamma != gammaValue){
 					activeLayer.gamma = gammaValue;
-					repaintComponent();
+					MainFrame.MAIN_PANEL.repaint();
 				}
 			}
 		});
@@ -208,7 +219,7 @@ public class FilterPanel extends JPanel implements LayerListener
 				if (activeLayer != null &&  activeLayer.contrast != contrastSlider.getValue() / 10.0)
 				{
 					activeLayer.contrast = contrastSlider.getValue() / 10.0;
-					repaintComponent();
+					MainFrame.MAIN_PANEL.repaint();
 				}
 			}
 		});
@@ -231,26 +242,30 @@ public class FilterPanel extends JPanel implements LayerListener
         comboBoxColorTable = new JComboBox<Lut>(Lut.values());
         comboBoxColorTable.setSelectedItem(Lut.GRAY);
 		add(comboBoxColorTable, "4, 10, 5, 1, fill, default");
-		comboBoxColorTable.addItemListener(new ItemListener() {
-			
+		comboBoxColorTable.addItemListener(new ItemListener()
+		{
 			@Override
-			public void itemStateChanged(ItemEvent e) {
-				if (activeLayer != null && activeLayer.getLut() != comboBoxColorTable.getSelectedItem()){
+			public void itemStateChanged(ItemEvent e)
+			{
+				if (activeLayer != null && activeLayer.getLut() != comboBoxColorTable.getSelectedItem())
+				{
 					activeLayer.setLut((Lut) comboBoxColorTable.getSelectedItem());
-					repaintComponent();
+					MainFrame.MAIN_PANEL.repaint();
 				}
 			}
 		});
 		
 		btnInverseColorTable = new JToggleButton(ICON_INVERT);
 		add(btnInverseColorTable, "10, 10");
-		btnInverseColorTable.addChangeListener(new ChangeListener() {
-			
+		btnInverseColorTable.addChangeListener(new ChangeListener()
+		{
 			@Override
-			public void stateChanged(ChangeEvent e) {
-				if(activeLayer != null && activeLayer.invertedLut != btnInverseColorTable.isSelected()){
+			public void stateChanged(ChangeEvent e)
+			{
+				if(activeLayer != null && activeLayer.invertedLut != btnInverseColorTable.isSelected())
+				{
 					activeLayer.invertedLut=btnInverseColorTable.isSelected();
-					repaintComponent();
+					MainFrame.MAIN_PANEL.repaint();
 				}
 			}
 		});
@@ -260,78 +275,92 @@ public class FilterPanel extends JPanel implements LayerListener
 		
 		chckbxRed = new JCheckBox("Red");
 		add(chckbxRed, "4, 12");
-		chckbxRed.addItemListener(new ItemListener() {
+		chckbxRed.addItemListener(new ItemListener()
+		{
 			@Override
-			public void itemStateChanged(ItemEvent e) {
-				if (activeLayer != null && activeLayer.redChannel != chckbxRed.isSelected()){
+			public void itemStateChanged(ItemEvent e)
+			{
+				if (activeLayer != null && activeLayer.redChannel != chckbxRed.isSelected())
+				{
 					activeLayer.redChannel=chckbxRed.isSelected();
-					repaintComponent();
+					MainFrame.MAIN_PANEL.repaint();
 				}
 			}
 		});
 		
 		chckbxGreen = new JCheckBox("Green");
 		add(chckbxGreen, "6, 12");
-		chckbxGreen.addChangeListener(new ChangeListener() {
+		chckbxGreen.addItemListener(new ItemListener()
+		{
 			@Override
-			public void stateChanged(ChangeEvent e) {
-				if (activeLayer != null && activeLayer.greenChannel != chckbxGreen.isSelected()){
+			public void itemStateChanged(ItemEvent e)
+			{
+				if (activeLayer != null && activeLayer.greenChannel != chckbxGreen.isSelected())
+				{
 					activeLayer.greenChannel=chckbxGreen.isSelected();
-					repaintComponent();
+					MainFrame.MAIN_PANEL.repaint();
 				}
 			}
 		});
 		
 		chckbxBlue = new JCheckBox("Blue");
 		add(chckbxBlue, "8, 12");
-		chckbxBlue.addChangeListener(new ChangeListener() {
+		chckbxBlue.addItemListener(new ItemListener()
+		{
 			@Override
-			public void stateChanged(ChangeEvent e) {
+			public void itemStateChanged(ItemEvent e)
+			{
 				if (activeLayer != null && activeLayer.blueChannel != chckbxBlue.isSelected())
 				{
 					activeLayer.blueChannel=chckbxBlue.isSelected();
-					repaintComponent();
+					MainFrame.MAIN_PANEL.repaint();
 				}
 			}
 		});
-
 	}
 
-	public void updateUIElements(ImageLayer _imageLayer)
+	public void update()
 	{
-		activeLayer = _imageLayer;
-		contrastSlider.setValue((int)(_imageLayer.contrast * 10));
-		gammaSlider.setValue((int) (Math.log(_imageLayer.gamma) / GAMMA_FACTOR));
-		opacitySlider.setValue((int) (_imageLayer.opacity * 100));
-		sharpenSlider.setValue((int) (_imageLayer.sharpness * 100));
-		comboBoxColorTable.setSelectedItem(_imageLayer.getLut());
-		btnInverseColorTable.setSelected(_imageLayer.invertedLut);
-		chckbxRed.setSelected(_imageLayer.redChannel);
-		chckbxGreen.setSelected(_imageLayer.greenChannel);
-		chckbxBlue.setSelected(_imageLayer.blueChannel);
+		if(activeLayer==null)
+		{
+			for(Component c:getComponents())
+				c.setEnabled(false);
+			return;
+		}
+		
+		for(Component c:getComponents())
+			c.setEnabled(true);
+		
+		contrastSlider.setValue((int)(activeLayer.contrast * 10));
+		gammaSlider.setValue((int) (Math.log(activeLayer.gamma) / GAMMA_FACTOR));
+		opacitySlider.setValue((int) (activeLayer.opacity * 100));
+		sharpenSlider.setValue((int) (activeLayer.sharpness * 100));
+		
+		comboBoxColorTable.setSelectedItem(activeLayer.getLut());
+		btnInverseColorTable.setSelected(activeLayer.invertedLut);
+		chckbxRed.setSelected(activeLayer.redChannel);
+		chckbxGreen.setSelected(activeLayer.greenChannel);
+		chckbxBlue.setSelected(activeLayer.blueChannel);
 	}
 	
 	@Override
 	public void layerAdded()
 	{
-		ImageLayer activeLayer = Layers.getActiveImageLayer();
-		if (activeLayer != null)
-			updateUIElements(activeLayer);
 	}
 
 	@Override
-	public void layersRemoved() {
+	public void layersRemoved()
+	{
 	}
 
 	@Override
 	public void activeLayerChanged(AbstractLayer layer)
 	{
-		if (layer != null && layer.isImageLayer())
-			updateUIElements((ImageLayer) layer);
-	}
-	
-	private void repaintComponent(){
-		MainFrame.MAIN_PANEL.repaint();
-	}
-	
+		if(layer instanceof ImageLayer)
+			activeLayer=(ImageLayer)layer;
+		else
+			activeLayer=null;
+		
+		update();
+	}	
 }

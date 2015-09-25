@@ -61,9 +61,16 @@ public class InstrumentModel
 								
 								if (Boolean.parseBoolean(Settings.getProperty("startup.loadmovie")))
 								{
-									Filter instrument = observatories.get("SDO").filters.get("AIA").filters.get("171");
-									LocalDateTime start = instrument.end.minusDays(1);
-									Layers.addLayer(instrument.sourceId, start, instrument.end, 1728, "AIA 171");
+									try
+									{
+										Filter instrument = observatories.get("SDO").filters.get("AIA").filters.get("171");
+										LocalDateTime start = instrument.end.minusWeeks(2);
+										Layers.addLayer(instrument.sourceId, start, instrument.end, 60*60, instrument.getNickname());
+									}
+									catch(NullPointerException _npe)
+									{
+										_npe.printStackTrace();
+									}
 								}
 								
 								for(Runnable ul:updateListeners)

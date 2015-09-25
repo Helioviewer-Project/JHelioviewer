@@ -21,9 +21,9 @@ public class Layers
 		@Override
 		public int compare(AbstractLayer o1, AbstractLayer o2)
 		{
-			if (!o1.isImageLayer && o2.isImageLayer)
+			if (!o1.isImageLayer() && o2.isImageLayer())
 				return 1;
-			else if (o1.isImageLayer && !o2.isImageLayer)
+			else if (o1.isImageLayer() && !o2.isImageLayer())
 				return -1;
 			else
 				return 0;
@@ -50,7 +50,7 @@ public class Layers
 			renderListener.layerAdded();
 		
 		if (layers.size() == 1)
-			layerChanged();
+			activeLayerChanged();
 		
 		return layer;
 	}
@@ -92,7 +92,7 @@ public class Layers
 			renderListener.layerAdded();
 		
 		if (layers.size() == 1)
-			layerChanged();
+			activeLayerChanged();
 	}
 
 	public static ImageLayer addLayer(int id, LocalDateTime start, LocalDateTime end, int cadence, String name)
@@ -102,13 +102,12 @@ public class Layers
 		layers.sort(COMPARATOR);
 		updateOpacity(layer, false);
 		
-		if (layers.size() == 1 || activeImageLayer < 0) setActiveLayer(0);
-		for (LayerListener renderListener : layerListeners) {
+		if (layers.size() == 1 || activeImageLayer < 0)
+			setActiveLayer(0);
+		for (LayerListener renderListener : layerListeners)
 			renderListener.layerAdded();
-		}
-		if (layers.size() == 1) {
-			layerChanged();
-		}
+		if (layers.size() == 1)
+			activeLayerChanged();
 		return layer;
 	}
 
@@ -147,7 +146,7 @@ public class Layers
 		if (counter != activeImageLayer)
 		{
 			activeImageLayer = -1;
-			layerChanged();
+			activeLayerChanged();
 		}
 		
 		for (LayerListener renderListener : layerListeners)
@@ -162,12 +161,11 @@ public class Layers
 		return layers.size();
 	}
 
-	private static void layerChanged() {
-		if (activeLayer >= 0) {
-			for (LayerListener renderListener : layerListeners) {
+	private static void activeLayerChanged()
+	{
+		if (activeLayer >= 0)
+			for (LayerListener renderListener : layerListeners)
 				renderListener.activeLayerChanged(getLayer(activeLayer));
-			}
-		}
 	}
 
 	public static int getActiveLayerNumber() {
@@ -185,7 +183,7 @@ public class Layers
 			Layers.activeLayer = activeLayer;
 			if (getActiveLayer() != null && getActiveLayer().isImageLayer())
 				Layers.activeImageLayer = activeLayer;
-			Layers.layerChanged();
+			Layers.activeLayerChanged();
 		}
 	}
 
@@ -206,7 +204,7 @@ public class Layers
 	public static void removeAllImageLayers()
 	{
 		for (AbstractLayer layer : layers)
-			if (layer.isImageLayer)
+			if (layer.isImageLayer())
 			{
 				layer.remove();
 				layers.remove(layer);

@@ -23,6 +23,7 @@ import kdu_jni.Kdu_region_compositor;
 import org.helioviewer.jhv.layers.ImageLayer.CacheStatus;
 import org.helioviewer.jhv.opengl.TextureCache;
 import org.helioviewer.jhv.viewmodel.jp2view.kakadu.KakaduUtils;
+import org.helioviewer.jhv.viewmodel.jp2view.newjpx.UltimateLayer;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.metadata.MetaDataContainer;
 import org.helioviewer.jhv.viewmodel.metadata.MetaDataFactory;
@@ -39,10 +40,12 @@ public class Movie
 
 	private Jp2_threadsafe_family_src family_src;
 	private Jpx_source jpxSrc;
+	private UltimateLayer ul;
 
-	public Movie(int _sourceId)
+	public Movie(UltimateLayer _ul, int _sourceId)
 	{
 		sourceId = _sourceId;
+		ul=_ul;
 	}
 	
 	public synchronized void setFile(String _filename)
@@ -102,6 +105,9 @@ public class Movie
 				metaDatas[i]=readMetadata(i+1, family_src);
 				TextureCache.invalidate(sourceId, metaDatas[i].getLocalDateTime());
 			}
+			
+			if(framecount>0)
+				ul.setLUT(metaDatas[0].getDefaultLUT());
 		}
 		catch (KduException e)
 		{
@@ -140,6 +146,9 @@ public class Movie
 	
 	public Match findClosestIdx(LocalDateTime _currentDateTime)
 	{
+		if(metaDatas==null)
+			return null;
+		
 		int bestI=-1;
 		long minDiff = Long.MAX_VALUE;
 		

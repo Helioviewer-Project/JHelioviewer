@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.LinkedList;
 
 import org.helioviewer.jhv.base.ImageRegion;
+import org.helioviewer.jhv.viewmodel.jp2view.newjpx.UltimateLayer;
 
 //FIXME: handle concurrency, by using the cache only from awt/gl thread
 public class TextureCache
@@ -23,7 +24,7 @@ public class TextureCache
 	{
 	}
 
-	public synchronized static ImageRegion add(ImageRegion _imageRegion, int _id)
+	public synchronized static ImageRegion add(ImageRegion _imageRegion, UltimateLayer _id)
 	{
 		Texture texture = cache.removeFirst();
 		texture.setNewImageRegion(_id, _imageRegion);
@@ -44,7 +45,7 @@ public class TextureCache
 				cacheableTexture.invalidate();
 	}
 
-	public synchronized static ImageRegion get(int id, ImageRegion imageRegion, LocalDateTime localDateTime)
+	public synchronized static ImageRegion get(UltimateLayer id, ImageRegion imageRegion, LocalDateTime localDateTime)
 	{
 		for (Texture texture : cache)
 			if (texture.compareRegion(id, imageRegion, localDateTime))

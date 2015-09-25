@@ -8,25 +8,26 @@ import javax.swing.JOptionPane;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.w3c.dom.Document;
 
-public class MetaDataFactory {
+public class MetaDataFactory
+{
 	@SuppressWarnings("unchecked")
-  static final Class<MetaData>[] META_DATA_CLASSES = new Class[]{
-		MetaDataAIA.class,
-		MetaDataEIT.class,
-		MetaDataHMI.class,
-		MetaDataLASCO_C2.class,
-		MetaDataLASCO_C3.class,
-		MetaDataMDI.class,
-		MetaDataStereo.class,
-		MetaDataStereoA_COR1.class,
-		MetaDataStereoA_COR2.class,
-		MetaDataStereoB_COR1.class,
-		MetaDataStereoB_COR2.class,
-		MetaDataHinode.class,
-		MetaDataSXT.class,
-		MetaDataSWAP.class
-	};
-	
+	static final Class<MetaData>[] META_DATA_CLASSES = new Class[]
+		{
+			MetaDataAIA.class,
+			MetaDataEIT.class,
+			MetaDataHMI.class,
+			MetaDataLASCO_C2.class,
+			MetaDataLASCO_C3.class,
+			MetaDataMDI.class,
+			MetaDataStereo.class,
+			MetaDataStereoA_COR1.class,
+			MetaDataStereoA_COR2.class,
+			MetaDataStereoB_COR1.class,
+			MetaDataStereoB_COR2.class,
+			MetaDataHinode.class,
+			MetaDataSXT.class,
+			MetaDataSWAP.class
+		};
 	
 	public static MetaData getMetaData(Document doc)
 	{

@@ -22,6 +22,8 @@ import org.helioviewer.jhv.base.downloadmanager.JPIPDownloadRequest;
 import org.helioviewer.jhv.base.downloadmanager.JPIPRequest;
 import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
 import org.helioviewer.jhv.gui.MainFrame;
+import org.helioviewer.jhv.layers.ImageLayer;
+import org.helioviewer.jhv.layers.LUT.Lut;
 import org.helioviewer.jhv.layers.Movie;
 import org.helioviewer.jhv.opengl.TextureCache;
 import org.helioviewer.jhv.viewmodel.TimeLine;
@@ -42,22 +44,22 @@ public class UltimateLayer
 	
 	private volatile Thread loaderThread;
 	private boolean localFile = false;
-	private int sourceId;
-	private int layerId;
+	private final int sourceId;
 	private Movie movie;
+	private final ImageLayer imageLayer;
 
-	public UltimateLayer(int _layerId, int _sourceId)
+	public UltimateLayer(int _sourceId, ImageLayer _imageLayer)
 	{
-		layerId = _layerId;
 		sourceId = _sourceId;
+		imageLayer = _imageLayer;
 	}
 	
-	public UltimateLayer(int _layerId, String _filename)
+	public UltimateLayer(ImageLayer _imageLayer, int _sourceId, String _filename)
 	{
-		layerId = _layerId;
 		sourceId = genSourceId(_filename);
+		imageLayer = _imageLayer;
 		localFile = true;
-		movie = new Movie(_layerId);
+		movie = new Movie(this,_sourceId);
 		movie.setFile(_filename);
 		MovieCache.add(movie);
 		
@@ -104,7 +106,7 @@ public class UltimateLayer
 						currentEnd = end;
 					
 					MovieDownload md=new MovieDownload();
-					md.movie = new Movie(sourceId);
+					md.movie = new Movie(UltimateLayer.this,sourceId);
 					md.metadata = new HTTPRequest(URL
 							+ "startTime=" + currentStart.format(formatter)
 							+ "&endTime=" + currentEnd.format(formatter)
@@ -205,7 +207,7 @@ public class UltimateLayer
 									}
 								});
 								
-								download.lq = new JPIPRequest(jsonObject.getString("uri"), DownloadPriority.URGENT, 0, frames.length(), new Rectangle(128, 128), download.movie);
+								download.lq = new JPIPRequest(jsonObject.getString("uri"), DownloadPriority.URGENT, 0, frames.length(), new Rectangle(256, 256), download.movie);
 								UltimateDownloadManager.addRequest(download.lq);
 								download.metadata=null;
 							}
@@ -231,11 +233,14 @@ public class UltimateLayer
 								@Override
 								public void run()
 								{
-									//FIXME: should probably only be set if current layer is active
-									MainFrame.MOVIE_PANEL.repaintSlider();
+									//FIXME: should only happen if current layer is active
+									//MainFrame.MOVIE_PANEL.repaintSlider();
+									
+									//FIXME: should only happen if needed
+									MainFrame.SINGLETON.repaint();
 								}
 							});
-							Thread.sleep(200);
+							Thread.sleep(500);
 							downloads.addLast(download);
 						}
 					}
@@ -359,7 +364,7 @@ public class UltimateLayer
 		imageRegion = _imageRegion;
 		imageRegion.setLocalDateTime(_localDateTime);
 		
-		imageRegion = TextureCache.add(_imageRegion, layerId);
+		imageRegion = TextureCache.add(_imageRegion, this);
 		
 		return MovieCache.getImage(sourceId, _localDateTime, 8, imageRegion.getZoomFactor(), imageRegion.getImageSize());
 	}
@@ -370,5 +375,10 @@ public class UltimateLayer
 			return null;
 		
 		return MovieCache.getMetaData(sourceId, currentDateTime);
+	}
+
+	public void setLUT(Lut _defaultLUT)
+	{
+		imageLayer.setLut(_defaultLUT);
 	}
 }
