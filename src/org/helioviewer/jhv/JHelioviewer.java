@@ -29,7 +29,7 @@ import org.helioviewer.jhv.gui.dialogs.InstrumentModel;
 import org.helioviewer.jhv.io.CommandLineProcessor;
 import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.opengl.TextureCache;
-import org.helioviewer.jhv.plugins.plugin.Plugins;
+import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.viewmodel.jp2view.kakadu.KduErrorHandler;
 
 import com.install4j.api.launcher.ApplicationLauncher;

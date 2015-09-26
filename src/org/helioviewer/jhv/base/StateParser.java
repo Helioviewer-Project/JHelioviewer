@@ -22,7 +22,7 @@ import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.actions.filefilters.ExtensionFileFilter;
 import org.helioviewer.jhv.layers.Layers;
-import org.helioviewer.jhv.plugins.plugin.Plugins;
+import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.json.JSONArray;
 import org.json.JSONException;

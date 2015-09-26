@@ -15,7 +15,7 @@ class MetaDataLASCO_C2 extends MetaData{
 	public MetaDataLASCO_C2(MetaDataContainer metaDataContainer) {
         super(metaDataContainer, RESOLUTION);
         if (!(instrument.equalsIgnoreCase("LASCO") && detector.equalsIgnoreCase("C2"))){
-        	throw new NonSuitableMetaDataException("invalid instrument: "+instrument+"/"+detector);
+        	throw new UnsuitableMetaDataException("invalid instrument: "+instrument+"/"+detector);
         }
 
         String measurement1 = metaDataContainer.get("FILTER");

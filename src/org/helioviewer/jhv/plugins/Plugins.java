@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.plugins.plugin;
+package org.helioviewer.jhv.plugins;
 
 import java.awt.Component;
 import java.awt.Cursor;
@@ -26,9 +26,9 @@ import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.PluginLayer;
 import org.helioviewer.jhv.opengl.RayTrace;
+import org.helioviewer.jhv.plugins.AbstractPlugin.RenderMode;
 import org.helioviewer.jhv.plugins.hekplugin.HEKPlugin;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
-import org.helioviewer.jhv.plugins.plugin.AbstractPlugin.RenderMode;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.TimeLine.TimeLineListener;
 import org.json.JSONObject;

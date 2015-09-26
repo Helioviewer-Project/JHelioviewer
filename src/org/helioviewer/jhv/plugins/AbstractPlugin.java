@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.plugins.plugin;
+package org.helioviewer.jhv.plugins;
 
 import java.awt.event.MouseEvent;
 import java.time.LocalDateTime;

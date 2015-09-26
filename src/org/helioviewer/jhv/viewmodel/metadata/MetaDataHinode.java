@@ -14,7 +14,7 @@ class MetaDataHinode extends MetaData{
         measurement = metaDataContainer.get("WAVELNTH");
         observatory = metaDataContainer.get("TELESCOP");
         if (!(instrument.equalsIgnoreCase("XRT"))){
-        	throw new NonSuitableMetaDataException("invalid instrument: "+instrument);
+        	throw new UnsuitableMetaDataException("invalid instrument: "+instrument);
         }
 
         this.instrument = "XRT";

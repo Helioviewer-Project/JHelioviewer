@@ -25,7 +25,6 @@ import org.helioviewer.jhv.opengl.TextureCache;
 import org.helioviewer.jhv.viewmodel.jp2view.kakadu.KakaduUtils;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.UltimateLayer;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.helioviewer.jhv.viewmodel.metadata.MetaDataContainer;
 import org.helioviewer.jhv.viewmodel.metadata.MetaDataFactory;
 import org.w3c.dom.Document;
 

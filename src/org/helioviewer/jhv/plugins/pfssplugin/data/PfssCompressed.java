@@ -4,9 +4,9 @@ import java.io.IOException;
 
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
+import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
 import org.helioviewer.jhv.plugins.pfssplugin.data.caching.Cacheable;
-import org.helioviewer.jhv.plugins.plugin.Plugins;
 
 import com.github.junrar.Archive;
 import com.github.junrar.Volume;

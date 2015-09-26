@@ -45,5 +45,7 @@
 	<classpathentry kind="lib" path="lib/commons-io-2.4.jar"/>
 	<classpathentry kind="lib" path="lib/annotation-detector-3.0.4.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang3-3.3.2.jar"/>
+	<classpathentry kind="lib" path="lib/annotations.jar"/>
+	<classpathentry kind="lib" path="lib/jsr305.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -8,10 +8,10 @@ import java.util.ArrayList;
 
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
+import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssSettings;
 import org.helioviewer.jhv.plugins.pfssplugin.data.FileDescriptor;
-import org.helioviewer.jhv.plugins.plugin.Plugins;
 
 /**
  * Manages loading and accessing of FileDescriptor Objects

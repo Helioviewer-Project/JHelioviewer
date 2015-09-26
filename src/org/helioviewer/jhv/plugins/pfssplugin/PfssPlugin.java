@@ -7,10 +7,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
+import org.helioviewer.jhv.plugins.AbstractPlugin;
+import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.plugins.pfssplugin.data.PfssDecompressed;
 import org.helioviewer.jhv.plugins.pfssplugin.data.managers.FrameManager;
-import org.helioviewer.jhv.plugins.plugin.AbstractPlugin;
-import org.helioviewer.jhv.plugins.plugin.Plugins;
 import org.json.JSONException;
 import org.json.JSONObject;
 

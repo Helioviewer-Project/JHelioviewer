@@ -43,7 +43,7 @@ public class MetaDataFactory
 			}
             catch(NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
             {
-                if(e.getCause() instanceof NonSuitableMetaDataException)
+                if(e.getCause() instanceof UnsuitableMetaDataException)
                 {
                     //ignore - we only tried the "wrong" metadata factory. a better fit
                     //should be found in a later iteration

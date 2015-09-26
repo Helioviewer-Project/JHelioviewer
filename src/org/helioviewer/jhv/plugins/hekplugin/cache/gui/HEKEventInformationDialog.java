@@ -37,13 +37,13 @@ import javax.swing.event.HyperlinkListener;
 
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.gui.ButtonCreator;
-import org.helioviewer.jhv.gui.ClipBoardCopier;
+import org.helioviewer.jhv.gui.ClipBoard;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
+import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKEvent;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKEventTableModel;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
-import org.helioviewer.jhv.plugins.plugin.Plugins;
 
 /**
  * Popup displaying informations about a HEK event.
@@ -532,7 +532,7 @@ public class HEKEventInformationDialog extends JDialog implements ActionListener
                 cellString = cellString.substring(0, cellString.lastIndexOf('\n'));
             }
 
-            ClipBoardCopier.getSingletonInstance().setString(cellString);
+            ClipBoard.setString(cellString);
 
         } else if (e.getSource() == moreButton) {
 

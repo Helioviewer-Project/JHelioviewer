@@ -8,9 +8,9 @@ import java.util.HashMap;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.base.math.Interval;
+import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKSettings;
-import org.helioviewer.jhv.plugins.plugin.Plugins;
 import org.json.JSONException;
 import org.json.JSONObject;
 

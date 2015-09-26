@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-import org.helioviewer.jhv.plugins.plugin.Plugins;
-import org.helioviewer.jhv.plugins.plugin.Plugins.PluginIcon;
+import org.helioviewer.jhv.plugins.Plugins;
+import org.helioviewer.jhv.plugins.Plugins.PluginIcon;
 
 /**
  * Panel of Pfss-Plugin

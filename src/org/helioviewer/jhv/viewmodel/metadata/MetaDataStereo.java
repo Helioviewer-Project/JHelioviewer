@@ -23,7 +23,7 @@ class MetaDataStereo extends MetaData
             measurement = "" + metaDataContainer.tryGetDouble("WAVELNTH");
         }
         if (!((observatory.equalsIgnoreCase("STEREO_A") || observatory.equalsIgnoreCase("STEREO_B") && detector.equalsIgnoreCase("EUVI")))){
-        	throw new NonSuitableMetaDataException("invalid instrument");
+        	throw new UnsuitableMetaDataException("invalid instrument");
         }
 
         fullName = detector + " " + measurement;

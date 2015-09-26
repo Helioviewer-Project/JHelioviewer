@@ -18,7 +18,7 @@ class MetaDataAIA extends MetaData{
         measurement = metaDataContainer.get("WAVELNTH");
         observatory = metaDataContainer.get("TELESCOP");
         if (!(instrument.equalsIgnoreCase("AIA_1") || instrument.equalsIgnoreCase("AIA_2") || instrument.equalsIgnoreCase("AIA_3") || instrument.equalsIgnoreCase("AIA_4"))){
-        	throw new NonSuitableMetaDataException("invalid instrument: "+instrument);
+        	throw new UnsuitableMetaDataException("invalid instrument: "+instrument);
         }
 
         this.instrument = "AIA";

@@ -16,7 +16,7 @@ class MetaDataSWAP extends MetaData{
         fullName = "SWAP " + measurement;
         
         if (!(instrument.contains("SWAP"))){
-        	throw new NonSuitableMetaDataException("invalid instrument: "+observatory+"/"+instrument+"/"+detector);
+        	throw new UnsuitableMetaDataException("invalid instrument: "+observatory+"/"+instrument+"/"+detector);
         }
         String observedDate = metaDataContainer.get("DATE-OBS");
         localDateTime = LocalDateTime.parse(observedDate, DATE_FORMAT);

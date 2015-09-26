@@ -23,9 +23,9 @@ import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.components.WheelSupport;
 import org.helioviewer.jhv.layers.AbstractLayer;
 import org.helioviewer.jhv.layers.ImageLayer;
+import org.helioviewer.jhv.layers.LUT.Lut;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
-import org.helioviewer.jhv.layers.LUT.Lut;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;

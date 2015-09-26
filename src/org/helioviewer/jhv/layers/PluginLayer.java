@@ -4,8 +4,8 @@ import java.awt.Dimension;
 import java.nio.ByteBuffer;
 
 import org.helioviewer.jhv.gui.MainPanel;
-import org.helioviewer.jhv.plugins.plugin.AbstractPlugin;
-import org.helioviewer.jhv.plugins.plugin.Plugins;
+import org.helioviewer.jhv.plugins.AbstractPlugin;
+import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 
 import com.jogamp.opengl.GL2;

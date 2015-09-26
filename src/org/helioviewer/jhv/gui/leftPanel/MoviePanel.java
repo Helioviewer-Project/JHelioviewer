@@ -13,7 +13,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
-import java.util.SortedSet;
 
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
@@ -38,7 +37,6 @@ import org.helioviewer.jhv.layers.AbstractLayer;
 import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
-import org.helioviewer.jhv.layers.Movie;
 import org.helioviewer.jhv.layers.Movie.Match;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.TimeLine.TimeLineListener;

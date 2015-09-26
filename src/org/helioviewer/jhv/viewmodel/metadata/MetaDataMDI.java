@@ -11,7 +11,7 @@ class MetaDataMDI extends MetaData{
 	public MetaDataMDI(MetaDataContainer metaDataContainer) {
         super(metaDataContainer, RESOLUTION);
         if (!(instrument.equalsIgnoreCase("MDI"))){
-        	throw new NonSuitableMetaDataException("invalid instrument: "+instrument);
+        	throw new UnsuitableMetaDataException("invalid instrument: "+instrument);
         }
         observatory = metaDataContainer.get("TELESCOP");
         measurement = metaDataContainer.get("DPC_OBSR");

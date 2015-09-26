@@ -26,8 +26,8 @@ import javax.swing.border.EmptyBorder;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.dialogs.calender.DatePicker;
 import org.helioviewer.jhv.layers.Layers;
-import org.helioviewer.jhv.plugins.plugin.AbstractPlugin;
-import org.helioviewer.jhv.plugins.plugin.Plugins;
+import org.helioviewer.jhv.plugins.AbstractPlugin;
+import org.helioviewer.jhv.plugins.Plugins;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
