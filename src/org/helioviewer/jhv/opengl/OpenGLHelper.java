@@ -8,6 +8,9 @@ import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
+import javax.annotation.Nullable;
+
+import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.gui.MainPanel;
@@ -262,21 +265,24 @@ public class OpenGLHelper
 	    return buffer;
 	}
 	
-	
-	public static String loadShaderFromFile(String shaderName) {
+	@Nullable
+	public static String loadShaderFromFile(String shaderName)
+	{
 		StringBuilder shaderCode = new StringBuilder();
 		String line = null;
 
 		try (BufferedReader br = new BufferedReader(new InputStreamReader(
-				MainPanel.class.getResourceAsStream(shaderName),
-				StandardCharsets.UTF_8))) {
-			while ((line = br.readLine()) != null) {
+				MainPanel.class.getResourceAsStream(shaderName), StandardCharsets.UTF_8)))
+		{
+			while ((line = br.readLine()) != null)
 				shaderCode.append(line + "\n");
-			}
-		} catch (IOException e) {
 			
-			e.printStackTrace();
+			return shaderCode.toString();
 		}
-		return shaderCode.toString();
+		catch (IOException e)
+		{
+			Telemetry.trackException(e);
+		}
+		return null;
 	}
 }

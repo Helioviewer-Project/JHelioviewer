@@ -10,6 +10,7 @@ import java.util.HashMap;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
+import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.plugins.hekplugin.HEKPlugin;
 
@@ -218,7 +219,7 @@ public class HEKConstants {
             setupEventBufImgs();
             setupBufImgs();
         } catch (IOException e) {
-            e.printStackTrace();
+        	Telemetry.trackException(e);
         }
     }
 

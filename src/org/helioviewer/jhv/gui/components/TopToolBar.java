@@ -68,19 +68,12 @@ public class TopToolBar extends JToolBar implements MouseListener
 	/**
 	 * Default constructor.
 	 */
-	public TopToolBar() {
+	public TopToolBar()
+	{
 		//setRollover(true);
 		setFloatable(false);
 
-		try {
-			displayMode = DisplayMode.valueOf(Settings.getProperty(
-					"display.toolbar").toUpperCase());
-		} catch (Exception e) {
-			System.err
-					.println("Error when reading the display mode of the toolbar");
-			e.printStackTrace();
-			displayMode = DisplayMode.ICONANDTEXT;
-		}
+		displayMode = DisplayMode.valueOf(Settings.getProperty("display.toolbar").toUpperCase());
 
 		createNewToolBar();
 		addMouseListener(this);

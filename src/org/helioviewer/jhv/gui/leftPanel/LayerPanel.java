@@ -40,6 +40,7 @@ import org.helioviewer.jhv.gui.dialogs.AddLayerPanel;
 import org.helioviewer.jhv.gui.dialogs.DownloadMovieDialog;
 import org.helioviewer.jhv.gui.dialogs.MetaDataDialog;
 import org.helioviewer.jhv.layers.AbstractLayer;
+import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.viewmodel.TimeLine;
@@ -368,8 +369,9 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				if (Layers.getActiveImageLayer() != null)
-					new DownloadMovieDialog().startDownload(Layers.getActiveLayer().getURL(), Layers.getActiveLayer());
+				ImageLayer l = Layers.getActiveImageLayer();
+				if (l != null)
+					new DownloadMovieDialog().startDownload(l.getURL(), l);
 			}
 		});
 		GridBagConstraints gbcBtnDownloadLayer = new GridBagConstraints();

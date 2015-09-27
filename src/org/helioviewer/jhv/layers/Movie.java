@@ -20,6 +20,7 @@ import kdu_jni.Kdu_coords;
 import kdu_jni.Kdu_dims;
 import kdu_jni.Kdu_region_compositor;
 
+import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.layers.ImageLayer.CacheStatus;
 import org.helioviewer.jhv.opengl.TextureCache;
 import org.helioviewer.jhv.viewmodel.jp2view.kakadu.KakaduUtils;
@@ -62,7 +63,7 @@ public class Movie
 		}
 		catch (KduException e)
 		{
-			e.printStackTrace();
+			Telemetry.trackException(e);
 		}
 	}
 	
@@ -80,7 +81,7 @@ public class Movie
 		}
 		catch (KduException e)
 		{
-			e.printStackTrace();
+			Telemetry.trackException(e);
 		}
 	}
 
@@ -110,7 +111,7 @@ public class Movie
 		}
 		catch (KduException e)
 		{
-			e.printStackTrace();
+			Telemetry.trackException(e);
 		}
 	}
 	
@@ -206,7 +207,7 @@ public class Movie
 		}
 		catch (Exception ex)
 		{
-			ex.printStackTrace();
+			Telemetry.trackException(ex);
 		}
 		return null;
 	}
@@ -236,7 +237,7 @@ public class Movie
 		}
 		catch (KduException e)
 		{
-			e.printStackTrace();
+			Telemetry.trackException(e);
 		}
 	}*/
 
@@ -298,8 +299,7 @@ public class Movie
 		}
 		catch (KduException e)
 		{
-			
-			e.printStackTrace();
+			Telemetry.trackException(e);
 		}
 		return null;
 	}

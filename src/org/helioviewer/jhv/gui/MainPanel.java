@@ -30,6 +30,7 @@ import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.JHVGlobals;
+import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
 import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
 import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
@@ -269,9 +270,13 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 			gl.glTranslated(0, 0, -translation.z);
 			if (CameraMode.mode == MODE.MODE_2D)
 			{
-				MetaData md=Layers.getActiveImageLayer().getMetaData(currentDateTime);
-				if(md!=null)
-					rotation = md.getRotation();
+				ImageLayer il=Layers.getActiveImageLayer();
+				if(il!=null)
+				{
+					MetaData md=il.getMetaData(currentDateTime);
+					if(md!=null)
+						rotation = md.getRotation();
+				}
 			}
 			
 			LinkedHashMap<AbstractLayer, Future<ByteBuffer>> layers=new LinkedHashMap<AbstractLayer, Future<ByteBuffer>>();
@@ -286,7 +291,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 				}
 				catch(ExecutionException|InterruptedException _e)
 				{
-					_e.printStackTrace();
+					Telemetry.trackException(_e);
 				}
 
 			gl.glMatrixMode(GL2.GL_MODELVIEW);

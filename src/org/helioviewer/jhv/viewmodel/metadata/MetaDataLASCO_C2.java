@@ -12,11 +12,11 @@ class MetaDataLASCO_C2 extends MetaData{
 	private final static Rectangle RESOLUTION = new Rectangle(1024, 1024);
 	private final double IMAGE_SCALE = 11.9;
 
-	public MetaDataLASCO_C2(MetaDataContainer metaDataContainer) {
+	public MetaDataLASCO_C2(MetaDataContainer metaDataContainer)
+	{
         super(metaDataContainer, RESOLUTION);
-        if (!(instrument.equalsIgnoreCase("LASCO") && detector.equalsIgnoreCase("C2"))){
+        if (!("LASCO".equalsIgnoreCase(instrument) && "C2".equalsIgnoreCase(detector)))
         	throw new UnsuitableMetaDataException("invalid instrument: "+instrument+"/"+detector);
-        }
 
         String measurement1 = metaDataContainer.get("FILTER");
         String measurement2 = metaDataContainer.get("POLAR");

@@ -63,7 +63,11 @@ class SDOCutOutAction extends AbstractAction {
 
 		url.append("&wavelengths=");
 		for (ImageLayer sdoLayer : sdoLayers)
-			url.append("," + sdoLayer.getMetaData(TimeLine.SINGLETON.getCurrentDateTime()).getMeasurement());
+		{
+			MetaData md=sdoLayer.getMetaData(TimeLine.SINGLETON.getCurrentDateTime());
+			if(md!=null)
+				url.append("," + md.getMeasurement());
+		}
 		
 		Rectangle resolution = metaData.getResolution();
 		double arcsecFactor = metaData.getArcsecPerPixel();

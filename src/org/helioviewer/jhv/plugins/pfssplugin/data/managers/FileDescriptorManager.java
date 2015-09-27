@@ -197,11 +197,11 @@ public class FileDescriptorManager
 			readFileDescriptors(loadingFrom, loadingTo);*/
 	}
 
-	public LocalDateTime getStartDate() {
+	public synchronized LocalDateTime getStartDate() {
 		return firstDate;
 	}
 	
-	public LocalDateTime getEndDate() {
+	public synchronized LocalDateTime getEndDate() {
 		return endDate;
 	}
 

@@ -87,14 +87,14 @@ public class JHVGlobals {
         }
         catch(Exception e)
         {
-            e.printStackTrace();
+        	Telemetry.trackException(e);
             try
             {
                 new ProcessBuilder("x-www-browser",url).start();
             }
             catch(Exception e2)
             {
-                e2.printStackTrace();
+            	Telemetry.trackException(e2);
             }
         }
     }

@@ -22,7 +22,7 @@ public class Settings
             }
             catch(BackingStoreException e)
             {
-                e.printStackTrace();
+            	Telemetry.trackException(e);
             }
         }
     }
@@ -47,9 +47,11 @@ public class Settings
             
             defaultPropStream.close();
             System.out.println(">> Settings.load() > Load default system settings: " + DEFAULT_PROPERTIES.toString());
-        } catch (Exception ex) {
+        }
+        catch (Exception ex)
+        {
             System.err.println(">> Settings.load(boolean) > Could not load settings");
-            ex.printStackTrace();
+            Telemetry.trackException(ex);
         }
     }
 
@@ -98,8 +100,10 @@ public class Settings
                         try
                         {
                             PREF_NODE.flush();
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
+                        }
+                        catch (Exception ex)
+                        {
+                        	Telemetry.trackException(ex);
                         }
                     }
                 });

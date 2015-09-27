@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.base.math.Interval;
@@ -87,7 +88,7 @@ class HEKRequestStructureThread extends HEKRequest implements Runnable {
 	                        return;
 					} catch (InterruptedException e) {
 						
-						e.printStackTrace();
+						Telemetry.trackException(e);
 					}
                 }
 
@@ -100,13 +101,9 @@ class HEKRequestStructureThread extends HEKRequest implements Runnable {
 	                hasMorePages = json.getBoolean("overmax");
 	                page++;
 				}
-				catch (IOException e)
+				catch (IOException | InterruptedException e)
 				{
-					e.printStackTrace();
-				}
-				catch (InterruptedException _e)
-				{
-					_e.printStackTrace();
+					Telemetry.trackException(e);
 				}
             }
         }
@@ -114,7 +111,7 @@ class HEKRequestStructureThread extends HEKRequest implements Runnable {
         {
             System.err.println("Error Parsing the HEK Response.");
             System.err.println("");
-            e.printStackTrace();
+            Telemetry.trackException(e);
         }
     }
 

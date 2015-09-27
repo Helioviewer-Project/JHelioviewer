@@ -41,6 +41,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.Settings;
+import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.ShowableDialog;
 import org.helioviewer.jhv.gui.actions.filefilters.FileFilter;
@@ -53,6 +54,8 @@ import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+//TODO: close streams properly during exceptions: try(...)
 
 /**
  * Dialog that is used to display meta data for an image.
@@ -300,18 +303,19 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 		addDataItem("Date        : " + metaData.getLocalDateTime());
 		addDataItem("Time        : " + metaData.getLocalDateTime());
 
+		//FIXME: fix this code, should use metaData.getDocument()
+		
 		//Document doc = metaData.getDocument();
 		Document doc = null;
-		if (doc == null) return;
+		if (doc == null)
+			return;
+		
 		// Send xml data to meta data dialog box
-		Node root = doc.getDocumentElement().getElementsByTagName("fits")
-				.item(0);
+		Node root = doc.getDocumentElement().getElementsByTagName("fits").item(0);
 		writeXMLData(root, 0);
-		root = doc.getDocumentElement().getElementsByTagName("helioviewer")
-				.item(0);
-		if (root != null) {
+		root = doc.getDocumentElement().getElementsByTagName("helioviewer").item(0);
+		if (root != null)
 			writeXMLData(root, 0);
-		}
 
 		// set the xml data for the MetaDataDialog
 		xmlDoc = doc;
@@ -348,13 +352,11 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 			addDataItem("-------------------------------");
 			addDataItem("      Helioviewer Header");
 			addDataItem("-------------------------------");
-		} else {
-
-			String tab = "";
-			for (int i = 0; i < indent; i++) {
-				tab = tab + "\t";
-			}
-
+		}
+		else
+		{
+			String tab = new String(new char[indent]).replace((char)0, '\t');
+			
 			addDataItem(tab + nodeName + ": " + nodeValue);
 		}
 
@@ -407,10 +409,13 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 		File xmlOutFile = new File(filename);
 		FileOutputStream fos;
 		Transformer transformer;
-		try {
+		try
+		{
 			fos = new FileOutputStream(xmlOutFile);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+		}
+		catch (FileNotFoundException e)
+		{
+			Telemetry.trackException(e);
 			return false;
 		}
 		try {
@@ -420,7 +425,7 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 			try {
 				transformer = transformerFactory.newTransformer();
 			} catch (TransformerConfigurationException e) {
-				e.printStackTrace();
+				Telemetry.trackException(e);
 				return false;
 			}
 
@@ -433,14 +438,14 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 			try {
 				transformer.transform(source, result);
 			} catch (TransformerException e) {
-				e.printStackTrace();
+				Telemetry.trackException(e);
 			}
 			return true;
 		} finally {
 			try {
 				fos.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				Telemetry.trackException(e);
 			}
 		}
 	}

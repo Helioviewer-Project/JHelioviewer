@@ -7,6 +7,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
+import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.viewmodel.jp2view.io.ChunkedInputStream;
 import org.helioviewer.jhv.viewmodel.jp2view.io.FixedSizedInputStream;
 import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPHeaderKey;
@@ -126,12 +127,15 @@ public class JPIPSocket extends HTTPSocket
                 send(req);
             }
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally{
+        }
+        catch (IOException e)
+        {
+        	Telemetry.trackException(e);
+        }
+        finally
+        {
             super.close();
         }
-
     }
 
     /**
@@ -181,19 +185,10 @@ public class JPIPSocket extends HTTPSocket
         if (_req.getMethod() == HTTPRequest.Method.POST)
             str.append(queryStr);
 
-        if (!isConnected()) {
+        if (!isConnected())
             reconnect();
-        }
+        
         // Writes the result to the output stream.
-        /*try
-        {
-            throw new RuntimeException();
-        }
-        catch(RuntimeException _re)
-        {
-            System.err.println(str.toString());
-            _re.printStackTrace();
-        }*/
         getOutputStream().write(str.toString().getBytes(StandardCharsets.UTF_8));
     }
 

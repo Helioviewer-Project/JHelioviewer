@@ -20,6 +20,7 @@ import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.Settings;
+import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.actions.filefilters.ExtensionFileFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.FileFilter;
@@ -133,17 +134,20 @@ public class SaveScreenshotAsAction extends AbstractAction
 
 	private void startSavingScreenshot(final File selectedFile, final String extension) {
 		loadSettings();
-		SwingUtilities.invokeLater(new Runnable() {
-			
+		SwingUtilities.invokeLater(new Runnable()
+		{
 			@Override
-			public void run() {
-				try {
+			public void run()
+			{
+				try
+				{
 					ImageIO.write(MainFrame.MAIN_PANEL.getBufferedImage(
 							imageWidth, imageHeight, textEnabled),
 							extension, selectedFile);
-				} catch (IOException e1) {
-					
-					e1.printStackTrace();
+				}
+				catch (IOException e1)
+				{
+					Telemetry.trackException(e1);
 				}
 			}
 		});	

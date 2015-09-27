@@ -5,6 +5,8 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 
+import org.helioviewer.jhv.Telemetry;
+
 public class Log
 {
     private static final int LOG_SIZE=8192;
@@ -44,8 +46,10 @@ public class Log
 	                log.append((char)_b);
 	                originalOut.write(_b);
 	            }},true,"UTF-8"));
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+		}
+        catch (UnsupportedEncodingException e)
+        {
+        	Telemetry.trackException(e);
 		}
     }
     

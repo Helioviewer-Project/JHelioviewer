@@ -16,6 +16,7 @@ import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.Settings;
+import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPDownloadRequest;
 import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
@@ -160,20 +161,20 @@ public class DownloadMovieDialog extends JDialog {
 			@Override
 			public void run()
 			{
-				while (!httpDownloadRequest.isFinished())
+				try
 				{
-					progressBar.setValue(httpDownloadRequest.getReceivedLength());
-					progressBar.setMaximum(httpDownloadRequest.getTotalLength());
-					try
+					while (!httpDownloadRequest.isFinished())
 					{
+						progressBar.setValue(httpDownloadRequest.getReceivedLength());
+						progressBar.setMaximum(httpDownloadRequest.getTotalLength());
 						Thread.sleep(20);
 					}
-					catch (InterruptedException e)
-					{
-						e.printStackTrace();
-					}
+					setVisible(false);
 				}
-				setVisible(false);
+				catch (InterruptedException e)
+				{
+					Telemetry.trackException(e);
+				}
 			}
 		}, "DOWNLOAD-MOVIE");
 		downloadMovieThread.start();

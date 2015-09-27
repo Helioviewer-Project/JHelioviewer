@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.ShowableDialog;
 
@@ -25,7 +26,8 @@ class TextDialog extends JDialog implements ActionListener, ShowableDialog {
     private static final long serialVersionUID = 1L;
     private JButton closeButton;
 
-    public TextDialog(String title, URL textFile) {
+    public TextDialog(String title, URL textFile)
+    {
         super(MainFrame.SINGLETON, title, true);
         setResizable(false);
 
@@ -38,8 +40,10 @@ class TextDialog extends JDialog implements ActionListener, ShowableDialog {
                 text.append(line);
                 text.append('\n');
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        }
+        catch (Exception e)
+        {
+        	Telemetry.trackException(e);
         }
         
         init(text.toString());

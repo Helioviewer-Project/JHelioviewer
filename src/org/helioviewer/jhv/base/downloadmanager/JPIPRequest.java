@@ -8,6 +8,7 @@ import java.net.URISyntaxException;
 import kdu_jni.KduException;
 import kdu_jni.Kdu_cache;
 
+import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.layers.Movie;
 import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPRequest.Method;
 import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPConstants;
@@ -75,6 +76,9 @@ public class JPIPRequest extends AbstractDownloadRequest
 				jpipSocket.send(request);
 				JPIPResponse response = jpipSocket.receive();
 				
+				if(response==null)
+					throw new IOException();
+				
 				// Update optimal package size
 				flowControl();
 				try
@@ -85,7 +89,7 @@ public class JPIPRequest extends AbstractDownloadRequest
 				}
 				catch (KduException e)
 				{
-					e.printStackTrace();
+					Telemetry.trackException(e);
 				}
 			}
 			
@@ -94,7 +98,7 @@ public class JPIPRequest extends AbstractDownloadRequest
 		}
 		catch (URISyntaxException | KduException e)
 		{
-			e.printStackTrace();
+			Telemetry.trackException(e);
 		}
 		finally
 		{
@@ -104,7 +108,7 @@ public class JPIPRequest extends AbstractDownloadRequest
 			}
 			catch (IOException e)
 			{
-				e.printStackTrace();
+				Telemetry.trackException(e);
 			}
 		}
 	}

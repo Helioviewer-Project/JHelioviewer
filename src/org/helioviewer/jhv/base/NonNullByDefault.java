@@ -11,7 +11,7 @@ import javax.annotation.meta.When;
 
 @Documented
 @Nonnull(when=When.ALWAYS)
-@TypeQualifierDefault({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
+@TypeQualifierDefault({/*ElementType.FIELD, ElementType.METHOD,*/ ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface NonNullByDefault
 {

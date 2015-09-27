@@ -51,7 +51,7 @@ public class JHelioviewer
 		}
 		catch (Exception e2)
 		{
-			e2.printStackTrace();
+			Telemetry.trackException(e2);
 		}
 		
 		// display the splash screen
@@ -219,7 +219,7 @@ public class JHelioviewer
 							}
 							catch (InterruptedException _e)
 							{
-								_e.printStackTrace();
+								Telemetry.trackException(_e);
 							}
 							SwingUtilities.invokeLater(new Runnable()
 							{
@@ -237,7 +237,7 @@ public class JHelioviewer
 		}
 		catch (Throwable _t)
 		{
-			JHVUncaughtExceptionHandler.getSingletonInstance().uncaughtException(Thread.currentThread(), _t);
+			JHVUncaughtExceptionHandler.SINGLETON.uncaughtException(Thread.currentThread(), _t);
 		}
 	}
 
@@ -259,7 +259,7 @@ public class JHelioviewer
 		}
 		catch (IOException e)
 		{
-			e.printStackTrace();
+			Telemetry.trackException(e);
 		}
 	}
 

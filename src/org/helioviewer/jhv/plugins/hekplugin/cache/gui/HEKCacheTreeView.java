@@ -22,6 +22,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.components.TristateCheckBox;
@@ -433,7 +434,7 @@ public class HEKCacheTreeView extends JTree implements TreeModelListener {
         {
           //td: find out how this could happen? according to swing javadoc
           //the method call above won't throw a npe ever... ?!?
-          _npe.printStackTrace();
+        	Telemetry.trackException(_npe);
         }
         
         // td: REALLY OVERWRITE == TRUE?

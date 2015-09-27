@@ -42,14 +42,9 @@ import com.mindscapehq.raygun4java.core.messages.RaygunIdentifier;
 /**
  * Routines to catch and handle all runtime exceptions.
  */
-class JHVUncaughtExceptionHandler implements
-		Thread.UncaughtExceptionHandler {
-
-	private static final JHVUncaughtExceptionHandler SINGLETON = new JHVUncaughtExceptionHandler();
-
-	public static JHVUncaughtExceptionHandler getSingletonInstance() {
-		return SINGLETON;
-	}
+class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
+{
+	public static final JHVUncaughtExceptionHandler SINGLETON = new JHVUncaughtExceptionHandler();
 
 	/**
 	 * This method sets the default uncaught exception handler. Thus, this
@@ -57,7 +52,7 @@ class JHVUncaughtExceptionHandler implements
 	 */
 	public static void setupHandlerForThread()
 	{
-		Thread.setDefaultUncaughtExceptionHandler(JHVUncaughtExceptionHandler.getSingletonInstance());
+		Thread.setDefaultUncaughtExceptionHandler(JHVUncaughtExceptionHandler.SINGLETON);
 	}
 
 	/**
@@ -139,36 +134,49 @@ class JHVUncaughtExceptionHandler implements
 		Runtime.getRuntime().halt(0);
 	}
 
-	private JHVUncaughtExceptionHandler() {
+	private JHVUncaughtExceptionHandler()
+	{
 	}
 
 	// we do not use the logger here, since it should work even before logging
 	// initialization
 	@SuppressWarnings("deprecation")
-	public synchronized void uncaughtException(final Thread t, final Throwable e) {
+	public synchronized void uncaughtException(final Thread t, final Throwable e)
+	{
 		// stop reentrant error reporting
-		Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+		Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler()
+		{
 			@Override
-			public void uncaughtException(Thread _t, Throwable _e) {
+			public void uncaughtException(Thread _t, Throwable _e)
+			{
 				// IGNORE all other exceptions
 			}
 		});
 
-		if (!EventQueue.isDispatchThread()) {
-			try {
-				EventQueue.invokeLater(new Runnable() {
+		if (!EventQueue.isDispatchThread())
+		{
+			try
+			{
+				EventQueue.invokeLater(new Runnable()
+				{
 					@Override
-					public void run() {
-						try {
+					public void run()
+					{
+						try
+						{
 							uncaughtException(t, e);
-						} catch (ThreadDeath _td) {
+						}
+						catch (ThreadDeath _td)
+						{
 							// ignore concurrent, unhandled exceptions
 						}
 					}
 				});
 				return;
-			} catch (Exception _e) {
-				_e.printStackTrace();
+			}
+			catch (Exception _e)
+			{
+				Telemetry.trackException(_e);
 
 				// even that didn't work? let's use our good
 				// luck and try to do the rest of the show
@@ -193,9 +201,12 @@ class JHVUncaughtExceptionHandler implements
 					&& (!thr.getThreadGroup().getName()
 							.equalsIgnoreCase("system") || thr.getName()
 							.contains("Timer")))
-				try {
+				try
+				{
 					thr.stop();
-				} catch (Throwable _th) {
+				}
+				catch (Throwable _th)
+				{
 				}
 
 		final String finalLog = Log.GetLastFewLines(6);
@@ -209,19 +220,23 @@ class JHVUncaughtExceptionHandler implements
 				+ System.getProperty("os.version") + "\n\n";
 		msg += finalLog;
 
-		try (StringWriter st = new StringWriter()) {
-			try (PrintWriter pw = new PrintWriter(st)) {
+		try (StringWriter st = new StringWriter())
+		{
+			try (PrintWriter pw = new PrintWriter(st))
+			{
 				e.printStackTrace(pw);
 				msg += st.toString();
 			}
-		} catch (IOException e1) {
-			e1.printStackTrace();
+		}
+		catch (IOException e1)
+		{
+			Telemetry.trackException(e1);
 		}
 
 		for (Frame f : Frame.getFrames())
 			f.setVisible(false);
 
-		e.printStackTrace();
+		Telemetry.trackException(e);
 
 		final String finalMsg = msg;
 		final Throwable finalE = e;
@@ -232,14 +247,18 @@ class JHVUncaughtExceptionHandler implements
 		 * try { EventQueue eq =
 		 * Toolkit.getDefaultToolkit().getSystemEventQueue();
 		 * while(eq.peekEvent()!=null) eq.getNextEvent(); }
-		 * catch(InterruptedException e2) { e2.printStackTrace(); }
+		 * catch(InterruptedException e2) { Telemetry.trackException(e2); }
 		 */
 
 		// this wizardry forces the creation of a new awt event queue, if needed
-		new Thread(new Runnable() {
-			public void run() {
-				EventQueue.invokeLater(new Runnable() {
-					public void run() {
+		new Thread(new Runnable()
+		{
+			public void run()
+			{
+				EventQueue.invokeLater(new Runnable()
+				{
+					public void run()
+					{
 						JHVUncaughtExceptionHandler.showErrorDialog(
 								"JHelioviewer: Fatal error", finalMsg, finalE,
 								finalLog);
@@ -249,14 +268,15 @@ class JHVUncaughtExceptionHandler implements
 		}).start();
 	}
 
-	private static Image iconToImage(Icon icon) {
+	private static Image iconToImage(Icon icon)
+	{
 		if (icon instanceof ImageIcon)
 			return ((ImageIcon) icon).getImage();
-		else {
+		else
+		{
 			int w = icon.getIconWidth();
 			int h = icon.getIconHeight();
-			GraphicsEnvironment ge = GraphicsEnvironment
-					.getLocalGraphicsEnvironment();
+			GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 			GraphicsDevice gd = ge.getDefaultScreenDevice();
 			GraphicsConfiguration gc = gd.getDefaultConfiguration();
 			BufferedImage image = gc.createCompatibleImage(w, h);

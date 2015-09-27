@@ -11,6 +11,7 @@ import java.util.TreeMap;
 import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.Settings;
+import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.base.AlphanumComparator;
 import org.helioviewer.jhv.base.downloadmanager.AbstractDownloadRequest;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
@@ -69,7 +70,7 @@ public class InstrumentModel
 									}
 									catch(NullPointerException _npe)
 									{
-										_npe.printStackTrace();
+										Telemetry.trackException(_npe);
 									}
 								}
 								
@@ -78,7 +79,7 @@ public class InstrumentModel
 							}
 							catch (JSONException e)
 							{
-								e.printStackTrace();
+								Telemetry.trackException(e);
 							}
 						}
 					});
@@ -86,7 +87,7 @@ public class InstrumentModel
 				catch (InterruptedException | IOException _e)
 				{
 					//FIXME: add proper error handling here, should retry etc.
-					_e.printStackTrace();
+					Telemetry.trackException(_e);
 				}
 			}
 		}, "MODEL_LOAD");
@@ -114,7 +115,7 @@ public class InstrumentModel
 			}
 			catch (JSONException _e)
 			{
-				_e.printStackTrace();
+				Telemetry.trackException(_e);
 			}
 			observatories.put(observatoryName, observatory);
 		}
@@ -181,7 +182,7 @@ public class InstrumentModel
 		}
 		catch (JSONException e)
 		{
-			e.printStackTrace();
+			Telemetry.trackException(e);
 		}
 	}
 

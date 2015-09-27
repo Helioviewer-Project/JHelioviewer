@@ -12,7 +12,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.helioviewer.jhv.JHVException.TextureException;
+import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.base.FutureValue;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.downloadmanager.AbstractDownloadRequest;
@@ -109,7 +109,7 @@ public class ImageLayer extends AbstractLayer
 		}
 		catch (JSONException e)
 		{
-			e.printStackTrace();
+			Telemetry.trackException(e);
 		}
 	}
 	
@@ -157,7 +157,7 @@ public class ImageLayer extends AbstractLayer
 		cadence = (int) (ChronoUnit.SECONDS.between(start, end) / ultimateLayer.getLocalDateTimes().size());
 	}
 
-	public int getTexture(MainPanel compenentView, ByteBuffer _imageData, Dimension size) throws TextureException
+	public int getTexture(MainPanel compenentView, ByteBuffer _imageData, Dimension size)
 	{
 		//upload new texture, if something was decoded
 		if (_imageData != null)
@@ -224,8 +224,7 @@ public class ImageLayer extends AbstractLayer
 		}
 		catch (JSONException e)
 		{
-			
-			e.printStackTrace();
+			Telemetry.trackException(e);
 		}
 	}
 
@@ -246,7 +245,7 @@ public class ImageLayer extends AbstractLayer
 		}
 		catch (JSONException e)
 		{
-			e.printStackTrace();
+			Telemetry.trackException(e);
 		}
 		return null;
 	}
@@ -258,129 +257,120 @@ public class ImageLayer extends AbstractLayer
 
 	public RenderResult renderLayer(GL2 gl, Dimension canvasSize, MainPanel mainPanel, ByteBuffer _imageData)
 	{
-		try
-		{
-			int layerTexture = getTexture(mainPanel, _imageData, canvasSize);
-			if (layerTexture < 0)
-				return RenderResult.RETRY_LATER;
-			
-			LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
-			
-			MetaData md=getMetaData(currentDateTime);
-			if(md==null)
-				return RenderResult.RETRY_LATER;
-			
-			Rectangle2D physicalSize = md.getPhysicalImageSize();
-			if (physicalSize.getWidth() <= 0 || physicalSize.getHeight() <= 0)
-				return RenderResult.RETRY_LATER;
-
-			MetaData metaData = getMetaData(currentDateTime);
-			float xSunOffset = (float) ((metaData.getSunPixelPosition().x - metaData
-					.getResolution().getWidth() / 2.0) / (float) metaData
-					.getResolution().getWidth());
-			float ySunOffset = -(float) ((metaData.getSunPixelPosition().y - metaData
-					.getResolution().getHeight() / 2.0) / (float) metaData
-					.getResolution().getHeight());
-
-			Vector3d currentPos = mainPanel.getRotation().toMatrix().multiply(new Vector3d(0, 0, 1));
-			Vector3d startPos = metaData.getRotation().toMatrix().multiply(new Vector3d(0, 0, 1));
-
-			double angle = Math.toDegrees(Math.acos(currentPos.dot(startPos)));
-			double maxAngle = 60;
-			double minAngle = 30;
-			float opacityCorona = (float) ((Math.abs(90 - angle) - minAngle) / (maxAngle - minAngle));
-			opacityCorona = opacityCorona > 1 ? 1f : opacityCorona;
-			if (!coronaVisible)
-				opacityCorona = 0;
-			gl.glEnable(GL2.GL_DEPTH_TEST);
-			gl.glDepthFunc(GL2.GL_LEQUAL);
-			gl.glDepthMask(true);
-			gl.glColor4f(1, 1, 1, 1);
-			gl.glEnable(GL2.GL_BLEND);
-			gl.glEnable(GL2.GL_TEXTURE_2D);
-			gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
-			gl.glActiveTexture(GL.GL_TEXTURE0);
-			gl.glBindTexture(GL2.GL_TEXTURE_2D, layerTexture);
-
-			gl.glEnable(GL2.GL_VERTEX_PROGRAM_ARB);
-			gl.glEnable(GL2.GL_FRAGMENT_PROGRAM_ARB);
-
-			gl.glUseProgram(shaderprogram);
-
-			gl.glActiveTexture(GL.GL_TEXTURE1);
-			gl.glBindTexture(GL2.GL_TEXTURE_2D, org.helioviewer.jhv.layers.LUT.getTexture());
-
-			gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "texture"), 0);
-			gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "lut"), 1);
-			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "fov"), (float) Math.toRadians(MainPanel.FOV / 2.0));
-			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "physicalImageWidth"), (float) metaData
-					.getPhysicalImageWidth());
-			gl.glUniform2f(gl.glGetUniformLocation(shaderprogram, "sunOffset"), xSunOffset, ySunOffset);
-			gl.glUniform4f(
-					gl.glGetUniformLocation(shaderprogram, "imageOffset"),
-					getLastDecodedImageRegion().getTextureOffsetX(),
-					getLastDecodedImageRegion().getTextureOffsetY(),
-					getLastDecodedImageRegion().getTextureScaleWidth(),
-					getLastDecodedImageRegion().getTextureScaleHeight());
-			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "opacity"), (float) opacity);
-			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "gamma"), (float) gamma);
-			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "sharpen"), (float) sharpness);
-			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "lutPosition"), getLut().ordinal());
-			gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "lutInverted"), invertedLut ? 1:0);
-			gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "redChannel"), redChannel ? 1:0);
-			gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "greenChannel"), greenChannel ? 1:0);
-			gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "blueChannel"), blueChannel ? 1:0);
-			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "opacityCorona"), opacityCorona);
-			gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "cameraMode"), CameraMode.getCameraMode());
-			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "contrast"), (float) contrast);
-
-			float clipNear = (float) Math.max(mainPanel.getTranslation().z - 4 * Constants.SUN_RADIUS, MainPanel.CLIP_NEAR);
-			gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "near"), clipNear);
-			gl.glUniform1f(
-					gl.glGetUniformLocation(shaderprogram, "far"),
-					(float) (mainPanel.getTranslation().z + 4 * Constants.SUN_RADIUS));
-			float[] transformation = mainPanel.getTransformation().toFloatArray();
-			gl.glUniformMatrix4fv(gl.glGetUniformLocation(shaderprogram, "transformation"), 1, true, transformation, 0);
-
-			float[] layerTransformation = getMetaData(currentDateTime).getRotation().toMatrix().toFloatArray();
-			gl.glUniformMatrix4fv(gl.glGetUniformLocation(shaderprogram, "layerTransformation"), 1, true, layerTransformation, 0);
-			
-			float[] layerInv = getMetaData(currentDateTime).getRotation().inversed().toMatrix().toFloatArray();
-			gl.glUniformMatrix4fv(gl.glGetUniformLocation(shaderprogram, "layerInv"), 1, true, layerInv, 0);
-
-			gl.glUniform2f(
-					gl.glGetUniformLocation(shaderprogram, "imageResolution"),
-					getLastDecodedImageRegion().textureHeight,
-					getLastDecodedImageRegion().textureHeight);
-
-			gl.glBegin(GL2.GL_QUADS);
-
-			gl.glTexCoord2f(0.0f, 1.0f);
-			gl.glVertex2d(-1, -1);
-			gl.glTexCoord2f(1.0f, 1.0f);
-			gl.glVertex2d(1, -1);
-			gl.glTexCoord2f(1.0f, 0.0f);
-			gl.glVertex2d(1, 1);
-			gl.glTexCoord2f(0.0f, 0.0f);
-			gl.glVertex2d(-1, 1);
-
-			gl.glEnd();
-			gl.glUseProgram(0);
-			// gl.glBindTexture(GL2.GL_TEXTURE_2D, 0);
-			gl.glActiveTexture(GL.GL_TEXTURE0);
-			// gl.glBindTexture(GL2.GL_TEXTURE_2D, 0);
-			gl.glDisable(GL2.GL_BLEND);
-			gl.glDisable(GL2.GL_TEXTURE_2D);
-			gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
-			gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
-			gl.glEnable(GL2.GL_DEPTH_TEST);
-			gl.glDepthMask(false);
-			return RenderResult.OK;
-		}
-		catch (TextureException e)
-		{
+		int layerTexture = getTexture(mainPanel, _imageData, canvasSize);
+		if (layerTexture < 0)
 			return RenderResult.RETRY_LATER;
-		}
+		
+		LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
+		
+		MetaData md=getMetaData(currentDateTime);
+		if(md==null)
+			return RenderResult.RETRY_LATER;
+		
+		Rectangle2D physicalSize = md.getPhysicalImageSize();
+		if (physicalSize.getWidth() <= 0 || physicalSize.getHeight() <= 0)
+			return RenderResult.RETRY_LATER;
+
+		float xSunOffset = (float) ((md.getSunPixelPosition().x - md
+				.getResolution().getWidth() / 2.0) / (float) md
+				.getResolution().getWidth());
+		float ySunOffset = -(float) ((md.getSunPixelPosition().y - md
+				.getResolution().getHeight() / 2.0) / (float)md
+				.getResolution().getHeight());
+
+		Vector3d currentPos = mainPanel.getRotation().toMatrix().multiply(new Vector3d(0, 0, 1));
+		Vector3d startPos = md.getRotation().toMatrix().multiply(new Vector3d(0, 0, 1));
+
+		double angle = Math.toDegrees(Math.acos(currentPos.dot(startPos)));
+		double maxAngle = 60;
+		double minAngle = 30;
+		float opacityCorona = (float) ((Math.abs(90 - angle) - minAngle) / (maxAngle - minAngle));
+		opacityCorona = opacityCorona > 1 ? 1f : opacityCorona;
+		if (!coronaVisible)
+			opacityCorona = 0;
+		gl.glEnable(GL2.GL_DEPTH_TEST);
+		gl.glDepthFunc(GL2.GL_LEQUAL);
+		gl.glDepthMask(true);
+		gl.glColor4f(1, 1, 1, 1);
+		gl.glEnable(GL2.GL_BLEND);
+		gl.glEnable(GL2.GL_TEXTURE_2D);
+		gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
+		gl.glActiveTexture(GL.GL_TEXTURE0);
+		gl.glBindTexture(GL2.GL_TEXTURE_2D, layerTexture);
+
+		gl.glEnable(GL2.GL_VERTEX_PROGRAM_ARB);
+		gl.glEnable(GL2.GL_FRAGMENT_PROGRAM_ARB);
+
+		gl.glUseProgram(shaderprogram);
+
+		gl.glActiveTexture(GL.GL_TEXTURE1);
+		gl.glBindTexture(GL2.GL_TEXTURE_2D, org.helioviewer.jhv.layers.LUT.getTexture());
+
+		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "texture"), 0);
+		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "lut"), 1);
+		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "fov"), (float) Math.toRadians(MainPanel.FOV / 2.0));
+		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "physicalImageWidth"), (float)md.getPhysicalImageWidth());
+		gl.glUniform2f(gl.glGetUniformLocation(shaderprogram, "sunOffset"), xSunOffset, ySunOffset);
+		gl.glUniform4f(
+				gl.glGetUniformLocation(shaderprogram, "imageOffset"),
+				getLastDecodedImageRegion().getTextureOffsetX(),
+				getLastDecodedImageRegion().getTextureOffsetY(),
+				getLastDecodedImageRegion().getTextureScaleWidth(),
+				getLastDecodedImageRegion().getTextureScaleHeight());
+		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "opacity"), (float) opacity);
+		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "gamma"), (float) gamma);
+		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "sharpen"), (float) sharpness);
+		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "lutPosition"), getLut().ordinal());
+		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "lutInverted"), invertedLut ? 1:0);
+		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "redChannel"), redChannel ? 1:0);
+		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "greenChannel"), greenChannel ? 1:0);
+		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "blueChannel"), blueChannel ? 1:0);
+		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "opacityCorona"), opacityCorona);
+		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "cameraMode"), CameraMode.getCameraMode());
+		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "contrast"), (float) contrast);
+
+		float clipNear = (float) Math.max(mainPanel.getTranslation().z - 4 * Constants.SUN_RADIUS, MainPanel.CLIP_NEAR);
+		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "near"), clipNear);
+		gl.glUniform1f(
+				gl.glGetUniformLocation(shaderprogram, "far"),
+				(float) (mainPanel.getTranslation().z + 4 * Constants.SUN_RADIUS));
+		float[] transformation = mainPanel.getTransformation().toFloatArray();
+		gl.glUniformMatrix4fv(gl.glGetUniformLocation(shaderprogram, "transformation"), 1, true, transformation, 0);
+
+		float[] layerTransformation = getMetaData(currentDateTime).getRotation().toMatrix().toFloatArray();
+		gl.glUniformMatrix4fv(gl.glGetUniformLocation(shaderprogram, "layerTransformation"), 1, true, layerTransformation, 0);
+		
+		float[] layerInv = getMetaData(currentDateTime).getRotation().inversed().toMatrix().toFloatArray();
+		gl.glUniformMatrix4fv(gl.glGetUniformLocation(shaderprogram, "layerInv"), 1, true, layerInv, 0);
+
+		gl.glUniform2f(
+				gl.glGetUniformLocation(shaderprogram, "imageResolution"),
+				getLastDecodedImageRegion().textureHeight,
+				getLastDecodedImageRegion().textureHeight);
+
+		gl.glBegin(GL2.GL_QUADS);
+
+		gl.glTexCoord2f(0.0f, 1.0f);
+		gl.glVertex2d(-1, -1);
+		gl.glTexCoord2f(1.0f, 1.0f);
+		gl.glVertex2d(1, -1);
+		gl.glTexCoord2f(1.0f, 0.0f);
+		gl.glVertex2d(1, 1);
+		gl.glTexCoord2f(0.0f, 0.0f);
+		gl.glVertex2d(-1, 1);
+
+		gl.glEnd();
+		gl.glUseProgram(0);
+		// gl.glBindTexture(GL2.GL_TEXTURE_2D, 0);
+		gl.glActiveTexture(GL.GL_TEXTURE0);
+		// gl.glBindTexture(GL2.GL_TEXTURE_2D, 0);
+		gl.glDisable(GL2.GL_BLEND);
+		gl.glDisable(GL2.GL_TEXTURE_2D);
+		gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
+		gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
+		gl.glEnable(GL2.GL_DEPTH_TEST);
+		gl.glDepthMask(false);
+		return RenderResult.OK;
 	}
 
 	public static void init()

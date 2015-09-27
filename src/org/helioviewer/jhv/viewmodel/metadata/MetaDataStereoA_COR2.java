@@ -20,9 +20,8 @@ class MetaDataStereoA_COR2 extends MetaData{
         }
         fullName = instrument + " " + detector;
         
-        if (!(observatory.equalsIgnoreCase("STEREO_A") && detector.equalsIgnoreCase("COR2"))){
+        if (!("STEREO_A".equalsIgnoreCase(observatory) && "COR2".equalsIgnoreCase(detector)))
         	throw new UnsuitableMetaDataException("invalid instrument: "+observatory+"/"+detector);
-        }
 
         String observedDate = metaDataContainer.get("DATE_OBS");
         localDateTime = LocalDateTime.parse(observedDate, DATE_FORMAT);

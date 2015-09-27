@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKSettings;
 import org.json.JSONArray;
@@ -113,8 +114,7 @@ class HEKEventFactory {
             result = new HEKPath(cache, path);
 
         } catch (JSONException e) {
-            System.err.println("");
-            e.printStackTrace();
+            Telemetry.trackException(e);
         }
 
         return result;
@@ -148,8 +148,7 @@ class HEKEventFactory {
             result = new HEKPath(cache, path);
 
         } catch (JSONException e) {
-            System.err.println("");
-            e.printStackTrace();
+            Telemetry.trackException(e);
         }
 
         return result;
@@ -219,8 +218,7 @@ class HEKEventFactory {
             }
 
         } catch (JSONException e) {
-            System.err.println("");
-            e.printStackTrace();
+            Telemetry.trackException(e);
         }
 
         return result;
@@ -253,8 +251,7 @@ class HEKEventFactory {
             }
 
         } catch (JSONException e) {
-            System.err.println("");
-            e.printStackTrace();
+            Telemetry.trackException(e);
         }
 
         return result;

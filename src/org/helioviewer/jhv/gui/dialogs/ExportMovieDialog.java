@@ -32,6 +32,7 @@ import javax.swing.filechooser.FileFilter;
 
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.Settings;
+import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 
@@ -82,7 +83,7 @@ public class ExportMovieDialog implements ActionListener {
 		progressDialog = new ProgressDialog(this);
 		progressDialog.setVisible(true);
 
-		this.initExportMovie();
+		this.initMovieExport();
 		thread = new Thread(new Runnable()
 		{
 			@Override
@@ -137,7 +138,7 @@ public class ExportMovieDialog implements ActionListener {
 						}
 						catch (IOException e)
 						{
-							e.printStackTrace();
+							Telemetry.trackException(e);
 						}
 					}
 					else if (selectedOutputFormat.isImageFile() && started)
@@ -152,12 +153,12 @@ public class ExportMovieDialog implements ActionListener {
 						}
 						catch (IOException e)
 						{
-							e.printStackTrace();
+							Telemetry.trackException(e);
 						}
 					}
 					TimeLine.SINGLETON.nextFrame();
 				}
-				stopExportMovie();
+				stopMovieExport();
 			}
 
 		}, "Movie Export");
@@ -336,30 +337,32 @@ public class ExportMovieDialog implements ActionListener {
 			imageHeight = 720;
 	}
 
-	private void initExportMovie() {
-		if (this.selectedOutputFormat.isMovieFile()) {
-
-			writer = ToolFactory.makeWriter(directory + filename
-					+ this.selectedOutputFormat.getExtension());
+	private void initMovieExport()
+	{
+		if (this.selectedOutputFormat.isMovieFile())
+		{
+			writer = ToolFactory.makeWriter(directory + filename + this.selectedOutputFormat.getExtension());
 
 			speed = 1000 / TimeLine.SINGLETON.getMillisecondsPerFrame();
 
-			writer.addVideoStream(0, 0, this.selectedOutputFormat.getCodec(),
-					this.imageWidth, this.imageHeight);
+			writer.addVideoStream(0, 0, this.selectedOutputFormat.getCodec(), this.imageWidth, this.imageHeight);
 		}
-
-		else if (this.selectedOutputFormat.isCompressedFile()) {
-			try {
+		else if (this.selectedOutputFormat.isCompressedFile())
+		{
+			try
+			{
 				fileOutputStream = new FileOutputStream(this.directory
 						+ this.filename
 						+ this.selectedOutputFormat.getExtension());
 				zipOutputStream = new ZipOutputStream(fileOutputStream);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
+			}
+			catch (FileNotFoundException e)
+			{
+				Telemetry.trackException(e);
 			}
 		}
-
-		else if (this.selectedOutputFormat.isImageFile()) {
+		else if (this.selectedOutputFormat.isImageFile())
+		{
 			File dir = new File(this.directory + this.filename);
 			dir.mkdir();
 			directory += this.filename + "/";
@@ -369,17 +372,22 @@ public class ExportMovieDialog implements ActionListener {
 		TimeLine.SINGLETON.setCurrentFrame(0);
 	}
 
-	private void stopExportMovie() {
+	private void stopMovieExport()
+	{
 		TimeLine.SINGLETON.setCurrentFrame(0);
 		// export movie
 		if (selectedOutputFormat.isMovieFile())
 			writer.close();
-		else if (selectedOutputFormat.isCompressedFile()) {
-			try {
+		else if (selectedOutputFormat.isCompressedFile())
+		{
+			try
+			{
 				zipOutputStream.close();
 				fileOutputStream.close();
-			} catch (IOException e) {
-				e.printStackTrace();
+			}
+			catch (IOException e)
+			{
+				Telemetry.trackException(e);
 			}
 		}
 		progressDialog.dispose();

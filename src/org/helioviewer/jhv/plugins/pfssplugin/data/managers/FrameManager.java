@@ -3,6 +3,7 @@ package org.helioviewer.jhv.plugins.pfssplugin.data.managers;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
+import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
 import org.helioviewer.jhv.plugins.pfssplugin.data.FileDescriptor;
 import org.helioviewer.jhv.plugins.pfssplugin.data.PfssCompressed;
@@ -51,7 +52,16 @@ public class FrameManager
 		        {
 		            PfssCompressed comp = dataCache.get(fd);
 		            comp.loadDataAsync();
-		            PfssDecompressor.decompress(comp,curFrame);
+		            
+		            try
+		            {
+		            	PfssDecompressor.decompress(comp,curFrame);
+		            }
+		            catch(NullPointerException _npe)
+		            {
+		            	Telemetry.trackException(_npe);
+		            	return null;
+		            }
 		        }
 		    }
 			return curFrame;
@@ -72,7 +82,6 @@ public class FrameManager
         }
         
         return null;
-        
 	}
 	
     /**

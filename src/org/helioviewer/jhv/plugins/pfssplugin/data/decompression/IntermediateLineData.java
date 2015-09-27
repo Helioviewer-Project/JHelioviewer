@@ -28,7 +28,8 @@ class IntermediateLineData {
 				int channelIndex = 2;
 				LinkedList<Indices> queue = new LinkedList<>();
 				queue.add(new Indices(0, decodedChannel.length-1));
-				while(!queue.isEmpty()) {
+				while(!queue.isEmpty())
+				{
 					prediction(queue,decodedChannel,channels[i],channelIndex);
 					channelIndex++;
 				}

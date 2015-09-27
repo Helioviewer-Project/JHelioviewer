@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 
 import javax.imageio.ImageIO;
 
+import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
 
@@ -81,25 +82,22 @@ public class LUT
 		
 		
 		try
-				{
-					BufferedImage bufferedImage;
-					bufferedImage = ImageIO.read(MainPanel.class.getResourceAsStream("/UltimateLookupTable.png"));
-					texture = openGLHelper.createTextureID();
-					openGLHelper.bindBufferedImageToGLTexture(bufferedImage, 256, 256);
-					GLContext.getCurrentGL().glEnable(GL2.GL_TEXTURE_2D);
-					GLContext.getCurrentGL().glBindTexture(GL2.GL_TEXTURE_2D, texture);
-					GLContext.getCurrentGL().getGL2().glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER,
-			               GL2.GL_NEAREST);
-					GLContext.getCurrentGL().getGL2().glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER,
-			                GL2.GL_NEAREST);
-					GLContext.getCurrentGL().glBindTexture(GL2.GL_TEXTURE_2D, 0);
-					GLContext.getCurrentGL().glDisable(GL2.GL_TEXTURE_2D);
-				}
-				catch (IOException e)
-				{
-					e.printStackTrace();
-				}
-		}	
+		{
+			BufferedImage bufferedImage = ImageIO.read(MainPanel.class.getResourceAsStream("/UltimateLookupTable.png"));
+			texture = openGLHelper.createTextureID();
+			openGLHelper.bindBufferedImageToGLTexture(bufferedImage, 256, 256);
+			GLContext.getCurrentGL().glEnable(GL2.GL_TEXTURE_2D);
+			GLContext.getCurrentGL().glBindTexture(GL2.GL_TEXTURE_2D, texture);
+			GLContext.getCurrentGL().getGL2().glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_NEAREST);
+			GLContext.getCurrentGL().getGL2().glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_NEAREST);
+			GLContext.getCurrentGL().glBindTexture(GL2.GL_TEXTURE_2D, 0);
+			GLContext.getCurrentGL().glDisable(GL2.GL_TEXTURE_2D);
+		}
+		catch (IOException e)
+		{
+			Telemetry.trackException(e);
+		}
+	}	
 	
 	private static void loadLutFromFile(String lutTxtName)
 	{
@@ -111,7 +109,7 @@ public class LUT
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			Telemetry.trackException(e);
 		}
 	}
 	

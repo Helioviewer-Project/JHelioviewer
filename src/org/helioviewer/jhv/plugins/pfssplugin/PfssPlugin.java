@@ -7,6 +7,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
+import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.plugins.AbstractPlugin;
 import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.plugins.pfssplugin.data.PfssDecompressed;
@@ -47,8 +48,10 @@ public class PfssPlugin extends AbstractPlugin {
 	}
 
 	@Override
-	public void render(GL2 gl) {
-		if (isVisible) {
+	public void render(GL2 gl)
+	{
+		if (isVisible)
+		{
 			LocalDateTime localDateTime = Plugins.SINGLETON.getCurrentDateTime();
 			PfssDecompressed frame = manager.getFrame(gl, localDateTime);
 			if (frame != null)
@@ -101,19 +104,22 @@ public class PfssPlugin extends AbstractPlugin {
 	}
 
 	@Override
-	public void restoreConfiguration(JSONObject jsonObject) {
-		if (jsonObject.has(JSON_NAME)) {
-			try {
+	public void restoreConfiguration(JSONObject jsonObject)
+	{
+		if (jsonObject.has(JSON_NAME))
+		{
+			try
+			{
 				JSONObject jsonPfss = jsonObject.getJSONObject(JSON_NAME);
 				boolean visible = jsonPfss.getBoolean(JSON_VISIBLE);
 				boolean open = jsonPfss.getBoolean(JSON_OPEN);
 				Plugins.setPanelOpenCloseState(pfssPluginPanel, open);
 				pfssPluginPanel.setVisibleBtn(visible);
-			} catch (JSONException e) {
-				
-				e.printStackTrace();
 			}
-
+			catch (JSONException e)
+			{
+				Telemetry.trackException(e);
+			}
 		}
 	}
 
@@ -124,9 +130,10 @@ public class PfssPlugin extends AbstractPlugin {
 			jsonPfss.put(JSON_OPEN, pfssPluginPanel.isVisible());
 			jsonPfss.put(JSON_VISIBLE, isVisible());
 			jsonObject.put(JSON_NAME, jsonPfss);
-		} catch (JSONException e) {
-			
-			e.printStackTrace();
+		}
+		catch (JSONException e)
+		{
+			Telemetry.trackException(e);
 		}
 	}
 

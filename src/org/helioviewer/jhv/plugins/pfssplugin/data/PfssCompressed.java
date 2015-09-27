@@ -119,16 +119,18 @@ public class PfssCompressed implements Cacheable
         });   
     }
     
-    public class ByteArrayVolumeManager implements VolumeManager {
+    public static class ByteArrayVolumeManager implements VolumeManager
+    {
         private byte[] bytes;
 
-        public ByteArrayVolumeManager(byte [] bytes) {
-            this.bytes = bytes;
+        public ByteArrayVolumeManager(byte[] _bytes)
+        {
+            bytes = _bytes;
         }
 
         @Override
-        public Volume nextArchive(Archive archive, Volume last)
-                throws IOException {
+        public Volume nextArchive(Archive archive, Volume last) throws IOException
+        {
             return new ByteArrayVolume( archive, bytes );
         }
     }

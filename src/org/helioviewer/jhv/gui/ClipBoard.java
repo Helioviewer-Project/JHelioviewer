@@ -9,6 +9,8 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
+import org.helioviewer.jhv.Telemetry;
+
 public class ClipBoard implements ClipboardOwner
 {
     private final static ClipBoard SINGLETON = new ClipBoard();
@@ -39,7 +41,7 @@ public class ClipBoard implements ClipboardOwner
             }
             catch (UnsupportedFlavorException | IOException e)
             {
-                e.printStackTrace();
+            	Telemetry.trackException(e);
             }
 
         return "";

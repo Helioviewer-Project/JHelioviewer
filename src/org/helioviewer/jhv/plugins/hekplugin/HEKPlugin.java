@@ -10,6 +10,7 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
+import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
 import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.base.math.Matrix4d;
@@ -408,8 +409,7 @@ public class HEKPlugin extends AbstractPlugin {
 				Plugins.setPanelOpenCloseState(hekPluginPanel,visible);
 				setVisible(visible);
 			} catch (JSONException e) {
-				
-				e.printStackTrace();
+				Telemetry.trackException(e);
 			}
 		}
 	}
@@ -430,7 +430,7 @@ public class HEKPlugin extends AbstractPlugin {
 			jsonObject.put(JSON_NAME, jsonHek);
 		} catch (JSONException e) {
 			
-			e.printStackTrace();
+			Telemetry.trackException(e);
 		}
 	}
 

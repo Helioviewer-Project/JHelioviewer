@@ -14,6 +14,7 @@ import java.util.TreeSet;
 
 import javax.swing.SwingUtilities;
 
+import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.downloadmanager.AbstractDownloadRequest;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
@@ -217,7 +218,7 @@ public class UltimateLayer
 								UltimateDownloadManager.remove(download.lq);
 								UltimateDownloadManager.remove(download.hq);
 
-								_e.printStackTrace();
+								Telemetry.trackException(_e);
 								
 								incomplete=true;
 								download.lq=null;
@@ -247,12 +248,12 @@ public class UltimateLayer
 					catch(IOException _e)
 					{
 						incomplete=true;
-						_e.printStackTrace();
+						Telemetry.trackException(_e);
 					}
 					catch (InterruptedException _e)
 					{
 						incomplete=true;
-						_e.printStackTrace();
+						Telemetry.trackException(_e);
 						break;
 					}
 				}

@@ -5,6 +5,7 @@ import java.net.URLEncoder;
 import java.util.Date;
 import java.util.HashMap;
 
+import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.base.math.Interval;
@@ -114,7 +115,7 @@ class HEKRequestThread extends HEKRequest implements Runnable {
 	                        return;
 					} catch (InterruptedException e) {
 						
-						e.printStackTrace();
+						Telemetry.trackException(e);
 					}
 				}
 
@@ -127,7 +128,7 @@ class HEKRequestThread extends HEKRequest implements Runnable {
 
         } catch (JSONException | IOException e) {
             System.err.println("Error Parsing the HEK Response.");
-            e.printStackTrace();
+            Telemetry.trackException(e);
         } catch (InterruptedException e)
         {
         }

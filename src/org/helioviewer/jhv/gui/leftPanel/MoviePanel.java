@@ -312,7 +312,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		slider.repaint();
 	}
 
-	private class TimeSlider extends JSlider
+	private static class TimeSlider extends JSlider
 	{
 		private static final long serialVersionUID = 2053723659623341117L;
 
@@ -381,14 +381,12 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 			//FIXME: this stuff is regenerated every frame --> should
 			//only be recreated when something has changed
 			
-			if (Layers.getActiveImageLayer() != null)
+			ImageLayer layer = (ImageLayer) Layers.getActiveImageLayer();
+			if (layer != null)
 			{
-				ImageLayer layer = (ImageLayer) Layers.getActiveImageLayer();
-
 				//FIXME: speed up!!!!!
 				LocalDateTime[] times=layer.getLocalDateTime().toArray(new LocalDateTime[0]);
 				int max=Math.min(times.length, (int)trackRect.getWidth());
-				Color[] colors = new Color[max];
 				
 				Match previousMatch = null;
 				for(int i=0;i<max;i++)

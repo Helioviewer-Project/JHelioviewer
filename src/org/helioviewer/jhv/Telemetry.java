@@ -8,7 +8,7 @@ import java.util.UUID;
 
 import com.microsoft.applicationinsights.TelemetryClient;
 
-class Telemetry
+public class Telemetry
 {
 	private static final TelemetryClient client;
 	
@@ -31,12 +31,13 @@ class Telemetry
 		client.getContext().getProperties().put("JavaFX", JHVGlobals.USE_JAVA_FX+"");
 		
 		
+		//TODO: track opengl info
 		//OpenGLHelper.glContext.
 		
 		//client.getContext().getDevice().setOperatingSystemVersion(operatingSystemVersion);
 	}
 	
-	static void trackEvent(String _event,String ... params)
+	public static void trackEvent(String _event,String ... params)
 	{
 		if(!JHVGlobals.isReleaseVersion())
 			return;
@@ -47,8 +48,10 @@ class Telemetry
 		client.trackEvent("Startup",ps,new HashMap<String, Double>());
 	}
 	
-	static void trackException(Throwable _e)
+	public static void trackException(Throwable _e)
 	{
+		_e.printStackTrace();
+		
 		if(_e instanceof Exception)
 			client.trackException((Exception)_e);
 		else

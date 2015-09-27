@@ -23,6 +23,7 @@ import javax.swing.JSpinner;
 import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 
+import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.dialogs.calender.DatePicker;
 import org.helioviewer.jhv.layers.Layers;
@@ -178,6 +179,7 @@ public class AddLayerPanel extends JDialog
 				}
 				catch (Exception e2)
 				{
+					Telemetry.trackException(e2);
 				}
 				
 				cmbbxFilter.removeAllItems();

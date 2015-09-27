@@ -17,6 +17,7 @@ import javax.swing.JOptionPane;
 
 import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.Settings;
+import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.gui.MainFrame;
@@ -74,14 +75,14 @@ public class StateParser extends DefaultHandler
 						&& selectedFile.isFile()) {
 
 					// remember the current directory for future
-					Settings.setProperty(LOAD_PATH_SETTINGS,
-							selectedFile.getParent());
-					try {
+					Settings.setProperty(LOAD_PATH_SETTINGS, selectedFile.getParent());
+					try
+					{
 						startLoadingStateFile(selectedFile);
-					} catch (IOException e) {
-						e.printStackTrace();
-					} catch (JSONException e) {
-						e.printStackTrace();
+					}
+					catch (IOException | JSONException e)
+					{
+						Telemetry.trackException(e);
 					}
 				}
 			}
@@ -188,37 +189,35 @@ public class StateParser extends DefaultHandler
 	}
 
 	private static void openSaveFileChooserFX() {
-		Platform.runLater(new Runnable() {
-
+		Platform.runLater(new Runnable()
+		{
 			@Override
-			public void run() {
-
+			public void run()
+			{
 				FileChooser fileChooser = new FileChooser();
 				fileChooser.setTitle("Save state file");
 
 				String val = Settings.getProperty(SAVE_PATH_SETTINGS);
-				File file = new File(val);
-				if (val != null && !(val.length() == 0) && file.exists()) {
-					fileChooser.setInitialDirectory(file);
+				if (val != null && val.length() != 0)
+				{
+					File file = new File(val);
+					if(file.exists())
+						fileChooser.setInitialDirectory(file);
 				}
 
-				fileChooser.getExtensionFilters().addAll(
-						StateParser.JHVStateFilter.getExtensionFilter());
+				fileChooser.getExtensionFilters().addAll(StateParser.JHVStateFilter.getExtensionFilter());
 
-				final File selectedFile = fileChooser
-						.showSaveDialog(new Stage());
+				final File selectedFile = fileChooser.showSaveDialog(new Stage());
 
-				if (selectedFile != null) {
-					try {
+				if (selectedFile != null)
+					try
+					{
 						startSavingStateFile(selectedFile);
-					} catch (JSONException e) {
-						
-						e.printStackTrace();
-					} catch (IOException e) {
-						
-						e.printStackTrace();
 					}
-				}
+					catch (JSONException | IOException e)
+					{
+						Telemetry.trackException(e);
+					}
 			}
 		});
 	}

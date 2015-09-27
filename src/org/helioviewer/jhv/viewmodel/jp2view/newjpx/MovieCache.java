@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import org.helioviewer.jhv.layers.Movie;
 import org.helioviewer.jhv.layers.Movie.Match;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
@@ -30,6 +32,7 @@ public class MovieCache
 			al.add(_movie);
 	}
 
+	@Nullable
 	public static Match findBestFrame(int _sourceId, LocalDateTime _currentDate)
 	{
 		List<Movie> al=cache.get(_sourceId);
@@ -48,12 +51,17 @@ public class MovieCache
 		return bestMatch;
 	}
 
+	@Nullable
 	public static ByteBuffer getImage(int _sourceId, LocalDateTime _localDateTime, int _quality, float _zoomFactor, Rectangle _imageSize)
 	{
 		Match bestMatch=findBestFrame(_sourceId, _localDateTime);
+		if(bestMatch==null)
+			return null;
+		
 		return bestMatch.movie.getImage(bestMatch.index, _quality, _zoomFactor, _imageSize);
 	}
 
+	@Nullable
 	public static MetaData getMetaData(int _sourceId, LocalDateTime _currentDateTime)
 	{
 		Match match = findBestFrame(_sourceId, _currentDateTime);

@@ -7,6 +7,7 @@ import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.helioviewer.jhv.JHVGlobals;
+import org.helioviewer.jhv.Telemetry;
 
 public class UltimateDownloadManager
 {
@@ -59,7 +60,7 @@ public class UltimateDownloadManager
 								catch (IOException e)
 								{
 									System.err.println(request.url);
-									e.printStackTrace();
+									Telemetry.trackException(e);
 									if (request.justTriedShouldTryAgain())
 										addRequest(request);
 									else

@@ -775,8 +775,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
 			float ar = 16 / 9f;
 			try {
 				int width = Integer.parseInt(txtScreenshotImageWidth.getText());
-				int height = Integer.parseInt(txtScreenshotImageHeight
-						.getText());
+				int height = Integer.parseInt(txtScreenshotImageHeight.getText());
 				ar = width / (float) height;
 			} catch (Exception _e) {
 			}

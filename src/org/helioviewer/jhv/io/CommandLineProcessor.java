@@ -9,6 +9,10 @@ import java.text.SimpleDateFormat;
 import java.util.AbstractList;
 import java.util.LinkedList;
 
+import org.helioviewer.jhv.Telemetry;
+
+//FIXME: merge all getDownloadOptionValues-style methods
+
 /**
  * A simple class to process command line arguments for JHelioviewer
  * specification.
@@ -17,24 +21,10 @@ import java.util.LinkedList;
  * @author Stephan Pagel
  * @author Andre Dau
  */
-public class CommandLineProcessor {
-
-    // ////////////////////////////////////////////////////////////////
-    // Definitions
-    // ////////////////////////////////////////////////////////////////
-
+public class CommandLineProcessor
+{
     private static String[] arguments;
     private static String usageMessage;
-
-    // ////////////////////////////////////////////////////////////////
-    // Methods
-    // ////////////////////////////////////////////////////////////////
-
-    /**
-     * Default constructor.
-     * */
-    public CommandLineProcessor() {
-    }
 
     /**
      * Sets the arguments (text from command line) to this class.
@@ -54,20 +44,24 @@ public class CommandLineProcessor {
      * 
      * @return list of values of the -jpx option as URLs
      */
-    public static AbstractList<URL> getJPXOptionValues() {
-
+    public static AbstractList<URL> getJPXOptionValues()
+    {
         // get associated value string for "jpip" option
         AbstractList<String> jpxURLs = getOptionValues("jpx");
         LinkedList<URL> result = new LinkedList<URL>();
-        for (String jpxURL : jpxURLs) {
-            if (!jpxURL.equals("")) {
-                try {
+        for (String jpxURL : jpxURLs)
+            if (!jpxURL.equals(""))
+            {
+                try
+                {
                     result.add(new URL(jpxURL));
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
+                }
+                catch (MalformedURLException e)
+                {
+                	Telemetry.trackException(e);
                 }
             }
-        }
+            
         return result;
     }
 
@@ -85,15 +79,19 @@ public class CommandLineProcessor {
 
         AbstractList<String> optionValues = getOptionValues("jhv");
 
-        for (String optionValue : optionValues) {
-            if (!optionValue.equals("")) {
-                try {
+        for (String optionValue : optionValues)
+            if (!optionValue.equals(""))
+            {
+                try
+                {
                     result.add(parseJHVRequest(optionValue));
-                } catch (IllegalArgumentException e) {
-                    e.printStackTrace();
+                }
+                catch (IllegalArgumentException e)
+                {
+                    Telemetry.trackException(e);
                 }
             }
-        }
+        
         return result;
     }
 
@@ -102,18 +100,23 @@ public class CommandLineProcessor {
      * 
      * @return list of values of the -jpip option as URIs
      */
-    public static AbstractList<URI> getJPIPOptionValues() {
+    public static AbstractList<URI> getJPIPOptionValues()
+    {
         AbstractList<String> jpipURIs = getOptionValues("jpip");
         LinkedList<URI> uris = new LinkedList<URI>();
-        for (String jpipURI : jpipURIs) {
-            if (!jpipURI.equals("")) {
-                try {
+        for (String jpipURI : jpipURIs)
+        {
+            if (!jpipURI.equals(""))
+            {
+                try
+                {
                     uris.add(new URI(jpipURI));
-                } catch (URISyntaxException e) {
-                    e.printStackTrace();
+                }
+                catch (URISyntaxException e)
+                {
+                	Telemetry.trackException(e);
                 }
             }
-
         }
         return uris;
     }
@@ -123,19 +126,23 @@ public class CommandLineProcessor {
      * 
      * @return list of value of the -download option as URIs
      */
-    public static AbstractList<URI> getDownloadOptionValues() {
+    public static AbstractList<URI> getDownloadOptionValues()
+    {
         AbstractList<String> addresses = getOptionValues("download");
         LinkedList<URI> uris = new LinkedList<URI>();
-        for (String address : addresses) {
-            if (!address.equals("")) {
-                try {
+        for (String address : addresses)
+            if (!address.equals(""))
+            {
+                try
+                {
                     uris.add(new URI(address));
-                } catch (URISyntaxException e) {
-                    e.printStackTrace();
+                }
+                catch (URISyntaxException e)
+                {
+                	Telemetry.trackException(e);
                 }
             }
-
-        }
+            
         return uris;
     }
 

@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 
+import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -205,10 +206,9 @@ public class Layers
 	{
 		for (AbstractLayer layer : layers)
 			if (layer.isImageLayer())
-			{
 				layer.remove();
-				layers.remove(layer);
-			}
+	
+		layers.clear();
 		
 		activeLayer = 0;
 		for (LayerListener renderListener : layerListeners)
@@ -241,7 +241,7 @@ public class Layers
 			}
 			catch (JSONException e)
 			{
-				e.printStackTrace();
+				Telemetry.trackException(e);
 			}
 		}
 	}

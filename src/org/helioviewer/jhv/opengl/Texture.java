@@ -50,9 +50,13 @@ class Texture
 
 	public void invalidate()
 	{
+		if(imageRegion==null)
+			return;
+		
+		LocalDateTime ldt=imageRegion.getDateTime();
 		imageRegion=null;
 		
-		if (TimeLine.SINGLETON.getCurrentDateTime().equals(imageRegion.getDateTime()))
+		if (TimeLine.SINGLETON.getCurrentDateTime().equals(ldt))
 			MainFrame.MAIN_PANEL.repaint();
 	}
 }

@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.base.coordinates.CoordinateHelper;
 import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
 import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
@@ -395,7 +396,7 @@ public class HEKEvent implements IntervalComparison<Date> {
             return HEKCoordinateTransform.StonyhurstRotateStonyhurst(result, timeDifferenceInSeconds);
 
         } catch (HEKEventException e) {
-            e.printStackTrace();
+        	Telemetry.trackException(e);
         }
 
         // if nothing worked, just return null
@@ -417,7 +418,7 @@ public class HEKEvent implements IntervalComparison<Date> {
 		}
 		catch (HEKEventException e)
 		{
-			e.printStackTrace();
+			Telemetry.trackException(e);
 		}
 		return null;
     }
@@ -626,7 +627,7 @@ public class HEKEvent implements IntervalComparison<Date> {
              * }
              */
         } catch (JSONException e) {
-            e.printStackTrace();
+        	Telemetry.trackException(e);
         }
 
         return null;

@@ -7,6 +7,7 @@ import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 
+import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.gui.ShowableDialog;
 import org.helioviewer.jhv.gui.dialogs.HelpDialog;
 
@@ -72,7 +73,7 @@ public class ShowDialogAction extends AbstractAction {
         }
         catch (Exception e1)
         {
-            e1.printStackTrace();
+        	Telemetry.trackException(e1);
         }
     }
 }

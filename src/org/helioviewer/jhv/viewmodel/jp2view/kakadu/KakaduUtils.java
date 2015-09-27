@@ -3,6 +3,8 @@
 import java.awt.Rectangle;
 import java.io.UnsupportedEncodingException;
 
+import org.helioviewer.jhv.Telemetry;
+
 import kdu_jni.Jp2_input_box;
 import kdu_jni.Jp2_locator;
 import kdu_jni.Jp2_threadsafe_family_src;
@@ -37,8 +39,10 @@ public class KakaduUtils {
             pos.Set_y(_rect.y);
             siz.Set_x(_rect.width);
             siz.Set_y(_rect.height);
-        } catch (KduException ex) {
-            ex.printStackTrace();
+        }
+        catch (KduException ex)
+        {
+        	Telemetry.trackException(ex);
         }
         return dims;
     }
@@ -233,7 +237,7 @@ public class KakaduUtils {
 	            }
 	            catch (UnsupportedEncodingException ex)
 	            {
-	                ex.printStackTrace();
+	                Telemetry.trackException(ex);
 	                xml = null;
 	            }
 	        }

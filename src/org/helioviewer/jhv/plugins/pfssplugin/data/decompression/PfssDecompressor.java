@@ -12,6 +12,7 @@ import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 
+import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.plugins.pfssplugin.data.PfssCompressed;
 import org.helioviewer.jhv.plugins.pfssplugin.data.PfssDecompressed;
 
@@ -67,7 +68,7 @@ public class PfssDecompressor
 		}
 		catch (FitsException | IOException e)
 		{
-			e.printStackTrace();
+			Telemetry.trackException(e);
 		}
 	}
 
