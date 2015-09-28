@@ -80,7 +80,7 @@ public abstract class AbstractLayer
 		return null;
 	}
 
-	abstract void remove();
+	abstract void dispose();
 
 	public int getBadRequestCount()
 	{

@@ -22,7 +22,6 @@ public class PfssPlugin extends AbstractPlugin {
 	private static final String JSON_OPEN = "pfssOpen";
 	private static final String JSON_VISIBLE = "pfssVisible";
 
-	private static final String NAME = "PFSS plugin";
 	private static final String PLUGIN_NAME = "PFSS";
 	private static int threadNumber = 0;
 	public static final ExecutorService pool = Executors.newFixedThreadPool(2,

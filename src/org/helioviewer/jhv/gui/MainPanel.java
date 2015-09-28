@@ -129,7 +129,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		statusLabelCameraListeners = new ArrayList<StatusLabelCameraListener>();
 		this.setSharedContext(_context);
 
-		Layers.addNewLayerListener(this);
+		Layers.addLayerListener(this);
 		TimeLine.SINGLETON.addListener(this);
 		this.addMouseListener(this);
 		this.addMouseMotionListener(this);
@@ -142,7 +142,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		cameraInteractions = new CameraInteraction[2];
 		cameraInteractions[0] = new CameraZoomInteraction(this, this);
 		cameraInteractions[1] = new CameraRotationInteraction(this, this);
-
+		
 		visibleAreaOutline = new double[40][3];
 	}
 

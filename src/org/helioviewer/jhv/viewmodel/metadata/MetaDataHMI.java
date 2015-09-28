@@ -8,13 +8,13 @@ class MetaDataHMI extends MetaData{
 	private final static Rectangle RESOLUTION = new Rectangle(4096, 4096);
 	private final double IMAGE_SCALE = 0.6;
 
-	public MetaDataHMI(MetaDataContainer metaDataContainer) {
+	public MetaDataHMI(MetaDataContainer metaDataContainer)
+	{
         super(metaDataContainer, RESOLUTION);
         measurement = metaDataContainer.get("CONTENT");
         observatory = metaDataContainer.get("TELESCOP");
-        if (!(instrument.equalsIgnoreCase("HMI_FRONT2"))){
+        if (!(instrument.equalsIgnoreCase("HMI_FRONT2")))
         	throw new UnsuitableMetaDataException("invalid instrument: "+instrument);
-        }
 
         instrument = "HMI";
         fullName = "HMI " + measurement.substring(0, 1) + measurement.substring(1, 3).toLowerCase();

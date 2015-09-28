@@ -23,9 +23,6 @@ public class FileDescriptorManager
 	private LocalDateTime endDate;
 	private volatile int epoch = 0;
 
-	private LocalDateTime loadingFrom;
-	private LocalDateTime loadingTo;
-
 	private PfssPlugin parent;
 
 	public FileDescriptorManager(PfssPlugin _parent)
@@ -61,9 +58,6 @@ public class FileDescriptorManager
 	{
 		epoch++;
 		final int curEpoch = epoch;
-
-		this.loadingFrom = from;
-		this.loadingTo = to;
 
 		this.firstDate = from;
 		this.endDate = to;

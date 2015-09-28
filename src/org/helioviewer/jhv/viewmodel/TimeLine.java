@@ -46,7 +46,7 @@ public class TimeLine implements LayerListener
 	private TimeLine()
 	{
 		localDateTimes = new ConcurrentSkipListSet<LocalDateTime>();
-		Layers.addNewLayerListener(this);
+		Layers.addLayerListener(this);
 		timeLineListeners = new ArrayList<TimeLine.TimeLineListener>();
 	}
 

@@ -112,7 +112,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 	{
 		setBorder(new EmptyBorder(0, 2, 10, 10));
 		TimeLine.SINGLETON.addListener(this);
-		Layers.addNewLayerListener(this);
+		Layers.addLayerListener(this);
 		setLayout(new BorderLayout());
 		add(createMain(), BorderLayout.CENTER);
 		optionPane = createOptionPane();

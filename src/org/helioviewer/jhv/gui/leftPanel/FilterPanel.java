@@ -53,7 +53,7 @@ public class FilterPanel extends JPanel implements LayerListener
 	public FilterPanel()
 	{
 		initGui();
-		Layers.addNewLayerListener(this);
+		Layers.addLayerListener(this);
 	}
 	
 	private void initGui()

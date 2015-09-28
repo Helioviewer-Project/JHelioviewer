@@ -90,6 +90,10 @@ public class UltimateLayer
 	
 	public void setTimeRange(final LocalDateTime start, final LocalDateTime end, final int cadence)
 	{
+		//FIXME
+		if(loaderThread!=null)
+			throw new RuntimeException("Changing time range after creation currently not implemented.");
+		
 		loaderThread = new Thread(new Runnable()
 		{
 			private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
@@ -253,7 +257,6 @@ public class UltimateLayer
 					catch (InterruptedException _e)
 					{
 						incomplete=true;
-						Telemetry.trackException(_e);
 						break;
 					}
 				}
@@ -264,7 +267,8 @@ public class UltimateLayer
 					public void run()
 					{
 						//FIXME: should probably only be set if current layer is active
-						MainFrame.MOVIE_PANEL.repaintSlider();
+						MainFrame.SINGLETON.repaint();
+						//MainFrame.MOVIE_PANEL.repaintSlider();
 					}
 				});
 				

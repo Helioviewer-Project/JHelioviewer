@@ -8,6 +8,7 @@ import java.nio.IntBuffer;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
+import javax.swing.SwingUtilities;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -22,6 +23,7 @@ import kdu_jni.Kdu_region_compositor;
 
 import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.layers.ImageLayer.CacheStatus;
+import org.helioviewer.jhv.layers.LUT.Lut;
 import org.helioviewer.jhv.opengl.TextureCache;
 import org.helioviewer.jhv.viewmodel.jp2view.kakadu.KakaduUtils;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.UltimateLayer;
@@ -40,7 +42,7 @@ public class Movie
 
 	private Jp2_threadsafe_family_src family_src;
 	private Jpx_source jpxSrc;
-	private UltimateLayer ul;
+	private final UltimateLayer ul;
 
 	public Movie(UltimateLayer _ul, int _sourceId)
 	{
@@ -107,7 +109,17 @@ public class Movie
 			}
 			
 			if(framecount>0)
-				ul.setLUT(metaDatas[0].getDefaultLUT());
+			{
+				final Lut l=metaDatas[0].getDefaultLUT();
+				SwingUtilities.invokeLater(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						ul.setLUT(l);
+					}
+				});
+			}
 		}
 		catch (KduException e)
 		{

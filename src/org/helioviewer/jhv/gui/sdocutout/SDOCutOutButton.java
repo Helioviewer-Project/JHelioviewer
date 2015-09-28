@@ -21,7 +21,7 @@ public class SDOCutOutButton extends JButton implements
 	{
 		super(new SDOCutOutAction());
 		initButton();
-		Layers.addNewLayerListener(this);
+		Layers.addLayerListener(this);
 		this.setEnabled(false);
 	}
 

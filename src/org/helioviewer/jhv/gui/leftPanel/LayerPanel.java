@@ -88,7 +88,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		initPopup();
 		initGUI();
 		updateData();
-		Layers.addNewLayerListener(this);
+		Layers.addLayerListener(this);
 		TimeLine.SINGLETON.addListener(this);
 	}
 
@@ -236,9 +236,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 					@Override
 					public void valueChanged(ListSelectionEvent e)
 					{
-						int row = table.getSelectedRow();
-						if (row != Layers.getActiveLayerNumber())
-							Layers.setActiveLayer(row);
+						Layers.setActiveLayer(table.getSelectedRow());
 					}
 				});
 		
@@ -410,10 +408,10 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			row++;
 		}
 		
-		if (Layers.getLayerCount() > 0 && Layers.getActiveLayerNumber()<Layers.getLayerCount() && Layers.getActiveLayerNumber()>=0)
+		if (Layers.getLayerCount() > 0 && Layers.getActiveLayer()!=null)
 			table.setRowSelectionInterval(
-					Layers.getActiveLayerNumber(),
-					Layers.getActiveLayerNumber());
+					Layers.getActiveLayerIndex(),
+					Layers.getActiveLayerIndex());
 	}
 
 	private static class LayerTableModel extends DefaultTableModel
@@ -505,6 +503,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 	@Override
 	public void layersRemoved()
 	{
+		updateData();
 	}
 
 	@Override

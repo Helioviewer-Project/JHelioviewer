@@ -1,5 +1,6 @@
 package org.helioviewer.jhv.viewmodel.metadata;
 
+import org.helioviewer.jhv.Telemetry;
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -47,7 +48,7 @@ public class MetaDataContainer
             }
             catch (NumberFormatException e)
             {
-                System.err.println("NumberFormatException while trying to parse value \"" + string + "\" of key " + key + " from meta data of");
+                Telemetry.trackException(e);
                 return 0;
             }
         }
@@ -66,7 +67,7 @@ public class MetaDataContainer
         }
         catch (NumberFormatException e)
         {
-            System.out.println("NumberFormatException while trying to parse value \"" + string + "\" of key " + key + " from meta data of");
+        	Telemetry.trackException(e);
             return Double.NaN;
         }
     }

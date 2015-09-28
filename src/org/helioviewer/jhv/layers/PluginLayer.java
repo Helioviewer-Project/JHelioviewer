@@ -35,7 +35,7 @@ public class PluginLayer extends AbstractLayer{
 	}
 
 	@Override
-	void remove() {
+	void dispose() {
 		Plugins.SINGLETON.deactivatePlugin(plugin);
 	}	
 	

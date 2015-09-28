@@ -1,9 +1,8 @@
 package org.helioviewer.jhv.layers;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
-
+import javax.annotation.Nullable;
 import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.json.JSONArray;
@@ -12,10 +11,9 @@ import org.json.JSONObject;
 
 public class Layers
 {
-	private static ArrayList<LayerListener> layerListeners;
-	private static ArrayList<AbstractLayer> layers;
-	private static int activeLayer = -1;
-	private static int activeImageLayer = -1;
+	private static ArrayList<LayerListener> layerListeners = new ArrayList<LayerListener>();
+	private static ArrayList<AbstractLayer> layers = new ArrayList<AbstractLayer>();
+	private static int activeLayerIndex = -1;
 
 	private static final Comparator<AbstractLayer> COMPARATOR = new Comparator<AbstractLayer>()
 	{
@@ -30,40 +28,15 @@ public class Layers
 				return 0;
 		}
 	};
-
 	
-	static
+	private static void updateOpacity(ImageLayer imageLayer, boolean remove)
 	{
-		layers = new ArrayList<AbstractLayer>();
-		layerListeners = new ArrayList<LayerListener>();
-	}
-
-	public static AbstractLayer addLayer(String _filePath)
-	{
-		ImageLayer layer = new ImageLayer(_filePath);
-		layers.add(layer);
-		layers.sort(COMPARATOR);
-		updateOpacity(layer, false);
-		if (layers.size() == 1 || activeImageLayer < 0)
-			setActiveLayer(0);
-		
-		for (LayerListener renderListener : layerListeners)
-			renderListener.layerAdded();
-		
-		if (layers.size() == 1)
-			activeLayerChanged();
-		
-		return layer;
-	}
-	
-	private static void updateOpacity(ImageLayer imageLayer, boolean remove){
 		int counter = 0;
 		for (AbstractLayer tmpLayer : layers)
 			if (tmpLayer.isImageLayer())
 				counter++;
 		
 		for (AbstractLayer tmpLayer : layers)
-		{
 			if (tmpLayer.isImageLayer())
 			{
 				ImageLayer tmpImageLayer = (ImageLayer) tmpLayer;
@@ -77,43 +50,27 @@ public class Layers
 						tmpImageLayer.opacity *= ((counter-1d) / counter);
 				}
 			}
-		}
 	}
 
-	public static void addLayer(AbstractLayer layer)
+	public static void addLayer(AbstractLayer _newLayer)
 	{
-		layers.add(layer);
+		layers.add(_newLayer);
 		layers.sort(COMPARATOR);
-		if (layers.size() == 1 || activeImageLayer < 0)
-			setActiveLayer(0);
-		if (layer.isImageLayer())
-			updateOpacity((ImageLayer)layer, false);
+		
+		if (_newLayer.isImageLayer())
+			updateOpacity((ImageLayer)_newLayer, false);
 		
 		for (LayerListener renderListener : layerListeners)
 			renderListener.layerAdded();
 		
-		if (layers.size() == 1)
-			activeLayerChanged();
+		for(int i=0;i<layers.size();i++)
+			if(layers.get(i)==_newLayer)
+				setActiveLayer(i);
 	}
 
-	public static ImageLayer addLayer(int id, LocalDateTime start, LocalDateTime end, int cadence, String name)
+	public static AbstractLayer getLayer(int idx)
 	{
-		ImageLayer layer = new ImageLayer(id, start, end, cadence, name);
-		layers.add(layer);
-		layers.sort(COMPARATOR);
-		updateOpacity(layer, false);
-		
-		if (layers.size() == 1 || activeImageLayer < 0)
-			setActiveLayer(0);
-		for (LayerListener renderListener : layerListeners)
-			renderListener.layerAdded();
-		if (layers.size() == 1)
-			activeLayerChanged();
-		return layer;
-	}
-
-	public static AbstractLayer getLayer(int idx) {
-		if (idx >= 0 && idx < layers.size())
+		if (idx >= 0)
 			return layers.get(idx);
 		return null;
 	}
@@ -126,78 +83,66 @@ public class Layers
 		if (!layers.get(idx).isImageLayer())
 			return;
 		
-		updateOpacity((ImageLayer)layers.get(idx), true);				
+		updateOpacity((ImageLayer)layers.get(idx), true);
 		
-		layers.get(idx).remove();
+		layers.get(idx).dispose();
 		layers.remove(idx);
-		if (layers.isEmpty())
-			activeLayer = -1;
 		
-		int counter = 0;
-		for (AbstractLayer layer : layers)
-		{
-			if (layer.isImageLayer())
-			{
-				activeImageLayer = counter;					
-				break;
-			}
-			counter++;
-		}
-		
-		if (counter != activeImageLayer)
-		{
-			activeImageLayer = -1;
-			activeLayerChanged();
-		}
+		if (layers.isEmpty() || activeLayerIndex==idx)
+			setActiveLayer(-1);
+		else if(activeLayerIndex>idx)
+			setActiveLayer(activeLayerIndex-1);
 		
 		for (LayerListener renderListener : layerListeners)
 			renderListener.layersRemoved();
 	}
 
-	public static void addNewLayerListener(LayerListener renderListener) {
+	public static void addLayerListener(LayerListener renderListener)
+	{
 		layerListeners.add(renderListener);
 	}
 
-	public static int getLayerCount() {
+	public static int getLayerCount()
+	{
 		return layers.size();
 	}
 
-	private static void activeLayerChanged()
+	@Deprecated
+	public static int getActiveLayerIndex()
 	{
-		if (activeLayer >= 0)
-			for (LayerListener renderListener : layerListeners)
-				renderListener.activeLayerChanged(getLayer(activeLayer));
+		return activeLayerIndex;
 	}
 
-	public static int getActiveLayerNumber() {
-		return activeLayer;
-	}
-
-	public static AbstractLayer getActiveLayer() {
-		if (layers.size() > 0 && activeLayer >= 0)
-			return layers.get(activeLayer);
+	@Nullable
+	public static AbstractLayer getActiveLayer()
+	{
+		if (activeLayerIndex >= 0)
+			return layers.get(activeLayerIndex);
+		
 		return null;
 	}
 
-	public static void setActiveLayer(int activeLayer) {
-		if ((Layers.activeLayer != activeLayer || Layers.activeImageLayer < 0) && getLayerCount() > 0) {
-			Layers.activeLayer = activeLayer;
-			if (getActiveLayer() != null && getActiveLayer().isImageLayer())
-				Layers.activeImageLayer = activeLayer;
-			Layers.activeLayerChanged();
-		}
+	@Deprecated
+	public static void setActiveLayer(int _newActiveLayer)
+	{
+		activeLayerIndex = _newActiveLayer;
+		
+		AbstractLayer l=getLayer(activeLayerIndex);
+		for (LayerListener renderListener : layerListeners)
+			renderListener.activeLayerChanged(l);
 	}
 
-	public static ArrayList<AbstractLayer> getLayers() {
+	public static ArrayList<AbstractLayer> getLayers()
+	{
 		return layers;
 	}
 
 	public static void toggleCoronaVisibility()
 	{
-		AbstractLayer il = getActiveLayer();
-		if(il instanceof ImageLayer)
+		ImageLayer il = getActiveImageLayer();
+		if(il != null)
 		{
-			((ImageLayer)il).toggleCoronaVisibility();
+			il.toggleCoronaVisibility();
 			MainFrame.MAIN_PANEL.repaint();
 		}
 	}
@@ -206,11 +151,11 @@ public class Layers
 	{
 		for (AbstractLayer layer : layers)
 			if (layer.isImageLayer())
-				layer.remove();
+				layer.dispose();
 	
 		layers.clear();
 		
-		activeLayer = 0;
+		activeLayerIndex = 0;
 		for (LayerListener renderListener : layerListeners)
 			renderListener.layersRemoved();
 	}
@@ -228,7 +173,6 @@ public class Layers
 	public static void readStatefile(JSONArray jsonLayers)
 	{
 		for (int i = 0; i < jsonLayers.length(); i++)
-		{
 			try
 			{
 				JSONObject jsonLayer = jsonLayers.getJSONObject(i);
@@ -243,13 +187,14 @@ public class Layers
 			{
 				Telemetry.trackException(e);
 			}
-		}
 	}
 
+	@Nullable
 	public static ImageLayer getActiveImageLayer()
 	{
-		if (activeImageLayer >= 0)
-			return (ImageLayer) layers.get(activeImageLayer);
-		return null;
+		if (activeLayerIndex == -1 || !(layers.get(activeLayerIndex) instanceof ImageLayer))
+			return null;
+		
+		return (ImageLayer) layers.get(activeLayerIndex);
 	}
 }

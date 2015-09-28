@@ -20,6 +20,7 @@ import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.actions.filefilters.AllSupportedImageTypesFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.FileFilter;
+import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.Layers;
 
 /**
@@ -78,7 +79,7 @@ public class OpenLocalFileAction extends AbstractAction {
 							{
 								// remember the current directory for future
 								Settings.setProperty("default.local.path", selectedFile.getParent());
-								Layers.addLayer(selectedFile.toString());
+								Layers.addLayer(new ImageLayer(selectedFile.toString()));
 							}
 						});
 					}
@@ -107,7 +108,7 @@ public class OpenLocalFileAction extends AbstractAction {
 				{
 					// remember the current directory for future
 					Settings.setProperty("default.local.path", fileChooser.getSelectedFile().getParent());
-					Layers.addLayer(fileChooser.getSelectedFile().toString());
+					Layers.addLayer(new ImageLayer(fileChooser.getSelectedFile().toString()));
 				}
 			}
 		}

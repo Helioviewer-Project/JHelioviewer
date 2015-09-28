@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.helioviewer.jhv.JHVGlobals;
 import org.helioviewer.jhv.Telemetry;
 
 public class UltimateDownloadManager
@@ -32,12 +31,12 @@ public class UltimateDownloadManager
 		}
 	});
 
-	private static final int NUMBER_OF_THREADS = 6;
+	private static final int CONCURRENT_DOWNLOADS = 4;
 	private static AtomicInteger activeNormalAndHighPrioDownloads = new AtomicInteger();
 
 	static
 	{
-		for (int i = 0; i < NUMBER_OF_THREADS; i++)
+		for (int i = 0; i < CONCURRENT_DOWNLOADS; i++)
 		{
 			Thread thread = new Thread(new Runnable()
 			{
@@ -71,8 +70,8 @@ public class UltimateDownloadManager
 									if(request.priority.ordinal()>DownloadPriority.LOW.ordinal())
 										activeNormalAndHighPrioDownloads.decrementAndGet();
 								}
-							else if(!JHVGlobals.isReleaseVersion())
-								throw t.ex;
+							else
+								Telemetry.trackException(t.ex);
 						}
 					}
 					catch (InterruptedException e)
@@ -93,7 +92,7 @@ public class UltimateDownloadManager
 		
 		try
 		{
-			throw new RuntimeException("Request for "+_request.url+" was not canceled properly");
+			throw new RuntimeException("Request for was not canceled properly: "+_request.url);
 		}
 		catch(RuntimeException _t)
 		{

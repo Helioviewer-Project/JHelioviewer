@@ -175,7 +175,7 @@ public class StateParser extends DefaultHandler
 		jsonCamera.put("rotation", jsonRotation);
 
 		jsonObject.put("camera", jsonCamera);
-		jsonObject.put("activeLayer", Layers.getActiveLayerNumber());
+		jsonObject.put("activeLayer", Layers.getActiveLayerIndex());
 		jsonObject.put("time", TimeLine.SINGLETON.getCurrentDateTime());
 
 		JSONObject jsonPlugins = new JSONObject();

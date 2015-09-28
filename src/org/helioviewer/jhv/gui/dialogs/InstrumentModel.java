@@ -17,6 +17,7 @@ import org.helioviewer.jhv.base.downloadmanager.AbstractDownloadRequest;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
+import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.Layers;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -66,7 +67,7 @@ public class InstrumentModel
 									{
 										Filter instrument = observatories.get("SDO").filters.get("AIA").filters.get("171");
 										LocalDateTime start = instrument.end.minusWeeks(2);
-										Layers.addLayer(instrument.sourceId, start, instrument.end, 60*60, instrument.getNickname());
+										Layers.addLayer(new ImageLayer(instrument.sourceId, start, instrument.end, 60*60, instrument.getNickname()));
 									}
 									catch(NullPointerException _npe)
 									{
@@ -240,40 +241,47 @@ public class InstrumentModel
 	static class Filter
 	{
 		private TreeMap<String, Filter> filters = new TreeMap<String, InstrumentModel.Filter>(new AlphanumComparator());
-		private String name;
+		private final String name;
 		
 		private LocalDateTime start;
 		private LocalDateTime end;
 		private String nickname;
 		int sourceId;
 
-		private Filter(String name) {
-			this.name = name;
+		private Filter(String _name)
+		{
+			name = _name;
 		}
 
-		private void addFilter(String name, Filter filter) {
+		private void addFilter(String name, Filter filter)
+		{
 			filters.put(name, filter);
 		}
 
-		public Collection<Filter> getFilters() {
-			return this.filters.values();
+		public Collection<Filter> getFilters()
+		{
+			return filters.values();
 		}
 
 		@Override
-		public String toString() {
-			return this.name;
+		public String toString()
+		{
+			return name;
 		}
 		
-		public LocalDateTime getStart(){
+		public LocalDateTime getStart()
+		{
 			return start;
 		}
 		
-		public LocalDateTime getEnd(){
+		public LocalDateTime getEnd()
+		{
 			return end;
 		}
 		
-		public String getNickname(){
-			return this.nickname;
+		public String getNickname()
+		{
+			return nickname;
 		}
 	}
 }

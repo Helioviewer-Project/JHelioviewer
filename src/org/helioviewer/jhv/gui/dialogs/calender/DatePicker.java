@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.time.LocalDate;
@@ -19,15 +20,14 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 
-public class DatePicker extends JPanel{
-
-	/**
-	 * 
-	 */
+//TODO: remove code duplication in formatting/parsing code
+public class DatePicker extends JPanel
+{
 	private static final long serialVersionUID = 3241360217403676930L;
 	
 	private enum KEY_MODE { UP, DOWN, NONE};
@@ -43,20 +43,23 @@ public class DatePicker extends JPanel{
 	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	private static final long MAX_TIME_STEPS = 3600 * 24 * 30; 
 	
-	public DatePicker(LocalDateTime dateTime, JDialog dialog) {
+	public DatePicker(LocalDateTime dateTime, JDialog dialog)
+	{
 		this.dateTime = dateTime;
 		newDatePickerPopup = new DatePickerPopup(this, dialog);
 		initGUI();
 		initData();
 	}
 	
-	private void initData(){
+	private void initData()
+	{
 		txtFieldTime.setText(this.dateTime.format(TIME_FORMAT));
 		txtFieldDate.setText(this.dateTime.format(DATE_FORMAT));
 	}
 	
 	
-	private void initGUI(){
+	private void initGUI()
+	{
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{0, 0, 0, 0};
 		gridBagLayout.rowHeights = new int[]{0, 0};
@@ -65,33 +68,58 @@ public class DatePicker extends JPanel{
 		setLayout(gridBagLayout);
 		
 		txtFieldDate = new JTextField();
-		txtFieldDate.addFocusListener(new FocusAdapter() {	
+		txtFieldDate.addFocusListener(new FocusAdapter()
+		{
 			@Override
-			public void focusLost(FocusEvent e) {
+			public void focusLost(FocusEvent e)
+			{
 				LocalDate localdate = null;
-				try {
+				try
+				{
 					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/D/yyyy");
 					localdate = LocalDate.parse(txtFieldDate.getText(), formatter);
-				} catch (Exception e1) {
-					try {
+				}
+				catch (Exception e1)
+				{
+					try
+					{
 						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d");
 						localdate = LocalDate.parse(txtFieldDate.getText(), formatter);
-					} catch (Exception e2) {
-						try {
+					}
+					catch (Exception e2)
+					{
+						try
+						{
 							DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d.M.yyyy");
 							localdate = LocalDate.parse(txtFieldDate.getText(), formatter);
-						} catch (Exception e3) {
+						}
+						catch (Exception e3)
+						{
 						}
 					}
 				}
 				
-				if (localdate != null){
+				if (localdate != null)
+				{
 					dateTime = localdate.atTime(dateTime.toLocalTime());
 					newDatePickerPopup.setCurrentDate(localdate);
 				}
 				txtFieldDate.setText(dateTime.format(DATE_FORMAT));
 				txtFieldTime.setText(dateTime.format(TIME_FORMAT));
-			}				
+			}
+			
+			@Override
+			public void focusGained(FocusEvent _e)
+			{
+				SwingUtilities.invokeLater(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						txtFieldDate.selectAll();
+					}
+				});
+			}
 		});
 		
 		GridBagConstraints gbcDate = new GridBagConstraints();
@@ -105,15 +133,18 @@ public class DatePicker extends JPanel{
 		
 		btnDatePicker = new JButton(IconBank.getIcon(JHVIcon.CALENDER));
 		btnDatePicker.setPreferredSize(new Dimension(22, 22));
-		btnDatePicker.addActionListener(new ActionListener() {
-			
+		btnDatePicker.addActionListener(new ActionListener()
+		{
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (popupVisibility){
+			public void actionPerformed(ActionEvent e)
+			{
+				if (popupVisibility)
+				{
 					newDatePickerPopup.setVisible(false);
 					popupVisibility = false;
 				}
-				else{
+				else
+				{
 					int x = txtFieldDate.getLocationOnScreen().x;
 		        	int y = txtFieldDate.getLocationOnScreen().y + txtFieldDate.getSize().height - 4;
 		        	newDatePickerPopup.setLocation(x, y);
@@ -130,40 +161,66 @@ public class DatePicker extends JPanel{
 		add(btnDatePicker, gbcBtnDatePicker);
 		
 		txtFieldTime = new JTextField();
-		txtFieldTime.addFocusListener(new FocusAdapter() {	
+		txtFieldTime.addFocusListener(new FocusAdapter()
+		{
 			@Override
-			public void focusLost(FocusEvent e) {
+			public void focusLost(FocusEvent e)
+			{
 				LocalTime localTime = null;
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("H:m:s");
-				try {
+				try
+				{
 					localTime = LocalTime.parse(txtFieldTime.getText(), formatter);
-				} catch (Exception e1) {
-					try {
+				}
+				catch (Exception e1)
+				{
+					try
+					{
 						formatter = DateTimeFormatter.ofPattern("H:m");
 						localTime = LocalTime.parse(txtFieldTime.getText(), formatter);
-					} catch (Exception e2) {
-						try {
+					}
+					catch (Exception e2)
+					{
+						try
+						{
 							formatter = DateTimeFormatter.ofPattern("H");
 							localTime = LocalTime.parse(txtFieldTime.getText(), formatter);
-						} catch (Exception e3) {
+						}
+						catch (Exception e3)
+						{
 						}
 					}
 				}
 				if (localTime != null)
 					dateTime = localTime.atDate(dateTime.toLocalDate());
 				txtFieldTime.setText(dateTime.toLocalTime().format(TIME_FORMAT));
-			}				
-		});
-		txtFieldTime.addKeyListener(new KeyAdapter() {
+			}
 			
 			@Override
-			public void keyReleased(KeyEvent e) {
+			public void focusGained(FocusEvent _e)
+			{
+				SwingUtilities.invokeLater(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						txtFieldTime.selectAll();
+					}
+				});
+			}
+		});
+		txtFieldTime.addKeyListener(new KeyAdapter()
+		{
+			@Override
+			public void keyReleased(KeyEvent e)
+			{
 				factor = 0;
 				keyMode = KEY_MODE.NONE;
 			}
 			
 			@Override
-			public void keyPressed(KeyEvent e) {
+			public void keyPressed(KeyEvent e)
+			{
 				long time = (long) Math.pow(2, factor);
 				time = time > MAX_TIME_STEPS ? MAX_TIME_STEPS : time;
 				if (++counter > 30) {

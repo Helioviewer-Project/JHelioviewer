@@ -118,7 +118,7 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 		exportFitsButton.addActionListener(this);
 		// exportButton.addActionListener(this);
 		pack();
-		Layers.addNewLayerListener(this);
+		Layers.addLayerListener(this);
 		TimeLine.SINGLETON.addListener(this);
 		setLocationRelativeTo(MainFrame.SINGLETON);
 		

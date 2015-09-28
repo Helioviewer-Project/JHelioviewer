@@ -7,6 +7,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
@@ -21,11 +24,13 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JSpinner;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.JSpinner.DefaultEditor;
 import javax.swing.border.EmptyBorder;
 
-import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.dialogs.calender.DatePicker;
+import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.plugins.AbstractPlugin;
 import org.helioviewer.jhv.plugins.Plugins;
@@ -179,7 +184,7 @@ public class AddLayerPanel extends JDialog
 				}
 				catch (Exception e2)
 				{
-					Telemetry.trackException(e2);
+					//fill UI on a best-effort basis
 				}
 				
 				cmbbxFilter.removeAllItems();
@@ -304,6 +309,25 @@ public class AddLayerPanel extends JDialog
 		cadence = new JSpinner();
 		cadence.setValue(20);
 		cadence.setPreferredSize(new Dimension(80, 20));
+		
+		
+		((DefaultEditor)cadence.getEditor()).getTextField().addFocusListener(new FocusAdapter()
+		{
+			@Override
+			public void focusGained(FocusEvent _e)
+			{
+				SwingUtilities.invokeLater(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						((DefaultEditor)cadence.getEditor()).getTextField().selectAll();
+					}
+				});
+			}
+		});
+		
+		
 		contentPanel.add(cadence, "4, 6");
 		cmbbxTimeSteps = new JComboBox<TIME_STEPS>(TIME_STEPS.values());
 		contentPanel.add(cmbbxTimeSteps, "6, 6, fill, default");
@@ -351,10 +375,11 @@ public class AddLayerPanel extends JDialog
 						int cadence = (int) AddLayerPanel.this.cadence.getValue()
 								* ((TIME_STEPS) cmbbxTimeSteps.getSelectedItem()).getFactor();
 						cadence = Math.max(cadence, 1);
-						Layers.addLayer(filter.sourceId,
+						Layers.addLayer(new ImageLayer(
+								filter.sourceId,
 								datePickerStartDate.getDateTime(),
 								datePickerEndDate.getDateTime(),
-								cadence, filter.getNickname());
+								cadence, filter.getNickname()));
 						
 						setVisible(false);
 					}

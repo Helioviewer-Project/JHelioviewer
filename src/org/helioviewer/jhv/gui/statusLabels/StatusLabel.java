@@ -23,7 +23,7 @@ abstract class StatusLabel extends JLabel implements TimeLineListener, StatusLab
 
 	public StatusLabel() {
 		TimeLine.SINGLETON.addListener(this);
-		Layers.addNewLayerListener(this);
+		Layers.addLayerListener(this);
 	}
 	
 	public void mouseExited(MouseEvent e, Ray ray) {

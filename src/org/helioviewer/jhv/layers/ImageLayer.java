@@ -429,7 +429,7 @@ public class ImageLayer extends AbstractLayer
 	}
 
 	@Override
-	void remove()
+	void dispose()
 	{
 		ultimateLayer.cancelAllDownloadsForThisLayer();
 	}
