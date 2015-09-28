@@ -86,7 +86,7 @@ class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
 		sp.setPreferredSize(new Dimension(600, 400));
 
 		objects.add(sp);
-		JCheckBox allowCrashReport = new JCheckBox("Send this anonymous crash report to the developers.", JHVGlobals.isReleaseVersion());
+		JCheckBox allowCrashReport = new JCheckBox("Send this anonymous crash report to the developers.", Globals.isReleaseVersion());
 		objects.add(allowCrashReport);
 		objects.add(Box.createVerticalStrut(10));
 
@@ -115,7 +115,7 @@ class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
 			Telemetry.trackException(e);
 			
 			RaygunClient client = new RaygunClient("iZK0JDVPkd3OgEwgDibzQw==");
-			client.SetVersion(JHVGlobals.VERSION);
+			client.SetVersion(Globals.VERSION);
 			Map<String, String> customData = new HashMap<String, String>();
 			customData.put("Log", log);
 			customData.put("JVM",
@@ -127,7 +127,7 @@ class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
 			RaygunIdentifier user = new RaygunIdentifier(Settings.getProperty("UUID"));
 			client.SetUser(user);
 			ArrayList<String> tags = new ArrayList<String>();
-			tags.add(JHVGlobals.RAYGUN_TAG);
+			tags.add(Globals.RAYGUN_TAG);
 			client.Send(e, tags, customData);
 		}
 
@@ -210,7 +210,7 @@ class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
 				}
 
 		final String finalLog = Log.GetLastFewLines(6);
-		String msg = "JHelioviewer: " + JHVGlobals.VERSION + "\n";
+		String msg = "JHelioviewer: " + Globals.VERSION + "\n";
 		msg += "Date: " + new Date() + "\n";
 		msg += "JVM: " + System.getProperty("java.vm.name") + " "
 				+ System.getProperty("java.vm.version") + " (JRE "

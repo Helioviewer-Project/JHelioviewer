@@ -5,7 +5,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 
-import org.helioviewer.jhv.JHVGlobals;
+import org.helioviewer.jhv.Globals;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
@@ -31,9 +31,6 @@ import org.helioviewer.jhv.opengl.camera.actions.ZoomOutAction;
  * 
  * <p>
  * Basically, contains all actions from {@link org.helioviewer.jhv.gui.actions}.
- * 
- * @author Markus Langenberg
- * 
  */
 public class MenuBar extends JMenuBar
 {
@@ -77,7 +74,7 @@ public class MenuBar extends JMenuBar
 
 		fileMenu.add(new ExportAction());
 
-		if (!JHVGlobals.isOSX())
+		if (!Globals.isOSX())
 		{
 			fileMenu.addSeparator();
 			fileMenu.add(new ExitProgramAction());

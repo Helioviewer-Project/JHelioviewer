@@ -12,8 +12,6 @@ import javax.swing.JComponent;
  * 
  * This panel hides the use of the {@link CollapsiblePane} and allows accessing
  * the children of the {@link CollapsiblePane} directly.
- * 
- * @author Markus Langenberg
  */
 public class SideContentPane extends JComponent {
 

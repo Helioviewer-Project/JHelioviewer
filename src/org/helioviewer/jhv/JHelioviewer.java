@@ -68,7 +68,7 @@ public class JHelioviewer
 			Log.redirectStdOutErr();
 			
 			splash.progressTo("Checking for updates");
-			if (JHVGlobals.isReleaseVersion())
+			if (Globals.isReleaseVersion())
 			{
 				if (UpdateScheduleRegistry.checkAndReset())
 				{
@@ -113,7 +113,7 @@ public class JHelioviewer
 
 			// initializes JavaFX environment
 			splash.progressTo("Initializing JavaFX");
-			if(JHVGlobals.USE_JAVA_FX)
+			if(Globals.USE_JAVA_FX)
 				SwingUtilities.invokeLater(new Runnable()
 				{
 				    public void run()
@@ -145,7 +145,7 @@ public class JHelioviewer
 			System.out.println("JHelioviewer started with command-line options:" + String.join(" ", args));
 			System.out.println("Initializing JHelioviewer");
 
-			JHVGlobals.initFileChooserAsync();
+			Globals.initFileChooserAsync();
 
 			// Load settings from file but do not apply them yet
 			// The settings must not be applied before the kakadu engine has
@@ -160,7 +160,7 @@ public class JHelioviewer
 			}
 			catch (UnsatisfiedLinkError _ule)
 			{
-				if (JHVGlobals.isLinux() && _ule.getMessage().contains("GLIBC"))
+				if (Globals.isLinux() && _ule.getMessage().contains("GLIBC"))
 				{
 					splash.setVisible(false);
 					JOptionPane.showMessageDialog(null,
@@ -248,7 +248,7 @@ public class JHelioviewer
 			Path tmpLibDir = Files.createTempDirectory("jhv-libs");
 			tmpLibDir.toFile().deleteOnExit();
 
-			if (JHVGlobals.isWindows())
+			if (Globals.isWindows())
 			{
 				System.loadLibrary("msvcr120");
 				System.loadLibrary("kdu_v75R");
@@ -266,7 +266,6 @@ public class JHelioviewer
 	@SuppressWarnings("unused")
 	private static void setupOSXApplicationListener()
 	{
-		final AboutDialog aboutDialog = new AboutDialog();
 		try
 		{
 			Class<?> applicationClass = Class.forName("com.apple.eawt.Application");
@@ -282,7 +281,15 @@ public class JHelioviewer
 						{
 							if ("handleAbout".equals(method.getName()))
 							{
-								aboutDialog.showDialog();
+								SwingUtilities.invokeLater(new Runnable()
+								{
+									@Override
+									public void run()
+									{
+										new AboutDialog();
+									}
+								});
+								
 								setHandled(args[0], Boolean.TRUE);
 							}
 							else if ("handleQuit".equals(method.getName()))

@@ -6,9 +6,6 @@ import java.util.Locale;
 /**
  * A class for two dimensional vectors with double coordinates. Instances of
  * Vector2dDouble are immutable.
- * 
- * @author Ludwig Schmidt
- * 
  */
 
 public final class Vector2d {

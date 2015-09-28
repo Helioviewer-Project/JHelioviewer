@@ -5,22 +5,20 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
+import javax.swing.JDialog;
 import javax.swing.KeyStroke;
 
 import org.helioviewer.jhv.Telemetry;
-import org.helioviewer.jhv.gui.ShowableDialog;
 import org.helioviewer.jhv.gui.dialogs.HelpDialog;
 
 /**
  * Action to show any given dialog.
- * 
- * @author Markus Langenberg
  */
 
-public class ShowDialogAction extends AbstractAction {
-
+public class ShowDialogAction extends AbstractAction
+{
     private static final long serialVersionUID = 1L;
-    private Class<ShowableDialog> dialogToShow;
+    private Class<JDialog> dialogToShow;
 
     /**
      * Default constructor.
@@ -31,11 +29,11 @@ public class ShowDialogAction extends AbstractAction {
      *            Dialog to open on click
      */
     @SuppressWarnings("unchecked")
-    public <T extends ShowableDialog> ShowDialogAction(String name, Class<T> dialog)
+    public <T extends JDialog> ShowDialogAction(String name, Class<T> dialog)
     {
         super(name);
-
-        dialogToShow = (Class<ShowableDialog>) dialog;
+        
+        dialogToShow = (Class<JDialog>) dialog;
 
         if (dialog.isAssignableFrom(HelpDialog.class))
             putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
@@ -52,24 +50,21 @@ public class ShowDialogAction extends AbstractAction {
      *            Dialog to open on click
      */
     @SuppressWarnings("unchecked")
-    public <T extends ShowableDialog> ShowDialogAction(String name, ImageIcon icon, Class<T> dialog)
+    public <T extends JDialog> ShowDialogAction(String name, ImageIcon icon, Class<T> dialog)
     {
         super(name, icon);
 
-        dialogToShow = (Class<ShowableDialog>) dialog;
+        dialogToShow = (Class<JDialog>) dialog;
 
         if (dialog.isAssignableFrom(HelpDialog.class))
             putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public void actionPerformed(ActionEvent e)
     {
         try
         {
-            dialogToShow.newInstance().showDialog();
+            dialogToShow.newInstance();
         }
         catch (Exception e1)
         {

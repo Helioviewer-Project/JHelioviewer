@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
 
-import org.helioviewer.jhv.JHVGlobals;
+import org.helioviewer.jhv.Globals;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.layers.AbstractLayer;
 import org.helioviewer.jhv.layers.ImageLayer;
@@ -79,6 +79,6 @@ class SDOCutOutAction extends AbstractAction {
 		url.append("&xCen=" + centerOffsetArcSec.x + "&yCen=" + centerOffsetArcSec.y);
 		
 		url.append("&cadence=" + mainSDOLayer.getCadence() + "&cadenceUnits=s");
-		JHVGlobals.openURL(url.toString());
+		Globals.openURL(url.toString());
     }
 }

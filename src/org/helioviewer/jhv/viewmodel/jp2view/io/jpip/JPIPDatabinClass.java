@@ -6,9 +6,6 @@ import org.helioviewer.jhv.viewmodel.jp2view.kakadu.KakaduConstants;
  * Enum describing the databin class ID's. Methods exist for getting the
  * KakaduClassID and the StandardClassID. I have also included the string
  * representations of the databins as defined for cache model updates.
- * 
- * @author caplins
- * 
  */
 public enum JPIPDatabinClass {
 

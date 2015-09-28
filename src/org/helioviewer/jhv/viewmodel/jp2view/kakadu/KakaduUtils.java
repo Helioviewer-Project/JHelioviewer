@@ -15,10 +15,6 @@ import org.helioviewer.jhv.Telemetry;
 
 /**
  * A collection of useful static methods.
- * 
- * @author caplins
- * @author Benjamin Wamsler
- * @author Juan Pablo
  */
 public class KakaduUtils {
 

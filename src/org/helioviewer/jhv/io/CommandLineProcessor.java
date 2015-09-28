@@ -16,10 +16,6 @@ import org.helioviewer.jhv.Telemetry;
 /**
  * A simple class to process command line arguments for JHelioviewer
  * specification.
- * 
- * @author Alen Alexanderian
- * @author Stephan Pagel
- * @author Andre Dau
  */
 public class CommandLineProcessor
 {

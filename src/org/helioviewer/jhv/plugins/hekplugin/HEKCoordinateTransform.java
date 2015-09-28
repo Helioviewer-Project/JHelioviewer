@@ -14,9 +14,6 @@ import org.helioviewer.jhv.base.physics.DifferentialRotation;
  * <p>
  * IT IS CURRENTLY HEAVILY WORKED ON - SO DON'T TRUST IT! IT IS ALSO NOT WELL
  * DOCUMENTED! SIMPLY IGNORE THIS FILE!
- * 
- * @author Malte Nuhn
- * 
  */
 public class HEKCoordinateTransform
 {

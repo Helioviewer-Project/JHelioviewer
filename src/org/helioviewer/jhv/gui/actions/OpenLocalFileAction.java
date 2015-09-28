@@ -15,7 +15,7 @@ import javax.swing.JFileChooser;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
-import org.helioviewer.jhv.JHVGlobals;
+import org.helioviewer.jhv.Globals;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.actions.filefilters.AllSupportedImageTypesFilter;
@@ -30,16 +30,11 @@ import org.helioviewer.jhv.layers.Layers;
  * Opens a file chooser dialog, opens the selected file. Currently supports the
  * following file extensions: "jpg", "jpeg", "png", "fts", "fits", "jp2" and
  * "jpx"
- * 
- * @author Markus Langenberg
  */
 public class OpenLocalFileAction extends AbstractAction {
 
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * Default constructor.
-	 */
 	public OpenLocalFileAction() {
 		super("Open...");
 		putValue(SHORT_DESCRIPTION, "Open image");
@@ -47,15 +42,12 @@ public class OpenLocalFileAction extends AbstractAction {
 				.getDefaultToolkit().getMenuShortcutKeyMask()));
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public void actionPerformed(ActionEvent e) {
 		
 		/**
 		 * Native filechooser with JavaFX
 		 */
-		if (JHVGlobals.USE_JAVA_FX)
+		if (Globals.USE_JAVA_FX)
 		{
 			Platform.runLater(new Runnable()
 			{
@@ -89,7 +81,7 @@ public class OpenLocalFileAction extends AbstractAction {
 		}
 		else
 		{
-			final JFileChooser fileChooser = JHVGlobals.getJFileChooser(Settings.getProperty("default.local.path"));
+			final JFileChooser fileChooser = Globals.getJFileChooser(Settings.getProperty("default.local.path"));
 			fileChooser.setAcceptAllFileFilterUsed(false);
 			fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 			fileChooser.addChoosableFileFilter(FileFilter.IMPLEMENTED_FILE_FILTER.JP2.getFileFilter());

@@ -7,8 +7,6 @@ import javax.swing.JButton;
 
 /**
  * Some convenience methods for creating buttons
- * 
- * @author mnuhn
  */
 public class ButtonCreator {
 

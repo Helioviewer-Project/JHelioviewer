@@ -8,9 +8,6 @@ import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPResponse;
 /**
  * A response to a JPIPRequest. Encapsulates both the HTTPResponse headers and
  * the JPIPDataSegments.
- * 
- * @author caplins
- * 
  */
 public class JPIPResponse extends HTTPResponse {
 

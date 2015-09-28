@@ -143,8 +143,6 @@ class IntermediateLineData {
 
 	/**
 	 * Helper class to und Prediction coding
-	 * @author Jonas Schwammberger
-	 *
 	 */
 	private static class Indices {
 		public int startIndex;

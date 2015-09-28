@@ -18,9 +18,6 @@ import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPSocket;
 
 /**
  * Assumes a persistent HTTP connection.
- * 
- * @author caplins
- * 
  */
 public class JPIPSocket extends HTTPSocket
 {

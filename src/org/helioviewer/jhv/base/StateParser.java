@@ -15,7 +15,7 @@ import javafx.stage.Stage;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
-import org.helioviewer.jhv.JHVGlobals;
+import org.helioviewer.jhv.Globals;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.base.math.Quaternion3d;
@@ -93,7 +93,7 @@ public class StateParser extends DefaultHandler
 	public static void loadStateFile() throws IOException, JSONException
 	{
 		String lastPath = Settings.getProperty(LOAD_PATH_SETTINGS);
-		if (JHVGlobals.USE_JAVA_FX)
+		if (Globals.USE_JAVA_FX)
 		{
 			openLoadFileChooserFX();
 		}
@@ -224,7 +224,7 @@ public class StateParser extends DefaultHandler
 
 	public static void writeStateFile() throws JSONException, IOException
 	{
-		if (JHVGlobals.USE_JAVA_FX)
+		if (Globals.USE_JAVA_FX)
 		{
 			openSaveFileChooserFX();
 		}

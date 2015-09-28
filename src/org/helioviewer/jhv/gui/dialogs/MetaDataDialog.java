@@ -39,11 +39,10 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.helioviewer.jhv.JHVGlobals;
+import org.helioviewer.jhv.Globals;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.gui.ShowableDialog;
 import org.helioviewer.jhv.gui.actions.filefilters.FileFilter;
 import org.helioviewer.jhv.layers.AbstractLayer;
 import org.helioviewer.jhv.layers.LayerListener;
@@ -59,18 +58,13 @@ import org.w3c.dom.NodeList;
 
 /**
  * Dialog that is used to display meta data for an image.
- * 
- * @author Alen Agheksanterian
- * @author Stephan Pagel
  */
-public class MetaDataDialog extends JDialog implements ActionListener,
-		ShowableDialog, LayerListener, TimeLineListener {
-
+public class MetaDataDialog extends JDialog implements ActionListener, LayerListener, TimeLineListener
+{
 	private static final long serialVersionUID = 1L;
 
 	private final JButton closeButton = new JButton("Close");
-	private final JButton exportFitsButton = new JButton(
-			"Export FITS header as XML");
+	private final JButton exportFitsButton = new JButton("Export FITS header as XML");
 
 	private List<String> infoList = new ArrayList<String>();
 	private JList<String> listBox = new JList<String>();
@@ -79,29 +73,28 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 	JScrollPane listScroller;
 
 	private Document xmlDoc;
-		private static final String LAST_DIRECTORY = "metadata.save.lastPath";
-	/**
-	 * The private constructor that sets the fields and the dialog.
-	 */
-	public MetaDataDialog() {
+	private static final String LAST_DIRECTORY = "metadata.save.lastPath";
+	
+	public MetaDataDialog()
+	{
 		super(MainFrame.SINGLETON, "Image metainfo");
 		setLayout(new BorderLayout());
 		setResizable(false);
 
 		listBox.setFont(new Font("Courier", Font.PLAIN, 12));
 
-		listBox.setCellRenderer(new ListCellRenderer<Object>() {
-			public Component getListCellRendererComponent(JList<?> list,
-					Object value, int index, boolean isSelected,
-					boolean cellHasFocus) {
-				JTextArea textArea = new JTextArea(value.toString().trim());
-				textArea.setLineWrap(true);
-				textArea.setEditable(false);
-				textArea.setWrapStyleWord(true);
-				textArea.setFont(list.getFont());
-				return textArea;
-			}
-		});
+		listBox.setCellRenderer(new ListCellRenderer<Object>()
+			{
+				public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus)
+				{
+					JTextArea textArea = new JTextArea(value.toString().trim());
+					textArea.setLineWrap(true);
+					textArea.setEditable(false);
+					textArea.setWrapStyleWord(true);
+					textArea.setFont(list.getFont());
+					return textArea;
+				}
+			});
 
 		JPanel bottomPanel = new JPanel();
 		bottomPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -152,6 +145,12 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 				setVisible(false);
 			}
 		}, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
+		
+		pack();
+		setSize(450, 600);
+
+		setLocationRelativeTo(MainFrame.SINGLETON);
+		setVisible(true);
 	}
 
 	/**
@@ -165,11 +164,10 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 		listBox.setListData(infoList.toArray(new String[0]));
 
 		// set the status of export button
-		if (!metaDataOK) {
+		if (!metaDataOK)
 			exportFitsButton.setEnabled(false);
-		} else {
+		else
 			exportFitsButton.setEnabled(true);
-		}
 	}
 
 	/**
@@ -189,17 +187,6 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 	/**
 	 * {@inheritDoc}
 	 */
-	public void showDialog() {
-		pack();
-		setSize(450, 600);
-
-		setLocationRelativeTo(MainFrame.SINGLETON);
-		setVisible(true);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public void actionPerformed(ActionEvent _a) {
 		if (_a.getSource() == closeButton) {
 			infoList.clear();
@@ -208,7 +195,7 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 
 		} else if (_a.getSource() == exportFitsButton) {
 			//FIXME: shouldn't happen here, instead in JHVGlobals or smth
-			if (JHVGlobals.USE_JAVA_FX){
+			if (Globals.USE_JAVA_FX){
 				openFileChooserFX(outFileName);
 			}
 			else {
@@ -261,7 +248,7 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 	
 	private void openFileChooser(String _filename) {
 		// Open save-dialog
-		final JFileChooser fileChooser = JHVGlobals.getJFileChooser();
+		final JFileChooser fileChooser = Globals.getJFileChooser();
 		fileChooser.setDialogTitle("Save metadata");
 		fileChooser.setFileHidingEnabled(false);
 		fileChooser.setMultiSelectionEnabled(false);
@@ -329,7 +316,7 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 		outFileName = metaData.getFullName().replace(" ", "_")
 				+ " "
 				+ metaData.getLocalDateTime().format(
-						JHVGlobals.FILE_DATE_TIME_FORMATTER) + ".fits.xml";
+						Globals.FILE_DATE_TIME_FORMATTER) + ".fits.xml";
 
 	}
 

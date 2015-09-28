@@ -1,13 +1,7 @@
 package org.helioviewer.jhv.viewmodel.jp2view.io.http;
 
 /**
- * 
  * The class <code>HTTPResponse</code> identifies a HTTP response.
- * 
- * @author Juan Pablo Garcia Ortiz
- * @see HTTPMessage
- * @version 0.1
- * 
  */
 public class HTTPResponse extends HTTPMessage {
 

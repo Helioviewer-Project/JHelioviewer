@@ -23,12 +23,12 @@ public class Telemetry
 		client.getContext().getDevice().setScreenResolution((int)Toolkit.getDefaultToolkit().getScreenSize().getWidth()+"x"+(int)Toolkit.getDefaultToolkit().getScreenSize().getHeight());
 		client.getContext().getDevice().setOperatingSystem(System.getProperty("os.name"));
 		client.getContext().getDevice().setOperatingSystemVersion(System.getProperty("os.version"));
-		client.getContext().getComponent().setVersion(JHVGlobals.VERSION);
+		client.getContext().getComponent().setVersion(Globals.VERSION);
 		client.getContext().getUser().setId(Settings.getProperty("UUID"));
 		client.getContext().getSession().setId(UUID.randomUUID().toString());
 		
 		client.getContext().getProperties().put("Cores", Runtime.getRuntime().availableProcessors()+"");
-		client.getContext().getProperties().put("JavaFX", JHVGlobals.USE_JAVA_FX+"");
+		client.getContext().getProperties().put("JavaFX", Globals.USE_JAVA_FX+"");
 		
 		
 		//TODO: track opengl info
@@ -39,7 +39,7 @@ public class Telemetry
 	
 	public static void trackEvent(String _event,String ... params)
 	{
-		if(!JHVGlobals.isReleaseVersion())
+		if(!Globals.isReleaseVersion())
 			return;
 		
 		Map<String,String> ps=new LinkedHashMap<String,String>();

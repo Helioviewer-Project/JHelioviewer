@@ -19,7 +19,6 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 
-import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.plugins.Plugins.PluginIcon;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;
@@ -35,8 +34,6 @@ import org.helioviewer.jhv.plugins.hekplugin.cache.gui.HEKCacheTreeViewContainer
 
 /**
  * Represents the UI components which manage the HEK event catalog.
- * 
- * @author Malte Nuhn
  * */
 class HEKPluginPanel extends JPanel implements ActionListener,
 		HEKCacheListener {

@@ -12,17 +12,9 @@ import java.nio.charset.StandardCharsets;
 import org.helioviewer.jhv.viewmodel.jp2view.io.LineReader;
 
 /**
- * 
  * The class <code>HTTPSocket</code> is a simple implementation for read/write
  * HTTP messages. In this version are only supported to send requests and to
  * receive responses.
- * 
- * @author Juan Pablo Garcia Ortiz
- * @see java.net.Socket
- * @see HTTPResponse
- * @see HTTPRequest
- * @version 0.1
- * 
  */
 public class HTTPSocket extends Socket {
 

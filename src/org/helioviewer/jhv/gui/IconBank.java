@@ -14,18 +14,11 @@ import javax.swing.ImageIcon;
 /**
  * This class provides access to all images, icons and cursors which are used by
  * the program.
- * 
- * @author caplins
- * @author dmueller
- * @author Stephan Pagel
  */
 public class IconBank
 {
     /**
      * The enum has all the icons, you supply these enums to the getIcon method.
-     * 
-     * @author caplins cleaned up unused icons
-     * @author dmueller
      */
     public static enum JHVIcon
     {

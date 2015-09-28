@@ -13,15 +13,12 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
 import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.gui.ShowableDialog;
 
 /**
  * Dialog used to display all supported characters for a date pattern. It also
  * gives some examples how to create a pattern.
- * 
- * @author Stephan Pagel
  */
-class DateFormatInfoDialog extends JDialog implements ShowableDialog
+class DateFormatInfoDialog extends JDialog
 {
     private static final long serialVersionUID = 1L;
 
@@ -59,13 +56,7 @@ class DateFormatInfoDialog extends JDialog implements ShowableDialog
         });
 
         add(buttonsPanel, BorderLayout.SOUTH);
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void showDialog()
-    {
         pack();
         setSize(getPreferredSize().width, getPreferredSize().height);
         setLocationRelativeTo(MainFrame.SINGLETON);

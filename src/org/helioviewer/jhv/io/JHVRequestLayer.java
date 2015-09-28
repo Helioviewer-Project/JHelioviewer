@@ -2,11 +2,9 @@ package org.helioviewer.jhv.io;
 
 /**
  * Struct for a single image layer within a JHV request from the command line
- * 
- * @author Andre Dau
- * 
  */
-class JHVRequestLayer {
+class JHVRequestLayer
+{
     public static final int numFields = 6;
 
     public static final int OBSERVATORY_INDEX = 0;

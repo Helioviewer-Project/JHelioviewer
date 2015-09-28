@@ -24,8 +24,6 @@ import org.helioviewer.jhv.gui.IconBank.JHVIcon;
  * {@link org.helioviewer.jhv.gui.components.StatusPanel#setStatusInfoText(String)}
  * results in updating the splash screen to. This behavior is useful for
  * plugins.
- * 
- * @author Stephan Pagel
  */
 class SplashScreen extends JFrame
 {
@@ -96,38 +94,27 @@ class SplashScreen extends JFrame
 	/**
 	 * The panel acts as container which displays the splash screen image and
 	 * position the label which displays the current status information.
-	 * 
-	 * @author Stephan Pagel
 	 * */
-	private static class SplashImagePanel extends JPanel {
-
-		// ////////////////////////////////////////////////////////////
-		// Definitions
-		// ////////////////////////////////////////////////////////////
-
+	private static class SplashImagePanel extends JPanel
+	{
 		private static final long serialVersionUID = 1L;
 
 		private BufferedImage image = IconBank.getImage(JHVIcon.SPLASH);
 		private JLabel label = new JLabel("");
 
-		// ////////////////////////////////////////////////////////////
-		// Methods
-		// ////////////////////////////////////////////////////////////
-
-		/**
-		 * Default constructor.
-		 * */
-		public SplashImagePanel() {
-
+		public SplashImagePanel()
+		{
 			// set basic layout
 			setLayout(null);
 
 			// set size of panel
-			if (image != null) {
-				setPreferredSize(new Dimension(image.getWidth(),
-						image.getHeight()));
+			if (image != null)
+			{
+				setPreferredSize(new Dimension(image.getWidth(), image.getHeight()));
 				setSize(image.getWidth(), image.getHeight());
-			} else {
+			}
+			else
+			{
 				setPreferredSize(new Dimension(400, 200));
 				setSize(400, 200);
 			}

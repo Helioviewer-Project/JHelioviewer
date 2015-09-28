@@ -2,13 +2,9 @@ package org.helioviewer.jhv.base.math;
 
 /**
  * A collection of useful static methods.
- * 
- * @author caplins
- * 
  */
-public class MathUtils {
-
-	
+public class MathUtils
+{
     public static final double RAD_TO_DEG = 180.0 / Math.PI;
 
     /**

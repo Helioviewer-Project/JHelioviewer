@@ -5,9 +5,6 @@ import org.helioviewer.jhv.gui.MainPanel;
 /**
  * This animation zooms the camera by a given amount. Zooming only affects the
  * z-component of the {@link GL3DCamera}'s translation.
- * 
- * @author Simon Sp�rri (simon.spoerri@fhnw.ch)
- * 
  */
 public class CameraZoomAnimation implements CameraAnimation {
     private boolean isFinished = false;

@@ -19,10 +19,9 @@ import javax.swing.JTextArea;
 
 import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.gui.ShowableDialog;
 
-class TextDialog extends JDialog implements ActionListener, ShowableDialog {
-
+class TextDialog extends JDialog implements ActionListener
+{
     private static final long serialVersionUID = 1L;
     private JButton closeButton;
 
@@ -47,9 +46,18 @@ class TextDialog extends JDialog implements ActionListener, ShowableDialog {
         }
         
         init(text.toString());
+        
+        pack();
+        setSize(getPreferredSize());
+        setLocationRelativeTo(MainFrame.SINGLETON);
+        
+        DialogTools.setDefaultButtons(closeButton,closeButton);
+        
+        setVisible(true);
     }
 
-    private void init(String text) {
+    private void init(String text)
+    {
         JTextArea textArea = new JTextArea(text);
         textArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(textArea);
@@ -65,18 +73,8 @@ class TextDialog extends JDialog implements ActionListener, ShowableDialog {
         add(closeButtonContainer, BorderLayout.SOUTH);
     }
 
-    public void actionPerformed(ActionEvent e) {
-        this.dispose();
-    }
-
-    public void showDialog()
+    public void actionPerformed(ActionEvent e)
     {
-        pack();
-        setSize(getPreferredSize());
-        setLocationRelativeTo(MainFrame.SINGLETON);
-        
-        DialogTools.setDefaultButtons(closeButton,closeButton);
-        
-        setVisible(true);
+        dispose();
     }
 }

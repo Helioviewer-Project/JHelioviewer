@@ -7,8 +7,6 @@ import org.helioviewer.jhv.base.math.Vector2d;
  * 
  * It might be useful to get the basic information of a region in another way.
  * The methods provide a mapping of the basic values in different formats.
- * 
- * @author Ludwig Schmidt
  * */
 public class PhysicalRegion implements BasicRegion {
 

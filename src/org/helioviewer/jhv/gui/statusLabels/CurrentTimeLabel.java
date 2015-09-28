@@ -3,7 +3,7 @@ import java.time.LocalDateTime;
 
 import javax.swing.BorderFactory;
 
-import org.helioviewer.jhv.JHVGlobals;
+import org.helioviewer.jhv.Globals;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 
 
@@ -24,6 +24,6 @@ public class CurrentTimeLabel extends StatusLabel{
 
 	@Override
 	public void timeStampChanged(LocalDateTime current, LocalDateTime last) {
-		this.setText(TimeLine.SINGLETON.getCurrentDateTime().format(JHVGlobals.DATE_TIME_FORMATTER));
+		this.setText(TimeLine.SINGLETON.getCurrentDateTime().format(Globals.DATE_TIME_FORMATTER));
 	}
 }

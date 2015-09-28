@@ -35,7 +35,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
-import org.helioviewer.jhv.JHVGlobals;
+import org.helioviewer.jhv.Globals;
 import org.helioviewer.jhv.gui.ButtonCreator;
 import org.helioviewer.jhv.gui.ClipBoard;
 import org.helioviewer.jhv.gui.IconBank;
@@ -55,10 +55,6 @@ import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
  * <p>
  * For further informations about solar events, see
  * {@link org.helioviewer.jhv.solarevents}.
- * 
- * @author Markus Langenberg
- * @author Malte Nuhn
- * 
  */
 public class HEKEventInformationDialog extends JDialog implements ActionListener, MouseListener, HyperlinkListener {
 
@@ -451,7 +447,7 @@ public class HEKEventInformationDialog extends JDialog implements ActionListener
         StringBuffer htmlLinks = new StringBuffer("<html>");
 
         Font font = hyperLinkPanel.getFont();
-        htmlLinks.append("<font style=\"font-family: '" + font.getFamily() + "'; font-size: " + font.getSize() + ";\">");
+        htmlLinks.append("<font style=\"font-family: '" + font.getFamily() + "'; font-size: " + font.getSize() + "px;\">");
 
         // add a link to the HEK summary page
         String archivid = newEvent.getString("kb_archivid");
@@ -554,7 +550,7 @@ public class HEKEventInformationDialog extends JDialog implements ActionListener
         } else if (e.getEventType() == HyperlinkEvent.EventType.EXITED) {
             setCursor(CURSOR_DEFAULT);
         } else {
-            JHVGlobals.openURL(e.getURL().toString());
+            Globals.openURL(e.getURL().toString());
         }
     }
 

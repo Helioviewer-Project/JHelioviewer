@@ -3,12 +3,8 @@ package org.helioviewer.jhv.plugins.hekplugin.cache;
 import javax.swing.table.AbstractTableModel;
 
 /**
- * 
  * TableModel displaying all available fields of an event. Table Layout is:
  * "Field Name", "Field Value"
- * 
- * @author mnuhn
- * 
  */
 public class HEKEventTableModel extends AbstractTableModel {
 

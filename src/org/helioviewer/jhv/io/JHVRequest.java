@@ -2,11 +2,9 @@ package org.helioviewer.jhv.io;
 
 /**
  * Struct for a JHV request from the command line
- * 
- * @author Andre Dau
- * 
  */
-class JHVRequest {
+class JHVRequest
+{
     public String startTime = null;
     public String endTime = null;
     public double imageScale = -1;

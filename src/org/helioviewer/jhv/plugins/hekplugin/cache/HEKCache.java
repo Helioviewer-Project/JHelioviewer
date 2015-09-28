@@ -8,9 +8,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.helioviewer.jhv.base.math.Interval;
-import org.helioviewer.jhv.base.math.IntervalContainer;
-import org.helioviewer.jhv.base.math.IntervalStore;
+import org.helioviewer.jhv.plugins.hekplugin.Interval;
+import org.helioviewer.jhv.plugins.hekplugin.IntervalContainer;
+import org.helioviewer.jhv.plugins.hekplugin.IntervalStore;
 
 /**
  * Datastructure to store a different items.
@@ -21,9 +21,6 @@ import org.helioviewer.jhv.base.math.IntervalStore;
  * 
  * This makes it possible to only request missing intervals when querying a
  * timerange, which has is partially covered by requests done before.
- * 
- * @author nuhn
- * 
  */
 public class HEKCache {
 

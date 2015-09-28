@@ -23,9 +23,9 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.helioviewer.jhv.Telemetry;
-import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.components.TristateCheckBox;
+import org.helioviewer.jhv.plugins.hekplugin.Interval;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheController;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheExpansionModel;
@@ -48,8 +48,6 @@ import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
  * We use the "separable model architecture." The designers of Swing did this
  * because it was "difficult to write a generic controller that didn't know
  * specifics about the [particular] view."
- * 
- * @author Malte Nuhn
  */
 public class HEKCacheTreeView extends JTree implements TreeModelListener {
 
@@ -140,8 +138,6 @@ public class HEKCacheTreeView extends JTree implements TreeModelListener {
 
     /**
      * TreeCellRenderer needed to draw the checkboxes into the tree
-     * 
-     * @author Malte Nuhn
      */
     private class JCheckBoxTreeRenderer extends DefaultTreeCellRenderer {
 
@@ -306,8 +302,6 @@ public class HEKCacheTreeView extends JTree implements TreeModelListener {
 
     /**
      * Helper class needed to register clicks onto the checkbox.
-     * 
-     * @author Malte Nuhn
      */
     private class JCheckBoxTreeMouseListener extends MouseAdapter {
 

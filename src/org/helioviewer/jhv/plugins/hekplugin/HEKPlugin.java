@@ -12,7 +12,6 @@ import java.util.List;
 
 import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
-import org.helioviewer.jhv.base.math.Interval;
 import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.SphericalCoord;
 import org.helioviewer.jhv.base.math.Vector3d;
@@ -32,9 +31,6 @@ import org.json.JSONObject;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 
-/**
- * @author Malte Nuhn
- * */
 public class HEKPlugin extends AbstractPlugin {
 
 	/**

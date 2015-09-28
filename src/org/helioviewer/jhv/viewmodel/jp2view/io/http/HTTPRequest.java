@@ -4,11 +4,6 @@ package org.helioviewer.jhv.viewmodel.jp2view.io.http;
  * 
  * The class <code>HTTPRequest</code> identifies a HTTP request. Currently it is
  * only supported the <code>GET</code> request.
- * 
- * @author Juan Pablo Garcia Ortiz
- * @see HTTPMessage
- * @version 0.1
- * 
  */
 public class HTTPRequest extends HTTPMessage {
 

@@ -15,16 +15,11 @@ import org.helioviewer.jhv.gui.MainFrame;
  * 
  * <p>
  * In this case, "fullscreen" means hiding the panel at left side of the window.
- * 
- * @author Markus Langenberg
  */
 public class ToggleFullscreenAction extends AbstractAction {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * Default constructor.
-     */
     public ToggleFullscreenAction() {
         super("Toggle Fullscreen", IconBank.getIcon(JHVIcon.FULLSCREEN, 16, 16));
         putValue(SHORT_DESCRIPTION, "Toggle fullscreen");

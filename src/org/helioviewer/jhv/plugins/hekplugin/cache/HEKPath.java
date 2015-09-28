@@ -6,9 +6,6 @@ import java.util.List;
 
 /**
  * Class used to categorize events
- * 
- * @author Malte Nuhn
- * 
  */
 public class HEKPath {
 

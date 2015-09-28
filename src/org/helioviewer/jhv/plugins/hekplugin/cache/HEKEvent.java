@@ -11,8 +11,6 @@ import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.base.coordinates.CoordinateHelper;
 import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
 import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
-import org.helioviewer.jhv.base.math.Interval;
-import org.helioviewer.jhv.base.math.IntervalComparison;
 import org.helioviewer.jhv.base.math.SphericalCoord;
 import org.helioviewer.jhv.base.math.Triangle;
 import org.helioviewer.jhv.base.math.Vector2d;
@@ -21,6 +19,8 @@ import org.helioviewer.jhv.base.physics.Astronomy;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.plugins.hekplugin.HEKCoordinateTransform;
+import org.helioviewer.jhv.plugins.hekplugin.Interval;
+import org.helioviewer.jhv.plugins.hekplugin.IntervalComparison;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,8 +29,6 @@ import org.json.JSONObject;
  * The class represents a solar event and manages all the associated
  * information. The current implementation is build around a
  * {@link org.json.JSONObject} object.
- * 
- * @author Malte Nuhn
  * */
 public class HEKEvent implements IntervalComparison<Date> {
 
@@ -281,7 +279,7 @@ public class HEKEvent implements IntervalComparison<Date> {
     /**
      * Wrapper method around the event's duration methods.
      * 
-     * @see org.helioviewer.jhv.base.math.Interval#contains
+     * @see org.helioviewer.jhv.plugins.hekplugin.Interval#contains
      */
     public boolean contains(Interval<Date> other) {
         return this.duration.contains(other);
@@ -290,7 +288,7 @@ public class HEKEvent implements IntervalComparison<Date> {
     /**
      * Wrapper method around the event's duration methods.
      * 
-     * @see org.helioviewer.jhv.base.math.Interval#containsFully
+     * @see org.helioviewer.jhv.plugins.hekplugin.Interval#containsFully
      */
     public boolean containsFully(Interval<Date> other) {
         return this.duration.containsFully(other);
@@ -299,7 +297,7 @@ public class HEKEvent implements IntervalComparison<Date> {
     /**
      * Wrapper method around the event's duration methods.
      * 
-     * @see org.helioviewer.jhv.base.math.Interval#containsInclusive
+     * @see org.helioviewer.jhv.plugins.hekplugin.Interval#containsInclusive
      */
     public boolean containsInclusive(Interval<Date> other) {
         return duration.containsInclusive(other);
@@ -308,7 +306,7 @@ public class HEKEvent implements IntervalComparison<Date> {
     /**
      * Wrapper method around the event's duration methods.
      * 
-     * @see org.helioviewer.jhv.base.math.Interval#containsPoint
+     * @see org.helioviewer.jhv.plugins.hekplugin.Interval#containsPoint
      */
     public boolean containsPoint(Date other) {
         return this.duration.containsPoint(other);
@@ -317,7 +315,7 @@ public class HEKEvent implements IntervalComparison<Date> {
     /**
      * Wrapper method around the event's duration methods.
      * 
-     * @see org.helioviewer.jhv.base.math.Interval#containsPointFully
+     * @see org.helioviewer.jhv.plugins.hekplugin.Interval#containsPointFully
      */
     public boolean containsPointFully(Date other) {
         return this.duration.containsPointFully(other);
@@ -326,7 +324,7 @@ public class HEKEvent implements IntervalComparison<Date> {
     /**
      * Wrapper method around the event's duration methods.
      * 
-     * @see org.helioviewer.jhv.base.math.Interval#containsPointInclusive
+     * @see org.helioviewer.jhv.plugins.hekplugin.Interval#containsPointInclusive
      */
     public boolean containsPointInclusive(Date other) {
         return this.duration.containsPointInclusive(other);
@@ -335,7 +333,7 @@ public class HEKEvent implements IntervalComparison<Date> {
     /**
      * Wrapper method around the event's duration methods.
      * 
-     * @see org.helioviewer.jhv.base.math.Interval#overlaps
+     * @see org.helioviewer.jhv.plugins.hekplugin.Interval#overlaps
      */
     public boolean overlaps(Interval<Date> other) {
         return this.duration.overlaps(other);
@@ -344,7 +342,7 @@ public class HEKEvent implements IntervalComparison<Date> {
     /**
      * Wrapper method around the event's duration methods.
      * 
-     * @see org.helioviewer.jhv.base.math.Interval#overlapsInclusive
+     * @see org.helioviewer.jhv.plugins.hekplugin.Interval#overlapsInclusive
      */
     public boolean overlapsInclusive(Interval<Date> other) {
         return this.duration.overlapsInclusive(other);
@@ -353,7 +351,7 @@ public class HEKEvent implements IntervalComparison<Date> {
     /**
      * Wrapper method around the event's duration methods.
      * 
-     * @see org.helioviewer.jhv.base.math.Interval#compareTo
+     * @see org.helioviewer.jhv.plugins.hekplugin.Interval#compareTo
      */
     public int compareTo(Interval<Date> arg0) {
         return this.duration.compareTo(arg0);
@@ -363,8 +361,6 @@ public class HEKEvent implements IntervalComparison<Date> {
      * Exception class for exceptions which can occur inside the solar event
      * class. Exceptions which occurred from the internal structure of the solar
      * event class should be mapped to this exception class.
-     * 
-     * @author Malte Nuhn
      */
     public static class HEKEventException extends Exception {
 

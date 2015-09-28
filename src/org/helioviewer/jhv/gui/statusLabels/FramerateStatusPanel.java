@@ -13,8 +13,6 @@ import javax.swing.BorderFactory;
  * 
  * <p>
  * This panel is not visible, if the active layer is not an image series.
- * 
- * @author Markus Langenberg
  */
 public class FramerateStatusPanel extends StatusLabel{
 

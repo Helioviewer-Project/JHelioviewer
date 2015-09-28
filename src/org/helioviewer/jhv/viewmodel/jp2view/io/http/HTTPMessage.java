@@ -5,15 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * 
  * The class <code>HTTPMessage</code> defines the basic body of a HTTP message.
- * 
- * @author Juan Pablo Garcia Ortiz
- * @see HTTPRequest
- * @see HTTPResponse
- * @see HTTPSocket
- * @version 0.1
- * 
  */
 abstract class HTTPMessage {
 

@@ -5,10 +5,6 @@ import java.util.Locale;
 /**
  * A class for three dimensional vectors with double coordinates. Instances of
  * Vector3dDouble are immutable.
- * 
- * @author Ludwig Schmidt
- * @author Malte Nuhn
- * 
  */
 
 public final class Vector3d {

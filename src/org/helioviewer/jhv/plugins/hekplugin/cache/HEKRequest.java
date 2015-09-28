@@ -2,7 +2,7 @@ package org.helioviewer.jhv.plugins.hekplugin.cache;
 
 import java.util.Date;
 
-import org.helioviewer.jhv.base.math.Interval;
+import org.helioviewer.jhv.plugins.hekplugin.Interval;
 
 abstract class HEKRequest {
 

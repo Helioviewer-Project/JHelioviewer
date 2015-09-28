@@ -1,14 +1,10 @@
-package org.helioviewer.jhv.base.math;
+package org.helioviewer.jhv.plugins.hekplugin;
 
 /**
  * This Interface defines methods needed for camparison of intervals.
- * 
- * @author Malte Nuhn
- * 
- * @param <TimeFormat>
  */
-public interface IntervalComparison<TimeFormat extends Comparable<TimeFormat>> extends Comparable<Interval<TimeFormat>> {
-
+public interface IntervalComparison<TimeFormat extends Comparable<TimeFormat>> extends Comparable<Interval<TimeFormat>>
+{
     /**
      * Check whether both intervals overlap.
      * <p>
@@ -115,5 +111,4 @@ public interface IntervalComparison<TimeFormat extends Comparable<TimeFormat>> e
      * @return true if the given point is contained in the current interval
      */
     public boolean containsPointInclusive(TimeFormat other);
-
 }

@@ -4,9 +4,6 @@ import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPRequest;
 
 /**
  * A glorified HTTP request object.
- * 
- * @author caplins
- * @author Juan Pablo
  */
 public class JPIPRequest extends HTTPRequest
 {

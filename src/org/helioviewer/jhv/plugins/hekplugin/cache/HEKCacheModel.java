@@ -8,9 +8,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.helioviewer.jhv.base.math.Interval;
-import org.helioviewer.jhv.base.math.IntervalContainer;
-import org.helioviewer.jhv.base.math.IntervalStore;
+import org.helioviewer.jhv.plugins.hekplugin.Interval;
+import org.helioviewer.jhv.plugins.hekplugin.IntervalContainer;
+import org.helioviewer.jhv.plugins.hekplugin.IntervalStore;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKSettings;
 
 /**
@@ -26,8 +26,6 @@ import org.helioviewer.jhv.plugins.hekplugin.settings.HEKSettings;
  * <li>The currently selected Categories/Events/...</li>
  * 
  * <li>The current point in time that is used to retrieve events</li>
- * 
- * @author Malte Nuhn
  */
 public class HEKCacheModel {
 

@@ -1,16 +1,10 @@
 package org.helioviewer.jhv.viewmodel.jp2view.io.jpip;
 
 /**
- * 
  * The class <code>JpipDataSegment</code> is used to construct objects to store
  * segments of JPIP data. These segments can be data-bin segments as well as EOR
  * messages. In this last case, the EOR code is stored in the <code>id</code>
  * field and the EOR message body is stored in the <code>data</code> field.
- * 
- * @author Juan Pablo Garcia Ortiz
- * @see JPIPDataInputStream
- * @version 0.1
- * 
  */
 public class JPIPDataSegment implements Cloneable {
 

@@ -6,15 +6,8 @@ import java.io.InputStream;
 import java.net.ProtocolException;
 
 /**
- * 
  * The class <code>JpipDataInputStream</code> allows to read JPIP data-bin
  * segments, as it is defined in the Part 9 of the the JPEG2000 standard.
- * 
- * @author Juan Pablo Garcia Ortiz
- * @see java.io.InputStream
- * @see JPIPDataSegment
- * @version 0.1
- * 
  */
 class JPIPDataInputStream {
 

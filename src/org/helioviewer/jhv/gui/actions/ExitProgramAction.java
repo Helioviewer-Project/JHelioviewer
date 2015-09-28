@@ -13,16 +13,11 @@ import org.helioviewer.jhv.layers.Layers;
 
 /**
  * Action to terminate the application.
- * 
- * @author Markus Langenberg
  */
 public class ExitProgramAction extends AbstractAction {
 
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * Default constructor.
-	 */
 	public ExitProgramAction() {
 		super("Quit");
 		putValue(SHORT_DESCRIPTION, "Quit program");
@@ -30,9 +25,6 @@ public class ExitProgramAction extends AbstractAction {
 				.getDefaultToolkit().getMenuShortcutKeyMask()));
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public void actionPerformed(ActionEvent e) {
 
 		if (Layers.getLayerCount() > 0) {

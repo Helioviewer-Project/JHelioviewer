@@ -12,13 +12,15 @@ import org.helioviewer.jhv.base.Log;
 import com.mindscapehq.raygun4java.core.RaygunClient;
 import com.mindscapehq.raygun4java.core.messages.RaygunIdentifier;
 
-class UILatencyWatchdog {
+class UILatencyWatchdog
+{
 	// maximum time the UI thread is allowed to block
-	private static final int MAX_LATENCY = 1500;
+	private static final int MAX_LATENCY_RELEASE = 1500;
+	private static final int MAX_LATENCY_DEBUG = 500;
 
 	// do not re-report errors within this time range
 	private static final int COOLDOWN_AFTER_TIMEOUT = 30000;
-
+	
 	private static volatile Thread awtDispatcher;
 	private static volatile boolean setFlag;
 
@@ -56,7 +58,11 @@ class UILatencyWatchdog {
 							}
 						});
 
-						Thread.sleep(MAX_LATENCY);
+						if(Globals.isReleaseVersion())
+							Thread.sleep(MAX_LATENCY_RELEASE);
+						else
+							Thread.sleep(MAX_LATENCY_DEBUG);
+						
 						if (!setFlag) {
 							// collect stack trace of just the AWT dispatcher
 							// thread
@@ -96,10 +102,10 @@ class UILatencyWatchdog {
 							}
 
 							// only report hangs to raygun in release builds
-							if (JHVGlobals.isReleaseVersion())
+							if (Globals.isReleaseVersion())
 							{
 								RaygunClient client = new RaygunClient("QXtNXLEKWBfClhyteqov4w==");
-								client.SetVersion(JHVGlobals.VERSION);
+								client.SetVersion(Globals.VERSION);
 								Map<String, String> customData = new HashMap<String, String>();
 								customData.put("Log", Log.GetLastFewLines(6));
 								customData.put(
@@ -115,7 +121,7 @@ class UILatencyWatchdog {
 								RaygunIdentifier user = new RaygunIdentifier(Settings.getProperty("UUID"));
 								client.SetUser(user);
 								ArrayList<String> tags = new ArrayList<String>();
-								tags.add(JHVGlobals.RAYGUN_TAG);
+								tags.add(Globals.RAYGUN_TAG);
 								tags.add("latency-watchdog");
 
 								Throwable diagThrowable = new Throwable("UI latency watchdog - UI thread hang detected");

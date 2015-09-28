@@ -16,8 +16,6 @@ import javax.swing.JCheckBox;
  * draws the 'block' nicely centered with nice transparency effects onto the
  * original CheckBox. This way, it should be compatible to (hopefully) all
  * Look-And-Feels, without introducing special cases for each of them.
- * 
- * @author Malte Nuhn
  */
 public final class TristateCheckBox extends JCheckBox {
 

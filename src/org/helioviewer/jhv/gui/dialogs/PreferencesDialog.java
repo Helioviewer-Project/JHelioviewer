@@ -41,12 +41,12 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.text.NumberFormatter;
 
-import org.helioviewer.jhv.JHVGlobals;
+import org.helioviewer.jhv.Globals;
 import org.helioviewer.jhv.Settings;
+import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.gui.ShowableDialog;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -55,15 +55,9 @@ import com.jgoodies.forms.layout.RowSpec;
 
 /**
  * Dialog that allows the user to change default preferences and settings.
- * 
- * @author Desmond Amadigwe
- * @author Benjamin Wamsler
- * @author Juan Pablo
- * @author Markus Langenberg
- * @author Andre Dau
  */
-public class PreferencesDialog extends JDialog implements ShowableDialog {
-
+public class PreferencesDialog extends JDialog
+{
 	private static final long serialVersionUID = 1L;
 
 	private final String defaultDateFormat = "yyyy/MM/dd";
@@ -74,8 +68,6 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
 	private DefaultsSelectionPanel defaultsPanel;
 	private JTextField dateFormatField;
 	private JButton dateFormatInfo;
-
-	private DateFormatInfoDialog dialog = new DateFormatInfoDialog();
 
 	private ScreenshotExportPanel screenshotExportPanel;
 	private MovieExportPanel movieExportPanel;
@@ -120,15 +112,12 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
 		JPanel exportSettings = new JPanel(new BorderLayout());
 
 		JPanel movieExportSubPanel = new JPanel(new BorderLayout());
-		movieExportSubPanel.setBorder(BorderFactory.createEmptyBorder(3, 3, 3,
-				3));
+		movieExportSubPanel.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
 		movieExportSubPanel.add(createMovieExportPanel(), BorderLayout.CENTER);
 
 		JPanel screenshotExportSubPanel = new JPanel(new BorderLayout());
-		screenshotExportSubPanel.setBorder(BorderFactory.createEmptyBorder(3,
-				3, 3, 3));
-		screenshotExportSubPanel.add(createScreenshotExportPanel(),
-				BorderLayout.CENTER);
+		screenshotExportSubPanel.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+		screenshotExportSubPanel.add(createScreenshotExportPanel(), BorderLayout.CENTER);
 
 		exportSettings.add(movieExportSubPanel, BorderLayout.NORTH);
 		exportSettings.add(screenshotExportSubPanel, BorderLayout.CENTER);
@@ -146,9 +135,12 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
 		cancelBtn = new JButton("Cancel");
 		resetBtn = new JButton("Reset");
 
-		acceptBtn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (!isDateFormatValid(dateFormatField.getText())) {
+		acceptBtn.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				if (!isDateFormatValid(dateFormatField.getText()))
+				{
 					JOptionPane.showMessageDialog(
 							PreferencesDialog.this,
 							"Syntax error",
@@ -162,18 +154,22 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
 			}
 		});
 
-		cancelBtn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		cancelBtn.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
 				dispose();
 			}
 		});
 
-		resetBtn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-
+		resetBtn.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
 				if (JOptionPane.showConfirmDialog(null,
 						"Do you really want to reset the Preferences?",
-						"Attention", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+						"Attention", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
+				{
 					defaultsPanel.resetSettings();
 					loadDefaultMovieOnStartUp.setSelected(true);
 					dateFormatField.setText(defaultDateFormat);
@@ -182,11 +178,14 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
 			}
 		});
 
-		if (JHVGlobals.isWindows()) {
+		if (Globals.isWindows())
+		{
 			btnPanel.add(acceptBtn);
 			btnPanel.add(resetBtn);
 			btnPanel.add(cancelBtn);
-		} else {
+		}
+		else
+		{
 			btnPanel.add(resetBtn);
 			btnPanel.add(cancelBtn);
 			btnPanel.add(acceptBtn);
@@ -195,43 +194,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
 		mainPanel.add(btnPanel, BorderLayout.SOUTH);
 
 		getContentPane().add(mainPanel);
-		pack();
-	}
-
-	/**
-	 * Checks the passed pattern if it is a supported date pattern. The pattern
-	 * could contain defined letters and special characters. The method checks
-	 * valid signs only!
-	 * 
-	 * @param format
-	 *            pattern to check.
-	 * @return boolean value if pattern is supported.
-	 */
-	private boolean isDateFormatValid(String format) {
-
-		// go through all signs of pattern
-		for (int i = 0; i < format.length(); i++) {
-			char sign = format.charAt(i);
-			int ascii = (int) sign;
-
-			// if it is a number or letter, check it if it is supported
-			if ((ascii >= 48 && ascii <= 57) || (ascii >= 65 && ascii <= 90)
-					|| (ascii >= 97 && ascii <= 122)) {
-				if (sign != 'y' && sign != 'M' && sign != 'd' && sign != 'w'
-						&& sign != 'D' && sign != 'E') {
-
-					return false;
-				}
-			}
-		}
-
-		return true;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void showDialog() {
+		
 		loadSettings();
 
 		pack();
@@ -243,21 +206,43 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
 	}
 
 	/**
+	 * Checks the passed pattern if it is a supported date pattern. The pattern
+	 * could contain defined letters and special characters. The method checks
+	 * valid signs only!
+	 * 
+	 * @param format
+	 *            pattern to check.
+	 * @return boolean value if pattern is supported.
+	 */
+	private boolean isDateFormatValid(String format)
+	{
+		// go through all signs of pattern
+		for (int i = 0; i < format.length(); i++)
+		{
+			char sign = format.charAt(i);
+			int ascii = (int) sign;
+
+			// if it is a number or letter, check it if it is supported
+			if ((ascii >= 48 && ascii <= 57) || (ascii >= 65 && ascii <= 90) || (ascii >= 97 && ascii <= 122))
+				if (sign != 'y' && sign != 'M' && sign != 'd' && sign != 'w' && sign != 'D' && sign != 'E')
+					return false;
+		}
+
+		return true;
+	}
+
+	/**
 	 * Loads the settings.
 	 * 
 	 * Reads the informations from {@link org.helioviewer.jhv.Settings} and sets
 	 * all gui elements according to them.
 	 */
-	private void loadSettings() {
-
-		// In principle the settings have been previously loaded
-		// settings.load();
-
+	private void loadSettings()
+	{
 		// Start up
-		loadDefaultMovieOnStartUp.setSelected(Boolean.parseBoolean(Settings
-				.getProperty("startup.loadmovie")));
-		doNothingOnStartUp.setSelected(!Boolean.parseBoolean(Settings
-				.getProperty("startup.loadmovie")));
+		loadDefaultMovieOnStartUp.setSelected(Boolean.parseBoolean(Settings.getProperty("startup.loadmovie")));
+		doNothingOnStartUp.setSelected(!Boolean.parseBoolean(Settings.getProperty("startup.loadmovie")));
+		
 		// Default date format
 		String fmt = Settings.getProperty("default.date.format");
 
@@ -277,14 +262,14 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
 	 * 
 	 * Writes the informations to {@link org.helioviewer.jhv.Settings}.
 	 */
-	private void saveSettings() {
-
+	private void saveSettings()
+	{
 		// Start up
-		Settings.setProperty("startup.loadmovie",
-				Boolean.toString(loadDefaultMovieOnStartUp.isSelected()));
+		Settings.setProperty("startup.loadmovie", Boolean.toString(loadDefaultMovieOnStartUp.isSelected()));
 
 		// Default date format
 		Settings.setProperty("default.date.format", dateFormatField.getText());
+		
 		// Default values
 		defaultsPanel.saveSettings();
 		movieExportPanel.saveSettings();
@@ -296,11 +281,11 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
 	 * 
 	 * @return General parameters panel
 	 */
-	private JPanel createParametersPanel() {
+	private JPanel createParametersPanel()
+	{
 		paramsPanel = new JPanel();
 
-		paramsPanel.setBorder(BorderFactory
-				.createTitledBorder(" Configuration "));
+		paramsPanel.setBorder(BorderFactory.createTitledBorder(" Configuration "));
 		paramsPanel.setLayout(new GridLayout(0, 1));
 
 		JPanel row0 = new JPanel(new FlowLayout(FlowLayout.LEADING));
@@ -327,13 +312,13 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
 
 		dateFormatInfo = new JButton(infoIcon);
 		dateFormatInfo.setBorder(BorderFactory.createEtchedBorder());
-		dateFormatInfo.setPreferredSize(new Dimension(
-				infoIcon.getIconWidth() + 5, 23));
+		dateFormatInfo.setPreferredSize(new Dimension(infoIcon.getIconWidth() + 5, 23));
 		dateFormatInfo.setToolTipText("Show possible date format information");
-		dateFormatInfo.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) {
-				dialog.showDialog();
+		dateFormatInfo.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				new DateFormatInfoDialog();
 			}
 		});
 
@@ -521,97 +506,99 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
 
 		}
 
-		public void loadSettings() {
+		public void loadSettings()
+		{
 			String val;
-			try {
+			try
+			{
 				val = Settings.getProperty(SETTING_MOVIE_TEXT);
-				if (val != null && !(val.length() == 0)) {
+				if (val != null && !(val.length() == 0))
 					isTextEnabled.setSelected(Boolean.parseBoolean(val));
-				}
-			} catch (Throwable t) {
-				System.err.println(t);
+			}
+			catch (Throwable t)
+			{
+				Telemetry.trackException(t);
 			}
 
-			try {
+			try
+			{
 				val = Settings.getProperty(SETTING_MOVIE_IMG_HEIGHT);
-				if (val != null && !(val.length() == 0)) {
-					txtMovieImageHeight.setValue(Math.round(Float
-							.parseFloat(val)));
-				}
-			} catch (Throwable t) {
-				System.err.println(t);
+				if (val != null && !(val.length() == 0))
+					txtMovieImageHeight.setValue(Math.round(Float.parseFloat(val)));
+			}
+			catch (Throwable t)
+			{
+				Telemetry.trackException(t);
 			}
 
-			try {
+			try
+			{
 				val = Settings.getProperty(SETTING_MOVIE_IMG_WIDTH);
-				if (val != null && !(val.length() == 0)) {
-					txtMovieImageWidth.setValue(Math.round(Float
-							.parseFloat(val)));
-				}
-			} catch (Throwable t) {
-				System.err.println(t);
+				if (val != null && !(val.length() == 0))
+					txtMovieImageWidth.setValue(Math.round(Float.parseFloat(val)));
+			}
+			catch (Throwable t)
+			{
+				Telemetry.trackException(t);
 			}
 
 			float ar = 16 / 9f;
-			try {
+			try
+			{
 				int width = Integer.parseInt(txtMovieImageWidth.getText());
 				int height = Integer.parseInt(txtMovieImageHeight.getText());
 				ar = width / (float) height;
-			} catch (Exception _e) {
+			}
+			catch (Exception _e)
+			{
+				Telemetry.trackException(_e);
 			}
 
-			movieAspectRatioSelection
-					.setSelectedItem(MOVIE_ASPECT_RATIO_PRESETS[MOVIE_ASPECT_RATIO_PRESETS.length - 1]);
-			for (AspectRatio asp : MOVIE_ASPECT_RATIO_PRESETS) {
-				if (Math.abs(asp.width / (float) asp.height - ar) < 0.01) {
+			movieAspectRatioSelection.setSelectedItem(MOVIE_ASPECT_RATIO_PRESETS[MOVIE_ASPECT_RATIO_PRESETS.length - 1]);
+			for (AspectRatio asp : MOVIE_ASPECT_RATIO_PRESETS)
+				if (Math.abs(asp.width / (float) asp.height - ar) < 0.01)
+				{
 					movieAspectRatioSelection.setSelectedItem(asp);
 					break;
 				}
-			}
 		}
 
-		public void saveSettings() {
-			Settings.setProperty(SETTING_MOVIE_TEXT, isTextEnabled.isSelected()
-					+ "");
-			Settings.setProperty(SETTING_MOVIE_IMG_WIDTH, txtMovieImageWidth
-					.getValue().toString());
-			Settings.setProperty(SETTING_MOVIE_IMG_HEIGHT, txtMovieImageHeight
-					.getValue().toString());
+		public void saveSettings()
+		{
+			Settings.setProperty(SETTING_MOVIE_TEXT, isTextEnabled.isSelected() + "");
+			Settings.setProperty(SETTING_MOVIE_IMG_WIDTH, txtMovieImageWidth.getValue().toString());
+			Settings.setProperty(SETTING_MOVIE_IMG_HEIGHT, txtMovieImageHeight.getValue().toString());
 		}
 
 	}
 
-	private JPanel createScreenshotExportPanel() {
-
+	private JPanel createScreenshotExportPanel()
+	{
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.setBorder(BorderFactory.createTitledBorder(" Screenshot export "));
 
 		screenshotExportPanel = new ScreenshotExportPanel();
 		screenshotExportPanel.setPreferredSize(new Dimension(400, 120));
-		screenshotExportPanel.setBorder(BorderFactory.createEmptyBorder(5, 5,
-				5, 5));
+		screenshotExportPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
 		panel.add(screenshotExportPanel, BorderLayout.CENTER);
-
 		return panel;
 	}
 
-	private static class ScreenshotExportPanel extends JPanel {
+	private static class ScreenshotExportPanel extends JPanel
+	{
 		private JComboBox<AspectRatio> screenshotAspectRatioSelection;
-		private JFormattedTextField txtScreenshotImageWidth,
-				txtScreenshotImageHeight;
+		private JFormattedTextField txtScreenshotImageWidth, txtScreenshotImageHeight;
 		private JCheckBox isTextEnabled;
 		private static final String SETTING_SCREENSHOT_IMG_WIDTH = "export.screenshot.image.width";
 		private static final String SETTING_SCREENSHOT_IMG_HEIGHT = "export.screenshot.image.height";
 		private static final String SETTING_SCREENSHOT_TEXT = "export.screenshot.text";
 		private boolean hasChanged = false;
-		/**
-		 * 
-		 */
+		
 		private static final long serialVersionUID = -3998530177421043272L;
 
-		public ScreenshotExportPanel() {
-
+		public ScreenshotExportPanel()
+		{
 			this.setLayout(new FormLayout(new ColumnSpec[] {
 					FormFactory.RELATED_GAP_COLSPEC,
 					FormFactory.DEFAULT_COLSPEC,
@@ -842,7 +829,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
 					if (row >= 2)
 						return;
 
-					if (JHVGlobals.USE_JAVA_FX) {
+					if (Globals.USE_JAVA_FX) {
 						openFileChooserFX(row);
 					} else {
 						openFileChooser(row);
@@ -858,7 +845,7 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
 		}
 
 		private void openFileChooser(int row) {
-			JFileChooser chooser = JHVGlobals.getJFileChooser((String) table
+			JFileChooser chooser = Globals.getJFileChooser((String) table
 					.getModel().getValueAt(row, 1));
 			chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
@@ -913,9 +900,6 @@ public class PreferencesDialog extends JDialog implements ShowableDialog {
 
 	/**
 	 * Class which stores aspect ratio information
-	 * 
-	 * @author Andre Dau
-	 * 
 	 */
 	private static class AspectRatio {
 		private int width;

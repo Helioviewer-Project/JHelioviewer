@@ -32,7 +32,7 @@ import javax.swing.event.PopupMenuListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
-import org.helioviewer.jhv.JHVGlobals;
+import org.helioviewer.jhv.Globals;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MainFrame;
@@ -48,9 +48,6 @@ import org.helioviewer.jhv.viewmodel.TimeLine.TimeLineListener;
 
 /**
  * The new LayerPanel, include a JTable for the current added layers
- * 
- * @author stefanmeier
- *
  */
 public class LayerPanel extends JPanel implements LayerListener, TimeLineListener
 {
@@ -101,7 +98,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				new MetaDataDialog().showDialog();
+				new MetaDataDialog();
 			}
 		});
 		
@@ -350,7 +347,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				new MetaDataDialog().showDialog();
+				new MetaDataDialog();
 			}
 		});
 		GridBagConstraints gbcBtnShowInfo = new GridBagConstraints();
@@ -473,7 +470,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 					break;
 				case 3:
 					LocalDateTime localDateTime = (LocalDateTime) value;
-					String date = localDateTime != null ? localDateTime.format(JHVGlobals.DATE_TIME_FORMATTER) : "";
+					String date = localDateTime != null ? localDateTime.format(Globals.DATE_TIME_FORMATTER) : "";
 					super.getTableCellRendererComponent(table, date, isSelected, hasFocus, row, column);
 					break;
 				case 4:

@@ -9,9 +9,6 @@ import java.util.Locale;
  * 
  * The restriction to integer coordinates might lead to overflows in some
  * calculations. Consider using Vector2dDouble or Vector2dLong instead.
- * 
- * @author Ludwig Schmidt
- * 
  */
 public final class Vector2i {
     private final int x;

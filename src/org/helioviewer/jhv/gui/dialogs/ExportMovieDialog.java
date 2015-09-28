@@ -30,7 +30,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileFilter;
 
-import org.helioviewer.jhv.JHVGlobals;
+import org.helioviewer.jhv.Globals;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.gui.MainFrame;
@@ -178,7 +178,7 @@ public class ExportMovieDialog implements ActionListener {
 				txtTargetFile = "";
 
 				txtTargetFile += LocalDateTime.now().format(
-						JHVGlobals.DATE_TIME_FORMATTER);
+						Globals.DATE_TIME_FORMATTER);
 
 				String val = Settings
 						.getProperty(SETTING_MOVIE_EXPORT_LAST_DIRECTORY);
@@ -216,17 +216,17 @@ public class ExportMovieDialog implements ActionListener {
 
 	private void openFileChooser()
 	{
-		if (JHVGlobals.USE_JAVA_FX)
+		if (Globals.USE_JAVA_FX)
 			openFXFileChooser();
 		else {
 			txtTargetFile = "";
 
 			txtTargetFile += LocalDateTime.now().format(
-					JHVGlobals.DATE_TIME_FORMATTER);
+					Globals.DATE_TIME_FORMATTER);
 			txtTargetFile += selectedOutputFormat.getExtension();
 
 			// Open save-dialog
-			final JFileChooser fileChooser = JHVGlobals.getJFileChooser();
+			final JFileChooser fileChooser = Globals.getJFileChooser();
 			fileChooser.setFileHidingEnabled(false);
 			fileChooser.setMultiSelectionEnabled(false);
 			fileChooser.setAcceptAllFileFilterUsed(false);

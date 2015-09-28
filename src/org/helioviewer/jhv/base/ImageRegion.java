@@ -12,7 +12,6 @@ import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 
 /**
  * Class to find the current ImageRegion that's needed to decode
- * @author stefanmeier
  */
 public class ImageRegion
 {

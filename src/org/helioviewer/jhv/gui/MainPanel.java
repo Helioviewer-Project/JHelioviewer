@@ -29,7 +29,7 @@ import javax.swing.JFrame;
 import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
 
-import org.helioviewer.jhv.JHVGlobals;
+import org.helioviewer.jhv.Globals;
 import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
 import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
@@ -640,7 +640,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 			descriptions = new ArrayList<String>();
 			for (AbstractLayer layer : Layers.getLayers())
 				if (layer.isVisible())
-					descriptions.add(layer.getFullName() + " - " + layer.getTime().format(JHVGlobals.DATE_TIME_FORMATTER));
+					descriptions.add(layer.getFullName() + " - " + layer.getTime().format(Globals.DATE_TIME_FORMATTER));
 		}
 		
 		int tileWidth = imageWidth < DEFAULT_TILE_WIDTH ? imageWidth : DEFAULT_TILE_WIDTH;

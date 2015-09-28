@@ -13,7 +13,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
 import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.gui.ShowableDialog;
 
 /**
  * Dialog used to display basic usage tips for the program.
@@ -21,8 +20,8 @@ import org.helioviewer.jhv.gui.ShowableDialog;
  * <p>
  * Basically, the dialog contains all shortcuts.
  */
-public class HelpDialog extends JDialog implements ActionListener, ShowableDialog {
-
+public class HelpDialog extends JDialog implements ActionListener
+{
     private static final long serialVersionUID = 1L;
 
     private final JButton closeButton = new JButton("Close");
@@ -33,7 +32,8 @@ public class HelpDialog extends JDialog implements ActionListener, ShowableDialo
     /**
      * The private constructor that sets the fields and the dialog.
      */
-    public HelpDialog() {
+    public HelpDialog()
+    {
         super(MainFrame.SINGLETON, "Shortcuts", true);
         setLayout(new BorderLayout());
         setResizable(false);
@@ -71,12 +71,7 @@ public class HelpDialog extends JDialog implements ActionListener, ShowableDialo
         closeButton.addActionListener(this);
         // wikiButton.addActionListener(this);
         // jhvButton.addActionListener(this);
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void showDialog() {
         pack();
         setSize(getPreferredSize().width, getPreferredSize().height);
         setLocationRelativeTo(MainFrame.SINGLETON);

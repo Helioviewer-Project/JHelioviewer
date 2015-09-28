@@ -7,8 +7,6 @@ import javax.swing.filechooser.FileFilter;
 /**
  * Abstract class representing a file filter which filters based on the
  * extension of a file.
- * 
- * @author Markus Langenberg
  */
 public abstract class ExtensionFileFilter extends FileFilter {
     protected String[] extensions = {};

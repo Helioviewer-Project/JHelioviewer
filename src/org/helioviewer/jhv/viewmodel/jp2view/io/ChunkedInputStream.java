@@ -6,14 +6,8 @@ import java.io.InputStream;
 import java.net.ProtocolException;
 
 /**
- * 
  * The class <code>ChunkedInputStream</code> allows to decode HTTP chunked
  * responses with a simple format. Do not support internal chunk headers.
- * 
- * @author Juan Pablo Garcia Ortiz
- * @see java.io.InputStream StringInputStream
- * @version 0.1
- * 
  */
 
 public class ChunkedInputStream extends InputStream {

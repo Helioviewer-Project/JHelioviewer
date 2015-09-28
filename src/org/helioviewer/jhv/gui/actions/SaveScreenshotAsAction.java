@@ -18,7 +18,7 @@ import javax.swing.JFileChooser;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
-import org.helioviewer.jhv.JHVGlobals;
+import org.helioviewer.jhv.Globals;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.gui.MainFrame;
@@ -30,8 +30,6 @@ import org.helioviewer.jhv.gui.actions.filefilters.FileFilter;
  * 
  * <p>
  * Therefore, opens a save dialog to choose format, name and location.
- * 
- * @author Markus Langenberg
  */
 public class SaveScreenshotAsAction extends AbstractAction
 {
@@ -47,9 +45,6 @@ public class SaveScreenshotAsAction extends AbstractAction
 
 	private boolean textEnabled;
 
-	/**
-	 * Default constructor.
-	 */
 	public SaveScreenshotAsAction() {
 		super("Save screenshot as...");
 		putValue(SHORT_DESCRIPTION, "Save screenshots to a file");
@@ -62,7 +57,7 @@ public class SaveScreenshotAsAction extends AbstractAction
 	private void openFileChooser() {
 
 		this.loadSettings();
-		final JFileChooser fileChooser = JHVGlobals.getJFileChooser();
+		final JFileChooser fileChooser = Globals.getJFileChooser();
 		fileChooser.setAcceptAllFileFilterUsed(false);
 		fileChooser
 				.addChoosableFileFilter(FileFilter.IMPLEMENTED_FILE_FILTER.JPG
@@ -157,7 +152,7 @@ public class SaveScreenshotAsAction extends AbstractAction
 	 * {@inheritDoc}
 	 */
 	public void actionPerformed(ActionEvent e) {
-		if (JHVGlobals.USE_JAVA_FX){
+		if (Globals.USE_JAVA_FX){
 			openFileChooserFX();
 		}
 		else {

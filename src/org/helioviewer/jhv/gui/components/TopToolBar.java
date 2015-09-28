@@ -38,9 +38,6 @@ import org.helioviewer.jhv.opengl.camera.actions.ZoomOutAction;
  * 
  * <p>
  * The toolbar provides a context menu to change its appearance.
- * 
- * @author Markus Langenberg
- * @author Andre Dau
  */
 public class TopToolBar extends JToolBar implements MouseListener
 {

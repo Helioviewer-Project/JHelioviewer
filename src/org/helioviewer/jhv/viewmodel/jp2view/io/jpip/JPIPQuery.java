@@ -4,9 +4,6 @@ import java.util.Hashtable;
 
 /**
  * A class that helps build a JPIP query string.
- * 
- * @author caplins
- * @author Juan Pablo
  */
 public class JPIPQuery implements Cloneable
 {

@@ -23,8 +23,6 @@ import org.helioviewer.jhv.plugins.hekplugin.cache.HEKPath;
  * 
  * The class updates/decides which component to show based on callback methods
  * called by the HEKCacheModel, by implementing the HEKCacheListener interface
- * 
- * @author Malte Nuhn
  */
 public class HEKCacheTreeViewContainer extends JPanel implements HEKCacheListener {
 

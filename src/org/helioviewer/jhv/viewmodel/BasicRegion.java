@@ -12,8 +12,6 @@ import org.helioviewer.jhv.base.math.Vector2d;
  * {@link ImageSizeMetaData#getUnitsPerPixel}) value which is defined in the
  * meta data of an image. Apart from that, for solar images, the origin of
  * physical coordinate system is the center of the sun.
- * 
- * @author Ludwig Schmidt
  * */
 interface BasicRegion {
 

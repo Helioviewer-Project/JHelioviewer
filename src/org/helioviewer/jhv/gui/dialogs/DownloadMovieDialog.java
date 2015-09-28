@@ -14,7 +14,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 
-import org.helioviewer.jhv.JHVGlobals;
+import org.helioviewer.jhv.Globals;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
@@ -194,10 +194,10 @@ public class DownloadMovieDialog extends JDialog {
 			});
 			return;
 		}
-		defaultName = _layer.getFullName() + "_F" + JHVGlobals.FILE_DATE_TIME_FORMATTER.format(((ImageLayer)_layer).getFirstLocalDateTime()) + "_T" + JHVGlobals.FILE_DATE_TIME_FORMATTER.format(((ImageLayer)_layer).getLastLocalDateTime());
+		defaultName = _layer.getFullName() + "_F" + Globals.FILE_DATE_TIME_FORMATTER.format(((ImageLayer)_layer).getFirstLocalDateTime()) + "_T" + Globals.FILE_DATE_TIME_FORMATTER.format(((ImageLayer)_layer).getLastLocalDateTime());
 		url = _url;
 		
-		if (JHVGlobals.USE_JAVA_FX)
+		if (Globals.USE_JAVA_FX)
 			openFileChooserFX();
 		else
 			openFileChooser();

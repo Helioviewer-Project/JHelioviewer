@@ -7,9 +7,6 @@ import org.helioviewer.jhv.gui.MainPanel;
  * certain amount of time. Register animations to the currently active
  * {@link GL3DCamera}. Make sure that isFinished returns true as soon as the
  * animation should stop.
- * 
- * @author Simon Sp�rri (simon.spoerri@fhnw.ch)
- * 
  */
 public interface CameraAnimation {
     public static final long DEFAULT_ANIMATION_TIME = 600;
