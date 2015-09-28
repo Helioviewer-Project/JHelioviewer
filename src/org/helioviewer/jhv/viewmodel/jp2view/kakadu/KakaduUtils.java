@@ -3,8 +3,6 @@
 import java.awt.Rectangle;
 import java.io.UnsupportedEncodingException;
 
-import org.helioviewer.jhv.Telemetry;
-
 import kdu_jni.Jp2_input_box;
 import kdu_jni.Jp2_locator;
 import kdu_jni.Jp2_threadsafe_family_src;
@@ -12,6 +10,8 @@ import kdu_jni.KduException;
 import kdu_jni.Kdu_coords;
 import kdu_jni.Kdu_dims;
 import kdu_jni.Kdu_global;
+
+import org.helioviewer.jhv.Telemetry;
 
 /**
  * A collection of useful static methods.

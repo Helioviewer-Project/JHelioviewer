@@ -10,8 +10,6 @@ import org.helioviewer.jhv.base.physics.Constants;
 class MetaDataLASCO_C3 extends MetaData{
 
 	private final static Rectangle RESOLUTION = new Rectangle(1024, 1024);
-	private final double IMAGE_SCALE = 56.0;
-
 	public MetaDataLASCO_C3(MetaDataContainer metaDataContainer) {
         super(metaDataContainer, RESOLUTION);
         if (!("LASCO".equalsIgnoreCase(instrument) && "C3".equalsIgnoreCase(detector)))

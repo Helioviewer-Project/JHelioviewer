@@ -9,7 +9,6 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
@@ -23,9 +22,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JSpinner;
+import javax.swing.JSpinner.DefaultEditor;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
-import javax.swing.JSpinner.DefaultEditor;
 import javax.swing.border.EmptyBorder;
 
 import org.helioviewer.jhv.gui.MainFrame;
@@ -139,8 +138,6 @@ public class AddLayerPanel extends JDialog
 			});
 		
 		cmbbxObservatory.setEnabled(true);
-		LocalDateTime endDateTime = LocalDateTime.now();
-		LocalDateTime startDateTime = endDateTime.minusDays(1);
 		
 		for (InstrumentModel.Observatory observatory : InstrumentModel.getObservatories())
 			cmbbxObservatory.addItem(observatory);
@@ -405,6 +402,7 @@ public class AddLayerPanel extends JDialog
 		DialogTools.setDefaultButtons(okButton,cancelButton);
 	}
 
+	@SuppressWarnings("unused")
 	private void initPluginGui(JPanel contentPanel)
 	{
 		contentPanel.setLayout(new FormLayout(

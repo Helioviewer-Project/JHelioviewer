@@ -10,8 +10,6 @@ import org.helioviewer.jhv.base.physics.Constants;
 class MetaDataLASCO_C2 extends MetaData{
 
 	private final static Rectangle RESOLUTION = new Rectangle(1024, 1024);
-	private final double IMAGE_SCALE = 11.9;
-
 	public MetaDataLASCO_C2(MetaDataContainer metaDataContainer)
 	{
         super(metaDataContainer, RESOLUTION);

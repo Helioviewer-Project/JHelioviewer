@@ -7,8 +7,6 @@ class MetaDataSXT extends MetaData
 {
 	
 	private final static Rectangle RESOLUTION = new Rectangle(1024, 1024);
-	private final double IMAGE_SCALE = 2.46;
-
 	public MetaDataSXT(MetaDataContainer metaDataContainer)
 	{
 	  	super(metaDataContainer, RESOLUTION);

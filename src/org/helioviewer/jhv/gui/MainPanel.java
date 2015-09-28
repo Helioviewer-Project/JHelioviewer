@@ -42,7 +42,6 @@ import org.helioviewer.jhv.base.physics.DifferentialRotation;
 import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelCameraListener;
 import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelMouseListener;
 import org.helioviewer.jhv.layers.AbstractLayer;
-import org.helioviewer.jhv.layers.AbstractLayer.RenderResult;
 import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
@@ -60,8 +59,8 @@ import org.helioviewer.jhv.opengl.camera.CameraZoomBoxInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraZoomInteraction;
 import org.helioviewer.jhv.opengl.camera.animation.CameraAnimation;
 import org.helioviewer.jhv.opengl.camera.animation.CameraTransformationAnimation;
-import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.plugins.AbstractPlugin.RenderMode;
+import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.TimeLine.TimeLineListener;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
@@ -287,7 +286,8 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 			for(Entry<AbstractLayer, Future<ByteBuffer>> l:layers.entrySet())
 				try
 				{
-					RenderResult r = l.getKey().renderLayer(gl, size, this, l.getValue().get());
+					//RenderResult r = 
+					l.getKey().renderLayer(gl, size, this, l.getValue().get());
 				}
 				catch(ExecutionException|InterruptedException _e)
 				{
@@ -678,10 +678,10 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		offscreenGL.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 		double aspect = imageWidth / (double) imageHeight;
-		double top = Math.tan(MainPanel.FOV / 360.0 * Math.PI) * MainPanel.CLIP_NEAR;
-		double right = top * aspect;
-		double left = -right;
-		double bottom = -top;
+		//double top = Math.tan(MainPanel.FOV / 360.0 * Math.PI) * MainPanel.CLIP_NEAR;
+		//double right = top * aspect;
+		//double left = -right;
+		//double bottom = -top;
 
 		TextRenderer textRenderer = new TextRenderer(new Font("SansSerif", Font.BOLD, 24));
 		textRenderer.setColor(1f, 1f, 1f, 1f);

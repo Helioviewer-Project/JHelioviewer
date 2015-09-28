@@ -6,8 +6,6 @@ import java.time.LocalDateTime;
 class MetaDataMDI extends MetaData{
 
 	private final static Rectangle RESOLUTION = new Rectangle(1024, 1024);
-	private final double IMAGE_SCALE = 1.986;
-
 	public MetaDataMDI(MetaDataContainer metaDataContainer) {
         super(metaDataContainer, RESOLUTION);
         if (!(instrument.equalsIgnoreCase("MDI"))){

@@ -50,7 +50,8 @@ public class StateParser extends DefaultHandler
 			return DESCRIPTION;
 		}
 
-		public static ExtensionFilter getExtensionFilter() {
+		public static ExtensionFilter getExtensionFilter()
+		{
 			return new ExtensionFilter(DESCRIPTION, "*" + EXTENSION);
 		}
 	}
@@ -71,14 +72,13 @@ public class StateParser extends DefaultHandler
 				fileChooser.getExtensionFilters().addAll(StateParser.JHVStateFilter.getExtensionFilter(),extensionFilter1);
 				final File selectedFile = fileChooser.showOpenDialog(new Stage());
 
-				if (selectedFile != null && selectedFile.exists()
-						&& selectedFile.isFile()) {
-
+				if (selectedFile != null && selectedFile.exists() && selectedFile.isFile())
+				{
 					// remember the current directory for future
 					Settings.setProperty(LOAD_PATH_SETTINGS, selectedFile.getParent());
 					try
 					{
-						startLoadingStateFile(selectedFile);
+						loadStateFile(selectedFile);
 					}
 					catch (IOException | JSONException e)
 					{
@@ -90,32 +90,34 @@ public class StateParser extends DefaultHandler
 		});
 	}
 
-	public static void loadStateFile() throws IOException, JSONException {
+	public static void loadStateFile() throws IOException, JSONException
+	{
 		String lastPath = Settings.getProperty(LOAD_PATH_SETTINGS);
-		if (JHVGlobals.USE_JAVA_FX) {
+		if (JHVGlobals.USE_JAVA_FX)
+		{
 			openLoadFileChooserFX();
-		} else {
+		}
+		else
+		{
 			JFileChooser fileChooser = new JFileChooser();
 			fileChooser.setDialogTitle("Open state file");
-			if (lastPath != null) {
+			if (lastPath != null)
 				fileChooser.setCurrentDirectory(new File(lastPath));
-			}
+		
 			fileChooser.setFileFilter(new StateParser.JHVStateFilter());
 			int retVal = fileChooser.showOpenDialog(MainFrame.SINGLETON);
-			if (retVal == JFileChooser.APPROVE_OPTION) {
+			if (retVal == JFileChooser.APPROVE_OPTION)
+			{
 				File selectedFile = fileChooser.getSelectedFile();
-				Settings.setProperty(LOAD_PATH_SETTINGS, fileChooser
-						.getCurrentDirectory().getAbsolutePath());
-				if (selectedFile.exists() && selectedFile.isFile()) {
-					startLoadingStateFile(selectedFile);
-				}
-
+				Settings.setProperty(LOAD_PATH_SETTINGS, fileChooser.getCurrentDirectory().getAbsolutePath());
+				if (selectedFile.exists() && selectedFile.isFile())
+					loadStateFile(selectedFile);
 			}
 		}
 	}
 
-	private static void startLoadingStateFile(File selectedFile)
-			throws IOException, JSONException {
+	public static void loadStateFile(File selectedFile) throws IOException, JSONException
+	{
 		Layers.removeAllImageLayers();
 		byte[] data = Files.readAllBytes(selectedFile.toPath());
 		String content = new String(data, StandardCharsets.UTF_8);
@@ -125,26 +127,23 @@ public class StateParser extends DefaultHandler
 
 		JSONObject jsonCamera = jsonObject.getJSONObject("camera");
 		JSONArray jsonTranslation = jsonCamera.getJSONArray("translation");
-		Vector3d translation = new Vector3d(jsonTranslation.getDouble(0),
-				jsonTranslation.getDouble(1), jsonTranslation.getDouble(2));
+		Vector3d translation = new Vector3d(jsonTranslation.getDouble(0), jsonTranslation.getDouble(1), jsonTranslation.getDouble(2));
 		JSONArray jsonRotation = jsonCamera.getJSONArray("rotation");
 		double angle = jsonRotation.getDouble(0);
-		Vector3d axis = new Vector3d(jsonRotation.getDouble(1),
-				jsonRotation.getDouble(2), jsonRotation.getDouble(3));
+		Vector3d axis = new Vector3d(jsonRotation.getDouble(1), jsonRotation.getDouble(2), jsonRotation.getDouble(3));
 		Quaternion3d rotation = new Quaternion3d(angle, axis);
 		MainFrame.MAIN_PANEL.setTransformation(rotation, translation);
-
+		
 		Layers.setActiveLayer(jsonObject.getInt("activeLayer"));
-		LocalDateTime currentDateTime = LocalDateTime.parse(jsonObject
-				.getString("time"));
+		LocalDateTime currentDateTime = LocalDateTime.parse(jsonObject.getString("time"));
 		TimeLine.SINGLETON.setCurrentDate(currentDateTime);
 
 		JSONObject jsonPlugin = jsonObject.getJSONObject("plugins");
 		Plugins.SINGLETON.restoreConfiguration(jsonPlugin);
 	}
 
-	private static void startSavingStateFile(File selectedFile)
-			throws JSONException, IOException {
+	private static void startSavingStateFile(File selectedFile) throws JSONException, IOException
+	{
 		Settings.setProperty(SAVE_PATH_SETTINGS, selectedFile.getParent());
 		String fileName = selectedFile.toString();
 		JHVStateFilter fileFilter = new JHVStateFilter();
@@ -181,14 +180,15 @@ public class StateParser extends DefaultHandler
 		JSONObject jsonPlugins = new JSONObject();
 		Plugins.SINGLETON.storeConfiguration(jsonPlugins);
 		jsonObject.put("plugins", jsonPlugins);
-
-		FileWriter file = new FileWriter(fileName);
-		file.write(jsonObject.toString());
-		file.flush();
-		file.close();
+		
+		try(FileWriter file = new FileWriter(fileName))
+		{
+			file.write(jsonObject.toString());
+		}
 	}
 
-	private static void openSaveFileChooserFX() {
+	private static void openSaveFileChooserFX()
+	{
 		Platform.runLater(new Runnable()
 		{
 			@Override
@@ -222,22 +222,27 @@ public class StateParser extends DefaultHandler
 		});
 	}
 
-	public static void writeStateFile() throws JSONException, IOException {
-		if (JHVGlobals.USE_JAVA_FX) {
+	public static void writeStateFile() throws JSONException, IOException
+	{
+		if (JHVGlobals.USE_JAVA_FX)
+		{
 			openSaveFileChooserFX();
-		} else {
+		}
+		else
+		{
 			String lastPath = Settings.getProperty(SAVE_PATH_SETTINGS);
 			JFileChooser fileChooser = new JFileChooser();
 			fileChooser.setDialogTitle("Save state file");
 			fileChooser.setMultiSelectionEnabled(false);
 
-			if (lastPath != null) {
+			if (lastPath != null)
 				fileChooser.setCurrentDirectory(new File(lastPath));
-			}
+		
 			fileChooser.setFileFilter(new StateParser.JHVStateFilter());
 			int retVal = fileChooser.showSaveDialog(MainFrame.SINGLETON);
 
-			if (fileChooser.getSelectedFile().exists()) {
+			if (fileChooser.getSelectedFile().exists())
+			{
 				// ask if the user wants to overwrite
 				int response = JOptionPane.showConfirmDialog(null,
 						"Overwrite existing file?", "Confirm Overwrite",
@@ -245,14 +250,12 @@ public class StateParser extends DefaultHandler
 						JOptionPane.QUESTION_MESSAGE);
 
 				// if the user doesn't want to overwrite, simply return null
-				if (response == JOptionPane.CANCEL_OPTION) {
+				if (response == JOptionPane.CANCEL_OPTION)
 					return;
-				}
 			}
 
-			if (retVal == JFileChooser.APPROVE_OPTION) {
+			if (retVal == JFileChooser.APPROVE_OPTION)
 				startSavingStateFile(fileChooser.getSelectedFile());
-			}
 		}
 	}
 }

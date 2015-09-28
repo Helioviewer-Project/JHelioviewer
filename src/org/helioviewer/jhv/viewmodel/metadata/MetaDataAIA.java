@@ -5,14 +5,12 @@ import java.time.LocalDateTime;
 
 import org.helioviewer.jhv.layers.LUT.Lut;
 
-class MetaDataAIA extends MetaData{
-	
+class MetaDataAIA extends MetaData
+{
 	private final static Rectangle RESOLUTION = new Rectangle(4096, 4096);
-	private final double IMAGE_SCALE = 0.6;
 	
-	
-  public MetaDataAIA(MetaDataContainer metaDataContainer)
-  {
+	public MetaDataAIA(MetaDataContainer metaDataContainer)
+	{
         super(metaDataContainer, RESOLUTION);
         
         measurement = metaDataContainer.get("WAVELNTH");

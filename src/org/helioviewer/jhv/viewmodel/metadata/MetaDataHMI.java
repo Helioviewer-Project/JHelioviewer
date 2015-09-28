@@ -6,8 +6,6 @@ import java.time.LocalDateTime;
 class MetaDataHMI extends MetaData{
 
 	private final static Rectangle RESOLUTION = new Rectangle(4096, 4096);
-	private final double IMAGE_SCALE = 0.6;
-
 	public MetaDataHMI(MetaDataContainer metaDataContainer)
 	{
         super(metaDataContainer, RESOLUTION);

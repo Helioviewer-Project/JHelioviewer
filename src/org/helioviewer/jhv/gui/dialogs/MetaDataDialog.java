@@ -289,8 +289,11 @@ public class MetaDataDialog extends JDialog implements ActionListener,
 	 *            Source to read
 	 * @see #addDataItem(String)
 	 */
-	public void setMetaData(MetaData metaData) {
-		if (metaData == null) return;
+	public void setMetaData(MetaData metaData)
+	{
+		if (metaData == null)
+			return;
+		
 		metaDataOK = true;
 		resetData();
 		addDataItem("-------------------------------");

@@ -11,8 +11,6 @@ import org.helioviewer.jhv.layers.LUT.Lut;
 class MetaDataStereo extends MetaData
 {
 	private final static Rectangle RESOLUTION = new Rectangle(2048, 2048);
-	private final double IMAGE_SCALE = 1.588;
-
 	public MetaDataStereo(MetaDataContainer metaDataContainer)
 	{
         super(metaDataContainer, RESOLUTION);

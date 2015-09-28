@@ -6,8 +6,6 @@ import java.time.LocalDateTime;
 class MetaDataSWAP extends MetaData{
 	
 	private final static Rectangle RESOLUTION = new Rectangle(1024, 1024);
-	private final double IMAGE_SCALE = 3.162;
-
 	public MetaDataSWAP(MetaDataContainer metaDataContainer) {
         super(metaDataContainer, RESOLUTION);
         instrument = "SWAP";

@@ -2,7 +2,9 @@ package org.helioviewer.jhv.layers;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+
 import javax.annotation.Nullable;
+
 import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.json.JSONArray;

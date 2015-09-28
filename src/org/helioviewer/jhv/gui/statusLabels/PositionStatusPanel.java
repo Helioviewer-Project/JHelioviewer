@@ -1,6 +1,5 @@
 package org.helioviewer.jhv.gui.statusLabels;
 
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -34,12 +33,9 @@ import org.helioviewer.jhv.viewmodel.TimeLine;
  * <p>
  * If there is no layer present, this panel will be invisible.
  */
-public class PositionStatusPanel extends StatusLabel implements MouseListener {
-
+public class PositionStatusPanel extends StatusLabel implements MouseListener
+{
 	private static final long serialVersionUID = 1L;
-
-	private MainFrame imagePanel;
-	private Point lastPosition;
 
 	private static final char DEGREE = '\u00B0';
 	private static final String title = " (X, Y) : ";
@@ -51,7 +47,8 @@ public class PositionStatusPanel extends StatusLabel implements MouseListener {
 	 * @param imagePanel
 	 *            ImagePanel to show mouse position for
 	 */
-	public PositionStatusPanel(MainFrame imagePanel) {
+	public PositionStatusPanel(MainFrame imagePanel)
+	{
 		setBorder(BorderFactory.createEtchedBorder());
 
 		popupState = new PopupState();
@@ -72,8 +69,10 @@ public class PositionStatusPanel extends StatusLabel implements MouseListener {
 	 * @param position
 	 *            Position on the screen.
 	 */
-	private void updatePosition(Ray ray) {
-		if (ray == null){
+	private void updatePosition(Ray ray)
+	{
+		if (ray == null)
+		{
 			this.setText(title);
 			return;
 		}
@@ -82,108 +81,109 @@ public class PositionStatusPanel extends StatusLabel implements MouseListener {
 
 		DecimalFormat df;
 		String point = null;
-		switch (this.popupState.getSelectedState()) {
-		case ARCSECS:
-			LocalDateTime current = TimeLine.SINGLETON.getCurrentDateTime();
-			if (current == null){
-				this.setText(title);
-				return;
-			}
-			
-			HelioprojectiveCartesianCoordinate hpc = cart.toHelioprojectiveCartesianCoordinate(current);
-			df = new DecimalFormat("#");
-			point = "(" + df.format(hpc.getThetaXAsArcSec()) + "\" ,"
-					+ df.format(hpc.getThetaYAsArcSec()) + "\")";
-			break;
-		case DEGREE:
-			HeliographicCoordinate newCoord = cart.toHeliographicCoordinate();
-			df = new DecimalFormat("#.##");
-			if (!(ray.getHitpointType() == HitpointType.PLANE))
-				point = "(" + df.format(newCoord.getHgLongitudeAsDeg())
-						+ DEGREE + " ,"
-						+ df.format(newCoord.getHgLatitudeAsDeg())
-						+ DEGREE + ") ";
-			else
-				point = "";
-			break;
-
-		default:
-			break;
+		switch (this.popupState.getSelectedState())
+		{
+			case ARCSECS:
+				LocalDateTime current = TimeLine.SINGLETON.getCurrentDateTime();
+				if (current == null){
+					this.setText(title);
+					return;
+				}
+				
+				HelioprojectiveCartesianCoordinate hpc = cart.toHelioprojectiveCartesianCoordinate(current);
+				df = new DecimalFormat("#");
+				point = "(" + df.format(hpc.getThetaXAsArcSec()) + "\" ,"
+						+ df.format(hpc.getThetaYAsArcSec()) + "\")";
+				break;
+			case DEGREE:
+				HeliographicCoordinate newCoord = cart.toHeliographicCoordinate();
+				df = new DecimalFormat("#.##");
+				if (!(ray.getHitpointType() == HitpointType.PLANE))
+					point = "(" + df.format(newCoord.getHgLongitudeAsDeg())
+							+ DEGREE + " ,"
+							+ df.format(newCoord.getHgLatitudeAsDeg())
+							+ DEGREE + ") ";
+				else
+					point = "";
+				break;
+	
+			default:
+				break;
 		}
 		this.setText(title + point);
 	}
 
 	
 	@Override
-	public void mouseMoved(MouseEvent e, Ray ray) {
+	public void mouseMoved(MouseEvent e, Ray ray)
+	{
 		updatePosition(ray);
 	}
 	
 	@Override
-	public void mouseExited(MouseEvent e, Ray ray) {
+	public void mouseExited(MouseEvent e, Ray ray)
+	{
 		updatePosition(null);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void mouseDragged(MouseEvent e) {
+	public void mouseDragged(MouseEvent e)
+	{
 	}
 	
 	@Override
-	public void mouseClicked(MouseEvent e) {
-		if (e.isPopupTrigger()) {
+	public void mouseClicked(MouseEvent e)
+	{
+		if (e.isPopupTrigger())
+		{
 			// popup(e);
 		}
 	}
 
 	@Override
-	public void mousePressed(MouseEvent e) {
-		
-
+	public void mousePressed(MouseEvent e)
+	{
 	}
 
 	@Override
-	public void mouseReleased(MouseEvent e) {
-		if (e.isPopupTrigger()) {
+	public void mouseReleased(MouseEvent e)
+	{
+		if (e.isPopupTrigger())
+		{
 			// popup(e);
 		}
 	}
 
 	@Override
-	public void mouseEntered(MouseEvent e) {
-		
-
+	public void mouseEntered(MouseEvent e)
+	{
 	}
 
 	@Override
-	public void mouseExited(MouseEvent e) {
-		
-
+	public void mouseExited(MouseEvent e)
+	{
 	}
 
-	private class PopupState extends JPopupMenu {
-		/**
-		 * 
-		 */
+	private class PopupState extends JPopupMenu
+	{
 		private static final long serialVersionUID = 5268038408623722705L;
 		private PopupItemState.PopupItemStates selectedItem = PopupItemState.PopupItemStates.ARCSECS;
 
-		public PopupState() {
-			for (PopupItemState.PopupItemStates popupItems : PopupItemState.PopupItemStates
-					.values()) {
+		public PopupState()
+		{
+			for (PopupItemState.PopupItemStates popupItems : PopupItemState.PopupItemStates.values())
+			{
 				this.add(popupItems.popupItem);
-				popupItems.popupItem.addActionListener(new ActionListener() {
-
+				popupItems.popupItem.addActionListener(new ActionListener()
+				{
 					@Override
-					public void actionPerformed(ActionEvent e) {
-						for (PopupItemState.PopupItemStates popupItems : PopupItemState.PopupItemStates
-								.values()) {
-							if (popupItems.popupItem == e.getSource()) {
+					public void actionPerformed(ActionEvent e)
+					{
+						for (PopupItemState.PopupItemStates popupItems : PopupItemState.PopupItemStates.values())
+						{
+							if (popupItems.popupItem == e.getSource())
+							{
 								selectedItem = popupItems;
-								PositionStatusPanel.this
-										.setToolTipText(selectedItem.popupItem
-												.getText());
+								PositionStatusPanel.this.setToolTipText(selectedItem.popupItem.getText());
 								break;
 							}
 						}
@@ -194,48 +194,48 @@ public class PositionStatusPanel extends StatusLabel implements MouseListener {
 			this.updateText();
 		}
 
-		private void updateText() {
-			for (PopupItemState.PopupItemStates popupItems : PopupItemState.PopupItemStates
-					.values()) {
+		private void updateText()
+		{
+			for (PopupItemState.PopupItemStates popupItems : PopupItemState.PopupItemStates.values())
+			{
 				if (selectedItem == popupItems)
-					popupItems.popupItem
-							.setText(popupItems.popupItem.selectedText);
+					popupItems.popupItem.setText(popupItems.popupItem.selectedText);
 				else
-					popupItems.popupItem
-							.setText(popupItems.popupItem.unselectedText);
+					popupItems.popupItem.setText(popupItems.popupItem.unselectedText);
 			}
 		}
 
-		public PopupItemState.PopupItemStates getSelectedState() {
+		public PopupItemState.PopupItemStates getSelectedState()
+		{
 			return this.selectedItem;
 		}
 
 	}
 
-	private static class PopupItemState extends JMenuItem {
+	private static class PopupItemState extends JMenuItem
+	{
 		private static final long serialVersionUID = -4382532722049627152L;
 
-		public enum PopupItemStates {
-			DEGREE("degrees (Heliographic)"), ARCSECS(
-					"arcsecs (Helioprojective cartesian)");
+		public enum PopupItemStates
+		{
+			DEGREE("degrees (Heliographic)"),
+			ARCSECS("arcsecs (Helioprojective cartesian)");
 
 			private PopupItemState popupItem;
 
-			private PopupItemStates(String name) {
-				this.popupItem = new PopupItemState(name);
+			private PopupItemStates(String _name)
+			{
+				popupItem = new PopupItemState(_name);
 			}
-
 		}
 
-		/**
-		 * 
-		 */
 		private String unselectedText;
 		private String selectedText;
 
-		public PopupItemState(String name) {
-			this.unselectedText = name;
-			this.selectedText = name + "  \u2713";
+		public PopupItemState(String _name)
+		{
+			unselectedText = _name;
+			selectedText = _name + "  \u2713";
 		}
 	}
 }

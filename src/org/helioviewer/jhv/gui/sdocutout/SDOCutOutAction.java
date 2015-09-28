@@ -50,8 +50,8 @@ class SDOCutOutAction extends AbstractAction {
 		ImageLayer mainSDOLayer = layer.getName().contains("AIA") ? layer : sdoLayers.get(0);
 		
 		Rectangle2D size = mainSDOLayer.getLastDecodedImageRegion().getImageData();
-		LocalDateTime start = layer.getLocalDateTime().first();
-		LocalDateTime end = layer.getLocalDateTime().last();
+		LocalDateTime start = TimeLine.SINGLETON.getFirstDateTime();
+		LocalDateTime end = TimeLine.SINGLETON.getLastDateTime();
 		MetaData metaData = mainSDOLayer.getMetaData(TimeLine.SINGLETON.getCurrentDateTime());
 		
 		if(metaData==null)

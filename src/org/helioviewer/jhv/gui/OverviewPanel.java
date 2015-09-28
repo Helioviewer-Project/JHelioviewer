@@ -14,8 +14,8 @@ import org.helioviewer.jhv.opengl.camera.CameraRotationInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraViewportPanInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraZoomBoxInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraZoomInteraction;
-import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.plugins.AbstractPlugin.RenderMode;
+import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 

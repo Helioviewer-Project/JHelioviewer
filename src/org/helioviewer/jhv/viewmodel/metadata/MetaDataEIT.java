@@ -8,8 +8,6 @@ import org.helioviewer.jhv.layers.LUT.Lut;
 class MetaDataEIT extends MetaData{
 
 	private final static Rectangle RESOLUTION = new Rectangle(1024, 1024);
-	private final double IMAGE_SCALE = 2.63;
-
 	public MetaDataEIT(MetaDataContainer metaDataContainer) {
         super(metaDataContainer, RESOLUTION);
         

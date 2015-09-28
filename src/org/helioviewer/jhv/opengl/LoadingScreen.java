@@ -84,6 +84,7 @@ public class LoadingScreen
 		//renderCircles(gl);
 	}
 
+	@SuppressWarnings("unused")
 	private static void renderCircles(GL2 gl)
 	{
 		// gl.glPushMatrix();

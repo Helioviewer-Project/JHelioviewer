@@ -65,6 +65,7 @@ public abstract class MetaData
 	protected Rectangle newResolution;
 
 	private double arcsecPerPixelX;
+	@SuppressWarnings("unused")
 	private double arcsecPerPixelY;
 	
     /**

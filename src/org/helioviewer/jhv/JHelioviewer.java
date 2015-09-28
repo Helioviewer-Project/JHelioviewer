@@ -263,6 +263,7 @@ public class JHelioviewer
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private static void setupOSXApplicationListener()
 	{
 		final AboutDialog aboutDialog = new AboutDialog();

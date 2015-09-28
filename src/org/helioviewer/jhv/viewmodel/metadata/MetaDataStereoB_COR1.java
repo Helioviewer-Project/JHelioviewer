@@ -9,8 +9,6 @@ import org.helioviewer.jhv.base.physics.Constants;
 class MetaDataStereoB_COR1 extends MetaData{
 
 	private final static Rectangle RESOLUTION = new Rectangle(512, 512);
-	private final double IMAGE_SCALE = 15.0;
-
 	public MetaDataStereoB_COR1(MetaDataContainer metaDataContainer) {
         super(metaDataContainer, RESOLUTION);
         observatory = metaDataContainer.get("OBSRVTRY");

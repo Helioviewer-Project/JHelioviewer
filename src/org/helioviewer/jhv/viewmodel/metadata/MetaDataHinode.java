@@ -6,9 +6,7 @@ import java.time.LocalDateTime;
 class MetaDataHinode extends MetaData{
 	
 	private final static Rectangle RESOLUTION = new Rectangle(4096, 4096);
-	private final static double IMAGE_SCALE = 0.6;
-
-  public MetaDataHinode(MetaDataContainer metaDataContainer){
+	public MetaDataHinode(MetaDataContainer metaDataContainer){
         super(metaDataContainer, RESOLUTION);
         
         measurement = metaDataContainer.get("WAVELNTH");
