@@ -1,16 +1,17 @@
 package org.helioviewer.jhv.viewmodel.metadata;
 
-import java.awt.Rectangle;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import org.helioviewer.jhv.base.math.Vector2d;
+import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.physics.Constants;
 
 class MetaDataLASCO_C3 extends MetaData{
 
-	private final static Rectangle RESOLUTION = new Rectangle(1024, 1024);
-	public MetaDataLASCO_C3(MetaDataContainer metaDataContainer) {
+	private final static Vector2i RESOLUTION = new Vector2i(1024, 1024);
+	public MetaDataLASCO_C3(MetaDataContainer metaDataContainer)
+	{
         super(metaDataContainer, RESOLUTION);
         if (!("LASCO".equalsIgnoreCase(instrument) && "C3".equalsIgnoreCase(detector)))
            	throw new UnsuitableMetaDataException("invalid instrument: "+instrument+"/"+detector);

@@ -5,12 +5,12 @@ import java.time.LocalDateTime;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.viewmodel.TimeLine;
-import org.helioviewer.jhv.viewmodel.jp2view.newjpx.UltimateLayer;
+import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
 
 //FIXME: combine with imageRegion
 class Texture
 {
-	private UltimateLayer sourceId;
+	private KakaduLayer sourceId;
 	private ImageRegion imageRegion;
 	private final int openGLTextureId;
 
@@ -19,23 +19,20 @@ class Texture
 		openGLTextureId = _openGLTextureId;
 	}
 
-	void setNewImageRegion(UltimateLayer _sourceId, ImageRegion _imageRegion)
+	void setNewImageRegion(KakaduLayer _sourceId, ImageRegion _imageRegion)
 	{
 		sourceId = _sourceId;
 		_imageRegion.setOpenGLTextureId(openGLTextureId);
 		imageRegion = _imageRegion;
 	}
 
-	public boolean compareRegion(UltimateLayer id, ImageRegion imageRegion, LocalDateTime localDateTime)
+	public boolean compareRegion(KakaduLayer id, ImageRegion imageRegion, LocalDateTime localDateTime)
 	{
-		if (this.imageRegion != null)
-		{
-			return (this.sourceId == id
-					&& this.imageRegion.contains(imageRegion)
-					&& this.imageRegion.compareScaleFactor(imageRegion) && localDateTime
-					.isEqual(this.imageRegion.getDateTime()));
-		}
-		return false;
+		return imageRegion != null
+				&& this.sourceId == id
+				&& this.imageRegion.contains(imageRegion)
+				&& this.imageRegion.equalOrHigherResolution(imageRegion)
+				&& localDateTime.isEqual(this.imageRegion.getDateTime());
 	}
 
 	public boolean compareTexture(int _sourceId, LocalDateTime ldt)

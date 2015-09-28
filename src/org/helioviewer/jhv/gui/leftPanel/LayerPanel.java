@@ -20,7 +20,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
@@ -35,12 +34,11 @@ import javax.swing.table.DefaultTableModel;
 import org.helioviewer.jhv.Globals;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
-import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.dialogs.AddLayerPanel;
 import org.helioviewer.jhv.gui.dialogs.DownloadMovieDialog;
 import org.helioviewer.jhv.gui.dialogs.MetaDataDialog;
+import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.layers.AbstractLayer;
-import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.viewmodel.TimeLine;
@@ -109,7 +107,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			public void actionPerformed(ActionEvent e)
 			{
 				if (Layers.getLayer(activePopupLayer) != null)
-					new DownloadMovieDialog().startDownload(Layers.getLayer(activePopupLayer).getURL(), Layers.getLayer(activePopupLayer));
+					new DownloadMovieDialog().startDownload(Layers.getLayer(activePopupLayer).getDownloadURL(), Layers.getLayer(activePopupLayer));
 			}
 		});
 		
@@ -161,7 +159,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 				if (Layers.getLayer(activePopupLayer).isImageLayer())
 				{
 					showMetaView.setEnabled(true);
-					downloadLayer.setEnabled(Layers.getLayer(activePopupLayer).isDownloadable());
+					downloadLayer.setEnabled(Layers.getLayer(activePopupLayer).getDownloadURL()!=null);
 					removeLayer.setEnabled(false);
 				}
 				else
@@ -257,23 +255,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 				{
 					boolean value = (boolean) table.getValueAt(row, column);
 					if (value)
-					{
-						Object[] options = {"Retry failed downloads", "Remove layer", "Ignore"};
-
-						int n = JOptionPane.showOptionDialog(MainFrame.SINGLETON, "Images could not be downloaded. Server didn't replied. This happened with "+ Layers.getLayer(row).getBadRequestCount() +" other requests as well.", "Images could not be downloaded", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
-						switch (n)
-						{
-							case 0:
-								Layers.getLayer(row).retryFailedRequests();
-								break;
-							case 1:
-								Layers.removeLayer(row);
-								break;
-							case 2:
-								Layers.getLayer(row).ignoreFailedRequests();
-								break;
-						}
-					}
+						Layers.getLayer(row).retry();
 				}
 			}
 
@@ -364,9 +346,9 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				ImageLayer l = Layers.getActiveImageLayer();
+				AbstractImageLayer l = Layers.getActiveImageLayer();
 				if (l != null)
-					new DownloadMovieDialog().startDownload(l.getURL(), l);
+					new DownloadMovieDialog().startDownload(l.getDownloadURL(), l);
 			}
 		});
 		GridBagConstraints gbcBtnDownloadLayer = new GridBagConstraints();
@@ -399,9 +381,9 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		for (AbstractLayer layer : Layers.getLayers())
 		{
 			tableModel.setValueAt(layer.isVisible(), row, 0);
-			tableModel.setValueAt(layer.checkBadRequest(), row, 1);
+			tableModel.setValueAt(layer.retryNeeded(), row, 1);
 			tableModel.setValueAt(layer.getName(), row, 2);
-			tableModel.setValueAt(layer.getTime(), row, 3);
+			tableModel.setValueAt(layer.getCurrentTime(), row, 3);
 			row++;
 		}
 		
@@ -508,7 +490,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 	{
 		if (layer != null)
 		{
-			btnDownloadLayer.setEnabled(layer.isDownloadable());
+			btnDownloadLayer.setEnabled(layer.getDownloadURL()!=null);
 			btnShowInfo.setEnabled(layer.isImageLayer());
 		}
 	}

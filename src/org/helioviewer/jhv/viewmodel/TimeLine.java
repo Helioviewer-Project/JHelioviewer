@@ -12,8 +12,8 @@ import javax.swing.Timer;
 
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.leftPanel.MoviePanel.AnimationMode;
+import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.layers.AbstractLayer;
-import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
 
@@ -97,17 +97,18 @@ public class TimeLine implements LayerListener
 		return current;
 	}
 
-	@Deprecated
-	public int getFrameCount() {
+	public int getFrameCount()
+	{
 		return localDateTimes.size();
 	}
 
-	@Deprecated
-	public int getCurrentFrame() {
+	public int getCurrentFrameIndex()
+	{
 		return localDateTimes.headSet(current).size();
 	}
 
-	public LocalDateTime getCurrentDateTime() {
+	public LocalDateTime getCurrentDateTime()
+	{
 		return current;
 	}
 
@@ -161,7 +162,7 @@ public class TimeLine implements LayerListener
 	{
 		if (layer != null && layer.isImageLayer())
 		{
-			setLocalDateTimes(((ImageLayer)layer).getLocalDateTime());
+			setLocalDateTimes(((AbstractImageLayer)layer).getLocalDateTimes());
 			MainFrame.MOVIE_PANEL.setButtonsEnabled(!localDateTimes.isEmpty());
 		}
 	}

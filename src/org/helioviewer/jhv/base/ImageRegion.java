@@ -6,24 +6,22 @@ import java.awt.geom.Rectangle2D;
 import java.time.LocalDateTime;
 
 import org.helioviewer.jhv.base.math.MathUtils;
+import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.gui.MainPanel;
-import org.helioviewer.jhv.layers.ImageLayer;
+import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 
-/**
- * Class to find the current ImageRegion that's needed to decode
- */
 public class ImageRegion
 {
-	// relative image coordinates
+	// relative image coordinates (0..1, 0..1) of 
 	private Rectangle2D imageData;
 	
 	// image size, which have been decoded
 	private Rectangle imageSize;
 	
+	// downsampling factor of decoded image (e.g. 0.5 = 50% of original resolution)
 	private float imageScaleFactor;
-	private double imageZoomFactor;
-
+	
 	private float textureOffsetX = 0;
 	private float textureOffsetY = 0;
 	private float textureScaleWidth = 1;
@@ -65,33 +63,27 @@ public class ImageRegion
 	}
 
 	/**
-	 * Return the current scalefactor
-	 * @return scalefactor
-	 */
-	public double getScaleFactor(){
-		return this.imageScaleFactor;
-	}
-	
-	/**
 	 * Function to compare the Scalefactor of two ImageRegion
 	 * @param imageRegion
 	 * @return TRUE --> current scalefactor is equal or higher, else FALSE
 	 */
-	public boolean compareScaleFactor(ImageRegion imageRegion) {
-		return this.imageScaleFactor >= imageRegion.getScaleFactor();
+	public boolean equalOrHigherResolution(ImageRegion imageRegion)
+	{
+		return imageScaleFactor >= imageRegion.imageScaleFactor;
 	}
 
-	public void calculateScaleFactor(ImageLayer layerInterface, MainPanel mainPanel, MetaData metaData, Dimension size) {
+	public void calculateScaleFactor(AbstractImageLayer layerInterface, MainPanel mainPanel, MetaData metaData, Dimension size)
+	{
 		// Get the image resolution
-		Rectangle resolution = metaData.getResolution();
+		Vector2i resolution = metaData.getResolution();
 		
 		// Calculate the current texelCount
-		int textureMaxX = (int)Math.ceil(resolution.getWidth() * (imageData.getX() + imageData.getWidth()));
-		int textureMaxY = (int)Math.ceil(resolution.getHeight() * (imageData.getY() + imageData.getHeight()));
-		int textureMinX = (int)(resolution.getWidth() * imageData.getX());
-		int textureMinY = (int)(resolution.getHeight() * imageData.getY());
-		int textureWidth = textureMaxX - textureMinX;
-		int textureHeight = textureMaxY - textureMinY;
+		int texelMaxX = (int)Math.ceil(resolution.x * (imageData.getX() + imageData.getWidth()));
+		int texelMaxY = (int)Math.ceil(resolution.y * (imageData.getY() + imageData.getHeight()));
+		int texelMinX = (int)(resolution.x * imageData.getX());
+		int texelMinY = (int)(resolution.y * imageData.getY());
+		int textureWidth = texelMaxX - texelMinX;
+		int textureHeight = texelMaxY - texelMinY;
 		double texelCount = textureWidth * textureHeight;
 		
 		// Calculate the current pixelCount
@@ -106,49 +98,51 @@ public class ImageRegion
 		double pixelCount = screenWidth * screenHeight;
 
 		// Calculate the imageScalefactors
-		this.imageZoomFactor = pixelCount >= texelCount ? 1 : Math.sqrt((pixelCount / texelCount));
-		this.imageScaleFactor = imageZoomFactor >= 1.0 ? 1 : nextZoomFraction(imageZoomFactor);
+		double imageZoomFactor = pixelCount >= texelCount ? 1 : Math.sqrt((pixelCount / texelCount));
+		imageScaleFactor = imageZoomFactor >= 1.0 ? 1 : nextZoomFraction(imageZoomFactor);
 		
-		imageSize = new Rectangle(textureMinX, textureMinY, textureWidth, textureHeight);
+		imageSize = new Rectangle(texelMinX, texelMinY, textureWidth, textureHeight);
 		
-		this.calculateImageSize(resolution);
-		
+		calculateImageSize(resolution);
 	}	
 	
-	public float getTextureOffsetX(){
+	public float getInTextureOffsetX()
+	{
 		return textureOffsetX;
 	}
 	
-	public float getTextureOffsetY(){
+	public float getInTextureOffsetY(){
 		return textureOffsetY;
 	}
 	
-	public float getTextureScaleWidth(){
+	public float getInTextureWidth()
+	{
 		return textureScaleWidth * xTextureScale;
 	}
 	
-	public float getTextureScaleHeight(){
+	public float getInTextureHeight()
+	{
 		return textureScaleHeight * yTextureScale;
 	}
 	
 	/**
 	 * Function to calculate the current image size
-	 * @param resolution
+	 * @param _resolution
 	 */
-	private void calculateImageSize(Rectangle resolution)
+	private void calculateImageSize(Vector2i _resolution)
 	{
-		int textureMaxX = (int)Math.ceil(resolution.getWidth() * (imageData.getX() + imageData.getWidth()) * imageScaleFactor);
-		int textureMaxY = (int)Math.ceil(resolution.getHeight() * (imageData.getY() + imageData.getHeight()) * imageScaleFactor);
-		int textureMinX = (int)(resolution.getWidth() * imageData.getX() * imageScaleFactor);
-		int textureMinY = (int)(resolution.getHeight() * imageData.getY() * imageScaleFactor);
+		int textureMaxX = (int)Math.ceil(_resolution.x * (imageData.getX() + imageData.getWidth()) * imageScaleFactor);
+		int textureMaxY = (int)Math.ceil(_resolution.y * (imageData.getY() + imageData.getHeight()) * imageScaleFactor);
+		int textureMinX = (int)(_resolution.x * imageData.getX() * imageScaleFactor);
+		int textureMinY = (int)(_resolution.y * imageData.getY() * imageScaleFactor);
 		int textureWidth = textureMaxX - textureMinX;
 		int textureHeight = textureMaxY - textureMinY;
-		this.imageSize = new Rectangle(textureMinX, textureMinY, textureWidth, textureHeight);
 		
-		this.textureOffsetX = textureMinX / (float)(resolution.getWidth() * imageScaleFactor);
-		this.textureOffsetY = textureMinY / (float)(resolution.getHeight() * imageScaleFactor);
-		this.textureScaleWidth = imageSize.width / (float)(resolution.getWidth() * imageScaleFactor);
-		this.textureScaleHeight = imageSize.height / (float)(resolution.getHeight() * imageScaleFactor);
+		imageSize = new Rectangle(textureMinX, textureMinY, textureWidth, textureHeight);
+		textureOffsetX = textureMinX / (float)(_resolution.x * imageScaleFactor);
+		textureOffsetY = textureMinY / (float)(_resolution.y * imageScaleFactor);
+		textureScaleWidth = imageSize.width / (float)(_resolution.x * imageScaleFactor);
+		textureScaleHeight = imageSize.height / (float)(_resolution.y * imageScaleFactor);
 	}
 	
 	public Rectangle getImageSize()
@@ -170,27 +164,27 @@ public class ImageRegion
 	
 	public LocalDateTime getDateTime()
 	{
-		return this.localDateTime;
+		return localDateTime;
 	}
 
 	public void setLocalDateTime(LocalDateTime currentDateTime)
 	{
-		this.localDateTime = currentDateTime;
+		localDateTime = currentDateTime;
 	}	
 	
 	public int getTextureID()
 	{
-		return this.textureID;
+		return textureID;
 	}
 	
 	public void setOpenGLTextureId(int _textureID)
 	{
-		this.textureID = _textureID;
+		textureID = _textureID;
 	}
 
 	public void setTextureScaleFactor(float xScale, float yScale)
 	{
-		this.xTextureScale = xScale;
-		this.yTextureScale = yScale;
+		xTextureScale = xScale;
+		yTextureScale = yScale;
 	}
 }

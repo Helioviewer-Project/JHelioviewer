@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 
 import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.gui.MainFrame;
+import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,7 +32,7 @@ public class Layers
 		}
 	};
 	
-	private static void updateOpacity(ImageLayer imageLayer, boolean remove)
+	private static void updateOpacity(AbstractImageLayer imageLayer, boolean remove)
 	{
 		int counter = 0;
 		for (AbstractLayer tmpLayer : layers)
@@ -41,7 +42,7 @@ public class Layers
 		for (AbstractLayer tmpLayer : layers)
 			if (tmpLayer.isImageLayer())
 			{
-				ImageLayer tmpImageLayer = (ImageLayer) tmpLayer;
+				AbstractImageLayer tmpImageLayer = (AbstractImageLayer) tmpLayer;
 				if (tmpImageLayer == imageLayer)
 					tmpImageLayer.opacity = 1d/counter;
 				else
@@ -60,7 +61,7 @@ public class Layers
 		layers.sort(COMPARATOR);
 		
 		if (_newLayer.isImageLayer())
-			updateOpacity((ImageLayer)_newLayer, false);
+			updateOpacity((AbstractImageLayer)_newLayer, false);
 		
 		for (LayerListener renderListener : layerListeners)
 			renderListener.layerAdded();
@@ -85,7 +86,7 @@ public class Layers
 		if (!layers.get(idx).isImageLayer())
 			return;
 		
-		updateOpacity((ImageLayer)layers.get(idx), true);
+		updateOpacity((AbstractImageLayer)layers.get(idx), true);
 		
 		layers.get(idx).dispose();
 		layers.remove(idx);
@@ -109,7 +110,6 @@ public class Layers
 		return layers.size();
 	}
 
-	@Deprecated
 	public static int getActiveLayerIndex()
 	{
 		return activeLayerIndex;
@@ -124,7 +124,6 @@ public class Layers
 		return null;
 	}
 
-	@Deprecated
 	public static void setActiveLayer(int _newActiveLayer)
 	{
 		activeLayerIndex = _newActiveLayer;
@@ -141,7 +140,7 @@ public class Layers
 
 	public static void toggleCoronaVisibility()
 	{
-		ImageLayer il = getActiveImageLayer();
+		AbstractImageLayer il = getActiveImageLayer();
 		if(il != null)
 		{
 			il.toggleCoronaVisibility();
@@ -178,7 +177,7 @@ public class Layers
 			try
 			{
 				JSONObject jsonLayer = jsonLayers.getJSONObject(i);
-				ImageLayer layer = ImageLayer.createFromStateFile(jsonLayer);
+				KakaduLayer layer = KakaduLayer.createFromStateFile(jsonLayer);
 				if (layer != null)
 				{
 					Layers.addLayer(layer);
@@ -192,11 +191,11 @@ public class Layers
 	}
 
 	@Nullable
-	public static ImageLayer getActiveImageLayer()
+	public static AbstractImageLayer getActiveImageLayer()
 	{
-		if (activeLayerIndex == -1 || !(layers.get(activeLayerIndex) instanceof ImageLayer))
+		if (activeLayerIndex == -1 || !(layers.get(activeLayerIndex) instanceof AbstractImageLayer))
 			return null;
 		
-		return (ImageLayer) layers.get(activeLayerIndex);
+		return (AbstractImageLayer) layers.get(activeLayerIndex);
 	}
 }

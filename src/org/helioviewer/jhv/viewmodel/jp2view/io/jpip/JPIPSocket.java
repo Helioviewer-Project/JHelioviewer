@@ -202,8 +202,6 @@ public class JPIPSocket extends HTTPSocket
     /** Receives a JPIPResponse returning null if EOS reached */
     public JPIPResponse receive() throws IOException
     {
-        // long tini = System.currentTimeMillis();
-
         HTTPResponse httpRes = (HTTPResponse) super.receive();
         if (httpRes == null)
             return null;
@@ -227,6 +225,7 @@ public class JPIPSocket extends HTTPSocket
             }
             catch(Exception _e)
             {
+            	Telemetry.trackException(_e);
             }
             
             throw new IOException("Invalid status code returned (" + res.getCode() + ") " + res.getReason() + "\n" + new String(buf,StandardCharsets.UTF_8).trim());

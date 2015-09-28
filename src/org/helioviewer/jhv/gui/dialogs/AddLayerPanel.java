@@ -29,10 +29,10 @@ import javax.swing.border.EmptyBorder;
 
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.dialogs.calender.DatePicker;
-import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.plugins.AbstractPlugin;
 import org.helioviewer.jhv.plugins.Plugins;
+import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -46,8 +46,8 @@ public class AddLayerPanel extends JDialog
 	private final JPanel contentPanel = new JPanel();
 
 	private JLabel lblFilter, lblFilter1, lblFilter2;
-	private JComboBox<InstrumentModel.Observatory> cmbbxObservatory;
-	private JComboBox<InstrumentModel.Filter> cmbbxFilter, cmbbxFilter1, cmbbxFilter2;
+	private JComboBox<Observatories.Observatory> cmbbxObservatory;
+	private JComboBox<Observatories.Filter> cmbbxFilter, cmbbxFilter1, cmbbxFilter2;
 	private JComboBox<TIME_STEPS> cmbbxTimeSteps;
 	private DatePicker datePickerStartDate;
 	private DatePicker datePickerEndDate;
@@ -126,8 +126,8 @@ public class AddLayerPanel extends JDialog
 
 	private void addData()
 	{
-		if(InstrumentModel.getObservatories().isEmpty())
-			InstrumentModel.addUpdateListener(new Runnable()
+		if(Observatories.getObservatories().isEmpty())
+			Observatories.addUpdateListener(new Runnable()
 			{
 				@Override
 				public void run()
@@ -139,7 +139,7 @@ public class AddLayerPanel extends JDialog
 		
 		cmbbxObservatory.setEnabled(true);
 		
-		for (InstrumentModel.Observatory observatory : InstrumentModel.getObservatories())
+		for (Observatories.Observatory observatory : Observatories.getObservatories())
 			cmbbxObservatory.addItem(observatory);
 		
 		cmbbxObservatory.addItemListener(new ItemListener()
@@ -147,7 +147,7 @@ public class AddLayerPanel extends JDialog
 			@Override
 			public void itemStateChanged(ItemEvent e)
 			{
-				InstrumentModel.Observatory observatory = ((InstrumentModel.Observatory) e.getItem());
+				Observatories.Observatory observatory = ((Observatories.Observatory) e.getItem());
 				lblFilter.setText("");
 				lblFilter1.setText("");
 				lblFilter2.setText("");
@@ -187,7 +187,7 @@ public class AddLayerPanel extends JDialog
 				cmbbxFilter.removeAllItems();
 				cmbbxFilter1.removeAllItems();
 				cmbbxFilter2.removeAllItems();
-				for (InstrumentModel.Filter instrument : observatory.getInstruments())
+				for (Observatories.Filter instrument : observatory.getInstruments())
 					cmbbxFilter.addItem(instrument);
 			}
 		});
@@ -199,12 +199,12 @@ public class AddLayerPanel extends JDialog
 			{
 				cmbbxFilter1.removeAllItems();
 				cmbbxFilter2.removeAllItems();
-				for (InstrumentModel.Filter filter : ((InstrumentModel.Filter) e.getItem()).getFilters())
+				for (Observatories.Filter filter : ((Observatories.Filter) e.getItem()).getFilters())
 					cmbbxFilter1.addItem(filter);
 
-				InstrumentModel.Filter filter = (InstrumentModel.Filter) cmbbxFilter2.getSelectedItem();
+				Observatories.Filter filter = (Observatories.Filter) cmbbxFilter2.getSelectedItem();
 				if (filter == null)
-					filter = (InstrumentModel.Filter) cmbbxFilter1.getSelectedItem();
+					filter = (Observatories.Filter) cmbbxFilter1.getSelectedItem();
 
 				if (filter != null && filter.getStart() != null)
 				{
@@ -220,12 +220,12 @@ public class AddLayerPanel extends JDialog
 			public void itemStateChanged(ItemEvent e)
 			{
 				cmbbxFilter2.removeAllItems();
-				for (InstrumentModel.Filter filter : ((InstrumentModel.Filter) e.getItem()).getFilters())
+				for (Observatories.Filter filter : ((Observatories.Filter) e.getItem()).getFilters())
 					cmbbxFilter2.addItem(filter);
 
-				InstrumentModel.Filter filter = (InstrumentModel.Filter) cmbbxFilter2.getSelectedItem();
+				Observatories.Filter filter = (Observatories.Filter) cmbbxFilter2.getSelectedItem();
 				if (filter == null)
-					filter = (InstrumentModel.Filter) cmbbxFilter1.getSelectedItem();
+					filter = (Observatories.Filter) cmbbxFilter1.getSelectedItem();
 				
 				if (filter != null && filter.getStart() != null)
 				{
@@ -332,19 +332,19 @@ public class AddLayerPanel extends JDialog
 		contentPanel.add(separator, "2, 8, 5, 1");
 		JLabel lblObservatory = new JLabel("Observatory");
 		contentPanel.add(lblObservatory, "2, 10");
-		cmbbxObservatory = new JComboBox<InstrumentModel.Observatory>();
+		cmbbxObservatory = new JComboBox<Observatories.Observatory>();
 		contentPanel.add(cmbbxObservatory, "6, 10, fill, default");
 		lblFilter = new JLabel("Instrument");
 		contentPanel.add(lblFilter, "2, 12");
-		cmbbxFilter = new JComboBox<InstrumentModel.Filter>();
+		cmbbxFilter = new JComboBox<Observatories.Filter>();
 		contentPanel.add(cmbbxFilter, "6, 12, fill, default");
 		lblFilter1 = new JLabel("");
 		contentPanel.add(lblFilter1, "2, 14");
-		cmbbxFilter1 = new JComboBox<InstrumentModel.Filter>();
+		cmbbxFilter1 = new JComboBox<Observatories.Filter>();
 		contentPanel.add(cmbbxFilter1, "6, 14, fill, default");
 		lblFilter2 = new JLabel("");
 		contentPanel.add(lblFilter2, "2, 16");
-		cmbbxFilter2 = new JComboBox<InstrumentModel.Filter>();
+		cmbbxFilter2 = new JComboBox<Observatories.Filter>();
 		contentPanel.add(cmbbxFilter2, "6, 16, fill, default");
 
 		JPanel buttonPane = new JPanel();
@@ -361,18 +361,18 @@ public class AddLayerPanel extends JDialog
 			public void actionPerformed(ActionEvent e)
 			{
 				//if (tabbedPane.getSelectedComponent() == layerPanel) {
-					InstrumentModel.Filter filter = (InstrumentModel.Filter) cmbbxFilter2.getSelectedItem();
+					Observatories.Filter filter = (Observatories.Filter) cmbbxFilter2.getSelectedItem();
 					if (filter == null)
-						filter = (InstrumentModel.Filter) cmbbxFilter1.getSelectedItem();
+						filter = (Observatories.Filter) cmbbxFilter1.getSelectedItem();
 					if (filter == null)
-						filter = (InstrumentModel.Filter) cmbbxFilter.getSelectedItem();
+						filter = (Observatories.Filter) cmbbxFilter.getSelectedItem();
 
 					if (filter != null)
 					{
 						int cadence = (int) AddLayerPanel.this.cadence.getValue()
 								* ((TIME_STEPS) cmbbxTimeSteps.getSelectedItem()).getFactor();
 						cadence = Math.max(cadence, 1);
-						Layers.addLayer(new ImageLayer(
+						Layers.addLayer(new KakaduLayer(
 								filter.sourceId,
 								datePickerStartDate.getDateTime(),
 								datePickerEndDate.getDateTime(),

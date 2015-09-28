@@ -10,41 +10,39 @@ import java.util.Locale;
  * The restriction to integer coordinates might lead to overflows in some
  * calculations. Consider using Vector2dDouble or Vector2dLong instead.
  */
-public final class Vector2i {
-    private final int x;
-    private final int y;
+public final class Vector2i
+{
+    public final int x;
+    public final int y;
 
-    public Vector2i() {
+    public Vector2i()
+    {
         x = 0;
         y = 0;
     }
 
-    public Vector2i(final int newX, final int newY) {
+    public Vector2i(final int newX, final int newY)
+    {
         x = newX;
         y = newY;
     }
 
-    public Vector2i(final Point p) {
+    public Vector2i(final Point p)
+    {
         x = p.x;
         y = p.y;
     }
 
-    public Vector2i(final Vector2i v) {
+    public Vector2i(final Vector2i v)
+    {
         x = v.x;
         y = v.y;
     }
 
-    public Vector2i(final Vector2d v) {
+    public Vector2i(final Vector2d v)
+    {
         x = (int) Math.round(v.x);
         y = (int) Math.round(v.y);
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
     }
 
     public Vector2i getXVector() {

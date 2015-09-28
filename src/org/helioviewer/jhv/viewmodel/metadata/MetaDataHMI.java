@@ -1,11 +1,12 @@
 package org.helioviewer.jhv.viewmodel.metadata;
 
-import java.awt.Rectangle;
 import java.time.LocalDateTime;
 
-class MetaDataHMI extends MetaData{
+import org.helioviewer.jhv.base.math.Vector2i;
 
-	private final static Rectangle RESOLUTION = new Rectangle(4096, 4096);
+class MetaDataHMI extends MetaData
+{
+	private final static Vector2i RESOLUTION = new Vector2i(4096, 4096);
 	public MetaDataHMI(MetaDataContainer metaDataContainer)
 	{
         super(metaDataContainer, RESOLUTION);

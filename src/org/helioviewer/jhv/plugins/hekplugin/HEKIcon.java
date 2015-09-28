@@ -43,10 +43,12 @@ class HEKIcon
 		}
 	}
 
-	static {
+	static
+	{
 		openGLHelper = new OpenGLHelper();
 		texture = openGLHelper.createTextureID();
-		for (HEKICONS hekIcon : HEKICONS.values()) {
+		for (HEKICONS hekIcon : HEKICONS.values())
+		{
 			BufferedImage bufferedImage = getImage(hekIcon);
 			openGLHelper.bindBufferedImageToGLTexture(bufferedImage, 0,
 					hekIcon.ordinal() * bufferedImage.getHeight(),

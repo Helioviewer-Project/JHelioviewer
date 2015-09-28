@@ -100,15 +100,18 @@ public class FrameManager
         descriptorManager.showErrorMessages();
     }
     
-    public LocalDateTime getStartDate(){
+    public LocalDateTime getStartDate()
+    {
     	return descriptorManager.getStartDate();
     }
     
-    public LocalDateTime getEndDate(){
+    public LocalDateTime getEndDate()
+    {
     	return descriptorManager.getEndDate();
     }
 
-	public void retryBadReqeuest() {
-		descriptorManager.retryBadReqeuest();
+	public void retry()
+	{
+		descriptorManager.readFileDescriptors(descriptorManager.getStartDate(), descriptorManager.getEndDate());
 	}
 }

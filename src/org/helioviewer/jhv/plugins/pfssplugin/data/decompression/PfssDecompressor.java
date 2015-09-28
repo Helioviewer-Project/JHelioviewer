@@ -39,7 +39,7 @@ public class PfssDecompressor
 			Fits fits = new Fits(is, false);
 			BasicHDU hdus[] = fits.read();
 			BinaryTableHDU bhdu = (BinaryTableHDU) hdus[1];
-
+			
 			float b0 = bhdu.getHeader().getFloatValue("B0");
 			float l0 = bhdu.getHeader().getFloatValue("L0");
 			float Q1 = bhdu.getHeader().getFloatValue("Q1");

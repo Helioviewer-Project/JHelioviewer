@@ -2,9 +2,7 @@ package org.helioviewer.jhv.plugins;
 
 import java.awt.event.MouseEvent;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
-import org.helioviewer.jhv.base.downloadmanager.AbstractDownloadRequest;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.json.JSONObject;
 
@@ -14,7 +12,6 @@ public abstract class AbstractPlugin
 {
 	protected final String pluginName;
 	protected final boolean LOAD_ON_STARTUP = true;
-	protected ArrayList<AbstractDownloadRequest> failedRequests = new ArrayList<AbstractDownloadRequest>();
 	
 	public enum RenderMode {
 		MAIN_PANEL, OVERVIEW_PANEL, ALL_PANEL;
@@ -70,7 +67,8 @@ public abstract class AbstractPlugin
 	public abstract void setVisible(boolean visible);
 	public abstract boolean isVisible();
 	
-	public String getName(){
+	public String getName()
+	{
 		return pluginName;
 	}
 
@@ -78,16 +76,11 @@ public abstract class AbstractPlugin
 	abstract public void remove();
 
 	@Override
-	public String toString() {
+	public String toString()
+	{
 		return pluginName;
 	}
 	
-	abstract public boolean checkBadRequests(LocalDateTime firstDate, LocalDateTime lastDate);
-	abstract public int getBadRequestCount();
-	abstract public void retryBadReqeuest();
-	
-	public void addBadRequest(AbstractDownloadRequest request) {
-		failedRequests.add(request);
-	}
-
+	abstract public boolean retryNeeded();
+	abstract public void retry();
 }

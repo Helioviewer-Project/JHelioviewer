@@ -358,7 +358,8 @@ public class CommandLineProcessor
 
                     request.imageLayers[layerNumber].opacity = Integer.parseInt(layer[JHVRequestLayer.OPACITY_INDEX]);
 
-                    if (request.imageLayers[layerNumber].opacity < 0 || request.imageLayers[layerNumber].opacity > 100) {
+                    if (request.imageLayers[layerNumber].opacity < 0 || request.imageLayers[layerNumber].opacity > 100)
+                    {
                         throw new IllegalArgumentException("opacity must be given in percent as an integer between and including 0 and 100: " + request.imageLayers[layerNumber].opacity);
                     }
 

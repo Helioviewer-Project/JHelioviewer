@@ -1,6 +1,5 @@
 package org.helioviewer.jhv.viewmodel.metadata;
 
-import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -13,6 +12,7 @@ import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.layers.LUT.Lut;
 
+//TODO: snychronized needed?
 //TODO: look at memory consumption and instance count of this class
 //TODO: make immutable
 public abstract class MetaData
@@ -24,7 +24,6 @@ public abstract class MetaData
     protected String measurement = " ";
     protected String observatory = " ";
     protected String fullName = "";
-    protected Vector2i pixelImageSize = new Vector2i();
     protected double solarPixelRadius = -1;
     protected Vector2d sunPixelPosition = new Vector2d();
 
@@ -62,7 +61,7 @@ public abstract class MetaData
     
 	protected Lut defaultLUT = Lut.GRAY;
 	
-	protected Rectangle newResolution;
+	protected Vector2i newResolution;
 
 	private double arcsecPerPixelX;
 	@SuppressWarnings("unused")
@@ -71,12 +70,12 @@ public abstract class MetaData
     /**
      * Default constructor, does not set size or position.
      */
-    public MetaData(MetaDataContainer metaDataContainer, Rectangle resolution)
+    public MetaData(MetaDataContainer metaDataContainer, Vector2i resolution)
     {
     	int width = metaDataContainer.tryGetInt("NAXIS1");
     	int height = metaDataContainer.tryGetInt("NAXIS2");
     	if (width > 0 && height > 0){
-    		this.newResolution = new Rectangle(width, height);
+    		this.newResolution = new Vector2i(width, height);
     	}
     	else{
     		this.newResolution = resolution;
@@ -105,15 +104,17 @@ public abstract class MetaData
     /**
      * {@inheritDoc}
      */
-    public synchronized double getPhysicalImageHeight() {
-        return this.getResolution().getHeight() * this.getUnitsPerPixel();
+    public synchronized double getPhysicalImageHeight()
+    {
+        return getResolution().y * getUnitsPerPixel();
     }
 
     /**
      * {@inheritDoc}
      */
-    public synchronized double getPhysicalImageWidth() {
-        return this.getResolution().getWidth() * this.getUnitsPerPixel();
+    public synchronized double getPhysicalImageWidth()
+    {
+        return getResolution().x * getUnitsPerPixel();
     }
 
     /**
@@ -122,7 +123,8 @@ public abstract class MetaData
      * @param newImageSize
      *            Physical size of the corresponding image
      */
-    protected synchronized void setPhysicalImageSize(double x, double y, double width, double height) {
+    protected synchronized void setPhysicalImageSize(double x, double y, double width, double height)
+    {
     	physicalImageSize = new Rectangle2D.Double(x, y, width, height);
     }
     
@@ -175,7 +177,8 @@ public abstract class MetaData
     /**
      * {@inheritDoc}
      */
-    public Rectangle getResolution() {
+    public Vector2i getResolution()
+    {
         return newResolution;
     }
 
@@ -218,11 +221,11 @@ public abstract class MetaData
         	{
         		newSolarPixelRadius = 17.173021;
         	}
-        	else if (newResolution.getWidth() == 1024)
+        	else if (newResolution.x == 1024)
         	{
         		newSolarPixelRadius = 360;
         	}
-        	else if(newResolution.getWidth() == 512)
+        	else if(newResolution.x == 512)
         	{
         		newSolarPixelRadius = 180;
         	}
@@ -232,7 +235,7 @@ public abstract class MetaData
         meterPerPixel = Constants.SUN_RADIUS / solarPixelRadius;
         
         
-        setPhysicalImageSize(sunPixelPosition.x * -meterPerPixel, sunPixelPosition.y * -meterPerPixel, newResolution.getWidth() * meterPerPixel, newResolution.getHeight() * meterPerPixel);
+        setPhysicalImageSize(sunPixelPosition.x * -meterPerPixel, sunPixelPosition.y * -meterPerPixel, newResolution.x * meterPerPixel, newResolution.y * meterPerPixel);
 	}
 	
 	public double getHEEX() {

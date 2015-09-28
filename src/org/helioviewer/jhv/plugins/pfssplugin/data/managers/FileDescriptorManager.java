@@ -119,7 +119,7 @@ public class FileDescriptorManager
 					}
 					catch (IOException e)
 					{
-						 parent.addBadRequest(httpRequest);
+						 parent.failedDownloads.add(httpRequest);
 					}
 					catch(InterruptedException _ie)
 					{
@@ -131,7 +131,6 @@ public class FileDescriptorManager
 		}, "PFSS-DESCRIPTION-LOADER");
 		thread.setDaemon(true);
 		thread.start();
-
 	}
 
 	/**
@@ -164,8 +163,10 @@ public class FileDescriptorManager
 	 * @param current
 	 * @return
 	 */
-	public FileDescriptor getNext(FileDescriptor current) {
-		synchronized (descriptors) {
+	public FileDescriptor getNext(FileDescriptor current)
+	{
+		synchronized (descriptors)
+		{
 			int index = descriptors.indexOf(current);
 			index = ++index % descriptors.size();
 			return descriptors.get(index);
@@ -191,16 +192,13 @@ public class FileDescriptorManager
 			readFileDescriptors(loadingFrom, loadingTo);*/
 	}
 
-	public synchronized LocalDateTime getStartDate() {
+	public synchronized LocalDateTime getStartDate()
+	{
 		return firstDate;
 	}
 	
-	public synchronized LocalDateTime getEndDate() {
+	public synchronized LocalDateTime getEndDate()
+	{
 		return endDate;
-	}
-
-	public void retryBadReqeuest() {
-		
-		
 	}
 }

@@ -17,8 +17,6 @@ import javax.swing.JPanel;
 
 import org.helioviewer.jhv.gui.MainFrame;
 
-import sun.management.jdp.JdpGenericPacket;
-
 /**
  * Dialog that is used to display information about the developers
  */

@@ -2,23 +2,24 @@ package org.helioviewer.jhv.layers;
 
 import java.awt.Dimension;
 import java.nio.ByteBuffer;
+import java.time.LocalDateTime;
 
 import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.plugins.AbstractPlugin;
 import org.helioviewer.jhv.plugins.Plugins;
-import org.helioviewer.jhv.viewmodel.TimeLine;
+import org.json.JSONObject;
 
 import com.jogamp.opengl.GL2;
 
-
-public class PluginLayer extends AbstractLayer{
-	
+public class PluginLayer extends AbstractLayer
+{	
 	final AbstractPlugin plugin;
 	
-	public PluginLayer(String name, AbstractPlugin plugin) {
-		this.plugin = plugin;
-		this.name = name;
-		setVisible(plugin.isVisible());
+	public PluginLayer(String _name, AbstractPlugin _plugin)
+	{
+		plugin = _plugin;
+		name = _name;
+		setVisible(_plugin.isVisible());
 	}
 
 	@Override
@@ -29,28 +30,45 @@ public class PluginLayer extends AbstractLayer{
 	}
 	
 	@Override
-	public void setVisible(boolean visible) {
+	public void setVisible(boolean visible)
+	{
 		super.setVisible(visible);
 		plugin.setVisible(visible);
 	}
 
 	@Override
-	void dispose() {
+	public void dispose()
+	{
 		Plugins.SINGLETON.deactivatePlugin(plugin);
 	}	
 	
 	@Override
-	public boolean checkBadRequest() {
-		return plugin.checkBadRequests(TimeLine.SINGLETON.getFirstDateTime(), TimeLine.SINGLETON.getLastDateTime());
+	public boolean retryNeeded()
+	{
+		return plugin.retryNeeded();
 	}
 	
 	@Override
-	public int getBadRequestCount() {
-		return plugin.getBadRequestCount();
+	public void retry()
+	{
+		plugin.retry();
 	}
-	
+
 	@Override
-	public void retryFailedRequests() {
-		plugin.retryBadReqeuest();
+	public LocalDateTime getCurrentTime()
+	{
+		return null;
+	}
+
+	@Override
+	public void writeStateFile(JSONObject _jsonLayer)
+	{
+		plugin.storeConfiguration(_jsonLayer);
+	}
+
+	@Override
+	public String getFullName()
+	{
+		return null;
 	}
 }

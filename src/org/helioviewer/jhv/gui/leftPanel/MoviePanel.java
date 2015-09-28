@@ -33,8 +33,8 @@ import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.components.MenuBar;
+import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.layers.AbstractLayer;
-import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.Movie.Match;
@@ -304,7 +304,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 	@Override
 	public void timeStampChanged(LocalDateTime current, LocalDateTime last)
 	{
-		slider.setValue(timeLine.getCurrentFrame() < 0 ? 0 : timeLine.getCurrentFrame());
+		slider.setValue(timeLine.getCurrentFrameIndex() < 0 ? 0 : timeLine.getCurrentFrameIndex());
 	}
 
 	public void repaintSlider()
@@ -381,11 +381,11 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 			//FIXME: this stuff is regenerated every frame --> should
 			//only be recreated when something has changed
 			
-			ImageLayer layer = (ImageLayer) Layers.getActiveImageLayer();
+			AbstractImageLayer layer = (AbstractImageLayer) Layers.getActiveImageLayer();
 			if (layer != null)
 			{
 				//FIXME: speed up!!!!!
-				LocalDateTime[] times=layer.getLocalDateTime().toArray(new LocalDateTime[0]);
+				LocalDateTime[] times=layer.getLocalDateTimes().toArray(new LocalDateTime[0]);
 				int max=Math.min(times.length, (int)trackRect.getWidth());
 				
 				Match previousMatch = null;
@@ -399,10 +399,10 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 					else
 						switch (currentMatch.movie.getCacheStatus())
 						{
-							case FILE_FULL:
+							case FULL:
 								g.setColor(COLOR_COMPLETELY_CACHED);
 								break;
-							case KDU_PREVIEW:
+							case PREVIEW:
 								g.setColor(COLOR_PARTIALLY_CACHED);
 								break;
 							case NONE:
@@ -457,8 +457,8 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 	{
 		if (layer != null && layer.isImageLayer())
 		{
-			slider.setMaximum(((ImageLayer) layer).getLocalDateTime().size() > 0 ? ((ImageLayer) layer)
-					.getLocalDateTime().size() - 1 : 0);
+			slider.setMaximum(((AbstractImageLayer) layer).getLocalDateTimes().size() > 0 ? ((AbstractImageLayer) layer)
+					.getLocalDateTimes().size() - 1 : 0);
 			lblFrames.setText(slider.getValue() + "/" + slider.getMaximum());
 		}
 	}

@@ -1,15 +1,16 @@
 package org.helioviewer.jhv.viewmodel.metadata;
 
-import java.awt.Rectangle;
 import java.time.LocalDateTime;
 
 import org.helioviewer.jhv.base.math.Vector2d;
+import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.physics.Constants;
 
-class MetaDataStereoB_COR1 extends MetaData{
-
-	private final static Rectangle RESOLUTION = new Rectangle(512, 512);
-	public MetaDataStereoB_COR1(MetaDataContainer metaDataContainer) {
+class MetaDataStereoB_COR1 extends MetaData
+{
+	private final static Vector2i RESOLUTION = new Vector2i(512, 512);
+	public MetaDataStereoB_COR1(MetaDataContainer metaDataContainer)
+	{
         super(metaDataContainer, RESOLUTION);
         observatory = metaDataContainer.get("OBSRVTRY");
         measurement = metaDataContainer.get("WAVELNTH");

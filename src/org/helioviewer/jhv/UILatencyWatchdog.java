@@ -149,7 +149,8 @@ class UILatencyWatchdog
 		System.out.println("UI latency watchdog active");
 	}
 
-	private static boolean isRMIActive() {
+	private static boolean isRMIActive()
+	{
 		for (Thread t : Thread.getAllStackTraces().keySet())
 			if (t.getName().startsWith("RMI "))
 				return true;

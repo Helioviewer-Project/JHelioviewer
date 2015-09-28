@@ -1,12 +1,14 @@
 package org.helioviewer.jhv.viewmodel.metadata;
 
-import java.awt.Rectangle;
 import java.time.LocalDateTime;
 
-class MetaDataMDI extends MetaData{
+import org.helioviewer.jhv.base.math.Vector2i;
 
-	private final static Rectangle RESOLUTION = new Rectangle(1024, 1024);
-	public MetaDataMDI(MetaDataContainer metaDataContainer) {
+class MetaDataMDI extends MetaData
+{
+	private final static Vector2i RESOLUTION = new Vector2i(1024, 1024);
+	public MetaDataMDI(MetaDataContainer metaDataContainer)
+	{
         super(metaDataContainer, RESOLUTION);
         if (!(instrument.equalsIgnoreCase("MDI"))){
         	throw new UnsuitableMetaDataException("invalid instrument: "+instrument);

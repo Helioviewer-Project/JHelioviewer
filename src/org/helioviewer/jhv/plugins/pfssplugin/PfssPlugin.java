@@ -3,11 +3,13 @@ package org.helioviewer.jhv.plugins.pfssplugin;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
 import org.helioviewer.jhv.Telemetry;
+import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.plugins.AbstractPlugin;
 import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.plugins.pfssplugin.data.PfssDecompressed;
@@ -17,6 +19,7 @@ import org.json.JSONObject;
 
 import com.jogamp.opengl.GL2;
 
+//FIXME: broken, does not work atm
 public class PfssPlugin extends AbstractPlugin {
 	private static final String JSON_NAME = "pfss";
 	private static final String JSON_OPEN = "pfssOpen";
@@ -38,7 +41,8 @@ public class PfssPlugin extends AbstractPlugin {
 	private FrameManager manager;
 	private boolean isVisible = false;
 	private PfssPluginPanel pfssPluginPanel;
-
+	public ArrayList<HTTPRequest> failedDownloads = new ArrayList<HTTPRequest>();
+	
 	public PfssPlugin() {
 		super(PLUGIN_NAME);
 		renderMode = RenderMode.MAIN_PANEL;
@@ -147,22 +151,19 @@ public class PfssPlugin extends AbstractPlugin {
 	}
 
 	@Override
-	public boolean checkBadRequests(LocalDateTime start, LocalDateTime end) {
-		if (start == null || end == null) return false;
-		else if (manager.getStartDate() == null || manager.getEndDate() == null) return true;
-		return manager.getStartDate().isAfter(start) && manager.getEndDate().isBefore(end);
+	public boolean retryNeeded()
+	{
+		return !failedDownloads.isEmpty();
 	}
 
 	@Override
-	public int getBadRequestCount() {
-		return failedRequests.size() > 0 ? failedRequests.size() : 1;
-	}
-
-	@Override
-	public void retryBadReqeuest() {
-		failedRequests.clear();
-		if (manager.getStartDate() == null || manager.getEndDate() == null) pfssPluginPanel.reload();
-		else manager.retryBadReqeuest();
+	public void retry()
+	{
+		if (manager.getStartDate() == null || manager.getEndDate() == null)
+			pfssPluginPanel.reload();
+		else
+			manager.retry();
+		
 		Plugins.repaintLayerPanel();
 	}
 }

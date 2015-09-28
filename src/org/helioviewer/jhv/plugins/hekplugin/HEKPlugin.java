@@ -438,25 +438,19 @@ public class HEKPlugin extends AbstractPlugin {
 	}
 
 	@Override
-	public void remove() {
+	public void remove()
+	{
 		Plugins.removePanelOnLeftControllPanel(hekPluginPanel);
 	}
 
 	@Override
-	public boolean checkBadRequests(LocalDateTime start, LocalDateTime end) {
-		
+	public boolean retryNeeded()
+	{
 		return false;
 	}
 
 	@Override
-	public int getBadRequestCount() {
-		
-		return 0;
+	public void retry()
+	{
 	}
-
-	@Override
-	public void retryBadReqeuest() {
-		
-		
-	}	
 }

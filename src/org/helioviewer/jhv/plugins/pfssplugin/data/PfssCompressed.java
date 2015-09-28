@@ -57,7 +57,7 @@ public class PfssCompressed implements Cacheable
 		}
 	    catch (IOException e)
 	    {
-			parent.addBadRequest(httpRequest);
+	    	parent.failedDownloads.add(httpRequest);
 		}
 	    catch(InterruptedException _ie)
 	    {

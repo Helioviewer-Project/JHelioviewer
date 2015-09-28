@@ -1,5 +1,6 @@
 package org.helioviewer.jhv.viewmodel.jp2view.newjpx;
 
+import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -11,10 +12,16 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.NavigableSet;
 import java.util.TreeSet;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
+import javax.annotation.Nullable;
 import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.Telemetry;
+import org.helioviewer.jhv.base.FutureValue;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.downloadmanager.AbstractDownloadRequest;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
@@ -23,9 +30,11 @@ import org.helioviewer.jhv.base.downloadmanager.JPIPDownloadRequest;
 import org.helioviewer.jhv.base.downloadmanager.JPIPRequest;
 import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
 import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.layers.ImageLayer;
+import org.helioviewer.jhv.gui.MainPanel;
+import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.layers.LUT.Lut;
 import org.helioviewer.jhv.layers.Movie;
+import org.helioviewer.jhv.layers.Movie.Match;
 import org.helioviewer.jhv.opengl.TextureCache;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
@@ -33,7 +42,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class UltimateLayer
+public class KakaduLayer extends AbstractImageLayer
 {
 	public static final int MAX_FRAME_DOWNLOAD_BATCH = 15;
 	private static final String URL = "http://api.helioviewer.org/v2/getJPX/?";
@@ -46,27 +55,125 @@ public class UltimateLayer
 	private volatile Thread loaderThread;
 	private boolean localFile = false;
 	private final int sourceId;
-	private Movie movie;
-	private final ImageLayer imageLayer;
-
-	public UltimateLayer(int _sourceId, ImageLayer _imageLayer)
+	protected int cadence = -1;
+	protected String localPath;
+	
+	public int getCadence()
+	{
+		return cadence;
+	}
+	
+	private static final ExecutorService exDecoder = Executors.newWorkStealingPool();
+	
+	public KakaduLayer(int _sourceId, LocalDateTime _start, LocalDateTime _end, int _cadence, String _name)
 	{
 		sourceId = _sourceId;
-		imageLayer = _imageLayer;
-	}
-	
-	public UltimateLayer(ImageLayer _imageLayer, int _sourceId, String _filename)
-	{
-		sourceId = genSourceId(_filename);
-		imageLayer = _imageLayer;
-		localFile = true;
-		movie = new Movie(this,_sourceId);
-		movie.setFile(_filename);
-		MovieCache.add(movie);
+		start = _start;
+		end = _end;
+		cadence = _cadence;
+		name = _name;
 		
-		TimeLine.SINGLETON.setLocalDateTimes(localDateTimes);
+		setTimeRange(start, end, cadence);
 	}
 	
+	public Match getMovie(LocalDateTime _currentDateTime)
+	{
+		return MovieCache.findBestFrame(sourceId, _currentDateTime);
+	}
+
+	public KakaduLayer(String _filePath)
+	{
+		localPath = _filePath;
+		
+		sourceId = genSourceId(_filePath);
+		localFile = true;
+		
+		Movie movie = new Movie(this,sourceId);
+		movie.setFile(_filePath);
+		MovieCache.add(movie);
+		name = movie.getMetaData(0).getFullName();
+		
+		start = getLocalDateTimes().first();
+		end = getLocalDateTimes().last();
+		cadence = (int) (ChronoUnit.SECONDS.between(start, end) / getLocalDateTimes().size());
+	}
+	
+	public void writeStateFile(JSONObject jsonLayer)
+	{
+		try
+		{
+			jsonLayer.put("localPath", localPath==null ? "":localPath);
+			jsonLayer.put("id", sourceId);
+			jsonLayer.put("cadence", cadence);
+			jsonLayer.put("startDateTime", start);
+			jsonLayer.put("endDateTime", end);
+			jsonLayer.put("name", name);
+			jsonLayer.put("opa.city", opacity);
+			jsonLayer.put("sharpen", sharpness);
+			jsonLayer.put("gamma", gamma);
+			jsonLayer.put("contrast", contrast);
+			jsonLayer.put("lut", getLut().ordinal());
+			jsonLayer.put("redChannel", redChannel);
+			jsonLayer.put("greenChannel", greenChannel);
+			jsonLayer.put("blueChannel", blueChannel);
+
+			jsonLayer.put("visibility", isVisible());
+			jsonLayer.put("invertedLut", invertedLut);
+			jsonLayer.put("coronaVisiblity", coronaVisible);
+		}
+		catch (JSONException e)
+		{
+			Telemetry.trackException(e);
+		}
+	}
+	
+	public void readStateFile(JSONObject jsonLayer)
+	{
+		try
+		{
+			opacity = jsonLayer.getDouble("opa.city");
+			sharpness = jsonLayer.getDouble("sharpen");
+			gamma = jsonLayer.getDouble("gamma");
+			contrast = jsonLayer.getDouble("contrast");
+			setLut(Lut.values()[jsonLayer.getInt("lut")]);
+			redChannel=jsonLayer.getBoolean("redChannel");
+			greenChannel=jsonLayer.getBoolean("greenChannel");
+			blueChannel=jsonLayer.getBoolean("blueChannel");
+			
+			setVisible(jsonLayer.getBoolean("visibility"));
+			invertedLut = jsonLayer.getBoolean("invertedLut");
+			coronaVisible=jsonLayer.getBoolean("coronaVisiblity");
+			MainFrame.FILTER_PANEL.update();
+		}
+		catch (JSONException e)
+		{
+			Telemetry.trackException(e);
+		}
+	}
+
+	//TODO: convert into constructor & combine with readStateFile
+	public static KakaduLayer createFromStateFile(JSONObject jsonLayer)
+	{
+		try
+		{
+			if (!jsonLayer.getString("localPath").equals(""))
+			{
+				return new KakaduLayer(jsonLayer.getString("localPath"));
+			}
+			else if (jsonLayer.getInt("cadence") >= 0)
+			{
+				LocalDateTime start = LocalDateTime.parse(jsonLayer.getString("startDateTime"));
+				LocalDateTime end = LocalDateTime.parse(jsonLayer.getString("endDateTime"));
+				return new KakaduLayer(jsonLayer.getInt("id"), start, end, jsonLayer.getInt("cadence"), jsonLayer.getString("name"));
+			}
+		}
+		catch (JSONException e)
+		{
+			Telemetry.trackException(e);
+		}
+		return null;
+	}
+
 	private static HashMap<String,Integer> usedIDs=new HashMap<>();
 	private static int unusedID=-1;
 	
@@ -77,6 +184,11 @@ public class UltimateLayer
 			usedIDs.put(_filename, unusedID--);
 		
 		return usedIDs.get(_filename);
+	}
+	
+	public String getLocalFilePath()
+	{
+		return localPath;
 	}
 	
 	
@@ -111,7 +223,7 @@ public class UltimateLayer
 						currentEnd = end;
 					
 					MovieDownload md=new MovieDownload();
-					md.movie = new Movie(UltimateLayer.this,sourceId);
+					md.movie = new Movie(KakaduLayer.this,sourceId);
 					md.metadata = new HTTPRequest(URL
 							+ "startTime=" + currentStart.format(formatter)
 							+ "&endTime=" + currentEnd.format(formatter)
@@ -287,6 +399,20 @@ public class UltimateLayer
 		loaderThread.setDaemon(true);
 		loaderThread.start();
 	}
+	
+	@Override
+	public LocalDateTime getCurrentTime()
+	{
+		return getClosestLocalDateTime(TimeLine.SINGLETON.getCurrentDateTime());
+	}
+
+	//FIXME: get rid of
+	
+	@Nullable
+	public ImageRegion getLastDecodedImageRegion()
+	{
+		return imageRegion;
+	}
 
 	private void addFrameDateTimes(LocalDateTime[] _localDateTimes)
 	{
@@ -315,47 +441,28 @@ public class UltimateLayer
 		return localDateTimes;
 	}
 
-	public ImageRegion getImageRegion()
-	{
-		return imageRegion;
-	}
-
-	public void cancelAllDownloadsForThisLayer()
+	@Override
+	public void dispose()
 	{
 		if (loaderThread != null)
 			loaderThread.interrupt();
 	}
 
-	public String getURL()
+	public String getDownloadURL()
 	{
 		if (localFile)
 			return null;
 		
+		if(ChronoUnit.SECONDS.between(start, end) / cadence >= 1000)
+			return null;
+		
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-		LocalDateTime start = this.localDateTimes.first();
-		LocalDateTime end = this.localDateTimes.last();
-		int cadence = 0;
-		LocalDateTime last = null;
-		for (LocalDateTime localDateTime : this.localDateTimes)
-		{
-			if (last != null)
-				cadence += ChronoUnit.SECONDS.between(last, localDateTime);
-			
-			last = localDateTime;
-		}
-		cadence /= (this.localDateTimes.size() - 1);
-
 		return URL + "startTime=" + start.format(formatter) + "&endTime=" + end.format(formatter) + "&sourceId=" + sourceId + "&cadence=" + cadence;
 	}
 
 	public boolean isLocalFile()
 	{
 		return localFile;
-	}
-
-	public MetaData getMetaData(int i)
-	{
-		return movie.getMetaData(i);
 	}
 
 	public void retryFailedRequests(final AbstractDownloadRequest[] requests)
@@ -381,9 +488,40 @@ public class UltimateLayer
 		
 		return MovieCache.getMetaData(sourceId, currentDateTime);
 	}
-
-	public void setLUT(Lut _defaultLUT)
+	
+	public Future<ByteBuffer> prepareImageData(final MainPanel mainPanel, final Dimension size)
 	{
-		imageLayer.setLut(_defaultLUT);
+		final LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
+		final MetaData metaData = getMetaData(currentDateTime);
+		if (metaData == null)
+			return new FutureValue<ByteBuffer>(null);
+		
+		if(lut==null)
+			lut=metaData.getDefaultLUT();
+		
+		final ImageRegion imageRegion = getCurrentRegion(mainPanel, metaData, size);
+		if (imageRegion.getImageSize().getWidth() < 0 || imageRegion.getImageSize().getHeight() < 0)
+			return new FutureValue<ByteBuffer>(null);
+		
+		LocalDateTime nextLocalDateTime = getClosestLocalDateTime(currentDateTime);
+		if (nextLocalDateTime == null)
+			nextLocalDateTime = localDateTimes.last();
+		
+		ImageRegion cachedRegion = TextureCache.get(this, imageRegion, nextLocalDateTime);
+		if(cachedRegion != null)
+		{
+			this.imageRegion = cachedRegion;
+			return new FutureValue<ByteBuffer>(null);
+		}
+		
+		final LocalDateTime finalNextLocalDateTime = nextLocalDateTime;
+		return exDecoder.submit(new Callable<ByteBuffer>()
+		{
+			@Override
+			public ByteBuffer call() throws Exception
+			{
+				return getImageData(finalNextLocalDateTime, imageRegion);
+			}
+		});
 	}
 }

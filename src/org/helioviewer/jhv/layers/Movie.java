@@ -22,11 +22,11 @@ import kdu_jni.Kdu_dims;
 import kdu_jni.Kdu_region_compositor;
 
 import org.helioviewer.jhv.Telemetry;
-import org.helioviewer.jhv.layers.ImageLayer.CacheStatus;
+import org.helioviewer.jhv.layers.AbstractImageLayer.CacheStatus;
 import org.helioviewer.jhv.layers.LUT.Lut;
 import org.helioviewer.jhv.opengl.TextureCache;
 import org.helioviewer.jhv.viewmodel.jp2view.kakadu.KakaduUtils;
-import org.helioviewer.jhv.viewmodel.jp2view.newjpx.UltimateLayer;
+import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.metadata.MetaDataFactory;
 import org.w3c.dom.Document;
@@ -42,9 +42,9 @@ public class Movie
 
 	private Jp2_threadsafe_family_src family_src;
 	private Jpx_source jpxSrc;
-	private final UltimateLayer ul;
+	private final KakaduLayer ul;
 
-	public Movie(UltimateLayer _ul, int _sourceId)
+	public Movie(KakaduLayer _ul, int _sourceId)
 	{
 		sourceId = _sourceId;
 		ul=_ul;
@@ -61,7 +61,7 @@ public class Movie
 			family_src = new Jp2_threadsafe_family_src();
 			family_src.Open(filename);
 			processFamilySrc();
-			cacheStatus = CacheStatus.FILE_FULL;
+			cacheStatus = CacheStatus.FULL;
 		}
 		catch (KduException e)
 		{
@@ -79,7 +79,7 @@ public class Movie
 			family_src = new Jp2_threadsafe_family_src();
 			family_src.Open(kduCache);
 			processFamilySrc();
-			cacheStatus = CacheStatus.KDU_PREVIEW;
+			cacheStatus = CacheStatus.PREVIEW;
 		}
 		catch (KduException e)
 		{
@@ -116,7 +116,7 @@ public class Movie
 					@Override
 					public void run()
 					{
-						ul.setLUT(l);
+						ul.setLut(l);
 					}
 				});
 			}
@@ -153,6 +153,12 @@ public class Movie
 			
 			Match o=(Match)_obj;
 			return index==o.index && movie==o.movie;
+		}
+		
+		@Override
+		public int hashCode()
+		{
+			return index ^ Long.hashCode(timeDifferenceNanos);
 		}
 	}
 	

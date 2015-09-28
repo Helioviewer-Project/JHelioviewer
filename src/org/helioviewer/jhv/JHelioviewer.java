@@ -25,9 +25,9 @@ import kdu_jni.Kdu_message_formatter;
 import org.helioviewer.jhv.base.Log;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.dialogs.AboutDialog;
-import org.helioviewer.jhv.gui.dialogs.InstrumentModel;
+import org.helioviewer.jhv.gui.dialogs.Observatories;
 import org.helioviewer.jhv.io.CommandLineProcessor;
-import org.helioviewer.jhv.layers.ImageLayer;
+import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.opengl.TextureCache;
 import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.viewmodel.jp2view.kakadu.KduErrorHandler;
@@ -195,7 +195,7 @@ public class JHelioviewer
 					TextureCache.init();
 					
 					splash.progressTo("Compiling shaders");
-					ImageLayer.init();
+					AbstractImageLayer.init();
 					
 					// force initialization of UltimatePluginInterface
 					splash.progressTo("Initializing plugins");
@@ -205,7 +205,7 @@ public class JHelioviewer
 					MainFrame.SINGLETON.setVisible(true);
 					
 		            splash.progressTo("Loading observatories");
-		            InstrumentModel.getObservatories();
+		            Observatories.getObservatories();
 		            
 		            splash.progressTo("");
 					new Thread(new Runnable()

@@ -17,18 +17,18 @@ import org.helioviewer.jhv.base.downloadmanager.AbstractDownloadRequest;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
-import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.Layers;
+import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 //FIXME: morph into general data object, not dialog-specific 
-public class InstrumentModel
+public class Observatories
 {
 	//FIXME: move to JHVGlobals
 	private static final String URL_DATASOURCE = "http://api.helioviewer.org/v2/getDataSources/?";
-	private static TreeMap<String, Observatory> observatories = new TreeMap<String, InstrumentModel.Observatory>(new AlphanumComparator()); 
+	private static TreeMap<String, Observatory> observatories = new TreeMap<String, Observatories.Observatory>(new AlphanumComparator()); 
 	private static final ArrayList<Runnable> updateListeners = new ArrayList<Runnable>(); 
 	
 	public static void addUpdateListener(Runnable _listener)
@@ -67,7 +67,7 @@ public class InstrumentModel
 									{
 										Filter instrument = observatories.get("SDO").filters.get("AIA").filters.get("171");
 										LocalDateTime start = instrument.end.minusWeeks(2);
-										Layers.addLayer(new ImageLayer(instrument.sourceId, start, instrument.end, 60*60, instrument.getNickname()));
+										Layers.addLayer(new KakaduLayer(instrument.sourceId, start, instrument.end, 60*60, instrument.getNickname()));
 									}
 									catch(NullPointerException _npe)
 									{
@@ -178,8 +178,8 @@ public class InstrumentModel
 			{
 				JSONObject obj = (JSONObject) uiLabels.get(i);
 				uiLabel.add(obj.getString("label"));
-				observatory.uiLabels = uiLabel;
 			}
+			observatory.uiLabels = uiLabel;
 		}
 		catch (JSONException e)
 		{
@@ -212,35 +212,40 @@ public class InstrumentModel
 
 	static class Observatory
 	{
-		private TreeMap<String, Filter> filters = new TreeMap<String, Filter>(new AlphanumComparator());
-		private String name;
+		private final TreeMap<String, Filter> filters = new TreeMap<String, Filter>(new AlphanumComparator());
+		private final String name;
 		private ArrayList<String> uiLabels;
 
-		private Observatory(String name) {
-			this.name = name;
+		private Observatory(String _name)
+		{
+			name = _name;
 		}
 
-		private void addFilter(String name, Filter filter) {
+		private void addFilter(String name, Filter filter)
+		{
 			filters.put(name, filter);
 		}
 
-		public Collection<Filter> getInstruments() {
-			return this.filters.values();
+		public Collection<Filter> getInstruments()
+		{
+			return filters.values();
 		}
 
-		public ArrayList<String> getUiLabels() {
+		public ArrayList<String> getUiLabels()
+		{
 			return uiLabels;
 		}
 
 		@Override
-		public String toString() {
-			return this.name;
+		public String toString()
+		{
+			return name;
 		}
 	}
 
 	static class Filter
 	{
-		private TreeMap<String, Filter> filters = new TreeMap<String, InstrumentModel.Filter>(new AlphanumComparator());
+		private TreeMap<String, Filter> filters = new TreeMap<String, Observatories.Filter>(new AlphanumComparator());
 		private final String name;
 		
 		private LocalDateTime start;

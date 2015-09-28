@@ -39,8 +39,8 @@ public final class Vector2d {
     }
 
     public Vector2d(final Vector2i v) {
-        x = (double) v.getX();
-        y = (double) v.getY();
+        x = (double) v.x;
+        y = (double) v.y;
     }
 
     public Vector2d getXVector() {
@@ -88,7 +88,7 @@ public final class Vector2d {
     }
     
     public static Vector2d scale(final Vector2i v, final double d){
-    	return new Vector2d(v.getX() * d, v.getY() * d);
+    	return new Vector2d(v.x * d, v.y * d);
     }
 
     public Vector2d negate() {

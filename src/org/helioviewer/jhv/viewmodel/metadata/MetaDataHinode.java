@@ -1,12 +1,14 @@
 package org.helioviewer.jhv.viewmodel.metadata;
 
-import java.awt.Rectangle;
 import java.time.LocalDateTime;
 
-class MetaDataHinode extends MetaData{
-	
-	private final static Rectangle RESOLUTION = new Rectangle(4096, 4096);
-	public MetaDataHinode(MetaDataContainer metaDataContainer){
+import org.helioviewer.jhv.base.math.Vector2i;
+
+class MetaDataHinode extends MetaData
+{
+	private final static Vector2i RESOLUTION = new Vector2i(4096, 4096);
+	public MetaDataHinode(MetaDataContainer metaDataContainer)
+	{
         super(metaDataContainer, RESOLUTION);
         
         measurement = metaDataContainer.get("WAVELNTH");

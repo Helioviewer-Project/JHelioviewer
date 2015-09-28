@@ -22,7 +22,7 @@ public class Settings
             }
             catch(BackingStoreException e)
             {
-            	Telemetry.trackException(e);
+            	e.printStackTrace();
             }
         }
     }

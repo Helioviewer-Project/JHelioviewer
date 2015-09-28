@@ -1,16 +1,16 @@
 package org.helioviewer.jhv.viewmodel.metadata;
 
-import java.awt.Rectangle;
 import java.time.LocalDateTime;
 
 import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
 import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
+import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.layers.LUT.Lut;
 
 class MetaDataStereo extends MetaData
 {
-	private final static Rectangle RESOLUTION = new Rectangle(2048, 2048);
+	private final static Vector2i RESOLUTION = new Vector2i(2048, 2048);
 	public MetaDataStereo(MetaDataContainer metaDataContainer)
 	{
         super(metaDataContainer, RESOLUTION);

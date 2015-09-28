@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
-import org.helioviewer.jhv.layers.ImageLayer;
+import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.opengl.camera.CameraInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraRotationInteraction;
@@ -55,7 +55,7 @@ public class OverviewPanel extends MainPanel
 
 	private void zoomToFit()
 	{
-		ImageLayer activeLayer = Layers.getActiveImageLayer();
+		AbstractImageLayer activeLayer = Layers.getActiveImageLayer();
 		if (activeLayer == null)
 			return;
 		

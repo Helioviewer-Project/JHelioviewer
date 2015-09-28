@@ -41,8 +41,8 @@ import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.base.physics.DifferentialRotation;
 import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelCameraListener;
 import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelMouseListener;
+import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.layers.AbstractLayer;
-import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.opengl.LoadingScreen;
@@ -269,7 +269,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 			gl.glTranslated(0, 0, -translation.z);
 			if (CameraMode.mode == MODE.MODE_2D)
 			{
-				ImageLayer il=Layers.getActiveImageLayer();
+				AbstractImageLayer il=Layers.getActiveImageLayer();
 				if(il!=null)
 				{
 					MetaData md=il.getMetaData(currentDateTime);
@@ -281,7 +281,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 			LinkedHashMap<AbstractLayer, Future<ByteBuffer>> layers=new LinkedHashMap<AbstractLayer, Future<ByteBuffer>>();
 			for (AbstractLayer layer : Layers.getLayers())
 				if (layer.isVisible() && layer.isImageLayer())
-					layers.put(layer,((ImageLayer)layer).prepareImageData(this, size));
+					layers.put(layer,((AbstractImageLayer)layer).prepareImageData(this, size));
 
 			for(Entry<AbstractLayer, Future<ByteBuffer>> l:layers.entrySet())
 				try
@@ -640,7 +640,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 			descriptions = new ArrayList<String>();
 			for (AbstractLayer layer : Layers.getLayers())
 				if (layer.isVisible())
-					descriptions.add(layer.getFullName() + " - " + layer.getTime().format(Globals.DATE_TIME_FORMATTER));
+					descriptions.add(layer.getFullName() + " - " + layer.getCurrentTime().format(Globals.DATE_TIME_FORMATTER));
 		}
 		
 		int tileWidth = imageWidth < DEFAULT_TILE_WIDTH ? imageWidth : DEFAULT_TILE_WIDTH;

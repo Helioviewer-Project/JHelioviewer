@@ -363,8 +363,7 @@ public class ExportMovieDialog implements ActionListener {
 		}
 		else if (this.selectedOutputFormat.isImageFile())
 		{
-			File dir = new File(this.directory + this.filename);
-			dir.mkdir();
+			new File(this.directory + this.filename).mkdir();
 			directory += this.filename + "/";
 		}
 

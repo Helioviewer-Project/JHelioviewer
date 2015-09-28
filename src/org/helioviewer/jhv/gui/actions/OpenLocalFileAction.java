@@ -20,8 +20,8 @@ import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.actions.filefilters.AllSupportedImageTypesFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.FileFilter;
-import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.Layers;
+import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
 
 /**
  * Action to open a local file.
@@ -71,7 +71,7 @@ public class OpenLocalFileAction extends AbstractAction {
 							{
 								// remember the current directory for future
 								Settings.setProperty("default.local.path", selectedFile.getParent());
-								Layers.addLayer(new ImageLayer(selectedFile.toString()));
+								Layers.addLayer(new KakaduLayer(selectedFile.toString()));
 							}
 						});
 					}
@@ -100,7 +100,7 @@ public class OpenLocalFileAction extends AbstractAction {
 				{
 					// remember the current directory for future
 					Settings.setProperty("default.local.path", fileChooser.getSelectedFile().getParent());
-					Layers.addLayer(new ImageLayer(fileChooser.getSelectedFile().toString()));
+					Layers.addLayer(new KakaduLayer(fileChooser.getSelectedFile().toString()));
 				}
 			}
 		}

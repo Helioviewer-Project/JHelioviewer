@@ -1,8 +1,10 @@
 package org.helioviewer.jhv.base;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
@@ -181,9 +183,9 @@ public class StateParser extends DefaultHandler
 		Plugins.SINGLETON.storeConfiguration(jsonPlugins);
 		jsonObject.put("plugins", jsonPlugins);
 		
-		try(FileWriter file = new FileWriter(fileName))
+		try(Writer w = new OutputStreamWriter(new FileOutputStream(fileName),StandardCharsets.UTF_8))
 		{
-			file.write(jsonObject.toString());
+			w.write(jsonObject.toString());
 		}
 	}
 

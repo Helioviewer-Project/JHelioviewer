@@ -14,10 +14,6 @@ public class Telemetry
 	
 	static
 	{
-		/*for(Map.Entry p:System.getProperties().entrySet())
-			System.out.println(p.getKey()+"="+p.getValue());
-		System.exit(0);*/
-		
 		client = new TelemetryClient();
 		
 		client.getContext().getDevice().setScreenResolution((int)Toolkit.getDefaultToolkit().getScreenSize().getWidth()+"x"+(int)Toolkit.getDefaultToolkit().getScreenSize().getHeight());
@@ -30,10 +26,8 @@ public class Telemetry
 		client.getContext().getProperties().put("Cores", Runtime.getRuntime().availableProcessors()+"");
 		client.getContext().getProperties().put("JavaFX", Globals.USE_JAVA_FX+"");
 		
-		
 		//TODO: track opengl info
 		//OpenGLHelper.glContext.
-		
 		//client.getContext().getDevice().setOperatingSystemVersion(operatingSystemVersion);
 	}
 	
