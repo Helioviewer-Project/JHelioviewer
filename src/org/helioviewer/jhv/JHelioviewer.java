@@ -23,12 +23,11 @@ import kdu_jni.Kdu_global;
 import kdu_jni.Kdu_message_formatter;
 
 import org.helioviewer.jhv.base.Log;
+import org.helioviewer.jhv.base.Observatories;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.dialogs.AboutDialog;
-import org.helioviewer.jhv.gui.dialogs.Observatories;
 import org.helioviewer.jhv.io.CommandLineProcessor;
 import org.helioviewer.jhv.layers.AbstractImageLayer;
-import org.helioviewer.jhv.opengl.TextureCache;
 import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.viewmodel.jp2view.kakadu.KduErrorHandler;
 
@@ -132,7 +131,6 @@ public class JHelioviewer
 			GLProfile.initSingleton();
 			GLDrawableFactory factory = GLDrawableFactory.getFactory(GLProfile.getDefault());
 			GLProfile profile = GLProfile.get(GLProfile.GL2);
-			profile = GLProfile.getDefault();
 			
 			splash.progressTo("Creating drawable");
 			GLCapabilities capabilities = new GLCapabilities(profile);
@@ -192,7 +190,7 @@ public class JHelioviewer
 					MainFrame.SINGLETON.initContext();
 					
 					splash.progressTo("Setting up texture cache");
-					TextureCache.init();
+					//TextureCache.init();
 					
 					splash.progressTo("Compiling shaders");
 					AbstractImageLayer.init();
@@ -228,6 +226,7 @@ public class JHelioviewer
 								{
 									splash.dispose();
 									UILatencyWatchdog.startWatchdog();
+									Telemetry.trackEvent("hoho");
 								}
 							});
 						}

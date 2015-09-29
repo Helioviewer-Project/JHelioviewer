@@ -12,6 +12,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
+import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.gui.MainFrame;
 
 /**
@@ -20,7 +21,7 @@ import org.helioviewer.jhv.gui.MainFrame;
  * <p>
  * Basically, the dialog contains all shortcuts.
  */
-public class HelpDialog extends JDialog implements ActionListener
+public class ShortcutsDialog extends JDialog implements ActionListener
 {
     private static final long serialVersionUID = 1L;
 
@@ -29,12 +30,12 @@ public class HelpDialog extends JDialog implements ActionListener
     // private final JButton wikiButton = new JButton("JHelioviewer Wiki");
     // private final JButton jhvButton = new JButton("JHelioviewer.org");
 
-    /**
-     * The private constructor that sets the fields and the dialog.
-     */
-    public HelpDialog()
+    public ShortcutsDialog()
     {
         super(MainFrame.SINGLETON, "Shortcuts", true);
+        
+    	Telemetry.trackEvent("Dialog", "Type", getClass().getSimpleName());
+
         setLayout(new BorderLayout());
         setResizable(false);
 

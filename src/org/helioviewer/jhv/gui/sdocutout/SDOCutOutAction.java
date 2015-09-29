@@ -11,6 +11,7 @@ import javax.swing.AbstractAction;
 import org.helioviewer.jhv.Globals;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
+import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.layers.AbstractLayer;
 import org.helioviewer.jhv.layers.Layers;
@@ -44,13 +45,14 @@ class SDOCutOutAction extends AbstractAction
 		
 		KakaduLayer mainSDOLayer = activeLayer.getName().contains("AIA") && (activeLayer instanceof KakaduLayer) ? (KakaduLayer)activeLayer : sdoLayers.get(0);
 		
-		Rectangle2D size = mainSDOLayer.getLastDecodedImageRegion().getImageData();
+		MetaData metaData = mainSDOLayer.getMetaData(TimeLine.SINGLETON.getCurrentDateTime());
 		LocalDateTime start = TimeLine.SINGLETON.getFirstDateTime();
 		LocalDateTime end = TimeLine.SINGLETON.getLastDateTime();
-		MetaData metaData = mainSDOLayer.getMetaData(TimeLine.SINGLETON.getCurrentDateTime());
 		
 		if(metaData==null || start==null || end==null)
 			return;
+		
+		Rectangle2D sourceRegion = mainSDOLayer.calculateRegion(MainFrame.MAIN_PANEL, metaData, MainFrame.MAIN_PANEL.getCanavasSize()).requiredOfSourceImage;
 		
 		StringBuilder url = new StringBuilder(URL);
 		url.append("startDate="+start.format(DATE_FORMATTER) + "&startTime=" + start.format(TIME_FORMATTER)); 
@@ -67,8 +69,8 @@ class SDOCutOutAction extends AbstractAction
 		Vector2i resolution = metaData.getResolution();
 		double arcsecFactor = metaData.getArcsecPerPixel();
 		Vector2d sunPosArcSec = metaData.getSunPixelPosition().scale(arcsecFactor);
-		Vector2d sizeArcSec = new Vector2d(size.getWidth() * resolution.x, size.getHeight() * resolution.y).scale(arcsecFactor);
-		Vector2d offsetArcSec = new Vector2d(size.getX() * resolution.x, size.getY() * resolution.y).scale(arcsecFactor);
+		Vector2d sizeArcSec = new Vector2d(sourceRegion.getWidth() * resolution.x, sourceRegion.getHeight() * resolution.y).scale(arcsecFactor);
+		Vector2d offsetArcSec = new Vector2d(sourceRegion.getX() * resolution.x, sourceRegion.getY() * resolution.y).scale(arcsecFactor);
 		Vector2d centerOffsetArcSec = sunPosArcSec.subtract(sizeArcSec.add(offsetArcSec).scale(0.5));
 		url.append("&width=" + sizeArcSec.x + "&height=" + sizeArcSec.y);
 		url.append("&xCen=" + centerOffsetArcSec.x + "&yCen=" + centerOffsetArcSec.y);

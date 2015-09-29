@@ -26,11 +26,9 @@ import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.layers.AbstractLayer;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 
-public class DownloadMovieDialog extends JDialog {
-
-	/**
-	 * 
-	 */
+//FIXME: layout on windows broken
+public class DownloadMovieDialog extends JDialog
+{
 	private static final long serialVersionUID = -1367652999885843133L;
 	private JProgressBar progressBar;
 	private static final String PATH_SETTINGS = "download.path";
@@ -38,18 +36,12 @@ public class DownloadMovieDialog extends JDialog {
 	private String defaultName;
 	private static class JPXFilter extends ExtensionFileFilter {
 
-		/**
-		 * Default Constructor.
-		 */
 		private static final String DESCRIPTION = "JPG2000 files (\".jpx\")";
 		private static final String EXTENSION = "*.jpx";
 		public JPXFilter() {
 			extensions = new String[] { EXTENSION };
 		}
 
-		/**
-		 * {@inheritDoc}
-		 */
 		public String getDescription() {
 			return DESCRIPTION;
 		}
@@ -62,7 +54,10 @@ public class DownloadMovieDialog extends JDialog {
 	public DownloadMovieDialog()
 	{
 		//FIXME: looks bad (Windows), probably needs cancel, etc.
-		super(MainFrame.SINGLETON, "Download imagedata", true);
+		super(MainFrame.SINGLETON, "Download movie", true);
+		
+    	Telemetry.trackEvent("Dialog", "Type", getClass().getSimpleName());
+
 		setLocationRelativeTo(MainFrame.SINGLETON);
 		setAlwaysOnTop(true);
 		setLayout(new BorderLayout());

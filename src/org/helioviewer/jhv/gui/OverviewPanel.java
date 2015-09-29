@@ -94,7 +94,7 @@ public class OverviewPanel extends MainPanel
 	@Override
 	protected void render(GL2 gl, boolean _showLoadingAnimation)
 	{
-		this.size = getSize();
+		this.sizeForDecoder = getSize();
 		this.rotation = MainFrame.MAIN_PANEL.getRotation();
 		super.render(gl, false);
 		gl.glPushMatrix();

@@ -12,22 +12,22 @@ import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.dialogs.ExportMovieDialog;
 import org.helioviewer.jhv.layers.Layers;
 
-public class ExportAction extends AbstractAction{
-  private static final long serialVersionUID=-1780397745337916864L;
+public class ExportAction extends AbstractAction
+{
+	private static final long serialVersionUID=-1780397745337916864L;
 
-  public ExportAction() {
-	        super("Save movie as...");
-	        putValue(SHORT_DESCRIPTION, "Export a movie to a file");
-	        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_E, KeyEvent.SHIFT_DOWN_MASK | Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-	    }
+  	public ExportAction()
+  	{
+		super("Save movie as...");
+		putValue(SHORT_DESCRIPTION, "Export a movie to a file");
+		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_E, KeyEvent.SHIFT_DOWN_MASK | Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+    }
 
-	    /**
-	     * {@inheritDoc}
-	     */
-	    public void actionPerformed(ActionEvent e) {
-          if(Layers.getLayerCount() > 0)
-        	  new ExportMovieDialog();
-          else
-            JOptionPane.showMessageDialog(MainFrame.MAIN_PANEL, "At least one active layer must be visible.\n\nPlease add a layer before exporting movies.", "Error", JOptionPane.ERROR_MESSAGE);
-	    }
+	public void actionPerformed(ActionEvent e)
+	{
+		if(Layers.getLayerCount() > 0)
+			new ExportMovieDialog();
+		else
+			JOptionPane.showMessageDialog(MainFrame.MAIN_PANEL, "At least one active layer must be visible.\n\nPlease add a layer before exporting movies.", "Error", JOptionPane.ERROR_MESSAGE);
+	}
 }

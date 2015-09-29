@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.gui.dialogs;
+package org.helioviewer.jhv.base;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -12,7 +12,6 @@ import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.Telemetry;
-import org.helioviewer.jhv.base.AlphanumComparator;
 import org.helioviewer.jhv.base.downloadmanager.AbstractDownloadRequest;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
@@ -210,7 +209,7 @@ public class Observatories
 		}
 	}
 
-	static class Observatory
+	public static class Observatory
 	{
 		private final TreeMap<String, Filter> filters = new TreeMap<String, Filter>(new AlphanumComparator());
 		private final String name;
@@ -243,7 +242,7 @@ public class Observatories
 		}
 	}
 
-	static class Filter
+	public static class Filter
 	{
 		private TreeMap<String, Filter> filters = new TreeMap<String, Observatories.Filter>(new AlphanumComparator());
 		private final String name;
@@ -251,7 +250,7 @@ public class Observatories
 		private LocalDateTime start;
 		private LocalDateTime end;
 		private String nickname;
-		int sourceId;
+		public int sourceId;
 
 		private Filter(String _name)
 		{

@@ -42,6 +42,7 @@ import org.helioviewer.jhv.base.physics.DifferentialRotation;
 import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelCameraListener;
 import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.StatusLabelMouseListener;
 import org.helioviewer.jhv.layers.AbstractImageLayer;
+import org.helioviewer.jhv.layers.AbstractImageLayer.PreparedImage;
 import org.helioviewer.jhv.layers.AbstractLayer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
@@ -78,6 +79,7 @@ import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.util.awt.ImageUtil;
 import com.jogamp.opengl.util.awt.TextRenderer;
 
+//TODO: change all listeners to inline anonymous classes
 public class MainPanel extends GLCanvas implements GLEventListener, MouseListener, MouseMotionListener, MouseWheelListener, LayerListener, TimeLineListener, Camera
 {
 	private static final long serialVersionUID = 6714893614985558471L;
@@ -114,7 +116,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 
 	private int[] renderBufferColor;
 
-	protected Dimension size;
+	protected Dimension sizeForDecoder;
 	private float resolutionDivisor=1;
 
 	private static int DEFAULT_TILE_WIDTH = 2048;
@@ -278,16 +280,16 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 				}
 			}
 			
-			LinkedHashMap<AbstractLayer, Future<ByteBuffer>> layers=new LinkedHashMap<AbstractLayer, Future<ByteBuffer>>();
+			LinkedHashMap<AbstractImageLayer, Future<PreparedImage>> layers=new LinkedHashMap<>();
 			for (AbstractLayer layer : Layers.getLayers())
 				if (layer.isVisible() && layer.isImageLayer())
-					layers.put(layer,((AbstractImageLayer)layer).prepareImageData(this, size));
+					layers.put((AbstractImageLayer)layer,((AbstractImageLayer)layer).prepareImageData(this, sizeForDecoder));
 
-			for(Entry<AbstractLayer, Future<ByteBuffer>> l:layers.entrySet())
+			for(Entry<AbstractImageLayer, Future<PreparedImage>> l:layers.entrySet())
 				try
 				{
 					//RenderResult r = 
-					l.getKey().renderLayer(gl, size, this, l.getValue().get());
+					l.getKey().renderLayer(gl, sizeForDecoder, this, l.getValue().get());
 				}
 				catch(ExecutionException|InterruptedException _e)
 				{
@@ -410,10 +412,10 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	@Override
 	public void display(GLAutoDrawable drawable)
 	{
-		size = getCanavasSize();
+		sizeForDecoder = getCanavasSize();
 		
 		if(TimeLine.SINGLETON.isPlaying())
-			size = new Dimension((int)(size.width/resolutionDivisor), (int)(size.height/resolutionDivisor));
+			sizeForDecoder = new Dimension((int)(sizeForDecoder.width/resolutionDivisor), (int)(sizeForDecoder.height/resolutionDivisor));
 		
 		GL2 gl = drawable.getGL().getGL2();
 
@@ -687,7 +689,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		textRenderer.setColor(1f, 1f, 1f, 1f);
 
 		offscreenGL.glViewport(0, 0, tileWidth, tileHeight);
-		this.size = new Dimension(tileWidth, tileHeight);
+		this.sizeForDecoder = new Dimension(tileWidth, tileHeight);
 
 		offscreenGL.glMatrixMode(GL2.GL_PROJECTION);
 		offscreenGL.glLoadIdentity();

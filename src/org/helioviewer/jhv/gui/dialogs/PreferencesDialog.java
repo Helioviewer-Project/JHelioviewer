@@ -91,9 +91,12 @@ public class PreferencesDialog extends JDialog
 	/**
 	 * The private constructor that sets the fields and the dialog.
 	 */
-	public PreferencesDialog() {
-
+	public PreferencesDialog()
+	{
 		super(MainFrame.SINGLETON, "Preferences", true);
+		
+		Telemetry.trackEvent("Dialog", "Type", getClass().getSimpleName());
+		
 		setResizable(false);
 
 		JPanel mainPanel = new JPanel(new BorderLayout());

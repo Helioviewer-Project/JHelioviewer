@@ -18,7 +18,7 @@ import org.helioviewer.jhv.gui.actions.SaveStateAction;
 import org.helioviewer.jhv.gui.actions.ShowDialogAction;
 import org.helioviewer.jhv.gui.actions.ToggleFullscreenAction;
 import org.helioviewer.jhv.gui.dialogs.AboutDialog;
-import org.helioviewer.jhv.gui.dialogs.HelpDialog;
+import org.helioviewer.jhv.gui.dialogs.ShortcutsDialog;
 import org.helioviewer.jhv.gui.dialogs.PreferencesDialog;
 import org.helioviewer.jhv.gui.leftPanel.MoviePanel;
 import org.helioviewer.jhv.opengl.camera.actions.Zoom1To1Action;
@@ -110,7 +110,7 @@ public class MenuBar extends JMenuBar
 		JMenu helpMenu = new JMenu("Help");
 		helpMenu.setMnemonic(KeyEvent.VK_H);
 		helpMenu.add(new OpenURLinBrowserAction("Open manual", "http://www.helioviewer.org/wiki/index.php?title=JHelioviewer_Handbook"));
-		helpMenu.add(new ShowDialogAction("List of shortcuts...", HelpDialog.class));
+		helpMenu.add(new ShowDialogAction("List of shortcuts...", ShortcutsDialog.class));
 		helpMenu.addSeparator();
 		helpMenu.add(new OpenURLinBrowserAction("Report a bug", "https://github.com/Helioviewer-Project/JHelioViewer/issues"));
 		helpMenu.add(new OpenURLinBrowserAction("Submit a feature request", "https://github.com/Helioviewer-Project/JHelioViewer/issues"));

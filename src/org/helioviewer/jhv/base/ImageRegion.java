@@ -3,188 +3,108 @@ package org.helioviewer.jhv.base;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
-import java.time.LocalDateTime;
 
 import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.gui.MainPanel;
-import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 
 public class ImageRegion
 {
-	// relative image coordinates (0..1, 0..1) of 
-	private Rectangle2D imageData;
+	// relative image coordinates (0..1, 0..1) of source image
+	public final Rectangle2D requiredOfSourceImage;
 	
-	// image size, which have been decoded
-	private Rectangle imageSize;
+	// scaling factor of decoded image (e.g. 0.5 = 50% of original resolution)
+	public final float decodeZoomFactor;
 	
-	// downsampling factor of decoded image (e.g. 0.5 = 50% of original resolution)
-	private float imageScaleFactor;
+	// where this region can be found in the texture, in texel coordinates
+	public final Rectangle texels;
 	
-	private float textureOffsetX = 0;
-	private float textureOffsetY = 0;
-	private float textureScaleWidth = 1;
-	private float textureScaleHeight = 1;
+	// where this region can be found in the texture, in 0..1 coordinates
+	public final float texCoordX;
+	public final float texCoordY;
+	public final float texCoordWidth;
+	public final float texCoordHeight;
 
-	private LocalDateTime localDateTime;
-	
-	private int textureID;
-	
-	public int textureWidth;
-	public int textureHeight;
-
-	private float xTextureScale = 1;
-	private float yTextureScale = 1;
-	
-	public ImageRegion(LocalDateTime localDateTime)
+	public ImageRegion(Rectangle2D _requiredOfSourceImage, double _zTranslation, MetaData _metaData, Dimension _screenSize)
 	{
-		imageData = new Rectangle();
-		this.localDateTime = localDateTime;
-	}
-			
-	public void setImageData(Rectangle2D imageData)
-	{
-		this.imageData = imageData;
+		this(_requiredOfSourceImage, _zTranslation, _metaData, _screenSize, 1.0);
 	}
 	
-	public Rectangle2D getImageData(){
-		return this.imageData;
-	}
-
-	/**
-	 * Function to check, whether the last decoded ImageRegion contains the given ImageRegion
-	 * @param imageRegion
-	 * @return TRUE --> contain, else FALSE
-	 */
-	public boolean contains(ImageRegion imageRegion)
+	public ImageRegion(Rectangle2D _requiredOfSourceImage, double _zTranslation, MetaData _metaData, Dimension _screenSize,double _safetyBorder)
 	{
-		return imageSize.contains(imageRegion.imageSize);
-	}
+		double newX1=MathUtils.clip(_requiredOfSourceImage.getCenterX()-_requiredOfSourceImage.getWidth()*0.5*_safetyBorder, 0, 1);
+		double newX2=MathUtils.clip(_requiredOfSourceImage.getCenterX()+_requiredOfSourceImage.getWidth()*0.5*_safetyBorder, 0, 1);
+		double newY1=MathUtils.clip(_requiredOfSourceImage.getCenterY()-_requiredOfSourceImage.getHeight()*0.5*_safetyBorder, 0, 1);
+		double newY2=MathUtils.clip(_requiredOfSourceImage.getCenterY()+_requiredOfSourceImage.getHeight()*0.5*_safetyBorder, 0, 1);
 
-	/**
-	 * Function to compare the Scalefactor of two ImageRegion
-	 * @param imageRegion
-	 * @return TRUE --> current scalefactor is equal or higher, else FALSE
-	 */
-	public boolean equalOrHigherResolution(ImageRegion imageRegion)
-	{
-		return imageScaleFactor >= imageRegion.imageScaleFactor;
-	}
-
-	public void calculateScaleFactor(AbstractImageLayer layerInterface, MainPanel mainPanel, MetaData metaData, Dimension size)
-	{
+		requiredOfSourceImage=new Rectangle2D.Double(newX1,newY1,newX2-newX1,newY2-newY1);
+		
 		// Get the image resolution
-		Vector2i resolution = metaData.getResolution();
+		Vector2i resolution = _metaData.getResolution();
 		
 		// Calculate the current texelCount
-		int texelMaxX = (int)Math.ceil(resolution.x * (imageData.getX() + imageData.getWidth()));
-		int texelMaxY = (int)Math.ceil(resolution.y * (imageData.getY() + imageData.getHeight()));
-		int texelMinX = (int)(resolution.x * imageData.getX());
-		int texelMinY = (int)(resolution.y * imageData.getY());
+		int texelMaxX = (int)Math.ceil(resolution.x * (requiredOfSourceImage.getX() + requiredOfSourceImage.getWidth()));
+		int texelMaxY = (int)Math.ceil(resolution.y * (requiredOfSourceImage.getY() + requiredOfSourceImage.getHeight()));
+		int texelMinX = (int)(resolution.x * requiredOfSourceImage.getX());
+		int texelMinY = (int)(resolution.y * requiredOfSourceImage.getY());
 		int textureWidth = texelMaxX - texelMinX;
 		int textureHeight = texelMaxY - texelMinY;
 		double texelCount = textureWidth * textureHeight;
 		
 		// Calculate the current pixelCount
-		double z = metaData.getPhysicalImageWidth() / Math.tan(Math.toRadians(MainPanel.FOV));
-		double zoom = mainPanel.getTranslation().z / z;
-		int screenMaxX = (int)Math.ceil(size.getWidth() * (imageData.getX() + imageData.getWidth()) /  zoom);
-		int screenMaxY = (int)Math.ceil(size.getHeight() * (imageData.getY() + imageData.getHeight()) / zoom);
-		int screenMinX = (int)(size.getWidth() * imageData.getX() / zoom);
-		int screenMinY = (int)(size.getHeight() * imageData.getY() / zoom);
+		double z = _metaData.getPhysicalImageWidth() / Math.tan(Math.toRadians(MainPanel.FOV));
+		double zoom = _zTranslation / z;
+		int screenMaxX = (int)Math.ceil(_screenSize.getWidth() * (requiredOfSourceImage.getX() + requiredOfSourceImage.getWidth()) / zoom);
+		int screenMaxY = (int)Math.ceil(_screenSize.getHeight() * (requiredOfSourceImage.getY() + requiredOfSourceImage.getHeight()) / zoom);
+		int screenMinX = (int)(_screenSize.getWidth() * requiredOfSourceImage.getX() / zoom);
+		int screenMinY = (int)(_screenSize.getHeight() * requiredOfSourceImage.getY() / zoom);
 		int screenWidth = screenMaxX - screenMinX;
 		int screenHeight = screenMaxY - screenMinY;
 		double pixelCount = screenWidth * screenHeight;
-
+		
 		// Calculate the imageScalefactors
-		double imageZoomFactor = pixelCount >= texelCount ? 1 : Math.sqrt((pixelCount / texelCount));
-		imageScaleFactor = imageZoomFactor >= 1.0 ? 1 : nextZoomFraction(imageZoomFactor);
+		double imageZoomFactor = pixelCount >= texelCount ? 1 : Math.sqrt(pixelCount / texelCount);
+		float decodeZoomFactor = imageZoomFactor >= 1.0 ? 1 : nextZoomFraction(imageZoomFactor);
 		
-		imageSize = new Rectangle(texelMinX, texelMinY, textureWidth, textureHeight);
+		for(;;)
+		{
+			texelMaxX = (int)Math.ceil(resolution.x * (requiredOfSourceImage.getX() + requiredOfSourceImage.getWidth()) * decodeZoomFactor);
+			texelMaxY = (int)Math.ceil(resolution.y * (requiredOfSourceImage.getY() + requiredOfSourceImage.getHeight()) * decodeZoomFactor);
+			texelMinX = (int)(resolution.x * requiredOfSourceImage.getX() * decodeZoomFactor);
+			texelMinY = (int)(resolution.y * requiredOfSourceImage.getY() * decodeZoomFactor);
+			textureWidth = texelMaxX - texelMinX;
+			textureHeight = texelMaxY - texelMinY;
+			
+			//TODO: implement properly by limiting the initial calculation --> no looping
+			if(textureWidth<=2048 && textureHeight<=2048)
+				break;
+			
+			decodeZoomFactor *= 0.5;
+		}
+		this.decodeZoomFactor=decodeZoomFactor;
 		
-		calculateImageSize(resolution);
-	}	
-	
-	public float getInTextureOffsetX()
-	{
-		return textureOffsetX;
+		texels = new Rectangle(texelMinX, texelMinY, textureWidth, textureHeight);
+		texCoordX = texelMinX / (float)(resolution.x * decodeZoomFactor);
+		texCoordY = texelMinY / (float)(resolution.y * decodeZoomFactor);
+		texCoordWidth = textureWidth / (float)(resolution.x * decodeZoomFactor);
+		texCoordHeight = textureHeight / (float)(resolution.y * decodeZoomFactor);
 	}
-	
-	public float getInTextureOffsetY(){
-		return textureOffsetY;
-	}
-	
-	public float getInTextureWidth()
-	{
-		return textureScaleWidth * xTextureScale;
-	}
-	
-	public float getInTextureHeight()
-	{
-		return textureScaleHeight * yTextureScale;
-	}
-	
+
 	/**
-	 * Function to calculate the current image size
-	 * @param _resolution
+	 * Function to check, whether the last decoded ImageRegion contains the given ImageRegion
+	 * @param _other
+	 * @return TRUE --> contain, else FALSE
 	 */
-	private void calculateImageSize(Vector2i _resolution)
+	public boolean contains(ImageRegion _other)
 	{
-		int textureMaxX = (int)Math.ceil(_resolution.x * (imageData.getX() + imageData.getWidth()) * imageScaleFactor);
-		int textureMaxY = (int)Math.ceil(_resolution.y * (imageData.getY() + imageData.getHeight()) * imageScaleFactor);
-		int textureMinX = (int)(_resolution.x * imageData.getX() * imageScaleFactor);
-		int textureMinY = (int)(_resolution.y * imageData.getY() * imageScaleFactor);
-		int textureWidth = textureMaxX - textureMinX;
-		int textureHeight = textureMaxY - textureMinY;
-		
-		imageSize = new Rectangle(textureMinX, textureMinY, textureWidth, textureHeight);
-		textureOffsetX = textureMinX / (float)(_resolution.x * imageScaleFactor);
-		textureOffsetY = textureMinY / (float)(_resolution.y * imageScaleFactor);
-		textureScaleWidth = imageSize.width / (float)(_resolution.x * imageScaleFactor);
-		textureScaleHeight = imageSize.height / (float)(_resolution.y * imageScaleFactor);
+		return texels.contains(_other.texels) && decodeZoomFactor >= _other.decodeZoomFactor;
 	}
-	
-	public Rectangle getImageSize()
-	{
-		return imageSize;
-	}
-	
-	public float getZoomFactor()
-	{
-		return imageScaleFactor;
-	}
-	
+
 	private static float nextZoomFraction(double zoomFactor)
 	{
 		int powerOfTwo = MathUtils.nextPowerOfTwo((int)Math.ceil(1/zoomFactor));
 		powerOfTwo >>= 1;
 		return 1/(float)powerOfTwo;
-	}
-	
-	public LocalDateTime getDateTime()
-	{
-		return localDateTime;
-	}
-
-	public void setLocalDateTime(LocalDateTime currentDateTime)
-	{
-		localDateTime = currentDateTime;
-	}	
-	
-	public int getTextureID()
-	{
-		return textureID;
-	}
-	
-	public void setOpenGLTextureId(int _textureID)
-	{
-		textureID = _textureID;
-	}
-
-	public void setTextureScaleFactor(float xScale, float yScale)
-	{
-		xTextureScale = xScale;
-		yTextureScale = yScale;
 	}
 }

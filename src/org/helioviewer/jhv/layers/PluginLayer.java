@@ -1,10 +1,7 @@
 package org.helioviewer.jhv.layers;
 
-import java.awt.Dimension;
-import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
 
-import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.plugins.AbstractPlugin;
 import org.helioviewer.jhv.plugins.Plugins;
 import org.json.JSONObject;
@@ -23,7 +20,7 @@ public class PluginLayer extends AbstractLayer
 	}
 
 	@Override
-	public RenderResult renderLayer(GL2 gl, Dimension canvasSize, MainPanel mainPanel,ByteBuffer _imageData)
+	public RenderResult renderLayer(GL2 gl)
 	{
 		plugin.render(gl);
 		return RenderResult.OK;

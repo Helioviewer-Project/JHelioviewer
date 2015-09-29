@@ -247,9 +247,9 @@ public class FilterPanel extends JPanel implements LayerListener
 			@Override
 			public void itemStateChanged(ItemEvent e)
 			{
-				if (activeLayer != null && activeLayer.getLut() != comboBoxColorTable.getSelectedItem())
+				if (activeLayer != null && activeLayer.getLUT() != comboBoxColorTable.getSelectedItem())
 				{
-					activeLayer.setLut((Lut) comboBoxColorTable.getSelectedItem());
+					activeLayer.setLUT((Lut) comboBoxColorTable.getSelectedItem());
 					MainFrame.MAIN_PANEL.repaint();
 				}
 			}
@@ -336,7 +336,7 @@ public class FilterPanel extends JPanel implements LayerListener
 		opacitySlider.setValue((int) (activeLayer.opacity * 100));
 		sharpenSlider.setValue((int) (activeLayer.sharpness * 100));
 		
-		comboBoxColorTable.setSelectedItem(activeLayer.getLut());
+		comboBoxColorTable.setSelectedItem(activeLayer.getLUT());
 		btnInverseColorTable.setSelected(activeLayer.invertedLut);
 		chckbxRed.setSelected(activeLayer.redChannel);
 		chckbxGreen.setSelected(activeLayer.greenChannel);

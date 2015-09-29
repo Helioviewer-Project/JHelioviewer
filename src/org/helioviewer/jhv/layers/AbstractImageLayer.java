@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 import java.util.NavigableSet;
 import java.util.concurrent.Future;
 
+import javax.annotation.Nullable;
+
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector3d;
@@ -18,6 +20,7 @@ import org.helioviewer.jhv.layers.LUT.Lut;
 import org.helioviewer.jhv.layers.Movie.Match;
 import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.opengl.RayTrace;
+import org.helioviewer.jhv.opengl.Texture;
 import org.helioviewer.jhv.opengl.camera.CameraMode;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
@@ -26,6 +29,10 @@ import org.json.JSONObject;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLContext;
+
+//FIXME: shader adds intensities before LUT-ing, instead of rgb-space
+//FIXME: shader handles this incorrectly: corona.opacity>0 && hit corona first && hit sphere later
+//FIXME: sometimes, viewport after adding layer stays black
 
 public abstract class AbstractImageLayer extends AbstractLayer
 {
@@ -48,14 +55,14 @@ public abstract class AbstractImageLayer extends AbstractLayer
 	protected LocalDateTime start;
 	protected LocalDateTime end;
 	
-	public Lut getLut()
+	public Lut getLUT()
 	{
 		return lut;
 	}
 
-	public void setLut(Lut _lutEntry)
+	public void setLUT(Lut _lut)
 	{
-		lut = _lutEntry;
+		lut = _lut;
 		MainFrame.FILTER_PANEL.update();
 	}
 
@@ -65,23 +72,10 @@ public abstract class AbstractImageLayer extends AbstractLayer
 	}
 	
 	private static int shaderprogram = -1;
-
-	public int getTexture(MainPanel compenentView, ByteBuffer _imageData, Dimension size)
-	{
-		//upload new texture, if something was decoded
-		if (_imageData != null)
-			OpenGLHelper.bindByteBufferToGLTexture(getLastDecodedImageRegion(), _imageData, getLastDecodedImageRegion().getImageSize());
-		
-		if (getLastDecodedImageRegion() != null)
-			return getLastDecodedImageRegion().getTextureID();
-
-		return -1;
-	}
-
+	
+	protected Texture texture=new Texture();
+	
 	public abstract NavigableSet<LocalDateTime> getLocalDateTimes();
-
-	//FIXME: get rid of
-	public abstract ImageRegion getLastDecodedImageRegion();
 
 	public abstract MetaData getMetaData(LocalDateTime currentDateTime);
 
@@ -89,21 +83,23 @@ public abstract class AbstractImageLayer extends AbstractLayer
 	
 	public abstract Match getMovie(LocalDateTime _currentDateTime);
 
-	public RenderResult renderLayer(GL2 gl, Dimension canvasSize, MainPanel mainPanel, ByteBuffer _imageData)
+	public RenderResult renderLayer(GL2 gl, Dimension canvasSize, MainPanel mainPanel, PreparedImage _preparedImageData)
 	{
-		int layerTexture = getTexture(mainPanel, _imageData, canvasSize);
-		if (layerTexture < 0)
-			return RenderResult.RETRY_LATER;
-		
 		LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
-		
 		MetaData md=getMetaData(currentDateTime);
 		if(md==null)
 			return RenderResult.RETRY_LATER;
 		
+		//upload new texture, if something was decoded
+		if (_preparedImageData != null)
+		{
+			System.out.println("Uploading "+_preparedImageData.width+"x"+_preparedImageData.height);
+			texture.upload(this,md.getLocalDateTime(),_preparedImageData.imageRegion,_preparedImageData.rawImageData, _preparedImageData.width, _preparedImageData.height);
+		}
+		
 		Rectangle2D physicalSize = md.getPhysicalImageSize();
-		if (physicalSize.getWidth() <= 0 || physicalSize.getHeight() <= 0)
-			return RenderResult.RETRY_LATER;
+		/*if (physicalSize.getWidth() <= 0 || physicalSize.getHeight() <= 0)
+			return RenderResult.RETRY_LATER;*/
 
 		float xSunOffset =  (float) ((md.getSunPixelPosition().x - md.getResolution().x / 2.0) / (float)md.getResolution().x);
 		float ySunOffset = -(float) ((md.getSunPixelPosition().y - md.getResolution().y / 2.0) / (float)md.getResolution().y);
@@ -126,7 +122,7 @@ public abstract class AbstractImageLayer extends AbstractLayer
 		gl.glEnable(GL2.GL_TEXTURE_2D);
 		gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
 		gl.glActiveTexture(GL.GL_TEXTURE0);
-		gl.glBindTexture(GL2.GL_TEXTURE_2D, layerTexture);
+		gl.glBindTexture(GL2.GL_TEXTURE_2D, texture.openGLTextureId);
 
 		gl.glEnable(GL2.GL_VERTEX_PROGRAM_ARB);
 		gl.glEnable(GL2.GL_FRAGMENT_PROGRAM_ARB);
@@ -141,16 +137,17 @@ public abstract class AbstractImageLayer extends AbstractLayer
 		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "fov"), (float) Math.toRadians(MainPanel.FOV / 2.0));
 		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "physicalImageWidth"), (float)md.getPhysicalImageWidth());
 		gl.glUniform2f(gl.glGetUniformLocation(shaderprogram, "sunOffset"), xSunOffset, ySunOffset);
+		
 		gl.glUniform4f(
 				gl.glGetUniformLocation(shaderprogram, "imageOffset"),
-				getLastDecodedImageRegion().getInTextureOffsetX(),
-				getLastDecodedImageRegion().getInTextureOffsetY(),
-				getLastDecodedImageRegion().getInTextureWidth(),
-				getLastDecodedImageRegion().getInTextureHeight());
+				texture.getImageRegion().texCoordX,
+				texture.getImageRegion().texCoordY,
+				texture.getImageRegion().texCoordWidth*texture.textureScaleX,
+				texture.getImageRegion().texCoordHeight*texture.textureScaleY);
 		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "opacity"), (float) opacity);
 		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "gamma"), (float) gamma);
 		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "sharpen"), (float) sharpness);
-		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "lutPosition"), getLut().ordinal());
+		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "lutPosition"), getLUT().ordinal());
 		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "lutInverted"), invertedLut ? 1:0);
 		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "redChannel"), redChannel ? 1:0);
 		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "greenChannel"), greenChannel ? 1:0);
@@ -175,8 +172,8 @@ public abstract class AbstractImageLayer extends AbstractLayer
 
 		gl.glUniform2f(
 				gl.glGetUniformLocation(shaderprogram, "imageResolution"),
-				getLastDecodedImageRegion().textureHeight,
-				getLastDecodedImageRegion().textureHeight);
+				texture.width,
+				texture.height);
 
 		gl.glBegin(GL2.GL_QUADS);
 
@@ -276,36 +273,50 @@ public abstract class AbstractImageLayer extends AbstractLayer
 	{
 		return end;
 	}
+	
+	public static class PreparedImage
+	{
+		final ImageRegion imageRegion;
+		final ByteBuffer rawImageData;
+		final int width;
+		final int height;
+		
+		public PreparedImage(ImageRegion _imageRegion, ByteBuffer _rawImageData,int _width,int _height)
+		{
+			imageRegion=_imageRegion;
+			rawImageData=_rawImageData;
+			width=_width;
+			height=_height;
+		}
+	}
 
-	public abstract Future<ByteBuffer> prepareImageData(final MainPanel mainPanel, final Dimension size);
+	public abstract Future<PreparedImage> prepareImageData(final MainPanel mainPanel, final Dimension size);
 	
 	private RayTrace rayTrace=new RayTrace();
 
 	private static final int MAX_X_POINTS = 11;
 	private static final int MAX_Y_POINTS = 11;
 
-	public ImageRegion getCurrentRegion(MainPanel mainPanel, MetaData metaData)
+	@Nullable
+	public ImageRegion calculateRegion(MainPanel _mainPanel, MetaData _metaData, Dimension _size)
 	{
-		return getCurrentRegion(mainPanel, metaData, mainPanel.getCanavasSize());
-	}
+		rayTrace = new RayTrace(_metaData.getRotation().toMatrix());
 
-	public ImageRegion getCurrentRegion(MainPanel mainPanel, MetaData metaData, Dimension size)
-	{
-		rayTrace = new RayTrace(metaData.getRotation().toMatrix());
-
-		double partOfWidth = mainPanel.getWidth() / (double) (MAX_X_POINTS - 1);
-		double partOfHeight = mainPanel.getHeight() / (double) (MAX_Y_POINTS - 1);
+		double partOfWidth = _mainPanel.getWidth() / (double) (MAX_X_POINTS - 1);
+		double partOfHeight = _mainPanel.getHeight() / (double) (MAX_Y_POINTS - 1);
 
 		double minX = Double.MAX_VALUE, minY = Double.MAX_VALUE, maxX = Double.MIN_VALUE, maxY = Double.MIN_VALUE;
-
+		
+		int hitPoints=0;
 		for (int i = 0; i < MAX_X_POINTS; i++)
-		{
 			for (int j = 0; j < MAX_Y_POINTS; j++)
 			{
-				Vector2d imagePoint = rayTrace.castTexturepos((int) (i * partOfWidth), (int) (j * partOfHeight), metaData, mainPanel);
+				Vector2d imagePoint = rayTrace.castTexturepos((int) (i * partOfWidth), (int) (j * partOfHeight), _metaData, _mainPanel);
 
 				if (imagePoint != null)
 				{
+					hitPoints++;
+					
 					/*
 					 * JPanel panel = null; if (!(mainPanel instanceof
 					 * OverViewPanel)){
@@ -326,15 +337,15 @@ public abstract class AbstractImageLayer extends AbstractLayer
 					 * contentPanel.add(panel); }
 					 */
 				}
-			}
 		}
 		// frame.repaint();
-
-		Rectangle2D rectangle = new Rectangle2D.Double(minX, minY, maxX - minX, maxY - minY);
-		ImageRegion imageRegion = new ImageRegion(getCurrentTime());
-		imageRegion.setImageData(rectangle);
-		imageRegion.calculateScaleFactor(this, mainPanel, metaData, size);
-		return imageRegion;
+		
+		if(hitPoints<3)
+			return null;
+		
+		return new ImageRegion(
+				new Rectangle2D.Double(minX, minY, maxX - minX, maxY - minY),
+				_mainPanel.getTranslation().z, _metaData, _size);
 		// frame.repaint();
 		// frame.setVisible(true);
 	}

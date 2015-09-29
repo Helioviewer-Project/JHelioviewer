@@ -52,13 +52,13 @@ public class MovieCache
 	}
 
 	@Nullable
-	public static ByteBuffer getImage(int _sourceId, LocalDateTime _localDateTime, int _quality, float _zoomFactor, Rectangle _imageSize)
+	public static ByteBuffer decodeImage(int _sourceId, LocalDateTime _localDateTime, int _quality, float _zoomFactor, Rectangle _requiredPixels)
 	{
 		Match bestMatch=findBestFrame(_sourceId, _localDateTime);
 		if(bestMatch==null)
 			return null;
 		
-		return bestMatch.movie.getImage(bestMatch.index, _quality, _zoomFactor, _imageSize);
+		return bestMatch.movie.decodeImage(bestMatch.index, _quality, _zoomFactor, _requiredPixels);
 	}
 
 	@Nullable

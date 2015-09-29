@@ -3,7 +3,6 @@ package org.helioviewer.jhv.viewmodel.jp2view.newjpx;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -17,7 +16,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import javax.annotation.Nullable;
 import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.Telemetry;
@@ -35,7 +33,6 @@ import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.layers.LUT.Lut;
 import org.helioviewer.jhv.layers.Movie;
 import org.helioviewer.jhv.layers.Movie.Match;
-import org.helioviewer.jhv.opengl.TextureCache;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.json.JSONArray;
@@ -49,9 +46,6 @@ public class KakaduLayer extends AbstractImageLayer
 	
 	public TreeSet<LocalDateTime> localDateTimes = new TreeSet<LocalDateTime>();
 
-	//FIXME: should be passed as parameters, not as state
-	public ImageRegion imageRegion;
-	
 	private volatile Thread loaderThread;
 	private boolean localFile = false;
 	private final int sourceId;
@@ -112,7 +106,7 @@ public class KakaduLayer extends AbstractImageLayer
 			jsonLayer.put("sharpen", sharpness);
 			jsonLayer.put("gamma", gamma);
 			jsonLayer.put("contrast", contrast);
-			jsonLayer.put("lut", getLut().ordinal());
+			jsonLayer.put("lut", getLUT().ordinal());
 			jsonLayer.put("redChannel", redChannel);
 			jsonLayer.put("greenChannel", greenChannel);
 			jsonLayer.put("blueChannel", blueChannel);
@@ -135,7 +129,7 @@ public class KakaduLayer extends AbstractImageLayer
 			sharpness = jsonLayer.getDouble("sharpen");
 			gamma = jsonLayer.getDouble("gamma");
 			contrast = jsonLayer.getDouble("contrast");
-			setLut(Lut.values()[jsonLayer.getInt("lut")]);
+			setLUT(Lut.values()[jsonLayer.getInt("lut")]);
 			redChannel=jsonLayer.getBoolean("redChannel");
 			greenChannel=jsonLayer.getBoolean("greenChannel");
 			blueChannel=jsonLayer.getBoolean("blueChannel");
@@ -190,7 +184,6 @@ public class KakaduLayer extends AbstractImageLayer
 	{
 		return localPath;
 	}
-	
 	
 	static class MovieDownload
 	{
@@ -403,15 +396,7 @@ public class KakaduLayer extends AbstractImageLayer
 	@Override
 	public LocalDateTime getCurrentTime()
 	{
-		return getClosestLocalDateTime(TimeLine.SINGLETON.getCurrentDateTime());
-	}
-
-	//FIXME: get rid of
-	
-	@Nullable
-	public ImageRegion getLastDecodedImageRegion()
-	{
-		return imageRegion;
+		return findClosestLocalDateTime(TimeLine.SINGLETON.getCurrentDateTime());
 	}
 
 	private void addFrameDateTimes(LocalDateTime[] _localDateTimes)
@@ -425,7 +410,7 @@ public class KakaduLayer extends AbstractImageLayer
 	}
 
 
-	public LocalDateTime getClosestLocalDateTime(LocalDateTime _currentDateTime)
+	public LocalDateTime findClosestLocalDateTime(LocalDateTime _currentDateTime)
 	{
 		LocalDateTime after = localDateTimes.ceiling(_currentDateTime);
 		LocalDateTime before = localDateTimes.floor(_currentDateTime);
@@ -471,16 +456,6 @@ public class KakaduLayer extends AbstractImageLayer
 		throw new RuntimeException("TODO");
 	}
 	
-	public ByteBuffer getImageData(LocalDateTime _localDateTime, ImageRegion _imageRegion)
-	{
-		imageRegion = _imageRegion;
-		imageRegion.setLocalDateTime(_localDateTime);
-		
-		imageRegion = TextureCache.add(_imageRegion, this);
-		
-		return MovieCache.getImage(sourceId, _localDateTime, 8, imageRegion.getZoomFactor(), imageRegion.getImageSize());
-	}
-	
 	public MetaData getMetaData(LocalDateTime currentDateTime)
 	{
 		if (localDateTimes.isEmpty())
@@ -489,38 +464,35 @@ public class KakaduLayer extends AbstractImageLayer
 		return MovieCache.getMetaData(sourceId, currentDateTime);
 	}
 	
-	public Future<ByteBuffer> prepareImageData(final MainPanel mainPanel, final Dimension size)
+	public Future<PreparedImage> prepareImageData(final MainPanel mainPanel, final Dimension size)
 	{
-		final LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
-		final MetaData metaData = getMetaData(currentDateTime);
+		final MetaData metaData = getMetaData(TimeLine.SINGLETON.getCurrentDateTime());
 		if (metaData == null)
-			return new FutureValue<ByteBuffer>(null);
+			return new FutureValue<PreparedImage>(null);
 		
+		//TODO: push instead of pull
 		if(lut==null)
 			lut=metaData.getDefaultLUT();
 		
-		final ImageRegion imageRegion = getCurrentRegion(mainPanel, metaData, size);
-		if (imageRegion.getImageSize().getWidth() < 0 || imageRegion.getImageSize().getHeight() < 0)
-			return new FutureValue<ByteBuffer>(null);
+		final ImageRegion requiredMinimumRegion = calculateRegion(mainPanel, metaData, size);
+		if (requiredMinimumRegion == null)
+			return new FutureValue<PreparedImage>(null);
 		
-		LocalDateTime nextLocalDateTime = getClosestLocalDateTime(currentDateTime);
-		if (nextLocalDateTime == null)
-			nextLocalDateTime = localDateTimes.last();
+		if(texture.contains(this, requiredMinimumRegion, metaData.getLocalDateTime()))
+			return new FutureValue<PreparedImage>(null);
 		
-		ImageRegion cachedRegion = TextureCache.get(this, imageRegion, nextLocalDateTime);
-		if(cachedRegion != null)
-		{
-			this.imageRegion = cachedRegion;
-			return new FutureValue<ByteBuffer>(null);
-		}
-		
-		final LocalDateTime finalNextLocalDateTime = nextLocalDateTime;
-		return exDecoder.submit(new Callable<ByteBuffer>()
+		return exDecoder.submit(new Callable<PreparedImage>()
 		{
 			@Override
-			public ByteBuffer call() throws Exception
+			public PreparedImage call() throws Exception
 			{
-				return getImageData(finalNextLocalDateTime, imageRegion);
+				ImageRegion requiredSafeRegion = new ImageRegion(requiredMinimumRegion.requiredOfSourceImage, mainPanel.getTranslation().z, metaData,size,1.2);
+				return new PreparedImage(
+						requiredSafeRegion,
+						MovieCache.decodeImage(sourceId, metaData.getLocalDateTime(), 8, requiredSafeRegion.decodeZoomFactor, requiredSafeRegion.texels),
+						requiredSafeRegion.texels.width,
+						requiredSafeRegion.texels.height
+					);
 			}
 		});
 	}

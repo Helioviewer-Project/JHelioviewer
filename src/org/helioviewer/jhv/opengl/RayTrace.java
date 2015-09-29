@@ -94,31 +94,32 @@ public class RayTrace
 		
 	}
 	
-	public Vector2d castTexturepos(int x, int y, MetaData metaData, MainPanel mainPanel){		
-		plane = new Plane(metaData.getRotation().toMatrix().multiply(new Vector3d(0, 0, 1)), 0);
-		double newX = (x-mainPanel.getWidth()/2.)/ mainPanel.getWidth();
-		double newY = (y-mainPanel.getHeight()/2.)/ mainPanel.getWidth();
+	public Vector2d castTexturepos(int _pixelX, int _pixelY, MetaData _metaData, MainPanel _mainPanel)
+	{	
+		plane = new Plane(_metaData.getRotation().toMatrix().multiply(new Vector3d(0, 0, 1)), 0);
+		double newX = (_pixelX-_mainPanel.getWidth()/2.)/ _mainPanel.getWidth();
+		double newY = (_pixelY-_mainPanel.getHeight()/2.)/ _mainPanel.getWidth();
 		double width = Math.tan(Math.toRadians(MainPanel.FOV/2.0)) * 2;
 		
 		Vector3d origin;
 		Vector3d direction;
 		if (CameraMode.mode == MODE.MODE_3D){
-			origin = mainPanel.getTransformation().multiply(new Vector3d(0, 0, 1));
+			origin = _mainPanel.getTransformation().multiply(new Vector3d(0, 0, 1));
 			direction = new Vector3d(newX * width, newY * width, -1).normalize();
 		}
 		else {
-			width = Math.tan(Math.toRadians(MainPanel.FOV / 2.0)) * mainPanel.getTranslation().z * 2.0;
-			origin = mainPanel.getTransformation().multiply(new Vector3d(0, 0, 1)).add(new Vector3d(newX * width, newY * width, 0));
+			width = Math.tan(Math.toRadians(MainPanel.FOV / 2.0)) * _mainPanel.getTranslation().z * 2.0;
+			origin = _mainPanel.getTransformation().multiply(new Vector3d(0, 0, 1)).add(new Vector3d(newX * width, newY * width, 0));
 			direction = new Vector3d(0, 0, -1).normalize();
 		}
 		Vector4d tmpOrigin = new Vector4d(origin.x, origin.y, origin.z, 0);
 		Vector4d tmpDirection = new Vector4d(direction.x, direction.y, direction.z, 0);
 		
-		Vector3d rayORot = mainPanel.getTransformation().multiply(origin);
-		Vector3d rayDRot = mainPanel.getTransformation().multiply(direction);
+		Vector3d rayORot = _mainPanel.getTransformation().multiply(origin);
+		Vector3d rayDRot = _mainPanel.getTransformation().multiply(direction);
 				
-		Vector4d rayORot1 = mainPanel.getTransformation().multiply(tmpOrigin);
-		Vector4d rayDRot1 = mainPanel.getTransformation().multiply(tmpDirection);
+		Vector4d rayORot1 = _mainPanel.getTransformation().multiply(tmpOrigin);
+		Vector4d rayDRot1 = _mainPanel.getTransformation().multiply(tmpDirection);
 		
 		rayORot = new Vector3d(rayORot1.x, rayORot1.y, rayORot1.z);
 		rayDRot = new Vector3d(rayDRot1.x, rayDRot1.y, rayDRot1.z);
@@ -127,12 +128,12 @@ public class RayTrace
 		Ray ray = new Ray(rayORot, rayDRot);
 		ray = intersect(ray);
 		rayOriginal.t = ray.t;
-		if (ray.hitpointType == HitpointType.SPHERE && metaData.getRotation().inversed().toMatrix().multiply(ray.getHitpoint()).z < 0){
+		if (ray.hitpointType == HitpointType.SPHERE && _metaData.getRotation().inversed().toMatrix().multiply(ray.getHitpoint()).z < 0){
 			return null;
 		}
 
-		Vector3d original = metaData.getRotation().inversed().toMatrix().multiply(ray.getHitpoint());
-		Rectangle2D physicalImageSize = metaData.getPhysicalImageSize();
+		Vector3d original = _metaData.getRotation().inversed().toMatrix().multiply(ray.getHitpoint());
+		Rectangle2D physicalImageSize = _metaData.getPhysicalImageSize();
 		double imageX = (Math.max(Math.min(original.x, physicalImageSize.getX() + physicalImageSize.getWidth()), physicalImageSize.getX()) - physicalImageSize.getX()) / physicalImageSize.getWidth();
 		double imageY = (Math.max(Math.min(original.y, physicalImageSize.getY() + physicalImageSize.getHeight()), physicalImageSize.getY()) - physicalImageSize.getY()) / physicalImageSize.getHeight();
 		return new Vector2d(imageX, imageY);

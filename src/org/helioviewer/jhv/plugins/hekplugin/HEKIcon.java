@@ -3,7 +3,6 @@ package org.helioviewer.jhv.plugins.hekplugin;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.net.URL;
 
 import javax.swing.ImageIcon;
 
@@ -13,10 +12,10 @@ class HEKIcon
 {
 	private static final String PATH = "/images/EventIcons/";
 
-	private static int texture = -1;
+	private static int openGLTextureId = -1;
 	private static OpenGLHelper openGLHelper;
 
-	enum HEKICONS
+	enum HEKIcons
 	{
 		AR_ICON("ar_icon.png"), PB_ICON("bp_icon.png"), CD_ICON("cd_icon.png"), CE_ICON(
 				"ce_icon.png"), CH_ICON("ch_icon.png"), CJ_ICON("cj_icon.png"), CW_ICON(
@@ -26,47 +25,40 @@ class HEKIcon
 				"ot_icon.png"), PG_ICON("pg_icon.png"), SG_ICON("sg_icon.png"), SP_ICON(
 				"sp_icon.png"), SS_ICON("ss_icon.png");
 
-		private String name;
-		private String id;
+		final String name;
 
-		private HEKICONS(String name) {
-			this.name = name;
-			this.id = name.substring(0, 2);
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public String getID() {
-			return id;
+		private HEKIcons(String _name)
+		{
+			name = _name;
 		}
 	}
 
 	static
 	{
 		openGLHelper = new OpenGLHelper();
-		texture = openGLHelper.createTextureID();
-		for (HEKICONS hekIcon : HEKICONS.values())
+		openGLTextureId = openGLHelper.createTextureID();
+		for (HEKIcons hekIcon : HEKIcons.values())
 		{
 			BufferedImage bufferedImage = getImage(hekIcon);
 			openGLHelper.bindBufferedImageToGLTexture(bufferedImage, 0,
 					hekIcon.ordinal() * bufferedImage.getHeight(),
-					bufferedImage.getWidth(), bufferedImage.getHeight()
-							* HEKICONS.values().length);
+					bufferedImage.getWidth(),
+					bufferedImage.getHeight()	* HEKIcons.values().length);
 		}
 	}
 
-	public static int getTexture() {
-		return texture;
+	public static int getOpenGLTextureId()
+	{
+		return openGLTextureId;
 	}
 
-	public static float getImageScaleFactorHeight() {
+	public static float getImageScaleFactorHeight()
+	{
 		return openGLHelper.getScaleFactorHeight();
 	}
 
-	private static BufferedImage getImage(HEKICONS icon) {
-
+	private static BufferedImage getImage(HEKIcons icon)
+	{
 		ImageIcon imageIcon = getIcon(icon);
 
 		if (imageIcon == null)
@@ -74,8 +66,8 @@ class HEKIcon
 
 		Image image = imageIcon.getImage();
 
-		if (image != null && image.getWidth(null) > 0
-				&& image.getHeight(null) > 0) {
+		if (image != null && image.getWidth(null) > 0 && image.getHeight(null) > 0)
+		{
 			BufferedImage bi = new BufferedImage(image.getWidth(null),
 					image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
 
@@ -89,9 +81,9 @@ class HEKIcon
 		return null;
 	}
 
-	private static ImageIcon getIcon(HEKICONS icon) {
-		URL imgURL = HEKIcon.class.getResource(PATH + icon.getName());
-		return new ImageIcon(imgURL);
+	private static ImageIcon getIcon(HEKIcons icon)
+	{
+		return new ImageIcon(HEKIcon.class.getResource(PATH + icon.name));
 	}
 
 }

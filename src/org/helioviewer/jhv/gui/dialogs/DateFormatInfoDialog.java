@@ -12,6 +12,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
+import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.gui.MainFrame;
 
 /**
@@ -27,6 +28,9 @@ class DateFormatInfoDialog extends JDialog
     public DateFormatInfoDialog()
     {
         super(MainFrame.SINGLETON, "Date format information", true);
+        
+    	Telemetry.trackEvent("Dialog", "Type", getClass().getSimpleName());
+
         setLayout(new BorderLayout());
         setResizable(false);
 

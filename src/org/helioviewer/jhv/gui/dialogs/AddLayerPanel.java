@@ -27,6 +27,8 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
+import org.helioviewer.jhv.Telemetry;
+import org.helioviewer.jhv.base.Observatories;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.dialogs.calender.DatePicker;
 import org.helioviewer.jhv.layers.Layers;
@@ -48,7 +50,7 @@ public class AddLayerPanel extends JDialog
 	private JLabel lblFilter, lblFilter1, lblFilter2;
 	private JComboBox<Observatories.Observatory> cmbbxObservatory;
 	private JComboBox<Observatories.Filter> cmbbxFilter, cmbbxFilter1, cmbbxFilter2;
-	private JComboBox<TIME_STEPS> cmbbxTimeSteps;
+	private JComboBox<TimeSteps> cmbbxTimeSteps;
 	private DatePicker datePickerStartDate;
 	private DatePicker datePickerEndDate;
 	private JSpinner cadence;
@@ -56,7 +58,7 @@ public class AddLayerPanel extends JDialog
 	//private JTabbedPane tabbedPane;
 	private JPanel layerPanel;
 
-	private enum TIME_STEPS
+	private enum TimeSteps
 	{
 		SEC("sec", 1),
 		MIN("min", 60),
@@ -64,18 +66,13 @@ public class AddLayerPanel extends JDialog
 		DAY("day", 3600 * 24),
 		GET_ALL("get all", 0);
 
-		private String name;
-		private int factor;
+		final String name;
+		final int factor;
 
-		TIME_STEPS(String name, int factor)
+		TimeSteps(String _name, int _factor)
 		{
-			this.name = name;
-			this.factor = factor;
-		}
-
-		public int getFactor()
-		{
-			return factor;
+			name = _name;
+			factor = _factor;
 		}
 
 		@Override
@@ -91,6 +88,9 @@ public class AddLayerPanel extends JDialog
 	public AddLayerPanel()
 	{
 		super(MainFrame.SINGLETON, "Add Layer", true);
+		
+    	Telemetry.trackEvent("Dialog", "Type", getClass().getSimpleName());
+
 		this.setResizable(false);
 		setMinimumSize(new Dimension(450, 370));
 		setPreferredSize(new Dimension(450, 370));
@@ -297,9 +297,10 @@ public class AddLayerPanel extends JDialog
 							FormFactory.DEFAULT_ROWSPEC
 						}));
 		
-		datePickerStartDate = new DatePicker(LocalDateTime.now().minusDays(1), this);
+		//FIXME: remove minusYears for release, check data availability
+		datePickerStartDate = new DatePicker(LocalDateTime.now().minusYears(1).minusDays(1), this);
 		contentPanel.add(datePickerStartDate, "2, 2, 5, 1, fill, top");
-		datePickerEndDate = new DatePicker(LocalDateTime.now(), this);
+		datePickerEndDate = new DatePicker(LocalDateTime.now().minusYears(1), this);
 		contentPanel.add(datePickerEndDate, "2, 4, 5, 1, fill, top");
 		JLabel lblCadence = new JLabel("Time Step");
 		contentPanel.add(lblCadence, "2, 6");
@@ -326,7 +327,9 @@ public class AddLayerPanel extends JDialog
 		
 		
 		contentPanel.add(cadence, "4, 6");
-		cmbbxTimeSteps = new JComboBox<TIME_STEPS>(TIME_STEPS.values());
+		cmbbxTimeSteps = new JComboBox<TimeSteps>(TimeSteps.values());
+		cmbbxTimeSteps.setSelectedItem(TimeSteps.MIN);
+		
 		contentPanel.add(cmbbxTimeSteps, "6, 6, fill, default");
 		JSeparator separator = new JSeparator();
 		contentPanel.add(separator, "2, 8, 5, 1");
@@ -370,7 +373,7 @@ public class AddLayerPanel extends JDialog
 					if (filter != null)
 					{
 						int cadence = (int) AddLayerPanel.this.cadence.getValue()
-								* ((TIME_STEPS) cmbbxTimeSteps.getSelectedItem()).getFactor();
+								* ((TimeSteps) cmbbxTimeSteps.getSelectedItem()).factor;
 						cadence = Math.max(cadence, 1);
 						Layers.addLayer(new KakaduLayer(
 								filter.sourceId,

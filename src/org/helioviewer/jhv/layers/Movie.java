@@ -8,6 +8,7 @@ import java.nio.IntBuffer;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
+import javax.annotation.Nullable;
 import javax.swing.SwingUtilities;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -24,7 +25,6 @@ import kdu_jni.Kdu_region_compositor;
 import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.layers.AbstractImageLayer.CacheStatus;
 import org.helioviewer.jhv.layers.LUT.Lut;
-import org.helioviewer.jhv.opengl.TextureCache;
 import org.helioviewer.jhv.viewmodel.jp2view.kakadu.KakaduUtils;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
@@ -105,21 +105,26 @@ public class Movie
 			for (int i = 0; i < framecount; i++)
 			{
 				metaDatas[i]=readMetadata(i+1, family_src);
-				TextureCache.invalidate(sourceId, metaDatas[i].getLocalDateTime());
+				
+				//FIXME: should invalidate textureCache
+				//TextureCache.invalidate(sourceId, metaDatas[i].getLocalDateTime());
 			}
 			
-			if(framecount>0)
-			{
-				final Lut l=metaDatas[0].getDefaultLUT();
-				SwingUtilities.invokeLater(new Runnable()
-				{
-					@Override
-					public void run()
+			if(ul.getLUT()==null)
+				for(MetaData md:metaDatas)
+					if(md!=null)
 					{
-						ul.setLut(l);
+						final Lut l=md.getDefaultLUT();
+						SwingUtilities.invokeLater(new Runnable()
+						{
+							@Override
+							public void run()
+							{
+								ul.setLUT(l);
+							}
+						});
+						break;
 					}
-				});
-			}
 		}
 		catch (KduException e)
 		{
@@ -206,6 +211,7 @@ public class Movie
 		return metaDatas[idx];
 	}
 	
+	@Nullable
 	private MetaData readMetadata(int index, Jp2_threadsafe_family_src family_src) throws KduException
 	{
 		String xmlText = KakaduUtils.getXml(family_src, index);
@@ -259,7 +265,7 @@ public class Movie
 		}
 	}*/
 
-	public ByteBuffer getImage(int _index, int quality, float zoomPercent, Rectangle imageSize)
+	public ByteBuffer decodeImage(int _index, int quality, float zoomPercent, Rectangle _requiredRegion)
 	{
 		try
 		{
@@ -279,7 +285,7 @@ public class Movie
 			compositor.Set_max_quality_layers(quality);
 			
 			compositor.Set_scale(false, false, false, zoomPercent);
-			Kdu_dims requestedBufferedRegion = KakaduUtils.rectangleToKdu_dims(imageSize);
+			Kdu_dims requestedBufferedRegion = KakaduUtils.rectangleToKdu_dims(_requiredRegion);
 			compositor.Set_buffer_surface(requestedBufferedRegion);
 
 			Kdu_dims actualBufferedRegion = new Kdu_dims();
@@ -288,7 +294,8 @@ public class Movie
 			actualOffset.Assign(actualBufferedRegion.Access_pos());
 
 			//TODO: don't reallocate buffers all the time
-			ByteBuffer byteBuffer = ByteBuffer.allocateDirect(imageSize.height * imageSize.width * 4);
+			//TODO: decode 8bit grayscale instead of 32bit
+			ByteBuffer byteBuffer = ByteBuffer.allocateDirect(_requiredRegion.width * _requiredRegion.height * 4);
 			IntBuffer intBuffer = byteBuffer.asIntBuffer();
 
 			Kdu_dims newRegion = new Kdu_dims();

@@ -124,7 +124,7 @@ public class HEKPlugin extends AbstractPlugin {
 		boolean large = evt.getShowEventInfo();
 		String type = evt.getString("event_type");
 		int offSetFactor = -1;
-		for (HEKIcon.HEKICONS hekIcon : HEKIcon.HEKICONS.values()) {
+		for (HEKIcon.HEKIcons hekIcon : HEKIcon.HEKIcons.values()) {
 			if (hekIcon.name().startsWith(type)) {
 				offSetFactor = hekIcon.ordinal();
 				break;
@@ -139,7 +139,7 @@ public class HEKPlugin extends AbstractPlugin {
 			double z = coords.z;
 
 			gl.glEnable(GL2.GL_TEXTURE_2D);
-			gl.glBindTexture(GL2.GL_TEXTURE_2D, HEKIcon.getTexture());
+			gl.glBindTexture(GL2.GL_TEXTURE_2D, HEKIcon.getOpenGLTextureId());
 			gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
 
 			float imageScaleFactorH = HEKIcon.getImageScaleFactorHeight();

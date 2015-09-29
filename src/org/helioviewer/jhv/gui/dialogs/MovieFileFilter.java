@@ -8,8 +8,10 @@ import javax.swing.filechooser.FileFilter;
 
 import com.xuggle.xuggler.ICodec;
 
-class MovieFileFilter extends FileFilter{
-	enum ImplementedMovieFilter{	
+class MovieFileFilter extends FileFilter
+{
+	enum ImplementedMovieFilter
+	{	
 		MP4("*.mp4","MPEG-4 (.mp4)", MovieTypes.MP4, ICodec.ID.CODEC_ID_MPEG4), 
 		MOV("*.mov", "Quicktime (.mov)", MovieTypes.MOV, ICodec.ID.CODEC_ID_MPEG4), 
 		JPG("*.jpg", "Set of JPG images (.jpg)", ImageTypes.JPG, "jpg"), 

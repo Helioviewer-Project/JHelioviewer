@@ -39,13 +39,13 @@ import org.helioviewer.jhv.viewmodel.TimeLine;
 import com.xuggle.mediatool.IMediaWriter;
 import com.xuggle.mediatool.ToolFactory;
 
-public class ExportMovieDialog implements ActionListener {
-
+//TODO: move to ExportAction instead
+public class ExportMovieDialog implements ActionListener
+{
 	private long speed = 0;
 	private IMediaWriter writer;
 
-	private MovieFileFilter selectedOutputFormat = MovieFileFilter.ImplementedMovieFilter.MP4
-			.getMovieFilter();
+	private MovieFileFilter selectedOutputFormat = MovieFileFilter.ImplementedMovieFilter.MP4.getMovieFilter();
 
 	private String txtTargetFile;
 	private ProgressDialog progressDialog;
@@ -70,8 +70,11 @@ public class ExportMovieDialog implements ActionListener {
 	private Thread thread;
 	private BufferedImage bufferedImage;
 
-	public ExportMovieDialog() {
+	public ExportMovieDialog()
+	{
 		openFileChooser();
+		
+    	Telemetry.trackEvent("Dialog", "Type", getClass().getSimpleName());
 	}
 
 	private void startMovieExport()

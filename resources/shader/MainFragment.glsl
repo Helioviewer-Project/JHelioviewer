@@ -184,9 +184,11 @@ void main(void)
         vec3 posRot = (vec4(posOri, 0) * (layerInv)).xyz;
         
         vec3 ray = ray1.origin + tSphere * ray1.direction;
-        if (posRot.z >= 0.0){
-            vec2 texPos = (posRot.xy/physicalImageWidth + 0.5) *vec2(1.,1.) + sunOffset;
-            if (texPos.x > 1.0 || texPos.x < 0.0 || texPos.y > 1.0 || texPos.y < 0.0) {
+        if (posRot.z >= 0.0)
+        {
+            vec2 texPos = (posRot.xy/physicalImageWidth + 0.5) + sunOffset;
+            if (texPos.x > 1.0 || texPos.x < 0.0 || texPos.y > 1.0 || texPos.y < 0.0)
+            {
                discard;
             }
             texPos = (texPos - imageOffset.xy) / imageOffset.zw;
@@ -194,13 +196,7 @@ void main(void)
             imageColor = contrastValue(imageColor.xyz);
         }
         
-        //float far = zTranslation - 4 * 695700000;
-            
 		gl_FragDepth = (1. /(zTranslation - ray.z) - 1. / near) / (1. /far - 1. / near);            
-            
-         //gl_FragDepth =  posRot.z;
-            //imageColor = texture2D(texture,texPos);
-        
     }
     
    	if (tPlane > 0. && (tPlane < tSphere|| tSphere < 0.)){
@@ -211,18 +207,19 @@ void main(void)
         if ((texPos.x > 1.0 || texPos.x < 0.0 || texPos.y > 1.0 || texPos.y < 0.0) && tSphere < 0.) {
             discard;
         }
-        texPos = (texPos - imageOffset.xy) / imageOffset.zw;
         
-        vec4 coronaImageColor = sharpenValue(texPos);
-        coronaImageColor = contrastValue(coronaImageColor.xyz);
-        //vec4 coronaImageColor = texture2D(texture,texPos);
-        if (opacityCorona > 0.){
+        if (opacityCorona > 0.)
+        {        
+	        texPos = (texPos - imageOffset.xy) / imageOffset.zw;
+	        vec4 coronaImageColor = sharpenValue(texPos);
+	        coronaImageColor = contrastValue(coronaImageColor.xyz);
             imageColor = imageColor + vec4(coronaImageColor.xyz * opacityCorona, coronaImageColor.a);
         }
     }
     
-    vec2 pos = vec2(imageColor.y,(lutPosition + 0.5 ) /255.);
-    if (lutInverted != 0){
+    vec2 pos = vec2(imageColor.y,(lutPosition + 0.5 ) /256.);
+    if (lutInverted != 0)
+    {
         pos.x = 1. - pos.x;
     }
     vec4 lutColor = texture2D(lut, pos);
@@ -230,6 +227,4 @@ void main(void)
     lutColor.y = pow(lutColor.y, gamma);
     lutColor.z = pow(lutColor.z, gamma);
     gl_FragColor = lutColor * vec4(redChannel,greenChannel,blueChannel,opacity);
-    //gl_FragColor = vec4(gl_FragDepth, gl_FragDepth, gl_FragDepth, 1);
 }
-

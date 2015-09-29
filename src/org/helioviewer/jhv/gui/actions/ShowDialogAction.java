@@ -9,7 +9,7 @@ import javax.swing.JDialog;
 import javax.swing.KeyStroke;
 
 import org.helioviewer.jhv.Telemetry;
-import org.helioviewer.jhv.gui.dialogs.HelpDialog;
+import org.helioviewer.jhv.gui.dialogs.ShortcutsDialog;
 
 /**
  * Action to show any given dialog.
@@ -35,7 +35,7 @@ public class ShowDialogAction extends AbstractAction
         
         dialogToShow = (Class<JDialog>) dialog;
 
-        if (dialog.isAssignableFrom(HelpDialog.class))
+        if (dialog.isAssignableFrom(ShortcutsDialog.class))
             putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
     }
     
@@ -56,7 +56,7 @@ public class ShowDialogAction extends AbstractAction
 
         dialogToShow = (Class<JDialog>) dialog;
 
-        if (dialog.isAssignableFrom(HelpDialog.class))
+        if (dialog.isAssignableFrom(ShortcutsDialog.class))
             putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
     }
 

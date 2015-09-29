@@ -1,6 +1,5 @@
 package org.helioviewer.jhv.opengl;
 
-import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,7 +10,6 @@ import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
 
 import org.helioviewer.jhv.Telemetry;
-import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.gui.MainPanel;
 
@@ -19,6 +17,7 @@ import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLContext;
 
+//FIXME: merge with Texture class
 public class OpenGLHelper
 {
 	private int textureID;
@@ -37,14 +36,6 @@ public class OpenGLHelper
 		return tmp[0];
 	}
 	
-	public static int[] createTextureIDs(int countTexture)
-	{
-		GL2 gl = GLContext.getCurrentGL().getGL2();
-		int tmp[] = new int[countTexture];
-		gl.glGenTextures(countTexture, tmp, 0);
-		return tmp;
-	}
-	
 	public void bindBufferedImageToGLTexture(final BufferedImage bufferedImage)
 	{
 		int width2 = MathUtils.nextPowerOfTwo(bufferedImage.getWidth());
@@ -57,22 +48,6 @@ public class OpenGLHelper
 		textureWidth = width2;
 
 		updateTexture(bufferedImage,0,0);
-	}
-	
-	public static void bindByteBufferToGLTexture(ImageRegion _region, final ByteBuffer byteBuffer, final Rectangle imageSize)
-	{
-		int width2 = MathUtils.nextPowerOfTwo(imageSize.width);
-		int height2 = MathUtils.nextPowerOfTwo(imageSize.height);
-		
-		//FIXME: avoid redundant recreation of textures
-		if (_region.textureHeight < height2 || _region.textureWidth < width2)
-		{
-			System.out.println("Recreating texture "+_region.textureWidth+"x"+_region.textureHeight+" --> "+width2+"x"+height2);
-			OpenGLHelper.createTexture(_region, width2, height2);
-		}
-
-		OpenGLHelper.updateTexture(_region, byteBuffer, imageSize.width, imageSize.height);
-		_region.setTextureScaleFactor(_region.textureWidth / (float)imageSize.width, _region.textureHeight / (float)imageSize.height);
 	}
 	
 	public float getScaleFactorWidth(){
@@ -198,51 +173,7 @@ public class OpenGLHelper
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T,
 				GL2.GL_CLAMP);
 	}
-		
-	private static void createTexture(ImageRegion imageRegion, int width, int height)
-	{
-		GL2 gl = GLContext.getCurrentGL().getGL2();
-		gl.glEnable(GL2.GL_TEXTURE_2D);			
-		gl.glBindTexture(GL2.GL_TEXTURE_2D, imageRegion.getTextureID());
-		
-		ByteBuffer b = ByteBuffer.allocate(width * height);
-		b.limit(width * height);
-		gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL2.GL_LUMINANCE8, width, height, 0, GL2.GL_LUMINANCE, GL2.GL_UNSIGNED_BYTE, b);
-
-		imageRegion.textureWidth = width;
-		imageRegion.textureHeight = height;
-		
-		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_LINEAR);
-		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_LINEAR);
-		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP_TO_BORDER);
-		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP_TO_BORDER);
-	}
 	
-	private static void updateTexture(ImageRegion imageRegion, ByteBuffer byteBuffer, int width, int height){
-		GL2 gl = GLContext.getCurrentGL().getGL2();
-		
-		gl.glEnable(GL2.GL_TEXTURE_2D);			
-		
-		gl.glPixelStorei(GL2.GL_UNPACK_SKIP_PIXELS, 0);
-		gl.glPixelStorei(GL2.GL_UNPACK_SKIP_ROWS, 0);
-		gl.glPixelStorei(GL2.GL_UNPACK_ROW_LENGTH, 0);
-		gl.glPixelStorei(GL2.GL_UNPACK_ALIGNMENT, 8 >> 3);
-
-		gl.glBindTexture(GL2.GL_TEXTURE_2D, imageRegion.getTextureID());
-		
-		gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, width, height,
-				GL2.GL_ABGR_EXT, GL2.GL_UNSIGNED_BYTE, byteBuffer);
-
-		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER,
-				GL2.GL_LINEAR);
-		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER,
-				GL2.GL_LINEAR);
-		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S,
-				GL2.GL_CLAMP);
-		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T,
-				GL2.GL_CLAMP);
-	}
-
 	private static ByteBuffer readPixels(BufferedImage image, boolean storeAlphaChannel, boolean switchRandBChannel) {
 		int[] pixels = new int[image.getWidth() * image.getHeight()];
         image.getRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());

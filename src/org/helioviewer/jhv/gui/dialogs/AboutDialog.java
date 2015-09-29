@@ -20,6 +20,7 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
 import org.helioviewer.jhv.Globals;
+import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MainFrame;
@@ -38,6 +39,9 @@ public final class AboutDialog extends JDialog implements HyperlinkListener
     public AboutDialog()
     {
         super(MainFrame.SINGLETON, "About JHelioviewer", true);
+        
+    	Telemetry.trackEvent("Dialog", "Type", getClass().getSimpleName());
+        
         setResizable(false);
 
         JPanel contentPane = new JPanel(new BorderLayout());

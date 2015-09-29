@@ -1,13 +1,8 @@
 package org.helioviewer.jhv.layers;
 
-import java.awt.Dimension;
-import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
-
 import javax.annotation.Nullable;
-
 import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.gui.MainPanel;
 import org.json.JSONObject;
 
 import com.jogamp.opengl.GL2;
@@ -57,7 +52,10 @@ public abstract class AbstractLayer
 		OK
 	}
 
-	abstract public RenderResult renderLayer(GL2 gl, Dimension canvasSize, MainPanel mainPanel, ByteBuffer _imageData);
+	public RenderResult renderLayer(GL2 _gl)
+	{
+		return RenderResult.OK;
+	}
 
 	public abstract void writeStateFile(JSONObject jsonLayer);
 	

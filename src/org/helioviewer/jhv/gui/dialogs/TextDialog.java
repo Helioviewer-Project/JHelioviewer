@@ -28,6 +28,9 @@ class TextDialog extends JDialog implements ActionListener
     public TextDialog(String title, URL textFile)
     {
         super(MainFrame.SINGLETON, title, true);
+        
+    	Telemetry.trackEvent("Dialog", "Type", getClass().getSimpleName(), "Title", title);
+
         setResizable(false);
 
         StringBuffer text = new StringBuffer();

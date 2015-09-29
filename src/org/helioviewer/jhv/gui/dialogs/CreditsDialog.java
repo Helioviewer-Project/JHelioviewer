@@ -15,6 +15,7 @@ import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.gui.MainFrame;
 
 /**
@@ -27,6 +28,9 @@ public final class CreditsDialog extends JDialog
     public CreditsDialog(Component _parent)
     {
         super(MainFrame.SINGLETON, "Credits", true);
+        
+    	Telemetry.trackEvent("Dialog", "Type", getClass().getSimpleName());
+    	
         setResizable(false);
 
         setLayout(new BorderLayout());

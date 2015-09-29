@@ -78,6 +78,9 @@ public class MetaDataDialog extends JDialog implements ActionListener, LayerList
 	public MetaDataDialog()
 	{
 		super(MainFrame.SINGLETON, "Image metainfo");
+		
+    	Telemetry.trackEvent("Dialog", "Type", getClass().getSimpleName());
+		
 		setLayout(new BorderLayout());
 		setResizable(false);
 
