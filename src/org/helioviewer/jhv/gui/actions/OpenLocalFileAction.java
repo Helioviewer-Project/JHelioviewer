@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
@@ -22,6 +23,7 @@ import org.helioviewer.jhv.gui.actions.filefilters.AllSupportedImageTypesFilter;
 import org.helioviewer.jhv.gui.actions.filefilters.FileFilter;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
+import org.helioviewer.jhv.viewmodel.metadata.UnsuitableMetaDataException;
 
 /**
  * Action to open a local file.
@@ -71,7 +73,15 @@ public class OpenLocalFileAction extends AbstractAction {
 							{
 								// remember the current directory for future
 								Settings.setProperty("default.local.path", selectedFile.getParent());
-								Layers.addLayer(new KakaduLayer(selectedFile.toString()));
+								
+								try
+								{
+									Layers.addLayer(new KakaduLayer(selectedFile.toString()));
+								}
+								catch(UnsuitableMetaDataException _umde)
+								{
+									JOptionPane.showMessageDialog(MainFrame.MAIN_PANEL, "This data source's metadata could not be read.");
+								}
 							}
 						});
 					}
@@ -100,7 +110,15 @@ public class OpenLocalFileAction extends AbstractAction {
 				{
 					// remember the current directory for future
 					Settings.setProperty("default.local.path", fileChooser.getSelectedFile().getParent());
-					Layers.addLayer(new KakaduLayer(fileChooser.getSelectedFile().toString()));
+					
+					try
+					{
+						Layers.addLayer(new KakaduLayer(fileChooser.getSelectedFile().toString()));
+					}
+					catch(UnsuitableMetaDataException _umde)
+					{
+						JOptionPane.showMessageDialog(MainFrame.MAIN_PANEL, "The source's metadata could not be read.");
+					}
 				}
 			}
 		}

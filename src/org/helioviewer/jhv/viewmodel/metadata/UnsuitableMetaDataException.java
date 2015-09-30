@@ -1,6 +1,6 @@
 package org.helioviewer.jhv.viewmodel.metadata;
 
-class UnsuitableMetaDataException extends RuntimeException
+public class UnsuitableMetaDataException extends RuntimeException
 {
 	private static final long serialVersionUID=1489762423742402867L;
 	public UnsuitableMetaDataException() { super(); }

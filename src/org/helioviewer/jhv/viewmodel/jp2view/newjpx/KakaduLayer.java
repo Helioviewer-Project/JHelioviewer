@@ -21,7 +21,6 @@ import javax.swing.SwingUtilities;
 import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.base.FutureValue;
 import org.helioviewer.jhv.base.ImageRegion;
-import org.helioviewer.jhv.base.downloadmanager.AbstractDownloadRequest;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.base.downloadmanager.JPIPDownloadRequest;
@@ -35,9 +34,11 @@ import org.helioviewer.jhv.layers.Movie;
 import org.helioviewer.jhv.layers.Movie.Match;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
+import org.helioviewer.jhv.viewmodel.metadata.UnsuitableMetaDataException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Document;
 
 public class KakaduLayer extends AbstractImageLayer
 {
@@ -84,6 +85,7 @@ public class KakaduLayer extends AbstractImageLayer
 		
 		Movie movie = new Movie(this,sourceId);
 		movie.setFile(_filePath);
+		
 		MovieCache.add(movie);
 		name = movie.getMetaData(0).getFullName();
 		
@@ -195,7 +197,6 @@ public class KakaduLayer extends AbstractImageLayer
 	
 	public void setTimeRange(final LocalDateTime start, final LocalDateTime end, final int cadence)
 	{
-		//FIXME
 		if(loaderThread!=null)
 			throw new RuntimeException("Changing time range after creation currently not implemented.");
 		
@@ -256,19 +257,27 @@ public class KakaduLayer extends AbstractImageLayer
 							UltimateDownloadManager.remove(download.metadata);
 							UltimateDownloadManager.remove(download.lq);
 							
-							download.movie.setFile(download.hq.getFilename());
-							
+							String hqFilename = download.hq.getFilename();
 							download.hq = null;
 							download.lq = null;
 							
-							SwingUtilities.invokeLater(new Runnable()
+							try
 							{
-								@Override
-								public void run()
+								download.movie.setFile(hqFilename);
+								
+								SwingUtilities.invokeLater(new Runnable()
 								{
-									MovieCache.add(download.movie);
-								}
-							});
+									@Override
+									public void run()
+									{
+										MovieCache.add(download.movie);
+									}
+								});
+							}
+							catch(UnsuitableMetaDataException _umde)
+							{
+								Telemetry.trackException(_umde);
+							}
 						}
 						else if(download.lq!=null && download.lq.isFinished())
 						{
@@ -344,10 +353,10 @@ public class KakaduLayer extends AbstractImageLayer
 								public void run()
 								{
 									//FIXME: should only happen if current layer is active
-									//MainFrame.MOVIE_PANEL.repaintSlider();
-									
 									//FIXME: should only happen if needed
-									MainFrame.SINGLETON.repaint();
+									MainFrame.MAIN_PANEL.repaint();
+									MainFrame.OVERVIEW_PANEL.repaint();
+									MainFrame.MOVIE_PANEL.repaint();
 								}
 							});
 							Thread.sleep(500);
@@ -371,9 +380,9 @@ public class KakaduLayer extends AbstractImageLayer
 					@Override
 					public void run()
 					{
-						//FIXME: should probably only be set if current layer is active
-						MainFrame.SINGLETON.repaint();
-						//MainFrame.MOVIE_PANEL.repaintSlider();
+						MainFrame.MAIN_PANEL.repaint();
+						MainFrame.OVERVIEW_PANEL.repaint();
+						MainFrame.MOVIE_PANEL.repaint();
 					}
 				});
 				
@@ -450,18 +459,20 @@ public class KakaduLayer extends AbstractImageLayer
 		return localFile;
 	}
 
-	public void retryFailedRequests(final AbstractDownloadRequest[] requests)
-	{
-		//FIXME
-		throw new RuntimeException("TODO");
-	}
-	
 	public MetaData getMetaData(LocalDateTime currentDateTime)
 	{
 		if (localDateTimes.isEmpty())
 			return null;
 		
 		return MovieCache.getMetaData(sourceId, currentDateTime);
+	}
+	
+	public Document getMetaDataDocument(LocalDateTime currentDateTime)
+	{
+		if (localDateTimes.isEmpty())
+			return null;
+		
+		return MovieCache.getMetaDataDocument(sourceId, currentDateTime);
 	}
 	
 	public Future<PreparedImage> prepareImageData(final MainPanel mainPanel, final Dimension size)

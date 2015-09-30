@@ -25,6 +25,7 @@ import org.helioviewer.jhv.opengl.camera.CameraMode;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.json.JSONObject;
+import org.w3c.dom.Document;
 
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
@@ -73,11 +74,13 @@ public abstract class AbstractImageLayer extends AbstractLayer
 	
 	private static int shaderprogram = -1;
 	
+	//FIXME: use a cache instead of a single texture, but at least one texture per layer
 	protected Texture texture=new Texture();
 	
 	public abstract NavigableSet<LocalDateTime> getLocalDateTimes();
 
 	public abstract MetaData getMetaData(LocalDateTime currentDateTime);
+	public abstract Document getMetaDataDocument(LocalDateTime _currentDateTime);
 
 	public abstract void writeStateFile(JSONObject jsonLayer);
 	

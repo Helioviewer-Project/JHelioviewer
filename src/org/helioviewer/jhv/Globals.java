@@ -14,6 +14,9 @@ import javax.swing.JFileChooser;
  */
 public class Globals
 {
+	public static final String OBSERVATORIES_DATASOURCE = "http://api.helioviewer.org/v2/getDataSources/?";
+
+	
     public static final String VERSION = System.getProperty("jhvVersion") == null ? "developer" : System.getProperty("jhvVersion");
     public static final String RAYGUN_TAG = System.getProperty("raygunTag");
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");

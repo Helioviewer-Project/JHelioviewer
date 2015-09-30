@@ -57,12 +57,6 @@ public class MetaDataFactory
             }
 
 		
-		if (metaData != null)
-			return metaData;
-		
-		//FIXME: error handling should be done in calling code instead!!! this will
-		//crash, because its called from a non awt-thread (during loading of imgs)
-		JOptionPane.showMessageDialog(MainFrame.MAIN_PANEL, "This data source's metadata could not be read.");
-		return null;
+		return metaData;
 	}
 }

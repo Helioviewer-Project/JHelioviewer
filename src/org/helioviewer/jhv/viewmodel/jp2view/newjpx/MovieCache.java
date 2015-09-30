@@ -12,6 +12,7 @@ import javax.annotation.Nullable;
 import org.helioviewer.jhv.layers.Movie;
 import org.helioviewer.jhv.layers.Movie.Match;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
+import org.w3c.dom.Document;
 
 //FIXME: clean out cache eventually
 //FIXME: back with database to remember files from previous sessions
@@ -69,5 +70,15 @@ public class MovieCache
 			return null;
 		
 		return match.movie.getMetaData(match.index);
+	}
+	
+	@Nullable
+	public static Document getMetaDataDocument(int _sourceId, LocalDateTime _currentDateTime)
+	{
+		Match match = findBestFrame(_sourceId, _currentDateTime);
+		if (match == null)
+			return null;
+		
+		return match.movie.readMetadataDocument(match.index);
 	}
 }

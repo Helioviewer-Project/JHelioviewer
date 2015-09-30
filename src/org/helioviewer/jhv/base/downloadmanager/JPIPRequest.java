@@ -17,6 +17,7 @@ import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPQuery;
 import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPRequestField;
 import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPResponse;
 import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPSocket;
+import org.helioviewer.jhv.viewmodel.metadata.UnsuitableMetaDataException;
 
 public class JPIPRequest extends AbstractDownloadRequest
 {
@@ -96,7 +97,7 @@ public class JPIPRequest extends AbstractDownloadRequest
 			movie.setKDUCache(kduCache);
 			finished = true;
 		}
-		catch (URISyntaxException | KduException e)
+		catch (URISyntaxException | UnsuitableMetaDataException | KduException e)
 		{
 			Telemetry.trackException(e);
 		}

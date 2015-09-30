@@ -18,6 +18,7 @@ import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
+import org.helioviewer.jhv.viewmodel.metadata.MetaDataAIA;
 
 class SDOCutOutAction extends AbstractAction
 {
@@ -36,14 +37,20 @@ class SDOCutOutAction extends AbstractAction
     {
 		AbstractImageLayer activeLayer = Layers.getActiveImageLayer();
 		ArrayList<KakaduLayer> sdoLayers = new ArrayList<KakaduLayer>();
-		for (AbstractLayer layer : Layers.getLayers())
-		{
-			//FIXME: don't search by comparing strings, also improve logic
-			if (layer.getName().contains("AIA") && layer instanceof KakaduLayer)
-				sdoLayers.add((KakaduLayer)layer);
-		}
 		
-		KakaduLayer mainSDOLayer = activeLayer.getName().contains("AIA") && (activeLayer instanceof KakaduLayer) ? (KakaduLayer)activeLayer : sdoLayers.get(0);
+		for (AbstractLayer layer : Layers.getLayers())
+			if(layer instanceof KakaduLayer)
+				if(((KakaduLayer)layer).getMetaData(TimeLine.SINGLETON.getCurrentDateTime()) instanceof MetaDataAIA)
+					sdoLayers.add((KakaduLayer)layer);
+		
+		if(sdoLayers.isEmpty())
+			return;
+		
+		KakaduLayer mainSDOLayer;
+		if(activeLayer instanceof KakaduLayer && ((KakaduLayer)activeLayer).getMetaData(TimeLine.SINGLETON.getCurrentDateTime()) instanceof MetaDataAIA)
+			mainSDOLayer=(KakaduLayer)activeLayer;
+		else
+			mainSDOLayer=sdoLayers.get(0);
 		
 		MetaData metaData = mainSDOLayer.getMetaData(TimeLine.SINGLETON.getCurrentDateTime());
 		LocalDateTime start = TimeLine.SINGLETON.getFirstDateTime();

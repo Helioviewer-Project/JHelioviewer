@@ -1,8 +1,5 @@
 package org.helioviewer.jhv.gui.sdocutout;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
 
@@ -11,10 +8,12 @@ import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.layers.AbstractLayer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
+import org.helioviewer.jhv.viewmodel.TimeLine;
+import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
+import org.helioviewer.jhv.viewmodel.metadata.MetaDataAIA;
 
-public class SDOCutOutButton extends JButton implements
-		PropertyChangeListener, LayerListener{
-
+public class SDOCutOutButton extends JButton implements	LayerListener
+{
 	private static final long serialVersionUID = 1L;
 
 	public SDOCutOutButton()
@@ -25,44 +24,44 @@ public class SDOCutOutButton extends JButton implements
 		this.setEnabled(false);
 	}
 
-	private void initButton() {
+	private void initButton()
+	{
 		setSelected(false);
 		setIcon(IconBank.getIcon(JHVIcon.SDO_CUT_OUT, 24, 24));
-		setToolTipText("Connect to SDO Cut-Out Service");
+		setToolTipText("Open SDO Cut-Out Service");
 		setEnabled(true);
 		setVerticalTextPosition(SwingConstants.BOTTOM);
 		setHorizontalAlignment(SwingConstants.CENTER);
 		setHorizontalTextPosition(SwingConstants.CENTER);
 	}
 
-	@Override
-	/*
-	 * This method is called by the event firePropertyChange to add the plugin
-	 * button in the TopToolBar
-	 */
-	public void propertyChange(PropertyChangeEvent evt) {
+	private void enableIffSDOLayersActive()
+	{
+		for (AbstractLayer layer : Layers.getLayers())
+			if(layer instanceof KakaduLayer)
+				if(((KakaduLayer)layer).getMetaData(TimeLine.SINGLETON.getCurrentDateTime()) instanceof MetaDataAIA)
+				{
+					setEnabled(true);
+					return;
+				}
+		
+		setEnabled(false);
 	}
 
 	@Override
-	public void layerAdded() {
-		boolean enable = false;
-		for (AbstractLayer layer : Layers.getLayers()){
-			if (layer.getName().contains("AIA")){
-				enable = true;
-			}
-		}
-		this.setEnabled(enable);
+	public void layerAdded()
+	{
+		enableIffSDOLayersActive();
 	}
 
 	@Override
-	public void layersRemoved() {
-		
-		
+	public void layersRemoved()
+	{
+		enableIffSDOLayersActive();
 	}
 
 	@Override
-	public void activeLayerChanged(AbstractLayer layer) {
-		
-		
+	public void activeLayerChanged(AbstractLayer layer)
+	{
 	}
 }

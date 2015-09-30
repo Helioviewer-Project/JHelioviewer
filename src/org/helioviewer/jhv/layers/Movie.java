@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 import javax.annotation.Nullable;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -23,12 +24,14 @@ import kdu_jni.Kdu_dims;
 import kdu_jni.Kdu_region_compositor;
 
 import org.helioviewer.jhv.Telemetry;
+import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.layers.AbstractImageLayer.CacheStatus;
 import org.helioviewer.jhv.layers.LUT.Lut;
 import org.helioviewer.jhv.viewmodel.jp2view.kakadu.KakaduUtils;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.metadata.MetaDataFactory;
+import org.helioviewer.jhv.viewmodel.metadata.UnsuitableMetaDataException;
 import org.w3c.dom.Document;
 
 public class Movie
@@ -61,6 +64,9 @@ public class Movie
 			family_src = new Jp2_threadsafe_family_src();
 			family_src.Open(filename);
 			processFamilySrc();
+			if(!containsValidFrames())
+				throw new UnsuitableMetaDataException();
+
 			cacheStatus = CacheStatus.FULL;
 		}
 		catch (KduException e)
@@ -79,6 +85,10 @@ public class Movie
 			family_src = new Jp2_threadsafe_family_src();
 			family_src.Open(kduCache);
 			processFamilySrc();
+			
+			if(!containsValidFrames())
+				throw new UnsuitableMetaDataException();
+			
 			cacheStatus = CacheStatus.PREVIEW;
 		}
 		catch (KduException e)
@@ -104,7 +114,7 @@ public class Movie
 			metaDatas = new MetaData[framecount];
 			for (int i = 0; i < framecount; i++)
 			{
-				metaDatas[i]=readMetadata(i+1, family_src);
+				metaDatas[i]=MetaDataFactory.getMetaData(readMetadataDocument(i+1));
 				
 				//FIXME: should invalidate textureCache
 				//TextureCache.invalidate(sourceId, metaDatas[i].getLocalDateTime());
@@ -130,6 +140,14 @@ public class Movie
 		{
 			Telemetry.trackException(e);
 		}
+	}
+	
+	public boolean containsValidFrames()
+	{
+		for(MetaData md:metaDatas)
+			if(md!=null)
+				return true;
+		return false;
 	}
 	
 	public String getBackingFile()
@@ -212,22 +230,23 @@ public class Movie
 	}
 	
 	@Nullable
-	private MetaData readMetadata(int index, Jp2_threadsafe_family_src family_src) throws KduException
+	public Document readMetadataDocument(int index)
 	{
-		String xmlText = KakaduUtils.getXml(family_src, index);
-		if (xmlText == null)
-			return null;
-		xmlText = xmlText.trim().replace("&", "&amp;").replace("$OBS", "");
-		
-		InputStream in = null;
 		try
 		{
-			in = new ByteArrayInputStream(xmlText.getBytes("UTF-8"));
-			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			Document doc = builder.parse(in);
-			doc.getDocumentElement().normalize();
+			String xmlText = KakaduUtils.getXml(family_src, index);
+			if (xmlText == null)
+				return null;
+			xmlText = xmlText.trim().replace("&", "&amp;").replace("$OBS", "");
 			
-			return MetaDataFactory.getMetaData(doc);
+			try(InputStream in = new ByteArrayInputStream(xmlText.getBytes("UTF-8")))
+			{
+				DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+				Document doc = builder.parse(in);
+				doc.getDocumentElement().normalize();
+				
+				return doc;
+			}
 		}
 		catch (Exception ex)
 		{
@@ -235,16 +254,6 @@ public class Movie
 		}
 		return null;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	/*private Kdu_thread_env threadEnviroment;

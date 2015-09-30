@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.layers.LUT.Lut;
 
-class MetaDataAIA extends MetaData
+public class MetaDataAIA extends MetaData
 {
 	private final static Vector2i RESOLUTION = new Vector2i(4096, 4096);
 	

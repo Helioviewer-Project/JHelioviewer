@@ -378,13 +378,13 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 			final int WIDTH = (int)trackRect.getWidth();
 			final int HEIGHT = 3;
 
-			//FIXME: this stuff is regenerated every frame --> should
+			//TODO: this stuff is regenerated every frame --> should
 			//only be recreated when something has changed
 			
 			AbstractImageLayer layer = (AbstractImageLayer) Layers.getActiveImageLayer();
 			if (layer != null)
 			{
-				//FIXME: speed up!!!!!
+				//TODO: speed up!!!!!
 				LocalDateTime[] times=layer.getLocalDateTimes().toArray(new LocalDateTime[0]);
 				int max=Math.min(times.length, (int)trackRect.getWidth());
 				

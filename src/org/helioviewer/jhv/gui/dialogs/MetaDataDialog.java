@@ -126,9 +126,10 @@ public class MetaDataDialog extends JDialog implements ActionListener, LayerList
 				if (Layers.getActiveImageLayer() != null)
 				{
 					MetaData md=Layers.getActiveImageLayer().getMetaData(TimeLine.SINGLETON.getCurrentDateTime());
+					Document doc=Layers.getActiveImageLayer().getMetaDataDocument(TimeLine.SINGLETON.getCurrentDateTime());
 					
-					if(md!=null)
-						setMetaData(md);
+					if(md!=null && doc!=null)
+						setMetaData(md,doc);
 					else
 					{
 						resetData();
@@ -279,7 +280,7 @@ public class MetaDataDialog extends JDialog implements ActionListener, LayerList
 	 *            Source to read
 	 * @see #addDataItem(String)
 	 */
-	public void setMetaData(MetaData metaData)
+	public void setMetaData(MetaData metaData, Document doc)
 	{
 		if (metaData == null)
 			return;
@@ -293,16 +294,9 @@ public class MetaDataDialog extends JDialog implements ActionListener, LayerList
 		addDataItem("Instrument  : " + metaData.getInstrument());
 		addDataItem("Detector    : " + metaData.getDetector());
 		addDataItem("Measurement : " + metaData.getMeasurement());
-		addDataItem("Date        : " + metaData.getLocalDateTime());
-		addDataItem("Time        : " + metaData.getLocalDateTime());
+		addDataItem("Date        : " + metaData.getLocalDateTime().toLocalDate());
+		addDataItem("Time        : " + metaData.getLocalDateTime().toLocalTime());
 
-		//FIXME: fix this code, should use metaData.getDocument()
-		
-		//Document doc = metaData.getDocument();
-		Document doc = null;
-		if (doc == null)
-			return;
-		
 		// Send xml data to meta data dialog box
 		Node root = doc.getDocumentElement().getElementsByTagName("fits").item(0);
 		writeXMLData(root, 0);
@@ -449,9 +443,10 @@ public class MetaDataDialog extends JDialog implements ActionListener, LayerList
 		if (Layers.getActiveImageLayer() != null)
 		{
 			MetaData md=Layers.getActiveImageLayer().getMetaData(TimeLine.SINGLETON.getCurrentDateTime());
+			Document doc=Layers.getActiveImageLayer().getMetaDataDocument(TimeLine.SINGLETON.getCurrentDateTime());
 			
-			if(md!=null)
-				setMetaData(md);
+			if(md!=null && doc!=null)
+				setMetaData(md,doc);
 			else
 			{
 				resetData();

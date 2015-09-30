@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
+import org.helioviewer.jhv.viewmodel.metadata.UnsuitableMetaDataException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -184,7 +185,7 @@ public class Layers
 					layer.readStateFile(jsonLayer);
 				}
 			}
-			catch (JSONException e)
+			catch (JSONException | UnsuitableMetaDataException e)
 			{
 				Telemetry.trackException(e);
 			}

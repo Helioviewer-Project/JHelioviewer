@@ -10,6 +10,7 @@ import java.util.TreeMap;
 
 import javax.swing.SwingUtilities;
 
+import org.helioviewer.jhv.Globals;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.base.downloadmanager.AbstractDownloadRequest;
@@ -22,11 +23,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-//FIXME: morph into general data object, not dialog-specific 
 public class Observatories
 {
-	//FIXME: move to JHVGlobals
-	private static final String URL_DATASOURCE = "http://api.helioviewer.org/v2/getDataSources/?";
 	private static TreeMap<String, Observatory> observatories = new TreeMap<String, Observatories.Observatory>(new AlphanumComparator()); 
 	private static final ArrayList<Runnable> updateListeners = new ArrayList<Runnable>(); 
 	
@@ -42,23 +40,20 @@ public class Observatories
 			@Override
 			public void run()
 			{
-				final HTTPRequest httpRequest = new HTTPRequest(URL_DATASOURCE, DownloadPriority.HIGH, AbstractDownloadRequest.INFINITE_TIMEOUT);
-				UltimateDownloadManager.addRequest(httpRequest);
-
-				
-				//FIXME: add error handling, in case download fails
-				try
-				{
-					final String json = httpRequest.getDataAsString();
-					
-					SwingUtilities.invokeLater(new Runnable()
+				for(;;)
+					try
 					{
-						@Override
-						public void run()
+						final HTTPRequest httpRequest = new HTTPRequest(Globals.OBSERVATORIES_DATASOURCE, DownloadPriority.HIGH, AbstractDownloadRequest.INFINITE_TIMEOUT);
+						UltimateDownloadManager.addRequest(httpRequest);
+						final JSONObject json = new JSONObject(httpRequest.getDataAsString());
+						
+						
+						SwingUtilities.invokeLater(new Runnable()
 						{
-							try
+							@Override
+							public void run()
 							{
-								addObservatories(new JSONObject(json));
+								addObservatories(json);
 								
 								if (Boolean.parseBoolean(Settings.getProperty("startup.loadmovie")))
 								{
@@ -77,18 +72,27 @@ public class Observatories
 								for(Runnable ul:updateListeners)
 									ul.run();
 							}
-							catch (JSONException e)
-							{
-								Telemetry.trackException(e);
-							}
+						});
+						
+						break;
+					}
+					catch (IOException | JSONException _e)
+					{
+						Telemetry.trackException(_e);
+						
+						try
+						{
+							Thread.sleep(1000);
 						}
-					});
-				}
-				catch (InterruptedException | IOException _e)
-				{
-					//FIXME: add proper error handling here, should retry etc.
-					Telemetry.trackException(_e);
-				}
+						catch(InterruptedException _ie)
+						{
+							break;
+						}
+					}
+					catch(InterruptedException _e)
+					{
+						break;
+					}
 			}
 		}, "MODEL_LOAD");
 		thread.setDaemon(true);
