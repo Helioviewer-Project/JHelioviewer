@@ -6,14 +6,13 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
 
-import org.helioviewer.jhv.opengl.OpenGLHelper;
+import org.helioviewer.jhv.opengl.Texture;
 
 class HEKIcon
 {
 	private static final String PATH = "/images/EventIcons/";
 
-	private static int openGLTextureId = -1;
-	private static OpenGLHelper openGLHelper;
+	private static Texture openGLHelper;
 
 	enum HEKIcons
 	{
@@ -35,12 +34,11 @@ class HEKIcon
 
 	static
 	{
-		openGLHelper = new OpenGLHelper();
-		openGLTextureId = openGLHelper.createTextureID();
+		openGLHelper = new Texture();
 		for (HEKIcons hekIcon : HEKIcons.values())
 		{
 			BufferedImage bufferedImage = getImage(hekIcon);
-			openGLHelper.bindBufferedImageToGLTexture(bufferedImage, 0,
+			openGLHelper.upload(bufferedImage, 0,
 					hekIcon.ordinal() * bufferedImage.getHeight(),
 					bufferedImage.getWidth(),
 					bufferedImage.getHeight()	* HEKIcons.values().length);
@@ -49,12 +47,12 @@ class HEKIcon
 
 	public static int getOpenGLTextureId()
 	{
-		return openGLTextureId;
+		return openGLHelper.openGLTextureId;
 	}
 
 	public static float getImageScaleFactorHeight()
 	{
-		return openGLHelper.getScaleFactorHeight();
+		return openGLHelper.textureScaleY;
 	}
 
 	private static BufferedImage getImage(HEKIcons icon)

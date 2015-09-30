@@ -1,12 +1,19 @@
 package org.helioviewer.jhv;
 
 import java.awt.Desktop;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import javax.annotation.Nullable;
 import javax.swing.JFileChooser;
+
+import org.helioviewer.jhv.gui.MainPanel;
 
 /**
  * Intended to be a class for static functions and fields relevant to the
@@ -152,4 +159,25 @@ public class Globals
         t.setDaemon(true);
         t.start();
     }
+    
+	@Nullable
+	public static String loadFile(String _resourcePath)
+	{
+		StringBuilder contents = new StringBuilder();
+		String line = null;
+
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(
+				MainPanel.class.getResourceAsStream(_resourcePath), StandardCharsets.UTF_8)))
+		{
+			while ((line = br.readLine()) != null)
+				contents.append(line + "\n");
+			
+			return contents.toString();
+		}
+		catch (IOException e)
+		{
+			Telemetry.trackException(e);
+		}
+		return null;
+	}
 }

@@ -29,17 +29,14 @@ public class LoadingScreen
 	private static int color;
 	private static float CIRCLE_COLOR = 192 / 255f;
 	private static int indicesSize;
-	private static OpenGLHelper openGLHelper;
-	private static int texture;
-
+	private static Texture openGLHelper;
 	private static long time;
 	
 	static
 	{
-		openGLHelper = new OpenGLHelper();
-		texture = openGLHelper.createTextureID();
+		openGLHelper = new Texture();
 		BufferedImage image = IconBank.getImage(JHVIcon.LOADING_BIG);
-		openGLHelper.bindBufferedImageToGLTexture(image);
+		openGLHelper.upload(image);
 		initCircleVBO(GLContext.getCurrentGL().getGL2());
 	}
 
@@ -61,7 +58,7 @@ public class LoadingScreen
 		gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
 		gl.glActiveTexture(GL.GL_TEXTURE0);
 		
-		gl.glBindTexture(GL2.GL_TEXTURE_2D, texture);
+		gl.glBindTexture(GL2.GL_TEXTURE_2D, openGLHelper.openGLTextureId);
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_LINEAR);
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_LINEAR);
 		// gl.glColor3f(1, 0, 0);

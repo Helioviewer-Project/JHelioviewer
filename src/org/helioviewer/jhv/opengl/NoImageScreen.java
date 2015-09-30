@@ -10,16 +10,13 @@ import com.jogamp.opengl.GL2;
 
 public class NoImageScreen
 {
-	private static int texture = -1;
-
-	private static OpenGLHelper openGLHelper;
+	private static Texture openGLHelper;
 
 	static
 	{
-		openGLHelper = new OpenGLHelper();
-		texture = openGLHelper.createTextureID();
+		openGLHelper = new Texture();
 		BufferedImage image = IconBank.getImage(JHVIcon.NOIMAGE);
-		openGLHelper.bindBufferedImageToGLTexture(image);
+		openGLHelper.upload(image);
 	}
 
 	public static void render(GL2 gl)
@@ -40,7 +37,7 @@ public class NoImageScreen
 		gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
 		gl.glActiveTexture(GL.GL_TEXTURE0);
 		
-		gl.glBindTexture(GL2.GL_TEXTURE_2D, texture);
+		gl.glBindTexture(GL2.GL_TEXTURE_2D, openGLHelper.openGLTextureId);
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_LINEAR);
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_LINEAR);
 		gl.glBegin(GL2.GL_QUADS);

@@ -10,7 +10,7 @@ import javax.imageio.ImageIO;
 
 import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.gui.MainPanel;
-import org.helioviewer.jhv.opengl.OpenGLHelper;
+import org.helioviewer.jhv.opengl.Texture;
 
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLContext;
@@ -70,24 +70,20 @@ public class LUT
 	
 	private static LinkedHashMap<String, Integer> lutMap;
 	private static int nextAvaibleLut = 0;
-	private static int texture = -1;
-	private static OpenGLHelper openGLHelper;
-	
+	private static Texture openGLHelper;
 	
 	static
 	{
 		lutMap = new LinkedHashMap<String, Integer>();
-		openGLHelper = new OpenGLHelper();
+		openGLHelper = new Texture();
 		loadLutFromFile("/UltimateLookupTable.txt");      
-		
 		
 		try
 		{
 			BufferedImage bufferedImage = ImageIO.read(MainPanel.class.getResourceAsStream("/UltimateLookupTable.png"));
-			texture = openGLHelper.createTextureID();
-			openGLHelper.bindBufferedImageToGLTexture(bufferedImage, 256, 256);
+			openGLHelper.upload(bufferedImage, 256, 256);
 			GLContext.getCurrentGL().glEnable(GL2.GL_TEXTURE_2D);
-			GLContext.getCurrentGL().glBindTexture(GL2.GL_TEXTURE_2D, texture);
+			GLContext.getCurrentGL().glBindTexture(GL2.GL_TEXTURE_2D, openGLHelper.openGLTextureId);
 			GLContext.getCurrentGL().getGL2().glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_NEAREST);
 			GLContext.getCurrentGL().getGL2().glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_NEAREST);
 			GLContext.getCurrentGL().glBindTexture(GL2.GL_TEXTURE_2D, 0);
@@ -113,8 +109,8 @@ public class LUT
 		}
 	}
 	
-	public static int getTexture()
+	public static int getTextureId()
 	{
-		return texture;
+		return openGLHelper.openGLTextureId;
 	}	
 }

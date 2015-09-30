@@ -5,14 +5,14 @@ import java.util.Comparator;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.helioviewer.jhv.base.math.Vector3d;
-import org.helioviewer.jhv.opengl.OpenGLHelper;
+import org.helioviewer.jhv.opengl.Texture;
 
 import com.jogamp.opengl.GL2;
 
-class RenderableEvents {
-	private int textureID = -1;
+class RenderableEvents
+{
 	private final String name;
-	private OpenGLHelper openGLHelper;
+	private Texture openGLHelper;
 	private Vector3d[] bounds = null;
 	private Vector3d[] area = null;
 	private Vector3d[] position;
@@ -46,15 +46,15 @@ class RenderableEvents {
 		events = new ConcurrentSkipListSet<RenderableEvent>(comparator);
 	}
 	
-	public RenderableEvents(String name, BufferedImage image){
-		this.name = name;
+	public RenderableEvents(String _name, BufferedImage image)
+	{
+		name = _name;
 		
 		events = new ConcurrentSkipListSet<RenderableEvent>(comparator);
 		events = new ConcurrentSkipListSet<RenderableEvent>();
 		
-		this.openGLHelper = new OpenGLHelper();
-		textureID = openGLHelper.createTextureID();
-		openGLHelper.bindBufferedImageToGLTexture(image);
+		openGLHelper = new Texture();
+		openGLHelper.upload(image);
 	}
 	
 	public void setBounds(Vector3d[] bounds){
@@ -66,7 +66,7 @@ class RenderableEvents {
 	}
 
 	public void render(GL2 gl){
-		if (textureID >= 0){
+		if (openGLHelper.openGLTextureId >= 0){
 			renderIcon(gl);
 		}
 		if (bounds != null){

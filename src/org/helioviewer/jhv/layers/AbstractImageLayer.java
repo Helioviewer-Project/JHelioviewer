@@ -10,6 +10,7 @@ import java.util.concurrent.Future;
 
 import javax.annotation.Nullable;
 
+import org.helioviewer.jhv.Globals;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector3d;
@@ -18,7 +19,6 @@ import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.layers.LUT.Lut;
 import org.helioviewer.jhv.layers.Movie.Match;
-import org.helioviewer.jhv.opengl.OpenGLHelper;
 import org.helioviewer.jhv.opengl.RayTrace;
 import org.helioviewer.jhv.opengl.Texture;
 import org.helioviewer.jhv.opengl.camera.CameraMode;
@@ -129,7 +129,7 @@ public abstract class AbstractImageLayer extends AbstractLayer
 		gl.glUseProgram(shaderprogram);
 
 		gl.glActiveTexture(GL.GL_TEXTURE1);
-		gl.glBindTexture(GL2.GL_TEXTURE_2D, org.helioviewer.jhv.layers.LUT.getTexture());
+		gl.glBindTexture(GL2.GL_TEXTURE_2D, org.helioviewer.jhv.layers.LUT.getTextureId());
 
 		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "texture"), 0);
 		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "lut"), 1);
@@ -157,9 +157,7 @@ public abstract class AbstractImageLayer extends AbstractLayer
 
 		float clipNear = (float) Math.max(mainPanel.getTranslation().z - 4 * Constants.SUN_RADIUS, MainPanel.CLIP_NEAR);
 		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "near"), clipNear);
-		gl.glUniform1f(
-				gl.glGetUniformLocation(shaderprogram, "far"),
-				(float) (mainPanel.getTranslation().z + 4 * Constants.SUN_RADIUS));
+		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "far"), (float) (mainPanel.getTranslation().z + 4 * Constants.SUN_RADIUS));
 		float[] transformation = mainPanel.getTransformation().toFloatArray();
 		gl.glUniformMatrix4fv(gl.glGetUniformLocation(shaderprogram, "transformation"), 1, true, transformation, 0);
 
@@ -174,6 +172,7 @@ public abstract class AbstractImageLayer extends AbstractLayer
 				texture.width,
 				texture.height);
 
+		//FIXME: right/bottom edges shimmer (wrap around)
 		gl.glBegin(GL2.GL_QUADS);
 
 		gl.glTexCoord2f(0.0f, 1.0f);
@@ -187,9 +186,7 @@ public abstract class AbstractImageLayer extends AbstractLayer
 
 		gl.glEnd();
 		gl.glUseProgram(0);
-		// gl.glBindTexture(GL2.GL_TEXTURE_2D, 0);
 		gl.glActiveTexture(GL.GL_TEXTURE0);
-		// gl.glBindTexture(GL2.GL_TEXTURE_2D, 0);
 		gl.glDisable(GL2.GL_BLEND);
 		gl.glDisable(GL2.GL_TEXTURE_2D);
 		gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
@@ -206,8 +203,8 @@ public abstract class AbstractImageLayer extends AbstractLayer
 		int vertexShader = gl.glCreateShader(GL2.GL_VERTEX_SHADER);
 		int fragmentShader = gl.glCreateShader(GL2.GL_FRAGMENT_SHADER);
 
-		String vertexShaderSrc = OpenGLHelper.loadShaderFromFile("/shader/MainVertex.glsl");
-		String fragmentShaderSrc = OpenGLHelper.loadShaderFromFile("/shader/MainFragment.glsl");
+		String vertexShaderSrc = Globals.loadFile("/shader/MainVertex.glsl");
+		String fragmentShaderSrc = Globals.loadFile("/shader/MainFragment.glsl");
 
 		gl.glShaderSource(vertexShader, 1, new String[] { vertexShaderSrc }, (int[]) null, 0);
 		gl.glCompileShader(vertexShader);

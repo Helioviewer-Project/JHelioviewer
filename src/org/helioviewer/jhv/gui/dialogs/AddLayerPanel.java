@@ -305,7 +305,7 @@ public class AddLayerPanel extends JDialog
 		JLabel lblCadence = new JLabel("Time Step");
 		contentPanel.add(lblCadence, "2, 6");
 		cadence = new JSpinner();
-		cadence.setValue(20);
+		cadence.setValue(120);
 		cadence.setPreferredSize(new Dimension(80, 20));
 		
 		
