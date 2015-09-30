@@ -91,7 +91,7 @@ public class JHelioviewer
 			CommandLineProcessor.setArguments(args);
 			if (args.length == 1 && (args[0].equals("-h") || args[0].equals("--help")))
 			{
-				System.out.println(CommandLineProcessor.getUsageMessage());
+				System.out.println(CommandLineProcessor.USAGE_MESSAGE);
 				return;
 			}
 
