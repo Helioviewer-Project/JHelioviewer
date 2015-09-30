@@ -32,7 +32,7 @@ public class UltimateDownloadManager
 	});
 
 	private static final int CONCURRENT_DOWNLOADS = 4;
-	private static AtomicInteger activeNormalAndHighPrioDownloads = new AtomicInteger();
+	private static AtomicInteger activeDownloads = new AtomicInteger();
 
 	static
 	{
@@ -52,8 +52,8 @@ public class UltimateDownloadManager
 							if (request != null)
 								try
 								{
-									if(request.priority.ordinal()>DownloadPriority.LOW.ordinal())
-										activeNormalAndHighPrioDownloads.incrementAndGet();
+									//if(request.priority.ordinal()>DownloadPriority.LOW.ordinal())
+										activeDownloads.incrementAndGet();
 									request.execute();
 								}
 								catch (IOException e)
@@ -67,8 +67,8 @@ public class UltimateDownloadManager
 								}
 								finally
 								{
-									if(request.priority.ordinal()>DownloadPriority.LOW.ordinal())
-										activeNormalAndHighPrioDownloads.decrementAndGet();
+									//if(request.priority.ordinal()>DownloadPriority.LOW.ordinal())
+										activeDownloads.decrementAndGet();
 								}
 							else
 								Telemetry.trackException(t.ex);
@@ -114,6 +114,6 @@ public class UltimateDownloadManager
 
 	public synchronized static boolean areDownloadsActive()
 	{
-		return activeNormalAndHighPrioDownloads.get()>0;
+		return activeDownloads.get()>0 || !taskDeque.isEmpty();
 	}
 }

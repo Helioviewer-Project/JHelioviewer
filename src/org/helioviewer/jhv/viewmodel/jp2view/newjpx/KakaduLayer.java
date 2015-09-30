@@ -355,9 +355,9 @@ public class KakaduLayer extends AbstractImageLayer
 								{
 									//FIXME: should only happen if current layer is active
 									//FIXME: should only happen if needed
-									MainFrame.MAIN_PANEL.repaint();
-									MainFrame.OVERVIEW_PANEL.repaint();
-									MainFrame.MOVIE_PANEL.repaint();
+									MainFrame.MAIN_PANEL.repaint(1000);
+									MainFrame.OVERVIEW_PANEL.repaint(1000);
+									MainFrame.MOVIE_PANEL.repaint(1000);
 								}
 							});
 							Thread.sleep(500);
@@ -381,9 +381,9 @@ public class KakaduLayer extends AbstractImageLayer
 					@Override
 					public void run()
 					{
-						MainFrame.MAIN_PANEL.repaint();
-						MainFrame.OVERVIEW_PANEL.repaint();
-						MainFrame.MOVIE_PANEL.repaint();
+						MainFrame.MAIN_PANEL.repaint(1000);
+						MainFrame.OVERVIEW_PANEL.repaint(1000);
+						MainFrame.MOVIE_PANEL.repaint(1000);
 					}
 				});
 				
