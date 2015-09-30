@@ -3,10 +3,7 @@ package org.helioviewer.jhv.viewmodel.metadata;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-import javax.swing.JOptionPane;
-
 import org.helioviewer.jhv.Telemetry;
-import org.helioviewer.jhv.gui.MainFrame;
 import org.w3c.dom.Document;
 
 public class MetaDataFactory

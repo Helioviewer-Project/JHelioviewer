@@ -100,10 +100,6 @@ public abstract class AbstractImageLayer extends AbstractLayer
 			texture.upload(this,md.getLocalDateTime(),_preparedImageData.imageRegion,_preparedImageData.rawImageData, _preparedImageData.width, _preparedImageData.height);
 		}
 		
-		Rectangle2D physicalSize = md.getPhysicalImageSize();
-		/*if (physicalSize.getWidth() <= 0 || physicalSize.getHeight() <= 0)
-			return RenderResult.RETRY_LATER;*/
-
 		float xSunOffset =  (float) ((md.getSunPixelPosition().x - md.getResolution().x / 2.0) / (float)md.getResolution().x);
 		float ySunOffset = -(float) ((md.getSunPixelPosition().y - md.getResolution().y / 2.0) / (float)md.getResolution().y);
 

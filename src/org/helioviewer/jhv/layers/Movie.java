@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 import javax.annotation.Nullable;
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -24,7 +23,6 @@ import kdu_jni.Kdu_dims;
 import kdu_jni.Kdu_region_compositor;
 
 import org.helioviewer.jhv.Telemetry;
-import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.layers.AbstractImageLayer.CacheStatus;
 import org.helioviewer.jhv.layers.LUT.Lut;
 import org.helioviewer.jhv.viewmodel.jp2view.kakadu.KakaduUtils;
@@ -64,7 +62,7 @@ public class Movie
 			family_src = new Jp2_threadsafe_family_src();
 			family_src.Open(filename);
 			processFamilySrc();
-			if(!containsValidFrames())
+			if(!(getAnyMetaData()!=null))
 				throw new UnsuitableMetaDataException();
 
 			cacheStatus = CacheStatus.FULL;
@@ -86,7 +84,7 @@ public class Movie
 			family_src.Open(kduCache);
 			processFamilySrc();
 			
-			if(!containsValidFrames())
+			if(!(getAnyMetaData()!=null))
 				throw new UnsuitableMetaDataException();
 			
 			cacheStatus = CacheStatus.PREVIEW;
@@ -121,33 +119,26 @@ public class Movie
 			}
 			
 			if(ul.getLUT()==null)
-				for(MetaData md:metaDatas)
-					if(md!=null)
+			{
+				MetaData md=getAnyMetaData();
+				if(md!=null)
+				{
+					final Lut l=md.getDefaultLUT();
+					SwingUtilities.invokeLater(new Runnable()
 					{
-						final Lut l=md.getDefaultLUT();
-						SwingUtilities.invokeLater(new Runnable()
+						@Override
+						public void run()
 						{
-							@Override
-							public void run()
-							{
-								ul.setLUT(l);
-							}
-						});
-						break;
-					}
+							ul.setLUT(l);
+						}
+					});
+				}
+			}
 		}
 		catch (KduException e)
 		{
 			Telemetry.trackException(e);
 		}
-	}
-	
-	public boolean containsValidFrames()
-	{
-		for(MetaData md:metaDatas)
-			if(md!=null)
-				return true;
-		return false;
 	}
 	
 	public String getBackingFile()
@@ -220,6 +211,15 @@ public class Movie
 	public CacheStatus getCacheStatus()
 	{
 		return cacheStatus;
+	}
+	
+	@Nullable
+	public MetaData getAnyMetaData()
+	{
+		for(MetaData md:metaDatas)
+			if(md!=null)
+				return md;
+		return null;
 	}
 	
 	public MetaData getMetaData(int idx)

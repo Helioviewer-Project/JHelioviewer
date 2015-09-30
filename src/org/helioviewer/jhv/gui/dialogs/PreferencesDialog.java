@@ -763,30 +763,31 @@ public class PreferencesDialog extends JDialog
 			}
 
 			float ar = 16 / 9f;
-			try {
+			try
+			{
 				int width = Integer.parseInt(txtScreenshotImageWidth.getText());
 				int height = Integer.parseInt(txtScreenshotImageHeight.getText());
 				ar = width / (float) height;
-			} catch (Exception _e) {
+			}
+			catch (Exception _e)
+			{
+				Telemetry.trackException(_e);
 			}
 
-			screenshotAspectRatioSelection
-					.setSelectedItem(IMAGE_ASPECT_RATIO_PRESETS[IMAGE_ASPECT_RATIO_PRESETS.length - 1]);
-			for (AspectRatio asp : IMAGE_ASPECT_RATIO_PRESETS) {
-				if (Math.abs(asp.width / (float) asp.height - ar) < 0.01) {
+			screenshotAspectRatioSelection.setSelectedItem(IMAGE_ASPECT_RATIO_PRESETS[IMAGE_ASPECT_RATIO_PRESETS.length - 1]);
+			for (AspectRatio asp : IMAGE_ASPECT_RATIO_PRESETS)
+				if (Math.abs(asp.width / (float) asp.height - ar) < 0.01)
+				{
 					screenshotAspectRatioSelection.setSelectedItem(asp);
 					break;
 				}
-			}
 		}
 
-		public void saveSettings() {
-			Settings.setProperty(SETTING_SCREENSHOT_TEXT,
-					isTextEnabled.isSelected() + "");
-			Settings.setProperty(SETTING_SCREENSHOT_IMG_WIDTH,
-					txtScreenshotImageWidth.getValue().toString());
-			Settings.setProperty(SETTING_SCREENSHOT_IMG_HEIGHT,
-					txtScreenshotImageHeight.getValue().toString());
+		public void saveSettings()
+		{
+			Settings.setProperty(SETTING_SCREENSHOT_TEXT, isTextEnabled.isSelected() + "");
+			Settings.setProperty(SETTING_SCREENSHOT_IMG_WIDTH, txtScreenshotImageWidth.getValue().toString());
+			Settings.setProperty(SETTING_SCREENSHOT_IMG_HEIGHT, txtScreenshotImageHeight.getValue().toString());
 		}
 
 	}

@@ -87,7 +87,8 @@ public class KakaduLayer extends AbstractImageLayer
 		movie.setFile(_filePath);
 		
 		MovieCache.add(movie);
-		name = movie.getMetaData(0).getFullName();
+		
+		name = movie.getAnyMetaData().getFullName();
 		
 		start = getLocalDateTimes().first();
 		end = getLocalDateTimes().last();

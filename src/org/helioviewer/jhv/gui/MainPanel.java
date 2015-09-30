@@ -642,7 +642,11 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 			descriptions = new ArrayList<String>();
 			for (AbstractLayer layer : Layers.getLayers())
 				if (layer.isVisible())
-					descriptions.add(layer.getFullName() + " - " + layer.getCurrentTime().format(Globals.DATE_TIME_FORMATTER));
+				{
+					LocalDateTime ldt=layer.getCurrentTime();
+					if(ldt!=null)
+						descriptions.add(layer.getFullName() + " - " + ldt.format(Globals.DATE_TIME_FORMATTER));
+				}
 		}
 		
 		int tileWidth = imageWidth < DEFAULT_TILE_WIDTH ? imageWidth : DEFAULT_TILE_WIDTH;
