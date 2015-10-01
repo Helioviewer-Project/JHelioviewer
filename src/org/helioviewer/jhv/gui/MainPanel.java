@@ -82,8 +82,6 @@ import com.jogamp.opengl.util.awt.TextRenderer;
 //TODO: change all listeners to inline anonymous classes
 public class MainPanel extends GLCanvas implements GLEventListener, MouseListener, MouseMotionListener, MouseWheelListener, LayerListener, TimeLineListener, Camera
 {
-	private static final long serialVersionUID = 6714893614985558471L;
-
 	public static final double MAX_DISTANCE = Constants.SUN_MEAN_DISTANCE_TO_EARTH * 1.8;
 	public static final double MIN_DISTANCE = Constants.SUN_RADIUS * 1.2;
 	private static final double DEFAULT_CAMERA_DISTANCE = 14 * Constants.SUN_RADIUS;
@@ -414,8 +412,9 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	{
 		sizeForDecoder = getCanavasSize();
 		
-		if(TimeLine.SINGLETON.isPlaying())
-			sizeForDecoder = new Dimension((int)(sizeForDecoder.width/resolutionDivisor), (int)(sizeForDecoder.height/resolutionDivisor));
+		//TODO: find a better solution to maintain fps
+		//if(TimeLine.SINGLETON.isPlaying())
+		//	sizeForDecoder = new Dimension((int)(sizeForDecoder.width/resolutionDivisor), (int)(sizeForDecoder.height/resolutionDivisor));
 		
 		GL2 gl = drawable.getGL().getGL2();
 

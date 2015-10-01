@@ -18,6 +18,7 @@ import javax.swing.SwingConstants;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
+import org.helioviewer.jhv.gui.actions.ResetCameraAction;
 import org.helioviewer.jhv.gui.actions.SetCameraPanInteractionAction;
 import org.helioviewer.jhv.gui.actions.SetCameraRotationInteractionAction;
 import org.helioviewer.jhv.gui.actions.SetCameraTrackAction;
@@ -26,12 +27,11 @@ import org.helioviewer.jhv.gui.actions.SetCameraZoomBoxInteractionAction;
 import org.helioviewer.jhv.gui.actions.ToggleCoronaVisibilityAction;
 import org.helioviewer.jhv.gui.actions.View2DAction;
 import org.helioviewer.jhv.gui.actions.View3DAction;
+import org.helioviewer.jhv.gui.actions.Zoom1To1Action;
+import org.helioviewer.jhv.gui.actions.ZoomFitAction;
+import org.helioviewer.jhv.gui.actions.ZoomInAction;
+import org.helioviewer.jhv.gui.actions.ZoomOutAction;
 import org.helioviewer.jhv.gui.sdocutout.SDOCutOutButton;
-import org.helioviewer.jhv.opengl.camera.actions.ResetCameraAction;
-import org.helioviewer.jhv.opengl.camera.actions.Zoom1To1Action;
-import org.helioviewer.jhv.opengl.camera.actions.ZoomFitAction;
-import org.helioviewer.jhv.opengl.camera.actions.ZoomInAction;
-import org.helioviewer.jhv.opengl.camera.actions.ZoomOutAction;
 
 /**
  * Toolbar containing the most common actions.
@@ -41,8 +41,6 @@ import org.helioviewer.jhv.opengl.camera.actions.ZoomOutAction;
  */
 public class TopToolBar extends JToolBar implements MouseListener
 {
-	private static final long serialVersionUID = 1L;
-
 	private enum DisplayMode
 	{
 		ICONANDTEXT, ICONONLY, TEXTONLY

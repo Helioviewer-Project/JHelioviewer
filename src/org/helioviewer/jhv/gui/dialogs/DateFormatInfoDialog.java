@@ -21,8 +21,6 @@ import org.helioviewer.jhv.gui.MainFrame;
  */
 class DateFormatInfoDialog extends JDialog
 {
-    private static final long serialVersionUID = 1L;
-
     private JButton closeButton = new JButton("Close");
 
     public DateFormatInfoDialog()

@@ -57,9 +57,6 @@ import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
  * {@link org.helioviewer.jhv.solarevents}.
  */
 public class HEKEventInformationDialog extends JDialog implements ActionListener, MouseListener, HyperlinkListener {
-
-    private static final long serialVersionUID = 1L;
-
     private static final Cursor CURSOR_DEFAULT = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);
     private static final Cursor CURSOR_CLICK = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
 

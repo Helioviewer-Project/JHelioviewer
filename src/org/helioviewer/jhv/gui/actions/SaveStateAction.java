@@ -11,21 +11,14 @@ import org.helioviewer.jhv.base.StateParser;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.json.JSONException;
 
-public class SaveStateAction extends AbstractAction {
-
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * Default constructor.
-     */
-    public SaveStateAction() {
+public class SaveStateAction extends AbstractAction
+{
+    public SaveStateAction()
+    {
         super("Save state...");
         putValue(SHORT_DESCRIPTION, "Saves the current state of JHV");
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public void actionPerformed(ActionEvent e)
     {
     	try

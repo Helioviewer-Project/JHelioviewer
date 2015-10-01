@@ -13,16 +13,12 @@ import javax.swing.JComponent;
  * This panel hides the use of the {@link CollapsiblePane} and allows accessing
  * the children of the {@link CollapsiblePane} directly.
  */
-public class SideContentPane extends JComponent {
-
-    private static final long serialVersionUID = 1L;
-
+public class SideContentPane extends JComponent
+{
     private HashMap<Component, CollapsiblePane> map = new HashMap<Component, CollapsiblePane>();
 
-    /**
-     * Default constructor.
-     */
-    public SideContentPane() {
+    public SideContentPane()
+    {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         add(Box.createGlue());
     }

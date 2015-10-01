@@ -14,53 +14,48 @@ import org.helioviewer.jhv.opengl.RayTrace.Ray;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.TimeLine.TimeLineListener;
 
-abstract class StatusLabel extends JLabel implements TimeLineListener, StatusLabelMouseListener, StatusLabelCameraListener, LayerListener{
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 6896917311893150028L;
-
-	public StatusLabel() {
+abstract class StatusLabel extends JLabel implements TimeLineListener, StatusLabelMouseListener, StatusLabelCameraListener, LayerListener
+{
+	public StatusLabel()
+	{
 		TimeLine.SINGLETON.addListener(this);
 		Layers.addLayerListener(this);
 	}
 	
-	public void mouseExited(MouseEvent e, Ray ray) {
-		
-		
+	public void mouseExited(MouseEvent e, Ray ray)
+	{
 	}
 
-	public void mouseMoved(MouseEvent e, Ray ray) {
-		
-		
-	}
-
-	@Override
-	public void timeStampChanged(LocalDateTime current, LocalDateTime last) {
-		
-		
+	public void mouseMoved(MouseEvent e, Ray ray)
+	{
 	}
 
 	@Override
-	public void dateTimesChanged(int framecount) {
-		
-		
+	public void timeStampChanged(LocalDateTime current, LocalDateTime last)
+	{
+	}
+
+	@Override
+	public void dateTimesChanged(int framecount)
+	{
 	}
 	
-	public void cameraChanged(){
-		
+	public void cameraChanged()
+	{
 	}
 
 	@Override
-	public void layerAdded() {
+	public void layerAdded()
+	{
 	}
 
 	@Override
-	public void layersRemoved() {
+	public void layersRemoved()
+	{
 	}
 
 	@Override
-	public void activeLayerChanged(AbstractLayer layer) {
+	public void activeLayerChanged(AbstractLayer layer)
+	{
 	}	
 }

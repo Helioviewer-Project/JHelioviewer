@@ -35,8 +35,6 @@ import org.helioviewer.jhv.viewmodel.TimeLine;
  */
 public class PositionStatusPanel extends StatusLabel implements MouseListener
 {
-	private static final long serialVersionUID = 1L;
-
 	private static final char DEGREE = '\u00B0';
 	private static final String title = " (X, Y) : ";
 	private PopupState popupState;
@@ -165,7 +163,6 @@ public class PositionStatusPanel extends StatusLabel implements MouseListener
 
 	private class PopupState extends JPopupMenu
 	{
-		private static final long serialVersionUID = 5268038408623722705L;
 		private PopupItemState.PopupItemStates selectedItem = PopupItemState.PopupItemStates.ARCSECS;
 
 		public PopupState()
@@ -214,8 +211,6 @@ public class PositionStatusPanel extends StatusLabel implements MouseListener
 
 	private static class PopupItemState extends JMenuItem
 	{
-		private static final long serialVersionUID = -4382532722049627152L;
-
 		public enum PopupItemStates
 		{
 			DEGREE("degrees (Heliographic)"),

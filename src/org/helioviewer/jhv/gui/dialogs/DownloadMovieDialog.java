@@ -29,7 +29,6 @@ import org.helioviewer.jhv.viewmodel.TimeLine;
 //FIXME: layout on windows broken
 public class DownloadMovieDialog extends JDialog
 {
-	private static final long serialVersionUID = -1367652999885843133L;
 	private JProgressBar progressBar;
 	private static final String PATH_SETTINGS = "download.path";
 	private String url = null;

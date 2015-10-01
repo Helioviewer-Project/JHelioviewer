@@ -33,8 +33,6 @@ import org.helioviewer.jhv.gui.actions.filefilters.FileFilter;
  */
 public class SaveScreenshotAsAction extends AbstractAction
 {
-	private static final long serialVersionUID = 1L;
-
 	private static final String SETTING_SCREENSHOT_IMG_WIDTH = "export.screenshot.image.width";
 	private static final String SETTING_SCREENSHOT_IMG_HEIGHT = "export.screenshot.image.height";
 	private static final String SETTING_SCREENSHOT_TEXT = "export.screenshot.text";

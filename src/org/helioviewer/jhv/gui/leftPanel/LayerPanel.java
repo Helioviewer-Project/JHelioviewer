@@ -44,12 +44,8 @@ import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.TimeLine.TimeLineListener;
 
-/**
- * The new LayerPanel, include a JTable for the current added layers
- */
 public class LayerPanel extends JPanel implements LayerListener, TimeLineListener
 {
-	private static final long serialVersionUID = 6800340702841902680L;
 	private static final int SIZE;
 	private static final ImageIcon ICON_REMOVE;
 	
@@ -395,8 +391,6 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 
 	private static class LayerTableModel extends DefaultTableModel
 	{
-		private static final long serialVersionUID = 5224476911114851064L;
-
 		public LayerTableModel(Object[][] data, String[] columnNames)
 		{
 			super(data, columnNames);
@@ -420,8 +414,6 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 
 	private static class ImageIconCellRenderer extends DefaultTableCellRenderer
 	{
-		private static final long serialVersionUID = -2552431402411803683L;
-
 		public ImageIconCellRenderer()
 		{
 			// setOpaque(true);

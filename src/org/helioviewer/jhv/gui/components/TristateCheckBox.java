@@ -17,28 +17,12 @@ import javax.swing.JCheckBox;
  * original CheckBox. This way, it should be compatible to (hopefully) all
  * Look-And-Feels, without introducing special cases for each of them.
  */
-public final class TristateCheckBox extends JCheckBox {
-
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * Constant to mark a HEKPath as checked
-     */
+public final class TristateCheckBox extends JCheckBox
+{
     final public static int CHECKED = 1;
-
-    /**
-     * Constant to mark a HEKPath as unchecked
-     */
     final public static int UNCHECKED = 2;
-
-    /**
-     * Constant to mark a HEKPath as undeterminated
-     */
     final public static int INDETERMINATE = 4;
 
-    /**
-     * Constant refering to the default HEKPath state
-     */
     final public static int DEFAULT = UNCHECKED;
 
     /**

@@ -5,6 +5,8 @@ import java.awt.geom.Rectangle2D;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NavigableSet;
 import java.util.concurrent.Future;
 
@@ -75,6 +77,7 @@ public abstract class AbstractImageLayer extends AbstractLayer
 	private static int shaderprogram = -1;
 	
 	//FIXME: use a cache instead of a single texture, but at least one texture per layer
+	protected Texture[] textures=new Texture[3];
 	protected Texture texture=new Texture();
 	
 	public abstract NavigableSet<LocalDateTime> getLocalDateTimes();
@@ -86,6 +89,12 @@ public abstract class AbstractImageLayer extends AbstractLayer
 	
 	public abstract Match getMovie(LocalDateTime _currentDateTime);
 
+	protected AbstractImageLayer()
+	{
+		for(int i=0;i<textures.length;i++)
+			textures[i]=new Texture();
+	}
+	
 	public RenderResult renderLayer(GL2 gl, Dimension canvasSize, MainPanel mainPanel, PreparedImage _preparedImageData)
 	{
 		LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();

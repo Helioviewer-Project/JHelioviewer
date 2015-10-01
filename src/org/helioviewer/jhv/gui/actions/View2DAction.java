@@ -8,19 +8,10 @@ import org.helioviewer.jhv.opengl.camera.CameraMode;
 
 public class View2DAction extends AbstractAction
 {
-
-    private static final long serialVersionUID=1L;
-
-    /**
-     * Default constructor.
-     */
     public View2DAction()
     {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public void actionPerformed(ActionEvent e)
     {
     	CameraMode.set2DMode();

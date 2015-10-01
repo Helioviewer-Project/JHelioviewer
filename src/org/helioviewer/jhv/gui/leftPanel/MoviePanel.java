@@ -48,8 +48,6 @@ import com.jgoodies.forms.layout.RowSpec;
 
 public class MoviePanel extends JPanel implements TimeLineListener, LayerListener
 {
-	private static final long serialVersionUID = 3837685812219375888L;
-
 	// different animation speeds
 	private enum PlaybackSpeedUnit
 	{
@@ -314,8 +312,6 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 
 	private static class TimeSlider extends JSlider
 	{
-		private static final long serialVersionUID = 2053723659623341117L;
-
 		public TimeSlider()
 		{
 			setUI(new TimeSliderUI(this));
@@ -488,8 +484,6 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 	 */
 	public static class StaticPlayPauseAction extends AbstractAction
 	{
-		private static final long serialVersionUID = 7709407709240852446L;
-
 		public StaticPlayPauseAction()
 		{
 			super("Play movie", ICON_PLAY);
@@ -512,8 +506,6 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 	 */
 	public static class StaticPreviousFrameAction extends AbstractAction
 	{
-		private static final long serialVersionUID = -6342665405812226382L;
-
 		public StaticPreviousFrameAction()
 		{
 			super("Step to Previous Frame", ICON_BACKWARD);
@@ -536,8 +528,6 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 	 */
 	public static class StaticNextFrameAction extends AbstractAction
 	{
-		private static final long serialVersionUID = -8262700086251171378L;
-
 		public StaticNextFrameAction()
 		{
 			super("Step to Next Frame", ICON_FORWARD);

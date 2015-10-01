@@ -23,8 +23,6 @@ import org.helioviewer.jhv.gui.MainFrame;
  */
 public class ShortcutsDialog extends JDialog implements ActionListener
 {
-    private static final long serialVersionUID = 1L;
-
     private final JButton closeButton = new JButton("Close");
 
     // private final JButton wikiButton = new JButton("JHelioviewer Wiki");

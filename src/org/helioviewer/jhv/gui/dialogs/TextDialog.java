@@ -22,7 +22,6 @@ import org.helioviewer.jhv.gui.MainFrame;
 
 class TextDialog extends JDialog implements ActionListener
 {
-    private static final long serialVersionUID = 1L;
     private JButton closeButton;
 
     public TextDialog(String title, URL textFile)

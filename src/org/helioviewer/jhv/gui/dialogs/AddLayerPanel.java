@@ -44,7 +44,6 @@ import com.jgoodies.forms.layout.RowSpec;
 //FIXME: remember last entered dates, times & instruments
 public class AddLayerPanel extends JDialog
 {
-	private static final long serialVersionUID = 5707539021281900015L;
 	private final JPanel contentPanel = new JPanel();
 
 	private JLabel lblFilter, lblFilter1, lblFilter2;

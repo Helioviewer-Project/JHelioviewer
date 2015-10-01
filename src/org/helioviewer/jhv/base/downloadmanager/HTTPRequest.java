@@ -51,6 +51,7 @@ public class HTTPRequest extends AbstractDownloadRequest
 			byteArrayOutputStream = new ByteArrayOutputStream(DEFAULT_BUFFER_SIZE);
 			byte[] buf = new byte[DEFAULT_BUFFER_SIZE];
 
+			//FIXME: out of memory during movie download
 			while ((receivedLength = inputStream.read(buf)) > 0)
 			{
 				byteArrayOutputStream.write(buf, 0, receivedLength);

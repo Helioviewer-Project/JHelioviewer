@@ -395,17 +395,16 @@ public class ExportMovieDialog implements ActionListener
 		progressDialog.dispose();
 	}
 
-	private static class ProgressDialog extends JDialog implements
-			ActionListener {
-
-		private static final long serialVersionUID = -488930636247393662L;
+	private static class ProgressDialog extends JDialog implements ActionListener
+	{
 		private JProgressBar progressBar;
 		private JButton btnCancel;
 		private JLabel lblDescription;
 		private ExportMovieDialog exportMovieDialog;
 		private final JPanel contentPanel = new JPanel();
 
-		private ProgressDialog(ExportMovieDialog exportMovieDialog) {
+		private ProgressDialog(ExportMovieDialog exportMovieDialog)
+		{
 			super(MainFrame.SINGLETON);
 			this.exportMovieDialog = exportMovieDialog;
 			setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);

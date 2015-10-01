@@ -33,11 +33,10 @@ import org.helioviewer.jhv.viewmodel.metadata.UnsuitableMetaDataException;
  * following file extensions: "jpg", "jpeg", "png", "fts", "fits", "jp2" and
  * "jpx"
  */
-public class OpenLocalFileAction extends AbstractAction {
-
-	private static final long serialVersionUID = 1L;
-
-	public OpenLocalFileAction() {
+public class OpenLocalFileAction extends AbstractAction
+{
+	public OpenLocalFileAction()
+	{
 		super("Open...");
 		putValue(SHORT_DESCRIPTION, "Open image");
 		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit

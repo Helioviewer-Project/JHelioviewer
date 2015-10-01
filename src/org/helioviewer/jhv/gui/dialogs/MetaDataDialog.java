@@ -61,8 +61,6 @@ import org.w3c.dom.NodeList;
  */
 public class MetaDataDialog extends JDialog implements ActionListener, LayerListener, TimeLineListener
 {
-	private static final long serialVersionUID = 1L;
-
 	private final JButton closeButton = new JButton("Close");
 	private final JButton exportFitsButton = new JButton("Export FITS header as XML");
 

@@ -50,9 +50,6 @@ import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
  * specifics about the [particular] view."
  */
 public class HEKCacheTreeView extends JTree implements TreeModelListener {
-
-    private static final long serialVersionUID = 1L;
-
     private HEKCacheSelectionModel selectionModel;
     private HEKCacheExpansionModel expansionModel;
     @SuppressWarnings("unused")
@@ -140,9 +137,6 @@ public class HEKCacheTreeView extends JTree implements TreeModelListener {
      * TreeCellRenderer needed to draw the checkboxes into the tree
      */
     private class JCheckBoxTreeRenderer extends DefaultTreeCellRenderer {
-
-        private static final long serialVersionUID = 8761123761371402102L;
-
         /**
          * Initialize the renderer
          */

@@ -25,17 +25,8 @@ import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MainFrame;
 
-
-/**
- * Dialog that is used to display information about the program.
- * 
- * <p>
- * This includes version and contact informations.
- */
 public final class AboutDialog extends JDialog implements HyperlinkListener
 {
-    private static final long serialVersionUID = 1L;
-
     public AboutDialog()
     {
         super(MainFrame.SINGLETON, "About JHelioviewer", true);

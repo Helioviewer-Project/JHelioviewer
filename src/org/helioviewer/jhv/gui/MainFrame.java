@@ -39,8 +39,6 @@ import com.jogamp.opengl.GLContext;
 
 public class MainFrame extends JFrame
 {
-	private static final long serialVersionUID = 5593418566466319335L;
-	
 	public static MainPanel MAIN_PANEL;
 	public static OverviewPanel OVERVIEW_PANEL;
 	public static final TopToolBar TOP_TOOL_BAR = new TopToolBar();

@@ -8,8 +8,6 @@ import org.helioviewer.jhv.layers.Layers;
 
 public class ToggleCoronaVisibilityAction extends AbstractAction
 {
-	private static final long serialVersionUID = 4120289247841074304L;
-
 	public ToggleCoronaVisibilityAction()
 	{
 		super("Corona");

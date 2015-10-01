@@ -6,21 +6,17 @@ import javax.swing.AbstractAction;
 
 import org.helioviewer.jhv.gui.MainFrame;
 
-public class SetCameraPanInteractionAction extends AbstractAction{
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -1199107637545677948L;
-	
-	public SetCameraPanInteractionAction() {
+public class SetCameraPanInteractionAction extends AbstractAction
+{
+	public SetCameraPanInteractionAction()
+	{
 		super("Pan");
 	}
 	
-	
 	@Override
-	public void actionPerformed(ActionEvent e) {
+	public void actionPerformed(ActionEvent e)
+	{
 		MainFrame.MAIN_PANEL.activatePanInteraction();
 		MainFrame.OVERVIEW_PANEL.activatePanInteraction();
 	}
-
 }

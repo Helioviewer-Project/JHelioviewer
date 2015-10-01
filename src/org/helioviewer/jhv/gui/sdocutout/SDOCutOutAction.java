@@ -22,8 +22,6 @@ import org.helioviewer.jhv.viewmodel.metadata.MetaDataAIA;
 
 class SDOCutOutAction extends AbstractAction
 {
-	private static final long serialVersionUID = 1L;
-
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
     private static final String URL = "http://www.lmsal.com/get_aia_data/?";

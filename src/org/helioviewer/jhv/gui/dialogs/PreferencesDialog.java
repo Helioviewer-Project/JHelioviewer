@@ -58,8 +58,6 @@ import com.jgoodies.forms.layout.RowSpec;
  */
 public class PreferencesDialog extends JDialog
 {
-	private static final long serialVersionUID = 1L;
-
 	private final String defaultDateFormat = "yyyy/MM/dd";
 
 	private JRadioButton loadDefaultMovieOnStartUp;
@@ -378,13 +376,9 @@ public class PreferencesDialog extends JDialog
 		private static final String SETTING_MOVIE_IMG_HEIGHT = "export.movie.image.height";
 		private static final String SETTING_MOVIE_TEXT = "export.movie.text";
 		private boolean hasChanged = false;
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = -4648762833065960026L;
 
-		public MovieExportPanel() {
-
+		public MovieExportPanel()
+		{
 			this.setLayout(new FormLayout(new ColumnSpec[] {
 					FormFactory.RELATED_GAP_COLSPEC,
 					FormFactory.DEFAULT_COLSPEC,
@@ -598,8 +592,6 @@ public class PreferencesDialog extends JDialog
 		private static final String SETTING_SCREENSHOT_TEXT = "export.screenshot.text";
 		private boolean hasChanged = false;
 		
-		private static final long serialVersionUID = -3998530177421043272L;
-
 		public ScreenshotExportPanel()
 		{
 			this.setLayout(new FormLayout(new ColumnSpec[] {
@@ -792,15 +784,13 @@ public class PreferencesDialog extends JDialog
 
 	}
 
-	private static class DefaultsSelectionPanel extends JPanel {
-
-		private static final long serialVersionUID = 1L;
-
+	private static class DefaultsSelectionPanel extends JPanel
+	{
 		private JTable table = null;
 		private Object[][] tableData = null;
 
-		public DefaultsSelectionPanel() {
-
+		public DefaultsSelectionPanel()
+		{
 			super(new BorderLayout());
 			setPreferredSize(new Dimension(150, 180));
 
@@ -810,11 +800,10 @@ public class PreferencesDialog extends JDialog
 					{ "Default remote path",
 							Settings.getProperty("default.remote.path") } };
 
-			table = new JTable(new DefaultTableModel(tableData, new String[] {
-					"Description", "Value" }) {
-				private static final long serialVersionUID = 1L;
-
-				public boolean isCellEditable(int row, int column) {
+			table = new JTable(new DefaultTableModel(tableData, new String[] {"Description", "Value" })
+			{
+				public boolean isCellEditable(int row, int column)
+				{
 					return ((row == 2) && (column == 1));
 				}
 			});

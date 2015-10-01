@@ -25,9 +25,6 @@ import org.helioviewer.jhv.plugins.hekplugin.cache.HEKPath;
  * called by the HEKCacheModel, by implementing the HEKCacheListener interface
  */
 public class HEKCacheTreeViewContainer extends JPanel implements HEKCacheListener {
-
-    private static final long serialVersionUID = 1L;
-
     private static final String MSG_REQUESTING_EVENTS = "Requesting events...";
     private static final String MSG_NO_DATA_AVAILABLE = "No events available yet";
 

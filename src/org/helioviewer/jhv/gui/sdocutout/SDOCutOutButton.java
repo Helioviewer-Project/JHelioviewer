@@ -14,8 +14,6 @@ import org.helioviewer.jhv.viewmodel.metadata.MetaDataAIA;
 
 public class SDOCutOutButton extends JButton implements	LayerListener
 {
-	private static final long serialVersionUID = 1L;
-
 	public SDOCutOutButton()
 	{
 		super(new SDOCutOutAction());

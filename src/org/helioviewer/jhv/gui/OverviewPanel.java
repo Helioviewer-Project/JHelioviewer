@@ -25,7 +25,6 @@ import com.jogamp.opengl.GLContext;
 
 public class OverviewPanel extends MainPanel
 {
-	private static final long serialVersionUID = 2662016428464982455L;
 	private ArrayList<MainPanel> mainViews;
 
 	public OverviewPanel(GLContext _context)

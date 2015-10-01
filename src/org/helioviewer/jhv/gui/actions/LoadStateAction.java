@@ -15,8 +15,6 @@ import org.json.JSONException;
 
 public class LoadStateAction extends AbstractAction
 {
-    private static final long serialVersionUID = 1L;
-
     private final File stateLocation;
 
     /**

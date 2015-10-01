@@ -18,22 +18,15 @@ import org.helioviewer.jhv.plugins.Plugins.PluginIcon;
 /**
  * Panel of Pfss-Plugin
  * */
-class PfssPluginPanel extends JPanel implements ActionListener {
-
-	private static final long serialVersionUID = 1L;
-
+class PfssPluginPanel extends JPanel implements ActionListener
+{
 	// UI Components
-	private JButton visibleButton = new JButton(
-			Plugins.getIcon(PluginIcon.INVISIBLE, 16, 16));
-	private JButton reloadButton = new JButton(Plugins.getIcon(
-			PluginIcon.REFRESH, 16, 16));
+	private JButton visibleButton = new JButton(Plugins.getIcon(PluginIcon.INVISIBLE, 16, 16));
+	private JButton reloadButton = new JButton(Plugins.getIcon(PluginIcon.REFRESH, 16, 16));
 	private PfssPlugin renderer;
 
-	/**
-	 * Default constructor
-	 * 
-	 * */
-	public PfssPluginPanel(PfssPlugin renderer) {
+	public PfssPluginPanel(PfssPlugin renderer)
+	{
 		// set up visual components
 		initVisualComponents();
 		// register as layers listener

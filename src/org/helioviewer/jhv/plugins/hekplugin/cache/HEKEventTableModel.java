@@ -7,9 +7,6 @@ import javax.swing.table.AbstractTableModel;
  * "Field Name", "Field Value"
  */
 public class HEKEventTableModel extends AbstractTableModel {
-
-    private static final long serialVersionUID = 1L;
-
     /**
      * Event to be displayed in the table
      */

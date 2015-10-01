@@ -14,17 +14,14 @@ import javax.swing.BorderFactory;
  * <p>
  * This panel is not visible, if the active layer is not an image series.
  */
-public class FramerateStatusPanel extends StatusLabel{
-
-    private static final long serialVersionUID = 1L;
+public class FramerateStatusPanel extends StatusLabel
+{
     private int counter = 0;
     private long currentMillis = 0;
     private static final String TITLE = "fps:";
     
-    /**
-     * Default constructor.
-     */
-    public FramerateStatusPanel(){
+    public FramerateStatusPanel()
+    {
     	super();
         setBorder(BorderFactory.createEtchedBorder());
 

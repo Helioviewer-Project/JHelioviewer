@@ -10,28 +10,18 @@ import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MainFrame;
 
-/**
- * Action to switch fullscreen mode on and off.
- * 
- * <p>
- * In this case, "fullscreen" means hiding the panel at left side of the window.
- */
-public class ToggleFullscreenAction extends AbstractAction {
-
-    private static final long serialVersionUID = 1L;
-
-    public ToggleFullscreenAction() {
+public class ToggleFullscreenAction extends AbstractAction
+{
+    public ToggleFullscreenAction()
+    {
         super("Toggle Fullscreen", IconBank.getIcon(JHVIcon.FULLSCREEN, 16, 16));
         putValue(SHORT_DESCRIPTION, "Toggle fullscreen");
         putValue(MNEMONIC_KEY, KeyEvent.VK_T);
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.ALT_MASK));
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void actionPerformed(ActionEvent e) {
+    public void actionPerformed(ActionEvent e)
+    {
     	MainFrame.MAIN_PANEL.switchToFullscreen();
     }
-
 }

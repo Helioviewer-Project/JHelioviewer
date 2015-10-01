@@ -27,8 +27,6 @@ import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 //TODO: remove code duplication in formatting/parsing code
 public class DatePicker extends JPanel
 {
-	private static final long serialVersionUID = 3241360217403676930L;
-	
 	private enum KEY_MODE { UP, DOWN, NONE};
 	private boolean popupVisibility = false;
 	private KEY_MODE keyMode = KEY_MODE.NONE;

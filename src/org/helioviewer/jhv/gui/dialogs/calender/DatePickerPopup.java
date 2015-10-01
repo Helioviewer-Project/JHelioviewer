@@ -37,7 +37,6 @@ import javax.swing.table.DefaultTableModel;
 
 class DatePickerPopup extends JDialog
 {
-	private static final long serialVersionUID = -6010133370918805221L;
 	private LocalDate currentDate;
 	private CalenderCellRenderer calenderCellRenderer;
 	private CalenderTableModel calenderTableModel;
@@ -284,27 +283,22 @@ class DatePickerPopup extends JDialog
 		lblMonth.setText(currentDate.getMonth().name());
 		lblYear.setText(currentDate.getYear() + "");
 	}
-	private static class CalenderTableModel extends DefaultTableModel {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 3326390496144906677L;
-
-		public CalenderTableModel(Object[][] data, String[] columnNames) {
+	private static class CalenderTableModel extends DefaultTableModel
+	{
+		public CalenderTableModel(Object[][] data, String[] columnNames)
+		{
 			super(data, columnNames);
 		}
 
 		@Override
-		public boolean isCellEditable(int row, int column) {
+		public boolean isCellEditable(int row, int column)
+		{
 			return false;
 		}
 	}
 
 	private static class CalenderCellRenderer extends DefaultTableCellRenderer
 	{
-		private static final long serialVersionUID = 1269766534482010809L;
-
 		private LocalDate currentMonth, currentDateTime;
 		private final Color GRAY = new Color(195, 195, 195);
 		private final Color SELECTION_BACKGROUND = new Color(203, 233, 247);
@@ -347,8 +341,6 @@ class DatePickerPopup extends JDialog
 
 	private static class CalenderHeaderRenderer extends DefaultTableCellRenderer
 	{
-		private static final long serialVersionUID = -3124760824900437244L;
-
 		public CalenderHeaderRenderer()
 		{
 			setHorizontalAlignment(CENTER);

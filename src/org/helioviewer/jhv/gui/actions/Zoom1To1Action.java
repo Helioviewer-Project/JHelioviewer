@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.opengl.camera.actions;
+package org.helioviewer.jhv.gui.actions;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -21,8 +21,6 @@ import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 
 public class Zoom1To1Action extends AbstractAction
 {
-	private static final long serialVersionUID = 1L;
-
 	public Zoom1To1Action(boolean small)
 	{
 		super("Zoom 1:1", small ? IconBank.getIcon(JHVIcon.NEW_ZOOM_1TO1, 16,16) : IconBank.getIcon(JHVIcon.NEW_ZOOM_1TO1, 24, 24));

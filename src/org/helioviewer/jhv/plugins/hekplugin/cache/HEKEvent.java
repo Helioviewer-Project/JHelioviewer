@@ -363,8 +363,6 @@ public class HEKEvent implements IntervalComparison<Date> {
      * event class should be mapped to this exception class.
      */
     public static class HEKEventException extends Exception {
-
-        private static final long serialVersionUID = 1L;
     }
 
     /**

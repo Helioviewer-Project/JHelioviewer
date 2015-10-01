@@ -27,8 +27,6 @@ import org.helioviewer.jhv.gui.IconBank.JHVIcon;
  */
 class SplashScreen extends JFrame
 {
-	private static final long serialVersionUID = 1L;
-
 	private SplashImagePanel imagePanel = new SplashImagePanel();
 	private JProgressBar progressBar = new JProgressBar(0, 100);
 
@@ -97,8 +95,6 @@ class SplashScreen extends JFrame
 	 * */
 	private static class SplashImagePanel extends JPanel
 	{
-		private static final long serialVersionUID = 1L;
-
 		private BufferedImage image = IconBank.getImage(JHVIcon.SPLASH);
 		private JLabel label = new JLabel("");
 

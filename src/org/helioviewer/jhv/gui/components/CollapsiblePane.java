@@ -23,10 +23,8 @@ import org.helioviewer.jhv.gui.MainFrame;
  * This panel consists of a toggle button and one arbitrary component. Clicking
  * the toggle button will toggle the visibility of the component.
  */
-class CollapsiblePane extends JComponent implements ActionListener {
-
-    private static final long serialVersionUID = 1L;
-
+class CollapsiblePane extends JComponent implements ActionListener
+{
     private static final ImageIcon ICON_EXPANDED = IconBank.getIcon(JHVIcon.NEW_DOWN, 16, 16);
     private static final ImageIcon ICON_COLLAPSED = IconBank.getIcon(JHVIcon.NEW_RIGHT, 16, 16);
 

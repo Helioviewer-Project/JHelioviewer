@@ -14,11 +14,10 @@ import org.helioviewer.jhv.layers.Layers;
 /**
  * Action to terminate the application.
  */
-public class ExitProgramAction extends AbstractAction {
-
-	private static final long serialVersionUID = 1L;
-
-	public ExitProgramAction() {
+public class ExitProgramAction extends AbstractAction
+{
+	public ExitProgramAction()
+	{
 		super("Quit");
 		putValue(SHORT_DESCRIPTION, "Quit program");
 		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_Q, Toolkit

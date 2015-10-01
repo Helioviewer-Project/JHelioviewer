@@ -28,8 +28,6 @@ import org.helioviewer.jhv.viewmodel.metadata.MetaData;
  */
 public class ZoomStatusPanel extends StatusLabel
 {
-	private static final long serialVersionUID = 1L;
-
 	public ZoomStatusPanel()
 	{
 		super();

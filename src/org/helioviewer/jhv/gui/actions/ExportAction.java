@@ -14,8 +14,6 @@ import org.helioviewer.jhv.layers.Layers;
 
 public class ExportAction extends AbstractAction
 {
-	private static final long serialVersionUID=-1780397745337916864L;
-
   	public ExportAction()
   	{
 		super("Save movie as...");

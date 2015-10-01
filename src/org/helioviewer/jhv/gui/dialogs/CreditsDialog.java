@@ -23,8 +23,6 @@ import org.helioviewer.jhv.gui.MainFrame;
  */
 public final class CreditsDialog extends JDialog
 {
-    private static final long serialVersionUID = 1L;
-
     public CreditsDialog(Component _parent)
     {
         super(MainFrame.SINGLETON, "Credits", true);

@@ -11,13 +11,8 @@ import javax.swing.KeyStroke;
 import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.gui.dialogs.ShortcutsDialog;
 
-/**
- * Action to show any given dialog.
- */
-
 public class ShowDialogAction extends AbstractAction
 {
-    private static final long serialVersionUID = 1L;
     private Class<JDialog> dialogToShow;
 
     /**

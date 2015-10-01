@@ -7,23 +7,20 @@ import org.helioviewer.jhv.Globals;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 
 
-public class CurrentTimeLabel extends StatusLabel{
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -9216168376764918306L;
-	
+public class CurrentTimeLabel extends StatusLabel
+{
 	private static final String EMPTY = " - ";
 	
-	public CurrentTimeLabel() {
+	public CurrentTimeLabel()
+	{
 		super();
         this.setBorder(BorderFactory.createEtchedBorder());
 		this.setText(EMPTY);
 	}
 
 	@Override
-	public void timeStampChanged(LocalDateTime current, LocalDateTime last) {
+	public void timeStampChanged(LocalDateTime current, LocalDateTime last)
+	{
 		this.setText(TimeLine.SINGLETON.getCurrentDateTime().format(Globals.DATE_TIME_FORMATTER));
 	}
 }

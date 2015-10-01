@@ -17,14 +17,14 @@ import org.helioviewer.jhv.gui.actions.SaveScreenshotAsAction;
 import org.helioviewer.jhv.gui.actions.SaveStateAction;
 import org.helioviewer.jhv.gui.actions.ShowDialogAction;
 import org.helioviewer.jhv.gui.actions.ToggleFullscreenAction;
+import org.helioviewer.jhv.gui.actions.Zoom1To1Action;
+import org.helioviewer.jhv.gui.actions.ZoomFitAction;
+import org.helioviewer.jhv.gui.actions.ZoomInAction;
+import org.helioviewer.jhv.gui.actions.ZoomOutAction;
 import org.helioviewer.jhv.gui.dialogs.AboutDialog;
 import org.helioviewer.jhv.gui.dialogs.PreferencesDialog;
 import org.helioviewer.jhv.gui.dialogs.ShortcutsDialog;
 import org.helioviewer.jhv.gui.leftPanel.MoviePanel;
-import org.helioviewer.jhv.opengl.camera.actions.Zoom1To1Action;
-import org.helioviewer.jhv.opengl.camera.actions.ZoomFitAction;
-import org.helioviewer.jhv.opengl.camera.actions.ZoomInAction;
-import org.helioviewer.jhv.opengl.camera.actions.ZoomOutAction;
 
 /**
  * Menu bar of the main window.
@@ -34,8 +34,6 @@ import org.helioviewer.jhv.opengl.camera.actions.ZoomOutAction;
  */
 public class MenuBar extends JMenuBar
 {
-	private static final long serialVersionUID = 1L;
-
 	public MenuBar()
 	{
 		super();

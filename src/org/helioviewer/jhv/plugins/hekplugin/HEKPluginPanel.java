@@ -38,8 +38,6 @@ import org.helioviewer.jhv.plugins.hekplugin.cache.gui.HEKCacheTreeViewContainer
 class HEKPluginPanel extends JPanel implements ActionListener,
 		HEKCacheListener {
 
-	private static final long serialVersionUID = 1L;
-
 	// UI Components
 	private JPanel buttonPanel = new JPanel(new BorderLayout());
 	private JProgressBar progressBar = new JProgressBar();
