@@ -73,7 +73,7 @@ public class OverviewPanel extends MainPanel
 				double distance = halfWidth
 						* Math.sin(Math.PI / 2 - halfFOVRad)
 						/ Math.sin(halfFOVRad);
-				this.translation = new Vector3d(0, 0, distance);
+				this.translationNow = new Vector3d(0, 0, distance);
 			}
 		}
 	}
@@ -94,13 +94,13 @@ public class OverviewPanel extends MainPanel
 	protected void render(GL2 gl, boolean _showLoadingAnimation)
 	{
 		this.sizeForDecoder = getSize();
-		this.rotation = MainFrame.MAIN_PANEL.getRotation();
+		this.rotationNow = MainFrame.MAIN_PANEL.getRotationCurrent();
 		super.render(gl, false);
 		gl.glPushMatrix();
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glLoadIdentity();
 		gl.glScaled(1, this.getAspect(), 1);
-		double width = Math.tan(Math.toRadians(FOV / 2.0)) * this.translation.z;
+		double width = Math.tan(Math.toRadians(FOV / 2.0)) * this.translationNow.z;
 		gl.glOrtho(-width, width, width, -width, -Constants.SUN_RADIUS, Constants.SUN_RADIUS);
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		gl.glLoadIdentity();
@@ -137,8 +137,8 @@ public class OverviewPanel extends MainPanel
 
 			gl.glBegin(GL2.GL_LINE_LOOP);
 			for (int i = 0; i < 30; i++) {
-				double x = Math.cos(i / 30.0 * 2 * Math.PI) * radius + mainView.getTranslation().x;
-				double y = Math.sin(i / 30.0 * 2 * Math.PI) * radius + mainView.getTranslation().y;
+				double x = Math.cos(i / 30.0 * 2 * Math.PI) * radius + mainView.getTranslationCurrent().x;
+				double y = Math.sin(i / 30.0 * 2 * Math.PI) * radius + mainView.getTranslationCurrent().y;
 				gl.glVertex2d(x, y);
 			}
 			gl.glEnd();

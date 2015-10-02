@@ -24,10 +24,9 @@ public class ZoomInAction  extends AbstractAction
 
     public void actionPerformed(ActionEvent e)
     {
-    	MainPanel compenentView = MainFrame.MAIN_PANEL;
+    	MainPanel componentView = MainFrame.MAIN_PANEL;
     	
-        double distance = -compenentView.getTranslation().z / 3;
-        compenentView.addCameraAnimation(new CameraZoomAnimation(distance, 500));
+        double distance = -componentView.getTranslationEnd().z / 3;
+        componentView.addCameraAnimation(new CameraZoomAnimation(componentView, distance));
     }
-
 }

@@ -84,7 +84,7 @@ public class Quaternion3d {
 
     public Quaternion3d scale(double s)
     {
-        return new Quaternion3d(a * s, this.u.scale(s));
+        return new Quaternion3d(a * s, u.scale(s));
     }
 
     public Quaternion3d rotate(Quaternion3d q2)
@@ -102,25 +102,27 @@ public class Quaternion3d {
     public Quaternion3d slerp(Quaternion3d r, double t)
     {
         double cosAngle = dot(r);
+        
+        //interpolate close quaternions
         if (cosAngle > 1 - EPSILON)
-        {
-            Quaternion3d result = r.add(this.subtract(r).scale(t));
-            return result.normalized();
-        }
-
+            return this.add(r.subtract(this).scale(t)).normalized();
+        
         if (cosAngle < 0)
             cosAngle = 0;
         if (cosAngle > 1)
             cosAngle = 1;
-
+        
         double theta0 = Math.acos(cosAngle);
         double theta = theta0 * t;
         Quaternion3d v2 = r.subtract(this.scale(cosAngle)).normalized();
 
-        Quaternion3d q = this.scale(Math.cos(theta)).add(v2.scale(Math.sin(theta)));
-        return q.normalized();
+        return this.scale(Math.cos(theta)).add(v2.scale(Math.sin(theta))).normalized();
     }
-
+    
+    public Quaternion3d nlerp(Quaternion3d r, double t)
+    {
+        return this.scale(1-t).add(r.scale(t)).normalized();
+    }
 
     public Quaternion3d normalized()
     {

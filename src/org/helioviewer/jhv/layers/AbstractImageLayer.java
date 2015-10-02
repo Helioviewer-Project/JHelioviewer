@@ -6,7 +6,6 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.NavigableSet;
 import java.util.concurrent.Future;
 
@@ -77,8 +76,8 @@ public abstract class AbstractImageLayer extends AbstractLayer
 	private static int shaderprogram = -1;
 	
 	//FIXME: use a cache instead of a single texture, but at least one texture per layer
-	protected Texture[] textures=new Texture[3];
-	protected Texture texture=new Texture();
+	protected static ArrayList<Texture> textures=new ArrayList<Texture>();
+	//protected Texture texture=new Texture();
 	
 	public abstract NavigableSet<LocalDateTime> getLocalDateTimes();
 
@@ -89,10 +88,11 @@ public abstract class AbstractImageLayer extends AbstractLayer
 	
 	public abstract Match getMovie(LocalDateTime _currentDateTime);
 
-	protected AbstractImageLayer()
+	protected static int freeTextureNr=0;
+	
+	public static void newRenderPassStarted()
 	{
-		for(int i=0;i<textures.length;i++)
-			textures[i]=new Texture();
+		freeTextureNr=0;
 	}
 	
 	public RenderResult renderLayer(GL2 gl, Dimension canvasSize, MainPanel mainPanel, PreparedImage _preparedImageData)
@@ -103,16 +103,16 @@ public abstract class AbstractImageLayer extends AbstractLayer
 			return RenderResult.RETRY_LATER;
 		
 		//upload new texture, if something was decoded
-		if (_preparedImageData != null)
+		if (_preparedImageData.rawImageData != null)
 		{
-			System.out.println("Uploading "+_preparedImageData.width+"x"+_preparedImageData.height);
-			texture.upload(this,md.getLocalDateTime(),_preparedImageData.imageRegion,_preparedImageData.rawImageData, _preparedImageData.width, _preparedImageData.height);
+			System.out.println("Uploading "+_preparedImageData.width+"x"+_preparedImageData.height + " to "+_preparedImageData.texture);
+			_preparedImageData.texture.upload(this,md.getLocalDateTime(),_preparedImageData.imageRegion,_preparedImageData.rawImageData, _preparedImageData.width, _preparedImageData.height);
 		}
 		
 		float xSunOffset =  (float) ((md.getSunPixelPosition().x - md.getResolution().x / 2.0) / (float)md.getResolution().x);
 		float ySunOffset = -(float) ((md.getSunPixelPosition().y - md.getResolution().y / 2.0) / (float)md.getResolution().y);
 
-		Vector3d currentPos = mainPanel.getRotation().toMatrix().multiply(new Vector3d(0, 0, 1));
+		Vector3d currentPos = mainPanel.getRotationCurrent().toMatrix().multiply(new Vector3d(0, 0, 1));
 		Vector3d startPos = md.getRotation().toMatrix().multiply(new Vector3d(0, 0, 1));
 
 		double angle = Math.toDegrees(Math.acos(currentPos.dot(startPos)));
@@ -130,7 +130,7 @@ public abstract class AbstractImageLayer extends AbstractLayer
 		gl.glEnable(GL2.GL_TEXTURE_2D);
 		gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
 		gl.glActiveTexture(GL.GL_TEXTURE0);
-		gl.glBindTexture(GL2.GL_TEXTURE_2D, texture.openGLTextureId);
+		gl.glBindTexture(GL2.GL_TEXTURE_2D, _preparedImageData.texture.openGLTextureId);
 
 		gl.glEnable(GL2.GL_VERTEX_PROGRAM_ARB);
 		gl.glEnable(GL2.GL_FRAGMENT_PROGRAM_ARB);
@@ -148,10 +148,10 @@ public abstract class AbstractImageLayer extends AbstractLayer
 		
 		gl.glUniform4f(
 				gl.glGetUniformLocation(shaderprogram, "imageOffset"),
-				texture.getImageRegion().texCoordX,
-				texture.getImageRegion().texCoordY,
-				texture.getImageRegion().texCoordWidth*texture.textureScaleX,
-				texture.getImageRegion().texCoordHeight*texture.textureScaleY);
+				_preparedImageData.texture.getImageRegion().texCoordX,
+				_preparedImageData.texture.getImageRegion().texCoordY,
+				_preparedImageData.texture.getImageRegion().texCoordWidth*_preparedImageData.texture.textureScaleX,
+				_preparedImageData.texture.getImageRegion().texCoordHeight*_preparedImageData.texture.textureScaleY);
 		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "opacity"), (float) opacity);
 		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "gamma"), (float) gamma);
 		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "sharpen"), (float) sharpness);
@@ -164,9 +164,9 @@ public abstract class AbstractImageLayer extends AbstractLayer
 		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "cameraMode"), CameraMode.getCameraMode());
 		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "contrast"), (float) contrast);
 
-		float clipNear = (float) Math.max(mainPanel.getTranslation().z - 4 * Constants.SUN_RADIUS, MainPanel.CLIP_NEAR);
+		float clipNear = (float) Math.max(mainPanel.getTranslationCurrent().z - 4 * Constants.SUN_RADIUS, MainPanel.CLIP_NEAR);
 		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "near"), clipNear);
-		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "far"), (float) (mainPanel.getTranslation().z + 4 * Constants.SUN_RADIUS));
+		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "far"), (float) (mainPanel.getTranslationCurrent().z + 4 * Constants.SUN_RADIUS));
 		float[] transformation = mainPanel.getTransformation().toFloatArray();
 		gl.glUniformMatrix4fv(gl.glGetUniformLocation(shaderprogram, "transformation"), 1, true, transformation, 0);
 
@@ -178,8 +178,8 @@ public abstract class AbstractImageLayer extends AbstractLayer
 
 		gl.glUniform2f(
 				gl.glGetUniformLocation(shaderprogram, "imageResolution"),
-				texture.width,
-				texture.height);
+				_preparedImageData.texture.width,
+				_preparedImageData.texture.height);
 
 		//FIXME: right/bottom edges shimmer (wrap around)
 		gl.glBegin(GL2.GL_QUADS);
@@ -281,13 +281,25 @@ public abstract class AbstractImageLayer extends AbstractLayer
 	
 	public static class PreparedImage
 	{
+		final Texture texture;
+		
 		final ImageRegion imageRegion;
 		final ByteBuffer rawImageData;
 		final int width;
 		final int height;
 		
-		public PreparedImage(ImageRegion _imageRegion, ByteBuffer _rawImageData,int _width,int _height)
+		public PreparedImage(Texture _texture)
 		{
+			texture=_texture;
+			imageRegion=null;
+			rawImageData=null;
+			width=0;
+			height=0;
+		}
+		
+		public PreparedImage(Texture _texture, ImageRegion _imageRegion, ByteBuffer _rawImageData,int _width,int _height)
+		{
+			texture=_texture;
 			imageRegion=_imageRegion;
 			rawImageData=_rawImageData;
 			width=_width;
@@ -350,7 +362,7 @@ public abstract class AbstractImageLayer extends AbstractLayer
 		
 		return new ImageRegion(
 				new Rectangle2D.Double(minX, minY, maxX - minX, maxY - minY),
-				_mainPanel.getTranslation().z, _metaData, _size);
+				_mainPanel.getTranslationCurrent().z, _metaData, _size);
 		// frame.repaint();
 		// frame.setVisible(true);
 	}

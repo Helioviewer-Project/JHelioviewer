@@ -9,9 +9,7 @@ import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.beans.PropertyChangeListener;
 
-import javax.swing.AbstractButton;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
@@ -169,10 +167,13 @@ public class MainFrame extends JFrame
 		return left;
 	}
 	
-	private JPanel getStatusPane(){
+	private JPanel getStatusPane()
+	{
 		JPanel statusPane = new JPanel();
 		
-		statusPane.setLayout(new FormLayout(new ColumnSpec[] {
+		statusPane.setLayout(new FormLayout(
+			new ColumnSpec[]
+			{
 				FormFactory.RELATED_GAP_COLSPEC,
 				FormFactory.DEFAULT_COLSPEC,
 				FormFactory.RELATED_GAP_COLSPEC,
@@ -183,11 +184,14 @@ public class MainFrame extends JFrame
 				ColumnSpec.decode("default:grow"),
 				FormFactory.RELATED_GAP_COLSPEC,
 				FormFactory.DEFAULT_COLSPEC,
-				FormFactory.RELATED_GAP_COLSPEC,},
-			new RowSpec[] {
+				FormFactory.RELATED_GAP_COLSPEC
+			},
+			new RowSpec[]
+			{
 				FormFactory.RELATED_GAP_ROWSPEC,
 				RowSpec.decode("default:grow"),
-				FormFactory.RELATED_GAP_ROWSPEC,}));
+				FormFactory.RELATED_GAP_ROWSPEC
+			}));
 		
 
 		FramerateStatusPanel framerateStatusPanel = new FramerateStatusPanel();
@@ -205,7 +209,8 @@ public class MainFrame extends JFrame
 		return statusPane;
 	}
 	
-	private SideContentPane getSideBar(){
+	private SideContentPane getSideBar()
+	{
 		LEFT_PANE = new SideContentPane();
 		LEFT_PANE.setMinimumSize(new Dimension(300, 200));
 		// Movie control
@@ -223,21 +228,10 @@ public class MainFrame extends JFrame
 		return LEFT_PANE;
 	}
 
-	private void initMenuBar(){
+	private void initMenuBar()
+	{
 		JMenuBar menuBar = new MenuBar();
 		menuBar.setMinimumSize(new Dimension());
 		this.setJMenuBar(menuBar);		
-	}
-
-	public void addTopToolBarPlugin(
-			PropertyChangeListener propertyChangeListener,
-			AbstractButton button) {
-		MainFrame.TOP_TOOL_BAR.addToolbarPlugin(button);
-
-		MainFrame.TOP_TOOL_BAR
-				.addPropertyChangeListener(propertyChangeListener);
-
-		MainFrame.TOP_TOOL_BAR.validate();
-		MainFrame.TOP_TOOL_BAR.repaint();
 	}
 }

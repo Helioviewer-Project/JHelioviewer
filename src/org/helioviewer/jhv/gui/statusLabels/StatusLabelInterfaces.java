@@ -6,12 +6,12 @@ import org.helioviewer.jhv.opengl.RayTrace.Ray;
 
 public class StatusLabelInterfaces {
 
-	public interface StatusLabelMouseListener{
+	public interface PanelMouseListener{
 		public void mouseExited(MouseEvent e, Ray ray);
 		public void mouseMoved(MouseEvent e, Ray ray);
 	}
 	
-	public interface StatusLabelCameraListener{
+	public interface CameraListener{
 		public void cameraChanged();
 	}
 

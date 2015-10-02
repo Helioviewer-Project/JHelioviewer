@@ -32,6 +32,7 @@ import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.layers.LUT.Lut;
 import org.helioviewer.jhv.layers.Movie;
 import org.helioviewer.jhv.layers.Movie.Match;
+import org.helioviewer.jhv.opengl.Texture;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.metadata.UnsuitableMetaDataException;
@@ -85,14 +86,21 @@ public class KakaduLayer extends AbstractImageLayer
 		
 		Movie movie = new Movie(this,sourceId);
 		movie.setFile(_filePath);
+		if(movie.getAnyMetaData()==null)
+			throw new UnsuitableMetaDataException();
 		
-		MovieCache.add(movie);
+		LocalDateTime[] times=new LocalDateTime[movie.getFrameCount()];
+		for(int i=0;i<times.length;i++)
+			times[i]=movie.getMetaData(i).getLocalDateTime();
+		addFrameDateTimes(times);
 		
+		start = localDateTimes.first();
+		end = localDateTimes.last();
 		name = movie.getAnyMetaData().getFullName();
 		
-		start = getLocalDateTimes().first();
-		end = getLocalDateTimes().last();
-		cadence = (int) (ChronoUnit.SECONDS.between(start, end) / getLocalDateTimes().size());
+		cadence = (int) (ChronoUnit.SECONDS.between(start, end) / times.length);
+		
+		MovieCache.add(movie);
 	}
 	
 	public void writeStateFile(JSONObject jsonLayer)
@@ -411,6 +419,9 @@ public class KakaduLayer extends AbstractImageLayer
 
 	private void addFrameDateTimes(LocalDateTime[] _localDateTimes)
 	{
+		if(_localDateTimes.length==0)
+			return;
+		
 		for (LocalDateTime localDateTime : _localDateTimes)
 			localDateTimes.add(localDateTime);
 		
@@ -490,16 +501,25 @@ public class KakaduLayer extends AbstractImageLayer
 		if (requiredMinimumRegion == null)
 			return new FutureValue<PreparedImage>(null);
 		
-		if(texture.contains(this, requiredMinimumRegion, metaData.getLocalDateTime()))
-			return new FutureValue<PreparedImage>(null);
+		for(Texture t:textures)
+			if(t.contains(this, requiredMinimumRegion, metaData.getLocalDateTime()))
+				return new FutureValue<PreparedImage>(new PreparedImage(t));
+		
+		final int thisTextureNr=freeTextureNr++;
+		if(thisTextureNr>=textures.size())
+		{
+			textures.add(new Texture());
+			System.out.println("Added new texture for a total of "+textures.size());
+		}
 		
 		return exDecoder.submit(new Callable<PreparedImage>()
 		{
 			@Override
 			public PreparedImage call() throws Exception
 			{
-				ImageRegion requiredSafeRegion = new ImageRegion(requiredMinimumRegion.requiredOfSourceImage, mainPanel.getTranslation().z, metaData,size,1.2);
+				ImageRegion requiredSafeRegion = new ImageRegion(requiredMinimumRegion.requiredOfSourceImage, mainPanel.getTranslationCurrent().z, metaData,size,1.2);
 				return new PreparedImage(
+						textures.get(thisTextureNr),
 						requiredSafeRegion,
 						MovieCache.decodeImage(sourceId, metaData.getLocalDateTime(), 8, requiredSafeRegion.decodeZoomFactor, requiredSafeRegion.texels),
 						requiredSafeRegion.texels.width,

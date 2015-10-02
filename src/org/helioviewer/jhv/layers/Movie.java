@@ -222,11 +222,20 @@ public class Movie
 		return null;
 	}
 	
+	@Nullable
 	public MetaData getMetaData(int idx)
 	{
 		if (metaDatas == null)
 			return null;
 		return metaDatas[idx];
+	}
+	
+	public int getFrameCount()
+	{
+		if(metaDatas==null)
+			return 0;
+		
+		return metaDatas.length;
 	}
 	
 	@Nullable

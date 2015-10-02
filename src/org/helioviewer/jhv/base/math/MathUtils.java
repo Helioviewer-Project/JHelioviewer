@@ -26,6 +26,17 @@ public class MathUtils
         else
             return _val;
     }
+    
+    /**
+     * Converts a linear ramp to a cosine ramp.
+     * 
+     * @param _val A value from 0..1
+     * @return A value from 0..1
+     */
+    public static double cosinize(double _val)
+    {
+    	return 0.5-0.5*Math.cos(_val*Math.PI);
+    }
 
     /**
      * Takes and returns the maximum value from the given args.

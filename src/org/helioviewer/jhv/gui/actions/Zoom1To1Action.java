@@ -31,7 +31,7 @@ public class Zoom1To1Action extends AbstractAction
 
 	public void actionPerformed(ActionEvent e)
 	{
-		MainPanel compenentView = MainFrame.MAIN_PANEL;
+		MainPanel componentView = MainFrame.MAIN_PANEL;
 		AbstractImageLayer activeLayer = Layers.getActiveImageLayer();
 		if (activeLayer == null)
 			return;
@@ -53,7 +53,7 @@ public class Zoom1To1Action extends AbstractAction
 
 		double halfFOVRad = Math.toRadians(MainPanel.FOV / 2.0);
 		double distance = (minCanvasDimension / 2.0 * unitsPerPixel) / Math.tan(halfFOVRad);
-		distance = distance - compenentView.getTranslation().z;
-		compenentView.addCameraAnimation(new CameraZoomAnimation(distance));
+		distance = distance - componentView.getTranslationEnd().z;
+		componentView.addCameraAnimation(new CameraZoomAnimation(componentView, distance));
 	}
 }

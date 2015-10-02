@@ -48,7 +48,7 @@ public class RayTrace
 			direction = new Vector3d(newX * width, newY * width, -1).normalize();
 		}
 		else {
-			width = Math.tan(Math.toRadians(MainPanel.FOV / 2.0)) * mainPanel.getTranslation().z * 2;
+			width = Math.tan(Math.toRadians(MainPanel.FOV / 2.0)) * mainPanel.getTranslationCurrent().z * 2;
 			origin = mainPanel.getTransformation().multiply(new Vector3d(0, 0, 1)).add(new Vector3d(newX * width, newY * width, 0));
 			direction = new Vector3d(0, 0, -1).normalize();
 		}
@@ -70,7 +70,7 @@ public class RayTrace
 			direction = new Vector3d(newX * width, newY * width, -1).normalize();
 		}
 		else {
-			width = Math.tan(Math.toRadians(MainPanel.FOV / 2.0)) * mainPanel.getTranslation().z * 2;
+			width = Math.tan(Math.toRadians(MainPanel.FOV / 2.0)) * mainPanel.getTranslationCurrent().z * 2;
 			origin = mainPanel.getTransformation().multiply(new Vector3d(0, 0, 1)).add(new Vector3d(newX * width, newY * width, 0));
 			direction = new Vector3d(0, 0, -1).normalize();
 		}
@@ -108,7 +108,7 @@ public class RayTrace
 			direction = new Vector3d(newX * width, newY * width, -1).normalize();
 		}
 		else {
-			width = Math.tan(Math.toRadians(MainPanel.FOV / 2.0)) * _mainPanel.getTranslation().z * 2.0;
+			width = Math.tan(Math.toRadians(MainPanel.FOV / 2.0)) * _mainPanel.getTranslationCurrent().z * 2.0;
 			origin = _mainPanel.getTransformation().multiply(new Vector3d(0, 0, 1)).add(new Vector3d(newX * width, newY * width, 0));
 			direction = new Vector3d(0, 0, -1).normalize();
 		}

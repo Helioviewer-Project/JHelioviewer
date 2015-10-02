@@ -26,8 +26,8 @@ public class ZoomOutAction  extends AbstractAction
     {
     	MainPanel compenentView = MainFrame.MAIN_PANEL;
     	
-        double distance = compenentView.getTranslation().z / 2;
-        compenentView.addCameraAnimation(new CameraZoomAnimation(distance, 500));
+        double distance = compenentView.getTranslationEnd().z / 2;
+        compenentView.addCameraAnimation(new CameraZoomAnimation(MainFrame.MAIN_PANEL, distance));
     }
 
 }

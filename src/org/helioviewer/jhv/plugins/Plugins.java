@@ -249,7 +249,7 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 
 	public static double getViewPortSize()
 	{
-		return MainFrame.MAIN_PANEL.getTranslation().z * Math.tan(MainPanel.FOV / 2) * 2;
+		return MainFrame.MAIN_PANEL.getTranslationCurrent().z * Math.tan(MainPanel.FOV / 2) * 2;
 	}
 
 	public static void repaintMainPanel()

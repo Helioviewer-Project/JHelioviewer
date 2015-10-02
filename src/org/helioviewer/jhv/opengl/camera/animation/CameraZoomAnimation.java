@@ -1,72 +1,35 @@
 package org.helioviewer.jhv.opengl.camera.animation;
 
-import org.helioviewer.jhv.gui.MainPanel;
+import org.helioviewer.jhv.base.math.Vector3d;
+import org.helioviewer.jhv.opengl.camera.Camera;
 
 /**
  * This animation zooms the camera by a given amount. Zooming only affects the
  * z-component of the {@link GL3DCamera}'s translation.
  */
-public class CameraZoomAnimation implements CameraAnimation {
-    private boolean isFinished = false;
+public class CameraZoomAnimation extends CameraAnimation
+{
+    private double speed;
 
-    private long startTime = -1;
-    private long lastAnimationTime = -1;
-    private long timeLeft = 0;
-
-    private double distanceToTravel;
-    private double distanceDelta;
-
-    private double targetDistance;
-
-    
-    public CameraZoomAnimation(double distanceToTravel) {
-        this(distanceToTravel, CameraAnimation.DEFAULT_ANIMATION_TIME);
+    public CameraZoomAnimation(Camera _cam, double _distanceDelta)
+    {
+        this(_cam, _distanceDelta, CameraAnimation.DEFAULT_ANIMATION_TIME);
     }
 
-    public CameraZoomAnimation(double distanceToTravel, long duration) {
-        this.distanceToTravel = distanceToTravel;
-        this.timeLeft = duration;
-        this.distanceDelta = distanceToTravel / this.timeLeft;
-    }
-    
-
-    public void animate(MainPanel compenentView) {
-        if (this.startTime < 0) {
-            this.startTime = System.currentTimeMillis();
-            this.lastAnimationTime = System.currentTimeMillis();
-            this.targetDistance = Math.max(MainPanel.MIN_DISTANCE, Math.min(MainPanel.MAX_DISTANCE, compenentView.getTranslation().z + this.distanceToTravel));
-            compenentView.repaint();
-        }
-
-        long timeDelta = System.currentTimeMillis() - lastAnimationTime;
-        this.timeLeft -= timeDelta;
-        if (timeLeft <= 0) {
-        	compenentView.setZTranslation(targetDistance);
-        } else {
-            double zTranslation = Math.min(compenentView.getTranslation().z + this.distanceDelta * timeDelta, targetDistance);
-            if (this.distanceToTravel < 0) {
-                zTranslation = Math.max(compenentView.getTranslation().z + this.distanceDelta * timeDelta, targetDistance);
-            }
-        	compenentView.setZTranslation(zTranslation);
-        }
-
-        if (compenentView.getTranslation().z == this.targetDistance) {
-            this.isFinished = true;
-        }
-        this.lastAnimationTime = System.currentTimeMillis();
+    public CameraZoomAnimation(Camera _cam, double _distanceDelta, long _duration)
+    {
+    	super(_duration);
+        speed = _distanceDelta / _duration;
+        
+        _cam.setTranslationEnd(_cam.getTranslationEnd().add(new Vector3d(0,0,_distanceDelta)));
     }
 
-    public void updateWithAnimation(CameraAnimation animation) {
-        if (animation instanceof CameraZoomAnimation) {
-            CameraZoomAnimation ani = (CameraZoomAnimation) animation;
-            this.timeLeft = Math.min(2000, this.timeLeft / 5 + ani.timeLeft);
-            this.distanceToTravel += ani.distanceToTravel;
-            this.targetDistance = Math.min(MainPanel.MIN_DISTANCE, Math.max(MainPanel.MAX_DISTANCE, this.targetDistance + ani.distanceToTravel));
-            this.distanceDelta = this.distanceToTravel / this.timeLeft;
-        }
-    }
-
-    public boolean isFinished() {
-        return isFinished;
+    @Override
+    public void animate(Camera _cam)
+    {
+    	if(isFinished())
+    		return;
+    	
+        _cam.setTranslationCurrent(_cam.getTranslationCurrent().add(new Vector3d(0,0,speed * getAndResetTimeDelta())));
     }
 }

@@ -37,7 +37,7 @@ import javax.swing.event.HyperlinkListener;
 
 import org.helioviewer.jhv.Globals;
 import org.helioviewer.jhv.gui.ButtonCreator;
-import org.helioviewer.jhv.gui.ClipBoard;
+import org.helioviewer.jhv.gui.Clipboard;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.plugins.Plugins;
@@ -525,7 +525,7 @@ public class HEKEventInformationDialog extends JDialog implements ActionListener
                 cellString = cellString.substring(0, cellString.lastIndexOf('\n'));
             }
 
-            ClipBoard.setString(cellString);
+            Clipboard.setString(cellString);
 
         } else if (e.getSource() == moreButton) {
 
