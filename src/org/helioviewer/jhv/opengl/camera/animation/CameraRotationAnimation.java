@@ -25,6 +25,6 @@ public class CameraRotationAnimation extends CameraAnimation
 		if(isFinished())
 			return;
 		
-		_cam.setRotationCurrent(_cam.getRotationCurrent().slerp(_cam.getRotationCurrent().rotate(rotationDelta), getAndResetTimeDelta()/(double)duration));
+		_cam.setRotationCurrent(_cam.getRotationCurrent().slerp(_cam.getRotationCurrent().rotate(rotationDelta), getAndResetTimeDelta()));
 	}
 }

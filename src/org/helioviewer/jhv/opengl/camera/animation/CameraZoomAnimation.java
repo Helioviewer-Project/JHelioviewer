@@ -9,7 +9,7 @@ import org.helioviewer.jhv.opengl.camera.Camera;
  */
 public class CameraZoomAnimation extends CameraAnimation
 {
-    private double speed;
+    private double distanceDelta;
 
     public CameraZoomAnimation(Camera _cam, double _distanceDelta)
     {
@@ -19,7 +19,7 @@ public class CameraZoomAnimation extends CameraAnimation
     public CameraZoomAnimation(Camera _cam, double _distanceDelta, long _duration)
     {
     	super(_duration);
-        speed = _distanceDelta / _duration;
+    	distanceDelta = _distanceDelta;
         
         _cam.setTranslationEnd(_cam.getTranslationEnd().add(new Vector3d(0,0,_distanceDelta)));
     }
@@ -30,6 +30,6 @@ public class CameraZoomAnimation extends CameraAnimation
     	if(isFinished())
     		return;
     	
-        _cam.setTranslationCurrent(_cam.getTranslationCurrent().add(new Vector3d(0,0,speed * getAndResetTimeDelta())));
+        _cam.setTranslationCurrent(_cam.getTranslationCurrent().add(new Vector3d(0,0,distanceDelta * getAndResetTimeDelta())));
     }
 }

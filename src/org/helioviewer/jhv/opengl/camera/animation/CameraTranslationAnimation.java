@@ -5,7 +5,7 @@ import org.helioviewer.jhv.opengl.camera.Camera;
 
 public class CameraTranslationAnimation extends CameraAnimation
 {
-    private Vector3d translationPerMS;
+    private Vector3d translationDelta;
 	
 	public CameraTranslationAnimation(Camera _cam,Vector3d _translationDelta)
 	{
@@ -15,13 +15,13 @@ public class CameraTranslationAnimation extends CameraAnimation
     public CameraTranslationAnimation(Camera _cam, Vector3d _translationDelta, long _duration)
     {
     	super(_duration);
-    	translationPerMS = _translationDelta.scale(1d/_duration);
+    	translationDelta = _translationDelta;
     	_cam.setTranslationEnd(_cam.getTranslationEnd().add(_translationDelta));
     }
 	
 	@Override
 	public void animate(Camera _cam)
 	{
-		_cam.setTranslationCurrent(_cam.getTranslationCurrent().add(translationPerMS.scale(getAndResetTimeDelta())));
+		_cam.setTranslationCurrent(_cam.getTranslationCurrent().add(translationDelta.scale(getAndResetTimeDelta())));
 	}
 }

@@ -70,9 +70,12 @@ public class Texture
 		{
 			case BufferedImage.TYPE_4BYTE_ABGR:
 				switchChannel = true;
+				inputFormat = GL2.GL_RGBA;
+				alpha = true;
+				break;
 			case BufferedImage.TYPE_INT_ARGB:
 				inputFormat = GL2.GL_RGBA;
-				alpha = true;			
+				alpha = true;
 				break;
 				
 			case BufferedImage.TYPE_3BYTE_BGR:
