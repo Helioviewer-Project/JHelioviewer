@@ -54,7 +54,7 @@ public class Globals
     public static final int STARTUP_LAYER_ID = 10;
 
     //TODO check all invocations of file dialogs, check should happen centralized
-	public static final boolean USE_JAVA_FX_FILE_DIALOG;
+	public static final boolean JAVA_FX_AVAILABLE;
 	
 	static
 	{
@@ -74,11 +74,10 @@ public class Globals
 		catch (ClassNotFoundException | InvocationTargetException | InterruptedException e)
 		{
 			javaFxAvailable = false;
-			Telemetry.trackException(e);
 			System.err.println("No JavaFX detected. Please install a Java 1.8 with JavaFX");
 		}
 		
-		USE_JAVA_FX_FILE_DIALOG = javaFxAvailable;
+		JAVA_FX_AVAILABLE = javaFxAvailable;
 	}
 
     private Globals()
@@ -155,7 +154,7 @@ public class Globals
     {
     	//TODO: add default file extension if none was specified by the user
     	
-		if (Globals.USE_JAVA_FX_FILE_DIALOG)
+		if (Globals.JAVA_FX_AVAILABLE)
 			try
 			{
 				final LinkedBlockingQueue<Stage> mainStage=new LinkedBlockingQueue<>();

@@ -9,7 +9,7 @@ import org.helioviewer.jhv.Globals;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
-import org.helioviewer.jhv.gui.actions.ExportAction;
+import org.helioviewer.jhv.gui.actions.ExportMovieAction;
 import org.helioviewer.jhv.gui.actions.LoadStateAction;
 import org.helioviewer.jhv.gui.actions.OpenLocalFileAction;
 import org.helioviewer.jhv.gui.actions.OpenURLinBrowserAction;
@@ -70,7 +70,7 @@ public class MenuBar extends JMenuBar
 		fileMenu.addSeparator();
 		fileMenu.add(new SaveScreenshotAsAction());
 
-		fileMenu.add(new ExportAction());
+		fileMenu.add(new ExportMovieAction());
 
 		if (!Globals.isOSX())
 		{

@@ -115,7 +115,7 @@ public class JHelioviewer
 
 			// initializes JavaFX environment
 			splash.progressTo("Initializing JavaFX");
-			if(Globals.USE_JAVA_FX_FILE_DIALOG)
+			if(Globals.JAVA_FX_AVAILABLE)
 				Platform.runLater(new Runnable()
 				{
 				    public void run()

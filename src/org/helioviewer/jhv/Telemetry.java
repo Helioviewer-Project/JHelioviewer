@@ -27,7 +27,7 @@ public class Telemetry
 		client.getContext().getSession().setId(UUID.randomUUID().toString());
 		
 		client.getContext().getProperties().put("Cores", Runtime.getRuntime().availableProcessors()+"");
-		client.getContext().getProperties().put("JavaFX", Globals.USE_JAVA_FX_FILE_DIALOG+"");
+		client.getContext().getProperties().put("JavaFX", Globals.JAVA_FX_AVAILABLE+"");
 		
 		client.getContext().getProperties().put("Screen size", Toolkit.getDefaultToolkit().getScreenSize().width+"x"+Toolkit.getDefaultToolkit().getScreenSize().height);
 		client.getContext().getProperties().put("DPI", Toolkit.getDefaultToolkit().getScreenResolution()+"");

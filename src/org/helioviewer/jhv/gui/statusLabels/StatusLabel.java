@@ -5,8 +5,6 @@ import java.time.LocalDateTime;
 
 import javax.swing.JLabel;
 
-import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.CameraListener;
-import org.helioviewer.jhv.gui.statusLabels.StatusLabelInterfaces.PanelMouseListener;
 import org.helioviewer.jhv.layers.AbstractLayer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;

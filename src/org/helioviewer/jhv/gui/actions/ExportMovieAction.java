@@ -1,9 +1,11 @@
-package org.helioviewer.jhv.gui.dialogs;
+package org.helioviewer.jhv.gui.actions;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,28 +17,46 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.imageio.ImageIO;
+import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import org.helioviewer.jhv.Globals;
-import org.helioviewer.jhv.Globals.DialogType;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.Telemetry;
+import org.helioviewer.jhv.Globals.DialogType;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.PredefinedFileFilter;
+import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 
 import com.xuggle.mediatool.IMediaWriter;
 import com.xuggle.mediatool.ToolFactory;
 
-//TODO: move to ExportAction instead
-public class ExportMovieDialog implements ActionListener
+public class ExportMovieAction extends AbstractAction
 {
+  	public ExportMovieAction()
+  	{
+		super("Save movie as...");
+		putValue(SHORT_DESCRIPTION, "Export a movie to a file");
+		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_E, KeyEvent.SHIFT_DOWN_MASK | Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+    }
+
+	public void actionPerformed(ActionEvent e)
+	{
+		if(Layers.getLayerCount() > 0)
+			openExportMovieDialog();
+		else
+			JOptionPane.showMessageDialog(MainFrame.MAIN_PANEL, "At least one active layer must be visible.\n\nPlease add a layer before exporting movies.", "Error", JOptionPane.ERROR_MESSAGE);
+	}
+	
 	private long speed = 0;
 	private IMediaWriter writer;
 
@@ -65,7 +85,7 @@ public class ExportMovieDialog implements ActionListener
 	private Thread thread;
 	private BufferedImage bufferedImage;
 
-	public ExportMovieDialog()
+	private void openExportMovieDialog()
 	{
 		txtTargetFile = LocalDateTime.now().format(Globals.DATE_TIME_FORMATTER);
 
@@ -101,7 +121,7 @@ public class ExportMovieDialog implements ActionListener
 		Settings.setProperty(SETTING_MOVIE_EXPORT_LAST_DIRECTORY, directory);
 		MainFrame.SINGLETON.setEnabled(false);
 
-		progressDialog = new ProgressDialog(this);
+		progressDialog = new ProgressDialog();
 		progressDialog.setVisible(true);
 
 		this.initMovieExport();
@@ -288,18 +308,16 @@ public class ExportMovieDialog implements ActionListener
 		progressDialog.dispose();
 	}
 
-	private static class ProgressDialog extends JDialog implements ActionListener
+	private class ProgressDialog extends JDialog implements ActionListener
 	{
 		private JProgressBar progressBar;
 		private JButton btnCancel;
 		private JLabel lblDescription;
-		private ExportMovieDialog exportMovieDialog;
 		private final JPanel contentPanel = new JPanel();
 
-		private ProgressDialog(ExportMovieDialog exportMovieDialog)
+		private ProgressDialog()
 		{
 			super(MainFrame.SINGLETON);
-			this.exportMovieDialog = exportMovieDialog;
 			setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			setResizable(false);
 			setTitle("Movie export");
@@ -358,23 +376,18 @@ public class ExportMovieDialog implements ActionListener
 		}
 
 		@Override
-		public void actionPerformed(ActionEvent ae) {
-			if (ae.getSource() == btnCancel) {
-				this.exportMovieDialog.cancelMovie();
-				;
+		public void actionPerformed(ActionEvent ae)
+		{
+			if (ae.getSource() == btnCancel)
+			{
+				ExportMovieAction.this.cancelMovie();
 				dispose();
 			}
-
 		}
 	}
 
-	public void cancelMovie() {
+	private void cancelMovie()
+	{
 		started = false;
 	}
-
-	@Override
-	public void actionPerformed(ActionEvent arg0) {
-		// exportMovie();
-	}
-
 }
