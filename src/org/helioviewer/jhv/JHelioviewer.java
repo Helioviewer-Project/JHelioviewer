@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 
 import javax.swing.JOptionPane;
@@ -32,6 +33,7 @@ import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.viewmodel.jp2view.kakadu.KduErrorHandler;
 
 import com.install4j.api.launcher.ApplicationLauncher;
+import com.install4j.api.update.UpdateSchedule;
 import com.install4j.api.update.UpdateScheduleRegistry;
 import com.jogamp.opengl.DebugGL2;
 import com.jogamp.opengl.GLAutoDrawable;
@@ -69,6 +71,7 @@ public class JHelioviewer
 			splash.progressTo("Checking for updates");
 			if (Globals.isReleaseVersion())
 			{
+				UpdateScheduleRegistry.setUpdateSchedule(UpdateSchedule.DAILY);
 				if (UpdateScheduleRegistry.checkAndReset())
 				{
 					// This will return immediately if you call it from the EDT,
@@ -113,7 +116,7 @@ public class JHelioviewer
 			// initializes JavaFX environment
 			splash.progressTo("Initializing JavaFX");
 			if(Globals.USE_JAVA_FX_FILE_DIALOG)
-				SwingUtilities.invokeLater(new Runnable()
+				Platform.runLater(new Runnable()
 				{
 				    public void run()
 				    {
@@ -142,8 +145,6 @@ public class JHelioviewer
 			
 			System.out.println("JHelioviewer started with command-line options:" + String.join(" ", args));
 			System.out.println("Initializing JHelioviewer");
-
-			Globals.initFileChooserAsync();
 
 			// Load settings from file but do not apply them yet
 			// The settings must not be applied before the kakadu engine has

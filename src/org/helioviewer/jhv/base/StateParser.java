@@ -9,22 +9,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
 
-import javafx.application.Platform;
-import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
-import javafx.stage.Stage;
-
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-
 import org.helioviewer.jhv.Globals;
-import org.helioviewer.jhv.Settings;
-import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.Globals.DialogType;
+import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.gui.filefilters.PredefinedFileFilter;
+import org.helioviewer.jhv.gui.PredefinedFileFilter;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.viewmodel.TimeLine;
@@ -38,65 +29,21 @@ public class StateParser extends DefaultHandler
 	private static final String LOAD_PATH_SETTINGS = "statefile.load.path";
 	private static final String SAVE_PATH_SETTINGS = "statefile.save.path";
 	
-	//FIXME: move to a centralized location
-	private static void openLoadFileChooserFX()
-	{
-		Platform.runLater(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				FileChooser fileChooser = new FileChooser();
-				fileChooser.setTitle("Open state file");
-				fileChooser.setInitialDirectory(new File(Settings.getProperty(LOAD_PATH_SETTINGS)));
-
-				ExtensionFilter extensionFilter1 = new ExtensionFilter("All Files", "*.*");
-				fileChooser.getExtensionFilters().addAll(PredefinedFileFilter.JHV.extensionFilter,extensionFilter1);
-				final File selectedFile = fileChooser.showOpenDialog(new Stage());
-
-				if (selectedFile != null && selectedFile.exists() && selectedFile.isFile())
-				{
-					// remember the current directory for future
-					Settings.setProperty(LOAD_PATH_SETTINGS, selectedFile.getParent());
-					try
-					{
-						loadStateFile(selectedFile);
-					}
-					catch (IOException | JSONException e)
-					{
-						Telemetry.trackException(e);
-					}
-				}
-			}
-
-		});
-	}
-
 	public static void loadStateFile() throws IOException, JSONException
 	{
-		if (Globals.USE_JAVA_FX_FILE_DIALOG)
+		File selectedFile = Globals.showFileDialog(
+				DialogType.OPEN_FILE,
+				"Open State File",
+				Settings.getProperty(LOAD_PATH_SETTINGS),
+				true,
+				null,
+				PredefinedFileFilter.JHV
+			);
+		
+		if (selectedFile!=null)
 		{
-			openLoadFileChooserFX();
-		}
-		else
-		{
-			File selectedFile = Globals.showFileDialog(
-					DialogType.OPEN_FILE,
-					"Open State File",
-					Settings.getProperty(LOAD_PATH_SETTINGS),
-					true,
-					null,
-					PredefinedFileFilter.JHV
-				);
-			
-			if (selectedFile!=null)
-			{
-				Settings.setProperty(LOAD_PATH_SETTINGS, selectedFile.getParentFile().getAbsolutePath());
-				if (selectedFile.exists() && selectedFile.isFile())
-				{
-					loadStateFile(selectedFile);
-				}
-			}
+			Settings.setProperty(LOAD_PATH_SETTINGS, selectedFile.getParentFile().getAbsolutePath());
+			loadStateFile(selectedFile);
 		}
 	}
 
@@ -174,75 +121,16 @@ public class StateParser extends DefaultHandler
 		}
 	}
 
-	private static void openSaveFileChooserFX()
-	{
-		Platform.runLater(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				FileChooser fileChooser = new FileChooser();
-				fileChooser.setTitle("Save state file");
-
-				String val = Settings.getProperty(SAVE_PATH_SETTINGS);
-				if (val != null && val.length() != 0)
-				{
-					File file = new File(val);
-					if(file.exists())
-						fileChooser.setInitialDirectory(file);
-				}
-
-				fileChooser.getExtensionFilters().addAll(PredefinedFileFilter.JHV.extensionFilter);
-
-				final File selectedFile = fileChooser.showSaveDialog(new Stage());
-
-				if (selectedFile != null)
-					try
-					{
-						startSavingStateFile(selectedFile);
-					}
-					catch (JSONException | IOException e)
-					{
-						Telemetry.trackException(e);
-					}
-			}
-		});
-	}
-
 	public static void writeStateFile() throws JSONException, IOException
 	{
-		if (Globals.USE_JAVA_FX_FILE_DIALOG)
-		{
-			openSaveFileChooserFX();
-		}
-		else
-		{
-			String lastPath = Settings.getProperty(SAVE_PATH_SETTINGS);
-			JFileChooser fileChooser = new JFileChooser();
-			fileChooser.setDialogTitle("Save state file");
-			fileChooser.setMultiSelectionEnabled(false);
-
-			if (lastPath != null)
-				fileChooser.setCurrentDirectory(new File(lastPath));
+		File selectedFile = Globals.showFileDialog(DialogType.SAVE_FILE,
+				"Save state file",
+				Settings.getProperty(SAVE_PATH_SETTINGS),
+				true,
+				null,
+				PredefinedFileFilter.JHV);
 		
-			fileChooser.setFileFilter(PredefinedFileFilter.JHV);
-			int retVal = fileChooser.showSaveDialog(MainFrame.SINGLETON);
-
-			if (fileChooser.getSelectedFile().exists())
-			{
-				// ask if the user wants to overwrite
-				int response = JOptionPane.showConfirmDialog(null,
-						"Overwrite existing file?", "Confirm Overwrite",
-						JOptionPane.OK_CANCEL_OPTION,
-						JOptionPane.QUESTION_MESSAGE);
-
-				// if the user doesn't want to overwrite, simply return null
-				if (response == JOptionPane.CANCEL_OPTION)
-					return;
-			}
-
-			if (retVal == JFileChooser.APPROVE_OPTION)
-				startSavingStateFile(fileChooser.getSelectedFile());
-		}
+		if(selectedFile!=null)
+			startSavingStateFile(selectedFile);
 	}
 }

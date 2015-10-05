@@ -8,16 +8,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
 import java.text.NumberFormat;
-
-import javafx.application.Platform;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.Stage;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -31,20 +24,12 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
 import javax.swing.text.NumberFormatter;
 
 import org.helioviewer.jhv.Globals;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.Telemetry;
-import org.helioviewer.jhv.Globals.DialogType;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MainFrame;
@@ -64,7 +49,6 @@ public class PreferencesDialog extends JDialog
 	private JRadioButton loadDefaultMovieOnStartUp;
 	private JRadioButton doNothingOnStartUp;
 	private JPanel paramsPanel;
-	private DefaultsSelectionPanel defaultsPanel;
 	private JTextField dateFormatField;
 	private JButton dateFormatInfo;
 
@@ -107,10 +91,6 @@ public class PreferencesDialog extends JDialog
 		paramsSubPanel.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
 		paramsSubPanel.add(createParametersPanel(), BorderLayout.CENTER);
 
-		JPanel defaultsSubPanel = new JPanel(new BorderLayout());
-		defaultsSubPanel.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
-		defaultsSubPanel.add(createDefaultSaveDirPanel(), BorderLayout.CENTER);
-
 		JPanel exportSettings = new JPanel(new BorderLayout());
 
 		JPanel movieExportSubPanel = new JPanel(new BorderLayout());
@@ -125,7 +105,6 @@ public class PreferencesDialog extends JDialog
 		exportSettings.add(screenshotExportSubPanel, BorderLayout.CENTER);
 
 		panel.add(paramsSubPanel, BorderLayout.NORTH);
-		panel.add(defaultsSubPanel, BorderLayout.CENTER);
 		panel.add(exportSettings, BorderLayout.SOUTH);
 
 		mainPanel.add(panel, BorderLayout.CENTER);
@@ -172,10 +151,8 @@ public class PreferencesDialog extends JDialog
 						"Do you really want to reset the Preferences?",
 						"Attention", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
 				{
-					defaultsPanel.resetSettings();
 					loadDefaultMovieOnStartUp.setSelected(true);
 					dateFormatField.setText(defaultDateFormat);
-
 				}
 			}
 		});
@@ -254,7 +231,6 @@ public class PreferencesDialog extends JDialog
 			dateFormatField.setText(fmt);
 
 		// Default values
-		defaultsPanel.loadSettings();
 		movieExportPanel.loadSettings();
 		screenshotExportPanel.loadSettings();
 	}
@@ -273,7 +249,6 @@ public class PreferencesDialog extends JDialog
 		Settings.setProperty("default.date.format", dateFormatField.getText());
 		
 		// Default values
-		defaultsPanel.saveSettings();
 		movieExportPanel.saveSettings();
 		screenshotExportPanel.saveSettings();
 	}
@@ -331,31 +306,12 @@ public class PreferencesDialog extends JDialog
 	}
 
 	/**
-	 * Creates the default save directories panel.
-	 * 
-	 * @return Default save directories panel
-	 */
-	private JPanel createDefaultSaveDirPanel() {
-
-		JPanel panel = new JPanel(new BorderLayout());
-		panel.setBorder(BorderFactory.createTitledBorder(" Defaults "));
-
-		defaultsPanel = new DefaultsSelectionPanel();
-		defaultsPanel.setPreferredSize(new Dimension(450, 100));
-		defaultsPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-
-		panel.add(defaultsPanel, BorderLayout.CENTER);
-
-		return panel;
-	}
-
-	/**
 	 * Creates the default movie export panel.
 	 * 
 	 * @return Default movie export panel
 	 */
-	private JPanel createMovieExportPanel() {
-
+	private JPanel createMovieExportPanel()
+	{
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.setBorder(BorderFactory.createTitledBorder(" Movie export "));
 
@@ -368,8 +324,8 @@ public class PreferencesDialog extends JDialog
 		return panel;
 	}
 
-	private static class MovieExportPanel extends JPanel {
-
+	private static class MovieExportPanel extends JPanel
+	{
 		private JComboBox<AspectRatio> movieAspectRatioSelection;
 		private JFormattedTextField txtMovieImageWidth, txtMovieImageHeight;
 		private JCheckBox isTextEnabled;
@@ -413,14 +369,14 @@ public class PreferencesDialog extends JDialog
 					public void itemStateChanged(ItemEvent e) {
 						AspectRatio aspectRatio = (AspectRatio) movieAspectRatioSelection
 								.getSelectedItem();
-						if (aspectRatio.getWidth() != 0) {
+						if (aspectRatio.width != 0) {
 							int width = Integer.parseInt(txtMovieImageWidth
 									.getText());
 							// txtMovieImageWidth.setValue(txtMovieImageWidth.getValue());
 							hasChanged = true;
 							txtMovieImageHeight.setValue(width
-									* aspectRatio.getHeight()
-									/ aspectRatio.getWidth());
+									* aspectRatio.height
+									/ aspectRatio.width);
 						}
 						hasChanged = false;
 					}
@@ -453,13 +409,13 @@ public class PreferencesDialog extends JDialog
 									AspectRatio aspectRatio = (AspectRatio) movieAspectRatioSelection
 
 									.getSelectedItem();
-									if (aspectRatio.getHeight() != 0) {
+									if (aspectRatio.height != 0) {
 										int width = (int) txtMovieImageWidth
 												.getValue();
 										hasChanged = true;
 										txtMovieImageHeight.setValue(width
-												* aspectRatio.getHeight()
-												/ aspectRatio.getWidth());
+												* aspectRatio.height
+												/ aspectRatio.width);
 									}
 								} else
 									hasChanged = false;
@@ -485,13 +441,13 @@ public class PreferencesDialog extends JDialog
 									AspectRatio aspectRatio = (AspectRatio) movieAspectRatioSelection
 
 									.getSelectedItem();
-									if (aspectRatio.getHeight() != 0) {
+									if (aspectRatio.height != 0) {
 										int heigth = (int) txtMovieImageHeight
 												.getValue();
 										hasChanged = true;
 										txtMovieImageWidth.setValue(heigth
-												* aspectRatio.getWidth()
-												/ aspectRatio.getHeight());
+												* aspectRatio.width
+												/ aspectRatio.height);
 									}
 								} else
 									hasChanged = false;
@@ -629,14 +585,14 @@ public class PreferencesDialog extends JDialog
 							public void itemStateChanged(ItemEvent e) {
 								AspectRatio aspectRatio = (AspectRatio) screenshotAspectRatioSelection
 										.getSelectedItem();
-								if (aspectRatio.getWidth() != 0) {
+								if (aspectRatio.width != 0) {
 									int width = Integer
 											.parseInt(txtScreenshotImageWidth
 													.getText());
 									hasChanged = true;
 									txtScreenshotImageHeight.setValue(width
-											* aspectRatio.getHeight()
-											/ aspectRatio.getWidth());
+											* aspectRatio.height
+											/ aspectRatio.width);
 								}
 								hasChanged = false;
 							}
@@ -669,14 +625,14 @@ public class PreferencesDialog extends JDialog
 									AspectRatio aspectRatio = (AspectRatio) screenshotAspectRatioSelection
 
 									.getSelectedItem();
-									if (aspectRatio.getHeight() != 0) {
+									if (aspectRatio.height != 0) {
 										int width = Integer
 												.parseInt(txtScreenshotImageWidth
 														.getText());
 										hasChanged = true;
 										txtScreenshotImageHeight.setValue(width
-												* aspectRatio.getHeight()
-												/ aspectRatio.getWidth());
+												* aspectRatio.height
+												/ aspectRatio.width);
 									}
 								} else
 									hasChanged = false;
@@ -703,14 +659,14 @@ public class PreferencesDialog extends JDialog
 									AspectRatio aspectRatio = (AspectRatio) screenshotAspectRatioSelection
 
 									.getSelectedItem();
-									if (aspectRatio.getHeight() != 0) {
+									if (aspectRatio.height != 0) {
 										int heigth = Integer
 												.parseInt(txtScreenshotImageHeight
 														.getText());
 										hasChanged = true;
 										txtScreenshotImageWidth.setValue(heigth
-												* aspectRatio.getWidth()
-												/ aspectRatio.getHeight());
+												* aspectRatio.width
+												/ aspectRatio.height);
 									}
 								} else
 									hasChanged = false;
@@ -784,156 +740,28 @@ public class PreferencesDialog extends JDialog
 			Settings.setProperty(SETTING_SCREENSHOT_IMG_WIDTH, txtScreenshotImageWidth.getValue().toString());
 			Settings.setProperty(SETTING_SCREENSHOT_IMG_HEIGHT, txtScreenshotImageHeight.getValue().toString());
 		}
-
-	}
-
-	private static class DefaultsSelectionPanel extends JPanel
-	{
-		private JTable table = null;
-		private Object[][] tableData = null;
-
-		public DefaultsSelectionPanel()
-		{
-			super(new BorderLayout());
-			setPreferredSize(new Dimension(150, 180));
-
-			tableData = new Object[][] {
-					{ "Default local path",
-							Settings.getProperty("default.local.path") },
-					{ "Default remote path",
-							Settings.getProperty("default.remote.path") } };
-
-			table = new JTable(new DefaultTableModel(tableData, new String[] {"Description", "Value" })
-			{
-				public boolean isCellEditable(int row, int column)
-				{
-					return ((row == 2) && (column == 1));
-				}
-			});
-
-			table.setRowHeight(20);
-			JScrollPane scrollPane = new JScrollPane(table);
-			table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			// table.setFillsViewportHeight(true);
-
-			table.addMouseListener(new MouseAdapter() {
-				public void mouseClicked(MouseEvent e) {
-					if (e.getClickCount() != 2)
-						return;
-
-					int row = table.getSelectedRow();
-					if (row >= 2)
-						return;
-
-					if (Globals.USE_JAVA_FX_FILE_DIALOG) {
-						openFileChooserFX(row);
-					} else {
-						openFileChooser(row);
-					}
-				}
-			});
-
-			TableColumn col = table.getColumnModel().getColumn(0);
-			col.setMaxWidth(150);
-			col.setMinWidth(150);
-
-			add(scrollPane, BorderLayout.CENTER);
-		}
-
-		private void openFileChooser(int row)
-		{
-			File f = Globals.showFileDialog(
-					DialogType.SELECT_DIRECTORY,
-					"Select directory",
-					(String) table.getModel().getValueAt(row, 1),
-					true,
-					null);
-			
-			if(f != null)
-				setPath(f.toString(), row);
-		}
-
-		private void openFileChooserFX(final int row)
-		{
-			Platform.runLater(new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					DirectoryChooser chooser = new DirectoryChooser();
-					chooser.setTitle("Set default remote path");
-					final File selectedDirectory = chooser.showDialog(new Stage());
-					if (selectedDirectory != null)
-						SwingUtilities.invokeLater(new Runnable()
-						{
-							@Override
-							public void run()
-							{
-								setPath(selectedDirectory.toString(), row);
-							}
-						});
-				}
-			});
-		}
-
-		private void setPath(String fileName, int row)
-		{
-			table.getModel().setValueAt(fileName, row, 1);
-		}
-
-		public void loadSettings()
-		{
-			TableModel model = table.getModel();
-
-			model.setValueAt(Settings.getProperty("default.local.path"), 0, 1);
-			model.setValueAt(Settings.getProperty("default.remote.path"), 1, 1);
-		}
-
-		public void saveSettings() {
-
-			TableModel model = table.getModel();
-
-			Settings.setProperty("default.local.path", model.getValueAt(0, 1)
-					.toString());
-			Settings.setProperty("default.remote.path", model.getValueAt(1, 1)
-					.toString());
-		}
-
-		public void resetSettings() {
-
-			TableModel model = table.getModel();
-
-			model.setValueAt("jpip://delphi.nascom.nasa.gov:8090", 1, 1);
-		}
 	}
 
 	/**
 	 * Class which stores aspect ratio information
 	 */
-	private static class AspectRatio {
-		private int width;
-		private int height;
+	private static class AspectRatio
+	{
+		final int width;
+		final int height;
 
-		private AspectRatio(int width, int height) {
-			this.width = width;
-			this.height = height;
+		private AspectRatio(int _width, int _height)
+		{
+			width = _width;
+			height = _height;
 		}
 
-		public String toString() {
-			if (width == 0 || height == 0) {
+		public String toString()
+		{
+			if (width == 0 || height == 0)
 				return "Custom";
-			} else {
+			else
 				return width + " : " + height;
-			}
 		}
-
-		public int getWidth() {
-			return width;
-		}
-
-		public int getHeight() {
-			return height;
-		}
-
 	}
 }

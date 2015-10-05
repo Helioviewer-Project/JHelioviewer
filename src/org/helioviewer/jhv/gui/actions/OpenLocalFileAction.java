@@ -13,7 +13,7 @@ import org.helioviewer.jhv.Globals;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.Globals.DialogType;
 import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.gui.filefilters.PredefinedFileFilter;
+import org.helioviewer.jhv.gui.PredefinedFileFilter;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
 import org.helioviewer.jhv.viewmodel.metadata.UnsuitableMetaDataException;
@@ -54,19 +54,16 @@ public class OpenLocalFileAction extends AbstractAction
 		if (selectedFile == null)
 			return;
 		
-		if (selectedFile.exists() && selectedFile.isFile())
+		// remember the current directory for future
+		Settings.setProperty("default.local.path", selectedFile.getParent());
+		
+		try
 		{
-			// remember the current directory for future
-			Settings.setProperty("default.local.path", selectedFile.getParent());
-			
-			try
-			{
-				Layers.addLayer(new KakaduLayer(selectedFile.getPath()));
-			}
-			catch(UnsuitableMetaDataException _umde)
-			{
-				JOptionPane.showMessageDialog(MainFrame.MAIN_PANEL, "The source's metadata could not be read.");
-			}
+			Layers.addLayer(new KakaduLayer(selectedFile.getPath()));
+		}
+		catch(UnsuitableMetaDataException _umde)
+		{
+			JOptionPane.showMessageDialog(MainFrame.MAIN_PANEL, "The source's metadata could not be read.");
 		}
 	}
 }

@@ -3,24 +3,20 @@ package org.helioviewer.jhv.gui.dialogs;
 import java.awt.BorderLayout;
 import java.io.File;
 
-import javafx.application.Platform;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-
 import javax.swing.JDialog;
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.Globals;
+import org.helioviewer.jhv.Globals.DialogType;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPDownloadRequest;
 import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
 import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.gui.filefilters.PredefinedFileFilter;
+import org.helioviewer.jhv.gui.PredefinedFileFilter;
 import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.layers.AbstractLayer;
 import org.helioviewer.jhv.viewmodel.TimeLine;
@@ -29,7 +25,7 @@ import org.helioviewer.jhv.viewmodel.TimeLine;
 public class DownloadMovieDialog extends JDialog
 {
 	private JProgressBar progressBar;
-	private static final String PATH_SETTINGS = "download.path";
+	private static final String PATH_SETTINGS = "download.path"; //TODO: consolidate/check all paths
 	private String url = null;
 	private String defaultName;
 
@@ -54,72 +50,6 @@ public class DownloadMovieDialog extends JDialog
 		add(progressBar);
 	}
 
-	private void openFileChooser()
-	{
-		String lastPath = Settings.getProperty(PATH_SETTINGS);
-		JFileChooser fileChooser = new JFileChooser();
-		fileChooser.setDialogTitle("Download imagedata");
-		if (lastPath != null)
-			fileChooser.setCurrentDirectory(new File(lastPath + "/" + defaultName));
-		
-		fileChooser.setFileFilter(PredefinedFileFilter.JPX);
-		int retVal = fileChooser.showSaveDialog(MainFrame.SINGLETON);
-
-		if (retVal == JFileChooser.CANCEL_OPTION)
-			return;
-
-		if (fileChooser.getSelectedFile().exists())
-		{
-			// ask if the user wants to overwrite
-			int response = JOptionPane.showConfirmDialog(null,
-					"Overwrite existing file?", "Confirm Overwrite",
-					JOptionPane.OK_CANCEL_OPTION,
-					JOptionPane.QUESTION_MESSAGE);
-
-			// if the user doesn't want to overwrite, simply return null
-			if (response == JOptionPane.CANCEL_OPTION)
-				return;
-		}
-		
-		if (retVal == JFileChooser.APPROVE_OPTION)
-		{
-			Settings.setProperty(PATH_SETTINGS, fileChooser.getCurrentDirectory().getAbsolutePath());
-			String fileName = fileChooser.getSelectedFile().toString();
-			PredefinedFileFilter fileFilter = (PredefinedFileFilter)fileChooser.getFileFilter();
-			fileName = fileName.endsWith(fileFilter.getDefaultExtension()) ? fileName : fileName + fileFilter.getDefaultExtension();
-			start(fileName);
-		}
-	}
-	
-	private void openFileChooserFX()
-	{
-		Platform.runLater(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				FileChooser fileChooser = new FileChooser();
-				fileChooser.setTitle("Downlaod imagedata");
-				fileChooser.setInitialFileName(defaultName);
-				
-				String lastPath = Settings.getProperty(PATH_SETTINGS);
-				
-				if (lastPath != null)
-				{
-					File file = new File(lastPath);
-					if (file.exists())
-						fileChooser.setInitialDirectory(file);
-				}
-
-				fileChooser.getExtensionFilters().addAll(PredefinedFileFilter.JPX.extensionFilter);
-				final File selectedFile = fileChooser.showSaveDialog(new Stage());
-
-				if (selectedFile != null)
-					start(selectedFile.toString());
-			}
-		});
-	}
-	
 	private void start(String fileName)
 	{
 		final HTTPDownloadRequest httpDownloadRequest = new HTTPDownloadRequest(url, DownloadPriority.URGENT, fileName);
@@ -176,9 +106,17 @@ public class DownloadMovieDialog extends JDialog
 		defaultName = _layer.getFullName() + "_F" + Globals.FILE_DATE_TIME_FORMATTER.format(((AbstractImageLayer)_layer).getFirstLocalDateTime()) + "_T" + Globals.FILE_DATE_TIME_FORMATTER.format(((AbstractImageLayer)_layer).getLastLocalDateTime());
 		url = _url;
 		
-		if (Globals.USE_JAVA_FX_FILE_DIALOG)
-			openFileChooserFX();
-		else
-			openFileChooser();
+		File selectedFile = Globals.showFileDialog(DialogType.SAVE_FILE,
+				"Download movie",
+				Settings.getProperty(PATH_SETTINGS),
+				true,
+				defaultName,
+				PredefinedFileFilter.JPX);
+		
+		if (selectedFile == null)
+			return;
+
+		Settings.setProperty(PATH_SETTINGS, selectedFile.getParent());
+		start(selectedFile.getPath());
 	}
 }

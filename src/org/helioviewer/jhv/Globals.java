@@ -8,15 +8,18 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeFormatter;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.Optional;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
@@ -25,13 +28,14 @@ import javafx.stage.StageStyle;
 import javax.annotation.Nullable;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileFilter;
 
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.MainPanel;
-import org.helioviewer.jhv.gui.filefilters.PredefinedFileFilter;
+import org.helioviewer.jhv.gui.PredefinedFileFilter;
 
 /**
  * Intended to be a class for static functions and fields relevant to the
@@ -41,15 +45,12 @@ public class Globals
 {
 	public static final String OBSERVATORIES_DATASOURCE = "http://api.helioviewer.org/v2/getDataSources/?";
 
-	
     public static final String VERSION = System.getProperty("jhvVersion") == null ? "developer" : System.getProperty("jhvVersion");
     public static final String RAYGUN_TAG = System.getProperty("raygunTag");
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
     public static final DateTimeFormatter FILE_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH.mm.ss'Z'");
     
-	/**
-	 * AIA 193
-	 */
+	//AIA 193
     public static final int STARTUP_LAYER_ID = 10;
 
     //TODO check all invocations of file dialogs, check should happen centralized
@@ -61,17 +62,19 @@ public class Globals
 		try
 		{
 			Class.forName("com.sun.javafx.runtime.VersionInfo");
-			Platform.runLater(new Runnable()
+			SwingUtilities.invokeAndWait(new Runnable()
 			{
 				@Override
 				public void run()
 				{
+					new JFXPanel();
 				}
 			});
 		}
-		catch (ClassNotFoundException e)
+		catch (ClassNotFoundException | InvocationTargetException | InterruptedException e)
 		{
 			javaFxAvailable = false;
+			Telemetry.trackException(e);
 			System.err.println("No JavaFX detected. Please install a Java 1.8 with JavaFX");
 		}
 		
@@ -150,11 +153,13 @@ public class Globals
     		@Nullable final String _defaultName,    		
     		final PredefinedFileFilter... _filters)
     {
-		if (Globals.USE_JAVA_FX_FILE_DIALOG && (_type==DialogType.OPEN_FILE || _type==DialogType.SAVE_FILE))
+    	//TODO: add default file extension if none was specified by the user
+    	
+		if (Globals.USE_JAVA_FX_FILE_DIALOG)
 			try
 			{
 				final LinkedBlockingQueue<Stage> mainStage=new LinkedBlockingQueue<>();
-				final ArrayBlockingQueue<File> selectedFile=new ArrayBlockingQueue<>(1);
+				final LinkedBlockingQueue<Optional<File>> selectedFile=new LinkedBlockingQueue<>();
 				
 				MainFrame.SINGLETON.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 				
@@ -187,80 +192,133 @@ public class Globals
 					}
 				});
 				
+		        Platform.setImplicitExit(false);
 				Platform.runLater(new Runnable()
 				{
 					@Override
 					public void run()
 					{
-						try
+						final Stage s=new Stage(StageStyle.UTILITY);
+						s.setOpacity(0);
+						s.setWidth(MainFrame.SINGLETON.getWidth());
+						s.setHeight(MainFrame.SINGLETON.getHeight());
+						s.setX(MainFrame.SINGLETON.getX());
+						s.setY(MainFrame.SINGLETON.getY());
+						s.setScene(new Scene(new Group()));
+						s.getScene().setCursor(javafx.scene.Cursor.WAIT);
+						s.getScene().getRoot().setCursor(javafx.scene.Cursor.WAIT);
+						s.show();
+						
+						mainStage.add(s);
+						
+						Platform.runLater(new Runnable()
 						{
-							FileChooser fileChooser = new FileChooser();
-							fileChooser.setTitle(_title);
-							if(_directory!=null)
-								fileChooser.setInitialDirectory(new File(_directory));
-							
-							for(PredefinedFileFilter f:_filters)
-								fileChooser.getExtensionFilters().add(f.extensionFilter);
-							
-							if(_allowAllExtensions)
-								fileChooser.getExtensionFilters().add(new ExtensionFilter("All Files (*.*)", "*.*"));
-							
-							if(_defaultName!=null)
-								fileChooser.setInitialFileName(_defaultName);
-							
-							Stage s=new Stage(StageStyle.UTILITY);
-							s.setOpacity(0);
-							s.setWidth(MainFrame.SINGLETON.getWidth());
-							s.setHeight(MainFrame.SINGLETON.getHeight());
-							s.setX(MainFrame.SINGLETON.getX());
-							s.setY(MainFrame.SINGLETON.getY());
-							s.setScene(new Scene(new Group()));
-							s.show();
-							
-							mainStage.add(s);
-							
-							switch(_type)
+							@Override
+							public void run()
 							{
-								case OPEN_FILE:
-									selectedFile.put(fileChooser.showOpenDialog(s));
-									break;
-								case SAVE_FILE:
-									selectedFile.put(fileChooser.showSaveDialog(s));
-									break;
-								default:
-									throw new RuntimeException();
-							}
-							
-							s.hide();
-						}
-						catch (InterruptedException _e)
-						{
-							Telemetry.trackException(_e);
-						}
-						finally
-						{
-							SwingUtilities.invokeLater(new Runnable()
-							{
-								@Override
-								public void run()
+								try
 								{
-									modalBlocker.setVisible(false);
+									switch(_type)
+									{
+										case OPEN_FILE:
+										case SAVE_FILE:
+											FileChooser fileChooser = new FileChooser();
+											fileChooser.setTitle(_title);
+											if(_directory!=null)
+												fileChooser.setInitialDirectory(new File(_directory));
+											
+											for(PredefinedFileFilter f:_filters)
+												fileChooser.getExtensionFilters().add(f.extensionFilter);
+											
+											if(_allowAllExtensions)
+												fileChooser.getExtensionFilters().add(new ExtensionFilter("All Files (*.*)", "*.*"));
+											
+											if(_defaultName!=null)
+												fileChooser.setInitialFileName(_defaultName);
+											
+											if(_type==DialogType.OPEN_FILE)
+												selectedFile.put(Optional.ofNullable(fileChooser.showOpenDialog(s)));
+											else
+												selectedFile.put(Optional.ofNullable(fileChooser.showSaveDialog(s)));
+											
+											break;
+										case SELECT_DIRECTORY:
+											DirectoryChooser dirChooser=new DirectoryChooser();
+											dirChooser.setTitle(_title);
+											if(_directory!=null)
+												dirChooser.setInitialDirectory(new File(_directory));
+											
+											selectedFile.add(Optional.ofNullable(dirChooser.showDialog(s)));
+											break;
+									}
+									
+									s.close();
 								}
-							});
-						}
+								catch (InterruptedException _e)
+								{
+									Telemetry.trackException(_e);
+								}
+								finally
+								{
+									SwingUtilities.invokeLater(new Runnable()
+									{
+										@Override
+										public void run()
+										{
+											modalBlocker.setVisible(false);
+											modalBlocker.dispose();
+										}
+									});
+								}
+							}
+						});
 					}
 				});
 				
 				modalBlocker.setVisible(true);
-				return selectedFile.peek();
+				
+				Optional<File> of=selectedFile.peek();
+				File f=of==null ? null : of.orElse(null);
+				if(f==null)
+					return null;
+				
+				switch(_type)
+				{
+					case OPEN_FILE:
+						if(f.isFile() && f.exists())
+							return f;
+						else
+							return null;
+
+					case SAVE_FILE:
+						if(!f.isFile())
+							return null;
+						
+						if(!f.exists())
+							return f;
+						
+		                switch (JOptionPane.showConfirmDialog(MainFrame.SINGLETON,
+		                        "This file exists already, overwrite?", "Overwrite existing file",
+		                        JOptionPane.YES_NO_CANCEL_OPTION))
+		                {
+			                case JOptionPane.YES_OPTION:
+			                    return f;
+			                case JOptionPane.CANCEL_OPTION:
+			                    return null;
+			                case JOptionPane.NO_OPTION:
+			                	return showFileDialog(_type, _title, f.getParent(), _allowAllExtensions, f.getName(), _filters);
+		                    default:
+		                    	throw new RuntimeException();
+		                }
+						
+					default:
+						throw new RuntimeException();
+				}
 			}
 			finally
 			{
 				MainFrame.SINGLETON.setCursor(null);
-				//MainFrame.SINGLETON.setEnabled(true);
-				Platform.exit();
 			}
-    	
     	
         try
         {
@@ -294,7 +352,13 @@ public class Globals
         	            		 break;
         	            	 }
                     if(instance.showOpenDialog(MainFrame.MAIN_PANEL)==JFileChooser.APPROVE_OPTION)
-                    	return instance.getSelectedFile();
+                    {
+                    	File f=instance.getSelectedFile();
+    					if(f.isFile() && f.exists())
+    						return f;
+    					else
+    						return null;
+                    }
                     else
                     	return null;
 
@@ -314,7 +378,28 @@ public class Globals
         	            		 break;
         	            	 }
                     if(instance.showSaveDialog(MainFrame.MAIN_PANEL)==JFileChooser.APPROVE_OPTION)
-                    	return instance.getSelectedFile();
+                    {
+                    	File f=instance.getSelectedFile();
+    					if(!f.isFile())
+    						return null;
+    					
+    					if(!f.exists())
+    						return f;
+    					
+    	                switch (JOptionPane.showConfirmDialog(MainFrame.SINGLETON,
+    	                        "The file exists, overwrite?", "Existing file",
+    	                        JOptionPane.YES_NO_CANCEL_OPTION))
+    	                {
+    		                case JOptionPane.YES_OPTION:
+    		                    return f;
+    		                case JOptionPane.CANCEL_OPTION:
+    		                    return null;
+    		                case JOptionPane.NO_OPTION:
+    		                	return showFileDialog(_type, _title, f.getParent(), _allowAllExtensions, f.getName(), _filters);
+    	                    default:
+    	                    	throw new RuntimeException();
+    	                }
+                    }
                     else
                     	return null;
 
@@ -323,14 +408,19 @@ public class Globals
                     instance.setAcceptAllFileFilterUsed(true);
                     instance.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
                     if(instance.showOpenDialog(MainFrame.MAIN_PANEL)==JFileChooser.APPROVE_OPTION)
-                    	return instance.getSelectedFile();
+                    {
+                    	File f=instance.getSelectedFile();
+                    	if(f.isDirectory() && f.exists())
+                    		return f;
+                    	else
+                    		return null;
+                    }
                     else
                     	return null;
                     
         		default:
         			throw new RuntimeException();
             }
-            
         }
         catch(InterruptedException e)
         {
@@ -347,6 +437,8 @@ public class Globals
             public void run()
             {
                 fileChooser.add(new JFileChooser());
+                
+                new FileChooser();
             }
         });
         

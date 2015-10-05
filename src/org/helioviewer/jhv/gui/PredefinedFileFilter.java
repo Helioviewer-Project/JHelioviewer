@@ -1,11 +1,8 @@
-package org.helioviewer.jhv.gui.filefilters;
+package org.helioviewer.jhv.gui;
 
 import java.io.File;
-
 import javax.swing.filechooser.FileFilter;
-
 import javafx.stage.FileChooser.ExtensionFilter;
-
 import com.xuggle.xuggler.ICodec;
 
 public class PredefinedFileFilter extends FileFilter

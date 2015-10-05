@@ -14,26 +14,21 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import javafx.application.Platform;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import org.helioviewer.jhv.Globals;
+import org.helioviewer.jhv.Globals.DialogType;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.Telemetry;
-import org.helioviewer.jhv.Globals.DialogType;
 import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.gui.filefilters.PredefinedFileFilter;
+import org.helioviewer.jhv.gui.PredefinedFileFilter;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 
 import com.xuggle.mediatool.IMediaWriter;
@@ -72,7 +67,30 @@ public class ExportMovieDialog implements ActionListener
 
 	public ExportMovieDialog()
 	{
-		openFileChooser();
+		txtTargetFile = LocalDateTime.now().format(Globals.DATE_TIME_FORMATTER);
+
+		// Open save-dialog
+		final File file = Globals.showFileDialog(
+				DialogType.SAVE_FILE,
+				"Save Movie as", 
+				Settings.getProperty(SETTING_MOVIE_EXPORT_LAST_DIRECTORY),
+				false,txtTargetFile,
+				PredefinedFileFilter.SaveMovieFileFilter);
+		
+		if (file == null)
+			return;
+		
+		for(PredefinedFileFilter mff:PredefinedFileFilter.SaveMovieFileFilter)
+			if(mff.accept(file))
+			{
+				selectedOutputFormat=mff;
+				break;
+			}
+		
+		directory = file.getParent() + "/";
+		filename = file.getName();
+		
+		startMovieExport();
 		
     	Telemetry.trackEvent("Dialog", "Type", getClass().getSimpleName());
 	}
@@ -166,98 +184,6 @@ public class ExportMovieDialog implements ActionListener
 
 		}, "Movie Export");
 		thread.start();
-	}
-
-	private void openFXFileChooser()
-	{
-		Platform.runLater(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				FileChooser fileChooser = new FileChooser();
-				fileChooser.setTitle("Export movie");
-
-				txtTargetFile = "";
-
-				txtTargetFile += LocalDateTime.now().format(Globals.DATE_TIME_FORMATTER);
-
-				String val = Settings.getProperty(SETTING_MOVIE_EXPORT_LAST_DIRECTORY);
-				if (val != null && !(val.length() == 0))
-					fileChooser.setInitialDirectory(new File(val));
-
-				fileChooser.setInitialFileName(txtTargetFile);
-				for (PredefinedFileFilter movieFilter : PredefinedFileFilter.SaveMovieFileFilter)
-					fileChooser.getExtensionFilters().addAll(movieFilter.extensionFilter);
-
-				final File selectedFile = fileChooser.showSaveDialog(new Stage());
-
-				if (selectedFile != null)
-				{
-					for (PredefinedFileFilter filter : PredefinedFileFilter.SaveMovieFileFilter)
-						if (filter.extensionFilter==fileChooser.getSelectedExtensionFilter())
-						{
-							selectedOutputFormat = filter;
-							break;
-						}
-					
-					directory = selectedFile.getAbsolutePath().substring(0, selectedFile.getAbsolutePath().lastIndexOf(File.separator) + 1);
-					filename = selectedFile.getName().substring(0, selectedFile.getName().lastIndexOf(selectedOutputFormat.getDefaultExtension()));
-					//directory = fileChooser.getCurrentDirectory().getPath() + "/";
-					//filename = fileChooser.getSelectedFile().getName();
-					startMovieExport();
-				}
-			}
-
-		});
-
-	}
-
-	private void openFileChooser()
-	{
-		if (Globals.USE_JAVA_FX_FILE_DIALOG)
-			openFXFileChooser();
-		else
-		{
-			txtTargetFile = LocalDateTime.now().format(Globals.DATE_TIME_FORMATTER);
-
-			// Open save-dialog
-			final File file = Globals.showFileDialog(
-					DialogType.SAVE_FILE,
-					"Save Movie as", 
-					Settings.getProperty(SETTING_MOVIE_EXPORT_LAST_DIRECTORY),
-					false,txtTargetFile,
-					PredefinedFileFilter.SaveMovieFileFilter);
-			
-			if (file != null)
-			{
-				for(PredefinedFileFilter mff:PredefinedFileFilter.SaveMovieFileFilter)
-					if(mff.accept(file))
-					{
-						selectedOutputFormat=mff;
-						break;
-					}
-				
-				directory = file.getParent() + "/";
-				filename = file.getName();
-
-				if (file.exists())
-				{
-					// ask if the user wants to overwrite
-					int response = JOptionPane.showConfirmDialog(null,
-							"Overwrite existing file?", "Confirm Overwrite",
-							JOptionPane.OK_CANCEL_OPTION,
-							JOptionPane.QUESTION_MESSAGE);
-
-					// if the user doesn't want to overwrite, just don't start the movie export
-					if (response == JOptionPane.CANCEL_OPTION)
-						return;
-				}
-
-				startMovieExport();
-			}
-
-		}
 	}
 
 	private void loadSettings()
