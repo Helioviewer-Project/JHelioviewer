@@ -24,7 +24,6 @@ import javafx.stage.Stage;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
-import javax.swing.JFileChooser;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -42,8 +41,9 @@ import javax.xml.transform.stream.StreamResult;
 import org.helioviewer.jhv.Globals;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.Telemetry;
+import org.helioviewer.jhv.Globals.DialogType;
 import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.gui.actions.filefilters.FileFilter;
+import org.helioviewer.jhv.gui.filefilters.PredefinedFileFilter;
 import org.helioviewer.jhv.layers.AbstractLayer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
@@ -197,7 +197,7 @@ public class MetaDataDialog extends JDialog implements ActionListener, LayerList
 
 		} else if (_a.getSource() == exportFitsButton) {
 			//FIXME: shouldn't happen here, instead in JHVGlobals or smth
-			if (Globals.USE_JAVA_FX){
+			if (Globals.USE_JAVA_FX_FILE_DIALOG){
 				openFileChooserFX(outFileName);
 			}
 			else {
@@ -233,7 +233,7 @@ public class MetaDataDialog extends JDialog implements ActionListener, LayerList
 						.getProperty("default.local.path")));
 				}
 				
-				fileChooser.getExtensionFilters().addAll(FileFilter.IMPLEMENTED_FILE_FILTER.XML.getFileFilter().getExtensionFilter());
+				fileChooser.getExtensionFilters().addAll(PredefinedFileFilter.XML.extensionFilter);
 				final File selectedFile = fileChooser
 						.showSaveDialog(new Stage());
 				
@@ -248,27 +248,19 @@ public class MetaDataDialog extends JDialog implements ActionListener, LayerList
 		});
 	}
 	
-	private void openFileChooser(String _filename) {
+	private void openFileChooser(String _filename)
+	{
 		// Open save-dialog
-		final JFileChooser fileChooser = Globals.getJFileChooser();
-		fileChooser.setDialogTitle("Save metadata");
-		fileChooser.setFileHidingEnabled(false);
-		fileChooser.setMultiSelectionEnabled(false);
-		fileChooser.setAcceptAllFileFilterUsed(true);
-		fileChooser.setFileFilter(FileFilter.IMPLEMENTED_FILE_FILTER.XML.getFileFilter());
-		String val = Settings.getProperty(LAST_DIRECTORY);
-		String fileName = "";
-		if (val != null){
-			File lastPath = new File(val);
-			if (lastPath.exists())
-			fileName += val + "/";
-		}
-
-		fileChooser.setSelectedFile(new File(fileName + _filename));
+		final File file = Globals.showFileDialog(
+				DialogType.SAVE_FILE,
+				"Save metadata",
+				Settings.getProperty(LAST_DIRECTORY),
+				true,
+				_filename,
+				PredefinedFileFilter.XML);
 		
-		int retVal = fileChooser.showDialog(MainFrame.SINGLETON, "OK");
-		if (retVal == JFileChooser.APPROVE_OPTION)
-			saveFits(fileChooser.getSelectedFile().getPath());
+		if (file != null)
+			saveFits(file.getPath());
 	}
 
 	/**

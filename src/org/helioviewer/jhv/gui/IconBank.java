@@ -152,10 +152,14 @@ public class IconBank
      * */
     public static ImageIcon getIcon(JHVIcon _icon)
     {
-        URL imgURL = IconBank.class.getResource(RESOURCE_PATH + _icon.filename);
-        return new ImageIcon(imgURL);
+        return new ImageIcon(IconBank.class.getResource(RESOURCE_PATH + _icon.filename));
     }
 
+    public static javafx.scene.image.Image getFXImage(JHVIcon _icon)
+    {
+        return new javafx.scene.image.Image(IconBank.class.getResourceAsStream(RESOURCE_PATH + _icon.filename));
+    }
+    
     public static ImageIcon getIcon(JHVIcon icon, int width, int height)
     {
         URL imgURL = IconBank.class.getResource(RESOURCE_PATH + icon.filename);
@@ -174,8 +178,8 @@ public class IconBank
      *            Name of the image which should be loaded
      * @return Image for the given name or null if it fails to load the image.
      * */
-    public static BufferedImage getImage(JHVIcon icon) {
-
+    public static BufferedImage getImage(JHVIcon icon)
+    {
         ImageIcon imageIcon = getIcon(icon);
 
         if (imageIcon == null)
@@ -183,7 +187,8 @@ public class IconBank
 
         Image image = imageIcon.getImage();
 
-        if (image != null && image.getWidth(null) > 0 && image.getHeight(null) > 0) {
+        if (image != null && image.getWidth(null) > 0 && image.getHeight(null) > 0)
+        {
             BufferedImage bi = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
 
             Graphics g = bi.getGraphics();

@@ -2,6 +2,7 @@ package org.helioviewer.jhv;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -53,6 +54,8 @@ class SplashScreen extends JFrame
 		add(imagePanel, BorderLayout.CENTER);
 		add(progressBar, BorderLayout.SOUTH);
 
+		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+		
 		// show the splash screen
 		setVisible(true);
 		

@@ -112,7 +112,7 @@ public class JHelioviewer
 
 			// initializes JavaFX environment
 			splash.progressTo("Initializing JavaFX");
-			if(Globals.USE_JAVA_FX)
+			if(Globals.USE_JAVA_FX_FILE_DIALOG)
 				SwingUtilities.invokeLater(new Runnable()
 				{
 				    public void run()
@@ -309,9 +309,10 @@ public class JHelioviewer
 			Method registerListenerMethod = applicationClass.getMethod("addApplicationListener", new Class[] { applicationListener });
 			registerListenerMethod.invoke(application, new Object[] { listenerProxy });
 		}
-		catch (Throwable e)
+		catch (Throwable t)
 		{
 			System.err.println("Failed to create native menuitems for Mac OSX");
+			Telemetry.trackException(t);
 		}
 	}
 }

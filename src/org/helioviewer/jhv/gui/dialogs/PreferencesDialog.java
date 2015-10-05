@@ -26,7 +26,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
-import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -36,6 +35,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
@@ -44,6 +44,7 @@ import javax.swing.text.NumberFormatter;
 import org.helioviewer.jhv.Globals;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.Telemetry;
+import org.helioviewer.jhv.Globals.DialogType;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MainFrame;
@@ -727,21 +728,23 @@ public class PreferencesDialog extends JDialog
 			String val;
 			try {
 				val = Settings.getProperty(SETTING_SCREENSHOT_TEXT);
-				if (val != null && !(val.length() == 0)) {
+				if (val != null && !(val.length() == 0))
 					isTextEnabled.setSelected(Boolean.parseBoolean(val));
-				}
-			} catch (Throwable t) {
-				System.err.println(t);
+			}
+			catch (Throwable t)
+			{
+				Telemetry.trackException(t);
 			}
 
-			try {
+			try
+			{
 				val = Settings.getProperty(SETTING_SCREENSHOT_IMG_HEIGHT);
-				if (val != null && !(val.length() == 0)) {
-					txtScreenshotImageHeight.setValue(Math.round(Float
-							.parseFloat(val)));
-				}
-			} catch (Throwable t) {
-				System.err.println(t);
+				if (val != null && !(val.length() == 0))
+					txtScreenshotImageHeight.setValue(Math.round(Float.parseFloat(val)));
+			}
+			catch (Throwable t)
+			{
+				Telemetry.trackException(t);
 			}
 
 			try {
@@ -751,7 +754,7 @@ public class PreferencesDialog extends JDialog
 							.parseFloat(val)));
 				}
 			} catch (Throwable t) {
-				System.err.println(t);
+				Telemetry.trackException(t);
 			}
 
 			float ar = 16 / 9f;
@@ -822,7 +825,7 @@ public class PreferencesDialog extends JDialog
 					if (row >= 2)
 						return;
 
-					if (Globals.USE_JAVA_FX) {
+					if (Globals.USE_JAVA_FX_FILE_DIALOG) {
 						openFileChooserFX(row);
 					} else {
 						openFileChooser(row);
@@ -837,36 +840,49 @@ public class PreferencesDialog extends JDialog
 			add(scrollPane, BorderLayout.CENTER);
 		}
 
-		private void openFileChooser(int row) {
-			JFileChooser chooser = Globals.getJFileChooser((String) table
-					.getModel().getValueAt(row, 1));
-			chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-
-			if (chooser.showDialog(null, "Select") == JFileChooser.APPROVE_OPTION)
-				setPath(chooser.getSelectedFile().toString(), row);
+		private void openFileChooser(int row)
+		{
+			File f = Globals.showFileDialog(
+					DialogType.SELECT_DIRECTORY,
+					"Select directory",
+					(String) table.getModel().getValueAt(row, 1),
+					true,
+					null);
+			
+			if(f != null)
+				setPath(f.toString(), row);
 		}
 
-		private void openFileChooserFX(final int row) {
-			Platform.runLater(new Runnable() {
-
+		private void openFileChooserFX(final int row)
+		{
+			Platform.runLater(new Runnable()
+			{
 				@Override
-				public void run() {
+				public void run()
+				{
 					DirectoryChooser chooser = new DirectoryChooser();
 					chooser.setTitle("Set default remote path");
-					File selectedDirectory = chooser.showDialog(new Stage());
-					if (selectedDirectory != null) {
-						setPath(selectedDirectory.toString(), row);
-					}
+					final File selectedDirectory = chooser.showDialog(new Stage());
+					if (selectedDirectory != null)
+						SwingUtilities.invokeLater(new Runnable()
+						{
+							@Override
+							public void run()
+							{
+								setPath(selectedDirectory.toString(), row);
+							}
+						});
 				}
 			});
 		}
 
-		private void setPath(String fileName, int row) {
+		private void setPath(String fileName, int row)
+		{
 			table.getModel().setValueAt(fileName, row, 1);
 		}
 
-		public void loadSettings() {
-
+		public void loadSettings()
+		{
 			TableModel model = table.getModel();
 
 			model.setValueAt(Settings.getProperty("default.local.path"), 0, 1);

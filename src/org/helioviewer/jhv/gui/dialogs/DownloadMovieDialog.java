@@ -5,7 +5,6 @@ import java.io.File;
 
 import javafx.application.Platform;
 import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 
 import javax.swing.JDialog;
@@ -21,7 +20,7 @@ import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPDownloadRequest;
 import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
 import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.gui.actions.filefilters.ExtensionFileFilter;
+import org.helioviewer.jhv.gui.filefilters.PredefinedFileFilter;
 import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.layers.AbstractLayer;
 import org.helioviewer.jhv.viewmodel.TimeLine;
@@ -33,22 +32,6 @@ public class DownloadMovieDialog extends JDialog
 	private static final String PATH_SETTINGS = "download.path";
 	private String url = null;
 	private String defaultName;
-	private static class JPXFilter extends ExtensionFileFilter {
-
-		private static final String DESCRIPTION = "JPG2000 files (\".jpx\")";
-		private static final String EXTENSION = "*.jpx";
-		public JPXFilter() {
-			extensions = new String[] { EXTENSION };
-		}
-
-		public String getDescription() {
-			return DESCRIPTION;
-		}
-		
-		public static ExtensionFilter getExtensionFilter(){
-			return new ExtensionFilter(DESCRIPTION, EXTENSION);
-		}
-	}
 
 	public DownloadMovieDialog()
 	{
@@ -65,26 +48,28 @@ public class DownloadMovieDialog extends JDialog
 		pack();
 	}
 
-	private void initGUI() {
+	private void initGUI()
+	{
 		progressBar = new JProgressBar();
-		this.add(progressBar);
+		add(progressBar);
 	}
 
-	private void openFileChooser(){
+	private void openFileChooser()
+	{
 		String lastPath = Settings.getProperty(PATH_SETTINGS);
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setDialogTitle("Download imagedata");
-		if (lastPath != null){
+		if (lastPath != null)
 			fileChooser.setCurrentDirectory(new File(lastPath + "/" + defaultName));
-		}
-		fileChooser.setFileFilter(new JPXFilter());
+		
+		fileChooser.setFileFilter(PredefinedFileFilter.JPX);
 		int retVal = fileChooser.showSaveDialog(MainFrame.SINGLETON);
 
-		if (retVal == JFileChooser.CANCEL_OPTION) {
+		if (retVal == JFileChooser.CANCEL_OPTION)
 			return;
-		}
 
-		if (fileChooser.getSelectedFile().exists()) {
+		if (fileChooser.getSelectedFile().exists())
+		{
 			// ask if the user wants to overwrite
 			int response = JOptionPane.showConfirmDialog(null,
 					"Overwrite existing file?", "Confirm Overwrite",
@@ -92,15 +77,15 @@ public class DownloadMovieDialog extends JDialog
 					JOptionPane.QUESTION_MESSAGE);
 
 			// if the user doesn't want to overwrite, simply return null
-			if (response == JOptionPane.CANCEL_OPTION) {
+			if (response == JOptionPane.CANCEL_OPTION)
 				return;
-			}
 		}
 		
-		if (retVal == JFileChooser.APPROVE_OPTION) {
+		if (retVal == JFileChooser.APPROVE_OPTION)
+		{
 			Settings.setProperty(PATH_SETTINGS, fileChooser.getCurrentDirectory().getAbsolutePath());
 			String fileName = fileChooser.getSelectedFile().toString();
-			JPXFilter fileFilter = (JPXFilter)fileChooser.getFileFilter();
+			PredefinedFileFilter fileFilter = (PredefinedFileFilter)fileChooser.getFileFilter();
 			fileName = fileName.endsWith(fileFilter.getDefaultExtension()) ? fileName : fileName + fileFilter.getDefaultExtension();
 			start(fileName);
 		}
@@ -126,7 +111,7 @@ public class DownloadMovieDialog extends JDialog
 						fileChooser.setInitialDirectory(file);
 				}
 
-				fileChooser.getExtensionFilters().addAll(JPXFilter.getExtensionFilter());
+				fileChooser.getExtensionFilters().addAll(PredefinedFileFilter.JPX.extensionFilter);
 				final File selectedFile = fileChooser.showSaveDialog(new Stage());
 
 				if (selectedFile != null)
@@ -191,7 +176,7 @@ public class DownloadMovieDialog extends JDialog
 		defaultName = _layer.getFullName() + "_F" + Globals.FILE_DATE_TIME_FORMATTER.format(((AbstractImageLayer)_layer).getFirstLocalDateTime()) + "_T" + Globals.FILE_DATE_TIME_FORMATTER.format(((AbstractImageLayer)_layer).getLastLocalDateTime());
 		url = _url;
 		
-		if (Globals.USE_JAVA_FX)
+		if (Globals.USE_JAVA_FX_FILE_DIALOG)
 			openFileChooserFX();
 		else
 			openFileChooser();

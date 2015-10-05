@@ -20,10 +20,11 @@ import javax.swing.JOptionPane;
 import org.helioviewer.jhv.Globals;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.Telemetry;
+import org.helioviewer.jhv.Globals.DialogType;
 import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.gui.actions.filefilters.ExtensionFileFilter;
+import org.helioviewer.jhv.gui.filefilters.PredefinedFileFilter;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.viewmodel.TimeLine;
@@ -37,27 +38,6 @@ public class StateParser extends DefaultHandler
 	private static final String LOAD_PATH_SETTINGS = "statefile.load.path";
 	private static final String SAVE_PATH_SETTINGS = "statefile.save.path";
 	
-	private static class JHVStateFilter extends ExtensionFileFilter
-	{
-		private static final String DESCRIPTION = "JHelioviewer State files (\"*.jhv\")";
-		private static final String EXTENSION = ".jhv";
-
-		public JHVStateFilter()
-		{
-			extensions = new String[] { EXTENSION };
-		}
-
-		public String getDescription()
-		{
-			return DESCRIPTION;
-		}
-
-		public static ExtensionFilter getExtensionFilter()
-		{
-			return new ExtensionFilter(DESCRIPTION, "*" + EXTENSION);
-		}
-	}
-
 	//FIXME: move to a centralized location
 	private static void openLoadFileChooserFX()
 	{
@@ -71,7 +51,7 @@ public class StateParser extends DefaultHandler
 				fileChooser.setInitialDirectory(new File(Settings.getProperty(LOAD_PATH_SETTINGS)));
 
 				ExtensionFilter extensionFilter1 = new ExtensionFilter("All Files", "*.*");
-				fileChooser.getExtensionFilters().addAll(StateParser.JHVStateFilter.getExtensionFilter(),extensionFilter1);
+				fileChooser.getExtensionFilters().addAll(PredefinedFileFilter.JHV.extensionFilter,extensionFilter1);
 				final File selectedFile = fileChooser.showOpenDialog(new Stage());
 
 				if (selectedFile != null && selectedFile.exists() && selectedFile.isFile())
@@ -94,26 +74,28 @@ public class StateParser extends DefaultHandler
 
 	public static void loadStateFile() throws IOException, JSONException
 	{
-		String lastPath = Settings.getProperty(LOAD_PATH_SETTINGS);
-		if (Globals.USE_JAVA_FX)
+		if (Globals.USE_JAVA_FX_FILE_DIALOG)
 		{
 			openLoadFileChooserFX();
 		}
 		else
 		{
-			JFileChooser fileChooser = new JFileChooser();
-			fileChooser.setDialogTitle("Open state file");
-			if (lastPath != null)
-				fileChooser.setCurrentDirectory(new File(lastPath));
-		
-			fileChooser.setFileFilter(new StateParser.JHVStateFilter());
-			int retVal = fileChooser.showOpenDialog(MainFrame.SINGLETON);
-			if (retVal == JFileChooser.APPROVE_OPTION)
+			File selectedFile = Globals.showFileDialog(
+					DialogType.OPEN_FILE,
+					"Open State File",
+					Settings.getProperty(LOAD_PATH_SETTINGS),
+					true,
+					null,
+					PredefinedFileFilter.JHV
+				);
+			
+			if (selectedFile!=null)
 			{
-				File selectedFile = fileChooser.getSelectedFile();
-				Settings.setProperty(LOAD_PATH_SETTINGS, fileChooser.getCurrentDirectory().getAbsolutePath());
+				Settings.setProperty(LOAD_PATH_SETTINGS, selectedFile.getParentFile().getAbsolutePath());
 				if (selectedFile.exists() && selectedFile.isFile())
+				{
 					loadStateFile(selectedFile);
+				}
 			}
 		}
 	}
@@ -152,9 +134,8 @@ public class StateParser extends DefaultHandler
 	{
 		Settings.setProperty(SAVE_PATH_SETTINGS, selectedFile.getParent());
 		String fileName = selectedFile.toString();
-		JHVStateFilter fileFilter = new JHVStateFilter();
-		fileName = fileName.endsWith(fileFilter.getDefaultExtension()) ? fileName
-				: fileName + fileFilter.getDefaultExtension();
+		fileName = fileName.endsWith(PredefinedFileFilter.JHV.getDefaultExtension()) ? fileName
+				: fileName + PredefinedFileFilter.JHV.getDefaultExtension();
 		JSONObject jsonObject = new JSONObject();
 
 		JSONArray jsonLayers = new JSONArray();
@@ -211,7 +192,7 @@ public class StateParser extends DefaultHandler
 						fileChooser.setInitialDirectory(file);
 				}
 
-				fileChooser.getExtensionFilters().addAll(StateParser.JHVStateFilter.getExtensionFilter());
+				fileChooser.getExtensionFilters().addAll(PredefinedFileFilter.JHV.extensionFilter);
 
 				final File selectedFile = fileChooser.showSaveDialog(new Stage());
 
@@ -230,7 +211,7 @@ public class StateParser extends DefaultHandler
 
 	public static void writeStateFile() throws JSONException, IOException
 	{
-		if (Globals.USE_JAVA_FX)
+		if (Globals.USE_JAVA_FX_FILE_DIALOG)
 		{
 			openSaveFileChooserFX();
 		}
@@ -244,7 +225,7 @@ public class StateParser extends DefaultHandler
 			if (lastPath != null)
 				fileChooser.setCurrentDirectory(new File(lastPath));
 		
-			fileChooser.setFileFilter(new StateParser.JHVStateFilter());
+			fileChooser.setFileFilter(PredefinedFileFilter.JHV);
 			int retVal = fileChooser.showSaveDialog(MainFrame.SINGLETON);
 
 			if (fileChooser.getSelectedFile().exists())

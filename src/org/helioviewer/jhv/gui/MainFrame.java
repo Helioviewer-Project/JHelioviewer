@@ -72,17 +72,16 @@ public class MainFrame extends JFrame
 		Dimension minSize = new Dimension(800, 600);
 
 		maxSize.width -= 200;
+		
 		// if the display is not very high, we want to take most of the height,
 		// as the rest is not useful anyway
-		if (maxSize.height < 1000) {
+		if (maxSize.height < 1000)
 			maxSize.height -= 100;
-		} else {
+		else
 			maxSize.height -= 150;
-		}
 
 		minSize.width = Math.min(minSize.width, maxSize.width);
 		minSize.height = Math.min(minSize.height, maxSize.height);
-		//frame.setMaximumSize(maxSize);
 		setMinimumSize(minSize);
 		setPreferredSize(maxSize);
 		setFont(new Font("SansSerif", Font.BOLD, 12));

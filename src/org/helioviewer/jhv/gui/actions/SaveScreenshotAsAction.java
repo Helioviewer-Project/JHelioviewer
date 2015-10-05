@@ -14,16 +14,17 @@ import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
-import javax.swing.JFileChooser;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.Globals;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.Telemetry;
+import org.helioviewer.jhv.Globals.DialogType;
 import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.gui.actions.filefilters.ExtensionFileFilter;
-import org.helioviewer.jhv.gui.actions.filefilters.FileFilter;
+import org.helioviewer.jhv.gui.filefilters.PredefinedFileFilter;
+
+import com.google.common.io.Files;
 
 /**
  * Action to save a screenshot in desired image format at desired location.
@@ -52,49 +53,23 @@ public class SaveScreenshotAsAction extends AbstractAction
 						| Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 	}
 
-	private void openFileChooser() {
-
+	private void openFileChooser()
+	{
 		this.loadSettings();
-		final JFileChooser fileChooser = Globals.getJFileChooser();
-		fileChooser.setAcceptAllFileFilterUsed(false);
-		fileChooser
-				.addChoosableFileFilter(FileFilter.IMPLEMENTED_FILE_FILTER.JPG
-						.getFileFilter());
-		fileChooser
-				.addChoosableFileFilter(FileFilter.IMPLEMENTED_FILE_FILTER.PNG
-						.getFileFilter());
-		fileChooser.setFileFilter(FileFilter.IMPLEMENTED_FILE_FILTER.JPG
-				.getFileFilter());
-		String val;
-		try {
-			val = Settings
-					.getProperty(SETTING_SCREENSHOT_EXPORT_LAST_DIRECTORY);
-			if (val != null && !(val.length() == 0)) {
-				fileChooser.setCurrentDirectory(new File(val));
-			}
-		} catch (Throwable t) {
-			System.err.println(t);
-		}
-
-		fileChooser.setSelectedFile(new File(fileChooser.getCurrentDirectory()
-				+ "/" + this.getDefaultFileName()));
-		int retVal = fileChooser.showSaveDialog(MainFrame.SINGLETON);
-
-		if (retVal == JFileChooser.APPROVE_OPTION) {
-			Settings.setProperty(SETTING_SCREENSHOT_EXPORT_LAST_DIRECTORY,
-					fileChooser.getCurrentDirectory().getPath() + "/");
-			File selectedFile = fileChooser.getSelectedFile();
-
-			ExtensionFileFilter fileFilter = (ExtensionFileFilter) fileChooser
-					.getFileFilter();
-
-			if (!fileFilter.accept(selectedFile)) {
-				selectedFile = new File(selectedFile.getParent(), selectedFile.getName());
-				selectedFile = new File(selectedFile.getPath()
-						+ fileFilter.getDefaultExtension());
-			}
-			startSavingScreenshot(selectedFile, fileFilter.getDefaultExtension().substring(1));
-		}
+		final File selectedFile = Globals.showFileDialog(
+				DialogType.SAVE_FILE,
+				"Save screenshot",
+				Settings.getProperty(SETTING_SCREENSHOT_EXPORT_LAST_DIRECTORY),
+				false,
+				getDefaultFileName(),
+				PredefinedFileFilter.PNG_SINGLE,
+				PredefinedFileFilter.JPG_SINGLE);
+		
+		if (selectedFile == null)
+			return;
+		
+		Settings.setProperty(SETTING_SCREENSHOT_EXPORT_LAST_DIRECTORY, selectedFile.getParent());
+		startSavingScreenshot(selectedFile, null);
 	}
 
 	private void openFileChooserFX() {
@@ -115,8 +90,8 @@ public class SaveScreenshotAsAction extends AbstractAction
 				}
 
 				fileChooser.getExtensionFilters().addAll(
-						FileFilter.IMPLEMENTED_FILE_FILTER.JPG.getFileFilter().getExtensionFilter(),
-						FileFilter.IMPLEMENTED_FILE_FILTER.PNG.getFileFilter().getExtensionFilter());
+						PredefinedFileFilter.JPG_SINGLE.extensionFilter,
+						PredefinedFileFilter.PNG_SINGLE.extensionFilter);
 				final File selectedFile = fileChooser.showSaveDialog(new Stage());
 
 				if (selectedFile != null)
@@ -125,7 +100,8 @@ public class SaveScreenshotAsAction extends AbstractAction
 		});
 	}
 
-	private void startSavingScreenshot(final File selectedFile, final String extension) {
+	private void startSavingScreenshot(final File selectedFile, final String extension)
+	{
 		loadSettings();
 		SwingUtilities.invokeLater(new Runnable()
 		{
@@ -136,7 +112,7 @@ public class SaveScreenshotAsAction extends AbstractAction
 				{
 					ImageIO.write(MainFrame.MAIN_PANEL.getBufferedImage(
 							imageWidth, imageHeight, textEnabled),
-							extension, selectedFile);
+							Files.getFileExtension(selectedFile.getPath()), selectedFile);
 				}
 				catch (IOException e1)
 				{
@@ -150,7 +126,7 @@ public class SaveScreenshotAsAction extends AbstractAction
 	 * {@inheritDoc}
 	 */
 	public void actionPerformed(ActionEvent e) {
-		if (Globals.USE_JAVA_FX){
+		if (Globals.USE_JAVA_FX_FILE_DIALOG){
 			openFileChooserFX();
 		}
 		else {
@@ -166,7 +142,7 @@ public class SaveScreenshotAsAction extends AbstractAction
 				this.textEnabled = Boolean.parseBoolean(val);
 			}
 		} catch (Throwable t) {
-			System.err.println(t);
+			Telemetry.trackException(t);
 		}
 
 		try {
@@ -175,7 +151,7 @@ public class SaveScreenshotAsAction extends AbstractAction
 				this.imageHeight = Integer.parseInt(val);
 			}
 		} catch (Throwable t) {
-			System.err.println(t);
+			Telemetry.trackException(t);
 		}
 
 		try {
@@ -184,7 +160,7 @@ public class SaveScreenshotAsAction extends AbstractAction
 				this.imageWidth = Integer.parseInt(val);
 			}
 		} catch (Throwable t) {
-			System.err.println(t);
+			Telemetry.trackException(t);
 		}
 
 		if (imageWidth == 0)

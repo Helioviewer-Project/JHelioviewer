@@ -5,22 +5,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 
-import javafx.application.Platform;
-import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
-import javafx.stage.Stage;
-
 import javax.swing.AbstractAction;
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.Globals;
 import org.helioviewer.jhv.Settings;
+import org.helioviewer.jhv.Globals.DialogType;
 import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.gui.actions.filefilters.AllSupportedImageTypesFilter;
-import org.helioviewer.jhv.gui.actions.filefilters.FileFilter;
+import org.helioviewer.jhv.gui.filefilters.PredefinedFileFilter;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
 import org.helioviewer.jhv.viewmodel.metadata.UnsuitableMetaDataException;
@@ -43,82 +36,36 @@ public class OpenLocalFileAction extends AbstractAction
 				.getDefaultToolkit().getMenuShortcutKeyMask()));
 	}
 
-	public void actionPerformed(ActionEvent e) {
-		
-		/**
-		 * Native filechooser with JavaFX
-		 */
-		if (Globals.USE_JAVA_FX)
-		{
-			Platform.runLater(new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					FileChooser fileChooser = new FileChooser();
-					fileChooser.setTitle("Open local file");
-					fileChooser.setInitialDirectory(new File(Settings.getProperty("default.local.path")));
-					ExtensionFilter extensionFilter = new ExtensionFilter("JPEG 2000", "*.jpx", "*.jp2");
-					ExtensionFilter extensionFilter1 = new ExtensionFilter("All Files", "*.*");
-					fileChooser.getExtensionFilters().addAll(extensionFilter, extensionFilter1);
-					final File selectedFile = fileChooser.showOpenDialog(new Stage());
-					
-					if (selectedFile != null && selectedFile.exists() && selectedFile.isFile())
-					{
-						SwingUtilities.invokeLater(new Runnable()
-						{
-							@Override
-							public void run()
-							{
-								// remember the current directory for future
-								Settings.setProperty("default.local.path", selectedFile.getParent());
-								
-								try
-								{
-									Layers.addLayer(new KakaduLayer(selectedFile.toString()));
-								}
-								catch(UnsuitableMetaDataException _umde)
-								{
-									JOptionPane.showMessageDialog(MainFrame.MAIN_PANEL, "This data source's metadata could not be read.");
-								}
-							}
-						});
-					}
-				}
-	
-			});
-		}
-		else
-		{
-			final JFileChooser fileChooser = Globals.getJFileChooser(Settings.getProperty("default.local.path"));
-			fileChooser.setAcceptAllFileFilterUsed(false);
-			fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-			fileChooser.addChoosableFileFilter(FileFilter.IMPLEMENTED_FILE_FILTER.JP2.getFileFilter());
-			fileChooser.addChoosableFileFilter(FileFilter.IMPLEMENTED_FILE_FILTER.FITS.getFileFilter());
-			fileChooser.addChoosableFileFilter(FileFilter.IMPLEMENTED_FILE_FILTER.PNG.getFileFilter());
-			fileChooser.addChoosableFileFilter(FileFilter.IMPLEMENTED_FILE_FILTER.JPG.getFileFilter());
-			fileChooser.setFileFilter(new AllSupportedImageTypesFilter());
-			fileChooser.setMultiSelectionEnabled(false);
+	public void actionPerformed(ActionEvent e)
+	{
+		//FIXME: do png, jpg & fits actually work?!
+		File selectedFile = Globals.showFileDialog(
+				DialogType.OPEN_FILE,
+				"Open local file",
+				Settings.getProperty("default.local.path"),
+				false,
+				null,
+				PredefinedFileFilter.ALL_SUPPORTED_IMAGE_TYPES,
+				PredefinedFileFilter.JP2,
+				PredefinedFileFilter.FITS,
+				PredefinedFileFilter.PNG_SINGLE,
+				PredefinedFileFilter.JPG_SINGLE);
 
-			int retVal = fileChooser.showOpenDialog(MainFrame.SINGLETON);
-			if (retVal == JFileChooser.APPROVE_OPTION)
+		if (selectedFile == null)
+			return;
+		
+		if (selectedFile.exists() && selectedFile.isFile())
+		{
+			// remember the current directory for future
+			Settings.setProperty("default.local.path", selectedFile.getParent());
+			
+			try
 			{
-				File selectedFile = fileChooser.getSelectedFile();
-	
-				if (selectedFile.exists() && selectedFile.isFile())
-				{
-					// remember the current directory for future
-					Settings.setProperty("default.local.path", fileChooser.getSelectedFile().getParent());
-					
-					try
-					{
-						Layers.addLayer(new KakaduLayer(fileChooser.getSelectedFile().toString()));
-					}
-					catch(UnsuitableMetaDataException _umde)
-					{
-						JOptionPane.showMessageDialog(MainFrame.MAIN_PANEL, "The source's metadata could not be read.");
-					}
-				}
+				Layers.addLayer(new KakaduLayer(selectedFile.getPath()));
+			}
+			catch(UnsuitableMetaDataException _umde)
+			{
+				JOptionPane.showMessageDialog(MainFrame.MAIN_PANEL, "The source's metadata could not be read.");
 			}
 		}
 	}

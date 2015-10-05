@@ -1,6 +1,9 @@
 package org.helioviewer.jhv;
 
+import java.awt.Cursor;
 import java.awt.Desktop;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -8,12 +11,27 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import javax.annotation.Nullable;
-import javax.swing.JFileChooser;
+import javafx.application.Platform;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
+import javax.annotation.Nullable;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
+import javax.swing.filechooser.FileFilter;
+
+import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.MainPanel;
+import org.helioviewer.jhv.gui.filefilters.PredefinedFileFilter;
 
 /**
  * Intended to be a class for static functions and fields relevant to the
@@ -35,7 +53,7 @@ public class Globals
     public static final int STARTUP_LAYER_ID = 10;
 
     //TODO check all invocations of file dialogs, check should happen centralized
-	public static final boolean USE_JAVA_FX;
+	public static final boolean USE_JAVA_FX_FILE_DIALOG;
 	
 	static
 	{
@@ -43,6 +61,13 @@ public class Globals
 		try
 		{
 			Class.forName("com.sun.javafx.runtime.VersionInfo");
+			Platform.runLater(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+				}
+			});
 		}
 		catch (ClassNotFoundException e)
 		{
@@ -50,7 +75,7 @@ public class Globals
 			System.err.println("No JavaFX detected. Please install a Java 1.8 with JavaFX");
 		}
 		
-		USE_JAVA_FX = javaFxAvailable;
+		USE_JAVA_FX_FILE_DIALOG = javaFxAvailable;
 	}
 
     private Globals()
@@ -110,37 +135,206 @@ public class Globals
         }
     }
     
-    private static LinkedBlockingQueue<JFileChooser> fileChooser=new LinkedBlockingQueue<>();
-    
-    public static JFileChooser getJFileChooser()
+    public enum DialogType
     {
-        return getJFileChooser(null);
+    	OPEN_FILE,
+    	SAVE_FILE,
+    	SELECT_DIRECTORY
     }
     
-    public static JFileChooser getJFileChooser(String _directory)
+    private static LinkedBlockingQueue<JFileChooser> fileChooser=new LinkedBlockingQueue<>();
+    
+    @Nullable
+    public static File showFileDialog(final DialogType _type, final String _title,
+    		@Nullable final String _directory, final boolean _allowAllExtensions,
+    		@Nullable final String _defaultName,    		
+    		final PredefinedFileFilter... _filters)
     {
+		if (Globals.USE_JAVA_FX_FILE_DIALOG && (_type==DialogType.OPEN_FILE || _type==DialogType.SAVE_FILE))
+			try
+			{
+				final LinkedBlockingQueue<Stage> mainStage=new LinkedBlockingQueue<>();
+				final ArrayBlockingQueue<File> selectedFile=new ArrayBlockingQueue<>(1);
+				
+				MainFrame.SINGLETON.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+				
+				//idea stolen from http://stackoverflow.com/questions/28920758/javafx-filechooser-in-swing
+				final JDialog modalBlocker = new JDialog();
+		        modalBlocker.setModal(true);
+		        modalBlocker.setUndecorated(true);
+		        modalBlocker.setOpacity(0.0f);
+		        modalBlocker.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		        modalBlocker.addFocusListener(new FocusListener()
+				{
+					@Override
+					public void focusLost(FocusEvent _e)
+					{
+					}
+					
+					@Override
+					public void focusGained(FocusEvent _e)
+					{
+						final Stage s = mainStage.peek();
+						if(s!=null)
+							Platform.runLater(new Runnable()
+							{
+								@Override
+								public void run()
+								{
+									s.requestFocus();
+								}
+							});
+					}
+				});
+				
+				Platform.runLater(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						try
+						{
+							FileChooser fileChooser = new FileChooser();
+							fileChooser.setTitle(_title);
+							if(_directory!=null)
+								fileChooser.setInitialDirectory(new File(_directory));
+							
+							for(PredefinedFileFilter f:_filters)
+								fileChooser.getExtensionFilters().add(f.extensionFilter);
+							
+							if(_allowAllExtensions)
+								fileChooser.getExtensionFilters().add(new ExtensionFilter("All Files (*.*)", "*.*"));
+							
+							if(_defaultName!=null)
+								fileChooser.setInitialFileName(_defaultName);
+							
+							Stage s=new Stage(StageStyle.UTILITY);
+							s.setOpacity(0);
+							s.setWidth(MainFrame.SINGLETON.getWidth());
+							s.setHeight(MainFrame.SINGLETON.getHeight());
+							s.setX(MainFrame.SINGLETON.getX());
+							s.setY(MainFrame.SINGLETON.getY());
+							s.setScene(new Scene(new Group()));
+							s.show();
+							
+							mainStage.add(s);
+							
+							switch(_type)
+							{
+								case OPEN_FILE:
+									selectedFile.put(fileChooser.showOpenDialog(s));
+									break;
+								case SAVE_FILE:
+									selectedFile.put(fileChooser.showSaveDialog(s));
+									break;
+								default:
+									throw new RuntimeException();
+							}
+							
+							s.hide();
+						}
+						catch (InterruptedException _e)
+						{
+							Telemetry.trackException(_e);
+						}
+						finally
+						{
+							SwingUtilities.invokeLater(new Runnable()
+							{
+								@Override
+								public void run()
+								{
+									modalBlocker.setVisible(false);
+								}
+							});
+						}
+					}
+				});
+				
+				modalBlocker.setVisible(true);
+				return selectedFile.peek();
+			}
+			finally
+			{
+				MainFrame.SINGLETON.setCursor(null);
+				//MainFrame.SINGLETON.setEnabled(true);
+				Platform.exit();
+			}
+    	
+    	
         try
         {
             JFileChooser instance=fileChooser.take();
             fileChooser.add(instance);
             
+            instance.setDialogTitle(_title);
             instance.setFileHidingEnabled(false);
             instance.setMultiSelectionEnabled(false);
-            instance.setAcceptAllFileFilterUsed(false);
-            instance.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            
+        	instance.setSelectedFile(_defaultName==null ? null:new File(_defaultName));
+            instance.setCurrentDirectory(_directory==null ? null:new File(_directory));
+            
+
             instance.resetChoosableFileFilters();
-            instance.setSelectedFile(null);
+            switch(_type)
+            {
+            	case OPEN_FILE:
+                    instance.setDialogType(JFileChooser.OPEN_DIALOG);
+                    instance.setAcceptAllFileFilterUsed(_allowAllExtensions);
+                    instance.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                    for(FileFilter f:_filters)
+                    	instance.addChoosableFileFilter(f);
+                    if(_filters.length>0)
+                    	instance.setFileFilter(_filters[0]);
+                    if(_defaultName!=null)
+        	            for(FileFilter f:_filters)
+        	            	 if(f.accept(new File(_defaultName)))
+        	            	 {
+        	            		 instance.setFileFilter(f);
+        	            		 break;
+        	            	 }
+                    if(instance.showOpenDialog(MainFrame.MAIN_PANEL)==JFileChooser.APPROVE_OPTION)
+                    	return instance.getSelectedFile();
+                    else
+                    	return null;
+
+            	case SAVE_FILE:
+                    instance.setDialogType(JFileChooser.SAVE_DIALOG);
+                    instance.setAcceptAllFileFilterUsed(false);
+                    instance.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                    for(FileFilter f:_filters)
+                    	instance.addChoosableFileFilter(f);
+                    if(_filters.length>0)
+                    	instance.setFileFilter(_filters[0]);
+                    if(_defaultName!=null)
+        	            for(FileFilter f:_filters)
+        	            	 if(f.accept(new File(_defaultName)))
+        	            	 {
+        	            		 instance.setFileFilter(f);
+        	            		 break;
+        	            	 }
+                    if(instance.showSaveDialog(MainFrame.MAIN_PANEL)==JFileChooser.APPROVE_OPTION)
+                    	return instance.getSelectedFile();
+                    else
+                    	return null;
+
+            	case SELECT_DIRECTORY:
+                    instance.setDialogType(JFileChooser.OPEN_DIALOG);
+                    instance.setAcceptAllFileFilterUsed(true);
+                    instance.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                    if(instance.showOpenDialog(MainFrame.MAIN_PANEL)==JFileChooser.APPROVE_OPTION)
+                    	return instance.getSelectedFile();
+                    else
+                    	return null;
+                    
+        		default:
+        			throw new RuntimeException();
+            }
             
-            if(_directory==null)
-                instance.setCurrentDirectory(null);
-            else
-                instance.setCurrentDirectory(new File(_directory));
-            
-            return instance;
         }
         catch(InterruptedException e)
         {
-            //shouldn't happen, except on shutdown
+        	Telemetry.trackException(e);
             return null;
         }
     }
