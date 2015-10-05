@@ -250,7 +250,16 @@ public class JHelioviewer
 
 			if (Globals.isWindows())
 			{
-				System.loadLibrary("msvcr120");
+				try
+				{
+					System.loadLibrary("msvcr120");
+				}
+				catch(UnsatisfiedLinkError _ule)
+				{
+					//ignore inability to load msvcr120. if there's really
+					//a problem, it will be caught by the outer try/catch
+					_ule.printStackTrace();
+				}
 				System.loadLibrary("kdu_v75R");
 				System.loadLibrary("kdu_a75R");
 			}
