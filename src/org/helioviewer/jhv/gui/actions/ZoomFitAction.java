@@ -50,6 +50,7 @@ public class ZoomFitAction extends AbstractAction
 		halfWidth = aspect > 1 ? halfWidth * aspect : halfWidth;
 		double halfFOVRad = Math.toRadians(MainPanel.FOV / 2.0);
 		double distance = halfWidth * Math.sin(Math.PI / 2 - halfFOVRad) / Math.sin(halfFOVRad);
+		
 		distance = distance - MainFrame.MAIN_PANEL.getTranslationEnd().z;
 		MainFrame.MAIN_PANEL.addCameraAnimation(new CameraZoomAnimation(MainFrame.MAIN_PANEL, distance));
 	}

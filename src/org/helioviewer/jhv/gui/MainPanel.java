@@ -59,8 +59,6 @@ import org.helioviewer.jhv.opengl.camera.CameraRotationInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraZoomBoxInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraZoomInteraction;
 import org.helioviewer.jhv.opengl.camera.animation.CameraAnimation;
-import org.helioviewer.jhv.opengl.camera.animation.CameraRotationAnimation;
-import org.helioviewer.jhv.opengl.camera.animation.CameraTranslationAnimation;
 import org.helioviewer.jhv.plugins.AbstractPlugin.RenderMode;
 import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.viewmodel.TimeLine;
@@ -85,7 +83,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 {
 	public static final double MAX_DISTANCE = Constants.SUN_MEAN_DISTANCE_TO_EARTH * 1.8;
 	public static final double MIN_DISTANCE = Constants.SUN_RADIUS * 1.2;
-	private static final double DEFAULT_CAMERA_DISTANCE = 14 * Constants.SUN_RADIUS;
+	public static final double DEFAULT_CAMERA_DISTANCE = 14 * Constants.SUN_RADIUS;
 
 	public static final double CLIP_NEAR = Constants.SUN_RADIUS / 10;
 	public static final double CLIP_FAR = Constants.SUN_RADIUS * 1000;
@@ -253,12 +251,13 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		
 		if(!cameraAnimations.isEmpty())
 		{
-			repaint();
 			for(CameraAnimation ca:cameraAnimations)
 				ca.animate(this);
+			
+			//render another new frame after this one
+			repaint();
 		}
 		
-		// Calculate Track
 		if (cameraTrackingEnabled)
 			updateTrackRotation();
 		
@@ -284,18 +283,18 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 				}
 			}
 			
+			AbstractImageLayer.newRenderPassStarted();
 			LinkedHashMap<AbstractImageLayer, Future<PreparedImage>> layers=new LinkedHashMap<>();
 			for (AbstractLayer layer : Layers.getLayers())
 				if (layer.isVisible() && layer.isImageLayer())
 					layers.put((AbstractImageLayer)layer,((AbstractImageLayer)layer).prepareImageData(this, sizeForDecoder));
 
-			AbstractImageLayer.newRenderPassStarted();
 			for(Entry<AbstractImageLayer, Future<PreparedImage>> l:layers.entrySet())
 				try
 				{
 					if(l.getValue().get()!=null)
 						//RenderResult r = 
-						l.getKey().renderLayer(gl, sizeForDecoder, this, l.getValue().get());
+						l.getKey().renderLayer(gl, this, l.getValue().get());
 				}
 				catch(ExecutionException|InterruptedException _e)
 				{
@@ -309,7 +308,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 			gl.glPushMatrix();
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
 
-			Quaternion3d rotation = new Quaternion3d(this.rotationNow.getAngle(), this.rotationNow.getRotationAxis().negateY());
+			Quaternion3d rotation = new Quaternion3d(rotationNow.getAngle(), rotationNow.getRotationAxis().negateY());
 			Matrix4d transformation = rotation.toMatrix().translated(-translationNow.x, translationNow.y, -translationNow.z);
 			gl.glMultMatrixd(transformation.m, 0);
 
@@ -320,12 +319,12 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 
 			if (CameraMode.mode == CameraMode.MODE.MODE_3D)
 			{
- 				glu.gluPerspective(MainPanel.FOV, this.aspect, clipNear, this.translationNow.z + 4 * Constants.SUN_RADIUS);
+ 				glu.gluPerspective(MainPanel.FOV, this.aspect, clipNear, translationNow.z + 4 * Constants.SUN_RADIUS);
 			}
 			else
 			{
 				double width = Math.tan(Math.toRadians(FOV) / 2) * translationNow.z;
-				gl.glOrtho(-width, width, -width, width, clipNear, this.translationNow.z + 4 * Constants.SUN_RADIUS);
+				gl.glOrtho(-width, width, -width, width, clipNear, translationNow.z + 4 * Constants.SUN_RADIUS);
 				gl.glScalef((float) (1 / aspect), 1, 1);
 			}
 
@@ -805,12 +804,6 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	{
 		cameraAnimations.add(cameraAnimation);
 		repaint();
-	}
-
-	public void resetCamera()
-	{
-		addCameraAnimation(new CameraRotationAnimation(this,getRotationEnd().inversed()));
-		addCameraAnimation(new CameraTranslationAnimation(this,new Vector3d(0, 0, DEFAULT_CAMERA_DISTANCE).subtract(getTranslationEnd())));
 	}
 
 	public void switchToFullscreen()

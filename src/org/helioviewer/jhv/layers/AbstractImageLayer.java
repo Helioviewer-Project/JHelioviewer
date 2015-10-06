@@ -95,7 +95,7 @@ public abstract class AbstractImageLayer extends AbstractLayer
 		freeTextureNr=0;
 	}
 	
-	public RenderResult renderLayer(GL2 gl, Dimension canvasSize, MainPanel mainPanel, PreparedImage _preparedImageData)
+	public RenderResult renderLayer(GL2 gl, MainPanel mainPanel, PreparedImage _preparedImageData)
 	{
 		LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
 		MetaData md=getMetaData(currentDateTime);

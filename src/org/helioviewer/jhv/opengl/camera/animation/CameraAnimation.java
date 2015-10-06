@@ -11,7 +11,7 @@ import org.helioviewer.jhv.opengl.camera.Camera;
  */
 public abstract class CameraAnimation
 {
-    public static final long DEFAULT_ANIMATION_TIME = 400;
+    public static final long DEFAULT_ANIMATION_TIME = 300;
     
     protected long timeLeft=0;
     private long lastTime;
@@ -50,8 +50,8 @@ public abstract class CameraAnimation
         timeLeft -= timeDelta;
         double newTimeRelative = 1 - timeLeft/(double)duration;
         
-        return MathUtils.cosinize(MathUtils.cosinize(1-newTimeRelative))
-             - MathUtils.cosinize(MathUtils.cosinize(1-oldTimeRelative));
+        return MathUtils.cosinize(MathUtils.cosinize(1-oldTimeRelative))
+        	-MathUtils.cosinize(MathUtils.cosinize(1-newTimeRelative));
         
         //return timeDelta/(double)duration;
     }

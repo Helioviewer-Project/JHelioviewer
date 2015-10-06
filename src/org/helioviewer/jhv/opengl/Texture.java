@@ -150,6 +150,13 @@ public class Texture
 		gl.glPixelStorei(GL2.GL_UNPACK_ROW_LENGTH, 0);
 		gl.glPixelStorei(GL2.GL_UNPACK_ALIGNMENT, 8 >> 3);
 
+		ByteBuffer b=ByteBuffer.allocateDirect(width2*height2);
+		for(int i=0;i<width2*height2;i++)
+			b.put((byte)255);
+		b.flip();
+		
+		gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, width2, height2, GL2.GL_RED, GL2.GL_UNSIGNED_BYTE, _image);
+		
 		gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, _imageWidth, _imageHeight, GL2.GL_ABGR_EXT, GL2.GL_UNSIGNED_BYTE, _image);
 		
 		textureScaleX=width / (float)_imageWidth;
