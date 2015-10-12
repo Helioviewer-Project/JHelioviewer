@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -83,7 +84,7 @@ public class ExportMovieAction extends AbstractAction
 	private int imageWidth;
 	private int imageHeight;
 	private Thread thread;
-	private BufferedImage bufferedImage;
+	@Nullable private volatile BufferedImage bufferedImage;
 
 	private void openExportMovieDialog()
 	{
@@ -376,7 +377,7 @@ public class ExportMovieAction extends AbstractAction
 		}
 
 		@Override
-		public void actionPerformed(ActionEvent ae)
+		public void actionPerformed(@Nullable ActionEvent ae)
 		{
 			if (ae.getSource() == btnCancel)
 			{

@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import javax.annotation.Nullable;
+
 import kdu_jni.KduException;
 import kdu_jni.Kdu_cache;
 
@@ -75,7 +77,7 @@ public class JPIPRequest extends AbstractDownloadRequest
 
 				request.setQuery(query);
 				jpipSocket.send(request);
-				JPIPResponse response = jpipSocket.receive();
+				@Nullable JPIPResponse response = jpipSocket.receive();
 				
 				if(response==null)
 					throw new IOException();

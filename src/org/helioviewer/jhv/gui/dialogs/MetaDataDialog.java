@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nonnull;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -217,11 +218,8 @@ public class MetaDataDialog extends JDialog implements ActionListener, LayerList
 	 *            Source to read
 	 * @see #addDataItem(String)
 	 */
-	public void setMetaData(MetaData metaData, Document doc)
+	public void setMetaData(@Nonnull MetaData metaData, @Nonnull Document doc)
 	{
-		if (metaData == null)
-			return;
-		
 		metaDataOK = true;
 		resetData();
 		addDataItem("-------------------------------");

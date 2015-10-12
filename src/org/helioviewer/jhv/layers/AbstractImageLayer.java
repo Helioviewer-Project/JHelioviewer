@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.NavigableSet;
 import java.util.concurrent.Future;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.helioviewer.jhv.Globals;
@@ -47,7 +48,7 @@ public abstract class AbstractImageLayer extends AbstractLayer
 	public double sharpness = 0;
 	public double gamma = 1;
 	public double contrast = 1;
-	protected Lut lut = null;
+	@Nullable protected Lut lut = null;
 	public boolean redChannel = true;
 	public boolean greenChannel = true;
 	public boolean blueChannel = true;
@@ -57,7 +58,7 @@ public abstract class AbstractImageLayer extends AbstractLayer
 	protected LocalDateTime start;
 	protected LocalDateTime end;
 	
-	public Lut getLUT()
+	@Nullable public Lut getLUT()
 	{
 		return lut;
 	}
@@ -81,8 +82,11 @@ public abstract class AbstractImageLayer extends AbstractLayer
 	
 	public abstract NavigableSet<LocalDateTime> getLocalDateTimes();
 
-	public abstract MetaData getMetaData(LocalDateTime currentDateTime);
-	public abstract Document getMetaDataDocument(LocalDateTime _currentDateTime);
+	@Nullable
+	public abstract MetaData getMetaData(@Nonnull LocalDateTime currentDateTime);
+
+	@Nullable
+	public abstract Document getMetaDataDocument(@Nonnull LocalDateTime _currentDateTime);
 
 	public abstract void writeStateFile(JSONObject jsonLayer);
 	

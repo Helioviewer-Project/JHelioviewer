@@ -25,6 +25,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import javax.annotation.Nullable;
 import javax.swing.JFrame;
 import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
@@ -107,7 +108,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	private boolean cameraTrackingEnabled = false;
 
 	private long lastFrameChangeTime = -1;
-	private LocalDateTime lastDate;
+	@Nullable private LocalDateTime lastDate;
 
 	private int[] frameBufferObject;
 	private int[] renderBufferDepth;

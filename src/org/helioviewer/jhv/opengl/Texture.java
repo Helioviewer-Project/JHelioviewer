@@ -171,7 +171,8 @@ public class Texture
 		
 		return imageRegion != null
 				&& source == _source
-				&& imageRegion.contains(_imageRegion)
+				&& imageRegion.texels.contains(_imageRegion.texels)
+				&& imageRegion.decodeZoomFactor >= _imageRegion.decodeZoomFactor
 				&& dateTime.isEqual(_localDateTime);
 	}
 

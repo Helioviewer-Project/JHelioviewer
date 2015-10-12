@@ -65,14 +65,14 @@ public class ImageRegion
 		
 		// Calculate the imageScalefactors
 		double imageZoomFactor = pixelCount >= texelCount ? 1 : Math.sqrt(pixelCount / texelCount);
-		float decodeZoomFactor = imageZoomFactor >= 1.0 ? 1 : nextZoomFraction(imageZoomFactor);
+		float candidateDecodeZoomFactor = imageZoomFactor >= 1.0 ? 1 : nextZoomFraction(imageZoomFactor);
 		
 		for(;;)
 		{
-			texelMaxX = (int)Math.ceil(resolution.x * (requiredOfSourceImage.getX() + requiredOfSourceImage.getWidth()) * decodeZoomFactor);
-			texelMaxY = (int)Math.ceil(resolution.y * (requiredOfSourceImage.getY() + requiredOfSourceImage.getHeight()) * decodeZoomFactor);
-			texelMinX = (int)(resolution.x * requiredOfSourceImage.getX() * decodeZoomFactor);
-			texelMinY = (int)(resolution.y * requiredOfSourceImage.getY() * decodeZoomFactor);
+			texelMaxX = (int)Math.ceil(resolution.x * (requiredOfSourceImage.getX() + requiredOfSourceImage.getWidth()) * candidateDecodeZoomFactor);
+			texelMaxY = (int)Math.ceil(resolution.y * (requiredOfSourceImage.getY() + requiredOfSourceImage.getHeight()) * candidateDecodeZoomFactor);
+			texelMinX = (int)(resolution.x * requiredOfSourceImage.getX() * candidateDecodeZoomFactor);
+			texelMinY = (int)(resolution.y * requiredOfSourceImage.getY() * candidateDecodeZoomFactor);
 			textureWidth = texelMaxX - texelMinX;
 			textureHeight = texelMaxY - texelMinY;
 			
@@ -80,25 +80,15 @@ public class ImageRegion
 			if(textureWidth<=2048 && textureHeight<=2048)
 				break;
 			
-			decodeZoomFactor *= 0.5;
+			candidateDecodeZoomFactor *= 0.5;
 		}
-		this.decodeZoomFactor=decodeZoomFactor;
+		decodeZoomFactor=candidateDecodeZoomFactor;
 		
 		texels = new Rectangle(texelMinX, texelMinY, textureWidth, textureHeight);
 		texCoordX = texelMinX / (float)(resolution.x * decodeZoomFactor);
 		texCoordY = texelMinY / (float)(resolution.y * decodeZoomFactor);
 		texCoordWidth = textureWidth / (float)(resolution.x * decodeZoomFactor);
 		texCoordHeight = textureHeight / (float)(resolution.y * decodeZoomFactor);
-	}
-
-	/**
-	 * Function to check, whether the last decoded ImageRegion contains the given ImageRegion
-	 * @param _other
-	 * @return TRUE --> contain, else FALSE
-	 */
-	public boolean contains(ImageRegion _other)
-	{
-		return texels.contains(_other.texels) && decodeZoomFactor >= _other.decodeZoomFactor;
 	}
 
 	private static float nextZoomFraction(double zoomFactor)

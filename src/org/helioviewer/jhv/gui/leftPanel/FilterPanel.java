@@ -6,6 +6,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 
+import javax.annotation.Nullable;
 import javax.swing.Icon;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -44,7 +45,8 @@ public class FilterPanel extends JPanel implements LayerListener
 	private JCheckBox chckbxBlue;
 	private JToggleButton btnInverseColorTable;
 	private JLabel lblOpacity, lblSharpen, lblGamma, lblContrast;
-	private AbstractImageLayer activeLayer;
+	
+	@Nullable private AbstractImageLayer activeLayer;
 	private static final double GAMMA_FACTOR = 0.01 * Math.log(10);
 	
     private static final Icon ICON_INVERT = IconBank.getIcon(JHVIcon.INVERT, 16, 16);

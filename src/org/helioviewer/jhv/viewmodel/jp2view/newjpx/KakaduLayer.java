@@ -16,6 +16,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import javax.annotation.Nullable;
 import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.Telemetry;
@@ -48,7 +49,7 @@ public class KakaduLayer extends AbstractImageLayer
 	
 	public TreeSet<LocalDateTime> localDateTimes = new TreeSet<LocalDateTime>();
 
-	private volatile Thread loaderThread;
+	@Nullable private volatile Thread loaderThread;
 	private boolean localFile = false;
 	private final int sourceId;
 	protected int cadence = -1;
@@ -471,6 +472,7 @@ public class KakaduLayer extends AbstractImageLayer
 		return localFile;
 	}
 
+	@Nullable
 	public MetaData getMetaData(LocalDateTime currentDateTime)
 	{
 		if (localDateTimes.isEmpty())

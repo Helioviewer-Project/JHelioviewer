@@ -8,6 +8,7 @@ import java.nio.IntBuffer;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.SwingUtilities;
 import javax.xml.parsers.DocumentBuilder;
@@ -34,10 +35,10 @@ import org.w3c.dom.Document;
 
 public class Movie
 {
-	private MetaData[] metaDatas;
+	@Nullable private MetaData[] metaDatas;
 	
 	public final int sourceId;
-	private String filename;
+	@Nullable private String filename;
 
 	private CacheStatus cacheStatus = CacheStatus.NONE;
 
@@ -141,7 +142,7 @@ public class Movie
 		}
 	}
 	
-	public String getBackingFile()
+	@Nullable public String getBackingFile()
 	{
 		return filename;
 	}
@@ -176,7 +177,7 @@ public class Movie
 		}
 	}
 	
-	public Match findClosestIdx(LocalDateTime _currentDateTime)
+	@Nullable public Match findClosestIdx(@Nonnull LocalDateTime _currentDateTime)
 	{
 		if(metaDatas==null)
 			return null;
@@ -213,8 +214,7 @@ public class Movie
 		return cacheStatus;
 	}
 	
-	@Nullable
-	public MetaData getAnyMetaData()
+	@Nullable public MetaData getAnyMetaData()
 	{
 		for(MetaData md:metaDatas)
 			if(md!=null)
@@ -243,7 +243,7 @@ public class Movie
 	{
 		try
 		{
-			String xmlText = KakaduUtils.getXml(family_src, index);
+			@Nullable String xmlText = KakaduUtils.getXml(family_src, index);
 			if (xmlText == null)
 				return null;
 			xmlText = xmlText.trim().replace("&", "&amp;").replace("$OBS", "");
