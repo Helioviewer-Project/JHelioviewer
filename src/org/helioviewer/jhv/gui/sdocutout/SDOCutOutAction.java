@@ -57,7 +57,7 @@ class SDOCutOutAction extends AbstractAction
 		if(metaData==null || start==null || end==null)
 			return;
 		
-		Rectangle2D sourceRegion = mainSDOLayer.calculateRegion(MainFrame.MAIN_PANEL, metaData, MainFrame.MAIN_PANEL.getCanavasSize()).requiredOfSourceImage;
+		Rectangle2D sourceRegion = mainSDOLayer.calculateRegion(MainFrame.MAIN_PANEL, metaData, MainFrame.MAIN_PANEL.getCanavasSize()).areaOfSourceImage;
 		
 		StringBuilder url = new StringBuilder(URL);
 		url.append("startDate="+start.format(DATE_FORMATTER) + "&startTime=" + start.format(TIME_FORMATTER)); 

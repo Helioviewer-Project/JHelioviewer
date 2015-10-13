@@ -291,7 +291,7 @@ public class Movie
 			jpxSrc2.Open(family_src, true);
 			
 			Kdu_region_compositor compositor = new Kdu_region_compositor(jpxSrc2);
-			//TODO: perhaps enable multii-threaded decoding?
+			//TODO: perhaps enable multi-threaded decoding?
 			//compositor.Set_thread_env(threadEnviroment, null);
 			
 			Kdu_dims dimsRef1 = new Kdu_dims();

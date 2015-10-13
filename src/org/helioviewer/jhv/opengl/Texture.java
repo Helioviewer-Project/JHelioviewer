@@ -23,11 +23,16 @@ public class Texture
 	public int width;
 	public int height;
 	
-	public float textureScaleX=1;
-	public float textureScaleY=1;
+	public float textureWidth=1; //always <=1
+	public float textureHeight=1; //always <=1
 	
 	private int internalFormat=GL.GL_LUMINANCE8;
 
+	/*
+	private JFrame debug=new JFrame();
+	private JLabel debugImage=new JLabel();
+	*/
+	
 	public Texture()
 	{
 		GL2 gl = GLContext.getCurrentGL().getGL2();
@@ -37,6 +42,13 @@ public class Texture
 		openGLTextureId = tmp[0];
 		width=0;
 		height=0;
+		
+		/*
+		debug.setTitle(openGLTextureId+"");
+		debug.setSize(200, 200);
+		debug.setVisible(true);
+		debug.getContentPane().add(debugImage);
+		*/
 	}
 	
 	public void upload(final BufferedImage bufferedImage)
@@ -57,11 +69,9 @@ public class Texture
 		if (height != height2 || width != width2 || internalFormat!=GL.GL_RGBA8)
 			allocateTexture(width2, height2, GL.GL_RGBA8);
 		
-		height = height2;
-		width = width2;
-		textureScaleX = bufferedImage.getWidth() / (float)width2;
-		textureScaleY = bufferedImage.getHeight() / (float)height2;
-
+		textureWidth = bufferedImage.getWidth() / (float)width;
+		textureHeight = bufferedImage.getHeight() / (float)height;
+		
 		boolean alpha = false;
 		boolean switchChannel = false;
 		int inputFormat = GL2.GL_RGB;
@@ -102,6 +112,8 @@ public class Texture
 		gl.glPixelStorei(GL2.GL_UNPACK_ALIGNMENT, 8 >> 3);
 
 		gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, _destX, _destY, bufferedImage.getWidth(), bufferedImage.getHeight(), inputFormat, inputType, buffer);
+		
+		//updateDebugImage();
 	}
 	
 	private static ByteBuffer readPixels(BufferedImage image, boolean storeAlphaChannel, boolean switchRandBChannel)
@@ -135,7 +147,7 @@ public class Texture
 		int width2 = MathUtils.nextPowerOfTwo(_imageWidth);
 		int height2 = MathUtils.nextPowerOfTwo(_imageHeight);
 		
-		if (height < height2 || width < width2 || internalFormat!=GL.GL_LUMINANCE8)
+		if (width < width2 || height < height2 || internalFormat!=GL.GL_LUMINANCE8)
 		{
 			System.out.println("Recreating texture "+width+"x"+height+" --> "+width2+"x"+height2);
 			allocateTexture(width2, height2, GL.GL_LUMINANCE8);
@@ -150,19 +162,70 @@ public class Texture
 		gl.glPixelStorei(GL2.GL_UNPACK_ROW_LENGTH, 0);
 		gl.glPixelStorei(GL2.GL_UNPACK_ALIGNMENT, 8 >> 3);
 
-		ByteBuffer b=ByteBuffer.allocateDirect(width2*height2);
-		for(int i=0;i<width2*height2;i++)
+		/*ByteBuffer b=ByteBuffer.allocateDirect(width*height*4);
+		for(int i=0;i<width*height;i++)
+		{
 			b.put((byte)255);
+			b.put((byte)(i % 2==0 ? 255 : 0));
+			b.put((byte)((i/2) % 2==0 ? 255 : 0));
+			b.put((byte)((i/4) % 2==0 ? 255 : 0));
+		}
 		b.flip();
-		
-		gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, width2, height2, GL2.GL_RED, GL2.GL_UNSIGNED_BYTE, _image);
+		gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, width, height, GL2.GL_ABGR_EXT, GL2.GL_UNSIGNED_BYTE, b);*/
 		
 		gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, _imageWidth, _imageHeight, GL2.GL_ABGR_EXT, GL2.GL_UNSIGNED_BYTE, _image);
 		
-		textureScaleX=width / (float)_imageWidth;
-		textureScaleY=height / (float)_imageHeight;
+		textureWidth=_imageWidth / (float)width;
+		textureHeight=_imageHeight / (float)height;
+		
+		//updateDebugImage();
 	}
 	
+	/*private void updateDebugImage()
+	{
+		GL2 gl = GLContext.getCurrentGL().getGL2();
+		gl.glBindTexture(GL2.GL_TEXTURE_2D, openGLTextureId);
+		
+		ByteBuffer buf=ByteBuffer.allocateDirect(width*height*4);
+		gl.glGetTexImage(GL2.GL_TEXTURE_2D, 0, GL2.GL_ABGR_EXT, GL2.GL_UNSIGNED_BYTE, buf);
+		
+		BufferedImage bi=new BufferedImage(width/2, height/2, BufferedImage.TYPE_4BYTE_ABGR);
+		int i=0;
+		for(int y=0;y<height/2;y++)
+		{
+			buf.position(y*2*width*4);
+			for(int x=0;x<width/2;x++)
+			{
+				bi.getRaster().getDataBuffer().setElem(i++, buf.get());
+				bi.getRaster().getDataBuffer().setElem(i++, buf.get());
+				bi.getRaster().getDataBuffer().setElem(i++, buf.get());
+				bi.getRaster().getDataBuffer().setElem(i++, buf.get());
+				buf.get();buf.get();buf.get();buf.get();
+			}
+		}
+		
+		
+		Graphics g=bi.getGraphics();
+		g.setColor(Color.GREEN);
+		g.fillOval((int)(textureWidth*width/2)-3, (int)(textureHeight*height/2)-3, 5, 5);
+		
+		//FIXME: nicht required image region an shader übergeben, sondern tatsächlich vorhandene
+		
+		
+		if(imageRegion!=null)
+			g.drawRect(
+					(int)(imageRegion.areaOfSourceImage.getX()*width/2), 
+					(int)(imageRegion.areaOfSourceImage.getY()*height/2),
+					(int)(imageRegion.areaOfSourceImage.getWidth()*width/2),
+					(int)(imageRegion.areaOfSourceImage.getHeight()*height/2)
+					);
+		
+		debug.setTitle(openGLTextureId+" "+System.currentTimeMillis());
+		
+		debugImage.setIcon(new ImageIcon(bi));
+		debug.setSize(Math.max(width/2+20,500), height/2+50);
+	}*/
+
 	public boolean contains(Object _source, ImageRegion _imageRegion, LocalDateTime _localDateTime)
 	{
 		if(!Globals.isReleaseVersion())
@@ -171,7 +234,7 @@ public class Texture
 		
 		return imageRegion != null
 				&& source == _source
-				&& imageRegion.texels.contains(_imageRegion.texels)
+				&& imageRegion.areaOfSourceImage.contains(_imageRegion.areaOfSourceImage)
 				&& imageRegion.decodeZoomFactor >= _imageRegion.decodeZoomFactor
 				&& dateTime.isEqual(_localDateTime);
 	}

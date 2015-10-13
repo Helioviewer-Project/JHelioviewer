@@ -117,11 +117,13 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	protected Dimension sizeForDecoder;
 	private float resolutionDivisor=1;
 
-	private static int DEFAULT_TILE_WIDTH = 2048;
-	private static int DEFAULT_TILE_HEIGHT = 2048;
+	private static final int DEFAULT_TILE_WIDTH = 2048;
+	private static final int DEFAULT_TILE_HEIGHT = 2048;
 
 	public MainPanel(GLContext _context)
 	{
+		
+		
 		cameraAnimations = new ArrayList<CameraAnimation>();
 		synchronizedViews = new ArrayList<MainPanel>();
 		panelMouseListeners = new ArrayList<PanelMouseListener>();
@@ -224,7 +226,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		{
 			if(TimeLine.SINGLETON.processElapsedAnimationTime(frameDuration))
 				lastFrameChangeTime = now;
-
+			
 			if(frameDuration > TimeLine.SINGLETON.getMillisecondsPerFrame())
 				resolutionDivisor += 1;
 			if(frameDuration < TimeLine.SINGLETON.getMillisecondsPerFrame())
@@ -284,7 +286,6 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 				}
 			}
 			
-			AbstractImageLayer.newRenderPassStarted();
 			LinkedHashMap<AbstractImageLayer, Future<PreparedImage>> layers=new LinkedHashMap<>();
 			for (AbstractLayer layer : Layers.getLayers())
 				if (layer.isVisible() && layer.isImageLayer())
@@ -409,6 +410,11 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		Plugins.SINGLETON.renderPlugins(gl, RenderMode.MAIN_PANEL);
 		gl.glDepthMask(false);
 	}
+	
+	protected float getDesiredRelativeResolution()
+	{
+		return 1;
+	}
 
 	@Override
 	public void display(GLAutoDrawable drawable)
@@ -418,6 +424,9 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		//TODO: find a better solution to maintain fps
 		//if(TimeLine.SINGLETON.isPlaying())
 		//	sizeForDecoder = new Dimension((int)(sizeForDecoder.width/resolutionDivisor), (int)(sizeForDecoder.height/resolutionDivisor));
+		sizeForDecoder = new Dimension(
+				(int)(sizeForDecoder.width*getDesiredRelativeResolution()),
+				(int)(sizeForDecoder.height*getDesiredRelativeResolution()));
 		
 		GL2 gl = drawable.getGL().getGL2();
 

@@ -511,7 +511,7 @@ public class KakaduLayer extends AbstractImageLayer
 		if(thisTextureNr>=textures.size())
 		{
 			textures.add(new Texture());
-			System.out.println("Added new texture for a total of "+textures.size());
+			System.out.println("Added new texture for a total of "+textures.size()+" textures.");
 		}
 		
 		return exDecoder.submit(new Callable<PreparedImage>()
@@ -519,11 +519,15 @@ public class KakaduLayer extends AbstractImageLayer
 			@Override
 			public PreparedImage call() throws Exception
 			{
-				ImageRegion requiredSafeRegion = new ImageRegion(requiredMinimumRegion.requiredOfSourceImage, mainPanel.getTranslationCurrent().z, metaData,size,1.2);
+				ImageRegion requiredSafeRegion = new ImageRegion(requiredMinimumRegion.areaOfSourceImage, mainPanel.getTranslationCurrent().z, metaData,size,
+						TimeLine.SINGLETON.isPlaying() ? 1.0 : 1.2);
+				
+				//FIXME: requiredSafeRegion should be rounded to the nearest pixels
+				
 				return new PreparedImage(
 						textures.get(thisTextureNr),
 						requiredSafeRegion,
-						MovieCache.decodeImage(sourceId, metaData.getLocalDateTime(), 8, requiredSafeRegion.decodeZoomFactor, requiredSafeRegion.texels),
+						MovieCache.decodeImage(sourceId, metaData.getLocalDateTime(), 8 /* 0-8 */, requiredSafeRegion.decodeZoomFactor, requiredSafeRegion.texels),
 						requiredSafeRegion.texels.width,
 						requiredSafeRegion.texels.height
 					);

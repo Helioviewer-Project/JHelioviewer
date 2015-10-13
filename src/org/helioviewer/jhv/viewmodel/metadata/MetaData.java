@@ -97,7 +97,8 @@ public abstract class MetaData
     /**
      * {@inheritDoc}
      */
-    public synchronized Rectangle2D getPhysicalImageSize() {
+    public synchronized Rectangle2D getPhysicalImageSize()
+    {
         return physicalImageSize;
     }
 

@@ -86,6 +86,12 @@ public class OverviewPanel extends MainPanel
 	}
 	
 	@Override
+	protected float getDesiredRelativeResolution()
+	{
+		return 0.5f;
+	}
+	
+	@Override
 	protected void advanceFrame()
 	{
 	}
@@ -93,13 +99,12 @@ public class OverviewPanel extends MainPanel
 	@Override
 	protected void render(GL2 gl, boolean _showLoadingAnimation)
 	{
-		this.sizeForDecoder = getSize();
-		this.rotationNow = MainFrame.MAIN_PANEL.getRotationCurrent();
+		rotationNow = MainFrame.MAIN_PANEL.getRotationCurrent();
 		super.render(gl, false);
 		gl.glPushMatrix();
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glLoadIdentity();
-		gl.glScaled(1, this.getAspect(), 1);
+		gl.glScaled(1, getAspect(), 1);
 		double width = Math.tan(Math.toRadians(FOV / 2.0)) * this.translationNow.z;
 		gl.glOrtho(-width, width, width, -width, -Constants.SUN_RADIUS, Constants.SUN_RADIUS);
 		gl.glMatrixMode(GL2.GL_MODELVIEW);

@@ -7,15 +7,12 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Toolkit;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.components.MenuBar;
@@ -145,8 +142,8 @@ public class MainFrame extends JFrame
 		
 		scrollContentPane.add(getSideBar());
 		
-		//FIXME: still needed?
-		this.addComponentListener(new ComponentAdapter()
+		//F-IXME: still needed?
+		/*this.addComponentListener(new ComponentAdapter()
 		{
 			@Override
 			public void componentResized(ComponentEvent e)
@@ -162,7 +159,7 @@ public class MainFrame extends JFrame
 					}
 				});
 			}
-		});
+		});*/
 		return left;
 	}
 	

@@ -112,27 +112,28 @@ public class TimeLine implements LayerListener
 		return current;
 	}
 
-	public void addListener(TimeLineListener timeLineListener) {
+	public void addListener(TimeLineListener timeLineListener)
+	{
 		timeLineListeners.add(timeLineListener);
 	}
 
-	public void removeListener(TimeLineListener timeLineListener) {
+	public void removeListener(TimeLineListener timeLineListener)
+	{
 		timeLineListeners.remove(timeLineListener);
 	}
 
-	private void dateTimeChanged(LocalDateTime last) {
-		for (TimeLine.TimeLineListener timeLineListener : timeLineListeners) {
+	private void dateTimeChanged(LocalDateTime last)
+	{
+		AbstractImageLayer.newRenderPassStarted();
+		for (TimeLine.TimeLineListener timeLineListener : timeLineListeners)
 			timeLineListener.timeStampChanged(current, last);
-		}
 	}
 
 	private void notifyUpdateDateTimes()
 	{
 		MainFrame.MOVIE_PANEL.setButtonsEnabled(!localDateTimes.isEmpty());
 		for (TimeLine.TimeLineListener timeLineListener : timeLineListeners)
-		{
 			timeLineListener.dateTimesChanged(localDateTimes.size());
-		}
 	}
 
 	public void setFPS(int fps)

@@ -103,11 +103,13 @@ public class RayTrace
 		
 		Vector3d origin;
 		Vector3d direction;
-		if (CameraMode.mode == MODE.MODE_3D){
+		if (CameraMode.mode == MODE.MODE_3D)
+		{
 			origin = _mainPanel.getTransformation().multiply(new Vector3d(0, 0, 1));
 			direction = new Vector3d(newX * width, newY * width, -1).normalize();
 		}
-		else {
+		else
+		{
 			width = Math.tan(Math.toRadians(MainPanel.FOV / 2.0)) * _mainPanel.getTranslationCurrent().z * 2.0;
 			origin = _mainPanel.getTransformation().multiply(new Vector3d(0, 0, 1)).add(new Vector3d(newX * width, newY * width, 0));
 			direction = new Vector3d(0, 0, -1).normalize();
@@ -123,14 +125,12 @@ public class RayTrace
 		
 		rayORot = new Vector3d(rayORot1.x, rayORot1.y, rayORot1.z);
 		rayDRot = new Vector3d(rayDRot1.x, rayDRot1.y, rayDRot1.z);
-		//plane.normal = camera.getTransformation().multiply(plane.normal);
 		Ray rayOriginal = new Ray(origin, direction);
 		Ray ray = new Ray(rayORot, rayDRot);
 		ray = intersect(ray);
 		rayOriginal.t = ray.t;
-		if (ray.hitpointType == HitpointType.SPHERE && _metaData.getRotation().inversed().toMatrix().multiply(ray.getHitpoint()).z < 0){
+		if (ray.hitpointType == HitpointType.SPHERE && _metaData.getRotation().inversed().toMatrix().multiply(ray.getHitpoint()).z < 0)
 			return null;
-		}
 
 		Vector3d original = _metaData.getRotation().inversed().toMatrix().multiply(ray.getHitpoint());
 		Rectangle2D physicalImageSize = _metaData.getPhysicalImageSize();

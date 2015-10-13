@@ -87,6 +87,8 @@ public class Layers
 		if (!layers.get(idx).isImageLayer())
 			return;
 		
+		AbstractImageLayer.newRenderPassStarted();
+		
 		updateOpacity((AbstractImageLayer)layers.get(idx), true);
 		
 		layers.get(idx).dispose();
@@ -155,6 +157,8 @@ public class Layers
 			if (layer.isImageLayer())
 				layer.dispose();
 	
+		AbstractImageLayer.newRenderPassStarted();
+		
 		layers.clear();
 		
 		activeLayerIndex = 0;

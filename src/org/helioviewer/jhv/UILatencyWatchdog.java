@@ -16,7 +16,7 @@ class UILatencyWatchdog
 {
 	// maximum time the UI thread is allowed to block
 	private static final int MAX_LATENCY_RELEASE = 1500;
-	private static final int MAX_LATENCY_DEBUG = 500;
+	private static final int MAX_LATENCY_DEBUG = 1000;
 
 	// do not re-report errors within this time range
 	private static final int COOLDOWN_AFTER_TIMEOUT = 30000;
@@ -26,7 +26,7 @@ class UILatencyWatchdog
 
 	public static void startWatchdog()
 	{
-		Thread t = new Thread(new Runnable()
+		final Thread t = new Thread(new Runnable()
 		{
 			@Override
 			public void run()
@@ -57,13 +57,14 @@ class UILatencyWatchdog
 								setFlag = true;
 							}
 						});
-
+						
 						if(Globals.isReleaseVersion())
 							Thread.sleep(MAX_LATENCY_RELEASE);
 						else
 							Thread.sleep(MAX_LATENCY_DEBUG);
 						
-						if (!setFlag) {
+						if (!setFlag && awtDispatcher.isAlive())
+						{
 							// collect stack trace of just the AWT dispatcher
 							// thread
 							//
@@ -72,7 +73,7 @@ class UILatencyWatchdog
 							// the full stack trace.
 							// this leads to better reporting since all
 							// exceptions will get grouped by raygun
-
+							
 							StringBuffer fullStackTrace = new StringBuffer();
 							StackTraceElement[] awtStackTrace = awtDispatcher.getStackTrace();
 							List<StackTraceElement> limitedStackTrace = new ArrayList<>();
@@ -146,6 +147,18 @@ class UILatencyWatchdog
 		t.setDaemon(true);
 		t.setPriority(Thread.MAX_PRIORITY);
 		t.start();
+		
+		//avoid false reports during shutdown
+		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				setFlag = true;
+				t.interrupt();
+			}
+		}));
+		
 		System.out.println("UI latency watchdog active");
 	}
 

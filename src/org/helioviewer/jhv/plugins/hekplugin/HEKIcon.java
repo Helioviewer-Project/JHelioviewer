@@ -52,7 +52,7 @@ class HEKIcon
 
 	public static float getImageScaleFactorHeight()
 	{
-		return openGLHelper.textureScaleY;
+		return openGLHelper.textureHeight;
 	}
 
 	private static BufferedImage getImage(HEKIcons icon)

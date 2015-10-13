@@ -109,7 +109,7 @@ public abstract class AbstractImageLayer extends AbstractLayer
 		//upload new texture, if something was decoded
 		if (_preparedImageData.rawImageData != null)
 		{
-			System.out.println("Uploading "+_preparedImageData.width+"x"+_preparedImageData.height + " to "+_preparedImageData.texture);
+			//System.out.println("Uploading "+_preparedImageData.width+"x"+_preparedImageData.height + " to "+_preparedImageData.texture);
 			_preparedImageData.texture.upload(this,md.getLocalDateTime(),_preparedImageData.imageRegion,_preparedImageData.rawImageData, _preparedImageData.width, _preparedImageData.height);
 		}
 		
@@ -147,15 +147,16 @@ public abstract class AbstractImageLayer extends AbstractLayer
 		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "texture"), 0);
 		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "lut"), 1);
 		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "fov"), (float) Math.toRadians(MainPanel.FOV / 2.0));
-		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "physicalImageWidth"), (float)md.getPhysicalImageWidth());
+		gl.glUniform2f(gl.glGetUniformLocation(shaderprogram, "physicalImageSize"), (float)md.getPhysicalImageWidth(), (float)md.getPhysicalImageHeight());
 		gl.glUniform2f(gl.glGetUniformLocation(shaderprogram, "sunOffset"), xSunOffset, ySunOffset);
 		
-		gl.glUniform4f(
-				gl.glGetUniformLocation(shaderprogram, "imageOffset"),
-				_preparedImageData.texture.getImageRegion().texCoordX,
-				_preparedImageData.texture.getImageRegion().texCoordY,
-				_preparedImageData.texture.getImageRegion().texCoordWidth*_preparedImageData.texture.textureScaleX,
-				_preparedImageData.texture.getImageRegion().texCoordHeight*_preparedImageData.texture.textureScaleY);
+		gl.glUniform4f(gl.glGetUniformLocation(shaderprogram, "imageOffset"),
+				(float)_preparedImageData.texture.getImageRegion().areaOfSourceImage.getX(),
+				(float)_preparedImageData.texture.getImageRegion().areaOfSourceImage.getY(),
+				(float)_preparedImageData.texture.getImageRegion().areaOfSourceImage.getWidth()/_preparedImageData.texture.textureWidth,
+				(float)_preparedImageData.texture.getImageRegion().areaOfSourceImage.getHeight()/_preparedImageData.texture.textureHeight
+			);
+		
 		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "opacity"), (float) opacity);
 		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "gamma"), (float) gamma);
 		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "sharpen"), (float) sharpness);
@@ -326,7 +327,8 @@ public abstract class AbstractImageLayer extends AbstractLayer
 		double partOfWidth = _mainPanel.getWidth() / (double) (MAX_X_POINTS - 1);
 		double partOfHeight = _mainPanel.getHeight() / (double) (MAX_Y_POINTS - 1);
 
-		double minX = Double.MAX_VALUE, minY = Double.MAX_VALUE, maxX = Double.MIN_VALUE, maxY = Double.MIN_VALUE;
+		double minX = Double.POSITIVE_INFINITY, minY = Double.POSITIVE_INFINITY;
+		double maxX = Double.NEGATIVE_INFINITY, maxY = Double.NEGATIVE_INFINITY;
 		
 		int hitPoints=0;
 		for (int i = 0; i < MAX_X_POINTS; i++)

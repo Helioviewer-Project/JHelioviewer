@@ -7,7 +7,7 @@ uniform mat4 modelView;
 uniform mat4 transformation;
 uniform mat4 layerTransformation;
 uniform mat4 layerInv;
-uniform float physicalImageWidth;
+uniform vec2 physicalImageSize;
 uniform float opacity;
 uniform float sharpen;
 uniform float gamma;
@@ -153,14 +153,16 @@ void main(void)
     
     //2D
     float zTranslation = (vec4(0,0,0,1) * transformation).z;
-    if (cameraMode == 0){
+    if (cameraMode == 0)
+    {
         width = zTranslation * tan(fov);
         vec2 tmpWidth = (-1.0 +2.0*uv) * width;
         rayOrigin = (vec4(0,0,1,1) * transformation).xyz + vec3(tmpWidth, 0);
         rayDirection = vec3( 0, 0, -1.0);
     }
     //3D
-    else{
+    else
+    {
         width = tan(fov);
         height = tan(fov);
         rayOrigin = (vec4(0,0,1,1) * transformation).xyz;
@@ -179,18 +181,18 @@ void main(void)
     vec4 imageColor;
     gl_FragDepth = 1;
     
-   	if (tSphere > 0.){
+   	if (tSphere > 0.)
+   	{
         vec3 posOri = rayRot.origin + tSphere*rayRot.direction;
         vec3 posRot = (vec4(posOri, 0) * (layerInv)).xyz;
         
         vec3 ray = ray1.origin + tSphere * ray1.direction;
         if (posRot.z >= 0.0)
         {
-            vec2 texPos = (posRot.xy/physicalImageWidth + 0.5) + sunOffset;
-            if (texPos.x > 1.0 || texPos.x < 0.0 || texPos.y > 1.0 || texPos.y < 0.0)
-            {
+            vec2 texPos = (posRot.xy/physicalImageSize + 0.5) + sunOffset;
+            if (texPos.x >= 1.0 || texPos.x < 0.0 || texPos.y >= 1.0 || texPos.y < 0.0)
                discard;
-            }
+               
             texPos = (texPos - imageOffset.xy) / imageOffset.zw;
             imageColor = sharpenValue(texPos);
             imageColor = contrastValue(imageColor.xyz);
@@ -199,17 +201,17 @@ void main(void)
 		gl_FragDepth = (1. /(zTranslation - ray.z) - 1. / near) / (1. /far - 1. / near);            
     }
     
-   	if (tPlane > 0. && (tPlane < tSphere|| tSphere < 0.)){
+   	if (tPlane > 0. && (tPlane < tSphere|| tSphere < 0.))
+   	{
         vec3 posOri = rayRot.origin + tPlane*rayRot.direction;
         vec3 posRot = (vec4(posOri, 0) * (layerInv)).xyz;
         
-        vec2 texPos = (posRot.xy/physicalImageWidth + 0.5) + sunOffset;
-        if ((texPos.x > 1.0 || texPos.x < 0.0 || texPos.y > 1.0 || texPos.y < 0.0) && tSphere < 0.) {
+        vec2 texPos = (posRot.xy/physicalImageSize + 0.5) + sunOffset;
+        if ((texPos.x >= 1.0 || texPos.x < 0.0 || texPos.y >= 1.0 || texPos.y < 0.0) && tSphere < 0.)
             discard;
-        }
         
         if (opacityCorona > 0.)
-        {        
+        {
 	        texPos = (texPos - imageOffset.xy) / imageOffset.zw;
 	        vec4 coronaImageColor = sharpenValue(texPos);
 	        coronaImageColor = contrastValue(coronaImageColor.xyz);
