@@ -4,6 +4,8 @@ import java.awt.geom.Rectangle2D;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import javax.annotation.Nullable;
+
 import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.Vector2d;
@@ -17,13 +19,13 @@ import org.helioviewer.jhv.layers.LUT.Lut;
 //TODO: make immutable
 public abstract class MetaData
 {
-    private Rectangle2D physicalImageSize;
+    private @Nullable Rectangle2D physicalImageSize;
     
-    protected String instrument = "";
-    protected String detector = "";
-    protected String measurement = " ";
-    protected String observatory = " ";
-    protected String fullName = "";
+    protected @Nullable String instrument;
+    protected @Nullable String detector;
+    protected @Nullable String measurement;
+    protected @Nullable String observatory;
+    protected @Nullable String fullName;
     protected double solarPixelRadius = -1;
     protected Vector2d sunPixelPosition = new Vector2d();
 
@@ -33,7 +35,7 @@ public abstract class MetaData
     protected double outerRadius;
     protected double flatDistance;
     protected double maskRotation;
-    protected Vector2d occulterCenter;
+    protected @Nullable Vector2d occulterCenter;
     protected Vector3d orientation = new Vector3d(0.00,0.00, Constants.SUN_RADIUS);
     private Quaternion3d defaultRotation = new Quaternion3d();
     
@@ -56,7 +58,7 @@ public abstract class MetaData
     protected double stonyhurstLatitude;
     protected boolean stonyhurstAvailable = false;
     
-    protected LocalDateTime localDateTime;
+    protected @Nullable LocalDateTime localDateTime;
 	protected final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_DATE_TIME;
     
 	protected Lut defaultLUT = Lut.GRAY;
@@ -70,49 +72,33 @@ public abstract class MetaData
     /**
      * Default constructor, does not set size or position.
      */
-    public MetaData(MetaDataContainer metaDataContainer, Vector2i resolution)
+    public MetaData(MetaDataContainer _metaDataContainer, Vector2i _resolution)
     {
-    	int width = metaDataContainer.tryGetInt("NAXIS1");
-    	int height = metaDataContainer.tryGetInt("NAXIS2");
-    	if (width > 0 && height > 0){
-    		this.newResolution = new Vector2i(width, height);
-    	}
-    	else{
-    		this.newResolution = resolution;
-    	}
+    	int width = _metaDataContainer.tryGetInt("NAXIS1");
+    	int height = _metaDataContainer.tryGetInt("NAXIS2");
+    	
+    	if (width > 0 && height > 0)
+    		newResolution = new Vector2i(width, height);
+    	else
+    		newResolution = _resolution;
         
-        if (metaDataContainer.get("INSTRUME") == null)
+        if (_metaDataContainer.get("INSTRUME") == null)
             return;
 
-        detector = metaDataContainer.get("DETECTOR");
-        instrument = metaDataContainer.get("INSTRUME");
-
-        if (detector == null)
-            detector = " "; //TODO: a space? not "" or null?!
-        
-        if (instrument == null)
-            instrument = " ";
+        detector = _metaDataContainer.get("DETECTOR");
+        instrument = _metaDataContainer.get("INSTRUME");
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public synchronized Rectangle2D getPhysicalImageSize()
+    public synchronized @Nullable Rectangle2D getPhysicalImageSize()
     {
         return physicalImageSize;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public synchronized double getPhysicalImageHeight()
     {
         return getResolution().y * getUnitsPerPixel();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public synchronized double getPhysicalImageWidth()
     {
         return getResolution().x * getUnitsPerPixel();
@@ -129,68 +115,53 @@ public abstract class MetaData
     	physicalImageSize = new Rectangle2D.Double(x, y, width, height);
     }
     
-    /**
-     * {@inheritDoc}
-     */
-    public String getDetector() {
+    public @Nullable String getDetector()
+    {
         return detector;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public String getInstrument() {
+    public @Nullable String getInstrument()
+    {
         return instrument;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public String getMeasurement() {
+    public @Nullable String getMeasurement()
+    {
         return measurement;
     }
 
-    /**<
-     * {@inheritDoc}
-     */
-    public String getObservatory() {
+    public @Nullable String getObservatory()
+    {
         return observatory;
     }
 
-    public String getFullName() {
+    public @Nullable String getFullName()
+    {
         return fullName;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public double getSunPixelRadius() {
+    public double getSunPixelRadius()
+    {
         return solarPixelRadius;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public Vector2d getSunPixelPosition() {
+    public Vector2d getSunPixelPosition()
+    {
         return sunPixelPosition;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public Vector2i getResolution()
     {
         return newResolution;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public double getUnitsPerPixel() {
+    public double getUnitsPerPixel()
+    {
         return meterPerPixel;
     }
 
-    public LocalDateTime getLocalDateTime(){
+    public @Nullable LocalDateTime getLocalDateTime()
+    {
     	return localDateTime;
     }
     
@@ -209,27 +180,18 @@ public abstract class MetaData
         double radiusSunInArcsec = Math.atan(Constants.SUN_RADIUS / distanceToSun) * MathUtils.RAD_TO_DEG * 3600;
 
         if (distanceToSun > 0)
-        {
             newSolarPixelRadius = radiusSunInArcsec / arcsecPerPixelX;        	
-        }
         else
         {
-        	if (detector.equals("C2"))
-        	{
+        	//TODO: move from general metadata into instrument specific class
+        	if ("C2".equals(detector))
         		newSolarPixelRadius = 80.814221;
-        	}
-        	else if (detector.equals("C3"))
-        	{
+        	else if ("C3".equals(detector))
         		newSolarPixelRadius = 17.173021;
-        	}
         	else if (newResolution.x == 1024)
-        	{
         		newSolarPixelRadius = 360;
-        	}
         	else if(newResolution.x == 512)
-        	{
         		newSolarPixelRadius = 180;
-        	}
         }
 
         solarPixelRadius = newSolarPixelRadius;
@@ -239,110 +201,111 @@ public abstract class MetaData
         setPhysicalImageSize(sunPixelPosition.x * -meterPerPixel, sunPixelPosition.y * -meterPerPixel, newResolution.x * meterPerPixel, newResolution.y * meterPerPixel);
 	}
 	
-	public double getHEEX() {
+	public double getHEEX()
+	{
         return heeX;
     }
 
-    public double getHEEY() {
+    public double getHEEY()
+    {
         return heeqY;
     }
 
-    public double getHEEZ() {
+    public double getHEEZ()
+    {
         return heeZ;
     }
 
-    public boolean isHEEProvided() {
+    public boolean isHEEProvided()
+    {
         return heeAvailable;
     }
 
-    public double getHEEQX() {
-        return this.heeqX;
-    }
-
-    public double getHEEQY() {
-        return this.heeqY;
-    }
-
-    public double getHEEQZ() {
-        return this.heeqZ;
-    }
-
-    public boolean isHEEQProvided() {
-        return this.heeqAvailable;
-    }
-
-    public double getCrln() {
-        return crln;
-    }
-
-    public double getCrlt() {
-        return crlt;
-    }
-
-    public double getDobs() {
-        return dobs;
-    }
-
-    public boolean isCarringtonProvided() {
-        return carringtonAvailable;
-    }
-
-    public boolean isStonyhurstProvided() {
-        return stonyhurstAvailable;
-    }
-
-    public double getStonyhurstLatitude() {
-        return stonyhurstLatitude;
-    }
-
-    public double getStonyhurstLongitude() {
-        return stonyhurstLongitude;
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public double getInnerPhysicalOcculterRadius() {
-        return innerRadius;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public double getOuterPhysicalOcculterRadius() {
-        return outerRadius;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public double getPhysicalFlatOcculterSize() {
-        return flatDistance;
-    }
-
-    public Vector2d getOcculterCenter() {
-        return occulterCenter;
-    }
-
-	public double getMaskRotation() {
-        return maskRotation;
-	}
-
-	public double getRadiusSuninArcsec()
+	public double getHEEQX()
 	{
-		throw new RuntimeException();
-		
-		//commented out, since metaDataContainer may be long gone by now. if this
-		//is really needed, DSUN_OBS should be cached in this class
-		
-        /*double distanceToSun = metaDataContainer.tryGetDouble("DSUN_OBS");
-        return Math.atan(Constants.SUN_RADIUS / distanceToSun) * MathUtils.RAD_TO_DEG * 3600;*/
+		return this.heeqX;
 	}
 
-	protected void calcDefaultRotation() {
+	public double getHEEQY()
+	{
+		return this.heeqY;
+	}
+
+	public double getHEEQZ()
+	{
+		return this.heeqZ;
+	}
+
+	public boolean isHEEQProvided()
+	{
+		return this.heeqAvailable;
+	}
+
+	public double getCrln()
+	{
+		return crln;
+	}
+
+	public double getCrlt()
+	{
+		return crlt;
+	}
+
+	public double getDobs()
+	{
+		return dobs;
+	}
+
+	public boolean isCarringtonProvided()
+	{
+		return carringtonAvailable;
+	}
+
+	public boolean isStonyhurstProvided()
+	{
+		return stonyhurstAvailable;
+	}
+
+	public double getStonyhurstLatitude()
+	{
+		return stonyhurstLatitude;
+	}
+
+	public double getStonyhurstLongitude()
+	{
+		return stonyhurstLongitude;
+	}
+
+	public double getInnerPhysicalOcculterRadius()
+	{
+		return innerRadius;
+	}
+
+	public double getOuterPhysicalOcculterRadius()
+	{
+		return outerRadius;
+	}
+
+	public double getPhysicalFlatOcculterSize()
+	{
+		return flatDistance;
+	}
+
+	public @Nullable Vector2d getOcculterCenter()
+	{
+		return occulterCenter;
+	}
+
+	public double getMaskRotation()
+	{
+		return maskRotation;
+	}
+
+	protected void calcDefaultRotation()
+	{
 		defaultRotation = Quaternion3d.calcRotation(new Vector3d(0, 0, Constants.SUN_RADIUS), orientation);
 	}
-	
+
 	public Quaternion3d getRotation()
 	{
 		return this.defaultRotation;
@@ -354,7 +317,8 @@ public abstract class MetaData
 	}
 		
 	//FIXME: don't assume that appX == appY
-	public double getArcsecPerPixel(){
+	public double getArcsecPerPixel()
+	{
 		return arcsecPerPixelX;
 	}
 }

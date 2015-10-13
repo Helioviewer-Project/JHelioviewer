@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<install4j version="6.0.3" transformSequenceNumber="5">
+<install4j version="6.0.4" transformSequenceNumber="5">
   <directoryPresets config="./resources" />
   <application name="JHelioviewer" distributionSourceDir="" applicationId="7791-5722-0682-7193" mediaDir="./builds" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="9" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="JHelioviewer" publisher="ESA JHelioviewer Team" publisherWeb="http://www.jhelioviewer.org" version="3.0.1" allPathsRelative="true" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="7ed177551bd348bc" javaMinVersion="1.8" javaMaxVersion="" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
@@ -13,9 +13,9 @@
       <variable name="mode" value="beta" description="&quot;release&quot; or &quot;beta&quot;" category="" />
     </variables>
     <mergedProjects />
-    <codeSigning macEnabled="false" macPkcs12File="../../cer/stefanmeier.cer" windowsEnabled="true" windowsKeySource="pkcs12" windowsPvkFile="" windowsSpcFile="" windowsPkcs12File="../../cer/Open Source Developer, Simon Felix.pfx" />
+    <codeSigning macEnabled="true" macPkcs12File="../../../cer/Apple Dev Certificate Stefan Meier.p12" windowsEnabled="true" windowsKeySource="pkcs12" windowsPvkFile="" windowsSpcFile="" windowsPkcs12File="../../../cer/Open Source Developer, Simon Felix.pfx" />
   </application>
-  <files keepModificationTimes="false" missingFilesStrategy="warn" globalExcludeSuffixes=".DS_Store" defaultOverwriteMode="4" defaultUninstallMode="0" launcherOverwriteMode="3" defaultFileMode="644" defaultDirMode="755">
+  <files keepModificationTimes="false" missingFilesStrategy="error" globalExcludeSuffixes=".DS_Store" defaultOverwriteMode="4" defaultUninstallMode="0" launcherOverwriteMode="3" defaultFileMode="644" defaultDirMode="755">
     <filesets />
     <roots />
     <mountPoints>
@@ -349,6 +349,54 @@
                 <serializedBean>
                   <java class="java.beans.XMLDecoder">
                     <object class="com.install4j.runtime.beans.actions.InstallFilesAction" />
+                  </java>
+                </serializedBean>
+                <condition />
+              </action>
+              <action name="" id="841" customizedId="" beanClass="com.install4j.runtime.beans.actions.registry.SetRegistryValueAction" enabled="true" commentSet="false" comment="" actionElevationType="elevated" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+                <serializedBean>
+                  <java class="java.beans.XMLDecoder">
+                    <object class="com.install4j.runtime.beans.actions.registry.SetRegistryValueAction">
+                      <void property="keyName">
+                        <string>Software\JavaSoft\Prefs</string>
+                      </void>
+                      <void property="registryRoot">
+                        <object class="java.lang.Enum" method="valueOf">
+                          <class>com.install4j.api.windows.RegistryRoot</class>
+                          <string>HKEY_CURRENT_USER</string>
+                        </object>
+                      </void>
+                    </object>
+                  </java>
+                </serializedBean>
+                <condition />
+              </action>
+              <action name="" id="840" customizedId="" beanClass="com.install4j.runtime.beans.actions.registry.AddRegistryRightsAction" enabled="true" commentSet="false" comment="" actionElevationType="elevated" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+                <serializedBean>
+                  <java class="java.beans.XMLDecoder">
+                    <object class="com.install4j.runtime.beans.actions.registry.AddRegistryRightsAction">
+                      <void property="group">
+                        <object class="java.lang.Enum" method="valueOf">
+                          <class>com.install4j.runtime.beans.actions.files.WindowsGroup</class>
+                          <string>ORIGINAL_USER</string>
+                        </object>
+                      </void>
+                      <void property="keyName">
+                        <string>Software\JavaSoft\Prefs</string>
+                      </void>
+                      <void property="read">
+                        <boolean>true</boolean>
+                      </void>
+                      <void property="registryRoot">
+                        <object class="java.lang.Enum" method="valueOf">
+                          <class>com.install4j.api.windows.RegistryRoot</class>
+                          <string>HKEY_CURRENT_USER</string>
+                        </object>
+                      </void>
+                      <void property="write">
+                        <boolean>true</boolean>
+                      </void>
+                    </object>
                   </java>
                 </serializedBean>
                 <condition />
@@ -1449,7 +1497,7 @@ return true;</string>
     </applications>
   </installerGui>
   <mediaSets>
-    <macosArchive name="Mac OS X Single Bundle Archive" id="68" customizedId="" mediaFileName="${compiler:sys.shortName}" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="macosx-amd64-1.8.0_45_unpacked" manualJREEntry="false" appleJre="false" archiveType="dmg" volumeName="${compiler:sys.shortName}" launcherId="24">
+    <macosArchive name="Mac OS X Single Bundle Archive" id="68" customizedId="" mediaFileName="${compiler:sys.shortName}" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="macosx-amd64-1.8.0_60_unpacked" manualJREEntry="false" appleJre="false" archiveType="dmg" volumeName="${compiler:sys.shortName}" launcherId="24">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedBeans />
@@ -1494,7 +1542,7 @@ return true;</string>
         <symlink name="Applications" target="/Applications" />
       </topLevelFiles>
     </macosArchive>
-    <windows name="Windows 64 bit" id="150" customizedId="" mediaFileName="" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="64" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="windows-amd64-1.8.0_45" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" verifyIntegrity="true">
+    <windows name="Windows 64 bit" id="150" customizedId="" mediaFileName="" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="64" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="windows-amd64-1.8.0_60" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" verifyIntegrity="true">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedLaunchers>

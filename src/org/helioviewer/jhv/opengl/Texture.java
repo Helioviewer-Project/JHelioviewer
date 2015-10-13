@@ -4,6 +4,8 @@ import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
 
+import javax.annotation.Nullable;
+
 import org.helioviewer.jhv.Globals;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.math.MathUtils;
@@ -16,9 +18,9 @@ import com.jogamp.opengl.GLContext;
 
 public class Texture
 {
-	private Object source;
-	private LocalDateTime dateTime;
-	protected ImageRegion imageRegion;
+	private @Nullable Object source;
+	private @Nullable LocalDateTime dateTime;
+	protected @Nullable ImageRegion imageRegion;
 	public final int openGLTextureId;
 	public int width;
 	public int height;
@@ -226,6 +228,7 @@ public class Texture
 		debug.setSize(Math.max(width/2+20,500), height/2+50);
 	}*/
 
+	@SuppressWarnings("null")
 	public boolean contains(Object _source, ImageRegion _imageRegion, LocalDateTime _localDateTime)
 	{
 		if(!Globals.isReleaseVersion())
@@ -244,7 +247,7 @@ public class Texture
 		return imageRegion != null && _ldt.equals(dateTime);
 	}
 
-	public ImageRegion getImageRegion()
+	public @Nullable ImageRegion getImageRegion()
 	{
 		return imageRegion;
 	}

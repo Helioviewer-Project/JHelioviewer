@@ -42,14 +42,14 @@ public class Movie
 
 	private CacheStatus cacheStatus = CacheStatus.NONE;
 
-	private Jp2_threadsafe_family_src family_src;
-	private Jpx_source jpxSrc;
-	private final KakaduLayer ul;
+	private @Nullable Jp2_threadsafe_family_src family_src;
+	private @Nullable Jpx_source jpxSrc;
+	private final KakaduLayer kakaduLayer;
 
-	public Movie(KakaduLayer _ul, int _sourceId)
+	public Movie(KakaduLayer _kakaduLayer, int _sourceId)
 	{
 		sourceId = _sourceId;
-		ul=_ul;
+		kakaduLayer=_kakaduLayer;
 	}
 	
 	public synchronized void setFile(String _filename)
@@ -97,6 +97,7 @@ public class Movie
 	}
 
 	
+	@SuppressWarnings("null")
 	private void processFamilySrc()
 	{
 		try
@@ -119,7 +120,7 @@ public class Movie
 				//TextureCache.invalidate(sourceId, metaDatas[i].getLocalDateTime());
 			}
 			
-			if(ul.getLUT()==null)
+			if(kakaduLayer.getLUT()==null)
 			{
 				MetaData md=getAnyMetaData();
 				if(md!=null)
@@ -130,7 +131,7 @@ public class Movie
 						@Override
 						public void run()
 						{
-							ul.setLUT(l);
+							kakaduLayer.setLUT(l);
 						}
 					});
 				}
@@ -161,7 +162,7 @@ public class Movie
 		}
 		
 		@Override
-		public boolean equals(Object _obj)
+		public boolean equals(@Nullable Object _obj)
 		{
 			if(!(_obj instanceof Match))
 				return false;
@@ -177,6 +178,7 @@ public class Movie
 		}
 	}
 	
+	@SuppressWarnings("null")
 	@Nullable public Match findClosestIdx(@Nonnull LocalDateTime _currentDateTime)
 	{
 		if(metaDatas==null)
@@ -216,26 +218,28 @@ public class Movie
 	
 	@Nullable public MetaData getAnyMetaData()
 	{
-		for(MetaData md:metaDatas)
-			if(md!=null)
-				return md;
+		if(metaDatas!=null)
+			for(MetaData md:metaDatas)
+				if(md!=null)
+					return md;
 		return null;
 	}
 	
 	@Nullable
 	public MetaData getMetaData(int idx)
 	{
-		if (metaDatas == null)
-			return null;
-		return metaDatas[idx];
+		if (metaDatas != null)
+			return metaDatas[idx];
+		return null;
 	}
 	
+	@SuppressWarnings("null")
 	public int getFrameCount()
 	{
-		if(metaDatas==null)
-			return 0;
+		if(metaDatas!=null)
+			return metaDatas.length;
 		
-		return metaDatas.length;
+		return 0;
 	}
 	
 	@Nullable
@@ -243,7 +247,11 @@ public class Movie
 	{
 		try
 		{
-			@Nullable String xmlText = KakaduUtils.getXml(family_src, index);
+			if(family_src==null)
+				return null;
+			
+			@SuppressWarnings("null")
+			String xmlText = KakaduUtils.getXml(family_src, index);
 			if (xmlText == null)
 				return null;
 			xmlText = xmlText.trim().replace("&", "&amp;").replace("$OBS", "");
@@ -283,7 +291,7 @@ public class Movie
 		}
 	}*/
 
-	public ByteBuffer decodeImage(int _index, int quality, float zoomPercent, Rectangle _requiredRegion)
+	public @Nullable ByteBuffer decodeImage(int _index, int quality, float zoomPercent, Rectangle _requiredRegion)
 	{
 		try
 		{

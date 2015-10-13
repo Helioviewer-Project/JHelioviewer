@@ -72,7 +72,7 @@ public class ExportMovieAction extends AbstractAction
 	private String filename;
 
 	private volatile FileOutputStream fileOutputStream;
-	private volatile ZipOutputStream zipOutputStream;
+	@Nullable private volatile ZipOutputStream zipOutputStream;
 
 	private static final String SETTING_MOVIE_EXPORT_LAST_DIRECTORY = "export.movie.last.directory";
 

@@ -3,6 +3,8 @@ package org.helioviewer.jhv.viewmodel.metadata;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
+import javax.annotation.Nullable;
+
 import org.helioviewer.jhv.Telemetry;
 import org.w3c.dom.Document;
 
@@ -27,9 +29,12 @@ public class MetaDataFactory
 			MetaDataSWAP.class
 		};
 	
-	public static MetaData getMetaData(Document doc)
+	public static @Nullable MetaData getMetaData(@Nullable Document _doc)
 	{
-		MetaDataContainer metaDataContainer = new MetaDataContainer(doc);
+		if(_doc==null)
+			return null;
+		
+		MetaDataContainer metaDataContainer = new MetaDataContainer(_doc);
 		MetaData metaData = null;
 		Object[] args = {metaDataContainer};
 		for (Class<MetaData> c : META_DATA_CLASSES)

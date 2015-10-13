@@ -1,5 +1,7 @@
 package org.helioviewer.jhv.viewmodel.metadata;
 
+import javax.annotation.Nullable;
+
 import org.helioviewer.jhv.Telemetry;
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.Document;
@@ -17,12 +19,12 @@ public class MetaDataContainer
 		document = _document;
 	}
 	
-	public String get(String key)
+	public @Nullable String get(String key)
 	{
         return getValueFromXML(key, "fits");
 	}
 
-	private String getValueFromXML(String key, String string)
+	private @Nullable String getValueFromXML(String key, String string)
 	{
 		NodeList current = document.getElementsByTagName("meta");
 		NodeList nodes = ((Element) current.item(0)).getElementsByTagName(string);

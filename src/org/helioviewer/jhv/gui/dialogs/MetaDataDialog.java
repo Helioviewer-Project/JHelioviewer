@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -41,6 +42,7 @@ import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.PredefinedFileFilter;
+import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.layers.AbstractLayer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
@@ -56,7 +58,7 @@ import org.w3c.dom.NodeList;
 /**
  * Dialog that is used to display meta data for an image.
  */
-public class MetaDataDialog extends JDialog implements ActionListener, LayerListener, TimeLineListener
+public class MetaDataDialog extends JDialog implements LayerListener, TimeLineListener
 {
 	private final JButton closeButton = new JButton("Close");
 	private final JButton exportFitsButton = new JButton("Export FITS header as XML");
@@ -83,7 +85,8 @@ public class MetaDataDialog extends JDialog implements ActionListener, LayerList
 
 		listBox.setCellRenderer(new ListCellRenderer<Object>()
 			{
-				public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus)
+				@SuppressWarnings("null")
+				public Component getListCellRendererComponent(@Nullable JList<?> list, @Nullable Object value, int index, boolean isSelected, boolean cellHasFocus)
 				{
 					JTextArea textArea = new JTextArea(value.toString().trim());
 					textArea.setLineWrap(true);
@@ -105,8 +108,39 @@ public class MetaDataDialog extends JDialog implements ActionListener, LayerList
 		add(bottomPanel, BorderLayout.PAGE_END);
 
 		// add action listeners to the buttons
-		closeButton.addActionListener(this);
-		exportFitsButton.addActionListener(this);
+		closeButton.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(@Nullable ActionEvent e)
+			{
+				infoList.clear();
+				resetData();
+				dispose();
+			}
+		});
+		exportFitsButton.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(@Nullable ActionEvent e)
+			{
+				// Open save-dialog
+				final File file = Globals.showFileDialog(
+						DialogType.SAVE_FILE,
+						"Save metadata",
+						Settings.getProperty(LAST_DIRECTORY),
+						true,
+						outFileName,
+						PredefinedFileFilter.XML);
+				
+				if (file == null)
+					return;
+				
+				DOMSource source = new DOMSource(xmlDoc.getDocumentElement().getElementsByTagName("fits").item(0));
+				if (!saveXMLDocument(source, file.getPath() + outFileName))
+					JOptionPane.showMessageDialog(MetaDataDialog.this, "Could not save document.");
+			}
+		});
+		
 		// exportButton.addActionListener(this);
 		pack();
 		Layers.addLayerListener(this);
@@ -116,30 +150,16 @@ public class MetaDataDialog extends JDialog implements ActionListener, LayerList
 		addComponentListener(new ComponentAdapter()
 		{
 			@Override
-			public void componentShown(ComponentEvent e)
+			public void componentShown(@Nullable ComponentEvent e)
 			{
-				if (Layers.getActiveImageLayer() != null)
-				{
-					MetaData md=Layers.getActiveImageLayer().getMetaData(TimeLine.SINGLETON.getCurrentDateTime());
-					Document doc=Layers.getActiveImageLayer().getMetaDataDocument(TimeLine.SINGLETON.getCurrentDateTime());
-					
-					if(md!=null && doc!=null)
-						setMetaData(md,doc);
-					else
-					{
-						resetData();
-						addDataItem("Metadata not available.");
-					}
-				}
-				else
-					resetData();
+				updateData();
 			}
 		});
 		
 		getRootPane().registerKeyboardAction(new ActionListener()
 		{
 			@Override
-			public void actionPerformed(ActionEvent e)
+			public void actionPerformed(@Nullable ActionEvent e)
 			{
 				setVisible(false);
 			}
@@ -152,10 +172,28 @@ public class MetaDataDialog extends JDialog implements ActionListener, LayerList
 		setVisible(true);
 	}
 
-	/**
-	 * Resets the list.
-	 */
-	public void resetData()
+	public void updateData()
+	{
+		AbstractImageLayer il=Layers.getActiveImageLayer();
+		if (il != null)
+		{
+			MetaData md=il.getMetaData(TimeLine.SINGLETON.getCurrentDateTime());
+			Document doc=il.getMetaDataDocument(TimeLine.SINGLETON.getCurrentDateTime());
+			
+			if(md!=null && doc!=null)
+				setMetaData(md,doc);
+			else
+			{
+				resetData();
+				addDataItem("Metadata not available.");
+			}
+		}
+		else
+			resetData();
+	}
+	
+
+	private void resetData()
 	{
 		infoList.clear();
 
@@ -176,39 +214,12 @@ public class MetaDataDialog extends JDialog implements ActionListener, LayerList
 	 *            New item to add
 	 * @see #setMetaData(MetaDataView)
 	 */
-	public void addDataItem(String _item) {
+	public void addDataItem(String _item)
+	{
 		infoList.add(_item);
 
 		// update the listBox
 		listBox.setListData(infoList.toArray(new String[0]));
-	}
-
-	public void actionPerformed(ActionEvent _a)
-	{
-		if (_a.getSource() == closeButton)
-		{
-			infoList.clear();
-			resetData();
-			dispose();
-		}
-		else if (_a.getSource() == exportFitsButton)
-		{
-			// Open save-dialog
-			final File file = Globals.showFileDialog(
-					DialogType.SAVE_FILE,
-					"Save metadata",
-					Settings.getProperty(LAST_DIRECTORY),
-					true,
-					outFileName,
-					PredefinedFileFilter.XML);
-			
-			if (file == null)
-				return;
-			
-			DOMSource source = new DOMSource(xmlDoc.getDocumentElement().getElementsByTagName("fits").item(0));
-			if (!saveXMLDocument(source, file.getPath() + outFileName))
-				JOptionPane.showMessageDialog(this,	"Could not save document.");
-		}
 	}
 
 	/**
@@ -238,7 +249,7 @@ public class MetaDataDialog extends JDialog implements ActionListener, LayerList
 		root = doc.getDocumentElement().getElementsByTagName("helioviewer").item(0);
 		if (root != null)
 			writeXMLData(root, 0);
-
+		
 		// set the xml data for the MetaDataDialog
 		xmlDoc = doc;
 
@@ -261,7 +272,8 @@ public class MetaDataDialog extends JDialog implements ActionListener, LayerList
 	 * @param indent
 	 *            Number of tabstops to insert
 	 */
-	private void writeXMLData(Node node, int indent) {
+	private void writeXMLData(Node node, int indent)
+	{
 		// get element name and value
 		String nodeName = node.getNodeName();
 		String nodeValue = getElementValue(node);
@@ -303,18 +315,13 @@ public class MetaDataDialog extends JDialog implements ActionListener, LayerList
 	 *            Node to read
 	 * @return value of the node
 	 */
-	private final String getElementValue(Node elem) {
-		Node child;
-		if (elem != null) {
-			if (elem.hasChildNodes()) {
-				for (child = elem.getFirstChild(); child != null; child = child
-						.getNextSibling()) {
-					if (child.getNodeType() == Node.TEXT_NODE) {
-						return child.getNodeValue();
-					}
-				}
-			}
-		}
+	private final String getElementValue(Node elem)
+	{
+		if (elem != null && elem.hasChildNodes())
+			for (Node child = elem.getFirstChild(); child != null; child = child.getNextSibling())
+				if (child.getNodeType() == Node.TEXT_NODE)
+					return child.getNodeValue();
+		
 		return "";
 	}
 
@@ -375,10 +382,11 @@ public class MetaDataDialog extends JDialog implements ActionListener, LayerList
 	@Override
 	public void timeStampChanged(LocalDateTime current, LocalDateTime last)
 	{
-		if (Layers.getActiveImageLayer() != null)
+		AbstractImageLayer il = Layers.getActiveImageLayer();
+		if (il != null)
 		{
-			MetaData md=Layers.getActiveImageLayer().getMetaData(TimeLine.SINGLETON.getCurrentDateTime());
-			Document doc=Layers.getActiveImageLayer().getMetaDataDocument(TimeLine.SINGLETON.getCurrentDateTime());
+			MetaData md=il.getMetaData(TimeLine.SINGLETON.getCurrentDateTime());
+			Document doc=il.getMetaDataDocument(TimeLine.SINGLETON.getCurrentDateTime());
 			
 			if(md!=null && doc!=null)
 				setMetaData(md,doc);
@@ -393,23 +401,23 @@ public class MetaDataDialog extends JDialog implements ActionListener, LayerList
 	}
 
 	@Override
-	public void dateTimesChanged(int framecount) {
-		
-
+	public void dateTimesChanged(int framecount)
+	{
 	}
 
 	@Override
-	public void layerAdded() {
+	public void layerAdded()
+	{
 	}
 
 	@Override
-	public void layersRemoved() {
-		
-
+	public void layersRemoved()
+	{
 	}
 
 	@Override
-	public void activeLayerChanged(AbstractLayer layer) {
-		// setMetaData(layer.getMetaData());
+	public void activeLayerChanged(AbstractLayer layer)
+	{
+		updateData();
 	}
 }

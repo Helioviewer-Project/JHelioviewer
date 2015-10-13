@@ -11,9 +11,6 @@ import javax.swing.KeyStroke;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.layers.Layers;
 
-/**
- * Action to terminate the application.
- */
 public class ExitProgramAction extends AbstractAction
 {
 	public ExitProgramAction()
@@ -24,19 +21,20 @@ public class ExitProgramAction extends AbstractAction
 				.getDefaultToolkit().getMenuShortcutKeyMask()));
 	}
 
-	public void actionPerformed(ActionEvent e) {
-
-		if (Layers.getLayerCount() > 0) {
+	public void actionPerformed(ActionEvent e)
+	{
+		if (Layers.getLayerCount() > 0)
+		{
 			int option = JOptionPane.showConfirmDialog(
 					MainFrame.SINGLETON,
 					"Are you sure you want to quit?", "Confirm",
 					JOptionPane.OK_CANCEL_OPTION);
-			if (option == JOptionPane.CANCEL_OPTION) {
+			
+			if (option == JOptionPane.CANCEL_OPTION)
 				return;
-			}
 		}
 
+		System.out.println("Quitting application");
 		System.exit(0);
 	}
-
 }

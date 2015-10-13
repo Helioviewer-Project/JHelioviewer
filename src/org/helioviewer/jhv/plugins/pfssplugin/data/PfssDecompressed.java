@@ -5,6 +5,8 @@ import java.nio.IntBuffer;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
+import javax.annotation.Nullable;
+
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.DifferentialRotation;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssSettings;
@@ -26,12 +28,12 @@ public class PfssDecompressed
 	private volatile boolean uploadedVBOs = false;
 	private final FileDescriptor descriptor;
 	
-	private FloatBuffer vertices;
-	private IntBuffer indicesSunToOutside = null;
-	private IntBuffer indicesSunToSun = null;
-	private IntBuffer indicesOutsideToSun = null;
+	private @Nullable FloatBuffer vertices;
+	private @Nullable IntBuffer indicesSunToOutside = null;
+	private @Nullable IntBuffer indicesSunToSun = null;
+	private @Nullable IntBuffer indicesOutsideToSun = null;
 	
-	private int[] buffers = null;
+	private @Nullable int[] buffers = null;
 	private int VBOVertices;
 	private int VBOIndicesSunToOutside;
 	private int VBOIndicesSunToSun;
@@ -40,9 +42,9 @@ public class PfssDecompressed
 	private float l0;
 	private float b0;
 	
-	public PfssDecompressed(FileDescriptor descriptor)
+	public PfssDecompressed(FileDescriptor _descriptor)
 	{
-		this.descriptor = descriptor;
+		descriptor = _descriptor;
 	}
 	
 	/**
@@ -71,6 +73,7 @@ public class PfssDecompressed
 	 * Initializes data on the videocard
 	 * @param gl2
 	 */
+	@SuppressWarnings("null")
 	private void uploadVBOs(GL gl)
 	{
         if(!isDataAssigned)
@@ -90,21 +93,20 @@ public class PfssDecompressed
 		gl2.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
 
 		// color
-		if (indicesSunToSun != null && indicesSunToSun.limit() > 0) {
+		if (indicesSunToSun != null && indicesSunToSun.limit() > 0)
+		{
 			VBOIndicesSunToSun = buffers[1];
-			gl2.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER,
-					VBOIndicesSunToSun);
+			gl2.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, VBOIndicesSunToSun);
 			gl2.glBufferData(GL.GL_ELEMENT_ARRAY_BUFFER,
 					indicesSunToSun.limit() * Buffers.SIZEOF_INT,
 					indicesSunToSun, GL.GL_STATIC_DRAW);
 			gl2.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, 0);
 		}
 
-		if (indicesSunToOutside != null
-				&& indicesSunToOutside.limit() > 0) {
+		if (indicesSunToOutside != null	&& indicesSunToOutside.limit() > 0)
+		{
 			VBOIndicesSunToOutside = buffers[2];
-			gl2.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER,
-					VBOIndicesSunToOutside);
+			gl2.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, VBOIndicesSunToOutside);
 			gl2.glBufferData(
 					GL.GL_ELEMENT_ARRAY_BUFFER,
 					indicesSunToOutside.limit() * Buffers.SIZEOF_INT,
@@ -112,11 +114,10 @@ public class PfssDecompressed
 			gl2.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, 0);
 		}
 
-		if (indicesOutsideToSun != null
-				&& indicesOutsideToSun.limit() > 0) {
+		if (indicesOutsideToSun != null && indicesOutsideToSun.limit() > 0)
+		{
 			VBOIndicesOutsideToSun = buffers[3];
-			gl2.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER,
-					VBOIndicesOutsideToSun);
+			gl2.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, VBOIndicesOutsideToSun);
 			gl2.glBufferData(
 					GL.GL_ELEMENT_ARRAY_BUFFER,
 					indicesOutsideToSun.limit() * Buffers.SIZEOF_INT,
@@ -146,6 +147,7 @@ public class PfssDecompressed
 	 * @param gl
 	 * @param localDateTime
 	 */
+	@SuppressWarnings("null")
 	public void display(GL gl, LocalDateTime localDateTime)
 	{
 	    if(!isDataAssigned)
@@ -153,7 +155,6 @@ public class PfssDecompressed
 	    
 	    if(!uploadedVBOs)
 	        uploadVBOs(gl);
-
                 
 		GL2 gl2 = gl.getGL2();
 		gl2.glEnableClientState(GL2.GL_VERTEX_ARRAY);
@@ -179,8 +180,7 @@ public class PfssDecompressed
 			color = PfssSettings.SUN_SUN_LINE_COLOR;
 			gl2.glColor4d(color.x, color.y, color.z, PfssSettings.LINE_ALPHA);
 			gl2.glBindBuffer(GL2.GL_ELEMENT_ARRAY_BUFFER, VBOIndicesSunToSun);
-			gl2.glDrawElements(GL2.GL_LINES, indicesSunToSun.limit(),
-					GL2.GL_UNSIGNED_INT, 0);
+			gl2.glDrawElements(GL2.GL_LINES, indicesSunToSun.limit(), GL2.GL_UNSIGNED_INT, 0);
 		}
 		
 		if (indicesSunToOutside != null && indicesSunToOutside.limit() > 0)
@@ -188,8 +188,7 @@ public class PfssDecompressed
 			color = PfssSettings.SUN_OUT_LINE_COLOR;
 			gl2.glColor4d(color.x, color.y, color.z, PfssSettings.LINE_ALPHA);
 			gl2.glBindBuffer(GL2.GL_ELEMENT_ARRAY_BUFFER, VBOIndicesSunToOutside);
-			gl2.glDrawElements(GL2.GL_LINES, indicesSunToOutside.limit(),
-					GL2.GL_UNSIGNED_INT, 0);
+			gl2.glDrawElements(GL2.GL_LINES, indicesSunToOutside.limit(), GL2.GL_UNSIGNED_INT, 0);
 		}
 
 		if (indicesOutsideToSun != null && indicesOutsideToSun.limit() > 0)
@@ -197,8 +196,7 @@ public class PfssDecompressed
 			color = PfssSettings.OUT_SUN_LINE_COLOR;
 			gl2.glColor4d(color.x, color.y, color.z, PfssSettings.LINE_ALPHA);
 			gl2.glBindBuffer(GL2.GL_ELEMENT_ARRAY_BUFFER, VBOIndicesOutsideToSun);
-			gl2.glDrawElements(GL2.GL_LINES, indicesOutsideToSun.limit(),
-					GL2.GL_UNSIGNED_INT, 0);
+			gl2.glDrawElements(GL2.GL_LINES, indicesOutsideToSun.limit(), GL2.GL_UNSIGNED_INT, 0);
 		}
 		gl2.glDisableClientState(GL2.GL_VERTEX_ARRAY);
 		gl2.glDisable(GL2.GL_LINE_SMOOTH);

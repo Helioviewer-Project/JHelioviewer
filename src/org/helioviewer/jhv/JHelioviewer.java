@@ -11,17 +11,12 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
-
+import javax.annotation.Nullable;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
-
-import kdu_jni.Kdu_global;
-import kdu_jni.Kdu_message_formatter;
 
 import org.helioviewer.jhv.base.Log;
 import org.helioviewer.jhv.base.Observatories;
@@ -40,6 +35,11 @@ import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLDrawableFactory;
 import com.jogamp.opengl.GLProfile;
+
+import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
+import kdu_jni.Kdu_global;
+import kdu_jni.Kdu_message_formatter;
 
 public class JHelioviewer
 {
@@ -188,7 +188,7 @@ public class JHelioviewer
 					sharedDrawable.getContext().makeCurrent();
 					
 					splash.progressTo("Creating OpenGL context");
-					MainFrame.SINGLETON.initContext();
+					MainFrame.SINGLETON.getClass();
 					
 					splash.progressTo("Setting up texture cache");
 					//TextureCache.init();
@@ -258,7 +258,6 @@ public class JHelioviewer
 				{
 					//ignore inability to load msvcr120. if there's really
 					//a problem, it will be caught by the outer try/catch
-					_ule.printStackTrace();
 				}
 				System.loadLibrary("kdu_v75R");
 				System.loadLibrary("kdu_a75R");
@@ -285,8 +284,9 @@ public class JHelioviewer
 					new Class[] { applicationListener },
 					new InvocationHandler()
 					{
+						@SuppressWarnings("null")
 						@Override
-						public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
+						public Object invoke(@Nullable Object proxy, @Nullable Method method, @Nullable Object[] args) throws Throwable
 						{
 							if ("handleAbout".equals(method.getName()))
 							{
@@ -299,7 +299,8 @@ public class JHelioviewer
 									}
 								});
 								
-								setHandled(args[0], Boolean.TRUE);
+								if(args!=null && args[0]!=null)
+									setHandled(args[0], Boolean.TRUE);
 							}
 							else if ("handleQuit".equals(method.getName()))
 							{

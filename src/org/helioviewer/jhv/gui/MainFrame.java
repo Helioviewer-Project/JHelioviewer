@@ -49,17 +49,36 @@ public class MainFrame extends JFrame
 	private MainFrame()
 	{
 		super("ESA JHelioviewer");
-	}
-	
-	public void initContext()
-	{
+
 		GLContext context = GLContext.getCurrent();
+		if(context==null)
+			throw new RuntimeException();
 		
 		MAIN_PANEL = new MainPanel(context);
 		OVERVIEW_PANEL = new OverviewPanel(context);
 		initMainFrame();
 		initMenuBar();
-		initGui();
+		
+		JPanel contentPane = new JPanel();
+		contentPane.setLayout(new BorderLayout(0, 0));
+		setContentPane(contentPane);
+		
+		// Add toolbar
+		contentPane.add(TOP_TOOL_BAR, BorderLayout.NORTH);
+		
+		splitPane = new JSplitPane();
+		splitPane.setResizeWeight(0.0);
+		splitPane.setContinuousLayout(true);
+		contentPane.add(splitPane, BorderLayout.CENTER);
+		
+		MAIN_PANEL.setMinimumSize(new Dimension());
+		OVERVIEW_PANEL.setMinimumSize(new Dimension(240, 200));
+		OVERVIEW_PANEL.setPreferredSize(new Dimension(240, 200));
+
+		splitPane.setRightComponent(MAIN_PANEL);		
+		splitPane.setLeftComponent(createLeftPanel());
+		
+		contentPane.add(this.getStatusPane(), BorderLayout.SOUTH);		
 	}
 	
 	private void initMainFrame()
@@ -85,30 +104,6 @@ public class MainFrame extends JFrame
 		setIconImage(IconBank.getIcon(JHVIcon.HVLOGO_SMALL).getImage());
 		this.pack();
 		setLocationRelativeTo(null);
-	}
-	
-	private void initGui()
-	{
-		JPanel contentPane = new JPanel();
-		contentPane.setLayout(new BorderLayout(0, 0));
-		setContentPane(contentPane);
-		
-		// Add toolbar
-		contentPane.add(TOP_TOOL_BAR, BorderLayout.NORTH);
-		
-		splitPane = new JSplitPane();
-		splitPane.setResizeWeight(0.0);
-		splitPane.setContinuousLayout(true);
-		contentPane.add(splitPane, BorderLayout.CENTER);
-		
-		MAIN_PANEL.setMinimumSize(new Dimension());
-		OVERVIEW_PANEL.setMinimumSize(new Dimension(240, 200));
-		OVERVIEW_PANEL.setPreferredSize(new Dimension(240, 200));
-
-		splitPane.setRightComponent(MAIN_PANEL);		
-		splitPane.setLeftComponent(createLeftPanel());
-		
-		contentPane.add(this.getStatusPane(), BorderLayout.SOUTH);		
 	}
 	
 	private JPanel createLeftPanel()

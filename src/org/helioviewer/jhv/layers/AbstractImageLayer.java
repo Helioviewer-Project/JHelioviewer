@@ -76,17 +76,13 @@ public abstract class AbstractImageLayer extends AbstractLayer
 	
 	private static int shaderprogram = -1;
 	
-	//FIXME: use a cache instead of a single texture, but at least one texture per layer
 	protected static ArrayList<Texture> textures=new ArrayList<Texture>();
-	//protected Texture texture=new Texture();
 	
 	public abstract NavigableSet<LocalDateTime> getLocalDateTimes();
 
-	@Nullable
-	public abstract MetaData getMetaData(@Nonnull LocalDateTime currentDateTime);
+	public abstract @Nullable MetaData getMetaData(@Nonnull LocalDateTime currentDateTime);
 
-	@Nullable
-	public abstract Document getMetaDataDocument(@Nonnull LocalDateTime _currentDateTime);
+	public abstract @Nullable Document getMetaDataDocument(@Nonnull LocalDateTime _currentDateTime);
 
 	public abstract void writeStateFile(JSONObject jsonLayer);
 	
@@ -94,6 +90,10 @@ public abstract class AbstractImageLayer extends AbstractLayer
 
 	protected static int freeTextureNr=0;
 	
+	/**
+	 * This method should be called whenever we can throw all cached textures away, and the
+	 * likelyhood that cached textures will be used again is low.
+	 */
 	public static void newRenderPassStarted()
 	{
 		freeTextureNr=0;
@@ -103,7 +103,7 @@ public abstract class AbstractImageLayer extends AbstractLayer
 	{
 		LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
 		MetaData md=getMetaData(currentDateTime);
-		if(md==null)
+		if(md==null || md.getLocalDateTime()==null)
 			return RenderResult.RETRY_LATER;
 		
 		//upload new texture, if something was decoded

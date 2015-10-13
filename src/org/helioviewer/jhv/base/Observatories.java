@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.TreeMap;
 
+import javax.annotation.Nullable;
 import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.Globals;
@@ -253,7 +254,7 @@ public class Observatories
 		
 		private LocalDateTime start;
 		private LocalDateTime end;
-		private String nickname;
+		@Nullable private String nickname;
 		public int sourceId;
 
 		private Filter(String _name)
@@ -266,7 +267,7 @@ public class Observatories
 			filters.put(name, filter);
 		}
 
-		public Collection<Filter> getFilters()
+		public @Nullable Collection<Filter> getFilters()
 		{
 			return filters.values();
 		}

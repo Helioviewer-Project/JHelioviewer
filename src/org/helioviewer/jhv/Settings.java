@@ -6,10 +6,13 @@ import java.util.UUID;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 public class Settings
 {
     private static final Properties DEFAULT_PROPERTIES = new Properties();
-    private static final Preferences PREF_NODE = Preferences.userRoot().node("jhelioviewer");
+	private static final Preferences PREF_NODE = Preferences.userRoot().node("jhelioviewer");
     
     static
     {
@@ -28,15 +31,10 @@ public class Settings
     }
     
 
-    /**
-     * The private constructor of this class.
-     * */
-    private Settings() {
+    private Settings()
+    {
     }
 
-    /**
-     * Method loads the settings from a user file or the default settings file
-     * */
     public static void load()
     {
         DEFAULT_PROPERTIES.clear();
@@ -64,7 +62,7 @@ public class Settings
      * @param val
      *            Value to be set to
      */
-    public static void setProperty(String key, String val)
+	public static void setProperty(String key, String val)
     {
         if (val.equals(getProperty(key)))
             return;
@@ -114,7 +112,7 @@ public class Settings
     
     //used to coordinate delayed flushing
     private final static Object syncObj=new Object();
-    private static Thread saveThread;
+    private static @Nullable Thread saveThread;
 
     /**
      * Method that returns the value of the specified property. User defined
@@ -123,7 +121,8 @@ public class Settings
      * @param key
      *            Default field to read
      */
-    public static String getProperty(String key) {
+    public static @Nullable String getProperty(@Nonnull String key)
+    {
         return PREF_NODE.get(key,DEFAULT_PROPERTIES.getProperty(key));
     }
 }

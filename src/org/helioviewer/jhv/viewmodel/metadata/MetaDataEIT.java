@@ -23,21 +23,22 @@ class MetaDataEIT extends MetaData
                 
         fullName = "EIT " + measurement;
 
-        switch (measurement) {
-		case "171":
-			defaultLUT = Lut.SOHO_EIT_171;
-			break;
-		case "195":
-			defaultLUT = Lut.SOHO_EIT_195;
-			break;
-		case "284":
-			defaultLUT = Lut.SOHO_EIT_284;
-			break;
-		case "304":
-			defaultLUT = Lut.SOHO_EIT_304;
-			break;
-		default:
-			break;
+        switch (measurement)
+        {
+			case "171":
+				defaultLUT = Lut.SOHO_EIT_171;
+				break;
+			case "195":
+				defaultLUT = Lut.SOHO_EIT_195;
+				break;
+			case "284":
+				defaultLUT = Lut.SOHO_EIT_284;
+				break;
+			case "304":
+				defaultLUT = Lut.SOHO_EIT_304;
+				break;
+			default:
+				break;
 		}
         
         String observedDate = metaDataContainer.get("DATE_OBS");

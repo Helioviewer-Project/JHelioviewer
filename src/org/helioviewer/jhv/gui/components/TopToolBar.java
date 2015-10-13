@@ -6,6 +6,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -53,16 +55,14 @@ public class TopToolBar extends JToolBar implements MouseListener
 	private JToggleButton rotateButtonYAxis;
 	private JToggleButton zoomBoxButton;
 
-	private JToggleButton trackButton;
+	private JToggleButton trackingEnabledButton;
 	private JToggleButton coronaVisibilityButton;
 	private JButton zoomInButton, zoomOutButton, zoomFitButton, zoom1to1Button;
 	private JButton resetCamera;
-	private JToggleButton view2d;
-	private JToggleButton view3d;
+	private JToggleButton view2DButton;
+	private JToggleButton view3DButton;
 
-	/**
-	 * Default constructor.
-	 */
+	@SuppressWarnings("null")
 	public TopToolBar()
 	{
 		//setRollover(true);
@@ -74,36 +74,26 @@ public class TopToolBar extends JToolBar implements MouseListener
 		addMouseListener(this);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void mouseClicked(MouseEvent e) {
+	public void mouseClicked(@Nullable MouseEvent e)
+	{
 		maybeShowPopup(e);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void mouseEntered(MouseEvent e) {
+	public void mouseEntered(@Nullable MouseEvent e)
+	{
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void mouseExited(MouseEvent e) {
+	public void mouseExited(@Nullable MouseEvent e)
+	{
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void mousePressed(MouseEvent e) {
+	public void mousePressed(@Nullable MouseEvent e)
+	{
 		maybeShowPopup(e);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void mouseReleased(MouseEvent e) {
+	public void mouseReleased(@Nullable MouseEvent e)
+	{
 	}
 
 	/**
@@ -156,18 +146,15 @@ public class TopToolBar extends JToolBar implements MouseListener
 		addButton(rotateButton);
 		addSeparator();
 
-		trackButton = new JToggleButton(new SetCameraTrackAction());
-		trackButton.setIcon(IconBank.getIcon(JHVIcon.NEW_TRACK, 24, 24));
-		trackButton
-				.setToolTipText("Enable Solar Rotation Tracking");
-		addButton(trackButton);
+		trackingEnabledButton = new JToggleButton(new SetCameraTrackAction());
+		trackingEnabledButton.setIcon(IconBank.getIcon(JHVIcon.NEW_TRACK, 24, 24));
+		trackingEnabledButton.setToolTipText("Enable Solar Rotation Tracking");
+		addButton(trackingEnabledButton);
 
 		coronaVisibilityButton = new JToggleButton(new ToggleCoronaVisibilityAction());
 		coronaVisibilityButton.setSelected(false);
-		coronaVisibilityButton.setIcon(IconBank
-				.getIcon(JHVIcon.SUN_WITH_128x128, 24 ,24));
-		coronaVisibilityButton.setSelectedIcon(IconBank
-				.getIcon(JHVIcon.SUN_WITHOUT_128x128, 24 ,24));
+		coronaVisibilityButton.setIcon(IconBank.getIcon(JHVIcon.SUN_WITH_128x128, 24, 24));
+		coronaVisibilityButton.setSelectedIcon(IconBank.getIcon(JHVIcon.SUN_WITHOUT_128x128, 24, 24));
 		coronaVisibilityButton.setToolTipText("Toggle Corona Visibility");
 		addButton(coronaVisibilityButton);
 
@@ -180,28 +167,27 @@ public class TopToolBar extends JToolBar implements MouseListener
 		addSeparator();
 
 		ButtonGroup stateGroup = new ButtonGroup();
-		view2d = new JToggleButton(new View2DAction());
-		view2d.setIcon(IconBank.getIcon(JHVIcon.CAMERA_MODE_2D, 24 ,24));
-		view2d.setSelectedIcon(IconBank.getIcon(JHVIcon.CAMERA_MODE_2D, 24 ,24));
-		view2d.setText("2D");
-		stateGroup.add(view2d);
+		view2DButton = new JToggleButton(new View2DAction());
+		view2DButton.setIcon(IconBank.getIcon(JHVIcon.CAMERA_MODE_2D, 24 ,24));
+		view2DButton.setSelectedIcon(IconBank.getIcon(JHVIcon.CAMERA_MODE_2D, 24 ,24));
+		view2DButton.setText("2D");
+		stateGroup.add(view2DButton);
 
-		view3d = new JToggleButton(new View3DAction());
-		view3d.setIcon(IconBank.getIcon(JHVIcon.CAMERA_MODE_3D, 24 ,24));
-		view3d.setSelectedIcon(IconBank.getIcon(JHVIcon.CAMERA_MODE_3D, 24 ,24));
-		view3d.setText("3D");
-		view3d.setSelected(true);
-		stateGroup.add(view3d);
+		view3DButton = new JToggleButton(new View3DAction());
+		view3DButton.setIcon(IconBank.getIcon(JHVIcon.CAMERA_MODE_3D, 24 ,24));
+		view3DButton.setSelectedIcon(IconBank.getIcon(JHVIcon.CAMERA_MODE_3D, 24 ,24));
+		view3DButton.setText("3D");
+		view3DButton.setSelected(true);
+		stateGroup.add(view3DButton);
 
-		addButton(view2d);
-		addButton(view3d);
+		addButton(view2DButton);
+		addButton(view3DButton);
 		addSeparator();
 		
 		addButton(new SDOCutOutButton());
 		addSeparator();
 		
 		set3DMode();
-
 	}
 
 	/**
@@ -213,7 +199,8 @@ public class TopToolBar extends JToolBar implements MouseListener
 	 * @param button
 	 *            Button to add
 	 */
-	public void addButton(AbstractButton button) {
+	public void addButton(AbstractButton button)
+	{
 		// button.setMargin(buttonMargin);
 		button.setVerticalTextPosition(SwingConstants.BOTTOM);
 		button.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -224,15 +211,16 @@ public class TopToolBar extends JToolBar implements MouseListener
 		//button.setOpaque(false);
 		button.addMouseListener(this);
 
-		switch (displayMode) {
-		case TEXTONLY:
-			button.setIcon(null);
-			break;
-		case ICONONLY:
-			button.setText("");
-			break;
-		default:
-			break;
+		switch (displayMode)
+		{
+			case TEXTONLY:
+				button.setIcon(null);
+				break;
+			case ICONONLY:
+				button.setText("");
+				break;
+			default:
+				break;
 		}
 
 		add(button);
@@ -243,31 +231,31 @@ public class TopToolBar extends JToolBar implements MouseListener
 	 * 
 	 * This changes the way the toolbar is display.
 	 * 
-	 * @param mode
+	 * @param _mode
 	 *            Display mode, can be either ICONANDTEXT, ICONONLY or TEXTONLY
 	 */
-	public void setDisplayMode(DisplayMode mode) {
+	public void setDisplayMode(@Nonnull DisplayMode _mode)
+	{
 		DisplayMode oldDisplayMode = displayMode;
-		if (mode != null) {
-			displayMode = mode;
-			Settings.setProperty("display.toolbar", mode.toString()
-					.toLowerCase());
-		}
+		displayMode = _mode;
+		Settings.setProperty("display.toolbar", _mode.toString().toLowerCase());
 		
 		createNewToolBar();
 
 		firePropertyChange("displayMode", oldDisplayMode, displayMode);
 
 		revalidate();
+		repaint();
 	}
 
-	public void addToolbarPlugin(AbstractButton button) {
+	public void addToolbarPlugin(AbstractButton button)
+	{
 		if (displayMode == DisplayMode.ICONANDTEXT)
-			this.add(button);
+			add(button);
 		else if (displayMode == DisplayMode.TEXTONLY)
-			this.add(new JToggleButton(button.getText()));
+			add(new JToggleButton(button.getText()));
 		else
-			this.add(new JToggleButton(button.getIcon()));
+			add(new JToggleButton(button.getIcon()));
 	}
 
 	/**
@@ -276,40 +264,41 @@ public class TopToolBar extends JToolBar implements MouseListener
 	 * @param e
 	 *            MouseEvent that triggered the event
 	 */
-	private void maybeShowPopup(MouseEvent e) {
-		if (e.isPopupTrigger() || e.getButton() == MouseEvent.BUTTON3) {
-
+	private void maybeShowPopup(final @Nullable MouseEvent e)
+	{
+		if (e!= null && (e.isPopupTrigger() || e.getButton() == MouseEvent.BUTTON3))
+		{
 			JPopupMenu popUpMenu = new JPopupMenu();
 			ButtonGroup group = new ButtonGroup();
 
-			JRadioButtonMenuItem iconAndText = new JRadioButtonMenuItem(
-					"Icon and Text", displayMode == DisplayMode.ICONANDTEXT);
-			iconAndText.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
+			JRadioButtonMenuItem iconAndText = new JRadioButtonMenuItem("Icon and Text", displayMode == DisplayMode.ICONANDTEXT);
+			iconAndText.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(@Nullable ActionEvent e)
+				{
 					setDisplayMode(DisplayMode.ICONANDTEXT);
-					repaint();
 				}
 			});
 			group.add(iconAndText);
 			popUpMenu.add(iconAndText);
 
-			JRadioButtonMenuItem iconOnly = new JRadioButtonMenuItem(
-					"Icon Only", displayMode == DisplayMode.ICONONLY);
-			iconOnly.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
+			JRadioButtonMenuItem iconOnly = new JRadioButtonMenuItem("Icon Only", displayMode == DisplayMode.ICONONLY);
+			iconOnly.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(@Nullable ActionEvent e)
+				{
 					setDisplayMode(DisplayMode.ICONONLY);
-					repaint();
 				}
 			});
 			group.add(iconOnly);
 			popUpMenu.add(iconOnly);
 
-			JRadioButtonMenuItem textOnly = new JRadioButtonMenuItem(
-					"Text Only", displayMode == DisplayMode.TEXTONLY);
-			textOnly.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
+			JRadioButtonMenuItem textOnly = new JRadioButtonMenuItem("Text Only", displayMode == DisplayMode.TEXTONLY);
+			textOnly.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(@Nullable ActionEvent e)
+				{
 					setDisplayMode(DisplayMode.TEXTONLY);
-					repaint();
 				}
 			});
 			group.add(textOnly);
@@ -319,25 +308,28 @@ public class TopToolBar extends JToolBar implements MouseListener
 		}
 	}
 
-	public void set2DMode() {
-        this.view2d.setSelected(true);
-        this.view3d.setSelected(false);
-		this.panButton.setSelected(true);
-		this.rotateButton.setEnabled(false);
-		this.zoomBoxButton.setEnabled(true);
+	public void set2DMode()
+	{
+        view2DButton.setSelected(true);
+        view3DButton.setSelected(false);
+		panButton.setSelected(true);
+		rotateButton.setEnabled(false);
+		zoomBoxButton.setEnabled(true);
 		//this.rotateButtonYAxis.setEnabled(false);
 	}
 
-	public void set3DMode() {
-        this.view2d.setSelected(false);
-	    this.view3d.setSelected(true);
-		this.rotateButton.setSelected(true);
-		this.rotateButton.setEnabled(true);
-		this.zoomBoxButton.setEnabled(false);
-		//this.rotateButtonYAxis.setEnabled(true);
+	public void set3DMode()
+	{
+        view2DButton.setSelected(false);
+	    view3DButton.setSelected(true);
+		rotateButton.setSelected(true);
+		rotateButton.setEnabled(true);
+		zoomBoxButton.setEnabled(false);
+		//rotateButtonYAxis.setEnabled(true);
 	}
 
-	public void setTrack(boolean track) {
-		this.trackButton.setSelected(track);
+	public void setTracking(boolean _track)
+	{
+		trackingEnabledButton.setSelected(_track);
 	}
 }

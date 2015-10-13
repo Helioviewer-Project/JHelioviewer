@@ -507,13 +507,20 @@ public class KakaduLayer extends AbstractImageLayer
 			if(t.contains(this, requiredMinimumRegion, metaData.getLocalDateTime()))
 				return new FutureValue<PreparedImage>(new PreparedImage(t));
 		
-		final int thisTextureNr=freeTextureNr++;
-		if(thisTextureNr>=textures.size())
+		int candidateTextureNr=freeTextureNr++;
+		if(candidateTextureNr>=textures.size())
 		{
-			textures.add(new Texture());
-			System.out.println("Added new texture for a total of "+textures.size()+" textures.");
+			if(textures.size()<10)
+			{
+				textures.add(new Texture());
+				System.out.println("Added new texture for a total of "+textures.size()+" textures.");
+			}
+			else
+				//we used a lot of texture cache, just wrap around for a lru cache
+				candidateTextureNr=freeTextureNr=0;
 		}
 		
+		final int textureNr=candidateTextureNr;
 		return exDecoder.submit(new Callable<PreparedImage>()
 		{
 			@Override
@@ -525,7 +532,7 @@ public class KakaduLayer extends AbstractImageLayer
 				//FIXME: requiredSafeRegion should be rounded to the nearest pixels
 				
 				return new PreparedImage(
-						textures.get(thisTextureNr),
+						textures.get(textureNr),
 						requiredSafeRegion,
 						MovieCache.decodeImage(sourceId, metaData.getLocalDateTime(), 8 /* 0-8 */, requiredSafeRegion.decodeZoomFactor, requiredSafeRegion.texels),
 						requiredSafeRegion.texels.width,
