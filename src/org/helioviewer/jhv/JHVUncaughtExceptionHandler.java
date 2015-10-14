@@ -144,6 +144,9 @@ class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
 	@SuppressWarnings("deprecation")
 	public synchronized void uncaughtException(final @Nullable Thread t, final @Nullable Throwable e)
 	{
+		if(e==null)
+			return;
+		
 		// stop reentrant error reporting
 		Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler()
 		{

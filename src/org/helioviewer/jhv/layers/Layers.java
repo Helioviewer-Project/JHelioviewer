@@ -24,7 +24,11 @@ public class Layers
 		@Override
 		public int compare(@Nullable AbstractLayer o1, @Nullable AbstractLayer o2)
 		{
-			if (!o1.isImageLayer() && o2.isImageLayer())
+			if (o1==null)
+				return 1;
+			else if (o2==null)
+				return -1;
+			else if (!o1.isImageLayer() && o2.isImageLayer())
 				return 1;
 			else if (o1.isImageLayer() && !o2.isImageLayer())
 				return -1;

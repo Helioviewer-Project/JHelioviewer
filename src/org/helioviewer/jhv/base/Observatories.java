@@ -252,8 +252,8 @@ public class Observatories
 		private TreeMap<String, Filter> filters = new TreeMap<String, Observatories.Filter>(new AlphanumComparator());
 		private final String name;
 		
-		private LocalDateTime start;
-		private LocalDateTime end;
+		@Nullable private LocalDateTime start;
+		@Nullable private LocalDateTime end;
 		@Nullable private String nickname;
 		public int sourceId;
 
@@ -278,17 +278,17 @@ public class Observatories
 			return name;
 		}
 		
-		public LocalDateTime getStart()
+		public @Nullable LocalDateTime getStart()
 		{
 			return start;
 		}
 		
-		public LocalDateTime getEnd()
+		public @Nullable LocalDateTime getEnd()
 		{
 			return end;
 		}
 		
-		public String getNickname()
+		public @Nullable String getNickname()
 		{
 			return nickname;
 		}

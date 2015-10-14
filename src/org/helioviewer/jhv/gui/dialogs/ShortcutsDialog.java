@@ -22,76 +22,65 @@ import org.helioviewer.jhv.gui.MainFrame;
  * <p>
  * Basically, the dialog contains all shortcuts.
  */
-public class ShortcutsDialog extends JDialog implements ActionListener
+public class ShortcutsDialog extends JDialog
 {
-    private final JButton closeButton = new JButton("Close");
+	private final JButton closeButton = new JButton("Close");
 
-    // private final JButton wikiButton = new JButton("JHelioviewer Wiki");
-    // private final JButton jhvButton = new JButton("JHelioviewer.org");
+	// private final JButton wikiButton = new JButton("JHelioviewer Wiki");
+	// private final JButton jhvButton = new JButton("JHelioviewer.org");
 
-    public ShortcutsDialog()
-    {
-        super(MainFrame.SINGLETON, "Shortcuts", true);
-        
-    	Telemetry.trackEvent("Dialog", "Type", getClass().getSimpleName());
+	public ShortcutsDialog()
+	{
+		super(MainFrame.SINGLETON, "Shortcuts", true);
 
-        setLayout(new BorderLayout());
-        setResizable(false);
+		Telemetry.trackEvent("Dialog", "Type", getClass().getSimpleName());
 
-        final String sep = System.getProperty("line.separator");
+		setLayout(new BorderLayout());
+		setResizable(false);
 
-        // the content panel:
-        JTextArea shortcuts = new JTextArea("Keyboard shortcuts:                        Mouse shortcuts:" + sep + sep +
-        		"ALT + c       Center active image          Scroll wheel up     Zoom in" + sep + 
-        		"ALT + t       Toggle fullscreen display    Scroll wheel down   Zoom out" + sep + 
-        		"ALT + i       Zoom in" + sep + 
-        		"ALT + o       Zoom out" + sep + 
-        		"ALT + k       Zoom to fit" + sep + 
-        		"ALT + l       Zoom to native resolution" + sep + 
-        		"ALT + p       Play/pause movie" + sep + 
-        		"ALT + b       Step to previous frame" + sep + 
-        		"ALT + n       Step to next frame" + sep + 
-        		"F1            Show shortcuts");
-        shortcuts.setEditable(false);
-        shortcuts.setFont(new Font("Courier", Font.PLAIN, 13));
-        shortcuts.setBackground(getBackground());
-        shortcuts.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
-        add(shortcuts, BorderLayout.CENTER);
+		final String sep = System.getProperty("line.separator");
 
-        // the buttons panel
-        JPanel buttonsPanel = new JPanel();
-        buttonsPanel.setLayout(new GridLayout(0, 3));
-        // buttonsPanel.add(wikiButton);
-        // buttonsPanel.add(jhvButton);
-        buttonsPanel.add(closeButton);
-        buttonsPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        add(buttonsPanel, BorderLayout.SOUTH);
+		// the content panel:
+		JTextArea shortcuts = new JTextArea("Keyboard shortcuts:                        Mouse shortcuts:" + sep + sep
+				+ "ALT + c       Center active image          Scroll wheel up     Zoom in" + sep
+				+ "ALT + t       Toggle fullscreen display    Scroll wheel down   Zoom out" + sep
+				+ "ALT + i       Zoom in" + sep + "ALT + o       Zoom out" + sep + "ALT + k       Zoom to fit" + sep
+				+ "ALT + l       Zoom to native resolution" + sep + "ALT + p       Play/pause movie" + sep
+				+ "ALT + b       Step to previous frame" + sep + "ALT + n       Step to next frame" + sep
+				+ "F1            Show shortcuts");
+		shortcuts.setEditable(false);
+		shortcuts.setFont(new Font("Courier", Font.PLAIN, 13));
+		shortcuts.setBackground(getBackground());
+		shortcuts.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
+		add(shortcuts, BorderLayout.CENTER);
 
-        // set the action listeners for the buttons
-        closeButton.addActionListener(this);
-        // wikiButton.addActionListener(this);
-        // jhvButton.addActionListener(this);
+		// the buttons panel
+		JPanel buttonsPanel = new JPanel();
+		buttonsPanel.setLayout(new GridLayout(0, 3));
+		// buttonsPanel.add(wikiButton);
+		// buttonsPanel.add(jhvButton);
+		buttonsPanel.add(closeButton);
+		buttonsPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+		add(buttonsPanel, BorderLayout.SOUTH);
 
-        pack();
-        setSize(getPreferredSize().width, getPreferredSize().height);
-        setLocationRelativeTo(MainFrame.SINGLETON);
-        
-        DialogTools.setDefaultButtons(closeButton,closeButton);
-        
-        setVisible(true);
-    }
+		// set the action listeners for the buttons
+		closeButton.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(@Nullable ActionEvent e)
+			{
+				dispose();
+			}
+		});
+		// wikiButton.addActionListener(this);
+		// jhvButton.addActionListener(this);
 
-    /**
-     * Closes the dialog.
-     */
-    public void actionPerformed(@Nullable ActionEvent _a) {
-        if (_a.getSource() == this.closeButton) {
-            this.dispose();
-        } /*
-           * else if (_a.getSource() == this.wikiButton) JHVGlobals.openURL(
-           * "http://www.helioviewer.org/wiki/index.php?title=JHelioviewer_User_Guide"
-           * ); else if (_a.getSource() == this.jhvButton)
-           * JHVGlobals.openURL("http://jhelioviewer.org");
-           */
-    }
+		pack();
+		setSize(getPreferredSize().width, getPreferredSize().height);
+		setLocationRelativeTo(MainFrame.SINGLETON);
+
+		DialogTools.setDefaultButtons(closeButton, closeButton);
+
+		setVisible(true);
+	}
 }

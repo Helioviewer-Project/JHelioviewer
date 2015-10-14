@@ -66,10 +66,10 @@ public class MetaDataDialog extends JDialog implements LayerListener, TimeLineLi
 	private List<String> infoList = new ArrayList<String>();
 	private JList<String> listBox = new JList<String>();
 	private boolean metaDataOK;
-	private String outFileName;
+	private @Nullable String outFileName;
 	JScrollPane listScroller;
 
-	private Document xmlDoc;
+	private @Nullable Document xmlDoc;
 	private static final String LAST_DIRECTORY = "metadata.save.lastPath";
 	
 	public MetaDataDialog()
@@ -253,14 +253,14 @@ public class MetaDataDialog extends JDialog implements LayerListener, TimeLineLi
 		// set the xml data for the MetaDataDialog
 		xmlDoc = doc;
 
-		// set the export file name for
-		// MetaDataDialog
-
-		outFileName = metaData.getFullName().replace(" ", "_")
-				+ " "
-				+ metaData.getLocalDateTime().format(
+		// set the export file name for MetaDataDialog
+		outFileName = "";
+		
+		if(metaData.getFullName()!=null)
+			outFileName += metaData.getFullName().replace(" ", "_") + " ";
+		
+		outFileName += metaData.getLocalDateTime().format(
 						Globals.FILE_DATE_TIME_FORMATTER) + ".fits.xml";
-
 	}
 
 	/**
@@ -416,7 +416,7 @@ public class MetaDataDialog extends JDialog implements LayerListener, TimeLineLi
 	}
 
 	@Override
-	public void activeLayerChanged(AbstractLayer layer)
+	public void activeLayerChanged(@Nullable AbstractLayer layer)
 	{
 		updateData();
 	}

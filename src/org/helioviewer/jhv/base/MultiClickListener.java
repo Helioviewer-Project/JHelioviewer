@@ -20,7 +20,11 @@ public class MultiClickListener extends MouseAdapter implements ActionListener
 
     public void mouseClicked (@Nullable MouseEvent e)
     {
-        if (e.getClickCount() > 2) return;
+		if(e==null)
+			return;
+		
+        if (e.getClickCount() > 2)
+        	return;
 
         lastEvent = e;
 
@@ -30,9 +34,7 @@ public class MultiClickListener extends MouseAdapter implements ActionListener
             doubleClick( lastEvent );
         }
         else
-        {
             timer.restart();
-        }
     }
 
     public void actionPerformed(@Nullable ActionEvent e)

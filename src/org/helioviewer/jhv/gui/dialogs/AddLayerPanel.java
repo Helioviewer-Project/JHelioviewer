@@ -82,9 +82,7 @@ public class AddLayerPanel extends JDialog
 		}
 	}
 
-	/**
-	 * Create the dialog.
-	 */
+	@SuppressWarnings("null")
 	public AddLayerPanel()
 	{
 		super(MainFrame.SINGLETON, "Add Layer", true);
@@ -147,6 +145,9 @@ public class AddLayerPanel extends JDialog
 			@Override
 			public void itemStateChanged(@Nullable ItemEvent e)
 			{
+				if(e==null)
+					return;
+				
 				Observatories.Observatory observatory = ((Observatories.Observatory) e.getItem());
 				lblFilter.setText("");
 				lblFilter1.setText("");
@@ -197,6 +198,9 @@ public class AddLayerPanel extends JDialog
 			@Override
 			public void itemStateChanged(@Nullable ItemEvent e)
 			{
+				if(e==null)
+					return;
+				
 				cmbbxFilter1.removeAllItems();
 				cmbbxFilter2.removeAllItems();
 				for (Observatories.Filter filter : ((Observatories.Filter) e.getItem()).getFilters())
@@ -219,6 +223,9 @@ public class AddLayerPanel extends JDialog
 			@Override
 			public void itemStateChanged(@Nullable ItemEvent e)
 			{
+				if(e==null)
+					return;
+				
 				cmbbxFilter2.removeAllItems();
 				for (Observatories.Filter filter : ((Observatories.Filter) e.getItem()).getFilters())
 					cmbbxFilter2.addItem(filter);

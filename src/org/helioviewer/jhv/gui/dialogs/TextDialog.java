@@ -48,20 +48,7 @@ class TextDialog extends JDialog implements ActionListener
         	Telemetry.trackException(e);
         }
         
-        init(text.toString());
-        
-        pack();
-        setSize(getPreferredSize());
-        setLocationRelativeTo(MainFrame.SINGLETON);
-        
-        DialogTools.setDefaultButtons(closeButton,closeButton);
-        
-        setVisible(true);
-    }
-
-    private void init(String text)
-    {
-        JTextArea textArea = new JTextArea(text);
+        JTextArea textArea = new JTextArea(text.toString());
         textArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(textArea);
         scrollPane.setPreferredSize(new Dimension(scrollPane.getPreferredSize().width + 50, 500));
@@ -74,6 +61,14 @@ class TextDialog extends JDialog implements ActionListener
         closeButtonContainer.add(closeButton);
         closeButtonContainer.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
         add(closeButtonContainer, BorderLayout.SOUTH);
+        
+        pack();
+        setSize(getPreferredSize());
+        setLocationRelativeTo(MainFrame.SINGLETON);
+        
+        DialogTools.setDefaultButtons(closeButton,closeButton);
+        
+        setVisible(true);
     }
 
     public void actionPerformed(@Nullable ActionEvent e)

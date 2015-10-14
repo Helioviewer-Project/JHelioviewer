@@ -18,7 +18,7 @@ public class RayTrace
 {
 	public enum HitpointType
 	{
-		SPHERE, PLANE, SPHERE_PLANE;
+		SPHERE, PLANE, SPHERE_AND_PLANE;
 	}
 
 	private Sphere sphere;
@@ -171,7 +171,7 @@ public class RayTrace
 		}
 		else if (tPlane > 0.0 && (tSphere < 0.))
 		{
-			ray.hitpointType = HitpointType.SPHERE_PLANE;
+			ray.hitpointType = HitpointType.SPHERE_AND_PLANE;
 			ray.tPlane = tPlane;
 		}
 		return ray;
@@ -194,14 +194,10 @@ public class RayTrace
 
 		public Vector3d getHitpoint()
 		{
-			if (this.hitpointType == HitpointType.SPHERE || this.hitpointType == HitpointType.SPHERE_PLANE)
-			{
-				return this.getHitpointOnSphere();
-			}
+			if (hitpointType == HitpointType.SPHERE || hitpointType == HitpointType.SPHERE_AND_PLANE)
+				return getHitpointOnSphere();
 			else
-			{
-				return this.getHitpointOnPlane();
-			}
+				return getHitpointOnPlane();
 		}
 
 		public @Nullable HitpointType getHitpointType()

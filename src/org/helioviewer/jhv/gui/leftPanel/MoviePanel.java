@@ -107,6 +107,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 	private JSlider slider;
 	private JButton btnPrevious, btnPlayPause, btnForward;
 
+	@SuppressWarnings("null")
 	public MoviePanel()
 	{
 		setBorder(new EmptyBorder(0, 2, 10, 10));
@@ -334,6 +335,9 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		@Override
 		public void paintThumb(@Nullable Graphics g)
 		{
+			if(g==null)
+				return;
+			
 			Rectangle knobBounds = thumbRect;
 			int w = knobBounds.width;
 			int h = knobBounds.height - 2;
@@ -367,6 +371,9 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		@Override
 		public void paintTrack(@Nullable Graphics g)
 		{
+			if(g==null)
+				return;
+			
 			g.translate(trackRect.x, 0);
 			
 			Graphics2D g2 = (Graphics2D) g;
@@ -450,7 +457,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 	}
 
 	@Override
-	public void activeLayerChanged(AbstractLayer layer)
+	public void activeLayerChanged(@Nullable AbstractLayer layer)
 	{
 		if (layer != null && layer.isImageLayer())
 		{

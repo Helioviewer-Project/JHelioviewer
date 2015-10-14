@@ -1,5 +1,6 @@
 package org.helioviewer.jhv.gui.sdocutout;
 
+import javax.annotation.Nullable;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
 
@@ -59,7 +60,7 @@ public class SDOCutOutButton extends JButton implements	LayerListener
 	}
 
 	@Override
-	public void activeLayerChanged(AbstractLayer layer)
+	public void activeLayerChanged(@Nullable AbstractLayer layer)
 	{
 	}
 }

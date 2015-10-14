@@ -132,8 +132,12 @@ public class PositionStatusPanel extends StatusLabel implements MouseListener
 	@Override
 	public void mouseClicked(@Nullable MouseEvent e)
 	{
+		if(e==null)
+			return;
+		
 		if (e.isPopupTrigger())
 		{
+			//TODO ?
 			// popup(e);
 		}
 	}
@@ -146,8 +150,12 @@ public class PositionStatusPanel extends StatusLabel implements MouseListener
 	@Override
 	public void mouseReleased(@Nullable MouseEvent e)
 	{
+		if(e==null)
+			return;
+		
 		if (e.isPopupTrigger())
 		{
+			//TODO ?
 			// popup(e);
 		}
 	}
@@ -176,6 +184,9 @@ public class PositionStatusPanel extends StatusLabel implements MouseListener
 					@Override
 					public void actionPerformed(@Nullable ActionEvent e)
 					{
+						if(e==null)
+							return;
+						
 						for (PopupItemState.PopupItemStates popupItems : PopupItemState.PopupItemStates.values())
 						{
 							if (popupItems.popupItem == e.getSource())

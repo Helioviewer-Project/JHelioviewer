@@ -86,7 +86,7 @@ public abstract class AbstractImageLayer extends AbstractLayer
 
 	public abstract void writeStateFile(JSONObject jsonLayer);
 	
-	public abstract Match getMovie(LocalDateTime _currentDateTime);
+	public abstract @Nullable Match getMovie(LocalDateTime _currentDateTime);
 
 	protected static int freeTextureNr=0;
 	
@@ -99,6 +99,7 @@ public abstract class AbstractImageLayer extends AbstractLayer
 		freeTextureNr=0;
 	}
 	
+	@SuppressWarnings("null")
 	public RenderResult renderLayer(GL2 gl, MainPanel mainPanel, PreparedImage _preparedImageData)
 	{
 		LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();

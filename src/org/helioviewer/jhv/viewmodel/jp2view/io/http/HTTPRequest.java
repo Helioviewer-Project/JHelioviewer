@@ -5,60 +5,34 @@ package org.helioviewer.jhv.viewmodel.jp2view.io.http;
  * The class <code>HTTPRequest</code> identifies a HTTP request. Currently it is
  * only supported the <code>GET</code> request.
  */
-public class HTTPRequest extends HTTPMessage {
+public class HTTPRequest extends HTTPMessage
+{
+	/** An enum identifying the 2 types of HTTPRequests supported. */
+	public static enum Method
+	{
+		GET, POST
+	};
 
-    /** An enum identifying the 2 types of HTTPRequests supported. */
-    public static enum Method {
-        GET, POST
-    };
+	/** The request type */
+	private Method method;
 
-    /** The request type */
-    private Method method;
+	/**
+	 * Constructs a new HTTP request indicating the request type.
+	 */
+	public HTTPRequest(Method _method)
+	{
+		method = _method;
+	}
 
-    /** The URI of the object */
-    private String uri;
+	/** Returns the method of the request. */
+	public Method getMethod()
+	{
+		return method;
+	}
 
-    /**
-     * The message body. Since it could potentially be created piecewise I use a
-     * string builder to build it incrementally.
-     */
-    private StringBuilder messageBody = new StringBuilder();
-
-    /**
-     * Constructs a new HTTP request indicating the request type.
-     */
-    public HTTPRequest(Method _method) {
-        this.method = _method;
-    }
-
-    /** Returns the URI of the object requested. */
-    public String getURI() {
-        return uri;
-    }
-
-    /** Sets the URI of the object. */
-    public void setURI(String _uri) {
-        this.uri = _uri;
-    }
-
-    /** Sets a new message body. */
-    public void setMessageBody(String _msg) {
-        this.messageBody = new StringBuilder(_msg);
-    }
-
-    /** Returns a String representation of the method body. */
-    public String getMessageBody() {
-        return this.messageBody.toString();
-    }
-
-    /** Returns the method of the request. */
-    public Method getMethod() {
-        return method;
-    }
-
-    /** This is a request message so this method always returns true. */
-    public boolean isRequest() {
-        return true;
-    }
-
-};
+	/** This is a request message so this method always returns true. */
+	public boolean isRequest()
+	{
+		return true;
+	}
+}

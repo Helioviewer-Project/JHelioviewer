@@ -1,5 +1,7 @@
 package org.helioviewer.jhv.viewmodel.jp2view.io.jpip;
 
+import javax.annotation.Nullable;
+
 import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPRequest;
 
 /**
@@ -7,41 +9,35 @@ import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPRequest;
  */
 public class JPIPRequest extends HTTPRequest
 {
-    private String query = null;
-    
-    /**
-     * Default constructor.
-     * 
-     * @param _method
-     */
-    public JPIPRequest(Method _method) {
-        super(_method);
-    }
+	private @Nullable String query = null;
 
-    /** Method does nothing. */
-    public void setURI(String _uri) {
-    }
+	/**
+	 * Default constructor.
+	 * 
+	 * @param _method
+	 */
+	public JPIPRequest(Method _method)
+	{
+		super(_method);
+	}
 
-    /** Method does nothing... returns null. */
-    public String getURI() {
-        return null;
-    }
+	/**
+	 * Gets the query string.
+	 * 
+	 * @return Query String
+	 */
+	public @Nullable String getQuery()
+	{
+		return query;
+	}
 
-    /**
-     * Gets the query string.
-     * 
-     * @return Query String
-     */
-    public String getQuery() {
-        return query;
-    }
-
-    /**
-     * Sets the query string.
-     * 
-     * @param _query
-     */
-    public void setQuery(Object _query) {
-        query = _query.toString();
-    }
+	/**
+	 * Sets the query string.
+	 * 
+	 * @param _query
+	 */
+	public void setQuery(Object _query)
+	{
+		query = _query.toString();
+	}
 }

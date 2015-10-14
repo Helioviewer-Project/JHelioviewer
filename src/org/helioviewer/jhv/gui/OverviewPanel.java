@@ -5,6 +5,8 @@ import java.awt.geom.Rectangle2D;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+import javax.annotation.Nullable;
+
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.layers.AbstractImageLayer;
@@ -79,7 +81,7 @@ public class OverviewPanel extends MainPanel
 	}
 
 	@Override
-	public void display(GLAutoDrawable drawable)
+	public void display(@Nullable GLAutoDrawable drawable)
 	{
 		zoomToFit();
 		super.display(drawable);

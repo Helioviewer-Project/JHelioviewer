@@ -75,6 +75,7 @@ public class PreferencesDialog extends JDialog
 	/**
 	 * The private constructor that sets the fields and the dialog.
 	 */
+	@SuppressWarnings("null")
 	public PreferencesDialog()
 	{
 		super(MainFrame.SINGLETON, "Preferences", true);
@@ -259,6 +260,7 @@ public class PreferencesDialog extends JDialog
 	 * 
 	 * @return General parameters panel
 	 */
+	@SuppressWarnings("null")
 	private JPanel createParametersPanel()
 	{
 		paramsPanel = new JPanel();

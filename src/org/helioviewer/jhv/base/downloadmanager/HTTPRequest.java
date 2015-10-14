@@ -7,11 +7,13 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
+import javax.annotation.Nullable;
+
 public class HTTPRequest extends AbstractDownloadRequest
 {
 	private static final int DEFAULT_BUFFER_SIZE = 16384;
 	
-	protected byte[] rawData;
+	protected @Nullable byte[] rawData;
 
 	public HTTPRequest(String uri, DownloadPriority priority, int timeOut, int retries)
 	{
@@ -45,7 +47,8 @@ public class HTTPRequest extends AbstractDownloadRequest
 		httpURLConnection.connect();
 		int response = httpURLConnection.getResponseCode();
 		totalLength = httpURLConnection.getContentLength();
-		if (response == HttpURLConnection.HTTP_OK) {
+		if (response == HttpURLConnection.HTTP_OK)
+		{
 			inputStream = httpURLConnection.getInputStream();
 			int receivedLength = 0;
 			byteArrayOutputStream = new ByteArrayOutputStream(DEFAULT_BUFFER_SIZE);

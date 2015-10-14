@@ -53,12 +53,6 @@ public class FilterPanel extends JPanel implements LayerListener
 
 	public FilterPanel()
 	{
-		initGui();
-		Layers.addLayerListener(this);
-	}
-	
-	private void initGui()
-	{
         Object clickInterval = Toolkit.getDefaultToolkit().getDesktopProperty("awt.multiClickInterval");
         int delay = clickInterval != null ? (int)clickInterval : 200;
 
@@ -109,6 +103,7 @@ public class FilterPanel extends JPanel implements LayerListener
 		
 		opacitySlider.addChangeListener(new ChangeListener()
 		{
+			@SuppressWarnings("null")
 			@Override
 			public void stateChanged(@Nullable ChangeEvent e)
 			{
@@ -141,6 +136,7 @@ public class FilterPanel extends JPanel implements LayerListener
 		add(lblSharpen, "10, 4");
 		sharpenSlider.addChangeListener(new ChangeListener()
 		{
+			@SuppressWarnings("null")
 			@Override
 			public void stateChanged(@Nullable ChangeEvent e)
 			{
@@ -152,9 +148,11 @@ public class FilterPanel extends JPanel implements LayerListener
 				}
 			}
 		});
-		sharpenSlider.addMouseListener(new MultiClickListener(delay){
+		sharpenSlider.addMouseListener(new MultiClickListener(delay)
+		{
 			@Override
-			public void doubleClick(MouseEvent e) {
+			public void doubleClick(MouseEvent e)
+			{
 				sharpenSlider.setValue(0);
 			}
 		});
@@ -173,17 +171,20 @@ public class FilterPanel extends JPanel implements LayerListener
 		WheelSupport.installMouseWheelSupport(gammaSlider);
 		gammaSlider.addChangeListener(new ChangeListener()
 		{
+			@SuppressWarnings("null")
 			@Override
-			public void stateChanged(@Nullable ChangeEvent e) {
+			public void stateChanged(@Nullable ChangeEvent e)
+			{
 				double gammaValue = Math.exp(gammaSlider.getValue() * GAMMA_FACTOR);
 		        String label = Double.toString(Math.round(gammaValue * 10.0) * 0.1);
-		        if (gammaSlider.getValue() == 100) {
+		        if (gammaSlider.getValue() == 100)
 		            label = label.substring(0, 4);
-		        } else {
+		        else
 		            label = label.substring(0, 3);
-		        }
+
 				lblGamma.setText(label);
-				if (activeLayer != null && activeLayer.gamma != gammaValue){
+				if (activeLayer != null && activeLayer.gamma != gammaValue)
+				{
 					activeLayer.gamma = gammaValue;
 					MainFrame.MAIN_PANEL.repaint();
 				}
@@ -213,6 +214,7 @@ public class FilterPanel extends JPanel implements LayerListener
 
 		contrastSlider.addChangeListener(new ChangeListener()
 		{
+			@SuppressWarnings("null")
 			@Override
 			public void stateChanged(@Nullable ChangeEvent e)
 			{
@@ -245,6 +247,7 @@ public class FilterPanel extends JPanel implements LayerListener
 		add(comboBoxColorTable, "4, 10, 5, 1, fill, default");
 		comboBoxColorTable.addItemListener(new ItemListener()
 		{
+			@SuppressWarnings("null")
 			@Override
 			public void itemStateChanged(@Nullable ItemEvent e)
 			{
@@ -260,6 +263,7 @@ public class FilterPanel extends JPanel implements LayerListener
 		add(btnInverseColorTable, "10, 10");
 		btnInverseColorTable.addChangeListener(new ChangeListener()
 		{
+			@SuppressWarnings("null")
 			@Override
 			public void stateChanged(@Nullable ChangeEvent e)
 			{
@@ -278,6 +282,7 @@ public class FilterPanel extends JPanel implements LayerListener
 		add(chckbxRed, "4, 12");
 		chckbxRed.addItemListener(new ItemListener()
 		{
+			@SuppressWarnings("null")
 			@Override
 			public void itemStateChanged(@Nullable ItemEvent e)
 			{
@@ -293,6 +298,7 @@ public class FilterPanel extends JPanel implements LayerListener
 		add(chckbxGreen, "6, 12");
 		chckbxGreen.addItemListener(new ItemListener()
 		{
+			@SuppressWarnings("null")
 			@Override
 			public void itemStateChanged(@Nullable ItemEvent e)
 			{
@@ -308,6 +314,7 @@ public class FilterPanel extends JPanel implements LayerListener
 		add(chckbxBlue, "8, 12");
 		chckbxBlue.addItemListener(new ItemListener()
 		{
+			@SuppressWarnings("null")
 			@Override
 			public void itemStateChanged(@Nullable ItemEvent e)
 			{
@@ -318,8 +325,11 @@ public class FilterPanel extends JPanel implements LayerListener
 				}
 			}
 		});
+		
+		Layers.addLayerListener(this);
 	}
 
+	@SuppressWarnings("null")
 	public void update()
 	{
 		if(activeLayer==null)
@@ -355,7 +365,7 @@ public class FilterPanel extends JPanel implements LayerListener
 	}
 
 	@Override
-	public void activeLayerChanged(AbstractLayer layer)
+	public void activeLayerChanged(@Nullable AbstractLayer layer)
 	{
 		if(layer instanceof AbstractImageLayer)
 			activeLayer=(AbstractImageLayer)layer;

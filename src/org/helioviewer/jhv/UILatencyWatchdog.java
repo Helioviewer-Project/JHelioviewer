@@ -21,6 +21,7 @@ class UILatencyWatchdog
 	// do not re-report errors within this time range
 	private static final int COOLDOWN_AFTER_TIMEOUT = 30000;
 	
+	@SuppressWarnings("null")
 	private static volatile Thread awtDispatcher;
 	private static volatile boolean setFlag;
 

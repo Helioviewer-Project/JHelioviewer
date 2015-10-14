@@ -3,6 +3,7 @@ package org.helioviewer.jhv.gui.statusLabels;
 import java.awt.Dimension;
 import java.time.LocalDateTime;
 
+import javax.annotation.Nullable;
 import javax.swing.BorderFactory;
 
 import org.helioviewer.jhv.gui.MainFrame;
@@ -68,7 +69,7 @@ public class ZoomStatusPanel extends StatusLabel
 	}
 
 	@Override
-	public void activeLayerChanged(AbstractLayer layer)
+	public void activeLayerChanged(@Nullable AbstractLayer layer)
 	{
 		updateZoomLevel();
 	}

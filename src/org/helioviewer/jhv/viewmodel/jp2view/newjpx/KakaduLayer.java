@@ -53,7 +53,7 @@ public class KakaduLayer extends AbstractImageLayer
 	private boolean localFile = false;
 	private final int sourceId;
 	protected int cadence = -1;
-	protected String localPath;
+	protected @Nullable String localPath;
 	
 	public int getCadence()
 	{
@@ -73,11 +73,12 @@ public class KakaduLayer extends AbstractImageLayer
 		setTimeRange(start, end, cadence);
 	}
 	
-	public Match getMovie(LocalDateTime _currentDateTime)
+	public @Nullable Match getMovie(LocalDateTime _currentDateTime)
 	{
 		return MovieCache.findBestFrame(sourceId, _currentDateTime);
 	}
 
+	@SuppressWarnings("null")
 	public KakaduLayer(String _filePath)
 	{
 		localPath = _filePath;
@@ -104,6 +105,7 @@ public class KakaduLayer extends AbstractImageLayer
 		MovieCache.add(movie);
 	}
 	
+	@SuppressWarnings("null")
 	public void writeStateFile(JSONObject jsonLayer)
 	{
 		try
@@ -165,7 +167,7 @@ public class KakaduLayer extends AbstractImageLayer
 	}
 
 	//TODO: convert into constructor & combine with readStateFile
-	public static KakaduLayer createFromStateFile(JSONObject jsonLayer)
+	public static @Nullable KakaduLayer createFromStateFile(JSONObject jsonLayer)
 	{
 		try
 		{
@@ -199,7 +201,7 @@ public class KakaduLayer extends AbstractImageLayer
 		return usedIDs.get(_filename);
 	}
 	
-	public String getLocalFilePath()
+	public @Nullable String getLocalFilePath()
 	{
 		return localPath;
 	}
@@ -217,6 +219,7 @@ public class KakaduLayer extends AbstractImageLayer
 		}
 	}
 	
+	@SuppressWarnings("null")
 	public void setTimeRange(final LocalDateTime start, final LocalDateTime end, final int cadence)
 	{
 		if(loaderThread!=null)
@@ -534,11 +537,12 @@ public class KakaduLayer extends AbstractImageLayer
 		final int textureNr=candidateTextureNr;
 		return exDecoder.submit(new Callable<PreparedImage>()
 		{
+			@SuppressWarnings("null")
 			@Override
 			public PreparedImage call() throws Exception
 			{
 				ImageRegion requiredSafeRegion = new ImageRegion(requiredMinimumRegion.areaOfSourceImage, mainPanel.getTranslationCurrent().z, metaData,size,
-						TimeLine.SINGLETON.isPlaying() ? 1.0 : 1.2);
+						TimeLine.SINGLETON.isPlaying() ? 1.05 : 1.2);
 				
 				//FIXME: requiredSafeRegion should be rounded to the nearest pixels
 				

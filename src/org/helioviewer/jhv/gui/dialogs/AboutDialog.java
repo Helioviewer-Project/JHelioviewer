@@ -153,6 +153,9 @@ public final class AboutDialog extends JDialog implements HyperlinkListener
      */
     public void hyperlinkUpdate(@Nullable HyperlinkEvent e)
     {
+		if(e==null)
+			return;
+		
         if (e.getEventType() != HyperlinkEvent.EventType.ACTIVATED)
         	return;
         

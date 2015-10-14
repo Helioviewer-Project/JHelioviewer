@@ -3,6 +3,7 @@ package org.helioviewer.jhv.gui.statusLabels;
 import java.awt.event.MouseEvent;
 import java.time.LocalDateTime;
 
+import javax.annotation.Nullable;
 import javax.swing.JLabel;
 
 import org.helioviewer.jhv.layers.AbstractLayer;
@@ -53,7 +54,7 @@ abstract class StatusLabel extends JLabel implements TimeLineListener, PanelMous
 	}
 
 	@Override
-	public void activeLayerChanged(AbstractLayer layer)
+	public void activeLayerChanged(@Nullable AbstractLayer layer)
 	{
 	}	
 }

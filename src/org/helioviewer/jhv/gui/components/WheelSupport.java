@@ -21,68 +21,80 @@ import javax.swing.JSpinner;
  * {@link #installMouseWheelSupport(javax.swing.JSpinner)} to add the support
  * and {@link #uninstallMouseWheelSupport(JComponent)} to remove the support.
  */
-public class WheelSupport {
+public class WheelSupport
+{
+	private static final String CLIENT_PROPERTY_MOUSE_WHEEL_LISTENER = "mouseWheelListener";
+	private static final String SPINNER_ACTION_NAME_INCREMENT = "increment";
+	private static final String SPINNER_ACTION_NAME_DECREMENT = "decrement";
+	private static final String SLIDER_ACTION_NAME_INCREMENT = "positiveUnitIncrement";
+	private static final String SLIDER_ACTION_NAME_DECREMENT = "negativeUnitIncrement";
 
-    private static final String CLIENT_PROPERTY_MOUSE_WHEEL_LISTENER = "mouseWheelListener";
-    private static final String SPINNER_ACTION_NAME_INCREMENT = "increment";
-    private static final String SPINNER_ACTION_NAME_DECREMENT = "decrement";
-    private static final String SLIDER_ACTION_NAME_INCREMENT = "positiveUnitIncrement";
-    private static final String SLIDER_ACTION_NAME_DECREMENT = "negativeUnitIncrement";
+	public static void installMouseWheelSupport(final JSpinner spinner)
+	{
+		MouseWheelListener l = new MouseWheelListener()
+		{
+			public void mouseWheelMoved(@Nullable MouseWheelEvent e)
+			{
+				if (!spinner.isEnabled())
+					return;
 
-    public static void installMouseWheelSupport(final JSpinner spinner) {
-        MouseWheelListener l = new MouseWheelListener() {
-            public void mouseWheelMoved(@Nullable MouseWheelEvent e) {
-                if (!spinner.isEnabled()) {
-                    return;
-                }
+				if(e==null)
+					return;
+				
+				int rotation = e.getWheelRotation();
+				if (rotation < 0)
+				{
+					Action action = spinner.getActionMap().get(SPINNER_ACTION_NAME_INCREMENT);
+					if (action != null)
+						action.actionPerformed(new ActionEvent(e.getSource(), 0, SPINNER_ACTION_NAME_INCREMENT));
+				}
+				else if (rotation > 0)
+				{
+					Action action = spinner.getActionMap().get(SPINNER_ACTION_NAME_DECREMENT);
+					if (action != null)
+						action.actionPerformed(new ActionEvent(e.getSource(), 0, SPINNER_ACTION_NAME_DECREMENT));
+				}
+			}
+		};
+		spinner.addMouseWheelListener(l);
+		spinner.putClientProperty(CLIENT_PROPERTY_MOUSE_WHEEL_LISTENER, l);
+	}
 
-                int rotation = e.getWheelRotation();
-                if (rotation < 0) {
-                    Action action = spinner.getActionMap().get(SPINNER_ACTION_NAME_INCREMENT);
-                    if (action != null) {
-                        action.actionPerformed(new ActionEvent(e.getSource(), 0, SPINNER_ACTION_NAME_INCREMENT));
-                    }
-                } else if (rotation > 0) {
-                    Action action = spinner.getActionMap().get(SPINNER_ACTION_NAME_DECREMENT);
-                    if (action != null) {
-                        action.actionPerformed(new ActionEvent(e.getSource(), 0, SPINNER_ACTION_NAME_DECREMENT));
-                    }
-                }
-            }
-        };
-        spinner.addMouseWheelListener(l);
-        spinner.putClientProperty(CLIENT_PROPERTY_MOUSE_WHEEL_LISTENER, l);
-    }
+	public static void installMouseWheelSupport(final JSlider slider)
+	{
+		MouseWheelListener l = new MouseWheelListener()
+		{
+			public void mouseWheelMoved(@Nullable MouseWheelEvent e)
+			{
+				if(e==null)
+					return;
+				
+				if (!slider.isEnabled())
+					return;
 
-    public static void installMouseWheelSupport(final JSlider slider) {
-        MouseWheelListener l = new MouseWheelListener() {
-            public void mouseWheelMoved(@Nullable MouseWheelEvent e) {
-                if (!slider.isEnabled()) {
-                    return;
-                }
+				int rotation = e.getWheelRotation();
+				if (rotation < 0)
+				{
+					Action action = slider.getActionMap().get(SLIDER_ACTION_NAME_INCREMENT);
+					if (action != null)
+						action.actionPerformed(new ActionEvent(e.getSource(), 0, SLIDER_ACTION_NAME_INCREMENT));
+				}
+				else if (rotation > 0)
+				{
+					Action action = slider.getActionMap().get(SLIDER_ACTION_NAME_DECREMENT);
+					if (action != null)
+						action.actionPerformed(new ActionEvent(e.getSource(), 0, SLIDER_ACTION_NAME_DECREMENT));
+				}
+			}
+		};
+		slider.addMouseWheelListener(l);
+		slider.putClientProperty(CLIENT_PROPERTY_MOUSE_WHEEL_LISTENER, l);
+	}
 
-                int rotation = e.getWheelRotation();
-                if (rotation < 0) {
-                    Action action = slider.getActionMap().get(SLIDER_ACTION_NAME_INCREMENT);
-                    if (action != null) {
-                        action.actionPerformed(new ActionEvent(e.getSource(), 0, SLIDER_ACTION_NAME_INCREMENT));
-                    }
-                } else if (rotation > 0) {
-                    Action action = slider.getActionMap().get(SLIDER_ACTION_NAME_DECREMENT);
-                    if (action != null) {
-                        action.actionPerformed(new ActionEvent(e.getSource(), 0, SLIDER_ACTION_NAME_DECREMENT));
-                    }
-                }
-            }
-        };
-        slider.addMouseWheelListener(l);
-        slider.putClientProperty(CLIENT_PROPERTY_MOUSE_WHEEL_LISTENER, l);
-    }
-
-    public static <T extends JComponent> void uninstallMouseWheelSupport(final T component) {
-        MouseWheelListener l = (MouseWheelListener) component.getClientProperty(CLIENT_PROPERTY_MOUSE_WHEEL_LISTENER);
-        if (l != null) {
-            component.removeMouseWheelListener(l);
-        }
-    }
+	public static <T extends JComponent> void uninstallMouseWheelSupport(final T component)
+	{
+		MouseWheelListener l = (MouseWheelListener) component.getClientProperty(CLIENT_PROPERTY_MOUSE_WHEEL_LISTENER);
+		if (l != null)
+			component.removeMouseWheelListener(l);
+	}
 }

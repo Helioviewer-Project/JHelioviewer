@@ -18,7 +18,7 @@ import org.helioviewer.jhv.plugins.Plugins.PluginIcon;
 
 /**
  * Panel of Pfss-Plugin
- * */
+ */
 class PfssPluginPanel extends JPanel implements ActionListener
 {
 	// UI Components
@@ -33,9 +33,11 @@ class PfssPluginPanel extends JPanel implements ActionListener
 		// register as layers listener
 		this.renderer = renderer;
 
-		this.addComponentListener(new ComponentAdapter() {
+		this.addComponentListener(new ComponentAdapter()
+		{
 			@Override
-			public void componentShown(@Nullable ComponentEvent e) {
+			public void componentShown(@Nullable ComponentEvent e)
+			{
 				reload();
 			}
 		});
@@ -44,22 +46,23 @@ class PfssPluginPanel extends JPanel implements ActionListener
 	/**
 	 * Force a redraw of the main window
 	 */
-	private void fireRedraw() {
+	private void fireRedraw()
+	{
 		Plugins.repaintMainPanel();
 	}
 
 	/**
 	 * Sets up the visual sub components and the visual part of the component
 	 * itself.
-	 * */
-	private void initVisualComponents() {
+	 */
+	private void initVisualComponents()
+	{
 		// set general appearance
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 0, 0, 0 };
 		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0, 0, 0 };
 		gridBagLayout.columnWeights = new double[] { 1.0, 0.0, Double.MIN_VALUE };
-		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0,
-				Double.MIN_VALUE };
+		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		setLayout(gridBagLayout);
 
 		visibleButton.addActionListener(this);
@@ -83,46 +86,55 @@ class PfssPluginPanel extends JPanel implements ActionListener
 		reloadButton.setToolTipText("reload PFSS data");
 	}
 
-	public void setVisibleBtn(boolean visible) {
-		if (visible != renderer.isVisible()) {
-			if (renderer.isVisible()) {
+	public void setVisibleBtn(boolean visible)
+	{
+		if (visible != renderer.isVisible())
+		{
+			if (renderer.isVisible())
+			{
 				renderer.setVisible(false);
-				visibleButton.setIcon(Plugins.getIcon(
-						PluginIcon.INVISIBLE, 16, 16));
-			} else {
+				visibleButton.setIcon(Plugins.getIcon(PluginIcon.INVISIBLE, 16, 16));
+			}
+			else
+			{
 				renderer.setVisible(true);
-				visibleButton.setIcon(Plugins.getIcon(
-						PluginIcon.VISIBLE, 16, 16));
+				visibleButton.setIcon(Plugins.getIcon(PluginIcon.VISIBLE, 16, 16));
 			}
 
 			fireRedraw();
 		}
 	}
 
-	public void actionPerformed(@Nullable ActionEvent act) {
-		if (act.getSource().equals(visibleButton)) {
-			setVisible(!renderer.isVisible());
-		}
+	public void actionPerformed(@Nullable ActionEvent act)
+	{
+		if (act == null)
+			return;
 
-		if (act.getSource().equals(reloadButton))
+		if (act.getSource()==visibleButton)
+			setVisible(!renderer.isVisible());
+
+		if (act.getSource()==reloadButton)
 			reload();
 	}
 
-	public void setEnabled(boolean b) {
+	public void setEnabled(boolean b)
+	{
 	}
 
-	public void activeLayerChanged(int idx) {
+	public void activeLayerChanged(int idx)
+	{
 	}
 
-	public void layerAdded(int idx) {
+	public void layerAdded(int idx)
+	{
 		reload();
 	}
 
-	public void reload() {
+	public void reload()
+	{
 		LocalDateTime startLocalDateTime;
 		startLocalDateTime = Plugins.getStartDateTime();
-		LocalDateTime endLocalDateTime = Plugins
-				.getEndDateTime();
+		LocalDateTime endLocalDateTime = Plugins.getEndDateTime();
 		if (startLocalDateTime != null && endLocalDateTime != null)
 			renderer.setDisplayRange(startLocalDateTime, endLocalDateTime);
 	}

@@ -80,7 +80,8 @@ import com.jogamp.opengl.util.awt.ImageUtil;
 import com.jogamp.opengl.util.awt.TextRenderer;
 
 //TODO: change all listeners to inline anonymous classes
-public class MainPanel extends GLCanvas implements GLEventListener, MouseListener, MouseMotionListener, MouseWheelListener, LayerListener, TimeLineListener, Camera
+public class MainPanel extends GLCanvas implements GLEventListener, MouseListener, MouseMotionListener,
+		MouseWheelListener, LayerListener, TimeLineListener, Camera
 {
 	public static final double MAX_DISTANCE = Constants.SUN_MEAN_DISTANCE_TO_EARTH * 1.8;
 	public static final double MIN_DISTANCE = Constants.SUN_RADIUS * 1.2;
@@ -108,22 +109,22 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	private boolean cameraTrackingEnabled = false;
 
 	private long lastFrameChangeTime = -1;
-	@Nullable private LocalDateTime lastDate;
+	@Nullable
+	private LocalDateTime lastDate;
 
 	private int[] frameBufferObject;
 	private int[] renderBufferDepth;
 	private int[] renderBufferColor;
 
 	protected Dimension sizeForDecoder;
-	private float resolutionDivisor=1;
+	private float resolutionDivisor = 1;
 
 	private static final int DEFAULT_TILE_WIDTH = 2048;
 	private static final int DEFAULT_TILE_HEIGHT = 2048;
 
 	public MainPanel(GLContext _context)
 	{
-		
-		
+
 		cameraAnimations = new ArrayList<CameraAnimation>();
 		synchronizedViews = new ArrayList<MainPanel>();
 		panelMouseListeners = new ArrayList<PanelMouseListener>();
@@ -143,7 +144,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		cameraInteractions = new CameraInteraction[2];
 		cameraInteractions[0] = new CameraZoomInteraction(this, this);
 		cameraInteractions[1] = new CameraRotationInteraction(this, this);
-		
+
 		visibleAreaOutline = new double[40][3];
 	}
 
@@ -156,7 +157,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	{
 		return translationNow;
 	}
-	
+
 	public Quaternion3d getRotationEnd()
 	{
 		return rotationEnd;
@@ -167,7 +168,6 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		return translationEnd;
 	}
 
-	
 	public void setRotationEnd(Quaternion3d _rotationEnd)
 	{
 		rotationEnd = _rotationEnd;
@@ -177,7 +177,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	{
 		translationEnd = _translationEnd;
 	}
-	
+
 	public void setRotationCurrent(Quaternion3d _rotationNow)
 	{
 		rotationNow = _rotationNow;
@@ -190,7 +190,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	{
 		if (_translationNow.isApproxEqual(translationNow, 1E-6))
 			return;
-		
+
 		translationNow = _translationNow;
 		repaint();
 		for (CameraListener listener : cameraListeners)
@@ -220,50 +220,50 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	protected void advanceFrame()
 	{
 		long now = System.currentTimeMillis();
-		long frameDuration = now-lastFrameChangeTime;
+		long frameDuration = now - lastFrameChangeTime;
 
 		if (TimeLine.SINGLETON.isPlaying())
 		{
-			if(TimeLine.SINGLETON.processElapsedAnimationTime(frameDuration))
+			if (TimeLine.SINGLETON.processElapsedAnimationTime(frameDuration))
 				lastFrameChangeTime = now;
-			
-			if(frameDuration > TimeLine.SINGLETON.getMillisecondsPerFrame())
+
+			if (frameDuration > TimeLine.SINGLETON.getMillisecondsPerFrame())
 				resolutionDivisor += 1;
-			if(frameDuration < TimeLine.SINGLETON.getMillisecondsPerFrame())
+			if (frameDuration < TimeLine.SINGLETON.getMillisecondsPerFrame())
 				resolutionDivisor -= 0.05;
-			
+
 			resolutionDivisor = Math.min(Math.max(resolutionDivisor, 1), 4);
 		}
 		else
 			lastFrameChangeTime = now;
 	}
-	
+
 	protected void render(GL2 gl, boolean _showLoadingAnimation)
 	{
 		advanceFrame();
-		
+
 		LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
 		gl.glClearDepth(1);
 		gl.glDepthMask(true);
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT);
 		gl.glClear(GL2.GL_DEPTH_BUFFER_BIT);
 		gl.glDepthMask(false);
-		
+
 		while (!cameraAnimations.isEmpty() && cameraAnimations.get(0).isFinished())
 			cameraAnimations.remove(0);
-		
-		if(!cameraAnimations.isEmpty())
+
+		if (!cameraAnimations.isEmpty())
 		{
-			for(CameraAnimation ca:cameraAnimations)
+			for (CameraAnimation ca : cameraAnimations)
 				ca.animate(this);
-			
-			//render another new frame after this one
+
+			// render another new frame after this one
 			repaint();
 		}
-		
+
 		if (cameraTrackingEnabled)
 			updateTrackRotation();
-		
+
 		if (Layers.getLayerCount() > 0)
 		{
 			gl.glMatrixMode(GL2.GL_PROJECTION);
@@ -277,28 +277,29 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 			gl.glTranslated(0, 0, -translationNow.z);
 			if (CameraMode.mode == MODE.MODE_2D)
 			{
-				AbstractImageLayer il=Layers.getActiveImageLayer();
-				if(il!=null)
+				AbstractImageLayer il = Layers.getActiveImageLayer();
+				if (il != null)
 				{
-					MetaData md=il.getMetaData(currentDateTime);
-					if(md!=null)
+					MetaData md = il.getMetaData(currentDateTime);
+					if (md != null)
 						rotationNow = md.getRotation();
 				}
 			}
-			
-			LinkedHashMap<AbstractImageLayer, Future<PreparedImage>> layers=new LinkedHashMap<>();
+
+			LinkedHashMap<AbstractImageLayer, Future<PreparedImage>> layers = new LinkedHashMap<>();
 			for (AbstractLayer layer : Layers.getLayers())
 				if (layer.isVisible() && layer.isImageLayer())
-					layers.put((AbstractImageLayer)layer,((AbstractImageLayer)layer).prepareImageData(this, sizeForDecoder));
+					layers.put((AbstractImageLayer) layer,
+							((AbstractImageLayer) layer).prepareImageData(this, sizeForDecoder));
 
-			for(Entry<AbstractImageLayer, Future<PreparedImage>> l:layers.entrySet())
+			for (Entry<AbstractImageLayer, Future<PreparedImage>> l : layers.entrySet())
 				try
 				{
-					if(l.getValue().get()!=null)
-						//RenderResult r = 
+					if (l.getValue().get() != null)
+						// RenderResult r =
 						l.getKey().renderLayer(gl, this, l.getValue().get());
 				}
-				catch(ExecutionException|InterruptedException _e)
+				catch (ExecutionException | InterruptedException _e)
 				{
 					Telemetry.trackException(_e);
 				}
@@ -311,7 +312,8 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
 
 			Quaternion3d rotation = new Quaternion3d(rotationNow.getAngle(), rotationNow.getRotationAxis().negateY());
-			Matrix4d transformation = rotation.toMatrix().translated(-translationNow.x, translationNow.y, -translationNow.z);
+			Matrix4d transformation = rotation.toMatrix().translated(-translationNow.x, translationNow.y,
+					-translationNow.z);
 			gl.glMultMatrixd(transformation.m, 0);
 
 			GLU glu = new GLU();
@@ -321,7 +323,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 
 			if (CameraMode.mode == CameraMode.MODE.MODE_3D)
 			{
- 				glu.gluPerspective(MainPanel.FOV, this.aspect, clipNear, translationNow.z + 4 * Constants.SUN_RADIUS);
+				glu.gluPerspective(MainPanel.FOV, this.aspect, clipNear, translationNow.z + 4 * Constants.SUN_RADIUS);
 			}
 			else
 			{
@@ -346,7 +348,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 			double yScale = aspect < 1 ? aspect : 1;
 			gl.glScaled(xScale, yScale, 1);
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
-			
+
 			if (UltimateDownloadManager.areDownloadsActive() && _showLoadingAnimation)
 			{
 				int xOffset = (int) (getSurfaceWidth() * 0.85);
@@ -359,12 +361,12 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 				repaint(1000);
 			}
 		}
-		
+
 		boolean noImageScreen = _showLoadingAnimation;
 		for (AbstractLayer layer : Layers.getLayers())
-			if(layer.isImageLayer())
+			if (layer.isImageLayer())
 				noImageScreen &= !layer.isVisible();
-		
+
 		if (noImageScreen)
 		{
 			double dim = Math.max(getSurfaceHeight(), getSurfaceWidth()) * 0.15;
@@ -373,31 +375,31 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 			int width = (int) (dim);
 			int yOffset = (int) (getSurfaceHeight() / 2 - dim / 2);
 			int height = (int) (dim);
-			
+
 			gl.glMatrixMode(GL2.GL_PROJECTION);
 			gl.glPushMatrix();
 			gl.glLoadIdentity();
 			gl.glViewport(xOffset, yOffset, width, height);
-			
+
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
 			gl.glPushMatrix();
 			gl.glLoadIdentity();
 
 			NoImageScreen.render(gl);
-			
+
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
 			gl.glPopMatrix();
-			
+
 			gl.glMatrixMode(GL2.GL_PROJECTION);
 			gl.glPopMatrix();
 		}
 
 		for (MainPanel componentView : synchronizedViews)
 			componentView.repaint();
-		
-		//force immediate repaints
+
+		// force immediate repaints
 		RepaintManager.currentManager(MainFrame.SINGLETON).paintDirtyRegions();
-		
+
 		if (TimeLine.SINGLETON.isPlaying())
 			repaint();
 	}
@@ -410,7 +412,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		Plugins.SINGLETON.renderPlugins(gl, RenderMode.MAIN_PANEL);
 		gl.glDepthMask(false);
 	}
-	
+
 	protected float getDesiredRelativeResolution()
 	{
 		return 1;
@@ -420,14 +422,15 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	public void display(@Nullable GLAutoDrawable drawable)
 	{
 		sizeForDecoder = getCanavasSize();
-		
-		//TODO: find a better solution to maintain fps
-		//if(TimeLine.SINGLETON.isPlaying())
-		//	sizeForDecoder = new Dimension((int)(sizeForDecoder.width/resolutionDivisor), (int)(sizeForDecoder.height/resolutionDivisor));
-		sizeForDecoder = new Dimension(
-				(int)(sizeForDecoder.width*getDesiredRelativeResolution()),
-				(int)(sizeForDecoder.height*getDesiredRelativeResolution()));
-		
+
+		// TODO: find a better solution to maintain fps
+		// if(TimeLine.SINGLETON.isPlaying())
+		// sizeForDecoder = new
+		// Dimension((int)(sizeForDecoder.width/resolutionDivisor),
+		// (int)(sizeForDecoder.height/resolutionDivisor));
+		sizeForDecoder = new Dimension((int) (sizeForDecoder.width * getDesiredRelativeResolution()),
+				(int) (sizeForDecoder.height * getDesiredRelativeResolution()));
+
 		GL2 gl = drawable.getGL().getGL2();
 
 		gl.glViewport(0, 0, this.getSurfaceWidth(), this.getSurfaceHeight());
@@ -444,34 +447,31 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		gl.glLoadIdentity();
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 
-		/*gl.glDisable(GL2.GL_BLEND);
-		gl.glDisable(GL2.GL_TEXTURE_2D);
-		gl.glUseProgram(0);
-		gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
-		gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
-		gl.glDisable(GL2.GL_DEPTH_TEST);
-
-
-		gl.glEnable(GL2.GL_TEXTURE_2D);
-		gl.glActiveTexture(GL.GL_TEXTURE0);
-		gl.glDisable(GL2.GL_BLEND);
-		gl.glDisable(GL2.GL_TEXTURE_2D);
-		gl.glEnable(GL2.GL_FRAGMENT_PROGRAM_ARB);
-		gl.glEnable(GL2.GL_VERTEX_PROGRAM_ARB);
-		gl.glUseProgram(0);
-		gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
-		gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
-
-		gl.glEnable(GL2.GL_BLEND);
-		gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);*/
+		/*
+		 * gl.glDisable(GL2.GL_BLEND); gl.glDisable(GL2.GL_TEXTURE_2D);
+		 * gl.glUseProgram(0); gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
+		 * gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
+		 * gl.glDisable(GL2.GL_DEPTH_TEST);
+		 * 
+		 * 
+		 * gl.glEnable(GL2.GL_TEXTURE_2D); gl.glActiveTexture(GL.GL_TEXTURE0);
+		 * gl.glDisable(GL2.GL_BLEND); gl.glDisable(GL2.GL_TEXTURE_2D);
+		 * gl.glEnable(GL2.GL_FRAGMENT_PROGRAM_ARB);
+		 * gl.glEnable(GL2.GL_VERTEX_PROGRAM_ARB); gl.glUseProgram(0);
+		 * gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
+		 * gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
+		 * 
+		 * gl.glEnable(GL2.GL_BLEND); gl.glBlendFunc(GL2.GL_SRC_ALPHA,
+		 * GL2.GL_ONE);
+		 */
 	}
 
 	protected void updateTrackRotation()
 	{
 		if (lastDate == null)
 			lastDate = TimeLine.SINGLETON.getCurrentDateTime();
-		
-		if (lastDate!=null && !lastDate.isEqual(TimeLine.SINGLETON.getCurrentDateTime()))
+
+		if (lastDate != null && !lastDate.isEqual(TimeLine.SINGLETON.getCurrentDateTime()))
 		{
 			Duration difference = Duration.between(lastDate, TimeLine.SINGLETON.getCurrentDateTime());
 
@@ -479,7 +479,8 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 			lastDate = TimeLine.SINGLETON.getCurrentDateTime();
 			RayTrace rayTrace = new RayTrace();
 			Vector3d hitPoint = rayTrace.cast(getWidth() / 2, getHeight() / 2, this).getHitpoint();
-			HeliographicCoordinate newCoord = new HeliocentricCartesianCoordinate(hitPoint.x, hitPoint.y, hitPoint.z).toHeliographicCoordinate();
+			HeliographicCoordinate newCoord = new HeliocentricCartesianCoordinate(hitPoint.x, hitPoint.y, hitPoint.z)
+					.toHeliographicCoordinate();
 			double angle = DifferentialRotation.calculateRotationInRadians(newCoord.latitude, seconds);
 
 			Quaternion3d newRotation = Quaternion3d.createRotation(angle, new Vector3d(0, 1, 0)).rotate(rotationNow);
@@ -499,8 +500,8 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		RayTrace rayTrace = new RayTrace();
 		int width = this.getWidth() / 9;
 		int height = this.getHeight() / 9;
-		
-		//TODO: fix anti-pattern
+
+		// TODO: fix anti-pattern
 		for (int i = 0; i < 40; i++)
 		{
 			if (i < 10)
@@ -542,8 +543,8 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	@Override
 	public void init(@Nullable GLAutoDrawable drawable)
 	{
-		//if (System.getProperty("jhvVersion") == null)
-		//	drawable.setGL(new DebugGL2(drawable.getGL().getGL2()));
+		// if (System.getProperty("jhvVersion") == null)
+		// drawable.setGL(new DebugGL2(drawable.getGL().getGL2()));
 		// GuiState3DWCS.overViewPanel.activate(drawable.getContext());
 		aspect = this.getSize().getWidth() / this.getSize().getHeight();
 		GL2 gl = drawable.getGL().getGL2();
@@ -565,21 +566,23 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	{
 		if (renderBufferDepth != null)
 			gl.glDeleteRenderbuffers(1, renderBufferDepth, 0);
-		
+
 		renderBufferDepth = new int[1];
 		gl.glGenRenderbuffers(1, renderBufferDepth, 0);
 		gl.glBindRenderbuffer(GL2.GL_RENDERBUFFER, renderBufferDepth[0]);
 		gl.glRenderbufferStorage(GL2.GL_RENDERBUFFER, GL2.GL_DEPTH_COMPONENT, width, height);
-		gl.glFramebufferRenderbuffer(GL2.GL_FRAMEBUFFER, GL2.GL_DEPTH_ATTACHMENT, GL2.GL_RENDERBUFFER, renderBufferDepth[0]);
+		gl.glFramebufferRenderbuffer(GL2.GL_FRAMEBUFFER, GL2.GL_DEPTH_ATTACHMENT, GL2.GL_RENDERBUFFER,
+				renderBufferDepth[0]);
 
 		if (renderBufferColor != null)
 			gl.glDeleteRenderbuffers(1, renderBufferColor, 0);
-			
+
 		renderBufferColor = new int[1];
 		gl.glGenRenderbuffers(1, renderBufferColor, 0);
 		gl.glBindRenderbuffer(GL2.GL_RENDERBUFFER, renderBufferColor[0]);
 		gl.glRenderbufferStorage(GL2.GL_RENDERBUFFER, GL2.GL_RGBA8, width, height);
-		gl.glFramebufferRenderbuffer(GL2.GL_FRAMEBUFFER, GL2.GL_COLOR_ATTACHMENT0, GL2.GL_RENDERBUFFER, renderBufferColor[0]);
+		gl.glFramebufferRenderbuffer(GL2.GL_FRAMEBUFFER, GL2.GL_COLOR_ATTACHMENT0, GL2.GL_RENDERBUFFER,
+				renderBufferColor[0]);
 	}
 
 	@Override
@@ -592,6 +595,9 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	@Override
 	public void mouseDragged(@Nullable MouseEvent e)
 	{
+		if (e == null)
+			return;
+
 		Ray ray = new RayTrace().cast(e.getX(), e.getY(), this);
 		for (CameraInteraction cameraInteraction : cameraInteractions)
 			cameraInteraction.mouseDragged(e, ray);
@@ -600,6 +606,9 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	@Override
 	public void mouseMoved(@Nullable MouseEvent e)
 	{
+		if (e == null)
+			return;
+
 		Ray ray = new RayTrace().cast(e.getX(), e.getY(), this);
 		for (PanelMouseListener listener : panelMouseListeners)
 			listener.mouseMoved(e, ray);
@@ -613,6 +622,9 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	@Override
 	public void mousePressed(@Nullable MouseEvent e)
 	{
+		if (e == null)
+			return;
+
 		Ray ray = new RayTrace().cast(e.getX(), e.getY(), this);
 		for (CameraInteraction cameraInteraction : cameraInteractions)
 			cameraInteraction.mousePressed(e, ray);
@@ -621,6 +633,9 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	@Override
 	public void mouseReleased(@Nullable MouseEvent e)
 	{
+		if (e == null)
+			return;
+
 		Ray ray = new RayTrace().cast(e.getX(), e.getY(), this);
 		for (CameraInteraction cameraInteraction : cameraInteractions)
 			cameraInteraction.mouseReleased(e, ray);
@@ -634,6 +649,9 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	@Override
 	public void mouseExited(@Nullable MouseEvent e)
 	{
+		if (e == null)
+			return;
+
 		Ray ray = new RayTrace().cast(e.getX(), e.getY(), this);
 		for (PanelMouseListener listener : panelMouseListeners)
 			listener.mouseExited(e, ray);
@@ -653,12 +671,12 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 			for (AbstractLayer layer : Layers.getLayers())
 				if (layer.isVisible())
 				{
-					LocalDateTime ldt=layer.getCurrentTime();
-					if(ldt!=null)
+					LocalDateTime ldt = layer.getCurrentTime();
+					if (ldt != null)
 						descriptions.add(layer.getFullName() + " - " + ldt.format(Globals.DATE_TIME_FORMATTER));
 				}
 		}
-		
+
 		int tileWidth = imageWidth < DEFAULT_TILE_WIDTH ? imageWidth : DEFAULT_TILE_WIDTH;
 		int tileHeight = imageHeight < DEFAULT_TILE_HEIGHT ? imageHeight : DEFAULT_TILE_HEIGHT;
 		repaint();
@@ -694,10 +712,11 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		offscreenGL.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 		double aspect = imageWidth / (double) imageHeight;
-		//double top = Math.tan(MainPanel.FOV / 360.0 * Math.PI) * MainPanel.CLIP_NEAR;
-		//double right = top * aspect;
-		//double left = -right;
-		//double bottom = -top;
+		// double top = Math.tan(MainPanel.FOV / 360.0 * Math.PI) *
+		// MainPanel.CLIP_NEAR;
+		// double right = top * aspect;
+		// double left = -right;
+		// double bottom = -top;
 
 		TextRenderer textRenderer = new TextRenderer(new Font("SansSerif", Font.BOLD, 24));
 		textRenderer.setColor(1f, 1f, 1f, 1f);
@@ -727,7 +746,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 				int destX = tileWidth * x;
 				int destY = tileHeight * y;
 				render(offscreenGL, false);
-				
+
 				if (descriptions != null && x == 0 && y == 0)
 				{
 					int counter = 0;
@@ -745,7 +764,8 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 				int cutOffX = imageWidth >= (x + 1) * tileWidth ? tileWidth : tileWidth - x * tileWidth;
 				int cutOffY = imageHeight >= (y + 1) * tileHeight ? tileHeight : tileHeight - y * tileHeight;
 
-				offscreenGL.glReadPixels(0, 0, cutOffX, cutOffY, GL2.GL_BGR, GL2.GL_UNSIGNED_BYTE, ByteBuffer.wrap(((DataBufferByte) screenshot.getRaster().getDataBuffer()).getData()));
+				offscreenGL.glReadPixels(0, 0, cutOffX, cutOffY, GL2.GL_BGR, GL2.GL_UNSIGNED_BYTE,
+						ByteBuffer.wrap(((DataBufferByte) screenshot.getRaster().getDataBuffer()).getData()));
 				offscreenGL.glMatrixMode(GL2.GL_PROJECTION);
 				offscreenGL.glPopMatrix();
 				offscreenGL.glMatrixMode(GL2.GL_MODELVIEW);
@@ -771,13 +791,16 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	@Override
 	public void mouseWheelMoved(@Nullable MouseWheelEvent e)
 	{
+		if (e == null)
+			return;
+
 		Ray ray = new RayTrace().cast(e.getX(), e.getY(), this);
 		for (CameraInteraction cameraInteraction : cameraInteractions)
 			cameraInteraction.mouseWheelMoved(e, ray);
 	}
 
 	@Override
-	public void activeLayerChanged(AbstractLayer layer)
+	public void activeLayerChanged(@Nullable AbstractLayer layer)
 	{
 		if (Layers.getActiveImageLayer() != null)
 			lastDate = null;
@@ -787,7 +810,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	@Override
 	public void timeStampChanged(LocalDateTime current, LocalDateTime last)
 	{
-		//this.repaint();
+		// this.repaint();
 	}
 
 	public double getAspect()
@@ -846,12 +869,15 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 				final KeyAdapter keyAdapter = new KeyAdapter()
 				{
 					@Override
-					public void keyPressed(@Nullable KeyEvent e) {
-						if (e.getKeyCode() == KeyEvent.VK_ESCAPE
-								|| (e.isAltDown() && e.getKeyCode() == KeyEvent.VK_T)) {
+					public void keyPressed(@Nullable KeyEvent e)
+					{
+						if(e==null)
+							return;
+						
+						if (e.getKeyCode() == KeyEvent.VK_ESCAPE || (e.isAltDown() && e.getKeyCode() == KeyEvent.VK_T))
+						{
 							MainPanel.this.removeKeyListener(this);
-							fullscreenFrame.getContentPane().remove(
-									MainPanel.this);
+							fullscreenFrame.getContentPane().remove(MainPanel.this);
 							lastParent.add(MainPanel.this);
 							fullscreenFrame.setVisible(false);
 
@@ -883,7 +909,6 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		cameraListeners.add(_listener);
 	}
 
-	
 	public void resetLastFrameChangeTime()
 	{
 		lastFrameChangeTime = System.currentTimeMillis();

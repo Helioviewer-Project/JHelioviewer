@@ -14,7 +14,7 @@ public class UltimateDownloadManager
 {
 	private static class Tuple
 	{
-		RuntimeException ex;
+		@Nullable RuntimeException ex;
 		WeakReference<AbstractDownloadRequest> request;
 	}
 	
@@ -24,6 +24,9 @@ public class UltimateDownloadManager
 		@Override
 		public int compare(@Nullable Tuple o1, @Nullable Tuple o2)
 		{
+			if(o1==null || o2==null)
+				return 0;
+			
 			AbstractDownloadRequest oo1 = o1.request.get();
 			AbstractDownloadRequest oo2 = o2.request.get();
 			if (oo1 == null || oo2 == null)

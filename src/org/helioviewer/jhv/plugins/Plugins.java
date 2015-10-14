@@ -159,6 +159,9 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 	@Override
 	public void mouseDragged(@Nullable MouseEvent e)
 	{
+		if(e==null)
+			return;
+		
 		Vector3d hitpoint = new RayTrace().cast(e.getX(), e.getY(), MainFrame.MAIN_PANEL).getHitpoint();
 		for (AbstractPlugin plugin : plugins)
 			plugin.mouseDragged(e, hitpoint);
@@ -167,6 +170,9 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 	@Override
 	public void mouseMoved(@Nullable MouseEvent e)
 	{
+		if(e==null)
+			return;
+		
 		Vector3d hitpoint = new RayTrace().cast(e.getX(), e.getY(), MainFrame.MAIN_PANEL).getHitpoint();
 		for (AbstractPlugin plugin : plugins)
 			plugin.mouseMoved(e, hitpoint);
@@ -175,6 +181,9 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 	@Override
 	public void mouseClicked(@Nullable MouseEvent e)
 	{
+		if(e==null)
+			return;
+		
 		Vector3d hitpoint = new RayTrace().cast(e.getX(), e.getY(), MainFrame.MAIN_PANEL).getHitpoint();
 		for (AbstractPlugin plugin : plugins)
 			plugin.mouseClicked(e, hitpoint);
@@ -183,23 +192,31 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 	@Override
 	public void mousePressed(@Nullable MouseEvent e)
 	{
+		if(e==null)
+			return;
+		
 		Vector3d hitpoint = new RayTrace().cast(e.getX(), e.getY(), MainFrame.MAIN_PANEL).getHitpoint();
 		for (AbstractPlugin plugin : plugins)
 			plugin.mousePressed(e, hitpoint);
 	}
 
 	@Override
-	public void mouseReleased(@Nullable MouseEvent e) {
-		Vector3d hitpoint = new RayTrace().cast(e.getX(), e.getY(),
-				MainFrame.MAIN_PANEL).getHitpoint();
-		for (AbstractPlugin plugin : plugins) {
+	public void mouseReleased(@Nullable MouseEvent e)
+	{
+		if(e==null)
+			return;
+		
+		Vector3d hitpoint = new RayTrace().cast(e.getX(), e.getY(), MainFrame.MAIN_PANEL).getHitpoint();
+		for (AbstractPlugin plugin : plugins)
 			plugin.mouseReleased(e, hitpoint);
-		}
 	}
 
 	@Override
 	public void mouseEntered(@Nullable MouseEvent e)
 	{
+		if(e==null)
+			return;
+		
 		Vector3d hitpoint = new RayTrace().cast(e.getX(), e.getY(), MainFrame.MAIN_PANEL).getHitpoint();
 		for (AbstractPlugin plugin : plugins)
 			plugin.mouseEntered(e, hitpoint);
@@ -208,6 +225,9 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 	@Override
 	public void mouseExited(@Nullable MouseEvent e)
 	{
+		if(e==null)
+			return;
+		
 		Vector3d hitpoint = new RayTrace().cast(e.getX(), e.getY(), MainFrame.MAIN_PANEL).getHitpoint();
 		for (AbstractPlugin plugin : plugins)
 			plugin.mouseExited(e, hitpoint);
@@ -233,12 +253,12 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 		return MainFrame.MAIN_PANEL.getSize();
 	}
 
-	public static LocalDateTime getStartDateTime()
+	public static @Nullable LocalDateTime getStartDateTime()
 	{
 		return TimeLine.SINGLETON.getFirstDateTime();
 	}
 
-	public static LocalDateTime getEndDateTime()
+	public static @Nullable LocalDateTime getEndDateTime()
 	{
 		return TimeLine.SINGLETON.getLastDateTime();
 	}

@@ -42,10 +42,10 @@ class SplashScreen extends JFrame
 		setFocusable(false);
 		setResizable(false);
 		setUndecorated(true);
-	    setIconImage(IconBank.getIcon(JHVIcon.HVLOGO_SMALL).getImage());
-	
-	    //if(isWindows())
-	      setType(java.awt.Window.Type.UTILITY);
+		setIconImage(IconBank.getIcon(JHVIcon.HVLOGO_SMALL).getImage());
+
+		// if(isWindows())
+		setType(java.awt.Window.Type.UTILITY);
 
 		// initialize the visual components
 		progressBar.setValue(0);
@@ -56,22 +56,22 @@ class SplashScreen extends JFrame
 		add(progressBar, BorderLayout.SOUTH);
 
 		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-		
+
 		// show the splash screen
 		setVisible(true);
-		
+
 		setAlwaysOnTop(true);
 	}
-	
+
 	@Override
 	public void dispose()
 	{
 		super.dispose();
-		
-		if(progressBar.getValue()!=progressBar.getMaximum())
-			throw new RuntimeException("Too many steps declared ("+progressBar.getMaximum()+" instead of "+progressBar.getValue()+")");
-	}
 
+		if (progressBar.getValue() != progressBar.getMaximum())
+			throw new RuntimeException("Too many steps declared (" + progressBar.getMaximum() + " instead of "
+					+ progressBar.getValue() + ")");
+	}
 
 	/**
 	 * Sets the text which gives information about what actually happens. The
@@ -80,28 +80,29 @@ class SplashScreen extends JFrame
 	 * 
 	 * @param text
 	 *            new text which shall be displayed.
-	 * */
+	 */
 	public void progressTo(String text)
 	{
 		System.out.println(text);
 		if (text != null)
 			imagePanel.setText(text);
-		
+
 		if (progressBar.getValue() == progressBar.getMaximum())
-			throw new RuntimeException("Too few steps declared (need >"+progressBar.getMaximum()+")");
-		
-		progressBar.setValue(progressBar.getValue()+1);
+			throw new RuntimeException("Too few steps declared (need >" + progressBar.getMaximum() + ")");
+
+		progressBar.setValue(progressBar.getValue() + 1);
 	}
 
 	/**
 	 * The panel acts as container which displays the splash screen image and
 	 * position the label which displays the current status information.
-	 * */
+	 */
 	private static class SplashImagePanel extends JPanel
 	{
-		private BufferedImage image = IconBank.getImage(JHVIcon.SPLASH);
+		private final @Nullable BufferedImage image = IconBank.getImage(JHVIcon.SPLASH);
 		private JLabel label = new JLabel("");
 
+		@SuppressWarnings("null")
 		public SplashImagePanel()
 		{
 			// set basic layout
@@ -132,7 +133,8 @@ class SplashScreen extends JFrame
 		 * @param text
 		 *            text which shall be displayed.
 		 */
-		public void setText(String text) {
+		public void setText(String text)
+		{
 			label.setText(text);
 		}
 
@@ -143,7 +145,11 @@ class SplashScreen extends JFrame
 		 * @param g
 		 *            Graphics object where image shall be drawn.
 		 */
-		protected void paintComponent(@Nullable Graphics g) {
+		protected void paintComponent(@Nullable Graphics g)
+		{
+			if(g==null)
+				return;
+			
 			super.paintComponent(g);
 			if (image != null)
 				g.drawImage(image, 0, 0, null);

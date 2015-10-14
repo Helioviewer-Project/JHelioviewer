@@ -3,12 +3,14 @@ package org.helioviewer.jhv.base.downloadmanager;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.annotation.Nullable;
+
 public abstract class AbstractDownloadRequest
 {
 	public static final int INFINITE_TIMEOUT = -1;
 	protected volatile boolean finished = false;
 	protected final AtomicInteger retries = new AtomicInteger(3);
-	protected volatile IOException ioException = null;
+	protected volatile @Nullable IOException ioException = null;
 	protected volatile int timeOut = 20000;
 	protected final String url;
 	protected volatile int totalLength = -1;
@@ -16,16 +18,17 @@ public abstract class AbstractDownloadRequest
 	
 	public final DownloadPriority priority;
 
-	public AbstractDownloadRequest(String url, DownloadPriority priority)
+	public AbstractDownloadRequest(String _url, DownloadPriority _priority)
 	{
-		this.url = url;
-		this.priority = priority;
+		url = _url;
+		priority = _priority;
 	}
 	
-	public AbstractDownloadRequest(String url, DownloadPriority priority, int retries)
+	public AbstractDownloadRequest(String _url, DownloadPriority _priority, int _retries)
 	{
-		this.url = url;
-		this.priority = priority;
+		url = _url;
+		priority = _priority;
+		retries.set(_retries);
 	}
 	
 	public boolean isFinished()

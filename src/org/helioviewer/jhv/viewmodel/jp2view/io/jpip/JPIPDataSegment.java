@@ -1,79 +1,67 @@
 package org.helioviewer.jhv.viewmodel.jp2view.io.jpip;
 
+import javax.annotation.Nullable;
+
 /**
  * The class <code>JpipDataSegment</code> is used to construct objects to store
  * segments of JPIP data. These segments can be data-bin segments as well as EOR
  * messages. In this last case, the EOR code is stored in the <code>id</code>
  * field and the EOR message body is stored in the <code>data</code> field.
  */
-public class JPIPDataSegment implements Cloneable {
+public class JPIPDataSegment
+{
+	/** The data-bin in-class identifier. */
+	public long binID;
 
-    /** The data-bin in-class identifier. */
-    public long binID;
+	/** The data-bin auxiliary information. */
+	public long aux;
 
-    /** The data-bin auxiliary information. */
-    public long aux;
+	/** The data-bin class identifier. */
+	public @Nullable JPIPDatabinClass classID;
 
-    /** The data-bin class identifier. */
-    public JPIPDatabinClass classID;
+	/** The code-stream index. */
+	public long codestreamID;
 
-    /** The code-stream index. */
-    public long codestreamID;
+	/** Offset of this segment within the data-bin data. */
+	public int offset;
 
-    /** Offset of this segment within the data-bin data. */
-    public int offset;
+	/** Length of this segment. */
+	public int length;
 
-    /** Length of this segment. */
-    public int length;
+	/** The segment data. */
+	public @Nullable byte data[];
 
-    /** The segment data. */
-    public byte data[];
+	/**
+	 * Indicates if this segment is the last one (when there is a data segment
+	 * stream).
+	 */
+	public boolean isFinal;
 
-    /**
-     * Indicates if this segment is the last one (when there is a data segment
-     * stream).
-     */
-    public boolean isFinal;
+	/** Indicates if this segment is a End Of Response message. */
+	public boolean isEOR;
 
-    /** Indicates if this segment is a End Of Response message. */
-    public boolean isEOR;
+	/** Default constructor */
+	public JPIPDataSegment()
+	{
+	}
 
-    /** Indicates if this data segment is a complete data bin */
-    private boolean isComplete;
-
-    /** Default constructor */
-    public JPIPDataSegment() {
-    }
-
-    /** Returns a completely disjoint clone of the JPIPDataSegment */
-    public JPIPDataSegment clone() {
-        JPIPDataSegment ret = new JPIPDataSegment();
-        ret.aux = this.aux;
-        ret.binID = this.binID;
-        ret.classID = this.classID;
-        ret.codestreamID = this.codestreamID;
-        ret.data = this.data == null ? null : this.data.clone();
-        ret.isComplete = this.isComplete;
-        ret.isEOR = this.isEOR;
-        ret.isFinal = this.isFinal;
-        ret.length = this.length;
-        ret.offset = this.offset;
-        return ret;
-    }
-
-    /** Returns a string representation of the JPIP data segment. */
-    public String toString() {
-        String res;
-        res = getClass().getName() + " [";
-        if (isEOR)
-            res += "EOR id=" + binID + " len=" + length;
-        else {
-            res += "class=" + classID.getJpipString() + " stream=" + codestreamID;
-            res += " id=" + binID + " off=" + offset + " len=" + length;
-            if (isFinal)
-                res += " final";
-        }
-        res += "]";
-        return res;
-    }
+	/** Returns a string representation of the JPIP data segment. */
+	public String toString()
+	{
+		String res;
+		res = getClass().getName() + " [";
+		if (isEOR)
+			res += "EOR id=" + binID + " len=" + length;
+		else
+		{
+			if(classID!=null)
+				res += "class=" + classID.getJpipString();
+			res += " stream=" + codestreamID;
+			res += " id=" + binID + " off=" + offset + " len=" + length;
+			if (isFinal)
+				res += " final";
+		}
+		res += "]";
+		return res;
+	}
 };

@@ -20,151 +20,172 @@ import javax.swing.JCheckBox;
  */
 public final class TristateCheckBox extends JCheckBox
 {
-    final public static int CHECKED = 1;
-    final public static int UNCHECKED = 2;
-    final public static int INDETERMINATE = 4;
+	final public static int CHECKED = 1;
+	final public static int UNCHECKED = 2;
+	final public static int INDETERMINATE = 4;
 
-    final public static int DEFAULT = UNCHECKED;
+	final public static int DEFAULT = UNCHECKED;
 
-    /**
-     * Size of the (outer) additional rectangle (if the checkbox is in
-     * intermediate state)
-     * 
-     * Note: Only even numbers are possible. Depending on the size of the full
-     * checkbox, one pixel may be added to this size
-     */
-    private static final int LARGE_RECTANGLE_SIZE = 10;
+	/**
+	 * Size of the (outer) additional rectangle (if the checkbox is in
+	 * intermediate state)
+	 * 
+	 * Note: Only even numbers are possible. Depending on the size of the full
+	 * checkbox, one pixel may be added to this size
+	 */
+	private static final int LARGE_RECTANGLE_SIZE = 10;
 
-    /**
-     * Size of the (inner) additional rectangle (if the checkbox is in
-     * intermediate state) This second rectangle is drawn to provide a smoother
-     * look
-     * 
-     * Note: Only even numbers are possible. Depending on the size of the full
-     * checkbox, one pixel may be added to this size
-     */
-    private static final int SMALL_RECTANGLE_SIZE = 6;
+	/**
+	 * Size of the (inner) additional rectangle (if the checkbox is in
+	 * intermediate state) This second rectangle is drawn to provide a smoother
+	 * look
+	 * 
+	 * Note: Only even numbers are possible. Depending on the size of the full
+	 * checkbox, one pixel may be added to this size
+	 */
+	private static final int SMALL_RECTANGLE_SIZE = 6;
 
-    /**
-     * This variable defines the opacity of the additionally drawn rectangle (if
-     * the checkbox is in intermediate state)
-     */
-    private static final float RECTANGLE_ALPHA = 0.3f;
+	/**
+	 * This variable defines the opacity of the additionally drawn rectangle (if
+	 * the checkbox is in intermediate state)
+	 */
+	private static final float RECTANGLE_ALPHA = 0.3f;
 
-    /**
-     * Color of the additional rectangle (if the checkbox is in intermediate
-     * state)
-     */
-    private static final Color RECTANGLE_COLOR = Color.BLACK;
+	/**
+	 * Color of the additional rectangle (if the checkbox is in intermediate
+	 * state)
+	 */
+	private static final Color RECTANGLE_COLOR = Color.BLACK;
 
-    /**
-     * If indeterminate is TRUE, the magic 'block' will be drawn
-     */
-    private boolean indeterminate = false;
+	/**
+	 * If indeterminate is TRUE, the magic 'block' will be drawn
+	 */
+	private boolean indeterminate = false;
 
-    public TristateCheckBox(String caption) {
-        super(caption);
-    }
+	public TristateCheckBox(String caption)
+	{
+		super(caption);
+	}
 
-    public TristateCheckBox(String caption, int rowState) {
-        super(caption);
-        setState(rowState);
-    }
+	public TristateCheckBox(String caption, int rowState)
+	{
+		super(caption);
+		setState(rowState);
+	}
 
-    private void setState(int rowState) {
-        // depending on the rowState set the checkbox state
-        if (rowState == TristateCheckBox.CHECKED) {
-            this.setSelected(true);
-            this.setIndeterminate(false);
-        } else if (rowState == TristateCheckBox.UNCHECKED) {
-            this.setSelected(false);
-            this.setIndeterminate(false);
-        } else {
-            this.getModel().setSelected(false);
-            this.setIndeterminate(true);
-        }
+	private void setState(int rowState)
+	{
+		// depending on the rowState set the checkbox state
+		if (rowState == TristateCheckBox.CHECKED)
+		{
+			this.setSelected(true);
+			this.setIndeterminate(false);
+		}
+		else if (rowState == TristateCheckBox.UNCHECKED)
+		{
+			this.setSelected(false);
+			this.setIndeterminate(false);
+		}
+		else
+		{
+			this.getModel().setSelected(false);
+			this.setIndeterminate(true);
+		}
 
-    }
+	}
 
-    /**
-     * Set the indeterminate state
-     * 
-     * @param indeterminate
-     */
-    public void setIndeterminate(boolean indeterminate) {
-        this.indeterminate = indeterminate;
-    }
+	/**
+	 * Set the indeterminate state
+	 * 
+	 * @param indeterminate
+	 */
+	public void setIndeterminate(boolean indeterminate)
+	{
+		this.indeterminate = indeterminate;
+	}
 
-    /**
-     * Convenience Method to generate AlphaComposite objects from a single float
-     * 
-     * @param alpha
-     *            - alpha value
-     * @return AlphaComposite object
-     */
-    private AlphaComposite makeComposite(float alpha) {
-        int type = AlphaComposite.SRC_OVER;
-        return (AlphaComposite.getInstance(type, alpha));
-    }
+	/**
+	 * Convenience Method to generate AlphaComposite objects from a single float
+	 * 
+	 * @param alpha
+	 *            - alpha value
+	 * @return AlphaComposite object
+	 */
+	private AlphaComposite makeComposite(float alpha)
+	{
+		int type = AlphaComposite.SRC_OVER;
+		return (AlphaComposite.getInstance(type, alpha));
+	}
 
-    /**
-     * Painting routine, which first draws the original component, and finally
-     * adds the magic 'block'...
-     */
-    public void paintComponent(@Nullable Graphics g) {
+	/**
+	 * Painting routine, which first draws the original component, and finally
+	 * adds the magic 'block'...
+	 */
+	public void paintComponent(@Nullable Graphics g)
+	{
+		// draw a 'native' checkbox
+		super.paintComponent(g);
 
-        // draw a 'native' checkbox
-        super.paintComponent(g);
+		if(g==null)
+			return;
+		
+		// if the checkbox is in intermediate mode, render the additional 'gray
+		// box' in the middle
+		if (indeterminate)
+		{
+			// use graphics2d to add a slightly transparent black box in the
+			Graphics2D g2 = (Graphics2D) g;
+			g2.setComposite(makeComposite(RECTANGLE_ALPHA));
+			g2.setColor(RECTANGLE_COLOR);
 
-        // if the checkbox is in intermediate mode, render the additional 'gray
-        // box' in the middle
-        if (indeterminate) {
+			// calculate the center of checkbox (with respect to having odd/even
+			// number of pixels)
+			int xCenter, yCenter;
 
-            // use graphics2d to add a slightly transparent black box in the
-            Graphics2D g2 = (Graphics2D) g;
-            g2.setComposite(makeComposite(RECTANGLE_ALPHA));
-            g2.setColor(RECTANGLE_COLOR);
+			// depending on having odd/even numbers of pixels, calculate the
+			// appropriate width/height of the inner box
+			int widthLarge, widthSmall;
+			int heightLarge, heightSmall;
 
-            // calculate the center of checkbox (with respect to having odd/even
-            // number of pixels)
-            int xCenter, yCenter;
+			// calculations for x/width
+			if (getWidth() % 2 == 0)
+			{
+				// even number of pixels
+				xCenter = getWidth() / 2;
+				widthLarge = LARGE_RECTANGLE_SIZE;
+				widthSmall = SMALL_RECTANGLE_SIZE;
+			}
+			else
+			{
+				// odd number of pixels
+				xCenter = (int) Math.floor(getWidth() / 2.0);
+				widthLarge = LARGE_RECTANGLE_SIZE + 1;
+				widthSmall = SMALL_RECTANGLE_SIZE + 1;
+			}
 
-            // depending on having odd/even numbers of pixels, calculate the
-            // appropriate width/height of the inner box
-            int widthLarge, widthSmall;
-            int heightLarge, heightSmall;
+			// calculations for y/height
+			if (getHeight() % 2 == 0)
+			{
+				// even number of pixels
+				yCenter = getHeight() / 2;
+				heightLarge = LARGE_RECTANGLE_SIZE;
+				heightSmall = SMALL_RECTANGLE_SIZE;
+			}
+			else
+			{
+				// odd number of pixels
+				yCenter = (int) Math.floor(getHeight() / 2.0);
+				heightLarge = LARGE_RECTANGLE_SIZE + 1;
+				heightSmall = SMALL_RECTANGLE_SIZE + 1;
+			}
 
-            // calculations for x/width
-            if (getWidth() % 2 == 0) {
-                // even number of pixels
-                xCenter = getWidth() / 2;
-                widthLarge = LARGE_RECTANGLE_SIZE;
-                widthSmall = SMALL_RECTANGLE_SIZE;
-            } else {
-                // odd number of pixels
-                xCenter = (int) Math.floor(getWidth() / 2.0);
-                widthLarge = LARGE_RECTANGLE_SIZE + 1;
-                widthSmall = SMALL_RECTANGLE_SIZE + 1;
-            }
+			// since we already caluclated the appropriate center/width/height
+			// we can just draw the rectangles now
+			g2.fillRect(xCenter - LARGE_RECTANGLE_SIZE / 2, yCenter - LARGE_RECTANGLE_SIZE / 2, widthLarge,
+					heightLarge);
+			g2.fillRect(xCenter - SMALL_RECTANGLE_SIZE / 2, yCenter - SMALL_RECTANGLE_SIZE / 2, widthSmall,
+					heightSmall);
+		}
 
-            // calculations for y/height
-            if (getHeight() % 2 == 0) {
-                // even number of pixels
-                yCenter = getHeight() / 2;
-                heightLarge = LARGE_RECTANGLE_SIZE;
-                heightSmall = SMALL_RECTANGLE_SIZE;
-            } else {
-                // odd number of pixels
-                yCenter = (int) Math.floor(getHeight() / 2.0);
-                heightLarge = LARGE_RECTANGLE_SIZE + 1;
-                heightSmall = SMALL_RECTANGLE_SIZE + 1;
-            }
-
-            // since we already caluclated the appropriate center/width/height
-            // we can just draw the rectangles now
-            g2.fillRect(xCenter - LARGE_RECTANGLE_SIZE / 2, yCenter - LARGE_RECTANGLE_SIZE / 2, widthLarge, heightLarge);
-            g2.fillRect(xCenter - SMALL_RECTANGLE_SIZE / 2, yCenter - SMALL_RECTANGLE_SIZE / 2, widthSmall, heightSmall);
-        }
-
-    }
+	}
 }

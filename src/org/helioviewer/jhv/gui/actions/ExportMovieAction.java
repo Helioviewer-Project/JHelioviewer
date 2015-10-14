@@ -43,36 +43,29 @@ import com.xuggle.mediatool.ToolFactory;
 
 public class ExportMovieAction extends AbstractAction
 {
-  	public ExportMovieAction()
-  	{
+	public ExportMovieAction()
+	{
 		super("Save movie as...");
 		putValue(SHORT_DESCRIPTION, "Export a movie to a file");
-		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_E, KeyEvent.SHIFT_DOWN_MASK | Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-    }
+		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_E,
+				KeyEvent.SHIFT_DOWN_MASK | Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+	}
 
 	public void actionPerformed(@Nullable ActionEvent e)
 	{
-		if(Layers.getLayerCount() > 0)
+		if (Layers.getLayerCount() > 0)
 			openExportMovieDialog();
 		else
-			JOptionPane.showMessageDialog(MainFrame.MAIN_PANEL, "At least one active layer must be visible.\n\nPlease add a layer before exporting movies.", "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(MainFrame.MAIN_PANEL,
+					"At least one active layer must be visible.\n\nPlease add a layer before exporting movies.",
+					"Error", JOptionPane.ERROR_MESSAGE);
 	}
-	
-	private long speed = 0;
-	private IMediaWriter writer;
 
 	private PredefinedFileFilter selectedOutputFormat = PredefinedFileFilter.MP4;
 
-	private String txtTargetFile;
-	private ProgressDialog progressDialog;
+	private @Nullable String txtTargetFile;
 
 	private boolean started = true;
-
-	private String directory;
-	private String filename;
-
-	private volatile FileOutputStream fileOutputStream;
-	@Nullable private volatile ZipOutputStream zipOutputStream;
 
 	private static final String SETTING_MOVIE_EXPORT_LAST_DIRECTORY = "export.movie.last.directory";
 
@@ -83,49 +76,89 @@ public class ExportMovieAction extends AbstractAction
 	private boolean textEnabled;
 	private int imageWidth;
 	private int imageHeight;
-	private Thread thread;
-	@Nullable private volatile BufferedImage bufferedImage;
+	private @Nullable Thread thread;
+	@Nullable
+	private volatile BufferedImage bufferedImage;
 
 	private void openExportMovieDialog()
 	{
 		txtTargetFile = LocalDateTime.now().format(Globals.DATE_TIME_FORMATTER);
 
 		// Open save-dialog
-		final File file = Globals.showFileDialog(
-				DialogType.SAVE_FILE,
-				"Save Movie as", 
-				Settings.getProperty(SETTING_MOVIE_EXPORT_LAST_DIRECTORY),
-				false,txtTargetFile,
+		final File file = Globals.showFileDialog(DialogType.SAVE_FILE, "Save Movie as",
+				Settings.getProperty(SETTING_MOVIE_EXPORT_LAST_DIRECTORY), false, txtTargetFile,
 				PredefinedFileFilter.SaveMovieFileFilter);
-		
+
 		if (file == null)
 			return;
-		
-		for(PredefinedFileFilter mff:PredefinedFileFilter.SaveMovieFileFilter)
-			if(mff.accept(file))
+
+		for (PredefinedFileFilter mff : PredefinedFileFilter.SaveMovieFileFilter)
+			if (mff.accept(file))
 			{
-				selectedOutputFormat=mff;
+				selectedOutputFormat = mff;
 				break;
 			}
-		
-		directory = file.getParent() + "/";
-		filename = file.getName();
-		
-		startMovieExport();
-		
-    	Telemetry.trackEvent("Dialog", "Type", getClass().getSimpleName());
+
+		startMovieExport(file.getParent() + "/", file.getName());
+
+		Telemetry.trackEvent("Dialog", "Type", getClass().getSimpleName());
 	}
 
-	private void startMovieExport()
+	@SuppressWarnings("null")
+	private void startMovieExport(String _directory, final String _filename)
 	{
 		this.loadSettings();
-		Settings.setProperty(SETTING_MOVIE_EXPORT_LAST_DIRECTORY, directory);
+		Settings.setProperty(SETTING_MOVIE_EXPORT_LAST_DIRECTORY, _directory);
 		MainFrame.SINGLETON.setEnabled(false);
 
-		progressDialog = new ProgressDialog();
+		final @Nullable FileOutputStream fileOutputStream;
+		final @Nullable ZipOutputStream zipOutputStream;
+		final @Nullable IMediaWriter writer;
+		final int speed;
+		if (selectedOutputFormat.isMovieFile())
+		{
+			fileOutputStream=null;
+			zipOutputStream=null;
+			
+			speed = 1000 / TimeLine.SINGLETON.getMillisecondsPerFrame();
+			
+			writer = ToolFactory.makeWriter(_directory + _filename + this.selectedOutputFormat.getDefaultExtension());
+			writer.addVideoStream(0, 0, selectedOutputFormat.codec, imageWidth, imageHeight);
+		}
+		else if (selectedOutputFormat.isCompressedFile())
+		{
+			writer = null;
+			speed = 0;
+			try
+			{
+				fileOutputStream = new FileOutputStream(
+						_directory + _filename + selectedOutputFormat.getDefaultExtension());
+				zipOutputStream = new ZipOutputStream(fileOutputStream);
+			}
+			catch (FileNotFoundException e1)
+			{
+				Telemetry.trackException(e1);
+				return;
+			}
+		}
+		else if (selectedOutputFormat.isImageFile())
+		{
+			fileOutputStream=null;
+			zipOutputStream=null;
+			writer = null;
+			speed = 0;
+			new File(_directory + _filename).mkdir();
+			_directory += _filename + "/";
+		}
+		else
+			throw new RuntimeException();
+		
+		final ProgressDialog progressDialog = new ProgressDialog();
 		progressDialog.setVisible(true);
+		progressDialog.setMaximumOfProgressBar(TimeLine.SINGLETON.getFrameCount());
+		TimeLine.SINGLETON.setCurrentFrame(0);
 
-		this.initMovieExport();
+		final String directory = _directory;
 		thread = new Thread(new Runnable()
 		{
 			@Override
@@ -134,7 +167,7 @@ public class ExportMovieAction extends AbstractAction
 				TimeLine.SINGLETON.setCurrentFrame(0);
 				for (int i = 0; i < TimeLine.SINGLETON.getFrameCount(); i++)
 				{
-					//FIXME: invokeLATER?!!?!
+					// FIXME: invokeLATER?!!?!
 					SwingUtilities.invokeLater(new Runnable()
 					{
 						@Override
@@ -173,9 +206,10 @@ public class ExportMovieAction extends AbstractAction
 						String number = String.format("%04d", i);
 						try
 						{
-							zipOutputStream.putNextEntry(new ZipEntry(filename + "/" + filename + "-" + number
+							zipOutputStream.putNextEntry(new ZipEntry(_filename + "/" + _filename + "-" + number
 									+ selectedOutputFormat.getInnerMovieFilter().getDefaultExtension()));
-							ImageIO.write(bufferedImage, selectedOutputFormat.getInnerMovieFilter().fileType, zipOutputStream);
+							ImageIO.write(bufferedImage, selectedOutputFormat.getInnerMovieFilter().fileType,
+									zipOutputStream);
 							zipOutputStream.closeEntry();
 						}
 						catch (IOException e)
@@ -188,10 +222,8 @@ public class ExportMovieAction extends AbstractAction
 						String number = String.format("%04d", i);
 						try
 						{
-							ImageIO.write(
-									bufferedImage,
-									selectedOutputFormat.fileType,
-									new File(directory + filename + "-" + number + selectedOutputFormat.getDefaultExtension()));
+							ImageIO.write(bufferedImage, selectedOutputFormat.fileType, new File(
+									directory + _filename + "-" + number + selectedOutputFormat.getDefaultExtension()));
 						}
 						catch (IOException e)
 						{
@@ -200,7 +232,24 @@ public class ExportMovieAction extends AbstractAction
 					}
 					TimeLine.SINGLETON.nextFrame();
 				}
-				stopMovieExport();
+				TimeLine.SINGLETON.setCurrentFrame(0);
+				// export movie
+				if (writer!=null)
+					writer.close();
+				
+				try
+				{
+					if(zipOutputStream!=null)
+						zipOutputStream.close();
+					if(fileOutputStream!=null)
+						fileOutputStream.close();
+				}
+				catch (IOException e)
+				{
+					Telemetry.trackException(e);
+				}
+
+				progressDialog.dispose();
 			}
 
 		}, "Movie Export");
@@ -214,9 +263,7 @@ public class ExportMovieAction extends AbstractAction
 		{
 			val = Settings.getProperty(SETTING_TEXT);
 			if (val != null && !(val.length() == 0))
-			{
 				textEnabled = Boolean.parseBoolean(val);
-			}
 		}
 		catch (Throwable t)
 		{
@@ -238,10 +285,9 @@ public class ExportMovieAction extends AbstractAction
 		{
 			val = Settings.getProperty(SETTING_IMG_WIDTH);
 			if (val != null && !(val.length() == 0))
-			{
 				this.imageWidth = Integer.parseInt(val);
-			}
-		} catch (Throwable t)
+		}
+		catch (Throwable t)
 		{
 			Telemetry.trackException(t);
 		}
@@ -254,62 +300,7 @@ public class ExportMovieAction extends AbstractAction
 			imageHeight = 720;
 	}
 
-	private void initMovieExport()
-	{
-		if (this.selectedOutputFormat.isMovieFile())
-		{
-			writer = ToolFactory.makeWriter(directory + filename + this.selectedOutputFormat.getDefaultExtension());
-
-			speed = 1000 / TimeLine.SINGLETON.getMillisecondsPerFrame();
-
-			writer.addVideoStream(0, 0, this.selectedOutputFormat.codec, this.imageWidth, this.imageHeight);
-		}
-		else if (this.selectedOutputFormat.isCompressedFile())
-		{
-			try
-			{
-				fileOutputStream = new FileOutputStream(this.directory
-						+ this.filename
-						+ this.selectedOutputFormat.getDefaultExtension());
-				zipOutputStream = new ZipOutputStream(fileOutputStream);
-			}
-			catch (FileNotFoundException e)
-			{
-				Telemetry.trackException(e);
-			}
-		}
-		else if (this.selectedOutputFormat.isImageFile())
-		{
-			new File(this.directory + this.filename).mkdir();
-			directory += this.filename + "/";
-		}
-
-		progressDialog.setMaximumOfProgressBar(TimeLine.SINGLETON.getFrameCount());
-		TimeLine.SINGLETON.setCurrentFrame(0);
-	}
-
-	private void stopMovieExport()
-	{
-		TimeLine.SINGLETON.setCurrentFrame(0);
-		// export movie
-		if (selectedOutputFormat.isMovieFile())
-			writer.close();
-		else if (selectedOutputFormat.isCompressedFile())
-		{
-			try
-			{
-				zipOutputStream.close();
-				fileOutputStream.close();
-			}
-			catch (IOException e)
-			{
-				Telemetry.trackException(e);
-			}
-		}
-		progressDialog.dispose();
-	}
-
-	private class ProgressDialog extends JDialog implements ActionListener
+	private class ProgressDialog extends JDialog
 	{
 		private JProgressBar progressBar;
 		private JButton btnCancel;
@@ -346,11 +337,18 @@ public class ExportMovieAction extends AbstractAction
 				JPanel buttonPane = new JPanel();
 				buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 				getContentPane().add(buttonPane, BorderLayout.SOUTH);
+
+				btnCancel = new JButton("Cancel");
+				buttonPane.add(btnCancel);
+				btnCancel.addActionListener(new ActionListener()
 				{
-					btnCancel = new JButton("Cancel");
-					buttonPane.add(btnCancel);
-					btnCancel.addActionListener(this);
-				}
+					@Override
+					public void actionPerformed(@Nullable ActionEvent ae)
+					{
+						ExportMovieAction.this.cancelMovie();
+						dispose();
+					}
+				});
 			}
 
 			this.pack();
@@ -358,32 +356,26 @@ public class ExportMovieAction extends AbstractAction
 
 		}
 
-		public void setMaximumOfProgressBar(int maximum) {
+		public void setMaximumOfProgressBar(int maximum)
+		{
 			this.progressBar.setMaximum(maximum);
 		}
 
-		private void updateProgressBar(int value) {
+		private void updateProgressBar(int value)
+		{
 			this.progressBar.setValue(value);
 		}
 
-		public void setDescription(String description) {
+		public void setDescription(String description)
+		{
 			this.lblDescription.setText(description);
 		}
 
 		@Override
-		public void dispose() {
+		public void dispose()
+		{
 			MainFrame.SINGLETON.setEnabled(true);
 			super.dispose();
-		}
-
-		@Override
-		public void actionPerformed(@Nullable ActionEvent ae)
-		{
-			if (ae.getSource() == btnCancel)
-			{
-				ExportMovieAction.this.cancelMovie();
-				dispose();
-			}
 		}
 	}
 

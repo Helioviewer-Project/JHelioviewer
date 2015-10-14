@@ -9,6 +9,7 @@ import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
 import java.net.URL;
 
+import javax.annotation.Nullable;
 import javax.swing.ImageIcon;
 
 /**
@@ -150,9 +151,13 @@ public class IconBank
      *            enum which represents the image
      * @return the image icon of the given enum
      * */
-    public static ImageIcon getIcon(JHVIcon _icon)
+    public static @Nullable ImageIcon getIcon(JHVIcon _icon)
     {
-        return new ImageIcon(IconBank.class.getResource(RESOURCE_PATH + _icon.filename));
+    	URL url=IconBank.class.getResource(RESOURCE_PATH + _icon.filename);
+    	if(url==null)
+    		return null;
+    	else
+    		return new ImageIcon(url);
     }
 
     public static javafx.scene.image.Image getFXImage(JHVIcon _icon)
@@ -178,7 +183,7 @@ public class IconBank
      *            Name of the image which should be loaded
      * @return Image for the given name or null if it fails to load the image.
      * */
-    public static BufferedImage getImage(JHVIcon icon)
+    public static @Nullable BufferedImage getImage(JHVIcon icon)
     {
         ImageIcon imageIcon = getIcon(icon);
 
@@ -220,12 +225,12 @@ public class IconBank
         return new Color(sumRed / divider, sumGreen / divider, sumBlue / divider);
     }
 
-    public static BufferedImage stackImages(BufferedImage[] bufImgs, double horizontal, double vertical)
+    public static @Nullable BufferedImage stackImages(BufferedImage[] bufImgs, double horizontal, double vertical)
     {
         // exit if no real image data is available
         if (bufImgs.length == 0 || bufImgs[0] == null)
             return null;
-
+        
         // the first layer is strictly copied
         BufferedImage result = bufImgs[0];
 
