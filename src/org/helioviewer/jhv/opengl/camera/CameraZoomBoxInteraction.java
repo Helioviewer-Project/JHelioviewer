@@ -2,6 +2,8 @@ package org.helioviewer.jhv.opengl.camera;
 
 import java.awt.event.MouseEvent;
 
+import javax.annotation.Nullable;
+
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.MainPanel;
@@ -12,8 +14,8 @@ import com.jogamp.opengl.GL2;
 
 public class CameraZoomBoxInteraction extends CameraInteraction
 {
-	private Vector3d start;
-	private Vector3d end;
+	private @Nullable Vector3d start;
+	private @Nullable Vector3d end;
 
 	public CameraZoomBoxInteraction(MainPanel mainPanel, Camera camera)
 	{
@@ -34,6 +36,7 @@ public class CameraZoomBoxInteraction extends CameraInteraction
 		camera.repaint();
 	}
 
+	@SuppressWarnings("null")
 	@Override
 	public void mouseReleased(MouseEvent e, Ray _ray)
 	{
@@ -58,6 +61,7 @@ public class CameraZoomBoxInteraction extends CameraInteraction
 		camera.addCameraAnimation(new CameraTranslationAnimation(MainFrame.MAIN_PANEL, newPoint.subtract(camera.getTranslationEnd())));
 	}
 
+	@SuppressWarnings("null")
 	@Override
 	public void renderInteraction(GL2 gl)
 	{

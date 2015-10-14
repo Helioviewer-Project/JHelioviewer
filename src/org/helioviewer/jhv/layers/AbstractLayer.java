@@ -61,16 +61,14 @@ public abstract class AbstractLayer
 
 	public abstract void writeStateFile(JSONObject jsonLayer);
 	
-	@Nullable
-	public String getDownloadURL()
+	public @Nullable String getDownloadURL()
 	{
 		return null;
 	}
 
-	public abstract String getFullName();
+	public abstract @Nullable String getFullName();
 
-	@Nullable
-	public abstract LocalDateTime getCurrentTime();
+	public abstract @Nullable LocalDateTime getCurrentTime();
 
 	public abstract void dispose();
 

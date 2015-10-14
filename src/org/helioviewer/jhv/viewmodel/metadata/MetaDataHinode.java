@@ -1,7 +1,5 @@
 package org.helioviewer.jhv.viewmodel.metadata;
 
-import java.time.LocalDateTime;
-
 import org.helioviewer.jhv.base.math.Vector2i;
 
 class MetaDataHinode extends MetaData
@@ -13,14 +11,11 @@ class MetaDataHinode extends MetaData
         
         measurement = metaDataContainer.get("WAVELNTH");
         observatory = metaDataContainer.get("TELESCOP");
-        if (!(instrument.equalsIgnoreCase("XRT"))){
+        if (!instrument.equalsIgnoreCase("XRT"))
         	throw new UnsuitableMetaDataException("invalid instrument: "+instrument);
-        }
 
-        this.instrument = "XRT";
+        instrument = "XRT";
         fullName = "XRT";
-        String observedDate = metaDataContainer.get("DATE_OBS");
-        localDateTime = LocalDateTime.parse(observedDate, DATE_FORMAT);
 
         readPixelParameters(metaDataContainer);
 

@@ -5,13 +5,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 
+import javax.annotation.Nullable;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
 import org.helioviewer.jhv.Globals;
-import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.Globals.DialogType;
+import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.PredefinedFileFilter;
 import org.helioviewer.jhv.layers.Layers;
@@ -36,7 +37,7 @@ public class OpenLocalFileAction extends AbstractAction
 				.getDefaultToolkit().getMenuShortcutKeyMask()));
 	}
 
-	public void actionPerformed(ActionEvent e)
+	public void actionPerformed(@Nullable ActionEvent e)
 	{
 		//FIXME: do png, jpg & fits actually work?!
 		File selectedFile = Globals.showFileDialog(

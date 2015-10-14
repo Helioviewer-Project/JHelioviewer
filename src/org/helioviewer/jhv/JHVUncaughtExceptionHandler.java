@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
 import javax.swing.Box;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -141,13 +142,13 @@ class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
 	// we do not use the logger here, since it should work even before logging
 	// initialization
 	@SuppressWarnings("deprecation")
-	public synchronized void uncaughtException(final Thread t, final Throwable e)
+	public synchronized void uncaughtException(final @Nullable Thread t, final @Nullable Throwable e)
 	{
 		// stop reentrant error reporting
 		Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler()
 		{
 			@Override
-			public void uncaughtException(Thread _t, Throwable _e)
+			public void uncaughtException(@Nullable Thread _t, @Nullable Throwable _e)
 			{
 				// IGNORE all other exceptions
 			}

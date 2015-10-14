@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
+import javax.annotation.Nullable;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -68,7 +69,7 @@ public class DatePicker extends JPanel
 		txtFieldDate.addFocusListener(new FocusAdapter()
 		{
 			@Override
-			public void focusLost(FocusEvent e)
+			public void focusLost(@Nullable FocusEvent e)
 			{
 				LocalDate localdate = null;
 				try
@@ -106,7 +107,7 @@ public class DatePicker extends JPanel
 			}
 			
 			@Override
-			public void focusGained(FocusEvent _e)
+			public void focusGained(@Nullable FocusEvent _e)
 			{
 				SwingUtilities.invokeLater(new Runnable()
 				{
@@ -133,7 +134,7 @@ public class DatePicker extends JPanel
 		btnDatePicker.addActionListener(new ActionListener()
 		{
 			@Override
-			public void actionPerformed(ActionEvent e)
+			public void actionPerformed(@Nullable ActionEvent e)
 			{
 				if (popupVisibility)
 				{
@@ -161,7 +162,7 @@ public class DatePicker extends JPanel
 		txtFieldTime.addFocusListener(new FocusAdapter()
 		{
 			@Override
-			public void focusLost(FocusEvent e)
+			public void focusLost(@Nullable FocusEvent e)
 			{
 				LocalTime localTime = null;
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("H:m:s");
@@ -194,7 +195,7 @@ public class DatePicker extends JPanel
 			}
 			
 			@Override
-			public void focusGained(FocusEvent _e)
+			public void focusGained(@Nullable FocusEvent _e)
 			{
 				SwingUtilities.invokeLater(new Runnable()
 				{
@@ -209,14 +210,14 @@ public class DatePicker extends JPanel
 		txtFieldTime.addKeyListener(new KeyAdapter()
 		{
 			@Override
-			public void keyReleased(KeyEvent e)
+			public void keyReleased(@Nullable KeyEvent e)
 			{
 				factor = 0;
 				keyMode = KEY_MODE.NONE;
 			}
 			
 			@Override
-			public void keyPressed(KeyEvent e)
+			public void keyPressed(@Nullable KeyEvent e)
 			{
 				long time = (long) Math.pow(2, factor);
 				time = time > MAX_TIME_STEPS ? MAX_TIME_STEPS : time;

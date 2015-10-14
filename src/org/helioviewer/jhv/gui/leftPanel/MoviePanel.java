@@ -14,6 +14,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
 
+import javax.annotation.Nullable;
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -145,7 +146,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		spinner.addChangeListener(new ChangeListener()
 		{
 			@Override
-			public void stateChanged(ChangeEvent e)
+			public void stateChanged(@Nullable ChangeEvent e)
 			{
 				timeLine.setFPS((int) spinner.getValue() * ((PlaybackSpeedUnit) speedUnitComboBox.getSelectedItem()).factor);
 			}
@@ -154,7 +155,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		speedUnitComboBox.addItemListener(new ItemListener()
 		{
 			@Override
-			public void itemStateChanged(ItemEvent e)
+			public void itemStateChanged(@Nullable ItemEvent e)
 			{
 				//FIXME: switching to other units doesn't work --> crash
 				timeLine.setFPS((int) spinner.getValue() * ((PlaybackSpeedUnit) speedUnitComboBox.getSelectedItem()).factor);
@@ -169,7 +170,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		animationModeComboBox.addItemListener(new ItemListener()
 		{
 			@Override
-			public void itemStateChanged(ItemEvent e)
+			public void itemStateChanged(@Nullable ItemEvent e)
 			{
 				timeLine.setAnimationMode((AnimationMode) animationModeComboBox.getSelectedItem());
 			}
@@ -217,7 +218,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		slider.addChangeListener(new ChangeListener()
 		{
 			@Override
-			public void stateChanged(ChangeEvent e)
+			public void stateChanged(@Nullable ChangeEvent e)
 			{
 				lblFrames.setText(slider.getValue() + "/" + slider.getMaximum());
 				timeLine.setCurrentFrame(slider.getValue());
@@ -230,7 +231,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		btnPrevious.addActionListener(new ActionListener()
 		{
 			@Override
-			public void actionPerformed(ActionEvent e)
+			public void actionPerformed(@Nullable ActionEvent e)
 			{
 				timeLine.previousFrame();
 			}
@@ -245,7 +246,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		btnPlayPause.addActionListener(new ActionListener()
 		{
 			@Override
-			public void actionPerformed(ActionEvent e)
+			public void actionPerformed(@Nullable ActionEvent e)
 			{
 				setPlaying(!timeLine.isPlaying());
 			}
@@ -258,7 +259,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		btnForward.addActionListener(new ActionListener()
 		{
 			@Override
-			public void actionPerformed(ActionEvent e)
+			public void actionPerformed(@Nullable ActionEvent e)
 			{
 				timeLine.nextFrame();
 			}
@@ -270,7 +271,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		btnMoreOptions.addActionListener(new ActionListener()
 		{
 			@Override
-			public void actionPerformed(ActionEvent e)
+			public void actionPerformed(@Nullable ActionEvent e)
 			{
 				if (showMore)
 					btnMoreOptions.setIcon(ICON_OPEN);
@@ -331,7 +332,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		}
 
 		@Override
-		public void paintThumb(Graphics g)
+		public void paintThumb(@Nullable Graphics g)
 		{
 			Rectangle knobBounds = thumbRect;
 			int w = knobBounds.width;
@@ -364,7 +365,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		}
 
 		@Override
-		public void paintTrack(Graphics g)
+		public void paintTrack(@Nullable Graphics g)
 		{
 			g.translate(trackRect.x, 0);
 			
@@ -491,7 +492,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.ALT_MASK));
 		}
 
-		public void actionPerformed(ActionEvent e)
+		public void actionPerformed(@Nullable ActionEvent e)
 		{
 			MainFrame.MOVIE_PANEL.setPlaying(!TimeLine.SINGLETON.isPlaying());
 		}
@@ -513,7 +514,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_B, KeyEvent.ALT_MASK));
 		}
 
-		public void actionPerformed(ActionEvent e)
+		public void actionPerformed(@Nullable ActionEvent e)
 		{
 			TimeLine.SINGLETON.previousFrame();
 		}
@@ -535,7 +536,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_MASK));
 		}
 
-		public void actionPerformed(ActionEvent e)
+		public void actionPerformed(@Nullable ActionEvent e)
 		{
 			TimeLine.SINGLETON.nextFrame();
 		}

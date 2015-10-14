@@ -8,6 +8,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
+import javax.annotation.Nullable;
+
 import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.plugins.AbstractPlugin;
@@ -30,7 +32,7 @@ public class PfssPlugin extends AbstractPlugin {
 	public static final ExecutorService pool = Executors.newFixedThreadPool(2,
 			new ThreadFactory() {
 				@Override
-				public Thread newThread(Runnable _r) {
+				public Thread newThread(@Nullable Runnable _r) {
 					Thread t = Executors.defaultThreadFactory().newThread(_r);
 					t.setName("PFSS-" + (threadNumber++));
 					t.setDaemon(true);

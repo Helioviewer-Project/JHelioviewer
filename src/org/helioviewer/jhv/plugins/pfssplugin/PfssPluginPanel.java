@@ -9,6 +9,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.time.LocalDateTime;
 
+import javax.annotation.Nullable;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
@@ -34,7 +35,7 @@ class PfssPluginPanel extends JPanel implements ActionListener
 
 		this.addComponentListener(new ComponentAdapter() {
 			@Override
-			public void componentShown(ComponentEvent e) {
+			public void componentShown(@Nullable ComponentEvent e) {
 				reload();
 			}
 		});
@@ -98,7 +99,7 @@ class PfssPluginPanel extends JPanel implements ActionListener
 		}
 	}
 
-	public void actionPerformed(ActionEvent act) {
+	public void actionPerformed(@Nullable ActionEvent act) {
 		if (act.getSource().equals(visibleButton)) {
 			setVisible(!renderer.isVisible());
 		}

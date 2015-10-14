@@ -30,9 +30,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import org.helioviewer.jhv.Globals;
+import org.helioviewer.jhv.Globals.DialogType;
 import org.helioviewer.jhv.Settings;
 import org.helioviewer.jhv.Telemetry;
-import org.helioviewer.jhv.Globals.DialogType;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.PredefinedFileFilter;
 import org.helioviewer.jhv.layers.Layers;
@@ -50,7 +50,7 @@ public class ExportMovieAction extends AbstractAction
 		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_E, KeyEvent.SHIFT_DOWN_MASK | Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
     }
 
-	public void actionPerformed(ActionEvent e)
+	public void actionPerformed(@Nullable ActionEvent e)
 	{
 		if(Layers.getLayerCount() > 0)
 			openExportMovieDialog();

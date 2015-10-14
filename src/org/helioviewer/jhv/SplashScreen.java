@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
+import javax.annotation.Nullable;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -142,7 +143,7 @@ class SplashScreen extends JFrame
 		 * @param g
 		 *            Graphics object where image shall be drawn.
 		 */
-		protected void paintComponent(Graphics g) {
+		protected void paintComponent(@Nullable Graphics g) {
 			super.paintComponent(g);
 			if (image != null)
 				g.drawImage(image, 0, 0, null);

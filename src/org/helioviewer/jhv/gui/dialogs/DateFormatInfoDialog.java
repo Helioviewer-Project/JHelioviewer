@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.annotation.Nullable;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -51,7 +52,7 @@ class DateFormatInfoDialog extends JDialog
         // add action listener to button
         closeButton.addActionListener(new ActionListener()
         {
-			public void actionPerformed(ActionEvent arg0)
+			public void actionPerformed(@Nullable ActionEvent arg0)
 			{
 				dispose();
 			}

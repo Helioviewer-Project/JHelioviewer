@@ -16,6 +16,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.time.LocalDateTime;
 
+import javax.annotation.Nullable;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -74,6 +75,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 	
 	private JButton btnShowInfo;
 
+	@SuppressWarnings("null")
 	public LayerPanel()
 	{
 		initPopup();
@@ -90,7 +92,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		showMetaView.addActionListener(new ActionListener()
 		{
 			@Override
-			public void actionPerformed(ActionEvent e)
+			public void actionPerformed(@Nullable ActionEvent e)
 			{
 				new MetaDataDialog();
 			}
@@ -100,10 +102,12 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		downloadLayer.addActionListener(new ActionListener()
 		{
 			@Override
-			public void actionPerformed(ActionEvent e)
+			public void actionPerformed(@Nullable ActionEvent e)
 			{
-				if (Layers.getLayer(activePopupLayer) != null)
-					new DownloadMovieDialog().startDownload(Layers.getLayer(activePopupLayer).getDownloadURL(), Layers.getLayer(activePopupLayer));
+				String downloadURL=Layers.getLayer(activePopupLayer).getDownloadURL();
+				
+				if (downloadURL != null)
+					new DownloadMovieDialog().startDownload(downloadURL, Layers.getLayer(activePopupLayer));
 			}
 		});
 		
@@ -111,7 +115,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		hideLayer.addActionListener(new ActionListener()
 		{
 			@Override
-			public void actionPerformed(ActionEvent e)
+			public void actionPerformed(@Nullable ActionEvent e)
 			{
 				Layers.getLayer(activePopupLayer).setVisible(false);
 				updateData();
@@ -121,7 +125,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		showLayer.addActionListener(new ActionListener()
 		{
 			@Override
-			public void actionPerformed(ActionEvent e)
+			public void actionPerformed(@Nullable ActionEvent e)
 			{
 				Layers.getLayer(activePopupLayer).setVisible(true);
 				updateData();
@@ -132,7 +136,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		removeLayer.addActionListener(new ActionListener()
 		{
 			@Override
-			public void actionPerformed(ActionEvent e)
+			public void actionPerformed(@Nullable ActionEvent e)
 			{
 				Layers.removeLayer(activePopupLayer);
 			}
@@ -150,7 +154,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		popupMenu.addPopupMenuListener(new PopupMenuListener()
 		{
 			@Override
-			public void popupMenuWillBecomeVisible(PopupMenuEvent e)
+			public void popupMenuWillBecomeVisible(@Nullable PopupMenuEvent e)
 			{
 				if (Layers.getLayer(activePopupLayer).isImageLayer())
 				{
@@ -167,12 +171,12 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			}
 			
 			@Override
-			public void popupMenuWillBecomeInvisible(PopupMenuEvent e)
+			public void popupMenuWillBecomeInvisible(@Nullable PopupMenuEvent e)
 			{
 			}
 			
 			@Override
-			public void popupMenuCanceled(PopupMenuEvent e)
+			public void popupMenuCanceled(@Nullable PopupMenuEvent e)
 			{
 			}
 		});
@@ -225,7 +229,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		table.getSelectionModel().addListSelectionListener(new ListSelectionListener()
 				{
 					@Override
-					public void valueChanged(ListSelectionEvent e)
+					public void valueChanged(@Nullable ListSelectionEvent e)
 					{
 						Layers.setActiveLayer(table.getSelectedRow());
 					}
@@ -234,8 +238,11 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		table.addMouseListener(new MouseAdapter()
 		{
 			@Override
-			public void mouseClicked(MouseEvent e)
+			public void mouseClicked(@Nullable MouseEvent e)
 			{
+				if(e==null)
+					return;
+				
 				JTable jTable = (JTable) e.getSource();
 				int row = jTable.rowAtPoint(e.getPoint());
 				int column = table.getSelectedColumn();
@@ -256,8 +263,11 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			}
 
 			@Override
-			public void mousePressed(MouseEvent e)
+			public void mousePressed(@Nullable MouseEvent e)
 			{
+				if(e==null)
+					return;
+				
 				if (e.isPopupTrigger())
 				{
 					JTable jTable = (JTable) e.getSource();
@@ -276,8 +286,11 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		table.addMouseMotionListener(new MouseMotionAdapter()
 		{
 			@Override
-			public void mouseMoved(MouseEvent e)
+			public void mouseMoved(@Nullable MouseEvent e)
 			{
+				if(e==null)
+					return;
+				
 				JTable jTable = (JTable) e.getSource();
 				int row = jTable.rowAtPoint(e.getPoint());
 				int column = table.columnAtPoint(e.getPoint());
@@ -299,8 +312,11 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		table.addKeyListener(new KeyAdapter()
 		{
 			@Override
-			public void keyPressed(KeyEvent e)
+			public void keyPressed(@Nullable KeyEvent e)
 			{
+				if(e==null)
+					return;
+				
 				if (e.getKeyCode() == KeyEvent.VK_DELETE /*|| e.getKeyCode() == KeyEvent.VK_BACK_SPACE*/)
 					Layers.removeLayer(table.getSelectedRow());
 			}
@@ -323,7 +339,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		btnShowInfo.addActionListener(new ActionListener()
 		{
 			@Override
-			public void actionPerformed(ActionEvent e)
+			public void actionPerformed(@Nullable ActionEvent e)
 			{
 				new MetaDataDialog();
 			}
@@ -340,11 +356,15 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		btnDownloadLayer.addActionListener(new ActionListener()
 		{
 			@Override
-			public void actionPerformed(ActionEvent e)
+			public void actionPerformed(@Nullable ActionEvent e)
 			{
 				AbstractImageLayer l = Layers.getActiveImageLayer();
-				if (l != null)
-					new DownloadMovieDialog().startDownload(l.getDownloadURL(), l);
+				if (l == null)
+					return;
+				
+				String downloadURL = l.getDownloadURL();
+				if(downloadURL!=null)
+					new DownloadMovieDialog().startDownload(downloadURL, l);
 			}
 		});
 		GridBagConstraints gbcBtnDownloadLayer = new GridBagConstraints();
@@ -357,7 +377,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		btnAddLayer.addActionListener(new ActionListener()
 		{
 			@Override
-			public void actionPerformed(ActionEvent e)
+			public void actionPerformed(@Nullable ActionEvent e)
 			{
 				new AddLayerPanel().setVisible(true);
 			}
@@ -422,7 +442,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		}
 
 		@Override
-		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, final int row, int column)
+		public Component getTableCellRendererComponent(@Nullable JTable table, @Nullable Object value, boolean isSelected, boolean hasFocus, final int row, int column)
 		{
 			switch (column)
 			{
@@ -431,7 +451,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 					break;
 				case 1:
 					JLabel label = (JLabel) super.getTableCellRendererComponent(table, null, isSelected, hasFocus, row, column);
-					if ((Boolean) value)
+					if (value!=null && (Boolean) value)
 					{
 						label.setIcon(WARNING_BAD_REQUEST);
 						label.setPreferredSize(new Dimension(20, 20));
@@ -478,7 +498,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 	}
 
 	@Override
-	public void activeLayerChanged(AbstractLayer layer)
+	public void activeLayerChanged(@Nullable AbstractLayer layer)
 	{
 		if (layer != null)
 		{

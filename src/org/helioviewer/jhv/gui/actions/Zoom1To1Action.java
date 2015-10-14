@@ -6,6 +6,7 @@ import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
 import java.time.LocalDateTime;
 
+import javax.annotation.Nullable;
 import javax.swing.AbstractAction;
 import javax.swing.KeyStroke;
 
@@ -29,7 +30,7 @@ public class Zoom1To1Action extends AbstractAction
 		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.ALT_MASK));
 	}
 
-	public void actionPerformed(ActionEvent e)
+	public void actionPerformed(@Nullable ActionEvent e)
 	{
 		MainPanel componentView = MainFrame.MAIN_PANEL;
 		AbstractImageLayer activeLayer = Layers.getActiveImageLayer();

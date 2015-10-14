@@ -3,6 +3,8 @@ package org.helioviewer.jhv.plugins.pfssplugin.data.managers;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
+import javax.annotation.Nullable;
+
 import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
 import org.helioviewer.jhv.plugins.pfssplugin.data.FileDescriptor;
@@ -21,8 +23,8 @@ public class FrameManager
 {
 	private final FileDescriptorManager descriptorManager;
 
-	private PfssDecompressed curFrame;
-	private DataCache dataCache;
+	private @Nullable PfssDecompressed curFrame;
+	private final DataCache dataCache;
 
 	public FrameManager(PfssPlugin _parent)
 	{
@@ -35,9 +37,9 @@ public class FrameManager
 	 * @param date
 	 * @return Frame or null if there is no frame for the requested date
 	 */
-	public PfssDecompressed getFrame(GL2 _gl, LocalDateTime date)
+	@SuppressWarnings({ "unused", "null" })
+	public @Nullable PfssDecompressed getFrame(GL2 _gl, LocalDateTime date)
 	{
-		
 		//outside of loaded frames
 		if(!descriptorManager.isDateInRange(date))
 			return null;

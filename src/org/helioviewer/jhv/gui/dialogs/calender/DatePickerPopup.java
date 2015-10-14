@@ -24,6 +24,7 @@ import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.Locale;
 
+import javax.annotation.Nullable;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -53,7 +54,7 @@ class DatePickerPopup extends JDialog
 		this.addWindowListener(new WindowAdapter()
 		{
 			@Override
-			public void windowDeactivated(WindowEvent e)
+			public void windowDeactivated(@Nullable WindowEvent e)
 			{
 				newDatePicker.hidePopup();
 			}
@@ -62,7 +63,7 @@ class DatePickerPopup extends JDialog
 		this.addFocusListener(new FocusAdapter()
 		{
 			@Override
-			public void focusLost(FocusEvent e)
+			public void focusLost(@Nullable FocusEvent e)
 			{
 				newDatePicker.hidePopup();
 			}			
@@ -76,7 +77,7 @@ class DatePickerPopup extends JDialog
 		Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener()
 		{
 			@Override
-			public void eventDispatched(AWTEvent event)
+			public void eventDispatched(@Nullable AWTEvent event)
 			{
 				if (event instanceof KeyEvent)
 				{
@@ -131,7 +132,7 @@ class DatePickerPopup extends JDialog
 		JLabel lblMonthLeft = new JLabel("<");
 		lblMonthLeft.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseClicked(@Nullable MouseEvent e) {
 				currentDate = currentDate.minusMonths(1);
 				updateData();
 			}
@@ -162,7 +163,7 @@ class DatePickerPopup extends JDialog
 		JLabel lblMonthRight = new JLabel(">");
 		lblMonthRight.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseClicked(@Nullable MouseEvent e) {
 				currentDate = currentDate.plusMonths(1);
 				updateData();
 			}
@@ -177,7 +178,7 @@ class DatePickerPopup extends JDialog
 		JLabel lblYearLeft = new JLabel("<");
 		lblYearLeft.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseClicked(@Nullable MouseEvent e) {
 				currentDate = currentDate.minusYears(1);
 				updateData();
 			}
@@ -201,7 +202,7 @@ class DatePickerPopup extends JDialog
 		JLabel lblYearRight = new JLabel(">");
 		lblYearRight.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseClicked(@Nullable MouseEvent e) {
 				currentDate = currentDate.plusYears(1);
 				updateData();
 			}
@@ -222,7 +223,7 @@ class DatePickerPopup extends JDialog
 		table = new JTable(calenderTableModel);
 		table.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseClicked(@Nullable MouseEvent e) {
 				int row = table.getSelectedRow();
 				int column = table.getSelectedColumn();
 				if (((LocalDate) table.getValueAt(row, column)).getMonthValue() == currentDate
@@ -310,8 +311,8 @@ class DatePickerPopup extends JDialog
 		}
 
 		@Override
-		public Component getTableCellRendererComponent(JTable table,
-				Object value, boolean isSelected, boolean hasFocus, int row,
+		public Component getTableCellRendererComponent(@Nullable JTable table,
+				@Nullable Object value, boolean isSelected, boolean hasFocus, int row,
 				int column) {
 			super.getTableCellRendererComponent(table,
 					((LocalDate) value).getDayOfMonth(), false, hasFocus, row,
@@ -347,8 +348,8 @@ class DatePickerPopup extends JDialog
 		}
 
 		@Override
-		public Component getTableCellRendererComponent(JTable table,
-				Object value, boolean isSelected, boolean hasFocus, int row,
+		public Component getTableCellRendererComponent(@Nullable JTable table,
+				@Nullable Object value, boolean isSelected, boolean hasFocus, int row,
 				int column)
 		{
 			super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);

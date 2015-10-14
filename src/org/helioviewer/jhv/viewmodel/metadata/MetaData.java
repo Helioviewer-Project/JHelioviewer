@@ -21,7 +21,7 @@ public abstract class MetaData
 {
     private @Nullable Rectangle2D physicalImageSize;
     
-    protected @Nullable String instrument;
+    protected String instrument;
     protected @Nullable String detector;
     protected @Nullable String measurement;
     protected @Nullable String observatory;
@@ -58,8 +58,7 @@ public abstract class MetaData
     protected double stonyhurstLatitude;
     protected boolean stonyhurstAvailable = false;
     
-    protected @Nullable LocalDateTime localDateTime;
-	protected final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_DATE_TIME;
+    protected final LocalDateTime localDateTime;
     
 	protected Lut defaultLUT = Lut.GRAY;
 	
@@ -82,11 +81,21 @@ public abstract class MetaData
     	else
     		newResolution = _resolution;
         
-        if (_metaDataContainer.get("INSTRUME") == null)
-            return;
-
         detector = _metaDataContainer.get("DETECTOR");
         instrument = _metaDataContainer.get("INSTRUME");
+        
+        if (instrument == null)
+            throw new UnsuitableMetaDataException("No instrument specified in metadata (INSTRUME)");
+        
+        String observedDate = _metaDataContainer.get("DATE_OBS");
+        String observedTime = _metaDataContainer.get("TIME_OBS");
+        if(observedDate!=null && !observedDate.contains("T") && observedTime!=null && !"".equals(observedTime))
+        	observedDate += "T" + _metaDataContainer.get("TIME_OBS");
+        
+        if(observedDate==null)
+            throw new UnsuitableMetaDataException("No date/time specified in metadata (DATE_OBS)");
+        
+        localDateTime = LocalDateTime.parse(observedDate, DateTimeFormatter.ISO_DATE_TIME);
     }
 
     public synchronized @Nullable Rectangle2D getPhysicalImageSize()
@@ -160,7 +169,7 @@ public abstract class MetaData
         return meterPerPixel;
     }
 
-    public @Nullable LocalDateTime getLocalDateTime()
+    public LocalDateTime getLocalDateTime()
     {
     	return localDateTime;
     }

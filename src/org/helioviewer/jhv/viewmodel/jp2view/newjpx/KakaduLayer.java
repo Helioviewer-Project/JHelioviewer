@@ -118,7 +118,10 @@ public class KakaduLayer extends AbstractImageLayer
 			jsonLayer.put("sharpen", sharpness);
 			jsonLayer.put("gamma", gamma);
 			jsonLayer.put("contrast", contrast);
-			jsonLayer.put("lut", getLUT().ordinal());
+			if(getLUT()!=null)
+				jsonLayer.put("lut", getLUT().ordinal());
+			else
+				jsonLayer.put("lut", -1);
 			jsonLayer.put("redChannel", redChannel);
 			jsonLayer.put("greenChannel", greenChannel);
 			jsonLayer.put("blueChannel", blueChannel);
@@ -141,7 +144,11 @@ public class KakaduLayer extends AbstractImageLayer
 			sharpness = jsonLayer.getDouble("sharpen");
 			gamma = jsonLayer.getDouble("gamma");
 			contrast = jsonLayer.getDouble("contrast");
-			setLUT(Lut.values()[jsonLayer.getInt("lut")]);
+			
+			if(jsonLayer.getInt("lut")==-1)
+				setLUT(null);
+			else
+				setLUT(Lut.values()[jsonLayer.getInt("lut")]);
 			redChannel=jsonLayer.getBoolean("redChannel");
 			greenChannel=jsonLayer.getBoolean("greenChannel");
 			blueChannel=jsonLayer.getBoolean("blueChannel");
@@ -199,10 +206,15 @@ public class KakaduLayer extends AbstractImageLayer
 	
 	static class MovieDownload
 	{
-		HTTPRequest metadata;
-		JPIPRequest lq;
-		JPIPDownloadRequest hq;
-		Movie movie;
+		@Nullable HTTPRequest metadata;
+		@Nullable JPIPRequest lq;
+		@Nullable JPIPDownloadRequest hq;
+		final Movie movie;
+		
+		MovieDownload(Movie _movie)
+		{
+			movie=_movie;
+		}
 	}
 	
 	public void setTimeRange(final LocalDateTime start, final LocalDateTime end, final int cadence)
@@ -226,8 +238,7 @@ public class KakaduLayer extends AbstractImageLayer
 					if(currentEnd.isAfter(end))
 						currentEnd = end;
 					
-					MovieDownload md=new MovieDownload();
-					md.movie = new Movie(KakaduLayer.this,sourceId);
+					MovieDownload md=new MovieDownload(new Movie(KakaduLayer.this,sourceId));
 					md.metadata = new HTTPRequest(URL
 							+ "startTime=" + currentStart.format(formatter)
 							+ "&endTime=" + currentEnd.format(formatter)
@@ -413,7 +424,7 @@ public class KakaduLayer extends AbstractImageLayer
 	}
 	
 	@Override
-	public LocalDateTime getCurrentTime()
+	public @Nullable LocalDateTime getCurrentTime()
 	{
 		return findClosestLocalDateTime(TimeLine.SINGLETON.getCurrentDateTime());
 	}
@@ -432,7 +443,7 @@ public class KakaduLayer extends AbstractImageLayer
 	}
 
 
-	public LocalDateTime findClosestLocalDateTime(LocalDateTime _currentDateTime)
+	public @Nullable LocalDateTime findClosestLocalDateTime(LocalDateTime _currentDateTime)
 	{
 		LocalDateTime after = localDateTimes.ceiling(_currentDateTime);
 		LocalDateTime before = localDateTimes.floor(_currentDateTime);
@@ -455,7 +466,7 @@ public class KakaduLayer extends AbstractImageLayer
 			loaderThread.interrupt();
 	}
 
-	public String getDownloadURL()
+	public @Nullable String getDownloadURL()
 	{
 		if (localFile)
 			return null;
@@ -481,7 +492,7 @@ public class KakaduLayer extends AbstractImageLayer
 		return MovieCache.getMetaData(sourceId, currentDateTime);
 	}
 	
-	public Document getMetaDataDocument(LocalDateTime currentDateTime)
+	public @Nullable Document getMetaDataDocument(LocalDateTime currentDateTime)
 	{
 		if (localDateTimes.isEmpty())
 			return null;

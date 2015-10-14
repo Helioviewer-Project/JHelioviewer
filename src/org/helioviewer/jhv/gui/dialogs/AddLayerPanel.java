@@ -14,6 +14,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
 
+import javax.annotation.Nullable;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -100,7 +101,7 @@ public class AddLayerPanel extends JDialog
 		getRootPane().registerKeyboardAction(new ActionListener()
 		{
 			@Override
-			public void actionPerformed(ActionEvent e)
+			public void actionPerformed(@Nullable ActionEvent e)
 			{
 				setVisible(false);
 			}
@@ -109,7 +110,7 @@ public class AddLayerPanel extends JDialog
 		this.addComponentListener(new ComponentAdapter()
 		{
 			@Override
-			public void componentShown(ComponentEvent e)
+			public void componentShown(@Nullable ComponentEvent e)
 			{
 				/*if (tabbedPane.getSelectedComponent() == pluginPanel) {
 					tabbedPane.setSelectedComponent(layerPanel);
@@ -144,7 +145,7 @@ public class AddLayerPanel extends JDialog
 		cmbbxObservatory.addItemListener(new ItemListener()
 		{
 			@Override
-			public void itemStateChanged(ItemEvent e)
+			public void itemStateChanged(@Nullable ItemEvent e)
 			{
 				Observatories.Observatory observatory = ((Observatories.Observatory) e.getItem());
 				lblFilter.setText("");
@@ -194,7 +195,7 @@ public class AddLayerPanel extends JDialog
 		cmbbxFilter.addItemListener(new ItemListener()
 		{
 			@Override
-			public void itemStateChanged(ItemEvent e)
+			public void itemStateChanged(@Nullable ItemEvent e)
 			{
 				cmbbxFilter1.removeAllItems();
 				cmbbxFilter2.removeAllItems();
@@ -216,7 +217,7 @@ public class AddLayerPanel extends JDialog
 		cmbbxFilter1.addItemListener(new ItemListener()
 		{
 			@Override
-			public void itemStateChanged(ItemEvent e)
+			public void itemStateChanged(@Nullable ItemEvent e)
 			{
 				cmbbxFilter2.removeAllItems();
 				for (Observatories.Filter filter : ((Observatories.Filter) e.getItem()).getFilters())
@@ -311,7 +312,7 @@ public class AddLayerPanel extends JDialog
 		((DefaultEditor)cadence.getEditor()).getTextField().addFocusListener(new FocusAdapter()
 		{
 			@Override
-			public void focusGained(FocusEvent _e)
+			public void focusGained(@Nullable FocusEvent _e)
 			{
 				SwingUtilities.invokeLater(new Runnable()
 				{
@@ -360,7 +361,7 @@ public class AddLayerPanel extends JDialog
 		okButton.addActionListener(new ActionListener()
 		{
 			@Override
-			public void actionPerformed(ActionEvent e)
+			public void actionPerformed(@Nullable ActionEvent e)
 			{
 				//if (tabbedPane.getSelectedComponent() == layerPanel) {
 					Observatories.Filter filter = (Observatories.Filter) cmbbxFilter2.getSelectedItem();
@@ -395,7 +396,7 @@ public class AddLayerPanel extends JDialog
 		cancelButton.addActionListener(new ActionListener()
 		{
 			@Override
-			public void actionPerformed(ActionEvent e)
+			public void actionPerformed(@Nullable ActionEvent e)
 			{
 				setVisible(false);
 			}
@@ -430,7 +431,7 @@ public class AddLayerPanel extends JDialog
 		contentPanel.addComponentListener(new ComponentAdapter()
 		{
 			@Override
-			public void componentShown(ComponentEvent e)
+			public void componentShown(@Nullable ComponentEvent e)
 			{
 				cmbbxPlugin.removeAllItems();
 				for (AbstractPlugin plugin : Plugins.SINGLETON.getInactivePlugins())

@@ -2,6 +2,7 @@ package org.helioviewer.jhv.gui.actions;
 
 import java.awt.event.ActionEvent;
 
+import javax.annotation.Nullable;
 import javax.swing.AbstractAction;
 
 import org.helioviewer.jhv.base.math.Vector3d;
@@ -23,7 +24,7 @@ public class ResetCameraAction extends AbstractAction
         // KeyEvent.ALT_MASK));
     }
 
-    public void actionPerformed(ActionEvent e)
+    public void actionPerformed(@Nullable ActionEvent e)
     {
 		MainFrame.MAIN_PANEL.addCameraAnimation(new CameraRotationAnimation(MainFrame.MAIN_PANEL,MainFrame.MAIN_PANEL.getRotationEnd().inversed()));
 		MainFrame.MAIN_PANEL.addCameraAnimation(new CameraTranslationAnimation(

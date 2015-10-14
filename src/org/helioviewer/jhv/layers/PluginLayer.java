@@ -2,6 +2,8 @@ package org.helioviewer.jhv.layers;
 
 import java.time.LocalDateTime;
 
+import javax.annotation.Nullable;
+
 import org.helioviewer.jhv.plugins.AbstractPlugin;
 import org.helioviewer.jhv.plugins.Plugins;
 import org.json.JSONObject;
@@ -52,7 +54,7 @@ public class PluginLayer extends AbstractLayer
 	}
 
 	@Override
-	public LocalDateTime getCurrentTime()
+	public @Nullable LocalDateTime getCurrentTime()
 	{
 		return null;
 	}
@@ -64,7 +66,7 @@ public class PluginLayer extends AbstractLayer
 	}
 
 	@Override
-	public String getFullName()
+	public @Nullable String getFullName()
 	{
 		return null;
 	}

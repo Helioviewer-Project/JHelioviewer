@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
+import javax.annotation.Nullable;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JSlider;
@@ -30,7 +31,7 @@ public class WheelSupport {
 
     public static void installMouseWheelSupport(final JSpinner spinner) {
         MouseWheelListener l = new MouseWheelListener() {
-            public void mouseWheelMoved(MouseWheelEvent e) {
+            public void mouseWheelMoved(@Nullable MouseWheelEvent e) {
                 if (!spinner.isEnabled()) {
                     return;
                 }
@@ -55,7 +56,7 @@ public class WheelSupport {
 
     public static void installMouseWheelSupport(final JSlider slider) {
         MouseWheelListener l = new MouseWheelListener() {
-            public void mouseWheelMoved(MouseWheelEvent e) {
+            public void mouseWheelMoved(@Nullable MouseWheelEvent e) {
                 if (!slider.isEnabled()) {
                     return;
                 }

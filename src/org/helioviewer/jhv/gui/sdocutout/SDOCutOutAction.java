@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
+import javax.annotation.Nullable;
 import javax.swing.AbstractAction;
 
 import org.helioviewer.jhv.Globals;
@@ -31,7 +32,7 @@ class SDOCutOutAction extends AbstractAction
         super("SDO Cut-Out");
     }
     
-    public void actionPerformed(ActionEvent e)
+    public void actionPerformed(@Nullable ActionEvent e)
     {
 		AbstractImageLayer activeLayer = Layers.getActiveImageLayer();
 		ArrayList<KakaduLayer> sdoLayers = new ArrayList<KakaduLayer>();

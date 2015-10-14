@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.KeyStroke;
@@ -43,7 +44,7 @@ public class SaveScreenshotAsAction extends AbstractAction
 						| Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 	}
 
-	public void actionPerformed(ActionEvent e)
+	public void actionPerformed(@Nullable ActionEvent e)
 	{
 		File selectedFile=Globals.showFileDialog(DialogType.SAVE_FILE,
 				"Save screenshot",

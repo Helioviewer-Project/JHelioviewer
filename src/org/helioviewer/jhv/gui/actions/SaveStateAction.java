@@ -3,6 +3,7 @@ package org.helioviewer.jhv.gui.actions;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 
+import javax.annotation.Nullable;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 
@@ -19,7 +20,7 @@ public class SaveStateAction extends AbstractAction
         putValue(SHORT_DESCRIPTION, "Saves the current state of JHV");
     }
 
-    public void actionPerformed(ActionEvent e)
+    public void actionPerformed(@Nullable ActionEvent e)
     {
     	try
     	{

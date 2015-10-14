@@ -2,6 +2,8 @@ package org.helioviewer.jhv.base.math;
 
 import java.util.Locale;
 
+import javax.annotation.Nullable;
+
 /**
  * A class for three dimensional vectors with double coordinates. Instances of
  * Vector3dDouble are immutable.
@@ -186,7 +188,7 @@ public final class Vector3d {
         return new Vector3d(Math.abs(v.x), Math.abs(v.y), Math.abs(v.z));
     }
 
-    public boolean equals(final Object o) {
+    public boolean equals(final @Nullable Object o) {
         if (!(o instanceof Vector3d)) {
             return false;
         }

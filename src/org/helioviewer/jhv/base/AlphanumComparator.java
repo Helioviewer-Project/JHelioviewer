@@ -26,6 +26,8 @@ package org.helioviewer.jhv.base;
 
 import java.util.Comparator;
 
+import javax.annotation.Nullable;
+
 /**
  * This is an updated version with enhancements made by Daniel Migowski, Andre
  * Bogus, and David Koelle
@@ -79,7 +81,7 @@ public class AlphanumComparator implements Comparator<String>
         return chunk.toString();
     }
 
-    public int compare(String s1, String s2) {
+    public int compare(@Nullable String s1, @Nullable String s2) {
         int thisMarker = 0;
         int thatMarker = 0;
         int s1Length = s1.length();

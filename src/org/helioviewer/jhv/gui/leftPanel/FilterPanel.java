@@ -110,7 +110,7 @@ public class FilterPanel extends JPanel implements LayerListener
 		opacitySlider.addChangeListener(new ChangeListener()
 		{
 			@Override
-			public void stateChanged(ChangeEvent e)
+			public void stateChanged(@Nullable ChangeEvent e)
 			{
 				lblOpacity.setText(opacitySlider.getValue() + "%");
 				if (activeLayer != null && activeLayer.opacity != opacitySlider.getValue() / 100.0)
@@ -142,7 +142,7 @@ public class FilterPanel extends JPanel implements LayerListener
 		sharpenSlider.addChangeListener(new ChangeListener()
 		{
 			@Override
-			public void stateChanged(ChangeEvent e)
+			public void stateChanged(@Nullable ChangeEvent e)
 			{
 				lblSharpen.setText(sharpenSlider.getValue() + "%");
 				if (activeLayer != null && activeLayer.sharpness != sharpenSlider.getValue()/100.0)
@@ -174,7 +174,7 @@ public class FilterPanel extends JPanel implements LayerListener
 		gammaSlider.addChangeListener(new ChangeListener()
 		{
 			@Override
-			public void stateChanged(ChangeEvent e) {
+			public void stateChanged(@Nullable ChangeEvent e) {
 				double gammaValue = Math.exp(gammaSlider.getValue() * GAMMA_FACTOR);
 		        String label = Double.toString(Math.round(gammaValue * 10.0) * 0.1);
 		        if (gammaSlider.getValue() == 100) {
@@ -214,7 +214,7 @@ public class FilterPanel extends JPanel implements LayerListener
 		contrastSlider.addChangeListener(new ChangeListener()
 		{
 			@Override
-			public void stateChanged(ChangeEvent e)
+			public void stateChanged(@Nullable ChangeEvent e)
 			{
 				lblContrast.setText(contrastSlider.getValue() + "");
 				if (activeLayer != null &&  activeLayer.contrast != contrastSlider.getValue() / 10.0)
@@ -246,7 +246,7 @@ public class FilterPanel extends JPanel implements LayerListener
 		comboBoxColorTable.addItemListener(new ItemListener()
 		{
 			@Override
-			public void itemStateChanged(ItemEvent e)
+			public void itemStateChanged(@Nullable ItemEvent e)
 			{
 				if (activeLayer != null && activeLayer.getLUT() != comboBoxColorTable.getSelectedItem())
 				{
@@ -261,7 +261,7 @@ public class FilterPanel extends JPanel implements LayerListener
 		btnInverseColorTable.addChangeListener(new ChangeListener()
 		{
 			@Override
-			public void stateChanged(ChangeEvent e)
+			public void stateChanged(@Nullable ChangeEvent e)
 			{
 				if(activeLayer != null && activeLayer.invertedLut != btnInverseColorTable.isSelected())
 				{
@@ -279,7 +279,7 @@ public class FilterPanel extends JPanel implements LayerListener
 		chckbxRed.addItemListener(new ItemListener()
 		{
 			@Override
-			public void itemStateChanged(ItemEvent e)
+			public void itemStateChanged(@Nullable ItemEvent e)
 			{
 				if (activeLayer != null && activeLayer.redChannel != chckbxRed.isSelected())
 				{
@@ -294,7 +294,7 @@ public class FilterPanel extends JPanel implements LayerListener
 		chckbxGreen.addItemListener(new ItemListener()
 		{
 			@Override
-			public void itemStateChanged(ItemEvent e)
+			public void itemStateChanged(@Nullable ItemEvent e)
 			{
 				if (activeLayer != null && activeLayer.greenChannel != chckbxGreen.isSelected())
 				{
@@ -309,7 +309,7 @@ public class FilterPanel extends JPanel implements LayerListener
 		chckbxBlue.addItemListener(new ItemListener()
 		{
 			@Override
-			public void itemStateChanged(ItemEvent e)
+			public void itemStateChanged(@Nullable ItemEvent e)
 			{
 				if (activeLayer != null && activeLayer.blueChannel != chckbxBlue.isSelected())
 				{

@@ -55,10 +55,10 @@ public class CommandLineProcessor
      * 
      * @return values of the -jhv option.
      */
-    public static List<JHVRequest> getJHVOptionValues()
+    public static List<CommandLineRequest> getJHVOptionValues()
     {
         List<String> optionValues = getOptionValues("jhv");
-        List<JHVRequest> result = new ArrayList<JHVRequest>(optionValues.size());
+        List<CommandLineRequest> result = new ArrayList<CommandLineRequest>(optionValues.size());
 
         for (String optionValue : optionValues)
             if (!optionValue.equals(""))
@@ -179,9 +179,9 @@ public class CommandLineProcessor
      * @throws IllegalArgumentException
      */
 
-    private static JHVRequest parseJHVRequest(String _data) throws IllegalArgumentException
+    private static CommandLineRequest parseJHVRequest(String _data) throws IllegalArgumentException
     {
-        JHVRequest request = new JHVRequest();
+        CommandLineRequest request = new CommandLineRequest();
         String[] fields = null;
 
         // Request must be in brackets

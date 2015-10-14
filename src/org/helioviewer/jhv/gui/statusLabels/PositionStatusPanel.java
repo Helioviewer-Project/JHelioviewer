@@ -7,6 +7,7 @@ import java.awt.event.MouseListener;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 
+import javax.annotation.Nullable;
 import javax.swing.BorderFactory;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -129,7 +130,7 @@ public class PositionStatusPanel extends StatusLabel implements MouseListener
 	}
 	
 	@Override
-	public void mouseClicked(MouseEvent e)
+	public void mouseClicked(@Nullable MouseEvent e)
 	{
 		if (e.isPopupTrigger())
 		{
@@ -138,12 +139,12 @@ public class PositionStatusPanel extends StatusLabel implements MouseListener
 	}
 
 	@Override
-	public void mousePressed(MouseEvent e)
+	public void mousePressed(@Nullable MouseEvent e)
 	{
 	}
 
 	@Override
-	public void mouseReleased(MouseEvent e)
+	public void mouseReleased(@Nullable MouseEvent e)
 	{
 		if (e.isPopupTrigger())
 		{
@@ -152,12 +153,12 @@ public class PositionStatusPanel extends StatusLabel implements MouseListener
 	}
 
 	@Override
-	public void mouseEntered(MouseEvent e)
+	public void mouseEntered(@Nullable MouseEvent e)
 	{
 	}
 
 	@Override
-	public void mouseExited(MouseEvent e)
+	public void mouseExited(@Nullable MouseEvent e)
 	{
 	}
 
@@ -173,7 +174,7 @@ public class PositionStatusPanel extends StatusLabel implements MouseListener
 				popupItems.popupItem.addActionListener(new ActionListener()
 				{
 					@Override
-					public void actionPerformed(ActionEvent e)
+					public void actionPerformed(@Nullable ActionEvent e)
 					{
 						for (PopupItemState.PopupItemStates popupItems : PopupItemState.PopupItemStates.values())
 						{

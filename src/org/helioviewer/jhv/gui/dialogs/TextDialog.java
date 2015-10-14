@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
+import javax.annotation.Nullable;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -75,7 +76,7 @@ class TextDialog extends JDialog implements ActionListener
         add(closeButtonContainer, BorderLayout.SOUTH);
     }
 
-    public void actionPerformed(ActionEvent e)
+    public void actionPerformed(@Nullable ActionEvent e)
     {
         dispose();
     }

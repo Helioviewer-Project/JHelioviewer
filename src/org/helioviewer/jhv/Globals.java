@@ -15,16 +15,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-
 import javax.annotation.Nullable;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -36,6 +26,16 @@ import javax.swing.filechooser.FileFilter;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.gui.PredefinedFileFilter;
+
+import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 /**
  * Intended to be a class for static functions and fields relevant to the
@@ -171,12 +171,12 @@ public class Globals
 		        modalBlocker.addFocusListener(new FocusListener()
 				{
 					@Override
-					public void focusLost(FocusEvent _e)
+					public void focusLost(@Nullable FocusEvent _e)
 					{
 					}
 					
 					@Override
-					public void focusGained(FocusEvent _e)
+					public void focusGained(@Nullable FocusEvent _e)
 					{
 						final Stage s = mainStage.peek();
 						if(s!=null)

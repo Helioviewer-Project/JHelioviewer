@@ -1,9 +1,13 @@
 package org.helioviewer.jhv.gui;
 
 import java.io.File;
+
+import javax.annotation.Nullable;
 import javax.swing.filechooser.FileFilter;
-import javafx.stage.FileChooser.ExtensionFilter;
+
 import com.xuggle.xuggler.ICodec;
+
+import javafx.stage.FileChooser.ExtensionFilter;
 
 public class PredefinedFileFilter extends FileFilter
 {
@@ -44,8 +48,11 @@ public class PredefinedFileFilter extends FileFilter
 	}
 	
     @Override
-    public boolean accept(File f)
+    public boolean accept(@Nullable File f)
     {
+    	if(f==null)
+    		return false;
+    	
         if (f.isDirectory())
             return true;
 
@@ -72,14 +79,14 @@ public class PredefinedFileFilter extends FileFilter
 
 
     private final String[] extensions;
-	public final String description;
-	public final String fileType;
+	public final @Nullable String description;
+	public final @Nullable String fileType;
 	
-	public final ICodec.ID codec;
-	public final ImageTypes imageType;
-	public final CompressedTypes compressedType;
-	private final PredefinedFileFilter innerFileFilter;
-	public final MovieTypes movieType;
+	public final @Nullable ICodec.ID codec;
+	public final @Nullable ImageTypes imageType;
+	public final @Nullable CompressedTypes compressedType;
+	private final @Nullable PredefinedFileFilter innerFileFilter;
+	public final @Nullable MovieTypes movieType;
 	
 	public final ExtensionFilter extensionFilter;
 	
@@ -158,12 +165,12 @@ public class PredefinedFileFilter extends FileFilter
 		return compressedType!=null;
 	}
 
-	public PredefinedFileFilter getInnerMovieFilter()
+	public @Nullable PredefinedFileFilter getInnerMovieFilter()
 	{
 		return innerFileFilter;
 	}
 	
-	public String getDescription()
+	public @Nullable String getDescription()
 	{
 		return description;
 	}

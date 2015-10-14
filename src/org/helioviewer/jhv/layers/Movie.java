@@ -14,15 +14,6 @@ import javax.swing.SwingUtilities;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import kdu_jni.Jp2_threadsafe_family_src;
-import kdu_jni.Jpx_source;
-import kdu_jni.KduException;
-import kdu_jni.Kdu_cache;
-import kdu_jni.Kdu_compositor_buf;
-import kdu_jni.Kdu_coords;
-import kdu_jni.Kdu_dims;
-import kdu_jni.Kdu_region_compositor;
-
 import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.layers.AbstractImageLayer.CacheStatus;
 import org.helioviewer.jhv.layers.LUT.Lut;
@@ -32,6 +23,15 @@ import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.metadata.MetaDataFactory;
 import org.helioviewer.jhv.viewmodel.metadata.UnsuitableMetaDataException;
 import org.w3c.dom.Document;
+
+import kdu_jni.Jp2_threadsafe_family_src;
+import kdu_jni.Jpx_source;
+import kdu_jni.KduException;
+import kdu_jni.Kdu_cache;
+import kdu_jni.Kdu_compositor_buf;
+import kdu_jni.Kdu_coords;
+import kdu_jni.Kdu_dims;
+import kdu_jni.Kdu_region_compositor;
 
 public class Movie
 {

@@ -2,6 +2,7 @@ package org.helioviewer.jhv.gui.actions;
 
 import java.awt.event.ActionEvent;
 
+import javax.annotation.Nullable;
 import javax.swing.AbstractAction;
 
 import org.helioviewer.jhv.Globals;
@@ -27,7 +28,7 @@ public class OpenURLinBrowserAction extends AbstractAction
         urlToOpen = url;
     }
 
-    public void actionPerformed(ActionEvent e)
+    public void actionPerformed(@Nullable ActionEvent e)
     {
         Globals.openURL(urlToOpen);
     }

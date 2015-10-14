@@ -417,7 +417,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	}
 
 	@Override
-	public void display(GLAutoDrawable drawable)
+	public void display(@Nullable GLAutoDrawable drawable)
 	{
 		sizeForDecoder = getCanavasSize();
 		
@@ -535,12 +535,12 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	}
 
 	@Override
-	public void dispose(GLAutoDrawable arg0)
+	public void dispose(@Nullable GLAutoDrawable arg0)
 	{
 	}
 
 	@Override
-	public void init(GLAutoDrawable drawable)
+	public void init(@Nullable GLAutoDrawable drawable)
 	{
 		//if (System.getProperty("jhvVersion") == null)
 		//	drawable.setGL(new DebugGL2(drawable.getGL().getGL2()));
@@ -583,14 +583,14 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	}
 
 	@Override
-	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height)
+	public void reshape(@Nullable GLAutoDrawable drawable, int x, int y, int width, int height)
 	{
 		aspect = this.getSize().getWidth() / this.getSize().getHeight();
 		repaint();
 	}
 
 	@Override
-	public void mouseDragged(MouseEvent e)
+	public void mouseDragged(@Nullable MouseEvent e)
 	{
 		Ray ray = new RayTrace().cast(e.getX(), e.getY(), this);
 		for (CameraInteraction cameraInteraction : cameraInteractions)
@@ -598,7 +598,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	}
 
 	@Override
-	public void mouseMoved(MouseEvent e)
+	public void mouseMoved(@Nullable MouseEvent e)
 	{
 		Ray ray = new RayTrace().cast(e.getX(), e.getY(), this);
 		for (PanelMouseListener listener : panelMouseListeners)
@@ -606,12 +606,12 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	}
 
 	@Override
-	public void mouseClicked(MouseEvent e)
+	public void mouseClicked(@Nullable MouseEvent e)
 	{
 	}
 
 	@Override
-	public void mousePressed(MouseEvent e)
+	public void mousePressed(@Nullable MouseEvent e)
 	{
 		Ray ray = new RayTrace().cast(e.getX(), e.getY(), this);
 		for (CameraInteraction cameraInteraction : cameraInteractions)
@@ -619,7 +619,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	}
 
 	@Override
-	public void mouseReleased(MouseEvent e)
+	public void mouseReleased(@Nullable MouseEvent e)
 	{
 		Ray ray = new RayTrace().cast(e.getX(), e.getY(), this);
 		for (CameraInteraction cameraInteraction : cameraInteractions)
@@ -627,12 +627,12 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	}
 
 	@Override
-	public void mouseEntered(MouseEvent e)
+	public void mouseEntered(@Nullable MouseEvent e)
 	{
 	}
 
 	@Override
-	public void mouseExited(MouseEvent e)
+	public void mouseExited(@Nullable MouseEvent e)
 	{
 		Ray ray = new RayTrace().cast(e.getX(), e.getY(), this);
 		for (PanelMouseListener listener : panelMouseListeners)
@@ -769,7 +769,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	}
 
 	@Override
-	public void mouseWheelMoved(MouseWheelEvent e)
+	public void mouseWheelMoved(@Nullable MouseWheelEvent e)
 	{
 		Ray ray = new RayTrace().cast(e.getX(), e.getY(), this);
 		for (CameraInteraction cameraInteraction : cameraInteractions)
@@ -846,7 +846,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 				final KeyAdapter keyAdapter = new KeyAdapter()
 				{
 					@Override
-					public void keyPressed(KeyEvent e) {
+					public void keyPressed(@Nullable KeyEvent e) {
 						if (e.getKeyCode() == KeyEvent.VK_ESCAPE
 								|| (e.isAltDown() && e.getKeyCode() == KeyEvent.VK_T)) {
 							MainPanel.this.removeKeyListener(this);

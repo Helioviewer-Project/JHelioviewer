@@ -3,6 +3,7 @@ package org.helioviewer.jhv.gui.actions;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
+import javax.annotation.Nullable;
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
@@ -55,7 +56,7 @@ public class ShowDialogAction extends AbstractAction
             putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
     }
 
-    public void actionPerformed(ActionEvent e)
+    public void actionPerformed(@Nullable ActionEvent e)
     {
         try
         {

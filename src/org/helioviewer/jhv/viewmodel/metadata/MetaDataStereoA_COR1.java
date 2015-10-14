@@ -1,7 +1,5 @@
 package org.helioviewer.jhv.viewmodel.metadata;
 
-import java.time.LocalDateTime;
-
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.physics.Constants;
@@ -22,9 +20,6 @@ class MetaDataStereoA_COR1 extends MetaData
         if (!("STEREO_A".equalsIgnoreCase(observatory) && "COR1".equalsIgnoreCase(observatory)))
         	throw new UnsuitableMetaDataException("invalid instrument: "+observatory+"/"+detector);
         
-        String observedDate = metaDataContainer.get("DATE_OBS");
-        localDateTime = LocalDateTime.parse(observedDate, DATE_FORMAT);
-
         readPixelParameters(metaDataContainer);
 
         innerRadius = metaDataContainer.tryGetDouble("HV_ROCC_INNER") * Constants.SUN_RADIUS;

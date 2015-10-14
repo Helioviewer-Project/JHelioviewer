@@ -1,7 +1,5 @@
 package org.helioviewer.jhv.viewmodel.metadata;
 
-import java.time.LocalDateTime;
-
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.layers.LUT.Lut;
 
@@ -41,9 +39,6 @@ class MetaDataEIT extends MetaData
 				break;
 		}
         
-        String observedDate = metaDataContainer.get("DATE_OBS");
-        localDateTime = LocalDateTime.parse(observedDate, DATE_FORMAT);
-
         readPixelParameters(metaDataContainer);
        
         this.heeqX = metaDataContainer.tryGetDouble("HEQX_OBS");

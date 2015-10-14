@@ -1,7 +1,5 @@
 package org.helioviewer.jhv.viewmodel.metadata;
 
-import java.time.LocalDateTime;
-
 import org.helioviewer.jhv.base.math.Vector2i;
 
 class MetaDataMDI extends MetaData
@@ -17,9 +15,6 @@ class MetaDataMDI extends MetaData
         measurement = metaDataContainer.get("DPC_OBSR");
         fullName = "MDI " + measurement.substring(3, 6);
                 
-        String observedDate = metaDataContainer.get("DATE_OBS");
-        localDateTime = LocalDateTime.parse(observedDate, DATE_FORMAT);
-
         readPixelParameters(metaDataContainer);
         
         this.heeqX = metaDataContainer.tryGetDouble("HEQX_OBS");

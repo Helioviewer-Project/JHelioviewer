@@ -7,16 +7,16 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 
-import nom.tam.fits.BasicHDU;
-import nom.tam.fits.BinaryTableHDU;
-import nom.tam.fits.Fits;
-import nom.tam.fits.FitsException;
-
 import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.plugins.pfssplugin.data.PfssCompressed;
 import org.helioviewer.jhv.plugins.pfssplugin.data.PfssDecompressed;
 
 import com.jogamp.common.nio.Buffers;
+
+import nom.tam.fits.BasicHDU;
+import nom.tam.fits.BinaryTableHDU;
+import nom.tam.fits.Fits;
+import nom.tam.fits.FitsException;
 
 /**
  * Reads in Memory PfssData and writes PfssFrames. Supports running in its own thread for asynchronous loading

@@ -3,6 +3,7 @@ package org.helioviewer.jhv.gui.components;
 import java.awt.Component;
 import java.util.HashMap;
 
+import javax.annotation.Nullable;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
@@ -175,7 +176,7 @@ public class SideContentPane extends JComponent
     /**
      * {@inheritDoc}
      */
-    public void remove(Component component) {
+    public void remove(@Nullable Component component) {
         if (map.containsKey(component)) {
             super.remove(map.get(component));
             map.remove(component);

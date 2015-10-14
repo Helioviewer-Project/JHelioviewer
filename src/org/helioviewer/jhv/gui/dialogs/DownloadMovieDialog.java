@@ -24,10 +24,8 @@ import org.helioviewer.jhv.viewmodel.TimeLine;
 //FIXME: layout on windows broken
 public class DownloadMovieDialog extends JDialog
 {
-	private JProgressBar progressBar;
+	private final JProgressBar progressBar;
 	private static final String PATH_SETTINGS = "download.path"; //TODO: consolidate/check all paths
-	private String url = null;
-	private String defaultName;
 
 	public DownloadMovieDialog()
 	{
@@ -40,19 +38,16 @@ public class DownloadMovieDialog extends JDialog
 		setAlwaysOnTop(true);
 		setLayout(new BorderLayout());
 		setResizable(false);
-		initGUI();
+
+		progressBar = new JProgressBar();
+		add(progressBar);
+
 		pack();
 	}
 
-	private void initGUI()
+	private void start(String fileName, String _url)
 	{
-		progressBar = new JProgressBar();
-		add(progressBar);
-	}
-
-	private void start(String fileName)
-	{
-		final HTTPDownloadRequest httpDownloadRequest = new HTTPDownloadRequest(url, DownloadPriority.URGENT, fileName);
+		final HTTPDownloadRequest httpDownloadRequest = new HTTPDownloadRequest(_url, DownloadPriority.URGENT, fileName);
 		SwingUtilities.invokeLater(new Runnable()
 		{
 			@Override
@@ -103,8 +98,7 @@ public class DownloadMovieDialog extends JDialog
 			});
 			return;
 		}
-		defaultName = _layer.getFullName() + "_F" + Globals.FILE_DATE_TIME_FORMATTER.format(((AbstractImageLayer)_layer).getFirstLocalDateTime()) + "_T" + Globals.FILE_DATE_TIME_FORMATTER.format(((AbstractImageLayer)_layer).getLastLocalDateTime());
-		url = _url;
+		String defaultName = _layer.getFullName() + "_F" + Globals.FILE_DATE_TIME_FORMATTER.format(((AbstractImageLayer)_layer).getFirstLocalDateTime()) + "_T" + Globals.FILE_DATE_TIME_FORMATTER.format(((AbstractImageLayer)_layer).getLastLocalDateTime());
 		
 		File selectedFile = Globals.showFileDialog(DialogType.SAVE_FILE,
 				"Download movie",
@@ -117,6 +111,6 @@ public class DownloadMovieDialog extends JDialog
 			return;
 
 		Settings.setProperty(PATH_SETTINGS, selectedFile.getParent());
-		start(selectedFile.getPath());
+		start(selectedFile.getPath(), _url);
 	}
 }

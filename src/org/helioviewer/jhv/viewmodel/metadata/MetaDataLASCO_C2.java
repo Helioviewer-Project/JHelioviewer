@@ -1,8 +1,5 @@
 package org.helioviewer.jhv.viewmodel.metadata;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.physics.Constants;
@@ -23,11 +20,6 @@ class MetaDataLASCO_C2 extends MetaData{
         observatory = metaDataContainer.get("TELESCOP");
         fullName = "LASCO " + detector;
 
-
-        String observedDate = metaDataContainer.get("DATE_OBS");
-        observedDate += "T" + metaDataContainer.get("TIME_OBS");
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd'T'HH:mm:ss.SSS");
-        localDateTime = LocalDateTime.parse(observedDate, formatter);
 
         readPixelParameters(metaDataContainer);
 

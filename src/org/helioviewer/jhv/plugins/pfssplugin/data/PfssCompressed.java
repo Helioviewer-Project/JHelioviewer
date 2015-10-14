@@ -2,6 +2,8 @@ package org.helioviewer.jhv.plugins.pfssplugin.data;
 
 import java.io.IOException;
 
+import javax.annotation.Nullable;
+
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.plugins.Plugins;
@@ -129,7 +131,7 @@ public class PfssCompressed implements Cacheable
         }
 
         @Override
-        public Volume nextArchive(Archive archive, Volume last) throws IOException
+        public Volume nextArchive(@Nullable Archive archive, @Nullable Volume last) throws IOException
         {
             return new ByteArrayVolume( archive, bytes );
         }

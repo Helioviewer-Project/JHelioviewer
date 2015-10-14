@@ -12,6 +12,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.NumberFormat;
 
+import javax.annotation.Nullable;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
@@ -118,7 +119,7 @@ public class PreferencesDialog extends JDialog
 
 		acceptBtn.addActionListener(new ActionListener()
 		{
-			public void actionPerformed(ActionEvent e)
+			public void actionPerformed(@Nullable ActionEvent e)
 			{
 				if (!isDateFormatValid(dateFormatField.getText()))
 				{
@@ -137,7 +138,7 @@ public class PreferencesDialog extends JDialog
 
 		cancelBtn.addActionListener(new ActionListener()
 		{
-			public void actionPerformed(ActionEvent e)
+			public void actionPerformed(@Nullable ActionEvent e)
 			{
 				dispose();
 			}
@@ -145,7 +146,7 @@ public class PreferencesDialog extends JDialog
 
 		resetBtn.addActionListener(new ActionListener()
 		{
-			public void actionPerformed(ActionEvent e)
+			public void actionPerformed(@Nullable ActionEvent e)
 			{
 				if (JOptionPane.showConfirmDialog(null,
 						"Do you really want to reset the Preferences?",
@@ -293,7 +294,7 @@ public class PreferencesDialog extends JDialog
 		dateFormatInfo.setToolTipText("Show possible date format information");
 		dateFormatInfo.addActionListener(new ActionListener()
 		{
-			public void actionPerformed(ActionEvent e)
+			public void actionPerformed(@Nullable ActionEvent e)
 			{
 				new DateFormatInfoDialog();
 			}
@@ -366,7 +367,7 @@ public class PreferencesDialog extends JDialog
 				movieAspectRatioSelection.addItemListener(new ItemListener() {
 
 					@Override
-					public void itemStateChanged(ItemEvent e) {
+					public void itemStateChanged(@Nullable ItemEvent e) {
 						AspectRatio aspectRatio = (AspectRatio) movieAspectRatioSelection
 								.getSelectedItem();
 						if (aspectRatio.width != 0) {
@@ -404,7 +405,7 @@ public class PreferencesDialog extends JDialog
 						new PropertyChangeListener() {
 
 							@Override
-							public void propertyChange(PropertyChangeEvent pe) {
+							public void propertyChange(@Nullable PropertyChangeEvent pe) {
 								if (!hasChanged) {
 									AspectRatio aspectRatio = (AspectRatio) movieAspectRatioSelection
 
@@ -436,7 +437,7 @@ public class PreferencesDialog extends JDialog
 						new PropertyChangeListener() {
 
 							@Override
-							public void propertyChange(PropertyChangeEvent evt) {
+							public void propertyChange(@Nullable PropertyChangeEvent evt) {
 								if (!hasChanged) {
 									AspectRatio aspectRatio = (AspectRatio) movieAspectRatioSelection
 
@@ -582,7 +583,7 @@ public class PreferencesDialog extends JDialog
 						.addItemListener(new ItemListener() {
 
 							@Override
-							public void itemStateChanged(ItemEvent e) {
+							public void itemStateChanged(@Nullable ItemEvent e) {
 								AspectRatio aspectRatio = (AspectRatio) screenshotAspectRatioSelection
 										.getSelectedItem();
 								if (aspectRatio.width != 0) {
@@ -620,7 +621,7 @@ public class PreferencesDialog extends JDialog
 						new PropertyChangeListener() {
 
 							@Override
-							public void propertyChange(PropertyChangeEvent evt) {
+							public void propertyChange(@Nullable PropertyChangeEvent evt) {
 								if (!hasChanged) {
 									AspectRatio aspectRatio = (AspectRatio) screenshotAspectRatioSelection
 
@@ -654,7 +655,7 @@ public class PreferencesDialog extends JDialog
 						new PropertyChangeListener() {
 
 							@Override
-							public void propertyChange(PropertyChangeEvent evt) {
+							public void propertyChange(@Nullable PropertyChangeEvent evt) {
 								if (!hasChanged) {
 									AspectRatio aspectRatio = (AspectRatio) screenshotAspectRatioSelection
 

@@ -22,7 +22,7 @@ public class Layers
 	private static final Comparator<AbstractLayer> COMPARATOR = new Comparator<AbstractLayer>()
 	{
 		@Override
-		public int compare(AbstractLayer o1, AbstractLayer o2)
+		public int compare(@Nullable AbstractLayer o1, @Nullable AbstractLayer o2)
 		{
 			if (!o1.isImageLayer() && o2.isImageLayer())
 				return 1;

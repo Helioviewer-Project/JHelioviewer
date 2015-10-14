@@ -3,6 +3,9 @@ package org.helioviewer.jhv.viewmodel.jp2view.io;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * 
  * The <code>StringInputStream</code> class allows reading of single lines from
@@ -15,17 +18,14 @@ public class LineReader
     static private final int CR = 13;
     static private final int LF = 10;
 
-    private LineReader()
-    {
-    }
-    
-    /**
+   /**
      * Reads a single line of the input stream.
      * 
      * @return The new line read or <code>null</code> if there is not more data.
      * @throws java.io.IOException
      */
-    public static String readLine(InputStream _is) throws IOException {
+    public static @Nullable String readLine(@Nonnull InputStream _is) throws IOException
+    {
         StringBuffer res = new StringBuffer(32);
 
         int c=_is.read();

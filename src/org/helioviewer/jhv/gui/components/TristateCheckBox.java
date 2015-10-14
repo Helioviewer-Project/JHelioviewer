@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
+import javax.annotation.Nullable;
 import javax.swing.JCheckBox;
 
 /**
@@ -110,7 +111,7 @@ public final class TristateCheckBox extends JCheckBox
      * Painting routine, which first draws the original component, and finally
      * adds the magic 'block'...
      */
-    public void paintComponent(Graphics g) {
+    public void paintComponent(@Nullable Graphics g) {
 
         // draw a 'native' checkbox
         super.paintComponent(g);

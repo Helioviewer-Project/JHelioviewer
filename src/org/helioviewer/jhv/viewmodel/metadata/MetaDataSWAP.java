@@ -1,7 +1,5 @@
 package org.helioviewer.jhv.viewmodel.metadata;
 
-import java.time.LocalDateTime;
-
 import org.helioviewer.jhv.base.math.Vector2i;
 
 class MetaDataSWAP extends MetaData{
@@ -15,11 +13,8 @@ class MetaDataSWAP extends MetaData{
         observatory = metaDataContainer.get("TELESCOP");
         fullName = "SWAP " + measurement;
         
-        if (!(instrument.contains("SWAP"))){
+        if (!(instrument.contains("SWAP")))
         	throw new UnsuitableMetaDataException("invalid instrument: "+observatory+"/"+instrument+"/"+detector);
-        }
-        String observedDate = metaDataContainer.get("DATE-OBS");
-        localDateTime = LocalDateTime.parse(observedDate, DATE_FORMAT);
 
         readPixelParameters(metaDataContainer);
 

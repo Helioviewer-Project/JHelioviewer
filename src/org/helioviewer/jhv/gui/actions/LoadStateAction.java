@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
+import javax.annotation.Nullable;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 
@@ -63,7 +64,7 @@ public class LoadStateAction extends AbstractAction
     /**
      * {@inheritDoc}
      */
-    public void actionPerformed(ActionEvent e)
+    public void actionPerformed(@Nullable ActionEvent e)
     {
     	try
     	{

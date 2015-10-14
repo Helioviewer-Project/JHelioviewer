@@ -1,7 +1,5 @@
 package org.helioviewer.jhv.viewmodel.metadata;
 
-import java.time.LocalDateTime;
-
 import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
 import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
 import org.helioviewer.jhv.base.math.Vector2i;
@@ -17,35 +15,32 @@ class MetaDataStereo extends MetaData
 
         observatory = metaDataContainer.get("OBSRVTRY");
         measurement = metaDataContainer.get("WAVELNTH");
-        if (measurement == null) {
-            measurement = "" + metaDataContainer.tryGetDouble("WAVELNTH");
-        }
-        if (!((observatory.equalsIgnoreCase("STEREO_A") || observatory.equalsIgnoreCase("STEREO_B") && detector.equalsIgnoreCase("EUVI")))){
+        if (measurement == null)
+            measurement = metaDataContainer.tryGetDouble("WAVELNTH")+"";
+	
+        if (!(("STEREO_A".equalsIgnoreCase(observatory) || "STEREO_B".equalsIgnoreCase(observatory) && "EUVI".equalsIgnoreCase(detector))))
         	throw new UnsuitableMetaDataException("invalid instrument");
-        }
 
         fullName = detector + " " + measurement;
         
-        switch (measurement) {
-		case "171":
-			defaultLUT = Lut.STEREO_EUVI_171;
-			break;
-		case "195":
-			defaultLUT = Lut.STEREO_EUVI_195;
-			break;
-		case "284":
-			defaultLUT = Lut.STEREO_EUVI_284;
-			break;
-		case "304":
-			defaultLUT = Lut.STEREO_EUVI_304;
-			break;
-		default:
-			break;
+        switch (measurement)
+        {
+			case "171":
+				defaultLUT = Lut.STEREO_EUVI_171;
+				break;
+			case "195":
+				defaultLUT = Lut.STEREO_EUVI_195;
+				break;
+			case "284":
+				defaultLUT = Lut.STEREO_EUVI_284;
+				break;
+			case "304":
+				defaultLUT = Lut.STEREO_EUVI_304;
+				break;
+			default:
+	        	throw new UnsuitableMetaDataException("invalid WAVELNTH");
 		}
         
-        String observedDate = metaDataContainer.get("DATE_OBS");
-        localDateTime = LocalDateTime.parse(observedDate, DATE_FORMAT);
-
         readPixelParameters(metaDataContainer);
         
         this.heeqX = metaDataContainer.tryGetDouble("HEQX_OBS");

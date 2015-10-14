@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.annotation.Nullable;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JToggleButton;
@@ -98,7 +99,7 @@ class CollapsiblePane extends JComponent implements ActionListener
     /**
      * {@inheritDoc}
      */
-    public void actionPerformed(ActionEvent e) {
+    public void actionPerformed(@Nullable ActionEvent e) {
         if (component.isVisible()) {
             collapse();
         } else {

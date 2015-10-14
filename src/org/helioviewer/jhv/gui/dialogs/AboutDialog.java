@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.annotation.Nullable;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -64,7 +65,7 @@ public final class AboutDialog extends JDialog implements HyperlinkListener
         install4j.addMouseListener(new MouseAdapter()
         {
 			@Override
-			public void mouseClicked(MouseEvent e)
+			public void mouseClicked(@Nullable MouseEvent e)
 			{
 				Globals.openURL("http://www.ej-technologies.com/products/install4j/overview.html");
 			}
@@ -74,7 +75,7 @@ public final class AboutDialog extends JDialog implements HyperlinkListener
         raygunIo.addMouseListener(new MouseAdapter()
         {
 			@Override
-			public void mouseClicked(MouseEvent e)
+			public void mouseClicked(@Nullable MouseEvent e)
 			{
 				Globals.openURL("https://raygun.io");
 			}
@@ -116,7 +117,7 @@ public final class AboutDialog extends JDialog implements HyperlinkListener
         closeButton.addActionListener(new ActionListener()
         {
 			@Override
-			public void actionPerformed(ActionEvent _arg0)
+			public void actionPerformed(@Nullable ActionEvent _arg0)
 			{
 				dispose();
 			}});
@@ -125,7 +126,7 @@ public final class AboutDialog extends JDialog implements HyperlinkListener
         creditsButton.addActionListener(new ActionListener()
         {
 			@Override
-			public void actionPerformed(ActionEvent _arg0)
+			public void actionPerformed(@Nullable ActionEvent _arg0)
 			{
 				new CreditsDialog(AboutDialog.this);
 			}});
@@ -150,7 +151,7 @@ public final class AboutDialog extends JDialog implements HyperlinkListener
     /**
      * Opens a browser or email client after clicking on a hyperlink.
      */
-    public void hyperlinkUpdate(HyperlinkEvent e)
+    public void hyperlinkUpdate(@Nullable HyperlinkEvent e)
     {
         if (e.getEventType() != HyperlinkEvent.EventType.ACTIVATED)
         	return;

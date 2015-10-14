@@ -6,6 +6,8 @@ import java.util.Comparator;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.annotation.Nullable;
+
 import org.helioviewer.jhv.Telemetry;
 
 public class UltimateDownloadManager
@@ -20,7 +22,7 @@ public class UltimateDownloadManager
 	private static PriorityBlockingQueue<Tuple> taskDeque = new PriorityBlockingQueue<Tuple>(100, new Comparator<Tuple>()
 	{
 		@Override
-		public int compare(Tuple o1, Tuple o2)
+		public int compare(@Nullable Tuple o1, @Nullable Tuple o2)
 		{
 			AbstractDownloadRequest oo1 = o1.request.get();
 			AbstractDownloadRequest oo2 = o2.request.get();
@@ -102,7 +104,7 @@ public class UltimateDownloadManager
 		taskDeque.put(t);
 	}
 
-	public static void remove(AbstractDownloadRequest request)
+	public static void remove(@Nullable AbstractDownloadRequest request)
 	{
 		for (Tuple t : taskDeque)
 			if(t.request.get()==request)

@@ -8,6 +8,8 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
+import javax.annotation.Nullable;
+
 import org.helioviewer.jhv.Telemetry;
 
 public class Clipboard implements ClipboardOwner
@@ -19,7 +21,7 @@ public class Clipboard implements ClipboardOwner
     }
 
     @Override
-    public void lostOwnership(java.awt.datatransfer.Clipboard aClipboard, Transferable aContents)
+    public void lostOwnership(@Nullable java.awt.datatransfer.Clipboard aClipboard, @Nullable Transferable aContents)
     {
     }
 

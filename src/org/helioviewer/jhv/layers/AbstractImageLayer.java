@@ -63,7 +63,7 @@ public abstract class AbstractImageLayer extends AbstractLayer
 		return lut;
 	}
 
-	public void setLUT(Lut _lut)
+	public void setLUT(@Nullable Lut _lut)
 	{
 		lut = _lut;
 		MainFrame.FILTER_PANEL.update();
@@ -256,7 +256,7 @@ public abstract class AbstractImageLayer extends AbstractLayer
 	}
 
 	@Override
-	public String getFullName()
+	public @Nullable String getFullName()
 	{
 		MetaData md=getMetaData(TimeLine.SINGLETON.getCurrentDateTime());
 		if(md!=null)
@@ -288,8 +288,8 @@ public abstract class AbstractImageLayer extends AbstractLayer
 	{
 		final Texture texture;
 		
-		final ImageRegion imageRegion;
-		final ByteBuffer rawImageData;
+		final @Nullable ImageRegion imageRegion;
+		final @Nullable ByteBuffer rawImageData;
 		final int width;
 		final int height;
 		

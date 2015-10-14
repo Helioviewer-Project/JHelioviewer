@@ -6,8 +6,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NavigableSet;
-import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.TreeSet;
 
+import javax.annotation.Nullable;
 import javax.swing.Timer;
 
 import org.helioviewer.jhv.gui.MainFrame;
@@ -25,7 +26,7 @@ public class TimeLine implements LayerListener
 
 	private ArrayList<TimeLineListener> timeLineListeners;
 
-	private NavigableSet<LocalDateTime> localDateTimes = null;
+	private NavigableSet<LocalDateTime> localDateTimes;
 
 	private int millisecondsPerFrame = 50;
 	private AnimationMode animationMode = AnimationMode.LOOP;
@@ -36,7 +37,7 @@ public class TimeLine implements LayerListener
 	private static final Timer timer = new Timer(0, new ActionListener()
 	{
 		@Override
-		public void actionPerformed(ActionEvent e)
+		public void actionPerformed(@Nullable ActionEvent e)
 		{
 			MainFrame.MAIN_PANEL.display();
 			timer.stop();
@@ -45,7 +46,7 @@ public class TimeLine implements LayerListener
 	
 	private TimeLine()
 	{
-		localDateTimes = new ConcurrentSkipListSet<LocalDateTime>();
+		localDateTimes = new TreeSet<LocalDateTime>();
 		Layers.addLayerListener(this);
 		timeLineListeners = new ArrayList<TimeLine.TimeLineListener>();
 	}
@@ -63,15 +64,15 @@ public class TimeLine implements LayerListener
 			_playing=false;
 		}
 		
-		this.isPlaying = _playing;
+		isPlaying = _playing;
 		forward = true;
 		MainFrame.MAIN_PANEL.resetLastFrameChangeTime();
 		MainFrame.MAIN_PANEL.repaint();
 	}
 
-	public LocalDateTime nextFrame()
+	public @Nullable LocalDateTime nextFrame()
 	{
-		if (localDateTimes.isEmpty())
+		if (localDateTimes==null || localDateTimes.isEmpty())
 			return null;
 		
 		LocalDateTime next = localDateTimes.higher(current);
@@ -84,7 +85,7 @@ public class TimeLine implements LayerListener
 		return current;
 	}
 
-	public LocalDateTime previousFrame()
+	public @Nullable LocalDateTime previousFrame()
 	{
 		if (localDateTimes.isEmpty())
 			return null;
@@ -155,11 +156,11 @@ public class TimeLine implements LayerListener
 	public void layersRemoved()
 	{
 		if (Layers.getActiveImageLayer() == null)
-			localDateTimes = null;
+			localDateTimes.clear();
 	}
 
 	@Override
-	public void activeLayerChanged(AbstractLayer layer)
+	public void activeLayerChanged(@Nullable AbstractLayer layer)
 	{
 		if (layer != null && layer.isImageLayer())
 		{
@@ -195,20 +196,20 @@ public class TimeLine implements LayerListener
 		void dateTimesChanged(int framecount);
 	}
 
-	public void setLocalDateTimes(NavigableSet<LocalDateTime> localDateTimes)
+	public void setLocalDateTimes(NavigableSet<LocalDateTime> _localDateTimes)
 	{
-		this.localDateTimes = localDateTimes;
+		localDateTimes = _localDateTimes;
 		notifyUpdateDateTimes();
 	}
 
-	public LocalDateTime getFirstDateTime()
+	public @Nullable LocalDateTime getFirstDateTime()
 	{
-		if (localDateTimes == null || localDateTimes.isEmpty())
+		if (localDateTimes.isEmpty())
 			return null;
 		return localDateTimes.first();
 	}
 
-	public LocalDateTime getLastDateTime()
+	public @Nullable LocalDateTime getLastDateTime()
 	{
 		if (localDateTimes == null || localDateTimes.isEmpty())
 			return null;
@@ -276,19 +277,24 @@ public class TimeLine implements LayerListener
 	
 	private void loop()
 	{
-		current = localDateTimes.higher(current);
-		if (current == null)
+		LocalDateTime next=localDateTimes.higher(current);
+		
+		if(next==null)
 			current = localDateTimes.first();
+		else
+			current = next;
 	}
 	
 	private void stop()
 	{
-		current = localDateTimes.lower(current);
-		if (current == null)
+		LocalDateTime next=localDateTimes.lower(current);
+		if (next == null)
 		{
 			current = localDateTimes.first();		
 			MainFrame.MOVIE_PANEL.setPlaying(false);
 		}
+		else
+			current = next;
 	}
 	
 	private void swing()

@@ -3,6 +3,8 @@ package org.helioviewer.jhv.base.math;
 import java.awt.Point;
 import java.util.Locale;
 
+import javax.annotation.Nullable;
+
 /**
  * A class for two dimensional vectors with double coordinates. Instances of
  * Vector2dDouble are immutable.
@@ -173,7 +175,7 @@ public final class Vector2d {
         return new Vector2d(Math.abs(v.x), Math.abs(v.y));
     }
 
-    public boolean equals(final Object o) {
+    public boolean equals(final @Nullable Object o) {
         if (!(o instanceof Vector2d)) {
             return false;
         }

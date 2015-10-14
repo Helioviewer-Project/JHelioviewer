@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.annotation.Nullable;
 import javax.swing.Timer;
 
 public class MultiClickListener extends MouseAdapter implements ActionListener
@@ -17,7 +18,7 @@ public class MultiClickListener extends MouseAdapter implements ActionListener
         timer = new Timer( delay, this);
     }
 
-    public void mouseClicked (MouseEvent e)
+    public void mouseClicked (@Nullable MouseEvent e)
     {
         if (e.getClickCount() > 2) return;
 
@@ -34,7 +35,7 @@ public class MultiClickListener extends MouseAdapter implements ActionListener
         }
     }
 
-    public void actionPerformed(ActionEvent e)
+    public void actionPerformed(@Nullable ActionEvent e)
     {
         timer.stop();
         singleClick( lastEvent );

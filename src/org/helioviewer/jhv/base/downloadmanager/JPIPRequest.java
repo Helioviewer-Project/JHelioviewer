@@ -7,9 +7,6 @@ import java.net.URISyntaxException;
 
 import javax.annotation.Nullable;
 
-import kdu_jni.KduException;
-import kdu_jni.Kdu_cache;
-
 import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.layers.Movie;
 import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPRequest.Method;
@@ -20,6 +17,9 @@ import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPRequestField;
 import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPResponse;
 import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPSocket;
 import org.helioviewer.jhv.viewmodel.metadata.UnsuitableMetaDataException;
+
+import kdu_jni.KduException;
+import kdu_jni.Kdu_cache;
 
 public class JPIPRequest extends AbstractDownloadRequest
 {

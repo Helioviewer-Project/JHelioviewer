@@ -6,6 +6,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.annotation.Nullable;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -83,7 +84,7 @@ public class ShortcutsDialog extends JDialog implements ActionListener
     /**
      * Closes the dialog.
      */
-    public void actionPerformed(ActionEvent _a) {
+    public void actionPerformed(@Nullable ActionEvent _a) {
         if (_a.getSource() == this.closeButton) {
             this.dispose();
         } /*

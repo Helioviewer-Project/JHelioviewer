@@ -3,6 +3,8 @@ package org.helioviewer.jhv.base.math;
 import java.awt.Point;
 import java.util.Locale;
 
+import javax.annotation.Nullable;
+
 /**
  * A class for two dimensional vectors with integer coordinates. Instances of
  * Vector2dInt are immutable.
@@ -155,7 +157,7 @@ public final class Vector2i
         return new Vector2i(Math.abs(v.x), Math.abs(v.y));
     }
 
-    public boolean equals(final Object o) {
+    public boolean equals(final @Nullable Object o) {
         if (!(o instanceof Vector2i)) {
             return false;
         }

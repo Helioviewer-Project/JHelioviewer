@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
 
+import javax.annotation.Nullable;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -67,7 +68,7 @@ public final class CreditsDialog extends JDialog
         closeButton.addActionListener(new ActionListener()
         {
 			@Override
-			public void actionPerformed(ActionEvent _arg0)
+			public void actionPerformed(@Nullable ActionEvent _arg0)
 			{
 				dispose();
 			}});
