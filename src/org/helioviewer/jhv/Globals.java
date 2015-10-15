@@ -350,7 +350,7 @@ public class Globals
         	            		 instance.setFileFilter(f);
         	            		 break;
         	            	 }
-                    if(instance.showOpenDialog(MainFrame.MAIN_PANEL)==JFileChooser.APPROVE_OPTION)
+                    if(instance.showOpenDialog(MainFrame.SINGLETON.MAIN_PANEL)==JFileChooser.APPROVE_OPTION)
                     {
                     	File f=instance.getSelectedFile();
     					if(f.isFile() && f.exists())
@@ -376,7 +376,7 @@ public class Globals
         	            		 instance.setFileFilter(f);
         	            		 break;
         	            	 }
-                    if(instance.showSaveDialog(MainFrame.MAIN_PANEL)==JFileChooser.APPROVE_OPTION)
+                    if(instance.showSaveDialog(MainFrame.SINGLETON.MAIN_PANEL)==JFileChooser.APPROVE_OPTION)
                     {
                     	File f=instance.getSelectedFile();
     					if(!f.isFile())
@@ -406,7 +406,7 @@ public class Globals
                     instance.setDialogType(JFileChooser.OPEN_DIALOG);
                     instance.setAcceptAllFileFilterUsed(true);
                     instance.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                    if(instance.showOpenDialog(MainFrame.MAIN_PANEL)==JFileChooser.APPROVE_OPTION)
+                    if(instance.showOpenDialog(MainFrame.SINGLETON.MAIN_PANEL)==JFileChooser.APPROVE_OPTION)
                     {
                     	File f=instance.getSelectedFile();
                     	if(f.isDirectory() && f.exists())

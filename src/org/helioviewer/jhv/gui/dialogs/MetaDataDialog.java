@@ -123,6 +123,9 @@ public class MetaDataDialog extends JDialog implements LayerListener, TimeLineLi
 			@Override
 			public void actionPerformed(@Nullable ActionEvent e)
 			{
+				if(xmlDoc==null)
+					return;
+				
 				// Open save-dialog
 				final File file = Globals.showFileDialog(
 						DialogType.SAVE_FILE,
@@ -135,6 +138,7 @@ public class MetaDataDialog extends JDialog implements LayerListener, TimeLineLi
 				if (file == null)
 					return;
 				
+				@SuppressWarnings("null")
 				DOMSource source = new DOMSource(xmlDoc.getDocumentElement().getElementsByTagName("fits").item(0));
 				if (!saveXMLDocument(source, file.getPath() + outFileName))
 					JOptionPane.showMessageDialog(MetaDataDialog.this, "Could not save document.");
@@ -229,6 +233,7 @@ public class MetaDataDialog extends JDialog implements LayerListener, TimeLineLi
 	 *            Source to read
 	 * @see #addDataItem(String)
 	 */
+	@SuppressWarnings("null")
 	public void setMetaData(@Nonnull MetaData metaData, @Nonnull Document doc)
 	{
 		metaDataOK = true;

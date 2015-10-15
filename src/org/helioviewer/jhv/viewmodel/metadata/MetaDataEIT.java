@@ -8,16 +8,10 @@ class MetaDataEIT extends MetaData
 	private final static Vector2i RESOLUTION = new Vector2i(1024, 1024);
 	public MetaDataEIT(MetaDataContainer metaDataContainer)
 	{
-        super(metaDataContainer, RESOLUTION);
+        super(metaDataContainer, RESOLUTION, metaDataContainer.get("TELESCOP"), metaDataContainer.get("WAVELNTH"));
         
-        measurement = metaDataContainer.get("WAVELNTH");
-        if (measurement == null) {
-            measurement = "" + metaDataContainer.tryGetInt("WAVELNTH");
-        }
-        observatory = metaDataContainer.get("TELESCOP");
-        if (!(instrument.equalsIgnoreCase("EIT"))){
+        if (!(instrument.equalsIgnoreCase("EIT")))
         	throw new UnsuitableMetaDataException("invalid instrument: "+instrument);
-        }
                 
         fullName = "EIT " + measurement;
 

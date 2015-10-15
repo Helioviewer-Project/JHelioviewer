@@ -77,7 +77,8 @@ public class KakaduLayer extends AbstractImageLayer
 	{
 		return MovieCache.findBestFrame(sourceId, _currentDateTime);
 	}
-
+	
+	
 	@SuppressWarnings("null")
 	public KakaduLayer(String _filePath)
 	{
@@ -158,7 +159,7 @@ public class KakaduLayer extends AbstractImageLayer
 			setVisible(jsonLayer.getBoolean("visibility"));
 			invertedLut = jsonLayer.getBoolean("invertedLut");
 			coronaVisible=jsonLayer.getBoolean("coronaVisiblity");
-			MainFrame.FILTER_PANEL.update();
+			MainFrame.SINGLETON.FILTER_PANEL.update();
 		}
 		catch (JSONException e)
 		{
@@ -281,7 +282,7 @@ public class KakaduLayer extends AbstractImageLayer
 							UltimateDownloadManager.remove(download.metadata);
 							UltimateDownloadManager.remove(download.lq);
 							
-							String hqFilename = download.hq.getFilename();
+							String hqFilename = download.hq.filename;
 							download.hq = null;
 							download.lq = null;
 							
@@ -378,9 +379,9 @@ public class KakaduLayer extends AbstractImageLayer
 								{
 									//FIXME: should only happen if current layer is active
 									//FIXME: should only happen if needed
-									MainFrame.MAIN_PANEL.repaint(1000);
-									MainFrame.OVERVIEW_PANEL.repaint(1000);
-									MainFrame.MOVIE_PANEL.repaint(1000);
+									MainFrame.SINGLETON.MAIN_PANEL.repaint(1000);
+									MainFrame.SINGLETON.OVERVIEW_PANEL.repaint(1000);
+									MainFrame.SINGLETON.MOVIE_PANEL.repaint(1000);
 								}
 							});
 							Thread.sleep(500);
@@ -404,9 +405,9 @@ public class KakaduLayer extends AbstractImageLayer
 					@Override
 					public void run()
 					{
-						MainFrame.MAIN_PANEL.repaint(1000);
-						MainFrame.OVERVIEW_PANEL.repaint(1000);
-						MainFrame.MOVIE_PANEL.repaint(1000);
+						MainFrame.SINGLETON.MAIN_PANEL.repaint(1000);
+						MainFrame.SINGLETON.OVERVIEW_PANEL.repaint(1000);
+						MainFrame.SINGLETON.MOVIE_PANEL.repaint(1000);
 					}
 				});
 				
@@ -442,7 +443,7 @@ public class KakaduLayer extends AbstractImageLayer
 		
 		//FIXME: should probably only be set if current layer is active
 		TimeLine.SINGLETON.setLocalDateTimes(localDateTimes);
-		MainFrame.MOVIE_PANEL.repaintSlider();
+		MainFrame.SINGLETON.MOVIE_PANEL.repaintSlider();
 	}
 
 

@@ -16,6 +16,11 @@ public class UltimateDownloadManager
 	{
 		@Nullable RuntimeException ex;
 		WeakReference<AbstractDownloadRequest> request;
+		
+		Tuple(AbstractDownloadRequest _adr)
+		{
+			request=new WeakReference<AbstractDownloadRequest>(_adr);
+		}
 	}
 	
 	
@@ -75,7 +80,7 @@ public class UltimateDownloadManager
 									//if(request.priority.ordinal()>DownloadPriority.LOW.ordinal())
 										activeDownloads.decrementAndGet();
 								}
-							else
+							else if(t.ex!=null)
 								Telemetry.trackException(t.ex);
 						}
 					}
@@ -92,8 +97,7 @@ public class UltimateDownloadManager
 
 	public static void addRequest(AbstractDownloadRequest _request)
 	{
-		Tuple t=new Tuple();
-		t.request=new WeakReference<>(_request);
+		Tuple t=new Tuple(_request);
 		
 		try
 		{

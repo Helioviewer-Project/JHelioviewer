@@ -45,6 +45,8 @@ public class JHelioviewer
 {
 	public static void main(final String[] args)
 	{
+		CommandLineProcessor.setArguments(args);
+		
 		// Setup Swing
 		try
 		{
@@ -91,7 +93,6 @@ public class JHelioviewer
 				}
 			}
 
-			CommandLineProcessor.setArguments(args);
 			if (args.length == 1 && (args[0].equals("-h") || args[0].equals("--help")))
 			{
 				System.out.println(CommandLineProcessor.USAGE_MESSAGE);

@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 import javax.swing.AbstractAction;
 
 import org.helioviewer.jhv.Globals;
+import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.gui.MainFrame;
@@ -58,7 +59,11 @@ class SDOCutOutAction extends AbstractAction
 		if(metaData==null || start==null || end==null)
 			return;
 		
-		Rectangle2D sourceRegion = mainSDOLayer.calculateRegion(MainFrame.MAIN_PANEL, metaData, MainFrame.MAIN_PANEL.getCanavasSize()).areaOfSourceImage;
+		ImageRegion ir=mainSDOLayer.calculateRegion(MainFrame.SINGLETON.MAIN_PANEL, metaData, MainFrame.SINGLETON.MAIN_PANEL.getCanavasSize());
+		if(ir==null)
+			return;
+		
+		Rectangle2D sourceRegion = ir.areaOfSourceImage;
 		
 		StringBuilder url = new StringBuilder(URL);
 		url.append("startDate="+start.format(DATE_FORMATTER) + "&startTime=" + start.format(TIME_FORMATTER)); 

@@ -26,10 +26,10 @@ public class ResetCameraAction extends AbstractAction
 
     public void actionPerformed(@Nullable ActionEvent e)
     {
-		MainFrame.MAIN_PANEL.addCameraAnimation(new CameraRotationAnimation(MainFrame.MAIN_PANEL,MainFrame.MAIN_PANEL.getRotationEnd().inversed()));
-		MainFrame.MAIN_PANEL.addCameraAnimation(new CameraTranslationAnimation(
-				MainFrame.MAIN_PANEL,
+		MainFrame.SINGLETON.MAIN_PANEL.addCameraAnimation(new CameraRotationAnimation(MainFrame.SINGLETON.MAIN_PANEL,MainFrame.SINGLETON.MAIN_PANEL.getRotationEnd().inversed()));
+		MainFrame.SINGLETON.MAIN_PANEL.addCameraAnimation(new CameraTranslationAnimation(
+				MainFrame.SINGLETON.MAIN_PANEL,
 				new Vector3d(0, 0, MainPanel.DEFAULT_CAMERA_DISTANCE)
-					.subtract(MainFrame.MAIN_PANEL.getTranslationEnd())));
+					.subtract(MainFrame.SINGLETON.MAIN_PANEL.getTranslationEnd())));
     }
 }

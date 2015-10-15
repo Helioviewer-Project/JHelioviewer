@@ -58,7 +58,7 @@ public class CameraZoomBoxInteraction extends CameraInteraction
 		
 		start = null;
 		end = null;
-		camera.addCameraAnimation(new CameraTranslationAnimation(MainFrame.MAIN_PANEL, newPoint.subtract(camera.getTranslationEnd())));
+		camera.addCameraAnimation(new CameraTranslationAnimation(MainFrame.SINGLETON.MAIN_PANEL, newPoint.subtract(camera.getTranslationEnd())));
 	}
 
 	@SuppressWarnings("null")

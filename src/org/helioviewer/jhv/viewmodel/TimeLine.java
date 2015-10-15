@@ -39,7 +39,7 @@ public class TimeLine implements LayerListener
 		@Override
 		public void actionPerformed(@Nullable ActionEvent e)
 		{
-			MainFrame.MAIN_PANEL.display();
+			MainFrame.SINGLETON.MAIN_PANEL.display();
 			timer.stop();
 		}
 	});
@@ -66,8 +66,8 @@ public class TimeLine implements LayerListener
 		
 		isPlaying = _playing;
 		forward = true;
-		MainFrame.MAIN_PANEL.resetLastFrameChangeTime();
-		MainFrame.MAIN_PANEL.repaint();
+		MainFrame.SINGLETON.MAIN_PANEL.resetLastFrameChangeTime();
+		MainFrame.SINGLETON.MAIN_PANEL.repaint();
 	}
 
 	public @Nullable LocalDateTime nextFrame()
@@ -132,7 +132,7 @@ public class TimeLine implements LayerListener
 
 	private void notifyUpdateDateTimes()
 	{
-		MainFrame.MOVIE_PANEL.setButtonsEnabled(!localDateTimes.isEmpty());
+		MainFrame.SINGLETON.MOVIE_PANEL.setButtonsEnabled(!localDateTimes.isEmpty());
 		for (TimeLine.TimeLineListener timeLineListener : timeLineListeners)
 			timeLineListener.dateTimesChanged(localDateTimes.size());
 	}
@@ -165,7 +165,7 @@ public class TimeLine implements LayerListener
 		if (layer != null && layer.isImageLayer())
 		{
 			setLocalDateTimes(((AbstractImageLayer)layer).getLocalDateTimes());
-			MainFrame.MOVIE_PANEL.setButtonsEnabled(!localDateTimes.isEmpty());
+			MainFrame.SINGLETON.MOVIE_PANEL.setButtonsEnabled(!localDateTimes.isEmpty());
 		}
 	}
 
@@ -185,7 +185,7 @@ public class TimeLine implements LayerListener
 			this.current = current;
 			dateTimeChanged(last);
 		}
-		MainFrame.MAIN_PANEL.repaint();
+		MainFrame.SINGLETON.MAIN_PANEL.repaint();
 	}
 
 	public interface TimeLineListener
@@ -291,7 +291,7 @@ public class TimeLine implements LayerListener
 		if (next == null)
 		{
 			current = localDateTimes.first();		
-			MainFrame.MOVIE_PANEL.setPlaying(false);
+			MainFrame.SINGLETON.MOVIE_PANEL.setPlaying(false);
 		}
 		else
 			current = next;

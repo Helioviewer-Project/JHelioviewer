@@ -101,7 +101,7 @@ public class OverviewPanel extends MainPanel
 	@Override
 	protected void render(GL2 gl, boolean _showLoadingAnimation)
 	{
-		rotationNow = MainFrame.MAIN_PANEL.getRotationCurrent();
+		rotationNow = MainFrame.SINGLETON.MAIN_PANEL.getRotationCurrent();
 		super.render(gl, false);
 		gl.glPushMatrix();
 		gl.glMatrixMode(GL2.GL_PROJECTION);

@@ -23,8 +23,8 @@ public abstract class MetaData
     
     protected String instrument;
     protected @Nullable String detector;
-    protected @Nullable String measurement;
-    protected @Nullable String observatory;
+    protected final String measurement;
+    protected final String observatory;
     protected @Nullable String fullName;
     protected double solarPixelRadius = -1;
     protected Vector2d sunPixelPosition = new Vector2d();
@@ -71,8 +71,17 @@ public abstract class MetaData
     /**
      * Default constructor, does not set size or position.
      */
-    public MetaData(MetaDataContainer _metaDataContainer, Vector2i _resolution)
+	public MetaData(MetaDataContainer _metaDataContainer, Vector2i _resolution, @Nullable String _observatory, @Nullable String _measurement)
     {
+		if(_measurement==null)
+			throw new UnsuitableMetaDataException();
+		
+		if(_observatory==null)
+			throw new UnsuitableMetaDataException();
+		
+		measurement = _measurement;
+		observatory = _observatory;
+		
     	int width = _metaDataContainer.tryGetInt("NAXIS1");
     	int height = _metaDataContainer.tryGetInt("NAXIS2");
     	
@@ -82,10 +91,12 @@ public abstract class MetaData
     		newResolution = _resolution;
         
         detector = _metaDataContainer.get("DETECTOR");
-        instrument = _metaDataContainer.get("INSTRUME");
         
-        if (instrument == null)
+        String instrume = _metaDataContainer.get("INSTRUME");
+        if (instrume == null)
             throw new UnsuitableMetaDataException("No instrument specified in metadata (INSTRUME)");
+        
+        instrument = instrume;
         
         String observedDate = _metaDataContainer.get("DATE_OBS");
         String observedTime = _metaDataContainer.get("TIME_OBS");

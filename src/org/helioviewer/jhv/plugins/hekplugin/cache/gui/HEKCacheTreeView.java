@@ -118,7 +118,8 @@ public class HEKCacheTreeView extends JTree implements TreeModelListener {
      * @param path
      * @return
      */
-    public int getState(TreePath path) {
+    @SuppressWarnings("null")
+	public int getState(TreePath path) {
 
         if (path == null) {
             return 0;
@@ -299,7 +300,8 @@ public class HEKCacheTreeView extends JTree implements TreeModelListener {
      */
     private class JCheckBoxTreeMouseListener extends MouseAdapter {
 
-        public HEKPath getHEKPath(TreePath path) {
+        @SuppressWarnings("null")
+		public HEKPath getHEKPath(TreePath path) {
             if (path == null) {
                 return null;
             }

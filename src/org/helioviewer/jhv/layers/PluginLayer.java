@@ -16,8 +16,8 @@ public class PluginLayer extends AbstractLayer
 	
 	public PluginLayer(String _name, AbstractPlugin _plugin)
 	{
-		plugin = _plugin;
 		name = _name;
+		plugin = _plugin;
 		setVisible(_plugin.isVisible());
 	}
 

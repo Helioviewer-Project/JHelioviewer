@@ -7,9 +7,7 @@ class MetaDataHMI extends MetaData
 	private final static Vector2i RESOLUTION = new Vector2i(4096, 4096);
 	public MetaDataHMI(MetaDataContainer metaDataContainer)
 	{
-        super(metaDataContainer, RESOLUTION);
-        measurement = metaDataContainer.get("CONTENT");
-        observatory = metaDataContainer.get("TELESCOP");
+        super(metaDataContainer, RESOLUTION, metaDataContainer.get("TELESCOP"), metaDataContainer.get("CONTENT"));
         if (!(instrument.equalsIgnoreCase("HMI_FRONT2")))
         	throw new UnsuitableMetaDataException("invalid instrument: "+instrument);
 

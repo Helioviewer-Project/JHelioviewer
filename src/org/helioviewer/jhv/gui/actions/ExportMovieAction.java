@@ -56,7 +56,7 @@ public class ExportMovieAction extends AbstractAction
 		if (Layers.getLayerCount() > 0)
 			openExportMovieDialog();
 		else
-			JOptionPane.showMessageDialog(MainFrame.MAIN_PANEL,
+			JOptionPane.showMessageDialog(MainFrame.SINGLETON.MAIN_PANEL,
 					"At least one active layer must be visible.\n\nPlease add a layer before exporting movies.",
 					"Error", JOptionPane.ERROR_MESSAGE);
 	}
@@ -175,7 +175,7 @@ public class ExportMovieAction extends AbstractAction
 						{
 							bufferedImage = null;
 							progressDialog.setDescription("Rendering images");
-							bufferedImage = MainFrame.MAIN_PANEL.getBufferedImage(imageWidth, imageHeight, textEnabled);
+							bufferedImage = MainFrame.SINGLETON.MAIN_PANEL.getBufferedImage(imageWidth, imageHeight, textEnabled);
 						}
 					});
 

@@ -32,7 +32,7 @@ public class ZoomStatusPanel extends StatusLabel
 	public ZoomStatusPanel()
 	{
 		super();
-		MainFrame.MAIN_PANEL.addCameraListener(this);
+		MainFrame.SINGLETON.MAIN_PANEL.addCameraListener(this);
 		setBorder(BorderFactory.createEtchedBorder());
 
 		setPreferredSize(new Dimension(100, 20));
@@ -60,11 +60,11 @@ public class ZoomStatusPanel extends StatusLabel
 		}
 
 		double unitsPerPixel = metaData.getUnitsPerPixel();
-		double minCanvasDimension = MainFrame.MAIN_PANEL.getCanavasSize().getHeight();
+		double minCanvasDimension = MainFrame.SINGLETON.MAIN_PANEL.getCanavasSize().getHeight();
 		
 		double halfFOVRad = Math.toRadians(MainPanel.FOV / 2.0);
 		double distance = (minCanvasDimension / 2.0 * unitsPerPixel) / Math.tan(halfFOVRad);
-		long zoom = Math.round(distance	/ MainFrame.MAIN_PANEL.getTranslationCurrent().z * 100);
+		long zoom = Math.round(distance	/ MainFrame.SINGLETON.MAIN_PANEL.getTranslationCurrent().z * 100);
 		setText("Zoom: " + zoom + "%");
 	}
 

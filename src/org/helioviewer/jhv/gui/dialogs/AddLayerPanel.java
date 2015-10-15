@@ -374,6 +374,7 @@ public class AddLayerPanel extends JDialog
 					Observatories.Filter filter = (Observatories.Filter) cmbbxFilter2.getSelectedItem();
 					if (filter == null)
 						filter = (Observatories.Filter) cmbbxFilter1.getSelectedItem();
+					
 					if (filter == null)
 						filter = (Observatories.Filter) cmbbxFilter.getSelectedItem();
 

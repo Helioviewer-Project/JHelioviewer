@@ -16,7 +16,7 @@ import org.json.JSONException;
 
 public class LoadStateAction extends AbstractAction
 {
-    private final File stateLocation;
+    private final @Nullable File stateLocation;
 
     /**
      * Constructor specifying no location to load.
@@ -61,18 +61,19 @@ public class LoadStateAction extends AbstractAction
         stateLocation = new File(location.getFile());
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void actionPerformed(@Nullable ActionEvent e)
+    @SuppressWarnings("null")
+	public void actionPerformed(@Nullable ActionEvent e)
     {
     	try
     	{
-			StateParser.loadStateFile(stateLocation);
+    		if(stateLocation==null)
+    			StateParser.loadStateFile();
+    		else
+    			StateParser.loadStateFile(stateLocation);
 		}
     	catch (IOException | JSONException _e)
     	{
-			JOptionPane.showMessageDialog(MainFrame.MAIN_PANEL, "Could not load file: " + _e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(MainFrame.SINGLETON.MAIN_PANEL, "Could not load file: " + _e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 			Telemetry.trackException(_e);
 		}
     }

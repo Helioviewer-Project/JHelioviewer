@@ -45,53 +45,33 @@ public class FilterPanel extends JPanel implements LayerListener
 	private JCheckBox chckbxBlue;
 	private JToggleButton btnInverseColorTable;
 	private JLabel lblOpacity, lblSharpen, lblGamma, lblContrast;
-	
-	@Nullable private AbstractImageLayer activeLayer;
+
+	@Nullable
+	private AbstractImageLayer activeLayer;
 	private static final double GAMMA_FACTOR = 0.01 * Math.log(10);
-	
-    private static final Icon ICON_INVERT = IconBank.getIcon(JHVIcon.INVERT, 16, 16);
+
+	private static final Icon ICON_INVERT = IconBank.getIcon(JHVIcon.INVERT, 16, 16);
 
 	public FilterPanel()
 	{
-        Object clickInterval = Toolkit.getDefaultToolkit().getDesktopProperty("awt.multiClickInterval");
-        int delay = clickInterval != null ? (int)clickInterval : 200;
+		Object clickInterval = Toolkit.getDefaultToolkit().getDesktopProperty("awt.multiClickInterval");
+		int delay = clickInterval != null ? (int) clickInterval : 200;
 
-		FormLayout formLayout = new FormLayout(new ColumnSpec[] {
-				FormFactory.RELATED_GAP_COLSPEC,
-				FormFactory.DEFAULT_COLSPEC,
-				FormFactory.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("default:grow"),
-				FormFactory.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("default:grow"),
-				FormFactory.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("right:default:grow"),
-				FormFactory.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("right:default"),
-				FormFactory.RELATED_GAP_COLSPEC,
-				FormFactory.DEFAULT_COLSPEC,},
-			new RowSpec[] {
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,});
-		formLayout.setColumnGroups(new int[][]{new int[]{8, 4, 6}});
+		FormLayout formLayout = new FormLayout(
+				new ColumnSpec[] { FormFactory.RELATED_GAP_COLSPEC, FormFactory.DEFAULT_COLSPEC, FormFactory.RELATED_GAP_COLSPEC,
+						ColumnSpec.decode("default:grow"), FormFactory.RELATED_GAP_COLSPEC, ColumnSpec.decode("default:grow"), FormFactory.RELATED_GAP_COLSPEC,
+						ColumnSpec.decode("right:default:grow"), FormFactory.RELATED_GAP_COLSPEC, ColumnSpec.decode("right:default"),
+						FormFactory.RELATED_GAP_COLSPEC, FormFactory.DEFAULT_COLSPEC, },
+				new RowSpec[] { FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC, FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
+						FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC, FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
+						FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC, FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
+						FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC, FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC, });
+		formLayout.setColumnGroups(new int[][] { new int[] { 8, 4, 6 } });
 		setLayout(formLayout);
-		
+
 		JLabel lblOpacityTitle = new JLabel("Opacity:");
 		add(lblOpacityTitle, "2, 2");
-		
+
 		opacitySlider = new JSlider();
 		opacitySlider.setMinorTickSpacing(20);
 		opacitySlider.setPaintTicks(true);
@@ -100,7 +80,6 @@ public class FilterPanel extends JPanel implements LayerListener
 		lblOpacity = new JLabel("%");
 		add(lblOpacity, "10, 2");
 
-		
 		opacitySlider.addChangeListener(new ChangeListener()
 		{
 			@SuppressWarnings("null")
@@ -111,19 +90,19 @@ public class FilterPanel extends JPanel implements LayerListener
 				if (activeLayer != null && activeLayer.opacity != opacitySlider.getValue() / 100.0)
 				{
 					activeLayer.opacity = opacitySlider.getValue() / 100.0;
-					MainFrame.MAIN_PANEL.repaint();
+					MainFrame.SINGLETON.MAIN_PANEL.repaint();
 				}
 			}
 		});
 		opacitySlider.addMouseListener(new MultiClickListener(delay)
 		{
 			@Override
-			public void doubleClick(MouseEvent e)
+			public void doubleClick(@Nullable MouseEvent e)
 			{
 				opacitySlider.setValue(100);
 			}
 		});
-		
+
 		JLabel lblSharpenTitle = new JLabel("Sharpen");
 		add(lblSharpenTitle, "2, 4");
 
@@ -141,31 +120,31 @@ public class FilterPanel extends JPanel implements LayerListener
 			public void stateChanged(@Nullable ChangeEvent e)
 			{
 				lblSharpen.setText(sharpenSlider.getValue() + "%");
-				if (activeLayer != null && activeLayer.sharpness != sharpenSlider.getValue()/100.0)
+				if (activeLayer != null && activeLayer.sharpness != sharpenSlider.getValue() / 100.0)
 				{
-					activeLayer.sharpness = sharpenSlider.getValue()/100.0;
-					MainFrame.MAIN_PANEL.repaint();
+					activeLayer.sharpness = sharpenSlider.getValue() / 100.0;
+					MainFrame.SINGLETON.MAIN_PANEL.repaint();
 				}
 			}
 		});
 		sharpenSlider.addMouseListener(new MultiClickListener(delay)
 		{
 			@Override
-			public void doubleClick(MouseEvent e)
+			public void doubleClick(@Nullable MouseEvent e)
 			{
 				sharpenSlider.setValue(0);
 			}
 		});
-		
+
 		JLabel lblGammaTitle = new JLabel("Gamma");
 		add(lblGammaTitle, "2, 6");
-		
+
 		gammaSlider = new JSlider(JSlider.HORIZONTAL, -100, 100, 0);
 		gammaSlider.setMinorTickSpacing(20);
 		gammaSlider.setPaintTicks(true);
 		gammaSlider.setValue(10);
 		add(gammaSlider, "4, 6, 5, 1");
-		
+
 		lblGamma = new JLabel("1.0");
 		add(lblGamma, "10, 6");
 		WheelSupport.installMouseWheelSupport(gammaSlider);
@@ -176,30 +155,32 @@ public class FilterPanel extends JPanel implements LayerListener
 			public void stateChanged(@Nullable ChangeEvent e)
 			{
 				double gammaValue = Math.exp(gammaSlider.getValue() * GAMMA_FACTOR);
-		        String label = Double.toString(Math.round(gammaValue * 10.0) * 0.1);
-		        if (gammaSlider.getValue() == 100)
-		            label = label.substring(0, 4);
-		        else
-		            label = label.substring(0, 3);
+				String label = Double.toString(Math.round(gammaValue * 10.0) * 0.1);
+				if (gammaSlider.getValue() == 100)
+					label = label.substring(0, 4);
+				else
+					label = label.substring(0, 3);
 
 				lblGamma.setText(label);
 				if (activeLayer != null && activeLayer.gamma != gammaValue)
 				{
 					activeLayer.gamma = gammaValue;
-					MainFrame.MAIN_PANEL.repaint();
+					MainFrame.SINGLETON.MAIN_PANEL.repaint();
 				}
 			}
 		});
-		gammaSlider.addMouseListener(new MultiClickListener(delay){
+		gammaSlider.addMouseListener(new MultiClickListener(delay)
+		{
 			@Override
-			public void doubleClick(MouseEvent e) {
-				gammaSlider.setValue((int)(Math.log(1) / GAMMA_FACTOR));
+			public void doubleClick(@Nullable MouseEvent e)
+			{
+				gammaSlider.setValue((int) (Math.log(1) / GAMMA_FACTOR));
 			}
 		});
-		
+
 		JLabel lblContrastTitle = new JLabel("Contrast");
 		add(lblContrastTitle, "2, 8");
-		
+
 		contrastSlider = new JSlider();
 		contrastSlider.setMinorTickSpacing(20);
 		contrastSlider.setPaintTicks(true);
@@ -208,7 +189,7 @@ public class FilterPanel extends JPanel implements LayerListener
 		contrastSlider.setValue(0);
 		add(contrastSlider, "4, 8, 5, 1");
 		WheelSupport.installMouseWheelSupport(contrastSlider);
-		
+
 		lblContrast = new JLabel("0");
 		add(lblContrast, "10,8");
 
@@ -219,31 +200,33 @@ public class FilterPanel extends JPanel implements LayerListener
 			public void stateChanged(@Nullable ChangeEvent e)
 			{
 				lblContrast.setText(contrastSlider.getValue() + "");
-				if (activeLayer != null &&  activeLayer.contrast != contrastSlider.getValue() / 10.0)
+				if (activeLayer != null && activeLayer.contrast != contrastSlider.getValue() / 10.0)
 				{
 					activeLayer.contrast = contrastSlider.getValue() / 10.0;
-					MainFrame.MAIN_PANEL.repaint();
+					MainFrame.SINGLETON.MAIN_PANEL.repaint();
 				}
 			}
 		});
 		contrastSlider.addMouseListener(new MultiClickListener(delay)
 		{
 			@Override
-			public void doubleClick(MouseEvent e)
+			public void doubleClick(@Nullable MouseEvent e)
 			{
 				contrastSlider.setValue(0);
 			}
 		});
-		
+
 		JLabel lblColorTitle = new JLabel("Color:");
 		add(lblColorTitle, "2, 10, right, default");
-		
-        /*Map<String, LUT> lutMap = LUT.getStandardList();
-        lutMap.put("<Load new GIMP gradient file>", null);*/
-        //comboBoxColorTable = new JComboBox<String>();
-        //comboBoxColorTable = new JComboBox<String>(LUT.getNames());
-        comboBoxColorTable = new JComboBox<Lut>(Lut.values());
-        comboBoxColorTable.setSelectedItem(Lut.GRAY);
+
+		/*
+		 * Map<String, LUT> lutMap = LUT.getStandardList(); lutMap.put(
+		 * "<Load new GIMP gradient file>", null);
+		 */
+		// comboBoxColorTable = new JComboBox<String>();
+		// comboBoxColorTable = new JComboBox<String>(LUT.getNames());
+		comboBoxColorTable = new JComboBox<Lut>(Lut.values());
+		comboBoxColorTable.setSelectedItem(Lut.GRAY);
 		add(comboBoxColorTable, "4, 10, 5, 1, fill, default");
 		comboBoxColorTable.addItemListener(new ItemListener()
 		{
@@ -254,11 +237,11 @@ public class FilterPanel extends JPanel implements LayerListener
 				if (activeLayer != null && activeLayer.getLUT() != comboBoxColorTable.getSelectedItem())
 				{
 					activeLayer.setLUT((Lut) comboBoxColorTable.getSelectedItem());
-					MainFrame.MAIN_PANEL.repaint();
+					MainFrame.SINGLETON.MAIN_PANEL.repaint();
 				}
 			}
 		});
-		
+
 		btnInverseColorTable = new JToggleButton(ICON_INVERT);
 		add(btnInverseColorTable, "10, 10");
 		btnInverseColorTable.addChangeListener(new ChangeListener()
@@ -267,17 +250,17 @@ public class FilterPanel extends JPanel implements LayerListener
 			@Override
 			public void stateChanged(@Nullable ChangeEvent e)
 			{
-				if(activeLayer != null && activeLayer.invertedLut != btnInverseColorTable.isSelected())
+				if (activeLayer != null && activeLayer.invertedLut != btnInverseColorTable.isSelected())
 				{
-					activeLayer.invertedLut=btnInverseColorTable.isSelected();
-					MainFrame.MAIN_PANEL.repaint();
+					activeLayer.invertedLut = btnInverseColorTable.isSelected();
+					MainFrame.SINGLETON.MAIN_PANEL.repaint();
 				}
 			}
 		});
-		
+
 		JLabel lblChannelsTitle = new JLabel("Channels");
 		add(lblChannelsTitle, "2, 12");
-		
+
 		chckbxRed = new JCheckBox("Red");
 		add(chckbxRed, "4, 12");
 		chckbxRed.addItemListener(new ItemListener()
@@ -288,12 +271,12 @@ public class FilterPanel extends JPanel implements LayerListener
 			{
 				if (activeLayer != null && activeLayer.redChannel != chckbxRed.isSelected())
 				{
-					activeLayer.redChannel=chckbxRed.isSelected();
-					MainFrame.MAIN_PANEL.repaint();
+					activeLayer.redChannel = chckbxRed.isSelected();
+					MainFrame.SINGLETON.MAIN_PANEL.repaint();
 				}
 			}
 		});
-		
+
 		chckbxGreen = new JCheckBox("Green");
 		add(chckbxGreen, "6, 12");
 		chckbxGreen.addItemListener(new ItemListener()
@@ -304,12 +287,12 @@ public class FilterPanel extends JPanel implements LayerListener
 			{
 				if (activeLayer != null && activeLayer.greenChannel != chckbxGreen.isSelected())
 				{
-					activeLayer.greenChannel=chckbxGreen.isSelected();
-					MainFrame.MAIN_PANEL.repaint();
+					activeLayer.greenChannel = chckbxGreen.isSelected();
+					MainFrame.SINGLETON.MAIN_PANEL.repaint();
 				}
 			}
 		});
-		
+
 		chckbxBlue = new JCheckBox("Blue");
 		add(chckbxBlue, "8, 12");
 		chckbxBlue.addItemListener(new ItemListener()
@@ -320,40 +303,40 @@ public class FilterPanel extends JPanel implements LayerListener
 			{
 				if (activeLayer != null && activeLayer.blueChannel != chckbxBlue.isSelected())
 				{
-					activeLayer.blueChannel=chckbxBlue.isSelected();
-					MainFrame.MAIN_PANEL.repaint();
+					activeLayer.blueChannel = chckbxBlue.isSelected();
+					MainFrame.SINGLETON.MAIN_PANEL.repaint();
 				}
 			}
 		});
-		
+
 		Layers.addLayerListener(this);
 	}
 
 	@SuppressWarnings("null")
 	public void update()
 	{
-		if(activeLayer==null)
+		if (activeLayer == null)
 		{
-			for(Component c:getComponents())
+			for (Component c : getComponents())
 				c.setEnabled(false);
 			return;
 		}
-		
-		for(Component c:getComponents())
+
+		for (Component c : getComponents())
 			c.setEnabled(true);
-		
-		contrastSlider.setValue((int)(activeLayer.contrast * 10));
+
+		contrastSlider.setValue((int) (activeLayer.contrast * 10));
 		gammaSlider.setValue((int) (Math.log(activeLayer.gamma) / GAMMA_FACTOR));
 		opacitySlider.setValue((int) (activeLayer.opacity * 100));
 		sharpenSlider.setValue((int) (activeLayer.sharpness * 100));
-		
+
 		comboBoxColorTable.setSelectedItem(activeLayer.getLUT());
 		btnInverseColorTable.setSelected(activeLayer.invertedLut);
 		chckbxRed.setSelected(activeLayer.redChannel);
 		chckbxGreen.setSelected(activeLayer.greenChannel);
 		chckbxBlue.setSelected(activeLayer.blueChannel);
 	}
-	
+
 	@Override
 	public void layerAdded()
 	{
@@ -367,11 +350,11 @@ public class FilterPanel extends JPanel implements LayerListener
 	@Override
 	public void activeLayerChanged(@Nullable AbstractLayer layer)
 	{
-		if(layer instanceof AbstractImageLayer)
-			activeLayer=(AbstractImageLayer)layer;
+		if (layer instanceof AbstractImageLayer)
+			activeLayer = (AbstractImageLayer) layer;
 		else
-			activeLayer=null;
-		
+			activeLayer = null;
+
 		update();
-	}	
+	}
 }

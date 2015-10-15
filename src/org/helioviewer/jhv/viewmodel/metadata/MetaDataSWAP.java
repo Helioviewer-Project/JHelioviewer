@@ -7,10 +7,8 @@ class MetaDataSWAP extends MetaData{
 	private final static Vector2i RESOLUTION = new Vector2i(1024, 1024);
 	public MetaDataSWAP(MetaDataContainer metaDataContainer)
 	{
-        super(metaDataContainer, RESOLUTION);
+        super(metaDataContainer, RESOLUTION, metaDataContainer.get("TELESCOP"), metaDataContainer.get("WAVELNTH"));
         instrument = "SWAP";
-        measurement = metaDataContainer.get("WAVELNTH");
-        observatory = metaDataContainer.get("TELESCOP");
         fullName = "SWAP " + measurement;
         
         if (!(instrument.contains("SWAP")))

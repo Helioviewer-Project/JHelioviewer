@@ -15,22 +15,22 @@ public class HTTPRequest extends AbstractDownloadRequest
 	
 	protected @Nullable byte[] rawData;
 
-	public HTTPRequest(String uri, DownloadPriority priority, int timeOut, int retries)
+	public HTTPRequest(String _uri, DownloadPriority _priority, int _timeOut, int _retries)
 	{
-		this(uri, priority);
-		this.retries.set(retries);
-		this.timeOut = timeOut;
+		this(_uri, _priority);
+		retries.set(_retries);
+		timeOut = _timeOut;
 	}
 
-	public HTTPRequest(String uri, DownloadPriority priority, int retries)
+	public HTTPRequest(String _uri, DownloadPriority _priority, int _retries)
 	{
-		this(uri, priority);
-		this.retries.set(retries);
+		this(_uri, _priority);
+		retries.set(_retries);
 	}
 
-	public HTTPRequest(String url, DownloadPriority priority)
+	public HTTPRequest(String _url, DownloadPriority _priority)
 	{
-		super(url, priority);
+		super(_url, _priority);
 	}
 
 	public void execute() throws IOException, InterruptedException
@@ -38,8 +38,7 @@ public class HTTPRequest extends AbstractDownloadRequest
 		HttpURLConnection httpURLConnection = null;
 		InputStream inputStream = null;
 		ByteArrayOutputStream byteArrayOutputStream = null;
-		URL url;
-		url = new URL(this.url);
+		URL url = new URL(this.url);
 		httpURLConnection = (HttpURLConnection) url.openConnection();
 		httpURLConnection.setReadTimeout(timeOut);
 		httpURLConnection.setRequestMethod("GET");
@@ -78,12 +77,10 @@ public class HTTPRequest extends AbstractDownloadRequest
 	public String getDataAsString() throws IOException, InterruptedException
 	{
 		byte[] data = getData();
-		if (data == null)
-			throw new IOException();
-		
 		return new String(data,StandardCharsets.UTF_8);
 	}
 
+	@SuppressWarnings("null")
 	public byte[] getData() throws IOException, InterruptedException
 	{
 		//TODO: proper synchronization

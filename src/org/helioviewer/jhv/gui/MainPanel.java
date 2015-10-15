@@ -122,9 +122,9 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	private static final int DEFAULT_TILE_WIDTH = 2048;
 	private static final int DEFAULT_TILE_HEIGHT = 2048;
 
+	@SuppressWarnings("null")
 	public MainPanel(GLContext _context)
 	{
-
 		cameraAnimations = new ArrayList<CameraAnimation>();
 		synchronizedViews = new ArrayList<MainPanel>();
 		panelMouseListeners = new ArrayList<PanelMouseListener>();
@@ -421,6 +421,9 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	@Override
 	public void display(@Nullable GLAutoDrawable drawable)
 	{
+		if(drawable==null)
+			return;
+		
 		sizeForDecoder = getCanavasSize();
 
 		// TODO: find a better solution to maintain fps
@@ -543,6 +546,9 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	@Override
 	public void init(@Nullable GLAutoDrawable drawable)
 	{
+		if(drawable==null)
+			return;
+		
 		// if (System.getProperty("jhvVersion") == null)
 		// drawable.setGL(new DebugGL2(drawable.getGL().getGL2()));
 		// GuiState3DWCS.overViewPanel.activate(drawable.getContext());

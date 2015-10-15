@@ -13,59 +13,66 @@ import org.helioviewer.jhv.plugins.pfssplugin.data.caching.Cacheable;
 import com.github.junrar.Archive;
 import com.github.junrar.Volume;
 import com.github.junrar.VolumeManager;
+import com.github.junrar.exception.RarException;
+import com.github.junrar.exception.RarException.RarExceptionType;
 import com.github.junrar.io.IReadOnlyAccess;
 import com.github.junrar.io.ReadOnlyAccessByteArray;
 
 /**
- * Represents the raw pfss data. This class is able to download the data asynchronously
+ * Represents the raw pfss data. This class is able to download the data
+ * asynchronously
  * 
  * This class is threadsafe
  */
 public class PfssCompressed implements Cacheable
 {
-    private volatile boolean isLoading = false;
+	private volatile boolean isLoading = false;
 	private volatile boolean isLoaded = false;
-	private volatile byte[] rawData;
+	private @Nullable volatile byte[] rawData;
 	private final FileDescriptor descriptor;
 	private final HTTPRequest httpRequest;
 	private final PfssPlugin parent;
+
 	/**
 	 * 
-	 * @param descriptor File Descriptor representing the file on the server
-	 * @param url file url to load
+	 * @param _descriptor
+	 *            File Descriptor representing the file on the server
+	 * @param url
+	 *            file url to load
 	 */
-	public PfssCompressed(FileDescriptor descriptor, String url, PfssPlugin parent)
+	public PfssCompressed(FileDescriptor _descriptor, String url, PfssPlugin _parent)
 	{
-		this.descriptor = descriptor;
+		descriptor = _descriptor;
 		httpRequest = Plugins.generateAndStartHTPPRequest(url, DownloadPriority.MEDIUM);
-		this.parent = parent;
+		parent = _parent;
 	}
-	
+
 	/**
-	 * Load the data into memory. this method signals all who are waiting on the condition "loaded"
+	 * Load the data into memory. this method signals all who are waiting on the
+	 * condition "loaded"
 	 */
 	public synchronized void loadData()
 	{
-	    if(isLoaded)
-	    {
-	        isLoading=false;
-	        return;
-	    }
-	    
-	    try
-	    {
+		if (isLoaded)
+		{
+			isLoading = false;
+			return;
+		}
+
+		try
+		{
 			rawData = httpRequest.getData();
-		    isLoaded = true;
+			isLoaded = true;
 		}
-	    catch (IOException e)
-	    {
-	    	parent.failedDownloads.add(httpRequest);
+		catch (IOException e)
+		{
+			parent.failedDownloads.add(httpRequest);
 		}
-	    catch(InterruptedException _ie)
-	    {
-	    }
+		catch (InterruptedException _ie)
+		{
+		}
 	}
-	
+
 	/**
 	 * 
 	 * @return true if data has finished loading into memory
@@ -74,27 +81,33 @@ public class PfssCompressed implements Cacheable
 	{
 		return isLoaded;
 	}
-	
-    /**
-     * 
-     * @return true if data is loading
-     */
-    public boolean isLoading()
-    {
-        return isLoading;
-    }
-	
+
+	/**
+	 * 
+	 * @return true if data is loading
+	 */
+	public boolean isLoading()
+	{
+		return isLoading;
+	}
+
 	/**
 	 * Check if it is loaded completely before accessing this method.
-	 * @return the loaded data 
+	 * 
+	 * @return the loaded data
 	 */
-	public byte[] getData()
+	public @Nullable byte[] getData()
 	{
 		return rawData;
 	}
-	
-	public VolumeManager getVolumeManage(){
-		return new ByteArrayVolumeManager(this.getData());
+
+	@SuppressWarnings("null")
+	public VolumeManager getVolumeManage() throws RarException
+	{
+		if(rawData==null)
+			throw new RarException(RarExceptionType.unkownError);
+		
+		return new ByteArrayVolumeManager(rawData);
 	}
 
 	@Override
@@ -103,66 +116,70 @@ public class PfssCompressed implements Cacheable
 		return this.descriptor;
 	}
 
-    public void loadDataAsync()
-    {
-        if(isLoading || isLoaded)
-            return;
-        
-        isLoading=true;
-        
-        PfssPlugin.pool.execute(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                loadData();
-                Plugins.repaintMainPanel();
-            }
-        });   
-    }
-    
-    public static class ByteArrayVolumeManager implements VolumeManager
-    {
-        private byte[] bytes;
+	public void loadDataAsync()
+	{
+		if (isLoading || isLoaded)
+			return;
 
-        public ByteArrayVolumeManager(byte[] _bytes)
-        {
-            bytes = _bytes;
-        }
+		isLoading = true;
 
-        @Override
-        public Volume nextArchive(@Nullable Archive archive, @Nullable Volume last) throws IOException
-        {
-            return new ByteArrayVolume( archive, bytes );
-        }
-    }
-    
-    public static class ByteArrayVolume implements Volume {
-        private final Archive archive;
-        private final byte [] bytes;
+		PfssPlugin.pool.execute(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				loadData();
+				Plugins.repaintMainPanel();
+			}
+		});
+	}
 
-        /**
-         * @param file
-         */
-        public ByteArrayVolume(Archive archive, byte [] bytes) {
-            this.archive = archive;
-            this.bytes = bytes;
-        }
+	public static class ByteArrayVolumeManager implements VolumeManager
+	{
+		private byte[] bytes;
 
-        @Override
-        public IReadOnlyAccess getReadOnlyAccess() throws IOException {
-            return new ReadOnlyAccessByteArray(bytes);
-        }
+		public ByteArrayVolumeManager(byte[] _bytes)
+		{
+			bytes = _bytes;
+		}
 
-        @Override
-        public long getLength() {
-            return bytes.length;
-        }
+		@Override
+		public @Nullable Volume nextArchive(@Nullable Archive archive, @Nullable Volume last) throws IOException
+		{
+			if(archive==null)
+				return null;
+			
+			return new ByteArrayVolume(archive, bytes);
+		}
+	}
 
-        @Override
-        public Archive getArchive() {
-            return archive;
-        }
+	public static class ByteArrayVolume implements Volume
+	{
+		private final Archive archive;
+		private final byte[] bytes;
 
-    }
+		public ByteArrayVolume(Archive _archive, byte[] _bytes)
+		{
+			archive = _archive;
+			bytes = _bytes;
+		}
+
+		@Override
+		public IReadOnlyAccess getReadOnlyAccess() throws IOException
+		{
+			return new ReadOnlyAccessByteArray(bytes);
+		}
+
+		@Override
+		public long getLength()
+		{
+			return bytes.length;
+		}
+
+		@Override
+		public Archive getArchive()
+		{
+			return archive;
+		}
+	}
 }

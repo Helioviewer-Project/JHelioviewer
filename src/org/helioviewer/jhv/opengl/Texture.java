@@ -260,7 +260,7 @@ public class Texture
 		imageRegion=null;
 		
 		if (TimeLine.SINGLETON.getCurrentDateTime().equals(dateTime))
-			MainFrame.MAIN_PANEL.repaint();
+			MainFrame.SINGLETON.MAIN_PANEL.repaint();
 	}
 	
 	

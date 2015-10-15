@@ -34,17 +34,17 @@ import com.jogamp.opengl.GLContext;
 
 public class MainFrame extends JFrame
 {
-	public static MainPanel MAIN_PANEL;
-	public static OverviewPanel OVERVIEW_PANEL;
-	public static final TopToolBar TOP_TOOL_BAR = new TopToolBar();
+	public final MainPanel MAIN_PANEL;
+	public final OverviewPanel OVERVIEW_PANEL;
+	public final TopToolBar TOP_TOOL_BAR = new TopToolBar();
 	public static final MainFrame SINGLETON = new MainFrame();
-	public static final int SIDE_PANEL_WIDTH = 320;
-	public static SideContentPane LEFT_PANE;
-	public static MoviePanel MOVIE_PANEL;
-	public static LayerPanel LAYER_PANEL;
-	private JSplitPane splitPane;
+	public final int SIDE_PANEL_WIDTH = 320;
+	public final SideContentPane LEFT_PANE;
+	public final MoviePanel MOVIE_PANEL;
+	public final LayerPanel LAYER_PANEL;
+	private final JSplitPane splitPane;
 
-	public static FilterPanel FILTER_PANEL;
+	public final FilterPanel FILTER_PANEL;
 	
 	private MainFrame()
 	{
@@ -75,39 +75,6 @@ public class MainFrame extends JFrame
 		OVERVIEW_PANEL.setMinimumSize(new Dimension(240, 200));
 		OVERVIEW_PANEL.setPreferredSize(new Dimension(240, 200));
 
-		splitPane.setRightComponent(MAIN_PANEL);		
-		splitPane.setLeftComponent(createLeftPanel());
-		
-		contentPane.add(this.getStatusPane(), BorderLayout.SOUTH);		
-	}
-	
-	private void initMainFrame()
-	{
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		Dimension maxSize = Toolkit.getDefaultToolkit().getScreenSize();
-		Dimension minSize = new Dimension(800, 600);
-
-		maxSize.width -= 200;
-		
-		// if the display is not very high, we want to take most of the height,
-		// as the rest is not useful anyway
-		if (maxSize.height < 1000)
-			maxSize.height -= 100;
-		else
-			maxSize.height -= 150;
-
-		minSize.width = Math.min(minSize.width, maxSize.width);
-		minSize.height = Math.min(minSize.height, maxSize.height);
-		setMinimumSize(minSize);
-		setPreferredSize(maxSize);
-		setFont(new Font("SansSerif", Font.BOLD, 12));
-		setIconImage(IconBank.getIcon(JHVIcon.HVLOGO_SMALL).getImage());
-		this.pack();
-		setLocationRelativeTo(null);
-	}
-	
-	private JPanel createLeftPanel()
-	{
 		JPanel left = new JPanel();
 		GridBagLayout gbl_left = new GridBagLayout();
 		gbl_left.columnWidths = new int[]{0, 0};
@@ -135,7 +102,21 @@ public class MainFrame extends JFrame
 		gbc_scrollPane.gridy = 1;
 		left.add(scrollPane, gbc_scrollPane);
 		
-		scrollContentPane.add(getSideBar());
+		LEFT_PANE = new SideContentPane();
+		LEFT_PANE.setMinimumSize(new Dimension(300, 200));
+		// Movie control
+		MOVIE_PANEL = new MoviePanel();
+		LEFT_PANE.add("Movie Controls", MOVIE_PANEL, true);
+		
+		// Layer control
+		LAYER_PANEL = new LayerPanel();
+		LEFT_PANE.add("Layers", LAYER_PANEL, true);
+
+		// Filter control
+		FILTER_PANEL = new FilterPanel();
+		LEFT_PANE.add("Adjustments", FILTER_PANEL , true);
+		
+		scrollContentPane.add(LEFT_PANE);
 		
 		//F-IXME: still needed?
 		/*this.addComponentListener(new ComponentAdapter()
@@ -155,7 +136,37 @@ public class MainFrame extends JFrame
 				});
 			}
 		});*/
-		return left;
+		
+		
+		splitPane.setRightComponent(MAIN_PANEL);		
+		splitPane.setLeftComponent(left);
+		
+		contentPane.add(this.getStatusPane(), BorderLayout.SOUTH);		
+	}
+	
+	private void initMainFrame()
+	{
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		Dimension maxSize = Toolkit.getDefaultToolkit().getScreenSize();
+		Dimension minSize = new Dimension(800, 600);
+
+		maxSize.width -= 200;
+		
+		// if the display is not very high, we want to take most of the height,
+		// as the rest is not useful anyway
+		if (maxSize.height < 1000)
+			maxSize.height -= 100;
+		else
+			maxSize.height -= 150;
+
+		minSize.width = Math.min(minSize.width, maxSize.width);
+		minSize.height = Math.min(minSize.height, maxSize.height);
+		setMinimumSize(minSize);
+		setPreferredSize(maxSize);
+		setFont(new Font("SansSerif", Font.BOLD, 12));
+		setIconImage(IconBank.getIcon(JHVIcon.HVLOGO_SMALL).getImage());
+		this.pack();
+		setLocationRelativeTo(null);
 	}
 	
 	private JPanel getStatusPane()
@@ -200,25 +211,6 @@ public class MainFrame extends JFrame
 		return statusPane;
 	}
 	
-	private SideContentPane getSideBar()
-	{
-		LEFT_PANE = new SideContentPane();
-		LEFT_PANE.setMinimumSize(new Dimension(300, 200));
-		// Movie control
-		MOVIE_PANEL = new MoviePanel();
-		LEFT_PANE.add("Movie Controls", MOVIE_PANEL, true);
-		
-		// Layer control
-		LAYER_PANEL = new LayerPanel();
-		LEFT_PANE.add("Layers", LAYER_PANEL, true);
-
-		// Filter control
-		FILTER_PANEL = new FilterPanel();
-		LEFT_PANE.add("Adjustments", FILTER_PANEL , true);
-		
-		return LEFT_PANE;
-	}
-
 	private void initMenuBar()
 	{
 		JMenuBar menuBar = new MenuBar();

@@ -269,6 +269,9 @@ public class HEKCacheModel {
                     container = intervalStore.getItem(overlappingIntervals.get(0));
                 }
             }
+            
+            if(container==null)
+            	throw new RuntimeException();
 
             List<HEKEvent> currentEvents = container.getItems();
 

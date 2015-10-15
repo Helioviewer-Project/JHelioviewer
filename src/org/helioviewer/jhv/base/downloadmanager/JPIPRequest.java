@@ -23,8 +23,6 @@ import kdu_jni.Kdu_cache;
 
 public class JPIPRequest extends AbstractDownloadRequest
 {
-	private JPIPSocket jpipSocket;
-
 	private final JPIPQuery query;
 
 	private int JpipRequestLen = JPIPConstants.MIN_REQUEST_LEN;
@@ -55,12 +53,12 @@ public class JPIPRequest extends AbstractDownloadRequest
 			return;
 		}
 		
-		jpipSocket = new JPIPSocket();
+		JPIPSocket jpipSocket = new JPIPSocket();
 
 		try
 		{
 			final Kdu_cache kduCache = new Kdu_cache();
-			openSocket(kduCache);
+			openSocket(jpipSocket, kduCache);
 			org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPRequest request = new org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPRequest(Method.GET);
 			for(;;)
 			{
@@ -71,7 +69,7 @@ public class JPIPRequest extends AbstractDownloadRequest
 				}
 
 				if (jpipSocket.isClosed())
-					openSocket(kduCache);
+					openSocket(jpipSocket, kduCache);
 				
 				query.setField(JPIPRequestField.LEN.toString(), String.valueOf(JpipRequestLen));
 
@@ -83,7 +81,7 @@ public class JPIPRequest extends AbstractDownloadRequest
 					throw new IOException();
 				
 				// Update optimal package size
-				flowControl();
+				flowControl(jpipSocket);
 				try
 				{
 					boolean complete = addJPIPResponseData(response,kduCache);
@@ -116,9 +114,9 @@ public class JPIPRequest extends AbstractDownloadRequest
 		}
 	}
 
-	private void openSocket(Kdu_cache _kduCache) throws IOException, URISyntaxException, KduException
+	private void openSocket(JPIPSocket _socket, Kdu_cache _kduCache) throws IOException, URISyntaxException, KduException
 	{
-		JPIPResponse jpipResponse = (JPIPResponse) jpipSocket.connect(new URI(url));
+		JPIPResponse jpipResponse = (JPIPResponse) _socket.connect(new URI(url));
 		addJPIPResponseData(jpipResponse,_kduCache);
 	}
 
@@ -140,7 +138,7 @@ public class JPIPRequest extends AbstractDownloadRequest
 		return jRes.isResponseComplete();
 	}
 
-	private void flowControl()
+	private void flowControl(JPIPSocket jpipSocket)
 	{
 		int adjust = 0;
 		int receivedBytes = jpipSocket.getReceivedData();

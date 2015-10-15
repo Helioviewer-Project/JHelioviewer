@@ -1,6 +1,5 @@
 package org.helioviewer.jhv.opengl;
 
-import java.awt.image.BufferedImage;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
@@ -35,8 +34,7 @@ public class LoadingScreen
 	static
 	{
 		openGLHelper = new Texture();
-		BufferedImage image = IconBank.getImage(JHVIcon.LOADING_BIG);
-		openGLHelper.upload(image);
+		openGLHelper.upload(IconBank.getImage(JHVIcon.LOADING_BIG));
 		initCircleVBO(GLContext.getCurrentGL().getGL2());
 	}
 

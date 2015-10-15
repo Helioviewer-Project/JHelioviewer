@@ -1,7 +1,5 @@
 package org.helioviewer.jhv.opengl;
 
-import java.awt.image.BufferedImage;
-
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 
@@ -15,8 +13,7 @@ public class NoImageScreen
 	static
 	{
 		openGLHelper = new Texture();
-		BufferedImage image = IconBank.getImage(JHVIcon.NOIMAGE);
-		openGLHelper.upload(image);
+		openGLHelper.upload(IconBank.getImage(JHVIcon.NOIMAGE));
 	}
 
 	public static void render(GL2 gl)

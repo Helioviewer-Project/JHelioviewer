@@ -32,7 +32,7 @@ public class Zoom1To1Action extends AbstractAction
 
 	public void actionPerformed(@Nullable ActionEvent e)
 	{
-		MainPanel componentView = MainFrame.MAIN_PANEL;
+		MainPanel componentView = MainFrame.SINGLETON.MAIN_PANEL;
 		AbstractImageLayer activeLayer = Layers.getActiveImageLayer();
 		if (activeLayer == null)
 			return;
@@ -49,7 +49,7 @@ public class Zoom1To1Action extends AbstractAction
 		if (region == null)
 			return;
 
-		Dimension dimension = MainFrame.MAIN_PANEL.getCanavasSize();
+		Dimension dimension = MainFrame.SINGLETON.MAIN_PANEL.getCanavasSize();
 		double minCanvasDimension = dimension.getHeight();
 
 		double halfFOVRad = Math.toRadians(MainPanel.FOV / 2.0);

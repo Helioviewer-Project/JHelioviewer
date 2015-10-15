@@ -11,13 +11,8 @@ class MetaDataStereo extends MetaData
 	private final static Vector2i RESOLUTION = new Vector2i(2048, 2048);
 	public MetaDataStereo(MetaDataContainer metaDataContainer)
 	{
-        super(metaDataContainer, RESOLUTION);
+        super(metaDataContainer, RESOLUTION, metaDataContainer.get("OBSRVTRY"), metaDataContainer.get("WAVELNTH"));
 
-        observatory = metaDataContainer.get("OBSRVTRY");
-        measurement = metaDataContainer.get("WAVELNTH");
-        if (measurement == null)
-            measurement = metaDataContainer.tryGetDouble("WAVELNTH")+"";
-	
         if (!(("STEREO_A".equalsIgnoreCase(observatory) || "STEREO_B".equalsIgnoreCase(observatory) && "EUVI".equalsIgnoreCase(detector))))
         	throw new UnsuitableMetaDataException("invalid instrument");
 

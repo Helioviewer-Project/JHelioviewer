@@ -74,8 +74,8 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 			if (plugin.LOAD_ON_STARTUP)
 				activatePlugin(plugin);
 		
-		MainFrame.MAIN_PANEL.addMouseListener(this);
-		MainFrame.MAIN_PANEL.addMouseMotionListener(this);
+		MainFrame.SINGLETON.MAIN_PANEL.addMouseListener(this);
+		MainFrame.SINGLETON.MAIN_PANEL.addMouseMotionListener(this);
 	}
 	
 	public ArrayList<AbstractPlugin> getInactivePlugins()
@@ -112,12 +112,12 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 
 	public static void addButtonToToolbar(AbstractButton button)
 	{
-		MainFrame.TOP_TOOL_BAR.addButton(button);
+		MainFrame.SINGLETON.TOP_TOOL_BAR.addButton(button);
 	}
 
 	public static void addPanelToLeftControllPanel(String title, JPanel panel, boolean startExpanded)
 	{
-		MainFrame.LEFT_PANE.add(title, panel, startExpanded);
+		MainFrame.SINGLETON.LEFT_PANE.add(title, panel, startExpanded);
 	}
 
 	@Override
@@ -162,7 +162,7 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 		if(e==null)
 			return;
 		
-		Vector3d hitpoint = new RayTrace().cast(e.getX(), e.getY(), MainFrame.MAIN_PANEL).getHitpoint();
+		Vector3d hitpoint = new RayTrace().cast(e.getX(), e.getY(), MainFrame.SINGLETON.MAIN_PANEL).getHitpoint();
 		for (AbstractPlugin plugin : plugins)
 			plugin.mouseDragged(e, hitpoint);
 	}
@@ -173,7 +173,7 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 		if(e==null)
 			return;
 		
-		Vector3d hitpoint = new RayTrace().cast(e.getX(), e.getY(), MainFrame.MAIN_PANEL).getHitpoint();
+		Vector3d hitpoint = new RayTrace().cast(e.getX(), e.getY(), MainFrame.SINGLETON.MAIN_PANEL).getHitpoint();
 		for (AbstractPlugin plugin : plugins)
 			plugin.mouseMoved(e, hitpoint);
 	}
@@ -184,7 +184,7 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 		if(e==null)
 			return;
 		
-		Vector3d hitpoint = new RayTrace().cast(e.getX(), e.getY(), MainFrame.MAIN_PANEL).getHitpoint();
+		Vector3d hitpoint = new RayTrace().cast(e.getX(), e.getY(), MainFrame.SINGLETON.MAIN_PANEL).getHitpoint();
 		for (AbstractPlugin plugin : plugins)
 			plugin.mouseClicked(e, hitpoint);
 	}
@@ -195,7 +195,7 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 		if(e==null)
 			return;
 		
-		Vector3d hitpoint = new RayTrace().cast(e.getX(), e.getY(), MainFrame.MAIN_PANEL).getHitpoint();
+		Vector3d hitpoint = new RayTrace().cast(e.getX(), e.getY(), MainFrame.SINGLETON.MAIN_PANEL).getHitpoint();
 		for (AbstractPlugin plugin : plugins)
 			plugin.mousePressed(e, hitpoint);
 	}
@@ -206,7 +206,7 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 		if(e==null)
 			return;
 		
-		Vector3d hitpoint = new RayTrace().cast(e.getX(), e.getY(), MainFrame.MAIN_PANEL).getHitpoint();
+		Vector3d hitpoint = new RayTrace().cast(e.getX(), e.getY(), MainFrame.SINGLETON.MAIN_PANEL).getHitpoint();
 		for (AbstractPlugin plugin : plugins)
 			plugin.mouseReleased(e, hitpoint);
 	}
@@ -217,7 +217,7 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 		if(e==null)
 			return;
 		
-		Vector3d hitpoint = new RayTrace().cast(e.getX(), e.getY(), MainFrame.MAIN_PANEL).getHitpoint();
+		Vector3d hitpoint = new RayTrace().cast(e.getX(), e.getY(), MainFrame.SINGLETON.MAIN_PANEL).getHitpoint();
 		for (AbstractPlugin plugin : plugins)
 			plugin.mouseEntered(e, hitpoint);
 	}
@@ -228,29 +228,29 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 		if(e==null)
 			return;
 		
-		Vector3d hitpoint = new RayTrace().cast(e.getX(), e.getY(), MainFrame.MAIN_PANEL).getHitpoint();
+		Vector3d hitpoint = new RayTrace().cast(e.getX(), e.getY(), MainFrame.SINGLETON.MAIN_PANEL).getHitpoint();
 		for (AbstractPlugin plugin : plugins)
 			plugin.mouseExited(e, hitpoint);
 	}
 
 	public static void setCursor(Cursor cursor)
 	{
-		MainFrame.MAIN_PANEL.setCursor(cursor);
+		MainFrame.SINGLETON.MAIN_PANEL.setCursor(cursor);
 	}
 
 	public static Cursor getCursor()
 	{
-		return MainFrame.MAIN_PANEL.getCursor();
+		return MainFrame.SINGLETON.MAIN_PANEL.getCursor();
 	}
 
 	public static Point mainPanelGetLocationOnScreen()
 	{
-		return MainFrame.MAIN_PANEL.getLocationOnScreen();
+		return MainFrame.SINGLETON.MAIN_PANEL.getLocationOnScreen();
 	}
 
 	public static Dimension mainPanelGetSize()
 	{
-		return MainFrame.MAIN_PANEL.getSize();
+		return MainFrame.SINGLETON.MAIN_PANEL.getSize();
 	}
 
 	public static @Nullable LocalDateTime getStartDateTime()
@@ -265,17 +265,17 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 
 	public static Dimension getMainPanelSize() 
 	{
-		return MainFrame.MAIN_PANEL.getSize();
+		return MainFrame.SINGLETON.MAIN_PANEL.getSize();
 	}
 
 	public static double getViewPortSize()
 	{
-		return MainFrame.MAIN_PANEL.getTranslationCurrent().z * Math.tan(MainPanel.FOV / 2) * 2;
+		return MainFrame.SINGLETON.MAIN_PANEL.getTranslationCurrent().z * Math.tan(MainPanel.FOV / 2) * 2;
 	}
 
 	public static void repaintMainPanel()
 	{
-		MainFrame.MAIN_PANEL.repaint();
+		MainFrame.SINGLETON.MAIN_PANEL.repaint();
 	}
 
 	public static HTTPRequest generateAndStartHTPPRequest(String uri, DownloadPriority priority)
@@ -300,11 +300,11 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 	public static void setPanelOpenCloseState(Component component, boolean open)
 	{
 		if (open)
-			MainFrame.LEFT_PANE.expand(component);
+			MainFrame.SINGLETON.LEFT_PANE.expand(component);
 		else
-			MainFrame.LEFT_PANE.collapse(component);
+			MainFrame.SINGLETON.LEFT_PANE.collapse(component);
 
-		MainFrame.LEFT_PANE.revalidate();
+		MainFrame.SINGLETON.LEFT_PANE.revalidate();
 		component.repaint();
 	}
 	
@@ -326,11 +326,11 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 	
 	public static void removePanelOnLeftControllPanel(JPanel jPanel)
 	{
-		MainFrame.LEFT_PANE.remove(jPanel);
+		MainFrame.SINGLETON.LEFT_PANE.remove(jPanel);
 	}
 
 	public static void repaintLayerPanel()
 	{
-		MainFrame.LAYER_PANEL.updateData();
+		MainFrame.SINGLETON.LAYER_PANEL.updateData();
 	}
 }

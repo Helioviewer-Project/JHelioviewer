@@ -51,6 +51,7 @@ public class Observatories
 						
 						SwingUtilities.invokeLater(new Runnable()
 						{
+							@SuppressWarnings("null")
 							@Override
 							public void run()
 							{
@@ -176,14 +177,12 @@ public class Observatories
 		JSONArray uiLabels;
 		try
 		{
-			ArrayList<String> uiLabel = new ArrayList<String>();
 			uiLabels = (JSONArray) jsonObject.get("uiLabels");
 			for (int i = 1; i < uiLabels.length(); i++)
 			{
 				JSONObject obj = (JSONObject) uiLabels.get(i);
-				uiLabel.add(obj.getString("label"));
+				observatory.uiLabels.add(obj.getString("label"));
 			}
-			observatory.uiLabels = uiLabel;
 		}
 		catch (JSONException e)
 		{
@@ -198,12 +197,10 @@ public class Observatories
 			DateTimeFormatter reader = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 			String end = jsonObject.getString("end");
 			String start = jsonObject.getString("start");
-			if (start != null && end != null && end != "null" && start != "null")
+			if (start != null && end != null && !"null".equals(end) && !"null".equals(start))
 			{
-				LocalDateTime endDateTime = LocalDateTime.parse(end, reader);
-				LocalDateTime startDateTime = LocalDateTime.parse(start, reader);
-				filter.start = startDateTime;
-				filter.end = endDateTime;
+				filter.start = LocalDateTime.parse(start, reader);
+				filter.end = LocalDateTime.parse(end, reader);
 			}
 			//filter.layeringOrder = jsonObject.getInt("layeringOrder");
 			filter.nickname = (String) jsonObject.getString("nickname");
@@ -211,6 +208,7 @@ public class Observatories
 		}
 		catch (JSONException e)
 		{
+			Telemetry.trackException(e);
 		}
 	}
 
@@ -218,7 +216,7 @@ public class Observatories
 	{
 		private final TreeMap<String, Filter> filters = new TreeMap<String, Filter>(new AlphanumComparator());
 		private final String name;
-		private ArrayList<String> uiLabels;
+		private ArrayList<String> uiLabels=new ArrayList<String>();
 
 		private Observatory(String _name)
 		{
@@ -254,12 +252,12 @@ public class Observatories
 		
 		@Nullable private LocalDateTime start;
 		@Nullable private LocalDateTime end;
-		@Nullable private String nickname;
+		private String nickname;
 		public int sourceId;
 
 		private Filter(String _name)
 		{
-			name = _name;
+			name = nickname = _name;
 		}
 
 		private void addFilter(String name, Filter filter)
@@ -267,7 +265,7 @@ public class Observatories
 			filters.put(name, filter);
 		}
 
-		public @Nullable Collection<Filter> getFilters()
+		public Collection<Filter> getFilters()
 		{
 			return filters.values();
 		}
@@ -288,7 +286,7 @@ public class Observatories
 			return end;
 		}
 		
-		public @Nullable String getNickname()
+		public String getNickname()
 		{
 			return nickname;
 		}

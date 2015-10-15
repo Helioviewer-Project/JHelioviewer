@@ -10,7 +10,7 @@ import javax.swing.Timer;
 
 public class MultiClickListener extends MouseAdapter implements ActionListener
 {
-    MouseEvent lastEvent;
+    @Nullable MouseEvent lastEvent;
     Timer timer;
 
     public MultiClickListener(int delay)
@@ -43,6 +43,6 @@ public class MultiClickListener extends MouseAdapter implements ActionListener
         singleClick( lastEvent );
     }
 
-    public void singleClick(MouseEvent e) {}
-    public void doubleClick(MouseEvent e) {}
+    public void singleClick(@Nullable MouseEvent e) {}
+    public void doubleClick(@Nullable MouseEvent e) {}
 }

@@ -260,7 +260,6 @@ public class PreferencesDialog extends JDialog
 	 * 
 	 * @return General parameters panel
 	 */
-	@SuppressWarnings("null")
 	private JPanel createParametersPanel()
 	{
 		paramsPanel = new JPanel();

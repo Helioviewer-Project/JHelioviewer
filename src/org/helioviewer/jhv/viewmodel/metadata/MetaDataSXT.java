@@ -7,10 +7,8 @@ class MetaDataSXT extends MetaData
 	private final static Vector2i RESOLUTION = new Vector2i(1024, 1024);
 	public MetaDataSXT(MetaDataContainer metaDataContainer)
 	{
-	  	super(metaDataContainer, RESOLUTION);
+	  	super(metaDataContainer, RESOLUTION, metaDataContainer.get("TELESCOP"), metaDataContainer.get("WAVELNTH"));
 
-        measurement = metaDataContainer.get("WAVELNTH");
-        observatory = metaDataContainer.get("TELESCOP");
         if (!instrument.equalsIgnoreCase("SXT"))
         	throw new UnsuitableMetaDataException("invalid instrument: "+instrument);
 

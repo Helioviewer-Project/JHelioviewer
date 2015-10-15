@@ -51,8 +51,8 @@ public class PositionStatusPanel extends StatusLabel implements MouseListener
 		setBorder(BorderFactory.createEtchedBorder());
 
 		popupState = new PopupState();
-		MainFrame.MAIN_PANEL.addPanelMouseListener(this);
-		MainFrame.OVERVIEW_PANEL.addPanelMouseListener(this);
+		MainFrame.SINGLETON.MAIN_PANEL.addPanelMouseListener(this);
+		MainFrame.SINGLETON.OVERVIEW_PANEL.addPanelMouseListener(this);
 		this.addMouseListener(this);
 		this.setComponentPopupMenu(popupState);
 
@@ -68,15 +68,16 @@ public class PositionStatusPanel extends StatusLabel implements MouseListener
 	 * @param position
 	 *            Position on the screen.
 	 */
-	private void updatePosition(Ray ray)
+	private void updatePosition(@Nullable Ray ray)
 	{
 		if (ray == null)
 		{
 			this.setText(title);
 			return;
 		}
-		HeliocentricCartesianCoordinate cart = new HeliocentricCartesianCoordinate(
-				ray.getHitpoint().x, ray.getHitpoint().y, ray.getHitpoint().z);
+
+		HeliocentricCartesianCoordinate cart = new HeliocentricCartesianCoordinate(ray.getHitpoint().x,
+				ray.getHitpoint().y, ray.getHitpoint().z);
 
 		DecimalFormat df;
 		String point = null;
@@ -84,41 +85,33 @@ public class PositionStatusPanel extends StatusLabel implements MouseListener
 		{
 			case ARCSECS:
 				LocalDateTime current = TimeLine.SINGLETON.getCurrentDateTime();
-				if (current == null){
-					this.setText(title);
-					return;
-				}
-				
+
 				HelioprojectiveCartesianCoordinate hpc = cart.toHelioprojectiveCartesianCoordinate(current);
 				df = new DecimalFormat("#");
-				point = "(" + df.format(hpc.getThetaXAsArcSec()) + "\" ,"
-						+ df.format(hpc.getThetaYAsArcSec()) + "\")";
+				point = "(" + df.format(hpc.getThetaXAsArcSec()) + "\" ," + df.format(hpc.getThetaYAsArcSec()) + "\")";
 				break;
 			case DEGREE:
 				HeliographicCoordinate newCoord = cart.toHeliographicCoordinate();
 				df = new DecimalFormat("#.##");
 				if (!(ray.getHitpointType() == HitpointType.PLANE))
-					point = "(" + df.format(newCoord.getHgLongitudeAsDeg())
-							+ DEGREE + " ,"
-							+ df.format(newCoord.getHgLatitudeAsDeg())
-							+ DEGREE + ") ";
+					point = "(" + df.format(newCoord.getHgLongitudeAsDeg()) + DEGREE + " ,"
+							+ df.format(newCoord.getHgLatitudeAsDeg()) + DEGREE + ") ";
 				else
 					point = "";
 				break;
-	
+
 			default:
 				break;
 		}
 		this.setText(title + point);
 	}
 
-	
 	@Override
 	public void mouseMoved(MouseEvent e, Ray ray)
 	{
 		updatePosition(ray);
 	}
-	
+
 	@Override
 	public void mouseExited(MouseEvent e, Ray ray)
 	{
@@ -128,16 +121,16 @@ public class PositionStatusPanel extends StatusLabel implements MouseListener
 	public void mouseDragged(MouseEvent e)
 	{
 	}
-	
+
 	@Override
 	public void mouseClicked(@Nullable MouseEvent e)
 	{
-		if(e==null)
+		if (e == null)
 			return;
-		
+
 		if (e.isPopupTrigger())
 		{
-			//TODO ?
+			// TODO ?
 			// popup(e);
 		}
 	}
@@ -150,12 +143,12 @@ public class PositionStatusPanel extends StatusLabel implements MouseListener
 	@Override
 	public void mouseReleased(@Nullable MouseEvent e)
 	{
-		if(e==null)
+		if (e == null)
 			return;
-		
+
 		if (e.isPopupTrigger())
 		{
-			//TODO ?
+			// TODO ?
 			// popup(e);
 		}
 	}
@@ -184,9 +177,9 @@ public class PositionStatusPanel extends StatusLabel implements MouseListener
 					@Override
 					public void actionPerformed(@Nullable ActionEvent e)
 					{
-						if(e==null)
+						if (e == null)
 							return;
-						
+
 						for (PopupItemState.PopupItemStates popupItems : PopupItemState.PopupItemStates.values())
 						{
 							if (popupItems.popupItem == e.getSource())
@@ -225,8 +218,7 @@ public class PositionStatusPanel extends StatusLabel implements MouseListener
 	{
 		public enum PopupItemStates
 		{
-			DEGREE("degrees (Heliographic)"),
-			ARCSECS("arcsecs (Helioprojective cartesian)");
+			DEGREE("degrees (Heliographic)"), ARCSECS("arcsecs (Helioprojective cartesian)");
 
 			private PopupItemState popupItem;
 

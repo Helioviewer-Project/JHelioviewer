@@ -35,8 +35,6 @@ import com.jogamp.opengl.GLContext;
 
 //FIXME: shader adds intensities before LUT-ing, instead of rgb-space
 //FIXME: shader handles this incorrectly: corona.opacity>0 && hit corona first && hit sphere later
-//FIXME: sometimes, viewport after adding layer stays black
-
 public abstract class AbstractImageLayer extends AbstractLayer
 {
 	public enum CacheStatus
@@ -55,7 +53,9 @@ public abstract class AbstractImageLayer extends AbstractLayer
 	public boolean invertedLut = false;
 	protected boolean coronaVisible = true;
 
+	@SuppressWarnings("null")
 	protected LocalDateTime start;
+	@SuppressWarnings("null")
 	protected LocalDateTime end;
 	
 	@Nullable public Lut getLUT()
@@ -66,7 +66,7 @@ public abstract class AbstractImageLayer extends AbstractLayer
 	public void setLUT(@Nullable Lut _lut)
 	{
 		lut = _lut;
-		MainFrame.FILTER_PANEL.update();
+		MainFrame.SINGLETON.FILTER_PANEL.update();
 	}
 
 	public void toggleCoronaVisibility()
@@ -320,8 +320,15 @@ public abstract class AbstractImageLayer extends AbstractLayer
 	private static final int MAX_X_POINTS = 11;
 	private static final int MAX_Y_POINTS = 11;
 
-	@Nullable
-	public ImageRegion calculateRegion(MainPanel _mainPanel, MetaData _metaData, Dimension _size)
+	/**
+	 * Calculates the shown region
+	 * 
+	 * @param _mainPanel
+	 * @param _metaData
+	 * @param _size
+	 * @return The ImageRegion or NULL if nothing is visible
+	 */
+	public @Nullable ImageRegion calculateRegion(MainPanel _mainPanel, MetaData _metaData, Dimension _size)
 	{
 		rayTrace = new RayTrace(_metaData.getRotation().toMatrix());
 

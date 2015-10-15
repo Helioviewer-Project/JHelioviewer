@@ -194,8 +194,6 @@ public class Movie
 				continue;
 			
 			LocalDateTime ldt=md.getLocalDateTime();
-			if(ldt==null)
-				continue;
 			
 			long curDiff = Math.abs(ChronoUnit.NANOS.between(ldt, _currentDateTime));
 			if(curDiff<minDiff)

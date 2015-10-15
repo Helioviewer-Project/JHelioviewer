@@ -24,39 +24,18 @@ public class JPIPQuery implements Cloneable
 	 */
 	public JPIPQuery(String... _values)
 	{
-		String key = null;
-		boolean isKey = true;
-		boolean hasLen = false;
-
-		for (String val : _values)
-		{
-			if (isKey)
-				key = val;
-			else
-			{
-				fields.put(key, val);
-				hasLen = key.equals("len");
-			}
-
-			isKey = !isKey;
-		}
-
-		if (!hasLen)
+		for(int i=0;i<_values.length;i+=2)
+			fields.put(_values[i], _values[i+1]);
+		
+		if (!fields.contains("len"))
 			fields.put("len", Integer.toString(JPIPConstants.MIN_REQUEST_LEN));
 	}
 
-	/**
-	 * Sets the specified field to the specified value.
-	 * 
-	 * @param _key
-	 * @param _value
-	 */
 	public void setField(String _key, String _value)
 	{
 		fields.put(_key, _value);
 	}
 
-	/** Clones the query. */
 	public JPIPQuery clone()
 	{
 		JPIPQuery ret = new JPIPQuery();
@@ -64,7 +43,6 @@ public class JPIPQuery implements Cloneable
 		return ret;
 	}
 
-	/** Returns a String representing this query. */
 	public String toString()
 	{
 		StringBuffer ret = new StringBuffer();

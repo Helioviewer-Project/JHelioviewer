@@ -37,7 +37,7 @@ public class FrameManager
 	 * @param date
 	 * @return Frame or null if there is no frame for the requested date
 	 */
-	@SuppressWarnings({ "unused", "null" })
+	@SuppressWarnings({ "null" })
 	public @Nullable PfssDecompressed getFrame(GL2 _gl, LocalDateTime date)
 	{
 		//outside of loaded frames
@@ -102,16 +102,17 @@ public class FrameManager
         descriptorManager.showErrorMessages();
     }
     
-    public LocalDateTime getStartDate()
+    public @Nullable LocalDateTime getStartDate()
     {
     	return descriptorManager.getStartDate();
     }
     
-    public LocalDateTime getEndDate()
+    public @Nullable LocalDateTime getEndDate()
     {
     	return descriptorManager.getEndDate();
     }
 
+	@SuppressWarnings("null")
 	public void retry()
 	{
 		descriptorManager.readFileDescriptors(descriptorManager.getStartDate(), descriptorManager.getEndDate());

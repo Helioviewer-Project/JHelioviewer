@@ -501,7 +501,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 
 		public void actionPerformed(@Nullable ActionEvent e)
 		{
-			MainFrame.MOVIE_PANEL.setPlaying(!TimeLine.SINGLETON.isPlaying());
+			MainFrame.SINGLETON.MOVIE_PANEL.setPlaying(!TimeLine.SINGLETON.isPlaying());
 		}
 	}
 

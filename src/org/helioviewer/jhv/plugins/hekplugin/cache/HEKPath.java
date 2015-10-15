@@ -14,9 +14,9 @@ public class HEKPath {
             String partA = a.getLastPart();
             String partB = b.getLastPart();
 
-            if (partA == null || partB == null) {
-                System.err.println("Path Lastpart is null. This should not happen!");
-            }
+            if (partA == null || partB == null)
+                throw new RuntimeException("Path Lastpart is null. This should not happen!");
+        
             return partA.compareTo(partB);
         }
     };

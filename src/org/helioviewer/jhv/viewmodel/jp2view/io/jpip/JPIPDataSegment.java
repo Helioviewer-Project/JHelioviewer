@@ -17,7 +17,7 @@ public class JPIPDataSegment
 	public long aux;
 
 	/** The data-bin class identifier. */
-	public @Nullable JPIPDatabinClass classID;
+	public JPIPDatabinClass classID;
 
 	/** The code-stream index. */
 	public long codestreamID;
@@ -40,7 +40,7 @@ public class JPIPDataSegment
 	/** Indicates if this segment is a End Of Response message. */
 	public boolean isEOR;
 
-	/** Default constructor */
+	@SuppressWarnings("null")
 	public JPIPDataSegment()
 	{
 	}

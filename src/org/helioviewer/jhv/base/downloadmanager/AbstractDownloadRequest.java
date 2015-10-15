@@ -43,9 +43,9 @@ public abstract class AbstractDownloadRequest
 	
 	abstract void execute() throws IOException, InterruptedException;
 
-	public void setError(IOException ioException)
+	public void setError(IOException _ioException)
 	{
-		this.ioException = ioException;
+		ioException = _ioException;
 		finished = true;
 	}
 	
@@ -73,7 +73,7 @@ public abstract class AbstractDownloadRequest
 
 	public void setRetries(int i)
 	{
-		this.ioException = null;
+		ioException = null;
 		retries.set(i);
 		finished = false;
 	}

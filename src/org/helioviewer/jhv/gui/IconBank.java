@@ -151,13 +151,13 @@ public class IconBank
      *            enum which represents the image
      * @return the image icon of the given enum
      * */
-    public static @Nullable ImageIcon getIcon(JHVIcon _icon)
+    public static ImageIcon getIcon(JHVIcon _icon)
     {
     	URL url=IconBank.class.getResource(RESOURCE_PATH + _icon.filename);
     	if(url==null)
-    		return null;
-    	else
-    		return new ImageIcon(url);
+    		throw new RuntimeException("Could not load icon "+_icon.filename);
+
+		return new ImageIcon(url);
     }
 
     public static javafx.scene.image.Image getFXImage(JHVIcon _icon)
@@ -183,15 +183,11 @@ public class IconBank
      *            Name of the image which should be loaded
      * @return Image for the given name or null if it fails to load the image.
      * */
-    public static @Nullable BufferedImage getImage(JHVIcon icon)
+    public static BufferedImage getImage(JHVIcon icon)
     {
         ImageIcon imageIcon = getIcon(icon);
 
-        if (imageIcon == null)
-            return null;
-
         Image image = imageIcon.getImage();
-
         if (image != null && image.getWidth(null) > 0 && image.getHeight(null) > 0)
         {
             BufferedImage bi = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
@@ -203,7 +199,7 @@ public class IconBank
             return bi;
         }
 
-        return null;
+        throw new RuntimeException("Could not load "+icon);
     }
     
     public static Color getAverageColor(BufferedImage bufImg)

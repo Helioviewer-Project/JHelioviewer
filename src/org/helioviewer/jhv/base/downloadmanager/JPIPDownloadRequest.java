@@ -10,11 +10,12 @@ public class JPIPDownloadRequest extends HTTPRequest
 {
 	private static final String CACHE_PATH = Directories.CACHE.getPath();
 
-	private String filename;
+	public final String filename;
 	
 	public JPIPDownloadRequest(String _url, DownloadPriority _priority)
 	{
 		super(_url, _priority, 60000, 3);
+		filename = CACHE_PATH + url.substring(url.lastIndexOf("/?")+2).replace(':', '.').replace('?', '_').replace('/', '-').replace('\\', '-').replace('*', '-').replace('<', '-').replace('>', '-').replace('|', '-');
 	}
 
 	@Override
@@ -23,7 +24,6 @@ public class JPIPDownloadRequest extends HTTPRequest
 		super.execute();
 		
 		byte[] data = getData();
-		filename = CACHE_PATH + url.substring(url.lastIndexOf("/?")+2).replace(':', '.').replace('?', '_').replace('/', '-').replace('\\', '-').replace('*', '-').replace('<', '-').replace('>', '-').replace('|', '-');
 		try(FileOutputStream fos = new FileOutputStream(new File(filename)))
 		{
 			fos.write(data);
@@ -31,10 +31,5 @@ public class JPIPDownloadRequest extends HTTPRequest
 		
 		//don't waste memory by keeping the downloaded data in memory
 		rawData = null;
-	}
-	
-	public String getFilename()
-	{
-		return filename;
 	}
 }

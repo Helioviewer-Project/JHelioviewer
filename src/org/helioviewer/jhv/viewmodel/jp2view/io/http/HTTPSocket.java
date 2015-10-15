@@ -9,6 +9,8 @@ import java.net.Socket;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
+import javax.annotation.Nullable;
+
 import org.helioviewer.jhv.viewmodel.jp2view.io.LineReader;
 
 /**
@@ -19,10 +21,10 @@ import org.helioviewer.jhv.viewmodel.jp2view.io.LineReader;
 public class HTTPSocket extends Socket
 {
 	/** The last used port */
-	private int lastUsedPort = 0;
+	private int port = 0;
 
 	/** The last used host */
-	private String lastUsedHost = null;
+	private @Nullable String host = null;
 
 	/** The default port for the HTTP socket */
 	static private final int PORT = 80;
@@ -51,13 +53,13 @@ public class HTTPSocket extends Socket
 	 * @param _uri
 	 * @throws IOException
 	 */
-	public Object connect(URI _uri) throws IOException
+	public @Nullable Object connect(URI _uri) throws IOException
 	{
-		lastUsedPort = _uri.getPort() <= 0 ? PORT : _uri.getPort();
-		lastUsedHost = _uri.getHost();
+		port = _uri.getPort() <= 0 ? PORT : _uri.getPort();
+		host = _uri.getHost();
 		super.setSoTimeout(10000);
 		super.setKeepAlive(true);
-		super.connect(new InetSocketAddress(lastUsedHost, lastUsedPort), 10000);
+		super.connect(new InetSocketAddress(host, port), 10000);
 		return null;
 	}
 
@@ -68,7 +70,7 @@ public class HTTPSocket extends Socket
 	 */
 	public void reconnect() throws IOException
 	{
-		super.connect(new InetSocketAddress(lastUsedHost, lastUsedPort), 10000);
+		super.connect(new InetSocketAddress(host, port), 10000);
 	}
 
 	/**
@@ -79,7 +81,7 @@ public class HTTPSocket extends Socket
 	 *         <code>null</code> if the end of stream was reached.
 	 * @throws java.io.IOException
 	 */
-	public HTTPMessage receive() throws IOException
+	public @Nullable HTTPMessage receive() throws IOException
 	{
 		int code;
 		double ver;
@@ -153,13 +155,12 @@ public class HTTPSocket extends Socket
 	/** Returns the lastUsedPort */
 	public int getPort()
 	{
-		return lastUsedPort;
+		return port;
 	}
 
 	/** Returns the lastUsedHost */
-	public String getHost()
+	public @Nullable String getHost()
 	{
-		return lastUsedHost;
+		return host;
 	}
-
-};
+}

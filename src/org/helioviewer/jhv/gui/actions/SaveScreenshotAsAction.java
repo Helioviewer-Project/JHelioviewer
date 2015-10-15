@@ -60,7 +60,7 @@ public class SaveScreenshotAsAction extends AbstractAction
 		loadSettings();
 		try
 		{
-			ImageIO.write(MainFrame.MAIN_PANEL.getBufferedImage(
+			ImageIO.write(MainFrame.SINGLETON.MAIN_PANEL.getBufferedImage(
 					imageWidth, imageHeight, textEnabled),
 					Files.getFileExtension(selectedFile.getPath()), selectedFile);
 		}

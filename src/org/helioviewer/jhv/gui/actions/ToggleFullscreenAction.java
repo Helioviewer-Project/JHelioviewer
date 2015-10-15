@@ -23,6 +23,6 @@ public class ToggleFullscreenAction extends AbstractAction
 
     public void actionPerformed(@Nullable ActionEvent e)
     {
-    	MainFrame.MAIN_PANEL.switchToFullscreen();
+    	MainFrame.SINGLETON.MAIN_PANEL.switchToFullscreen();
     }
 }

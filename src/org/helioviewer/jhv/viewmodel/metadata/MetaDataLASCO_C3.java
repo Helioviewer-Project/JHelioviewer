@@ -9,15 +9,10 @@ class MetaDataLASCO_C3 extends MetaData{
 	private final static Vector2i RESOLUTION = new Vector2i(1024, 1024);
 	public MetaDataLASCO_C3(MetaDataContainer metaDataContainer)
 	{
-        super(metaDataContainer, RESOLUTION);
+        super(metaDataContainer, RESOLUTION, metaDataContainer.get("TELESCOP"), metaDataContainer.get("FILTER") + " " + metaDataContainer.get("POLAR"));
         if (!("LASCO".equalsIgnoreCase(instrument) && "C3".equalsIgnoreCase(detector)))
            	throw new UnsuitableMetaDataException("invalid instrument: "+instrument+"/"+detector);
 
-        String measurement1 = metaDataContainer.get("FILTER");
-        String measurement2 = metaDataContainer.get("POLAR");
-        measurement = measurement1 + " " + measurement2;
-
-        observatory = metaDataContainer.get("TELESCOP");
         fullName = "LASCO " + detector;
 
         readPixelParameters(metaDataContainer);

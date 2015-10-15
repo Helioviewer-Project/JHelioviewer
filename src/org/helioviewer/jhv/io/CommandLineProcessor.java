@@ -16,7 +16,8 @@ import org.helioviewer.jhv.Telemetry;
 
 public class CommandLineProcessor
 {
-    private static String[] arguments;
+	@SuppressWarnings("null")
+	private static String[] arguments;
     public static final String USAGE_MESSAGE="The following command-line options are available: \n\n" + "-jhv  jhv \"request(s)\"\n" + "      Allows the user to pass a jhv request. The jhv option can be used multiple times.\n" + "      A request should be surrounded by quotation marks\n" + "      There are two sorts of request, one for a single image and one for a image series" + "\n\n" + "      The request for a single image has the following form:\n" + "      [date=yyyy-MM-dd'T'HH:mm:ss'Z';imageScale=KILOMETER_PER_PIXEL;imageLayers=LAYER1,LAYER2,...]" + "\n\n" + "      The single layers LAYER1, LAYER2,... must be of the form:\n" + "      [OBSERVATORY,INSTRUMENT,DETECTOR,MEASUREMENT,VISIBILITY,OPACITY]" + "\n\n" + "      The form for an image series is similar:\n" + "      [startTime=yyy-MM-dd'T'HH:mm:ss'Z';endTime=yyyy-MM-dd'T'HH:mm:ss'Z';linked=LOAD_LAYERS_LINKED;cadence=SECONDS_BETWEEN_IMAGES;imageScale=KILOMETER_PER_PIXEL;imageLayers=LAYER1,LAYER2,...]" + "\n\n" + "      Example for retrieving a single image with multiple layers:\n" + "      -jhv \"[date=2003-10-05T00:00:00Z;imageScale=5000;imageLayers=[SOHO,EIT,EIT,171,1,100],[SOHO,LASCO,C2,white-light,1,100]]\"" + "\n\n" + "      Example for retrieving an image sequence with multiple layers:\n" + "      -jhv \"[startTime=2003-10-05T00:00:00Z;endTime=2003-10-20T00:00:00Z;linked=true;cadence=3600;imageScale=5000;imageLayers=[SOHO,EIT,EIT,171,1,100],[SOHO,LASCO,C2,white-light,1,100]]\"" + "\n\n\n" + "-jpx   JPX_REQUEST_URL\n" + "       Allows users to pass a jpx request url for a jpx movie which will be opened upon program start. The option can be used multiple times." + "\n\n" + "       Example:\n" + "       -jpx \"http://helioviewer.nascom.nasa.gov/api/index.php?action=getJPX&observatory=SOHO&instrument=MDI&detector=MDI&measurement=magnetogram&startTime=2003-10-05T00:00:00Z&endTime=2003-10-20T00:00:00Z&cadence=3600&linked=true&jpip=true&frames=true\"" + "\n\n\n" + "-jpip  JPIP_URL\n" + "       Allows users to pass a jpip url of a JP2 or JPX image to be opened upon program start.  The option can be used multiple times." + "\n\nExample:\n" + "       -jpip \"jpip://delphi.nascom.nasa.gov:8090/test/images/JP2_v20090917/2003_10_05__00_00_10_653__SOHO_EIT_EIT_195.jp2\"" + "\n\n\n" + "-download  URI_TO_FILE \n" + "       Allows the users to pass the location of JP2 or JPX image, which will be \n" + "       downloaded to a default location and opened when the program starts. This is specially useful \n" + "       for the case of large jpx files which will be very slow to play remotely." + "\n\n" + "       Example:\n" + "       -download \"http://delphi.nascom.nasa.gov/jp2/test/images/JP2_v20090917/2003_10_05__00_00_10_653__SOHO_EIT_EIT_195.jp2\"";
 
     public static void setArguments(String[] args)
@@ -178,8 +179,7 @@ public class CommandLineProcessor
      * @return values of JHV data request as an array.
      * @throws IllegalArgumentException
      */
-
-    private static CommandLineRequest parseJHVRequest(String _data) throws IllegalArgumentException
+	private static CommandLineRequest parseJHVRequest(String _data) throws IllegalArgumentException
     {
         CommandLineRequest request = new CommandLineRequest();
         String[] fields = null;
@@ -332,27 +332,27 @@ public class CommandLineProcessor
                 String[] layerStrings = field.split("\\],\\[");
 
                 // Each layer has exactly six subfields
-                request.imageLayers = new JHVRequestLayer[layerStrings.length];
+                request.imageLayers = new CommandLineLayerRequest[layerStrings.length];
 
                 for (int layerNumber = 0; layerNumber < layerStrings.length; ++layerNumber)
                 {
                     // Split the subfields of each layer
                     String[] layer = layerStrings[layerNumber].split(",");
 
-                    if (layer.length != JHVRequestLayer.numFields)
+                    if (layer.length != CommandLineLayerRequest.numFields)
                     {
                         System.err.println(USAGE_MESSAGE);
                         throw new IllegalArgumentException("Invalid number of fields for layer: " + layerStrings[layerNumber]);
                     }
 
                     // Copy layer information
-                    request.imageLayers[layerNumber] = new JHVRequestLayer();
-                    request.imageLayers[layerNumber].observatory = layer[JHVRequestLayer.OBSERVATORY_INDEX];
-                    request.imageLayers[layerNumber].instrument = layer[JHVRequestLayer.INSTRUMENT_INDEX];
-                    request.imageLayers[layerNumber].detector = layer[JHVRequestLayer.DETECTOR_INDEX];
-                    request.imageLayers[layerNumber].measurement = layer[JHVRequestLayer.MEASUREMENT_INDEX];
+                    request.imageLayers[layerNumber] = new CommandLineLayerRequest();
+                    request.imageLayers[layerNumber].observatory = layer[CommandLineLayerRequest.OBSERVATORY_INDEX];
+                    request.imageLayers[layerNumber].instrument = layer[CommandLineLayerRequest.INSTRUMENT_INDEX];
+                    request.imageLayers[layerNumber].detector = layer[CommandLineLayerRequest.DETECTOR_INDEX];
+                    request.imageLayers[layerNumber].measurement = layer[CommandLineLayerRequest.MEASUREMENT_INDEX];
 
-                    request.imageLayers[layerNumber].opacity = Integer.parseInt(layer[JHVRequestLayer.OPACITY_INDEX]);
+                    request.imageLayers[layerNumber].opacity = Integer.parseInt(layer[CommandLineLayerRequest.OPACITY_INDEX]);
 
                     if (request.imageLayers[layerNumber].opacity < 0 || request.imageLayers[layerNumber].opacity > 100)
                         throw new IllegalArgumentException("opacity must be given in percent as an integer between and including 0 and 100: " + request.imageLayers[layerNumber].opacity);

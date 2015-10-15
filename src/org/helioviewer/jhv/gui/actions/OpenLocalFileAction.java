@@ -64,7 +64,7 @@ public class OpenLocalFileAction extends AbstractAction
 		}
 		catch(UnsuitableMetaDataException _umde)
 		{
-			JOptionPane.showMessageDialog(MainFrame.MAIN_PANEL, "The source's metadata could not be read.");
+			JOptionPane.showMessageDialog(MainFrame.SINGLETON.MAIN_PANEL, "The source's metadata could not be read.");
 		}
 	}
 }

@@ -7,10 +7,8 @@ class MetaDataHinode extends MetaData
 	private final static Vector2i RESOLUTION = new Vector2i(4096, 4096);
 	public MetaDataHinode(MetaDataContainer metaDataContainer)
 	{
-        super(metaDataContainer, RESOLUTION);
+        super(metaDataContainer, RESOLUTION, metaDataContainer.get("TELESCOP"), metaDataContainer.get("WAVELNTH"));
         
-        measurement = metaDataContainer.get("WAVELNTH");
-        observatory = metaDataContainer.get("TELESCOP");
         if (!instrument.equalsIgnoreCase("XRT"))
         	throw new UnsuitableMetaDataException("invalid instrument: "+instrument);
 

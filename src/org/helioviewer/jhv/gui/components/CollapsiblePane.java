@@ -26,85 +26,96 @@ import org.helioviewer.jhv.gui.MainFrame;
  */
 class CollapsiblePane extends JComponent implements ActionListener
 {
-    private static final ImageIcon ICON_EXPANDED = IconBank.getIcon(JHVIcon.NEW_DOWN, 16, 16);
-    private static final ImageIcon ICON_COLLAPSED = IconBank.getIcon(JHVIcon.NEW_RIGHT, 16, 16);
+	private static final ImageIcon ICON_EXPANDED = IconBank.getIcon(JHVIcon.NEW_DOWN, 16, 16);
+	private static final ImageIcon ICON_COLLAPSED = IconBank.getIcon(JHVIcon.NEW_RIGHT, 16, 16);
 
-    private JToggleButton toggleButton;
-    private Component component;
+	private JToggleButton toggleButton;
+	private Component component;
 
-    /**
-     * Default constructor.
-     * 
-     * @param title
-     *            Text on the toggle button
-     * @param component
-     *            Component to manage
-     * @param startExpanded
-     *            if true, the component will be visible right from the start
-     */
-    public CollapsiblePane(String title, Component component, boolean startExpanded) {
-        setLayout(new BorderLayout());
+	/**
+	 * Default constructor.
+	 * 
+	 * @param title
+	 *            Text on the toggle button
+	 * @param component
+	 *            Component to manage
+	 * @param startExpanded
+	 *            if true, the component will be visible right from the start
+	 */
+	public CollapsiblePane(String title, Component component, boolean startExpanded)
+	{
+		setLayout(new BorderLayout());
 
-        toggleButton = new JToggleButton(title);
-        toggleButton.setHorizontalAlignment(SwingConstants.LEFT);
-        toggleButton.setSelected(startExpanded);
-        toggleButton.setFont(new Font("SansSerif", Font.BOLD, 12));
-        if (startExpanded) {
-            toggleButton.setIcon(IconBank.getIcon(JHVIcon.NEW_DOWN, 16, 16));
-        } else {
-            toggleButton.setIcon(IconBank.getIcon(JHVIcon.RIGHT2));
-        }
-        toggleButton.setPreferredSize(new Dimension(MainFrame.SIDE_PANEL_WIDTH, (int) toggleButton.getPreferredSize().getHeight()));
-        toggleButton.addActionListener(this);
+		toggleButton = new JToggleButton(title);
+		toggleButton.setHorizontalAlignment(SwingConstants.LEFT);
+		toggleButton.setSelected(startExpanded);
+		toggleButton.setFont(new Font("SansSerif", Font.BOLD, 12));
+		if (startExpanded)
+		{
+			toggleButton.setIcon(IconBank.getIcon(JHVIcon.NEW_DOWN, 16, 16));
+		}
+		else
+		{
+			toggleButton.setIcon(IconBank.getIcon(JHVIcon.RIGHT2));
+		}
+		toggleButton.setPreferredSize(new Dimension(MainFrame.SINGLETON.SIDE_PANEL_WIDTH, (int) toggleButton.getPreferredSize().getHeight()));
+		toggleButton.addActionListener(this);
 
-        this.component = component;
-        component.setVisible(startExpanded);
+		this.component = component;
+		component.setVisible(startExpanded);
 
-        add(toggleButton, BorderLayout.PAGE_START);
-        add(component, BorderLayout.CENTER);
+		add(toggleButton, BorderLayout.PAGE_START);
+		add(component, BorderLayout.CENTER);
 
-        setMaximumSize(new Dimension(Short.MAX_VALUE, getPreferredSize().height));
-    }
+		setMaximumSize(new Dimension(Short.MAX_VALUE, getPreferredSize().height));
+	}
 
-    /**
-     * Sets the text on the toggle button
-     * 
-     * @param title
-     *            Text on the toggle button
-     * */
-    public void setTitle(final String title) {
-        toggleButton.setText(title);
-    }
+	/**
+	 * Sets the text on the toggle button
+	 * 
+	 * @param title
+	 *            Text on the toggle button
+	 */
+	public void setTitle(final String title)
+	{
+		toggleButton.setText(title);
+	}
 
-    /**
-     * Expands the pane.
-     */
-    public void expand() {
-        toggleButton.setSelected(true);
-        component.setVisible(true);
-        toggleButton.setIcon(ICON_EXPANDED);
-        MainFrame.SINGLETON.getContentPane().revalidate();
-    }
+	/**
+	 * Expands the pane.
+	 */
+	public void expand()
+	{
+		toggleButton.setSelected(true);
+		component.setVisible(true);
+		toggleButton.setIcon(ICON_EXPANDED);
+		MainFrame.SINGLETON.getContentPane().revalidate();
+	}
 
-    /**
-     * Collapses the pane.
-     */
-    public void collapse() {
-        toggleButton.setSelected(false);
-        component.setVisible(false);
-        toggleButton.setIcon(ICON_COLLAPSED);
-        MainFrame.SINGLETON.getContentPane().revalidate();
-    }
+	/**
+	 * Collapses the pane.
+	 */
+	public void collapse()
+	{
+		toggleButton.setSelected(false);
+		component.setVisible(false);
+		toggleButton.setIcon(ICON_COLLAPSED);
+		MainFrame.SINGLETON.getContentPane().revalidate();
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public void actionPerformed(@Nullable ActionEvent e) {
-        if (component.isVisible()) {
-            collapse();
-        } else {
-            expand();
-        }
-        setMaximumSize(new Dimension(Short.MAX_VALUE, getPreferredSize().height));
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public void actionPerformed(@Nullable ActionEvent e)
+	{
+		if (component.isVisible())
+		{
+			collapse();
+		}
+		else
+		{
+			expand();
+		}
+		setMaximumSize(new Dimension(Short.MAX_VALUE, getPreferredSize().height));
+	}
 }

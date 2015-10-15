@@ -102,7 +102,7 @@ public class HEKEventInformationDialog extends JDialog implements ActionListener
     /**
      * Button for showing more/less information about the event
      */
-    private JButton moreButton = ButtonCreator.createTextButton(IconBank.getIcon(JHVIcon.SHOW_MORE), "More", "More Event Information", this);
+	private JButton moreButton = ButtonCreator.createTextButton(IconBank.getIcon(JHVIcon.SHOW_MORE), "More", "More Event Information", this);
 
     /**
      * Table showing all event fields

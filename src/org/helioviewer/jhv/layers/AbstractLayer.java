@@ -12,6 +12,7 @@ import com.jogamp.opengl.GL2;
 public abstract class AbstractLayer
 {
 	private boolean visible = true;
+	@SuppressWarnings("null")
 	protected String name;
 	
 	public String getName()
@@ -39,7 +40,7 @@ public abstract class AbstractLayer
 			return;
 		
 		visible = _visible;
-		MainFrame.MAIN_PANEL.repaint();
+		MainFrame.SINGLETON.MAIN_PANEL.repaint();
 	}
 
 	public final boolean isImageLayer()

@@ -3,6 +3,8 @@ package org.helioviewer.jhv.opengl.camera;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 
+import javax.annotation.Nullable;
+
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.opengl.RayTrace.Ray;
@@ -12,7 +14,7 @@ public class CameraPanInteraction extends CameraInteraction
 {
 	private double meterPerPixelWidth;
 	private double meterPerPixelHeight;
-	private Point lastPosition;
+	private @Nullable Point lastPosition;
 	private boolean dragged;
 	
 	public CameraPanInteraction(MainPanel mainPanel, Camera camera) 
@@ -39,9 +41,10 @@ public class CameraPanInteraction extends CameraInteraction
 	}
 
 
+	@SuppressWarnings("null")
 	public void mouseDragged(MouseEvent e, Ray _ray)
 	{
-		if (!e.getPoint().equals(lastPosition))
+		if (lastPosition!=null && !e.getPoint().equals(lastPosition))
 		{
 			dragged = true;
 			double xTranslation = (lastPosition.getX() - e.getX()) * meterPerPixelWidth;
@@ -54,11 +57,12 @@ public class CameraPanInteraction extends CameraInteraction
 		}
 	}
 
+	@SuppressWarnings("null")
 	@Override
 	public void mouseReleased(MouseEvent e, Ray _ray)
 	{
 		// If never dragged, pan to the point where should be clicked
-		if (!dragged)
+		if (!dragged && lastPosition!=null)
 		{
 			double xTranslation = (lastPosition.getX() - mainPanel.getWidth() / 2) * meterPerPixelWidth;
 			double yTranslation = (lastPosition.getY() - mainPanel.getHeight() / 2) * meterPerPixelHeight;

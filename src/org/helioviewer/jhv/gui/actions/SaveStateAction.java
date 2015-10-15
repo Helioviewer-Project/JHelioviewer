@@ -29,7 +29,7 @@ public class SaveStateAction extends AbstractAction
     	catch (JSONException | IOException e1)
     	{
 			Telemetry.trackException(e1);
-			JOptionPane.showMessageDialog(MainFrame.MAIN_PANEL, "Could not write file:\n" + e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(MainFrame.SINGLETON.MAIN_PANEL, "Could not write file:\n" + e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 		}
         
     }

@@ -63,11 +63,11 @@ public class StateParser extends DefaultHandler
 		double angle = jsonRotation.getDouble(0);
 		Vector3d axis = new Vector3d(jsonRotation.getDouble(1), jsonRotation.getDouble(2), jsonRotation.getDouble(3));
 		Quaternion3d rotation = new Quaternion3d(angle, axis);
-		MainFrame.MAIN_PANEL.stopAllAnimations();
-		MainFrame.MAIN_PANEL.setRotationEnd(rotation);
-		MainFrame.MAIN_PANEL.setRotationCurrent(rotation);
-		MainFrame.MAIN_PANEL.setTranslationEnd(translation);
-		MainFrame.MAIN_PANEL.setTranslationCurrent(translation);
+		MainFrame.SINGLETON.MAIN_PANEL.stopAllAnimations();
+		MainFrame.SINGLETON.MAIN_PANEL.setRotationEnd(rotation);
+		MainFrame.SINGLETON.MAIN_PANEL.setRotationCurrent(rotation);
+		MainFrame.SINGLETON.MAIN_PANEL.setTranslationEnd(translation);
+		MainFrame.SINGLETON.MAIN_PANEL.setTranslationCurrent(translation);
 		
 		Layers.setActiveLayer(jsonObject.getInt("activeLayer"));
 		LocalDateTime currentDateTime = LocalDateTime.parse(jsonObject.getString("time"));
@@ -92,14 +92,14 @@ public class StateParser extends DefaultHandler
 		JSONObject jsonCamera = new JSONObject();
 
 		JSONArray jsonTranslation = new JSONArray();
-		Vector3d translation = MainFrame.MAIN_PANEL.getTranslationCurrent();
+		Vector3d translation = MainFrame.SINGLETON.MAIN_PANEL.getTranslationCurrent();
 		jsonTranslation.put(translation.x);
 		jsonTranslation.put(translation.y);
 		jsonTranslation.put(translation.z);
 		jsonCamera.put("translation", jsonTranslation);
 
 		JSONArray jsonRotation = new JSONArray();
-		Quaternion3d rotation = MainFrame.MAIN_PANEL.getRotationCurrent();
+		Quaternion3d rotation = MainFrame.SINGLETON.MAIN_PANEL.getRotationCurrent();
 		jsonRotation.put(rotation.getAngle());
 		Vector3d axis = rotation.getRotationAxis();
 		jsonRotation.put(axis.x);

@@ -78,9 +78,7 @@ public class Layers
 
 	public static AbstractLayer getLayer(int idx)
 	{
-		if (idx >= 0)
-			return layers.get(idx);
-		return null;
+		return layers.get(idx);
 	}
 
 	public static void removeLayer(int idx)
@@ -151,7 +149,7 @@ public class Layers
 		if(il != null)
 		{
 			il.toggleCoronaVisibility();
-			MainFrame.MAIN_PANEL.repaint();
+			MainFrame.SINGLETON.MAIN_PANEL.repaint();
 		}
 	}
 
