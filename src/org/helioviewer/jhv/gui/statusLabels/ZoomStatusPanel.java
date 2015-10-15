@@ -29,10 +29,10 @@ import org.helioviewer.jhv.viewmodel.metadata.MetaData;
  */
 public class ZoomStatusPanel extends StatusLabel
 {
-	public ZoomStatusPanel()
+	public ZoomStatusPanel(MainPanel _mp)
 	{
 		super();
-		MainFrame.SINGLETON.MAIN_PANEL.addCameraListener(this);
+		_mp.addCameraListener(this);
 		setBorder(BorderFactory.createEtchedBorder());
 
 		setPreferredSize(new Dimension(100, 20));

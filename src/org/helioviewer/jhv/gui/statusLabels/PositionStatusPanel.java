@@ -51,8 +51,8 @@ public class PositionStatusPanel extends StatusLabel implements MouseListener
 		setBorder(BorderFactory.createEtchedBorder());
 
 		popupState = new PopupState();
-		MainFrame.SINGLETON.MAIN_PANEL.addPanelMouseListener(this);
-		MainFrame.SINGLETON.OVERVIEW_PANEL.addPanelMouseListener(this);
+		imagePanel.MAIN_PANEL.addPanelMouseListener(this);
+		imagePanel.OVERVIEW_PANEL.addPanelMouseListener(this);
 		this.addMouseListener(this);
 		this.setComponentPopupMenu(popupState);
 

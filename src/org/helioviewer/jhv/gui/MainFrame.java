@@ -199,7 +199,7 @@ public class MainFrame extends JFrame
 		FramerateStatusPanel framerateStatusPanel = new FramerateStatusPanel();
 		statusPane.add(framerateStatusPanel, "2, 2, fill, fill");
 		
-		ZoomStatusPanel zoomStatusPanel = new ZoomStatusPanel();
+		ZoomStatusPanel zoomStatusPanel = new ZoomStatusPanel(MAIN_PANEL);
 		statusPane.add(zoomStatusPanel, "4, 2, fill, fill");
 		
 		CurrentTimeLabel currentTimeLabel = new CurrentTimeLabel();

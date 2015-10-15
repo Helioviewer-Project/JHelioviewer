@@ -58,7 +58,7 @@ class CollapsiblePane extends JComponent implements ActionListener
 		{
 			toggleButton.setIcon(IconBank.getIcon(JHVIcon.RIGHT2));
 		}
-		toggleButton.setPreferredSize(new Dimension(MainFrame.SINGLETON.SIDE_PANEL_WIDTH, (int) toggleButton.getPreferredSize().getHeight()));
+		toggleButton.setPreferredSize(new Dimension(0, (int) toggleButton.getPreferredSize().getHeight()));
 		toggleButton.addActionListener(this);
 
 		this.component = component;
