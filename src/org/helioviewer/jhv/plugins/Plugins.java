@@ -1,6 +1,5 @@
 package org.helioviewer.jhv.plugins;
 
-import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Image;
@@ -241,6 +240,8 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 
 	public void storeConfiguration(JSONObject jsonPlugins)
 	{
+		//FIXME: save layer visibility state, expanded/collapsed panel state, ...
+		
 		for (Plugin plugin : plugins)
 			plugin.storeConfiguration(jsonPlugins);
 	}
@@ -250,8 +251,8 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 		for (Plugin plugin : plugins)
 			plugin.restoreConfiguration(jsonPlugins);
 	}
-
-	public static void setPanelOpenCloseState(Component component, boolean open)
+	
+	/*public static void setPanelOpenCloseState(Component component, boolean open)
 	{
 		if (open)
 			MainFrame.SINGLETON.LEFT_PANE.expand(component);
@@ -260,7 +261,7 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 
 		MainFrame.SINGLETON.LEFT_PANE.revalidate();
 		component.repaint();
-	}
+	}*/
 	
 	public static ImageIcon getIcon(PluginIcon icon, int width, int height)
 	{

@@ -10,7 +10,6 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
-import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
 import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.SphericalCoord;
@@ -21,11 +20,8 @@ import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKEvent;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKEvent.GenericTriangle;
-import org.helioviewer.jhv.plugins.hekplugin.cache.HEKPath;
 import org.helioviewer.jhv.plugins.hekplugin.cache.gui.HEKEventInformationDialog;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.jogamp.opengl.GL;
@@ -33,11 +29,9 @@ import com.jogamp.opengl.GL2;
 
 public class HEKPlugin extends Plugin
 {
-	private static final String JSON_NAME = "hek";
-	private static final String JSON_VISIBLE = "visible";
-	private static final String JSON_EVENTS = "events";
+	/*private static final String JSON_NAME = "hek";
+	private static final String JSON_EVENTS = "events";*/
 
-	private boolean visible = false;
 	private static final Cursor CURSOR_HELP = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
 
 	private Cursor lastCursor;
@@ -62,7 +56,7 @@ public class HEKPlugin extends Plugin
 	@Override
 	public void render(GL2 gl)
 	{
-		if (visible)
+		if (isVisible())
 		{
 			LocalDateTime in = Plugins.SINGLETON.getCurrentDateTime();
 			if (in != null)
@@ -111,7 +105,6 @@ public class HEKPlugin extends Plugin
 	 */
 	public void drawIcon(GL2 gl, HEKEvent evt, Date now)
 	{
-
 		if (evt == null || !evt.isVisible(now))
 			return;
 
@@ -386,43 +379,29 @@ public class HEKPlugin extends Plugin
 		return HEKPlugin.class.getResource(name);
 	}
 
-	public void setVisible(boolean visible)
-	{
-		this.visible = visible;
-	}
-
-	public boolean isVisible()
-	{
-		return this.visible;
-	}
-
 	@Override
 	public void restoreConfiguration(JSONObject jsonObject)
 	{
-		if (jsonObject.has(JSON_NAME))
+		/*if (jsonObject.has(JSON_NAME))
 		{
 			try
 			{
 				JSONObject jsonHek = jsonObject.getJSONObject(JSON_NAME);
-				boolean visible = jsonHek.getBoolean(JSON_VISIBLE);
-				Plugins.setPanelOpenCloseState(hekPluginPanel, visible);
-				setVisible(visible);
 			}
 			catch (JSONException e)
 			{
 				Telemetry.trackException(e);
 			}
-		}
+		}*/
 	}
 
 	@Override
 	public void storeConfiguration(JSONObject jsonObject)
 	{
-		JSONObject jsonHek = new JSONObject();
+		/*JSONObject jsonHek = new JSONObject();
 		JSONArray jsonHekEvents = new JSONArray();
 		try
 		{
-			jsonHek.put(JSON_VISIBLE, isVisible());
 			for (HEKPath hekPath : HEKCache.getSingletonInstance().getTrackPaths())
 			{
 				int state = HEKCache.getSingletonInstance().getSelectionModel().getState(hekPath);
@@ -433,9 +412,8 @@ public class HEKPlugin extends Plugin
 		}
 		catch (JSONException e)
 		{
-
 			Telemetry.trackException(e);
-		}
+		}*/
 	}
 
 	@Override
