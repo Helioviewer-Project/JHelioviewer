@@ -1,6 +1,6 @@
 package org.helioviewer.jhv.opengl.camera;
 
-import org.helioviewer.jhv.Settings;
+import org.helioviewer.jhv.base.Settings;
 import org.helioviewer.jhv.gui.MainFrame;
 
 public class CameraMode

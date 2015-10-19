@@ -11,9 +11,6 @@ import java.util.TreeMap;
 import javax.annotation.Nullable;
 import javax.swing.SwingUtilities;
 
-import org.helioviewer.jhv.Globals;
-import org.helioviewer.jhv.Settings;
-import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.base.downloadmanager.AbstractDownloadRequest;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;

@@ -35,7 +35,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
-import org.helioviewer.jhv.Globals;
+import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.gui.ButtonCreator;
 import org.helioviewer.jhv.gui.Clipboard;
 import org.helioviewer.jhv.gui.IconBank;

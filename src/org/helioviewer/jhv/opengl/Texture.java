@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 import javax.annotation.Nullable;
 
-import org.helioviewer.jhv.Globals;
+import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.gui.MainFrame;

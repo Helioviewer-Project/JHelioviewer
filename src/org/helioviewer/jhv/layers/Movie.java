@@ -14,7 +14,7 @@ import javax.swing.SwingUtilities;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.helioviewer.jhv.Telemetry;
+import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.layers.AbstractImageLayer.CacheStatus;
 import org.helioviewer.jhv.layers.LUT.Lut;
 import org.helioviewer.jhv.viewmodel.jp2view.kakadu.KakaduUtils;

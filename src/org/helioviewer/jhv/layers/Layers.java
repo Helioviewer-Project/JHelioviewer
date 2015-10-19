@@ -5,7 +5,7 @@ import java.util.Comparator;
 
 import javax.annotation.Nullable;
 
-import org.helioviewer.jhv.Telemetry;
+import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
 import org.helioviewer.jhv.viewmodel.metadata.UnsuitableMetaDataException;

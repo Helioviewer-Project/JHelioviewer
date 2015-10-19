@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import javax.annotation.Nullable;
 import javax.swing.AbstractAction;
 
-import org.helioviewer.jhv.Globals;
+import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;

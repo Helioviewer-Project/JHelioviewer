@@ -9,8 +9,8 @@ import javax.annotation.Nullable;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 
-import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.base.StateParser;
+import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.json.JSONException;
 

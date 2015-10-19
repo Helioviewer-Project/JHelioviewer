@@ -8,7 +8,7 @@ import java.util.LinkedHashMap;
 
 import javax.imageio.ImageIO;
 
-import org.helioviewer.jhv.Telemetry;
+import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.opengl.Texture;
 

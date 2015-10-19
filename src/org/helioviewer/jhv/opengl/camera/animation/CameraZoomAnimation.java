@@ -1,6 +1,8 @@
 package org.helioviewer.jhv.opengl.camera.animation;
 
+import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.base.math.Vector3d;
+import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.opengl.camera.Camera;
 
 /**
@@ -19,9 +21,11 @@ public class CameraZoomAnimation extends CameraAnimation
     public CameraZoomAnimation(Camera _cam, double _distanceDelta, long _duration)
     {
     	super(_duration);
-    	distanceDelta = _distanceDelta;
-        
-        _cam.setTranslationEnd(_cam.getTranslationEnd().add(new Vector3d(0,0,_distanceDelta)));
+    	
+    	Vector3d translationEnd = _cam.getTranslationEnd();
+    	
+    	distanceDelta = MathUtils.clip(_distanceDelta + translationEnd.z, MainPanel.MIN_DISTANCE, MainPanel.MAX_DISTANCE) - translationEnd.z;
+        _cam.setTranslationEnd(translationEnd.add(new Vector3d(0,0,distanceDelta)));
     }
 
     @Override

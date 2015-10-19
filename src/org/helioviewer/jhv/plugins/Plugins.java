@@ -27,14 +27,11 @@ import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.PluginLayer;
 import org.helioviewer.jhv.opengl.RayTrace;
-import org.helioviewer.jhv.plugins.AbstractPlugin.RenderMode;
 import org.helioviewer.jhv.plugins.hekplugin.HEKPlugin;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.TimeLine.TimeLineListener;
 import org.json.JSONObject;
-
-import com.jogamp.opengl.GL2;
 
 public class Plugins implements TimeLineListener, MouseListener, MouseMotionListener
 {
@@ -132,23 +129,6 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 	{
 		for (AbstractPlugin plugin : plugins)
 			plugin.dateTimesChanged(framecount);
-	}
-
-	public void renderPlugins(GL2 gl, RenderMode renderMode)
-	{
-		for (AbstractPlugin plugin : plugins)
-			if (plugin.getRenderMode() == renderMode || plugin.getRenderMode() == RenderMode.ALL_PANEL)
-			{
-				gl.glMatrixMode(GL2.GL_PROJECTION);
-				gl.glPushMatrix();
-				gl.glMatrixMode(GL2.GL_MODELVIEW);
-				gl.glPushMatrix();
-				plugin.render(gl);
-				gl.glMatrixMode(GL2.GL_PROJECTION);
-				gl.glPopMatrix();
-				gl.glMatrixMode(GL2.GL_MODELVIEW);
-				gl.glPopMatrix();
-			}
 	}
 
 	public LocalDateTime getCurrentDateTime()

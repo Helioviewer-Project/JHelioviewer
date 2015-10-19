@@ -7,8 +7,6 @@ import javax.annotation.Nullable;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.json.JSONObject;
 
-import com.jogamp.opengl.GL2;
-
 public abstract class Layer
 {
 	private boolean visible = true;
@@ -53,11 +51,6 @@ public abstract class Layer
 		RETRY_LATER,
 		ERROR,
 		OK
-	}
-
-	public RenderResult renderLayer(GL2 _gl)
-	{
-		return RenderResult.OK;
 	}
 
 	public abstract void writeStateFile(JSONObject jsonLayer);

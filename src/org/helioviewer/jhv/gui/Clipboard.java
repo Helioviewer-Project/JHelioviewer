@@ -10,7 +10,7 @@ import java.io.IOException;
 
 import javax.annotation.Nullable;
 
-import org.helioviewer.jhv.Telemetry;
+import org.helioviewer.jhv.base.Telemetry;
 
 public class Clipboard implements ClipboardOwner
 {

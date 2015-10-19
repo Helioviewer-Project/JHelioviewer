@@ -1,4 +1,4 @@
-package org.helioviewer.jhv;
+package org.helioviewer.jhv.base;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -27,7 +27,7 @@ import org.helioviewer.jhv.gui.IconBank.JHVIcon;
  * results in updating the splash screen to. This behavior is useful for
  * plugins.
  */
-class SplashScreen extends JFrame
+public class SplashScreen extends JFrame
 {
 	private SplashImagePanel imagePanel = new SplashImagePanel();
 	private JProgressBar progressBar = new JProgressBar(0, 100);

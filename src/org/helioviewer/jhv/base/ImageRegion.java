@@ -32,30 +32,24 @@ public class ImageRegion
 		double newY1=MathUtils.clip(_requiredOfSourceImage.getCenterY()-_requiredOfSourceImage.getHeight()*0.5*_safetyBorder, 0, 1);
 		double newY2=MathUtils.clip(_requiredOfSourceImage.getCenterY()+_requiredOfSourceImage.getHeight()*0.5*_safetyBorder, 0, 1);
 
-		areaOfSourceImage=new Rectangle2D.Double(newX1,newY1,newX2-newX1,newY2-newY1);
-		
 		// Get the image resolution
 		Vector2i resolution = _metaData.getResolution();
 		
 		// Calculate the current texelCount
-		int texelMaxX = (int)Math.ceil(resolution.x * (areaOfSourceImage.getX() + areaOfSourceImage.getWidth()));
-		int texelMaxY = (int)Math.ceil(resolution.y * (areaOfSourceImage.getY() + areaOfSourceImage.getHeight()));
-		int texelMinX = (int)(resolution.x * areaOfSourceImage.getX());
-		int texelMinY = (int)(resolution.y * areaOfSourceImage.getY());
-		int textureWidth = texelMaxX - texelMinX;
-		int textureHeight = texelMaxY - texelMinY;
-		double texelCount = textureWidth * textureHeight;
+		int texelMinX = (int)(resolution.x * newX1);
+		int texelMinY = (int)(resolution.y * newY1);
+		int texelMaxX = (int)Math.ceil(resolution.x * newX2);
+		int texelMaxY = (int)Math.ceil(resolution.y * newY2);
+		double texelCount = (texelMaxX - texelMinX) * (texelMaxY - texelMinY);
 		
 		// Calculate the current pixelCount
 		double z = _metaData.getPhysicalImageWidth() / Math.tan(Math.toRadians(MainPanel.FOV));
 		double zoom = _zTranslation / z;
-		int screenMaxX = (int)Math.ceil(_screenSize.getWidth() * (areaOfSourceImage.getX() + areaOfSourceImage.getWidth()) / zoom);
-		int screenMaxY = (int)Math.ceil(_screenSize.getHeight() * (areaOfSourceImage.getY() + areaOfSourceImage.getHeight()) / zoom);
-		int screenMinX = (int)(_screenSize.getWidth() * areaOfSourceImage.getX() / zoom);
-		int screenMinY = (int)(_screenSize.getHeight() * areaOfSourceImage.getY() / zoom);
-		int screenWidth = screenMaxX - screenMinX;
-		int screenHeight = screenMaxY - screenMinY;
-		double pixelCount = screenWidth * screenHeight;
+		int screenMaxX = (int)Math.ceil(_screenSize.getWidth() * newX2 / zoom);
+		int screenMaxY = (int)Math.ceil(_screenSize.getHeight() * newY2 / zoom);
+		int screenMinX = (int)(_screenSize.getWidth() * newX1 / zoom);
+		int screenMinY = (int)(_screenSize.getHeight() * newY1 / zoom);
+		double pixelCount = (screenMaxX - screenMinX) * (screenMaxY - screenMinY);
 		
 		// Calculate the imageScalefactors
 		double imageZoomFactor = pixelCount >= texelCount ? 1 : Math.sqrt(pixelCount / texelCount);
@@ -63,23 +57,30 @@ public class ImageRegion
 		
 		for(;;)
 		{
-			texelMaxX = (int)Math.ceil(resolution.x * (areaOfSourceImage.getX() + areaOfSourceImage.getWidth()) * candidateDecodeZoomFactor);
-			texelMaxY = (int)Math.ceil(resolution.y * (areaOfSourceImage.getY() + areaOfSourceImage.getHeight()) * candidateDecodeZoomFactor);
-			texelMinX = (int)(resolution.x * areaOfSourceImage.getX() * candidateDecodeZoomFactor);
-			texelMinY = (int)(resolution.y * areaOfSourceImage.getY() * candidateDecodeZoomFactor);
-			textureWidth = texelMaxX - texelMinX;
-			textureHeight = texelMaxY - texelMinY;
-			
 			//openGL implementations are required to support at least 2048 x 2048 textures
-			if(textureWidth<=2048 && textureHeight<=2048)
-				//TODO: implement properly by limiting the initial calculation --> no looping
+			if((texelMaxX - texelMinX)<=2048 && (texelMaxY - texelMinY)<=2048)
 				break;
 			
+			//TODO: implement properly by limiting the initial calculation --> no looping
 			candidateDecodeZoomFactor *= 0.5;
+			texelMinX = (int)(resolution.x * newX1 * candidateDecodeZoomFactor);
+			texelMinY = (int)(resolution.y * newY1 * candidateDecodeZoomFactor);
+			texelMaxX = (int)Math.ceil(resolution.x * newX2 * candidateDecodeZoomFactor);
+			texelMaxY = (int)Math.ceil(resolution.y * newY2 * candidateDecodeZoomFactor);
 		}
 		decodeZoomFactor=candidateDecodeZoomFactor;
 		
-		texels = new Rectangle(texelMinX, texelMinY, textureWidth, textureHeight);
+		
+		texels = new Rectangle(texelMinX, texelMinY, texelMaxX - texelMinX, texelMaxY - texelMinY);
+		
+		//we need to inverse the texture coordinate, because the texture coordinates are
+		//rounded to integer coordinates --> to be prices, the areaOfSourceImage should
+		//be rounded to the same texels
+		newX1=texelMinX/(double)resolution.x/decodeZoomFactor;
+		newX2=texelMaxX/(double)resolution.x/decodeZoomFactor;
+		newY1=texelMinY/(double)resolution.y/decodeZoomFactor;
+		newY2=texelMaxY/(double)resolution.y/decodeZoomFactor;
+		areaOfSourceImage=new Rectangle2D.Double(newX1,newY1,newX2-newX1,newY2-newY1);
 	}
 
 	private static float nextZoomFraction(double zoomFactor)

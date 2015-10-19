@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import org.helioviewer.jhv.Directories;
+import org.helioviewer.jhv.base.Directories;
 
 public class JPIPDownloadRequest extends HTTPRequest
 {

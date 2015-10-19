@@ -30,8 +30,8 @@ import javax.swing.JFrame;
 import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
 
-import org.helioviewer.jhv.Globals;
-import org.helioviewer.jhv.Telemetry;
+import org.helioviewer.jhv.base.Globals;
+import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
 import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
 import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
@@ -47,6 +47,7 @@ import org.helioviewer.jhv.layers.AbstractImageLayer.PreparedImage;
 import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
+import org.helioviewer.jhv.layers.PluginLayer;
 import org.helioviewer.jhv.opengl.LoadingScreen;
 import org.helioviewer.jhv.opengl.NoImageScreen;
 import org.helioviewer.jhv.opengl.RayTrace;
@@ -60,8 +61,6 @@ import org.helioviewer.jhv.opengl.camera.CameraRotationInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraZoomBoxInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraZoomInteraction;
 import org.helioviewer.jhv.opengl.camera.animation.CameraAnimation;
-import org.helioviewer.jhv.plugins.AbstractPlugin.RenderMode;
-import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.TimeLine.TimeLineListener;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
@@ -85,7 +84,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 {
 	public static final double MAX_DISTANCE = Constants.SUN_MEAN_DISTANCE_TO_EARTH * 1.8;
 	public static final double MIN_DISTANCE = Constants.SUN_RADIUS * 1.2;
-	public static final double DEFAULT_CAMERA_DISTANCE = 14 * Constants.SUN_RADIUS;
+	public static final double DEFAULT_CAMERA_DISTANCE = 22 * Constants.SUN_RADIUS;
 
 	public static final double CLIP_NEAR = Constants.SUN_RADIUS / 10;
 	public static final double CLIP_FAR = Constants.SUN_RADIUS * 1000;
@@ -266,49 +265,50 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 
 		if (Layers.getLayerCount() > 0)
 		{
+			double clipNear = Math.max(this.translationNow.z - 4 * Constants.SUN_RADIUS, CLIP_NEAR);
+			
 			gl.glMatrixMode(GL2.GL_PROJECTION);
 			gl.glPushMatrix();
-
-			double clipNear = Math.max(this.translationNow.z - 4 * Constants.SUN_RADIUS, CLIP_NEAR);
-			gl.glOrtho(-1, 1, -1, 1, clipNear, this.translationNow.z + 4 * Constants.SUN_RADIUS);
-			gl.glMatrixMode(GL2.GL_MODELVIEW);
-			gl.glLoadIdentity();
-
-			gl.glTranslated(0, 0, -translationNow.z);
-			if (CameraMode.mode == MODE.MODE_2D)
 			{
-				AbstractImageLayer il = Layers.getActiveImageLayer();
-				if (il != null)
+				gl.glOrtho(-1, 1, -1, 1, clipNear, this.translationNow.z + 4 * Constants.SUN_RADIUS);
+				gl.glMatrixMode(GL2.GL_MODELVIEW);
+				gl.glLoadIdentity();
+	
+				gl.glTranslated(0, 0, -translationNow.z);
+				if (CameraMode.mode == MODE.MODE_2D)
 				{
-					MetaData md = il.getMetaData(currentDateTime);
-					if (md != null)
-						rotationNow = md.getRotation();
+					AbstractImageLayer il = Layers.getActiveImageLayer();
+					if (il != null)
+					{
+						MetaData md = il.getMetaData(currentDateTime);
+						if (md != null)
+							rotationNow = md.getRotation();
+					}
 				}
+				
+				LinkedHashMap<AbstractImageLayer, Future<PreparedImage>> layers = new LinkedHashMap<>();
+				for (Layer layer : Layers.getLayers())
+					if (layer.isVisible() && layer.isImageLayer())
+						layers.put((AbstractImageLayer) layer,
+								((AbstractImageLayer) layer).prepareImageData(this, sizeForDecoder));
+				
+				for (Entry<AbstractImageLayer, Future<PreparedImage>> l : layers.entrySet())
+					try
+					{
+						if (l.getValue().get() != null)
+							// RenderResult r =
+							l.getKey().renderLayer(gl, this, l.getValue().get());
+					}
+					catch (ExecutionException | InterruptedException _e)
+					{
+						Telemetry.trackException(_e);
+					}
+				
+				gl.glMatrixMode(GL2.GL_MODELVIEW);
+				gl.glLoadIdentity();
 			}
-
-			LinkedHashMap<AbstractImageLayer, Future<PreparedImage>> layers = new LinkedHashMap<>();
-			for (Layer layer : Layers.getLayers())
-				if (layer.isVisible() && layer.isImageLayer())
-					layers.put((AbstractImageLayer) layer,
-							((AbstractImageLayer) layer).prepareImageData(this, sizeForDecoder));
-
-			for (Entry<AbstractImageLayer, Future<PreparedImage>> l : layers.entrySet())
-				try
-				{
-					if (l.getValue().get() != null)
-						// RenderResult r =
-						l.getKey().renderLayer(gl, this, l.getValue().get());
-				}
-				catch (ExecutionException | InterruptedException _e)
-				{
-					Telemetry.trackException(_e);
-				}
-
-			gl.glMatrixMode(GL2.GL_MODELVIEW);
-			gl.glLoadIdentity();
 			gl.glMatrixMode(GL2.GL_PROJECTION);
 			gl.glPopMatrix();
-			gl.glPushMatrix();
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
 
 			Quaternion3d rotation = new Quaternion3d(rotationNow.getAngle(), rotationNow.getRotationAxis().negateY());
@@ -316,14 +316,13 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 					-translationNow.z);
 			gl.glMultMatrixd(transformation.m, 0);
 
-			GLU glu = new GLU();
 			gl.glMatrixMode(GL2.GL_PROJECTION);
 			gl.glLoadIdentity();
 			gl.glScaled(aspect, aspect, 1);
 
 			if (CameraMode.mode == CameraMode.MODE.MODE_3D)
 			{
-				glu.gluPerspective(MainPanel.FOV, this.aspect, clipNear, translationNow.z + 4 * Constants.SUN_RADIUS);
+				new GLU().gluPerspective(MainPanel.FOV, this.aspect, clipNear, translationNow.z + 4 * Constants.SUN_RADIUS);
 			}
 			else
 			{
@@ -336,25 +335,38 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 			calculateBounds();
 			for (CameraInteraction cameraInteraction : cameraInteractions)
 				cameraInteraction.renderInteraction(gl);
-
-			renderPlugins(gl);
-			gl.glMatrixMode(GL2.GL_PROJECTION);
-			gl.glPopMatrix();
+			
+			gl.glEnable(GL2.GL_DEPTH_TEST);
+			gl.glDepthFunc(GL2.GL_LESS);
+			gl.glDepthMask(false);
+			
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
-
+			gl.glPushMatrix();
+			
+			//render plugin layers
+			for (Layer layer : Layers.getLayers())
+				if (layer.isVisible() && layer instanceof PluginLayer)
+					((PluginLayer)layer).renderLayer(gl,this);
+			
+			gl.glMatrixMode(GL2.GL_MODELVIEW);
+			gl.glPopMatrix();
+			
+			gl.glDepthMask(false);
+			
 			gl.glMatrixMode(GL2.GL_PROJECTION);
 			gl.glLoadIdentity();
 			double xScale = aspect > 1 ? 1 / aspect : 1;
 			double yScale = aspect < 1 ? aspect : 1;
 			gl.glScaled(xScale, yScale, 1);
-			gl.glMatrixMode(GL2.GL_MODELVIEW);
-
+			gl.glMatrixMode(GL2.GL_MODELVIEW);			
+			
 			if (UltimateDownloadManager.areDownloadsActive() && _showLoadingAnimation)
 			{
 				int xOffset = (int) (getSurfaceWidth() * 0.85);
 				int width = (int) (getSurfaceWidth() * 0.15);
 				int yOffset = (int) (getSurfaceHeight() * 0.85);
 				int height = (int) (getSurfaceHeight() * 0.15);
+				
 				gl.glViewport(xOffset, yOffset, width, height);
 				LoadingScreen.render(gl);
 				gl.glViewport(0, 0, getSurfaceWidth(), getSurfaceHeight());
@@ -369,27 +381,23 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 
 		if (noImageScreen)
 		{
-			double dim = Math.max(getSurfaceHeight(), getSurfaceWidth()) * 0.15;
-
-			int xOffset = (int) (getSurfaceWidth() / 2 - dim / 2);
-			int width = (int) (dim);
-			int yOffset = (int) (getSurfaceHeight() / 2 - dim / 2);
-			int height = (int) (dim);
-
 			gl.glMatrixMode(GL2.GL_PROJECTION);
 			gl.glPushMatrix();
-			gl.glLoadIdentity();
-			gl.glViewport(xOffset, yOffset, width, height);
-
-			gl.glMatrixMode(GL2.GL_MODELVIEW);
-			gl.glPushMatrix();
-			gl.glLoadIdentity();
-
-			NoImageScreen.render(gl);
-
-			gl.glMatrixMode(GL2.GL_MODELVIEW);
-			gl.glPopMatrix();
-
+			{
+				gl.glLoadIdentity();
+				
+				double size = Math.max(getSurfaceHeight(), getSurfaceWidth()) * 0.15;
+				gl.glViewport((int) (getSurfaceWidth() / 2 - size / 2), (int) (getSurfaceHeight() / 2 - size / 2), (int)size, (int)size);
+				
+				gl.glMatrixMode(GL2.GL_MODELVIEW);
+				gl.glPushMatrix();
+				{
+					gl.glLoadIdentity();
+					NoImageScreen.render(gl);
+				}
+				gl.glMatrixMode(GL2.GL_MODELVIEW);
+				gl.glPopMatrix();
+			}
 			gl.glMatrixMode(GL2.GL_PROJECTION);
 			gl.glPopMatrix();
 		}
@@ -397,20 +405,11 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		for (MainPanel componentView : synchronizedViews)
 			componentView.repaint();
 
-		// force immediate repaints
+		// force immediate repaints of dependent regions
 		RepaintManager.currentManager(MainFrame.SINGLETON).paintDirtyRegions();
 
 		if (TimeLine.SINGLETON.isPlaying())
 			repaint();
-	}
-
-	protected void renderPlugins(GL2 gl)
-	{
-		gl.glEnable(GL2.GL_DEPTH_TEST);
-		gl.glDepthFunc(GL2.GL_LESS);
-		gl.glDepthMask(false);
-		Plugins.SINGLETON.renderPlugins(gl, RenderMode.MAIN_PANEL);
-		gl.glDepthMask(false);
 	}
 
 	protected float getDesiredRelativeResolution()
@@ -799,7 +798,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	{
 		if (e == null)
 			return;
-
+		
 		Ray ray = new RayTrace().cast(e.getX(), e.getY(), this);
 		for (CameraInteraction cameraInteraction : cameraInteractions)
 			cameraInteraction.mouseWheelMoved(e, ray);

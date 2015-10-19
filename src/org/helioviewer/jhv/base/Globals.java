@@ -1,4 +1,4 @@
-package org.helioviewer.jhv;
+package org.helioviewer.jhv.base;
 
 import java.awt.Cursor;
 import java.awt.Desktop;

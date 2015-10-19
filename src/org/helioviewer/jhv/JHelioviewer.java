@@ -18,8 +18,14 @@ import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 
+import org.helioviewer.jhv.base.Globals;
+import org.helioviewer.jhv.base.JHVUncaughtExceptionHandler;
 import org.helioviewer.jhv.base.Log;
 import org.helioviewer.jhv.base.Observatories;
+import org.helioviewer.jhv.base.Settings;
+import org.helioviewer.jhv.base.SplashScreen;
+import org.helioviewer.jhv.base.Telemetry;
+import org.helioviewer.jhv.base.UILatencyWatchdog;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.dialogs.AboutDialog;
 import org.helioviewer.jhv.io.CommandLineProcessor;
@@ -179,6 +185,17 @@ public class JHelioviewer
             Kdu_global.Kdu_customize_warnings(new Kdu_message_formatter(new KduErrorHandler(false), 80));
             Kdu_global.Kdu_customize_errors(new Kdu_message_formatter(new KduErrorHandler(true), 80));
 
+            final long startTime=System.currentTimeMillis();
+            Runtime.getRuntime().addShutdownHook(new Thread(new Runnable()
+            {
+				@Override
+				public void run()
+				{
+					//TODO: move to action instead (more stable environment & add collection of ui state)
+					Telemetry.trackMetric("Session duration", (System.currentTimeMillis()-startTime)/1000);
+				}
+			}));
+            
 			// Create main view chain and display main window
             splash.progressTo("Starting Swing");
 			SwingUtilities.invokeLater(new Runnable()
@@ -228,7 +245,6 @@ public class JHelioviewer
 								{
 									splash.dispose();
 									UILatencyWatchdog.startWatchdog();
-									Telemetry.trackEvent("hoho");
 								}
 							});
 						}

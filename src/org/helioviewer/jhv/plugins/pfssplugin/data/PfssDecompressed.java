@@ -150,6 +150,8 @@ public class PfssDecompressed
 	@SuppressWarnings("null")
 	public void display(GL gl, LocalDateTime localDateTime)
 	{
+		System.out.println(isDataAssigned+" "+uploadedVBOs);
+		
 	    if(!isDataAssigned)
 	        return;
 	    

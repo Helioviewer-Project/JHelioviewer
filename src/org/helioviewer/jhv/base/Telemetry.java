@@ -1,4 +1,4 @@
-package org.helioviewer.jhv;
+package org.helioviewer.jhv.base;
 
 import java.awt.Toolkit;
 import java.util.HashMap;
@@ -43,7 +43,13 @@ public class Telemetry
 		Map<String,String> ps=new LinkedHashMap<String,String>();
 		for(int i=0;i<params.length;i+=2)
 			ps.put(params[i], params[i+1]);
-		client.trackEvent("Startup",ps,new HashMap<String, Double>());
+		
+		client.trackEvent(_event,ps,new HashMap<String, Double>());
+	}
+	
+	public static void trackMetric(String _name,double _value)
+	{
+		client.trackMetric(_name, _value);
 	}
 	
 	private synchronized static void initializeOpenGL()

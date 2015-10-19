@@ -12,67 +12,78 @@ public abstract class AbstractPlugin
 {
 	protected final String pluginName;
 	protected final boolean LOAD_ON_STARTUP = true;
-	
-	public enum RenderMode {
-		MAIN_PANEL, OVERVIEW_PANEL, ALL_PANEL;
+
+	public enum RenderMode
+	{
+		MAIN_PANEL, OVERVIEW_PANEL, BOTH_PANELS;
 	};
-	protected RenderMode renderMode = RenderMode.ALL_PANEL;
-	
-	public AbstractPlugin(String name) {
+
+	protected RenderMode renderMode = RenderMode.BOTH_PANELS;
+
+	public AbstractPlugin(String name)
+	{
 		pluginName = name;
 	}
-	
-	public void timeStampChanged(LocalDateTime current, LocalDateTime last){
-		
-	}
-	
-	
-	public void dateTimesChanged(int framecount) {
-		
-		
-	}
-	
-	public void render(GL2 gl){
-		
-	}
-	
-	public void mouseDragged(MouseEvent e, Vector3d point) {
+
+	public void timeStampChanged(LocalDateTime current, LocalDateTime last)
+	{
+
 	}
 
-	public void mouseMoved(MouseEvent e, Vector3d point) {
+	public void dateTimesChanged(int framecount)
+	{
+
 	}
 
-	public void mouseClicked(MouseEvent e, Vector3d point) {
+	public void render(GL2 gl)
+	{
+
 	}
 
-	public void mousePressed(MouseEvent e, Vector3d point) {
+	public void mouseDragged(MouseEvent e, Vector3d point)
+	{
 	}
 
-	public void mouseReleased(MouseEvent e, Vector3d point) {
+	public void mouseMoved(MouseEvent e, Vector3d point)
+	{
 	}
 
-	public void mouseEntered(MouseEvent e, Vector3d point) {
+	public void mouseClicked(MouseEvent e, Vector3d point)
+	{
 	}
 
-	public void mouseExited(MouseEvent e, Vector3d point) {
+	public void mousePressed(MouseEvent e, Vector3d point)
+	{
 	}
-	
-	public RenderMode getRenderMode(){
-		return this.renderMode;
+
+	public void mouseReleased(MouseEvent e, Vector3d point)
+	{
 	}
-	
+
+	public void mouseEntered(MouseEvent e, Vector3d point)
+	{
+	}
+
+	public void mouseExited(MouseEvent e, Vector3d point)
+	{
+	}
+
+	public RenderMode getRenderMode()
+	{
+		return renderMode;
+	}
+
 	abstract public void restoreConfiguration(JSONObject jsonObject);
+
 	abstract public void storeConfiguration(JSONObject jsonObject);
 
-	public abstract void setVisible(boolean visible);
-	public abstract boolean isVisible();
-	
 	public String getName()
 	{
 		return pluginName;
 	}
 
 	abstract public void load();
+
 	abstract public void remove();
 
 	@Override
@@ -80,7 +91,8 @@ public abstract class AbstractPlugin
 	{
 		return pluginName;
 	}
-	
+
 	abstract public boolean retryNeeded();
+
 	abstract public void retry();
 }

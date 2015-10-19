@@ -28,9 +28,9 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.text.NumberFormatter;
 
-import org.helioviewer.jhv.Globals;
-import org.helioviewer.jhv.Settings;
-import org.helioviewer.jhv.Telemetry;
+import org.helioviewer.jhv.base.Globals;
+import org.helioviewer.jhv.base.Settings;
+import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MainFrame;
@@ -215,7 +215,7 @@ public class PreferencesDialog extends JDialog
 	/**
 	 * Loads the settings.
 	 * 
-	 * Reads the informations from {@link org.helioviewer.jhv.Settings} and sets
+	 * Reads the informations from {@link org.helioviewer.jhv.base.Settings} and sets
 	 * all gui elements according to them.
 	 */
 	private void loadSettings()
@@ -240,7 +240,7 @@ public class PreferencesDialog extends JDialog
 	/**
 	 * Saves the settings.
 	 * 
-	 * Writes the informations to {@link org.helioviewer.jhv.Settings}.
+	 * Writes the informations to {@link org.helioviewer.jhv.base.Settings}.
 	 */
 	private void saveSettings()
 	{

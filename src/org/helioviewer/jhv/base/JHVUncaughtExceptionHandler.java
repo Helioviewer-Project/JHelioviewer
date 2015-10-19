@@ -1,4 +1,4 @@
-package org.helioviewer.jhv;
+package org.helioviewer.jhv.base;
 
 import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
@@ -35,15 +35,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.UIManager;
 
-import org.helioviewer.jhv.base.Log;
-
 import com.mindscapehq.raygun4java.core.RaygunClient;
 import com.mindscapehq.raygun4java.core.messages.RaygunIdentifier;
 
 /**
  * Routines to catch and handle all runtime exceptions.
  */
-class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
+public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
 {
 	public static final JHVUncaughtExceptionHandler SINGLETON = new JHVUncaughtExceptionHandler();
 

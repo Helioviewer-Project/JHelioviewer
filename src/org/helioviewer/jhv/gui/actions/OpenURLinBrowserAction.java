@@ -5,7 +5,7 @@ import java.awt.event.ActionEvent;
 import javax.annotation.Nullable;
 import javax.swing.AbstractAction;
 
-import org.helioviewer.jhv.Globals;
+import org.helioviewer.jhv.base.Globals;
 
 /**
  * Action to open a browser showing any given URL.

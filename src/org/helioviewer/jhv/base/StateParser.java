@@ -9,9 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
 
-import org.helioviewer.jhv.Globals;
-import org.helioviewer.jhv.Globals.DialogType;
-import org.helioviewer.jhv.Settings;
+import org.helioviewer.jhv.base.Globals.DialogType;
 import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.gui.MainFrame;

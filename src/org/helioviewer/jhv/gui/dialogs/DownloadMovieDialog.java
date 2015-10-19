@@ -8,10 +8,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 
-import org.helioviewer.jhv.Globals;
-import org.helioviewer.jhv.Globals.DialogType;
-import org.helioviewer.jhv.Settings;
-import org.helioviewer.jhv.Telemetry;
+import org.helioviewer.jhv.base.Globals;
+import org.helioviewer.jhv.base.Settings;
+import org.helioviewer.jhv.base.Telemetry;
+import org.helioviewer.jhv.base.Globals.DialogType;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPDownloadRequest;
 import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;

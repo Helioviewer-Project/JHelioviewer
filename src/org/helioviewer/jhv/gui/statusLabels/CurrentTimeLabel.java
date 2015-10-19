@@ -3,7 +3,7 @@ import java.time.LocalDateTime;
 
 import javax.swing.BorderFactory;
 
-import org.helioviewer.jhv.Globals;
+import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 
 

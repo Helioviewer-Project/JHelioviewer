@@ -4,7 +4,10 @@ import java.time.LocalDateTime;
 
 import javax.annotation.Nullable;
 
+import org.helioviewer.jhv.gui.MainPanel;
+import org.helioviewer.jhv.gui.OverviewPanel;
 import org.helioviewer.jhv.plugins.AbstractPlugin;
+import org.helioviewer.jhv.plugins.AbstractPlugin.RenderMode;
 import org.helioviewer.jhv.plugins.Plugins;
 import org.json.JSONObject;
 
@@ -18,23 +21,25 @@ public class PluginLayer extends Layer
 	{
 		name = _name;
 		plugin = _plugin;
-		setVisible(_plugin.isVisible());
 	}
 
-	@Override
-	public RenderResult renderLayer(GL2 gl)
+	public RenderResult renderLayer(GL2 gl, MainPanel _parent)
 	{
+		if(_parent instanceof OverviewPanel)
+		{
+			if(plugin.getRenderMode()==RenderMode.MAIN_PANEL)
+				return RenderResult.OK;
+		}
+		else
+		{
+			if(plugin.getRenderMode()==RenderMode.OVERVIEW_PANEL)
+				return RenderResult.OK;
+		}
+		
 		plugin.render(gl);
 		return RenderResult.OK;
 	}
 	
-	@Override
-	public void setVisible(boolean visible)
-	{
-		super.setVisible(visible);
-		plugin.setVisible(visible);
-	}
-
 	@Override
 	public void dispose()
 	{

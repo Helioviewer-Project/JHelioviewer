@@ -5,7 +5,7 @@ import java.io.UnsupportedEncodingException;
 
 import javax.annotation.Nullable;
 
-import org.helioviewer.jhv.Telemetry;
+import org.helioviewer.jhv.base.Telemetry;
 
 import kdu_jni.Jp2_input_box;
 import kdu_jni.Jp2_locator;

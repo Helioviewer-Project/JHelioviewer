@@ -16,8 +16,6 @@ import org.helioviewer.jhv.opengl.camera.CameraRotationInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraViewportPanInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraZoomBoxInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraZoomInteraction;
-import org.helioviewer.jhv.plugins.AbstractPlugin.RenderMode;
-import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 
@@ -115,16 +113,6 @@ public class OverviewPanel extends MainPanel
 		if (Layers.getActiveImageLayer() != null)
 			displayRect(gl, width / 100.0);
 		gl.glPopMatrix();
-	}
-
-	@Override
-	protected void renderPlugins(GL2 gl)
-	{
-		gl.glEnable(GL2.GL_DEPTH_TEST);
-		gl.glDepthFunc(GL2.GL_LESS);
-		gl.glDepthMask(false);
-		Plugins.SINGLETON.renderPlugins(gl, RenderMode.OVERVIEW_PANEL);
-		gl.glDepthMask(false);
 	}
 
 	private void displayRect(GL2 gl, double radius)

@@ -19,9 +19,9 @@ import java.util.concurrent.Future;
 import javax.annotation.Nullable;
 import javax.swing.SwingUtilities;
 
-import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.base.FutureValue;
 import org.helioviewer.jhv.base.ImageRegion;
+import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.base.downloadmanager.JPIPDownloadRequest;
@@ -542,10 +542,10 @@ public class KakaduLayer extends AbstractImageLayer
 			@Override
 			public PreparedImage call() throws Exception
 			{
+				Thread.currentThread().setName("Decoder-"+Thread.currentThread().getId());
+				
 				ImageRegion requiredSafeRegion = new ImageRegion(requiredMinimumRegion.areaOfSourceImage, mainPanel.getTranslationCurrent().z, metaData,size,
 						TimeLine.SINGLETON.isPlaying() ? 1.05 : 1.2);
-				
-				//FIXME: requiredSafeRegion should be rounded to the nearest pixels
 				
 				return new PreparedImage(
 						textures.get(textureNr),

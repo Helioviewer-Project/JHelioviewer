@@ -10,7 +10,7 @@ import java.util.concurrent.ThreadFactory;
 
 import javax.annotation.Nullable;
 
-import org.helioviewer.jhv.Telemetry;
+import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.plugins.AbstractPlugin;
 import org.helioviewer.jhv.plugins.Plugins;
@@ -22,36 +22,39 @@ import org.json.JSONObject;
 import com.jogamp.opengl.GL2;
 
 //FIXME: broken, does not work atm
-public class PfssPlugin extends AbstractPlugin {
+public class PfssPlugin extends AbstractPlugin
+{
 	private static final String JSON_NAME = "pfss";
 	private static final String JSON_OPEN = "pfssOpen";
 	private static final String JSON_VISIBLE = "pfssVisible";
 
 	private static final String PLUGIN_NAME = "PFSS";
 	private static int threadNumber = 0;
-	public static final ExecutorService pool = Executors.newFixedThreadPool(2,
-			new ThreadFactory() {
-				@Override
-				public Thread newThread(@Nullable Runnable _r) {
-					Thread t = Executors.defaultThreadFactory().newThread(_r);
-					t.setName("PFSS-" + (threadNumber++));
-					t.setDaemon(true);
-					return t;
-				}
-			});
+	public static final ExecutorService pool = Executors.newFixedThreadPool(2, new ThreadFactory()
+	{
+		@Override
+		public Thread newThread(@Nullable Runnable _r)
+		{
+			Thread t = Executors.defaultThreadFactory().newThread(_r);
+			t.setName("PFSS-" + (threadNumber++));
+			t.setDaemon(true);
+			return t;
+		}
+	});
 
 	private FrameManager manager;
 	private boolean isVisible = false;
 	private PfssPluginPanel pfssPluginPanel;
 	public ArrayList<HTTPRequest> failedDownloads = new ArrayList<HTTPRequest>();
-	
-	public PfssPlugin() {
+
+	public PfssPlugin()
+	{
 		super(PLUGIN_NAME);
 		renderMode = RenderMode.MAIN_PANEL;
 		manager = new FrameManager(this);
 		pfssPluginPanel = new PfssPluginPanel(this);
 	}
-
+	
 	@Override
 	public void render(GL2 gl)
 	{
@@ -69,7 +72,8 @@ public class PfssPlugin extends AbstractPlugin {
 	 * 
 	 * null because this is an internal plugin
 	 */
-	public String getAboutLicenseText() {
+	public String getAboutLicenseText()
+	{
 		String description = "";
 		description += "<p>"
 				+ "The plugin uses the <a href=\"http://heasarc.gsfc.nasa.gov/docs/heasarc/fits/java/v1.0/\">Fits in Java</a> Library, licensed under a <a href=\"https://www.gnu.org/licenses/old-licenses/gpl-1.0-standalone.html\">GPL License</a>.";
@@ -79,7 +83,8 @@ public class PfssPlugin extends AbstractPlugin {
 		return description;
 	}
 
-	public static URL getResourceUrl(String name) {
+	public static URL getResourceUrl(String name)
+	{
 		return PfssPlugin.class.getResource(name);
 	}
 
@@ -93,18 +98,21 @@ public class PfssPlugin extends AbstractPlugin {
 	 * @throws IOException
 	 *             if the dates are not present+
 	 */
-	public void setDisplayRange(LocalDateTime start, LocalDateTime end) {
+	public void setDisplayRange(LocalDateTime start, LocalDateTime end)
+	{
 		manager.setDateRange(start, end);
 	}
 
-	public void setVisible(boolean visible) {
+	public void setVisible(boolean visible)
+	{
 		isVisible = visible;
 
 		if (visible)
 			manager.showErrorMessages();
 	}
 
-	public boolean isVisible() {
+	public boolean isVisible()
+	{
 		return isVisible;
 	}
 
@@ -129,8 +137,10 @@ public class PfssPlugin extends AbstractPlugin {
 	}
 
 	@Override
-	public void storeConfiguration(JSONObject jsonObject) {
-		try {
+	public void storeConfiguration(JSONObject jsonObject)
+	{
+		try
+		{
 			JSONObject jsonPfss = new JSONObject();
 			jsonPfss.put(JSON_OPEN, pfssPluginPanel.isVisible());
 			jsonPfss.put(JSON_VISIBLE, isVisible());
@@ -143,12 +153,14 @@ public class PfssPlugin extends AbstractPlugin {
 	}
 
 	@Override
-	public void load() {
+	public void load()
+	{
 		Plugins.addPluginLayer(this, PLUGIN_NAME);
 	}
 
 	@Override
-	public void remove() {
+	public void remove()
+	{
 		Plugins.removePanelOnLeftControllPanel(pfssPluginPanel);
 	}
 
@@ -165,7 +177,7 @@ public class PfssPlugin extends AbstractPlugin {
 			pfssPluginPanel.reload();
 		else
 			manager.retry();
-		
+
 		Plugins.repaintLayerPanel();
 	}
 }

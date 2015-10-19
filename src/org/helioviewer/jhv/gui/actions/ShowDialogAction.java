@@ -9,7 +9,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.KeyStroke;
 
-import org.helioviewer.jhv.Telemetry;
+import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.gui.dialogs.ShortcutsDialog;
 
 public class ShowDialogAction extends AbstractAction

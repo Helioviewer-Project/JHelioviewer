@@ -1,4 +1,4 @@
-package org.helioviewer.jhv;
+package org.helioviewer.jhv.base;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,12 +7,10 @@ import java.util.Map;
 
 import javax.swing.SwingUtilities;
 
-import org.helioviewer.jhv.base.Log;
-
 import com.mindscapehq.raygun4java.core.RaygunClient;
 import com.mindscapehq.raygun4java.core.messages.RaygunIdentifier;
 
-class UILatencyWatchdog
+public class UILatencyWatchdog
 {
 	// maximum time the UI thread is allowed to block
 	private static final int MAX_LATENCY_RELEASE = 1500;

@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 import javax.annotation.Nullable;
 
-import org.helioviewer.jhv.Telemetry;
+import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.viewmodel.jp2view.io.ChunkedInputStream;
 import org.helioviewer.jhv.viewmodel.jp2view.io.FixedSizedInputStream;
 import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPHeaderKey;

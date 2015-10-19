@@ -16,32 +16,35 @@ import javax.swing.BorderFactory;
  */
 public class FramerateStatusPanel extends StatusLabel
 {
-    private int counter = 0;
-    private long currentMillis = 0;
-    private static final String TITLE = "fps:";
-    
-    public FramerateStatusPanel()
-    {
-    	super();
-        setBorder(BorderFactory.createEtchedBorder());
+	private int counter = 0;
+	private long currentMillis = 0;
+	private static final String TITLE = "fps:";
 
-        setPreferredSize(new Dimension(70, 20));
-        setText(TITLE);
+	public FramerateStatusPanel()
+	{
+		super();
+		setBorder(BorderFactory.createEtchedBorder());
 
-        currentMillis = System.currentTimeMillis();
+		setPreferredSize(new Dimension(70, 20));
+		setText(TITLE);
 
-    }
+		currentMillis = System.currentTimeMillis();
+	}
 
-    private void updateFramerate() {
-            setVisible(true);
-            setText(TITLE + counter);
-            counter = 0;
-            currentMillis = System.currentTimeMillis();
-    }
+	private void updateFramerate()
+	{
+		//TODO: collect framerate info via telemetry (+number of layers, ...)
+		
+		setVisible(true);
+		setText(TITLE + counter);
+		counter = 0;
+		currentMillis = System.currentTimeMillis();
+	}
 
-	public void timeStampChanged(LocalDateTime current, LocalDateTime last) {
+	public void timeStampChanged(LocalDateTime current, LocalDateTime last)
+	{
 		if ((System.currentTimeMillis() - currentMillis) >= 1000)
-           updateFramerate();
+			updateFramerate();
 		counter++;
-	}	
+	}
 }
