@@ -1,15 +1,17 @@
 package org.helioviewer.jhv.viewmodel.metadata;
 
+import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.layers.LUT.Lut;
+import org.w3c.dom.Document;
 
 public class MetaDataAIA extends MetaData
 {
 	private final static Vector2i RESOLUTION = new Vector2i(4096, 4096);
 	
-	public MetaDataAIA(MetaDataContainer metaDataContainer)
+	public MetaDataAIA(Document _doc)
 	{
-        super(metaDataContainer, RESOLUTION, metaDataContainer.get("TELESCOP"), metaDataContainer.get("WAVELNTH"));
+        super(_doc, RESOLUTION, get(_doc, "TELESCOP"), get(_doc, "WAVELNTH"));
         
         if (!(instrument.equalsIgnoreCase("AIA_1") || instrument.equalsIgnoreCase("AIA_2") || instrument.equalsIgnoreCase("AIA_3") || instrument.equalsIgnoreCase("AIA_4")))
         	throw new UnsuitableMetaDataException("invalid instrument: "+instrument);
@@ -50,7 +52,9 @@ public class MetaDataAIA extends MetaData
 				defaultLUT = Lut.SDO_AIA_94;
 				break;
 			default:
-	        	throw new UnsuitableMetaDataException("invalid measurement: "+measurement);
+	        	UnsuitableMetaDataException e = new UnsuitableMetaDataException("Unexpected measurement: "+measurement);
+	        	Telemetry.trackException(e);
+	        	throw e;
 		}
    }
 }

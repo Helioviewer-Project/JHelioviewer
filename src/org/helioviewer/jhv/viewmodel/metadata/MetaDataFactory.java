@@ -16,14 +16,10 @@ public class MetaDataFactory
 			MetaDataAIA.class,
 			MetaDataEIT.class,
 			MetaDataHMI.class,
-			MetaDataLASCO_C2.class,
-			MetaDataLASCO_C3.class,
+			MetaDataLASCO.class,
 			MetaDataMDI.class,
+			MetaDataStereoEUVI.class,
 			MetaDataStereo.class,
-			MetaDataStereoA_COR1.class,
-			MetaDataStereoA_COR2.class,
-			MetaDataStereoB_COR1.class,
-			MetaDataStereoB_COR2.class,
 			MetaDataHinode.class,
 			MetaDataSXT.class,
 			MetaDataSWAP.class
@@ -34,14 +30,12 @@ public class MetaDataFactory
 		if(_doc==null)
 			return null;
 		
-		MetaDataContainer metaDataContainer = new MetaDataContainer(_doc);
 		MetaData metaData = null;
-		Object[] args = {metaDataContainer};
 		for (Class<MetaData> c : META_DATA_CLASSES)
 			try
 			{
-			    Constructor<MetaData> constructor = c.getDeclaredConstructor(MetaDataContainer.class);
-				metaData = constructor.newInstance(args);
+			    Constructor<MetaData> constructor = c.getDeclaredConstructor(Document.class);
+				metaData = constructor.newInstance(new Object[] { _doc });
 				break;
 			}
             catch(NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
@@ -57,7 +51,6 @@ public class MetaDataFactory
                     Telemetry.trackException(e);
                 }
             }
-
 		
 		return metaData;
 	}

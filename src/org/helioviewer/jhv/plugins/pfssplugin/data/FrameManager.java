@@ -39,10 +39,7 @@ public class FrameManager
 	{
 		//outside of loaded frames
 		if(!descriptorManager.isDateInRange(date))
-		{
-			System.out.println("Not in range");
 			return null;
-		}
 		
 		//still the same frame
 		if (curFrame!=null && curFrame.getDescriptor().isDateInRange(date))

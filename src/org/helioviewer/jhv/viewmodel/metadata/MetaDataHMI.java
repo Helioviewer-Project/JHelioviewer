@@ -1,13 +1,14 @@
 package org.helioviewer.jhv.viewmodel.metadata;
 
 import org.helioviewer.jhv.base.math.Vector2i;
+import org.w3c.dom.Document;
 
 class MetaDataHMI extends MetaData
 {
 	private final static Vector2i RESOLUTION = new Vector2i(4096, 4096);
-	public MetaDataHMI(MetaDataContainer metaDataContainer)
+	public MetaDataHMI(Document _doc)
 	{
-        super(metaDataContainer, RESOLUTION, metaDataContainer.get("TELESCOP"), metaDataContainer.get("CONTENT"));
+        super(_doc, RESOLUTION, get(_doc, "TELESCOP"), get(_doc, "CONTENT"));
         if (!(instrument.equalsIgnoreCase("HMI_FRONT2")))
         	throw new UnsuitableMetaDataException("invalid instrument: "+instrument);
 

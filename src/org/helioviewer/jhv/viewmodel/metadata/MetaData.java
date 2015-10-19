@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 
 import javax.annotation.Nullable;
 
+import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.Vector2d;
@@ -13,6 +14,11 @@ import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.layers.LUT.Lut;
+import org.w3c.dom.CharacterData;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 //TODO: look at memory consumption and instance count of this class
 //TODO: make immutable
@@ -69,7 +75,7 @@ public abstract class MetaData
     /**
      * Default constructor, does not set size or position.
      */
-	public MetaData(MetaDataContainer _metaDataContainer, Vector2i _resolution, @Nullable String _observatory, @Nullable String _measurement)
+	public MetaData(Document _doc, Vector2i _resolution, @Nullable String _observatory, @Nullable String _measurement)
     {
 		if(_measurement==null)
 			throw new UnsuitableMetaDataException();
@@ -80,65 +86,68 @@ public abstract class MetaData
 		measurement = _measurement;
 		observatory = _observatory;
 		
-    	int width = _metaDataContainer.tryGetInt("NAXIS1");
-    	int height = _metaDataContainer.tryGetInt("NAXIS2");
+    	int width = tryGetInt(_doc, "NAXIS1");
+    	int height = tryGetInt(_doc, "NAXIS2");
     	
     	if (width > 0 && height > 0)
     		newResolution = new Vector2i(width, height);
     	else
+    	{
+    		System.err.println("Weird, this image has no resolution... Using default");
+    		Telemetry.trackEvent("Missing resolution info", "Observatory", _observatory, "Measurement", _measurement);
     		newResolution = _resolution;
+    	}
         
-        detector = _metaDataContainer.get("DETECTOR");
+        detector = get(_doc, "DETECTOR");
         
-        String instrume = _metaDataContainer.get("INSTRUME");
+        String instrume = get(_doc, "INSTRUME");
         if (instrume == null)
             throw new UnsuitableMetaDataException("No instrument specified in metadata (INSTRUME)");
         
         instrument = instrume;
         
-        String observedDate = _metaDataContainer.get("DATE_OBS");
-        String observedTime = _metaDataContainer.get("TIME_OBS");
+        String observedDate = get(_doc, "DATE_OBS");
+        String observedTime = get(_doc, "TIME_OBS");
         if(observedDate!=null && !observedDate.contains("T") && observedTime!=null && !"".equals(observedTime))
-        	observedDate += "T" + _metaDataContainer.get("TIME_OBS");
+        	observedDate += "T" + get(_doc, "TIME_OBS");
         
         if(observedDate==null)
             throw new UnsuitableMetaDataException("No date/time specified in metadata (DATE_OBS)");
         
         localDateTime = LocalDateTime.parse(observedDate, DateTimeFormatter.ISO_DATE_TIME);
         
-        heeqX = _metaDataContainer.tryGetDouble("HEQX_OBS");
-        heeqY = _metaDataContainer.tryGetDouble("HEQY_OBS");
-        heeqZ = _metaDataContainer.tryGetDouble("HEQZ_OBS");
-        heeqAvailable = heeqX != 0.0 || heeqY != 0.0 || heeqZ != 0.0;
+        heeqX = tryGetDouble(_doc, "HEQX_OBS");
+        heeqY = tryGetDouble(_doc, "HEQY_OBS");
+        heeqZ = tryGetDouble(_doc, "HEQZ_OBS");
+        heeqAvailable = !Double.isNaN(heeqX) && !Double.isNaN(heeqY) && !Double.isNaN(heeqZ) && (heeqX != 0.0 || heeqY != 0.0 || heeqZ != 0.0);
 
-        heeX = _metaDataContainer.tryGetDouble("HEEX_OBS");
-        heeY = _metaDataContainer.tryGetDouble("HEEY_OBS");
-        heeZ = _metaDataContainer.tryGetDouble("HEEZ_OBS");
-        heeAvailable = heeX != 0.0 || heeY != 0.0 || heeZ != 0.0;
+        heeX = tryGetDouble(_doc, "HEEX_OBS");
+        heeY = tryGetDouble(_doc, "HEEY_OBS");
+        heeZ = tryGetDouble(_doc, "HEEZ_OBS");
+        heeAvailable = !Double.isNaN(heeX) && !Double.isNaN(heeY) && !Double.isNaN(heeZ) && (heeX != 0.0 || heeY != 0.0 || heeZ != 0.0);
 
-        crlt = _metaDataContainer.tryGetDouble("CRLT_OBS");
-        crln = _metaDataContainer.tryGetDouble("CRLN_OBS");
-        dobs = _metaDataContainer.tryGetDouble("DSUN_OBS");
-        carringtonAvailable = crlt != 0.0 || crln != 0.0;
+        crlt = tryGetDouble(_doc, "CRLT_OBS");
+        crln = tryGetDouble(_doc, "CRLN_OBS");
+        dobs = tryGetDouble(_doc, "DSUN_OBS"); //distanceToSun
+        carringtonAvailable = !Double.isNaN(crlt) && !Double.isNaN(crln) && !Double.isNaN(dobs) && (crlt != 0.0 || crln != 0.0);
 
-        stonyhurstLatitude = _metaDataContainer.tryGetDouble("HGLT_OBS");
-        stonyhurstLongitude = _metaDataContainer.tryGetDouble("HGLN_OBS");
-        stonyhurstAvailable = stonyhurstLatitude != 0.0 || stonyhurstLongitude != 0.0;
         
+        stonyhurstLatitude = tryGetDouble(_doc, "HGLT_OBS");
+        stonyhurstLongitude = tryGetDouble(_doc, "HGLN_OBS");
+        stonyhurstAvailable = !Double.isNaN(stonyhurstLatitude) && !Double.isNaN(stonyhurstLongitude) && (stonyhurstLatitude != 0.0 || stonyhurstLongitude != 0.0);
         
         double newSolarPixelRadius = -1.0;
         
-        double sunX = _metaDataContainer.tryGetDouble("CRPIX1");
-        double sunY = _metaDataContainer.tryGetDouble("CRPIX2");
+        double sunX = tryGetDouble(_doc, "CRPIX1");
+        double sunY = tryGetDouble(_doc, "CRPIX2");
         sunPixelPosition = new Vector2d(sunX, sunY);
 
-        arcsecPerPixelX = _metaDataContainer.tryGetDouble("CDELT1");
-        arcsecPerPixelY = _metaDataContainer.tryGetDouble("CDELT2");
+        arcsecPerPixelX = tryGetDouble(_doc, "CDELT1");
+        arcsecPerPixelY = tryGetDouble(_doc, "CDELT2");
         
-        double distanceToSun = _metaDataContainer.tryGetDouble("DSUN_OBS");
-        double radiusSunInArcsec = Math.atan(Constants.SUN_RADIUS / distanceToSun) * MathUtils.RAD_TO_DEG * 3600;
+        double radiusSunInArcsec = Math.atan(Constants.SUN_RADIUS / dobs) * MathUtils.RAD_TO_DEG * 3600;
 
-        if (distanceToSun > 0)
+        if (!Double.isNaN(dobs) && dobs > 0)
             newSolarPixelRadius = radiusSunInArcsec / arcsecPerPixelX;        	
         else
         {
@@ -338,4 +347,59 @@ public abstract class MetaData
 	{
 		return new Vector2d(arcsecPerPixelX,arcsecPerPixelY);
 	}
+	
+	
+	protected static @Nullable String get(Document _doc, String key)
+	{
+        return getValueFromXML(_doc, key, "fits");
+	}
+
+	private static @Nullable String getValueFromXML(Document _doc, String _key, String _node)
+	{
+		NodeList current = _doc.getElementsByTagName("meta");
+		NodeList nodes = ((Element) current.item(0)).getElementsByTagName(_node);
+		NodeList value = ((Element) nodes.item(0)).getElementsByTagName(_key);
+		Element line = (Element) value.item(0);
+		if (line != null)
+		{
+			Node child = line.getFirstChild();
+			if (child instanceof CharacterData)
+				return ((CharacterData) child).getData();
+		}
+		return null;
+	}
+
+	protected static int tryGetInt(Document _doc, String _key)
+	{
+		String string = get(_doc, _key);
+        if (string == null)
+        	return 0;
+
+        try
+        {
+            return Integer.parseInt(string);
+        }
+        catch (NumberFormatException e)
+        {
+            Telemetry.trackException(e);
+            return 0;
+        }
+    }
+
+	protected static double tryGetDouble(Document _doc, String _key)
+	{
+        String string = get(_doc, _key);
+        if (string == null)
+        	return Double.NaN;
+        
+        try
+        {
+            return Double.parseDouble(string);
+        }
+        catch (NumberFormatException e)
+        {
+        	Telemetry.trackException(e);
+            return Double.NaN;
+        }
+    }
 }
