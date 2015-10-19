@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.plugins.pfssplugin.data.managers;
+package org.helioviewer.jhv.plugins.pfssplugin.data;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -7,9 +7,6 @@ import javax.annotation.Nullable;
 
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
-import org.helioviewer.jhv.plugins.pfssplugin.data.FileDescriptor;
-import org.helioviewer.jhv.plugins.pfssplugin.data.PfssCompressed;
-import org.helioviewer.jhv.plugins.pfssplugin.data.PfssDecompressed;
 import org.helioviewer.jhv.plugins.pfssplugin.data.caching.DataCache;
 import org.helioviewer.jhv.plugins.pfssplugin.data.decompression.PfssDecompressor;
 
@@ -42,7 +39,10 @@ public class FrameManager
 	{
 		//outside of loaded frames
 		if(!descriptorManager.isDateInRange(date))
+		{
+			System.out.println("Not in range");
 			return null;
+		}
 		
 		//still the same frame
 		if (curFrame!=null && curFrame.getDescriptor().isDateInRange(date))

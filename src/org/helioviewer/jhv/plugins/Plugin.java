@@ -8,31 +8,40 @@ import org.json.JSONObject;
 
 import com.jogamp.opengl.GL2;
 
-public abstract class AbstractPlugin
+public abstract class Plugin
 {
-	protected final String pluginName;
-	protected final boolean LOAD_ON_STARTUP = true;
-
+	public final String pluginName;
+	private boolean isVisible;
+	
 	public enum RenderMode
 	{
 		MAIN_PANEL, OVERVIEW_PANEL, BOTH_PANELS;
 	};
 
-	protected RenderMode renderMode = RenderMode.BOTH_PANELS;
+	public final RenderMode renderMode;
 
-	public AbstractPlugin(String name)
+	public Plugin(String name, RenderMode _renderMode)
 	{
 		pluginName = name;
+		renderMode = _renderMode;
 	}
 
 	public void timeStampChanged(LocalDateTime current, LocalDateTime last)
 	{
-
 	}
 
 	public void dateTimesChanged(int framecount)
 	{
-
+	}
+	
+	public void visibilityChanged(boolean _isVisible)
+	{
+		isVisible=_isVisible;
+	}
+	
+	public boolean isVisible()
+	{
+		return isVisible;
 	}
 
 	public void render(GL2 gl)
@@ -68,23 +77,9 @@ public abstract class AbstractPlugin
 	{
 	}
 
-	public RenderMode getRenderMode()
-	{
-		return renderMode;
-	}
-
 	abstract public void restoreConfiguration(JSONObject jsonObject);
 
 	abstract public void storeConfiguration(JSONObject jsonObject);
-
-	public String getName()
-	{
-		return pluginName;
-	}
-
-	abstract public void load();
-
-	abstract public void remove();
 
 	@Override
 	public String toString()

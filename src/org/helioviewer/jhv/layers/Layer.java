@@ -53,7 +53,7 @@ public abstract class Layer
 		OK
 	}
 
-	public abstract void writeStateFile(JSONObject jsonLayer);
+	public abstract void storeConfiguration(JSONObject jsonLayer);
 	
 	public @Nullable String getDownloadURL()
 	{

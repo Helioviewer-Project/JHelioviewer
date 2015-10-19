@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.DifferentialRotation;
+import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssSettings;
 
 import com.jogamp.common.nio.Buffers;
@@ -50,20 +51,20 @@ public class PfssDecompressed
 	/**
 	 * The FrameManager sets the loaded data to this frame
 	 * 
-	 * @param vertices
-	 * @param indicesSunToOutside
-	 * @param indicesSunToSun
-	 * @param indicesOutsideToSun
+	 * @param _vertices
+	 * @param _indicesSunToOutside
+	 * @param _indicesSunToSun
+	 * @param _indicesOutsideToSun
 	 */
-	public synchronized void setLoadedData(FloatBuffer vertices, IntBuffer indicesSunToOutside, IntBuffer indicesSunToSun, IntBuffer indicesOutsideToSun, float _l0, float _b0)
+	public synchronized void setLoadedData(FloatBuffer _vertices, IntBuffer _indicesSunToOutside, IntBuffer _indicesSunToSun, IntBuffer _indicesOutsideToSun, float _l0, float _b0)
 	{
 		if(isDataAssigned)
 		    return;
 		
-		this.vertices = vertices;
-		this.indicesSunToOutside = indicesSunToOutside;
-		this.indicesSunToSun = indicesSunToSun;
-		this.indicesOutsideToSun = indicesOutsideToSun;
+		vertices = _vertices;
+		indicesSunToOutside = _indicesSunToOutside;
+		indicesSunToSun = _indicesSunToSun;
+		indicesOutsideToSun = _indicesOutsideToSun;
 		l0 = _l0;
 		b0 = _b0;
 		isDataAssigned = true;
@@ -150,8 +151,6 @@ public class PfssDecompressed
 	@SuppressWarnings("null")
 	public void display(GL gl, LocalDateTime localDateTime)
 	{
-		System.out.println(isDataAssigned+" "+uploadedVBOs);
-		
 	    if(!isDataAssigned)
 	        return;
 	    

@@ -34,7 +34,7 @@ public class PfssDecompressor
 
 		if (_dest.isDataAssigned())
 			return;
-
+		
 		try (InputStream is = new ByteArrayInputStream(UnRar.unrarData(_src).toByteArray()))
 		{
 			Fits fits = new Fits(is, false);

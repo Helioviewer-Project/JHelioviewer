@@ -84,7 +84,7 @@ public abstract class AbstractImageLayer extends Layer
 
 	public abstract @Nullable Document getMetaDataDocument(@Nonnull LocalDateTime _currentDateTime);
 
-	public abstract void writeStateFile(JSONObject jsonLayer);
+	public abstract void storeConfiguration(JSONObject jsonLayer);
 	
 	public abstract @Nullable Match getMovie(LocalDateTime _currentDateTime);
 

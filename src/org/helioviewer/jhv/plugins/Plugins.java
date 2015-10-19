@@ -10,7 +10,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.net.URL;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 import javax.annotation.Nullable;
 import javax.swing.AbstractButton;
@@ -58,55 +57,30 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 	/** The location of the image files relative to this folder. */
     private static final String RESOURCE_PATH = "/images/";
 	
-	private ArrayList<AbstractPlugin> plugins;
+	private final Plugin[] plugins;
 
-	private static final AbstractPlugin[] KNOWN_PLUGINS = new AbstractPlugin[] { new HEKPlugin(), new PfssPlugin() };
 	public static final Plugins SINGLETON = new Plugins();
 	
 	private Plugins()
 	{
-		plugins = new ArrayList<AbstractPlugin>();
 		TimeLine.SINGLETON.addListener(this);
-		for (AbstractPlugin plugin : KNOWN_PLUGINS)
-			if (plugin.LOAD_ON_STARTUP)
-				activatePlugin(plugin);
+		
+		plugins = new Plugin[]
+			{
+				new HEKPlugin(),
+				new PfssPlugin()
+			};
+		
+		//TODO: store visibility of plugins on startup/shutdown
+		for(Plugin p:plugins)
+		{
+			Layers.addLayer(new PluginLayer(p));
+		}
 		
 		MainFrame.SINGLETON.MAIN_PANEL.addMouseListener(this);
 		MainFrame.SINGLETON.MAIN_PANEL.addMouseMotionListener(this);
 	}
 	
-	public ArrayList<AbstractPlugin> getInactivePlugins()
-	{
-		ArrayList<AbstractPlugin> inactivePlugins = new ArrayList<AbstractPlugin>();
-		for (AbstractPlugin plugin : KNOWN_PLUGINS)
-		{
-			boolean active = false;
-			for (AbstractPlugin activePlugin : plugins)
-				active |= plugin == activePlugin;
-			
-			if (!active)
-				inactivePlugins.add(plugin);
-		}
-		return inactivePlugins;
-	}
-
-	public void activatePlugin(AbstractPlugin plugin)
-	{
-		plugin.load();
-		plugins.add(plugin);
-	}
-
-	public void deactivatePlugin(AbstractPlugin plugin)
-	{
-		plugin.remove();
-		plugins.remove(plugin);
-	}
-	
-	public ArrayList<AbstractPlugin> getActivePlugins()
-	{
-		return plugins;
-	}
-
 	public static void addButtonToToolbar(AbstractButton button)
 	{
 		MainFrame.SINGLETON.TOP_TOOL_BAR.addButton(button);
@@ -120,14 +94,14 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 	@Override
 	public void timeStampChanged(LocalDateTime current, LocalDateTime last)
 	{
-		for (AbstractPlugin plugin : plugins)
+		for (Plugin plugin : plugins)
 			plugin.timeStampChanged(current, last);
 	}
 
 	@Override
 	public void dateTimesChanged(int framecount)
 	{
-		for (AbstractPlugin plugin : plugins)
+		for (Plugin plugin : plugins)
 			plugin.dateTimesChanged(framecount);
 	}
 
@@ -143,7 +117,7 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 			return;
 		
 		Vector3d hitpoint = new RayTrace().cast(e.getX(), e.getY(), MainFrame.SINGLETON.MAIN_PANEL).getHitpoint();
-		for (AbstractPlugin plugin : plugins)
+		for (Plugin plugin : plugins)
 			plugin.mouseDragged(e, hitpoint);
 	}
 
@@ -154,7 +128,7 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 			return;
 		
 		Vector3d hitpoint = new RayTrace().cast(e.getX(), e.getY(), MainFrame.SINGLETON.MAIN_PANEL).getHitpoint();
-		for (AbstractPlugin plugin : plugins)
+		for (Plugin plugin : plugins)
 			plugin.mouseMoved(e, hitpoint);
 	}
 
@@ -165,7 +139,7 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 			return;
 		
 		Vector3d hitpoint = new RayTrace().cast(e.getX(), e.getY(), MainFrame.SINGLETON.MAIN_PANEL).getHitpoint();
-		for (AbstractPlugin plugin : plugins)
+		for (Plugin plugin : plugins)
 			plugin.mouseClicked(e, hitpoint);
 	}
 
@@ -176,7 +150,7 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 			return;
 		
 		Vector3d hitpoint = new RayTrace().cast(e.getX(), e.getY(), MainFrame.SINGLETON.MAIN_PANEL).getHitpoint();
-		for (AbstractPlugin plugin : plugins)
+		for (Plugin plugin : plugins)
 			plugin.mousePressed(e, hitpoint);
 	}
 
@@ -187,7 +161,7 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 			return;
 		
 		Vector3d hitpoint = new RayTrace().cast(e.getX(), e.getY(), MainFrame.SINGLETON.MAIN_PANEL).getHitpoint();
-		for (AbstractPlugin plugin : plugins)
+		for (Plugin plugin : plugins)
 			plugin.mouseReleased(e, hitpoint);
 	}
 
@@ -198,7 +172,7 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 			return;
 		
 		Vector3d hitpoint = new RayTrace().cast(e.getX(), e.getY(), MainFrame.SINGLETON.MAIN_PANEL).getHitpoint();
-		for (AbstractPlugin plugin : plugins)
+		for (Plugin plugin : plugins)
 			plugin.mouseEntered(e, hitpoint);
 	}
 
@@ -209,7 +183,7 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 			return;
 		
 		Vector3d hitpoint = new RayTrace().cast(e.getX(), e.getY(), MainFrame.SINGLETON.MAIN_PANEL).getHitpoint();
-		for (AbstractPlugin plugin : plugins)
+		for (Plugin plugin : plugins)
 			plugin.mouseExited(e, hitpoint);
 	}
 
@@ -267,13 +241,13 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 
 	public void storeConfiguration(JSONObject jsonPlugins)
 	{
-		for (AbstractPlugin plugin : plugins)
+		for (Plugin plugin : plugins)
 			plugin.storeConfiguration(jsonPlugins);
 	}
 
 	public void restoreConfiguration(JSONObject jsonPlugins)
 	{
-		for (AbstractPlugin plugin : plugins)
+		for (Plugin plugin : plugins)
 			plugin.restoreConfiguration(jsonPlugins);
 	}
 
@@ -297,12 +271,6 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
         imageIcon.setImage(image);
         return imageIcon;	
     }
-	
-	public static void addPluginLayer(AbstractPlugin plugin, String name)
-	{
-		PluginLayer pluginLayer = new PluginLayer(name, plugin);
-		Layers.addLayer(pluginLayer);
-	}
 	
 	public static void removePanelOnLeftControllPanel(JPanel jPanel)
 	{

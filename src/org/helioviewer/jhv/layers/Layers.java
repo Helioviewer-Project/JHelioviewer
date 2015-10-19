@@ -176,7 +176,7 @@ public class Layers
 		for (Layer layer : layers)
 		{
 			JSONObject jsonLayer = new JSONObject();
-			layer.writeStateFile(jsonLayer);
+			layer.storeConfiguration(jsonLayer);
 			jsonLayers.put(jsonLayer);
 		}
 	}

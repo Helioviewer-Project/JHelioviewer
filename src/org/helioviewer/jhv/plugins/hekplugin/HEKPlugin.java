@@ -16,7 +16,7 @@ import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.SphericalCoord;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.DifferentialRotation;
-import org.helioviewer.jhv.plugins.AbstractPlugin;
+import org.helioviewer.jhv.plugins.Plugin;
 import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKEvent;
@@ -31,21 +31,14 @@ import org.json.JSONObject;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 
-public class HEKPlugin extends AbstractPlugin {
-
-	/**
-	 * Reference to the eventPlugin
-	 */
+public class HEKPlugin extends Plugin
+{
 	private static final String JSON_NAME = "hek";
 	private static final String JSON_VISIBLE = "visible";
 	private static final String JSON_EVENTS = "events";
 
 	private boolean visible = false;
-	private static final String NAME = "HEK Overlay Plugin";
-	private static final String PLUGIN_NAME = "HEK";
-	
-	private static final Cursor CURSOR_HELP = Cursor
-			.getPredefinedCursor(Cursor.HAND_CURSOR);
+	private static final Cursor CURSOR_HELP = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
 
 	private Cursor lastCursor;
 	private HEKEventInformationDialog hekPopUp = new HEKEventInformationDialog();
@@ -57,27 +50,27 @@ public class HEKPlugin extends AbstractPlugin {
 	private static final int Y_OFFSET = 12;
 
 	private HEKPluginPanel hekPluginPanel;
-	
-	/**
-	 * Default constructor.
-	 */
+
 	public HEKPlugin()
 	{
-		super(PLUGIN_NAME);
+		super("HEK", RenderMode.MAIN_PANEL);
 		hekPluginPanel = new HEKPluginPanel(HEKCache.getSingletonInstance());
+		
+		Plugins.addPanelToLeftControllPanel("HEK", hekPluginPanel, false);
 	}
 
 	@Override
-	public void render(GL2 gl) {
-		if (visible) {
-			LocalDateTime in = Plugins.SINGLETON
-					.getCurrentDateTime();
-			if (in != null) {
-				Date currentDate = Date.from(in.atZone(ZoneId.systemDefault())
-						.toInstant());
-				List<HEKEvent> toDraw = HEKCache.getSingletonInstance()
-						.getModel().getActiveEvents(currentDate);
-				if (toDraw != null && toDraw.size() > 0) {
+	public void render(GL2 gl)
+	{
+		if (visible)
+		{
+			LocalDateTime in = Plugins.SINGLETON.getCurrentDateTime();
+			if (in != null)
+			{
+				Date currentDate = Date.from(in.atZone(ZoneId.systemDefault()).toInstant());
+				List<HEKEvent> toDraw = HEKCache.getSingletonInstance().getModel().getActiveEvents(currentDate);
+				if (toDraw != null && toDraw.size() > 0)
+				{
 
 					gl.glDisable(GL2.GL_TEXTURE_2D);
 					gl.glEnable(GL2.GL_CULL_FACE);
@@ -116,7 +109,8 @@ public class HEKPlugin extends AbstractPlugin {
 	 * @param now
 	 *            - Current point in time
 	 */
-	public void drawIcon(GL2 gl, HEKEvent evt, Date now) {
+	public void drawIcon(GL2 gl, HEKEvent evt, Date now)
+	{
 
 		if (evt == null || !evt.isVisible(now))
 			return;
@@ -124,8 +118,10 @@ public class HEKPlugin extends AbstractPlugin {
 		boolean large = evt.getShowEventInfo();
 		String type = evt.getString("event_type");
 		int offSetFactor = -1;
-		for (HEKIcon.HEKIcons hekIcon : HEKIcon.HEKIcons.values()) {
-			if (hekIcon.name().startsWith(type)) {
+		for (HEKIcon.HEKIcons hekIcon : HEKIcon.HEKIcons.values())
+		{
+			if (hekIcon.name().startsWith(type))
+			{
 				offSetFactor = hekIcon.ordinal();
 				break;
 			}
@@ -201,14 +197,12 @@ public class HEKPlugin extends AbstractPlugin {
 			return;
 
 		gl.glPushMatrix();
-		gl.glRotated(DifferentialRotation.calculateRotationInDegrees(
-				heliographicCoordinate.latitude, (now.getTime() - evt
-						.getStart().getTime()) / 1000d), 0, 1, 0);
+		gl.glRotated(DifferentialRotation.calculateRotationInDegrees(heliographicCoordinate.latitude,
+				(now.getTime() - evt.getStart().getTime()) / 1000d), 0, 1, 0);
 
 		if (triangles != null)
 		{
-			gl.glColor4ub((byte) eventColor.getRed(),
-					(byte) eventColor.getGreen(), (byte) eventColor.getBlue(),
+			gl.glColor4ub((byte) eventColor.getRed(), (byte) eventColor.getGreen(), (byte) eventColor.getBlue(),
 					(byte) eventColor.getAlpha());
 
 			gl.glEnable(GL2.GL_CULL_FACE);
@@ -227,7 +221,8 @@ public class HEKPlugin extends AbstractPlugin {
 
 		// draw bounds
 		gl.glColor4f(1, 1, 1, 1);
-		if (outerBound != null) {
+		if (outerBound != null)
+		{
 			gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
 			gl.glEnable(GL2.GL_DEPTH_TEST);
 
@@ -244,11 +239,14 @@ public class HEKPlugin extends AbstractPlugin {
 	}
 
 	@Override
-	public void mouseClicked(MouseEvent e, Vector3d point) {
-		if (mouseOverHEKEvent != null) {
+	public void mouseClicked(MouseEvent e, Vector3d point)
+	{
+		if (mouseOverHEKEvent != null)
+		{
 
 			// should never be the case
-			if (hekPopUp == null) {
+			if (hekPopUp == null)
+			{
 				hekPopUp = new HEKEventInformationDialog();
 			}
 
@@ -265,27 +263,25 @@ public class HEKPlugin extends AbstractPlugin {
 		}
 	}
 
-	private Point calcWindowPosition(Point p) {
+	private Point calcWindowPosition(Point p)
+	{
 		int yCoord = 0;
 		boolean yCoordInMiddle = false;
-		if (p.y + hekPopUp.getSize().height + Y_OFFSET < Plugins
-				.mainPanelGetSize().height) {
-			yCoord = p.y
-					+ Plugins.mainPanelGetLocationOnScreen().y
-					+ Y_OFFSET;
-		} else {
-			yCoord = p.y
-					+ Plugins.mainPanelGetLocationOnScreen().y
-					- hekPopUp.getSize().height - Y_OFFSET;
-			if (yCoord < Plugins.mainPanelGetLocationOnScreen().y) {
-				yCoord = Plugins.mainPanelGetLocationOnScreen().y
-						+ Plugins.mainPanelGetSize().height
+		if (p.y + hekPopUp.getSize().height + Y_OFFSET < Plugins.mainPanelGetSize().height)
+		{
+			yCoord = p.y + Plugins.mainPanelGetLocationOnScreen().y + Y_OFFSET;
+		}
+		else
+		{
+			yCoord = p.y + Plugins.mainPanelGetLocationOnScreen().y - hekPopUp.getSize().height - Y_OFFSET;
+			if (yCoord < Plugins.mainPanelGetLocationOnScreen().y)
+			{
+				yCoord = Plugins.mainPanelGetLocationOnScreen().y + Plugins.mainPanelGetSize().height
 						- hekPopUp.getSize().height;
 
-				if (yCoord < Plugins
-						.mainPanelGetLocationOnScreen().y) {
-					yCoord = Plugins
-							.mainPanelGetLocationOnScreen().y;
+				if (yCoord < Plugins.mainPanelGetLocationOnScreen().y)
+				{
+					yCoord = Plugins.mainPanelGetLocationOnScreen().y;
 				}
 
 				yCoordInMiddle = true;
@@ -293,19 +289,16 @@ public class HEKPlugin extends AbstractPlugin {
 		}
 
 		int xCoord = 0;
-		if (p.x + hekPopUp.getSize().width + X_OFFSET < Plugins
-				.mainPanelGetSize().width) {
-			xCoord = p.x
-					+ Plugins.mainPanelGetLocationOnScreen().x
-					+ X_OFFSET;
-		} else {
-			xCoord = p.x
-					+ Plugins.mainPanelGetLocationOnScreen().x
-					- hekPopUp.getSize().width - X_OFFSET;
-			if (xCoord < Plugins.mainPanelGetLocationOnScreen().x
-					&& !yCoordInMiddle) {
-				xCoord = Plugins.mainPanelGetLocationOnScreen().x
-						+ Plugins.mainPanelGetSize().width
+		if (p.x + hekPopUp.getSize().width + X_OFFSET < Plugins.mainPanelGetSize().width)
+		{
+			xCoord = p.x + Plugins.mainPanelGetLocationOnScreen().x + X_OFFSET;
+		}
+		else
+		{
+			xCoord = p.x + Plugins.mainPanelGetLocationOnScreen().x - hekPopUp.getSize().width - X_OFFSET;
+			if (xCoord < Plugins.mainPanelGetLocationOnScreen().x && !yCoordInMiddle)
+			{
+				xCoord = Plugins.mainPanelGetLocationOnScreen().x + Plugins.mainPanelGetSize().width
 						- hekPopUp.getSize().width;
 			}
 		}
@@ -314,56 +307,59 @@ public class HEKPlugin extends AbstractPlugin {
 
 	}
 
-	public void dateTimesChanged(int framecount) {
+	public void dateTimesChanged(int framecount)
+	{
 		LocalDateTime startDateTime;
 		startDateTime = Plugins.getStartDateTime();
 		LocalDateTime endDateTime = Plugins.getEndDateTime();
-		if (startDateTime != null && endDateTime != null) {
-			Date start = Date.from(startDateTime.atZone(ZoneId.systemDefault())
-					.toInstant());
-			Date end = Date.from(endDateTime.atZone(ZoneId.systemDefault())
-					.toInstant());
+		if (startDateTime != null && endDateTime != null)
+		{
+			Date start = Date.from(startDateTime.atZone(ZoneId.systemDefault()).toInstant());
+			Date end = Date.from(endDateTime.atZone(ZoneId.systemDefault()).toInstant());
 
 			Interval<Date> newInterval = new Interval<Date>(start, end);
 			hekPluginPanel.setCurInterval(newInterval);
 		}
 	};
 
-	public void mouseMoved(MouseEvent e, Vector3d point) {
+	public void mouseMoved(MouseEvent e, Vector3d point)
+	{
 		HEKEvent lastHEKEvent = mouseOverHEKEvent;
 
-		LocalDateTime in = Plugins.SINGLETON
-				.getCurrentDateTime();
-		if (in != null) {
-			Date currentDate = Date.from(in.atZone(ZoneId.systemDefault())
-					.toInstant());
+		LocalDateTime in = Plugins.SINGLETON.getCurrentDateTime();
+		if (in != null)
+		{
+			Date currentDate = Date.from(in.atZone(ZoneId.systemDefault()).toInstant());
 
 			mouseOverHEKEvent = null;
 			mouseOverPosition = null;
 
-			List<HEKEvent> toDraw = HEKCache.getSingletonInstance().getModel()
-					.getActiveEvents(currentDate);
-			if (toDraw.size() > 0) {
-				for (HEKEvent evt : toDraw) {
+			List<HEKEvent> toDraw = HEKCache.getSingletonInstance().getModel().getActiveEvents(currentDate);
+			if (toDraw.size() > 0)
+			{
+				for (HEKEvent evt : toDraw)
+				{
 					SphericalCoord stony = evt.getStony(currentDate);
-					Vector3d coords = HEKEvent.convertToSceneCoordinates(stony,
-							currentDate);
+					Vector3d coords = HEKEvent.convertToSceneCoordinates(stony, currentDate);
 
 					double deltaX = Math.abs(point.x - coords.x);
 					double deltaY = Math.abs(-point.y - coords.y);
 					double deltaZ = Math.abs(point.z - coords.z);
-					if (deltaX < 10000000 && deltaZ < 10000000
-							&& deltaY < 10000000) {
+					if (deltaX < 10000000 && deltaZ < 10000000 && deltaY < 10000000)
+					{
 						mouseOverHEKEvent = evt;
 						mouseOverPosition = new Point(e.getX(), e.getY());
 					}
 
 				}
 
-				if (lastHEKEvent == null && mouseOverHEKEvent != null) {
+				if (lastHEKEvent == null && mouseOverHEKEvent != null)
+				{
 					lastCursor = Plugins.getCursor();
 					Plugins.setCursor(CURSOR_HELP);
-				} else if (lastHEKEvent != null && mouseOverHEKEvent == null) {
+				}
+				else if (lastHEKEvent != null && mouseOverHEKEvent == null)
+				{
 					Plugins.setCursor(lastCursor);
 				}
 			}
@@ -376,7 +372,8 @@ public class HEKPlugin extends AbstractPlugin {
 	 * 
 	 * null because this is an internal plugin
 	 */
-	public String getAboutLicenseText() {
+	public String getAboutLicenseText()
+	{
 		String description = "";
 		description += "<p>"
 				+ "This software uses the <a href=\"http://www.json.org/java/\">JSON in Java</a> Library, licensed under a <a href=\"http://www.json.org/license.html\">custom License</a>.";
@@ -384,63 +381,61 @@ public class HEKPlugin extends AbstractPlugin {
 		return description;
 	}
 
-	public static URL getResourceUrl(String name) {
+	public static URL getResourceUrl(String name)
+	{
 		return HEKPlugin.class.getResource(name);
 	}
 
-	public void setVisible(boolean visible) {
+	public void setVisible(boolean visible)
+	{
 		this.visible = visible;
 	}
 
-	public boolean isVisible() {
+	public boolean isVisible()
+	{
 		return this.visible;
 	}
 
 	@Override
-	public void restoreConfiguration(JSONObject jsonObject) {
-		if (jsonObject.has(JSON_NAME)) {
-			try {
+	public void restoreConfiguration(JSONObject jsonObject)
+	{
+		if (jsonObject.has(JSON_NAME))
+		{
+			try
+			{
 				JSONObject jsonHek = jsonObject.getJSONObject(JSON_NAME);
 				boolean visible = jsonHek.getBoolean(JSON_VISIBLE);
-				Plugins.setPanelOpenCloseState(hekPluginPanel,visible);
+				Plugins.setPanelOpenCloseState(hekPluginPanel, visible);
 				setVisible(visible);
-			} catch (JSONException e) {
+			}
+			catch (JSONException e)
+			{
 				Telemetry.trackException(e);
 			}
 		}
 	}
 
 	@Override
-	public void storeConfiguration(JSONObject jsonObject) {
+	public void storeConfiguration(JSONObject jsonObject)
+	{
 		JSONObject jsonHek = new JSONObject();
 		JSONArray jsonHekEvents = new JSONArray();
-		try {
+		try
+		{
 			jsonHek.put(JSON_VISIBLE, isVisible());
-			for (HEKPath hekPath : HEKCache.getSingletonInstance()
-					.getTrackPaths()) {
-				int state = HEKCache.getSingletonInstance().getSelectionModel()
-						.getState(hekPath);
+			for (HEKPath hekPath : HEKCache.getSingletonInstance().getTrackPaths())
+			{
+				int state = HEKCache.getSingletonInstance().getSelectionModel().getState(hekPath);
 				jsonHekEvents.put(state);
 			}
 			jsonHek.put(JSON_EVENTS, jsonHekEvents);
 			jsonObject.put(JSON_NAME, jsonHek);
-		} catch (JSONException e) {
-			
+		}
+		catch (JSONException e)
+		{
+
 			Telemetry.trackException(e);
 		}
-	}
-
-	@Override
-	public void load() {
-		Plugins.addPanelToLeftControllPanel(NAME,
-				hekPluginPanel, false);
-		Plugins.addPluginLayer(this, PLUGIN_NAME);
-	}
-
-	@Override
-	public void remove()
-	{
-		Plugins.removePanelOnLeftControllPanel(hekPluginPanel);
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.plugins.pfssplugin.data.managers;
+package org.helioviewer.jhv.plugins.pfssplugin.data;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -12,7 +12,6 @@ import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssSettings;
-import org.helioviewer.jhv.plugins.pfssplugin.data.FileDescriptor;
 
 /**
  * Manages loading and accessing of FileDescriptor Objects

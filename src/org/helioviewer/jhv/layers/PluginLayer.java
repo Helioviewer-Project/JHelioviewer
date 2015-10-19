@@ -6,33 +6,35 @@ import javax.annotation.Nullable;
 
 import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.gui.OverviewPanel;
-import org.helioviewer.jhv.plugins.AbstractPlugin;
-import org.helioviewer.jhv.plugins.AbstractPlugin.RenderMode;
+import org.helioviewer.jhv.plugins.Plugin;
 import org.helioviewer.jhv.plugins.Plugins;
+import org.helioviewer.jhv.plugins.Plugin.RenderMode;
 import org.json.JSONObject;
 
 import com.jogamp.opengl.GL2;
 
 public class PluginLayer extends Layer
 {	
-	final AbstractPlugin plugin;
+	final Plugin plugin;
 	
-	public PluginLayer(String _name, AbstractPlugin _plugin)
+	public PluginLayer(Plugin _plugin)
 	{
-		name = _name;
+		name = _plugin.pluginName;
 		plugin = _plugin;
+		
+		plugin.visibilityChanged(isVisible());
 	}
 
 	public RenderResult renderLayer(GL2 gl, MainPanel _parent)
 	{
 		if(_parent instanceof OverviewPanel)
 		{
-			if(plugin.getRenderMode()==RenderMode.MAIN_PANEL)
+			if(plugin.renderMode==RenderMode.MAIN_PANEL)
 				return RenderResult.OK;
 		}
 		else
 		{
-			if(plugin.getRenderMode()==RenderMode.OVERVIEW_PANEL)
+			if(plugin.renderMode==RenderMode.OVERVIEW_PANEL)
 				return RenderResult.OK;
 		}
 		
@@ -41,9 +43,16 @@ public class PluginLayer extends Layer
 	}
 	
 	@Override
+	public void setVisible(boolean _visible)
+	{
+		super.setVisible(_visible);
+		plugin.visibilityChanged(_visible);
+	}
+	
+	@Override
 	public void dispose()
 	{
-		Plugins.SINGLETON.deactivatePlugin(plugin);
+		throw new RuntimeException();
 	}	
 	
 	@Override
@@ -56,6 +65,7 @@ public class PluginLayer extends Layer
 	public void retry()
 	{
 		plugin.retry();
+		Plugins.repaintLayerPanel();
 	}
 
 	@Override
@@ -65,7 +75,7 @@ public class PluginLayer extends Layer
 	}
 
 	@Override
-	public void writeStateFile(JSONObject _jsonLayer)
+	public void storeConfiguration(JSONObject _jsonLayer)
 	{
 		plugin.storeConfiguration(_jsonLayer);
 	}
@@ -73,6 +83,6 @@ public class PluginLayer extends Layer
 	@Override
 	public @Nullable String getFullName()
 	{
-		return null;
+		return plugin.pluginName;
 	}
 }

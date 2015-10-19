@@ -120,7 +120,7 @@ public class PfssCompressed implements Cacheable
 	{
 		if (isLoading || isLoaded)
 			return;
-
+		
 		isLoading = true;
 
 		PfssPlugin.pool.execute(new Runnable()

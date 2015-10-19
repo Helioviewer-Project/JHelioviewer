@@ -107,7 +107,7 @@ public class KakaduLayer extends AbstractImageLayer
 	}
 	
 	@SuppressWarnings("null")
-	public void writeStateFile(JSONObject jsonLayer)
+	public void storeConfiguration(JSONObject jsonLayer)
 	{
 		try
 		{

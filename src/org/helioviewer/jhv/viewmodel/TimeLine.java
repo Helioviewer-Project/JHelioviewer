@@ -123,11 +123,11 @@ public class TimeLine implements LayerListener
 		timeLineListeners.remove(timeLineListener);
 	}
 
-	private void dateTimeChanged(LocalDateTime last)
+	private void dateTimeChanged(LocalDateTime _previous)
 	{
 		AbstractImageLayer.newRenderPassStarted();
 		for (TimeLine.TimeLineListener timeLineListener : timeLineListeners)
-			timeLineListener.timeStampChanged(current, last);
+			timeLineListener.timeStampChanged(current, _previous);
 	}
 
 	private void notifyUpdateDateTimes()
@@ -169,20 +169,20 @@ public class TimeLine implements LayerListener
 		}
 	}
 
-	public void setCurrentFrame(int value)
+	public void setCurrentFrame(int _frameNr)
 	{
 		Iterator<LocalDateTime> it = localDateTimes.iterator();
 		int i = 0;
-		LocalDateTime current = null;
-		while (it.hasNext() && i <= value)
+		LocalDateTime newCurrent = null;
+		while (it.hasNext() && i <= _frameNr)
 		{
-			current = it.next();
+			newCurrent = it.next();
 			i++;
 		}
-		if (current != null && !current.isEqual(this.current))
+		if (newCurrent != null && !newCurrent.isEqual(current))
 		{
-			LocalDateTime last = this.current;
-			this.current = current;
+			LocalDateTime last = current;
+			current = newCurrent;
 			dateTimeChanged(last);
 		}
 		MainFrame.SINGLETON.MAIN_PANEL.repaint();
@@ -200,6 +200,10 @@ public class TimeLine implements LayerListener
 	{
 		localDateTimes = _localDateTimes;
 		notifyUpdateDateTimes();
+		if(_localDateTimes.isEmpty())
+			setCurrentDate(LocalDateTime.now());
+		else
+			setCurrentDate(_localDateTimes.first());
 	}
 
 	public @Nullable LocalDateTime getFirstDateTime()
@@ -216,16 +220,16 @@ public class TimeLine implements LayerListener
 		return localDateTimes.last();
 	}
 
-	public void setCurrentDate(LocalDateTime currentDateTime)
+	public void setCurrentDate(LocalDateTime _newDateTime)
 	{
-		LocalDateTime last = current;
-		this.current = currentDateTime;
-		dateTimeChanged(last);
+		LocalDateTime previous = current;
+		current = _newDateTime;
+		dateTimeChanged(previous);
 	}
 
-	public void setAnimationMode(AnimationMode animationMode)
+	public void setAnimationMode(AnimationMode _animationMode)
 	{
-		this.animationMode = animationMode;
+		animationMode = _animationMode;
 	}
 	
 	/**
