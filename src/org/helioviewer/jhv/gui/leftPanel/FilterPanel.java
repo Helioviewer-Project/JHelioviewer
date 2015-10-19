@@ -23,7 +23,7 @@ import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.components.WheelSupport;
 import org.helioviewer.jhv.layers.AbstractImageLayer;
-import org.helioviewer.jhv.layers.AbstractLayer;
+import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.LUT.Lut;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
@@ -348,7 +348,7 @@ public class FilterPanel extends JPanel implements LayerListener
 	}
 
 	@Override
-	public void activeLayerChanged(@Nullable AbstractLayer layer)
+	public void activeLayerChanged(@Nullable Layer layer)
 	{
 		if (layer instanceof AbstractImageLayer)
 			activeLayer = (AbstractImageLayer) layer;

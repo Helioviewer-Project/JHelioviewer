@@ -35,7 +35,7 @@ import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.components.MenuBar;
 import org.helioviewer.jhv.layers.AbstractImageLayer;
-import org.helioviewer.jhv.layers.AbstractLayer;
+import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.Movie.Match;
@@ -438,7 +438,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 	public void layerAdded()
 	{
 		boolean enable = false;
-		for (AbstractLayer layer : Layers.getLayers())
+		for (Layer layer : Layers.getLayers())
 			enable |= layer.isImageLayer();
 		
 		setButtonsEnabled(enable);
@@ -450,14 +450,14 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 	public void layersRemoved()
 	{
 		boolean enable = false;
-		for (AbstractLayer layer : Layers.getLayers())
+		for (Layer layer : Layers.getLayers())
 			enable |= layer.isImageLayer();
 		
 		setButtonsEnabled(enable);
 	}
 
 	@Override
-	public void activeLayerChanged(@Nullable AbstractLayer layer)
+	public void activeLayerChanged(@Nullable Layer layer)
 	{
 		if (layer != null && layer.isImageLayer())
 		{

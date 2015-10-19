@@ -15,7 +15,7 @@ import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.layers.AbstractImageLayer;
-import org.helioviewer.jhv.layers.AbstractLayer;
+import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
@@ -38,7 +38,7 @@ class SDOCutOutAction extends AbstractAction
 		AbstractImageLayer activeLayer = Layers.getActiveImageLayer();
 		ArrayList<KakaduLayer> sdoLayers = new ArrayList<KakaduLayer>();
 		
-		for (AbstractLayer layer : Layers.getLayers())
+		for (Layer layer : Layers.getLayers())
 			if(layer instanceof KakaduLayer)
 				if(((KakaduLayer)layer).getMetaData(TimeLine.SINGLETON.getCurrentDateTime()) instanceof MetaDataAIA)
 					sdoLayers.add((KakaduLayer)layer);
@@ -78,7 +78,7 @@ class SDOCutOutAction extends AbstractAction
 		}
 		
 		Vector2i resolution = metaData.getResolution();
-		double arcsecFactor = metaData.getArcsecPerPixel();
+		Vector2d arcsecFactor = metaData.getArcsecPerPixel();
 		Vector2d sunPosArcSec = metaData.getSunPixelPosition().scale(arcsecFactor);
 		Vector2d sizeArcSec = new Vector2d(sourceRegion.getWidth() * resolution.x, sourceRegion.getHeight() * resolution.y).scale(arcsecFactor);
 		Vector2d offsetArcSec = new Vector2d(sourceRegion.getX() * resolution.x, sourceRegion.getY() * resolution.y).scale(arcsecFactor);

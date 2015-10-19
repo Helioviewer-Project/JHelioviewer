@@ -297,7 +297,7 @@ public class DatePicker extends JPanel
 		return dateTime;
 	}
 
-	public void setToolTip(String s)
+	public void setToolTip(@Nullable String s)
 	{
 		txtFieldDate.setToolTipText(s);
 		txtFieldTime.setToolTipText(s);

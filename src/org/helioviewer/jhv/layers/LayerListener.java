@@ -6,5 +6,5 @@ public interface LayerListener
 {
 	void layerAdded();
 	void layersRemoved();
-	void activeLayerChanged(@Nullable AbstractLayer _newLayer);
+	void activeLayerChanged(@Nullable Layer _newLayer);
 }

@@ -10,7 +10,7 @@ import org.json.JSONObject;
 
 import com.jogamp.opengl.GL2;
 
-public class PluginLayer extends AbstractLayer
+public class PluginLayer extends Layer
 {	
 	final AbstractPlugin plugin;
 	

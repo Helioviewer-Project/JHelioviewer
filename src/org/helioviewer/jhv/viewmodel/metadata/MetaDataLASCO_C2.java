@@ -17,8 +17,6 @@ class MetaDataLASCO_C2 extends MetaData
 
 		fullName = "LASCO " + detector;
 
-		readPixelParameters(metaDataContainer);
-
 		innerRadius = metaDataContainer.tryGetDouble("HV_ROCC_INNER") * Constants.SUN_RADIUS;
 		outerRadius = metaDataContainer.tryGetDouble("HV_ROCC_OUTER") * Constants.SUN_RADIUS;
 
@@ -43,6 +41,5 @@ class MetaDataLASCO_C2 extends MetaData
 		}
 
 		occulterCenter = new Vector2d(centerX * getUnitsPerPixel(), centerY * getUnitsPerPixel());
-
 	}
 }

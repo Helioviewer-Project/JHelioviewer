@@ -43,7 +43,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
 //FIXME: remember last entered dates, times & instruments
-public class AddLayerPanel extends JDialog
+public class AddLayerDialog extends JDialog
 {
 	private final JPanel contentPanel = new JPanel();
 
@@ -83,7 +83,7 @@ public class AddLayerPanel extends JDialog
 	}
 
 	@SuppressWarnings("null")
-	public AddLayerPanel()
+	public AddLayerDialog()
 	{
 		super(MainFrame.SINGLETON, "Add Layer", true);
 		
@@ -105,21 +105,20 @@ public class AddLayerPanel extends JDialog
 			}
 		}, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
 		
-		this.addComponentListener(new ComponentAdapter()
+		/*addComponentListener(new ComponentAdapter()
 		{
 			@Override
 			public void componentShown(@Nullable ComponentEvent e)
 			{
-				/*if (tabbedPane.getSelectedComponent() == pluginPanel) {
+				if (tabbedPane.getSelectedComponent() == pluginPanel) {
 					tabbedPane.setSelectedComponent(layerPanel);
 				}
 				tabbedPane.setEnabledAt(tabbedPane
 						.indexOfComponent(pluginPanel),
 						!UltimatePluginInterface.SINGLETON.getInactivePlugins()
 								.isEmpty());
-								*/
 			}
-		});
+		});*/
 	}
 
 	private void addData()
@@ -212,8 +211,8 @@ public class AddLayerPanel extends JDialog
 
 				if (filter != null && filter.getStart() != null)
 				{
-					datePickerStartDate.setToolTip("Data available after : " + filter.getStart());
-					datePickerEndDate.setToolTip("Data available before : " + filter.getEnd());
+					datePickerStartDate.setToolTip("Data available after " + filter.getStart());
+					datePickerEndDate.setToolTip("Data available before " + filter.getEnd());
 				}
 			}
 		});
@@ -229,20 +228,20 @@ public class AddLayerPanel extends JDialog
 				cmbbxFilter2.removeAllItems();
 				for (Observatories.Filter filter : ((Observatories.Filter) e.getItem()).getFilters())
 					cmbbxFilter2.addItem(filter);
-
+				
 				Observatories.Filter filter = (Observatories.Filter) cmbbxFilter2.getSelectedItem();
 				if (filter == null)
 					filter = (Observatories.Filter) cmbbxFilter1.getSelectedItem();
 				
 				if (filter != null && filter.getStart() != null)
 				{
-					datePickerStartDate.setToolTip("Data available after : " + filter.getStart());
-					datePickerEndDate.setToolTip("Data available before : " + filter.getEnd());
+					datePickerStartDate.setToolTip("Data available after " + filter.getStart());
+					datePickerEndDate.setToolTip("Data available before " + filter.getEnd());
 				}
 				else
 				{
-					datePickerStartDate.setToolTip("");
-					datePickerEndDate.setToolTip("");
+					datePickerStartDate.setToolTip(null);
+					datePickerEndDate.setToolTip(null);
 				}
 			}
 		});
@@ -380,7 +379,7 @@ public class AddLayerPanel extends JDialog
 
 					if (filter != null)
 					{
-						int cadence = (int) AddLayerPanel.this.cadence.getValue()
+						int cadence = (int) AddLayerDialog.this.cadence.getValue()
 								* ((TimeSteps) cmbbxTimeSteps.getSelectedItem()).factor;
 						cadence = Math.max(cadence, 1);
 						Layers.addLayer(new KakaduLayer(
@@ -447,6 +446,5 @@ public class AddLayerPanel extends JDialog
 
 			}
 		});
-
 	}
 }

@@ -43,7 +43,7 @@ import org.helioviewer.jhv.Telemetry;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.PredefinedFileFilter;
 import org.helioviewer.jhv.layers.AbstractImageLayer;
-import org.helioviewer.jhv.layers.AbstractLayer;
+import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.viewmodel.TimeLine;
@@ -421,7 +421,7 @@ public class MetaDataDialog extends JDialog implements LayerListener, TimeLineLi
 	}
 
 	@Override
-	public void activeLayerChanged(@Nullable AbstractLayer layer)
+	public void activeLayerChanged(@Nullable Layer layer)
 	{
 		updateData();
 	}

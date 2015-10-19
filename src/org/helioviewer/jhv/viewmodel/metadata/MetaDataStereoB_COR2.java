@@ -17,8 +17,6 @@ class MetaDataStereoB_COR2 extends MetaData
 		if (!("STEREO_B".equalsIgnoreCase(observatory) && "COR2".equalsIgnoreCase(detector)))
 			throw new UnsuitableMetaDataException("invalid instrument: " + observatory + "/" + detector);
 
-		readPixelParameters(metaDataContainer);
-
 		innerRadius = metaDataContainer.tryGetDouble("HV_ROCC_INNER") * Constants.SUN_RADIUS;
 		outerRadius = metaDataContainer.tryGetDouble("HV_ROCC_OUTER") * Constants.SUN_RADIUS;
 
@@ -29,7 +27,6 @@ class MetaDataStereoB_COR2 extends MetaData
 		}
 
 		flatDistance = 18 * Constants.SUN_RADIUS;
-
 		maskRotation = Math.toRadians(metaDataContainer.tryGetDouble("CROTA"));
 
 		double centerX = 0, centerY = 0;

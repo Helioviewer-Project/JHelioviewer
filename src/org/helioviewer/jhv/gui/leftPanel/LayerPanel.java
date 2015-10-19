@@ -35,11 +35,11 @@ import javax.swing.table.DefaultTableModel;
 import org.helioviewer.jhv.Globals;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
-import org.helioviewer.jhv.gui.dialogs.AddLayerPanel;
+import org.helioviewer.jhv.gui.dialogs.AddLayerDialog;
 import org.helioviewer.jhv.gui.dialogs.DownloadMovieDialog;
 import org.helioviewer.jhv.gui.dialogs.MetaDataDialog;
 import org.helioviewer.jhv.layers.AbstractImageLayer;
-import org.helioviewer.jhv.layers.AbstractLayer;
+import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.viewmodel.TimeLine;
@@ -104,10 +104,14 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			@Override
 			public void actionPerformed(@Nullable ActionEvent e)
 			{
-				String downloadURL=Layers.getLayer(activePopupLayer).getDownloadURL();
+				Layer l=Layers.getLayer(activePopupLayer);
+				if(l==null)
+					return;
+				
+				String downloadURL=l.getDownloadURL();
 				
 				if (downloadURL != null)
-					new DownloadMovieDialog().startDownload(downloadURL, Layers.getLayer(activePopupLayer));
+					new DownloadMovieDialog().startDownload(downloadURL, l);
 			}
 		});
 		
@@ -117,7 +121,11 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			@Override
 			public void actionPerformed(@Nullable ActionEvent e)
 			{
-				Layers.getLayer(activePopupLayer).setVisible(false);
+				Layer l=Layers.getLayer(activePopupLayer);
+				if(l==null)
+					return;
+				
+				l.setVisible(false);
 				updateData();
 			}
 		});
@@ -127,7 +135,11 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			@Override
 			public void actionPerformed(@Nullable ActionEvent e)
 			{
-				Layers.getLayer(activePopupLayer).setVisible(true);
+				Layer l=Layers.getLayer(activePopupLayer);
+				if(l==null)
+					return;
+
+				l.setVisible(true);
 				updateData();
 			}
 		});
@@ -156,10 +168,14 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			@Override
 			public void popupMenuWillBecomeVisible(@Nullable PopupMenuEvent e)
 			{
-				if (Layers.getLayer(activePopupLayer).isImageLayer())
+				Layer l=Layers.getLayer(activePopupLayer);
+				if(l==null)
+					return;
+				
+				if (l.isImageLayer())
 				{
 					showMetaView.setEnabled(true);
-					downloadLayer.setEnabled(Layers.getLayer(activePopupLayer).getDownloadURL()!=null);
+					downloadLayer.setEnabled(l.getDownloadURL()!=null);
 					removeLayer.setEnabled(false);
 				}
 				else
@@ -237,6 +253,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		
 		table.addMouseListener(new MouseAdapter()
 		{
+			@SuppressWarnings("null")
 			@Override
 			public void mouseClicked(@Nullable MouseEvent e)
 			{
@@ -250,7 +267,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 					Layers.removeLayer(row);
 				else if (column == 0)
 				{
-					AbstractLayer layer = Layers.getLayer(row);
+					Layer layer = Layers.getLayer(row);
 					if (layer != null)
 						layer.setVisible(!layer.isVisible());
 				}
@@ -262,6 +279,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 				}
 			}
 
+			@SuppressWarnings("null")
 			@Override
 			public void mousePressed(@Nullable MouseEvent e)
 			{
@@ -379,7 +397,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			@Override
 			public void actionPerformed(@Nullable ActionEvent e)
 			{
-				new AddLayerPanel().setVisible(true);
+				new AddLayerDialog().setVisible(true);
 			}
 		});
 		GridBagConstraints gbcBtnAddLayer = new GridBagConstraints();
@@ -394,7 +412,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		tableModel.setRowCount(Layers.getLayerCount());
 		
 		int row = 0;
-		for (AbstractLayer layer : Layers.getLayers())
+		for (Layer layer : Layers.getLayers())
 		{
 			tableModel.setValueAt(layer.isVisible(), row, 0);
 			tableModel.setValueAt(layer.retryNeeded(), row, 1);
@@ -441,6 +459,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			// setBackground(Color.WHITE);
 		}
 
+		@SuppressWarnings("null")
 		@Override
 		public Component getTableCellRendererComponent(@Nullable JTable table, @Nullable Object value, boolean isSelected, boolean hasFocus, final int row, int column)
 		{
@@ -498,7 +517,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 	}
 
 	@Override
-	public void activeLayerChanged(@Nullable AbstractLayer layer)
+	public void activeLayerChanged(@Nullable Layer layer)
 	{
 		if (layer != null)
 		{

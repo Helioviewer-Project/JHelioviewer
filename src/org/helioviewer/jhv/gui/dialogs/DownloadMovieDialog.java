@@ -18,7 +18,7 @@ import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.PredefinedFileFilter;
 import org.helioviewer.jhv.layers.AbstractImageLayer;
-import org.helioviewer.jhv.layers.AbstractLayer;
+import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 
 //FIXME: layout on windows broken
@@ -84,7 +84,7 @@ public class DownloadMovieDialog extends JDialog
 		downloadMovieThread.start();
 	}
 	
-	public void startDownload(String _url, AbstractLayer _layer)
+	public void startDownload(String _url, Layer _layer)
 	{
 		if (TimeLine.SINGLETON.getFrameCount() >= 1000)
 		{

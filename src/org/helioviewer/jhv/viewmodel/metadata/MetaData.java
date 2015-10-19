@@ -14,49 +14,48 @@ import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.layers.LUT.Lut;
 
-//TODO: snychronized needed?
 //TODO: look at memory consumption and instance count of this class
 //TODO: make immutable
 public abstract class MetaData
 {
-    private @Nullable Rectangle2D physicalImageSize;
+    private final Rectangle2D physicalImageSize;
     
     protected String instrument;
     protected @Nullable String detector;
     protected final String measurement;
     protected final String observatory;
     protected @Nullable String fullName;
-    protected double solarPixelRadius = -1;
-    protected Vector2d sunPixelPosition = new Vector2d();
+    protected final double solarPixelRadius;
+    protected final Vector2d sunPixelPosition;
 
-    protected double meterPerPixel;
+    protected final double meterPerPixel;
 
     protected double innerRadius;
     protected double outerRadius;
     protected double flatDistance;
     protected double maskRotation;
     protected @Nullable Vector2d occulterCenter;
-    protected Vector3d orientation = new Vector3d(0.00,0.00, Constants.SUN_RADIUS);
-    private Quaternion3d defaultRotation = new Quaternion3d();
+    protected Vector3d orientation = new Vector3d(0, 0, Constants.SUN_RADIUS);
+    protected Quaternion3d defaultRotation = new Quaternion3d();
     
-    protected double heeqX;
-    protected double heeqY;
-    protected double heeqZ;
-    protected boolean heeqAvailable = false;
+    protected final double heeqX;
+    protected final double heeqY;
+    protected final double heeqZ;
+    protected final boolean heeqAvailable;
 
-    protected double heeX;
-    protected double heeY;
-    protected double heeZ;
-    protected boolean heeAvailable = false;
+    protected final double heeX;
+    protected final double heeY;
+    protected final double heeZ;
+    protected final boolean heeAvailable;
 
-    protected double crlt;
-    protected double crln;
-    protected double dobs;
-    protected boolean carringtonAvailable = false;
+    protected final double crlt;
+    protected final double crln;
+    protected final double dobs;
+    protected final boolean carringtonAvailable;
 
-    protected double stonyhurstLongitude;
-    protected double stonyhurstLatitude;
-    protected boolean stonyhurstAvailable = false;
+    protected final double stonyhurstLongitude;
+    protected final double stonyhurstLatitude;
+    protected final boolean stonyhurstAvailable;
     
     protected final LocalDateTime localDateTime;
     
@@ -65,7 +64,6 @@ public abstract class MetaData
 	protected Vector2i newResolution;
 
 	private double arcsecPerPixelX;
-	@SuppressWarnings("unused")
 	private double arcsecPerPixelY;
 	
     /**
@@ -107,34 +105,75 @@ public abstract class MetaData
             throw new UnsuitableMetaDataException("No date/time specified in metadata (DATE_OBS)");
         
         localDateTime = LocalDateTime.parse(observedDate, DateTimeFormatter.ISO_DATE_TIME);
+        
+        heeqX = _metaDataContainer.tryGetDouble("HEQX_OBS");
+        heeqY = _metaDataContainer.tryGetDouble("HEQY_OBS");
+        heeqZ = _metaDataContainer.tryGetDouble("HEQZ_OBS");
+        heeqAvailable = heeqX != 0.0 || heeqY != 0.0 || heeqZ != 0.0;
+
+        heeX = _metaDataContainer.tryGetDouble("HEEX_OBS");
+        heeY = _metaDataContainer.tryGetDouble("HEEY_OBS");
+        heeZ = _metaDataContainer.tryGetDouble("HEEZ_OBS");
+        heeAvailable = heeX != 0.0 || heeY != 0.0 || heeZ != 0.0;
+
+        crlt = _metaDataContainer.tryGetDouble("CRLT_OBS");
+        crln = _metaDataContainer.tryGetDouble("CRLN_OBS");
+        dobs = _metaDataContainer.tryGetDouble("DSUN_OBS");
+        carringtonAvailable = crlt != 0.0 || crln != 0.0;
+
+        stonyhurstLatitude = _metaDataContainer.tryGetDouble("HGLT_OBS");
+        stonyhurstLongitude = _metaDataContainer.tryGetDouble("HGLN_OBS");
+        stonyhurstAvailable = stonyhurstLatitude != 0.0 || stonyhurstLongitude != 0.0;
+        
+        
+        double newSolarPixelRadius = -1.0;
+        
+        double sunX = _metaDataContainer.tryGetDouble("CRPIX1");
+        double sunY = _metaDataContainer.tryGetDouble("CRPIX2");
+        sunPixelPosition = new Vector2d(sunX, sunY);
+
+        arcsecPerPixelX = _metaDataContainer.tryGetDouble("CDELT1");
+        arcsecPerPixelY = _metaDataContainer.tryGetDouble("CDELT2");
+        
+        double distanceToSun = _metaDataContainer.tryGetDouble("DSUN_OBS");
+        double radiusSunInArcsec = Math.atan(Constants.SUN_RADIUS / distanceToSun) * MathUtils.RAD_TO_DEG * 3600;
+
+        if (distanceToSun > 0)
+            newSolarPixelRadius = radiusSunInArcsec / arcsecPerPixelX;        	
+        else
+        {
+        	//TODO: move from general metadata into instrument specific class
+        	if ("C2".equals(detector))
+        		newSolarPixelRadius = 80.814221;
+        	else if ("C3".equals(detector))
+        		newSolarPixelRadius = 17.173021;
+        	else if (newResolution.x == 1024)
+        		newSolarPixelRadius = 360;
+        	else if(newResolution.x == 512)
+        		newSolarPixelRadius = 180;
+        }
+
+        solarPixelRadius = newSolarPixelRadius;
+        meterPerPixel = Constants.SUN_RADIUS / solarPixelRadius;
+        
+        physicalImageSize = new Rectangle2D.Double(sunPixelPosition.x * -meterPerPixel, sunPixelPosition.y * -meterPerPixel, newResolution.x * meterPerPixel, newResolution.y * meterPerPixel);
     }
 
-    public synchronized @Nullable Rectangle2D getPhysicalImageSize()
+    public @Nullable Rectangle2D getPhysicalImageSize()
     {
         return physicalImageSize;
     }
 
-    public synchronized double getPhysicalImageHeight()
+    public double getPhysicalImageHeight()
     {
         return getResolution().y * getUnitsPerPixel();
     }
-
-    public synchronized double getPhysicalImageWidth()
+    
+    public double getPhysicalImageWidth()
     {
         return getResolution().x * getUnitsPerPixel();
     }
 
-    /**
-     * Sets the physical size of the corresponding image.
-     * 
-     * @param newImageSize
-     *            Physical size of the corresponding image
-     */
-    protected synchronized void setPhysicalImageSize(double x, double y, double width, double height)
-    {
-    	physicalImageSize = new Rectangle2D.Double(x, y, width, height);
-    }
-    
     public @Nullable String getDetector()
     {
         return detector;
@@ -185,42 +224,6 @@ public abstract class MetaData
     	return localDateTime;
     }
     
-	protected void readPixelParameters(MetaDataContainer _container)
-	{
-        double newSolarPixelRadius = -1.0;
-        
-        double sunX = _container.tryGetDouble("CRPIX1");
-        double sunY = _container.tryGetDouble("CRPIX2");
-        sunPixelPosition = new Vector2d(sunX, sunY);
-
-        arcsecPerPixelX = _container.tryGetDouble("CDELT1");
-        arcsecPerPixelY = _container.tryGetDouble("CDELT2");
-        
-        double distanceToSun = _container.tryGetDouble("DSUN_OBS");
-        double radiusSunInArcsec = Math.atan(Constants.SUN_RADIUS / distanceToSun) * MathUtils.RAD_TO_DEG * 3600;
-
-        if (distanceToSun > 0)
-            newSolarPixelRadius = radiusSunInArcsec / arcsecPerPixelX;        	
-        else
-        {
-        	//TODO: move from general metadata into instrument specific class
-        	if ("C2".equals(detector))
-        		newSolarPixelRadius = 80.814221;
-        	else if ("C3".equals(detector))
-        		newSolarPixelRadius = 17.173021;
-        	else if (newResolution.x == 1024)
-        		newSolarPixelRadius = 360;
-        	else if(newResolution.x == 512)
-        		newSolarPixelRadius = 180;
-        }
-
-        solarPixelRadius = newSolarPixelRadius;
-        meterPerPixel = Constants.SUN_RADIUS / solarPixelRadius;
-        
-        
-        setPhysicalImageSize(sunPixelPosition.x * -meterPerPixel, sunPixelPosition.y * -meterPerPixel, newResolution.x * meterPerPixel, newResolution.y * meterPerPixel);
-	}
-	
 	public double getHEEX()
 	{
         return heeX;
@@ -243,22 +246,22 @@ public abstract class MetaData
 
 	public double getHEEQX()
 	{
-		return this.heeqX;
+		return heeqX;
 	}
 
 	public double getHEEQY()
 	{
-		return this.heeqY;
+		return heeqY;
 	}
 
 	public double getHEEQZ()
 	{
-		return this.heeqZ;
+		return heeqZ;
 	}
 
 	public boolean isHEEQProvided()
 	{
-		return this.heeqAvailable;
+		return heeqAvailable;
 	}
 
 	public double getCrln()
@@ -321,24 +324,18 @@ public abstract class MetaData
 		return maskRotation;
 	}
 
-	protected void calcDefaultRotation()
-	{
-		defaultRotation = Quaternion3d.calcRotation(new Vector3d(0, 0, Constants.SUN_RADIUS), orientation);
-	}
-
 	public Quaternion3d getRotation()
 	{
-		return this.defaultRotation;
+		return defaultRotation;
 	}
 	
 	public Lut getDefaultLUT()
 	{
 		return defaultLUT;
 	}
-		
-	//FIXME: don't assume that appX == appY
-	public double getArcsecPerPixel()
+	
+	public Vector2d getArcsecPerPixel()
 	{
-		return arcsecPerPixelX;
+		return new Vector2d(arcsecPerPixelX,arcsecPerPixelY);
 	}
 }

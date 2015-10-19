@@ -9,7 +9,7 @@ import org.json.JSONObject;
 
 import com.jogamp.opengl.GL2;
 
-public abstract class AbstractLayer
+public abstract class Layer
 {
 	private boolean visible = true;
 	@SuppressWarnings("null")

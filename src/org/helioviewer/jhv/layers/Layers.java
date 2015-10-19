@@ -16,13 +16,13 @@ import org.json.JSONObject;
 public class Layers
 {
 	private static ArrayList<LayerListener> layerListeners = new ArrayList<LayerListener>();
-	private static ArrayList<AbstractLayer> layers = new ArrayList<AbstractLayer>();
+	private static ArrayList<Layer> layers = new ArrayList<Layer>();
 	private static int activeLayerIndex = -1;
 
-	private static final Comparator<AbstractLayer> COMPARATOR = new Comparator<AbstractLayer>()
+	private static final Comparator<Layer> COMPARATOR = new Comparator<Layer>()
 	{
 		@Override
-		public int compare(@Nullable AbstractLayer o1, @Nullable AbstractLayer o2)
+		public int compare(@Nullable Layer o1, @Nullable Layer o2)
 		{
 			if (o1==null)
 				return 1;
@@ -40,11 +40,11 @@ public class Layers
 	private static void updateOpacity(AbstractImageLayer imageLayer, boolean remove)
 	{
 		int counter = 0;
-		for (AbstractLayer tmpLayer : layers)
+		for (Layer tmpLayer : layers)
 			if (tmpLayer.isImageLayer())
 				counter++;
 		
-		for (AbstractLayer tmpLayer : layers)
+		for (Layer tmpLayer : layers)
 			if (tmpLayer.isImageLayer())
 			{
 				AbstractImageLayer tmpImageLayer = (AbstractImageLayer) tmpLayer;
@@ -60,7 +60,7 @@ public class Layers
 			}
 	}
 
-	public static void addLayer(AbstractLayer _newLayer)
+	public static void addLayer(Layer _newLayer)
 	{
 		layers.add(_newLayer);
 		layers.sort(COMPARATOR);
@@ -76,8 +76,11 @@ public class Layers
 				setActiveLayer(i);
 	}
 
-	public static AbstractLayer getLayer(int idx)
+	public static @Nullable Layer getLayer(int idx)
 	{
+		if(idx==-1)
+			return null;
+		
 		return layers.get(idx);
 	}
 
@@ -121,7 +124,7 @@ public class Layers
 	}
 
 	@Nullable
-	public static AbstractLayer getActiveLayer()
+	public static Layer getActiveLayer()
 	{
 		if (activeLayerIndex >= 0)
 			return layers.get(activeLayerIndex);
@@ -133,12 +136,12 @@ public class Layers
 	{
 		activeLayerIndex = _newActiveLayer;
 		
-		AbstractLayer l=getLayer(activeLayerIndex);
+		Layer l=getLayer(activeLayerIndex);
 		for (LayerListener renderListener : layerListeners)
 			renderListener.activeLayerChanged(l);
 	}
 
-	public static ArrayList<AbstractLayer> getLayers()
+	public static ArrayList<Layer> getLayers()
 	{
 		return layers;
 	}
@@ -155,7 +158,7 @@ public class Layers
 
 	public static void removeAllImageLayers()
 	{
-		for (AbstractLayer layer : layers)
+		for (Layer layer : layers)
 			if (layer.isImageLayer())
 				layer.dispose();
 	
@@ -170,7 +173,7 @@ public class Layers
 
 	public static void writeStatefile(JSONArray jsonLayers)
 	{
-		for (AbstractLayer layer : layers)
+		for (Layer layer : layers)
 		{
 			JSONObject jsonLayer = new JSONObject();
 			layer.writeStateFile(jsonLayer);

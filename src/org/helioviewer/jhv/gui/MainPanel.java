@@ -44,7 +44,7 @@ import org.helioviewer.jhv.gui.statusLabels.CameraListener;
 import org.helioviewer.jhv.gui.statusLabels.PanelMouseListener;
 import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.layers.AbstractImageLayer.PreparedImage;
-import org.helioviewer.jhv.layers.AbstractLayer;
+import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.opengl.LoadingScreen;
@@ -287,7 +287,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 			}
 
 			LinkedHashMap<AbstractImageLayer, Future<PreparedImage>> layers = new LinkedHashMap<>();
-			for (AbstractLayer layer : Layers.getLayers())
+			for (Layer layer : Layers.getLayers())
 				if (layer.isVisible() && layer.isImageLayer())
 					layers.put((AbstractImageLayer) layer,
 							((AbstractImageLayer) layer).prepareImageData(this, sizeForDecoder));
@@ -363,7 +363,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		}
 
 		boolean noImageScreen = _showLoadingAnimation;
-		for (AbstractLayer layer : Layers.getLayers())
+		for (Layer layer : Layers.getLayers())
 			if (layer.isImageLayer())
 				noImageScreen &= !layer.isVisible();
 
@@ -674,7 +674,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		if (textEnabled)
 		{
 			descriptions = new ArrayList<String>();
-			for (AbstractLayer layer : Layers.getLayers())
+			for (Layer layer : Layers.getLayers())
 				if (layer.isVisible())
 				{
 					LocalDateTime ldt = layer.getCurrentTime();
@@ -806,7 +806,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	}
 
 	@Override
-	public void activeLayerChanged(@Nullable AbstractLayer layer)
+	public void activeLayerChanged(@Nullable Layer layer)
 	{
 		if (Layers.getActiveImageLayer() != null)
 			lastDate = null;

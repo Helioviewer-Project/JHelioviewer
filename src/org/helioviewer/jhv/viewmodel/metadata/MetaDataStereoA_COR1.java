@@ -17,8 +17,6 @@ class MetaDataStereoA_COR1 extends MetaData
 		if (!("STEREO_A".equalsIgnoreCase(observatory) && "COR1".equalsIgnoreCase(observatory)))
 			throw new UnsuitableMetaDataException("invalid instrument: " + observatory + "/" + detector);
 
-		readPixelParameters(metaDataContainer);
-
 		innerRadius = metaDataContainer.tryGetDouble("HV_ROCC_INNER") * Constants.SUN_RADIUS;
 		outerRadius = metaDataContainer.tryGetDouble("HV_ROCC_OUTER") * Constants.SUN_RADIUS;
 
@@ -47,6 +45,5 @@ class MetaDataStereoA_COR1 extends MetaData
 		centerY += 1;
 
 		occulterCenter = new Vector2d(centerX * getUnitsPerPixel(), centerY * getUnitsPerPixel());
-
 	}
 }

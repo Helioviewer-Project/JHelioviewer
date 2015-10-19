@@ -48,7 +48,6 @@ public class Observatories
 						UltimateDownloadManager.addRequest(httpRequest);
 						final JSONObject json = new JSONObject(httpRequest.getDataAsString());
 						
-						
 						SwingUtilities.invokeLater(new Runnable()
 						{
 							@SuppressWarnings("null")
@@ -178,6 +177,7 @@ public class Observatories
 		try
 		{
 			uiLabels = (JSONArray) jsonObject.get("uiLabels");
+			observatory.uiLabels.clear();
 			for (int i = 1; i < uiLabels.length(); i++)
 			{
 				JSONObject obj = (JSONObject) uiLabels.get(i);

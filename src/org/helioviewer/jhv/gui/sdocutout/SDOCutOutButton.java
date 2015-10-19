@@ -6,7 +6,7 @@ import javax.swing.SwingConstants;
 
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
-import org.helioviewer.jhv.layers.AbstractLayer;
+import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.viewmodel.TimeLine;
@@ -36,7 +36,7 @@ public class SDOCutOutButton extends JButton implements	LayerListener
 
 	private void enableIffSDOLayersActive()
 	{
-		for (AbstractLayer layer : Layers.getLayers())
+		for (Layer layer : Layers.getLayers())
 			if(layer instanceof KakaduLayer)
 				if(((KakaduLayer)layer).getMetaData(TimeLine.SINGLETON.getCurrentDateTime()) instanceof MetaDataAIA)
 				{
@@ -60,7 +60,7 @@ public class SDOCutOutButton extends JButton implements	LayerListener
 	}
 
 	@Override
-	public void activeLayerChanged(@Nullable AbstractLayer layer)
+	public void activeLayerChanged(@Nullable Layer layer)
 	{
 	}
 }

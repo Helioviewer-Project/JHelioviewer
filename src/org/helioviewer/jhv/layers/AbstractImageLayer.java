@@ -35,7 +35,7 @@ import com.jogamp.opengl.GLContext;
 
 //FIXME: shader adds intensities before LUT-ing, instead of rgb-space
 //FIXME: shader handles this incorrectly: corona.opacity>0 && hit corona first && hit sphere later
-public abstract class AbstractImageLayer extends AbstractLayer
+public abstract class AbstractImageLayer extends Layer
 {
 	public enum CacheStatus
 	{
