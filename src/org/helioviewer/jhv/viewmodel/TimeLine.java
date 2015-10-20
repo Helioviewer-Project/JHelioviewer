@@ -72,7 +72,7 @@ public class TimeLine implements LayerListener
 
 	public @Nullable LocalDateTime nextFrame()
 	{
-		if (localDateTimes==null || localDateTimes.isEmpty())
+		if (localDateTimes.isEmpty())
 			return null;
 		
 		LocalDateTime next = localDateTimes.higher(current);
@@ -156,17 +156,14 @@ public class TimeLine implements LayerListener
 	public void layersRemoved()
 	{
 		if (Layers.getActiveImageLayer() == null)
-			localDateTimes.clear();
+			setLocalDateTimes(new TreeSet<LocalDateTime>());
 	}
 
 	@Override
 	public void activeLayerChanged(@Nullable Layer layer)
 	{
 		if (layer != null && layer.isImageLayer())
-		{
 			setLocalDateTimes(((AbstractImageLayer)layer).getLocalDateTimes());
-			MainFrame.SINGLETON.MOVIE_PANEL.setButtonsEnabled(!localDateTimes.isEmpty());
-		}
 	}
 
 	public void setCurrentFrame(int _frameNr)
@@ -204,6 +201,10 @@ public class TimeLine implements LayerListener
 			setCurrentDate(LocalDateTime.now());
 		else
 			setCurrentDate(_localDateTimes.first());
+		
+		if(localDateTimes.isEmpty())
+			setPlaying(false);
+		MainFrame.SINGLETON.MOVIE_PANEL.setButtonsEnabled(!localDateTimes.isEmpty());
 	}
 
 	public @Nullable LocalDateTime getFirstDateTime()

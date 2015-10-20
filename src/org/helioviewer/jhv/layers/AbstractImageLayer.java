@@ -374,9 +374,15 @@ public abstract class AbstractImageLayer extends Layer
 		if(hitPoints<3)
 			return null;
 		
-		return new ImageRegion(
+		ImageRegion ir = new ImageRegion(
 				new Rectangle2D.Double(minX, minY, maxX - minX, maxY - minY),
 				_mainPanel.getTranslationCurrent().z, _metaData, _size);
+		
+		if(ir.texels.width==0 || ir.texels.height==0)
+			return null;
+		
+		return ir;
+		
 		// frame.repaint();
 		// frame.setVisible(true);
 	}

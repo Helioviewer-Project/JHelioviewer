@@ -1,6 +1,5 @@
 package org.helioviewer.jhv.viewmodel.jp2view.kakadu;
 
-import java.awt.Rectangle;
 import java.io.UnsupportedEncodingException;
 
 import javax.annotation.Nullable;
@@ -11,43 +10,10 @@ import kdu_jni.Jp2_input_box;
 import kdu_jni.Jp2_locator;
 import kdu_jni.Jp2_threadsafe_family_src;
 import kdu_jni.KduException;
-import kdu_jni.Kdu_coords;
-import kdu_jni.Kdu_dims;
 import kdu_jni.Kdu_global;
 
-/**
- * A collection of useful static methods.
- */
 public class KakaduUtils
 {
-
-	/**
-	 * Converts a Rectangle object to a Kdu_dims object
-	 * 
-	 * @param _rect
-	 *            Rectangle to convert
-	 * @return Kdu_dims equivalent to the given Rectangle
-	 */
-	public static Kdu_dims rectangleToKdu_dims(Rectangle _rect)
-	{
-		Kdu_dims dims = null;
-		try
-		{
-			dims = new Kdu_dims();
-			Kdu_coords pos = dims.Access_pos();
-			Kdu_coords siz = dims.Access_size();
-			pos.Set_x(_rect.x);
-			pos.Set_y(_rect.y);
-			siz.Set_x(_rect.width);
-			siz.Set_y(_rect.height);
-		}
-		catch (KduException ex)
-		{
-			Telemetry.trackException(ex);
-		}
-		return dims;
-	}
-
 	/**
 	 * Searches the _familySrc for a box of type _boxType (the box types are
 	 * defined in the Kdu_global class). The method returns the in _boxNumber

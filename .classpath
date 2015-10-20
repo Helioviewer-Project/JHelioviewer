@@ -19,7 +19,7 @@
 	<classpathentry kind="lib" path="lib/slf4j-nop-1.7.7.jar"/>
 	<classpathentry kind="lib" path="lib/gson-2.2.4.jar"/>
 	<classpathentry kind="lib" path="lib/i4jruntime.jar"/>
-	<classpathentry kind="lib" path="lib/kdu.jar">
+	<classpathentry kind="lib" path="lib/kdu.jar" sourcepath="C:/Users/de.IRU/Documents/Visual Studio 2015/Projects/Kakadu/java/kdu_jni">
 		<attributes>
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="JHelioviewer/lib/native"/>
 		</attributes>

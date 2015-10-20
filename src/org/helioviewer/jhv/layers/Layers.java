@@ -113,9 +113,17 @@ public class Layers
 		layerListeners.add(renderListener);
 	}
 
-	public static int getLayerCount()
+	public static boolean anyImageLayers()
 	{
-		return layers.size();
+		for (Layer tmpLayer : layers)
+			if (tmpLayer.isImageLayer())
+				return true;
+		return false;
+	}
+
+	public static boolean anyLayers()
+	{
+		return !layers.isEmpty();
 	}
 
 	public static int getActiveLayerIndex()

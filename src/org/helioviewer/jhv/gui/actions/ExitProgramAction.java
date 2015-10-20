@@ -9,11 +9,14 @@ import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
+import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.layers.Layers;
 
 public class ExitProgramAction extends AbstractAction
 {
+	private static final long START_TIME=System.currentTimeMillis();
+	
 	public ExitProgramAction()
 	{
 		super("Quit");
@@ -24,7 +27,7 @@ public class ExitProgramAction extends AbstractAction
 
 	public void actionPerformed(@Nullable ActionEvent e)
 	{
-		if (Layers.getLayerCount() > 0)
+		if (Layers.anyImageLayers())
 		{
 			int option = JOptionPane.showConfirmDialog(
 					MainFrame.SINGLETON,
@@ -35,6 +38,10 @@ public class ExitProgramAction extends AbstractAction
 				return;
 		}
 
+		
+		Telemetry.trackMetric("Session duration", (System.currentTimeMillis()-START_TIME)/1000);
+		//TODO: track more telemetry
+		
 		System.out.println("Quitting application");
 		System.exit(0);
 	}

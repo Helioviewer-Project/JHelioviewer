@@ -550,7 +550,7 @@ public class KakaduLayer extends AbstractImageLayer
 				return new PreparedImage(
 						textures.get(textureNr),
 						requiredSafeRegion,
-						MovieCache.decodeImage(sourceId, metaData.getLocalDateTime(), 8 /* 0-8 */, requiredSafeRegion.decodeZoomFactor, requiredSafeRegion.texels),
+						MovieCache.decodeImage(sourceId, metaData.getLocalDateTime(), 16384 /* 0-8 */, requiredSafeRegion.decodeZoomFactor, requiredSafeRegion.texels),
 						requiredSafeRegion.texels.width,
 						requiredSafeRegion.texels.height
 					);

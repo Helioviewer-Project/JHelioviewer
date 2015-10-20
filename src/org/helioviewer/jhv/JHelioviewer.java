@@ -185,17 +185,6 @@ public class JHelioviewer
             Kdu_global.Kdu_customize_warnings(new Kdu_message_formatter(new KduErrorHandler(false), 80));
             Kdu_global.Kdu_customize_errors(new Kdu_message_formatter(new KduErrorHandler(true), 80));
 
-            final long startTime=System.currentTimeMillis();
-            Runtime.getRuntime().addShutdownHook(new Thread(new Runnable()
-            {
-				@Override
-				public void run()
-				{
-					//TODO: move to action instead (more stable environment & add collection of ui state)
-					Telemetry.trackMetric("Session duration", (System.currentTimeMillis()-startTime)/1000);
-				}
-			}));
-            
 			// Create main view chain and display main window
             splash.progressTo("Starting Swing");
 			SwingUtilities.invokeLater(new Runnable()

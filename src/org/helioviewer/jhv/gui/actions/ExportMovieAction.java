@@ -53,7 +53,7 @@ public class ExportMovieAction extends AbstractAction
 
 	public void actionPerformed(@Nullable ActionEvent e)
 	{
-		if (Layers.getLayerCount() > 0)
+		if (Layers.anyImageLayers())
 			openExportMovieDialog();
 		else
 			JOptionPane.showMessageDialog(MainFrame.SINGLETON.MAIN_PANEL,

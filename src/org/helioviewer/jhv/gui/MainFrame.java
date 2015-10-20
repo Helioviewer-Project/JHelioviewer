@@ -7,7 +7,11 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
+import javax.annotation.Nullable;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
@@ -15,6 +19,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
+import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 import org.helioviewer.jhv.gui.components.MenuBar;
 import org.helioviewer.jhv.gui.components.SideContentPane;
 import org.helioviewer.jhv.gui.components.TopToolBar;
@@ -146,7 +151,19 @@ public class MainFrame extends JFrame
 	
 	private void initMainFrame()
 	{
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		
+		addWindowListener(new WindowAdapter()
+		{
+			@Override
+			public void windowClosing(@Nullable WindowEvent e)
+			{
+				super.windowClosing(e);
+				new ExitProgramAction().actionPerformed(new ActionEvent(MainFrame.this, 0, "CLOSING"));
+			}
+		});
+		
+		
 		Dimension maxSize = Toolkit.getDefaultToolkit().getScreenSize();
 		Dimension minSize = new Dimension(800, 600);
 
@@ -165,7 +182,7 @@ public class MainFrame extends JFrame
 		setPreferredSize(maxSize);
 		setFont(new Font("SansSerif", Font.BOLD, 12));
 		setIconImage(IconBank.getIcon(JHVIcon.HVLOGO_SMALL).getImage());
-		this.pack();
+		pack();
 		setLocationRelativeTo(null);
 	}
 	

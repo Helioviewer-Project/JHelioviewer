@@ -22,6 +22,8 @@ import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 
 public class Zoom1To1Action extends AbstractAction
 {
+	//TODO: disable button when no imageLayer is selected
+	
 	public Zoom1To1Action(boolean small)
 	{
 		super("Zoom 1:1", small ? IconBank.getIcon(JHVIcon.NEW_ZOOM_1TO1, 16,16) : IconBank.getIcon(JHVIcon.NEW_ZOOM_1TO1, 24, 24));

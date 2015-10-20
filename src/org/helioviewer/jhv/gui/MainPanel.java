@@ -263,115 +263,112 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		if (cameraTrackingEnabled)
 			updateTrackRotation();
 
-		if (Layers.getLayerCount() > 0)
+		double clipNear = Math.max(this.translationNow.z - 4 * Constants.SUN_RADIUS, CLIP_NEAR);
+		
+		gl.glMatrixMode(GL2.GL_PROJECTION);
+		gl.glPushMatrix();
 		{
-			double clipNear = Math.max(this.translationNow.z - 4 * Constants.SUN_RADIUS, CLIP_NEAR);
-			
-			gl.glMatrixMode(GL2.GL_PROJECTION);
-			gl.glPushMatrix();
+			gl.glOrtho(-1, 1, -1, 1, clipNear, this.translationNow.z + 4 * Constants.SUN_RADIUS);
+			gl.glMatrixMode(GL2.GL_MODELVIEW);
+			gl.glLoadIdentity();
+
+			gl.glTranslated(0, 0, -translationNow.z);
+			if (CameraMode.mode == MODE.MODE_2D)
 			{
-				gl.glOrtho(-1, 1, -1, 1, clipNear, this.translationNow.z + 4 * Constants.SUN_RADIUS);
-				gl.glMatrixMode(GL2.GL_MODELVIEW);
-				gl.glLoadIdentity();
-	
-				gl.glTranslated(0, 0, -translationNow.z);
-				if (CameraMode.mode == MODE.MODE_2D)
+				AbstractImageLayer il = Layers.getActiveImageLayer();
+				if (il != null)
 				{
-					AbstractImageLayer il = Layers.getActiveImageLayer();
-					if (il != null)
-					{
-						MetaData md = il.getMetaData(currentDateTime);
-						if (md != null)
-							rotationNow = md.getRotation();
-					}
+					MetaData md = il.getMetaData(currentDateTime);
+					if (md != null)
+						rotationNow = md.getRotation();
 				}
-				
-				LinkedHashMap<AbstractImageLayer, Future<PreparedImage>> layers = new LinkedHashMap<>();
-				for (Layer layer : Layers.getLayers())
-					if (layer.isVisible() && layer.isImageLayer())
-						layers.put((AbstractImageLayer) layer,
-								((AbstractImageLayer) layer).prepareImageData(this, sizeForDecoder));
-				
-				for (Entry<AbstractImageLayer, Future<PreparedImage>> l : layers.entrySet())
-					try
-					{
-						if (l.getValue().get() != null)
-							// RenderResult r =
-							l.getKey().renderLayer(gl, this, l.getValue().get());
-					}
-					catch (ExecutionException | InterruptedException _e)
-					{
-						Telemetry.trackException(_e);
-					}
-				
-				gl.glMatrixMode(GL2.GL_MODELVIEW);
-				gl.glLoadIdentity();
 			}
-			gl.glMatrixMode(GL2.GL_PROJECTION);
-			gl.glPopMatrix();
-			gl.glMatrixMode(GL2.GL_MODELVIEW);
-
-			Quaternion3d rotation = new Quaternion3d(rotationNow.getAngle(), rotationNow.getRotationAxis().negateY());
-			Matrix4d transformation = rotation.toMatrix().translated(-translationNow.x, translationNow.y,
-					-translationNow.z);
-			gl.glMultMatrixd(transformation.m, 0);
-
-			gl.glMatrixMode(GL2.GL_PROJECTION);
-			gl.glLoadIdentity();
-			gl.glScaled(aspect, aspect, 1);
-
-			if (CameraMode.mode == CameraMode.MODE.MODE_3D)
-			{
-				new GLU().gluPerspective(MainPanel.FOV, this.aspect, clipNear, translationNow.z + 4 * Constants.SUN_RADIUS);
-			}
-			else
-			{
-				double width = Math.tan(Math.toRadians(FOV) / 2) * translationNow.z;
-				gl.glOrtho(-width, width, -width, width, clipNear, translationNow.z + 4 * Constants.SUN_RADIUS);
-				gl.glScalef((float) (1 / aspect), 1, 1);
-			}
-
-			gl.glMatrixMode(GL2.GL_MODELVIEW);
-			calculateBounds();
-			for (CameraInteraction cameraInteraction : cameraInteractions)
-				cameraInteraction.renderInteraction(gl);
 			
-			gl.glEnable(GL2.GL_DEPTH_TEST);
-			gl.glDepthFunc(GL2.GL_LESS);
-			gl.glDepthMask(false);
-			
-			gl.glMatrixMode(GL2.GL_MODELVIEW);
-			gl.glPushMatrix();
-			
-			//render plugin layers
+			LinkedHashMap<AbstractImageLayer, Future<PreparedImage>> layers = new LinkedHashMap<>();
 			for (Layer layer : Layers.getLayers())
-				if (layer.isVisible() && layer instanceof PluginLayer)
-					((PluginLayer)layer).renderLayer(gl,this);
+				if (layer.isVisible() && layer.isImageLayer())
+					layers.put((AbstractImageLayer) layer,
+							((AbstractImageLayer) layer).prepareImageData(this, sizeForDecoder));
+			
+			for (Entry<AbstractImageLayer, Future<PreparedImage>> l : layers.entrySet())
+				try
+				{
+					if (l.getValue().get() != null)
+						// RenderResult r =
+						l.getKey().renderLayer(gl, this, l.getValue().get());
+				}
+				catch (ExecutionException | InterruptedException _e)
+				{
+					Telemetry.trackException(_e);
+				}
 			
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
-			gl.glPopMatrix();
-			
-			gl.glDepthMask(false);
-			
-			gl.glMatrixMode(GL2.GL_PROJECTION);
 			gl.glLoadIdentity();
-			double xScale = aspect > 1 ? 1 / aspect : 1;
-			double yScale = aspect < 1 ? aspect : 1;
-			gl.glScaled(xScale, yScale, 1);
-			gl.glMatrixMode(GL2.GL_MODELVIEW);			
+		}
+		gl.glMatrixMode(GL2.GL_PROJECTION);
+		gl.glPopMatrix();
+		gl.glMatrixMode(GL2.GL_MODELVIEW);
+
+		Quaternion3d rotation = new Quaternion3d(rotationNow.getAngle(), rotationNow.getRotationAxis().negateY());
+		Matrix4d transformation = rotation.toMatrix().translated(-translationNow.x, translationNow.y,
+				-translationNow.z);
+		gl.glMultMatrixd(transformation.m, 0);
+
+		gl.glMatrixMode(GL2.GL_PROJECTION);
+		gl.glLoadIdentity();
+		gl.glScaled(aspect, aspect, 1);
+
+		if (CameraMode.mode == CameraMode.MODE.MODE_3D)
+		{
+			new GLU().gluPerspective(MainPanel.FOV, this.aspect, clipNear, translationNow.z + 4 * Constants.SUN_RADIUS);
+		}
+		else
+		{
+			double width = Math.tan(Math.toRadians(FOV) / 2) * translationNow.z;
+			gl.glOrtho(-width, width, -width, width, clipNear, translationNow.z + 4 * Constants.SUN_RADIUS);
+			gl.glScalef((float) (1 / aspect), 1, 1);
+		}
+
+		gl.glMatrixMode(GL2.GL_MODELVIEW);
+		calculateBounds();
+		for (CameraInteraction cameraInteraction : cameraInteractions)
+			cameraInteraction.renderInteraction(gl);
+		
+		gl.glEnable(GL2.GL_DEPTH_TEST);
+		gl.glDepthFunc(GL2.GL_LESS);
+		gl.glDepthMask(false);
+		
+		gl.glMatrixMode(GL2.GL_MODELVIEW);
+		gl.glPushMatrix();
+		
+		//render plugin layers
+		for (Layer layer : Layers.getLayers())
+			if (layer.isVisible() && layer instanceof PluginLayer)
+				((PluginLayer)layer).renderLayer(gl,this);
+		
+		gl.glMatrixMode(GL2.GL_MODELVIEW);
+		gl.glPopMatrix();
+		
+		gl.glDepthMask(false);
+		
+		gl.glMatrixMode(GL2.GL_PROJECTION);
+		gl.glLoadIdentity();
+		double xScale = aspect > 1 ? 1 / aspect : 1;
+		double yScale = aspect < 1 ? aspect : 1;
+		gl.glScaled(xScale, yScale, 1);
+		gl.glMatrixMode(GL2.GL_MODELVIEW);			
+		
+		if (UltimateDownloadManager.areDownloadsActive() && _showLoadingAnimation)
+		{
+			int xOffset = (int) (getSurfaceWidth() * 0.85);
+			int width = (int) (getSurfaceWidth() * 0.15);
+			int yOffset = (int) (getSurfaceHeight() * 0.85);
+			int height = (int) (getSurfaceHeight() * 0.15);
 			
-			if (UltimateDownloadManager.areDownloadsActive() && _showLoadingAnimation)
-			{
-				int xOffset = (int) (getSurfaceWidth() * 0.85);
-				int width = (int) (getSurfaceWidth() * 0.15);
-				int yOffset = (int) (getSurfaceHeight() * 0.85);
-				int height = (int) (getSurfaceHeight() * 0.15);
-				
-				gl.glViewport(xOffset, yOffset, width, height);
-				LoadingScreen.render(gl);
-				gl.glViewport(0, 0, getSurfaceWidth(), getSurfaceHeight());
-				repaint(1000);
-			}
+			gl.glViewport(xOffset, yOffset, width, height);
+			LoadingScreen.render(gl);
+			gl.glViewport(0, 0, getSurfaceWidth(), getSurfaceHeight());
+			repaint(1000);
 		}
 
 		boolean noImageScreen = _showLoadingAnimation;

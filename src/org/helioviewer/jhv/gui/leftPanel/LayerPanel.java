@@ -290,7 +290,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 				{
 					JTable jTable = (JTable) e.getSource();
 					int row = jTable.rowAtPoint(e.getPoint());
-					if (row >= 0 && row < Layers.getLayerCount())
+					if (row >= 0 && row < Layers.getLayers().size())
 					{
 						activePopupLayer = row;
 						hideLayer.setVisible(Layers.getLayer(activePopupLayer).isVisible());
@@ -409,7 +409,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 
 	public void updateData()
 	{
-		tableModel.setRowCount(Layers.getLayerCount());
+		tableModel.setRowCount(Layers.getLayers().size());
 		
 		int row = 0;
 		for (Layer layer : Layers.getLayers())
@@ -421,7 +421,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			row++;
 		}
 		
-		if (Layers.getLayerCount() > 0 && Layers.getActiveLayer()!=null)
+		if (Layers.anyLayers() && Layers.getActiveLayer()!=null)
 			table.setRowSelectionInterval(
 					Layers.getActiveLayerIndex(),
 					Layers.getActiveLayerIndex());
