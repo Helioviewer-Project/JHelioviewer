@@ -120,20 +120,20 @@ public class OverviewPanel extends MainPanel
 		gl.glDisable(GL2.GL_DEPTH_TEST);
 		for (MainPanel mainView : mainViews)
 		{
-			double[][] bounds = mainView.getVisibleAreaOutline();
 			gl.glColor4f(0, 1, 0, 1);
 			gl.glDisable(GL2.GL_TEXTURE_2D);
 			gl.glEnable(GL2.GL_BLEND);
 			gl.glEnable(GL2.GL_LINE_SMOOTH);
 			gl.glBegin(GL2.GL_LINE_LOOP);
-			for (double[] bound : bounds)
-				gl.glVertex3d(bound[0], bound[1], bound[2]);
+			for (Vector3d bound : mainView.getVisibleAreaOutline())
+				gl.glVertex3d(bound.x, bound.y, bound.z);
 			gl.glEnd();
-
+			
 			gl.glBegin(GL2.GL_LINE_LOOP);
-			for (int i = 0; i < 30; i++) {
-				double x = Math.cos(i / 30.0 * 2 * Math.PI) * radius + mainView.getTranslationCurrent().x;
-				double y = Math.sin(i / 30.0 * 2 * Math.PI) * radius + mainView.getTranslationCurrent().y;
+			for (int i = 0; i < 15; i++)
+			{
+				double x = Math.cos(i / 15d * 2 * Math.PI) * radius + mainView.getTranslationCurrent().x;
+				double y = Math.sin(i / 15d * 2 * Math.PI) * radius + mainView.getTranslationCurrent().y;
 				gl.glVertex2d(x, y);
 			}
 			gl.glEnd();

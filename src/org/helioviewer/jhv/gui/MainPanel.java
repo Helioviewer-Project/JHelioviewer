@@ -91,7 +91,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	public static final double FOV = 10;
 	private double aspect = 0.0;
 
-	private double[][] visibleAreaOutline;
+	private Vector3d[] visibleAreaOutline;
 
 	protected Quaternion3d rotationNow;
 	protected Vector3d translationNow;
@@ -144,7 +144,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		cameraInteractions[0] = new CameraZoomInteraction(this, this);
 		cameraInteractions[1] = new CameraRotationInteraction(this, this);
 
-		visibleAreaOutline = new double[40][3];
+		visibleAreaOutline = new Vector3d[40];
 	}
 
 	public Quaternion3d getRotationCurrent()
@@ -497,40 +497,15 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	protected void calculateBounds()
 	{
 		RayTrace rayTrace = new RayTrace();
-		int width = this.getWidth() / 9;
-		int height = this.getHeight() / 9;
+		double width = getWidth() / 10d;
+		double height = getHeight() / 10d;
 
-		// TODO: fix anti-pattern
-		for (int i = 0; i < 40; i++)
+		for (int i = 0; i < 10; i++)
 		{
-			if (i < 10)
-			{
-				Vector3d hitpoint = rayTrace.cast(i * width, 0, this).getHitpoint();
-				visibleAreaOutline[i][0] = hitpoint.x;
-				visibleAreaOutline[i][1] = hitpoint.y;
-				visibleAreaOutline[i][2] = hitpoint.z;
-			}
-			else if (i < 20)
-			{
-				Vector3d hitpoint = rayTrace.cast(this.getWidth(), (i - 10) * height, this).getHitpoint();
-				visibleAreaOutline[i][0] = hitpoint.x;
-				visibleAreaOutline[i][1] = hitpoint.y;
-				visibleAreaOutline[i][2] = hitpoint.z;
-			}
-			else if (i < 30)
-			{
-				Vector3d hitpoint = rayTrace.cast((29 - i) * width, getHeight(), this).getHitpoint();
-				visibleAreaOutline[i][0] = hitpoint.x;
-				visibleAreaOutline[i][1] = hitpoint.y;
-				visibleAreaOutline[i][2] = hitpoint.z;
-			}
-			else if (i < 40)
-			{
-				Vector3d hitpoint = rayTrace.cast(0, (39 - i) * height, this).getHitpoint();
-				visibleAreaOutline[i][0] = hitpoint.x;
-				visibleAreaOutline[i][1] = hitpoint.y;
-				visibleAreaOutline[i][2] = hitpoint.z;
-			}
+			visibleAreaOutline[i   ] = rayTrace.cast((int)(i * width), 0, this).getHitpoint();
+			visibleAreaOutline[i+10] = rayTrace.cast(getWidth(), (int)(i * height), this).getHitpoint();
+			visibleAreaOutline[i+20] = rayTrace.cast((int)((10 - i) * width), getHeight(), this).getHitpoint();
+			visibleAreaOutline[i+30] = rayTrace.cast(0, (int)((10 - i) * height), this).getHitpoint();
 		}
 	}
 
@@ -830,7 +805,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	{
 	}
 
-	public double[][] getVisibleAreaOutline()
+	public Vector3d[] getVisibleAreaOutline()
 	{
 		return visibleAreaOutline;
 	}
