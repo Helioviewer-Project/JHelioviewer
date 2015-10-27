@@ -1,6 +1,5 @@
 package org.helioviewer.jhv.base.downloadmanager;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -9,12 +8,15 @@ import java.nio.charset.StandardCharsets;
 
 import javax.annotation.Nullable;
 
+import com.google.common.io.ByteSource;
+import com.google.common.io.FileBackedOutputStream;
+
 public class HTTPRequest extends AbstractDownloadRequest
 {
 	private static final int DEFAULT_BUFFER_SIZE = 16384;
 	
-	protected @Nullable byte[] rawData;
-
+	protected @Nullable ByteSource rawData;
+	
 	public HTTPRequest(String _uri, DownloadPriority _priority, int _timeOut, int _retries)
 	{
 		this(_uri, _priority);
@@ -35,53 +37,54 @@ public class HTTPRequest extends AbstractDownloadRequest
 
 	public void execute() throws IOException, InterruptedException
 	{
-		HttpURLConnection httpURLConnection = null;
-		InputStream inputStream = null;
-		ByteArrayOutputStream byteArrayOutputStream = null;
-		URL url = new URL(this.url);
-		httpURLConnection = (HttpURLConnection) url.openConnection();
-		httpURLConnection.setReadTimeout(timeOut);
-		httpURLConnection.setRequestMethod("GET");
-		//TODO: accept-encoding: GZIP && GZIPInputStream
-		httpURLConnection.connect();
-		int response = httpURLConnection.getResponseCode();
-		totalLength = httpURLConnection.getContentLength();
-		if (response == HttpURLConnection.HTTP_OK)
+		HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(this.url).openConnection();
+		try
 		{
-			inputStream = httpURLConnection.getInputStream();
-			int receivedLength = 0;
-			byteArrayOutputStream = new ByteArrayOutputStream(DEFAULT_BUFFER_SIZE);
-			byte[] buf = new byte[DEFAULT_BUFFER_SIZE];
-
-			//FIXME: out of memory during movie download
-			while ((receivedLength = inputStream.read(buf)) > 0)
+			httpURLConnection.setReadTimeout(timeOut);
+			httpURLConnection.setRequestMethod("GET");
+			//TODO: accept-encoding: GZIP && GZIPInputStream
+			httpURLConnection.connect();
+			int response = httpURLConnection.getResponseCode();
+			totalLength = httpURLConnection.getContentLength();
+			if (response != HttpURLConnection.HTTP_OK)
+				throw new IOException("Response code "+response);
+				
+			try(InputStream inputStream = httpURLConnection.getInputStream())
 			{
-				byteArrayOutputStream.write(buf, 0, receivedLength);
-				this.receivedLength += receivedLength;
+				try(FileBackedOutputStream byteArrayOutputStream = new FileBackedOutputStream(1024*1024*4,true))
+				{
+					byte[] buf = new byte[DEFAULT_BUFFER_SIZE];
+					int read = 0;
+					while ((read = inputStream.read(buf)) > 0)
+					{
+						byteArrayOutputStream.write(buf, 0, read);
+						receivedLength += read;
+					}
+					rawData = byteArrayOutputStream.asByteSource();
+					byteArrayOutputStream.close();
+				}
 			}
-			rawData = byteArrayOutputStream.toByteArray();
-			byteArrayOutputStream.close();
 		}
-		else
-			throw new IOException();
-
-		if (inputStream != null)
+		finally
 		{
-			byteArrayOutputStream.close();
-			inputStream.close();
-			httpURLConnection.disconnect();
+			try
+			{
+				httpURLConnection.disconnect();
+			}
+			catch(Exception _e)
+			{
+			}
+			finished = true;
 		}
-		finished = true;
 	}
 
 	public String getDataAsString() throws IOException, InterruptedException
 	{
-		byte[] data = getData();
-		return new String(data,StandardCharsets.UTF_8);
+		return getData().asCharSource(StandardCharsets.UTF_8).read();
 	}
 
 	@SuppressWarnings("null")
-	public byte[] getData() throws IOException, InterruptedException
+	public ByteSource getData() throws IOException, InterruptedException
 	{
 		//TODO: proper synchronization
 		while(!isFinished())

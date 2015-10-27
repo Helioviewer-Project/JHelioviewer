@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import com.google.common.io.ByteSource;
+
 public class HTTPDownloadRequest extends HTTPRequest
 {
 	private final String fileName;
@@ -19,10 +21,10 @@ public class HTTPDownloadRequest extends HTTPRequest
 	{
 		super.execute();
 		
-		byte[] data = this.getData();
+		ByteSource data = getData();
 		try(FileOutputStream fos = new FileOutputStream(new File(fileName)))
 		{
-			fos.write(data);
+			data.copyTo(fos);
 		}
 	}
 }

@@ -1,5 +1,6 @@
 package org.helioviewer.jhv.plugins.pfssplugin.data;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import javax.annotation.Nullable;
@@ -59,9 +60,10 @@ public class PfssCompressed implements Cacheable
 			return;
 		}
 
-		try
+		try(ByteArrayOutputStream bos=new ByteArrayOutputStream(65536))
 		{
-			rawData = httpRequest.getData();
+			httpRequest.getData().copyTo(bos);
+			rawData = bos.toByteArray();
 			isLoaded = true;
 		}
 		catch (IOException e)
@@ -89,16 +91,6 @@ public class PfssCompressed implements Cacheable
 	public boolean isLoading()
 	{
 		return isLoading;
-	}
-
-	/**
-	 * Check if it is loaded completely before accessing this method.
-	 * 
-	 * @return the loaded data
-	 */
-	public @Nullable byte[] getData()
-	{
-		return rawData;
 	}
 
 	@SuppressWarnings("null")
