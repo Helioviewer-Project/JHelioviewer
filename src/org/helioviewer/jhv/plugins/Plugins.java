@@ -15,6 +15,7 @@ import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
+import org.helioviewer.jhv.base.Settings;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
@@ -22,6 +23,7 @@ import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.MainPanel;
+import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.PluginLayer;
 import org.helioviewer.jhv.opengl.RayTrace;
@@ -70,10 +72,20 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 				new PfssPlugin()
 			};
 		
-		//TODO: store visibility of plugins on startup/shutdown
 		for(Plugin p:plugins)
 		{
-			Layers.addLayer(new PluginLayer(p));
+			final PluginLayer pl=new PluginLayer(p);
+			pl.setVisible(Settings.getBoolean("plugin."+pl.getName()+".visible"));
+			Layers.addLayer(pl);
+			
+			ExitProgramAction.addShutdownHook(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					Settings.setBoolean("plugin."+pl.getName()+".visible", pl.isVisible());
+				}
+			});
 		}
 		
 		MainFrame.SINGLETON.MAIN_PANEL.addMouseListener(this);

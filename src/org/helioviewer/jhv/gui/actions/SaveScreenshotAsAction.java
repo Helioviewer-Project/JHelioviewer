@@ -48,7 +48,7 @@ public class SaveScreenshotAsAction extends AbstractAction
 	{
 		File selectedFile=Globals.showFileDialog(DialogType.SAVE_FILE,
 				"Save screenshot",
-				Settings.getProperty(SETTING_SCREENSHOT_EXPORT_LAST_DIRECTORY),
+				Settings.getString(SETTING_SCREENSHOT_EXPORT_LAST_DIRECTORY),
 				false,
 				getDefaultFileName(),
 				PredefinedFileFilter.PNG_SINGLE,
@@ -75,7 +75,7 @@ public class SaveScreenshotAsAction extends AbstractAction
 		String val;
 		try
 		{
-			val = Settings.getProperty(SETTING_SCREENSHOT_TEXT);
+			val = Settings.getString(SETTING_SCREENSHOT_TEXT);
 			if (val != null && !(val.length() == 0))
 				this.textEnabled = Boolean.parseBoolean(val);
 		}
@@ -86,7 +86,7 @@ public class SaveScreenshotAsAction extends AbstractAction
 
 		try
 		{
-			val = Settings.getProperty(SETTING_SCREENSHOT_IMG_HEIGHT);
+			val = Settings.getString(SETTING_SCREENSHOT_IMG_HEIGHT);
 			if (val != null && !(val.length() == 0))
 				this.imageHeight = Integer.parseInt(val);
 		}
@@ -97,7 +97,7 @@ public class SaveScreenshotAsAction extends AbstractAction
 
 		try
 		{
-			val = Settings.getProperty(SETTING_SCREENSHOT_IMG_WIDTH);
+			val = Settings.getString(SETTING_SCREENSHOT_IMG_WIDTH);
 			if (val != null && !(val.length() == 0))
 				this.imageWidth = Integer.parseInt(val);
 		}

@@ -102,7 +102,7 @@ public class DownloadMovieDialog extends JDialog
 		
 		File selectedFile = Globals.showFileDialog(DialogType.SAVE_FILE,
 				"Download movie",
-				Settings.getProperty(PATH_SETTINGS),
+				Settings.getString(PATH_SETTINGS),
 				true,
 				defaultName,
 				PredefinedFileFilter.JPX);
@@ -110,7 +110,7 @@ public class DownloadMovieDialog extends JDialog
 		if (selectedFile == null)
 			return;
 
-		Settings.setProperty(PATH_SETTINGS, selectedFile.getParent());
+		Settings.setString(PATH_SETTINGS, selectedFile.getParent());
 		start(selectedFile.getPath(), _url);
 	}
 }

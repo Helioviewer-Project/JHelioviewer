@@ -68,8 +68,8 @@ public class Layers
 		if (_newLayer.isImageLayer())
 			updateOpacity((AbstractImageLayer)_newLayer, false);
 		
-		for (LayerListener renderListener : layerListeners)
-			renderListener.layerAdded();
+		for (LayerListener listener : layerListeners)
+			listener.layerAdded();
 		
 		for(int i=0;i<layers.size();i++)
 			if(layers.get(i)==_newLayer)

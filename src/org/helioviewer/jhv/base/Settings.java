@@ -53,21 +53,22 @@ public class Settings
         }
     }
 
-    /**
-     * Method sets the value of a specified property and saves it as a user
-     * setting.
-     * 
-     * @param key
-     *            Default field to be written to
-     * @param val
-     *            Value to be set to
-     */
-	public static void setProperty(String key, String val)
+    public static void setBoolean(String _key, boolean _val)
     {
-        if (val.equals(getProperty(key)))
+    	setString(_key,_val?"1":"0");
+    }
+    
+    public static boolean getBoolean(String _key)
+    {
+    	return "1".equals(getString(_key));
+    }
+    
+	public static void setString(String _key, String _val)
+    {
+        if (_val.equals(getString(_key)))
             return;
         
-        PREF_NODE.put(key,val);
+        PREF_NODE.put(_key,_val);
         
         synchronized(syncObj)
         {
@@ -113,16 +114,9 @@ public class Settings
     //used to coordinate delayed flushing
     private final static Object syncObj=new Object();
     private static @Nullable Thread saveThread;
-
-    /**
-     * Method that returns the value of the specified property. User defined
-     * properties are always preferred over the default settings.
-     * 
-     * @param key
-     *            Default field to read
-     */
-    public static @Nullable String getProperty(@Nonnull String key)
+    
+    public static @Nullable String getString(@Nonnull String _key)
     {
-        return PREF_NODE.get(key,DEFAULT_PROPERTIES.getProperty(key));
+        return PREF_NODE.get(_key,DEFAULT_PROPERTIES.getProperty(_key));
     }
 }

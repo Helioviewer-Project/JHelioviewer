@@ -130,7 +130,7 @@ public class MetaDataDialog extends JDialog implements LayerListener, TimeLineLi
 				final File file = Globals.showFileDialog(
 						DialogType.SAVE_FILE,
 						"Save metadata",
-						Settings.getProperty(LAST_DIRECTORY),
+						Settings.getString(LAST_DIRECTORY),
 						true,
 						outFileName,
 						PredefinedFileFilter.XML);

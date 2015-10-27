@@ -15,7 +15,7 @@ public class CameraMode
 
 	public static void set3DMode()
 	{
-		Settings.setProperty("startup.cameramode", "3D");
+		Settings.setString("startup.cameramode", "3D");
 		mode = MODE.MODE_3D;
 		MainFrame.SINGLETON.TOP_TOOL_BAR.set3DMode();
 		MainFrame.SINGLETON.MAIN_PANEL.activateRotationInteraction();
@@ -26,7 +26,7 @@ public class CameraMode
 	public static void set2DMode()
 	{
 		mode = MODE.MODE_2D;
-		Settings.setProperty("startup.cameramode", "2D");
+		Settings.setString("startup.cameramode", "2D");
 		MainFrame.SINGLETON.TOP_TOOL_BAR.set2DMode();
 		MainFrame.SINGLETON.MAIN_PANEL.activatePanInteraction();
 		// MainFrame.SINGLETON.OVERVIEW_PANEL.setPanInteraction();

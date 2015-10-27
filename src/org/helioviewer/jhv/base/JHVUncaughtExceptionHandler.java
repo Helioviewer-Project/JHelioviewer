@@ -123,7 +123,7 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
 							+ System.getProperty("java.specification.version")
 							+ ")");
 
-			RaygunIdentifier user = new RaygunIdentifier(Settings.getProperty("UUID"));
+			RaygunIdentifier user = new RaygunIdentifier(Settings.getString("UUID"));
 			client.SetUser(user);
 			ArrayList<String> tags = new ArrayList<String>();
 			tags.add(Globals.RAYGUN_TAG);

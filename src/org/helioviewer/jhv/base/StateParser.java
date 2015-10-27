@@ -32,7 +32,7 @@ public class StateParser extends DefaultHandler
 		File selectedFile = Globals.showFileDialog(
 				DialogType.OPEN_FILE,
 				"Open State File",
-				Settings.getProperty(LOAD_PATH_SETTINGS),
+				Settings.getString(LOAD_PATH_SETTINGS),
 				true,
 				null,
 				PredefinedFileFilter.JHV
@@ -40,7 +40,7 @@ public class StateParser extends DefaultHandler
 		
 		if (selectedFile!=null)
 		{
-			Settings.setProperty(LOAD_PATH_SETTINGS, selectedFile.getParentFile().getAbsolutePath());
+			Settings.setString(LOAD_PATH_SETTINGS, selectedFile.getParentFile().getAbsolutePath());
 			loadStateFile(selectedFile);
 		}
 	}
@@ -77,7 +77,7 @@ public class StateParser extends DefaultHandler
 
 	private static void startSavingStateFile(File selectedFile) throws JSONException, IOException
 	{
-		Settings.setProperty(SAVE_PATH_SETTINGS, selectedFile.getParent());
+		Settings.setString(SAVE_PATH_SETTINGS, selectedFile.getParent());
 		String fileName = selectedFile.toString();
 		fileName = fileName.endsWith(PredefinedFileFilter.JHV.getDefaultExtension()) ? fileName
 				: fileName + PredefinedFileFilter.JHV.getDefaultExtension();
@@ -123,7 +123,7 @@ public class StateParser extends DefaultHandler
 	{
 		File selectedFile = Globals.showFileDialog(DialogType.SAVE_FILE,
 				"Save state file",
-				Settings.getProperty(SAVE_PATH_SETTINGS),
+				Settings.getString(SAVE_PATH_SETTINGS),
 				true,
 				null,
 				PredefinedFileFilter.JHV);

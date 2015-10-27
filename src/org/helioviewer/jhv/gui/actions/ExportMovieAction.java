@@ -86,7 +86,7 @@ public class ExportMovieAction extends AbstractAction
 
 		// Open save-dialog
 		final File file = Globals.showFileDialog(DialogType.SAVE_FILE, "Save Movie as",
-				Settings.getProperty(SETTING_MOVIE_EXPORT_LAST_DIRECTORY), false, txtTargetFile,
+				Settings.getString(SETTING_MOVIE_EXPORT_LAST_DIRECTORY), false, txtTargetFile,
 				PredefinedFileFilter.SaveMovieFileFilter);
 
 		if (file == null)
@@ -108,7 +108,7 @@ public class ExportMovieAction extends AbstractAction
 	private void startMovieExport(String _directory, final String _filename)
 	{
 		this.loadSettings();
-		Settings.setProperty(SETTING_MOVIE_EXPORT_LAST_DIRECTORY, _directory);
+		Settings.setString(SETTING_MOVIE_EXPORT_LAST_DIRECTORY, _directory);
 		MainFrame.SINGLETON.setEnabled(false);
 
 		final @Nullable FileOutputStream fileOutputStream;
@@ -261,7 +261,7 @@ public class ExportMovieAction extends AbstractAction
 		String val;
 		try
 		{
-			val = Settings.getProperty(SETTING_TEXT);
+			val = Settings.getString(SETTING_TEXT);
 			if (val != null && !(val.length() == 0))
 				textEnabled = Boolean.parseBoolean(val);
 		}
@@ -272,7 +272,7 @@ public class ExportMovieAction extends AbstractAction
 
 		try
 		{
-			val = Settings.getProperty(SETTING_IMG_HEIGHT);
+			val = Settings.getString(SETTING_IMG_HEIGHT);
 			if (val != null && !(val.length() == 0))
 				this.imageHeight = Integer.parseInt(val);
 		}
@@ -283,7 +283,7 @@ public class ExportMovieAction extends AbstractAction
 
 		try
 		{
-			val = Settings.getProperty(SETTING_IMG_WIDTH);
+			val = Settings.getString(SETTING_IMG_WIDTH);
 			if (val != null && !(val.length() == 0))
 				this.imageWidth = Integer.parseInt(val);
 		}

@@ -118,7 +118,7 @@ public class UILatencyWatchdog
 												+ ")");
 								customData.put("FullStackTrace", fullStackTrace.toString());
 
-								RaygunIdentifier user = new RaygunIdentifier(Settings.getProperty("UUID"));
+								RaygunIdentifier user = new RaygunIdentifier(Settings.getString("UUID"));
 								client.SetUser(user);
 								ArrayList<String> tags = new ArrayList<String>();
 								tags.add(Globals.RAYGUN_TAG);

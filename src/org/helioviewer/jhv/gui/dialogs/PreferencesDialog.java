@@ -221,11 +221,11 @@ public class PreferencesDialog extends JDialog
 	private void loadSettings()
 	{
 		// Start up
-		loadDefaultMovieOnStartUp.setSelected(Boolean.parseBoolean(Settings.getProperty("startup.loadmovie")));
-		doNothingOnStartUp.setSelected(!Boolean.parseBoolean(Settings.getProperty("startup.loadmovie")));
+		loadDefaultMovieOnStartUp.setSelected(Settings.getBoolean("startup.loadmovie"));
+		doNothingOnStartUp.setSelected(!Settings.getBoolean("startup.loadmovie"));
 		
 		// Default date format
-		String fmt = Settings.getProperty("default.date.format");
+		String fmt = Settings.getString("default.date.format");
 
 		if (fmt == null)
 			dateFormatField.setText(defaultDateFormat);
@@ -245,10 +245,10 @@ public class PreferencesDialog extends JDialog
 	private void saveSettings()
 	{
 		// Start up
-		Settings.setProperty("startup.loadmovie", Boolean.toString(loadDefaultMovieOnStartUp.isSelected()));
-
+		Settings.setBoolean("startup.loadmovie", loadDefaultMovieOnStartUp.isSelected());
+		
 		// Default date format
-		Settings.setProperty("default.date.format", dateFormatField.getText());
+		Settings.setString("default.date.format", dateFormatField.getText());
 		
 		// Default values
 		movieExportPanel.saveSettings();
@@ -467,7 +467,7 @@ public class PreferencesDialog extends JDialog
 			String val;
 			try
 			{
-				val = Settings.getProperty(SETTING_MOVIE_TEXT);
+				val = Settings.getString(SETTING_MOVIE_TEXT);
 				if (val != null && !(val.length() == 0))
 					isTextEnabled.setSelected(Boolean.parseBoolean(val));
 			}
@@ -478,7 +478,7 @@ public class PreferencesDialog extends JDialog
 
 			try
 			{
-				val = Settings.getProperty(SETTING_MOVIE_IMG_HEIGHT);
+				val = Settings.getString(SETTING_MOVIE_IMG_HEIGHT);
 				if (val != null && !(val.length() == 0))
 					txtMovieImageHeight.setValue(Math.round(Float.parseFloat(val)));
 			}
@@ -489,7 +489,7 @@ public class PreferencesDialog extends JDialog
 
 			try
 			{
-				val = Settings.getProperty(SETTING_MOVIE_IMG_WIDTH);
+				val = Settings.getString(SETTING_MOVIE_IMG_WIDTH);
 				if (val != null && !(val.length() == 0))
 					txtMovieImageWidth.setValue(Math.round(Float.parseFloat(val)));
 			}
@@ -521,9 +521,9 @@ public class PreferencesDialog extends JDialog
 
 		public void saveSettings()
 		{
-			Settings.setProperty(SETTING_MOVIE_TEXT, isTextEnabled.isSelected() + "");
-			Settings.setProperty(SETTING_MOVIE_IMG_WIDTH, txtMovieImageWidth.getValue().toString());
-			Settings.setProperty(SETTING_MOVIE_IMG_HEIGHT, txtMovieImageHeight.getValue().toString());
+			Settings.setString(SETTING_MOVIE_TEXT, isTextEnabled.isSelected() + "");
+			Settings.setString(SETTING_MOVIE_IMG_WIDTH, txtMovieImageWidth.getValue().toString());
+			Settings.setString(SETTING_MOVIE_IMG_HEIGHT, txtMovieImageHeight.getValue().toString());
 		}
 
 	}
@@ -685,7 +685,7 @@ public class PreferencesDialog extends JDialog
 		public void loadSettings() {
 			String val;
 			try {
-				val = Settings.getProperty(SETTING_SCREENSHOT_TEXT);
+				val = Settings.getString(SETTING_SCREENSHOT_TEXT);
 				if (val != null && !(val.length() == 0))
 					isTextEnabled.setSelected(Boolean.parseBoolean(val));
 			}
@@ -696,7 +696,7 @@ public class PreferencesDialog extends JDialog
 
 			try
 			{
-				val = Settings.getProperty(SETTING_SCREENSHOT_IMG_HEIGHT);
+				val = Settings.getString(SETTING_SCREENSHOT_IMG_HEIGHT);
 				if (val != null && !(val.length() == 0))
 					txtScreenshotImageHeight.setValue(Math.round(Float.parseFloat(val)));
 			}
@@ -706,7 +706,7 @@ public class PreferencesDialog extends JDialog
 			}
 
 			try {
-				val = Settings.getProperty(SETTING_SCREENSHOT_IMG_WIDTH);
+				val = Settings.getString(SETTING_SCREENSHOT_IMG_WIDTH);
 				if (val != null && !(val.length() == 0)) {
 					txtScreenshotImageWidth.setValue(Math.round(Float
 							.parseFloat(val)));
@@ -738,9 +738,9 @@ public class PreferencesDialog extends JDialog
 
 		public void saveSettings()
 		{
-			Settings.setProperty(SETTING_SCREENSHOT_TEXT, isTextEnabled.isSelected() + "");
-			Settings.setProperty(SETTING_SCREENSHOT_IMG_WIDTH, txtScreenshotImageWidth.getValue().toString());
-			Settings.setProperty(SETTING_SCREENSHOT_IMG_HEIGHT, txtScreenshotImageHeight.getValue().toString());
+			Settings.setString(SETTING_SCREENSHOT_TEXT, isTextEnabled.isSelected() + "");
+			Settings.setString(SETTING_SCREENSHOT_IMG_WIDTH, txtScreenshotImageWidth.getValue().toString());
+			Settings.setString(SETTING_SCREENSHOT_IMG_HEIGHT, txtScreenshotImageHeight.getValue().toString());
 		}
 	}
 

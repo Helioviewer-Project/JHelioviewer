@@ -43,7 +43,7 @@ public class OpenLocalFileAction extends AbstractAction
 		File selectedFile = Globals.showFileDialog(
 				DialogType.OPEN_FILE,
 				"Open local file",
-				Settings.getProperty("default.local.path"),
+				Settings.getString("default.local.path"),
 				false,
 				null,
 				PredefinedFileFilter.ALL_SUPPORTED_IMAGE_TYPES,
@@ -56,7 +56,7 @@ public class OpenLocalFileAction extends AbstractAction
 			return;
 		
 		// remember the current directory for future
-		Settings.setProperty("default.local.path", selectedFile.getParent());
+		Settings.setString("default.local.path", selectedFile.getParent());
 		
 		try
 		{

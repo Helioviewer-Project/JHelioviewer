@@ -53,7 +53,7 @@ public class Observatories
 							{
 								addObservatories(json);
 								
-								if (Boolean.parseBoolean(Settings.getProperty("startup.loadmovie")))
+								if (Settings.getBoolean("startup.loadmovie"))
 								{
 									try
 									{

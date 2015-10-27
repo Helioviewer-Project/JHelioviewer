@@ -6,6 +6,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.helioviewer.jhv.gui.actions.ExitProgramAction;
+
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GLContext;
 import com.microsoft.applicationinsights.TelemetryClient;
@@ -14,6 +16,7 @@ public class Telemetry
 {
 	private static final TelemetryClient client;
 	private static boolean openGLInitialized=false;
+	private static final long START_TIME=System.currentTimeMillis();
 	
 	static
 	{
@@ -23,7 +26,7 @@ public class Telemetry
 		client.getContext().getDevice().setOperatingSystem(System.getProperty("os.name"));
 		client.getContext().getDevice().setOperatingSystemVersion(System.getProperty("os.version"));
 		client.getContext().getComponent().setVersion(Globals.VERSION);
-		client.getContext().getUser().setId(Settings.getProperty("UUID"));
+		client.getContext().getUser().setId(Settings.getString("UUID"));
 		client.getContext().getSession().setId(UUID.randomUUID().toString());
 		
 		client.getContext().getProperties().put("Cores", Runtime.getRuntime().availableProcessors()+"");
@@ -31,6 +34,17 @@ public class Telemetry
 		
 		client.getContext().getProperties().put("Screen size", Toolkit.getDefaultToolkit().getScreenSize().width+"x"+Toolkit.getDefaultToolkit().getScreenSize().height);
 		client.getContext().getProperties().put("DPI", Toolkit.getDefaultToolkit().getScreenResolution()+"");
+		
+		
+		ExitProgramAction.addShutdownHook(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				Telemetry.trackMetric("Session duration", (System.currentTimeMillis()-START_TIME)/1000);
+				//TODO: track more telemetry
+			}
+		});
 	}
 	
 	public static void trackEvent(String _event,String ... params)
