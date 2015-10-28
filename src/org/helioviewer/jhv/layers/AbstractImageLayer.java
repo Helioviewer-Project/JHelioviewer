@@ -69,6 +69,11 @@ public abstract class AbstractImageLayer extends Layer
 		coronaVisible=!coronaVisible;
 	}
 	
+	public boolean isCoronaVisible()
+	{
+		return coronaVisible;
+	}
+	
 	private static int shaderprogram = -1;
 	
 	protected static ArrayList<Texture> textures=new ArrayList<Texture>();
@@ -83,11 +88,11 @@ public abstract class AbstractImageLayer extends Layer
 	
 	public abstract @Nullable Match getMovie(LocalDateTime _currentDateTime);
 
-	protected static int freeTextureNr=0;
+	protected static volatile int freeTextureNr=0;
 	
 	/**
 	 * This method should be called whenever we can throw all cached textures away, and the
-	 * likelyhood that cached textures will be used again is low.
+	 * likelihood that cached textures would be used again is low.
 	 */
 	public static void newRenderPassStarted()
 	{

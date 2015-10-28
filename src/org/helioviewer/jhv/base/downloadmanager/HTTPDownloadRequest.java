@@ -2,7 +2,6 @@ package org.helioviewer.jhv.base.downloadmanager;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 
 import com.google.common.io.ByteSource;
 
@@ -17,7 +16,7 @@ public class HTTPDownloadRequest extends HTTPRequest
 	}
 
 	@Override
-	public void execute() throws IOException, InterruptedException
+	public void execute() throws Throwable
 	{
 		super.execute();
 		

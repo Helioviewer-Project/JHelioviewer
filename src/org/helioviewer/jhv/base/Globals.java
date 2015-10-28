@@ -37,17 +37,13 @@ import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-/**
- * Intended to be a class for static functions and fields relevant to the
- * application as a whole.
- */
 public class Globals
 {
 	public static final String OBSERVATORIES_DATASOURCE = "http://api.helioviewer.org/v2/getDataSources/?";
 
     public static final String VERSION = System.getProperty("jhvVersion") == null ? "developer" : System.getProperty("jhvVersion");
     public static final String RAYGUN_TAG = System.getProperty("raygunTag");
-    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     public static final DateTimeFormatter FILE_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH.mm.ss'Z'");
     
 	//AIA 193
@@ -290,7 +286,7 @@ public class Globals
 							return null;
 
 					case SAVE_FILE:
-						if(!f.isFile())
+						if(f.isDirectory())
 							return null;
 						
 						if(!f.exists())

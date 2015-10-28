@@ -7,8 +7,8 @@ import javax.annotation.Nullable;
 import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.gui.OverviewPanel;
 import org.helioviewer.jhv.plugins.Plugin;
-import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.plugins.Plugin.RenderMode;
+import org.helioviewer.jhv.plugins.Plugins;
 import org.json.JSONObject;
 
 import com.jogamp.opengl.GL2;

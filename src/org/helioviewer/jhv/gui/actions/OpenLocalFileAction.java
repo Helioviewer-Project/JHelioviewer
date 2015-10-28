@@ -11,8 +11,8 @@ import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
 import org.helioviewer.jhv.base.Globals;
-import org.helioviewer.jhv.base.Settings;
 import org.helioviewer.jhv.base.Globals.DialogType;
+import org.helioviewer.jhv.base.Settings;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.PredefinedFileFilter;
 import org.helioviewer.jhv.layers.Layers;

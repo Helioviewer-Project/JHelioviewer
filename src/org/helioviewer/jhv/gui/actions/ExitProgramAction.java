@@ -43,6 +43,7 @@ public class ExitProgramAction extends AbstractAction
 				return;
 		}
 		
+		System.out.println("Running shutdown hooks");
 		for(Runnable r:onShutdown)
 			r.run();
 		

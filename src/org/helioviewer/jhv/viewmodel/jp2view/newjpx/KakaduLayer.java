@@ -2,7 +2,6 @@ package org.helioviewer.jhv.viewmodel.jp2view.newjpx;
 
 import java.awt.Dimension;
 import java.awt.Rectangle;
-import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -87,7 +86,7 @@ public class KakaduLayer extends AbstractImageLayer
 		sourceId = genSourceId(_filePath);
 		localFile = true;
 		
-		Movie movie = new Movie(this,sourceId,_filePath);
+		Movie movie = new Movie(sourceId,_filePath);
 		if(movie.getAnyMetaData()==null)
 			throw new UnsuitableMetaDataException();
 		
@@ -211,6 +210,7 @@ public class KakaduLayer extends AbstractImageLayer
 		@Nullable HTTPRequest metadata;
 		@Nullable JPIPRequest lq;
 		@Nullable JPIPDownloadRequest hq;
+		@Nullable Movie lqMovie;
 		
 		MovieDownload()
 		{
@@ -253,6 +253,7 @@ public class KakaduLayer extends AbstractImageLayer
 							+ "&endTime=" + currentEnd.format(formatter)
 							+ "&sourceId=" + sourceId
 							+ "&cadence=" + cadence,
+							MovieCache.generateFilename(sourceId,currentStart,currentEnd,cadence),
 							DownloadPriority.LOW);
 					
 					UltimateDownloadManager.addRequest(md.metadata);
@@ -281,13 +282,22 @@ public class KakaduLayer extends AbstractImageLayer
 							
 							try
 							{
-								final Movie m=new Movie(KakaduLayer.this,sourceId,download.hq.filename);
+								final Movie m=new Movie(sourceId,download.hq.filename);
 								SwingUtilities.invokeLater(new Runnable()
 								{
 									@Override
 									public void run()
 									{
+										if(download.lqMovie!=null)
+											MovieCache.remove(download.lqMovie);
 										MovieCache.add(m);
+										
+										if(lut==null)
+										{
+											MetaData md=m.getAnyMetaData();
+											if(md!=null)
+												setLUT(md.getDefaultLUT());
+										}
 									}
 								});
 							}
@@ -303,13 +313,20 @@ public class KakaduLayer extends AbstractImageLayer
 						{
 							try
 							{
-								final Movie m=new Movie(KakaduLayer.this,sourceId,download.lq.kduCache);
+								download.lqMovie=new Movie(sourceId,download.lq.kduCache);
 								SwingUtilities.invokeLater(new Runnable()
 								{
 									@Override
 									public void run()
 									{
-										MovieCache.add(m);
+										MovieCache.add(download.lqMovie);
+										
+										if(lut==null)
+										{
+											MetaData md=download.lqMovie.getAnyMetaData();
+											if(md!=null)
+												setLUT(md.getDefaultLUT());
+										}
 									}
 								});
 							}
@@ -393,15 +410,15 @@ public class KakaduLayer extends AbstractImageLayer
 							downloads.addLast(download);
 						}
 					}
-					catch(IOException _e)
-					{
-						incomplete=true;
-						Telemetry.trackException(_e);
-					}
 					catch (InterruptedException _e)
 					{
 						incomplete=true;
 						break;
+					}
+					catch(Throwable _e)
+					{
+						incomplete=true;
+						Telemetry.trackException(_e);
 					}
 				}
 				
@@ -527,20 +544,25 @@ public class KakaduLayer extends AbstractImageLayer
 			if(t.contains(this, requiredMinimumRegion, metaData.getLocalDateTime()))
 				return new FutureValue<PreparedImage>(new PreparedImage(t));
 		
-		int candidateTextureNr=freeTextureNr++;
-		if(candidateTextureNr>=textures.size())
+		final int textureNr;
+		synchronized(AbstractImageLayer.class)
 		{
-			if(textures.size()<10)
+			int candidateTextureNr=freeTextureNr++;
+			if(candidateTextureNr>=textures.size())
 			{
-				textures.add(new Texture());
-				System.out.println("Added new texture for a total of "+textures.size()+" textures.");
+				if(textures.size()<10)
+				{
+					textures.add(new Texture());
+					System.out.println("Added new texture for a total of "+textures.size()+" textures.");
+				}
+				else
+					//we used a lot of texture cache, just wrap around for a lru cache
+					candidateTextureNr=freeTextureNr=0;
 			}
-			else
-				//we used a lot of texture cache, just wrap around for a lru cache
-				candidateTextureNr=freeTextureNr=0;
+			
+			textureNr=candidateTextureNr;
 		}
 		
-		final int textureNr=candidateTextureNr;
 		return exDecoder.submit(new Callable<PreparedImage>()
 		{
 			@SuppressWarnings("null")

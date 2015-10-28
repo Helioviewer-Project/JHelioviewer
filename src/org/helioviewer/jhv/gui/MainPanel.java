@@ -286,7 +286,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 			
 			LinkedHashMap<AbstractImageLayer, Future<PreparedImage>> layers = new LinkedHashMap<>();
 			for (Layer layer : Layers.getLayers())
-				if (layer.isVisible() && layer.isImageLayer())
+				if (layer.isVisible() && layer instanceof AbstractImageLayer)
 					layers.put((AbstractImageLayer) layer,
 							((AbstractImageLayer) layer).prepareImageData(this, sizeForDecoder));
 			
@@ -373,7 +373,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 
 		boolean noImageScreen = _showLoadingAnimation;
 		for (Layer layer : Layers.getLayers())
-			if (layer.isImageLayer())
+			if (layer instanceof AbstractImageLayer)
 				noImageScreen &= !layer.isVisible();
 
 		if (noImageScreen)
@@ -886,15 +886,17 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		cameraListeners.add(_listener);
 	}
 
-	public void resetLastFrameChangeTime()
-	{
-		lastFrameChangeTime = System.currentTimeMillis();
-	}
-
 	public void stopAllAnimations()
 	{
 		cameraAnimations.clear();
 		setTranslationEnd(getTranslationCurrent());
 		setRotationEnd(getRotationCurrent());
+	}
+
+	@Override
+	public void isPlayingChanged(boolean _isPlaying)
+	{
+		lastFrameChangeTime = System.currentTimeMillis();
+		repaint();
 	}
 }

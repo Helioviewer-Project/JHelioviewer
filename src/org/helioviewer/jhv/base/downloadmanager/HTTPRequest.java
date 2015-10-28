@@ -35,7 +35,7 @@ public class HTTPRequest extends AbstractDownloadRequest
 		super(_url, _priority);
 	}
 
-	public void execute() throws IOException, InterruptedException
+	public void execute() throws Throwable
 	{
 		HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(this.url).openConnection();
 		try
@@ -48,7 +48,7 @@ public class HTTPRequest extends AbstractDownloadRequest
 			totalLength = httpURLConnection.getContentLength();
 			if (response != HttpURLConnection.HTTP_OK)
 				throw new IOException("Response code "+response);
-				
+			
 			try(InputStream inputStream = httpURLConnection.getInputStream())
 			{
 				try(FileBackedOutputStream byteArrayOutputStream = new FileBackedOutputStream(1024*1024*4,true))
@@ -78,20 +78,20 @@ public class HTTPRequest extends AbstractDownloadRequest
 		}
 	}
 
-	public String getDataAsString() throws IOException, InterruptedException
+	public String getDataAsString() throws Throwable
 	{
 		return getData().asCharSource(StandardCharsets.UTF_8).read();
 	}
-
+	
 	@SuppressWarnings("null")
-	public ByteSource getData() throws IOException, InterruptedException
+	public ByteSource getData() throws Throwable
 	{
 		//TODO: proper synchronization
 		while(!isFinished())
 			Thread.sleep(20);
 		
-		if (ioException != null)
-			throw ioException;
+		if (exception != null)
+			throw exception;
 		
 		return rawData;
 	}

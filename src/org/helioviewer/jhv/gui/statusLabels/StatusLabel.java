@@ -33,6 +33,11 @@ abstract class StatusLabel extends JLabel implements TimeLineListener, PanelMous
 	public void timeStampChanged(LocalDateTime current, LocalDateTime last)
 	{
 	}
+	
+	@Override
+	public void isPlayingChanged(boolean _isPlaying)
+	{
+	}
 
 	@Override
 	public void dateTimesChanged(int framecount)

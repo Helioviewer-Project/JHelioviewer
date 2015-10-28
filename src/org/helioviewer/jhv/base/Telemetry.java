@@ -3,10 +3,18 @@ package org.helioviewer.jhv.base;
 import java.awt.Toolkit;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.swing.SwingUtilities;
+
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
+import org.helioviewer.jhv.gui.statusLabels.FramerateStatusPanel;
+import org.helioviewer.jhv.layers.AbstractImageLayer;
+import org.helioviewer.jhv.layers.Layer;
+import org.helioviewer.jhv.layers.Layers;
+import org.helioviewer.jhv.viewmodel.TimeLine;
 
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GLContext;
@@ -45,6 +53,65 @@ public class Telemetry
 				//TODO: track more telemetry
 			}
 		});
+		
+		
+		
+		Thread telemetryCollection = new Thread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				for(;;)
+					try
+					{
+						Thread.sleep(70000);
+						SwingUtilities.invokeAndWait(new Runnable()
+						{
+							@Override
+							public void run()
+							{
+								List<Layer> layers=Layers.getLayers();
+								
+								if(TimeLine.SINGLETON.isPlaying())
+								Telemetry.trackMetric("FPS Current", FramerateStatusPanel.getFPS());
+								Telemetry.trackMetric("FPS Target", 1000f/TimeLine.SINGLETON.getMillisecondsPerFrame());
+								Telemetry.trackMetric("FPS Relative", FramerateStatusPanel.getFPS()/(1000f/TimeLine.SINGLETON.getMillisecondsPerFrame()));
+								
+								Telemetry.trackMetric("Layers", layers.size());
+								for(Layer l:layers)
+									if(l instanceof AbstractImageLayer)
+									{
+										AbstractImageLayer il=(AbstractImageLayer)l;
+										Telemetry.trackMetric("Layer opacity", il.opacity);
+										Telemetry.trackMetric("Layer contrast", il.contrast);
+										Telemetry.trackMetric("Layer sharpness", il.sharpness);
+										Telemetry.trackMetric("Layer red", il.redChannel?1:0);
+										Telemetry.trackMetric("Layer green", il.greenChannel?1:0);
+										Telemetry.trackMetric("Layer blue", il.blueChannel?1:0);
+										Telemetry.trackMetric("Layer inverted", il.invertedLut?1:0);
+										Telemetry.trackMetric("Layer visible", il.isVisible()?1:0);
+										Telemetry.trackMetric("Layer corona", il.isCoronaVisible()?1:0);
+									}
+							}
+						});
+					}
+					catch (InterruptedException e)
+					{
+						return;
+					}
+					catch (Exception e)
+					{
+						Telemetry.trackException(e);
+					}
+			}
+		});
+		
+		
+		
+		telemetryCollection.setName("Telemetry collection");
+		telemetryCollection.setDaemon(true);
+		telemetryCollection.setPriority(Thread.MIN_PRIORITY);
+		telemetryCollection.start();
 	}
 	
 	public static void trackEvent(String _event,String ... params)

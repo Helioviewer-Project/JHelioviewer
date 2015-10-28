@@ -16,34 +16,51 @@ import javax.swing.BorderFactory;
  */
 public class FramerateStatusPanel extends StatusLabel
 {
+	private static int lastCounter;
+	
 	private int counter = 0;
-	private long currentMillis = 0;
-	private static final String TITLE = "fps:";
-
+	private long startMeasurement = 0;
+	
 	public FramerateStatusPanel()
 	{
 		super();
 		setBorder(BorderFactory.createEtchedBorder());
 
 		setPreferredSize(new Dimension(70, 20));
-		setText(TITLE);
-
-		currentMillis = System.currentTimeMillis();
+		setText("FPS: ");
+		
+		startMeasurement = System.currentTimeMillis();
+	}
+	
+	public static int getFPS()
+	{
+		return lastCounter;
 	}
 
 	private void updateFramerate()
 	{
-		//TODO: collect framerate info via telemetry (+number of layers, ...)
+		lastCounter = counter;
 		
 		setVisible(true);
-		setText(TITLE + counter);
+		setText("FPS: " + counter);
 		counter = 0;
-		currentMillis = System.currentTimeMillis();
+		startMeasurement = System.currentTimeMillis();
 	}
-
+	
+	@Override
+	public void isPlayingChanged(boolean _isPlaying)
+	{
+		counter = 0;
+		startMeasurement = System.currentTimeMillis();
+	}
+	
+	@Override
 	public void timeStampChanged(LocalDateTime current, LocalDateTime last)
 	{
-		if ((System.currentTimeMillis() - currentMillis) >= 1000)
+		//TODO: should only count frames that stem from advanceFrame in TimeLine, not when the user
+		//is seeking through the file. those frames are not fully decoded, leading to wrongly reported
+		//high fps
+		if ((System.currentTimeMillis() - startMeasurement) >= 1000)
 			updateFramerate();
 		counter++;
 	}

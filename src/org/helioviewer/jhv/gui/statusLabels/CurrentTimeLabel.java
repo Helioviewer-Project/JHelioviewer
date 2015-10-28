@@ -14,13 +14,13 @@ public class CurrentTimeLabel extends StatusLabel
 	public CurrentTimeLabel()
 	{
 		super();
-        this.setBorder(BorderFactory.createEtchedBorder());
-		this.setText(EMPTY);
+        setBorder(BorderFactory.createEtchedBorder());
+		setText(EMPTY);
 	}
 
 	@Override
 	public void timeStampChanged(LocalDateTime current, LocalDateTime last)
 	{
-		this.setText(TimeLine.SINGLETON.getCurrentDateTime().format(Globals.DATE_TIME_FORMATTER));
+		setText(TimeLine.SINGLETON.getCurrentDateTime().format(Globals.DATE_TIME_FORMATTER));
 	}
 }

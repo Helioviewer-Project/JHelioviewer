@@ -1,6 +1,5 @@
 package org.helioviewer.jhv.base.downloadmanager;
 
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.Comparator;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -14,7 +13,7 @@ public class UltimateDownloadManager
 {
 	private static class Tuple
 	{
-		@Nullable RuntimeException ex;
+		@Nullable Throwable preparedNotCancelledException;
 		WeakReference<AbstractDownloadRequest> request;
 		
 		Tuple(AbstractDownloadRequest _adr)
@@ -66,7 +65,11 @@ public class UltimateDownloadManager
 										activeDownloads.incrementAndGet();
 									request.execute();
 								}
-								catch (IOException e)
+								catch(InterruptedException e)
+								{
+									throw e;
+								}
+								catch (Throwable e)
 								{
 									System.err.println(request.url);
 									Telemetry.trackException(e);
@@ -80,8 +83,8 @@ public class UltimateDownloadManager
 									//if(request.priority.ordinal()>DownloadPriority.LOW.ordinal())
 										activeDownloads.decrementAndGet();
 								}
-							else if(t.ex!=null)
-								Telemetry.trackException(t.ex);
+							else if(t.preparedNotCancelledException!=null)
+								Telemetry.trackException(t.preparedNotCancelledException);
 						}
 					}
 					catch (InterruptedException e)
@@ -105,7 +108,7 @@ public class UltimateDownloadManager
 		}
 		catch(RuntimeException _t)
 		{
-			t.ex=_t;
+			t.preparedNotCancelledException=_t;
 		}
 		
 		taskDeque.put(t);

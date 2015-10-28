@@ -1,6 +1,5 @@
 package org.helioviewer.jhv.plugins.hekplugin.cache;
 
-import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,131 +11,151 @@ import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.plugins.hekplugin.Interval;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKSettings;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-class HEKRequestThread extends HEKRequest implements Runnable {
+class HEKRequestThread extends HEKRequest implements Runnable
+{
 
-    private HEKCacheController cacheController;
+	private HEKCacheController cacheController;
 
-    public HEKRequestThread(HEKCacheController cacheController, HEKPath path, Interval<Date> interval) {
-        this.cacheController = cacheController;
-        this.path = path;
-        this.interval = interval;
-    }
+	public HEKRequestThread(HEKCacheController cacheController, HEKPath path, Interval<Date> interval)
+	{
+		this.cacheController = cacheController;
+		this.path = path;
+		this.interval = interval;
+	}
 
-    public void run() {
+	public void run()
+	{
 
-        // don't even start
-        if (cancel) {
-            return;
-        }
+		// don't even start
+		if (cancel)
+		{
+			return;
+		}
 
-        cacheController.setState(path, HEKCacheLoadingModel.PATH_LOADING);
-        cacheController.fireEventsChanged(path);
+		cacheController.setState(path, HEKCacheLoadingModel.PATH_LOADING);
+		cacheController.fireEventsChanged(path);
 
-        requestEvents(interval, path.getType(), path.getFRM());
+		requestEvents(interval, path.getType(), path.getFRM());
 
-        if (!cancel) {
-            this.finishRequest();
-        }
-    }
+		if (!cancel)
+		{
+			this.finishRequest();
+		}
+	}
 
-    protected void finishRequest() {
-        cacheController.setState(path, HEKCacheLoadingModel.PATH_NOTHING);
+	protected void finishRequest()
+	{
+		cacheController.setState(path, HEKCacheLoadingModel.PATH_NOTHING);
 
-        // if the download was canceled, the tree will be refreshed by the one
-        // that canceled all downloads
-        if (!cancel) {
-            cacheController.fireEventsChanged(path);
-        }
-    }
+		// if the download was canceled, the tree will be refreshed by the one
+		// that canceled all downloads
+		if (!cancel)
+		{
+			cacheController.fireEventsChanged(path);
+		}
+	}
 
-    /**
-     * Request the events with given TYPE and FRM available in the given
-     * interval
-     * 
-     * @param interval
-     *            - interval to request events for
-     * @param type
-     *            - event requirement
-     * @param frm
-     *            - event requirement
-     * @return
-     */
-    public void requestEvents(Interval<Date> interval, String type, String frm) {
+	/**
+	 * Request the events with given TYPE and FRM available in the given
+	 * interval
+	 * 
+	 * @param interval
+	 *            - interval to request events for
+	 * @param type
+	 *            - event requirement
+	 * @param frm
+	 *            - event requirement
+	 * @return
+	 */
+	public void requestEvents(Interval<Date> interval, String type, String frm)
+	{
 
-        int page = 1;
-        boolean hasMorePages = true;
+		int page = 1;
+		boolean hasMorePages = true;
 
-        try {
+		try
+		{
 
-            while (hasMorePages && page < HEKSettings.REQUEST_EVENTS_MAXPAGES) {
+			while (hasMorePages && page < HEKSettings.REQUEST_EVENTS_MAXPAGES)
+			{
 
-                // return if the current operation was canceled
-                if (cancel)
-                    return;
+				// return if the current operation was canceled
+				if (cancel)
+					return;
 
-                String startDate = HEKConstants.getSingletonInstance().getDateFormat().format(interval.start);
-                String endDate = HEKConstants.getSingletonInstance().getDateFormat().format(interval.end);
+				String startDate = HEKConstants.getSingletonInstance().getDateFormat().format(interval.start);
+				String endDate = HEKConstants.getSingletonInstance().getDateFormat().format(interval.end);
 
-                String encFRM = URLEncoder.encode(frm, "UTF-8");
-                String encType = URLEncoder.encode(type, "UTF-8");
+				String encFRM = URLEncoder.encode(frm, "UTF-8");
+				String encType = URLEncoder.encode(type, "UTF-8");
 
-                // if we do not specify any return fields, just do not mention
-                // anything about them in the request
-                String fieldRequest = "";
+				// if we do not specify any return fields, just do not mention
+				// anything about them in the request
+				String fieldRequest = "";
 
-                if (HEKSettings.DOWNLOADER_DOWNLOAD_EVENTS_FIELDS.length > 0) {
+				if (HEKSettings.DOWNLOADER_DOWNLOAD_EVENTS_FIELDS.length > 0)
+				{
 
-                    fieldRequest = "&return=";
+					fieldRequest = "&return=";
 
-                    for (String field : HEKSettings.DOWNLOADER_DOWNLOAD_EVENTS_FIELDS) {
-                        fieldRequest = fieldRequest + field + ",";
-                    }
+					for (String field : HEKSettings.DOWNLOADER_DOWNLOAD_EVENTS_FIELDS)
+					{
+						fieldRequest = fieldRequest + field + ",";
+					}
 
-                    // strip of the last ","
-                    fieldRequest = fieldRequest.substring(0, fieldRequest.length() - 1);
+					// strip of the last ","
+					fieldRequest = fieldRequest.substring(0, fieldRequest.length() - 1);
 
-                }
+				}
 
+				String uri = "http://www.lmsal.com/hek/her?cosec=2&cmd=search&type=column&event_type=" + encType
+						+ fieldRequest + "&event_starttime=" + startDate + "&event_endtime=" + endDate
+						+ "&event_coordsys=helioprojective&x1=-1200&x2=1200&y1=-1200&y2=1200&temporalmode=overlap&param0=FRM_Name&op0==&value0="
+						+ encFRM + "&result_limit=" + HEKSettings.REQUEST_EVENTS_PAGESIZE + "&page=" + page;
+				System.out.println("Requesting Page " + page + " of HEK Events: " + uri);
 
-                String uri = "http://www.lmsal.com/hek/her?cosec=2&cmd=search&type=column&event_type=" + encType + fieldRequest + "&event_starttime=" + startDate + "&event_endtime=" + endDate + "&event_coordsys=helioprojective&x1=-1200&x2=1200&y1=-1200&y2=1200&temporalmode=overlap&param0=FRM_Name&op0==&value0=" + encFRM + "&result_limit=" + HEKSettings.REQUEST_EVENTS_PAGESIZE + "&page=" + page;
-                System.out.println("Requesting Page " + page + " of HEK Events: " + uri);
+				// this might take a while
+				HTTPRequest httpRequest = Plugins.generateAndStartHTPPRequest(uri, DownloadPriority.MEDIUM);
+				// return if the current operation was canceled
 
-                // this might take a while
-                HTTPRequest httpRequest = Plugins.generateAndStartHTPPRequest(uri, DownloadPriority.MEDIUM);
-                // return if the current operation was canceled
-
-                while (!httpRequest.isFinished()) {
-                	try {
+				while (!httpRequest.isFinished())
+				{
+					try
+					{
 						Thread.sleep(20);
-	                    if (cancel)
-	                        return;
-					} catch (InterruptedException e) {
-						
+						if (cancel)
+							return;
+					}
+					catch (InterruptedException e)
+					{
 						Telemetry.trackException(e);
 					}
 				}
 
-                JSONObject json = new JSONObject(httpRequest.getDataAsString());
-                parseAndFeed(json, interval);
+				JSONObject json = new JSONObject(httpRequest.getDataAsString());
+				parseAndFeed(json, interval);
 
-                hasMorePages = json.getBoolean("overmax");
-                page++;
-            }
+				hasMorePages = json.getBoolean("overmax");
+				page++;
+			}
 
-        } catch (JSONException | IOException e) {
-            System.err.println("Error Parsing the HEK Response.");
-            Telemetry.trackException(e);
-        } catch (InterruptedException e)
-        {
-        }
-    }
+		}
+		catch (InterruptedException e)
+		{
+		}
+		catch (Throwable e)
+		{
+			System.err.println("Error Parsing the HEK Response.");
+			Telemetry.trackException(e);
+		}
+	}
 
-    private void parseAndFeed(JSONObject json, Interval<Date> interval) {
-        HashMap<HEKPath, HEKEvent> events = HEKEventFactory.getSingletonInstance().parseEvents(json);
-        cacheController.feedEvents(events, interval);
-    }
+	private void parseAndFeed(JSONObject json, Interval<Date> interval)
+	{
+		HashMap<HEKPath, HEKEvent> events = HEKEventFactory.getSingletonInstance().parseEvents(json);
+		cacheController.feedEvents(events, interval);
+	}
 
 }

@@ -249,7 +249,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 			@Override
 			public void actionPerformed(@Nullable ActionEvent e)
 			{
-				setPlaying(!timeLine.isPlaying());
+				TimeLine.SINGLETON.setPlaying(!timeLine.isPlaying());
 			}
 		});
 		//btnPlayPause.setPreferredSize(new Dimension(btnPlayPause.getPreferredSize().width, buttonSize));
@@ -292,27 +292,18 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		return contentPanel;
 	}
 
-	public void setPlaying(boolean _playing)
-	{
-		TimeLine.SINGLETON.setPlaying(_playing);
-		if(TimeLine.SINGLETON.isPlaying())
-			btnPlayPause.setIcon(ICON_PAUSE);
-		else
-			btnPlayPause.setIcon(ICON_PLAY);
-	}
-
 	@Override
 	public void timeStampChanged(LocalDateTime current, LocalDateTime last)
 	{
 		slider.setValue(timeLine.getCurrentFrameIndex() < 0 ? 0 : timeLine.getCurrentFrameIndex());
 	}
-
+	
 	public void repaintSlider()
 	{
 		slider.repaint();
 	}
 
-	private static class TimeSlider extends JSlider
+	private class TimeSlider extends JSlider
 	{
 		public TimeSlider()
 		{
@@ -320,7 +311,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		}
 	}
 
-	private static class TimeSliderUI extends BasicSliderUI
+	private class TimeSliderUI extends BasicSliderUI
 	{
 		private final Color COLOR_NOT_CACHED = Color.LIGHT_GRAY;
 		private final Color COLOR_PARTIALLY_CACHED = new Color(0x8080FF);
@@ -371,6 +362,8 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		@Override
 		public void paintTrack(@Nullable Graphics g)
 		{
+			lblFrames.setText(slider.getValue() + "/" + slider.getMaximum());
+			
 			if(g==null)
 				return;
 			
@@ -409,9 +402,9 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 							case PREVIEW:
 								g.setColor(COLOR_PARTIALLY_CACHED);
 								break;
-							case NONE:
+							/*case NONE:
 								g.setColor(COLOR_NOT_CACHED);
-								break;
+								break;*/
 							default:
 								throw new RuntimeException();
 						}
@@ -439,11 +432,9 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 	{
 		boolean enable = false;
 		for (Layer layer : Layers.getLayers())
-			enable |= layer.isImageLayer();
+			enable |= layer instanceof AbstractImageLayer;
 		
 		setButtonsEnabled(enable);
-		if (Layers.getActiveImageLayer() != null)
-			lblFrames.setText(slider.getValue() + "/" + slider.getMaximum());
 	}
 
 	@Override
@@ -451,7 +442,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 	{
 		boolean enable = false;
 		for (Layer layer : Layers.getLayers())
-			enable |= layer.isImageLayer();
+			enable |= layer instanceof AbstractImageLayer;
 		
 		setButtonsEnabled(enable);
 	}
@@ -459,11 +450,10 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 	@Override
 	public void activeLayerChanged(@Nullable Layer layer)
 	{
-		if (layer != null && layer.isImageLayer())
+		if (layer != null && layer instanceof AbstractImageLayer)
 		{
 			slider.setMaximum(((AbstractImageLayer) layer).getLocalDateTimes().size() > 0 ? ((AbstractImageLayer) layer)
 					.getLocalDateTimes().size() - 1 : 0);
-			lblFrames.setText(slider.getValue() + "/" + slider.getMaximum());
 		}
 	}
 
@@ -473,15 +463,14 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		btnPrevious.setEnabled(_enable);
 		btnPlayPause.setEnabled(_enable);
 		btnForward.setEnabled(_enable);
-		lblFrames.setText("");
 	}
-
+	
 	@Override
 	public void dateTimesChanged(int framecount)
 	{
-		this.slider.setMaximum(framecount > 0 ? framecount - 1 : 0);
-		lblFrames.setText(slider.getValue() + "/" + slider.getMaximum());
-		this.repaint();
+		setButtonsEnabled(framecount > 0);
+		slider.setMaximum(framecount > 0 ? framecount - 1 : 0);
+		repaint();
 	}
 
 	/**
@@ -501,7 +490,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 
 		public void actionPerformed(@Nullable ActionEvent e)
 		{
-			MainFrame.SINGLETON.MOVIE_PANEL.setPlaying(!TimeLine.SINGLETON.isPlaying());
+			TimeLine.SINGLETON.setPlaying(!TimeLine.SINGLETON.isPlaying());
 		}
 	}
 
@@ -547,5 +536,14 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		{
 			TimeLine.SINGLETON.nextFrame();
 		}
+	}
+
+	@Override
+	public void isPlayingChanged(boolean _isPlaying)
+	{
+		if(_isPlaying)
+			btnPlayPause.setIcon(ICON_PAUSE);
+		else
+			btnPlayPause.setIcon(ICON_PLAY);
 	}
 }

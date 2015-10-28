@@ -63,7 +63,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 	private JButton btnDownloadLayer;
 	private static final Cursor HAND_CURSOR = new Cursor(Cursor.HAND_CURSOR);
 	private static final ImageIcon WARNING_BAD_REQUEST = IconBank.getIcon(JHVIcon.WARNING, SIZE, SIZE);
-	private int activePopupLayer = 0;
+	private @Nullable Layer activePopupLayer;
 
 	private JPopupMenu popupMenu;
 
@@ -101,45 +101,44 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		downloadLayer = new JMenuItem("Download movie", IconBank.getIcon(JHVIcon.DOWNLOAD_NEW, SIZE, SIZE));
 		downloadLayer.addActionListener(new ActionListener()
 		{
+			@SuppressWarnings("null")
 			@Override
 			public void actionPerformed(@Nullable ActionEvent e)
 			{
-				Layer l=Layers.getLayer(activePopupLayer);
-				if(l==null)
+				if(activePopupLayer==null)
 					return;
 				
-				String downloadURL=l.getDownloadURL();
-				
+				String downloadURL=activePopupLayer.getDownloadURL();
 				if (downloadURL != null)
-					new DownloadMovieDialog().startDownload(downloadURL, l);
+					new DownloadMovieDialog(downloadURL, activePopupLayer);
 			}
 		});
 		
 		hideLayer = new JMenuItem("Hide layer", IconBank.getIcon(JHVIcon.HIDDEN, SIZE, SIZE));
 		hideLayer.addActionListener(new ActionListener()
 		{
+			@SuppressWarnings("null")
 			@Override
 			public void actionPerformed(@Nullable ActionEvent e)
 			{
-				Layer l=Layers.getLayer(activePopupLayer);
-				if(l==null)
+				if(activePopupLayer==null)
 					return;
 				
-				l.setVisible(false);
+				activePopupLayer.setVisible(false);
 				updateData();
 			}
 		});
 		showLayer = new JMenuItem("Show layer", IconBank.getIcon(JHVIcon.VISIBLE, SIZE, SIZE));
 		showLayer.addActionListener(new ActionListener()
 		{
+			@SuppressWarnings("null")
 			@Override
 			public void actionPerformed(@Nullable ActionEvent e)
 			{
-				Layer l=Layers.getLayer(activePopupLayer);
-				if(l==null)
+				if(activePopupLayer==null)
 					return;
-
-				l.setVisible(true);
+				
+				activePopupLayer.setVisible(true);
 				updateData();
 			}
 		});
@@ -147,6 +146,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		removeLayer = new JMenuItem("Close layer", IconBank.getIcon(JHVIcon.REMOVE_NEW, SIZE, SIZE));
 		removeLayer.addActionListener(new ActionListener()
 		{
+			@SuppressWarnings("null")
 			@Override
 			public void actionPerformed(@Nullable ActionEvent e)
 			{
@@ -165,17 +165,17 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 
 		popupMenu.addPopupMenuListener(new PopupMenuListener()
 		{
+			@SuppressWarnings("null")
 			@Override
 			public void popupMenuWillBecomeVisible(@Nullable PopupMenuEvent e)
 			{
-				Layer l=Layers.getLayer(activePopupLayer);
-				if(l==null)
+				if(activePopupLayer==null)
 					return;
 				
-				if (l.isImageLayer())
+				if (activePopupLayer instanceof AbstractImageLayer)
 				{
 					showMetaView.setEnabled(true);
-					downloadLayer.setEnabled(l.getDownloadURL()!=null);
+					downloadLayer.setEnabled(activePopupLayer.getDownloadURL()!=null);
 					removeLayer.setEnabled(false);
 				}
 				else
@@ -207,9 +207,6 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		table.getColumnModel().getColumn(column).setResizable(false);
 	}
 	
-	/**
-	 * Create the panel.
-	 */
 	private void initGUI()
 	{
 		setLayout(new BorderLayout(0, 0));
@@ -260,9 +257,8 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 				if(e==null)
 					return;
 				
-				JTable jTable = (JTable) e.getSource();
-				int row = jTable.rowAtPoint(e.getPoint());
-				int column = table.getSelectedColumn();
+				int row = table.rowAtPoint(e.getPoint());
+				int column = table.columnAtPoint(e.getPoint());
 				if (column == 4)
 					Layers.removeLayer(row);
 				else if (column == 0)
@@ -288,16 +284,24 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 				
 				if (e.isPopupTrigger())
 				{
-					JTable jTable = (JTable) e.getSource();
-					int row = jTable.rowAtPoint(e.getPoint());
+					int row = table.rowAtPoint(e.getPoint());
 					if (row >= 0 && row < Layers.getLayers().size())
 					{
-						activePopupLayer = row;
-						hideLayer.setVisible(Layers.getLayer(activePopupLayer).isVisible());
-						showLayer.setVisible(!Layers.getLayer(activePopupLayer).isVisible());
-						popupMenu.show(jTable, e.getX(), e.getY());
+						Layers.setActiveLayer(row);
+						activePopupLayer=Layers.getLayer(row);
+						
+						hideLayer.setVisible(activePopupLayer.isVisible());
+						showLayer.setVisible(!activePopupLayer.isVisible());
+						popupMenu.show(table, e.getX(), e.getY());
 					}
 				}
+			}
+			
+			@Override
+			public void mouseReleased(@Nullable MouseEvent e)
+			{
+				//popup triggers should be checked on mousePressed AND mouseReleased
+				mousePressed(e);
 			}
 		});
 
@@ -382,7 +386,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 				
 				String downloadURL = l.getDownloadURL();
 				if(downloadURL!=null)
-					new DownloadMovieDialog().startDownload(downloadURL, l);
+					new DownloadMovieDialog(downloadURL, l);
 			}
 		});
 		GridBagConstraints gbcBtnDownloadLayer = new GridBagConstraints();
@@ -459,7 +463,6 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			// setBackground(Color.WHITE);
 		}
 
-		@SuppressWarnings("null")
 		@Override
 		public Component getTableCellRendererComponent(@Nullable JTable table, @Nullable Object value, boolean isSelected, boolean hasFocus, final int row, int column)
 		{
@@ -488,7 +491,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 					break;
 				case 4:
 					JLabel label4 = (JLabel) super.getTableCellRendererComponent(table, null, isSelected, hasFocus, row, column);
-					if (Layers.getLayer(row) != null && Layers.getLayer(row).isImageLayer())
+					if (Layers.getLayer(row) != null && Layers.getLayer(row) instanceof AbstractImageLayer)
 					{
 						label4.setIcon(ICON_REMOVE);
 						label4.setPreferredSize(new Dimension(20, 20));
@@ -522,7 +525,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		if (layer != null)
 		{
 			btnDownloadLayer.setEnabled(layer.getDownloadURL()!=null);
-			btnShowInfo.setEnabled(layer.isImageLayer());
+			btnShowInfo.setEnabled(layer instanceof AbstractImageLayer);
 		}
 	}
 
@@ -534,6 +537,11 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 
 	@Override
 	public void dateTimesChanged(int framecount)
+	{
+	}
+
+	@Override
+	public void isPlayingChanged(boolean _isPlaying)
 	{
 	}
 }

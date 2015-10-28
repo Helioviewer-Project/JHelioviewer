@@ -9,14 +9,11 @@ import java.time.temporal.ChronoUnit;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.swing.SwingUtilities;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.helioviewer.jhv.base.Telemetry;
-import org.helioviewer.jhv.layers.LUT.Lut;
 import org.helioviewer.jhv.viewmodel.jp2view.kakadu.KakaduUtils;
-import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.metadata.MetaDataFactory;
 import org.helioviewer.jhv.viewmodel.metadata.UnsuitableMetaDataException;
@@ -40,54 +37,86 @@ public class Movie
 	
 	public enum Quality
 	{
-		NONE, PREVIEW, FULL
+		PREVIEW, FULL
 	}
 	
 	public final Quality quality;
 	
-	private @Nullable Jp2_threadsafe_family_src family_src;
-	private final KakaduLayer kakaduLayer;
+	private final @Nullable Kdu_cache kduCache;
+	private final Jp2_threadsafe_family_src family_src;
+	private boolean disposed;
 	
-	public Movie(KakaduLayer _kakaduLayer, int _sourceId, String _filename)
+	@SuppressWarnings("null")
+	public void dispose()
 	{
-		sourceId = _sourceId;
-		kakaduLayer=_kakaduLayer;
-		quality = Quality.FULL;
+		disposed=true;
+		metaDatas=null;
 		
 		try
 		{
-			filename = _filename;
-			family_src = new Jp2_threadsafe_family_src();
-			family_src.Open(filename);
-			processFamilySrc();
-			if(!(getAnyMetaData()!=null))
-				throw new UnsuitableMetaDataException();
+			family_src.Close();
 		}
 		catch (KduException e)
 		{
 			Telemetry.trackException(e);
+		}
+		family_src.Native_destroy();
+		
+		if(kduCache!=null)
+		{
+			try
+			{
+				kduCache.Close();
+			}
+			catch (KduException e)
+			{
+				Telemetry.trackException(e);
+			}
+			kduCache.Native_destroy();
 		}
 	}
 	
-	public Movie(KakaduLayer _kakaduLayer, int _sourceId, Kdu_cache kduCache)
+	public Movie(int _sourceId, String _filename)
 	{
 		sourceId = _sourceId;
-		kakaduLayer=_kakaduLayer;
-		quality = Quality.PREVIEW;
+		quality = Quality.FULL;
+		family_src = new Jp2_threadsafe_family_src();
+		filename = _filename;
+		kduCache = null;
 		
 		try
 		{
-			family_src = new Jp2_threadsafe_family_src();
-			family_src.Open(kduCache);
+			family_src.Open(filename);
 			processFamilySrc();
-			
-			if(!(getAnyMetaData()!=null))
-				throw new UnsuitableMetaDataException();
 		}
 		catch (KduException e)
 		{
 			Telemetry.trackException(e);
 		}
+		
+		if(getAnyMetaData()==null)
+			throw new UnsuitableMetaDataException();
+	}
+	
+	public Movie(int _sourceId, Kdu_cache _kduCache)
+	{
+		sourceId = _sourceId;
+		quality = Quality.PREVIEW;
+		family_src = new Jp2_threadsafe_family_src();
+		kduCache = _kduCache;
+		
+		try
+		{
+			family_src.Open(kduCache);
+			processFamilySrc();
+		}
+		catch (KduException e)
+		{
+			Telemetry.trackException(e);
+		}
+		
+		if(getAnyMetaData()==null)
+			throw new UnsuitableMetaDataException();
 	}
 
 	
@@ -115,23 +144,6 @@ public class Movie
 				//FIXME: should invalidate textureCache
 				//TextureCache.invalidate(sourceId, metaDatas[i].getLocalDateTime());
 			}
-			
-			if(kakaduLayer.getLUT()==null)
-			{
-				MetaData md=getAnyMetaData();
-				if(md!=null)
-				{
-					final Lut l=md.getDefaultLUT();
-					SwingUtilities.invokeLater(new Runnable()
-					{
-						@Override
-						public void run()
-						{
-							kakaduLayer.setLUT(l);
-						}
-					});
-				}
-			}
 		}
 		catch (KduException e)
 		{
@@ -143,17 +155,17 @@ public class Movie
 	{
 		return filename;
 	}
-
+	
 	public class Match
 	{
 		public final int index;
-		public final long timeDifferenceNanos;
+		public final long timeDifferenceSeconds;
 		public final Movie movie;
 		
 		Match(int _index, long _timeDifferenceNanos)
 		{
 			index=_index;
-			timeDifferenceNanos=_timeDifferenceNanos;
+			timeDifferenceSeconds=_timeDifferenceNanos;
 			movie=Movie.this;
 		}
 		
@@ -170,16 +182,13 @@ public class Movie
 		@Override
 		public int hashCode()
 		{
-			return index ^ Long.hashCode(timeDifferenceNanos);
+			return index ^ Long.hashCode(timeDifferenceSeconds);
 		}
 	}
 	
 	@SuppressWarnings("null")
 	@Nullable public Match findClosestIdx(@Nonnull LocalDateTime _currentDateTime)
 	{
-		if(metaDatas==null)
-			return null;
-		
 		int bestI=-1;
 		long minDiff = Long.MAX_VALUE;
 		
@@ -191,7 +200,7 @@ public class Movie
 			
 			LocalDateTime ldt=md.getLocalDateTime();
 			
-			long curDiff = Math.abs(ChronoUnit.NANOS.between(ldt, _currentDateTime));
+			long curDiff = Math.abs(ChronoUnit.SECONDS.between(ldt, _currentDateTime));
 			if(curDiff<minDiff)
 			{
 				minDiff=curDiff;
@@ -232,15 +241,11 @@ public class Movie
 	}
 	
 	@Nullable
-	public Document readMetadataDocument(int index)
+	public Document readMetadataDocument(int _index)
 	{
 		try
 		{
-			if(family_src==null)
-				return null;
-			
-			@SuppressWarnings("null")
-			String xmlText = KakaduUtils.getXml(family_src, index);
+			String xmlText = KakaduUtils.getXml(family_src, _index);
 			if (xmlText == null)
 				return null;
 			xmlText = xmlText.trim().replace("&", "&amp;").replace("$OBS", "");
@@ -282,12 +287,13 @@ public class Movie
 
 	public @Nullable ByteBuffer decodeImage(int _index, int quality, float zoomPercent, Rectangle _requiredRegion)
 	{
+		if(disposed)
+			throw new IllegalStateException();
+		
 		try
 		{
 			Jpx_source jpxSrc = new Jpx_source();
 			jpxSrc.Open(family_src, true);
-			
-			
 			
 			Kdu_dims requestedBufferedRegion = new Kdu_dims();
 			requestedBufferedRegion.Access_pos().Set_x(_requiredRegion.x);

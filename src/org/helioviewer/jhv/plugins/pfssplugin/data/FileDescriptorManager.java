@@ -1,6 +1,5 @@
 package org.helioviewer.jhv.plugins.pfssplugin.data;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -112,13 +111,13 @@ public class FileDescriptorManager
 							}
 						}
 					}
-					catch (IOException e)
-					{
-						parent.failedDownloads.add(httpRequest);
-					}
 					catch (InterruptedException _ie)
 					{
 						return;
+					}
+					catch (Throwable e)
+					{
+						parent.failedDownloads.add(httpRequest);
 					}
 					Plugins.repaintMainPanel();
 				}

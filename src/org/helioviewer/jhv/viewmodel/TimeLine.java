@@ -64,10 +64,14 @@ public class TimeLine implements LayerListener
 			_playing=false;
 		}
 		
+		if(isPlaying==_playing)
+			return;
+		
 		isPlaying = _playing;
 		forward = true;
-		MainFrame.SINGLETON.MAIN_PANEL.resetLastFrameChangeTime();
-		MainFrame.SINGLETON.MAIN_PANEL.repaint();
+		
+		for(TimeLineListener l:timeLineListeners)
+			l.isPlayingChanged(isPlaying);
 	}
 
 	public @Nullable LocalDateTime nextFrame()
@@ -130,16 +134,9 @@ public class TimeLine implements LayerListener
 			timeLineListener.timeStampChanged(current, _previous);
 	}
 
-	private void notifyUpdateDateTimes()
+	public void setFPS(int _fps)
 	{
-		MainFrame.SINGLETON.MOVIE_PANEL.setButtonsEnabled(!localDateTimes.isEmpty());
-		for (TimeLine.TimeLineListener timeLineListener : timeLineListeners)
-			timeLineListener.dateTimesChanged(localDateTimes.size());
-	}
-
-	public void setFPS(int fps)
-	{
-		this.millisecondsPerFrame = Math.round(1000f / fps);
+		millisecondsPerFrame = Math.round(1000f / _fps);
 	}
 
 	public int getMillisecondsPerFrame()
@@ -162,7 +159,7 @@ public class TimeLine implements LayerListener
 	@Override
 	public void activeLayerChanged(@Nullable Layer layer)
 	{
-		if (layer != null && layer.isImageLayer())
+		if (layer != null && layer instanceof AbstractImageLayer)
 			setLocalDateTimes(((AbstractImageLayer)layer).getLocalDateTimes());
 	}
 
@@ -187,6 +184,7 @@ public class TimeLine implements LayerListener
 
 	public interface TimeLineListener
 	{
+		void isPlayingChanged(boolean _isPlaying);
 		void timeStampChanged(LocalDateTime current, LocalDateTime last);
 
 		@Deprecated
@@ -196,15 +194,16 @@ public class TimeLine implements LayerListener
 	public void setLocalDateTimes(NavigableSet<LocalDateTime> _localDateTimes)
 	{
 		localDateTimes = _localDateTimes;
-		notifyUpdateDateTimes();
-		if(_localDateTimes.isEmpty())
+		for (TimeLine.TimeLineListener timeLineListener : timeLineListeners)
+			timeLineListener.dateTimesChanged(localDateTimes.size());
+
+		/*if(_localDateTimes.isEmpty())
 			setCurrentDate(LocalDateTime.now());
 		else
-			setCurrentDate(_localDateTimes.first());
+			setCurrentDate(current);*/
 		
 		if(localDateTimes.isEmpty())
 			setPlaying(false);
-		MainFrame.SINGLETON.MOVIE_PANEL.setButtonsEnabled(!localDateTimes.isEmpty());
 	}
 
 	public @Nullable LocalDateTime getFirstDateTime()
@@ -296,7 +295,7 @@ public class TimeLine implements LayerListener
 		if (next == null)
 		{
 			current = localDateTimes.first();		
-			MainFrame.SINGLETON.MOVIE_PANEL.setPlaying(false);
+			setPlaying(false);
 		}
 		else
 			current = next;

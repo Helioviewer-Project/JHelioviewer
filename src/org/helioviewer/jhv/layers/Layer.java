@@ -41,11 +41,6 @@ public abstract class Layer
 		MainFrame.SINGLETON.MAIN_PANEL.repaint();
 	}
 
-	public final boolean isImageLayer()
-	{
-		return this instanceof AbstractImageLayer;
-	}
-	
 	public enum RenderResult
 	{
 		RETRY_LATER,

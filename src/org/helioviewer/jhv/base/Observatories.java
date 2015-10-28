@@ -1,6 +1,5 @@
 package org.helioviewer.jhv.base;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -74,7 +73,11 @@ public class Observatories
 						
 						break;
 					}
-					catch (IOException | JSONException _e)
+					catch(InterruptedException _e)
+					{
+						break;
+					}
+					catch (Throwable _e)
 					{
 						Telemetry.trackException(_e);
 						
@@ -86,10 +89,6 @@ public class Observatories
 						{
 							break;
 						}
-					}
-					catch(InterruptedException _e)
-					{
-						break;
 					}
 			}
 		}, "MODEL_LOAD");

@@ -41,7 +41,6 @@ public class Settings
         try (InputStream defaultPropStream = Settings.class.getResourceAsStream("/settings/defaults.properties"))
         {
             DEFAULT_PROPERTIES.load(defaultPropStream);
-            DEFAULT_PROPERTIES.setProperty("default.local.path",Directories.REMOTEFILES.getPath());
             
             defaultPropStream.close();
             System.out.println(">> Settings.load() > Load default system settings: " + DEFAULT_PROPERTIES.toString());
@@ -55,12 +54,31 @@ public class Settings
 
     public static void setBoolean(String _key, boolean _val)
     {
-    	setString(_key,_val?"1":"0");
+    	setInt(_key,_val?1:0);
     }
     
     public static boolean getBoolean(String _key)
     {
-    	return "1".equals(getString(_key));
+    	return getInt(_key)!=0;
+    }
+    
+    public static void setInt(String _key, int _val)
+    {
+    	setString(_key,Integer.toString(_val));
+    }
+    
+    public static int getInt(String _key)
+    {
+    	final String v=getString(_key);
+    	try
+    	{
+    		return Integer.parseInt(v);
+    	}
+    	catch(NumberFormatException _nfe)
+    	{
+    		Telemetry.trackException(new NumberFormatException("Settings: Cannot parse \""+v+"\" for key \""+_key+"\"."));
+    		return 0;
+    	}
     }
     
 	public static void setString(String _key, String _val)

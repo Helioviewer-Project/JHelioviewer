@@ -294,4 +294,9 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 	{
 		MainFrame.SINGLETON.LAYER_PANEL.updateData();
 	}
+
+	@Override
+	public void isPlayingChanged(boolean _isPlaying)
+	{
+	}
 }

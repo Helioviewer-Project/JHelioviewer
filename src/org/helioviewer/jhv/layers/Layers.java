@@ -28,9 +28,9 @@ public class Layers
 				return 1;
 			else if (o2==null)
 				return -1;
-			else if (!o1.isImageLayer() && o2.isImageLayer())
+			else if (!(o1 instanceof AbstractImageLayer) && o2 instanceof AbstractImageLayer)
 				return 1;
-			else if (o1.isImageLayer() && !o2.isImageLayer())
+			else if (o1 instanceof AbstractImageLayer && !(o2 instanceof AbstractImageLayer))
 				return -1;
 			else
 				return 0;
@@ -41,11 +41,11 @@ public class Layers
 	{
 		int counter = 0;
 		for (Layer tmpLayer : layers)
-			if (tmpLayer.isImageLayer())
+			if (tmpLayer instanceof AbstractImageLayer)
 				counter++;
 		
 		for (Layer tmpLayer : layers)
-			if (tmpLayer.isImageLayer())
+			if (tmpLayer instanceof AbstractImageLayer)
 			{
 				AbstractImageLayer tmpImageLayer = (AbstractImageLayer) tmpLayer;
 				if (tmpImageLayer == imageLayer)
@@ -65,7 +65,9 @@ public class Layers
 		layers.add(_newLayer);
 		layers.sort(COMPARATOR);
 		
-		if (_newLayer.isImageLayer())
+		Telemetry.trackEvent("Layer added", "Name",_newLayer.getName(),"Full name",_newLayer.getFullName());
+		
+		if (_newLayer instanceof AbstractImageLayer)
 			updateOpacity((AbstractImageLayer)_newLayer, false);
 		
 		for (LayerListener listener : layerListeners)
@@ -83,25 +85,34 @@ public class Layers
 		
 		return layers.get(idx);
 	}
-
-	public static void removeLayer(int idx)
+	
+	public static void removeLayer(Layer _l)
+	{
+		int index=layers.indexOf(_l);
+		if(index==-1)
+			return;
+		
+		removeLayer(index);
+	}
+	
+	public static void removeLayer(int _idx)
 	{
 		if (layers.isEmpty())
 			return;
 		
-		if (!layers.get(idx).isImageLayer())
+		if (!(layers.get(_idx) instanceof AbstractImageLayer))
 			return;
 		
 		AbstractImageLayer.newRenderPassStarted();
 		
-		updateOpacity((AbstractImageLayer)layers.get(idx), true);
+		updateOpacity((AbstractImageLayer)layers.get(_idx), true);
 		
-		layers.get(idx).dispose();
-		layers.remove(idx);
+		layers.get(_idx).dispose();
+		layers.remove(_idx);
 		
-		if (layers.isEmpty() || activeLayerIndex==idx)
+		if (layers.isEmpty() || activeLayerIndex==_idx)
 			setActiveLayer(-1);
-		else if(activeLayerIndex>idx)
+		else if(activeLayerIndex>_idx)
 			setActiveLayer(activeLayerIndex-1);
 		
 		for (LayerListener renderListener : layerListeners)
@@ -116,7 +127,7 @@ public class Layers
 	public static boolean anyImageLayers()
 	{
 		for (Layer tmpLayer : layers)
-			if (tmpLayer.isImageLayer())
+			if (tmpLayer instanceof AbstractImageLayer)
 				return true;
 		return false;
 	}
@@ -167,7 +178,7 @@ public class Layers
 	public static void removeAllImageLayers()
 	{
 		for (Layer layer : layers)
-			if (layer.isImageLayer())
+			if (layer instanceof AbstractImageLayer)
 				layer.dispose();
 	
 		AbstractImageLayer.newRenderPassStarted();

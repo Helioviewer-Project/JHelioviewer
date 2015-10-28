@@ -66,12 +66,12 @@ public class PfssCompressed implements Cacheable
 			rawData = bos.toByteArray();
 			isLoaded = true;
 		}
-		catch (IOException e)
-		{
-			parent.failedDownloads.add(httpRequest);
-		}
 		catch (InterruptedException _ie)
 		{
+		}
+		catch (Throwable e)
+		{
+			parent.failedDownloads.add(httpRequest);
 		}
 	}
 

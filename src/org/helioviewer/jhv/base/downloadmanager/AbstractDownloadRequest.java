@@ -1,6 +1,5 @@
 package org.helioviewer.jhv.base.downloadmanager;
 
-import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.Nullable;
@@ -10,7 +9,7 @@ public abstract class AbstractDownloadRequest
 	public static final int INFINITE_TIMEOUT = -1;
 	protected volatile boolean finished = false;
 	protected final AtomicInteger retries = new AtomicInteger(3);
-	protected volatile @Nullable IOException ioException = null;
+	protected volatile @Nullable Throwable exception = null;
 	protected volatile int timeOut = 20000;
 	protected final String url;
 	protected volatile int totalLength = -1;
@@ -41,11 +40,11 @@ public abstract class AbstractDownloadRequest
 		return retries.decrementAndGet()>0;
 	}
 	
-	abstract void execute() throws IOException, InterruptedException;
+	abstract void execute() throws Throwable;
 
-	public void setError(IOException _ioException)
+	public void setError(Throwable _exception)
 	{
-		ioException = _ioException;
+		exception = _exception;
 		finished = true;
 	}
 	
@@ -65,15 +64,14 @@ public abstract class AbstractDownloadRequest
 		return receivedLength;
 	}
 	
-	public void checkException() throws IOException
+	public void checkException() throws Throwable
 	{
-		if (ioException != null)
-			throw ioException;
+		if (exception != null)
+			throw exception;
 	}
 
 	public void setRetries(int i)
 	{
-		ioException = null;
 		retries.set(i);
 		finished = false;
 	}
