@@ -14,7 +14,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.helioviewer.jhv.base.Telemetry;
-import org.helioviewer.jhv.layers.AbstractImageLayer.CacheStatus;
 import org.helioviewer.jhv.layers.LUT.Lut;
 import org.helioviewer.jhv.viewmodel.jp2view.kakadu.KakaduUtils;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
@@ -38,22 +37,22 @@ public class Movie
 	
 	public final int sourceId;
 	@Nullable private String filename;
-
-	private CacheStatus cacheStatus = CacheStatus.NONE;
-
+	
+	public enum Quality
+	{
+		NONE, PREVIEW, FULL
+	}
+	
+	public final Quality quality;
+	
 	private @Nullable Jp2_threadsafe_family_src family_src;
 	private final KakaduLayer kakaduLayer;
-
-	public Movie(KakaduLayer _kakaduLayer, int _sourceId)
+	
+	public Movie(KakaduLayer _kakaduLayer, int _sourceId, String _filename)
 	{
 		sourceId = _sourceId;
 		kakaduLayer=_kakaduLayer;
-	}
-	
-	public synchronized void setFile(String _filename)
-	{
-		if(filename != null)
-			throw new IllegalStateException();
+		quality = Quality.FULL;
 		
 		try
 		{
@@ -63,8 +62,6 @@ public class Movie
 			processFamilySrc();
 			if(!(getAnyMetaData()!=null))
 				throw new UnsuitableMetaDataException();
-
-			cacheStatus = CacheStatus.FULL;
 		}
 		catch (KduException e)
 		{
@@ -72,10 +69,11 @@ public class Movie
 		}
 	}
 	
-	public synchronized void setKDUCache(Kdu_cache kduCache)
+	public Movie(KakaduLayer _kakaduLayer, int _sourceId, Kdu_cache kduCache)
 	{
-		if (filename != null)
-			return;
+		sourceId = _sourceId;
+		kakaduLayer=_kakaduLayer;
+		quality = Quality.PREVIEW;
 		
 		try
 		{
@@ -85,8 +83,6 @@ public class Movie
 			
 			if(!(getAnyMetaData()!=null))
 				throw new UnsuitableMetaDataException();
-			
-			cacheStatus = CacheStatus.PREVIEW;
 		}
 		catch (KduException e)
 		{
@@ -207,11 +203,6 @@ public class Movie
 			return null;
 		else
 			return new Match(bestI,minDiff);
-	}
-	
-	public CacheStatus getCacheStatus()
-	{
-		return cacheStatus;
 	}
 	
 	@Nullable public MetaData getAnyMetaData()

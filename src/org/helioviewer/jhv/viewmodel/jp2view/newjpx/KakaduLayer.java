@@ -87,8 +87,7 @@ public class KakaduLayer extends AbstractImageLayer
 		sourceId = genSourceId(_filePath);
 		localFile = true;
 		
-		Movie movie = new Movie(this,sourceId);
-		movie.setFile(_filePath);
+		Movie movie = new Movie(this,sourceId,_filePath);
 		if(movie.getAnyMetaData()==null)
 			throw new UnsuitableMetaDataException();
 		
@@ -212,11 +211,9 @@ public class KakaduLayer extends AbstractImageLayer
 		@Nullable HTTPRequest metadata;
 		@Nullable JPIPRequest lq;
 		@Nullable JPIPDownloadRequest hq;
-		final Movie movie;
 		
-		MovieDownload(Movie _movie)
+		MovieDownload()
 		{
-			movie=_movie;
 		}
 	}
 	
@@ -242,7 +239,7 @@ public class KakaduLayer extends AbstractImageLayer
 					if(currentEnd.isAfter(end))
 						currentEnd = end;
 					
-					MovieDownload md=new MovieDownload(new Movie(KakaduLayer.this,sourceId));
+					MovieDownload md=new MovieDownload();
 					md.metadata = new HTTPRequest(URL
 							+ "startTime=" + currentStart.format(formatter)
 							+ "&endTime=" + currentEnd.format(formatter)
@@ -282,20 +279,15 @@ public class KakaduLayer extends AbstractImageLayer
 							UltimateDownloadManager.remove(download.metadata);
 							UltimateDownloadManager.remove(download.lq);
 							
-							String hqFilename = download.hq.filename;
-							download.hq = null;
-							download.lq = null;
-							
 							try
 							{
-								download.movie.setFile(hqFilename);
-								
+								final Movie m=new Movie(KakaduLayer.this,sourceId,download.hq.filename);
 								SwingUtilities.invokeLater(new Runnable()
 								{
 									@Override
 									public void run()
 									{
-										MovieCache.add(download.movie);
+										MovieCache.add(m);
 									}
 								});
 							}
@@ -303,19 +295,31 @@ public class KakaduLayer extends AbstractImageLayer
 							{
 								Telemetry.trackException(_umde);
 							}
+							
+							download.hq = null;
+							download.lq = null;
 						}
 						else if(download.lq!=null && download.lq.isFinished())
 						{
+							try
+							{
+								final Movie m=new Movie(KakaduLayer.this,sourceId,download.lq.kduCache);
+								SwingUtilities.invokeLater(new Runnable()
+								{
+									@Override
+									public void run()
+									{
+										MovieCache.add(m);
+									}
+								});
+							}
+							catch(UnsuitableMetaDataException _umde)
+							{
+								Telemetry.trackException(_umde);
+							}
+							
 							download.lq=null;
 							downloads.addLast(download);
-							SwingUtilities.invokeLater(new Runnable()
-							{
-								@Override
-								public void run()
-								{
-									MovieCache.add(download.movie);
-								}
-							});
 						}
 						else if(download.metadata!=null && download.metadata.isFinished())
 						{
@@ -351,7 +355,8 @@ public class KakaduLayer extends AbstractImageLayer
 									}
 								});
 								
-								download.lq = new JPIPRequest(jsonObject.getString("uri"), DownloadPriority.URGENT, 0, frames.length(), new Rectangle(256, 256), download.movie);
+								download.lq = new JPIPRequest(jsonObject.getString("uri"), DownloadPriority.URGENT, 0, frames.length(), new Rectangle(256, 256));
+								
 								UltimateDownloadManager.addRequest(download.lq);
 								download.metadata=null;
 							}

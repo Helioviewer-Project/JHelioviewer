@@ -37,11 +37,6 @@ import com.jogamp.opengl.GLContext;
 //FIXME: shader handles this incorrectly: corona.opacity>0 && hit corona first && hit sphere later
 public abstract class AbstractImageLayer extends Layer
 {
-	public enum CacheStatus
-	{
-		FULL, PREVIEW, NONE;
-	}
-
 	public double opacity = 1;
 	public double sharpness = 0;
 	public double gamma = 1;

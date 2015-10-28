@@ -401,7 +401,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 					if(currentMatch==null || currentMatch.equals(previousMatch))
 						g.setColor(COLOR_NOT_CACHED);
 					else
-						switch (currentMatch.movie.getCacheStatus())
+						switch (currentMatch.movie.quality)
 						{
 							case FULL:
 								g.setColor(COLOR_COMPLETELY_CACHED);

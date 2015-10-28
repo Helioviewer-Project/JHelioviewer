@@ -8,7 +8,6 @@ import java.net.URISyntaxException;
 import javax.annotation.Nullable;
 
 import org.helioviewer.jhv.base.Telemetry;
-import org.helioviewer.jhv.layers.Movie;
 import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPRequest.Method;
 import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPConstants;
 import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPDataSegment;
@@ -27,13 +26,11 @@ public class JPIPRequest extends AbstractDownloadRequest
 
 	private int JpipRequestLen = JPIPConstants.MIN_REQUEST_LEN;
 	private volatile long lastResponseTime = -1;
-	private final Movie movie;
+	public final Kdu_cache kduCache = new Kdu_cache();
 	
-	public JPIPRequest(String url, DownloadPriority priority, int startFrame, int endFrame, Rectangle size, Movie _movie)
+	public JPIPRequest(String url, DownloadPriority priority, int startFrame, int endFrame, Rectangle size)
 	{
 		super(url, priority);
-		
-		movie=_movie;
 		
 		query = new JPIPQuery();
 		query.setField(JPIPRequestField.CONTEXT.toString(), "jpxl<" + startFrame + "-" + endFrame + ">");
@@ -47,27 +44,15 @@ public class JPIPRequest extends AbstractDownloadRequest
 	@Override
 	void execute() throws IOException
 	{
-		if(movie.getBackingFile()!=null)
-		{
-			finished=true;
-			return;
-		}
-		
 		JPIPSocket jpipSocket = new JPIPSocket();
 
 		try
 		{
-			final Kdu_cache kduCache = new Kdu_cache();
+			
 			openSocket(jpipSocket, kduCache);
 			org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPRequest request = new org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPRequest(Method.GET);
 			for(;;)
 			{
-				if(movie.getBackingFile()!=null)
-				{
-					finished=true;
-					return;
-				}
-
 				if (jpipSocket.isClosed())
 					openSocket(jpipSocket, kduCache);
 				
@@ -94,7 +79,6 @@ public class JPIPRequest extends AbstractDownloadRequest
 				}
 			}
 			
-			movie.setKDUCache(kduCache);
 			finished = true;
 		}
 		catch (URISyntaxException | UnsuitableMetaDataException | KduException e)

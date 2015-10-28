@@ -16,7 +16,6 @@ import org.w3c.dom.Document;
 
 //FIXME: clean out cache eventually
 //FIXME: back with database to remember files from previous sessions
-//FIXME: manage temporally overlapping movies with different resolutions/qualities/cadence
 public class MovieCache
 {
 	private static HashMap<Integer,List<Movie>> cache=new HashMap<Integer, List<Movie>>();
@@ -40,12 +39,16 @@ public class MovieCache
 		if(al==null)
 			return null;
 		
-		//TODO: make more efficient
+		//TODO: use more efficient data structures
 		Match bestMatch=null;
 		for (Movie m : al)
 		{
 			Match curMatch=m.findClosestIdx(_currentDate);
-			if(bestMatch==null || (curMatch!=null && curMatch.timeDifferenceNanos<bestMatch.timeDifferenceNanos))
+			if(bestMatch==null)
+				bestMatch=curMatch;
+			else if(curMatch.timeDifferenceNanos<bestMatch.timeDifferenceNanos)
+				bestMatch=curMatch;
+			else if(curMatch.timeDifferenceNanos==bestMatch.timeDifferenceNanos && curMatch.movie.quality.ordinal()>bestMatch.movie.quality.ordinal())
 				bestMatch=curMatch;
 		}
 		
