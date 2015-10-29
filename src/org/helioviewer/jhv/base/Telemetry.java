@@ -50,7 +50,6 @@ public class Telemetry
 			public void run()
 			{
 				Telemetry.trackMetric("Session duration", (System.currentTimeMillis()-START_TIME)/1000);
-				//TODO: track more telemetry
 			}
 		});
 		

@@ -399,8 +399,7 @@ public class KakaduLayer extends AbstractImageLayer
 								@Override
 								public void run()
 								{
-									//FIXME: should only happen if current layer is active
-									//FIXME: should only happen if needed
+									//TODO: should only happen if needed (layer visible, time range, ...)
 									MainFrame.SINGLETON.MAIN_PANEL.repaint(1000);
 									MainFrame.SINGLETON.OVERVIEW_PANEL.repaint(1000);
 									MainFrame.SINGLETON.MOVIE_PANEL.repaint(1000);
@@ -463,7 +462,7 @@ public class KakaduLayer extends AbstractImageLayer
 		for (LocalDateTime localDateTime : _localDateTimes)
 			localDateTimes.add(localDateTime);
 		
-		//FIXME: should probably only be set if current layer is active
+		//TODO: should probably only be set if current layer is active
 		TimeLine.SINGLETON.setLocalDateTimes(localDateTimes);
 		MainFrame.SINGLETON.MOVIE_PANEL.repaintSlider();
 	}

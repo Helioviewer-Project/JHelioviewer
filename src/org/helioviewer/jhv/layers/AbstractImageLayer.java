@@ -187,7 +187,7 @@ public abstract class AbstractImageLayer extends Layer
 				_preparedImageData.texture.width,
 				_preparedImageData.texture.height);
 
-		//FIXME: right/bottom edges shimmer (wrap around)
+		//TODO: right/bottom edges shimmer (wrap around)
 		gl.glBegin(GL2.GL_QUADS);
 
 		gl.glTexCoord2f(0.0f, 1.0f);

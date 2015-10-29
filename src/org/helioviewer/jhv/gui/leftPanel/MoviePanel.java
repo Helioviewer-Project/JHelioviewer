@@ -32,7 +32,6 @@ import javax.swing.plaf.basic.BasicSliderUI;
 
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
-import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.components.MenuBar;
 import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.layers.Layer;
@@ -158,7 +157,6 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 			@Override
 			public void itemStateChanged(@Nullable ItemEvent e)
 			{
-				//FIXME: switching to other units doesn't work --> crash
 				timeLine.setFPS((int) spinner.getValue() * ((PlaybackSpeedUnit) speedUnitComboBox.getSelectedItem()).factor);
 			}
 		});

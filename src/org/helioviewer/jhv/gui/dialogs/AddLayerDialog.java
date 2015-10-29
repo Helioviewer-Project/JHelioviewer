@@ -51,7 +51,7 @@ public class AddLayerDialog extends JDialog
 	private DatePicker datePickerEndDate;
 	private JSpinner cadence;
 	private JPanel layerPanel;
-
+	
 	private enum TimeSteps
 	{
 		SEC("sec", 1),

@@ -28,7 +28,7 @@ public class TimeLine implements LayerListener
 
 	private NavigableSet<LocalDateTime> localDateTimes;
 
-	private int millisecondsPerFrame = 50;
+	private double millisecondsPerFrame = 50;
 	private AnimationMode animationMode = AnimationMode.LOOP;
 
 	public static TimeLine SINGLETON = new TimeLine();
@@ -136,10 +136,10 @@ public class TimeLine implements LayerListener
 
 	public void setFPS(int _fps)
 	{
-		millisecondsPerFrame = Math.round(1000f / _fps);
+		millisecondsPerFrame = 1000d / _fps;
 	}
 
-	public int getMillisecondsPerFrame()
+	public double getMillisecondsPerFrame()
 	{
 		return millisecondsPerFrame;
 	}
@@ -243,7 +243,7 @@ public class TimeLine implements LayerListener
 		if (_elapsedMilliseconds <= 0)
 			return true;
 		
-		int elapsedFrames = (int)_elapsedMilliseconds / millisecondsPerFrame;
+		int elapsedFrames = (int)(_elapsedMilliseconds / millisecondsPerFrame);
 		if (elapsedFrames <= 0)
 		{
 			timer.stop();

@@ -21,14 +21,13 @@ import org.helioviewer.jhv.layers.AbstractImageLayer;
 import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 
-//FIXME: layout on windows broken
+//TODO: layout on windows broken
 public class DownloadMovieDialog extends JDialog
 {
 	private static final String PATH_SETTINGS = "download.path"; //TODO: consolidate/check all paths
 
 	public DownloadMovieDialog(String _url, Layer _layer)
 	{
-		//FIXME: looks bad (Windows), probably needs cancel, etc.
 		super(MainFrame.SINGLETON, "Download movie", true);
 		
     	Telemetry.trackEvent("Dialog", "Type", getClass().getSimpleName());

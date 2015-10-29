@@ -211,9 +211,6 @@ public class Texture
 		g.setColor(Color.GREEN);
 		g.fillOval((int)(textureWidth*width/2)-3, (int)(textureHeight*height/2)-3, 5, 5);
 		
-		//FIXME: nicht required image region an shader übergeben, sondern tatsächlich vorhandene
-		
-		
 		if(imageRegion!=null)
 			g.drawRect(
 					(int)(imageRegion.areaOfSourceImage.getX()*width/2), 

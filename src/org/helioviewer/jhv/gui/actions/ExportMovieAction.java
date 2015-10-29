@@ -114,13 +114,13 @@ public class ExportMovieAction extends AbstractAction
 		final @Nullable FileOutputStream fileOutputStream;
 		final @Nullable ZipOutputStream zipOutputStream;
 		final @Nullable IMediaWriter writer;
-		final int speed;
+		final int fps;
 		if (selectedOutputFormat.isMovieFile())
 		{
 			fileOutputStream=null;
 			zipOutputStream=null;
 			
-			speed = 1000 / TimeLine.SINGLETON.getMillisecondsPerFrame();
+			fps = (int)Math.round(1000d / TimeLine.SINGLETON.getMillisecondsPerFrame());
 			
 			writer = ToolFactory.makeWriter(_directory + _filename + this.selectedOutputFormat.getDefaultExtension());
 			writer.addVideoStream(0, 0, selectedOutputFormat.codec, imageWidth, imageHeight);
@@ -128,7 +128,7 @@ public class ExportMovieAction extends AbstractAction
 		else if (selectedOutputFormat.isCompressedFile())
 		{
 			writer = null;
-			speed = 0;
+			fps = 0;
 			try
 			{
 				fileOutputStream = new FileOutputStream(
@@ -146,7 +146,7 @@ public class ExportMovieAction extends AbstractAction
 			fileOutputStream=null;
 			zipOutputStream=null;
 			writer = null;
-			speed = 0;
+			fps = 0;
 			new File(_directory + _filename).mkdir();
 			_directory += _filename + "/";
 		}
@@ -167,7 +167,7 @@ public class ExportMovieAction extends AbstractAction
 				TimeLine.SINGLETON.setCurrentFrame(0);
 				for (int i = 0; i < TimeLine.SINGLETON.getFrameCount(); i++)
 				{
-					// FIXME: invokeLATER?!!?!
+					// TODO: invokeLATER?!!?!
 					SwingUtilities.invokeLater(new Runnable()
 					{
 						@Override
@@ -199,7 +199,7 @@ public class ExportMovieAction extends AbstractAction
 
 					if (selectedOutputFormat.isMovieFile() && started)
 					{
-						writer.encodeVideo(0, bufferedImage, speed * i, TimeUnit.MILLISECONDS);
+						writer.encodeVideo(0, bufferedImage, fps * i, TimeUnit.MILLISECONDS);
 					}
 					else if (selectedOutputFormat.isCompressedFile() && started)
 					{

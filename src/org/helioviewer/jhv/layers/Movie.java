@@ -141,7 +141,7 @@ public class Movie
 			{
 				metaDatas[i]=MetaDataFactory.getMetaData(readMetadataDocument(i+1));
 				
-				//FIXME: should invalidate textureCache
+				//TODO: should invalidate textureCache
 				//TextureCache.invalidate(sourceId, metaDatas[i].getLocalDateTime());
 			}
 		}
@@ -354,7 +354,7 @@ public class Movie
 			return byteBuffer;*/
 			
 			
-			//FIXME: use kdu_region_decompressor instead
+			//TODO: use kdu_region_decompressor instead
 			Kdu_region_compositor compositor = new Kdu_region_compositor(jpxSrc);
 			
 			//FIXME: downgrade quality first, before resolution when having speed problems

@@ -49,7 +49,6 @@ public class Globals
 	//AIA 193
     public static final int STARTUP_LAYER_ID = 10;
 
-    //TODO check all invocations of file dialogs, check should happen centralized
 	public static final boolean JAVA_FX_AVAILABLE;
 	
 	static
