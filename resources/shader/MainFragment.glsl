@@ -26,17 +26,20 @@ uniform int cameraMode;
 uniform float near;
 uniform float far;
 
-struct Sphere{
+struct Sphere
+{
     vec3 center;
     float radius;
 };
 
-struct Ray{
+struct Ray
+{
     vec3 origin;
     vec3 direction;
 };
 
-struct Plane{
+struct Plane
+{
     vec3 normal;
     float d;
 };
@@ -47,7 +50,6 @@ Plane plane = Plane((vec4(0,0,1,0) * layerTransformation).xyz,-0.);
 
 float intersectSphere(in Ray ray, in Sphere sphere)
 {
-    
     vec3 oc = ray.origin - sphere.center;
     float b = 2.0 *dot(oc, ray.direction);
     float c = dot(oc,oc) - sphere.radius*sphere.radius;
@@ -76,73 +78,74 @@ void intersect(in Ray ray, out float tSphere, out float tPlane)
 const mat3 kernel = mat3(-0.1,-0.2,-0.1,-0.2,1.2,-0.2,-0.1,-0.2,-0.1);
 
 
-/* Mexican-hat 7x7 filter
- 0  0 -1 -1 -1  0  0
- 0 -1 -3 -3 -3 -1  0
- -1 -3  0  7  0 -3 -1
- -1 -3  7 24  7 -3 -1
- -1 -3  0  7  0 -3 -1
- 0 -1 -3 -3 -3 -1  0
- 0  0 -1 -1 -1  0  0
+/* shapen 5x5 filter
+ -1 -2 -4 -2 -1 10
+ -2 -4 -8 -4 -2 20
+ -4 -8 84 -8 -4 24
+ -2 -4 -8 -4 -2 20
+ -1 -2 -4 -2 -1 10
  */
-vec4 sharpenValue(vec2 texPos){
+float sharpenValue(vec2 texPos)
+{
     // grayscale value of filter
-    vec3 tmp = vec3(0,0,0);
+    float tmp = 0.0;
     float x = 1.0/imageResolution.x;
     float y = 1.0/imageResolution.y;
     
-    tmp += texture2D(texture,texPos + vec2(-x, -3*y)).xyz * -1;
-    tmp += texture2D(texture,texPos + vec2(0, -3*y)).xyz * -1;
-    tmp += texture2D(texture,texPos + vec2(x, -3*y)).xyz * -1;
+    tmp -= texture2D(texture,texPos + vec2(-x-x, -y-y)).r;
+    tmp -= texture2D(texture,texPos + vec2(-  x, -y-y)).r * 2;
+    tmp -= texture2D(texture,texPos + vec2(   0, -y-y)).r * 4;
+    tmp -= texture2D(texture,texPos + vec2(   x, -y-y)).r * 2;
+    tmp -= texture2D(texture,texPos + vec2( x+x, -y-y)).r;
     
-    tmp += texture2D(texture,texPos + vec2(-2*x, -2*y)).xyz * -1;
-    tmp += texture2D(texture,texPos + vec2(-x, -2*y)).xyz * -3;
-    tmp += texture2D(texture,texPos + vec2(0, -2*y)).xyz * -3;
-    tmp += texture2D(texture,texPos + vec2(x, -2*y)).xyz * -3;
-    tmp += texture2D(texture,texPos + vec2(2*x, -2*y)).xyz * -1;
+    tmp -= texture2D(texture,texPos + vec2(-x-x,   -y)).r * 2;
+    tmp -= texture2D(texture,texPos + vec2(-  x,   -y)).r * 4;
+    tmp -= texture2D(texture,texPos + vec2(   0,   -y)).r * 8;
+    tmp -= texture2D(texture,texPos + vec2(   x,   -y)).r * 4;
+    tmp -= texture2D(texture,texPos + vec2( x+x,   -y)).r * 2;
     
-    tmp += texture2D(texture,texPos + vec2(-3*x, -y)).xyz * -1;
-    tmp += texture2D(texture,texPos + vec2(-2*x, -y)).xyz * -3;
-    tmp += texture2D(texture,texPos + vec2(0, -y)).xyz * 7;
-    tmp += texture2D(texture,texPos + vec2(2*x, -y)).xyz * -3;
-    tmp += texture2D(texture,texPos + vec2(-3*x, -y)).xyz * -1;
+    tmp -= texture2D(texture,texPos + vec2(-x-x,    0)).r * 4;
+    tmp -= texture2D(texture,texPos + vec2(-  x,    0)).r * 8;
+    tmp += texture2D(texture,texPos + vec2(   0,    0)).r * 84;
+    tmp -= texture2D(texture,texPos + vec2(   x,    0)).r * 8;
+    tmp -= texture2D(texture,texPos + vec2( x+x,    0)).r * 4;
     
-    tmp += texture2D(texture,texPos + vec2(-3*x, 0)).xyz * -1;
-    tmp += texture2D(texture,texPos + vec2(-2*x, 0)).xyz * -3;
-    tmp += texture2D(texture,texPos + vec2(-x, 0)).xyz * 7;
-    tmp += texture2D(texture,texPos + vec2(0, 0)).xyz * 24;
-    tmp += texture2D(texture,texPos + vec2(x, 0)).xyz * 7;
-    tmp += texture2D(texture,texPos + vec2(2*x, 0)).xyz * -3;
-    tmp += texture2D(texture,texPos + vec2(3*x, 0)).xyz * -1;
+    tmp -= texture2D(texture,texPos + vec2(-x-x,    y)).r * 2;
+    tmp -= texture2D(texture,texPos + vec2(-  x,    y)).r * 4;
+    tmp -= texture2D(texture,texPos + vec2(   0,    y)).r * 8;
+    tmp -= texture2D(texture,texPos + vec2(   x,    y)).r * 4;
+    tmp -= texture2D(texture,texPos + vec2( x+x,    y)).r * 2;
     
-    tmp += texture2D(texture,texPos + vec2(-3*x, y)).xyz * -1;
-    tmp += texture2D(texture,texPos + vec2(-2*x, y)).xyz * -3;
-    tmp += texture2D(texture,texPos + vec2(0, y)).xyz * 7;
-    tmp += texture2D(texture,texPos + vec2(2*x, y)).xyz * -3;
-    tmp += texture2D(texture,texPos + vec2(-3*x, y)).xyz * -1;
+    tmp -= texture2D(texture,texPos + vec2(-x-x,  y+y)).r;
+    tmp -= texture2D(texture,texPos + vec2(-  x,  y+y)).r * 2;
+    tmp -= texture2D(texture,texPos + vec2(   0,  y+y)).r * 4;
+    tmp -= texture2D(texture,texPos + vec2(   x,  y+y)).r * 2;
+    tmp -= texture2D(texture,texPos + vec2( x+x,  y+y)).r;
     
-    tmp += texture2D(texture,texPos + vec2(-2*x, 2*y)).xyz * -1;
-    tmp += texture2D(texture,texPos + vec2(-x, 2*y)).xyz * -3;
-    tmp += texture2D(texture,texPos + vec2(0, 2*y)).xyz * -3;
-    tmp += texture2D(texture,texPos + vec2(x, 2*y)).xyz * -3;
-    tmp += texture2D(texture,texPos + vec2(2*x, 2*y)).xyz * -1;
-    
-    tmp += texture2D(texture,texPos + vec2(-x, 3*y)).xyz * -1;
-    tmp += texture2D(texture,texPos + vec2(0, 3*y)).xyz * -1;
-    tmp += texture2D(texture,texPos + vec2(x, 3*y)).xyz * -1;
-    
-    return clamp(texture2D(texture,texPos) + vec4(tmp / 3.0 * sharpen, 0.0), 0.0, 1.0);
+    return clamp(texture2D(texture,texPos).r + tmp / 3.0 * sharpen, 0.0, 1.0);
 }
 
-vec4 contrastValue(vec3 color){
-    float value = min(clamp(0.5 + (color.x - 0.5) * (1 + contrast/10.0) ,0.0, 1.0), sqrt(color.x) + color.x);
-    return vec4(value, value, value, 1.0);
+float contrastValue(float color)
+{
+    return min(clamp(0.5 + (color - 0.5) * (1 + contrast/10.0), 0.0, 1.0), sqrt(color) + color);
+}
+
+vec3 lutLookup(float intensity)
+{
+    vec2 pos = vec2(intensity,(lutPosition + 0.5) / 256.);
+    if (lutInverted != 0)
+        pos.x = 1. - pos.x;
+   	
+   	vec3 res = texture2D(lut, pos).rgb;
+    res.r=pow(res.r,gamma);
+    res.g=pow(res.g,gamma);
+    res.b=pow(res.b,gamma);
+    return res;
 }
 
 void main(void)
 {
     gl_FragColor = vec4(0,0,0,1);
-    /* clear color */
     vec2 uv = gl_TexCoord[0].xy;
     /* calculate viewport */
     float width;
@@ -151,18 +154,18 @@ void main(void)
     vec3 rayOrigin;
     vec3 rayDirection;
     
-    //2D
     float zTranslation = (vec4(0,0,0,1) * transformation).z;
     if (cameraMode == 0)
     {
+	    //2D
         width = zTranslation * tan(fov);
         vec2 tmpWidth = (-1.0 +2.0*uv) * width;
         rayOrigin = (vec4(0,0,1,1) * transformation).xyz + vec3(tmpWidth, 0);
         rayDirection = vec3( 0, 0, -1.0);
     }
-    //3D
     else
     {
+	    //3D
         width = tan(fov);
         height = tan(fov);
         rayOrigin = (vec4(0,0,1,1) * transformation).xyz;
@@ -178,7 +181,8 @@ void main(void)
     float tSphere, tPlane;
     intersect (rayRot, tSphere, tPlane);
     
-    vec4 imageColor;
+    float sphereIntensity = 0.;
+    float coronaIntensity = 0.;
     gl_FragDepth = 1;
     
    	if (tSphere > 0.)
@@ -194,11 +198,10 @@ void main(void)
                discard;
                
             texPos = (texPos - imageOffset.xy) / imageOffset.zw;
-            imageColor = sharpenValue(texPos);
-            imageColor = contrastValue(imageColor.xyz);
+            sphereIntensity = contrastValue(sharpenValue(texPos));
         }
         
-		gl_FragDepth = (1. /(zTranslation - ray.z) - 1. / near) / (1. /far - 1. / near);            
+		gl_FragDepth = (1./(zTranslation - ray.z) - 1./near) / (1./far - 1./near);            
     }
     
    	if (tPlane > 0. && (tPlane < tSphere|| tSphere < 0.))
@@ -213,20 +216,10 @@ void main(void)
         if (opacityCorona > 0.)
         {
 	        texPos = (texPos - imageOffset.xy) / imageOffset.zw;
-	        vec4 coronaImageColor = sharpenValue(texPos);
-	        coronaImageColor = contrastValue(coronaImageColor.xyz);
-            imageColor = imageColor + vec4(coronaImageColor.xyz * opacityCorona, coronaImageColor.a);
+            coronaIntensity = contrastValue(sharpenValue(texPos)) * opacityCorona;
         }
     }
     
-    vec2 pos = vec2(imageColor.y,(lutPosition + 0.5 ) /256.);
-    if (lutInverted != 0)
-    {
-        pos.x = 1. - pos.x;
-    }
-    vec4 lutColor = texture2D(lut, pos);
-    lutColor.x = pow(lutColor.x, gamma);
-    lutColor.y = pow(lutColor.y, gamma);
-    lutColor.z = pow(lutColor.z, gamma);
-    gl_FragColor = lutColor * vec4(redChannel,greenChannel,blueChannel,opacity);
+    vec3 lutColor = lutLookup(coronaIntensity) + lutLookup(sphereIntensity);
+    gl_FragColor = vec4(lutColor,1) * vec4(redChannel,greenChannel,blueChannel,opacity);
 }

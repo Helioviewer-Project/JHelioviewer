@@ -355,6 +355,7 @@ public class FilterPanel extends JPanel implements LayerListener
 		else
 			activeLayer = null;
 
+		//FIXME: lut is not yet available potentially --> leads to empty combo box
 		update();
 	}
 }

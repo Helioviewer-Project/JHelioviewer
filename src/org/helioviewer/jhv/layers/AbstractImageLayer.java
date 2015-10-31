@@ -33,7 +33,6 @@ import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLContext;
 
-//FIXME: shader adds intensities before LUT-ing, instead of rgb-space
 //FIXME: shader handles this incorrectly: corona.opacity>0 && hit corona first && hit sphere later
 public abstract class AbstractImageLayer extends Layer
 {
@@ -227,15 +226,37 @@ public abstract class AbstractImageLayer extends Layer
 		gl.glShaderSource(fragmentShader, 1, new String[] { fragmentShaderSrc }, (int[]) null, 0);
 		gl.glCompileShader(fragmentShader);
 
+		IntBuffer intBuffer = IntBuffer.allocate(1);
+		gl.glGetShaderiv(fragmentShader, GL2.GL_COMPILE_STATUS, intBuffer);
+		if(intBuffer.get(0) == GL2.GL_FALSE)
+		{
+			gl.glGetShaderiv(fragmentShader, GL2.GL_INFO_LOG_LENGTH, intBuffer);
+			int size = intBuffer.get(0);
+			System.err.println("Program compile error: ");
+			if (size > 0)
+			{
+				ByteBuffer byteBuffer = ByteBuffer.allocate(size);
+				gl.glGetShaderInfoLog(fragmentShader, size, intBuffer, byteBuffer);
+				for (byte b : byteBuffer.array())
+					System.err.print((char) b);
+			}
+			else
+			{
+				System.err.println("Unknown error during shader compilation.");
+			}
+			throw new RuntimeException("Could not compile shader.");
+		}
+		
+		
+
 		shaderprogram = gl.glCreateProgram();
 		gl.glAttachShader(shaderprogram, vertexShader);
 		gl.glAttachShader(shaderprogram, fragmentShader);
 		gl.glLinkProgram(shaderprogram);
 		gl.glValidateProgram(shaderprogram);
 
-		IntBuffer intBuffer = IntBuffer.allocate(1);
 		gl.glGetProgramiv(shaderprogram, GL2.GL_LINK_STATUS, intBuffer);
-		if (intBuffer.get(0) != 1)
+		if (intBuffer.get(0) == GL2.GL_FALSE)
 		{
 			gl.glGetProgramiv(shaderprogram, GL2.GL_INFO_LOG_LENGTH, intBuffer);
 			int size = intBuffer.get(0);

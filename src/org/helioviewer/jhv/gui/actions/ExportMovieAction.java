@@ -167,13 +167,12 @@ public class ExportMovieAction extends AbstractAction
 				TimeLine.SINGLETON.setCurrentFrame(0);
 				for (int i = 0; i < TimeLine.SINGLETON.getFrameCount(); i++)
 				{
-					// TODO: invokeLATER?!!?!
+					bufferedImage = null;
 					SwingUtilities.invokeLater(new Runnable()
 					{
 						@Override
 						public void run()
 						{
-							bufferedImage = null;
 							progressDialog.setDescription("Rendering images");
 							bufferedImage = MainFrame.SINGLETON.MAIN_PANEL.getBufferedImage(imageWidth, imageHeight, textEnabled);
 						}

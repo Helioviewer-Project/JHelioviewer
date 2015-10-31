@@ -113,6 +113,8 @@ public class DatePicker extends JPanel
 			@Override
 			public void focusGained(@Nullable FocusEvent _e)
 			{
+				//this has to run as a callback because of timing-issues
+				//in swing
 				SwingUtilities.invokeLater(new Runnable()
 				{
 					@Override
@@ -201,6 +203,8 @@ public class DatePicker extends JPanel
 			@Override
 			public void focusGained(@Nullable FocusEvent _e)
 			{
+				//required to call as a callback because
+				//of timing-issues in swing
 				SwingUtilities.invokeLater(new Runnable()
 				{
 					@Override

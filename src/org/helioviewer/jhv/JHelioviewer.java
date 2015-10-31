@@ -27,6 +27,7 @@ import org.helioviewer.jhv.base.SplashScreen;
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.UILatencyWatchdog;
 import org.helioviewer.jhv.gui.MainFrame;
+import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 import org.helioviewer.jhv.gui.dialogs.AboutDialog;
 import org.helioviewer.jhv.io.CommandLineProcessor;
 import org.helioviewer.jhv.layers.AbstractImageLayer;
@@ -309,9 +310,7 @@ public class JHelioviewer
 									setHandled(args[0], Boolean.TRUE);
 							}
 							else if ("handleQuit".equals(method.getName()))
-							{
-								System.exit(0);
-							}
+								new ExitProgramAction().actionPerformed(null);
 							
 							return null;
 						}

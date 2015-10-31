@@ -867,7 +867,6 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 				MainPanel.this.addKeyListener(keyAdapter);
 			}
 		});
-
 	}
 
 	public void toggleCameraTracking()

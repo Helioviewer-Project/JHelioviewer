@@ -3,6 +3,7 @@ package org.helioviewer.jhv.viewmodel.metadata;
 import java.awt.geom.Rectangle2D;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 import javax.annotation.Nullable;
 
@@ -24,6 +25,8 @@ import org.w3c.dom.NodeList;
 //TODO: make immutable
 public abstract class MetaData
 {
+    private static final DateTimeFormatter SOHO_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd'T'HH:mm:ss.SSS");
+
     private final Rectangle2D physicalImageSize;
     
     protected String instrument;
@@ -63,7 +66,7 @@ public abstract class MetaData
     protected final double stonyhurstLatitude;
     protected final boolean stonyhurstAvailable;
     
-    protected final LocalDateTime localDateTime;
+    protected LocalDateTime localDateTime;
     
 	protected Lut defaultLUT = Lut.GRAY;
 	
@@ -114,7 +117,14 @@ public abstract class MetaData
         if(observedDate==null)
             throw new UnsuitableMetaDataException("No date/time specified in metadata (DATE_OBS)");
         
-        localDateTime = LocalDateTime.parse(observedDate, DateTimeFormatter.ISO_DATE_TIME);
+        try
+        {
+        	localDateTime = LocalDateTime.parse(observedDate, DateTimeFormatter.ISO_DATE_TIME);
+        }
+        catch(DateTimeParseException _dtpe)
+        {
+        	localDateTime = LocalDateTime.parse(observedDate, SOHO_DATE_TIME_FORMATTER);
+        }
         
         heeqX = tryGetDouble(_doc, "HEQX_OBS");
         heeqY = tryGetDouble(_doc, "HEQY_OBS");

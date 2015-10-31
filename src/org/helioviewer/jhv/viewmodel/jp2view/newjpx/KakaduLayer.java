@@ -283,7 +283,7 @@ public class KakaduLayer extends AbstractImageLayer
 							try
 							{
 								final Movie m=new Movie(sourceId,download.hq.filename);
-								SwingUtilities.invokeLater(new Runnable()
+								SwingUtilities.invokeAndWait(new Runnable()
 								{
 									@Override
 									public void run()
@@ -314,7 +314,7 @@ public class KakaduLayer extends AbstractImageLayer
 							try
 							{
 								download.lqMovie=new Movie(sourceId,download.lq.kduCache);
-								SwingUtilities.invokeLater(new Runnable()
+								SwingUtilities.invokeAndWait(new Runnable()
 								{
 									@Override
 									public void run()
@@ -363,7 +363,7 @@ public class KakaduLayer extends AbstractImageLayer
 								for (int i = 0; i < frames.length(); i++)
 									localDateTimes[i] = new Timestamp(frames.getLong(i) * 1000L).toLocalDateTime();
 								
-								SwingUtilities.invokeLater(new Runnable()
+								SwingUtilities.invokeAndWait(new Runnable()
 								{
 									@Override
 									public void run()

@@ -425,7 +425,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			row++;
 		}
 		
-		if (Layers.anyLayers() && Layers.getActiveLayer()!=null)
+		if (Layers.getActiveLayer()!=null)
 			table.setRowSelectionInterval(
 					Layers.getActiveLayerIndex(),
 					Layers.getActiveLayerIndex());
@@ -526,6 +526,11 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		{
 			btnDownloadLayer.setEnabled(layer.getDownloadURL()!=null);
 			btnShowInfo.setEnabled(layer instanceof AbstractImageLayer);
+			
+			if (Layers.getActiveLayer()!=null)
+				table.setRowSelectionInterval(
+						Layers.getActiveLayerIndex(),
+						Layers.getActiveLayerIndex());
 		}
 	}
 

@@ -294,6 +294,8 @@ public class AddLayerDialog extends JDialog
 			@Override
 			public void focusGained(@Nullable FocusEvent _e)
 			{
+				//required to call as a callback because
+				//of timing-issues in swing
 				SwingUtilities.invokeLater(new Runnable()
 				{
 					@Override

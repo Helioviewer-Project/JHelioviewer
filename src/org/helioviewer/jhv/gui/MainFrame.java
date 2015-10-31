@@ -123,7 +123,7 @@ public class MainFrame extends JFrame
 		
 		scrollContentPane.add(LEFT_PANE);
 		
-		//F-IXME: still needed?
+		//F-IXME: still needed? maybe on os x?
 		/*this.addComponentListener(new ComponentAdapter()
 		{
 			@Override

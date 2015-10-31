@@ -175,6 +175,7 @@ public class Texture
 		b.flip();
 		gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, width, height, GL2.GL_ABGR_EXT, GL2.GL_UNSIGNED_BYTE, b);*/
 		
+		//FIXME: crashes with LASCO C2
 		gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, _imageWidth, _imageHeight, /*GL2.GL_ABGR_EXT*/ GL2.GL_RED, GL2.GL_UNSIGNED_BYTE, _image);
 		
 		textureWidth=_imageWidth / (float)width;
