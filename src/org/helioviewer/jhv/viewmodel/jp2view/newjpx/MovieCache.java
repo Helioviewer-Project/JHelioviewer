@@ -15,6 +15,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import org.helioviewer.jhv.base.JHVUncaughtExceptionHandler;
+import org.helioviewer.jhv.base.Settings;
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 import org.helioviewer.jhv.layers.Movie;
@@ -56,30 +57,40 @@ public class MovieCache
 			}
 		});
 		
-		for(File f:CACHE_DIR.listFiles())
+		if(Settings.getBoolean("cache.loading.crashed"))
 		{
-			String[] parts=f.getName().split(",");
-			if(parts.length==4)
-				try
-				{
-					add(new Movie(Integer.parseInt(parts[0]),f.getAbsolutePath()));
-				}
-				catch(UnsuitableMetaDataException e)
-				{
-					Telemetry.trackException(new IOException("Cache: Could not load "+f.getName(),e));
-					f.delete();
-				}
-				catch(NumberFormatException e)
-				{
-					Telemetry.trackException(new IOException("Cache: Unexpected file found "+f.getName(),e));
-					f.delete();
-				}
-			else
-			{
-				Telemetry.trackException(new IOException("Cache: Unexpected file found "+f.getName()));
+			for(File f:CACHE_DIR.listFiles())
 				f.delete();
+		}
+		else
+		{
+			Settings.setBoolean("cache.loading.crashed", true);
+			for(File f:CACHE_DIR.listFiles())
+			{
+				String[] parts=f.getName().split(",");
+				if(parts.length==4)
+					try
+					{
+						add(new Movie(Integer.parseInt(parts[0]),f.getAbsolutePath()));
+					}
+					catch(UnsuitableMetaDataException e)
+					{
+						Telemetry.trackException(new IOException("Cache: Could not load "+f.getName(),e));
+						f.delete();
+					}
+					catch(NumberFormatException e)
+					{
+						Telemetry.trackException(new IOException("Cache: Unexpected file found "+f.getName(),e));
+						f.delete();
+					}
+				else
+				{
+					Telemetry.trackException(new IOException("Cache: Unexpected file found "+f.getName()));
+					f.delete();
+				}
 			}
 		}
+		Settings.setBoolean("cache.loading.crashed", false);
 	}
 	
 	private static void limitCacheSize()
