@@ -73,6 +73,7 @@ public class FilterPanel extends JPanel implements LayerListener
 		add(lblOpacityTitle, "2, 2");
 
 		opacitySlider = new JSlider();
+		opacitySlider.setValue(100);
 		opacitySlider.setMinorTickSpacing(20);
 		opacitySlider.setPaintTicks(true);
 		add(opacitySlider, "4,2,5,1");
@@ -107,6 +108,7 @@ public class FilterPanel extends JPanel implements LayerListener
 		add(lblSharpenTitle, "2, 4");
 
 		sharpenSlider = new JSlider();
+		sharpenSlider.setValue(0);
 		sharpenSlider.setMinorTickSpacing(20);
 		sharpenSlider.setPaintTicks(true);
 		add(sharpenSlider, "4, 4, 5, 1");
@@ -142,7 +144,7 @@ public class FilterPanel extends JPanel implements LayerListener
 		gammaSlider = new JSlider(JSlider.HORIZONTAL, -100, 100, 0);
 		gammaSlider.setMinorTickSpacing(20);
 		gammaSlider.setPaintTicks(true);
-		gammaSlider.setValue(10);
+		gammaSlider.setValue(0);
 		add(gammaSlider, "4, 6, 5, 1");
 
 		lblGamma = new JLabel("1.0");

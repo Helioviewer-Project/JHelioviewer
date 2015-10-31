@@ -39,7 +39,7 @@ public abstract class AbstractImageLayer extends Layer
 	public double opacity = 1;
 	public double sharpness = 0;
 	public double gamma = 1;
-	public double contrast = 1;
+	public double contrast = 0;
 	@Nullable protected Lut lut = null;
 	public boolean redChannel = true;
 	public boolean greenChannel = true;

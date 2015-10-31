@@ -79,12 +79,12 @@ const mat3 kernel = mat3(-0.1,-0.2,-0.1,-0.2,1.2,-0.2,-0.1,-0.2,-0.1);
 
 
 /* shapen 5x5 filter
- -1 -2 -4 -2 -1 10
- -2 -4 -8 -4 -2 20
- -4 -8 84 -8 -4 24
- -2 -4 -8 -4 -2 20
- -1 -2 -4 -2 -1 10
- */
+  0  -4  -6  -4  0  14
+ -4 -16 -24 -16 -4  64
+ -6 -24 220 -24 -6  60
+ -4 -16 -24 -16 -4  64
+  0  -4  -6  -4  0  14
+  */
 float sharpenValue(vec2 texPos)
 {
     // grayscale value of filter
@@ -92,35 +92,35 @@ float sharpenValue(vec2 texPos)
     float x = 1.0/imageResolution.x;
     float y = 1.0/imageResolution.y;
     
-    tmp -= texture2D(texture,texPos + vec2(-x-x, -y-y)).r;
-    tmp -= texture2D(texture,texPos + vec2(-  x, -y-y)).r * 2;
-    tmp -= texture2D(texture,texPos + vec2(   0, -y-y)).r * 4;
-    tmp -= texture2D(texture,texPos + vec2(   x, -y-y)).r * 2;
-    tmp -= texture2D(texture,texPos + vec2( x+x, -y-y)).r;
+    //tmp -= texture2D(texture,texPos + vec2(-x-x, -y-y)).r;
+    tmp -= texture2D(texture,texPos + vec2(-  x, -y-y)).r * 4;
+    tmp -= texture2D(texture,texPos + vec2(   0, -y-y)).r * 6;
+    tmp -= texture2D(texture,texPos + vec2(   x, -y-y)).r * 4;
+    //tmp -= texture2D(texture,texPos + vec2( x+x, -y-y)).r;
     
-    tmp -= texture2D(texture,texPos + vec2(-x-x,   -y)).r * 2;
-    tmp -= texture2D(texture,texPos + vec2(-  x,   -y)).r * 4;
-    tmp -= texture2D(texture,texPos + vec2(   0,   -y)).r * 8;
-    tmp -= texture2D(texture,texPos + vec2(   x,   -y)).r * 4;
-    tmp -= texture2D(texture,texPos + vec2( x+x,   -y)).r * 2;
+    tmp -= texture2D(texture,texPos + vec2(-x-x,   -y)).r * 4;
+    tmp -= texture2D(texture,texPos + vec2(-  x,   -y)).r * 16;
+    tmp -= texture2D(texture,texPos + vec2(   0,   -y)).r * 24;
+    tmp -= texture2D(texture,texPos + vec2(   x,   -y)).r * 16;
+    tmp -= texture2D(texture,texPos + vec2( x+x,   -y)).r * 4;
     
-    tmp -= texture2D(texture,texPos + vec2(-x-x,    0)).r * 4;
-    tmp -= texture2D(texture,texPos + vec2(-  x,    0)).r * 8;
-    tmp += texture2D(texture,texPos + vec2(   0,    0)).r * 84;
-    tmp -= texture2D(texture,texPos + vec2(   x,    0)).r * 8;
-    tmp -= texture2D(texture,texPos + vec2( x+x,    0)).r * 4;
+    tmp -= texture2D(texture,texPos + vec2(-x-x,    0)).r * 6;
+    tmp -= texture2D(texture,texPos + vec2(-  x,    0)).r * 24;
+    tmp += texture2D(texture,texPos + vec2(   0,    0)).r * 216;
+    tmp -= texture2D(texture,texPos + vec2(   x,    0)).r * 24;
+    tmp -= texture2D(texture,texPos + vec2( x+x,    0)).r * 6;
     
-    tmp -= texture2D(texture,texPos + vec2(-x-x,    y)).r * 2;
-    tmp -= texture2D(texture,texPos + vec2(-  x,    y)).r * 4;
-    tmp -= texture2D(texture,texPos + vec2(   0,    y)).r * 8;
-    tmp -= texture2D(texture,texPos + vec2(   x,    y)).r * 4;
-    tmp -= texture2D(texture,texPos + vec2( x+x,    y)).r * 2;
+    tmp -= texture2D(texture,texPos + vec2(-x-x,    y)).r * 4;
+    tmp -= texture2D(texture,texPos + vec2(-  x,    y)).r * 16;
+    tmp -= texture2D(texture,texPos + vec2(   0,    y)).r * 24;
+    tmp -= texture2D(texture,texPos + vec2(   x,    y)).r * 16;
+    tmp -= texture2D(texture,texPos + vec2( x+x,    y)).r * 4;
     
-    tmp -= texture2D(texture,texPos + vec2(-x-x,  y+y)).r;
-    tmp -= texture2D(texture,texPos + vec2(-  x,  y+y)).r * 2;
-    tmp -= texture2D(texture,texPos + vec2(   0,  y+y)).r * 4;
-    tmp -= texture2D(texture,texPos + vec2(   x,  y+y)).r * 2;
-    tmp -= texture2D(texture,texPos + vec2( x+x,  y+y)).r;
+    //tmp -= texture2D(texture,texPos + vec2(-x-x,  y+y)).r;
+    tmp -= texture2D(texture,texPos + vec2(-  x,  y+y)).r * 4;
+    tmp -= texture2D(texture,texPos + vec2(   0,  y+y)).r * 6;
+    tmp -= texture2D(texture,texPos + vec2(   x,  y+y)).r * 4;
+    //tmp -= texture2D(texture,texPos + vec2( x+x,  y+y)).r;
     
     return clamp(texture2D(texture,texPos).r + tmp / 3.0 * sharpen, 0.0, 1.0);
 }
