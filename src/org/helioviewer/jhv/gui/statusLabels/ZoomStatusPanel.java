@@ -8,7 +8,7 @@ import javax.swing.BorderFactory;
 
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.MainPanel;
-import org.helioviewer.jhv.layers.AbstractImageLayer;
+import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.viewmodel.TimeLine;
@@ -44,7 +44,7 @@ public class ZoomStatusPanel extends StatusLabel
 	 */
 	private void updateZoomLevel()
 	{
-		AbstractImageLayer activeLayer = Layers.getActiveImageLayer();
+		ImageLayer activeLayer = Layers.getActiveImageLayer();
 		if (activeLayer == null)
 		{
 			setText("Zoom:");

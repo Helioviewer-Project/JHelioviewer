@@ -13,7 +13,7 @@ import javax.swing.Timer;
 
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.leftPanel.MoviePanel.AnimationMode;
-import org.helioviewer.jhv.layers.AbstractImageLayer;
+import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
@@ -129,7 +129,7 @@ public class TimeLine implements LayerListener
 
 	private void dateTimeChanged(LocalDateTime _previous)
 	{
-		AbstractImageLayer.newRenderPassStarted();
+		ImageLayer.newRenderPassStarted();
 		for (TimeLine.TimeLineListener timeLineListener : timeLineListeners)
 			timeLineListener.timeStampChanged(current, _previous);
 	}
@@ -159,8 +159,8 @@ public class TimeLine implements LayerListener
 	@Override
 	public void activeLayerChanged(@Nullable Layer layer)
 	{
-		if (layer != null && layer instanceof AbstractImageLayer)
-			setLocalDateTimes(((AbstractImageLayer)layer).getLocalDateTimes());
+		if (layer != null && layer instanceof ImageLayer)
+			setLocalDateTimes(((ImageLayer)layer).getLocalDateTimes());
 	}
 
 	public void setCurrentFrame(int _frameNr)

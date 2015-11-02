@@ -22,7 +22,7 @@ import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.components.WheelSupport;
-import org.helioviewer.jhv.layers.AbstractImageLayer;
+import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.LUT.Lut;
 import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.LayerListener;
@@ -47,7 +47,7 @@ public class FilterPanel extends JPanel implements LayerListener
 	private JLabel lblOpacity, lblSharpen, lblGamma, lblContrast;
 
 	@Nullable
-	private AbstractImageLayer activeLayer;
+	private ImageLayer activeLayer;
 	private static final double GAMMA_FACTOR = 0.01 * Math.log(10);
 
 	private static final Icon ICON_INVERT = IconBank.getIcon(JHVIcon.INVERT, 16, 16);
@@ -352,12 +352,12 @@ public class FilterPanel extends JPanel implements LayerListener
 	@Override
 	public void activeLayerChanged(@Nullable Layer layer)
 	{
-		if (layer instanceof AbstractImageLayer)
-			activeLayer = (AbstractImageLayer) layer;
+		if (layer instanceof ImageLayer)
+			activeLayer = (ImageLayer) layer;
 		else
 			activeLayer = null;
-
-		//FIXME: lut is not yet available potentially --> leads to empty combo box
+		
+		//FIXME: lut is potentially not yet available --> leads to empty combo box
 		update();
 	}
 }

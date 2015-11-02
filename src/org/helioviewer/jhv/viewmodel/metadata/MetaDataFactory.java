@@ -30,13 +30,12 @@ public class MetaDataFactory
 		if(_doc==null)
 			return null;
 		
-		MetaData metaData = null;
 		for (Class<MetaData> c : META_DATA_CLASSES)
 			try
 			{
 			    Constructor<MetaData> constructor = c.getDeclaredConstructor(Document.class);
-				metaData = constructor.newInstance(new Object[] { _doc });
-				break;
+				MetaData metaData = constructor.newInstance(new Object[] { _doc });
+				return metaData;
 			}
             catch(NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
             {
@@ -52,6 +51,6 @@ public class MetaDataFactory
                 }
             }
 		
-		return metaData;
+		return null;
 	}
 }

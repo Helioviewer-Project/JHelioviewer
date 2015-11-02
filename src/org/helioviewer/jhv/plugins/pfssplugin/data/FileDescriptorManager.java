@@ -172,7 +172,7 @@ public class FileDescriptorManager
 		if (!parent.isVisible())
 			return;
 
-		// FIXME
+		// FIXME: add proper error handling
 		/*
 		 * if (errorMessage == null) return;
 		 * 

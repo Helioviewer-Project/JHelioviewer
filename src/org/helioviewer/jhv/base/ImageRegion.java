@@ -57,19 +57,19 @@ public class ImageRegion
 		
 		for(;;)
 		{
+			texelMinX = (int)(resolution.x * newX1 * candidateDecodeZoomFactor);
+			texelMinY = (int)(resolution.y * newY1 * candidateDecodeZoomFactor);
+			texelMaxX = (int)Math.ceil(resolution.x * newX2 * candidateDecodeZoomFactor);
+			texelMaxY = (int)Math.ceil(resolution.y * newY2 * candidateDecodeZoomFactor);
+			
 			//openGL implementations are required to support at least 2048 x 2048 textures
 			if((texelMaxX - texelMinX)<=2048 && (texelMaxY - texelMinY)<=2048)
 				break;
 			
 			//TODO: implement properly by limiting the initial calculation --> no looping
 			candidateDecodeZoomFactor *= 0.5;
-			texelMinX = (int)(resolution.x * newX1 * candidateDecodeZoomFactor);
-			texelMinY = (int)(resolution.y * newY1 * candidateDecodeZoomFactor);
-			texelMaxX = (int)Math.ceil(resolution.x * newX2 * candidateDecodeZoomFactor);
-			texelMaxY = (int)Math.ceil(resolution.y * newY2 * candidateDecodeZoomFactor);
 		}
 		decodeZoomFactor=candidateDecodeZoomFactor;
-		
 		
 		texels = new Rectangle(texelMinX, texelMinY, texelMaxX - texelMinX, texelMaxY - texelMinY);
 		

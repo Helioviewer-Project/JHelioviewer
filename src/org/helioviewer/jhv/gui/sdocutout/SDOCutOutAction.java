@@ -14,7 +14,7 @@ import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.layers.AbstractImageLayer;
+import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.viewmodel.TimeLine;
@@ -35,7 +35,7 @@ class SDOCutOutAction extends AbstractAction
     
     public void actionPerformed(@Nullable ActionEvent e)
     {
-		AbstractImageLayer activeLayer = Layers.getActiveImageLayer();
+		ImageLayer activeLayer = Layers.getActiveImageLayer();
 		ArrayList<KakaduLayer> sdoLayers = new ArrayList<KakaduLayer>();
 		
 		for (Layer layer : Layers.getLayers())
@@ -70,7 +70,7 @@ class SDOCutOutAction extends AbstractAction
 		url.append("&stopDate=" + end.format(DATE_FORMATTER) + "&stopTime=" + end.format(TIME_FORMATTER));
 
 		url.append("&wavelengths=");
-		for (AbstractImageLayer sdoLayer : sdoLayers)
+		for (ImageLayer sdoLayer : sdoLayers)
 		{
 			MetaData md=sdoLayer.getMetaData(TimeLine.SINGLETON.getCurrentDateTime());
 			if(md!=null)

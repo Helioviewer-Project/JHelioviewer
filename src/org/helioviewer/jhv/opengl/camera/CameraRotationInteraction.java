@@ -30,6 +30,8 @@ public class CameraRotationInteraction extends CameraInteraction
 			return;
 		
 		currentRotationEndPoint = _ray.getHitpoint();
+		
+		//FIXME: does not work at the moment
 		if (yAxisBlocked)
 			currentRotationEndPoint = new Vector3d(currentRotationEndPoint.x, currentRotationStartPoint.y, currentRotationEndPoint.z);
 		

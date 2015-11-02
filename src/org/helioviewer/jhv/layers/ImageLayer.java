@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.ImageRegion;
+import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
@@ -34,7 +35,7 @@ import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLContext;
 
 //FIXME: shader handles this incorrectly: corona.opacity>0 && hit corona first && hit sphere later
-public abstract class AbstractImageLayer extends Layer
+public abstract class ImageLayer extends Layer
 {
 	public double opacity = 1;
 	public double sharpness = 0;
@@ -87,15 +88,44 @@ public abstract class AbstractImageLayer extends Layer
 	
 	public abstract @Nullable Match getMovie(LocalDateTime _currentDateTime);
 
-	protected static volatile int freeTextureNr=0;
-	
 	/**
 	 * This method should be called whenever we can throw all cached textures away, and the
 	 * likelihood that cached textures would be used again is low.
 	 */
 	public static void newRenderPassStarted()
 	{
-		freeTextureNr=0;
+		for(Texture t:textures)
+			if(t.usedByCurrentRenderPass)
+			{
+				Telemetry.trackException(new RuntimeException("Had to clear texture usage flag?!?"));
+				t.usedByCurrentRenderPass=false;
+			}
+	}
+	
+	public static void ensureAppropriateTextureCacheSize()
+	{
+		while(textures.size()<10)
+			textures.add(new Texture());
+		
+		if(1==1)
+			return;
+		
+		int cnt=0;
+		for (Layer l : Layers.getLayers())
+			if (l instanceof ImageLayer)
+				//need at least two textures per layer (overview + main)
+				cnt+=2;
+		
+		//we should have space for at least 10 textures (2k x 2k * 8bit * 20 = 80 mb) 
+		if(cnt<20)
+			cnt=20;
+		
+		//no reason to destroy existing textures
+		if(cnt<textures.size())
+			cnt=textures.size();
+		
+		while(textures.size()<cnt)
+			textures.add(new Texture());
 	}
 	
 	@SuppressWarnings("null")
@@ -109,9 +139,14 @@ public abstract class AbstractImageLayer extends Layer
 		//upload new texture, if something was decoded
 		if (_preparedImageData.rawImageData != null)
 		{
-			//System.out.println("Uploading "+_preparedImageData.width+"x"+_preparedImageData.height + " to "+_preparedImageData.texture);
-			_preparedImageData.texture.upload(this,md.getLocalDateTime(),_preparedImageData.imageRegion,_preparedImageData.rawImageData, _preparedImageData.width, _preparedImageData.height);
+			_preparedImageData.texture.upload(this,md.getLocalDateTime(),
+					_preparedImageData.imageRegion,
+					_preparedImageData.rawImageData,
+					_preparedImageData.imageRegion.texels.width,
+					_preparedImageData.imageRegion.texels.height);
 		}
+		
+		_preparedImageData.texture.usedByCurrentRenderPass=false;
 		
 		float xSunOffset =  (float) ((md.getSunPixelPosition().x - md.getResolution().x / 2.0) / (float)md.getResolution().x);
 		float ySunOffset = -(float) ((md.getSunPixelPosition().y - md.getResolution().y / 2.0) / (float)md.getResolution().y);
@@ -186,7 +221,7 @@ public abstract class AbstractImageLayer extends Layer
 				_preparedImageData.texture.width,
 				_preparedImageData.texture.height);
 
-		//TODO: right/bottom edges shimmer (wrap around)
+		//TODO: right/bottom edges shimmer
 		gl.glBegin(GL2.GL_QUADS);
 
 		gl.glTexCoord2f(0.0f, 1.0f);
@@ -312,25 +347,19 @@ public abstract class AbstractImageLayer extends Layer
 		
 		final @Nullable ImageRegion imageRegion;
 		final @Nullable ByteBuffer rawImageData;
-		final int width;
-		final int height;
 		
 		public PreparedImage(Texture _texture)
 		{
 			texture=_texture;
 			imageRegion=null;
 			rawImageData=null;
-			width=0;
-			height=0;
 		}
 		
-		public PreparedImage(Texture _texture, ImageRegion _imageRegion, ByteBuffer _rawImageData,int _width,int _height)
+		public PreparedImage(Texture _texture, ImageRegion _imageRegion, ByteBuffer _rawImageData)
 		{
 			texture=_texture;
 			imageRegion=_imageRegion;
 			rawImageData=_rawImageData;
-			width=_width;
-			height=_height;
 		}
 	}
 
@@ -342,11 +371,8 @@ public abstract class AbstractImageLayer extends Layer
 	private static final int MAX_Y_POINTS = 11;
 
 	/**
-	 * Calculates the shown region
+	 * Calculates the required region
 	 * 
-	 * @param _mainPanel
-	 * @param _metaData
-	 * @param _size
 	 * @return The ImageRegion or NULL if nothing is visible
 	 */
 	public @Nullable ImageRegion calculateRegion(MainPanel _mainPanel, MetaData _metaData, Dimension _size)

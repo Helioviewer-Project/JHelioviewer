@@ -33,7 +33,7 @@ import javax.swing.plaf.basic.BasicSliderUI;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.components.MenuBar;
-import org.helioviewer.jhv.layers.AbstractImageLayer;
+import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
@@ -376,7 +376,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 			//TODO: this stuff is regenerated every frame --> should
 			//only be recreated when something has changed
 			
-			AbstractImageLayer layer = (AbstractImageLayer) Layers.getActiveImageLayer();
+			ImageLayer layer = (ImageLayer) Layers.getActiveImageLayer();
 			if (layer != null)
 			{
 				//TODO: speed up!!!!!
@@ -430,7 +430,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 	{
 		boolean enable = false;
 		for (Layer layer : Layers.getLayers())
-			enable |= layer instanceof AbstractImageLayer;
+			enable |= layer instanceof ImageLayer;
 		
 		setButtonsEnabled(enable);
 	}
@@ -440,7 +440,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 	{
 		boolean enable = false;
 		for (Layer layer : Layers.getLayers())
-			enable |= layer instanceof AbstractImageLayer;
+			enable |= layer instanceof ImageLayer;
 		
 		setButtonsEnabled(enable);
 	}
@@ -448,9 +448,9 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 	@Override
 	public void activeLayerChanged(@Nullable Layer layer)
 	{
-		if (layer != null && layer instanceof AbstractImageLayer)
+		if (layer != null && layer instanceof ImageLayer)
 		{
-			slider.setMaximum(((AbstractImageLayer) layer).getLocalDateTimes().size() > 0 ? ((AbstractImageLayer) layer)
+			slider.setMaximum(((ImageLayer) layer).getLocalDateTimes().size() > 0 ? ((ImageLayer) layer)
 					.getLocalDateTimes().size() - 1 : 0);
 		}
 	}

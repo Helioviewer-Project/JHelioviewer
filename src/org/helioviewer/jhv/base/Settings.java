@@ -43,11 +43,9 @@ public class Settings
             DEFAULT_PROPERTIES.load(defaultPropStream);
             
             defaultPropStream.close();
-            System.out.println(">> Settings.load() > Load default system settings: " + DEFAULT_PROPERTIES.toString());
         }
         catch (Exception ex)
         {
-            System.err.println(">> Settings.load(boolean) > Could not load settings");
             Telemetry.trackException(ex);
         }
     }

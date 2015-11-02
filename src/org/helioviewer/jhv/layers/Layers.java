@@ -28,26 +28,26 @@ public class Layers
 				return 1;
 			else if (o2==null)
 				return -1;
-			else if (!(o1 instanceof AbstractImageLayer) && o2 instanceof AbstractImageLayer)
+			else if (!(o1 instanceof ImageLayer) && o2 instanceof ImageLayer)
 				return 1;
-			else if (o1 instanceof AbstractImageLayer && !(o2 instanceof AbstractImageLayer))
+			else if (o1 instanceof ImageLayer && !(o2 instanceof ImageLayer))
 				return -1;
 			else
 				return 0;
 		}
 	};
 	
-	private static void updateOpacity(AbstractImageLayer imageLayer, boolean remove)
+	private static void updateOpacity(ImageLayer imageLayer, boolean remove)
 	{
 		int counter = 0;
 		for (Layer tmpLayer : layers)
-			if (tmpLayer instanceof AbstractImageLayer)
+			if (tmpLayer instanceof ImageLayer)
 				counter++;
 		
 		for (Layer tmpLayer : layers)
-			if (tmpLayer instanceof AbstractImageLayer)
+			if (tmpLayer instanceof ImageLayer)
 			{
-				AbstractImageLayer tmpImageLayer = (AbstractImageLayer) tmpLayer;
+				ImageLayer tmpImageLayer = (ImageLayer) tmpLayer;
 				if (tmpImageLayer == imageLayer)
 					tmpImageLayer.opacity = 1d/counter;
 				else
@@ -67,8 +67,8 @@ public class Layers
 		
 		Telemetry.trackEvent("Layer added", "Name",_newLayer.getName(),"Full name",_newLayer.getFullName());
 		
-		if (_newLayer instanceof AbstractImageLayer)
-			updateOpacity((AbstractImageLayer)_newLayer, false);
+		if (_newLayer instanceof ImageLayer)
+			updateOpacity((ImageLayer)_newLayer, false);
 		
 		for (LayerListener listener : layerListeners)
 			listener.layerAdded();
@@ -100,12 +100,12 @@ public class Layers
 		if (layers.isEmpty())
 			return;
 		
-		if (!(layers.get(_idx) instanceof AbstractImageLayer))
+		if (!(layers.get(_idx) instanceof ImageLayer))
 			return;
 		
-		AbstractImageLayer.newRenderPassStarted();
+		ImageLayer.newRenderPassStarted();
 		
-		updateOpacity((AbstractImageLayer)layers.get(_idx), true);
+		updateOpacity((ImageLayer)layers.get(_idx), true);
 		
 		layers.get(_idx).dispose();
 		layers.remove(_idx);
@@ -127,7 +127,7 @@ public class Layers
 	public static boolean anyImageLayers()
 	{
 		for (Layer tmpLayer : layers)
-			if (tmpLayer instanceof AbstractImageLayer)
+			if (tmpLayer instanceof ImageLayer)
 				return true;
 		return false;
 	}
@@ -159,7 +159,7 @@ public class Layers
 		for (LayerListener renderListener : layerListeners)
 			renderListener.activeLayerChanged(l);
 	}
-
+	
 	public static ArrayList<Layer> getLayers()
 	{
 		return layers;
@@ -167,7 +167,7 @@ public class Layers
 
 	public static void toggleCoronaVisibility()
 	{
-		AbstractImageLayer il = getActiveImageLayer();
+		ImageLayer il = getActiveImageLayer();
 		if(il != null)
 		{
 			il.toggleCoronaVisibility();
@@ -178,10 +178,10 @@ public class Layers
 	public static void removeAllImageLayers()
 	{
 		for (Layer layer : layers)
-			if (layer instanceof AbstractImageLayer)
+			if (layer instanceof ImageLayer)
 				layer.dispose();
 	
-		AbstractImageLayer.newRenderPassStarted();
+		ImageLayer.newRenderPassStarted();
 		
 		layers.clear();
 		
@@ -220,11 +220,11 @@ public class Layers
 	}
 
 	@Nullable
-	public static AbstractImageLayer getActiveImageLayer()
+	public static ImageLayer getActiveImageLayer()
 	{
-		if (activeLayerIndex == -1 || !(layers.get(activeLayerIndex) instanceof AbstractImageLayer))
+		if (activeLayerIndex == -1 || !(layers.get(activeLayerIndex) instanceof ImageLayer))
 			return null;
 		
-		return (AbstractImageLayer) layers.get(activeLayerIndex);
+		return (ImageLayer) layers.get(activeLayerIndex);
 	}
 }

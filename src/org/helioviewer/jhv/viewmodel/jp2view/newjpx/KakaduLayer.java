@@ -28,7 +28,7 @@ import org.helioviewer.jhv.base.downloadmanager.JPIPRequest;
 import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.MainPanel;
-import org.helioviewer.jhv.layers.AbstractImageLayer;
+import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.LUT.Lut;
 import org.helioviewer.jhv.layers.Movie;
 import org.helioviewer.jhv.layers.Movie.Match;
@@ -41,7 +41,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
 
-public class KakaduLayer extends AbstractImageLayer
+public class KakaduLayer extends ImageLayer
 {
 	public static final int MAX_FRAME_DOWNLOAD_BATCH = 15;
 	private static final String URL = "http://api.helioviewer.org/v2/getJPX/?";
@@ -525,7 +525,7 @@ public class KakaduLayer extends AbstractImageLayer
 		return MovieCache.getMetaDataDocument(sourceId, currentDateTime);
 	}
 	
-	public Future<PreparedImage> prepareImageData(final MainPanel mainPanel, final Dimension size)
+	public Future<PreparedImage> prepareImageData(final MainPanel _panel, final Dimension _size)
 	{
 		final MetaData metaData = getMetaData(TimeLine.SINGLETON.getCurrentDateTime());
 		if (metaData == null)
@@ -535,33 +535,48 @@ public class KakaduLayer extends AbstractImageLayer
 		if(lut==null)
 			lut=metaData.getDefaultLUT();
 		
-		final ImageRegion requiredMinimumRegion = calculateRegion(mainPanel, metaData, size);
+		final ImageRegion requiredMinimumRegion = calculateRegion(_panel, metaData, _size);
 		if (requiredMinimumRegion == null)
 			return new FutureValue<PreparedImage>(null);
 		
-		for(Texture t:textures)
+		/*for(Texture t:textures)
 			if(t.contains(this, requiredMinimumRegion, metaData.getLocalDateTime()))
-				return new FutureValue<PreparedImage>(new PreparedImage(t));
-		
-		final int textureNr;
-		synchronized(AbstractImageLayer.class)
-		{
-			int candidateTextureNr=freeTextureNr++;
-			if(candidateTextureNr>=textures.size())
 			{
-				if(textures.size()<10)
-				{
-					textures.add(new Texture());
-					System.out.println("Added new texture for a total of "+textures.size()+" textures.");
-				}
-				else
-					//we used a lot of texture cache, just wrap around for a lru cache
-					candidateTextureNr=freeTextureNr=0;
-			}
-			
-			textureNr=candidateTextureNr;
-		}
+				t.usedByCurrentRenderPass=true;
+				return new FutureValue<PreparedImage>(new PreparedImage(t));
+			}*/
 		
+		//search an empty spot, starting at the end (=oldest)
+		int textureNr;
+		for(textureNr=textures.size()-1;textureNr>=0;textureNr--)
+			if(!textures.get(textureNr).usedByCurrentRenderPass)
+				break;
+		
+		
+		
+		//FIXME: buggy repaints
+		/*
+		REPRO:
+			add 4 layers (STEREO A/B, COR1 & EUVI)
+			rotate to make all layers visible
+			play, pause
+			--> flicker when pausing. Why?!
+		*/
+		
+		
+		
+		if(textureNr<0)
+			//we didn't find a free spot?!? how should this be possible?
+			//ImageLayer.ensureAppropriateTextureCacheSize ensures that we have
+			//at least two textures per AbstractImageLayer
+			throw new RuntimeException("Shouldn't be possible. Bug!");
+		
+		//move elements to ensure lru order (most recent = element #0)
+		textures.add(0, textures.remove(textureNr));
+		
+		final Texture tex=textures.get(textureNr);
+		tex.usedByCurrentRenderPass=true;
+		System.out.println("Upload new texture "+System.currentTimeMillis());
 		return exDecoder.submit(new Callable<PreparedImage>()
 		{
 			@SuppressWarnings("null")
@@ -570,15 +585,17 @@ public class KakaduLayer extends AbstractImageLayer
 			{
 				Thread.currentThread().setName("Decoder-"+Thread.currentThread().getId());
 				
-				ImageRegion requiredSafeRegion = new ImageRegion(requiredMinimumRegion.areaOfSourceImage, mainPanel.getTranslationCurrent().z, metaData,size,
+				ImageRegion requiredSafeRegion = new ImageRegion(
+						requiredMinimumRegion.areaOfSourceImage,
+						_panel.getTranslationCurrent().z,
+						metaData,
+						_size,
 						TimeLine.SINGLETON.isPlaying() ? 1.05 : 1.2);
 				
 				return new PreparedImage(
-						textures.get(textureNr),
+						tex,
 						requiredSafeRegion,
-						MovieCache.decodeImage(sourceId, metaData.getLocalDateTime(), 16384 /* 0-8 */, requiredSafeRegion.decodeZoomFactor, requiredSafeRegion.texels),
-						requiredSafeRegion.texels.width,
-						requiredSafeRegion.texels.height
+						MovieCache.decodeImage(sourceId, metaData.getLocalDateTime(), 16384 /* 0-8 */, requiredSafeRegion.decodeZoomFactor, requiredSafeRegion.texels)
 					);
 			}
 		});

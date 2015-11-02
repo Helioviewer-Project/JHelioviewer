@@ -38,7 +38,7 @@ import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.dialogs.AddLayerDialog;
 import org.helioviewer.jhv.gui.dialogs.DownloadMovieDialog;
 import org.helioviewer.jhv.gui.dialogs.MetaDataDialog;
-import org.helioviewer.jhv.layers.AbstractImageLayer;
+import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
@@ -172,7 +172,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 				if(activePopupLayer==null)
 					return;
 				
-				if (activePopupLayer instanceof AbstractImageLayer)
+				if (activePopupLayer instanceof ImageLayer)
 				{
 					showMetaView.setEnabled(true);
 					downloadLayer.setEnabled(activePopupLayer.getDownloadURL()!=null);
@@ -380,7 +380,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			@Override
 			public void actionPerformed(@Nullable ActionEvent e)
 			{
-				AbstractImageLayer l = Layers.getActiveImageLayer();
+				ImageLayer l = Layers.getActiveImageLayer();
 				if (l == null)
 					return;
 				
@@ -429,6 +429,8 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			table.setRowSelectionInterval(
 					Layers.getActiveLayerIndex(),
 					Layers.getActiveLayerIndex());
+		else
+			table.clearSelection();
 	}
 
 	private static class LayerTableModel extends DefaultTableModel
@@ -491,7 +493,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 					break;
 				case 4:
 					JLabel label4 = (JLabel) super.getTableCellRendererComponent(table, null, isSelected, hasFocus, row, column);
-					if (Layers.getLayer(row) != null && Layers.getLayer(row) instanceof AbstractImageLayer)
+					if (Layers.getLayer(row) != null && Layers.getLayer(row) instanceof ImageLayer)
 					{
 						label4.setIcon(ICON_REMOVE);
 						label4.setPreferredSize(new Dimension(20, 20));
@@ -525,13 +527,15 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		if (layer != null)
 		{
 			btnDownloadLayer.setEnabled(layer.getDownloadURL()!=null);
-			btnShowInfo.setEnabled(layer instanceof AbstractImageLayer);
+			btnShowInfo.setEnabled(layer instanceof ImageLayer);
 			
 			if (Layers.getActiveLayer()!=null)
 				table.setRowSelectionInterval(
 						Layers.getActiveLayerIndex(),
 						Layers.getActiveLayerIndex());
 		}
+		else
+			table.clearSelection();
 	}
 
 	@Override

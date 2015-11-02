@@ -17,7 +17,7 @@ import org.helioviewer.jhv.base.downloadmanager.HTTPDownloadRequest;
 import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.PredefinedFileFilter;
-import org.helioviewer.jhv.layers.AbstractImageLayer;
+import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 
@@ -49,7 +49,7 @@ public class DownloadMovieDialog extends JDialog
 			return;
 		}
 		
-		String defaultName = _layer.getFullName() + " " + Globals.FILE_DATE_TIME_FORMATTER.format(((AbstractImageLayer)_layer).getFirstLocalDateTime()) + " " + Globals.FILE_DATE_TIME_FORMATTER.format(((AbstractImageLayer)_layer).getLastLocalDateTime());
+		String defaultName = _layer.getFullName() + " " + Globals.FILE_DATE_TIME_FORMATTER.format(((ImageLayer)_layer).getFirstLocalDateTime()) + " " + Globals.FILE_DATE_TIME_FORMATTER.format(((ImageLayer)_layer).getLastLocalDateTime());
 		File selectedFile = Globals.showFileDialog(DialogType.SAVE_FILE,
 				"Download movie",
 				Settings.getString(PATH_SETTINGS),

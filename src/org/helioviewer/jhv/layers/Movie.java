@@ -4,6 +4,7 @@ import java.awt.Rectangle;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
@@ -141,6 +142,9 @@ public class Movie
 			{
 				metaDatas[i]=MetaDataFactory.getMetaData(readMetadataDocument(i+1));
 				
+				if(metaDatas[i]==null)
+					Telemetry.trackException(new UnsuitableMetaDataException("Cannot find metadata class for:\n"+KakaduUtils.getXml(family_src, i+1)));
+				
 				//TODO: should invalidate textureCache
 				//TextureCache.invalidate(sourceId, metaDatas[i].getLocalDateTime());
 			}
@@ -250,6 +254,8 @@ public class Movie
 				return null;
 			xmlText = xmlText.trim().replace("&", "&amp;").replace("$OBS", "");
 			
+			//System.out.println(xmlText);
+			
 			try(InputStream in = new ByteArrayInputStream(xmlText.getBytes("UTF-8")))
 			{
 				DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -285,7 +291,7 @@ public class Movie
 		}
 	}*/
 
-	public @Nullable ByteBuffer decodeImage(int _index, int quality, float zoomPercent, Rectangle _requiredRegion)
+	public @Nullable ByteBuffer decodeImage(int _index, int _quality, float _zoomPercent, Rectangle _requiredRegion)
 	{
 		if(disposed)
 			throw new IllegalStateException();
@@ -358,8 +364,8 @@ public class Movie
 			Kdu_region_compositor compositor = new Kdu_region_compositor(jpxSrc);
 			
 			//FIXME: downgrade quality first, before resolution when having speed problems
-			compositor.Set_max_quality_layers(quality);
-			compositor.Set_scale(false, false, false, zoomPercent);
+			compositor.Set_max_quality_layers(_quality);
+			compositor.Set_scale(false, false, false, _zoomPercent);
 			compositor.Set_buffer_surface(requestedBufferedRegion);
 			
 			//CRASHES KDU. WHY?!
@@ -377,11 +383,11 @@ public class Movie
 			actualOffset.Assign(actualBufferedRegion.Access_pos());
 			
 			//TODO: don't reallocate buffers all the time
-			ByteBuffer byteBuffer = ByteBuffer.allocateDirect(_requiredRegion.width * _requiredRegion.height);
+			ByteBuffer byteBuffer = ByteBuffer.allocateDirect(_requiredRegion.width * _requiredRegion.height).order(ByteOrder.nativeOrder());
 			
 			Kdu_dims newRegion = new Kdu_dims();
-			int[] region_buf = new int[128000];
-			while (compositor.Process(128000-_requiredRegion.width, newRegion))
+			int[] region_buf = new int[Math.min(128000,_requiredRegion.width*(_requiredRegion.height+1))];
+			while (compositor.Process(region_buf.length-_requiredRegion.width, newRegion))
 			{
 				Kdu_coords newOffset = newRegion.Access_pos();
 				Kdu_coords newSize = newRegion.Access_size();
@@ -402,7 +408,7 @@ public class Movie
 			compositorBuf.Native_destroy();
 			compositor.Native_destroy();
 			
-			byteBuffer.flip();
+			byteBuffer.position(0);
 			return byteBuffer;
 		}
 		catch (KduException e)

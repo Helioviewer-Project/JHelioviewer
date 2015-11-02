@@ -11,7 +11,7 @@ import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 import org.helioviewer.jhv.gui.statusLabels.FramerateStatusPanel;
-import org.helioviewer.jhv.layers.AbstractImageLayer;
+import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.viewmodel.TimeLine;
@@ -78,9 +78,9 @@ public class Telemetry
 								
 								Telemetry.trackMetric("Layers", layers.size());
 								for(Layer l:layers)
-									if(l instanceof AbstractImageLayer)
+									if(l instanceof ImageLayer)
 									{
-										AbstractImageLayer il=(AbstractImageLayer)l;
+										ImageLayer il=(ImageLayer)l;
 										Telemetry.trackMetric("Layer opacity", il.opacity);
 										Telemetry.trackMetric("Layer contrast", il.contrast);
 										Telemetry.trackMetric("Layer sharpness", il.sharpness);

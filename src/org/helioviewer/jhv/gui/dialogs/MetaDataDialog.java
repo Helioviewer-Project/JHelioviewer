@@ -42,7 +42,7 @@ import org.helioviewer.jhv.base.Settings;
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.PredefinedFileFilter;
-import org.helioviewer.jhv.layers.AbstractImageLayer;
+import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
@@ -178,7 +178,7 @@ public class MetaDataDialog extends JDialog implements LayerListener, TimeLineLi
 
 	public void updateData()
 	{
-		AbstractImageLayer il=Layers.getActiveImageLayer();
+		ImageLayer il=Layers.getActiveImageLayer();
 		if (il != null)
 		{
 			MetaData md=il.getMetaData(TimeLine.SINGLETON.getCurrentDateTime());
@@ -387,7 +387,7 @@ public class MetaDataDialog extends JDialog implements LayerListener, TimeLineLi
 	@Override
 	public void timeStampChanged(LocalDateTime current, LocalDateTime last)
 	{
-		AbstractImageLayer il = Layers.getActiveImageLayer();
+		ImageLayer il = Layers.getActiveImageLayer();
 		if (il != null)
 		{
 			MetaData md=il.getMetaData(TimeLine.SINGLETON.getCurrentDateTime());

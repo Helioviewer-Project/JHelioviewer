@@ -42,8 +42,8 @@ import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.base.physics.DifferentialRotation;
 import org.helioviewer.jhv.gui.statusLabels.CameraListener;
 import org.helioviewer.jhv.gui.statusLabels.PanelMouseListener;
-import org.helioviewer.jhv.layers.AbstractImageLayer;
-import org.helioviewer.jhv.layers.AbstractImageLayer.PreparedImage;
+import org.helioviewer.jhv.layers.ImageLayer;
+import org.helioviewer.jhv.layers.ImageLayer.PreparedImage;
 import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
@@ -275,7 +275,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 			gl.glTranslated(0, 0, -translationNow.z);
 			if (CameraMode.mode == MODE.MODE_2D)
 			{
-				AbstractImageLayer il = Layers.getActiveImageLayer();
+				ImageLayer il = Layers.getActiveImageLayer();
 				if (il != null)
 				{
 					MetaData md = il.getMetaData(currentDateTime);
@@ -284,13 +284,16 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 				}
 			}
 			
-			LinkedHashMap<AbstractImageLayer, Future<PreparedImage>> layers = new LinkedHashMap<>();
-			for (Layer layer : Layers.getLayers())
-				if (layer.isVisible() && layer instanceof AbstractImageLayer)
-					layers.put((AbstractImageLayer) layer,
-							((AbstractImageLayer) layer).prepareImageData(this, sizeForDecoder));
+			ImageLayer.ensureAppropriateTextureCacheSize();
 			
-			for (Entry<AbstractImageLayer, Future<PreparedImage>> l : layers.entrySet())
+			//System.out.println("-------------------------------------------------------");
+			LinkedHashMap<ImageLayer, Future<PreparedImage>> layers = new LinkedHashMap<>();
+			for (Layer layer : Layers.getLayers())
+				if (layer.isVisible() && layer instanceof ImageLayer)
+					layers.put((ImageLayer) layer,
+							((ImageLayer) layer).prepareImageData(this, sizeForDecoder));
+			
+			for (Entry<ImageLayer, Future<PreparedImage>> l : layers.entrySet())
 				try
 				{
 					if (l.getValue().get() != null)
@@ -301,6 +304,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 				{
 					Telemetry.trackException(_e);
 				}
+			//System.out.println("-------------------------------------------------------");
 			
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
 			gl.glLoadIdentity();
@@ -310,8 +314,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 
 		Quaternion3d rotation = new Quaternion3d(rotationNow.getAngle(), rotationNow.getRotationAxis().negateY());
-		Matrix4d transformation = rotation.toMatrix().translated(-translationNow.x, translationNow.y,
-				-translationNow.z);
+		Matrix4d transformation = rotation.toMatrix().translated(-translationNow.x, translationNow.y,-translationNow.z);
 		gl.glMultMatrixd(transformation.m, 0);
 
 		gl.glMatrixMode(GL2.GL_PROJECTION);
@@ -373,7 +376,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 
 		boolean noImageScreen = _showLoadingAnimation;
 		for (Layer layer : Layers.getLayers())
-			if (layer instanceof AbstractImageLayer)
+			if (layer instanceof ImageLayer)
 				noImageScreen &= !layer.isVisible();
 
 		if (noImageScreen)

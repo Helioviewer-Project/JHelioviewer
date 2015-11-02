@@ -1,7 +1,11 @@
 package org.helioviewer.jhv.viewmodel.metadata;
 
+import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
+import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
+import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
+import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.w3c.dom.Document;
 
@@ -26,7 +30,7 @@ class MetaDataStereo extends MetaData
 		
 		double innerDefault = -1;
 		double outerDefault = -1;
-		if ("STEREO_A".equalsIgnoreCase(observatory) && "COR1".equalsIgnoreCase(observatory))
+		if ("STEREO_A".equalsIgnoreCase(observatory) && "COR1".equalsIgnoreCase(detector))
 		{
 			innerDefault = 1.36 * Constants.SUN_RADIUS;
 			outerDefault = 4.5 * Constants.SUN_RADIUS;
@@ -36,7 +40,7 @@ class MetaDataStereo extends MetaData
 			centerX += 1;
 			centerY += 1;
 		}
-		else if ("STEREO_A".equalsIgnoreCase(observatory) && "COR2".equalsIgnoreCase(observatory))
+		else if ("STEREO_A".equalsIgnoreCase(observatory) && "COR2".equalsIgnoreCase(detector))
 		{
 			innerDefault = 2.4 * Constants.SUN_RADIUS;
 			outerDefault = 15.6 * Constants.SUN_RADIUS;
@@ -46,7 +50,7 @@ class MetaDataStereo extends MetaData
 			centerX += 3;
 			centerY += 6;
 		}
-		else if ("STEREO_B".equalsIgnoreCase(observatory) && "COR1".equalsIgnoreCase(observatory))
+		else if ("STEREO_B".equalsIgnoreCase(observatory) && "COR1".equalsIgnoreCase(detector))
 		{
 			innerDefault = 1.5 * Constants.SUN_RADIUS;
 			outerDefault = 4.9 * Constants.SUN_RADIUS;
@@ -56,7 +60,7 @@ class MetaDataStereo extends MetaData
 			centerX += 1;
 			centerY += 3;
 		}
-		else if ("STEREO_B".equalsIgnoreCase(observatory) && "COR2".equalsIgnoreCase(observatory))
+		else if ("STEREO_B".equalsIgnoreCase(observatory) && "COR2".equalsIgnoreCase(detector))
 		{
 			innerDefault = 3.25 * Constants.SUN_RADIUS;
 			outerDefault = 17 * Constants.SUN_RADIUS;
@@ -77,6 +81,13 @@ class MetaDataStereo extends MetaData
 			innerRadius = innerDefault;
 			outerRadius = outerDefault;
 		}
+		
+        if (stonyhurstAvailable)
+        {
+        	HeliocentricCartesianCoordinate hcc = new HeliographicCoordinate(Math.toRadians(stonyhurstLongitude), Math.toRadians(stonyhurstLatitude)).toHeliocentricCartesianCoordinate();
+        	orientation = new Vector3d(hcc.x, hcc.y, hcc.z);
+        	defaultRotation = Quaternion3d.calcRotation(new Vector3d(0, 0, Constants.SUN_RADIUS), orientation);
+        }
 		
 		maskRotation = Math.toRadians(tryGetDouble(_doc, "CROTA"));
 		occulterCenter = new Vector2d(centerX * getUnitsPerPixel(), centerY * getUnitsPerPixel());

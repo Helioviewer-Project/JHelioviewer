@@ -29,6 +29,13 @@ public class Texture
 	public float textureHeight=1; //always <=1
 	
 	private int internalFormat=GL.GL_LUMINANCE8;
+	
+	//MainPanel will paint the following way:
+	//   1. prepare texture data per layer (in parallel)
+	//            --> the used textures will be marked by this flag
+	//   2. textures will be used sequentially
+	//            --> the flags will be cleared again
+	public boolean usedByCurrentRenderPass = false;
 
 	/*
 	private JFrame debug=new JFrame();
@@ -150,11 +157,8 @@ public class Texture
 		int height2 = MathUtils.nextPowerOfTwo(_imageHeight);
 		
 		if (width < width2 || height < height2 || internalFormat!=GL.GL_LUMINANCE8)
-		{
-			System.out.println("Recreating texture "+width+"x"+height+" --> "+width2+"x"+height2);
 			allocateTexture(width2, height2, GL.GL_LUMINANCE8);
-		}
-
+		
 		GL2 gl = GLContext.getCurrentGL().getGL2();
 		
 		gl.glBindTexture(GL2.GL_TEXTURE_2D, openGLTextureId);
@@ -175,7 +179,6 @@ public class Texture
 		b.flip();
 		gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, width, height, GL2.GL_ABGR_EXT, GL2.GL_UNSIGNED_BYTE, b);*/
 		
-		//FIXME: crashes with LASCO C2
 		gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, _imageWidth, _imageHeight, /*GL2.GL_ABGR_EXT*/ GL2.GL_RED, GL2.GL_UNSIGNED_BYTE, _image);
 		
 		textureWidth=_imageWidth / (float)width;

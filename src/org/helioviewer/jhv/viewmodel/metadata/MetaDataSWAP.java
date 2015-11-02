@@ -9,10 +9,10 @@ class MetaDataSWAP extends MetaData{
 	public MetaDataSWAP(Document _doc)
 	{
         super(_doc, RESOLUTION, get(_doc, "TELESCOP"), get(_doc, "WAVELNTH"));
-        instrument = "SWAP";
+        
         fullName = "SWAP " + measurement;
         
-        if (!(instrument.contains("SWAP")))
+        if (!"SWAP".equalsIgnoreCase(instrument) || !"PROBA2".equalsIgnoreCase(observatory))
         	throw new UnsuitableMetaDataException("invalid instrument: "+observatory+"/"+instrument+"/"+detector);
    }
 }

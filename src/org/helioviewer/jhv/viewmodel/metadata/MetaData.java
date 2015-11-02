@@ -75,9 +75,6 @@ public abstract class MetaData
 	private double arcsecPerPixelX;
 	private double arcsecPerPixelY;
 	
-    /**
-     * Default constructor, does not set size or position.
-     */
 	public MetaData(Document _doc, Vector2i _resolution, @Nullable String _observatory, @Nullable String _measurement)
     {
 		if(_measurement==null)
@@ -110,6 +107,9 @@ public abstract class MetaData
         instrument = instrume;
         
         String observedDate = get(_doc, "DATE_OBS");
+        if(observedDate==null || "".equals(observedDate))
+        	observedDate = get(_doc, "DATE-OBS");
+        
         String observedTime = get(_doc, "TIME_OBS");
         if(observedDate!=null && !observedDate.contains("T") && observedTime!=null && !"".equals(observedTime))
         	observedDate += "T" + get(_doc, "TIME_OBS");

@@ -1,12 +1,9 @@
 package org.helioviewer.jhv;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -30,7 +27,7 @@ import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 import org.helioviewer.jhv.gui.dialogs.AboutDialog;
 import org.helioviewer.jhv.io.CommandLineProcessor;
-import org.helioviewer.jhv.layers.AbstractImageLayer;
+import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.viewmodel.jp2view.kakadu.KduErrorHandler;
 
@@ -202,7 +199,7 @@ public class JHelioviewer
 					//TextureCache.init();
 					
 					splash.progressTo("Compiling shaders");
-					AbstractImageLayer.init();
+					ImageLayer.init();
 					
 					// force initialization of UltimatePluginInterface
 					splash.progressTo("Initializing plugins");
@@ -250,32 +247,22 @@ public class JHelioviewer
 
 	private static void loadLibraries()
 	{
-		try
+		if (Globals.isWindows())
 		{
-			Path tmpLibDir = Files.createTempDirectory("jhv-libs");
-			tmpLibDir.toFile().deleteOnExit();
-
-			if (Globals.isWindows())
+			try
 			{
-				try
-				{
-					System.loadLibrary("msvcr120");
-				}
-				catch(UnsatisfiedLinkError _ule)
-				{
-					//ignore inability to load msvcr120. if there's really
-					//a problem, it will be caught by the outer try/catch
-				}
-				System.loadLibrary("kdu_v75R");
-				System.loadLibrary("kdu_a75R");
+				System.loadLibrary("msvcr120");
 			}
-
-			System.loadLibrary("kdu_jni");
+			catch(UnsatisfiedLinkError _ule)
+			{
+				//ignore inability to load msvcr120. if there's really
+				//a problem, it will be caught by the outer try/catch
+			}
+			System.loadLibrary("kdu_v75R");
+			System.loadLibrary("kdu_a75R");
 		}
-		catch (IOException e)
-		{
-			Telemetry.trackException(e);
-		}
+		
+		System.loadLibrary("kdu_jni");
 	}
 
 	@SuppressWarnings("unused")

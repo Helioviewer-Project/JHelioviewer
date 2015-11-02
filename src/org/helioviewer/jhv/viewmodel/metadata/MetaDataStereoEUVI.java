@@ -16,8 +16,8 @@ class MetaDataStereoEUVI extends MetaData
 	public MetaDataStereoEUVI(Document _doc)
 	{
         super(_doc, RESOLUTION, get(_doc, "OBSRVTRY"), get(_doc, "WAVELNTH"));
-
-        if (!(("STEREO_A".equalsIgnoreCase(observatory) || "STEREO_B".equalsIgnoreCase(observatory) && "EUVI".equalsIgnoreCase(detector))))
+        
+        if ((!"STEREO_A".equalsIgnoreCase(observatory) && !"STEREO_B".equalsIgnoreCase(observatory)) || !"EUVI".equalsIgnoreCase(detector))
         	throw new UnsuitableMetaDataException("invalid instrument");
 
         fullName = detector + " " + measurement;

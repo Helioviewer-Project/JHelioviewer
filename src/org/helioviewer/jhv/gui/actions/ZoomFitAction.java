@@ -14,7 +14,7 @@ import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.MainPanel;
-import org.helioviewer.jhv.layers.AbstractImageLayer;
+import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.opengl.camera.animation.CameraZoomAnimation;
 import org.helioviewer.jhv.viewmodel.TimeLine;
@@ -32,7 +32,7 @@ public class ZoomFitAction extends AbstractAction
 
 	public void actionPerformed(@Nullable ActionEvent e)
 	{
-		AbstractImageLayer activeLayer = Layers.getActiveImageLayer();
+		ImageLayer activeLayer = Layers.getActiveImageLayer();
 		if (activeLayer == null)
 			return;
 

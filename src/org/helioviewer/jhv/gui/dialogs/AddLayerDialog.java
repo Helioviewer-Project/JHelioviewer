@@ -27,6 +27,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import org.helioviewer.jhv.base.Observatories;
+import org.helioviewer.jhv.base.Observatories.Filter;
+import org.helioviewer.jhv.base.Observatories.Observatory;
+import org.helioviewer.jhv.base.Settings;
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.dialogs.calender.DatePicker;
@@ -83,7 +86,7 @@ public class AddLayerDialog extends JDialog
 		
     	Telemetry.trackEvent("Dialog", "Type", getClass().getSimpleName());
 
-		this.setResizable(false);
+		setResizable(false);
 		setMinimumSize(new Dimension(450, 370));
 		setPreferredSize(new Dimension(450, 370));
 		setLocationRelativeTo(MainFrame.SINGLETON);
@@ -96,6 +99,7 @@ public class AddLayerDialog extends JDialog
 			public void actionPerformed(@Nullable ActionEvent e)
 			{
 				setVisible(false);
+				dispose();
 			}
 		}, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
 	}
@@ -229,6 +233,40 @@ public class AddLayerDialog extends JDialog
 			cmbbxObservatory.setSelectedIndex(1);
 			cmbbxObservatory.setSelectedIndex(0);
 		}
+		
+		
+		int sourceId=Settings.getInt("addlayer.last.sourceid");
+		for(Observatory o:Observatories.getObservatories())
+			for(Filter f:o.getInstruments())
+			{
+				if(f.sourceId==sourceId)
+				{
+					cmbbxObservatory.setSelectedItem(o);
+					cmbbxFilter.setSelectedItem(f);
+					return;
+				}
+				
+				for(Filter f1:f.getFilters())
+				{
+					if(f1.sourceId==sourceId)
+					{
+						cmbbxObservatory.setSelectedItem(o);
+						cmbbxFilter.setSelectedItem(f);
+						cmbbxFilter1.setSelectedItem(f1);
+						return;
+					}
+					
+					for(Filter f2:f1.getFilters())
+						if(f2.sourceId==sourceId)
+						{
+							cmbbxObservatory.setSelectedItem(o);
+							cmbbxFilter.setSelectedItem(f);
+							cmbbxFilter1.setSelectedItem(f1);
+							cmbbxFilter2.setSelectedItem(f2);
+							return;
+						}
+				}
+			}
 	}
 
 	private void initGui()
@@ -278,9 +316,9 @@ public class AddLayerDialog extends JDialog
 						}));
 		
 		//FIXME: remove minusYears for release, check data availability
-		datePickerStartDate = new DatePicker(LocalDateTime.now().minusYears(1).minusDays(1), this);
+		datePickerStartDate = new DatePicker(LocalDateTime.now().minusYears(3).minusDays(1), this);
 		contentPanel.add(datePickerStartDate, "2, 2, 5, 1, fill, top");
-		datePickerEndDate = new DatePicker(LocalDateTime.now().minusYears(1), this);
+		datePickerEndDate = new DatePicker(LocalDateTime.now().minusYears(3), this);
 		contentPanel.add(datePickerEndDate, "2, 4, 5, 1, fill, top");
 		JLabel lblCadence = new JLabel("Time Step");
 		contentPanel.add(lblCadence, "2, 6");
@@ -363,7 +401,10 @@ public class AddLayerDialog extends JDialog
 							datePickerEndDate.getDateTime(),
 							cadence, filter.getNickname()));
 					
+					Settings.setInt("addlayer.last.sourceid", filter.sourceId);
+					
 					setVisible(false);
+					dispose();
 				}
 			}
 		});
