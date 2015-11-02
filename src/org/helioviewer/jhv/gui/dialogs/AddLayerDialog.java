@@ -41,7 +41,6 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
-//FIXME: remember last entered dates, times & instruments
 public class AddLayerDialog extends JDialog
 {
 	private final JPanel contentPanel = new JPanel();
@@ -54,6 +53,10 @@ public class AddLayerDialog extends JDialog
 	private DatePicker datePickerEndDate;
 	private JSpinner cadence;
 	private JPanel layerPanel;
+	
+	//FIXME: remove minusYears for release, check data availability
+	private static LocalDateTime lastStart = LocalDateTime.now().minusYears(3).minusDays(1);
+	private static LocalDateTime lastEnd = LocalDateTime.now().minusYears(3); 
 	
 	private enum TimeSteps
 	{
@@ -315,10 +318,9 @@ public class AddLayerDialog extends JDialog
 							FormFactory.DEFAULT_ROWSPEC
 						}));
 		
-		//FIXME: remove minusYears for release, check data availability
-		datePickerStartDate = new DatePicker(LocalDateTime.now().minusYears(3).minusDays(1), this);
+		datePickerStartDate = new DatePicker(lastStart, this);
 		contentPanel.add(datePickerStartDate, "2, 2, 5, 1, fill, top");
-		datePickerEndDate = new DatePicker(LocalDateTime.now().minusYears(3), this);
+		datePickerEndDate = new DatePicker(lastEnd, this);
 		contentPanel.add(datePickerEndDate, "2, 4, 5, 1, fill, top");
 		JLabel lblCadence = new JLabel("Time Step");
 		contentPanel.add(lblCadence, "2, 6");
@@ -402,6 +404,8 @@ public class AddLayerDialog extends JDialog
 							cadence, filter.getNickname()));
 					
 					Settings.setInt("addlayer.last.sourceid", filter.sourceId);
+					lastStart = datePickerStartDate.getDateTime();
+					lastEnd = datePickerEndDate.getDateTime();
 					
 					setVisible(false);
 					dispose();
