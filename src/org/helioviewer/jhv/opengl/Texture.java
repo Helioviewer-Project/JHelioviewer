@@ -9,8 +9,6 @@ import javax.annotation.Nullable;
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.math.MathUtils;
-import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.viewmodel.TimeLine;
 
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
@@ -187,7 +185,8 @@ public class Texture
 		//updateDebugImage();
 	}
 	
-	/*private void updateDebugImage()
+	/*
+	private void updateDebugImage()
 	{
 		GL2 gl = GLContext.getCurrentGL().getGL2();
 		gl.glBindTexture(GL2.GL_TEXTURE_2D, openGLTextureId);
@@ -195,17 +194,19 @@ public class Texture
 		ByteBuffer buf=ByteBuffer.allocateDirect(width*height*4);
 		gl.glGetTexImage(GL2.GL_TEXTURE_2D, 0, GL2.GL_ABGR_EXT, GL2.GL_UNSIGNED_BYTE, buf);
 		
-		BufferedImage bi=new BufferedImage(width/2, height/2, BufferedImage.TYPE_4BYTE_ABGR);
+		BufferedImage bi=new BufferedImage(width/4, height/4, BufferedImage.TYPE_4BYTE_ABGR);
 		int i=0;
-		for(int y=0;y<height/2;y++)
+		for(int y=0;y<height/4;y++)
 		{
-			buf.position(y*2*width*4);
-			for(int x=0;x<width/2;x++)
+			buf.position(y*4*width*4);
+			for(int x=0;x<width/4;x++)
 			{
 				bi.getRaster().getDataBuffer().setElem(i++, buf.get());
 				bi.getRaster().getDataBuffer().setElem(i++, buf.get());
 				bi.getRaster().getDataBuffer().setElem(i++, buf.get());
 				bi.getRaster().getDataBuffer().setElem(i++, buf.get());
+				buf.get();buf.get();buf.get();buf.get();
+				buf.get();buf.get();buf.get();buf.get();
 				buf.get();buf.get();buf.get();buf.get();
 			}
 		}
@@ -213,20 +214,21 @@ public class Texture
 		
 		Graphics g=bi.getGraphics();
 		g.setColor(Color.GREEN);
-		g.fillOval((int)(textureWidth*width/2)-3, (int)(textureHeight*height/2)-3, 5, 5);
+		g.fillOval((int)(textureWidth*width/4)-3, (int)(textureHeight*height/4)-3, 5, 5);
 		
+		g.setColor(Color.BLUE);
 		if(imageRegion!=null)
 			g.drawRect(
-					(int)(imageRegion.areaOfSourceImage.getX()*width/2), 
-					(int)(imageRegion.areaOfSourceImage.getY()*height/2),
-					(int)(imageRegion.areaOfSourceImage.getWidth()*width/2),
-					(int)(imageRegion.areaOfSourceImage.getHeight()*height/2)
+					(int)(imageRegion.areaOfSourceImage.getX()*width/4), 
+					(int)(imageRegion.areaOfSourceImage.getY()*height/4),
+					(int)(imageRegion.areaOfSourceImage.getWidth()*width/4),
+					(int)(imageRegion.areaOfSourceImage.getHeight()*height/4)
 					);
 		
 		debug.setTitle(openGLTextureId+" "+System.currentTimeMillis());
 		
 		debugImage.setIcon(new ImageIcon(bi));
-		debug.setSize(Math.max(width/2+20,500), height/2+50);
+		debug.setSize(Math.max(width/4+20,500), height/4+50);
 	}*/
 
 	@SuppressWarnings("null")
@@ -259,11 +261,7 @@ public class Texture
 			return;
 		
 		imageRegion=null;
-		
-		if (TimeLine.SINGLETON.getCurrentDateTime().equals(dateTime))
-			MainFrame.SINGLETON.MAIN_PANEL.repaint();
 	}
-	
 	
 	public void allocateTexture(int _width, int _height, int _internalFormat)
 	{

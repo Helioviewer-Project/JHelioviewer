@@ -403,6 +403,8 @@ public class AddLayerDialog extends JDialog
 							datePickerEndDate.getDateTime(),
 							cadence, filter.getNickname()));
 					
+					//FIXME: move camera to make this new layer visible (STEREO might not be visible otherwise)
+					
 					Settings.setInt("addlayer.last.sourceid", filter.sourceId);
 					lastStart = datePickerStartDate.getDateTime();
 					lastEnd = datePickerEndDate.getDateTime();

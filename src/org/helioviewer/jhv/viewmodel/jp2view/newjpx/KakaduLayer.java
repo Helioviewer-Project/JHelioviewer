@@ -539,31 +539,18 @@ public class KakaduLayer extends ImageLayer
 		if (requiredMinimumRegion == null)
 			return new FutureValue<PreparedImage>(null);
 		
-		/*for(Texture t:textures)
+		for(Texture t:textures)
 			if(t.contains(this, requiredMinimumRegion, metaData.getLocalDateTime()))
 			{
 				t.usedByCurrentRenderPass=true;
 				return new FutureValue<PreparedImage>(new PreparedImage(t));
-			}*/
+			}
 		
 		//search an empty spot, starting at the end (=oldest)
 		int textureNr;
 		for(textureNr=textures.size()-1;textureNr>=0;textureNr--)
 			if(!textures.get(textureNr).usedByCurrentRenderPass)
 				break;
-		
-		
-		
-		//FIXME: buggy repaints
-		/*
-		REPRO:
-			add 4 layers (STEREO A/B, COR1 & EUVI)
-			rotate to make all layers visible
-			play, pause
-			--> flicker when pausing. Why?!
-		*/
-		
-		
 		
 		if(textureNr<0)
 			//we didn't find a free spot?!? how should this be possible?
@@ -572,11 +559,11 @@ public class KakaduLayer extends ImageLayer
 			throw new RuntimeException("Shouldn't be possible. Bug!");
 		
 		//move elements to ensure lru order (most recent = element #0)
-		textures.add(0, textures.remove(textureNr));
-		
-		final Texture tex=textures.get(textureNr);
+		final Texture tex=textures.remove(textureNr);
+		textures.add(0, tex);
+		tex.invalidate();
 		tex.usedByCurrentRenderPass=true;
-		System.out.println("Upload new texture "+System.currentTimeMillis());
+		
 		return exDecoder.submit(new Callable<PreparedImage>()
 		{
 			@SuppressWarnings("null")

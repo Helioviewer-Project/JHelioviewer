@@ -104,23 +104,17 @@ public abstract class ImageLayer extends Layer
 	
 	public static void ensureAppropriateTextureCacheSize()
 	{
-		while(textures.size()<10)
-			textures.add(new Texture());
-		
-		if(1==1)
-			return;
-		
 		int cnt=0;
 		for (Layer l : Layers.getLayers())
 			if (l instanceof ImageLayer)
 				//need at least two textures per layer (overview + main)
 				cnt+=2;
 		
-		//we should have space for at least 10 textures (2k x 2k * 8bit * 20 = 80 mb) 
-		if(cnt<20)
-			cnt=20;
+		//we should have space for at least 10 textures (2k x 2k * 8bit * 10 = 40 mb) 
+		if(cnt<10)
+			cnt=10;
 		
-		//no reason to destroy existing textures
+		//there's no reason to deallocate already existing textures
 		if(cnt<textures.size())
 			cnt=textures.size();
 		
@@ -343,10 +337,10 @@ public abstract class ImageLayer extends Layer
 	
 	public static class PreparedImage
 	{
-		final Texture texture;
+		public final Texture texture;
 		
-		final @Nullable ImageRegion imageRegion;
-		final @Nullable ByteBuffer rawImageData;
+		public final @Nullable ImageRegion imageRegion;
+		public final @Nullable ByteBuffer rawImageData;
 		
 		public PreparedImage(Texture _texture)
 		{
