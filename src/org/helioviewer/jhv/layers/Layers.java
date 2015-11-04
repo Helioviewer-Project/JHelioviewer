@@ -65,7 +65,7 @@ public class Layers
 		layers.add(_newLayer);
 		layers.sort(COMPARATOR);
 		
-		Telemetry.trackEvent("Layer added", "Name",_newLayer.getName(),"Full name",_newLayer.getFullName());
+		Telemetry.trackEvent("Layer added", "Name", _newLayer.getName(), "Full name", _newLayer.getFullName());
 		
 		if (_newLayer instanceof ImageLayer)
 			updateOpacity((ImageLayer)_newLayer, false);

@@ -14,6 +14,7 @@ import org.helioviewer.jhv.gui.statusLabels.FramerateStatusPanel;
 import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.Layers;
+import org.helioviewer.jhv.layers.PluginLayer;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 
 import com.jogamp.opengl.GL;
@@ -72,12 +73,15 @@ public class Telemetry
 								List<Layer> layers=Layers.getLayers();
 								
 								if(TimeLine.SINGLETON.isPlaying())
-								Telemetry.trackMetric("FPS Current", FramerateStatusPanel.getFPS());
-								Telemetry.trackMetric("FPS Target", 1000f/TimeLine.SINGLETON.getMillisecondsPerFrame());
-								Telemetry.trackMetric("FPS Relative", FramerateStatusPanel.getFPS()/(1000f/TimeLine.SINGLETON.getMillisecondsPerFrame()));
+								{
+									Telemetry.trackMetric("FPS Current", FramerateStatusPanel.getFPS());
+									Telemetry.trackMetric("FPS Target", 1000f/TimeLine.SINGLETON.getMillisecondsPerFrame());
+									Telemetry.trackMetric("FPS Relative", FramerateStatusPanel.getFPS()/(1000f/TimeLine.SINGLETON.getMillisecondsPerFrame()));
+								}
 								
 								Telemetry.trackMetric("Layers", layers.size());
 								for(Layer l:layers)
+								{
 									if(l instanceof ImageLayer)
 									{
 										ImageLayer il=(ImageLayer)l;
@@ -91,6 +95,9 @@ public class Telemetry
 										Telemetry.trackMetric("Layer visible", il.isVisible()?1:0);
 										Telemetry.trackMetric("Layer corona", il.isCoronaVisible()?1:0);
 									}
+									if(l instanceof PluginLayer)
+										Telemetry.trackMetric("Plugin "+l.getName()+" visible", l.isVisible()?1:0);
+								}
 							}
 						});
 					}

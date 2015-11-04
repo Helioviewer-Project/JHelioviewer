@@ -13,7 +13,7 @@ public abstract class Layer
 	@SuppressWarnings("null")
 	protected String name;
 	
-	public String getName()
+	public final String getName()
 	{
 		return name;
 	}
@@ -55,6 +55,7 @@ public abstract class Layer
 		return null;
 	}
 
+	//TODO: get rid of this and merge with getName() - or properly document the difference
 	public abstract @Nullable String getFullName();
 
 	public abstract @Nullable LocalDateTime getCurrentTime();
