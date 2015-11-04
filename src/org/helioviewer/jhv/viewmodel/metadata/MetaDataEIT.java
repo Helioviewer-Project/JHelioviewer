@@ -7,16 +7,13 @@ import org.w3c.dom.Document;
 
 class MetaDataEIT extends MetaData
 {
-	private final static Vector2i RESOLUTION = new Vector2i(1024, 1024);
 	public MetaDataEIT(Document _doc)
 	{
-        super(_doc, RESOLUTION, get(_doc, "TELESCOP"), get(_doc, "WAVELNTH"));
+        super(_doc, new Vector2i(1024, 1024), get(_doc, "TELESCOP"), get(_doc, "WAVELNTH"), "EIT " + get(_doc, "WAVELNTH"));
         
         if (!(instrument.equalsIgnoreCase("EIT")))
         	throw new UnsuitableMetaDataException("invalid instrument: "+instrument);
                 
-        fullName = "EIT " + measurement;
-
         switch (measurement)
         {
 			case "171":

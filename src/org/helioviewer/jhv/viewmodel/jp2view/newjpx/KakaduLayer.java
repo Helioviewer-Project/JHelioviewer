@@ -92,12 +92,12 @@ public class KakaduLayer extends ImageLayer
 		
 		LocalDateTime[] times=new LocalDateTime[movie.getFrameCount()];
 		for(int i=0;i<times.length;i++)
-			times[i]=movie.getMetaData(i).getLocalDateTime();
+			times[i]=movie.getMetaData(i).localDateTime;
 		addFrameDateTimes(times);
 		
 		start = localDateTimes.first();
 		end = localDateTimes.last();
-		name = movie.getAnyMetaData().getFullName();
+		name = movie.getAnyMetaData().displayName;
 		
 		cadence = (int) (ChronoUnit.SECONDS.between(start, end) / times.length);
 		
@@ -540,7 +540,7 @@ public class KakaduLayer extends ImageLayer
 			return new FutureValue<PreparedImage>(null);
 		
 		for(Texture t:textures)
-			if(t.contains(this, requiredMinimumRegion, metaData.getLocalDateTime()))
+			if(t.contains(this, requiredMinimumRegion, metaData.localDateTime))
 			{
 				t.usedByCurrentRenderPass=true;
 				return new FutureValue<PreparedImage>(new PreparedImage(t));
@@ -582,7 +582,7 @@ public class KakaduLayer extends ImageLayer
 				return new PreparedImage(
 						tex,
 						requiredSafeRegion,
-						MovieCache.decodeImage(sourceId, metaData.getLocalDateTime(), 16384 /* 0-8 */, requiredSafeRegion.decodeZoomFactor, requiredSafeRegion.texels)
+						MovieCache.decodeImage(sourceId, metaData.localDateTime, 16384 /* 0-8 */, requiredSafeRegion.decodeZoomFactor, requiredSafeRegion.texels)
 					);
 			}
 		});

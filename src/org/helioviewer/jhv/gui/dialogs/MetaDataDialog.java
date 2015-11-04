@@ -233,7 +233,6 @@ public class MetaDataDialog extends JDialog implements LayerListener, TimeLineLi
 	 *            Source to read
 	 * @see #addDataItem(String)
 	 */
-	@SuppressWarnings("null")
 	public void setMetaData(@Nonnull MetaData metaData, @Nonnull Document doc)
 	{
 		metaDataOK = true;
@@ -241,13 +240,13 @@ public class MetaDataDialog extends JDialog implements LayerListener, TimeLineLi
 		addDataItem("-------------------------------");
 		addDataItem("       Basic Information       ");
 		addDataItem("-------------------------------");
-		addDataItem("Observatory : " + metaData.getObservatory());
-		addDataItem("Instrument  : " + metaData.getInstrument());
-		addDataItem("Detector    : " + metaData.getDetector());
-		addDataItem("Measurement : " + metaData.getMeasurement());
-		addDataItem("Date        : " + metaData.getLocalDateTime().toLocalDate());
-		addDataItem("Time        : " + metaData.getLocalDateTime().toLocalTime());
-
+		addDataItem("Observatory : " + metaData.observatory);
+		addDataItem("Instrument  : " + metaData.instrument);
+		addDataItem("Detector    : " + metaData.detector);
+		addDataItem("Measurement : " + metaData.measurement);
+		addDataItem("Date        : " + metaData.localDateTime.toLocalDate());
+		addDataItem("Time        : " + metaData.localDateTime.toLocalTime());
+		
 		// Send xml data to meta data dialog box
 		Node root = doc.getDocumentElement().getElementsByTagName("fits").item(0);
 		writeXMLData(root, 0);
@@ -261,10 +260,10 @@ public class MetaDataDialog extends JDialog implements LayerListener, TimeLineLi
 		// set the export file name for MetaDataDialog
 		outFileName = "";
 		
-		if(metaData.getFullName()!=null)
-			outFileName += metaData.getFullName().replace(" ", "_") + " ";
+		if(metaData.displayName!=null)
+			outFileName += metaData.displayName.replace(" ", "_") + " ";
 		
-		outFileName += metaData.getLocalDateTime().format(
+		outFileName += metaData.localDateTime.format(
 						Globals.FILE_DATE_TIME_FORMATTER) + ".fits.xml";
 	}
 

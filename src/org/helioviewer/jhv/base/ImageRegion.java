@@ -33,7 +33,7 @@ public class ImageRegion
 		double newY2=MathUtils.clip(_requiredOfSourceImage.getCenterY()+_requiredOfSourceImage.getHeight()*0.5*_safetyBorder, 0, 1);
 
 		// Get the image resolution
-		Vector2i resolution = _metaData.getResolution();
+		Vector2i resolution = _metaData.resolution;
 		
 		// Calculate the current texelCount
 		int texelMinX = (int)(resolution.x * newX1);

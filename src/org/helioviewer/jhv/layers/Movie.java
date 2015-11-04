@@ -202,7 +202,7 @@ public class Movie
 			if(md==null)
 				continue;
 			
-			LocalDateTime ldt=md.getLocalDateTime();
+			LocalDateTime ldt=md.localDateTime;
 			
 			long curDiff = Math.abs(ChronoUnit.SECONDS.between(ldt, _currentDateTime));
 			if(curDiff<minDiff)

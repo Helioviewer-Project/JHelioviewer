@@ -105,7 +105,7 @@ public class RayTrace
 
 	public @Nullable Vector2d castTexturepos(int _pixelX, int _pixelY, MetaData _metaData, MainPanel _mainPanel)
 	{
-		plane = new Plane(_metaData.getRotation().toMatrix().multiply(new Vector3d(0, 0, 1)), 0);
+		plane = new Plane(_metaData.rotation.toMatrix().multiply(new Vector3d(0, 0, 1)), 0);
 		double newX = (_pixelX - _mainPanel.getWidth() / 2.) / _mainPanel.getWidth();
 		double newY = (_pixelY - _mainPanel.getHeight() / 2.) / _mainPanel.getWidth();
 		double width = Math.tan(Math.toRadians(MainPanel.FOV / 2.0)) * 2;
@@ -140,10 +140,10 @@ public class RayTrace
 		ray = intersect(ray);
 		rayOriginal.t = ray.t;
 		if (ray.hitpointType == HitpointType.SPHERE
-				&& _metaData.getRotation().inversed().toMatrix().multiply(ray.getHitpoint()).z < 0)
+				&& _metaData.rotation.inversed().toMatrix().multiply(ray.getHitpoint()).z < 0)
 			return null;
 
-		Vector3d original = _metaData.getRotation().inversed().toMatrix().multiply(ray.getHitpoint());
+		Vector3d original = _metaData.rotation.inversed().toMatrix().multiply(ray.getHitpoint());
 		Rectangle2D physicalImageSize = _metaData.getPhysicalImageSize();
 		if (physicalImageSize == null)
 			return null;

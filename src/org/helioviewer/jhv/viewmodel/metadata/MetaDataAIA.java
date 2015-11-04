@@ -7,17 +7,12 @@ import org.w3c.dom.Document;
 
 public class MetaDataAIA extends MetaData
 {
-	private final static Vector2i RESOLUTION = new Vector2i(4096, 4096);
-	
 	public MetaDataAIA(Document _doc)
 	{
-        super(_doc, RESOLUTION, get(_doc, "TELESCOP"), get(_doc, "WAVELNTH"));
+        super(_doc, new Vector2i(4096, 4096), get(_doc, "TELESCOP"), get(_doc, "WAVELNTH"), "AIA "+get(_doc, "WAVELNTH"));
         
         if (!(instrument.equalsIgnoreCase("AIA_1") || instrument.equalsIgnoreCase("AIA_2") || instrument.equalsIgnoreCase("AIA_3") || instrument.equalsIgnoreCase("AIA_4")))
         	throw new UnsuitableMetaDataException("invalid instrument: "+instrument);
-
-        instrument = "AIA";
-        fullName = "AIA " + measurement;
         
         switch (measurement)
         {

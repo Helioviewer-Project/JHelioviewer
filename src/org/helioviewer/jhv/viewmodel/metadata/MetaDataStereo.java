@@ -1,11 +1,7 @@
 package org.helioviewer.jhv.viewmodel.metadata;
 
-import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
-import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
-import org.helioviewer.jhv.base.math.Quaternion3d;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
-import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.w3c.dom.Document;
 
@@ -13,19 +9,20 @@ class MetaDataStereo extends MetaData
 {
 	public MetaDataStereo(Document _doc)
 	{
-		super(_doc, "COR1".equalsIgnoreCase(get(_doc, "OBSRVTRY")) ? new Vector2i(512, 512) : new Vector2i(2048, 2048), get(_doc, "OBSRVTRY"), get(_doc, "WAVELNTH"));
+		super(_doc, "COR1".equalsIgnoreCase(get(_doc, "OBSRVTRY")) ? new Vector2i(512, 512) : new Vector2i(2048, 2048),
+				get(_doc, "OBSRVTRY"),
+				get(_doc, "WAVELNTH"),
+				get(_doc, "INSTRUME") + " " + get(_doc, "DETECTOR"));
 
-		fullName = instrument + " " + detector;
-
-		double centerX = 0, centerY = 0;
+		Vector2d center = Vector2d.NULL;
 
 		// Convert arcsec to meters
 		double cdelt1 = tryGetDouble(_doc, "CDELT1");
 		double cdelt2 = tryGetDouble(_doc, "CDELT2");
 		if (!Double.isNaN(cdelt1) && !Double.isNaN(cdelt2) && cdelt1 != 0 && cdelt2 != 0)
 		{
-			centerX = centerX / cdelt1;
-			centerY = centerY / cdelt2;
+			//TODO: center will always be Vector2d.NULL anyway?!
+			center = center.scaled(1/cdelt1, 1/cdelt2);
 		}
 		
 		double innerDefault = -1;
@@ -37,8 +34,7 @@ class MetaDataStereo extends MetaData
 			flatDistance = 4.5 * Constants.SUN_RADIUS;
 			
 			// HACK - manual adjustment for occulter center
-			centerX += 1;
-			centerY += 1;
+			center=center.add(new Vector2d(1,1));
 		}
 		else if ("STEREO_A".equalsIgnoreCase(observatory) && "COR2".equalsIgnoreCase(detector))
 		{
@@ -47,8 +43,7 @@ class MetaDataStereo extends MetaData
 			flatDistance = 15.75 * Constants.SUN_RADIUS;
 			
 			// HACK - manual adjustment for occulter center
-			centerX += 3;
-			centerY += 6;
+			center=center.add(new Vector2d(3,6));
 		}
 		else if ("STEREO_B".equalsIgnoreCase(observatory) && "COR1".equalsIgnoreCase(detector))
 		{
@@ -57,8 +52,7 @@ class MetaDataStereo extends MetaData
 			flatDistance = 4.95 * Constants.SUN_RADIUS;
 			
 			// HACK - manual adjustment for occulter center
-			centerX += 1;
-			centerY += 3;
+			center=center.add(new Vector2d(1,3));
 		}
 		else if ("STEREO_B".equalsIgnoreCase(observatory) && "COR2".equalsIgnoreCase(detector))
 		{
@@ -67,8 +61,7 @@ class MetaDataStereo extends MetaData
 			flatDistance = 18 * Constants.SUN_RADIUS;
 			
 			// HACK - manual adjustment for occulter center
-			centerX += 22;
-			centerY -= 37;
+			center=center.add(new Vector2d(22,-37));
 		}
 		else
 			throw new UnsuitableMetaDataException("invalid instrument: " + observatory + "/" + detector);
@@ -82,14 +75,6 @@ class MetaDataStereo extends MetaData
 			outerRadius = outerDefault;
 		}
 		
-        if (stonyhurstAvailable)
-        {
-        	HeliocentricCartesianCoordinate hcc = new HeliographicCoordinate(Math.toRadians(stonyhurstLongitude), Math.toRadians(stonyhurstLatitude)).toHeliocentricCartesianCoordinate();
-        	orientation = new Vector3d(hcc.x, hcc.y, hcc.z);
-        	defaultRotation = Quaternion3d.calcRotationBetween(new Vector3d(0, 0, Constants.SUN_RADIUS), orientation);
-        }
-		
-		maskRotation = Math.toRadians(tryGetDouble(_doc, "CROTA"));
-		occulterCenter = new Vector2d(centerX * getUnitsPerPixel(), centerY * getUnitsPerPixel());
+		occulterCenter = center.scaled(getUnitsPerPixel());
 	}
 }

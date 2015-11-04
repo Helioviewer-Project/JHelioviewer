@@ -5,15 +5,11 @@ import org.w3c.dom.Document;
 
 class MetaDataHinode extends MetaData
 {
-	private final static Vector2i RESOLUTION = new Vector2i(4096, 4096);
 	public MetaDataHinode(Document _doc)
 	{
-        super(_doc, RESOLUTION, get(_doc, "TELESCOP"), get(_doc, "WAVELNTH"));
+        super(_doc, new Vector2i(4096, 4096), get(_doc, "TELESCOP"), get(_doc, "WAVELNTH"),"XRT");
         
         if (!instrument.equalsIgnoreCase("XRT"))
         	throw new UnsuitableMetaDataException("invalid instrument: "+instrument);
-
-        instrument = "XRT";
-        fullName = "XRT";
    }
 }

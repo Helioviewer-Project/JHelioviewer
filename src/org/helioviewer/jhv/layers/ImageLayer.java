@@ -127,13 +127,13 @@ public abstract class ImageLayer extends Layer
 	{
 		LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
 		MetaData md=getMetaData(currentDateTime);
-		if(md==null || md.getLocalDateTime()==null)
+		if(md==null || md.localDateTime==null)
 			return RenderResult.RETRY_LATER;
 		
 		//upload new texture, if something was decoded
 		if (_preparedImageData.rawImageData != null)
 		{
-			_preparedImageData.texture.upload(this,md.getLocalDateTime(),
+			_preparedImageData.texture.upload(this,md.localDateTime,
 					_preparedImageData.imageRegion,
 					_preparedImageData.rawImageData,
 					_preparedImageData.imageRegion.texels.width,
@@ -142,11 +142,11 @@ public abstract class ImageLayer extends Layer
 		
 		_preparedImageData.texture.usedByCurrentRenderPass=false;
 		
-		float xSunOffset =  (float) ((md.getSunPixelPosition().x - md.getResolution().x / 2.0) / (float)md.getResolution().x);
-		float ySunOffset = -(float) ((md.getSunPixelPosition().y - md.getResolution().y / 2.0) / (float)md.getResolution().y);
+		float xSunOffset =  (float) ((md.sunPixelPosition.x - md.resolution.x / 2.0) / (float)md.resolution.x);
+		float ySunOffset = -(float) ((md.sunPixelPosition.y - md.resolution.y / 2.0) / (float)md.resolution.y);
 
 		Vector3d currentPos = mainPanel.getRotationCurrent().toMatrix().multiply(new Vector3d(0, 0, 1));
-		Vector3d startPos = md.getRotation().toMatrix().multiply(new Vector3d(0, 0, 1));
+		Vector3d startPos = md.rotation.toMatrix().multiply(new Vector3d(0, 0, 1));
 
 		double angle = Math.toDegrees(Math.acos(currentPos.dot(startPos)));
 		double maxAngle = 60;
@@ -204,10 +204,10 @@ public abstract class ImageLayer extends Layer
 		float[] transformation = mainPanel.getTransformation().toFloatArray();
 		gl.glUniformMatrix4fv(gl.glGetUniformLocation(shaderprogram, "transformation"), 1, true, transformation, 0);
 
-		float[] layerTransformation = md.getRotation().toMatrix().toFloatArray();
+		float[] layerTransformation = md.rotation.toMatrix().toFloatArray();
 		gl.glUniformMatrix4fv(gl.glGetUniformLocation(shaderprogram, "layerTransformation"), 1, true, layerTransformation, 0);
 		
-		float[] layerInv = md.getRotation().inversed().toMatrix().toFloatArray();
+		float[] layerInv = md.rotation.inversed().toMatrix().toFloatArray();
 		gl.glUniformMatrix4fv(gl.glGetUniformLocation(shaderprogram, "layerInv"), 1, true, layerInv, 0);
 
 		gl.glUniform2f(
@@ -311,7 +311,7 @@ public abstract class ImageLayer extends Layer
 	{
 		MetaData md=getMetaData(TimeLine.SINGLETON.getCurrentDateTime());
 		if(md!=null)
-			return md.getFullName();
+			return md.displayName;
 		else
 			return null;
 	}
@@ -371,7 +371,7 @@ public abstract class ImageLayer extends Layer
 	 */
 	public @Nullable ImageRegion calculateRegion(MainPanel _mainPanel, MetaData _metaData, Dimension _size)
 	{
-		rayTrace = new RayTrace(_metaData.getRotation().toMatrix());
+		rayTrace = new RayTrace(_metaData.rotation.toMatrix());
 
 		double partOfWidth = _mainPanel.getWidth() / (double) (MAX_X_POINTS - 1);
 		double partOfHeight = _mainPanel.getHeight() / (double) (MAX_Y_POINTS - 1);

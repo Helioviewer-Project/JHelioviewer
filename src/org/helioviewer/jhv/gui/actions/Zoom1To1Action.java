@@ -1,6 +1,5 @@
 package org.helioviewer.jhv.gui.actions;
 
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
@@ -10,6 +9,7 @@ import javax.annotation.Nullable;
 import javax.swing.AbstractAction;
 import javax.swing.KeyStroke;
 
+import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MainFrame;
@@ -45,17 +45,14 @@ public class Zoom1To1Action extends AbstractAction
 		if(metaData==null)
 			return;
 		
-		double unitsPerPixel = metaData.getUnitsPerPixel();
+		Vector2d unitsPerPixel = metaData.getUnitsPerPixel();
 		Rectangle2D region = metaData.getPhysicalImageSize();
 
 		if (region == null)
 			return;
 
-		Dimension dimension = MainFrame.SINGLETON.MAIN_PANEL.getCanavasSize();
-		double minCanvasDimension = dimension.getHeight();
-
 		double halfFOVRad = Math.toRadians(MainPanel.FOV / 2.0);
-		double distance = (minCanvasDimension / 2.0 * unitsPerPixel) / Math.tan(halfFOVRad);
+		double distance = (MainFrame.SINGLETON.MAIN_PANEL.getCanavasSize().getHeight() / 2.0 * unitsPerPixel.y) / Math.tan(halfFOVRad);
 		
 		distance = distance - componentView.getTranslationEnd().z;
 		componentView.addCameraAnimation(new CameraZoomAnimation(componentView, distance));

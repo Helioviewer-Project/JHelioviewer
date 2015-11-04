@@ -74,15 +74,15 @@ class SDOCutOutAction extends AbstractAction
 		{
 			MetaData md=sdoLayer.getMetaData(TimeLine.SINGLETON.getCurrentDateTime());
 			if(md!=null)
-				url.append("," + md.getMeasurement());
+				url.append("," + md.measurement);
 		}
 		
-		Vector2i resolution = metaData.getResolution();
-		Vector2d arcsecFactor = metaData.getArcsecPerPixel();
-		Vector2d sunPosArcSec = metaData.getSunPixelPosition().scale(arcsecFactor);
-		Vector2d sizeArcSec = new Vector2d(sourceRegion.getWidth() * resolution.x, sourceRegion.getHeight() * resolution.y).scale(arcsecFactor);
-		Vector2d offsetArcSec = new Vector2d(sourceRegion.getX() * resolution.x, sourceRegion.getY() * resolution.y).scale(arcsecFactor);
-		Vector2d centerOffsetArcSec = sunPosArcSec.subtract(sizeArcSec.add(offsetArcSec).scale(0.5));
+		Vector2i resolution = metaData.resolution;
+		Vector2d arcsecFactor = metaData.arcsecPerPixel;
+		Vector2d sunPosArcSec = metaData.sunPixelPosition.scaled(arcsecFactor);
+		Vector2d sizeArcSec = new Vector2d(sourceRegion.getWidth() * resolution.x, sourceRegion.getHeight() * resolution.y).scaled(arcsecFactor);
+		Vector2d offsetArcSec = new Vector2d(sourceRegion.getX() * resolution.x, sourceRegion.getY() * resolution.y).scaled(arcsecFactor);
+		Vector2d centerOffsetArcSec = sunPosArcSec.subtract(sizeArcSec.add(offsetArcSec).scaled(0.5));
 		url.append("&width=" + sizeArcSec.x + "&height=" + sizeArcSec.y);
 		url.append("&xCen=" + centerOffsetArcSec.x + "&yCen=" + centerOffsetArcSec.y);
 		

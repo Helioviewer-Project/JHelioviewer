@@ -397,11 +397,13 @@ public class AddLayerDialog extends JDialog
 					int cadence = (int) AddLayerDialog.this.cadence.getValue()
 							* ((TimeSteps) cmbbxTimeSteps.getSelectedItem()).factor;
 					cadence = Math.max(cadence, 1);
-					Layers.addLayer(new KakaduLayer(
+					
+					KakaduLayer newLayer=new KakaduLayer(
 							filter.sourceId,
 							datePickerStartDate.getDateTime(),
 							datePickerEndDate.getDateTime(),
-							cadence, filter.getNickname()));
+							cadence, filter.getNickname());
+					Layers.addLayer(newLayer);
 					
 					//FIXME: move camera to make this new layer visible (STEREO might not be visible otherwise)
 					

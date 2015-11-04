@@ -12,22 +12,13 @@ import javax.annotation.Nullable;
 
 public final class Vector2d
 {
-
-	public static final Vector2d NULL_VECTOR = new Vector2d(0, 0);
-	public static final Vector2d NEGATIVE_INFINITY_VECTOR = new Vector2d(Double.NEGATIVE_INFINITY,
-			Double.NEGATIVE_INFINITY);
-	public static final Vector2d POSITIVE_INFINITY_VECTOR = new Vector2d(Double.POSITIVE_INFINITY,
-			Double.POSITIVE_INFINITY);
+	public static final Vector2d NULL = new Vector2d(0, 0);
+	public static final Vector2d NEGATIVE_INFINITY_VECTOR = new Vector2d(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY);
+	public static final Vector2d POSITIVE_INFINITY_VECTOR = new Vector2d(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
 
 	public final double x;
 
 	public final double y;
-
-	public Vector2d()
-	{
-		x = 0.0;
-		y = 0.0;
-	}
 
 	public Vector2d(final double newX, final double newY)
 	{
@@ -53,29 +44,9 @@ public final class Vector2d
 		y = (double) v.y;
 	}
 
-	public Vector2d getXVector()
-	{
-		return new Vector2d(x, 0.0);
-	}
-
-	public Vector2d getYVector()
-	{
-		return new Vector2d(0.0, y);
-	}
-
-	public Point toPoint()
-	{
-		return new Point((int) Math.round(x), (int) Math.round(y));
-	}
-
 	public Vector2d add(final Vector2d v)
 	{
 		return new Vector2d(x + v.x, y + v.y);
-	}
-
-	public static Vector2d add(final Vector2d v1, final Vector2d v2)
-	{
-		return new Vector2d(v1.x + v2.x, v1.y + v2.y);
 	}
 
 	public Vector2d subtract(final Vector2d v)
@@ -83,34 +54,19 @@ public final class Vector2d
 		return new Vector2d(x - v.x, y - v.y);
 	}
 
-	public static Vector2d subtract(final Vector2d v1, final Vector2d v2)
-	{
-		return new Vector2d(v1.x - v2.x, v1.y - v2.y);
-	}
-
-	public Vector2d scale(final double d)
+	public Vector2d scaled(final double d)
 	{
 		return new Vector2d(x * d, y * d);
 	}
 
-	public Vector2d scale(final Vector2d v)
+	public Vector2d scaled(final double _x, final double _y)
+	{
+		return new Vector2d(x * _x, y * _y);
+	}
+
+	public Vector2d scaled(final Vector2d v)
 	{
 		return new Vector2d(x * v.x, y * v.y);
-	}
-
-	public Vector2d invertedScale(final Vector2d v)
-	{
-		return new Vector2d(x / v.x, y / v.y);
-	}
-
-	public static Vector2d scale(final Vector2d v, final double d)
-	{
-		return new Vector2d(v.x * d, v.y * d);
-	}
-
-	public static Vector2d scale(final Vector2i v, final double d)
-	{
-		return new Vector2d(v.x * d, v.y * d);
 	}
 
 	public Vector2d negate()
@@ -123,54 +79,19 @@ public final class Vector2d
 		return new Vector2d(-v.x, -v.y);
 	}
 
-	public Vector2d negateX()
+	public Vector2d negatedX()
 	{
 		return new Vector2d(-x, y);
 	}
 
-	public static Vector2d negateX(final Vector2d v)
-	{
-		return new Vector2d(-v.x, v.y);
-	}
-
-	public Vector2d negateY()
+	public Vector2d negatedY()
 	{
 		return new Vector2d(x, -y);
-	}
-
-	public static Vector2d negateY(final Vector2d v)
-	{
-		return new Vector2d(v.x, -v.y);
 	}
 
 	public Vector2d crop(Vector2d min, Vector2d max)
 	{
 		return new Vector2d(Math.min(max.x, Math.max(min.x, x)), Math.min(max.y, Math.max(min.y, y)));
-	}
-
-	public static Vector2d crop(Vector2d v, Vector2d min, Vector2d max)
-	{
-		return new Vector2d(Math.min(max.x, Math.max(min.x, v.x)), Math.min(max.x, Math.max(min.x, v.y)));
-	}
-
-	public Vector2d componentMin(final Vector2d v)
-	{
-		return new Vector2d(Math.min(x, v.x), Math.min(y, v.y));
-	}
-
-	public static Vector2d componentMin(final Vector2d v1, final Vector2d v2)
-	{
-		return new Vector2d(Math.min(v1.x, v2.x), Math.min(v1.y, v2.y));
-	}
-
-	public Vector2d componentMax(final Vector2d v)
-	{
-		return new Vector2d(Math.max(x, v.x), Math.max(y, v.y));
-	}
-
-	public static Vector2d componentMax(final Vector2d v1, final Vector2d v2)
-	{
-		return new Vector2d(Math.max(v1.x, v2.x), Math.max(v1.y, v2.y));
 	}
 
 	public double length()
@@ -183,16 +104,10 @@ public final class Vector2d
 		return x * x + y * y;
 	}
 
-	public Vector2d normalize()
+	public Vector2d normalized()
 	{
 		double length = Math.sqrt(x * x + y * y);
 		return new Vector2d(x / length, y / length);
-	}
-
-	public static Vector2d normalize(final Vector2d v)
-	{
-		double length = Math.sqrt(v.x * v.x + v.y * v.y);
-		return new Vector2d(v.x / length, v.y / length);
 	}
 
 	public double dot(final Vector2d v)
@@ -209,11 +124,6 @@ public final class Vector2d
 	public Vector2d absolute()
 	{
 		return new Vector2d(Math.abs(x), Math.abs(y));
-	}
-
-	public static Vector2d absolute(final Vector2d v)
-	{
-		return new Vector2d(Math.abs(v.x), Math.abs(v.y));
 	}
 
 	public boolean equals(final @Nullable Object o)

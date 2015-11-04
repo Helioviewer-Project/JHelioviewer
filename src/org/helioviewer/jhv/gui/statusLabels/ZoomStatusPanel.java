@@ -59,11 +59,8 @@ public class ZoomStatusPanel extends StatusLabel
 			return;
 		}
 
-		double unitsPerPixel = metaData.getUnitsPerPixel();
-		double minCanvasDimension = MainFrame.SINGLETON.MAIN_PANEL.getCanavasSize().getHeight();
-		
 		double halfFOVRad = Math.toRadians(MainPanel.FOV / 2.0);
-		double distance = (minCanvasDimension / 2.0 * unitsPerPixel) / Math.tan(halfFOVRad);
+		double distance = (MainFrame.SINGLETON.MAIN_PANEL.getCanavasSize().getHeight() / 2.0 * metaData.getUnitsPerPixel().y) / Math.tan(halfFOVRad);
 		long zoom = Math.round(distance	/ MainFrame.SINGLETON.MAIN_PANEL.getTranslationCurrent().z * 100);
 		setText("Zoom: " + zoom + "%");
 	}
