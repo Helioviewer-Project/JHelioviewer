@@ -8,9 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +26,6 @@ import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.ListCellRenderer;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -50,8 +46,6 @@ import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-//TODO: close streams properly during exceptions: try(...)
 
 /**
  * Dialog that is used to display meta data for an image.
@@ -132,7 +126,7 @@ public class MetaDataDialog extends JDialog
 
 				@SuppressWarnings("null")
 				DOMSource source = new DOMSource(xmlDoc.getDocumentElement().getElementsByTagName("fits").item(0));
-				if (!saveXMLDocument(source, file.getPath() + outFileName))
+				if (!exportXML(source, file.getPath() + outFileName))
 					JOptionPane.showMessageDialog(MetaDataDialog.this, "Could not save document.");
 			}
 		});
@@ -260,10 +254,10 @@ public class MetaDataDialog extends JDialog
 
 		// Send xml data to meta data dialog box
 		Node root = doc.getDocumentElement().getElementsByTagName("fits").item(0);
-		writeXMLData(root, 0);
+		printXMLData(root, 0);
 		root = doc.getDocumentElement().getElementsByTagName("helioviewer").item(0);
 		if (root != null)
-			writeXMLData(root, 0);
+			printXMLData(root, 0);
 
 		// set the xml data for the MetaDataDialog
 		xmlDoc = doc;
@@ -286,7 +280,7 @@ public class MetaDataDialog extends JDialog
 	 * @param indent
 	 *            Number of tabstops to insert
 	 */
-	private void writeXMLData(Node node, int indent)
+	private void printXMLData(Node node, int indent)
 	{
 		// get element name and value
 		String nodeName = node.getNodeName();
@@ -307,7 +301,6 @@ public class MetaDataDialog extends JDialog
 		else
 		{
 			String tab = new String(new char[indent]).replace((char) 0, '\t');
-
 			addDataItem(tab + nodeName + ": " + nodeValue);
 		}
 
@@ -317,9 +310,7 @@ public class MetaDataDialog extends JDialog
 		{
 			Node child = children.item(i);
 			if (child.getNodeType() == Node.ELEMENT_NODE)
-			{
-				writeXMLData(child, indent + 1);
-			}
+				printXMLData(child, indent + 1);
 		}
 	}
 
@@ -347,66 +338,28 @@ public class MetaDataDialog extends JDialog
 	/**
 	 * This routine saves the fits data into an XML file.
 	 * 
-	 * @param source
+	 * @param _source
 	 *            XML document to save
-	 * @param filename
+	 * @param _filename
 	 *            XML file name
 	 */
-	private boolean saveXMLDocument(DOMSource source, String filename)
+	private boolean exportXML(DOMSource _source, String _filename)
 	{
 		// open the output stream where XML Document will be saved
-		File xmlOutFile = new File(filename);
-		FileOutputStream fos;
-		Transformer transformer;
-		try
-		{
-			fos = new FileOutputStream(xmlOutFile);
-		}
-		catch (FileNotFoundException e)
-		{
-			Telemetry.trackException(e);
-			return false;
-		}
-		try
+		try(FileOutputStream fos = new FileOutputStream(_filename))
 		{
 			// Use a Transformer for the purpose of output
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			try
-			{
-				transformer = transformerFactory.newTransformer();
-			}
-			catch (TransformerConfigurationException e)
-			{
-				Telemetry.trackException(e);
-				return false;
-			}
-
-			// The source is the fits header
-
-			// The destination for output
-			StreamResult result = new StreamResult(fos);
+			Transformer transformer = transformerFactory.newTransformer();
 
 			// transform source into result will do a file save
-			try
-			{
-				transformer.transform(source, result);
-			}
-			catch (TransformerException e)
-			{
-				Telemetry.trackException(e);
-			}
+			transformer.transform(_source, new StreamResult(fos));
 			return true;
 		}
-		finally
+		catch (Exception e)
 		{
-			try
-			{
-				fos.close();
-			}
-			catch (IOException e)
-			{
-				Telemetry.trackException(e);
-			}
+			Telemetry.trackException(e);
+			return false;
 		}
 	}
 }
