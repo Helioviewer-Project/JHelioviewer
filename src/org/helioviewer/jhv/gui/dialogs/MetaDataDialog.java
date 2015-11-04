@@ -6,8 +6,6 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -58,7 +56,7 @@ import org.w3c.dom.NodeList;
 /**
  * Dialog that is used to display meta data for an image.
  */
-public class MetaDataDialog extends JDialog implements LayerListener, TimeLineListener
+public class MetaDataDialog extends JDialog
 {
 	private final JButton closeButton = new JButton("Close");
 	private final JButton exportFitsButton = new JButton("Export FITS header as XML");
@@ -71,31 +69,32 @@ public class MetaDataDialog extends JDialog implements LayerListener, TimeLineLi
 
 	private @Nullable Document xmlDoc;
 	private static final String LAST_DIRECTORY = "metadata.save.lastPath";
-	
+
 	public MetaDataDialog()
 	{
 		super(MainFrame.SINGLETON, "Image metainfo");
-		
-    	Telemetry.trackEvent("Dialog", "Type", getClass().getSimpleName());
-		
+
+		Telemetry.trackEvent("Dialog", "Type", getClass().getSimpleName());
+
 		setLayout(new BorderLayout());
 		setResizable(false);
 
 		listBox.setFont(new Font("Courier", Font.PLAIN, 12));
 
 		listBox.setCellRenderer(new ListCellRenderer<Object>()
+		{
+			@SuppressWarnings("null")
+			public Component getListCellRendererComponent(@Nullable JList<?> list, @Nullable Object value, int index,
+					boolean isSelected, boolean cellHasFocus)
 			{
-				@SuppressWarnings("null")
-				public Component getListCellRendererComponent(@Nullable JList<?> list, @Nullable Object value, int index, boolean isSelected, boolean cellHasFocus)
-				{
-					JTextArea textArea = new JTextArea(value.toString().trim());
-					textArea.setLineWrap(true);
-					textArea.setEditable(false);
-					textArea.setWrapStyleWord(true);
-					textArea.setFont(list.getFont());
-					return textArea;
-				}
-			});
+				JTextArea textArea = new JTextArea(value.toString().trim());
+				textArea.setLineWrap(true);
+				textArea.setEditable(false);
+				textArea.setWrapStyleWord(true);
+				textArea.setFont(list.getFont());
+				return textArea;
+			}
+		});
 
 		JPanel bottomPanel = new JPanel();
 		bottomPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -113,8 +112,6 @@ public class MetaDataDialog extends JDialog implements LayerListener, TimeLineLi
 			@Override
 			public void actionPerformed(@Nullable ActionEvent e)
 			{
-				infoList.clear();
-				resetData();
 				dispose();
 			}
 		});
@@ -123,43 +120,65 @@ public class MetaDataDialog extends JDialog implements LayerListener, TimeLineLi
 			@Override
 			public void actionPerformed(@Nullable ActionEvent e)
 			{
-				if(xmlDoc==null)
+				if (xmlDoc == null)
 					return;
-				
+
 				// Open save-dialog
-				final File file = Globals.showFileDialog(
-						DialogType.SAVE_FILE,
-						"Save metadata",
-						Settings.getString(LAST_DIRECTORY),
-						true,
-						outFileName,
-						PredefinedFileFilter.XML);
-				
+				final File file = Globals.showFileDialog(DialogType.SAVE_FILE, "Save metadata",
+						Settings.getString(LAST_DIRECTORY), true, outFileName, PredefinedFileFilter.XML);
+
 				if (file == null)
 					return;
-				
+
 				@SuppressWarnings("null")
 				DOMSource source = new DOMSource(xmlDoc.getDocumentElement().getElementsByTagName("fits").item(0));
 				if (!saveXMLDocument(source, file.getPath() + outFileName))
 					JOptionPane.showMessageDialog(MetaDataDialog.this, "Could not save document.");
 			}
 		});
-		
+
 		// exportButton.addActionListener(this);
 		pack();
-		Layers.addLayerListener(this);
-		TimeLine.SINGLETON.addListener(this);
-		setLocationRelativeTo(MainFrame.SINGLETON);
-		
-		addComponentListener(new ComponentAdapter()
+		Layers.addLayerListener(new LayerListener()
 		{
 			@Override
-			public void componentShown(@Nullable ComponentEvent e)
+			public void layersRemoved()
+			{
+			}
+
+			@Override
+			public void layerAdded()
+			{
+			}
+
+			@Override
+			public void activeLayerChanged(@Nullable Layer _newLayer)
 			{
 				updateData();
 			}
 		});
-		
+		TimeLine.SINGLETON.addListener(new TimeLineListener()
+		{
+			@Override
+			public void timeStampChanged(LocalDateTime current, LocalDateTime last)
+			{
+				updateData();
+			}
+
+			@Override
+			public void isPlayingChanged(boolean _isPlaying)
+			{
+			}
+
+			@Override
+			public void dateTimesChanged(int framecount)
+			{
+			}
+		});
+		setLocationRelativeTo(MainFrame.SINGLETON);
+
+		updateData();
+
 		getRootPane().registerKeyboardAction(new ActionListener()
 		{
 			@Override
@@ -168,7 +187,7 @@ public class MetaDataDialog extends JDialog implements LayerListener, TimeLineLi
 				setVisible(false);
 			}
 		}, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
-		
+
 		pack();
 		setSize(450, 600);
 
@@ -176,28 +195,27 @@ public class MetaDataDialog extends JDialog implements LayerListener, TimeLineLi
 		setVisible(true);
 	}
 
-	public void updateData()
+	private void updateData()
 	{
-		ImageLayer il=Layers.getActiveImageLayer();
+		ImageLayer il = Layers.getActiveImageLayer();
 		if (il != null)
 		{
-			MetaData md=il.getMetaData(TimeLine.SINGLETON.getCurrentDateTime());
-			Document doc=il.getMetaDataDocument(TimeLine.SINGLETON.getCurrentDateTime());
-			
-			if(md!=null && doc!=null)
-				setMetaData(md,doc);
+			MetaData md = il.getMetaData(TimeLine.SINGLETON.getCurrentDateTime());
+			Document doc = il.getMetaDataDocument(TimeLine.SINGLETON.getCurrentDateTime());
+
+			if (md != null && doc != null)
+				showData(md, doc);
 			else
 			{
-				resetData();
+				clearData();
 				addDataItem("Metadata not available.");
 			}
 		}
 		else
-			resetData();
+			clearData();
 	}
-	
 
-	private void resetData()
+	private void clearData()
 	{
 		infoList.clear();
 
@@ -226,17 +244,10 @@ public class MetaDataDialog extends JDialog implements LayerListener, TimeLineLi
 		listBox.setListData(infoList.toArray(new String[0]));
 	}
 
-	/**
-	 * Sets the full document which can be found reading the given MetaDataView.
-	 * 
-	 * @param metaDataView
-	 *            Source to read
-	 * @see #addDataItem(String)
-	 */
-	public void setMetaData(@Nonnull MetaData metaData, @Nonnull Document doc)
+	private void showData(@Nonnull MetaData metaData, @Nonnull Document doc)
 	{
 		metaDataOK = true;
-		resetData();
+		clearData();
 		addDataItem("-------------------------------");
 		addDataItem("       Basic Information       ");
 		addDataItem("-------------------------------");
@@ -246,25 +257,24 @@ public class MetaDataDialog extends JDialog implements LayerListener, TimeLineLi
 		addDataItem("Measurement : " + metaData.measurement);
 		addDataItem("Date        : " + metaData.localDateTime.toLocalDate());
 		addDataItem("Time        : " + metaData.localDateTime.toLocalTime());
-		
+
 		// Send xml data to meta data dialog box
 		Node root = doc.getDocumentElement().getElementsByTagName("fits").item(0);
 		writeXMLData(root, 0);
 		root = doc.getDocumentElement().getElementsByTagName("helioviewer").item(0);
 		if (root != null)
 			writeXMLData(root, 0);
-		
+
 		// set the xml data for the MetaDataDialog
 		xmlDoc = doc;
 
 		// set the export file name for MetaDataDialog
 		outFileName = "";
-		
-		if(metaData.displayName!=null)
+
+		if (metaData.displayName != null)
 			outFileName += metaData.displayName.replace(" ", "_") + " ";
-		
-		outFileName += metaData.localDateTime.format(
-						Globals.FILE_DATE_TIME_FORMATTER) + ".fits.xml";
+
+		outFileName += metaData.localDateTime.format(Globals.FILE_DATE_TIME_FORMATTER) + ".fits.xml";
 	}
 
 	/**
@@ -282,27 +292,32 @@ public class MetaDataDialog extends JDialog implements LayerListener, TimeLineLi
 		String nodeName = node.getNodeName();
 		String nodeValue = getElementValue(node);
 
-		if (nodeName.equals("fits")) {
+		if (nodeName.equals("fits"))
+		{
 			addDataItem("-------------------------------");
 			addDataItem("          FITS Header");
 			addDataItem("-------------------------------");
-		} else if (nodeName.equals("helioviewer")) {
+		}
+		else if (nodeName.equals("helioviewer"))
+		{
 			addDataItem("-------------------------------");
 			addDataItem("      Helioviewer Header");
 			addDataItem("-------------------------------");
 		}
 		else
 		{
-			String tab = new String(new char[indent]).replace((char)0, '\t');
-			
+			String tab = new String(new char[indent]).replace((char) 0, '\t');
+
 			addDataItem(tab + nodeName + ": " + nodeValue);
 		}
 
 		// write the child nodes recursively
 		NodeList children = node.getChildNodes();
-		for (int i = 0; i < children.getLength(); i++) {
+		for (int i = 0; i < children.getLength(); i++)
+		{
 			Node child = children.item(i);
-			if (child.getNodeType() == Node.ELEMENT_NODE) {
+			if (child.getNodeType() == Node.ELEMENT_NODE)
+			{
 				writeXMLData(child, indent + 1);
 			}
 		}
@@ -325,7 +340,7 @@ public class MetaDataDialog extends JDialog implements LayerListener, TimeLineLi
 			for (Node child = elem.getFirstChild(); child != null; child = child.getNextSibling())
 				if (child.getNodeType() == Node.TEXT_NODE)
 					return child.getNodeValue();
-		
+
 		return "";
 	}
 
@@ -337,7 +352,8 @@ public class MetaDataDialog extends JDialog implements LayerListener, TimeLineLi
 	 * @param filename
 	 *            XML file name
 	 */
-	private boolean saveXMLDocument(DOMSource source, String filename) {
+	private boolean saveXMLDocument(DOMSource source, String filename)
+	{
 		// open the output stream where XML Document will be saved
 		File xmlOutFile = new File(filename);
 		FileOutputStream fos;
@@ -351,13 +367,16 @@ public class MetaDataDialog extends JDialog implements LayerListener, TimeLineLi
 			Telemetry.trackException(e);
 			return false;
 		}
-		try {
+		try
+		{
 			// Use a Transformer for the purpose of output
-			TransformerFactory transformerFactory = TransformerFactory
-					.newInstance();
-			try {
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			try
+			{
 				transformer = transformerFactory.newTransformer();
-			} catch (TransformerConfigurationException e) {
+			}
+			catch (TransformerConfigurationException e)
+			{
 				Telemetry.trackException(e);
 				return false;
 			}
@@ -368,65 +387,26 @@ public class MetaDataDialog extends JDialog implements LayerListener, TimeLineLi
 			StreamResult result = new StreamResult(fos);
 
 			// transform source into result will do a file save
-			try {
+			try
+			{
 				transformer.transform(source, result);
-			} catch (TransformerException e) {
+			}
+			catch (TransformerException e)
+			{
 				Telemetry.trackException(e);
 			}
 			return true;
-		} finally {
-			try {
+		}
+		finally
+		{
+			try
+			{
 				fos.close();
-			} catch (IOException e) {
+			}
+			catch (IOException e)
+			{
 				Telemetry.trackException(e);
 			}
 		}
-	}
-
-	@Override
-	public void timeStampChanged(LocalDateTime current, LocalDateTime last)
-	{
-		ImageLayer il = Layers.getActiveImageLayer();
-		if (il != null)
-		{
-			MetaData md=il.getMetaData(TimeLine.SINGLETON.getCurrentDateTime());
-			Document doc=il.getMetaDataDocument(TimeLine.SINGLETON.getCurrentDateTime());
-			
-			if(md!=null && doc!=null)
-				setMetaData(md,doc);
-			else
-			{
-				resetData();
-				addDataItem("Metadata not available.");
-			}
-		}
-		else
-			resetData();
-	}
-
-	@Override
-	public void dateTimesChanged(int framecount)
-	{
-	}
-
-	@Override
-	public void layerAdded()
-	{
-	}
-
-	@Override
-	public void layersRemoved()
-	{
-	}
-
-	@Override
-	public void activeLayerChanged(@Nullable Layer layer)
-	{
-		updateData();
-	}
-
-	@Override
-	public void isPlayingChanged(boolean _isPlaying)
-	{
 	}
 }
