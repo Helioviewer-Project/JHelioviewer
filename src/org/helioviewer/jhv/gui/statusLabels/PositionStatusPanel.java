@@ -3,7 +3,6 @@ package org.helioviewer.jhv.gui.statusLabels;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 
@@ -34,28 +33,47 @@ import org.helioviewer.jhv.viewmodel.TimeLine;
  * <p>
  * If there is no layer present, this panel will be invisible.
  */
-public class PositionStatusPanel extends StatusLabel implements MouseListener
+public class PositionStatusPanel extends StatusLabel
 {
 	private static final char DEGREE = '\u00B0';
 	private static final String title = " (X, Y) : ";
 	private PopupState popupState;
 
-	/**
-	 * Default constructor.
-	 * 
-	 * @param imagePanel
-	 *            ImagePanel to show mouse position for
-	 */
 	public PositionStatusPanel(MainFrame imagePanel)
 	{
 		setBorder(BorderFactory.createEtchedBorder());
 
 		popupState = new PopupState();
-		imagePanel.MAIN_PANEL.addPanelMouseListener(this);
-		imagePanel.OVERVIEW_PANEL.addPanelMouseListener(this);
-		this.addMouseListener(this);
-		this.setComponentPopupMenu(popupState);
+		imagePanel.MAIN_PANEL.addPanelMouseListener(new PanelMouseListener()
+		{
+			@Override
+			public void mouseMoved(MouseEvent e, Ray ray)
+			{
+				updatePosition(ray);
+			}
 
+			@Override
+			public void mouseExited(MouseEvent e, Ray ray)
+			{
+				updatePosition(null);
+			}
+		});
+		imagePanel.OVERVIEW_PANEL.addPanelMouseListener(new PanelMouseListener()
+		{
+			@Override
+			public void mouseMoved(MouseEvent e, Ray ray)
+			{
+				updatePosition(ray);
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e, Ray ray)
+			{
+				updatePosition(null);
+			}
+		});
+		
+		setComponentPopupMenu(popupState);
 		setToolTipText(popupState.selectedItem.popupItem.getText());
 	}
 
@@ -104,63 +122,6 @@ public class PositionStatusPanel extends StatusLabel implements MouseListener
 				break;
 		}
 		this.setText(title + point);
-	}
-
-	@Override
-	public void mouseMoved(MouseEvent e, Ray ray)
-	{
-		updatePosition(ray);
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e, Ray ray)
-	{
-		updatePosition(null);
-	}
-
-	public void mouseDragged(MouseEvent e)
-	{
-	}
-
-	@Override
-	public void mouseClicked(@Nullable MouseEvent e)
-	{
-		if (e == null)
-			return;
-
-		if (e.isPopupTrigger())
-		{
-			// TODO ?
-			// popup(e);
-		}
-	}
-
-	@Override
-	public void mousePressed(@Nullable MouseEvent e)
-	{
-	}
-
-	@Override
-	public void mouseReleased(@Nullable MouseEvent e)
-	{
-		if (e == null)
-			return;
-
-		if (e.isPopupTrigger())
-		{
-			// TODO ?
-			// popup(e);
-		}
-	}
-
-	@Override
-	public void mouseEntered(@Nullable MouseEvent e)
-	{
-	}
-
-	@Override
-	public void mouseExited(@Nullable MouseEvent e)
-	{
 	}
 
 	private class PopupState extends JPopupMenu
