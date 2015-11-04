@@ -25,6 +25,7 @@ import org.helioviewer.jhv.layers.Movie.Match;
 import org.helioviewer.jhv.opengl.RayTrace;
 import org.helioviewer.jhv.opengl.Texture;
 import org.helioviewer.jhv.opengl.camera.CameraMode;
+import org.helioviewer.jhv.opengl.camera.animation.CameraRotationAnimation;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.json.JSONObject;
@@ -47,6 +48,7 @@ public abstract class ImageLayer extends Layer
 	public boolean blueChannel = true;
 	public boolean invertedLut = false;
 	protected boolean coronaVisible = true;
+	public boolean animateCameraToFacePlane;
 
 	@SuppressWarnings("null")
 	protected LocalDateTime start;
@@ -129,6 +131,19 @@ public abstract class ImageLayer extends Layer
 		MetaData md=getMetaData(currentDateTime);
 		if(md==null || md.localDateTime==null)
 			return RenderResult.RETRY_LATER;
+		
+		//create camera animation to rotate the camera to face the image plane of
+		//the current layer. this is used when layers are newly added to make sure
+		//they are shown nicely.
+		if(animateCameraToFacePlane)
+		{
+			animateCameraToFacePlane=false;
+			
+			MainFrame.SINGLETON.MAIN_PANEL.addCameraAnimation(new CameraRotationAnimation(
+					MainFrame.SINGLETON.MAIN_PANEL,
+					MainFrame.SINGLETON.MAIN_PANEL.getRotationEnd().inversed().rotate(md.rotation)
+				));
+		}
 		
 		//upload new texture, if something was decoded
 		if (_preparedImageData.rawImageData != null)

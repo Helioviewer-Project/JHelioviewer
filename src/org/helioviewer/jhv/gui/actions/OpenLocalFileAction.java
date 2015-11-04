@@ -60,7 +60,10 @@ public class OpenLocalFileAction extends AbstractAction
 		
 		try
 		{
-			Layers.addLayer(new KakaduLayer(selectedFile.getPath()));
+			KakaduLayer newLayer=new KakaduLayer(selectedFile.getPath());
+			Layers.addLayer(newLayer);
+			
+			newLayer.animateCameraToFacePlane=true;
 		}
 		catch(UnsuitableMetaDataException _umde)
 		{

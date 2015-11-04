@@ -10,7 +10,7 @@ import java.nio.file.Files;
 import java.time.LocalDateTime;
 
 import org.helioviewer.jhv.base.Globals.DialogType;
-import org.helioviewer.jhv.base.math.Quaternion3d;
+import org.helioviewer.jhv.base.math.Quaternion;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.PredefinedFileFilter;
@@ -58,7 +58,7 @@ public class StateParser extends DefaultHandler
 		JSONArray jsonTranslation = jsonCamera.getJSONArray("translation");
 		Vector3d translation = new Vector3d(jsonTranslation.getDouble(0), jsonTranslation.getDouble(1), jsonTranslation.getDouble(2));
 		JSONArray jsonRotation = jsonCamera.getJSONArray("rotation");
-		Quaternion3d rotation = Quaternion3d.createRotation(jsonRotation.getDouble(0), new Vector3d(jsonRotation.getDouble(1), jsonRotation.getDouble(2), jsonRotation.getDouble(3)));
+		Quaternion rotation = Quaternion.createRotation(jsonRotation.getDouble(0), new Vector3d(jsonRotation.getDouble(1), jsonRotation.getDouble(2), jsonRotation.getDouble(3)));
 		MainFrame.SINGLETON.MAIN_PANEL.stopAllAnimations();
 		MainFrame.SINGLETON.MAIN_PANEL.setRotationEnd(rotation);
 		MainFrame.SINGLETON.MAIN_PANEL.setRotationCurrent(rotation);
@@ -95,7 +95,7 @@ public class StateParser extends DefaultHandler
 		jsonCamera.put("translation", jsonTranslation);
 
 		JSONArray jsonRotation = new JSONArray();
-		Quaternion3d rotation = MainFrame.SINGLETON.MAIN_PANEL.getRotationCurrent();
+		Quaternion rotation = MainFrame.SINGLETON.MAIN_PANEL.getRotationCurrent();
 		jsonRotation.put(rotation.getAngle());
 		Vector3d axis = rotation.getRotationAxis();
 		jsonRotation.put(axis.x);

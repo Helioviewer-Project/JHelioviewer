@@ -1,16 +1,16 @@
 package org.helioviewer.jhv.opengl.camera;
 
 import org.helioviewer.jhv.base.math.Matrix4d;
-import org.helioviewer.jhv.base.math.Quaternion3d;
+import org.helioviewer.jhv.base.math.Quaternion;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.opengl.camera.animation.CameraAnimation;
 
 public interface Camera
 {
-	public Quaternion3d getRotationCurrent();
-	public Quaternion3d getRotationEnd();
-	public void setRotationCurrent(Quaternion3d rotation);
-	public void setRotationEnd(Quaternion3d rotation);
+	public Quaternion getRotationCurrent();
+	public Quaternion getRotationEnd();
+	public void setRotationCurrent(Quaternion rotation);
+	public void setRotationEnd(Quaternion rotation);
     public Vector3d getTranslationCurrent();
     public Vector3d getTranslationEnd();
 	public void setTranslationCurrent(Vector3d translation);

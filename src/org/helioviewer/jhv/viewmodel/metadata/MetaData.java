@@ -11,7 +11,7 @@ import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
 import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
 import org.helioviewer.jhv.base.math.MathUtils;
-import org.helioviewer.jhv.base.math.Quaternion3d;
+import org.helioviewer.jhv.base.math.Quaternion;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.math.Vector3d;
@@ -45,7 +45,7 @@ public abstract class MetaData
 	public final Vector2i resolution;
 	public final Vector2d arcsecPerPixel;
     public final double maskRotation;
-    public final Quaternion3d rotation;
+    public final Quaternion rotation;
     
     public final double heeqX;
     public final double heeqY;
@@ -165,10 +165,10 @@ public abstract class MetaData
         if (stonyhurstAvailable)
         {
         	HeliocentricCartesianCoordinate hcc = new HeliographicCoordinate(Math.toRadians(stonyhurstLongitude), Math.toRadians(stonyhurstLatitude)).toHeliocentricCartesianCoordinate();
-        	rotation = Quaternion3d.calcRotationBetween(new Vector3d(0, 0, Constants.SUN_RADIUS), new Vector3d(hcc.x, hcc.y, hcc.z));
+        	rotation = Quaternion.calcRotationBetween(new Vector3d(0, 0, Constants.SUN_RADIUS), new Vector3d(hcc.x, hcc.y, hcc.z));
         }
         else
-        	rotation = Quaternion3d.IDENTITY;
+        	rotation = Quaternion.IDENTITY;
         
         
 		maskRotation = Math.toRadians(tryGetDouble(_doc, "CROTA"));

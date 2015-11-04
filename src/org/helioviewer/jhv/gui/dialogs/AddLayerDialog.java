@@ -405,7 +405,7 @@ public class AddLayerDialog extends JDialog
 							cadence, filter.getNickname());
 					Layers.addLayer(newLayer);
 					
-					//FIXME: move camera to make this new layer visible (STEREO might not be visible otherwise)
+					newLayer.animateCameraToFacePlane = true;
 					
 					Settings.setInt("addlayer.last.sourceid", filter.sourceId);
 					lastStart = datePickerStartDate.getDateTime();

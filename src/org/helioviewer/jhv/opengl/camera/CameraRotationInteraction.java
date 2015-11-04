@@ -4,7 +4,7 @@ import java.awt.event.MouseEvent;
 
 import javax.annotation.Nullable;
 
-import org.helioviewer.jhv.base.math.Quaternion3d;
+import org.helioviewer.jhv.base.math.Quaternion;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.opengl.RayTrace.Ray;
@@ -30,20 +30,20 @@ public class CameraRotationInteraction extends CameraInteraction
 		
 		Vector3d endPoint = _ray.getHitpoint().normalized();
 		
-		Quaternion3d rotation;
+		Quaternion rotation;
 		if (yAxis==null)
-			rotation = Quaternion3d.calcRotationBetween(endPoint, startPoint);
+			rotation = Quaternion.calcRotationBetween(endPoint, startPoint);
 		else
 		{
 			//TODO: doesn't move the right amount, but probably good enough atm
-			double angle = Quaternion3d.calcRotationBetween(
+			double angle = Quaternion.calcRotationBetween(
 					endPoint.projectedToPlane(yAxis).normalized(),
 					startPoint.projectedToPlane(yAxis).normalized()
 			).getAngle() * -Math.signum(endPoint.projectedToPlane(yAxis).cross(startPoint.projectedToPlane(yAxis)).z);
 			
-			rotation = Quaternion3d.createRotation(angle, yAxis);
+			rotation = Quaternion.createRotation(angle, yAxis);
 		}
-		Quaternion3d newRotation = mainPanel.getRotationCurrent().rotate(rotation);
+		Quaternion newRotation = mainPanel.getRotationCurrent().rotate(rotation);
 		
 		camera.stopAllAnimations();
 		camera.setRotationCurrent(newRotation);

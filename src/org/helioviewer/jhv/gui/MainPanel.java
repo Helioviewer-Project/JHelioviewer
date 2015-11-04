@@ -36,7 +36,7 @@ import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
 import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
 import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
 import org.helioviewer.jhv.base.math.Matrix4d;
-import org.helioviewer.jhv.base.math.Quaternion3d;
+import org.helioviewer.jhv.base.math.Quaternion;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.base.physics.DifferentialRotation;
@@ -93,9 +93,9 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 
 	private Vector3d[] visibleAreaOutline;
 
-	protected Quaternion3d rotationNow;
+	protected Quaternion rotationNow;
 	protected Vector3d translationNow;
-	protected Quaternion3d rotationEnd;
+	protected Quaternion rotationEnd;
 	protected Vector3d translationEnd;
 	private ArrayList<MainPanel> synchronizedViews;
 
@@ -137,7 +137,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		addGLEventListener(this);
 		addMouseWheelListener(this);
 
-		rotationNow = rotationEnd = Quaternion3d.createRotation(0.0, new Vector3d(0, 1, 0));
+		rotationNow = rotationEnd = Quaternion.createRotation(0.0, new Vector3d(0, 1, 0));
 		translationNow = translationEnd = new Vector3d(0, 0, DEFAULT_CAMERA_DISTANCE);
 
 		cameraInteractions = new CameraInteraction[2];
@@ -147,7 +147,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		visibleAreaOutline = new Vector3d[40];
 	}
 
-	public Quaternion3d getRotationCurrent()
+	public Quaternion getRotationCurrent()
 	{
 		return rotationNow;
 	}
@@ -157,7 +157,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		return translationNow;
 	}
 
-	public Quaternion3d getRotationEnd()
+	public Quaternion getRotationEnd()
 	{
 		return rotationEnd;
 	}
@@ -167,7 +167,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		return translationEnd;
 	}
 
-	public void setRotationEnd(Quaternion3d _rotationEnd)
+	public void setRotationEnd(Quaternion _rotationEnd)
 	{
 		rotationEnd = _rotationEnd;
 	}
@@ -177,7 +177,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		translationEnd = _translationEnd;
 	}
 
-	public void setRotationCurrent(Quaternion3d _rotationNow)
+	public void setRotationCurrent(Quaternion _rotationNow)
 	{
 		rotationNow = _rotationNow;
 		repaint();
@@ -316,7 +316,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 
 		
 		//FIXME: which one is correct? original was the first variant...
-		Quaternion3d rotation = new Quaternion3d(rotationNow.a, rotationNow.u.negatedY());
+		Quaternion rotation = new Quaternion(rotationNow.a, rotationNow.u.negatedY());
 		Matrix4d transformation = rotation.toMatrix().translated(-translationNow.x, translationNow.y,-translationNow.z);
 		gl.glMultMatrixd(transformation.m, 0);
 
@@ -488,7 +488,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 					.toHeliographicCoordinate();
 			double angle = DifferentialRotation.calculateRotationInRadians(newCoord.latitude, seconds);
 
-			Quaternion3d newRotation = Quaternion3d.createRotation(angle, new Vector3d(0, 1, 0)).rotate(rotationNow);
+			Quaternion newRotation = Quaternion.createRotation(angle, new Vector3d(0, 1, 0)).rotate(rotationNow);
 
 			if (CameraMode.mode == MODE.MODE_3D)
 				rotationNow = newRotation;

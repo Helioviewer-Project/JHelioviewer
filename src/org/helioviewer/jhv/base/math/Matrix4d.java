@@ -220,7 +220,7 @@ public class Matrix4d
 		return s;
 	}
 
-	public static Matrix4d createRotationMatrix(Quaternion3d _q)
+	public static Matrix4d createRotationMatrix(Quaternion _q)
 	{
 		return _q.toMatrix();
 	}
