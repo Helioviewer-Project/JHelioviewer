@@ -324,7 +324,9 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		gl.glPopMatrix();
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 
-		Quaternion3d rotation = new Quaternion3d(rotationNow.getAngle(), rotationNow.getRotationAxis().negateY());
+		
+		//FIXME: which one is correct? original was the first variant...
+		Quaternion3d rotation = new Quaternion3d(rotationNow.a, rotationNow.u.negatedY());
 		Matrix4d transformation = rotation.toMatrix().translated(-translationNow.x, translationNow.y,-translationNow.z);
 		gl.glMultMatrixd(transformation.m, 0);
 

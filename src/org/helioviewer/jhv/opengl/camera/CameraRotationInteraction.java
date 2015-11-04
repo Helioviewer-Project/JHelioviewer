@@ -11,10 +11,9 @@ import org.helioviewer.jhv.opengl.RayTrace.Ray;
 
 public class CameraRotationInteraction extends CameraInteraction
 {
-	private @Nullable Vector3d currentRotationStartPoint;
-	private @Nullable Vector3d currentRotationEndPoint;
-	private @Nullable Quaternion3d currentDragRotation;
-
+	private @Nullable Vector3d startPoint;
+	private @Nullable Vector3d yAxis;
+	
 	public static boolean yAxisBlocked = false;
 
 	public CameraRotationInteraction(MainPanel _mainPanel, Camera _camera)
@@ -24,32 +23,41 @@ public class CameraRotationInteraction extends CameraInteraction
 
 	@SuppressWarnings("null")
 	@Override
-	public void mouseDragged(MouseEvent e, Ray _ray)
+	public void mouseDragged(MouseEvent _e, Ray _ray)
 	{
-		if (currentRotationStartPoint == null)
+		if (startPoint == null)
 			return;
 		
-		currentRotationEndPoint = _ray.getHitpoint();
+		Vector3d endPoint = _ray.getHitpoint().normalized();
 		
-		//FIXME: does not work at the moment
-		if (yAxisBlocked)
-			currentRotationEndPoint = new Vector3d(currentRotationEndPoint.x, currentRotationStartPoint.y, currentRotationEndPoint.z);
+		Quaternion3d rotation;
+		if (yAxis==null)
+			rotation = Quaternion3d.calcRotationBetween(endPoint, startPoint);
+		else
+		{
+			//TODO: doesn't move the right amount, but probably good enough atm
+			double angle = Quaternion3d.calcRotationBetween(
+					endPoint.projectedToPlane(yAxis).normalized(),
+					startPoint.projectedToPlane(yAxis).normalized()
+			).getAngle() * -Math.signum(endPoint.projectedToPlane(yAxis).cross(startPoint.projectedToPlane(yAxis)).z);
+			
+			rotation = Quaternion3d.createRotation(angle, yAxis);
+		}
+		Quaternion3d newRotation = mainPanel.getRotationCurrent().rotate(rotation);
 		
-		// TODO: are the parameters in the correct order?
-		// Quaternion3d.calcRotation expects (startPoint,endPoint)
-		currentDragRotation = Quaternion3d.calcRotation(currentRotationEndPoint.normalize(), currentRotationStartPoint.normalize());
-		Quaternion3d currentCam = mainPanel.getRotationCurrent().rotate(currentDragRotation);
-		
-		// currentDragRotation.rotate(mainPanel.getRotation());
 		camera.stopAllAnimations();
-		camera.setRotationCurrent(currentCam);
-		camera.setRotationEnd(currentCam);
-		currentRotationStartPoint = currentRotationEndPoint;
+		camera.setRotationCurrent(newRotation);
+		camera.setRotationEnd(newRotation);
+		startPoint = endPoint;
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e, Ray _ray)
 	{
-		currentRotationStartPoint = _ray.getHitpoint();
+		startPoint = _ray.getHitpoint().normalized();
+		if(yAxisBlocked)
+			yAxis = mainPanel.getRotationCurrent().inversed().toMatrix().multiply(new Vector3d(0,1,0)).normalized();
+		else
+			yAxis = null;
 	}
 }

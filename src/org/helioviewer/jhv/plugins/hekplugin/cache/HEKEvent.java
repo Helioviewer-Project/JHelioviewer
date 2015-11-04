@@ -598,10 +598,10 @@ public class HEKEvent implements IntervalComparison<Date> {
                     int steps=(int)(va.subtract(vb).length()/MAX_LINE_SEGMENT_LENGTH);
                     if(steps>1)
                     {
-                        Vector3d step=vb.subtract(va).scale(1d/steps);
+                        Vector3d step=vb.subtract(va).scaled(1d/steps);
                         for(int j=1;j<steps;j++)
                         {
-                            Vector3d interp=va.add(step.scale(j)).normalize().scale(Constants.SUN_RADIUS);
+                            Vector3d interp=va.add(step.scaled(j)).normalized().scaled(Constants.SUN_RADIUS);
                             oldStonyBound.add(++i,HEKCoordinateTransform.CartesianToStonyhurst(interp));
                         }
                     }
@@ -644,9 +644,9 @@ public class HEKEvent implements IntervalComparison<Date> {
         List<GenericTriangle<Vector3d>> result = new ArrayList<GenericTriangle<Vector3d>>();
         for (GenericTriangle<SphericalCoord> triangle : cachedTriangles)
         {
-        	Vector3d A = convertToSceneCoordinates(triangle.A, now).scale(1.005);
-        	Vector3d B = convertToSceneCoordinates(triangle.B, now).scale(1.005);
-        	Vector3d C = convertToSceneCoordinates(triangle.C, now).scale(1.005);
+        	Vector3d A = convertToSceneCoordinates(triangle.A, now).scaled(1.005);
+        	Vector3d B = convertToSceneCoordinates(triangle.B, now).scaled(1.005);
+        	Vector3d C = convertToSceneCoordinates(triangle.C, now).scaled(1.005);
 			
             result.add(new GenericTriangle<Vector3d>(A, B, C));
         }

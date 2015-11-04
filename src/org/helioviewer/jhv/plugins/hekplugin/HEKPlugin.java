@@ -142,7 +142,7 @@ public class HEKPlugin extends Plugin
 
 			double angle = Math.acos(sourceDir.dot(targetDir) / (sourceDir.length() * targetDir.length()));
 			Vector3d axis = sourceDir.cross(targetDir);
-			Matrix4d r = Matrix4d.createRotationMatrix(angle, axis.normalize()).translatedAbsolute(x, y, z);
+			Matrix4d r = Matrix4d.createRotationMatrix(angle, axis.normalized()).translatedAbsolute(x, y, z);
 
 			Vector3d p0 = new Vector3d(-width2, -height2, 0);
 			Vector3d p1 = new Vector3d(-width2, height2, 0);
@@ -222,7 +222,7 @@ public class HEKPlugin extends Plugin
 			gl.glBegin(GL.GL_LINE_LOOP);
 			for (SphericalCoord boundaryPoint : outerBound)
 			{
-				Vector3d boundaryPoint3d = HEKEvent.convertToSceneCoordinates(boundaryPoint, now).scale(1.005);
+				Vector3d boundaryPoint3d = HEKEvent.convertToSceneCoordinates(boundaryPoint, now).scaled(1.005);
 				gl.glVertex3d(boundaryPoint3d.x, boundaryPoint3d.y, boundaryPoint3d.z);
 			}
 			gl.glEnd();

@@ -45,7 +45,7 @@ public abstract class MetaData
     protected double maskRotation;
     protected @Nullable Vector2d occulterCenter;
     protected Vector3d orientation = new Vector3d(0, 0, Constants.SUN_RADIUS);
-    protected Quaternion3d defaultRotation = new Quaternion3d();
+    protected Quaternion3d defaultRotation = Quaternion3d.IDENTITY;
     
     protected final double heeqX;
     protected final double heeqY;

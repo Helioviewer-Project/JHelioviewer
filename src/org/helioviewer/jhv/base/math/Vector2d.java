@@ -275,7 +275,7 @@ public final class Vector2d
 	 */
 	public Vector3d projectBack(Vector3d planeCenter, Vector3d planeVectorA, Vector3d planeVectorB)
 	{
-		return planeCenter.add(planeVectorA.scale(x)).add(planeVectorB.scale(y));
+		return planeCenter.add(planeVectorA.scaled(x)).add(planeVectorB.scaled(y));
 	}
 
 	/**

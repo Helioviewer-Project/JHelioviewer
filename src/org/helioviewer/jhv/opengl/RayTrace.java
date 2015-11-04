@@ -48,14 +48,14 @@ public class RayTrace
 		if (CameraMode.mode == MODE.MODE_3D)
 		{
 			origin = mainPanel.getTransformation().multiply(new Vector3d(0, 0, 1));
-			direction = new Vector3d(newX * width, newY * width, -1).normalize();
+			direction = new Vector3d(newX * width, newY * width, -1).normalized();
 		}
 		else
 		{
 			width = Math.tan(Math.toRadians(MainPanel.FOV / 2.0)) * mainPanel.getTranslationCurrent().z * 2;
 			origin = mainPanel.getTransformation().multiply(new Vector3d(0, 0, 1))
 					.add(new Vector3d(newX * width, newY * width, 0));
-			direction = new Vector3d(0, 0, -1).normalize();
+			direction = new Vector3d(0, 0, -1).normalized();
 		}
 
 		Ray ray = new Ray(origin, direction);
@@ -74,14 +74,14 @@ public class RayTrace
 		if (CameraMode.mode == MODE.MODE_3D)
 		{
 			origin = mainPanel.getTransformation().multiply(new Vector3d(0, 0, 1));
-			direction = new Vector3d(newX * width, newY * width, -1).normalize();
+			direction = new Vector3d(newX * width, newY * width, -1).normalized();
 		}
 		else
 		{
 			width = Math.tan(Math.toRadians(MainPanel.FOV / 2.0)) * mainPanel.getTranslationCurrent().z * 2;
 			origin = mainPanel.getTransformation().multiply(new Vector3d(0, 0, 1))
 					.add(new Vector3d(newX * width, newY * width, 0));
-			direction = new Vector3d(0, 0, -1).normalize();
+			direction = new Vector3d(0, 0, -1).normalized();
 		}
 
 		Vector4d tmpOrigin = new Vector4d(origin.x, origin.y, origin.z, 0);
@@ -115,14 +115,14 @@ public class RayTrace
 		if (CameraMode.mode == MODE.MODE_3D)
 		{
 			origin = _mainPanel.getTransformation().multiply(new Vector3d(0, 0, 1));
-			direction = new Vector3d(newX * width, newY * width, -1).normalize();
+			direction = new Vector3d(newX * width, newY * width, -1).normalized();
 		}
 		else
 		{
 			width = Math.tan(Math.toRadians(MainPanel.FOV / 2.0)) * _mainPanel.getTranslationCurrent().z * 2.0;
 			origin = _mainPanel.getTransformation().multiply(new Vector3d(0, 0, 1))
 					.add(new Vector3d(newX * width, newY * width, 0));
-			direction = new Vector3d(0, 0, -1).normalize();
+			direction = new Vector3d(0, 0, -1).normalized();
 		}
 		Vector4d tmpOrigin = new Vector4d(origin.x, origin.y, origin.z, 0);
 		Vector4d tmpDirection = new Vector4d(direction.x, direction.y, direction.z, 0);
@@ -207,12 +207,12 @@ public class RayTrace
 
 		public Vector3d getHitpointOnSphere()
 		{
-			return origin.add(direction.scale(tSphere));
+			return origin.add(direction.scaled(tSphere));
 		}
 
 		public Vector3d getHitpointOnPlane()
 		{
-			return origin.add(direction.scale(tPlane));
+			return origin.add(direction.scaled(tPlane));
 		}
 
 		@Override

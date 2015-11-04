@@ -1,51 +1,38 @@
 package org.helioviewer.jhv.base.math;
 
 
-public class Quaternion3d {
+public class Quaternion3d
+{
+	public static final Quaternion3d IDENTITY = new Quaternion3d(1,new Vector3d(0,0,0));
     private static final double EPSILON = 0.000001;
 
-    private final double a;
-    private final Vector3d u;
+    public final double a;
+    public final Vector3d u;
 
-    public static Quaternion3d createRotation(double angle, Vector3d axis)
+    public static Quaternion3d createRotation(double _angle, Vector3d _axis)
     {
-        double halfAngle = angle / 2;
-        return new Quaternion3d(Math.cos(halfAngle), axis.normalize().scale(Math.sin(halfAngle)));
+        return new Quaternion3d(Math.cos(_angle / 2), _axis.normalized().scaled(Math.sin(_angle / 2)));
     }
 
-    public Quaternion3d(double a, double x, double y, double z)
+    public Quaternion3d(double _a, double _x, double _y, double _z)
     {
-        this(a, new Vector3d(x, y, z));
+        this(_a, new Vector3d(_x, _y, _z));
     }
 
-    public Quaternion3d(double a, Vector3d u)
+    public Quaternion3d(double _a, Vector3d _u)
     {
-        this.a = a;
-        this.u = u;
+        a = _a;
+        u = _u;
     }
 
-    public Quaternion3d()
+    public Quaternion3d multiply(Quaternion3d _q)
     {
-    	this(1, new Vector3d(0, 0, 0));
-    }
-
-    public Quaternion3d multiply(Quaternion3d q)
-    {
-        double a1 = this.a;
-        double x1 = this.u.x;
-        double y1 = this.u.y;
-        double z1 = this.u.z;
-        double a2 = q.a;
-        double x2 = q.u.x;
-        double y2 = q.u.y;
-        double z2 = q.u.z;
-
-        double a = (a1 * a2 - x1 * x2 - y1 * y2 - z1 * z2);
-        double x = (a1 * x2 + x1 * a2 - y1 * z2 + z1 * y2);
-        double y = (a1 * y2 + x1 * z2 + y1 * a2 - z1 * x2);
-        double z = (a1 * z2 - x1 * y2 + y1 * x2 + z1 * a2);
+        double ra = (a * _q.a - u.x * _q.u.x - u.y * _q.u.y - u.z * _q.u.z);
+        double rx = (a * _q.u.x + u.x * _q.a - u.y * _q.u.z + u.z * _q.u.y);
+        double ry = (a * _q.u.y + u.x * _q.u.z + u.y * _q.a - u.z * _q.u.x);
+        double rz = (a * _q.u.z - u.x * _q.u.y + u.y * _q.u.x + u.z * _q.a);
         
-        return new Quaternion3d(a, x, y, z);
+        return new Quaternion3d(ra, rx, ry, rz);
     }
 
     public Matrix4d toMatrix()
@@ -62,50 +49,49 @@ public class Quaternion3d {
 		        0, 0, 0, w2 + x2 + y2 + z2);
     }
 
-    public double getAngle()
-    {
-        return this.a;
-    }
-
     public Vector3d getRotationAxis()
     {
-        return this.u;
+        return u.normalized();
+    }
+    
+    public double getAngle()
+    {
+    	return Math.atan2(u.length(),a) * 2;
     }
 
-    public Quaternion3d add(Quaternion3d q)
+    public Quaternion3d add(Quaternion3d _q)
     {
-        return new Quaternion3d(a + q.a, this.u.add(q.u));
+        return new Quaternion3d(a + _q.a, u.add(_q.u));
     }
 
-    public Quaternion3d subtract(Quaternion3d q)
+    public Quaternion3d subtract(Quaternion3d _q)
     {
-        return new Quaternion3d(a - q.a, this.u.subtract(q.u));
+        return new Quaternion3d(a - _q.a, u.subtract(_q.u));
     }
 
-    public Quaternion3d scale(double s)
+    public Quaternion3d scale(double _s)
     {
-        return new Quaternion3d(a * s, u.scale(s));
+        return new Quaternion3d(a * _s, u.scaled(_s));
     }
 
-    public Quaternion3d rotate(Quaternion3d q2)
+    public Quaternion3d rotate(Quaternion3d _q2)
     {
-        double angle = this.a * q2.a - this.u.x * q2.u.x - this.u.y * q2.u.y - this.u.z * q2.u.z;
+        double angle = a * _q2.a - u.x * _q2.u.x - u.y * _q2.u.y - u.z * _q2.u.z;
         Vector3d axis = new Vector3d(
-                this.a * q2.u.x + this.u.x * q2.a + this.u.y * q2.u.z - this.u.z * q2.u.y,
-                this.a * q2.u.y + this.u.y * q2.a + this.u.z * q2.u.x - this.u.x * q2.u.z,
-                this.a * q2.u.z + this.u.z * q2.a + this.u.x * q2.u.y - this.u.y * q2.u.x);
+                a * _q2.u.x + u.x * _q2.a + u.y * _q2.u.z - u.z * _q2.u.y,
+                a * _q2.u.y + u.y * _q2.a + u.z * _q2.u.x - u.x * _q2.u.z,
+                a * _q2.u.z + u.z * _q2.a + u.x * _q2.u.y - u.y * _q2.u.x);
        	
         return new Quaternion3d(angle, axis).normalized();
-       	
     }
 
-    public Quaternion3d slerp(Quaternion3d r, double t)
+    public Quaternion3d slerp(Quaternion3d _r, double _t)
     {
-        double cosAngle = dot(r);
+        double cosAngle = dot(_r);
         
         //interpolate close quaternions
         if (cosAngle > 1 - EPSILON)
-            return this.add(r.subtract(this).scale(t)).normalized();
+            return add(_r.subtract(this).scale(_t)).normalized();
         
         if (cosAngle < 0)
             cosAngle = 0;
@@ -113,21 +99,21 @@ public class Quaternion3d {
             cosAngle = 1;
         
         double theta0 = Math.acos(cosAngle);
-        double theta = theta0 * t;
-        Quaternion3d v2 = r.subtract(this.scale(cosAngle)).normalized();
+        double theta = theta0 * _t;
+        Quaternion3d v2 = _r.subtract(this.scale(cosAngle)).normalized();
 
         return this.scale(Math.cos(theta)).add(v2.scale(Math.sin(theta))).normalized();
     }
     
-    public Quaternion3d nlerp(Quaternion3d r, double t)
+    public Quaternion3d nlerp(Quaternion3d _r, double _t)
     {
-        return this.scale(1-t).add(r.scale(t)).normalized();
+        return scale(1-_t).add(_r.scale(_t)).normalized();
     }
 
     public Quaternion3d normalized()
     {
-        double l = this.length();
-        return new Quaternion3d(a / l, u.scale(1/l));
+        double l = length();
+        return new Quaternion3d(a / l, u.scaled(1/l));
     }
 
     public double length()
@@ -140,30 +126,31 @@ public class Quaternion3d {
         return a * a + u.lengthSq();
     }
 
-    public double dot(Quaternion3d q)
+    public double dot(Quaternion3d _q)
     {
-        return this.a * q.a + this.u.x * q.u.x + this.u.y * q.u.y + this.u.z * q.u.z;
+        return a * _q.a + u.x * _q.u.x + u.y * _q.u.y + u.z * _q.u.z;
     }
 
-    public static Quaternion3d calcRotation(Vector3d startPoint, Vector3d endPoint)
+    public static Quaternion3d calcRotationBetween(Vector3d _startPoint, Vector3d _endPoint)
     {
-    	Vector3d rotationAxis = startPoint.cross(endPoint);
-        double rotationAngle = Math.atan2(rotationAxis.length(), startPoint.dot(endPoint));
-        if (rotationAngle == 0.0) rotationAxis = new Vector3d(0,0,1);
+    	Vector3d rotationAxis = _startPoint.cross(_endPoint);
+        double rotationAngle = Math.atan2(rotationAxis.length(), _startPoint.dot(_endPoint));
+        if (rotationAngle == 0.0)
+        	rotationAxis = new Vector3d(0,0,1);
         return Quaternion3d.createRotation(rotationAngle, rotationAxis);
     }
 
     public Quaternion3d inversed()
     {
-    	Quaternion3d q = this.conjugated();
+    	Quaternion3d q = conjugated();
     	double length = q.a*q.a + q.u.x*q.u.x + q.u.y * q.u.y + q.u.z*q.u.z;
     	
-    	return new Quaternion3d(q.a / length, q.u.scale(1/length));
+    	return new Quaternion3d(q.a / length, q.u.scaled(1/length));
     }
     
     public Quaternion3d conjugated()
     {
-        return new Quaternion3d(this.a, new Vector3d(-u.x,-u.y,-u.z));
+        return new Quaternion3d(a, new Vector3d(-u.x,-u.y,-u.z));
     }
 
     public String toString()

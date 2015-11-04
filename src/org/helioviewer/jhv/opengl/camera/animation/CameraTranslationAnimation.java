@@ -22,6 +22,6 @@ public class CameraTranslationAnimation extends CameraAnimation
 	@Override
 	public void animate(Camera _cam)
 	{
-		_cam.setTranslationCurrent(_cam.getTranslationCurrent().add(translationDelta.scale(getAndResetTimeDelta())));
+		_cam.setTranslationCurrent(_cam.getTranslationCurrent().add(translationDelta.scaled(getAndResetTimeDelta())));
 	}
 }

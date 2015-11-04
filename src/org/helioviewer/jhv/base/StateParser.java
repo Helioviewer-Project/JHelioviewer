@@ -58,9 +58,7 @@ public class StateParser extends DefaultHandler
 		JSONArray jsonTranslation = jsonCamera.getJSONArray("translation");
 		Vector3d translation = new Vector3d(jsonTranslation.getDouble(0), jsonTranslation.getDouble(1), jsonTranslation.getDouble(2));
 		JSONArray jsonRotation = jsonCamera.getJSONArray("rotation");
-		double angle = jsonRotation.getDouble(0);
-		Vector3d axis = new Vector3d(jsonRotation.getDouble(1), jsonRotation.getDouble(2), jsonRotation.getDouble(3));
-		Quaternion3d rotation = new Quaternion3d(angle, axis);
+		Quaternion3d rotation = Quaternion3d.createRotation(jsonRotation.getDouble(0), new Vector3d(jsonRotation.getDouble(1), jsonRotation.getDouble(2), jsonRotation.getDouble(3)));
 		MainFrame.SINGLETON.MAIN_PANEL.stopAllAnimations();
 		MainFrame.SINGLETON.MAIN_PANEL.setRotationEnd(rotation);
 		MainFrame.SINGLETON.MAIN_PANEL.setRotationCurrent(rotation);

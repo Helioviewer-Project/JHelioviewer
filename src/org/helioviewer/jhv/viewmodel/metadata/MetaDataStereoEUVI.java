@@ -46,7 +46,7 @@ class MetaDataStereoEUVI extends MetaData
         {
         	HeliocentricCartesianCoordinate hcc = new HeliographicCoordinate(Math.toRadians(stonyhurstLongitude), Math.toRadians(stonyhurstLatitude)).toHeliocentricCartesianCoordinate();
         	orientation = new Vector3d(hcc.x, hcc.y, hcc.z);
-        	defaultRotation = Quaternion3d.calcRotation(new Vector3d(0, 0, Constants.SUN_RADIUS), orientation);
+        	defaultRotation = Quaternion3d.calcRotationBetween(new Vector3d(0, 0, Constants.SUN_RADIUS), orientation);
         }
    }
 }

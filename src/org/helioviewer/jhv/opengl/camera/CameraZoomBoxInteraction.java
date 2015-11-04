@@ -43,9 +43,9 @@ public class CameraZoomBoxInteraction extends CameraInteraction
 		if (start == null || end == null)
 			return;
 		
-		Vector3d newPoint = start.add(end).scale(0.5);
+		Vector3d newPoint = start.add(end).scaled(0.5);
 		newPoint = new Vector3d(newPoint.x, -newPoint.y, camera.getTranslationCurrent().z);
-		Vector3d rect = start.add(end.negate());
+		Vector3d rect = start.add(end.negated());
 		
 		double width;
 		if (rect.x > rect.y)

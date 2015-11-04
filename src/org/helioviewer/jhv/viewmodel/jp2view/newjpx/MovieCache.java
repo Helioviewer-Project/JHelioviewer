@@ -240,4 +240,8 @@ public class MovieCache
 	{
 		return new File(CACHE_DIR, _sourceId+","+_currentStart.atOffset(ZoneOffset.UTC).toEpochSecond()+","+_currentEnd.atOffset(ZoneOffset.UTC).toEpochSecond()+","+_cadence).getAbsolutePath();
 	}
+
+	public static void init()
+	{
+	}
 }

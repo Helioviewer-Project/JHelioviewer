@@ -30,6 +30,7 @@ import org.helioviewer.jhv.io.CommandLineProcessor;
 import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.viewmodel.jp2view.kakadu.KduErrorHandler;
+import org.helioviewer.jhv.viewmodel.jp2view.newjpx.MovieCache;
 
 import com.install4j.api.launcher.ApplicationLauncher;
 import com.install4j.api.update.UpdateSchedule;
@@ -195,8 +196,8 @@ public class JHelioviewer
 					splash.progressTo("Creating OpenGL context");
 					MainFrame.SINGLETON.getClass();
 					
-					splash.progressTo("Setting up texture cache");
-					//TextureCache.init();
+					splash.progressTo("Setting up caches");
+					MovieCache.init();
 					
 					splash.progressTo("Compiling shaders");
 					ImageLayer.init();
