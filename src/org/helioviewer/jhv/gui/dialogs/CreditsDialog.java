@@ -7,6 +7,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
+import java.util.Collections;
 
 import javax.annotation.Nullable;
 import javax.swing.BorderFactory;
@@ -18,6 +19,8 @@ import javax.swing.JPanel;
 
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.gui.MainFrame;
+
+import com.google.common.collect.Lists;
 
 /**
  * Dialog that is used to display information about the developers
@@ -49,11 +52,12 @@ public final class CreditsDialog extends JDialog
         add(content, BorderLayout.NORTH);
         
         
-        String[] names=new String[] { "Alen Agheksanterian","Alen Alexanderian","Andre Dau","Benjamin W. Caplins","Benjamin Wamsler","Bram Bourgoignie",
-        		"Daniel Müller","Desmond Amadigwe","Freek Verstringe","Jonas Schwammberger","Juan Pablo Garcia Ortiz","Ludwig Schmidt","Malte Nuhn",
-        		"Markus Langenberg","Simon Felix","Simon Spörri","Stefan Meier","Stephan Pagel"};
+		String[] names = new String[] { "Alen Alexanderian", "Andre Dau", "Benjamin W. Caplins", "Benjamin Wamsler",
+				"Bram Bourgoignie", "Daniel Müller", "Desmond Amadigwe", "Freek Verstringe", "Jonas Schwammberger",
+				"Juan Pablo Garcia Ortiz", "Ludwig Schmidt", "Malte Nuhn", "Markus Langenberg", "Simon Felix",
+				"Simon Spörri", "Stefan Meier", "Stephan Pagel", "Helge Dietert", "Andreas Hoelzl" };
         
-        Arrays.sort(names);
+        Collections.shuffle(Arrays.asList(names));
         
 		JPanel nameGrid=new JPanel(new GridLayout(0, 3));
 		for(String name:names)
