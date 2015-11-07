@@ -1,16 +1,15 @@
 package org.helioviewer.jhv.plugins.hekplugin.cache;
 
+import org.helioviewer.jhv.plugins.hekplugin.Interval;
+import org.helioviewer.jhv.plugins.hekplugin.IntervalContainer;
+import org.helioviewer.jhv.plugins.hekplugin.IntervalStore;
+
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-
-import org.helioviewer.jhv.plugins.hekplugin.Interval;
-import org.helioviewer.jhv.plugins.hekplugin.IntervalContainer;
-import org.helioviewer.jhv.plugins.hekplugin.IntervalStore;
 
 /**
  * Datastructure to store a different items.
@@ -26,7 +25,7 @@ public class HEKCache {
 
     private static final HEKCache SINGLETON = new HEKCache();
 
-    private HashMap<HEKPath, IntervalStore<Date, HEKEvent>> tracks = new HashMap<HEKPath, IntervalStore<Date, HEKEvent>>();
+    private HashMap<HEKPath, IntervalStore<Date, HEKEvent>> tracks = new HashMap<>();
 
     private HEKCacheModel model = new HEKCacheModel(this);
     private HEKCacheController controller = new HEKCacheController(this);
@@ -108,7 +107,7 @@ public class HEKCache {
      */
     public void addTrack(HEKPath track) {
         if (!this.containsTrack(track)) {
-            this.tracks.put(track, new IntervalStore<Date, HEKEvent>());
+            this.tracks.put(track, new IntervalStore<Date,HEKEvent>());
         }
     }
 
@@ -128,7 +127,7 @@ public class HEKCache {
         addTrack(trackPath);
         IntervalStore<Date, HEKEvent> theTrack = getTrack(trackPath);
         // Log.info("Current Track is " + theTrack);
-        IntervalContainer<Date, HEKEvent> newContainer = new IntervalContainer<Date, HEKEvent>(events);
+        IntervalContainer<Date, HEKEvent> newContainer = new IntervalContainer<>(events);
         theTrack.add(newInterval, newContainer);
     }
 
@@ -155,12 +154,12 @@ public class HEKCache {
      * available
      */
     public HashMap<HEKPath, List<Interval<Date>>> needed(HashMap<HEKPath, List<Interval<Date>>> request) {
-        HashMap<HEKPath, List<Interval<Date>>> result = new HashMap<HEKPath, List<Interval<Date>>>();
+        HashMap<HEKPath, List<Interval<Date>>> result = new HashMap<>();
 
         for(Entry<HEKPath,List<Interval<Date>>> cur:request.entrySet())
         {
             if (!this.getTracks().containsKey(cur.getKey())) {
-                this.tracks.put(cur.getKey(), new IntervalStore<Date, HEKEvent>());
+                this.tracks.put(cur.getKey(), new IntervalStore<Date,HEKEvent>());
             }
 
             List<Interval<Date>> requestIntervals = cur.getValue();
@@ -235,10 +234,8 @@ public class HEKCache {
 
         String result = "";
 
-        Iterator<HEKPath> keyIterator = getTracks().keySet().iterator();
-        while (keyIterator.hasNext()) {
-
-            HEKPath key = keyIterator.next();
+        for (HEKPath key : getTracks().keySet())
+        {
 
             result = result + key.toString() + ", ";
 

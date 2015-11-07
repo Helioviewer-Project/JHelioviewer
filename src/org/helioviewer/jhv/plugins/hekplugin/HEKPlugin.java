@@ -1,15 +1,7 @@
 package org.helioviewer.jhv.plugins.hekplugin;
 
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Point;
-import java.awt.event.MouseEvent;
-import java.net.URL;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
-import java.util.List;
-
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
 import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
 import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.SphericalCoord;
@@ -24,8 +16,13 @@ import org.helioviewer.jhv.plugins.hekplugin.cache.gui.HEKEventInformationDialog
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
 import org.json.JSONObject;
 
-import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL2;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.List;
 
 public class HEKPlugin extends Plugin
 {
@@ -258,7 +255,7 @@ public class HEKPlugin extends Plugin
 
 	private Point calcWindowPosition(Point p)
 	{
-		int yCoord = 0;
+		int yCoord;
 		boolean yCoordInMiddle = false;
 		if (p.y + hekPopUp.getSize().height + Y_OFFSET < Plugins.mainPanelGetSize().height)
 		{
@@ -281,7 +278,7 @@ public class HEKPlugin extends Plugin
 			}
 		}
 
-		int xCoord = 0;
+		int xCoord;
 		if (p.x + hekPopUp.getSize().width + X_OFFSET < Plugins.mainPanelGetSize().width)
 		{
 			xCoord = p.x + Plugins.mainPanelGetLocationOnScreen().x + X_OFFSET;
@@ -310,10 +307,10 @@ public class HEKPlugin extends Plugin
 			Date start = Date.from(startDateTime.atZone(ZoneId.systemDefault()).toInstant());
 			Date end = Date.from(endDateTime.atZone(ZoneId.systemDefault()).toInstant());
 
-			Interval<Date> newInterval = new Interval<Date>(start, end);
+			Interval<Date> newInterval = new Interval<>(start, end);
 			hekPluginPanel.setCurInterval(newInterval);
 		}
-	};
+	}
 
 	public void mouseMoved(MouseEvent e, Vector3d point)
 	{

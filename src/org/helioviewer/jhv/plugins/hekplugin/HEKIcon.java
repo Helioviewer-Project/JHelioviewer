@@ -1,12 +1,10 @@
 package org.helioviewer.jhv.plugins.hekplugin;
 
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-
-import javax.swing.ImageIcon;
-
 import org.helioviewer.jhv.opengl.Texture;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 
 class HEKIcon
 {
@@ -26,7 +24,7 @@ class HEKIcon
 
 		final String name;
 
-		private HEKIcons(String _name)
+		HEKIcons(String _name)
 		{
 			name = _name;
 		}

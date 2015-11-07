@@ -1,8 +1,21 @@
 package org.helioviewer.jhv.gui.actions;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.Toolkit;
+import com.xuggle.mediatool.IMediaWriter;
+import com.xuggle.mediatool.ToolFactory;
+import org.helioviewer.jhv.base.Globals;
+import org.helioviewer.jhv.base.Globals.DialogType;
+import org.helioviewer.jhv.base.Settings;
+import org.helioviewer.jhv.base.Telemetry;
+import org.helioviewer.jhv.gui.MainFrame;
+import org.helioviewer.jhv.gui.PredefinedFileFilter;
+import org.helioviewer.jhv.layers.Layers;
+import org.helioviewer.jhv.viewmodel.TimeLine;
+
+import javax.annotation.Nullable;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -15,31 +28,6 @@ import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
-import javax.annotation.Nullable;
-import javax.imageio.ImageIO;
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
-import javax.swing.border.EmptyBorder;
-
-import org.helioviewer.jhv.base.Globals;
-import org.helioviewer.jhv.base.Globals.DialogType;
-import org.helioviewer.jhv.base.Settings;
-import org.helioviewer.jhv.base.Telemetry;
-import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.gui.PredefinedFileFilter;
-import org.helioviewer.jhv.layers.Layers;
-import org.helioviewer.jhv.viewmodel.TimeLine;
-
-import com.xuggle.mediatool.IMediaWriter;
-import com.xuggle.mediatool.ToolFactory;
 
 public class ExportMovieAction extends AbstractAction
 {
@@ -63,8 +51,6 @@ public class ExportMovieAction extends AbstractAction
 
 	private PredefinedFileFilter selectedOutputFormat = PredefinedFileFilter.MP4;
 
-	private @Nullable String txtTargetFile;
-
 	private boolean started = true;
 
 	private static final String SETTING_MOVIE_EXPORT_LAST_DIRECTORY = "export.movie.last.directory";
@@ -76,13 +62,12 @@ public class ExportMovieAction extends AbstractAction
 	private boolean textEnabled;
 	private int imageWidth;
 	private int imageHeight;
-	private @Nullable Thread thread;
 	@Nullable
 	private volatile BufferedImage bufferedImage;
 
 	private void openExportMovieDialog()
 	{
-		txtTargetFile = LocalDateTime.now().format(Globals.DATE_TIME_FORMATTER);
+		String txtTargetFile = LocalDateTime.now().format(Globals.DATE_TIME_FORMATTER);
 
 		// Open save-dialog
 		final File file = Globals.showFileDialog(DialogType.SAVE_FILE, "Save Movie as",
@@ -159,35 +144,26 @@ public class ExportMovieAction extends AbstractAction
 		TimeLine.SINGLETON.setCurrentFrame(0);
 
 		final String directory = _directory;
-		thread = new Thread(new Runnable()
-		{
+		Thread thread = new Thread(new Runnable() {
 			@Override
-			public void run()
-			{
+			public void run() {
 				TimeLine.SINGLETON.setCurrentFrame(0);
-				for (int i = 0; i < TimeLine.SINGLETON.getFrameCount(); i++)
-				{
+				for (int i = 0; i < TimeLine.SINGLETON.getFrameCount(); i++) {
 					bufferedImage = null;
-					SwingUtilities.invokeLater(new Runnable()
-					{
+					SwingUtilities.invokeLater(new Runnable() {
 						@Override
-						public void run()
-						{
+						public void run() {
 							progressDialog.setDescription("Rendering images");
 							bufferedImage = MainFrame.SINGLETON.MAIN_PANEL.getBufferedImage(imageWidth, imageHeight, textEnabled);
 						}
 					});
 
-					while (bufferedImage == null)
-					{
-						try
-						{
+					while (bufferedImage == null) {
+						try {
 							if (!started)
 								break;
 							Thread.sleep(20);
-						}
-						catch (InterruptedException e)
-						{
+						} catch (InterruptedException e) {
 							break;
 						}
 					}
@@ -196,36 +172,25 @@ public class ExportMovieAction extends AbstractAction
 
 					progressDialog.updateProgressBar(i);
 
-					if (selectedOutputFormat.isMovieFile() && started)
-					{
+					if (selectedOutputFormat.isMovieFile() && started) {
 						writer.encodeVideo(0, bufferedImage, fps * i, TimeUnit.MILLISECONDS);
-					}
-					else if (selectedOutputFormat.isCompressedFile() && started)
-					{
+					} else if (selectedOutputFormat.isCompressedFile() && started) {
 						String number = String.format("%04d", i);
-						try
-						{
+						try {
 							zipOutputStream.putNextEntry(new ZipEntry(_filename + "/" + _filename + "-" + number
 									+ selectedOutputFormat.getInnerMovieFilter().getDefaultExtension()));
 							ImageIO.write(bufferedImage, selectedOutputFormat.getInnerMovieFilter().fileType,
 									zipOutputStream);
 							zipOutputStream.closeEntry();
-						}
-						catch (IOException e)
-						{
+						} catch (IOException e) {
 							Telemetry.trackException(e);
 						}
-					}
-					else if (selectedOutputFormat.isImageFile() && started)
-					{
+					} else if (selectedOutputFormat.isImageFile() && started) {
 						String number = String.format("%04d", i);
-						try
-						{
+						try {
 							ImageIO.write(bufferedImage, selectedOutputFormat.fileType, new File(
 									directory + _filename + "-" + number + selectedOutputFormat.getDefaultExtension()));
-						}
-						catch (IOException e)
-						{
+						} catch (IOException e) {
 							Telemetry.trackException(e);
 						}
 					}
@@ -233,18 +198,15 @@ public class ExportMovieAction extends AbstractAction
 				}
 				TimeLine.SINGLETON.setCurrentFrame(0);
 				// export movie
-				if (writer!=null)
+				if (writer != null)
 					writer.close();
-				
-				try
-				{
-					if(zipOutputStream!=null)
+
+				try {
+					if (zipOutputStream != null)
 						zipOutputStream.close();
-					if(fileOutputStream!=null)
+					if (fileOutputStream != null)
 						fileOutputStream.close();
-				}
-				catch (IOException e)
-				{
+				} catch (IOException e) {
 					Telemetry.trackException(e);
 				}
 

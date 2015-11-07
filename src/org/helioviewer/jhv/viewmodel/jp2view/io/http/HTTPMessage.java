@@ -1,10 +1,9 @@
 package org.helioviewer.jhv.viewmodel.jp2view.io.http;
 
+import javax.annotation.Nullable;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
-
-import javax.annotation.Nullable;
 
 /**
  * The class <code>HTTPMessage</code> defines the basic body of a HTTP message.
@@ -13,7 +12,7 @@ abstract class HTTPMessage
 {
 
 	/** A hash table with the headers of the message */
-	private Hashtable<String, String> headers = new Hashtable<String, String>();
+	private Hashtable<String, String> headers = new Hashtable<>();
 
 	/** Returns <code>true</code> if the message is a request. */
 	public abstract boolean isRequest();
@@ -80,4 +79,4 @@ abstract class HTTPMessage
 	{
 		return headers.containsKey(_key);
 	}
-};
+}

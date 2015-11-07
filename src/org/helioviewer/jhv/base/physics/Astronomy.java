@@ -1,8 +1,8 @@
 package org.helioviewer.jhv.base.physics;
 
-import java.util.Calendar;
-
 import org.helioviewer.jhv.base.math.MathUtils;
+
+import java.util.Calendar;
 
 public class Astronomy {
     
@@ -12,10 +12,10 @@ public class Astronomy {
         int da = _d.get(Calendar.DAY_OF_MONTH);
 
         int yr = _d.get(Calendar.YEAR);
-        int A = 0;
-        int B = 0;
-        int C = 0;
-        int D = 0;
+        int A;
+        int B;
+        int C;
+        int D;
 
         if (mo <= 2)
         {
@@ -47,12 +47,10 @@ public class Astronomy {
     }
 
     // This method is based on the SolarSoft GET_SUN routine
-    public static double getB0InRadians(Calendar time) {
-        Calendar item = time;
+    public static double getB0InRadians(Calendar time)
+    {
 
-        Calendar itemx = item;
-
-        double t = (calendarToJulianDay(itemx) - 2415020) / 36525;
+        double t = (calendarToJulianDay(time) - 2415020) / 36525;
 
         double mnl = 279.69668 + 36000.76892 * t + 0.0003025 * t * t;
         mnl = MathUtils.mapTo0To360(mnl);
@@ -73,9 +71,7 @@ public class Astronomy {
         // do we want to change this to 7.33?
         double i = 7.25;
 
-        double he_lat = Math.asin(Math.sin(diff) * Math.sin(i / MathUtils.RAD_TO_DEG));
-
-        return he_lat;
+        return Math.asin(Math.sin(diff) * Math.sin(i / MathUtils.RAD_TO_DEG));
     }
 
     public static double getB0InDegree(Calendar time) {

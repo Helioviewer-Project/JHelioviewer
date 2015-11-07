@@ -1,12 +1,11 @@
 package org.helioviewer.jhv.plugins;
 
-import java.awt.event.MouseEvent;
-import java.time.LocalDateTime;
-
+import com.jogamp.opengl.GL2;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.json.JSONObject;
 
-import com.jogamp.opengl.GL2;
+import java.awt.event.MouseEvent;
+import java.time.LocalDateTime;
 
 public abstract class Plugin
 {
@@ -15,8 +14,8 @@ public abstract class Plugin
 	
 	public enum RenderMode
 	{
-		MAIN_PANEL, OVERVIEW_PANEL, BOTH_PANELS;
-	};
+		MAIN_PANEL, OVERVIEW_PANEL, BOTH_PANELS
+	}
 
 	public final RenderMode renderMode;
 

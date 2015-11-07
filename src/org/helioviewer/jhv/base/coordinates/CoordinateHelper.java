@@ -11,8 +11,7 @@ public class CoordinateHelper
 	private static final double JAN_1_1900 = 2415020.0;
 	
 	public static double julianDaySinceJ19000101(LocalDateTime localDateTime) {
-		double dd = localDateTime.getLong(JulianFields.JULIAN_DAY) - JAN_1_1900;
-		return dd;
+        return localDateTime.getLong(JulianFields.JULIAN_DAY) - JAN_1_1900;
 	}
 	
     public static double calculateRotationInDegrees(double latitude, double timeDifferenceInSeconds) {

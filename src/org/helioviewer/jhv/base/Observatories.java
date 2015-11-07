@@ -1,15 +1,5 @@
 package org.helioviewer.jhv.base;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.TreeMap;
-
-import javax.annotation.Nullable;
-import javax.swing.SwingUtilities;
-
 import org.helioviewer.jhv.base.downloadmanager.AbstractDownloadRequest;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
@@ -20,10 +10,19 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.annotation.Nullable;
+import javax.swing.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.TreeMap;
+
 public class Observatories
 {
-	private static TreeMap<String, Observatory> observatories = new TreeMap<String, Observatories.Observatory>(new AlphanumComparator()); 
-	private static final ArrayList<Runnable> updateListeners = new ArrayList<Runnable>(); 
+	private static TreeMap<String, Observatory> observatories = new TreeMap<>(new AlphanumComparator());
+	private static final ArrayList<Runnable> updateListeners = new ArrayList<>();
 	
 	public static void addUpdateListener(Runnable _listener)
 	{
@@ -199,7 +198,7 @@ public class Observatories
 				filter.end = LocalDateTime.parse(end, reader);
 			}
 			//filter.layeringOrder = jsonObject.getInt("layeringOrder");
-			filter.nickname = (String) jsonObject.getString("nickname");
+			filter.nickname = jsonObject.getString("nickname");
 			filter.sourceId = jsonObject.getInt("sourceId");
 		}
 		catch (JSONException e)
@@ -210,9 +209,9 @@ public class Observatories
 
 	public static class Observatory
 	{
-		private final TreeMap<String, Filter> filters = new TreeMap<String, Filter>(new AlphanumComparator());
+		private final TreeMap<String, Filter> filters = new TreeMap<>(new AlphanumComparator());
 		private final String name;
-		private ArrayList<String> uiLabels=new ArrayList<String>();
+		private ArrayList<String> uiLabels= new ArrayList<>();
 
 		private Observatory(String _name)
 		{
@@ -243,7 +242,7 @@ public class Observatories
 
 	public static class Filter
 	{
-		private TreeMap<String, Filter> filters = new TreeMap<String, Observatories.Filter>(new AlphanumComparator());
+		private TreeMap<String, Filter> filters = new TreeMap<>(new AlphanumComparator());
 		private final String name;
 		
 		@Nullable private LocalDateTime start;

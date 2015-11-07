@@ -1,14 +1,5 @@
 package org.helioviewer.jhv.viewmodel.jp2view.io.jpip;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-
-import javax.annotation.Nullable;
-
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.viewmodel.jp2view.io.ChunkedInputStream;
 import org.helioviewer.jhv.viewmodel.jp2view.io.FixedSizedInputStream;
@@ -17,6 +8,14 @@ import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPRequest;
 import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPRequest.Method;
 import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPResponse;
 import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPSocket;
+
+import javax.annotation.Nullable;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 
 /**
  * Assumes a persistent HTTP connection.
@@ -84,17 +83,17 @@ public class JPIPSocket extends HTTPSocket
 		if (res == null)
 			throw new IOException("After conncting to the server, it did not send a response.");
 
-		HashMap<String, String> map = null;
+		HashMap<String, String> map;
 		String[] cnewParams = { "cid", "transport", "host", "path", "port", "auxport" };
 		if (res.getHeader("JPIP-cnew") != null)
 		{
-			map = new HashMap<String, String>();
+			map = new HashMap<>();
 			@SuppressWarnings("null")
 			String[] parts = res.getHeader("JPIP-cnew").split(",");
-			for (int i = 0; i < parts.length; i++)
-				for (int j = 0; j < cnewParams.length; j++)
-					if (parts[i].startsWith(cnewParams[j] + "="))
-						map.put(cnewParams[j], parts[i].substring(cnewParams[j].length() + 1));
+			for (String part : parts)
+				for (String cnewParam : cnewParams)
+					if (part.startsWith(cnewParam + "="))
+						map.put(cnewParam, part.substring(cnewParam.length() + 1));
 		}
 		else
 			throw new IOException("The header 'JPIP-cnew' was not sent by the server!");
@@ -111,7 +110,7 @@ public class JPIPSocket extends HTTPSocket
 
 		return res;
 
-	};
+	}
 
 	/** Closes the JPIPSocket */
 	@SuppressWarnings("null")
@@ -164,7 +163,7 @@ public class JPIPSocket extends HTTPSocket
 		if (!_req.headerExists(HTTPHeaderKey.HOST.toString()))
 			_req.setHeader(HTTPHeaderKey.HOST.toString(), (getHost() + ":" + getPort()));
 		// Adds a necessary JPIP request field
-		if ((queryStr.indexOf("cid=") == -1) && (queryStr.indexOf("cclose") == -1) && jpipChannelID != null)
+		if ((!queryStr.contains("cid=")) && (!queryStr.contains("cclose")) && jpipChannelID != null)
 			queryStr += "&cid=" + jpipChannelID;
 
 		if (_req.getMethod() == Method.GET)
@@ -209,7 +208,7 @@ public class JPIPSocket extends HTTPSocket
 
 	private String getResponseHeadersAsString(HTTPResponse res)
 	{
-		StringBuffer result = new StringBuffer("Headers:");
+		StringBuilder result = new StringBuilder("Headers:");
 		if (res != null && res.getHeaders() != null)
 			for (String header : res.getHeaders())
 				result.append("\n" + header + ": " + res.getHeader(header));
@@ -254,28 +253,28 @@ public class JPIPSocket extends HTTPSocket
 			throw new IOException("Expected image/jpp-stream content!\n" + getResponseHeadersAsString(res));
 
 		String transferEncoding = res.getHeader("Transfer-Encoding") == null ? "" : res.getHeader("Transfer-Encoding").trim();
-		if (transferEncoding.equals("") || transferEncoding.equals("identity"))
+		switch (transferEncoding)
 		{
-			String contentLengthString = res.getHeader("Content-Length") == null ? "" : res.getHeader("Content-Length").trim();
-			try
-			{
-				int contentLength = Integer.parseInt(contentLengthString);
-				input = new FixedSizedInputStream(new BufferedInputStream(getInputStream(), 65536), contentLength);
-			}
-			catch (NumberFormatException _nfe)
-			{
-				throw new IOException("Invalid Content-Length header: " + contentLengthString + "\n"
-						+ getResponseHeadersAsString(res));
-			}
-		}
-		else if (transferEncoding.equals("chunked"))
-		{
-			input = new ChunkedInputStream(new BufferedInputStream(getInputStream(), 65536));
-		}
-		else
-		{
-			throw new IOException(
-					"Unsupported transfer encoding: " + transferEncoding + "\n" + getResponseHeadersAsString(res));
+			case "":
+			case "identity":
+				String contentLengthString = res.getHeader("Content-Length") == null ? "" : res.getHeader("Content-Length").trim();
+				try
+				{
+					int contentLength = Integer.parseInt(contentLengthString);
+					input = new FixedSizedInputStream(new BufferedInputStream(getInputStream(), 65536), contentLength);
+				}
+				catch (NumberFormatException _nfe)
+				{
+					throw new IOException("Invalid Content-Length header: " + contentLengthString + "\n"
+							+ getResponseHeadersAsString(res));
+				}
+				break;
+			case "chunked":
+				input = new ChunkedInputStream(new BufferedInputStream(getInputStream(), 65536));
+				break;
+			default:
+				throw new IOException(
+						"Unsupported transfer encoding: " + transferEncoding + "\n" + getResponseHeadersAsString(res));
 		}
 
 		replyTextTm = System.currentTimeMillis();
@@ -322,4 +321,4 @@ public class JPIPSocket extends HTTPSocket
 		return receivedData;
 	}
 
-};
+}

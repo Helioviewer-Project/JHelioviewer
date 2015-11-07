@@ -1,10 +1,5 @@
 package org.helioviewer.jhv.layers;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-
-import javax.annotation.Nullable;
-
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
@@ -13,10 +8,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Comparator;
+
 public class Layers
 {
-	private static ArrayList<LayerListener> layerListeners = new ArrayList<LayerListener>();
-	private static ArrayList<Layer> layers = new ArrayList<Layer>();
+	private static ArrayList<LayerListener> layerListeners = new ArrayList<>();
+	private static ArrayList<Layer> layers = new ArrayList<>();
 	private static int activeLayerIndex = -1;
 
 	private static final Comparator<Layer> COMPARATOR = new Comparator<Layer>()

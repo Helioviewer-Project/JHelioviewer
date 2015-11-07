@@ -1,5 +1,8 @@
 package org.helioviewer.jhv.plugins.hekplugin.cache;
 
+import org.helioviewer.jhv.plugins.hekplugin.Interval;
+import org.helioviewer.jhv.plugins.hekplugin.settings.HEKSettings;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -8,9 +11,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
-
-import org.helioviewer.jhv.plugins.hekplugin.Interval;
-import org.helioviewer.jhv.plugins.hekplugin.settings.HEKSettings;
 
 /**
  * This is the basic class to access the API. It does not deal with the
@@ -40,7 +40,7 @@ public class HEKStupidDownloader {
     /**
      * Store all requests so that they can be canceled later on
      */
-    private List<HEKRequest> downloadRequests = new ArrayList<HEKRequest>();
+    private List<HEKRequest> downloadRequests = new ArrayList<>();
 
     // the sole instance of this class
     private static final HEKStupidDownloader SINGLETON = new HEKStupidDownloader();
@@ -90,7 +90,7 @@ public class HEKStupidDownloader {
         });
 
         // clear all downloadRequests
-        downloadRequests = new ArrayList<HEKRequest>();
+        downloadRequests = new ArrayList<>();
 
         // update the treeview
         HEKCache.getSingletonInstance().getController().fireEventsChanged(HEKCache.getSingletonInstance().getController().getRootPath());// cacheModel.getFirstVisiblePath(path));

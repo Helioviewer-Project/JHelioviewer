@@ -1,12 +1,11 @@
 package org.helioviewer.jhv.viewmodel.metadata;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-
-import javax.annotation.Nullable;
-
 import org.helioviewer.jhv.base.Telemetry;
 import org.w3c.dom.Document;
+
+import javax.annotation.Nullable;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 public class MetaDataFactory
 {
@@ -34,8 +33,7 @@ public class MetaDataFactory
 			try
 			{
 			    Constructor<MetaData> constructor = c.getDeclaredConstructor(Document.class);
-				MetaData metaData = constructor.newInstance(new Object[] { _doc });
-				return metaData;
+				return constructor.newInstance(_doc);
 			}
             catch(NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
             {

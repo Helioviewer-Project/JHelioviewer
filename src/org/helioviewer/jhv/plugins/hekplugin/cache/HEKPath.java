@@ -29,7 +29,7 @@ public class HEKPath {
     /**
      * List of Subdirectories
      */
-    private List<String> path = new ArrayList<String>();
+    private List<String> path = new ArrayList<>();
 
     /**
      * Flag if this path directly exists in the cache, or if it is an
@@ -105,8 +105,9 @@ public class HEKPath {
      */
     public HEKPath(HEKCache hekCache, String[] path) {
         this.cache = hekCache;
-        for (int i = 0; i < path.length; i++) {
-            this.path.add(path[i]);
+        for (String aPath : path)
+        {
+            this.path.add(aPath);
         }
     }
 
@@ -279,7 +280,7 @@ public class HEKPath {
     }
 
     public Object[] getTreePath() {
-    	List<HEKPath> result = new ArrayList<HEKPath>();
+    	List<HEKPath> result = new ArrayList<>();
         getTreePath(result);
         return result.toArray();
     }

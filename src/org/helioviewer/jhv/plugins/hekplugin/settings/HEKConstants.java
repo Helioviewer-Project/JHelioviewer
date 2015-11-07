@@ -1,18 +1,17 @@
 package org.helioviewer.jhv.plugins.hekplugin.settings;
 
-import java.awt.Color;
+import org.helioviewer.jhv.base.Telemetry;
+import org.helioviewer.jhv.gui.IconBank;
+import org.helioviewer.jhv.plugins.hekplugin.HEKPlugin;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.AbstractMap;
 import java.util.HashMap;
-
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-
-import org.helioviewer.jhv.base.Telemetry;
-import org.helioviewer.jhv.gui.IconBank;
-import org.helioviewer.jhv.plugins.hekplugin.HEKPlugin;
 
 public class HEKConstants {
 
@@ -26,14 +25,14 @@ public class HEKConstants {
     private SimpleDateFormat hekDateFormat;
     private HashMap<String, String> acronymStrings;
 
-    private AbstractMap<String, ImageIcon> smallIcons = new HashMap<String, ImageIcon>();
-    private AbstractMap<String, BufferedImage> smallBufImgs = new HashMap<String, BufferedImage>();
-    private AbstractMap<String, BufferedImage> smallOverlayBufImgs = new HashMap<String, BufferedImage>();
+    private AbstractMap<String, ImageIcon> smallIcons = new HashMap<>();
+    private AbstractMap<String, BufferedImage> smallBufImgs = new HashMap<>();
+    private AbstractMap<String, BufferedImage> smallOverlayBufImgs = new HashMap<>();
 
-    private AbstractMap<String, ImageIcon> largeIcons = new HashMap<String, ImageIcon>();
-    private AbstractMap<String, BufferedImage> largeBufImgs = new HashMap<String, BufferedImage>();
-    private AbstractMap<String, BufferedImage> largeOverlayBufImgs = new HashMap<String, BufferedImage>();
-    private AbstractMap<String, Color> colors = new HashMap<String, Color>();
+    private AbstractMap<String, ImageIcon> largeIcons = new HashMap<>();
+    private AbstractMap<String, BufferedImage> largeBufImgs = new HashMap<>();
+    private AbstractMap<String, BufferedImage> largeOverlayBufImgs = new HashMap<>();
+    private AbstractMap<String, Color> colors = new HashMap<>();
 
     /**
      * Setup all other BufferedImages needed
@@ -60,7 +59,7 @@ public class HEKConstants {
 
         System.out.println("HEKConstants -> Setting up event acronyms...");
 
-        acronymStrings = new HashMap<String, String>();
+        acronymStrings = new HashMap<>();
 
         acronymStrings.put("AR", "Active Region");
         acronymStrings.put("CE", "CME");

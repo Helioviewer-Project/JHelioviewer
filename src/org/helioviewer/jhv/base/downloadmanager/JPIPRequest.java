@@ -1,24 +1,17 @@
 package org.helioviewer.jhv.base.downloadmanager;
 
-import java.awt.Rectangle;
+import kdu_jni.KduException;
+import kdu_jni.Kdu_cache;
+import org.helioviewer.jhv.base.Telemetry;
+import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPRequest.Method;
+import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.*;
+import org.helioviewer.jhv.viewmodel.metadata.UnsuitableMetaDataException;
+
+import javax.annotation.Nullable;
+import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-
-import javax.annotation.Nullable;
-
-import org.helioviewer.jhv.base.Telemetry;
-import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPRequest.Method;
-import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPConstants;
-import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPDataSegment;
-import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPQuery;
-import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPRequestField;
-import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPResponse;
-import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPSocket;
-import org.helioviewer.jhv.viewmodel.metadata.UnsuitableMetaDataException;
-
-import kdu_jni.KduException;
-import kdu_jni.Kdu_cache;
 
 public class JPIPRequest extends AbstractDownloadRequest
 {
@@ -108,17 +101,10 @@ public class JPIPRequest extends AbstractDownloadRequest
 	{
 		JPIPDataSegment data;
 		while ((data = jRes.removeJpipDataSegment()) != null && !data.isEOR)
-			try
-			{
-				_kduCache.Add_to_databin(data.classID.getKakaduClassID(),
-					data.codestreamID, data.binID, data.data, data.offset,
-					data.length, data.isFinal, true, false);
-			}
-			catch (KduException ex)
-			{
-				throw ex;
-			}
-		
+			_kduCache.Add_to_databin(data.classID.getKakaduClassID(),
+				data.codestreamID, data.binID, data.data, data.offset,
+				data.length, data.isFinal, true, false);
+
 		return jRes.isResponseComplete();
 	}
 

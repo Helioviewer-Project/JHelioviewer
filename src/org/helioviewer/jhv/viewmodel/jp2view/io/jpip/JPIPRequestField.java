@@ -8,11 +8,11 @@ public enum JPIPRequestField {
 
     private final String str;
 
-    private JPIPRequestField(final String _str) {
+    JPIPRequestField(final String _str) {
         str = _str;
     }
 
     public String toString() {
         return str;
     }
-};
+}

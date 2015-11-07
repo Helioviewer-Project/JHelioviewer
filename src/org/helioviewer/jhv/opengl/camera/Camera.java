@@ -7,17 +7,17 @@ import org.helioviewer.jhv.opengl.camera.animation.CameraAnimation;
 
 public interface Camera
 {
-	public Quaternion getRotationCurrent();
-	public Quaternion getRotationEnd();
-	public void setRotationCurrent(Quaternion rotation);
-	public void setRotationEnd(Quaternion rotation);
-    public Vector3d getTranslationCurrent();
-    public Vector3d getTranslationEnd();
-	public void setTranslationCurrent(Vector3d translation);
-	public void setTranslationEnd(Vector3d _translationEnd);
-	public Matrix4d getTransformation();
-	public void addCameraAnimation(CameraAnimation cameraAnimation);
-	public double getAspect();
-	public void repaint();
-	public void stopAllAnimations();
+	Quaternion getRotationCurrent();
+	Quaternion getRotationEnd();
+	void setRotationCurrent(Quaternion rotation);
+	void setRotationEnd(Quaternion rotation);
+    Vector3d getTranslationCurrent();
+    Vector3d getTranslationEnd();
+	void setTranslationCurrent(Vector3d translation);
+	void setTranslationEnd(Vector3d _translationEnd);
+	Matrix4d getTransformation();
+	void addCameraAnimation(CameraAnimation cameraAnimation);
+	double getAspect();
+	void repaint();
+	void stopAllAnimations();
 }

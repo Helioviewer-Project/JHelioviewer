@@ -64,4 +64,4 @@ public class JPIPDataSegment
 		res += "]";
 		return res;
 	}
-};
+}

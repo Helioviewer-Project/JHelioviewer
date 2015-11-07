@@ -52,10 +52,8 @@ class IntermediateLineData
 	 */
 	private void dequantizePredictionErrors(float _Q1, float _Q2, float _Q3)
 	{
-		for (int i = 0; i < channels.length; i++)
+		for (float[] current : channels)
 		{
-			float[] current = channels[i];
-
 			int j = 0;
 			for (; j < 5 && j < current.length; j++)
 			{

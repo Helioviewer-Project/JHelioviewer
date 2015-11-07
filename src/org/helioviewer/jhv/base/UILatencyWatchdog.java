@@ -1,14 +1,13 @@
 package org.helioviewer.jhv.base;
 
+import com.mindscapehq.raygun4java.core.RaygunClient;
+import com.mindscapehq.raygun4java.core.messages.RaygunIdentifier;
+
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.swing.SwingUtilities;
-
-import com.mindscapehq.raygun4java.core.RaygunClient;
-import com.mindscapehq.raygun4java.core.messages.RaygunIdentifier;
 
 public class UILatencyWatchdog
 {
@@ -73,7 +72,7 @@ public class UILatencyWatchdog
 							// this leads to better reporting since all
 							// exceptions will get grouped by raygun
 							
-							StringBuffer fullStackTrace = new StringBuffer();
+							StringBuilder fullStackTrace = new StringBuilder();
 							StackTraceElement[] awtStackTrace = awtDispatcher.getStackTrace();
 							List<StackTraceElement> limitedStackTrace = new ArrayList<>();
 							boolean jhvPartFound = false;
@@ -106,7 +105,7 @@ public class UILatencyWatchdog
 							{
 								RaygunClient client = new RaygunClient("QXtNXLEKWBfClhyteqov4w==");
 								client.SetVersion(Globals.VERSION);
-								Map<String, String> customData = new HashMap<String, String>();
+								Map<String, String> customData = new HashMap<>();
 								customData.put("Log", Log.GetLastFewLines(6));
 								customData.put(
 										"JVM",
@@ -120,7 +119,7 @@ public class UILatencyWatchdog
 
 								RaygunIdentifier user = new RaygunIdentifier(Settings.getString("UUID"));
 								client.SetUser(user);
-								ArrayList<String> tags = new ArrayList<String>();
+								ArrayList<String> tags = new ArrayList<>();
 								tags.add(Globals.RAYGUN_TAG);
 								tags.add("latency-watchdog");
 

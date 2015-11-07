@@ -54,7 +54,7 @@ public class Log
     public static String GetLastFewLines(int _numberOfLines)
     {
         String[] lines=log.toString().split("\\n");
-        StringBuffer res=new StringBuffer();
+        StringBuilder res=new StringBuilder();
         
         for(int i=Math.min(_numberOfLines, lines.length)-1;i>=0;i--)
             res.append(lines[lines.length-1-i]+"\n");

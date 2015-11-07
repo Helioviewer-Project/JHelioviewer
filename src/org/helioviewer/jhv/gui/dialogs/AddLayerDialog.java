@@ -1,31 +1,9 @@
 package org.helioviewer.jhv.gui.dialogs;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.KeyEvent;
-import java.time.LocalDateTime;
-
-import javax.annotation.Nullable;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSeparator;
-import javax.swing.JSpinner;
-import javax.swing.JSpinner.DefaultEditor;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
-import javax.swing.border.EmptyBorder;
-
+import com.jgoodies.forms.factories.FormFactory;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.RowSpec;
 import org.helioviewer.jhv.base.Observatories;
 import org.helioviewer.jhv.base.Observatories.Filter;
 import org.helioviewer.jhv.base.Observatories.Observatory;
@@ -36,10 +14,13 @@ import org.helioviewer.jhv.gui.dialogs.calender.DatePicker;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
 
-import com.jgoodies.forms.factories.FormFactory;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.RowSpec;
+import javax.annotation.Nullable;
+import javax.swing.*;
+import javax.swing.JSpinner.DefaultEditor;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
+import java.awt.event.*;
+import java.time.LocalDateTime;
 
 public class AddLayerDialog extends JDialog
 {
@@ -52,8 +33,7 @@ public class AddLayerDialog extends JDialog
 	private DatePicker datePickerStartDate;
 	private DatePicker datePickerEndDate;
 	private JSpinner cadence;
-	private JPanel layerPanel;
-	
+
 	//FIXME: remove minusYears for release, check data availability
 	private static LocalDateTime lastStart = LocalDateTime.now().minusYears(3).minusDays(1);
 	private static LocalDateTime lastEnd = LocalDateTime.now().minusYears(3); 
@@ -280,7 +260,7 @@ public class AddLayerDialog extends JDialog
 		//tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		contentPanel.setLayout(new BorderLayout());
 		//contentPanel.add(tabbedPane, BorderLayout.CENTER);
-		layerPanel = new JPanel();
+		JPanel layerPanel = new JPanel();
 		initLayerGui(layerPanel);
 		contentPanel.add(layerPanel, BorderLayout.CENTER);
 	}
@@ -349,7 +329,7 @@ public class AddLayerDialog extends JDialog
 		
 		
 		contentPanel.add(cadence, "4, 6");
-		cmbbxTimeSteps = new JComboBox<TimeSteps>(TimeSteps.values());
+		cmbbxTimeSteps = new JComboBox<>(TimeSteps.values());
 		cmbbxTimeSteps.setSelectedItem(TimeSteps.MIN);
 		
 		contentPanel.add(cmbbxTimeSteps, "6, 6, fill, default");
@@ -357,19 +337,19 @@ public class AddLayerDialog extends JDialog
 		contentPanel.add(separator, "2, 8, 5, 1");
 		JLabel lblObservatory = new JLabel("Observatory");
 		contentPanel.add(lblObservatory, "2, 10");
-		cmbbxObservatory = new JComboBox<Observatories.Observatory>();
+		cmbbxObservatory = new JComboBox<>();
 		contentPanel.add(cmbbxObservatory, "6, 10, fill, default");
 		lblFilter = new JLabel("Instrument");
 		contentPanel.add(lblFilter, "2, 12");
-		cmbbxFilter = new JComboBox<Observatories.Filter>();
+		cmbbxFilter = new JComboBox<>();
 		contentPanel.add(cmbbxFilter, "6, 12, fill, default");
 		lblFilter1 = new JLabel("");
 		contentPanel.add(lblFilter1, "2, 14");
-		cmbbxFilter1 = new JComboBox<Observatories.Filter>();
+		cmbbxFilter1 = new JComboBox<>();
 		contentPanel.add(cmbbxFilter1, "6, 14, fill, default");
 		lblFilter2 = new JLabel("");
 		contentPanel.add(lblFilter2, "2, 16");
-		cmbbxFilter2 = new JComboBox<Observatories.Filter>();
+		cmbbxFilter2 = new JComboBox<>();
 		contentPanel.add(cmbbxFilter2, "6, 16, fill, default");
 
 		JPanel buttonPane = new JPanel();
@@ -404,7 +384,8 @@ public class AddLayerDialog extends JDialog
 							datePickerEndDate.getDateTime(),
 							cadence, filter.getNickname());
 					Layers.addLayer(newLayer);
-					
+
+					//FIXME: camera rotation not correct for COR1 layer
 					newLayer.animateCameraToFacePlane = true;
 					
 					Settings.setInt("addlayer.last.sourceid", filter.sourceId);

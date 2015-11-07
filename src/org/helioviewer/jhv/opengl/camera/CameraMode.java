@@ -10,7 +10,7 @@ public class CameraMode
 
 	public enum MODE
 	{
-		MODE_2D, MODE_3D;
+		MODE_2D, MODE_3D
 	}
 
 	public static void set3DMode()

@@ -55,9 +55,7 @@ public class HEKCoordinateTransform
 
     public static boolean stonyIsVisible(SphericalCoord stony) {
         stony.phi = makePhi(stony.phi);
-        if (stony.phi < -90 || stony.phi > 90)
-            return false;
-        return true;
+        return !(stony.phi < -90 || stony.phi > 90);
     }
 
     public static double makePhi(double phi) {

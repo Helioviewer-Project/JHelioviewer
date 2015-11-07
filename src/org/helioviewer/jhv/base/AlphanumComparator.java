@@ -24,9 +24,8 @@ package org.helioviewer.jhv.base;
  *
  */
 
-import java.util.Comparator;
-
 import javax.annotation.Nullable;
+import java.util.Comparator;
 
 /**
  * This is an updated version with enhancements made by Daniel Migowski, Andre
@@ -47,7 +46,7 @@ import javax.annotation.Nullable;
  */
 public class AlphanumComparator implements Comparator<String>
 {
-	private final boolean isDigit(char ch)
+	private boolean isDigit(char ch)
 	{
 		return ch >= 48 && ch <= 57;
 	}
@@ -56,7 +55,7 @@ public class AlphanumComparator implements Comparator<String>
 	 * Length of string is passed in for improved efficiency (only need to
 	 * calculate it once)
 	 **/
-	private final String getChunk(String s, int slength, int marker)
+	private String getChunk(String s, int slength, int marker)
 	{
 		StringBuilder chunk = new StringBuilder();
 		char c = s.charAt(marker);
@@ -110,7 +109,7 @@ public class AlphanumComparator implements Comparator<String>
 			thatMarker += thatChunk.length();
 
 			// If both chunks contain numeric characters, sort them numerically
-			int result = 0;
+			int result;
 			if (isDigit(thisChunk.charAt(0)) && isDigit(thatChunk.charAt(0)))
 			{
 				// Simple chunk comparison by length.

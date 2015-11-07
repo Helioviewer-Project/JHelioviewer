@@ -5,10 +5,10 @@ import java.util.Hashtable;
 /**
  * A class that helps build a JPIP query string.
  */
-public class JPIPQuery implements Cloneable
+public class JPIPQuery
 {
 	/** The hashtable holding the jpip-request-fields */
-	private Hashtable<String, String> fields = new Hashtable<String, String>();
+	private Hashtable<String, String> fields = new Hashtable<>();
 
 	/** Default constructor. */
 	public JPIPQuery()
@@ -36,16 +36,9 @@ public class JPIPQuery implements Cloneable
 		fields.put(_key, _value);
 	}
 
-	public JPIPQuery clone()
-	{
-		JPIPQuery ret = new JPIPQuery();
-		ret.fields.putAll(this.fields);
-		return ret;
-	}
-
 	public String toString()
 	{
-		StringBuffer ret = new StringBuffer();
+		StringBuilder ret = new StringBuilder();
 		for (String field : fields.keySet())
 		{
 			if (ret.length() != 0)

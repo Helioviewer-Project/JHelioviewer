@@ -1,23 +1,22 @@
 package org.helioviewer.jhv.plugins.pfssplugin.data;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-
-import javax.annotation.Nullable;
-
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssSettings;
 
+import javax.annotation.Nullable;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+
 /**
  * Manages loading and accessing of FileDescriptor Objects
  */
 public class FileDescriptorManager
 {
-	private ArrayList<FileDescriptor> descriptors = new ArrayList<>();
+	private final ArrayList<FileDescriptor> descriptors = new ArrayList<>();
 	private @Nullable LocalDateTime firstDate;
 	private @Nullable LocalDateTime endDate;
 	private volatile int epoch = 0;
@@ -77,7 +76,7 @@ public class FileDescriptorManager
 				DateTimeFormatter yearFormatter = DateTimeFormatter.ofPattern("YYYY");
 				DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
-				ArrayList<HTTPRequest> httpRequests = new ArrayList<HTTPRequest>();
+				ArrayList<HTTPRequest> httpRequests = new ArrayList<>();
 				while (currentDate.isBefore(_to))
 				{
 					final String url = PfssSettings.SERVER_URL + currentDate.format(yearFormatter) + "/" + currentDate.format(monthFormatter) + "/list.txt";

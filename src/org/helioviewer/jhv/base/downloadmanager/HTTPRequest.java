@@ -1,15 +1,14 @@
 package org.helioviewer.jhv.base.downloadmanager;
 
+import com.google.common.io.ByteSource;
+import com.google.common.io.FileBackedOutputStream;
+
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-
-import javax.annotation.Nullable;
-
-import com.google.common.io.ByteSource;
-import com.google.common.io.FileBackedOutputStream;
 
 public class HTTPRequest extends AbstractDownloadRequest
 {
@@ -54,7 +53,7 @@ public class HTTPRequest extends AbstractDownloadRequest
 				try(FileBackedOutputStream byteArrayOutputStream = new FileBackedOutputStream(1024*1024*4,true))
 				{
 					byte[] buf = new byte[DEFAULT_BUFFER_SIZE];
-					int read = 0;
+					int read;
 					while ((read = inputStream.read(buf)) > 0)
 					{
 						byteArrayOutputStream.write(buf, 0, read);

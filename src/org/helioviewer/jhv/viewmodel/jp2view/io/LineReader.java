@@ -1,10 +1,9 @@
 package org.helioviewer.jhv.viewmodel.jp2view.io;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * 
@@ -26,7 +25,7 @@ public class LineReader
      */
     public static @Nullable String readLine(@Nonnull InputStream _is) throws IOException
     {
-        StringBuffer res = new StringBuffer(32);
+        StringBuilder res = new StringBuilder(32);
 
         int c=_is.read();
         if(c==-1)

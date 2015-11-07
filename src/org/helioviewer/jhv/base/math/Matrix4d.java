@@ -233,9 +233,9 @@ public class Matrix4d
 	public static Matrix4d createRotationMatrix(double angle, double _x, double _y, double _z)
 	{
 		Matrix4d r = new Matrix4d(IDENTITY);
-		double RadAng = (double) angle;
-		double ca = (double) Math.cos(RadAng);
-		double sa = (double) Math.sin(RadAng);
+		double RadAng = angle;
+		double ca = Math.cos(RadAng);
+		double sa = Math.sin(RadAng);
 
 		if (_x == 1 && _y == 0 && _z == 0) // about x-axis
 		{
@@ -281,7 +281,7 @@ public class Matrix4d
 			double z = _z;
 			if (len > 1.0001 || len < 0.9999 && len != 0)
 			{
-				len = 1 / (double) Math.sqrt(len);
+				len = 1 / Math.sqrt(len);
 				x *= len;
 				y *= len;
 				z *= len;
@@ -311,7 +311,7 @@ public class Matrix4d
 
 	public static Matrix4d createPerspectiveMatrix(double fov, double aspect, double n, double f)
 	{
-		double t = (double) (Math.tan(Math.toRadians(fov * 0.5)) * n);
+		double t = Math.tan(Math.toRadians(fov * 0.5)) * n;
 		double b = -t;
 		double r = t * aspect;
 		double l = -r;
@@ -325,7 +325,7 @@ public class Matrix4d
 
 	public String toString()
 	{
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		String format = "%01.02f, %01.02f, %01.02f, %01.02f";
 		sb.append(String.format(format, m[0], m[4], m[8], m[12]) + ", \n");
 		sb.append(String.format(format, m[1], m[5], m[9], m[13]) + ", \n");

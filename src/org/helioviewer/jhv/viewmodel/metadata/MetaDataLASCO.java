@@ -14,8 +14,8 @@ class MetaDataLASCO extends MetaData
 		if (!"LASCO".equalsIgnoreCase(instrument) || detector==null)
 			throw new UnsuitableMetaDataException("invalid instrument: " + instrument + "/" + detector);
 		
-		double innerDefault=-1;
-		double outerDefault=-1;
+		double innerDefault;
+		double outerDefault;
 		
 		switch(detector.toUpperCase())
 		{

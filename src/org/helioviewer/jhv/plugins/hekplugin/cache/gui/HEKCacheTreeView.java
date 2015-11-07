@@ -1,40 +1,25 @@
 package org.helioviewer.jhv.plugins.hekplugin.cache.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Rectangle;
+import org.helioviewer.jhv.base.Telemetry;
+import org.helioviewer.jhv.gui.IconBank;
+import org.helioviewer.jhv.gui.components.TristateCheckBox;
+import org.helioviewer.jhv.plugins.hekplugin.Interval;
+import org.helioviewer.jhv.plugins.hekplugin.cache.*;
+import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
+
+import javax.swing.*;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-
-import javax.swing.ImageIcon;
-import javax.swing.JPanel;
-import javax.swing.JTree;
-import javax.swing.UIManager;
-import javax.swing.event.TreeModelEvent;
-import javax.swing.event.TreeModelListener;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
-
-import org.helioviewer.jhv.base.Telemetry;
-import org.helioviewer.jhv.gui.IconBank;
-import org.helioviewer.jhv.gui.components.TristateCheckBox;
-import org.helioviewer.jhv.plugins.hekplugin.Interval;
-import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;
-import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheController;
-import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheExpansionModel;
-import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheLoadingModel;
-import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheModel;
-import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheSelectionModel;
-import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheTreeModel;
-import org.helioviewer.jhv.plugins.hekplugin.cache.HEKPath;
-import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
 
 /**
  * A Tree View visualizing the data provided by a HEKCacheModel
@@ -52,8 +37,6 @@ import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
 public class HEKCacheTreeView extends JTree implements TreeModelListener {
     private HEKCacheSelectionModel selectionModel;
     private HEKCacheExpansionModel expansionModel;
-    @SuppressWarnings("unused")
-    private HEKCacheTreeModel treeModel;
     private HEKCacheLoadingModel loadingModel;
     private HEKCacheModel cacheModel;
     private HEKCacheController cacheController;
@@ -96,7 +79,7 @@ public class HEKCacheTreeView extends JTree implements TreeModelListener {
      */
     public void setTreeModel(HEKCacheTreeModel t) {
         // the order of these instructions is important!
-        this.treeModel = t;
+        HEKCacheTreeModel treeModel = t;
         super.setModel(t);
         // important, since we care about the expansion state by our self
         super.treeModelListener = this;
@@ -223,7 +206,7 @@ public class HEKCacheTreeView extends JTree implements TreeModelListener {
 
                     if (cacheModel != null && loading != HEKCacheLoadingModel.PATH_NOTHING) {
                         BufferedImage loadingImage;
-                        String overlayMode = "No Overlay";
+                        String overlayMode;
 
                         if ((loading & HEKCacheLoadingModel.PATH_LOADING) != 0) {
                             loadingImage = HEKConstants.getSingletonInstance().getOverlayBufferedImage("LOADING", false);
@@ -254,7 +237,7 @@ public class HEKCacheTreeView extends JTree implements TreeModelListener {
 
                     if (loading != HEKCacheLoadingModel.PATH_NOTHING) {
                         BufferedImage loadingImage;
-                        String overlayMode = "No Overlay";
+                        String overlayMode;
 
                         if ((loading & HEKCacheLoadingModel.PATH_LOADING) != 0) {
                             loadingImage = HEKConstants.getSingletonInstance().getOverlayBufferedImage("LOADING", false);
@@ -309,8 +292,7 @@ public class HEKCacheTreeView extends JTree implements TreeModelListener {
             Object[] p = path.getPath();
 
             if (p != null & p.length > 0 & p[p.length - 1] instanceof HEKPath) {
-                HEKPath e = (HEKPath) p[p.length - 1];
-                return e;
+                return (HEKPath) p[p.length - 1];
             }
 
             return null;

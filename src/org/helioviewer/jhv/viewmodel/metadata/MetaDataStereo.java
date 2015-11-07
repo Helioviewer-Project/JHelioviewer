@@ -25,8 +25,8 @@ class MetaDataStereo extends MetaData
 			center = center.scaled(1/cdelt1, 1/cdelt2);
 		}
 		
-		double innerDefault = -1;
-		double outerDefault = -1;
+		double innerDefault;
+		double outerDefault;
 		if ("STEREO_A".equalsIgnoreCase(observatory) && "COR1".equalsIgnoreCase(detector))
 		{
 			innerDefault = 1.36 * Constants.SUN_RADIUS;

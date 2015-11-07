@@ -16,7 +16,7 @@ public interface IntervalComparison<TimeFormat extends Comparable<TimeFormat>> e
      * @param other
      * @return true if intervals overlap
      */
-    public boolean overlaps(Interval<TimeFormat> other);
+    boolean overlaps(Interval<TimeFormat> other);
 
     /**
      * Check whether both intervals overlap.
@@ -29,7 +29,7 @@ public interface IntervalComparison<TimeFormat extends Comparable<TimeFormat>> e
      * @param other
      * @return true if intervals overlap
      */
-    public boolean overlapsInclusive(Interval<TimeFormat> other);
+    boolean overlapsInclusive(Interval<TimeFormat> other);
 
     /**
      * Check whether the given interval is contained in current interval.
@@ -43,7 +43,7 @@ public interface IntervalComparison<TimeFormat extends Comparable<TimeFormat>> e
      * @param other
      * @return true if the given interval is contained in the current interval
      */
-    public boolean contains(Interval<TimeFormat> other);
+    boolean contains(Interval<TimeFormat> other);
 
     /**
      * Check whether the given interval is contained in current interval.
@@ -57,7 +57,7 @@ public interface IntervalComparison<TimeFormat extends Comparable<TimeFormat>> e
      * @param other
      * @return true if the given interval is contained in the current interval
      */
-    public boolean containsFully(Interval<TimeFormat> other);
+    boolean containsFully(Interval<TimeFormat> other);
 
     /**
      * Check whether the given interval is contained in current interval.
@@ -71,7 +71,7 @@ public interface IntervalComparison<TimeFormat extends Comparable<TimeFormat>> e
      * @param other
      * @return true if the given interval is contained in the current interval
      */
-    public boolean containsInclusive(Interval<TimeFormat> other);
+    boolean containsInclusive(Interval<TimeFormat> other);
 
     /**
      * Check whether the given point is contained in current interval.
@@ -84,7 +84,7 @@ public interface IntervalComparison<TimeFormat extends Comparable<TimeFormat>> e
      * @param other
      * @return true if the given interval is contained in the current interval
      */
-    public boolean containsPoint(TimeFormat other);
+    boolean containsPoint(TimeFormat other);
 
     /**
      * Check whether the given point is contained in the current interval.
@@ -97,7 +97,7 @@ public interface IntervalComparison<TimeFormat extends Comparable<TimeFormat>> e
      * @param other
      * @return true if the given point is contained in the current interval
      */
-    public boolean containsPointFully(TimeFormat other);
+    boolean containsPointFully(TimeFormat other);
 
     /**
      * Check whether the given point is contained in current interval.
@@ -110,5 +110,5 @@ public interface IntervalComparison<TimeFormat extends Comparable<TimeFormat>> e
      * @param other
      * @return true if the given point is contained in the current interval
      */
-    public boolean containsPointInclusive(TimeFormat other);
+    boolean containsPointInclusive(TimeFormat other);
 }

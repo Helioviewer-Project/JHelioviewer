@@ -7,7 +7,7 @@ import java.util.List;
 public class HEKCacheExpansionModel {
     HEKCache cache;
     HEKCacheModel cacheModel;
-    private HashMap<HEKPath, Boolean> expansionState = new HashMap<HEKPath, Boolean>();
+    private HashMap<HEKPath, Boolean> expansionState = new HashMap<>();
 
     public HEKCacheExpansionModel(HEKCache cache) {
         this.cache = cache;
@@ -18,7 +18,7 @@ public class HEKCacheExpansionModel {
 
         // td Malte Nuhn - Implement the CacheModelLock
 
-    	List<HEKPath> result = new ArrayList<HEKPath>();
+    	List<HEKPath> result = new ArrayList<>();
 
         result.add(new HEKPath(this.cache));
 

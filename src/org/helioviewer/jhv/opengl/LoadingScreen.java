@@ -1,15 +1,14 @@
 package org.helioviewer.jhv.opengl;
 
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-
-import org.helioviewer.jhv.gui.IconBank;
-import org.helioviewer.jhv.gui.IconBank.JHVIcon;
-
 import com.jogamp.common.nio.Buffers;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLContext;
+import org.helioviewer.jhv.gui.IconBank;
+import org.helioviewer.jhv.gui.IconBank.JHVIcon;
+
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 public class LoadingScreen
 {
@@ -26,11 +25,10 @@ public class LoadingScreen
 	private static int vertices;
 	private static int indices;
 	private static int color;
-	private static float CIRCLE_COLOR = 192 / 255f;
+	private static final float CIRCLE_COLOR = 192 / 255f;
 	private static int indicesSize;
 	private static Texture openGLHelper;
-	private static long time;
-	
+
 	static
 	{
 		openGLHelper = new Texture();
@@ -60,7 +58,7 @@ public class LoadingScreen
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_LINEAR);
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_LINEAR);
 		// gl.glColor3f(1, 0, 0);
-		time = System.currentTimeMillis();
+		long time = System.currentTimeMillis();
 		long counter = (time / 600) % 4;
 		gl.glBegin(GL2.GL_QUADS);
 		gl.glTexCoord2f(0, counter * 0.25f);

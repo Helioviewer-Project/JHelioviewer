@@ -1,42 +1,6 @@
 package org.helioviewer.jhv.plugins.hekplugin.cache.gui;
 
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
-
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JEditorPane;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
-
 import org.helioviewer.jhv.base.Globals;
-import org.helioviewer.jhv.gui.ButtonCreator;
 import org.helioviewer.jhv.gui.Clipboard;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
@@ -44,6 +8,15 @@ import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKEvent;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKEventTableModel;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
+
+import javax.swing.*;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
+import java.awt.*;
+import java.awt.event.*;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 /**
  * Popup displaying informations about a HEK event.
@@ -102,7 +75,14 @@ public class HEKEventInformationDialog extends JDialog implements ActionListener
     /**
      * Button for showing more/less information about the event
      */
-	private JButton moreButton = ButtonCreator.createTextButton(IconBank.getIcon(JHVIcon.SHOW_MORE), "More", "More Event Information", this);
+	private JButton moreButton;
+
+    {
+        JButton newButton = new JButton("More", IconBank.getIcon(JHVIcon.SHOW_MORE));
+        newButton.setToolTipText("More Event Information");
+        newButton.addActionListener(this);
+        moreButton = newButton;
+    }
 
     /**
      * Table showing all event fields
@@ -441,7 +421,7 @@ public class HEKEventInformationDialog extends JDialog implements ActionListener
         }
 
         // build a short summary of all containing links to websites
-        StringBuffer htmlLinks = new StringBuffer("<html>");
+        StringBuilder htmlLinks = new StringBuilder("<html>");
 
         Font font = hyperLinkPanel.getFont();
         htmlLinks.append("<font style=\"font-family: '" + font.getFamily() + "'; font-size: " + font.getSize() + "px;\">");
@@ -499,7 +479,7 @@ public class HEKEventInformationDialog extends JDialog implements ActionListener
             boolean saveValue = (e.getSource() == copyValueToClipboardMenuItem || e.getSource() == copyBothToClipboardMenuItem);
 
             // build a list of selected strings
-            StringBuffer cellStringBuffer = new StringBuffer();
+            StringBuilder cellStringBuffer = new StringBuilder();
 
             for (int currentRow : infoTable.getSelectedRows()) {
                 if (saveName) {

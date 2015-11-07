@@ -1,22 +1,20 @@
 package org.helioviewer.jhv.plugins.pfssplugin.data.decompression;
 
+import com.jogamp.common.nio.Buffers;
+import nom.tam.fits.BasicHDU;
+import nom.tam.fits.BinaryTableHDU;
+import nom.tam.fits.Fits;
+import nom.tam.fits.FitsException;
+import org.helioviewer.jhv.base.Telemetry;
+import org.helioviewer.jhv.plugins.pfssplugin.data.PfssCompressed;
+import org.helioviewer.jhv.plugins.pfssplugin.data.PfssDecompressed;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
-
-import org.helioviewer.jhv.base.Telemetry;
-import org.helioviewer.jhv.plugins.pfssplugin.data.PfssCompressed;
-import org.helioviewer.jhv.plugins.pfssplugin.data.PfssDecompressed;
-
-import com.jogamp.common.nio.Buffers;
-
-import nom.tam.fits.BasicHDU;
-import nom.tam.fits.BinaryTableHDU;
-import nom.tam.fits.Fits;
-import nom.tam.fits.FitsException;
 
 /**
  * Reads in Memory PfssData and writes PfssFrames. Supports running in its own
@@ -61,7 +59,7 @@ public class PfssDecompressor
 			for (IntermediateLineData l : lines)
 				l.decodePrediction(Q1, Q2, Q3);
 
-			ArrayList<DecompressedLine> decompressedLines = new ArrayList<DecompressedLine>(lines.length);
+			ArrayList<DecompressedLine> decompressedLines = new ArrayList<>(lines.length);
 			for (IntermediateLineData line : lines)
 				decompressedLines.add(new DecompressedLine(line));
 
@@ -118,9 +116,8 @@ public class PfssDecompressor
 		IntBuffer indicesOutsideToSun = Buffers.newDirectIntBuffer(otsSize * 2);
 
 		int vertexIndex = 0;
-		for (int i = 0; i < lines.size(); i++)
+		for (DecompressedLine line : lines)
 		{
-			DecompressedLine line = lines.get(i);
 			IntBuffer indexBuffer = getLineType(line.getType(), indicesSunToOutside, indicesSunToSun, indicesOutsideToSun);
 
 			int pointIndex = 0;

@@ -1,33 +1,9 @@
 package org.helioviewer.jhv.gui.dialogs;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.text.NumberFormat;
-
-import javax.annotation.Nullable;
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JFormattedTextField;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
-import javax.swing.text.NumberFormatter;
-
+import com.jgoodies.forms.factories.FormFactory;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.RowSpec;
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.Settings;
 import org.helioviewer.jhv.base.Telemetry;
@@ -35,10 +11,17 @@ import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MainFrame;
 
-import com.jgoodies.forms.factories.FormFactory;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.RowSpec;
+import javax.annotation.Nullable;
+import javax.swing.*;
+import javax.swing.text.NumberFormatter;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.text.NumberFormat;
 
 /**
  * Dialog that allows the user to change default preferences and settings.
@@ -49,9 +32,7 @@ public class PreferencesDialog extends JDialog
 
 	private JRadioButton loadDefaultMovieOnStartUp;
 	private JRadioButton doNothingOnStartUp;
-	private JPanel paramsPanel;
 	private JTextField dateFormatField;
-	private JButton dateFormatInfo;
 
 	private ScreenshotExportPanel screenshotExportPanel;
 	private MovieExportPanel movieExportPanel;
@@ -262,7 +243,7 @@ public class PreferencesDialog extends JDialog
 	 */
 	private JPanel createParametersPanel()
 	{
-		paramsPanel = new JPanel();
+		JPanel paramsPanel = new JPanel();
 
 		paramsPanel.setBorder(BorderFactory.createTitledBorder(" Configuration "));
 		paramsPanel.setLayout(new GridLayout(0, 1));
@@ -289,7 +270,7 @@ public class PreferencesDialog extends JDialog
 		row2.add(dateFormatField);
 		Icon infoIcon = IconBank.getIcon(JHVIcon.INFO);
 
-		dateFormatInfo = new JButton(infoIcon);
+		JButton dateFormatInfo = new JButton(infoIcon);
 		dateFormatInfo.setBorder(BorderFactory.createEtchedBorder());
 		dateFormatInfo.setPreferredSize(new Dimension(infoIcon.getIconWidth() + 5, 23));
 		dateFormatInfo.setToolTipText("Show possible date format information");
@@ -362,7 +343,7 @@ public class PreferencesDialog extends JDialog
 				this.add(lblAspectRation, "2, 4, right, default");
 			}
 			{
-				movieAspectRatioSelection = new JComboBox<AspectRatio>(
+				movieAspectRatioSelection = new JComboBox<>(
 						MOVIE_ASPECT_RATIO_PRESETS);
 				this.add(movieAspectRatioSelection, "4, 4, left, default");
 				movieAspectRatioSelection.addItemListener(new ItemListener() {
@@ -577,7 +558,7 @@ public class PreferencesDialog extends JDialog
 				this.add(lblAspectRation, "2, 4, right, default");
 			}
 			{
-				screenshotAspectRatioSelection = new JComboBox<AspectRatio>(
+				screenshotAspectRatioSelection = new JComboBox<>(
 						IMAGE_ASPECT_RATIO_PRESETS);
 				this.add(screenshotAspectRatioSelection, "4, 4, left, default");
 				screenshotAspectRatioSelection

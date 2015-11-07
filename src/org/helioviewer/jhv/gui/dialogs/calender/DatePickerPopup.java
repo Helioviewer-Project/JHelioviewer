@@ -1,40 +1,18 @@
 package org.helioviewer.jhv.gui.dialogs.calender;
 
-import java.awt.AWTEvent;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FontMetrics;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.Toolkit;
-import java.awt.event.AWTEventListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import javax.annotation.Nullable;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.*;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.Locale;
-
-import javax.annotation.Nullable;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSeparator;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
 
 class DatePickerPopup extends JDialog
 {
@@ -44,7 +22,6 @@ class DatePickerPopup extends JDialog
 	private DatePicker newDatePicker;
 	private String[] columnNames;
 
-	private JPanel controlPanel;
 	private JLabel lblMonth, lblYear;
 	private JTable table;
 
@@ -117,7 +94,7 @@ class DatePickerPopup extends JDialog
 
 	private void initControlPanel()
 	{
-		controlPanel = new JPanel();
+		JPanel controlPanel = new JPanel();
 		controlPanel.setBackground(Color.WHITE);
 		controlPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		add(controlPanel, BorderLayout.NORTH);

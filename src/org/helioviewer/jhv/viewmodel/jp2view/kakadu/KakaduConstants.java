@@ -15,4 +15,4 @@ public final class KakaduConstants {
     /** Kakadu constant */
     public static final int KDU_UNDEFINED_DATABIN = 5;
 
-};
+}

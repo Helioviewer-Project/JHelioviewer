@@ -1,19 +1,14 @@
 package org.helioviewer.jhv.layers;
 
-import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.LinkedHashMap;
-
-import javax.imageio.ImageIO;
-
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLContext;
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.opengl.Texture;
 
-import com.jogamp.opengl.GL2;
-import com.jogamp.opengl.GLContext;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 public class LUT
 {
@@ -68,22 +63,16 @@ public class LUT
 		}
 	}
 	
-	private static LinkedHashMap<String, Integer> lutMap;
-	private static int nextAvaibleLut = 0;
-	private static Texture openGLHelper;
+	private static final Texture tex = new Texture();
 	
 	static
 	{
-		lutMap = new LinkedHashMap<String, Integer>();
-		openGLHelper = new Texture();
-		loadLutFromFile("/UltimateLookupTable.txt");      
-		
 		try
 		{
 			BufferedImage bufferedImage = ImageIO.read(MainPanel.class.getResourceAsStream("/UltimateLookupTable.png"));
-			openGLHelper.upload(bufferedImage, 256, 256);
+			tex.upload(bufferedImage, 256, 256);
 			GLContext.getCurrentGL().glEnable(GL2.GL_TEXTURE_2D);
-			GLContext.getCurrentGL().glBindTexture(GL2.GL_TEXTURE_2D, openGLHelper.openGLTextureId);
+			GLContext.getCurrentGL().glBindTexture(GL2.GL_TEXTURE_2D, tex.openGLTextureId);
 			GLContext.getCurrentGL().getGL2().glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_NEAREST);
 			GLContext.getCurrentGL().getGL2().glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_NEAREST);
 			GLContext.getCurrentGL().glBindTexture(GL2.GL_TEXTURE_2D, 0);
@@ -95,22 +84,8 @@ public class LUT
 		}
 	}	
 	
-	private static void loadLutFromFile(String lutTxtName)
-	{
-		try(BufferedReader br=new BufferedReader(new InputStreamReader(MainPanel.class.getResourceAsStream(lutTxtName),"UTF-8")))
-		{
-		    String line = null;
-			while ((line = br.readLine()) != null)
-				lutMap.put(line, nextAvaibleLut++);
-		}
-		catch (Exception e)
-		{
-			Telemetry.trackException(e);
-		}
-	}
-	
 	public static int getTextureId()
 	{
-		return openGLHelper.openGLTextureId;
+		return tex.openGLTextureId;
 	}	
 }

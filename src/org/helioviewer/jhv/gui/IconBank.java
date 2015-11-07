@@ -1,16 +1,12 @@
 package org.helioviewer.jhv.gui;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
+import javax.annotation.Nullable;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
 import java.net.URL;
-
-import javax.annotation.Nullable;
-import javax.swing.ImageIcon;
 
 /**
  * This class provides access to all images, icons and cursors which are used by
@@ -21,7 +17,7 @@ public class IconBank
     /**
      * The enum has all the icons, you supply these enums to the getIcon method.
      */
-    public static enum JHVIcon
+    public enum JHVIcon
     {
         // The formatter will not merge together multiple lines, if at least one
         // empty line is inserted in between:
@@ -139,7 +135,7 @@ public class IconBank
         {
             filename = _filename;
         }
-    };
+    }
 
     /** The location of the image files relative to this folder. */
     private static final String RESOURCE_PATH = "/images/";

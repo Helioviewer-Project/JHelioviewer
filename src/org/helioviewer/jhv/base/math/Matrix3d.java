@@ -1,5 +1,6 @@
 package org.helioviewer.jhv.base.math;
 
+//FIXME: make immutable
 class Matrix3d {
     public double[] m = new double[9];/*
                                         * / 0 3 6 \ | 1 4 7 | \ 2 5 8 /
@@ -50,12 +51,12 @@ class Matrix3d {
     }
 
     // -----------------------------------------------------------------------------
-    public Vector3d multiply(Vector3d v) {
-        Vector3d vec = new Vector3d(
+    public Vector3d multiply(Vector3d v)
+    {
+        return new Vector3d(
                 m[0] * v.x + m[3] * v.y + m[6] * v.z,
                 m[1] * v.x + m[4] * v.y + m[7] * v.z,
                 m[2] * v.x + m[5] * v.y + m[8] * v.z);
-        return vec;
     }
 
     public Matrix3d multiply(double f) {
@@ -83,10 +84,10 @@ class Matrix3d {
     }
 
     public Matrix3d rotation(double degAng, double axisx, double axisy, double axisz) {
-        double radAng = degAng * (double) Math.PI / 180;
+        double radAng = degAng * Math.PI / 180;
 
-        double ca = (double) Math.cos(radAng);
-        double sa = (double) Math.sin(radAng);
+        double ca = Math.cos(radAng);
+        double sa = Math.sin(radAng);
 
         if (axisx == 1 && axisy == 0 && axisz == 0) {
             m[0] = 1;
@@ -126,7 +127,7 @@ class Matrix3d {
             z = axisz;
 
             if ((l > 1.0001f || l < 0.9999f) && l != 0) {
-                l = 1f / (double) Math.sqrt(l);
+                l = 1f / Math.sqrt(l);
                 x *= l;
                 y *= l;
                 z *= l;

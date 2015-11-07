@@ -82,11 +82,9 @@ public class HEKEventTableModel extends AbstractTableModel {
         return false;
     }
 
-    /**
-     * Cell values can NOT be changed
-     */
-    public void setValueAt(Object value, int row, int col) {
-        return;
+    public void setValueAt(Object value, int row, int col)
+    {
+        //Cell values can NOT be changed
     }
 
 }

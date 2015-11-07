@@ -1,11 +1,11 @@
 package org.helioviewer.jhv.plugins.hekplugin.cache;
 
+import org.helioviewer.jhv.plugins.hekplugin.Interval;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
-
-import org.helioviewer.jhv.plugins.hekplugin.Interval;
 
 public class HEKCacheLoadingModel {
 
@@ -16,7 +16,7 @@ public class HEKCacheLoadingModel {
     public final static int PATH_QUEUED = 1;
     public final static int PATH_NOTHING = 0;
 
-    private HashMap<HEKPath, Integer> loadingState = new HashMap<HEKPath, Integer>();
+    private HashMap<HEKPath, Integer> loadingState = new HashMap<>();
 
     public HEKCacheLoadingModel(HEKCache cache) {
         this.cache = cache;
@@ -62,7 +62,7 @@ public class HEKCacheLoadingModel {
 
     public HashMap<HEKPath, List<Interval<Date>>> filterState(HashMap<HEKPath, List<Interval<Date>>> needed, int state) {
 
-        HashMap<HEKPath, List<Interval<Date>>> result = new HashMap<HEKPath, List<Interval<Date>>>();
+        HashMap<HEKPath, List<Interval<Date>>> result = new HashMap<>();
 
         for (Entry<HEKPath,List<Interval<Date>>> e : needed.entrySet()) {
             if (getState(e.getKey(), false) == state) {

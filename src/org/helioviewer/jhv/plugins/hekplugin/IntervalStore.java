@@ -1,12 +1,7 @@
 package org.helioviewer.jhv.plugins.hekplugin;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 
 /**
  * Relationship: Interval <--> Items during that Interval
@@ -17,7 +12,7 @@ public class IntervalStore<TimeFormat extends Comparable<TimeFormat>, ItemFormat
     /**
      * The interval represents the Interval which returned the data
      */
-    private HashMap<Interval<TimeFormat>, IntervalContainer<TimeFormat, ItemFormat>> data = new HashMap<Interval<TimeFormat>, IntervalContainer<TimeFormat, ItemFormat>>();
+    private HashMap<Interval<TimeFormat>, IntervalContainer<TimeFormat, ItemFormat>> data = new HashMap<>();
 
     /**
      * Empty Constructor
@@ -28,7 +23,7 @@ public class IntervalStore<TimeFormat extends Comparable<TimeFormat>, ItemFormat
 
     public IntervalStore(Interval<TimeFormat> interval)
     {
-        data.put(interval, new IntervalContainer<TimeFormat, ItemFormat>());
+        data.put(interval, new IntervalContainer<TimeFormat,ItemFormat>());
     }
 
     /**
@@ -93,22 +88,24 @@ public class IntervalStore<TimeFormat extends Comparable<TimeFormat>, ItemFormat
 
         // loop to make sure that all events are registered to all possible
         // buckets
-        Iterator<Interval<TimeFormat>> iter = this.data.keySet().iterator();
 
-        while (iter.hasNext()) {
+        for (Interval<TimeFormat> curInterval : this.data.keySet())
+        {
 
-            Interval<TimeFormat> curInterval = iter.next();
             IntervalContainer<TimeFormat, ItemFormat> curContainer = this.data.get(curInterval);
 
             // this is currently not the interval we just created
-            if (!curInterval.equals(newInterval)) {
+            if (!curInterval.equals(newInterval))
+            {
 
                 // loop over all items
 
-                for (ItemFormat curItem : curContainer.getItems()) {
+                for (ItemFormat curItem : curContainer.getItems())
+                {
 
                     // if it overlaps the newInterval, add the item there, too
-                    if (curItem.overlaps(newInterval) && !newIntervalContainer.getItems().contains(curItem)) {
+                    if (curItem.overlaps(newInterval) && !newIntervalContainer.getItems().contains(curItem))
+                    {
 
                         newIntervalContainer.getItems().add(curItem);
 
@@ -130,12 +127,12 @@ public class IntervalStore<TimeFormat extends Comparable<TimeFormat>, ItemFormat
      * @return list of overlapping intervals
      */
     public List<Interval<TimeFormat>> getOverlappingIntervals(Interval<TimeFormat> interval) {
-    	ArrayList<Interval<TimeFormat>> result = new ArrayList<Interval<TimeFormat>>();
+    	ArrayList<Interval<TimeFormat>> result = new ArrayList<>();
 
-        Iterator<Interval<TimeFormat>> iter = this.data.keySet().iterator();
-        while (iter.hasNext()) {
-            Interval<TimeFormat> key = iter.next();
-            if (key.overlaps(interval) || key.equals(interval)) {
+        for (Interval<TimeFormat> key : this.data.keySet())
+        {
+            if (key.overlaps(interval) || key.equals(interval))
+            {
                 result.add(key);
             }
         }
@@ -150,12 +147,12 @@ public class IntervalStore<TimeFormat extends Comparable<TimeFormat>, ItemFormat
      * @return list of overlapping intervals
      */
     public List<Interval<TimeFormat>> getCoveringIntervals(Interval<TimeFormat> interval) {
-        ArrayList<Interval<TimeFormat>> result = new ArrayList<Interval<TimeFormat>>();
+        ArrayList<Interval<TimeFormat>> result = new ArrayList<>();
 
-        Iterator<Interval<TimeFormat>> iter = this.data.keySet().iterator();
-        while (iter.hasNext()) {
-            Interval<TimeFormat> key = iter.next();
-            if (key.containsInclusive(interval) || key.equals(interval)) {
+        for (Interval<TimeFormat> key : this.data.keySet())
+        {
+            if (key.containsInclusive(interval) || key.equals(interval))
+            {
                 result.add(key);
             }
         }
@@ -173,18 +170,18 @@ public class IntervalStore<TimeFormat extends Comparable<TimeFormat>, ItemFormat
     public List<Interval<TimeFormat>> needed(Interval<TimeFormat> interval) {
 
         // linked list needed
-        List<Interval<TimeFormat>> result = new ArrayList<Interval<TimeFormat>>();
+        List<Interval<TimeFormat>> result = new ArrayList<>();
 
         result.add(interval);
 
         // loop over the intervals in this cache
-        Iterator<Interval<TimeFormat>> storeIntervalsIterator = this.data.keySet().iterator();
-        while (storeIntervalsIterator.hasNext()) {
-            Interval<TimeFormat> curStoreInterval = storeIntervalsIterator.next();
+        for (Interval<TimeFormat> curStoreInterval : this.data.keySet())
+        {
             IntervalContainer<TimeFormat, ItemFormat> curStoreContainer = this.data.get(curStoreInterval);
 
             // partially downloaded containers do not count
-            if (curStoreContainer.isPartial()) {
+            if (curStoreContainer.isPartial())
+            {
                 continue;
             }
 
@@ -196,16 +193,19 @@ public class IntervalStore<TimeFormat extends Comparable<TimeFormat>, ItemFormat
             // iterate over the list -
             ListIterator<Interval<TimeFormat>> resultIntervalsIterator = result.listIterator();
 
-            while (resultIntervalsIterator.hasNext()) {
+            while (resultIntervalsIterator.hasNext())
+            {
                 Interval<TimeFormat> curResultInterval = resultIntervalsIterator.next();
 
                 // replace currently stored (overlapping) result interval by an
                 // excluded one
                 // we only remove those intervals that have already been loaded
-                if (curStoreInterval.overlaps(curResultInterval) || curStoreInterval.equals(curResultInterval)) {
+                if (curStoreInterval.overlaps(curResultInterval) || curStoreInterval.equals(curResultInterval))
+                {
                     resultIntervalsIterator.remove(); // result.remove(checkInterval);
                     List<Interval<TimeFormat>> toAdd = curResultInterval.exclude(curStoreInterval);
-                    for (Interval<TimeFormat> add : toAdd) {
+                    for (Interval<TimeFormat> add : toAdd)
+                    {
                         resultIntervalsIterator.add(add);
                     }
                 }
@@ -227,7 +227,7 @@ public class IntervalStore<TimeFormat extends Comparable<TimeFormat>, ItemFormat
      * @return intervals needed
      */
     public List<Interval<TimeFormat>> needed(List<Interval<TimeFormat>> requestIntervals) {
-        List<Interval<TimeFormat>> result = new ArrayList<Interval<TimeFormat>>();
+        List<Interval<TimeFormat>> result = new ArrayList<>();
         for (Interval<TimeFormat> requestInterval : requestIntervals) {
             List<Interval<TimeFormat>> neededIntervals = this.needed(requestInterval);
             result.addAll(neededIntervals);
@@ -239,13 +239,12 @@ public class IntervalStore<TimeFormat extends Comparable<TimeFormat>, ItemFormat
      * Return a String representation, e.g. "[[A,B),[C,D)]"
      */
     public String toString() {
-        StringBuffer result = new StringBuffer("IntervalStore [ ");
+        StringBuilder result = new StringBuilder("IntervalStore [ ");
         boolean added = false;
 
         // loop over the intervals in this cache
-        Iterator<Interval<TimeFormat>> iter = this.data.keySet().iterator();
-        while (iter.hasNext()) {
-            Interval<TimeFormat> curInterval = iter.next();
+        for (Interval<TimeFormat> curInterval : this.data.keySet())
+        {
             added = true;
             result.append(curInterval.toString());
             result.append(" : ");
@@ -290,6 +289,8 @@ public class IntervalStore<TimeFormat extends Comparable<TimeFormat>, ItemFormat
         
         if (this.data.size() != other.data.size())
             return false;
+
+		//FIXME: get() will lookup an Integer-object, not the i-th element.
         for (int i = 0; i < this.data.size(); i++) {
             if (!this.data.get(i).equals(other.data.get(i)))
                 return false;
@@ -315,7 +316,7 @@ public class IntervalStore<TimeFormat extends Comparable<TimeFormat>, ItemFormat
     public void addEvent(Interval<TimeFormat> interval, ItemFormat newEvent) {
         // System.out.println("Adding " + newEvent + " to " + interval);
         if (!this.data.containsKey(interval)) {
-            this.data.put(interval, new IntervalContainer<TimeFormat, ItemFormat>());
+            this.data.put(interval, new IntervalContainer<TimeFormat,ItemFormat>());
         }
 
         IntervalContainer<TimeFormat, ItemFormat> curContainer = this.data.get(interval);
@@ -349,10 +350,11 @@ public class IntervalStore<TimeFormat extends Comparable<TimeFormat>, ItemFormat
      * @return true if the given item has been stored in the given request
      *         interval
      */
-    public boolean contains(Interval<TimeFormat> request, ItemFormat hek) {
-        if (!this.data.containsKey(request))
+    public boolean contains(Interval<TimeFormat> request, ItemFormat hek)
+    {
+        if (!data.containsKey(request))
             return false;
-        return this.data.get(request).getItems().contains(hek);
+        return data.get(request).getItems().contains(hek);
     }
 
     /**
@@ -374,13 +376,12 @@ public class IntervalStore<TimeFormat extends Comparable<TimeFormat>, ItemFormat
      * @return - list of intervals
      */
     public List<Interval<TimeFormat>> findItem(ItemFormat item) {
-        List<Interval<TimeFormat>> result = new ArrayList<Interval<TimeFormat>>();
+        List<Interval<TimeFormat>> result = new ArrayList<>();
 
-        Iterator<Interval<TimeFormat>> iter = this.data.keySet().iterator();
-        while (iter.hasNext()) {
-            Interval<TimeFormat> interval = iter.next();
-
-            if (this.data.get(interval).getItems().contains(item)) {
+        for (Interval<TimeFormat> interval : this.data.keySet())
+        {
+            if (this.data.get(interval).getItems().contains(item))
+            {
                 result.add(interval);
             }
 
@@ -409,10 +410,10 @@ public class IntervalStore<TimeFormat extends Comparable<TimeFormat>, ItemFormat
      * This IntervalCache has a couple of Request Buckets!
      */
     public List<Interval<TimeFormat>> getIntervals() {
-        List<Interval<TimeFormat>> result = new ArrayList<Interval<TimeFormat>>();
-        Iterator<Interval<TimeFormat>> iter = this.data.keySet().iterator();
-        while (iter.hasNext()) {
-            result.add(iter.next());
+        List<Interval<TimeFormat>> result = new ArrayList<>();
+        for (Interval<TimeFormat> timeFormatInterval : this.data.keySet())
+        {
+            result.add(timeFormatInterval);
         }
         return result;
     }

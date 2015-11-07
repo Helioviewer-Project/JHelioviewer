@@ -1,16 +1,10 @@
 package org.helioviewer.jhv.viewmodel.jp2view.kakadu;
 
-import java.io.UnsupportedEncodingException;
-
-import javax.annotation.Nullable;
-
+import kdu_jni.*;
 import org.helioviewer.jhv.base.Telemetry;
 
-import kdu_jni.Jp2_input_box;
-import kdu_jni.Jp2_locator;
-import kdu_jni.Jp2_threadsafe_family_src;
-import kdu_jni.KduException;
-import kdu_jni.Kdu_global;
+import javax.annotation.Nullable;
+import java.io.UnsupportedEncodingException;
 
 public class KakaduUtils
 {
@@ -30,7 +24,7 @@ public class KakaduUtils
 	public static Jp2_input_box[] findBox(Jp2_threadsafe_family_src _familySrc, long _boxType, int _boxNumber)
 			throws KduException
 	{
-		Jp2_locator jp2Locator = null;
+		Jp2_locator jp2Locator;
 		Jp2_input_box box = null, box_final = null;
 		Jp2_input_box result[] = { null, null };
 
@@ -112,10 +106,6 @@ public class KakaduUtils
 			result[0] = box;
 			return result;
 		}
-		catch (KduException ex)
-		{
-			throw ex;
-		}
 		finally
 		{
 			if (box_final != null)
@@ -143,38 +133,30 @@ public class KakaduUtils
 	public static @Nullable Jp2_input_box findBox2(Jp2_input_box _supBox, long _boxType, int _boxNumber)
 			throws KduException
 	{
-		Jp2_input_box box = null;
+		Jp2_input_box box;
 
-		try
+		box = new Jp2_input_box();
+
+		if (!box.Open(_supBox))
+			throw new KduException("Box not open: " + _boxNumber);
+
+		else
 		{
-			box = new Jp2_input_box();
+			int i = 1;
 
-			if (!box.Open(_supBox))
-				throw new KduException("Box not open: " + _boxNumber);
-
-			else
+			while ((box.Get_box_type() != _boxType || i < _boxNumber) && box.Exists())
 			{
-				int i = 1;
-
-				while ((box.Get_box_type() != _boxType || i < _boxNumber) && box.Exists())
-				{
-					if (box.Get_box_type() == _boxType)
-						i++;
-					box.Close();
-					box.Open_next();
-				}
-
-				if (!box.Exists() || box.Get_box_type() != _boxType)
-				{
-					box.Native_destroy();
-					box = null;
-				}
+				if (box.Get_box_type() == _boxType)
+					i++;
+				box.Close();
+				box.Open_next();
 			}
 
-		}
-		catch (KduException ex)
-		{
-			throw ex;
+			if (!box.Exists() || box.Get_box_type() != _boxType)
+			{
+				box.Native_destroy();
+				box = null;
+			}
 		}
 
 		return box;
@@ -188,7 +170,7 @@ public class KakaduUtils
 	public static @Nullable String getXml(Jp2_threadsafe_family_src _familySrc, int _boxNumber) throws KduException
 	{
 		String xml = null;
-		Jp2_input_box xmlBox = null;
+		Jp2_input_box xmlBox;
 		Jp2_input_box assocBox = null;
 		Jp2_input_box assoc2Box = null;
 		Jp2_input_box findBoxResult[] = new Jp2_input_box[2];
@@ -231,10 +213,6 @@ public class KakaduUtils
 					}
 					xmlBox.Native_destroy();
 				}
-				catch (KduException ex)
-				{
-					throw ex;
-				}
 				catch (UnsupportedEncodingException ex)
 				{
 					Telemetry.trackException(ex);
@@ -247,12 +225,10 @@ public class KakaduUtils
 			if (assocBox != null)
 			{
 				assocBox.Native_destroy();
-				assocBox = null;
 			}
 			if (assoc2Box != null)
 			{
 				assoc2Box.Native_destroy();
-				assoc2Box = null;
 			}
 			if (findBoxResult[1] != null)
 			{

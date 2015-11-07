@@ -1,13 +1,11 @@
 package org.helioviewer.jhv.gui;
 
-import java.io.File;
+import com.xuggle.xuggler.ICodec;
+import javafx.stage.FileChooser.ExtensionFilter;
 
 import javax.annotation.Nullable;
 import javax.swing.filechooser.FileFilter;
-
-import com.xuggle.xuggler.ICodec;
-
-import javafx.stage.FileChooser.ExtensionFilter;
+import java.io.File;
 
 public class PredefinedFileFilter extends FileFilter
 {
@@ -34,17 +32,17 @@ public class PredefinedFileFilter extends FileFilter
 		
 	enum MovieTypes
 	{	
-		MOV, MP4;
+		MOV, MP4
 	}
 	
 	enum CompressedTypes
 	{
-		ZIP;
+		ZIP
 	}
 	
 	enum ImageTypes
 	{
-		JPG, JPEG, PNG;
+		JPG, JPEG, PNG
 	}
 	
     @Override

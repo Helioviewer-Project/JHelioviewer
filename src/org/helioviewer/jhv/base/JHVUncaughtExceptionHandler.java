@@ -1,42 +1,19 @@
 package org.helioviewer.jhv.base;
 
+import com.mindscapehq.raygun4java.core.RaygunClient;
+import com.mindscapehq.raygun4java.core.messages.RaygunIdentifier;
+
+import javax.annotation.Nullable;
+import javax.swing.*;
 import java.awt.Dialog.ModalityType;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.Font;
-import java.awt.Frame;
-import java.awt.Graphics2D;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-import java.awt.Image;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Nullable;
-import javax.swing.Box;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JCheckBox;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.UIManager;
-
-import com.mindscapehq.raygun4java.core.RaygunClient;
-import com.mindscapehq.raygun4java.core.messages.RaygunIdentifier;
 
 /**
  * Routines to catch and handle all runtime exceptions.
@@ -68,7 +45,7 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
 	 */
 	private static void showErrorDialog(final String title, final String msg, final Throwable e, final String log)
 	{
-		List<Object> objects = new ArrayList<Object>();
+		List<Object> objects = new ArrayList<>();
 
 		JLabel head = new JLabel("Dang! You hit a bug in JHelioviewer.");
 		head.setFont(head.getFont().deriveFont(Font.BOLD));
@@ -115,7 +92,7 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
 			
 			RaygunClient client = new RaygunClient("iZK0JDVPkd3OgEwgDibzQw==");
 			client.SetVersion(Globals.VERSION);
-			Map<String, String> customData = new HashMap<String, String>();
+			Map<String, String> customData = new HashMap<>();
 			customData.put("Log", log);
 			customData.put("JVM",
 					System.getProperty("java.vm.name") + " "
@@ -125,7 +102,7 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
 
 			RaygunIdentifier user = new RaygunIdentifier(Settings.getString("UUID"));
 			client.SetUser(user);
-			ArrayList<String> tags = new ArrayList<String>();
+			ArrayList<String> tags = new ArrayList<>();
 			tags.add(Globals.RAYGUN_TAG);
 			client.Send(e, tags, customData);
 		}
@@ -241,7 +218,6 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
 		Telemetry.trackException(e);
 
 		final String finalMsg = msg;
-		final Throwable finalE = e;
 
 		// DO NOT USE THIS. will kill the repaint manager
 		// try to drain the awt-eventqueue, throwing everything away
@@ -262,7 +238,7 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
 					public void run()
 					{
 						JHVUncaughtExceptionHandler.showErrorDialog(
-								"JHelioviewer: Fatal error", finalMsg, finalE,
+								"JHelioviewer: Fatal error", finalMsg, e,
 								finalLog);
 					}
 				});

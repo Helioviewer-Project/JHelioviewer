@@ -1,12 +1,9 @@
 package org.helioviewer.jhv.gui.components;
 
-import java.awt.Component;
-import java.util.HashMap;
-
 import javax.annotation.Nullable;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JComponent;
+import javax.swing.*;
+import java.awt.*;
+import java.util.HashMap;
 
 /**
  * Panel managing multiple {@link CollapsiblePane}s.
@@ -16,7 +13,7 @@ import javax.swing.JComponent;
  */
 public class SideContentPane extends JComponent
 {
-	private HashMap<Component, CollapsiblePane> map = new HashMap<Component, CollapsiblePane>();
+	private HashMap<Component, CollapsiblePane> map = new HashMap<>();
 
 	public SideContentPane()
 	{
@@ -160,9 +157,9 @@ public class SideContentPane extends JComponent
 	{
 		// go through map to find all effected collapsible panes
 		Object[] components = map.keySet().toArray();
-		for (int i = 0; i < components.length; i++)
-			if (c.isInstance(components[i]))
-				remove((Component) components[i]);
+		for (Object component : components)
+			if (c.isInstance(component))
+				remove((Component) component);
 
 		// go through sub components of the side panel in case a component is
 		// not added to a collapsible pane

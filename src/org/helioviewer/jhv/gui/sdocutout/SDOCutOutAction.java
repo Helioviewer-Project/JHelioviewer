@@ -1,14 +1,5 @@
 package org.helioviewer.jhv.gui.sdocutout;
 
-import java.awt.event.ActionEvent;
-import java.awt.geom.Rectangle2D;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-
-import javax.annotation.Nullable;
-import javax.swing.AbstractAction;
-
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.math.Vector2d;
@@ -21,6 +12,14 @@ import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.metadata.MetaDataAIA;
+
+import javax.annotation.Nullable;
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.geom.Rectangle2D;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 class SDOCutOutAction extends AbstractAction
 {
@@ -36,7 +35,7 @@ class SDOCutOutAction extends AbstractAction
     public void actionPerformed(@Nullable ActionEvent e)
     {
 		ImageLayer activeLayer = Layers.getActiveImageLayer();
-		ArrayList<KakaduLayer> sdoLayers = new ArrayList<KakaduLayer>();
+		ArrayList<KakaduLayer> sdoLayers = new ArrayList<>();
 		
 		for (Layer layer : Layers.getLayers())
 			if(layer instanceof KakaduLayer)
@@ -47,7 +46,7 @@ class SDOCutOutAction extends AbstractAction
 			return;
 		
 		KakaduLayer mainSDOLayer;
-		if(activeLayer instanceof KakaduLayer && ((KakaduLayer)activeLayer).getMetaData(TimeLine.SINGLETON.getCurrentDateTime()) instanceof MetaDataAIA)
+		if(activeLayer instanceof KakaduLayer && activeLayer.getMetaData(TimeLine.SINGLETON.getCurrentDateTime()) instanceof MetaDataAIA)
 			mainSDOLayer=(KakaduLayer)activeLayer;
 		else
 			mainSDOLayer=sdoLayers.get(0);

@@ -1,15 +1,15 @@
 package org.helioviewer.jhv.opengl.camera;
 
-import java.awt.Point;
-import java.awt.event.MouseEvent;
-
-import javax.annotation.Nullable;
-
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.opengl.RayTrace.Ray;
 import org.helioviewer.jhv.opengl.camera.CameraMode.MODE;
 
+import javax.annotation.Nullable;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+
+//FIXME: duplicate of CameraPanInteraction?
 public class CameraViewportPanInteraction extends CameraInteraction
 {
 	private double meterPerPixelWidth;

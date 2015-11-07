@@ -1,18 +1,18 @@
 package org.helioviewer.jhv.plugins.hekplugin.cache;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.plugins.hekplugin.Interval;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKSettings;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Class to parse JSON objects and create Event objects from them.
@@ -63,22 +63,12 @@ class HEKEventFactory {
             Date start = hekDateFormat.parse(json.getString("event_starttime"));
             Date end = hekDateFormat.parse(json.getString("event_endtime"));
 
-            Interval<Date> duration = new Interval<Date>(start, end);
+            Interval<Date> duration = new Interval<>(start, end);
 
             result.setDuration(duration);
             result.setId(id);
             result.setEventObject(json);
-        } catch (ParseException e) {
-            if (!sloppy) {
-                System.err.println("HEKEventFactory.ParseHEK(...) >> Could not parse HEK event: " + e.getMessage());
-                result = null;
-            }
-        } catch (JSONException e) {
-            if (!sloppy) {
-                System.err.println("HEKEventFactory.ParseHEK(...) >> Could not parse HEK event: " + e.getMessage());
-                result = null;
-            }
-        } catch (NumberFormatException e) {
+        } catch (ParseException | NumberFormatException | JSONException e) {
             if (!sloppy) {
                 System.err.println("HEKEventFactory.ParseHEK(...) >> Could not parse HEK event: " + e.getMessage());
                 result = null;
@@ -167,7 +157,7 @@ class HEKEventFactory {
     public HashMap<HEKPath, HEKEvent> parseEvents(JSONObject json) {
         HEKCache cache = HEKCache.getSingletonInstance();
 
-        HashMap<HEKPath, HEKEvent> result = new HashMap<HEKPath, HEKEvent>();
+        HashMap<HEKPath, HEKEvent> result = new HashMap<>();
 
         try {
             JSONArray jsonEvents = json.getJSONArray("result");
@@ -235,7 +225,7 @@ class HEKEventFactory {
     public List<HEKPath> parseStructure(JSONObject json) {
         HEKCache cache = HEKCache.getSingletonInstance();
 
-        List<HEKPath> result = new ArrayList<HEKPath>();
+        List<HEKPath> result = new ArrayList<>();
 
         try {
             JSONArray jsonEvents = json.getJSONArray("result");

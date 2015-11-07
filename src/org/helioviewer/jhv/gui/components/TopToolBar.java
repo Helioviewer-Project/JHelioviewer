@@ -1,39 +1,19 @@
 package org.helioviewer.jhv.gui.components;
 
-import java.awt.Dimension;
+import org.helioviewer.jhv.base.Settings;
+import org.helioviewer.jhv.gui.IconBank;
+import org.helioviewer.jhv.gui.IconBank.JHVIcon;
+import org.helioviewer.jhv.gui.actions.*;
+import org.helioviewer.jhv.gui.sdocutout.SDOCutOutButton;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.AbstractButton;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JPopupMenu;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JToggleButton;
-import javax.swing.JToolBar;
-import javax.swing.SwingConstants;
-
-import org.helioviewer.jhv.base.Settings;
-import org.helioviewer.jhv.gui.IconBank;
-import org.helioviewer.jhv.gui.IconBank.JHVIcon;
-import org.helioviewer.jhv.gui.actions.ResetCameraAction;
-import org.helioviewer.jhv.gui.actions.SetCameraPanInteractionAction;
-import org.helioviewer.jhv.gui.actions.SetCameraRotationInteractionAction;
-import org.helioviewer.jhv.gui.actions.SetCameraTrackAction;
-import org.helioviewer.jhv.gui.actions.SetCameraYAxisBlockedAction;
-import org.helioviewer.jhv.gui.actions.SetCameraZoomBoxInteractionAction;
-import org.helioviewer.jhv.gui.actions.ToggleCoronaVisibilityAction;
-import org.helioviewer.jhv.gui.actions.View2DAction;
-import org.helioviewer.jhv.gui.actions.View3DAction;
-import org.helioviewer.jhv.gui.actions.Zoom1To1Action;
-import org.helioviewer.jhv.gui.actions.ZoomFitAction;
-import org.helioviewer.jhv.gui.actions.ZoomInAction;
-import org.helioviewer.jhv.gui.actions.ZoomOutAction;
-import org.helioviewer.jhv.gui.sdocutout.SDOCutOutButton;
 
 /**
  * Toolbar containing the most common actions.
@@ -46,19 +26,15 @@ public class TopToolBar extends JToolBar implements MouseListener
 	private enum DisplayMode
 	{
 		ICONANDTEXT, ICONONLY, TEXTONLY
-	};
+	}
 
 	private DisplayMode displayMode;
 
 	private JToggleButton panButton;
 	private JToggleButton rotateButton;
-	private JToggleButton rotateButtonYAxis;
 	private JToggleButton zoomBoxButton;
 
 	private JToggleButton trackingEnabledButton;
-	private JToggleButton coronaVisibilityButton;
-	private JButton zoomInButton, zoomOutButton, zoomFitButton, zoom1to1Button;
-	private JButton resetCamera;
 	private JToggleButton view2DButton;
 	private JToggleButton view3DButton;
 
@@ -108,11 +84,11 @@ public class TopToolBar extends JToolBar implements MouseListener
 	private void createNewToolBar() {
 		//removeAll();
 		// Zoom
-		zoomInButton = new JButton(new ZoomInAction(false));
-		zoomOutButton = new JButton(new ZoomOutAction(false));
-		zoomFitButton = new JButton(new ZoomFitAction(false));
-		zoom1to1Button = new JButton(new Zoom1To1Action(false));	
-		resetCamera = new JButton(new ResetCameraAction());
+		JButton zoomInButton = new JButton(new ZoomInAction(false));
+		JButton zoomOutButton = new JButton(new ZoomOutAction(false));
+		JButton zoomFitButton = new JButton(new ZoomFitAction(false));
+		JButton zoom1to1Button = new JButton(new Zoom1To1Action(false));
+		JButton resetCamera = new JButton(new ResetCameraAction());
 
 		addButton(zoomInButton);
 		addButton(zoomOutButton);
@@ -151,14 +127,14 @@ public class TopToolBar extends JToolBar implements MouseListener
 		trackingEnabledButton.setToolTipText("Enable Solar Rotation Tracking");
 		addButton(trackingEnabledButton);
 
-		coronaVisibilityButton = new JToggleButton(new ToggleCoronaVisibilityAction());
+		JToggleButton coronaVisibilityButton = new JToggleButton(new ToggleCoronaVisibilityAction());
 		coronaVisibilityButton.setSelected(false);
 		coronaVisibilityButton.setIcon(IconBank.getIcon(JHVIcon.SUN_WITH_128x128, 24, 24));
 		coronaVisibilityButton.setSelectedIcon(IconBank.getIcon(JHVIcon.SUN_WITHOUT_128x128, 24, 24));
 		coronaVisibilityButton.setToolTipText("Toggle Corona Visibility");
 		addButton(coronaVisibilityButton);
 
-		rotateButtonYAxis = new JToggleButton(new SetCameraYAxisBlockedAction());
+		JToggleButton rotateButtonYAxis = new JToggleButton(new SetCameraYAxisBlockedAction());
 		rotateButtonYAxis.setIcon(IconBank.getIcon(JHVIcon.NEW_ROTATION_Y_AXIS, 24, 24));
 		
 		rotateButtonYAxis.setToolTipText("Enable rotation on Y-Axis");

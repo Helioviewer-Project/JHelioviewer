@@ -1,20 +1,16 @@
 package org.helioviewer.jhv.plugins.hekplugin.cache;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
 import org.helioviewer.jhv.gui.components.TristateCheckBox;
 import org.helioviewer.jhv.plugins.hekplugin.Interval;
+
+import java.util.*;
 
 public class HEKCacheSelectionModel implements HEKCacheListener {
 
     HEKCache cache;
     HEKCacheModel cacheModel;
 
-    private HashMap<HEKPath, Integer> selectionState = new HashMap<HEKPath, Integer>();
+    private HashMap<HEKPath, Integer> selectionState = new HashMap<>();
 
     public HEKCacheSelectionModel(HEKCache cache) {
         this.cache = cache;
@@ -29,7 +25,7 @@ public class HEKCacheSelectionModel implements HEKCacheListener {
     public HashMap<HEKPath, List<Interval<Date>>> getSelection(Interval<Date> curInterval) {
 
         // td: Malte Nuhn - Implement the CacheModelLOCK
-        HashMap<HEKPath, List<Interval<Date>>> result = new HashMap<HEKPath, List<Interval<Date>>>();
+        HashMap<HEKPath, List<Interval<Date>>> result = new HashMap<>();
 
         result.putAll(getSelection(cache.getTrackPaths().iterator(), curInterval));
 
@@ -103,7 +99,7 @@ public class HEKCacheSelectionModel implements HEKCacheListener {
      */
     private HashMap<HEKPath, List<Interval<Date>>> getSelection(Iterator<HEKPath> keyIterator, Interval<Date> timeRange) {
 
-        HashMap<HEKPath, List<Interval<Date>>> result = new HashMap<HEKPath, List<Interval<Date>>>();
+        HashMap<HEKPath, List<Interval<Date>>> result = new HashMap<>();
 
         while (keyIterator.hasNext()) {
 
@@ -174,7 +170,7 @@ public class HEKCacheSelectionModel implements HEKCacheListener {
         // this is a virtual path, that does not exist in the cache
         if (path.isVirtual() && children.size() > 0) {
 
-            int state = TristateCheckBox.DEFAULT;
+            int state;
             int checked = 0;
             int total = 0;
 

@@ -1,35 +1,10 @@
 package org.helioviewer.jhv.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Frame;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
-import java.nio.ByteBuffer;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map.Entry;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
-import javax.annotation.Nullable;
-import javax.swing.JFrame;
-import javax.swing.RepaintManager;
-import javax.swing.SwingUtilities;
-
+import com.jogamp.opengl.*;
+import com.jogamp.opengl.awt.GLCanvas;
+import com.jogamp.opengl.glu.GLU;
+import com.jogamp.opengl.util.awt.ImageUtil;
+import com.jogamp.opengl.util.awt.TextRenderer;
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
@@ -42,41 +17,33 @@ import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.base.physics.DifferentialRotation;
 import org.helioviewer.jhv.gui.statusLabels.CameraListener;
 import org.helioviewer.jhv.gui.statusLabels.PanelMouseListener;
-import org.helioviewer.jhv.layers.ImageLayer;
+import org.helioviewer.jhv.layers.*;
 import org.helioviewer.jhv.layers.ImageLayer.PreparedImage;
-import org.helioviewer.jhv.layers.Layer;
-import org.helioviewer.jhv.layers.LayerListener;
-import org.helioviewer.jhv.layers.Layers;
-import org.helioviewer.jhv.layers.PluginLayer;
 import org.helioviewer.jhv.opengl.LoadingScreen;
 import org.helioviewer.jhv.opengl.NoImageScreen;
 import org.helioviewer.jhv.opengl.RayTrace;
 import org.helioviewer.jhv.opengl.RayTrace.Ray;
-import org.helioviewer.jhv.opengl.camera.Camera;
-import org.helioviewer.jhv.opengl.camera.CameraInteraction;
-import org.helioviewer.jhv.opengl.camera.CameraMode;
+import org.helioviewer.jhv.opengl.camera.*;
 import org.helioviewer.jhv.opengl.camera.CameraMode.MODE;
-import org.helioviewer.jhv.opengl.camera.CameraPanInteraction;
-import org.helioviewer.jhv.opengl.camera.CameraRotationInteraction;
-import org.helioviewer.jhv.opengl.camera.CameraZoomBoxInteraction;
-import org.helioviewer.jhv.opengl.camera.CameraZoomInteraction;
 import org.helioviewer.jhv.opengl.camera.animation.CameraAnimation;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.TimeLine.TimeLineListener;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 
-import com.jogamp.opengl.GL2;
-import com.jogamp.opengl.GLAutoDrawable;
-import com.jogamp.opengl.GLCapabilities;
-import com.jogamp.opengl.GLContext;
-import com.jogamp.opengl.GLDrawable;
-import com.jogamp.opengl.GLDrawableFactory;
-import com.jogamp.opengl.GLEventListener;
-import com.jogamp.opengl.GLProfile;
-import com.jogamp.opengl.awt.GLCanvas;
-import com.jogamp.opengl.glu.GLU;
-import com.jogamp.opengl.util.awt.ImageUtil;
-import com.jogamp.opengl.util.awt.TextRenderer;
+import javax.annotation.Nullable;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.nio.ByteBuffer;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 //TODO: change all listeners to inline anonymous classes
 public class MainPanel extends GLCanvas implements GLEventListener, MouseListener, MouseMotionListener,
@@ -124,10 +91,10 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	@SuppressWarnings("null")
 	public MainPanel(GLContext _context)
 	{
-		cameraAnimations = new ArrayList<CameraAnimation>();
-		synchronizedViews = new ArrayList<MainPanel>();
-		panelMouseListeners = new ArrayList<PanelMouseListener>();
-		cameraListeners = new ArrayList<CameraListener>();
+		cameraAnimations = new ArrayList<>();
+		synchronizedViews = new ArrayList<>();
+		panelMouseListeners = new ArrayList<>();
+		cameraListeners = new ArrayList<>();
 		setSharedContext(_context);
 
 		Layers.addLayerListener(this);
@@ -650,7 +617,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		ArrayList<String> descriptions = null;
 		if (textEnabled)
 		{
-			descriptions = new ArrayList<String>();
+			descriptions = new ArrayList<>();
 			for (Layer layer : Layers.getLayers())
 				if (layer.isVisible())
 				{
@@ -669,6 +636,8 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		int countYTiles = imageHeight % tileHeight == 0 ? (int) yTiles : (int) yTiles + 1;
 
 		GLDrawableFactory factory = GLDrawableFactory.getFactory(GLProfile.getDefault());
+
+		//FIXME: which profile do we actually need/want for max compat?
 		GLProfile profile = GLProfile.get(GLProfile.GL2);
 		profile = GLProfile.getDefault();
 		GLCapabilities capabilities = new GLCapabilities(profile);

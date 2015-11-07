@@ -1,27 +1,21 @@
 package org.helioviewer.jhv.gui;
 
-import java.awt.Dimension;
-import java.awt.geom.Rectangle2D;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-
-import javax.annotation.Nullable;
-
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLContext;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.Layers;
-import org.helioviewer.jhv.opengl.camera.CameraInteraction;
-import org.helioviewer.jhv.opengl.camera.CameraRotationInteraction;
-import org.helioviewer.jhv.opengl.camera.CameraViewportPanInteraction;
-import org.helioviewer.jhv.opengl.camera.CameraZoomBoxInteraction;
-import org.helioviewer.jhv.opengl.camera.CameraZoomInteraction;
+import org.helioviewer.jhv.opengl.camera.*;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 
-import com.jogamp.opengl.GL2;
-import com.jogamp.opengl.GLAutoDrawable;
-import com.jogamp.opengl.GLContext;
+import javax.annotation.Nullable;
+import java.awt.*;
+import java.awt.geom.Rectangle2D;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 public class OverviewPanel extends MainPanel
 {
@@ -30,7 +24,7 @@ public class OverviewPanel extends MainPanel
 	public OverviewPanel(GLContext _context)
 	{
 		super(_context);
-		mainViews = new ArrayList<MainPanel>();
+		mainViews = new ArrayList<>();
 
 		cameraInteractions = new CameraInteraction[2];
 	}

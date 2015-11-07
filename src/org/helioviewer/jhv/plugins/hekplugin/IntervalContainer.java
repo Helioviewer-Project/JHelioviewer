@@ -16,7 +16,7 @@ public class IntervalContainer<TimeFormat extends Comparable<TimeFormat>, ItemFo
         this.partial = partial;
     }
 
-    List<ItemFormat> items = new ArrayList<ItemFormat>();
+    List<ItemFormat> items = new ArrayList<>();
 
     public IntervalContainer(List<ItemFormat> newItems) {
         items = newItems;

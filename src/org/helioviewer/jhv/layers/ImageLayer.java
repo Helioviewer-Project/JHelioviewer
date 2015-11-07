@@ -1,17 +1,8 @@
 package org.helioviewer.jhv.layers;
 
-import java.awt.Dimension;
-import java.awt.geom.Rectangle2D;
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.NavigableSet;
-import java.util.concurrent.Future;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLContext;
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.Telemetry;
@@ -31,9 +22,16 @@ import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
 
-import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL2;
-import com.jogamp.opengl.GLContext;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.awt.*;
+import java.awt.geom.Rectangle2D;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.NavigableSet;
+import java.util.concurrent.Future;
 
 //FIXME: shader handles this incorrectly: corona.opacity>0 && hit corona first && hit sphere later
 public abstract class ImageLayer extends Layer
@@ -78,7 +76,7 @@ public abstract class ImageLayer extends Layer
 	
 	private static int shaderprogram = -1;
 	
-	protected static ArrayList<Texture> textures=new ArrayList<Texture>();
+	protected static ArrayList<Texture> textures= new ArrayList<>();
 	
 	public abstract NavigableSet<LocalDateTime> getLocalDateTimes();
 
@@ -264,10 +262,10 @@ public abstract class ImageLayer extends Layer
 		String vertexShaderSrc = Globals.loadFile("/shader/MainVertex.glsl");
 		String fragmentShaderSrc = Globals.loadFile("/shader/MainFragment.glsl");
 
-		gl.glShaderSource(vertexShader, 1, new String[] { vertexShaderSrc }, (int[]) null, 0);
+		gl.glShaderSource(vertexShader, 1, new String[] { vertexShaderSrc }, null, 0);
 		gl.glCompileShader(vertexShader);
 
-		gl.glShaderSource(fragmentShader, 1, new String[] { fragmentShaderSrc }, (int[]) null, 0);
+		gl.glShaderSource(fragmentShader, 1, new String[] { fragmentShaderSrc }, null, 0);
 		gl.glCompileShader(fragmentShader);
 
 		IntBuffer intBuffer = IntBuffer.allocate(1);
@@ -373,8 +371,6 @@ public abstract class ImageLayer extends Layer
 	}
 
 	public abstract Future<PreparedImage> prepareImageData(final MainPanel mainPanel, final Dimension size);
-	
-	private RayTrace rayTrace=new RayTrace();
 
 	private static final int MAX_X_POINTS = 11;
 	private static final int MAX_Y_POINTS = 11;
@@ -386,7 +382,7 @@ public abstract class ImageLayer extends Layer
 	 */
 	public @Nullable ImageRegion calculateRegion(MainPanel _mainPanel, MetaData _metaData, Dimension _size)
 	{
-		rayTrace = new RayTrace(_metaData.rotation.toMatrix());
+		RayTrace rayTrace = new RayTrace(_metaData.rotation.toMatrix());
 
 		double partOfWidth = _mainPanel.getWidth() / (double) (MAX_X_POINTS - 1);
 		double partOfHeight = _mainPanel.getHeight() / (double) (MAX_Y_POINTS - 1);

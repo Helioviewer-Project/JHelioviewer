@@ -1,5 +1,7 @@
 package org.helioviewer.jhv.io;
 
+import org.helioviewer.jhv.base.Telemetry;
+
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -8,8 +10,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.helioviewer.jhv.base.Telemetry;
 
 //TODO: merge all getDownloadOptionValues-style methods
 //FIXME: does this still work?
@@ -34,7 +34,7 @@ public class CommandLineProcessor
     {
         // get associated value string for "jpip" option
         List<String> jpxURLs = getOptionValues("jpx");
-        List<URL> result = new ArrayList<URL>(jpxURLs.size());
+        List<URL> result = new ArrayList<>(jpxURLs.size());
         for (String jpxURL : jpxURLs)
             if (!jpxURL.equals(""))
                 try
@@ -59,7 +59,7 @@ public class CommandLineProcessor
     public static List<CommandLineRequest> getJHVOptionValues()
     {
         List<String> optionValues = getOptionValues("jhv");
-        List<CommandLineRequest> result = new ArrayList<CommandLineRequest>(optionValues.size());
+        List<CommandLineRequest> result = new ArrayList<>(optionValues.size());
 
         for (String optionValue : optionValues)
             if (!optionValue.equals(""))
@@ -83,7 +83,7 @@ public class CommandLineProcessor
     public static List<URI> getJPIPOptionValues()
     {
         List<String> jpipURIs = getOptionValues("jpip");
-        List<URI> uris = new ArrayList<URI>(jpipURIs.size());
+        List<URI> uris = new ArrayList<>(jpipURIs.size());
         for (String jpipURI : jpipURIs)
             if (!jpipURI.equals(""))
                 try
@@ -106,7 +106,7 @@ public class CommandLineProcessor
     public static List<URI> getDownloadOptionValues()
     {
         List<String> addresses = getOptionValues("download");
-        List<URI> uris = new ArrayList<URI>(addresses.size());
+        List<URI> uris = new ArrayList<>(addresses.size());
         for (String address : addresses)
             if (!address.equals(""))
                 try
@@ -148,7 +148,7 @@ public class CommandLineProcessor
     private static List<String> getOptionValues(String param)
     {
         param = "-" + param;
-        List<String> values = new ArrayList<String>(arguments.length);
+        List<String> values = new ArrayList<>(arguments.length);
 
         if (arguments != null)
             for (int i = 0; i < arguments.length; i++)
@@ -182,7 +182,7 @@ public class CommandLineProcessor
 	private static CommandLineRequest parseJHVRequest(String _data) throws IllegalArgumentException
     {
         CommandLineRequest request = new CommandLineRequest();
-        String[] fields = null;
+        String[] fields;
 
         // Request must be in brackets
         if ((_data.charAt(0) != '[') || (_data.charAt(_data.length() - 1) != ']'))

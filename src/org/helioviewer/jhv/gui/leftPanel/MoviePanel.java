@@ -1,35 +1,9 @@
 package org.helioviewer.jhv.gui.leftPanel;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Polygon;
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.KeyEvent;
-import java.time.LocalDateTime;
-
-import javax.annotation.Nullable;
-import javax.swing.AbstractAction;
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSlider;
-import javax.swing.JSpinner;
-import javax.swing.KeyStroke;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.plaf.basic.BasicSliderUI;
-
+import com.jgoodies.forms.factories.FormFactory;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.RowSpec;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.components.MenuBar;
@@ -41,10 +15,15 @@ import org.helioviewer.jhv.layers.Movie.Match;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.TimeLine.TimeLineListener;
 
-import com.jgoodies.forms.factories.FormFactory;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.RowSpec;
+import javax.annotation.Nullable;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.plaf.basic.BasicSliderUI;
+import java.awt.*;
+import java.awt.event.*;
+import java.time.LocalDateTime;
 
 public class MoviePanel extends JPanel implements TimeLineListener, LayerListener
 {
@@ -59,7 +38,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		private String text;
 		private int factor;
 
-		private PlaybackSpeedUnit(String _text, int _factor)
+		PlaybackSpeedUnit(String _text, int _factor)
 		{
 			text = _text;
 			factor = _factor;
@@ -77,7 +56,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		LOOP("Loop"), STOP("Stop"), SWING("Swing");
 		private String text;
 		
-		private AnimationMode(String _text)
+		AnimationMode(String _text)
 		{
 			text = _text;
 		}
@@ -140,7 +119,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		final JSpinner spinner = new JSpinner(spinnerNumberModel);
 		contentPanel.add(spinner, "4, 2");
 
-		final JComboBox<PlaybackSpeedUnit> speedUnitComboBox = new JComboBox<PlaybackSpeedUnit>(
+		final JComboBox<PlaybackSpeedUnit> speedUnitComboBox = new JComboBox<>(
 				PlaybackSpeedUnit.values());
 
 		spinner.addChangeListener(new ChangeListener()
@@ -165,7 +144,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		JLabel lblAnimationMode = new JLabel("Animation Mode:");
 		contentPanel.add(lblAnimationMode, "2, 4, 3, 1");
 
-		final JComboBox<AnimationMode> animationModeComboBox = new JComboBox<AnimationMode>(AnimationMode.values());
+		final JComboBox<AnimationMode> animationModeComboBox = new JComboBox<>(AnimationMode.values());
 		animationModeComboBox.addItemListener(new ItemListener()
 		{
 			@Override
@@ -376,7 +355,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 			//TODO: this stuff is regenerated every frame --> should
 			//only be recreated when something has changed
 			
-			ImageLayer layer = (ImageLayer) Layers.getActiveImageLayer();
+			ImageLayer layer = Layers.getActiveImageLayer();
 			if (layer != null)
 			{
 				//TODO: speed up!!!!!

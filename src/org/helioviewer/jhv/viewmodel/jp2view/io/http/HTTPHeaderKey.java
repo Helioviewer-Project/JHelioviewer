@@ -8,7 +8,7 @@ public enum HTTPHeaderKey {
     CACHE_CONTROL("Cache-Control"), CONNECTION("Connection"), TRANSFER_ENCODING("Transfer-Encoding"), HOST("Host"), USER_AGENT("User-Agent"), CONTENT_LENGTH("Content-Length"), CONTENT_TYPE("Content-Type");
     private final String str;
 
-    private HTTPHeaderKey(final String _str) {
+    HTTPHeaderKey(final String _str) {
         str = _str;
     }
 
@@ -16,4 +16,4 @@ public enum HTTPHeaderKey {
     public String toString() {
         return str;
     }
-};
+}

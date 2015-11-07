@@ -1,23 +1,10 @@
 package org.helioviewer.jhv.gui.leftPanel;
 
-import java.awt.Component;
-import java.awt.Toolkit;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.MouseEvent;
-
-import javax.annotation.Nullable;
-import javax.swing.Icon;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSlider;
-import javax.swing.JToggleButton;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
-import org.helioviewer.jhv.base.MultiClickListener;
+import com.jgoodies.forms.factories.FormFactory;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.RowSpec;
+import org.helioviewer.jhv.base.MultiClickAdapter;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MainFrame;
@@ -28,10 +15,14 @@ import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
 
-import com.jgoodies.forms.factories.FormFactory;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.RowSpec;
+import javax.annotation.Nullable;
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
 
 public class FilterPanel extends JPanel implements LayerListener
 {
@@ -95,7 +86,7 @@ public class FilterPanel extends JPanel implements LayerListener
 				}
 			}
 		});
-		opacitySlider.addMouseListener(new MultiClickListener(delay)
+		opacitySlider.addMouseListener(new MultiClickAdapter(delay)
 		{
 			@Override
 			public void doubleClick(@Nullable MouseEvent e)
@@ -129,7 +120,7 @@ public class FilterPanel extends JPanel implements LayerListener
 				}
 			}
 		});
-		sharpenSlider.addMouseListener(new MultiClickListener(delay)
+		sharpenSlider.addMouseListener(new MultiClickAdapter(delay)
 		{
 			@Override
 			public void doubleClick(@Nullable MouseEvent e)
@@ -171,7 +162,7 @@ public class FilterPanel extends JPanel implements LayerListener
 				}
 			}
 		});
-		gammaSlider.addMouseListener(new MultiClickListener(delay)
+		gammaSlider.addMouseListener(new MultiClickAdapter(delay)
 		{
 			@Override
 			public void doubleClick(@Nullable MouseEvent e)
@@ -209,7 +200,7 @@ public class FilterPanel extends JPanel implements LayerListener
 				}
 			}
 		});
-		contrastSlider.addMouseListener(new MultiClickListener(delay)
+		contrastSlider.addMouseListener(new MultiClickAdapter(delay)
 		{
 			@Override
 			public void doubleClick(@Nullable MouseEvent e)
@@ -227,7 +218,7 @@ public class FilterPanel extends JPanel implements LayerListener
 		 */
 		// comboBoxColorTable = new JComboBox<String>();
 		// comboBoxColorTable = new JComboBox<String>(LUT.getNames());
-		comboBoxColorTable = new JComboBox<Lut>(Lut.values());
+		comboBoxColorTable = new JComboBox<>(Lut.values());
 		comboBoxColorTable.setSelectedItem(Lut.GRAY);
 		add(comboBoxColorTable, "4, 10, 5, 1, fill, default");
 		comboBoxColorTable.addItemListener(new ItemListener()

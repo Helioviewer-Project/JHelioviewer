@@ -1,11 +1,10 @@
 package org.helioviewer.jhv.viewmodel.jp2view.io.jpip;
 
-import java.io.IOException;
-import java.util.LinkedList;
+import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPResponse;
 
 import javax.annotation.Nullable;
-
-import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPResponse;
+import java.io.IOException;
+import java.util.LinkedList;
 
 /**
  * A response to a JPIPRequest. Encapsulates both the HTTPResponse headers and
@@ -35,7 +34,7 @@ public class JPIPResponse extends HTTPResponse
 			setHeader(key, res.getHeader(key));
 		
 		status = -1;
-		jpipDataList = new LinkedList<JPIPDataSegment>();
+		jpipDataList = new LinkedList<>();
 	}
 
 	/**
@@ -70,8 +69,7 @@ public class JPIPResponse extends HTTPResponse
 	public long getResponseSize()
 	{
 		long size = 0;
-		for (int i = 0; i < jpipDataList.size(); i++)
-			size += jpipDataList.get(i).length;
+		for (JPIPDataSegment aJpipDataList : jpipDataList) size += aJpipDataList.length;
 		return size;
 	}
 
@@ -85,4 +83,4 @@ public class JPIPResponse extends HTTPResponse
 		return (status == JPIPConstants.EOR_WINDOW_DONE || status == JPIPConstants.EOR_IMAGE_DONE);
 	}
 
-};
+}

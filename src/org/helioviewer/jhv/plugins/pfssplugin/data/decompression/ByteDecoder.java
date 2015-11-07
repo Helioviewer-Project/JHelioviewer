@@ -54,7 +54,7 @@ class ByteDecoder {
 		int outIndex = 0;
 		for (int i = 0; i < data.length; i++) {
 			byte current = data[i];
-			int value = (int) (current & (FLAG_CONTINUE - 1));
+			int value = current & (FLAG_CONTINUE - 1);
 			
 			//add encoded bytes as long as the continue flag is set.
 			boolean run = (current & FLAG_CONTINUE) != 0;
@@ -81,8 +81,9 @@ class ByteDecoder {
 	private static int calcLength(byte[] data) {
 		int out = 0;
 
-		for (int i = 0; i < data.length; i++) {
-			if ((data[i] & FLAG_CONTINUE) == 0)
+		for (byte aData : data)
+		{
+			if ((aData & FLAG_CONTINUE) == 0)
 				out++;
 		}
 		return out;

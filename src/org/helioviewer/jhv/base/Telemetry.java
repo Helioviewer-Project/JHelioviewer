@@ -1,14 +1,8 @@
 package org.helioviewer.jhv.base;
 
-import java.awt.Toolkit;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import javax.swing.SwingUtilities;
-
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GLContext;
+import com.microsoft.applicationinsights.TelemetryClient;
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 import org.helioviewer.jhv.gui.statusLabels.FramerateStatusPanel;
 import org.helioviewer.jhv.layers.ImageLayer;
@@ -17,9 +11,10 @@ import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.PluginLayer;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 
-import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GLContext;
-import com.microsoft.applicationinsights.TelemetryClient;
+import javax.swing.*;
+import java.awt.*;
+import java.util.*;
+import java.util.List;
 
 public class Telemetry
 {
@@ -127,11 +122,11 @@ public class Telemetry
 		
 		initializeOpenGL();
 		
-		Map<String,String> ps=new LinkedHashMap<String,String>();
+		Map<String,String> ps= new LinkedHashMap<>();
 		for(int i=0;i<params.length;i+=2)
 			ps.put(params[i], params[i+1]);
 		
-		client.trackEvent(_event,ps,new HashMap<String, Double>());
+		client.trackEvent(_event,ps, new HashMap<String,Double>());
 	}
 	
 	public static void trackMetric(String _name,double _value)

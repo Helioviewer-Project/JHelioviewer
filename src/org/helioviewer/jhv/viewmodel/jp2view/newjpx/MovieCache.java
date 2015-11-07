@@ -1,19 +1,6 @@
 package org.helioviewer.jhv.viewmodel.jp2view.newjpx;
 
-import java.awt.Rectangle;
-import java.io.File;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.annotation.Nullable;
-
+import com.google.common.io.Files;
 import org.helioviewer.jhv.base.JHVUncaughtExceptionHandler;
 import org.helioviewer.jhv.base.Settings;
 import org.helioviewer.jhv.base.Telemetry;
@@ -24,11 +11,19 @@ import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.metadata.UnsuitableMetaDataException;
 import org.w3c.dom.Document;
 
-import com.google.common.io.Files;
+import javax.annotation.Nullable;
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.*;
+import java.util.List;
 
 public class MovieCache
 {
-	private static HashMap<Integer,List<Movie>> cache=new HashMap<Integer, List<Movie>>();
+	private static HashMap<Integer,List<Movie>> cache= new HashMap<>();
 
 	private static final long MAX_CACHE_SIZE = 1024*1024*50;
 	private static final File CACHE_DIR = new File(System.getProperty("java.io.tmpdir") + "jhv-movie-cache" + File.separator);
@@ -160,7 +155,7 @@ public class MovieCache
 	{
 		List<Movie> al=cache.get(_movie.sourceId);
 		if(al==null)
-			cache.put(_movie.sourceId, al=new ArrayList<Movie>());
+			cache.put(_movie.sourceId, al= new ArrayList<>());
 		
 		if(al.contains(_movie))
 			System.out.println("Cache already contains this movie.");

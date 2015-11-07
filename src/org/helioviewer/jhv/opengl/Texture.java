@@ -1,18 +1,16 @@
 package org.helioviewer.jhv.opengl;
 
-import java.awt.image.BufferedImage;
-import java.nio.ByteBuffer;
-import java.time.LocalDateTime;
-
-import javax.annotation.Nullable;
-
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLContext;
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.math.MathUtils;
 
-import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL2;
-import com.jogamp.opengl.GLContext;
+import javax.annotation.Nullable;
+import java.awt.image.BufferedImage;
+import java.nio.ByteBuffer;
+import java.time.LocalDateTime;
 
 public class Texture
 {
@@ -81,7 +79,7 @@ public class Texture
 		
 		boolean alpha = false;
 		boolean switchChannel = false;
-		int inputFormat = GL2.GL_RGB;
+		int inputFormat;
 		int inputType = GL2.GL_UNSIGNED_BYTE;
 		switch (bufferedImage.getType())
 		{
@@ -243,11 +241,6 @@ public class Texture
 				&& imageRegion.areaOfSourceImage.contains(_imageRegion.areaOfSourceImage)
 				&& imageRegion.decodeZoomFactor >= _imageRegion.decodeZoomFactor
 				&& dateTime.isEqual(_localDateTime);
-	}
-
-	public boolean compareTexture(int _sourceId, LocalDateTime _ldt)
-	{
-		return imageRegion != null && _ldt.equals(dateTime);
 	}
 
 	public @Nullable ImageRegion getImageRegion()
