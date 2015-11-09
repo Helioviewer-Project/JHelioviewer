@@ -727,8 +727,7 @@ public class HEKEvent implements IntervalComparison<Date> {
         
         
         List<Vector2d> src= new ArrayList<>();
-        for(Vector2d v:_coordinates)
-            src.add(v);
+        Collections.addAll(src, _coordinates);
         
         //determine orientation of outline (clockwise/counter-clockwise?)
         //http://en.wikipedia.org/wiki/Shoelace_formula

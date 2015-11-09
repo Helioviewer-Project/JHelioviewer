@@ -183,16 +183,16 @@ public class JPIPSocket extends HTTPSocket
 		StringBuilder str = new StringBuilder();
 
 		// Adds the URI line.
-		str.append(_req.getMethod() + " ");
+		str.append(_req.getMethod()).append(" ");
 		str.append(jpipPath);
 		if (_req.getMethod() == Method.GET)
-			str.append("?" + queryStr);
+			str.append("?").append(queryStr);
 		str.append(" ");
-		str.append(versionText + CRLF);
+		str.append(versionText).append(CRLF);
 
 		// Adds the headers
 		for (String key : _req.getHeaders())
-			str.append(key + ": " + _req.getHeader(key) + CRLF);
+			str.append(key).append(": ").append(_req.getHeader(key)).append(CRLF);
 		str.append(CRLF);
 
 		// Adds the message body if necessary.
@@ -211,7 +211,7 @@ public class JPIPSocket extends HTTPSocket
 		StringBuilder result = new StringBuilder("Headers:");
 		if (res != null && res.getHeaders() != null)
 			for (String header : res.getHeaders())
-				result.append("\n" + header + ": " + res.getHeader(header));
+				result.append("\n").append(header).append(": ").append(res.getHeader(header));
 
 		return result.toString();
 	}

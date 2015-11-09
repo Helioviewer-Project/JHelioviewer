@@ -424,13 +424,13 @@ public class HEKEventInformationDialog extends JDialog implements ActionListener
         StringBuilder htmlLinks = new StringBuilder("<html>");
 
         Font font = hyperLinkPanel.getFont();
-        htmlLinks.append("<font style=\"font-family: '" + font.getFamily() + "'; font-size: " + font.getSize() + "px;\">");
+        htmlLinks.append("<font style=\"font-family: '").append(font.getFamily()).append("'; font-size: ").append(font.getSize()).append("px;\">");
 
         // add a link to the HEK summary page
         String archivid = newEvent.getString("kb_archivid");
 
         if (archivid != null) {
-            htmlLinks.append("<a href=\"").append(HEKConstants.HEK_SUMMARY_URL + archivid).append("\"> ").append("HEK Summary Page").append("</a>, ");
+            htmlLinks.append("<a href=\"").append(HEKConstants.HEK_SUMMARY_URL).append(archivid).append("\"> ").append("HEK Summary Page").append("</a>, ");
         }
 
         // add all other links that can be found

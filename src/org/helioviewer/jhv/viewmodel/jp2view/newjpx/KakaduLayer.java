@@ -26,10 +26,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.NavigableSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -452,9 +449,8 @@ public class KakaduLayer extends ImageLayer
 	{
 		if(_localDateTimes.length==0)
 			return;
-		
-		for (LocalDateTime localDateTime : _localDateTimes)
-			localDateTimes.add(localDateTime);
+
+		Collections.addAll(localDateTimes, _localDateTimes);
 		
 		//TODO: should probably only be set if current layer is active
 		TimeLine.SINGLETON.setLocalDateTimes(localDateTimes);

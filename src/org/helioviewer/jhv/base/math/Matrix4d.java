@@ -233,9 +233,8 @@ public class Matrix4d
 	public static Matrix4d createRotationMatrix(double angle, double _x, double _y, double _z)
 	{
 		Matrix4d r = new Matrix4d(IDENTITY);
-		double RadAng = angle;
-		double ca = Math.cos(RadAng);
-		double sa = Math.sin(RadAng);
+		double ca = Math.cos(angle);
+		double sa = Math.sin(angle);
 
 		if (_x == 1 && _y == 0 && _z == 0) // about x-axis
 		{
@@ -325,14 +324,11 @@ public class Matrix4d
 
 	public String toString()
 	{
-		StringBuilder sb = new StringBuilder();
 		String format = "%01.02f, %01.02f, %01.02f, %01.02f";
-		sb.append(String.format(format, m[0], m[4], m[8], m[12]) + ", \n");
-		sb.append(String.format(format, m[1], m[5], m[9], m[13]) + ", \n");
-		sb.append(String.format(format, m[2], m[6], m[10], m[14]) + ", \n");
-		sb.append(String.format(format, m[3], m[7], m[11], m[15]) + "\n");
-
-		return sb.toString();
+		return String.format(format, m[0], m[4], m[8], m[12]) + ", \n" +
+				String.format(format, m[1], m[5], m[9], m[13]) + ", \n" +
+				String.format(format, m[2], m[6], m[10], m[14]) + ", \n" +
+				String.format(format, m[3], m[7], m[11], m[15]) + "\n";
 	}
 
 	public float[] toFloatArray()

@@ -79,7 +79,6 @@ public class HEKCacheTreeView extends JTree implements TreeModelListener {
      */
     public void setTreeModel(HEKCacheTreeModel t) {
         // the order of these instructions is important!
-        HEKCacheTreeModel treeModel = t;
         super.setModel(t);
         // important, since we care about the expansion state by our self
         super.treeModelListener = this;

@@ -57,7 +57,7 @@ public class Log
         StringBuilder res=new StringBuilder();
         
         for(int i=Math.min(_numberOfLines, lines.length)-1;i>=0;i--)
-            res.append(lines[lines.length-1-i]+"\n");
+            res.append(lines[lines.length - 1 - i]).append("\n");
         
         return res.toString();
     }

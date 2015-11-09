@@ -43,7 +43,7 @@ public class JPIPQuery
 		{
 			if (ret.length() != 0)
 				ret.append('&');
-			ret.append(field + "=" + fields.get(field));
+			ret.append(field).append("=").append(fields.get(field));
 		}
 
 		return ret.toString();

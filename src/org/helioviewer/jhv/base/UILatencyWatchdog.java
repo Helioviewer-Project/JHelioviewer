@@ -4,10 +4,7 @@ import com.mindscapehq.raygun4java.core.RaygunClient;
 import com.mindscapehq.raygun4java.core.messages.RaygunIdentifier;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class UILatencyWatchdog
 {
@@ -78,7 +75,7 @@ public class UILatencyWatchdog
 							boolean jhvPartFound = false;
 							for (StackTraceElement ste : awtStackTrace)
 							{
-								fullStackTrace.append("  " + ste.toString() + "\n");
+								fullStackTrace.append("  ").append(ste.toString()).append("\n");
 								
 								jhvPartFound |= ste.getClassName().startsWith("org.helioviewer.jhv.");
 								if (jhvPartFound)
@@ -88,8 +85,7 @@ public class UILatencyWatchdog
 							// huh, jhv not even involved?! let's report the
 							// complete stack trace in that case...
 							if (!jhvPartFound)
-								for (StackTraceElement ste : awtStackTrace)
-									limitedStackTrace.add(ste);
+								Collections.addAll(limitedStackTrace, awtStackTrace);
 
 							if (isRMIActive())
 							{

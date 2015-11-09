@@ -443,7 +443,7 @@ public class Globals
 				MainPanel.class.getResourceAsStream(_resourcePath), StandardCharsets.UTF_8)))
 		{
 			while ((line = br.readLine()) != null)
-				contents.append(line + "\n");
+				contents.append(line).append("\n");
 			
 			return contents.toString();
 		}

@@ -1,6 +1,7 @@
 package org.helioviewer.jhv.plugins.hekplugin.cache;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -105,10 +106,7 @@ public class HEKPath {
      */
     public HEKPath(HEKCache hekCache, String[] path) {
         this.cache = hekCache;
-        for (String aPath : path)
-        {
-            this.path.add(aPath);
-        }
+        Collections.addAll(this.path, path);
     }
 
     /**
