@@ -1,26 +1,15 @@
 package org.helioviewer.jhv.gui.dialogs;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
+import org.helioviewer.jhv.base.Telemetry;
+import org.helioviewer.jhv.gui.MainFrame;
+
+import javax.annotation.Nullable;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.Collections;
-
-import javax.annotation.Nullable;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JEditorPane;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
-import org.helioviewer.jhv.base.Telemetry;
-import org.helioviewer.jhv.gui.MainFrame;
-
-import com.google.common.collect.Lists;
 
 /**
  * Dialog that is used to display information about the developers
@@ -53,9 +42,9 @@ public final class CreditsDialog extends JDialog
         
         
 		String[] names = new String[] { "Alen Alexanderian", "Andre Dau", "Benjamin W. Caplins", "Benjamin Wamsler",
-				"Bram Bourgoignie", "Daniel Müller", "Desmond Amadigwe", "Freek Verstringe", "Jonas Schwammberger",
+				"Bram Bourgoignie", "Daniel MÃ¼ller", "Desmond Amadigwe", "Freek Verstringe", "Jonas Schwammberger",
 				"Juan Pablo Garcia Ortiz", "Ludwig Schmidt", "Malte Nuhn", "Markus Langenberg", "Simon Felix",
-				"Simon Spörri", "Stefan Meier", "Stephan Pagel", "Helge Dietert", "Andreas Hoelzl" };
+				"Simon SpÃ¶rri", "Stefan Meier", "Stephan Pagel", "Helge Dietert", "Andreas Hoelzl" };
         
         Collections.shuffle(Arrays.asList(names));
         
