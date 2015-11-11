@@ -167,7 +167,7 @@ public class PredefinedFileFilter extends FileFilter
 	{
 		return innerFileFilter;
 	}
-	
+
 	public @Nullable String getDescription()
 	{
 		return description;

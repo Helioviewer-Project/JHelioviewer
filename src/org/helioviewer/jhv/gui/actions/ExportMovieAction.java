@@ -137,7 +137,12 @@ public class ExportMovieAction extends AbstractAction
 		}
 		else
 			throw new RuntimeException();
-		
+
+		Telemetry.trackEvent("Export movie","Format",selectedOutputFormat.description);
+		Telemetry.trackMetric("MovieWidth",imageWidth);
+		Telemetry.trackMetric("MovieHeight",imageHeight);
+		Telemetry.trackMetric("MovieTextEnabled", textEnabled?1:0);
+
 		final ProgressDialog progressDialog = new ProgressDialog();
 		progressDialog.setVisible(true);
 		progressDialog.setMaximumOfProgressBar(TimeLine.SINGLETON.getFrameCount());
