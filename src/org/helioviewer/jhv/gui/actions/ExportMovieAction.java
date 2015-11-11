@@ -4,6 +4,9 @@ import com.xuggle.mediatool.IMediaWriter;
 import com.xuggle.mediatool.ToolFactory;
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.Globals.DialogType;
+import org.helioviewer.jhv.base.Settings.BooleanKey;
+import org.helioviewer.jhv.base.Settings.IntKey;
+import org.helioviewer.jhv.base.Settings.StringKey;
 import org.helioviewer.jhv.base.Settings;
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.gui.MainFrame;
@@ -31,6 +34,13 @@ import java.util.zip.ZipOutputStream;
 
 public class ExportMovieAction extends AbstractAction
 {
+	private PredefinedFileFilter selectedOutputFormat = PredefinedFileFilter.MP4;
+	private boolean started = true;
+	private boolean textEnabled;
+	private int imageWidth;
+	private int imageHeight;
+	@Nullable
+	private volatile BufferedImage bufferedImage;
 	public ExportMovieAction()
 	{
 		super("Save movie as...");
@@ -49,29 +59,13 @@ public class ExportMovieAction extends AbstractAction
 					"Error", JOptionPane.ERROR_MESSAGE);
 	}
 
-	private PredefinedFileFilter selectedOutputFormat = PredefinedFileFilter.MP4;
-
-	private boolean started = true;
-
-	private static final String SETTING_MOVIE_EXPORT_LAST_DIRECTORY = "export.movie.last.directory";
-
-	private static final String SETTING_IMG_WIDTH = "export.movie.image.width";
-	private static final String SETTING_IMG_HEIGHT = "export.movie.image.height";
-	private static final String SETTING_TEXT = "export.movie.text";
-
-	private boolean textEnabled;
-	private int imageWidth;
-	private int imageHeight;
-	@Nullable
-	private volatile BufferedImage bufferedImage;
-
 	private void openExportMovieDialog()
 	{
 		String txtTargetFile = LocalDateTime.now().format(Globals.DATE_TIME_FORMATTER);
 
 		// Open save-dialog
 		final File file = Globals.showFileDialog(DialogType.SAVE_FILE, "Save Movie as",
-				Settings.getString(SETTING_MOVIE_EXPORT_LAST_DIRECTORY), false, txtTargetFile,
+				Settings.getString(StringKey.MOVIE_EXPORT_DIRECTORY), false, txtTargetFile,
 				PredefinedFileFilter.SaveMovieFileFilter);
 
 		if (file == null)
@@ -93,7 +87,7 @@ public class ExportMovieAction extends AbstractAction
 	private void startMovieExport(String _directory, final String _filename)
 	{
 		this.loadSettings();
-		Settings.setString(SETTING_MOVIE_EXPORT_LAST_DIRECTORY, _directory);
+		Settings.setString(StringKey.MOVIE_EXPORT_DIRECTORY, _directory);
 		MainFrame.SINGLETON.setEnabled(false);
 
 		final @Nullable FileOutputStream fileOutputStream;
@@ -104,9 +98,9 @@ public class ExportMovieAction extends AbstractAction
 		{
 			fileOutputStream=null;
 			zipOutputStream=null;
-			
+
 			fps = (int)Math.round(1000d / TimeLine.SINGLETON.getMillisecondsPerFrame());
-			
+
 			writer = ToolFactory.makeWriter(_directory + _filename + this.selectedOutputFormat.getDefaultExtension());
 			writer.addVideoStream(0, 0, selectedOutputFormat.codec, imageWidth, imageHeight);
 		}
@@ -224,54 +218,29 @@ public class ExportMovieAction extends AbstractAction
 
 	private void loadSettings()
 	{
-		String val;
-		try
-		{
-			val = Settings.getString(SETTING_TEXT);
-			if (val != null && !(val.length() == 0))
-				textEnabled = Boolean.parseBoolean(val);
-		}
-		catch (Throwable t)
-		{
-			Telemetry.trackException(t);
-		}
-
-		try
-		{
-			val = Settings.getString(SETTING_IMG_HEIGHT);
-			if (val != null && !(val.length() == 0))
-				this.imageHeight = Integer.parseInt(val);
-		}
-		catch (Throwable t)
-		{
-			Telemetry.trackException(t);
-		}
-
-		try
-		{
-			val = Settings.getString(SETTING_IMG_WIDTH);
-			if (val != null && !(val.length() == 0))
-				this.imageWidth = Integer.parseInt(val);
-		}
-		catch (Throwable t)
-		{
-			Telemetry.trackException(t);
-		}
+		textEnabled = Settings.getBoolean(BooleanKey.MOVIE_TEXT);
+		imageWidth = Settings.getInt(IntKey.MOVIE_IMG_WIDTH);
+		imageHeight = Settings.getInt(IntKey.MOVIE_IMG_HEIGHT);
 
 		// default settings if nothing was specified so far
-		if (imageWidth == 0)
+		if (imageWidth < 2 || imageHeight < 2)
+		{
 			imageWidth = 1280;
-
-		if (imageHeight == 0)
 			imageHeight = 720;
+		}
+	}
+
+	private void cancelMovie()
+	{
+		started = false;
 	}
 
 	private class ProgressDialog extends JDialog
 	{
+		private final JPanel contentPanel = new JPanel();
 		private JProgressBar progressBar;
 		private JButton btnCancel;
 		private JLabel lblDescription;
-		private final JPanel contentPanel = new JPanel();
 
 		private ProgressDialog()
 		{
@@ -343,10 +312,5 @@ public class ExportMovieAction extends AbstractAction
 			MainFrame.SINGLETON.setEnabled(true);
 			super.dispose();
 		}
-	}
-
-	private void cancelMovie()
-	{
-		started = false;
 	}
 }

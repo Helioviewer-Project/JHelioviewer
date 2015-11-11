@@ -11,6 +11,7 @@ import javax.swing.SwingUtilities;
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.Globals.DialogType;
 import org.helioviewer.jhv.base.Settings;
+import org.helioviewer.jhv.base.Settings.StringKey;
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPDownloadRequest;
@@ -24,8 +25,6 @@ import org.helioviewer.jhv.viewmodel.TimeLine;
 //TODO: layout on windows broken
 public class DownloadMovieDialog extends JDialog
 {
-	private static final String PATH_SETTINGS = "download.path"; //TODO: consolidate/check all paths
-
 	public DownloadMovieDialog(String _url, Layer _layer)
 	{
 		super(MainFrame.SINGLETON, "Download movie", true);
@@ -52,7 +51,7 @@ public class DownloadMovieDialog extends JDialog
 		String defaultName = _layer.getFullName() + " " + Globals.FILE_DATE_TIME_FORMATTER.format(((ImageLayer)_layer).getFirstLocalDateTime()) + " " + Globals.FILE_DATE_TIME_FORMATTER.format(((ImageLayer)_layer).getLastLocalDateTime());
 		File selectedFile = Globals.showFileDialog(DialogType.SAVE_FILE,
 				"Download movie",
-				Settings.getString(PATH_SETTINGS),
+				Settings.getString(StringKey.MOVIE_DOWNLOAD_PATH),
 				true,
 				defaultName,
 				PredefinedFileFilter.JPX);
@@ -60,7 +59,7 @@ public class DownloadMovieDialog extends JDialog
 		if (selectedFile == null)
 			return;
 		
-		Settings.setString(PATH_SETTINGS, selectedFile.getParent());
+		Settings.setString(StringKey.MOVIE_DOWNLOAD_PATH, selectedFile.getParent());
 		final HTTPDownloadRequest httpDownloadRequest = new HTTPDownloadRequest(_url, DownloadPriority.URGENT, selectedFile.getPath());
 		
 		UltimateDownloadManager.addRequest(httpDownloadRequest);

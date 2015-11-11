@@ -4,6 +4,9 @@ import com.mindscapehq.raygun4java.core.RaygunClient;
 import com.mindscapehq.raygun4java.core.messages.RaygunIdentifier;
 
 import javax.swing.*;
+
+import org.helioviewer.jhv.base.Settings.StringKey;
+
 import java.util.*;
 
 public class UILatencyWatchdog
@@ -113,7 +116,7 @@ public class UILatencyWatchdog
 												+ ")");
 								customData.put("FullStackTrace", fullStackTrace.toString());
 
-								RaygunIdentifier user = new RaygunIdentifier(Settings.getString("UUID"));
+								RaygunIdentifier user = new RaygunIdentifier(Settings.getString(StringKey.UUID));
 								client.SetUser(user);
 								ArrayList<String> tags = new ArrayList<>();
 								tags.add(Globals.RAYGUN_TAG);

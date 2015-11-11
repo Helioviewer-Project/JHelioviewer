@@ -3,6 +3,8 @@ package org.helioviewer.jhv.base;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GLContext;
 import com.microsoft.applicationinsights.TelemetryClient;
+
+import org.helioviewer.jhv.base.Settings.StringKey;
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 import org.helioviewer.jhv.gui.statusLabels.FramerateStatusPanel;
 import org.helioviewer.jhv.layers.ImageLayer;
@@ -30,7 +32,7 @@ public class Telemetry
 		client.getContext().getDevice().setOperatingSystem(System.getProperty("os.name"));
 		client.getContext().getDevice().setOperatingSystemVersion(System.getProperty("os.version"));
 		client.getContext().getComponent().setVersion(Globals.VERSION);
-		client.getContext().getUser().setId(Settings.getString("UUID"));
+		client.getContext().getUser().setId(Settings.getString(StringKey.UUID));
 		client.getContext().getSession().setId(UUID.randomUUID().toString());
 		
 		client.getContext().getProperties().put("Cores", Runtime.getRuntime().availableProcessors()+"");

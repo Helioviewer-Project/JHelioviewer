@@ -5,6 +5,9 @@ import com.mindscapehq.raygun4java.core.messages.RaygunIdentifier;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
+
+import org.helioviewer.jhv.base.Settings.StringKey;
+
 import java.awt.Dialog.ModalityType;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -100,7 +103,7 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
 							+ System.getProperty("java.specification.version")
 							+ ")");
 
-			RaygunIdentifier user = new RaygunIdentifier(Settings.getString("UUID"));
+			RaygunIdentifier user = new RaygunIdentifier(Settings.getString(StringKey.UUID));
 			client.SetUser(user);
 			ArrayList<String> tags = new ArrayList<>();
 			tags.add(Globals.RAYGUN_TAG);
@@ -121,6 +124,8 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
 	{
 		if(e==null)
 			return;
+		
+		e.printStackTrace();
 		
 		// stop reentrant error reporting
 		Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler()

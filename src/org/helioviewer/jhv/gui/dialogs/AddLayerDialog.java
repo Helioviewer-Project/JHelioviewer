@@ -218,7 +218,7 @@ public class AddLayerDialog extends JDialog
 		}
 		
 		
-		int sourceId=Settings.getInt("addlayer.last.sourceid");
+		int sourceId=Settings.getInt(Settings.IntKey.ADDLAYER_LAST_SOURCEID);
 		for(Observatory o:Observatories.getObservatories())
 			for(Filter f:o.getInstruments())
 			{
@@ -388,7 +388,7 @@ public class AddLayerDialog extends JDialog
 					//FIXME: camera rotation not correct for COR1 layer
 					newLayer.animateCameraToFacePlane = true;
 					
-					Settings.setInt("addlayer.last.sourceid", filter.sourceId);
+					Settings.setInt(Settings.IntKey.ADDLAYER_LAST_SOURCEID, filter.sourceId);
 					lastStart = datePickerStartDate.getDateTime();
 					lastEnd = datePickerEndDate.getDateTime();
 					

@@ -4,6 +4,9 @@ import com.google.common.io.Files;
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.Globals.DialogType;
 import org.helioviewer.jhv.base.Settings;
+import org.helioviewer.jhv.base.Settings.BooleanKey;
+import org.helioviewer.jhv.base.Settings.IntKey;
+import org.helioviewer.jhv.base.Settings.StringKey;
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.PredefinedFileFilter;
@@ -21,11 +24,6 @@ import java.util.Date;
 
 public class SaveScreenshotAsAction extends AbstractAction
 {
-	private static final String SETTING_SCREENSHOT_IMG_WIDTH = "export.screenshot.image.width";
-	private static final String SETTING_SCREENSHOT_IMG_HEIGHT = "export.screenshot.image.height";
-	private static final String SETTING_SCREENSHOT_TEXT = "export.screenshot.text";
-	private static final String SETTING_SCREENSHOT_EXPORT_LAST_DIRECTORY = "export.screenshot.last.directory";
-
 	private int imageWidth;
 	private int imageHeight;
 
@@ -45,7 +43,7 @@ public class SaveScreenshotAsAction extends AbstractAction
 	{
 		File selectedFile=Globals.showFileDialog(DialogType.SAVE_FILE,
 				"Save screenshot",
-				Settings.getString(SETTING_SCREENSHOT_EXPORT_LAST_DIRECTORY),
+				Settings.getString(StringKey.SCREENSHOT_EXPORT_DIRECTORY),
 				false,
 				getDefaultFileName(),
 				PredefinedFileFilter.PNG_SINGLE,
@@ -74,45 +72,15 @@ public class SaveScreenshotAsAction extends AbstractAction
 
 	private void loadSettings()
 	{
-		String val;
-		try
-		{
-			val = Settings.getString(SETTING_SCREENSHOT_TEXT);
-			if (val != null && !(val.length() == 0))
-				this.textEnabled = Boolean.parseBoolean(val);
-		}
-		catch (Throwable t)
-		{
-			Telemetry.trackException(t);
-		}
+		textEnabled = Settings.getBoolean(BooleanKey.SCREENSHOT_TEXT);
+		imageWidth = Settings.getInt(IntKey.SCREENSHOT_IMG_WIDTH);
+		imageHeight = Settings.getInt(IntKey.SCREENSHOT_IMG_HEIGHT);
 
-		try
+		if (imageWidth < 2 || imageHeight < 2)
 		{
-			val = Settings.getString(SETTING_SCREENSHOT_IMG_HEIGHT);
-			if (val != null && !(val.length() == 0))
-				this.imageHeight = Integer.parseInt(val);
-		}
-		catch (Throwable t)
-		{
-			Telemetry.trackException(t);
-		}
-
-		try
-		{
-			val = Settings.getString(SETTING_SCREENSHOT_IMG_WIDTH);
-			if (val != null && !(val.length() == 0))
-				this.imageWidth = Integer.parseInt(val);
-		}
-		catch (Throwable t)
-		{
-			Telemetry.trackException(t);
-		}
-
-		if (imageWidth == 0)
 			imageWidth = 1280;
-
-		if (imageHeight == 0)
 			imageHeight = 720;
+		}
 	}
 
 	/**

@@ -12,6 +12,7 @@ import javax.swing.KeyStroke;
 
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.Globals.DialogType;
+import org.helioviewer.jhv.base.Settings.StringKey;
 import org.helioviewer.jhv.base.Settings;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.PredefinedFileFilter;
@@ -43,7 +44,7 @@ public class OpenLocalFileAction extends AbstractAction
 		File selectedFile = Globals.showFileDialog(
 				DialogType.OPEN_FILE,
 				"Open local file",
-				Settings.getString("default.local.path"),
+				Settings.getString(StringKey.MOVIE_OPEN_PATH),
 				false,
 				null,
 				PredefinedFileFilter.ALL_SUPPORTED_IMAGE_TYPES,
@@ -56,7 +57,7 @@ public class OpenLocalFileAction extends AbstractAction
 			return;
 		
 		// remember the current directory for future
-		Settings.setString("default.local.path", selectedFile.getParent());
+		Settings.setString(StringKey.MOVIE_OPEN_PATH, selectedFile.getParent());
 		
 		try
 		{

@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.time.LocalDateTime;
 
 import org.helioviewer.jhv.base.Globals.DialogType;
+import org.helioviewer.jhv.base.Settings.StringKey;
 import org.helioviewer.jhv.base.math.Quaternion;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.gui.MainFrame;
@@ -24,15 +25,12 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public class StateParser extends DefaultHandler
 {
-	private static final String LOAD_PATH_SETTINGS = "statefile.load.path";
-	private static final String SAVE_PATH_SETTINGS = "statefile.save.path";
-	
 	public static void loadStateFile() throws IOException, JSONException
 	{
 		File selectedFile = Globals.showFileDialog(
 				DialogType.OPEN_FILE,
 				"Open State File",
-				Settings.getString(LOAD_PATH_SETTINGS),
+				Settings.getString(StringKey.STATE_DIRECTORY),
 				true,
 				null,
 				PredefinedFileFilter.JHV
@@ -40,7 +38,7 @@ public class StateParser extends DefaultHandler
 		
 		if (selectedFile!=null)
 		{
-			Settings.setString(LOAD_PATH_SETTINGS, selectedFile.getParentFile().getAbsolutePath());
+			Settings.setString(StringKey.STATE_DIRECTORY, selectedFile.getParentFile().getAbsolutePath());
 			loadStateFile(selectedFile);
 		}
 	}
@@ -75,7 +73,7 @@ public class StateParser extends DefaultHandler
 
 	private static void startSavingStateFile(File selectedFile) throws JSONException, IOException
 	{
-		Settings.setString(SAVE_PATH_SETTINGS, selectedFile.getParent());
+		Settings.setString(StringKey.STATE_DIRECTORY, selectedFile.getParent());
 		String fileName = selectedFile.toString();
 		fileName = fileName.endsWith(PredefinedFileFilter.JHV.getDefaultExtension()) ? fileName
 				: fileName + PredefinedFileFilter.JHV.getDefaultExtension();
@@ -121,7 +119,7 @@ public class StateParser extends DefaultHandler
 	{
 		File selectedFile = Globals.showFileDialog(DialogType.SAVE_FILE,
 				"Save state file",
-				Settings.getString(SAVE_PATH_SETTINGS),
+				Settings.getString(StringKey.STATE_DIRECTORY),
 				true,
 				null,
 				PredefinedFileFilter.JHV);

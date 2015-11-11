@@ -3,6 +3,7 @@ package org.helioviewer.jhv.gui.dialogs;
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.Globals.DialogType;
 import org.helioviewer.jhv.base.Settings;
+import org.helioviewer.jhv.base.Settings.StringKey;
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.PredefinedFileFilter;
@@ -49,7 +50,6 @@ public class MetaDataDialog extends JDialog
 	JScrollPane listScroller;
 
 	private @Nullable Document xmlDoc;
-	private static final String LAST_DIRECTORY = "metadata.save.lastPath";
 
 	public MetaDataDialog()
 	{
@@ -106,7 +106,7 @@ public class MetaDataDialog extends JDialog
 
 				// Open save-dialog
 				final File file = Globals.showFileDialog(DialogType.SAVE_FILE, "Save metadata",
-						Settings.getString(LAST_DIRECTORY), true, outFileName, PredefinedFileFilter.XML);
+						Settings.getString(StringKey.METADATA_EXPORT_DIRECTORY), true, outFileName, PredefinedFileFilter.XML);
 
 				if (file == null)
 					return;

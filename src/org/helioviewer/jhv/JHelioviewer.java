@@ -138,7 +138,7 @@ public class JHelioviewer
 			// The settings must not be applied before the kakadu engine has
 			// been initialized
 			splash.progressTo("Loading settings");
-			Settings.load();
+			Settings.init();
 
 			splash.progressTo("Initializing Kakadu");
 			try

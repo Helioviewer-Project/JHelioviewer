@@ -1,5 +1,15 @@
 package org.helioviewer.jhv.base;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.TreeMap;
+
+import javax.annotation.Nullable;
+import javax.swing.SwingUtilities;
+
 import org.helioviewer.jhv.base.downloadmanager.AbstractDownloadRequest;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
@@ -9,15 +19,6 @@ import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import javax.annotation.Nullable;
-import javax.swing.*;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.TreeMap;
 
 public class Observatories
 {
@@ -51,7 +52,7 @@ public class Observatories
 							{
 								addObservatories(json);
 								
-								if (Settings.getBoolean("startup.loadmovie"))
+								if (Settings.getBoolean(Settings.BooleanKey.STARTUP_LOADMOVIE))
 								{
 									try
 									{

@@ -54,7 +54,6 @@ class HEKPluginPanel extends JPanel implements ActionListener,
 		this.cache = hekCache;
 		this.cacheModel = hekCache.getModel();
 		this.selectionModel = hekCache.getSelectionModel();
-		HEKCacheTreeModel treeModel = hekCache.getTreeModel();
 		this.loadingModel = hekCache.getLoadingModel();
 
 		// set up visual components

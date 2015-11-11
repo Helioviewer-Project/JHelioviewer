@@ -1,6 +1,7 @@
 package org.helioviewer.jhv.gui.components;
 
 import org.helioviewer.jhv.base.Settings;
+import org.helioviewer.jhv.base.Settings.StringKey;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.actions.*;
@@ -44,7 +45,7 @@ public class TopToolBar extends JToolBar implements MouseListener
 		//setRollover(true);
 		setFloatable(false);
 
-		displayMode = DisplayMode.valueOf(Settings.getString("display.toolbar").toUpperCase());
+		displayMode = DisplayMode.valueOf(Settings.getString(StringKey.TOOLBAR_DISPLAY));
 
 		createNewToolBar();
 		addMouseListener(this);
@@ -214,7 +215,7 @@ public class TopToolBar extends JToolBar implements MouseListener
 	{
 		DisplayMode oldDisplayMode = displayMode;
 		displayMode = _mode;
-		Settings.setString("display.toolbar", _mode.toString().toLowerCase());
+		Settings.setString(StringKey.TOOLBAR_DISPLAY, _mode.toString());
 		
 		createNewToolBar();
 

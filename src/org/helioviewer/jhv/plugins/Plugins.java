@@ -16,6 +16,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 import org.helioviewer.jhv.base.Settings;
+import org.helioviewer.jhv.base.Settings.BooleanKey;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
@@ -75,7 +76,7 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 		for(Plugin p:plugins)
 		{
 			final PluginLayer pl=new PluginLayer(p);
-			pl.setVisible(Settings.getBoolean("plugin."+pl.getName()+".visible"));
+			pl.setVisible(Settings.getBoolean(Settings.BooleanKey.PLUGIN_VISIBLE,pl.getName()));
 			Layers.addLayer(pl);
 			
 			ExitProgramAction.addShutdownHook(new Runnable()
@@ -83,7 +84,7 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 				@Override
 				public void run()
 				{
-					Settings.setBoolean("plugin."+pl.getName()+".visible", pl.isVisible());
+					Settings.setBoolean(BooleanKey.PLUGIN_VISIBLE, pl.getName(), pl.isVisible());
 				}
 			});
 		}

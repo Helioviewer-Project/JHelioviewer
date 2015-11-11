@@ -16,6 +16,7 @@ import org.helioviewer.jhv.layers.Movie.Match;
 import org.helioviewer.jhv.opengl.RayTrace;
 import org.helioviewer.jhv.opengl.Texture;
 import org.helioviewer.jhv.opengl.camera.CameraMode;
+import org.helioviewer.jhv.opengl.camera.CameraMode.MODE;
 import org.helioviewer.jhv.opengl.camera.animation.CameraRotationAnimation;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
@@ -208,7 +209,7 @@ public abstract class ImageLayer extends Layer
 		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "greenChannel"), greenChannel ? 1:0);
 		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "blueChannel"), blueChannel ? 1:0);
 		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "opacityCorona"), opacityCorona);
-		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "cameraMode"), CameraMode.getCameraMode());
+		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "cameraMode"), CameraMode.mode == MODE.MODE_3D ? 1 : 0);
 		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "contrast"), (float) contrast);
 
 		float clipNear = (float) Math.max(mainPanel.getTranslationCurrent().z - 4 * Constants.SUN_RADIUS, MainPanel.CLIP_NEAR);

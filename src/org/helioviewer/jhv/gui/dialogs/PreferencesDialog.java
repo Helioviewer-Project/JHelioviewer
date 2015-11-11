@@ -7,6 +7,9 @@ import com.jgoodies.forms.layout.RowSpec;
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.Settings;
 import org.helioviewer.jhv.base.Telemetry;
+import org.helioviewer.jhv.base.Settings.BooleanKey;
+import org.helioviewer.jhv.base.Settings.IntKey;
+import org.helioviewer.jhv.base.Settings.StringKey;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MainFrame;
@@ -44,14 +47,10 @@ public class PreferencesDialog extends JDialog
 	private static final int MAX_SIZE_SCREENSHOT = 4096;
 	private static final int MAX_SIZE_MOVIE_EXPORT = 4096;
 
-	private static final AspectRatio[] MOVIE_ASPECT_RATIO_PRESETS = {
-			new AspectRatio(1, 1), new AspectRatio(4, 3),
-			new AspectRatio(16, 9), new AspectRatio(16, 10),
-			new AspectRatio(0, 0) };
-	private static final AspectRatio[] IMAGE_ASPECT_RATIO_PRESETS = {
-			new AspectRatio(1, 1), new AspectRatio(4, 3),
-			new AspectRatio(16, 9), new AspectRatio(16, 10),
-			new AspectRatio(0, 0) };
+	private static final AspectRatio[] MOVIE_ASPECT_RATIO_PRESETS = { new AspectRatio(1, 1), new AspectRatio(4, 3),
+			new AspectRatio(16, 9), new AspectRatio(16, 10), new AspectRatio(0, 0) };
+	private static final AspectRatio[] IMAGE_ASPECT_RATIO_PRESETS = { new AspectRatio(1, 1), new AspectRatio(4, 3),
+			new AspectRatio(16, 9), new AspectRatio(16, 10), new AspectRatio(0, 0) };
 
 	/**
 	 * The private constructor that sets the fields and the dialog.
@@ -60,9 +59,9 @@ public class PreferencesDialog extends JDialog
 	public PreferencesDialog()
 	{
 		super(MainFrame.SINGLETON, "Preferences", true);
-		
+
 		Telemetry.trackEvent("Dialog", "Type", getClass().getSimpleName());
-		
+
 		setResizable(false);
 
 		JPanel mainPanel = new JPanel(new BorderLayout());
@@ -105,9 +104,7 @@ public class PreferencesDialog extends JDialog
 			{
 				if (!isDateFormatValid(dateFormatField.getText()))
 				{
-					JOptionPane.showMessageDialog(
-							PreferencesDialog.this,
-							"Syntax error",
+					JOptionPane.showMessageDialog(PreferencesDialog.this, "Syntax error",
 							"The entered date pattern contains illegal signs!\nAll suppported signs are listed in the associated information dialog.",
 							JOptionPane.ERROR_MESSAGE);
 					return;
@@ -130,9 +127,8 @@ public class PreferencesDialog extends JDialog
 		{
 			public void actionPerformed(@Nullable ActionEvent e)
 			{
-				if (JOptionPane.showConfirmDialog(null,
-						"Do you really want to reset the Preferences?",
-						"Attention", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
+				if (JOptionPane.showConfirmDialog(null, "Do you really want to reset the Preferences?", "Attention",
+						JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
 				{
 					loadDefaultMovieOnStartUp.setSelected(true);
 					dateFormatField.setText(defaultDateFormat);
@@ -156,7 +152,7 @@ public class PreferencesDialog extends JDialog
 		mainPanel.add(btnPanel, BorderLayout.SOUTH);
 
 		getContentPane().add(mainPanel);
-		
+
 		loadSettings();
 
 		pack();
@@ -196,17 +192,17 @@ public class PreferencesDialog extends JDialog
 	/**
 	 * Loads the settings.
 	 * 
-	 * Reads the informations from {@link org.helioviewer.jhv.base.Settings} and sets
-	 * all gui elements according to them.
+	 * Reads the informations from {@link org.helioviewer.jhv.base.Settings} and
+	 * sets all gui elements according to them.
 	 */
 	private void loadSettings()
 	{
 		// Start up
-		loadDefaultMovieOnStartUp.setSelected(Settings.getBoolean("startup.loadmovie"));
-		doNothingOnStartUp.setSelected(!Settings.getBoolean("startup.loadmovie"));
-		
+		loadDefaultMovieOnStartUp.setSelected(Settings.getBoolean(Settings.BooleanKey.STARTUP_LOADMOVIE));
+		doNothingOnStartUp.setSelected(!Settings.getBoolean(Settings.BooleanKey.STARTUP_LOADMOVIE));
+
 		// Default date format
-		String fmt = Settings.getString("default.date.format");
+		String fmt = Settings.getString(StringKey.DEFAULT_DATE_FORMAT);
 
 		if (fmt == null)
 			dateFormatField.setText(defaultDateFormat);
@@ -218,19 +214,14 @@ public class PreferencesDialog extends JDialog
 		screenshotExportPanel.loadSettings();
 	}
 
-	/**
-	 * Saves the settings.
-	 * 
-	 * Writes the informations to {@link org.helioviewer.jhv.base.Settings}.
-	 */
 	private void saveSettings()
 	{
 		// Start up
-		Settings.setBoolean("startup.loadmovie", loadDefaultMovieOnStartUp.isSelected());
-		
+		Settings.setBoolean(BooleanKey.STARTUP_LOADMOVIE, loadDefaultMovieOnStartUp.isSelected());
+
 		// Default date format
-		Settings.setString("default.date.format", dateFormatField.getText());
-		
+		Settings.setString(StringKey.DEFAULT_DATE_FORMAT, dateFormatField.getText());
+
 		// Default values
 		movieExportPanel.saveSettings();
 		screenshotExportPanel.saveSettings();
@@ -312,54 +303,40 @@ public class PreferencesDialog extends JDialog
 		private JComboBox<AspectRatio> movieAspectRatioSelection;
 		private JFormattedTextField txtMovieImageWidth, txtMovieImageHeight;
 		private JCheckBox isTextEnabled;
-		private static final String SETTING_MOVIE_IMG_WIDTH = "export.movie.image.width";
-		private static final String SETTING_MOVIE_IMG_HEIGHT = "export.movie.image.height";
-		private static final String SETTING_MOVIE_TEXT = "export.movie.text";
 		private boolean hasChanged = false;
 
 		public MovieExportPanel()
 		{
-			this.setLayout(new FormLayout(new ColumnSpec[] {
-					FormFactory.RELATED_GAP_COLSPEC,
-					FormFactory.DEFAULT_COLSPEC,
-					FormFactory.RELATED_GAP_COLSPEC,
-					FormFactory.DEFAULT_COLSPEC,
-					FormFactory.RELATED_GAP_COLSPEC,
-					FormFactory.DEFAULT_COLSPEC,
-					FormFactory.RELATED_GAP_COLSPEC,
-					ColumnSpec.decode("default:grow"), }, new RowSpec[] {
-					FormFactory.RELATED_GAP_ROWSPEC,
-					FormFactory.DEFAULT_ROWSPEC,
-					FormFactory.RELATED_GAP_ROWSPEC,
-					FormFactory.DEFAULT_ROWSPEC,
-					FormFactory.RELATED_GAP_ROWSPEC,
-					FormFactory.DEFAULT_ROWSPEC,
-					FormFactory.RELATED_GAP_ROWSPEC,
-					FormFactory.DEFAULT_ROWSPEC,
-					FormFactory.RELATED_GAP_ROWSPEC,
-					FormFactory.DEFAULT_ROWSPEC, }));
+			this.setLayout(new FormLayout(
+					new ColumnSpec[] { FormFactory.RELATED_GAP_COLSPEC, FormFactory.DEFAULT_COLSPEC,
+							FormFactory.RELATED_GAP_COLSPEC, FormFactory.DEFAULT_COLSPEC,
+							FormFactory.RELATED_GAP_COLSPEC, FormFactory.DEFAULT_COLSPEC,
+							FormFactory.RELATED_GAP_COLSPEC, ColumnSpec.decode("default:grow"), },
+					new RowSpec[] { FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
+							FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
+							FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
+							FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
+							FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC, }));
 			{
 				JLabel lblAspectRation = new JLabel("Aspect ratio");
 				this.add(lblAspectRation, "2, 4, right, default");
 			}
 			{
-				movieAspectRatioSelection = new JComboBox<>(
-						MOVIE_ASPECT_RATIO_PRESETS);
+				movieAspectRatioSelection = new JComboBox<>(MOVIE_ASPECT_RATIO_PRESETS);
 				this.add(movieAspectRatioSelection, "4, 4, left, default");
-				movieAspectRatioSelection.addItemListener(new ItemListener() {
+				movieAspectRatioSelection.addItemListener(new ItemListener()
+				{
 
 					@Override
-					public void itemStateChanged(@Nullable ItemEvent e) {
-						AspectRatio aspectRatio = (AspectRatio) movieAspectRatioSelection
-								.getSelectedItem();
-						if (aspectRatio.width != 0) {
-							int width = Integer.parseInt(txtMovieImageWidth
-									.getText());
+					public void itemStateChanged(@Nullable ItemEvent e)
+					{
+						AspectRatio aspectRatio = (AspectRatio) movieAspectRatioSelection.getSelectedItem();
+						if (aspectRatio.width != 0)
+						{
+							int width = Integer.parseInt(txtMovieImageWidth.getText());
 							// txtMovieImageWidth.setValue(txtMovieImageWidth.getValue());
 							hasChanged = true;
-							txtMovieImageHeight.setValue(width
-									* aspectRatio.height
-									/ aspectRatio.width);
+							txtMovieImageHeight.setValue(width * aspectRatio.height / aspectRatio.width);
 						}
 						hasChanged = false;
 					}
@@ -383,27 +360,28 @@ public class PreferencesDialog extends JDialog
 			{
 				txtMovieImageWidth = new JFormattedTextField(formatter);
 				txtMovieImageWidth.setValue(1280);
-				txtMovieImageWidth.addPropertyChangeListener("value",
-						new PropertyChangeListener() {
+				txtMovieImageWidth.addPropertyChangeListener("value", new PropertyChangeListener()
+				{
 
-							@Override
-							public void propertyChange(@Nullable PropertyChangeEvent pe) {
-								if (!hasChanged) {
-									AspectRatio aspectRatio = (AspectRatio) movieAspectRatioSelection
+					@Override
+					public void propertyChange(@Nullable PropertyChangeEvent pe)
+					{
+						if (!hasChanged)
+						{
+							AspectRatio aspectRatio = (AspectRatio) movieAspectRatioSelection
 
 									.getSelectedItem();
-									if (aspectRatio.height != 0) {
-										int width = (int) txtMovieImageWidth
-												.getValue();
-										hasChanged = true;
-										txtMovieImageHeight.setValue(width
-												* aspectRatio.height
-												/ aspectRatio.width);
-									}
-								} else
-									hasChanged = false;
+							if (aspectRatio.height != 0)
+							{
+								int width = (int) txtMovieImageWidth.getValue();
+								hasChanged = true;
+								txtMovieImageHeight.setValue(width * aspectRatio.height / aspectRatio.width);
 							}
-						});
+						}
+						else
+							hasChanged = false;
+					}
+				});
 				this.add(txtMovieImageWidth, "4, 6, left, default");
 				txtMovieImageWidth.setColumns(10);
 				txtMovieImageWidth.setToolTipText("value between 1 to 4096");
@@ -415,27 +393,28 @@ public class PreferencesDialog extends JDialog
 			{
 				txtMovieImageHeight = new JFormattedTextField(formatter);
 				txtMovieImageHeight.setValue(720);
-				txtMovieImageHeight.addPropertyChangeListener("value",
-						new PropertyChangeListener() {
+				txtMovieImageHeight.addPropertyChangeListener("value", new PropertyChangeListener()
+				{
 
-							@Override
-							public void propertyChange(@Nullable PropertyChangeEvent evt) {
-								if (!hasChanged) {
-									AspectRatio aspectRatio = (AspectRatio) movieAspectRatioSelection
+					@Override
+					public void propertyChange(@Nullable PropertyChangeEvent evt)
+					{
+						if (!hasChanged)
+						{
+							AspectRatio aspectRatio = (AspectRatio) movieAspectRatioSelection
 
 									.getSelectedItem();
-									if (aspectRatio.height != 0) {
-										int heigth = (int) txtMovieImageHeight
-												.getValue();
-										hasChanged = true;
-										txtMovieImageWidth.setValue(heigth
-												* aspectRatio.width
-												/ aspectRatio.height);
-									}
-								} else
-									hasChanged = false;
+							if (aspectRatio.height != 0)
+							{
+								int heigth = (int) txtMovieImageHeight.getValue();
+								hasChanged = true;
+								txtMovieImageWidth.setValue(heigth * aspectRatio.width / aspectRatio.height);
 							}
-						});
+						}
+						else
+							hasChanged = false;
+					}
+				});
 				this.add(txtMovieImageHeight, "4, 8, left, default");
 				txtMovieImageHeight.setColumns(10);
 				txtMovieImageHeight.setToolTipText("value between 1 to 4096");
@@ -445,39 +424,10 @@ public class PreferencesDialog extends JDialog
 
 		public void loadSettings()
 		{
-			String val;
-			try
-			{
-				val = Settings.getString(SETTING_MOVIE_TEXT);
-				if (val != null && !(val.length() == 0))
-					isTextEnabled.setSelected(Boolean.parseBoolean(val));
-			}
-			catch (Throwable t)
-			{
-				Telemetry.trackException(t);
-			}
+			isTextEnabled.setSelected(Settings.getBoolean(BooleanKey.MOVIE_TEXT));
 
-			try
-			{
-				val = Settings.getString(SETTING_MOVIE_IMG_HEIGHT);
-				if (val != null && !(val.length() == 0))
-					txtMovieImageHeight.setValue(Math.round(Float.parseFloat(val)));
-			}
-			catch (Throwable t)
-			{
-				Telemetry.trackException(t);
-			}
-
-			try
-			{
-				val = Settings.getString(SETTING_MOVIE_IMG_WIDTH);
-				if (val != null && !(val.length() == 0))
-					txtMovieImageWidth.setValue(Math.round(Float.parseFloat(val)));
-			}
-			catch (Throwable t)
-			{
-				Telemetry.trackException(t);
-			}
+			txtMovieImageWidth.setValue(IntKey.MOVIE_IMG_WIDTH);
+			txtMovieImageHeight.setValue(IntKey.MOVIE_IMG_HEIGHT);
 
 			float ar = 16 / 9f;
 			try
@@ -491,7 +441,8 @@ public class PreferencesDialog extends JDialog
 				Telemetry.trackException(_e);
 			}
 
-			movieAspectRatioSelection.setSelectedItem(MOVIE_ASPECT_RATIO_PRESETS[MOVIE_ASPECT_RATIO_PRESETS.length - 1]);
+			movieAspectRatioSelection
+					.setSelectedItem(MOVIE_ASPECT_RATIO_PRESETS[MOVIE_ASPECT_RATIO_PRESETS.length - 1]);
 			for (AspectRatio asp : MOVIE_ASPECT_RATIO_PRESETS)
 				if (Math.abs(asp.width / (float) asp.height - ar) < 0.01)
 				{
@@ -502,9 +453,21 @@ public class PreferencesDialog extends JDialog
 
 		public void saveSettings()
 		{
-			Settings.setString(SETTING_MOVIE_TEXT, isTextEnabled.isSelected() + "");
-			Settings.setString(SETTING_MOVIE_IMG_WIDTH, txtMovieImageWidth.getValue().toString());
-			Settings.setString(SETTING_MOVIE_IMG_HEIGHT, txtMovieImageHeight.getValue().toString());
+			Settings.setBoolean(BooleanKey.MOVIE_TEXT, isTextEnabled.isSelected());
+			try
+			{
+				Settings.setInt(IntKey.MOVIE_IMG_WIDTH, Integer.parseInt(txtMovieImageWidth.getValue().toString()));
+			}
+			catch (NumberFormatException _nfe)
+			{
+			}
+			try
+			{
+				Settings.setInt(IntKey.MOVIE_IMG_HEIGHT, Integer.parseInt(txtMovieImageHeight.getValue().toString()));
+			}
+			catch (NumberFormatException _nfe)
+			{
+			}
 		}
 
 	}
@@ -527,59 +490,43 @@ public class PreferencesDialog extends JDialog
 		private JComboBox<AspectRatio> screenshotAspectRatioSelection;
 		private JFormattedTextField txtScreenshotImageWidth, txtScreenshotImageHeight;
 		private JCheckBox isTextEnabled;
-		private static final String SETTING_SCREENSHOT_IMG_WIDTH = "export.screenshot.image.width";
-		private static final String SETTING_SCREENSHOT_IMG_HEIGHT = "export.screenshot.image.height";
-		private static final String SETTING_SCREENSHOT_TEXT = "export.screenshot.text";
 		private boolean hasChanged = false;
-		
+
 		public ScreenshotExportPanel()
 		{
-			this.setLayout(new FormLayout(new ColumnSpec[] {
-					FormFactory.RELATED_GAP_COLSPEC,
-					FormFactory.DEFAULT_COLSPEC,
-					FormFactory.RELATED_GAP_COLSPEC,
-					FormFactory.DEFAULT_COLSPEC,
-					FormFactory.RELATED_GAP_COLSPEC,
-					FormFactory.DEFAULT_COLSPEC,
-					FormFactory.RELATED_GAP_COLSPEC,
-					ColumnSpec.decode("default:grow"), }, new RowSpec[] {
-					FormFactory.RELATED_GAP_ROWSPEC,
-					FormFactory.DEFAULT_ROWSPEC,
-					FormFactory.RELATED_GAP_ROWSPEC,
-					FormFactory.DEFAULT_ROWSPEC,
-					FormFactory.RELATED_GAP_ROWSPEC,
-					FormFactory.DEFAULT_ROWSPEC,
-					FormFactory.RELATED_GAP_ROWSPEC,
-					FormFactory.DEFAULT_ROWSPEC,
-					FormFactory.RELATED_GAP_ROWSPEC,
-					FormFactory.DEFAULT_ROWSPEC, }));
+			this.setLayout(new FormLayout(
+					new ColumnSpec[] { FormFactory.RELATED_GAP_COLSPEC, FormFactory.DEFAULT_COLSPEC,
+							FormFactory.RELATED_GAP_COLSPEC, FormFactory.DEFAULT_COLSPEC,
+							FormFactory.RELATED_GAP_COLSPEC, FormFactory.DEFAULT_COLSPEC,
+							FormFactory.RELATED_GAP_COLSPEC, ColumnSpec.decode("default:grow"), },
+					new RowSpec[] { FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
+							FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
+							FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
+							FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
+							FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC, }));
 			{
 				JLabel lblAspectRation = new JLabel("Aspect ratio");
 				this.add(lblAspectRation, "2, 4, right, default");
 			}
 			{
-				screenshotAspectRatioSelection = new JComboBox<>(
-						IMAGE_ASPECT_RATIO_PRESETS);
+				screenshotAspectRatioSelection = new JComboBox<>(IMAGE_ASPECT_RATIO_PRESETS);
 				this.add(screenshotAspectRatioSelection, "4, 4, left, default");
-				screenshotAspectRatioSelection
-						.addItemListener(new ItemListener() {
+				screenshotAspectRatioSelection.addItemListener(new ItemListener()
+				{
 
-							@Override
-							public void itemStateChanged(@Nullable ItemEvent e) {
-								AspectRatio aspectRatio = (AspectRatio) screenshotAspectRatioSelection
-										.getSelectedItem();
-								if (aspectRatio.width != 0) {
-									int width = Integer
-											.parseInt(txtScreenshotImageWidth
-													.getText());
-									hasChanged = true;
-									txtScreenshotImageHeight.setValue(width
-											* aspectRatio.height
-											/ aspectRatio.width);
-								}
-								hasChanged = false;
-							}
-						});
+					@Override
+					public void itemStateChanged(@Nullable ItemEvent e)
+					{
+						AspectRatio aspectRatio = (AspectRatio) screenshotAspectRatioSelection.getSelectedItem();
+						if (aspectRatio.width != 0)
+						{
+							int width = Integer.parseInt(txtScreenshotImageWidth.getText());
+							hasChanged = true;
+							txtScreenshotImageHeight.setValue(width * aspectRatio.height / aspectRatio.width);
+						}
+						hasChanged = false;
+					}
+				});
 			}
 			{
 				isTextEnabled = new JCheckBox("Render time stamps");
@@ -599,32 +546,31 @@ public class PreferencesDialog extends JDialog
 			{
 				txtScreenshotImageWidth = new JFormattedTextField(formatter);
 				txtScreenshotImageWidth.setValue(1280);
-				txtScreenshotImageWidth.addPropertyChangeListener("value",
-						new PropertyChangeListener() {
+				txtScreenshotImageWidth.addPropertyChangeListener("value", new PropertyChangeListener()
+				{
 
-							@Override
-							public void propertyChange(@Nullable PropertyChangeEvent evt) {
-								if (!hasChanged) {
-									AspectRatio aspectRatio = (AspectRatio) screenshotAspectRatioSelection
+					@Override
+					public void propertyChange(@Nullable PropertyChangeEvent evt)
+					{
+						if (!hasChanged)
+						{
+							AspectRatio aspectRatio = (AspectRatio) screenshotAspectRatioSelection
 
 									.getSelectedItem();
-									if (aspectRatio.height != 0) {
-										int width = Integer
-												.parseInt(txtScreenshotImageWidth
-														.getText());
-										hasChanged = true;
-										txtScreenshotImageHeight.setValue(width
-												* aspectRatio.height
-												/ aspectRatio.width);
-									}
-								} else
-									hasChanged = false;
+							if (aspectRatio.height != 0)
+							{
+								int width = Integer.parseInt(txtScreenshotImageWidth.getText());
+								hasChanged = true;
+								txtScreenshotImageHeight.setValue(width * aspectRatio.height / aspectRatio.width);
 							}
-						});
+						}
+						else
+							hasChanged = false;
+					}
+				});
 				this.add(txtScreenshotImageWidth, "4, 6, left, default");
 				txtScreenshotImageWidth.setColumns(10);
-				txtScreenshotImageWidth
-						.setToolTipText("value between 1 to 4096");
+				txtScreenshotImageWidth.setToolTipText("value between 1 to 4096");
 			}
 			{
 				JLabel lblImageHeight = new JLabel("Image height");
@@ -633,68 +579,40 @@ public class PreferencesDialog extends JDialog
 			{
 				txtScreenshotImageHeight = new JFormattedTextField(formatter);
 				txtScreenshotImageHeight.setValue(720);
-				txtScreenshotImageHeight.addPropertyChangeListener("value",
-						new PropertyChangeListener() {
+				txtScreenshotImageHeight.addPropertyChangeListener("value", new PropertyChangeListener()
+				{
 
-							@Override
-							public void propertyChange(@Nullable PropertyChangeEvent evt) {
-								if (!hasChanged) {
-									AspectRatio aspectRatio = (AspectRatio) screenshotAspectRatioSelection
+					@Override
+					public void propertyChange(@Nullable PropertyChangeEvent evt)
+					{
+						if (!hasChanged)
+						{
+							AspectRatio aspectRatio = (AspectRatio) screenshotAspectRatioSelection
 
 									.getSelectedItem();
-									if (aspectRatio.height != 0) {
-										int heigth = Integer
-												.parseInt(txtScreenshotImageHeight
-														.getText());
-										hasChanged = true;
-										txtScreenshotImageWidth.setValue(heigth
-												* aspectRatio.width
-												/ aspectRatio.height);
-									}
-								} else
-									hasChanged = false;
+							if (aspectRatio.height != 0)
+							{
+								int heigth = Integer.parseInt(txtScreenshotImageHeight.getText());
+								hasChanged = true;
+								txtScreenshotImageWidth.setValue(heigth * aspectRatio.width / aspectRatio.height);
 							}
-						});
+						}
+						else
+							hasChanged = false;
+					}
+				});
 				this.add(txtScreenshotImageHeight, "4, 8, left, default");
 				txtScreenshotImageHeight.setColumns(10);
-				txtScreenshotImageHeight
-						.setToolTipText("value between 1 to 4096");
+				txtScreenshotImageHeight.setToolTipText("value between 1 to 4096");
 			}
 
 		}
 
-		public void loadSettings() {
-			String val;
-			try {
-				val = Settings.getString(SETTING_SCREENSHOT_TEXT);
-				if (val != null && !(val.length() == 0))
-					isTextEnabled.setSelected(Boolean.parseBoolean(val));
-			}
-			catch (Throwable t)
-			{
-				Telemetry.trackException(t);
-			}
-
-			try
-			{
-				val = Settings.getString(SETTING_SCREENSHOT_IMG_HEIGHT);
-				if (val != null && !(val.length() == 0))
-					txtScreenshotImageHeight.setValue(Math.round(Float.parseFloat(val)));
-			}
-			catch (Throwable t)
-			{
-				Telemetry.trackException(t);
-			}
-
-			try {
-				val = Settings.getString(SETTING_SCREENSHOT_IMG_WIDTH);
-				if (val != null && !(val.length() == 0)) {
-					txtScreenshotImageWidth.setValue(Math.round(Float
-							.parseFloat(val)));
-				}
-			} catch (Throwable t) {
-				Telemetry.trackException(t);
-			}
+		public void loadSettings()
+		{
+			isTextEnabled.setSelected(Settings.getBoolean(BooleanKey.SCREENSHOT_TEXT));
+			txtScreenshotImageWidth.setValue(Settings.getInt(IntKey.SCREENSHOT_IMG_WIDTH));
+			txtScreenshotImageHeight.setValue(Settings.getInt(IntKey.SCREENSHOT_IMG_HEIGHT));
 
 			float ar = 16 / 9f;
 			try
@@ -708,7 +626,8 @@ public class PreferencesDialog extends JDialog
 				Telemetry.trackException(_e);
 			}
 
-			screenshotAspectRatioSelection.setSelectedItem(IMAGE_ASPECT_RATIO_PRESETS[IMAGE_ASPECT_RATIO_PRESETS.length - 1]);
+			screenshotAspectRatioSelection
+					.setSelectedItem(IMAGE_ASPECT_RATIO_PRESETS[IMAGE_ASPECT_RATIO_PRESETS.length - 1]);
 			for (AspectRatio asp : IMAGE_ASPECT_RATIO_PRESETS)
 				if (Math.abs(asp.width / (float) asp.height - ar) < 0.01)
 				{
@@ -719,9 +638,23 @@ public class PreferencesDialog extends JDialog
 
 		public void saveSettings()
 		{
-			Settings.setString(SETTING_SCREENSHOT_TEXT, isTextEnabled.isSelected() + "");
-			Settings.setString(SETTING_SCREENSHOT_IMG_WIDTH, txtScreenshotImageWidth.getValue().toString());
-			Settings.setString(SETTING_SCREENSHOT_IMG_HEIGHT, txtScreenshotImageHeight.getValue().toString());
+			Settings.setBoolean(BooleanKey.SCREENSHOT_TEXT, isTextEnabled.isSelected());
+			try
+			{
+				Settings.setInt(IntKey.SCREENSHOT_IMG_WIDTH,
+						Integer.parseInt(txtScreenshotImageWidth.getValue().toString()));
+			}
+			catch (NumberFormatException _nfe)
+			{
+			}
+			try
+			{
+				Settings.setInt(IntKey.SCREENSHOT_IMG_HEIGHT,
+						Integer.parseInt(txtScreenshotImageHeight.getValue().toString()));
+			}
+			catch (NumberFormatException _nfe)
+			{
+			}
 		}
 	}
 

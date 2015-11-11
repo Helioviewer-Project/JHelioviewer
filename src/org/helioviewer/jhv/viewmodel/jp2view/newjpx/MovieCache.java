@@ -52,14 +52,14 @@ public class MovieCache
 			}
 		});
 		
-		if(Settings.getBoolean("cache.loading.crashed"))
+		if(Settings.getBoolean(Settings.BooleanKey.CACHE_LOADING_CRASHED))
 		{
 			for(File f:CACHE_DIR.listFiles())
 				f.delete();
 		}
 		else
 		{
-			Settings.setBoolean("cache.loading.crashed", true);
+			Settings.setBoolean(Settings.BooleanKey.CACHE_LOADING_CRASHED, true);
 			for(File f:CACHE_DIR.listFiles())
 			{
 				String[] parts=f.getName().split(",");
@@ -85,7 +85,7 @@ public class MovieCache
 				}
 			}
 		}
-		Settings.setBoolean("cache.loading.crashed", false);
+		Settings.setBoolean(Settings.BooleanKey.CACHE_LOADING_CRASHED, false);
 	}
 	
 	private static void limitCacheSize()
