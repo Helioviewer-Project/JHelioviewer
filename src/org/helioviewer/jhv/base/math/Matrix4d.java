@@ -16,28 +16,28 @@ public class Matrix4d
 			double M6, double M10, double M14, double M3, double M7, double M11, double M15)
 	{
 		m[0] = M0;
-		m[4] = M4;
-		m[8] = M8;
-		m[12] = M12;
 		m[1] = M1;
-		m[5] = M5;
-		m[9] = M9;
-		m[13] = M13;
 		m[2] = M2;
-		m[6] = M6;
-		m[10] = M10;
-		m[14] = M14;
 		m[3] = M3;
+		m[4] = M4;
+		m[5] = M5;
+		m[6] = M6;
 		m[7] = M7;
+		m[8] = M8;
+		m[9] = M9;
+		m[10] = M10;
 		m[11] = M11;
+		m[12] = M12;
+		m[13] = M13;
+		m[14] = M14;
 		m[15] = M15;
 	}
 
-	public Matrix4d()
+	private Matrix4d()
 	{
 	}
 
-	public Matrix4d(Matrix4d _m)
+	private Matrix4d(Matrix4d _m)
 	{
 		System.arraycopy(_m.m, 0, m, 0, m.length);
 	}
@@ -86,11 +86,6 @@ public class Matrix4d
 		return new Vector4d(m[0] * v.x + m[4] * v.y + m[8] * v.z + m[12] * v.w,
 				m[1] * v.x + m[5] * v.y + m[9] * v.z + m[13] * v.w, m[2] * v.x + m[6] * v.y + m[10] * v.z + m[14] * v.w,
 				m[3] * v.x + m[7] * v.y + m[11] * v.z + m[15] * v.w);
-	}
-
-	public Matrix3d rotationPart()
-	{
-		return new Matrix3d(m[0], m[1], m[2], m[4], m[5], m[6], m[8], m[9], m[10]);
 	}
 
 	public Vector3d translationPart()
@@ -315,11 +310,6 @@ public class Matrix4d
 		double r = t * aspect;
 		double l = -r;
 		return createFrustumMatrix(l, r, b, t, n, f);
-	}
-
-	public Matrix3d toMatrix3d()
-	{
-		return new Matrix3d(m[0], m[4], m[8], m[1], m[5], m[9], m[2], m[6], m[10]);
 	}
 
 	public String toString()
