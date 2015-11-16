@@ -175,7 +175,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 
 	public void activatePanInteraction()
 	{
-		cameraInteractions[1] = new CameraPanInteraction(this, this);
+		cameraInteractions[1] = new CameraPanInteraction(this, this, 1);
 	}
 
 	public void activateZoomBoxInteraction()

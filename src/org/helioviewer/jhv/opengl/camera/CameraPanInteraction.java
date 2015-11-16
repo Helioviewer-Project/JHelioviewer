@@ -12,14 +12,16 @@ import org.helioviewer.jhv.opengl.camera.CameraMode.MODE;
 
 public class CameraPanInteraction extends CameraInteraction
 {
+	private double scale;
 	private double meterPerPixelWidth;
 	private double meterPerPixelHeight;
 	private @Nullable Point lastPosition;
 	private boolean dragged;
 	
-	public CameraPanInteraction(MainPanel mainPanel, Camera camera) 
+	public CameraPanInteraction(MainPanel mainPanel, Camera camera, double _scale) 
 	{
 		super(mainPanel, camera);
+		scale=_scale;
 	}
 
 	@Override
@@ -37,7 +39,6 @@ public class CameraPanInteraction extends CameraInteraction
 		meterPerPixelWidth = width/(double)mainPanel.getWidth();
 		meterPerPixelHeight = height/(double)mainPanel.getHeight();
 		lastPosition = e.getPoint();
-		
 	}
 
 
@@ -52,8 +53,8 @@ public class CameraPanInteraction extends CameraInteraction
 			Vector3d translation = camera.getTranslationCurrent();
 			lastPosition = e.getPoint();
 			camera.stopAllAnimations();
-			camera.setTranslationCurrent(new Vector3d(translation.x + xTranslation, translation.y + yTranslation, translation.z));
-			camera.setTranslationEnd(new Vector3d(translation.x + xTranslation, translation.y + yTranslation, translation.z));
+			camera.setTranslationCurrent(new Vector3d(translation.x + xTranslation*scale, translation.y + yTranslation*scale, translation.z));
+			camera.setTranslationEnd(new Vector3d(translation.x + xTranslation*scale, translation.y + yTranslation*scale, translation.z));
 		}
 	}
 

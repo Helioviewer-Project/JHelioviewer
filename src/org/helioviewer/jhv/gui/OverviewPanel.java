@@ -38,12 +38,13 @@ public class OverviewPanel extends MainPanel
 	@Override
 	public void activatePanInteraction()
 	{
-		this.cameraInteractions[1] = new CameraViewportPanInteraction(this, mainViews.get(0));
+		cameraInteractions[1] = new CameraPanInteraction(this, mainViews.get(0), -1);
+		//cameraInteractions[1] = new CameraViewportPanInteraction(this, mainViews.get(0));
 	}
 
 	public void activateZoomBoxInteraction()
 	{
-		this.cameraInteractions[1] = new CameraZoomBoxInteraction(this, mainViews.get(0));
+		cameraInteractions[1] = new CameraZoomBoxInteraction(this, mainViews.get(0));
 	}
 
 	private void zoomToFit()
