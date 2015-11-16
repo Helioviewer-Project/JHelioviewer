@@ -40,18 +40,18 @@ public class OpenLocalFileAction extends AbstractAction
 
 	public void actionPerformed(@Nullable ActionEvent e)
 	{
-		//FIXME: do png, jpg & fits actually work?!
+		//TODO: add png, jpg & fits support
 		File selectedFile = Globals.showFileDialog(
 				DialogType.OPEN_FILE,
 				"Open local file",
 				Settings.getString(StringKey.MOVIE_OPEN_PATH),
 				false,
 				null,
-				PredefinedFileFilter.ALL_SUPPORTED_IMAGE_TYPES,
-				PredefinedFileFilter.JP2,
+				//PredefinedFileFilter.ALL_SUPPORTED_IMAGE_TYPES,
+				PredefinedFileFilter.JP2/*,
 				PredefinedFileFilter.FITS,
 				PredefinedFileFilter.PNG_SINGLE,
-				PredefinedFileFilter.JPG_SINGLE);
+				PredefinedFileFilter.JPG_SINGLE*/);
 
 		if (selectedFile == null)
 			return;
