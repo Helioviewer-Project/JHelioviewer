@@ -15,7 +15,7 @@ import org.helioviewer.jhv.base.Settings.StringKey;
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPDownloadRequest;
-import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
+import org.helioviewer.jhv.base.downloadmanager.DownloadManager;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.PredefinedFileFilter;
 import org.helioviewer.jhv.layers.ImageLayer;
@@ -62,7 +62,7 @@ public class DownloadMovieDialog extends JDialog
 		Settings.setString(StringKey.MOVIE_DOWNLOAD_PATH, selectedFile.getParent());
 		final HTTPDownloadRequest httpDownloadRequest = new HTTPDownloadRequest(_url, DownloadPriority.URGENT, selectedFile.getPath());
 		
-		UltimateDownloadManager.addRequest(httpDownloadRequest);
+		DownloadManager.addRequest(httpDownloadRequest);
 		Thread downloadMovieThread = new Thread(new Runnable()
 		{
 			@Override

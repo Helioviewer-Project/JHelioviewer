@@ -9,7 +9,7 @@ import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
 import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
-import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
+import org.helioviewer.jhv.base.downloadmanager.DownloadManager;
 import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.Quaternion;
 import org.helioviewer.jhv.base.math.Vector3d;
@@ -433,7 +433,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		gl.glScaled(xScale, yScale, 1);
 		gl.glMatrixMode(GL2.GL_MODELVIEW);			
 		
-		if (UltimateDownloadManager.areDownloadsActive() && _showLoadingAnimation)
+		if (DownloadManager.areDownloadsActive() && _showLoadingAnimation)
 		{
 			int xOffset = (int) (getSurfaceWidth() * 0.85);
 			int width = (int) (getSurfaceWidth() * 0.15);

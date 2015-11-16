@@ -13,7 +13,7 @@ import javax.swing.SwingUtilities;
 import org.helioviewer.jhv.base.downloadmanager.AbstractDownloadRequest;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
-import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
+import org.helioviewer.jhv.base.downloadmanager.DownloadManager;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
 import org.json.JSONArray;
@@ -41,7 +41,7 @@ public class Observatories
 					try
 					{
 						final HTTPRequest httpRequest = new HTTPRequest(Globals.OBSERVATORIES_DATASOURCE, DownloadPriority.HIGH, AbstractDownloadRequest.INFINITE_TIMEOUT);
-						UltimateDownloadManager.addRequest(httpRequest);
+						DownloadManager.addRequest(httpRequest);
 						final JSONObject json = new JSONObject(httpRequest.getDataAsString());
 						
 						SwingUtilities.invokeLater(new Runnable()

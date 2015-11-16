@@ -8,7 +8,7 @@ import java.util.Comparator;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class UltimateDownloadManager
+public class DownloadManager
 {
 	private static class Tuple
 	{

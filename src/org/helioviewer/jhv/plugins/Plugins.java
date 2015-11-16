@@ -19,7 +19,7 @@ import org.helioviewer.jhv.base.Settings;
 import org.helioviewer.jhv.base.Settings.BooleanKey;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
-import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
+import org.helioviewer.jhv.base.downloadmanager.DownloadManager;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.MainFrame;
@@ -247,7 +247,7 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 	public static HTTPRequest generateAndStartHTPPRequest(String uri, DownloadPriority priority)
 	{
 		HTTPRequest httpRequest = new HTTPRequest(uri, priority);
-		UltimateDownloadManager.addRequest(httpRequest);
+		DownloadManager.addRequest(httpRequest);
 		return httpRequest;
 	}
 
