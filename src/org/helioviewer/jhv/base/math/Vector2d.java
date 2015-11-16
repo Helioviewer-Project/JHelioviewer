@@ -129,11 +129,9 @@ public final class Vector2d
 	public boolean equals(final @Nullable Object o)
 	{
 		if (!(o instanceof Vector2d))
-		{
 			return false;
-		}
+		
 		Vector2d v = (Vector2d) o;
-
 		return Double.compare(x, v.x) == 0 && Double.compare(y, v.y) == 0;
 	}
 

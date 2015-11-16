@@ -176,9 +176,12 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
 					&& (!thr.getThreadGroup().getName()
 							.equalsIgnoreCase("system") || thr.getName()
 							.contains("Timer")))
-				try {
+				try
+				{
 					thr.suspend();
-				} catch (Throwable _th) {
+				}
+				catch (Throwable _th)
+				{
 				}
 		for (Thread thr : Thread.getAllStackTraces().keySet())
 			if (thr != Thread.currentThread()

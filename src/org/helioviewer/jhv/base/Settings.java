@@ -27,7 +27,7 @@ public class Settings
             }
             catch(BackingStoreException e)
             {
-            	Telemetry.trackException(e);
+            	e.printStackTrace();
             }
         }
         
@@ -41,7 +41,7 @@ public class Settings
         }
         catch (Exception ex)
         {
-            Telemetry.trackException(ex);
+        	ex.printStackTrace();
         }
         
         //check whether a default is defined for all known settings

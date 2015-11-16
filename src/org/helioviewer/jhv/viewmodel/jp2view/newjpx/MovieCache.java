@@ -54,8 +54,15 @@ public class MovieCache
 		
 		if(Settings.getBoolean(Settings.BooleanKey.CACHE_LOADING_CRASHED))
 		{
-			for(File f:CACHE_DIR.listFiles())
-				f.delete();
+			try
+			{
+				for(File f:CACHE_DIR.listFiles())
+					f.delete();
+			}
+			catch(Throwable _t)
+			{
+				Telemetry.trackException(_t);
+			}
 		}
 		else
 		{
@@ -91,6 +98,9 @@ public class MovieCache
 	private static void limitCacheSize()
 	{
 		File[] files=CACHE_DIR.listFiles();
+		if(files==null)
+			return;
+		
 		long cacheSize = 0;
 		for(File f:files)
 			cacheSize += f.length();
@@ -176,6 +186,9 @@ public class MovieCache
 		for (Movie m : al)
 		{
 			Match curMatch=m.findClosestIdx(_currentDate);
+			if(curMatch==null)
+				continue;
+			
 			if(bestMatch==null)
 				bestMatch=curMatch;
 			else if(curMatch.timeDifferenceSeconds<bestMatch.timeDifferenceSeconds)

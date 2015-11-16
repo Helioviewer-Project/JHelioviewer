@@ -32,6 +32,14 @@ public class JHelioviewer
 {
 	public static void main(final String[] args)
 	{
+		/*for(int i=1;i<30;i++)
+			System.out.println(i+"\t"+Integer.numberOfTrailingZeros(i));
+			//System.out.println(i+"\t"+(int)Math.round(Math.log(i & -i)/Math.log(2)));
+		
+		if(1==1)
+			return;*/
+		
+		
 		CommandLineProcessor.setArguments(args);
 		
 		// Setup Swing

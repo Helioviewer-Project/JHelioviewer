@@ -1,6 +1,7 @@
 package org.helioviewer.jhv.viewmodel.jp2view.newjpx;
 
 import org.helioviewer.jhv.base.FutureValue;
+import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.downloadmanager.*;
@@ -35,7 +36,6 @@ import java.util.concurrent.Future;
 public class KakaduLayer extends ImageLayer
 {
 	public static final int MAX_FRAME_DOWNLOAD_BATCH = 15;
-	private static final String URL = "http://api.helioviewer.org/v2/getJPX/?";
 	
 	public TreeSet<LocalDateTime> localDateTimes = new TreeSet<>();
 
@@ -231,16 +231,16 @@ public class KakaduLayer extends ImageLayer
 						currentEnd = end;
 					
 					MovieDownload md=new MovieDownload();
-					md.metadata = new HTTPRequest(URL
-							+ "startTime=" + currentStart.format(formatter)
+					md.metadata = new HTTPRequest(Globals.JPX_DATASOURCE
+							+ "?startTime=" + currentStart.format(formatter)
 							+ "&endTime=" + currentEnd.format(formatter)
 							+ "&sourceId=" + sourceId
 							+ "&cadence=" + cadence
 							+ "&jpip=true&verbose=true",
 							DownloadPriority.HIGH);
 					
-					md.hq = new JPIPDownloadRequest(URL
-							+ "startTime=" + currentStart.format(formatter)
+					md.hq = new JPIPDownloadRequest(Globals.JPX_DATASOURCE
+							+ "?startTime=" + currentStart.format(formatter)
 							+ "&endTime=" + currentEnd.format(formatter)
 							+ "&sourceId=" + sourceId
 							+ "&cadence=" + cadence,
@@ -490,7 +490,7 @@ public class KakaduLayer extends ImageLayer
 			return null;
 		
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-		return URL + "startTime=" + start.format(formatter) + "&endTime=" + end.format(formatter) + "&sourceId=" + sourceId + "&cadence=" + cadence;
+		return Globals.JPX_DATASOURCE + "?startTime=" + start.format(formatter) + "&endTime=" + end.format(formatter) + "&sourceId=" + sourceId + "&cadence=" + cadence;
 	}
 
 	public boolean isLocalFile()

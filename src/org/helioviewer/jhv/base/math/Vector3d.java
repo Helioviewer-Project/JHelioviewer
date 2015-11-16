@@ -217,7 +217,7 @@ public class Vector3d
 	/**
 	 * A normalized variant of a 3d vector, with shortcuts for some calculations.
 	 */
-	private class Vector3dNormalized extends Vector3d
+	private static class Vector3dNormalized extends Vector3d
 	{
 		private Vector3dNormalized(final double newX, final double newY, final double newZ)
 		{
