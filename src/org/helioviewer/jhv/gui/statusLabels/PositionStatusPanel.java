@@ -50,7 +50,7 @@ public class PositionStatusPanel extends StatusLabel
 			}
 
 			@Override
-			public void mouseExited(MouseEvent e, Ray ray)
+			public void mouseExited()
 			{
 				updatePosition(null);
 			}
@@ -64,7 +64,7 @@ public class PositionStatusPanel extends StatusLabel
 			}
 
 			@Override
-			public void mouseExited(MouseEvent e, Ray ray)
+			public void mouseExited()
 			{
 				updatePosition(null);
 			}

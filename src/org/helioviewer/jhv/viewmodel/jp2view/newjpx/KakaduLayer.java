@@ -1,10 +1,33 @@
 package org.helioviewer.jhv.viewmodel.jp2view.newjpx;
 
+import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.NavigableSet;
+import java.util.TreeSet;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+import javax.annotation.Nullable;
+import javax.swing.SwingUtilities;
+
 import org.helioviewer.jhv.base.FutureValue;
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.Telemetry;
-import org.helioviewer.jhv.base.downloadmanager.*;
+import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
+import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
+import org.helioviewer.jhv.base.downloadmanager.JPIPDownloadRequest;
+import org.helioviewer.jhv.base.downloadmanager.JPIPRequest;
+import org.helioviewer.jhv.base.downloadmanager.UltimateDownloadManager;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.layers.ImageLayer;
@@ -19,19 +42,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
-
-import javax.annotation.Nullable;
-import javax.swing.*;
-import java.awt.*;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 public class KakaduLayer extends ImageLayer
 {
@@ -182,7 +192,13 @@ public class KakaduLayer extends ImageLayer
 	private static HashMap<String,Integer> usedIDs=new HashMap<>();
 	private static int unusedID=-1;
 	
-	//TODO: are negative sourceId's allowed?
+	/**
+	 * This method creates new, otherwise unused SourceId's for sources
+	 * that stem from files. Helioviewer.org only ever uses positive id's.
+	 * 
+	 * @param _filename
+	 * @return Associated (negative) ID
+	 */
 	private int genSourceId(String _filename)
 	{
 		if(!usedIDs.containsKey(_filename))

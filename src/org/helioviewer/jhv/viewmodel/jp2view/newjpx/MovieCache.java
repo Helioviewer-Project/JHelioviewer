@@ -173,9 +173,7 @@ public class MovieCache
 			al.add(_movie);
 	}
 
-	@SuppressWarnings("null")
-	@Nullable
-	public static Match findBestFrame(int _sourceId, LocalDateTime _currentDate)
+	public static @Nullable Match findBestFrame(int _sourceId, LocalDateTime _currentDate)
 	{
 		List<Movie> al=cache.get(_sourceId);
 		if(al==null)

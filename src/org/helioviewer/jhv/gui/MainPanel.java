@@ -45,9 +45,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-//TODO: change all listeners to inline anonymous classes
-public class MainPanel extends GLCanvas implements GLEventListener, MouseListener, MouseMotionListener,
-		MouseWheelListener, LayerListener, TimeLineListener, Camera
+public class MainPanel extends GLCanvas implements GLEventListener, Camera
 {
 	public static final double MAX_DISTANCE = Constants.SUN_MEAN_DISTANCE_TO_EARTH * 1.8;
 	public static final double MIN_DISTANCE = Constants.SUN_RADIUS * 1.2;
@@ -97,12 +95,117 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		cameraListeners = new ArrayList<>();
 		setSharedContext(_context);
 
-		Layers.addLayerListener(this);
-		TimeLine.SINGLETON.addListener(this);
-		addMouseListener(this);
-		addMouseMotionListener(this);
+		Layers.addLayerListener(new LayerListener()
+		{
+			@Override
+			public void layerAdded()
+			{
+				repaint();
+			}
+
+			@Override
+			public void layersRemoved()
+			{
+				repaint();
+			}
+
+			@Override
+			public void activeLayerChanged(@Nullable Layer layer)
+			{
+				if (Layers.getActiveImageLayer() != null)
+					lastDate = null;
+				repaint();
+			}
+		});
+		TimeLine.SINGLETON.addListener(new TimeLineListener()
+		{
+			
+			@Override
+			public void timeStampChanged(LocalDateTime current, LocalDateTime last)
+			{
+			}
+			
+			@Override
+			public void dateTimesChanged(int framecount)
+			{
+			}
+
+			@Override
+			public void isPlayingChanged(boolean _isPlaying)
+			{
+				lastFrameChangeTime = System.currentTimeMillis();
+				repaint();
+			}
+		});
+		addMouseListener(new MouseAdapter()
+				{
+					@Override
+					public void mousePressed(@Nullable MouseEvent e)
+					{
+						if (e == null)
+							return;
+		
+						Ray ray = new RayTrace().cast(e.getX(), e.getY(), MainPanel.this);
+						for (CameraInteraction cameraInteraction : cameraInteractions)
+							cameraInteraction.mousePressed(e, ray);
+					}
+		
+					@Override
+					public void mouseReleased(@Nullable MouseEvent e)
+					{
+						if (e == null)
+							return;
+		
+						Ray ray = new RayTrace().cast(e.getX(), e.getY(), MainPanel.this);
+						for (CameraInteraction cameraInteraction : cameraInteractions)
+							cameraInteraction.mouseReleased(e, ray);
+					}
+		
+					@Override
+					public void mouseExited(@Nullable MouseEvent e)
+					{
+						for (PanelMouseListener listener : panelMouseListeners)
+							listener.mouseExited();
+					}
+				});
+		addMouseMotionListener(new MouseMotionListener()
+		{
+			@Override
+			public void mouseDragged(@Nullable MouseEvent e)
+			{
+				if (e == null)
+					return;
+
+				Ray ray = new RayTrace().cast(e.getX(), e.getY(), MainPanel.this);
+				for (CameraInteraction cameraInteraction : cameraInteractions)
+					cameraInteraction.mouseDragged(e, ray);
+			}
+
+			@Override
+			public void mouseMoved(@Nullable MouseEvent e)
+			{
+				if (e == null)
+					return;
+
+				Ray ray = new RayTrace().cast(e.getX(), e.getY(), MainPanel.this);
+				for (PanelMouseListener listener : panelMouseListeners)
+					listener.mouseMoved(e, ray);
+			}
+		});
 		addGLEventListener(this);
-		addMouseWheelListener(this);
+		addMouseWheelListener(new MouseWheelListener()
+		{
+			@Override
+			public void mouseWheelMoved(@Nullable MouseWheelEvent e)
+			{
+				if (e == null)
+					return;
+				
+				Ray ray = new RayTrace().cast(e.getX(), e.getY(), MainPanel.this);
+				for (CameraInteraction cameraInteraction : cameraInteractions)
+					cameraInteraction.mouseWheelMoved(e, ray);
+			}
+		});
 
 		rotationNow = rotationEnd = Quaternion.createRotation(0.0, new Vector3d(0, 1, 0));
 		translationNow = translationEnd = new Vector3d(0, 0, DEFAULT_CAMERA_DISTANCE);
@@ -282,7 +385,6 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 
 		
-		//FIXME: which one is correct? original was the first variant...
 		Quaternion rotation = new Quaternion(rotationNow.a, rotationNow.u.negatedY());
 		Matrix4d transformation = rotation.toMatrix().translated(-translationNow.x, translationNow.y,-translationNow.z);
 		gl.glMultMatrixd(transformation.m, 0);
@@ -542,71 +644,6 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		repaint();
 	}
 
-	@Override
-	public void mouseDragged(@Nullable MouseEvent e)
-	{
-		if (e == null)
-			return;
-
-		Ray ray = new RayTrace().cast(e.getX(), e.getY(), this);
-		for (CameraInteraction cameraInteraction : cameraInteractions)
-			cameraInteraction.mouseDragged(e, ray);
-	}
-
-	@Override
-	public void mouseMoved(@Nullable MouseEvent e)
-	{
-		if (e == null)
-			return;
-
-		Ray ray = new RayTrace().cast(e.getX(), e.getY(), this);
-		for (PanelMouseListener listener : panelMouseListeners)
-			listener.mouseMoved(e, ray);
-	}
-
-	@Override
-	public void mouseClicked(@Nullable MouseEvent e)
-	{
-	}
-
-	@Override
-	public void mousePressed(@Nullable MouseEvent e)
-	{
-		if (e == null)
-			return;
-
-		Ray ray = new RayTrace().cast(e.getX(), e.getY(), this);
-		for (CameraInteraction cameraInteraction : cameraInteractions)
-			cameraInteraction.mousePressed(e, ray);
-	}
-
-	@Override
-	public void mouseReleased(@Nullable MouseEvent e)
-	{
-		if (e == null)
-			return;
-
-		Ray ray = new RayTrace().cast(e.getX(), e.getY(), this);
-		for (CameraInteraction cameraInteraction : cameraInteractions)
-			cameraInteraction.mouseReleased(e, ray);
-	}
-
-	@Override
-	public void mouseEntered(@Nullable MouseEvent e)
-	{
-	}
-
-	@Override
-	public void mouseExited(@Nullable MouseEvent e)
-	{
-		if (e == null)
-			return;
-
-		Ray ray = new RayTrace().cast(e.getX(), e.getY(), this);
-		for (PanelMouseListener listener : panelMouseListeners)
-			listener.mouseExited(e, ray);
-	}
-
 	public Dimension getCanavasSize()
 	{
 		return new Dimension(getSurfaceWidth(), getSurfaceHeight());
@@ -637,9 +674,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 
 		GLDrawableFactory factory = GLDrawableFactory.getFactory(GLProfile.getDefault());
 
-		//FIXME: which profile do we actually need/want for max compat?
 		GLProfile profile = GLProfile.get(GLProfile.GL2);
-		profile = GLProfile.getDefault();
 		GLCapabilities capabilities = new GLCapabilities(profile);
 		capabilities.setDoubleBuffered(false);
 		capabilities.setOnscreen(false);
@@ -728,43 +763,6 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		return screenshot;
 	}
 
-	@Override
-	public void layerAdded()
-	{
-		repaint();
-	}
-
-	@Override
-	public void layersRemoved()
-	{
-		repaint();
-	}
-
-	@Override
-	public void mouseWheelMoved(@Nullable MouseWheelEvent e)
-	{
-		if (e == null)
-			return;
-		
-		Ray ray = new RayTrace().cast(e.getX(), e.getY(), this);
-		for (CameraInteraction cameraInteraction : cameraInteractions)
-			cameraInteraction.mouseWheelMoved(e, ray);
-	}
-
-	@Override
-	public void activeLayerChanged(@Nullable Layer layer)
-	{
-		if (Layers.getActiveImageLayer() != null)
-			lastDate = null;
-		repaint();
-	}
-
-	@Override
-	public void timeStampChanged(LocalDateTime current, LocalDateTime last)
-	{
-		// this.repaint();
-	}
-
 	public double getAspect()
 	{
 		return this.aspect;
@@ -773,11 +771,6 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 	public void addSynchronizedView(MainPanel compenentView)
 	{
 		synchronizedViews.add(compenentView);
-	}
-
-	@Override
-	public void dateTimesChanged(int framecount)
-	{
 	}
 
 	public Vector3d[] getVisibleAreaOutline()
@@ -865,12 +858,5 @@ public class MainPanel extends GLCanvas implements GLEventListener, MouseListene
 		cameraAnimations.clear();
 		setTranslationEnd(getTranslationCurrent());
 		setRotationEnd(getRotationCurrent());
-	}
-
-	@Override
-	public void isPlayingChanged(boolean _isPlaying)
-	{
-		lastFrameChangeTime = System.currentTimeMillis();
-		repaint();
 	}
 }

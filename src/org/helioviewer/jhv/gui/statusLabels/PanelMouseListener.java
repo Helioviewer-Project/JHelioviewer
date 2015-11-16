@@ -6,6 +6,6 @@ import java.awt.event.MouseEvent;
 
 public interface PanelMouseListener
 {
-	void mouseExited(MouseEvent e, Ray ray);
+	void mouseExited();
 	void mouseMoved(MouseEvent e, Ray ray);
 }

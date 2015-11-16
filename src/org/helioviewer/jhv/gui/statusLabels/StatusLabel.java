@@ -21,10 +21,12 @@ abstract class StatusLabel extends JLabel implements TimeLineListener, PanelMous
 		Layers.addLayerListener(this);
 	}
 	
-	public void mouseExited(MouseEvent e, Ray ray)
+	@Override
+	public void mouseExited()
 	{
 	}
 
+	@Override
 	public void mouseMoved(MouseEvent e, Ray ray)
 	{
 	}
