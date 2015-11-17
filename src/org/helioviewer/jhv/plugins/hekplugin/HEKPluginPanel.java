@@ -1,13 +1,9 @@
 package org.helioviewer.jhv.plugins.hekplugin;
 
-import org.helioviewer.jhv.plugins.Plugins;
-import org.helioviewer.jhv.plugins.Plugins.PluginIcon;
-import org.helioviewer.jhv.plugins.hekplugin.cache.*;
-import org.helioviewer.jhv.plugins.hekplugin.cache.gui.HEKCacheTreeView;
-import org.helioviewer.jhv.plugins.hekplugin.cache.gui.HEKCacheTreeViewContainer;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -17,6 +13,23 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+
+import org.helioviewer.jhv.plugins.Plugins;
+import org.helioviewer.jhv.plugins.Plugins.PluginIcon;
+import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;
+import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheListener;
+import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheLoadingModel;
+import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheModel;
+import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheSelectionModel;
+import org.helioviewer.jhv.plugins.hekplugin.cache.HEKPath;
+import org.helioviewer.jhv.plugins.hekplugin.cache.HEKStupidDownloader;
+import org.helioviewer.jhv.plugins.hekplugin.cache.gui.HEKCacheTreeView;
+import org.helioviewer.jhv.plugins.hekplugin.cache.gui.HEKCacheTreeViewContainer;
 
 /**
  * Represents the UI components which manage the HEK event catalog.

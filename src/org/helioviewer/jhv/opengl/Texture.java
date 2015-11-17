@@ -1,16 +1,18 @@
 package org.helioviewer.jhv.opengl;
 
-import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL2;
-import com.jogamp.opengl.GLContext;
+import java.awt.image.BufferedImage;
+import java.nio.ByteBuffer;
+import java.time.LocalDateTime;
+
+import javax.annotation.Nullable;
+
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.math.MathUtils;
 
-import javax.annotation.Nullable;
-import java.awt.image.BufferedImage;
-import java.nio.ByteBuffer;
-import java.time.LocalDateTime;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLContext;
 
 public class Texture
 {

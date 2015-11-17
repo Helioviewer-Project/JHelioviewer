@@ -1,12 +1,16 @@
 package org.helioviewer.jhv.gui;
 
-import javax.annotation.Nullable;
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
 import java.net.URL;
+
+import javax.annotation.Nullable;
+import javax.swing.ImageIcon;
 
 /**
  * This class provides access to all images, icons and cursors which are used by

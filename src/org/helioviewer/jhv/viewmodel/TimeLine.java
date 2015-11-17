@@ -1,14 +1,5 @@
 package org.helioviewer.jhv.viewmodel;
 
-import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.gui.leftPanel.MoviePanel.AnimationMode;
-import org.helioviewer.jhv.layers.ImageLayer;
-import org.helioviewer.jhv.layers.Layer;
-import org.helioviewer.jhv.layers.LayerListener;
-import org.helioviewer.jhv.layers.Layers;
-
-import javax.annotation.Nullable;
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDateTime;
@@ -16,6 +7,16 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NavigableSet;
 import java.util.TreeSet;
+
+import javax.annotation.Nullable;
+import javax.swing.Timer;
+
+import org.helioviewer.jhv.gui.MainFrame;
+import org.helioviewer.jhv.gui.MoviePanel.AnimationMode;
+import org.helioviewer.jhv.layers.ImageLayer;
+import org.helioviewer.jhv.layers.Layer;
+import org.helioviewer.jhv.layers.LayerListener;
+import org.helioviewer.jhv.layers.Layers;
 
 public class TimeLine implements LayerListener
 {

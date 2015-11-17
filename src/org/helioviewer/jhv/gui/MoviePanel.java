@@ -1,10 +1,38 @@
-package org.helioviewer.jhv.gui.leftPanel;
+package org.helioviewer.jhv.gui;
 
-import com.jgoodies.forms.factories.FormFactory;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.RowSpec;
-import org.helioviewer.jhv.gui.IconBank;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.Polygon;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.time.LocalDateTime;
+
+import javax.annotation.Nullable;
+import javax.swing.AbstractAction;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.JSpinner;
+import javax.swing.KeyStroke;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.plaf.basic.BasicSliderUI;
+
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.components.MenuBar;
 import org.helioviewer.jhv.layers.ImageLayer;
@@ -14,16 +42,6 @@ import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.Movie.Match;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.TimeLine.TimeLineListener;
-
-import javax.annotation.Nullable;
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.plaf.basic.BasicSliderUI;
-import java.awt.*;
-import java.awt.event.*;
-import java.time.LocalDateTime;
 
 public class MoviePanel extends JPanel implements TimeLineListener, LayerListener
 {
@@ -77,174 +95,95 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 	private static final Icon ICON_FORWARD = IconBank.getIcon(JHVIcon.FORWARD_NEW, 16, 16);
 
 	private boolean showMore = false;
-	private JPanel optionPane;
 
 	private TimeLine timeLine = TimeLine.SINGLETON;
 	private JLabel lblFrames;
+	private JComboBox<PlaybackSpeedUnit> speedUnitComboBox;
+	private JComboBox<AnimationMode> animationModeComboBox;
+	private JSpinner spinner;
 
-	private JSlider slider;
+	private JPanel optionPane;
 	private JButton btnPrevious, btnPlayPause, btnForward;
+	private JSlider slider;
 
-	@SuppressWarnings("null")
 	public MoviePanel()
 	{
-		setBorder(new EmptyBorder(0, 2, 10, 10));
+		setBorder(new EmptyBorder(10, 10, 10, 10));
 		TimeLine.SINGLETON.addListener(this);
 		Layers.addLayerListener(this);
 		setLayout(new BorderLayout());
-		add(createMain(), BorderLayout.CENTER);
-		optionPane = createOptionPane();
-		add(optionPane, BorderLayout.SOUTH);
-	}
-
-	private JPanel createOptionPane()
-	{
-		JPanel contentPanel = new JPanel();
-		contentPanel.setLayout(new FormLayout(new ColumnSpec[] {
-						FormFactory.RELATED_GAP_COLSPEC,
-						ColumnSpec.decode("max(5px;default)"),
-						FormFactory.RELATED_GAP_COLSPEC,
-						ColumnSpec.decode("max(5px;default)"),
-						FormFactory.RELATED_GAP_COLSPEC,
-						ColumnSpec.decode("default:grow"), }, new RowSpec[] {
-						FormFactory.RELATED_GAP_ROWSPEC,
-						FormFactory.DEFAULT_ROWSPEC,
-						FormFactory.RELATED_GAP_ROWSPEC,
-						FormFactory.DEFAULT_ROWSPEC, }));
-
-		JLabel lblSpeed = new JLabel("Speed:");
-		contentPanel.add(lblSpeed, "2, 2");
-
+		
 		SpinnerNumberModel spinnerNumberModel = new SpinnerNumberModel(20, 1, 300, 1);
-		final JSpinner spinner = new JSpinner(spinnerNumberModel);
-		contentPanel.add(spinner, "4, 2");
-
-		final JComboBox<PlaybackSpeedUnit> speedUnitComboBox = new JComboBox<>(
-				PlaybackSpeedUnit.values());
-
-		spinner.addChangeListener(new ChangeListener()
-		{
-			@Override
-			public void stateChanged(@Nullable ChangeEvent e)
-			{
-				timeLine.setFPS((int) spinner.getValue() * ((PlaybackSpeedUnit) speedUnitComboBox.getSelectedItem()).factor);
-			}
-		});
 		
-		speedUnitComboBox.addItemListener(new ItemListener()
-		{
-			@Override
-			public void itemStateChanged(@Nullable ItemEvent e)
-			{
-				timeLine.setFPS((int) spinner.getValue() * ((PlaybackSpeedUnit) speedUnitComboBox.getSelectedItem()).factor);
-			}
-		});
-		contentPanel.add(speedUnitComboBox, "6, 2, fill, default");
-
-		JLabel lblAnimationMode = new JLabel("Animation Mode:");
-		contentPanel.add(lblAnimationMode, "2, 4, 3, 1");
-
-		final JComboBox<AnimationMode> animationModeComboBox = new JComboBox<>(AnimationMode.values());
-		animationModeComboBox.addItemListener(new ItemListener()
-		{
-			@Override
-			public void itemStateChanged(@Nullable ItemEvent e)
-			{
-				timeLine.setAnimationMode((AnimationMode) animationModeComboBox.getSelectedItem());
-			}
-		});
-		contentPanel.add(animationModeComboBox, "6, 4, fill, default");
-		contentPanel.setVisible(false);
-		return contentPanel;
-	}
-
-	private JPanel createMain()
-	{
 		JPanel contentPanel = new JPanel();
 
-		contentPanel.setLayout(new FormLayout(
-				new ColumnSpec[]
-				{
-					FormFactory.RELATED_GAP_COLSPEC,
-					FormFactory.DEFAULT_COLSPEC,
-					FormFactory.RELATED_GAP_COLSPEC,
-					FormFactory.DEFAULT_COLSPEC,
-					FormFactory.RELATED_GAP_COLSPEC,
-					FormFactory.DEFAULT_COLSPEC,
-					FormFactory.RELATED_GAP_COLSPEC,
-					FormFactory.DEFAULT_COLSPEC,
-					FormFactory.RELATED_GAP_COLSPEC,
-					ColumnSpec.decode("pref:grow"),
-					FormFactory.RELATED_GAP_COLSPEC,
-					FormFactory.DEFAULT_COLSPEC
-				},
-				new RowSpec[]
-				{
-					FormFactory.RELATED_GAP_ROWSPEC,
-					FormFactory.PREF_ROWSPEC,
-					FormFactory.RELATED_GAP_ROWSPEC,
-					FormFactory.PREF_ROWSPEC
-				}));
-
-		slider = new TimeSlider();
-		slider.setValue(0);
-		slider.setPreferredSize(new Dimension(0, 20));
-		slider.setMinimum(0);
-		slider.setMaximum(49);
-		slider.setSnapToTicks(true);
-		slider.setEnabled(false);
-		slider.addChangeListener(new ChangeListener()
-		{
-			@Override
-			public void stateChanged(@Nullable ChangeEvent e)
-			{
-				lblFrames.setText(slider.getValue() + "/" + slider.getMaximum());
-				timeLine.setCurrentFrame(slider.getValue());
-			}
-		});
-		contentPanel.add(slider, "2, 2, 11, 1");
-
-		btnPrevious = new JButton(ICON_BACKWARD);
-		btnPrevious.setEnabled(false);
-		btnPrevious.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(@Nullable ActionEvent e)
-			{
-				timeLine.previousFrame();
-			}
-		});
-		//final int buttonSize = new JButton(ICON_PLAY).getPreferredSize().height;
 		
-		//btnPrevious.setPreferredSize(new Dimension(btnPrevious.getPreferredSize().width, buttonSize));
-		contentPanel.add(btnPrevious, "2, 4");
-
-		btnPlayPause = new JButton(ICON_PLAY);
-		btnPlayPause.setEnabled(false);
-		btnPlayPause.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(@Nullable ActionEvent e)
-			{
-				TimeLine.SINGLETON.setPlaying(!timeLine.isPlaying());
-			}
-		});
-		//btnPlayPause.setPreferredSize(new Dimension(btnPlayPause.getPreferredSize().width, buttonSize));
-		contentPanel.add(btnPlayPause, "4, 4");
-
-		btnForward = new JButton(ICON_FORWARD);
-		btnForward.setEnabled(false);
-		btnForward.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(@Nullable ActionEvent e)
-			{
-				timeLine.nextFrame();
-			}
-		});
-		//btnForward.setPreferredSize(new Dimension(btnForward.getPreferredSize().width, buttonSize));
 		
-		contentPanel.add(btnForward, "6, 4");
+		GridBagLayout gbl_contentPanel = new GridBagLayout();
+		gbl_contentPanel.columnWidths = new int[]{49, 49, 49, 147, 100, 0};
+		gbl_contentPanel.rowHeights = new int[]{0, 0, 0};
+		gbl_contentPanel.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
+		gbl_contentPanel.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
+		contentPanel.setLayout(gbl_contentPanel);
+		
+				btnPlayPause = new JButton(ICON_PLAY);
+				btnPlayPause.setEnabled(false);
+				btnPlayPause.addActionListener(new ActionListener()
+				{
+					@Override
+					public void actionPerformed(@Nullable ActionEvent e)
+					{
+						TimeLine.SINGLETON.setPlaying(!timeLine.isPlaying());
+					}
+				});
+				
+						btnPrevious = new JButton(ICON_BACKWARD);
+						btnPrevious.setEnabled(false);
+						btnPrevious.addActionListener(new ActionListener()
+						{
+							@Override
+							public void actionPerformed(@Nullable ActionEvent e)
+							{
+								timeLine.previousFrame();
+							}
+						});
+						
+						slider = new TimeSlider();
+						slider.setValue(0);
+						slider.setMinimum(0);
+						slider.setMaximum(49);
+						slider.setSnapToTicks(true);
+						slider.setEnabled(false);
+						slider.addChangeListener(new ChangeListener()
+						{
+							@Override
+							public void stateChanged(@Nullable ChangeEvent e)
+							{
+								lblFrames.setText(slider.getValue() + "/" + slider.getMaximum());
+								timeLine.setCurrentFrame(slider.getValue());
+							}
+						});
+
+						GridBagConstraints gbc_slider_2 = new GridBagConstraints();
+						gbc_slider_2.fill = GridBagConstraints.HORIZONTAL;
+						gbc_slider_2.gridwidth = 5;
+						gbc_slider_2.insets = new Insets(0, 0, 5, 5);
+						gbc_slider_2.gridx = 0;
+						gbc_slider_2.gridy = 0;
+						contentPanel.add(slider, gbc_slider_2);
+						
+						GridBagConstraints gbc_btnPrevious = new GridBagConstraints();
+						gbc_btnPrevious.anchor = GridBagConstraints.WEST;
+						gbc_btnPrevious.insets = new Insets(0, 0, 0, 5);
+						gbc_btnPrevious.gridx = 0;
+						gbc_btnPrevious.gridy = 1;
+						contentPanel.add(btnPrevious, gbc_btnPrevious);
+				GridBagConstraints gbc_btnPlayPause = new GridBagConstraints();
+				gbc_btnPlayPause.anchor = GridBagConstraints.WEST;
+				gbc_btnPlayPause.insets = new Insets(0, 0, 0, 5);
+				gbc_btnPlayPause.gridx = 1;
+				gbc_btnPlayPause.gridy = 1;
+				contentPanel.add(btnPlayPause, gbc_btnPlayPause);
 		final JButton btnMoreOptions = new JButton("More Options", ICON_OPEN);
 		btnMoreOptions.addActionListener(new ActionListener()
 		{
@@ -261,12 +200,122 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 			}
 		});
 		
-		contentPanel.add(btnMoreOptions, "8, 4");
-		lblFrames = new JLabel();
-		contentPanel.add(lblFrames, "12, 4");
+				btnForward = new JButton(ICON_FORWARD);
+				btnForward.setEnabled(false);
+				btnForward.addActionListener(new ActionListener()
+				{
+					@Override
+					public void actionPerformed(@Nullable ActionEvent e)
+					{
+						timeLine.nextFrame();
+					}
+				});
+				//btnForward.setPreferredSize(new Dimension(btnForward.getPreferredSize().width, buttonSize));
+				
+				GridBagConstraints gbc_btnForward = new GridBagConstraints();
+				gbc_btnForward.anchor = GridBagConstraints.WEST;
+				gbc_btnForward.insets = new Insets(0, 0, 0, 5);
+				gbc_btnForward.gridx = 2;
+				gbc_btnForward.gridy = 1;
+				contentPanel.add(btnForward, gbc_btnForward);
+		
+		GridBagConstraints gbc_btnMoreOptions = new GridBagConstraints();
+		gbc_btnMoreOptions.anchor = GridBagConstraints.NORTHWEST;
+		gbc_btnMoreOptions.insets = new Insets(0, 0, 0, 5);
+		gbc_btnMoreOptions.gridx = 3;
+		gbc_btnMoreOptions.gridy = 1;
+		contentPanel.add(btnMoreOptions, gbc_btnMoreOptions);
+		lblFrames = new JLabel("0/0");
+		GridBagConstraints gbc_lblFrames = new GridBagConstraints();
+		gbc_lblFrames.anchor = GridBagConstraints.EAST;
+		gbc_lblFrames.gridx = 4;
+		gbc_lblFrames.gridy = 1;
+		contentPanel.add(lblFrames, gbc_lblFrames);
 
 		setButtonsEnabled(false);
-		return contentPanel;
+		add(contentPanel, BorderLayout.CENTER);
+
+		optionPane = new JPanel();
+		optionPane.setBorder(new EmptyBorder(15, 0, 0, 0));
+		GridBagLayout gbl_optionPane = new GridBagLayout();
+		gbl_optionPane.columnWidths = new int[]{49, 65, 0, 0};
+		gbl_optionPane.rowHeights = new int[]{26, 26, 0};
+		gbl_optionPane.columnWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_optionPane.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
+		optionPane.setLayout(gbl_optionPane);
+		
+				JLabel lblSpeed = new JLabel("Speed:");
+				GridBagConstraints gbc_lblSpeed = new GridBagConstraints();
+				gbc_lblSpeed.anchor = GridBagConstraints.WEST;
+				gbc_lblSpeed.insets = new Insets(0, 0, 5, 5);
+				gbc_lblSpeed.gridx = 0;
+				gbc_lblSpeed.gridy = 0;
+				optionPane.add(lblSpeed, gbc_lblSpeed);
+		spinner = new JSpinner(spinnerNumberModel);
+		
+				GridBagConstraints gbc_spinner = new GridBagConstraints();
+				gbc_spinner.anchor = GridBagConstraints.NORTHWEST;
+				gbc_spinner.insets = new Insets(0, 0, 5, 5);
+				gbc_spinner.gridx = 1;
+				gbc_spinner.gridy = 0;
+				optionPane.add(spinner, gbc_spinner);
+				
+						spinner.addChangeListener(new ChangeListener()
+						{
+							@Override
+							public void stateChanged(@Nullable ChangeEvent e)
+							{
+								timeLine.setFPS((int) spinner.getValue() * ((PlaybackSpeedUnit) speedUnitComboBox.getSelectedItem()).factor);
+							}
+						});
+		
+		speedUnitComboBox = new JComboBox<>();
+		speedUnitComboBox.setModel(new DefaultComboBoxModel<>(PlaybackSpeedUnit.values()));
+		
+		speedUnitComboBox.addItemListener(new ItemListener()
+		{
+			@Override
+			public void itemStateChanged(@Nullable ItemEvent e)
+			{
+				timeLine.setFPS((int) spinner.getValue() * ((PlaybackSpeedUnit) speedUnitComboBox.getSelectedItem()).factor);
+			}
+		});
+		GridBagConstraints gbc_speedUnitComboBox = new GridBagConstraints();
+		gbc_speedUnitComboBox.anchor = GridBagConstraints.NORTH;
+		gbc_speedUnitComboBox.fill = GridBagConstraints.HORIZONTAL;
+		gbc_speedUnitComboBox.insets = new Insets(0, 0, 5, 0);
+		gbc_speedUnitComboBox.gridx = 2;
+		gbc_speedUnitComboBox.gridy = 0;
+		optionPane.add(speedUnitComboBox, gbc_speedUnitComboBox);
+		
+				JLabel lblAnimationMode = new JLabel("Animation mode:");
+				GridBagConstraints gbc_lblAnimationMode = new GridBagConstraints();
+				gbc_lblAnimationMode.fill = GridBagConstraints.HORIZONTAL;
+				gbc_lblAnimationMode.insets = new Insets(0, 0, 0, 5);
+				gbc_lblAnimationMode.gridwidth = 2;
+				gbc_lblAnimationMode.gridx = 0;
+				gbc_lblAnimationMode.gridy = 1;
+				optionPane.add(lblAnimationMode, gbc_lblAnimationMode);
+		optionPane.setVisible(false);
+		add(optionPane, BorderLayout.SOUTH);
+		
+		animationModeComboBox = new JComboBox<>();
+		animationModeComboBox.setModel(new DefaultComboBoxModel<>(AnimationMode.values()));
+		
+				animationModeComboBox.addItemListener(new ItemListener()
+				{
+					@Override
+					public void itemStateChanged(@Nullable ItemEvent e)
+					{
+						timeLine.setAnimationMode((AnimationMode) animationModeComboBox.getSelectedItem());
+					}
+				});
+				GridBagConstraints gbc_animationModeComboBox = new GridBagConstraints();
+				gbc_animationModeComboBox.anchor = GridBagConstraints.NORTH;
+				gbc_animationModeComboBox.fill = GridBagConstraints.HORIZONTAL;
+				gbc_animationModeComboBox.gridx = 2;
+				gbc_animationModeComboBox.gridy = 1;
+				optionPane.add(animationModeComboBox, gbc_animationModeComboBox);
 	}
 
 	@Override

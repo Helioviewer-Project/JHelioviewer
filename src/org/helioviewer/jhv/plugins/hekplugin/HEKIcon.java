@@ -1,10 +1,12 @@
 package org.helioviewer.jhv.plugins.hekplugin;
 
-import org.helioviewer.jhv.opengl.Texture;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
+
+import javax.swing.ImageIcon;
+
+import org.helioviewer.jhv.opengl.Texture;
 
 class HEKIcon
 {

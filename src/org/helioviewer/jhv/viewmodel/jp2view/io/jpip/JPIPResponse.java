@@ -1,10 +1,11 @@
 package org.helioviewer.jhv.viewmodel.jp2view.io.jpip;
 
-import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPResponse;
-
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.LinkedList;
+
+import javax.annotation.Nullable;
+
+import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPResponse;
 
 /**
  * A response to a JPIPRequest. Encapsulates both the HTTPResponse headers and

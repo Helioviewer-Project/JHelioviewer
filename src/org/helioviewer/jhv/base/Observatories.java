@@ -11,9 +11,9 @@ import javax.annotation.Nullable;
 import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.base.downloadmanager.AbstractDownloadRequest;
+import org.helioviewer.jhv.base.downloadmanager.DownloadManager;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
-import org.helioviewer.jhv.base.downloadmanager.DownloadManager;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
 import org.json.JSONArray;

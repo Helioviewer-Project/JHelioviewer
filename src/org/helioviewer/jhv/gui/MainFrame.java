@@ -23,18 +23,11 @@ import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 import org.helioviewer.jhv.gui.components.MenuBar;
 import org.helioviewer.jhv.gui.components.SideContentPane;
 import org.helioviewer.jhv.gui.components.TopToolBar;
-import org.helioviewer.jhv.gui.leftPanel.FilterPanel;
-import org.helioviewer.jhv.gui.leftPanel.LayerPanel;
-import org.helioviewer.jhv.gui.leftPanel.MoviePanel;
 import org.helioviewer.jhv.gui.statusLabels.CurrentTimeLabel;
 import org.helioviewer.jhv.gui.statusLabels.FramerateStatusPanel;
 import org.helioviewer.jhv.gui.statusLabels.PositionStatusPanel;
 import org.helioviewer.jhv.gui.statusLabels.ZoomStatusPanel;
 
-import com.jgoodies.forms.factories.FormFactory;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.RowSpec;
 import com.jogamp.opengl.GLContext;
 
 public class MainFrame extends JFrame
@@ -189,41 +182,44 @@ public class MainFrame extends JFrame
 	private JPanel getStatusPane()
 	{
 		JPanel statusPane = new JPanel();
-		
-		statusPane.setLayout(new FormLayout(
-			new ColumnSpec[]
-			{
-				FormFactory.RELATED_GAP_COLSPEC,
-				FormFactory.DEFAULT_COLSPEC,
-				FormFactory.RELATED_GAP_COLSPEC,
-				FormFactory.DEFAULT_COLSPEC,
-				FormFactory.RELATED_GAP_COLSPEC,
-				FormFactory.DEFAULT_COLSPEC,
-				FormFactory.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("default:grow"),
-				FormFactory.RELATED_GAP_COLSPEC,
-				FormFactory.DEFAULT_COLSPEC,
-				FormFactory.RELATED_GAP_COLSPEC
-			},
-			new RowSpec[]
-			{
-				FormFactory.RELATED_GAP_ROWSPEC,
-				RowSpec.decode("default:grow"),
-				FormFactory.RELATED_GAP_ROWSPEC
-			}));
+		GridBagLayout gbl_statusPane = new GridBagLayout();
+		gbl_statusPane.columnWidths = new int[]{70, 104, 20, 0, 104, 0};
+		gbl_statusPane.rowHeights = new int[]{0};
+		gbl_statusPane.columnWeights = new double[]{0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
+		gbl_statusPane.rowWeights = new double[]{0.0};
+		statusPane.setLayout(gbl_statusPane);
 		
 
 		FramerateStatusPanel framerateStatusPanel = new FramerateStatusPanel();
-		statusPane.add(framerateStatusPanel, "2, 2, fill, fill");
+		GridBagConstraints gbc_framerateStatusPanel = new GridBagConstraints();
+		gbc_framerateStatusPanel.fill = GridBagConstraints.BOTH;
+		gbc_framerateStatusPanel.insets = new Insets(0, 0, 0, 5);
+		gbc_framerateStatusPanel.gridx = 0;
+		gbc_framerateStatusPanel.gridy = 0;
+		statusPane.add(framerateStatusPanel, gbc_framerateStatusPanel);
 		
 		ZoomStatusPanel zoomStatusPanel = new ZoomStatusPanel(MAIN_PANEL);
-		statusPane.add(zoomStatusPanel, "4, 2, fill, fill");
+		GridBagConstraints gbc_zoomStatusPanel = new GridBagConstraints();
+		gbc_zoomStatusPanel.fill = GridBagConstraints.BOTH;
+		gbc_zoomStatusPanel.insets = new Insets(0, 0, 0, 5);
+		gbc_zoomStatusPanel.gridx = 1;
+		gbc_zoomStatusPanel.gridy = 0;
+		statusPane.add(zoomStatusPanel, gbc_zoomStatusPanel);
 		
 		CurrentTimeLabel currentTimeLabel = new CurrentTimeLabel();
-		statusPane.add(currentTimeLabel, "6, 2, fill, fill");
+		GridBagConstraints gbc_currentTimeLabel = new GridBagConstraints();
+		gbc_currentTimeLabel.fill = GridBagConstraints.BOTH;
+		gbc_currentTimeLabel.insets = new Insets(0, 0, 0, 5);
+		gbc_currentTimeLabel.gridx = 2;
+		gbc_currentTimeLabel.gridy = 0;
+		statusPane.add(currentTimeLabel, gbc_currentTimeLabel);
 		
 		PositionStatusPanel positionStatusPanel = new PositionStatusPanel(this);
-		statusPane.add(positionStatusPanel, "10, 2, fill, fill");
+		GridBagConstraints gbc_positionStatusPanel = new GridBagConstraints();
+		gbc_positionStatusPanel.fill = GridBagConstraints.BOTH;
+		gbc_positionStatusPanel.gridx = 4;
+		gbc_positionStatusPanel.gridy = 0;
+		statusPane.add(positionStatusPanel, gbc_positionStatusPanel);
 
 		return statusPane;
 	}

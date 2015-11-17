@@ -10,7 +10,6 @@ import java.util.prefs.Preferences;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-//FIXME: check that all keys have defaults defined & are unique, ideally via startup code
 public class Settings
 {
     private static final Properties DEFAULT_PROPERTIES = new Properties();

@@ -1,14 +1,16 @@
 package org.helioviewer.jhv.layers;
 
-import com.jogamp.opengl.GL2;
-import com.jogamp.opengl.GLContext;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.opengl.Texture;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLContext;
 
 public class LUT
 {

@@ -1,9 +1,13 @@
 package org.helioviewer.jhv.plugins.hekplugin.cache;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
 import org.helioviewer.jhv.gui.components.TristateCheckBox;
 import org.helioviewer.jhv.plugins.hekplugin.Interval;
-
-import java.util.*;
 
 public class HEKCacheSelectionModel implements HEKCacheListener {
 

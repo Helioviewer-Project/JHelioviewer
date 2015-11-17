@@ -1,16 +1,16 @@
 package org.helioviewer.jhv.layers;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+
+import javax.annotation.Nullable;
+
 import org.helioviewer.jhv.base.Telemetry;
-import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
 import org.helioviewer.jhv.viewmodel.metadata.UnsuitableMetaDataException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Comparator;
 
 public class Layers
 {
@@ -162,16 +162,6 @@ public class Layers
 	public static ArrayList<Layer> getLayers()
 	{
 		return layers;
-	}
-
-	public static void toggleCoronaVisibility()
-	{
-		ImageLayer il = getActiveImageLayer();
-		if(il != null)
-		{
-			il.toggleCoronaVisibility();
-			MainFrame.SINGLETON.MAIN_PANEL.repaint();
-		}
 	}
 
 	public static void removeAllImageLayers()

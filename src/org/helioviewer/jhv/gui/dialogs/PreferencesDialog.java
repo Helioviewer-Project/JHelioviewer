@@ -1,23 +1,13 @@
 package org.helioviewer.jhv.gui.dialogs;
 
-import com.jgoodies.forms.factories.FormFactory;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.RowSpec;
-import org.helioviewer.jhv.base.Globals;
-import org.helioviewer.jhv.base.Settings;
-import org.helioviewer.jhv.base.Telemetry;
-import org.helioviewer.jhv.base.Settings.BooleanKey;
-import org.helioviewer.jhv.base.Settings.IntKey;
-import org.helioviewer.jhv.base.Settings.StringKey;
-import org.helioviewer.jhv.gui.IconBank;
-import org.helioviewer.jhv.gui.IconBank.JHVIcon;
-import org.helioviewer.jhv.gui.MainFrame;
-
-import javax.annotation.Nullable;
-import javax.swing.*;
-import javax.swing.text.NumberFormatter;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -26,6 +16,35 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.NumberFormat;
 
+import javax.annotation.Nullable;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFormattedTextField;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+import javax.swing.text.NumberFormatter;
+
+import org.helioviewer.jhv.base.Globals;
+import org.helioviewer.jhv.base.Settings;
+import org.helioviewer.jhv.base.Settings.BooleanKey;
+import org.helioviewer.jhv.base.Settings.IntKey;
+import org.helioviewer.jhv.base.Settings.StringKey;
+import org.helioviewer.jhv.base.Telemetry;
+import org.helioviewer.jhv.gui.IconBank;
+import org.helioviewer.jhv.gui.IconBank.JHVIcon;
+import org.helioviewer.jhv.gui.MainFrame;
+
 /**
  * Dialog that allows the user to change default preferences and settings.
  */
@@ -33,12 +52,8 @@ public class PreferencesDialog extends JDialog
 {
 	private final String defaultDateFormat = "yyyy/MM/dd";
 
-	private JRadioButton loadDefaultMovieOnStartUp;
-	private JRadioButton doNothingOnStartUp;
+	private JCheckBox loadDefaultMovieOnStartUp;
 	private JTextField dateFormatField;
-
-	private ScreenshotExportPanel screenshotExportPanel;
-	private MovieExportPanel movieExportPanel;
 
 	private JButton acceptBtn;
 	private JButton cancelBtn;
@@ -46,7 +61,7 @@ public class PreferencesDialog extends JDialog
 
 	private static final int MAX_SIZE_SCREENSHOT = 4096;
 	private static final int MAX_SIZE_MOVIE_EXPORT = 4096;
-
+	
 	private static final AspectRatio[] MOVIE_ASPECT_RATIO_PRESETS = { new AspectRatio(1, 1), new AspectRatio(4, 3),
 			new AspectRatio(16, 9), new AspectRatio(16, 10), new AspectRatio(0, 0) };
 	private static final AspectRatio[] IMAGE_ASPECT_RATIO_PRESETS = { new AspectRatio(1, 1), new AspectRatio(4, 3),
@@ -55,98 +70,449 @@ public class PreferencesDialog extends JDialog
 	/**
 	 * The private constructor that sets the fields and the dialog.
 	 */
-	@SuppressWarnings("null")
 	public PreferencesDialog()
 	{
 		super(MainFrame.SINGLETON, "Preferences", true);
+		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		setResizable(false);
 
 		Telemetry.trackEvent("Dialog", "Type", getClass().getSimpleName());
-
-		setResizable(false);
 
 		JPanel mainPanel = new JPanel(new BorderLayout());
 
 		JPanel panel = new JPanel();
-		panel.setLayout(new BorderLayout());
+		panel.setBorder(new EmptyBorder(15, 15, 15, 15));
+		Icon infoIcon = IconBank.getIcon(JHVIcon.INFO);
+		
+		NumberFormat screenshotFormat = NumberFormat.getInstance();
+		screenshotFormat.setGroupingUsed(false);
+		final NumberFormatter screenshotFormatter = new NumberFormatter(screenshotFormat);
+		screenshotFormatter.setValueClass(Integer.class);
+		screenshotFormatter.setCommitsOnValidEdit(true);
+		screenshotFormatter.setMinimum(1);
+		screenshotFormatter.setMaximum(MAX_SIZE_SCREENSHOT);
 
-		JPanel paramsSubPanel = new JPanel(new BorderLayout());
-		paramsSubPanel.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
-		paramsSubPanel.add(createParametersPanel(), BorderLayout.CENTER);
 
-		JPanel exportSettings = new JPanel(new BorderLayout());
+		NumberFormat movieFormat = NumberFormat.getInstance();
+		movieFormat.setGroupingUsed(false);
+		final NumberFormatter movieFormatter = new NumberFormatter(movieFormat);
+		movieFormatter.setValueClass(Integer.class);
+		movieFormatter.setCommitsOnValidEdit(true);
+		movieFormatter.setMinimum(1);
+		movieFormatter.setMaximum(MAX_SIZE_MOVIE_EXPORT);
+		
+		
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		
+		
+		JPanel paramsPanel = new JPanel();
+		panel.add(paramsPanel);
+		
+				paramsPanel.setBorder(BorderFactory.createTitledBorder("Configuration"));
+								paramsPanel.setLayout(new GridLayout(0, 1, 0, 0));
+								
+								JPanel panel_1 = new JPanel();
+								panel_1.setBorder(new EmptyBorder(5, 5, 0, 5));
+								paramsPanel.add(panel_1);
+								panel_1.setLayout(new BorderLayout(0, 0));
+						
+								loadDefaultMovieOnStartUp = new JCheckBox("Load default movie at startup", true);
+								panel_1.add(loadDefaultMovieOnStartUp);
+								loadDefaultMovieOnStartUp.setHorizontalAlignment(SwingConstants.LEFT);
+										
+												dateFormatField = new JTextField();
+												dateFormatField.setPreferredSize(new Dimension(200, 26));
+												
+														JPanel row2 = new JPanel(new FlowLayout(FlowLayout.LEADING));
+														row2.setAlignmentX(Component.LEFT_ALIGNMENT);
+														row2.setBorder(new EmptyBorder(0, 5, 5, 5));
+														row2.add(new JLabel("Date format: "));
+														row2.add(dateFormatField);
+														
+																JButton dateFormatInfo = new JButton(infoIcon);
+																dateFormatInfo.setBorder(BorderFactory.createEtchedBorder());
+																dateFormatInfo.setPreferredSize(new Dimension(infoIcon.getIconWidth() + 5, 23));
+																dateFormatInfo.setToolTipText("Show possible date format information");
+																dateFormatInfo.addActionListener(new ActionListener()
+																{
+																	public void actionPerformed(@Nullable ActionEvent e)
+																	{
+																		new DateFormatInfoDialog();
+																	}
+																});
+																
+																		row2.add(dateFormatInfo);
+																		paramsPanel.add(row2);
+				
+				Component verticalStrut_1 = Box.createVerticalStrut(20);
+				panel.add(verticalStrut_1);
+				
+				JPanel movieExportPanelBorder = new JPanel(new BorderLayout());
+				panel.add(movieExportPanelBorder);
+				movieExportPanelBorder.setBorder(BorderFactory.createTitledBorder("Movie export"));
+				
+						
+						
+						
+						
+						
+						
+						JPanel movieExportPanel = new JPanel();
+						GridBagLayout gbl_movieExportPanel = new GridBagLayout();
+						gbl_movieExportPanel.columnWidths = new int[]{120, 100, 50, 150, 0};
+						gbl_movieExportPanel.rowHeights = new int[]{29, 26, 26, 0};
+						gbl_movieExportPanel.columnWeights = new double[]{0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
+						gbl_movieExportPanel.rowWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
+						movieExportPanel.setLayout(gbl_movieExportPanel);
+						{
+							JLabel lblAspectRation = new JLabel("Aspect ratio");
+							GridBagConstraints gbc_lblAspectRation = new GridBagConstraints();
+							gbc_lblAspectRation.anchor = GridBagConstraints.WEST;
+							gbc_lblAspectRation.insets = new Insets(0, 0, 5, 5);
+							gbc_lblAspectRation.gridx = 0;
+							gbc_lblAspectRation.gridy = 0;
+							movieExportPanel.add(lblAspectRation, gbc_lblAspectRation);
+						}
+						{
+							movieAspectRatioSelection = new JComboBox<>();
+							movieAspectRatioSelection.setModel(new DefaultComboBoxModel<>(MOVIE_ASPECT_RATIO_PRESETS));
+							GridBagConstraints gbc_movieAspectRatioSelection = new GridBagConstraints();
+							gbc_movieAspectRatioSelection.anchor = GridBagConstraints.WEST;
+							gbc_movieAspectRatioSelection.insets = new Insets(0, 0, 5, 5);
+							gbc_movieAspectRatioSelection.gridx = 1;
+							gbc_movieAspectRatioSelection.gridy = 0;
+							movieExportPanel.add(movieAspectRatioSelection, gbc_movieAspectRatioSelection);
+							movieAspectRatioSelection.addItemListener(new ItemListener()
+							{
 
-		JPanel movieExportSubPanel = new JPanel(new BorderLayout());
-		movieExportSubPanel.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
-		movieExportSubPanel.add(createMovieExportPanel(), BorderLayout.CENTER);
+								@Override
+								public void itemStateChanged(@Nullable ItemEvent e)
+								{
+									AspectRatio aspectRatio = (AspectRatio) movieAspectRatioSelection.getSelectedItem();
+									if (aspectRatio.width != 0)
+									{
+										int width = Integer.parseInt(txtMovieImageWidth.getText());
+										// txtMovieImageWidth.setValue(txtMovieImageWidth.getValue());
+										movieChanged = true;
+										txtMovieImageHeight.setValue(width * aspectRatio.height / aspectRatio.width);
+									}
+									movieChanged = false;
+								}
+							});
+						}
+						{
+							movieTextEnabled = new JCheckBox("Render time stamps");
+							GridBagConstraints gbc_movieTextEnabled = new GridBagConstraints();
+							gbc_movieTextEnabled.anchor = GridBagConstraints.NORTHWEST;
+							gbc_movieTextEnabled.insets = new Insets(0, 0, 5, 0);
+							gbc_movieTextEnabled.gridx = 3;
+							gbc_movieTextEnabled.gridy = 0;
+							movieExportPanel.add(movieTextEnabled, gbc_movieTextEnabled);
+						}
+						{
+							JLabel lblImageWidth = new JLabel("Image width");
+							GridBagConstraints gbc_lblImageWidth = new GridBagConstraints();
+							gbc_lblImageWidth.anchor = GridBagConstraints.WEST;
+							gbc_lblImageWidth.insets = new Insets(0, 0, 5, 5);
+							gbc_lblImageWidth.gridx = 0;
+							gbc_lblImageWidth.gridy = 1;
+							movieExportPanel.add(lblImageWidth, gbc_lblImageWidth);
+						}
+						
+						NumberFormat format = NumberFormat.getInstance();
+						format.setGroupingUsed(false);
+						txtMovieImageWidth = new JFormattedTextField(movieFormatter);
+						txtMovieImageWidth.setValue(1280);
+						txtMovieImageWidth.addPropertyChangeListener("value", new PropertyChangeListener()
+						{
+							@Override
+							public void propertyChange(@Nullable PropertyChangeEvent pe)
+							{
+								if (!movieChanged)
+								{
+									AspectRatio aspectRatio = (AspectRatio) movieAspectRatioSelection
+	
+											.getSelectedItem();
+									if (aspectRatio.height != 0)
+									{
+										int width = (int) txtMovieImageWidth.getValue();
+										movieChanged = true;
+										txtMovieImageHeight.setValue(width * aspectRatio.height / aspectRatio.width);
+									}
+								}
+								else
+									movieChanged = false;
+							}
+						});
+						GridBagConstraints gbc_txtMovieImageWidth = new GridBagConstraints();
+						gbc_txtMovieImageWidth.fill = GridBagConstraints.HORIZONTAL;
+						gbc_txtMovieImageWidth.anchor = GridBagConstraints.NORTH;
+						gbc_txtMovieImageWidth.insets = new Insets(0, 0, 5, 5);
+						gbc_txtMovieImageWidth.gridx = 1;
+						gbc_txtMovieImageWidth.gridy = 1;
+						movieExportPanel.add(txtMovieImageWidth, gbc_txtMovieImageWidth);
+						txtMovieImageWidth.setColumns(10);
+						txtMovieImageWidth.setToolTipText("value between 1 to 4096");
+						{
+							JLabel lblImageHeight = new JLabel("Image height");
+							GridBagConstraints gbc_lblImageHeight = new GridBagConstraints();
+							gbc_lblImageHeight.anchor = GridBagConstraints.WEST;
+							gbc_lblImageHeight.insets = new Insets(0, 0, 0, 5);
+							gbc_lblImageHeight.gridx = 0;
+							gbc_lblImageHeight.gridy = 2;
+							movieExportPanel.add(lblImageHeight, gbc_lblImageHeight);
+						}
+						txtMovieImageHeight = new JFormattedTextField(movieFormatter);
+						txtMovieImageHeight.setValue(720);
+						txtMovieImageHeight.addPropertyChangeListener("value", new PropertyChangeListener()
+						{
 
-		JPanel screenshotExportSubPanel = new JPanel(new BorderLayout());
-		screenshotExportSubPanel.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
-		screenshotExportSubPanel.add(createScreenshotExportPanel(), BorderLayout.CENTER);
+							@Override
+							public void propertyChange(@Nullable PropertyChangeEvent evt)
+							{
+								if (!movieChanged)
+								{
+									AspectRatio aspectRatio = (AspectRatio) movieAspectRatioSelection
 
-		exportSettings.add(movieExportSubPanel, BorderLayout.NORTH);
-		exportSettings.add(screenshotExportSubPanel, BorderLayout.CENTER);
+											.getSelectedItem();
+									if (aspectRatio.height != 0)
+									{
+										int heigth = (int) txtMovieImageHeight.getValue();
+										movieChanged = true;
+										txtMovieImageWidth.setValue(heigth * aspectRatio.width / aspectRatio.height);
+									}
+								}
+								else
+									movieChanged = false;
+							}
+						});
+						GridBagConstraints gbc_txtMovieImageHeight = new GridBagConstraints();
+						gbc_txtMovieImageHeight.fill = GridBagConstraints.HORIZONTAL;
+						gbc_txtMovieImageHeight.anchor = GridBagConstraints.NORTH;
+						gbc_txtMovieImageHeight.insets = new Insets(0, 0, 0, 5);
+						gbc_txtMovieImageHeight.gridx = 1;
+						gbc_txtMovieImageHeight.gridy = 2;
+						movieExportPanel.add(txtMovieImageHeight, gbc_txtMovieImageHeight);
+						txtMovieImageHeight.setColumns(10);
+						txtMovieImageHeight.setToolTipText("value between 1 to 4096");
+						movieExportPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+						
+								movieExportPanelBorder.add(movieExportPanel, BorderLayout.CENTER);
+				
+				Component verticalStrut = Box.createVerticalStrut(20);
+				panel.add(verticalStrut);
+				
+				JPanel screenshotExportPanelBorder = new JPanel(new BorderLayout());
+				panel.add(screenshotExportPanelBorder);
+				screenshotExportPanelBorder.setBorder(BorderFactory.createTitledBorder("Screenshot export"));
+				
+						JPanel screenshotExportPanel = new JPanel();
+						GridBagLayout gbl_screenshotExportPanel = new GridBagLayout();
+						gbl_screenshotExportPanel.columnWidths = new int[]{120, 100, 50, 150, 0};
+						gbl_screenshotExportPanel.rowHeights = new int[]{29, 26, 26, 0};
+						gbl_screenshotExportPanel.columnWeights = new double[]{0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
+						gbl_screenshotExportPanel.rowWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
+						screenshotExportPanel.setLayout(gbl_screenshotExportPanel);
+						txtScreenshotImageHeight = new JFormattedTextField(screenshotFormatter);
+						txtScreenshotImageHeight.setValue(720);
+						txtScreenshotImageHeight.addPropertyChangeListener("value", new PropertyChangeListener()
+						{
 
-		panel.add(paramsSubPanel, BorderLayout.NORTH);
-		panel.add(exportSettings, BorderLayout.SOUTH);
+							@Override
+							public void propertyChange(@Nullable PropertyChangeEvent evt)
+							{
+								if (!screenshotChanged)
+								{
+									AspectRatio aspectRatio = (AspectRatio) screenshotAspectRatioSelection
+
+											.getSelectedItem();
+									if (aspectRatio.height != 0)
+									{
+										int heigth = Integer.parseInt(txtScreenshotImageHeight.getText());
+										screenshotChanged = true;
+										txtScreenshotImageWidth.setValue(heigth * aspectRatio.width / aspectRatio.height);
+									}
+								}
+								else
+									screenshotChanged = false;
+							}
+						});
+						{
+							JLabel lblAspectRation = new JLabel("Aspect ratio");
+							GridBagConstraints gbc_lblAspectRation = new GridBagConstraints();
+							gbc_lblAspectRation.anchor = GridBagConstraints.WEST;
+							gbc_lblAspectRation.insets = new Insets(0, 0, 5, 5);
+							gbc_lblAspectRation.gridx = 0;
+							gbc_lblAspectRation.gridy = 0;
+							screenshotExportPanel.add(lblAspectRation, gbc_lblAspectRation);
+						}
+						{
+							screenshotAspectRatioSelection = new JComboBox<>();
+							screenshotAspectRatioSelection.setModel(new DefaultComboBoxModel<>(IMAGE_ASPECT_RATIO_PRESETS));
+
+							GridBagConstraints gbc_screenshotAspectRatioSelection = new GridBagConstraints();
+							gbc_screenshotAspectRatioSelection.anchor = GridBagConstraints.WEST;
+							gbc_screenshotAspectRatioSelection.insets = new Insets(0, 0, 5, 5);
+							gbc_screenshotAspectRatioSelection.gridx = 1;
+							gbc_screenshotAspectRatioSelection.gridy = 0;
+							screenshotExportPanel.add(screenshotAspectRatioSelection, gbc_screenshotAspectRatioSelection);
+							screenshotAspectRatioSelection.addItemListener(new ItemListener()
+							{
+
+								@Override
+								public void itemStateChanged(@Nullable ItemEvent e)
+								{
+									AspectRatio aspectRatio = (AspectRatio) screenshotAspectRatioSelection.getSelectedItem();
+									if (aspectRatio.width != 0)
+									{
+										int width = Integer.parseInt(txtScreenshotImageWidth.getText());
+										screenshotChanged = true;
+										txtScreenshotImageHeight.setValue(width * aspectRatio.height / aspectRatio.width);
+									}
+									screenshotChanged = false;
+								}
+							});
+						}
+						{
+							screenshotTextEnabled = new JCheckBox("Render time stamps");
+							GridBagConstraints gbc_screenshotTextEnabled = new GridBagConstraints();
+							gbc_screenshotTextEnabled.anchor = GridBagConstraints.NORTHWEST;
+							gbc_screenshotTextEnabled.insets = new Insets(0, 0, 5, 0);
+							gbc_screenshotTextEnabled.gridx = 3;
+							gbc_screenshotTextEnabled.gridy = 0;
+							screenshotExportPanel.add(screenshotTextEnabled, gbc_screenshotTextEnabled);
+						}
+						{
+							JLabel lblImageWidth = new JLabel("Image width");
+							GridBagConstraints gbc_lblImageWidth = new GridBagConstraints();
+							gbc_lblImageWidth.anchor = GridBagConstraints.WEST;
+							gbc_lblImageWidth.insets = new Insets(0, 0, 5, 5);
+							gbc_lblImageWidth.gridx = 0;
+							gbc_lblImageWidth.gridy = 1;
+							screenshotExportPanel.add(lblImageWidth, gbc_lblImageWidth);
+						}
+						{
+							txtScreenshotImageWidth = new JFormattedTextField(screenshotFormatter);
+							txtScreenshotImageWidth.setValue(1280);
+							txtScreenshotImageWidth.addPropertyChangeListener("value", new PropertyChangeListener()
+							{
+
+								@Override
+								public void propertyChange(@Nullable PropertyChangeEvent evt)
+								{
+									if (!screenshotChanged)
+									{
+										AspectRatio aspectRatio = (AspectRatio) screenshotAspectRatioSelection
+
+												.getSelectedItem();
+										if (aspectRatio.height != 0)
+										{
+											int width = Integer.parseInt(txtScreenshotImageWidth.getText());
+											screenshotChanged = true;
+											txtScreenshotImageHeight.setValue(width * aspectRatio.height / aspectRatio.width);
+										}
+									}
+									else
+										screenshotChanged = false;
+								}
+							});
+							GridBagConstraints gbc_txtScreenshotImageWidth = new GridBagConstraints();
+							gbc_txtScreenshotImageWidth.fill = GridBagConstraints.HORIZONTAL;
+							gbc_txtScreenshotImageWidth.anchor = GridBagConstraints.NORTH;
+							gbc_txtScreenshotImageWidth.insets = new Insets(0, 0, 5, 5);
+							gbc_txtScreenshotImageWidth.gridx = 1;
+							gbc_txtScreenshotImageWidth.gridy = 1;
+							screenshotExportPanel.add(txtScreenshotImageWidth, gbc_txtScreenshotImageWidth);
+							txtScreenshotImageWidth.setColumns(10);
+							txtScreenshotImageWidth.setToolTipText("value between 1 to 4096");
+						}
+						{
+							JLabel lblImageHeight = new JLabel("Image height");
+							GridBagConstraints gbc_lblImageHeight = new GridBagConstraints();
+							gbc_lblImageHeight.anchor = GridBagConstraints.WEST;
+							gbc_lblImageHeight.insets = new Insets(0, 0, 0, 5);
+							gbc_lblImageHeight.gridx = 0;
+							gbc_lblImageHeight.gridy = 2;
+							screenshotExportPanel.add(lblImageHeight, gbc_lblImageHeight);
+						}
+						GridBagConstraints gbc_txtScreenshotImageHeight = new GridBagConstraints();
+						gbc_txtScreenshotImageHeight.fill = GridBagConstraints.HORIZONTAL;
+						gbc_txtScreenshotImageHeight.anchor = GridBagConstraints.NORTH;
+						gbc_txtScreenshotImageHeight.insets = new Insets(0, 0, 0, 5);
+						gbc_txtScreenshotImageHeight.gridx = 1;
+						gbc_txtScreenshotImageHeight.gridy = 2;
+						screenshotExportPanel.add(txtScreenshotImageHeight, gbc_txtScreenshotImageHeight);
+						txtScreenshotImageHeight.setColumns(10);
+						txtScreenshotImageHeight.setToolTipText("value between 1 to 4096");
+								screenshotExportPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+								
+										screenshotExportPanelBorder.add(screenshotExportPanel, BorderLayout.CENTER);
 
 		mainPanel.add(panel, BorderLayout.CENTER);
 
-		JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		btnPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
-
-		acceptBtn = new JButton("OK");
-		cancelBtn = new JButton("Cancel");
-		resetBtn = new JButton("Reset");
-
-		acceptBtn.addActionListener(new ActionListener()
+		FlowLayout fl_btnPanel = new FlowLayout(FlowLayout.RIGHT);
+		JPanel btnPanel = new JPanel(fl_btnPanel);
+		btnPanel.setBorder(new EmptyBorder(0, 15, 15, 15));
+		
+		JPanel panel_2 = new JPanel();
+		btnPanel.add(panel_2);
+				panel_2.setLayout(new GridLayout(0, 3, 15, 0));
+		
+				acceptBtn = new JButton("OK");
+				panel_2.add(acceptBtn);
+				
+						acceptBtn.addActionListener(new ActionListener()
+						{
+							public void actionPerformed(@Nullable ActionEvent e)
+							{
+								if (!isDateFormatValid(dateFormatField.getText()))
+								{
+									JOptionPane.showMessageDialog(PreferencesDialog.this, "Syntax error",
+											"The entered date pattern contains illegal signs!\nAll suppported signs are listed in the associated information dialog.",
+											JOptionPane.ERROR_MESSAGE);
+									return;
+								}
+				
+								saveSettings();
+								dispose();
+							}
+						});
+						resetBtn = new JButton("Reset");
+						panel_2.add(resetBtn);
+						cancelBtn = new JButton("Cancel");
+						panel_2.add(cancelBtn);
+						
+								cancelBtn.addActionListener(new ActionListener()
+								{
+									public void actionPerformed(@Nullable ActionEvent e)
+									{
+										dispose();
+									}
+								});
+								DialogTools.setDefaultButtons(acceptBtn, cancelBtn);
+						
+								resetBtn.addActionListener(new ActionListener()
+								{
+									public void actionPerformed(@Nullable ActionEvent e)
+									{
+										if (JOptionPane.showConfirmDialog(null, "Do you really want to reset the Preferences?", "Attention",
+												JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
+										{
+											loadDefaultMovieOnStartUp.setSelected(true);
+											dateFormatField.setText(defaultDateFormat);
+										}
+									}
+								});
+		
+		if (Globals.isOSX())
 		{
-			public void actionPerformed(@Nullable ActionEvent e)
-			{
-				if (!isDateFormatValid(dateFormatField.getText()))
-				{
-					JOptionPane.showMessageDialog(PreferencesDialog.this, "Syntax error",
-							"The entered date pattern contains illegal signs!\nAll suppported signs are listed in the associated information dialog.",
-							JOptionPane.ERROR_MESSAGE);
-					return;
-				}
-
-				saveSettings();
-				dispose();
-			}
-		});
-
-		cancelBtn.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(@Nullable ActionEvent e)
-			{
-				dispose();
-			}
-		});
-
-		resetBtn.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(@Nullable ActionEvent e)
-			{
-				if (JOptionPane.showConfirmDialog(null, "Do you really want to reset the Preferences?", "Attention",
-						JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
-				{
-					loadDefaultMovieOnStartUp.setSelected(true);
-					dateFormatField.setText(defaultDateFormat);
-				}
-			}
-		});
-
-		if (Globals.isWindows())
-		{
-			btnPanel.add(acceptBtn);
-			btnPanel.add(resetBtn);
-			btnPanel.add(cancelBtn);
-		}
-		else
-		{
-			btnPanel.add(resetBtn);
-			btnPanel.add(cancelBtn);
-			btnPanel.add(acceptBtn);
+			panel_2.remove(resetBtn);
+			panel_2.remove(cancelBtn);
+			panel_2.remove(acceptBtn);
+			
+			panel_2.add(resetBtn);
+			panel_2.add(cancelBtn);
+			panel_2.add(acceptBtn);
 		}
 
 		mainPanel.add(btnPanel, BorderLayout.SOUTH);
@@ -155,10 +521,8 @@ public class PreferencesDialog extends JDialog
 
 		loadSettings();
 
-		pack();
-		setSize(getPreferredSize());
+		setSize(new Dimension(597, 579));
 		setLocationRelativeTo(MainFrame.SINGLETON);
-		DialogTools.setDefaultButtons(acceptBtn, cancelBtn);
 
 		setVisible(true);
 	}
@@ -199,7 +563,6 @@ public class PreferencesDialog extends JDialog
 	{
 		// Start up
 		loadDefaultMovieOnStartUp.setSelected(Settings.getBoolean(Settings.BooleanKey.STARTUP_LOADMOVIE));
-		doNothingOnStartUp.setSelected(!Settings.getBoolean(Settings.BooleanKey.STARTUP_LOADMOVIE));
 
 		// Default date format
 		String fmt = Settings.getString(StringKey.DEFAULT_DATE_FORMAT);
@@ -209,9 +572,8 @@ public class PreferencesDialog extends JDialog
 		else
 			dateFormatField.setText(fmt);
 
-		// Default values
-		movieExportPanel.loadSettings();
-		screenshotExportPanel.loadSettings();
+		loadMovieSettings();
+		loadScreenshotSettings();
 	}
 
 	private void saveSettings()
@@ -222,445 +584,118 @@ public class PreferencesDialog extends JDialog
 		// Default date format
 		Settings.setString(StringKey.DEFAULT_DATE_FORMAT, dateFormatField.getText());
 
-		// Default values
-		movieExportPanel.saveSettings();
-		screenshotExportPanel.saveSettings();
+		saveMovieSettings();
+		saveScreenshotSettings();
 	}
 
-	/**
-	 * Creates the general parameters panel.
-	 * 
-	 * @return General parameters panel
-	 */
-	private JPanel createParametersPanel()
+	private JComboBox<AspectRatio> movieAspectRatioSelection;
+	private JFormattedTextField txtMovieImageWidth, txtMovieImageHeight;
+	private JCheckBox movieTextEnabled;
+	private boolean movieChanged = false;
+
+	public void loadMovieSettings()
 	{
-		JPanel paramsPanel = new JPanel();
+		movieTextEnabled.setSelected(Settings.getBoolean(BooleanKey.MOVIE_TEXT));
 
-		paramsPanel.setBorder(BorderFactory.createTitledBorder(" Configuration "));
-		paramsPanel.setLayout(new GridLayout(0, 1));
+		txtMovieImageWidth.setValue(Settings.getInt(IntKey.MOVIE_IMG_WIDTH));
+		txtMovieImageHeight.setValue(Settings.getInt(IntKey.MOVIE_IMG_HEIGHT));
 
-		JPanel row0 = new JPanel(new FlowLayout(FlowLayout.LEADING));
-		row0.add(new JLabel("At start-up: "));
-
-		loadDefaultMovieOnStartUp = new JRadioButton("Load default movie", true);
-		doNothingOnStartUp = new JRadioButton("Do nothing", false);
-
-		ButtonGroup buttonGroup = new ButtonGroup();
-		buttonGroup.add(loadDefaultMovieOnStartUp);
-		buttonGroup.add(doNothingOnStartUp);
-
-		row0.add(loadDefaultMovieOnStartUp);
-		row0.add(doNothingOnStartUp);
-		paramsPanel.add(row0);
-
-		dateFormatField = new JTextField();
-		dateFormatField.setPreferredSize(new Dimension(150, 23));
-
-		JPanel row2 = new JPanel(new FlowLayout(FlowLayout.LEADING));
-		row2.add(new JLabel("Default date format:  "));
-		row2.add(dateFormatField);
-		Icon infoIcon = IconBank.getIcon(JHVIcon.INFO);
-
-		JButton dateFormatInfo = new JButton(infoIcon);
-		dateFormatInfo.setBorder(BorderFactory.createEtchedBorder());
-		dateFormatInfo.setPreferredSize(new Dimension(infoIcon.getIconWidth() + 5, 23));
-		dateFormatInfo.setToolTipText("Show possible date format information");
-		dateFormatInfo.addActionListener(new ActionListener()
+		float ar = 16 / 9f;
+		try
 		{
-			public void actionPerformed(@Nullable ActionEvent e)
+			int width = Integer.parseInt(txtMovieImageWidth.getText());
+			int height = Integer.parseInt(txtMovieImageHeight.getText());
+			ar = width / (float) height;
+		}
+		catch (Exception _e)
+		{
+			Telemetry.trackException(_e);
+		}
+
+		movieAspectRatioSelection
+				.setSelectedItem(MOVIE_ASPECT_RATIO_PRESETS[MOVIE_ASPECT_RATIO_PRESETS.length - 1]);
+		for (AspectRatio asp : MOVIE_ASPECT_RATIO_PRESETS)
+			if (Math.abs(asp.width / (float) asp.height - ar) < 0.01)
 			{
-				new DateFormatInfoDialog();
+				movieAspectRatioSelection.setSelectedItem(asp);
+				break;
 			}
-		});
-
-		row2.add(dateFormatInfo);
-		paramsPanel.add(row2);
-
-		return paramsPanel;
 	}
 
-	/**
-	 * Creates the default movie export panel.
-	 * 
-	 * @return Default movie export panel
-	 */
-	private JPanel createMovieExportPanel()
+	public void saveMovieSettings()
 	{
-		JPanel panel = new JPanel(new BorderLayout());
-		panel.setBorder(BorderFactory.createTitledBorder(" Movie export "));
-
-		movieExportPanel = new MovieExportPanel();
-		movieExportPanel.setPreferredSize(new Dimension(400, 120));
-		movieExportPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-
-		panel.add(movieExportPanel, BorderLayout.CENTER);
-
-		return panel;
+		Settings.setBoolean(BooleanKey.MOVIE_TEXT, movieTextEnabled.isSelected());
+		try
+		{
+			Settings.setInt(IntKey.MOVIE_IMG_WIDTH, Integer.parseInt(txtMovieImageWidth.getValue().toString()));
+		}
+		catch (NumberFormatException _nfe)
+		{
+		}
+		try
+		{
+			Settings.setInt(IntKey.MOVIE_IMG_HEIGHT, Integer.parseInt(txtMovieImageHeight.getValue().toString()));
+		}
+		catch (NumberFormatException _nfe)
+		{
+		}
 	}
 
-	private static class MovieExportPanel extends JPanel
+	
+	private JComboBox<AspectRatio> screenshotAspectRatioSelection;
+	private JFormattedTextField txtScreenshotImageWidth, txtScreenshotImageHeight;
+	private JCheckBox screenshotTextEnabled;
+	private boolean screenshotChanged = false;
+
+	public void loadScreenshotSettings()
 	{
-		private JComboBox<AspectRatio> movieAspectRatioSelection;
-		private JFormattedTextField txtMovieImageWidth, txtMovieImageHeight;
-		private JCheckBox isTextEnabled;
-		private boolean hasChanged = false;
+		screenshotTextEnabled.setSelected(Settings.getBoolean(BooleanKey.SCREENSHOT_TEXT));
+		txtScreenshotImageWidth.setValue(Settings.getInt(IntKey.SCREENSHOT_IMG_WIDTH));
+		txtScreenshotImageHeight.setValue(Settings.getInt(IntKey.SCREENSHOT_IMG_HEIGHT));
 
-		public MovieExportPanel()
+		float ar = 16 / 9f;
+		try
 		{
-			this.setLayout(new FormLayout(
-					new ColumnSpec[] { FormFactory.RELATED_GAP_COLSPEC, FormFactory.DEFAULT_COLSPEC,
-							FormFactory.RELATED_GAP_COLSPEC, FormFactory.DEFAULT_COLSPEC,
-							FormFactory.RELATED_GAP_COLSPEC, FormFactory.DEFAULT_COLSPEC,
-							FormFactory.RELATED_GAP_COLSPEC, ColumnSpec.decode("default:grow"), },
-					new RowSpec[] { FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
-							FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
-							FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
-							FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
-							FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC, }));
-			{
-				JLabel lblAspectRation = new JLabel("Aspect ratio");
-				this.add(lblAspectRation, "2, 4, right, default");
-			}
-			{
-				movieAspectRatioSelection = new JComboBox<>(MOVIE_ASPECT_RATIO_PRESETS);
-				this.add(movieAspectRatioSelection, "4, 4, left, default");
-				movieAspectRatioSelection.addItemListener(new ItemListener()
-				{
-
-					@Override
-					public void itemStateChanged(@Nullable ItemEvent e)
-					{
-						AspectRatio aspectRatio = (AspectRatio) movieAspectRatioSelection.getSelectedItem();
-						if (aspectRatio.width != 0)
-						{
-							int width = Integer.parseInt(txtMovieImageWidth.getText());
-							// txtMovieImageWidth.setValue(txtMovieImageWidth.getValue());
-							hasChanged = true;
-							txtMovieImageHeight.setValue(width * aspectRatio.height / aspectRatio.width);
-						}
-						hasChanged = false;
-					}
-				});
-			}
-			{
-				isTextEnabled = new JCheckBox("Render time stamps");
-				this.add(isTextEnabled, "8,4,left, default");
-			}
-			NumberFormat format = NumberFormat.getInstance();
-			format.setGroupingUsed(false);
-			final NumberFormatter formatter = new NumberFormatter(format);
-			formatter.setValueClass(Integer.class);
-			formatter.setCommitsOnValidEdit(true);
-			formatter.setMinimum(1);
-			formatter.setMaximum(MAX_SIZE_MOVIE_EXPORT);
-			{
-				JLabel lblImageWidth = new JLabel("Image width");
-				this.add(lblImageWidth, "2, 6, right, default");
-			}
-			{
-				txtMovieImageWidth = new JFormattedTextField(formatter);
-				txtMovieImageWidth.setValue(1280);
-				txtMovieImageWidth.addPropertyChangeListener("value", new PropertyChangeListener()
-				{
-
-					@Override
-					public void propertyChange(@Nullable PropertyChangeEvent pe)
-					{
-						if (!hasChanged)
-						{
-							AspectRatio aspectRatio = (AspectRatio) movieAspectRatioSelection
-
-									.getSelectedItem();
-							if (aspectRatio.height != 0)
-							{
-								int width = (int) txtMovieImageWidth.getValue();
-								hasChanged = true;
-								txtMovieImageHeight.setValue(width * aspectRatio.height / aspectRatio.width);
-							}
-						}
-						else
-							hasChanged = false;
-					}
-				});
-				this.add(txtMovieImageWidth, "4, 6, left, default");
-				txtMovieImageWidth.setColumns(10);
-				txtMovieImageWidth.setToolTipText("value between 1 to 4096");
-			}
-			{
-				JLabel lblImageHeight = new JLabel("Image height");
-				this.add(lblImageHeight, "2, 8, right, default");
-			}
-			{
-				txtMovieImageHeight = new JFormattedTextField(formatter);
-				txtMovieImageHeight.setValue(720);
-				txtMovieImageHeight.addPropertyChangeListener("value", new PropertyChangeListener()
-				{
-
-					@Override
-					public void propertyChange(@Nullable PropertyChangeEvent evt)
-					{
-						if (!hasChanged)
-						{
-							AspectRatio aspectRatio = (AspectRatio) movieAspectRatioSelection
-
-									.getSelectedItem();
-							if (aspectRatio.height != 0)
-							{
-								int heigth = (int) txtMovieImageHeight.getValue();
-								hasChanged = true;
-								txtMovieImageWidth.setValue(heigth * aspectRatio.width / aspectRatio.height);
-							}
-						}
-						else
-							hasChanged = false;
-					}
-				});
-				this.add(txtMovieImageHeight, "4, 8, left, default");
-				txtMovieImageHeight.setColumns(10);
-				txtMovieImageHeight.setToolTipText("value between 1 to 4096");
-			}
-
+			int width = Integer.parseInt(txtScreenshotImageWidth.getText());
+			int height = Integer.parseInt(txtScreenshotImageHeight.getText());
+			ar = width / (float) height;
+		}
+		catch (Exception _e)
+		{
+			Telemetry.trackException(_e);
 		}
 
-		public void loadSettings()
-		{
-			isTextEnabled.setSelected(Settings.getBoolean(BooleanKey.MOVIE_TEXT));
-
-			txtMovieImageWidth.setValue(IntKey.MOVIE_IMG_WIDTH);
-			txtMovieImageHeight.setValue(IntKey.MOVIE_IMG_HEIGHT);
-
-			float ar = 16 / 9f;
-			try
+		screenshotAspectRatioSelection
+				.setSelectedItem(IMAGE_ASPECT_RATIO_PRESETS[IMAGE_ASPECT_RATIO_PRESETS.length - 1]);
+		for (AspectRatio asp : IMAGE_ASPECT_RATIO_PRESETS)
+			if (Math.abs(asp.width / (float) asp.height - ar) < 0.01)
 			{
-				int width = Integer.parseInt(txtMovieImageWidth.getText());
-				int height = Integer.parseInt(txtMovieImageHeight.getText());
-				ar = width / (float) height;
+				screenshotAspectRatioSelection.setSelectedItem(asp);
+				break;
 			}
-			catch (Exception _e)
-			{
-				Telemetry.trackException(_e);
-			}
-
-			movieAspectRatioSelection
-					.setSelectedItem(MOVIE_ASPECT_RATIO_PRESETS[MOVIE_ASPECT_RATIO_PRESETS.length - 1]);
-			for (AspectRatio asp : MOVIE_ASPECT_RATIO_PRESETS)
-				if (Math.abs(asp.width / (float) asp.height - ar) < 0.01)
-				{
-					movieAspectRatioSelection.setSelectedItem(asp);
-					break;
-				}
-		}
-
-		public void saveSettings()
-		{
-			Settings.setBoolean(BooleanKey.MOVIE_TEXT, isTextEnabled.isSelected());
-			try
-			{
-				Settings.setInt(IntKey.MOVIE_IMG_WIDTH, Integer.parseInt(txtMovieImageWidth.getValue().toString()));
-			}
-			catch (NumberFormatException _nfe)
-			{
-			}
-			try
-			{
-				Settings.setInt(IntKey.MOVIE_IMG_HEIGHT, Integer.parseInt(txtMovieImageHeight.getValue().toString()));
-			}
-			catch (NumberFormatException _nfe)
-			{
-			}
-		}
-
 	}
 
-	private JPanel createScreenshotExportPanel()
+	public void saveScreenshotSettings()
 	{
-		JPanel panel = new JPanel(new BorderLayout());
-		panel.setBorder(BorderFactory.createTitledBorder(" Screenshot export "));
-
-		screenshotExportPanel = new ScreenshotExportPanel();
-		screenshotExportPanel.setPreferredSize(new Dimension(400, 120));
-		screenshotExportPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-
-		panel.add(screenshotExportPanel, BorderLayout.CENTER);
-		return panel;
-	}
-
-	private static class ScreenshotExportPanel extends JPanel
-	{
-		private JComboBox<AspectRatio> screenshotAspectRatioSelection;
-		private JFormattedTextField txtScreenshotImageWidth, txtScreenshotImageHeight;
-		private JCheckBox isTextEnabled;
-		private boolean hasChanged = false;
-
-		public ScreenshotExportPanel()
+		Settings.setBoolean(BooleanKey.SCREENSHOT_TEXT, screenshotTextEnabled.isSelected());
+		try
 		{
-			this.setLayout(new FormLayout(
-					new ColumnSpec[] { FormFactory.RELATED_GAP_COLSPEC, FormFactory.DEFAULT_COLSPEC,
-							FormFactory.RELATED_GAP_COLSPEC, FormFactory.DEFAULT_COLSPEC,
-							FormFactory.RELATED_GAP_COLSPEC, FormFactory.DEFAULT_COLSPEC,
-							FormFactory.RELATED_GAP_COLSPEC, ColumnSpec.decode("default:grow"), },
-					new RowSpec[] { FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
-							FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
-							FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
-							FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
-							FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC, }));
-			{
-				JLabel lblAspectRation = new JLabel("Aspect ratio");
-				this.add(lblAspectRation, "2, 4, right, default");
-			}
-			{
-				screenshotAspectRatioSelection = new JComboBox<>(IMAGE_ASPECT_RATIO_PRESETS);
-				this.add(screenshotAspectRatioSelection, "4, 4, left, default");
-				screenshotAspectRatioSelection.addItemListener(new ItemListener()
-				{
-
-					@Override
-					public void itemStateChanged(@Nullable ItemEvent e)
-					{
-						AspectRatio aspectRatio = (AspectRatio) screenshotAspectRatioSelection.getSelectedItem();
-						if (aspectRatio.width != 0)
-						{
-							int width = Integer.parseInt(txtScreenshotImageWidth.getText());
-							hasChanged = true;
-							txtScreenshotImageHeight.setValue(width * aspectRatio.height / aspectRatio.width);
-						}
-						hasChanged = false;
-					}
-				});
-			}
-			{
-				isTextEnabled = new JCheckBox("Render time stamps");
-				this.add(isTextEnabled, "8,4,left, default");
-			}
-
-			NumberFormat format = NumberFormat.getInstance();
-			format.setGroupingUsed(false);
-			NumberFormatter formatter = new NumberFormatter(format);
-			formatter.setValueClass(Integer.class);
-			formatter.setMinimum(1);
-			formatter.setMaximum(MAX_SIZE_SCREENSHOT);
-			{
-				JLabel lblImageWidth = new JLabel("Image width");
-				this.add(lblImageWidth, "2, 6, right, default");
-			}
-			{
-				txtScreenshotImageWidth = new JFormattedTextField(formatter);
-				txtScreenshotImageWidth.setValue(1280);
-				txtScreenshotImageWidth.addPropertyChangeListener("value", new PropertyChangeListener()
-				{
-
-					@Override
-					public void propertyChange(@Nullable PropertyChangeEvent evt)
-					{
-						if (!hasChanged)
-						{
-							AspectRatio aspectRatio = (AspectRatio) screenshotAspectRatioSelection
-
-									.getSelectedItem();
-							if (aspectRatio.height != 0)
-							{
-								int width = Integer.parseInt(txtScreenshotImageWidth.getText());
-								hasChanged = true;
-								txtScreenshotImageHeight.setValue(width * aspectRatio.height / aspectRatio.width);
-							}
-						}
-						else
-							hasChanged = false;
-					}
-				});
-				this.add(txtScreenshotImageWidth, "4, 6, left, default");
-				txtScreenshotImageWidth.setColumns(10);
-				txtScreenshotImageWidth.setToolTipText("value between 1 to 4096");
-			}
-			{
-				JLabel lblImageHeight = new JLabel("Image height");
-				this.add(lblImageHeight, "2, 8, right, default");
-			}
-			{
-				txtScreenshotImageHeight = new JFormattedTextField(formatter);
-				txtScreenshotImageHeight.setValue(720);
-				txtScreenshotImageHeight.addPropertyChangeListener("value", new PropertyChangeListener()
-				{
-
-					@Override
-					public void propertyChange(@Nullable PropertyChangeEvent evt)
-					{
-						if (!hasChanged)
-						{
-							AspectRatio aspectRatio = (AspectRatio) screenshotAspectRatioSelection
-
-									.getSelectedItem();
-							if (aspectRatio.height != 0)
-							{
-								int heigth = Integer.parseInt(txtScreenshotImageHeight.getText());
-								hasChanged = true;
-								txtScreenshotImageWidth.setValue(heigth * aspectRatio.width / aspectRatio.height);
-							}
-						}
-						else
-							hasChanged = false;
-					}
-				});
-				this.add(txtScreenshotImageHeight, "4, 8, left, default");
-				txtScreenshotImageHeight.setColumns(10);
-				txtScreenshotImageHeight.setToolTipText("value between 1 to 4096");
-			}
-
+			Settings.setInt(IntKey.SCREENSHOT_IMG_WIDTH,
+					Integer.parseInt(txtScreenshotImageWidth.getValue().toString()));
 		}
-
-		public void loadSettings()
+		catch (NumberFormatException _nfe)
 		{
-			isTextEnabled.setSelected(Settings.getBoolean(BooleanKey.SCREENSHOT_TEXT));
-			txtScreenshotImageWidth.setValue(Settings.getInt(IntKey.SCREENSHOT_IMG_WIDTH));
-			txtScreenshotImageHeight.setValue(Settings.getInt(IntKey.SCREENSHOT_IMG_HEIGHT));
-
-			float ar = 16 / 9f;
-			try
-			{
-				int width = Integer.parseInt(txtScreenshotImageWidth.getText());
-				int height = Integer.parseInt(txtScreenshotImageHeight.getText());
-				ar = width / (float) height;
-			}
-			catch (Exception _e)
-			{
-				Telemetry.trackException(_e);
-			}
-
-			screenshotAspectRatioSelection
-					.setSelectedItem(IMAGE_ASPECT_RATIO_PRESETS[IMAGE_ASPECT_RATIO_PRESETS.length - 1]);
-			for (AspectRatio asp : IMAGE_ASPECT_RATIO_PRESETS)
-				if (Math.abs(asp.width / (float) asp.height - ar) < 0.01)
-				{
-					screenshotAspectRatioSelection.setSelectedItem(asp);
-					break;
-				}
 		}
-
-		public void saveSettings()
+		try
 		{
-			Settings.setBoolean(BooleanKey.SCREENSHOT_TEXT, isTextEnabled.isSelected());
-			try
-			{
-				Settings.setInt(IntKey.SCREENSHOT_IMG_WIDTH,
-						Integer.parseInt(txtScreenshotImageWidth.getValue().toString()));
-			}
-			catch (NumberFormatException _nfe)
-			{
-			}
-			try
-			{
-				Settings.setInt(IntKey.SCREENSHOT_IMG_HEIGHT,
-						Integer.parseInt(txtScreenshotImageHeight.getValue().toString()));
-			}
-			catch (NumberFormatException _nfe)
-			{
-			}
+			Settings.setInt(IntKey.SCREENSHOT_IMG_HEIGHT,
+					Integer.parseInt(txtScreenshotImageHeight.getValue().toString()));
+		}
+		catch (NumberFormatException _nfe)
+		{
 		}
 	}
-
-	/**
-	 * Class which stores aspect ratio information
-	 */
+	
 	private static class AspectRatio
 	{
 		final int width;

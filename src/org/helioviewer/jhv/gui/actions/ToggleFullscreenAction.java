@@ -1,14 +1,16 @@
 package org.helioviewer.jhv.gui.actions;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+
+import javax.annotation.Nullable;
+import javax.swing.AbstractAction;
+import javax.swing.KeyStroke;
+
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MainFrame;
-
-import javax.annotation.Nullable;
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
 
 public class ToggleFullscreenAction extends AbstractAction
 {

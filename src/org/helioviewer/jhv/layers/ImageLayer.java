@@ -1,8 +1,17 @@
 package org.helioviewer.jhv.layers;
 
-import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL2;
-import com.jogamp.opengl.GLContext;
+import java.awt.Dimension;
+import java.awt.geom.Rectangle2D;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.NavigableSet;
+import java.util.concurrent.Future;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.Telemetry;
@@ -23,18 +32,10 @@ import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.awt.*;
-import java.awt.geom.Rectangle2D;
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.NavigableSet;
-import java.util.concurrent.Future;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLContext;
 
-//FIXME: shader handles this incorrectly: corona.opacity>0 && hit corona first && hit sphere later
 public abstract class ImageLayer extends Layer
 {
 	public double opacity = 1;

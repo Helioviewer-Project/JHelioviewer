@@ -1,7 +1,5 @@
 package org.helioviewer.jhv.io;
 
-import org.helioviewer.jhv.base.Telemetry;
-
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -10,6 +8,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.helioviewer.jhv.base.Telemetry;
 
 //TODO: merge all getDownloadOptionValues-style methods
 //FIXME: does this still work?

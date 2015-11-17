@@ -1,6 +1,13 @@
 package org.helioviewer.jhv.plugins.pfssplugin;
 
-import com.jogamp.opengl.GL2;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+
+import javax.annotation.Nullable;
+
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.plugins.Plugin;
 import org.helioviewer.jhv.plugins.Plugins;
@@ -8,12 +15,7 @@ import org.helioviewer.jhv.plugins.pfssplugin.data.FrameManager;
 import org.helioviewer.jhv.plugins.pfssplugin.data.PfssDecompressed;
 import org.json.JSONObject;
 
-import javax.annotation.Nullable;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
+import com.jogamp.opengl.GL2;
 
 public class PfssPlugin extends Plugin
 {

@@ -1,22 +1,7 @@
 package org.helioviewer.jhv.base;
 
-import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.gui.MainPanel;
-import org.helioviewer.jhv.gui.PredefinedFileFilter;
-
-import javax.annotation.Nullable;
-import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
-import java.awt.*;
+import java.awt.Cursor;
+import java.awt.Desktop;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.io.BufferedReader;
@@ -29,6 +14,28 @@ import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import javax.annotation.Nullable;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
+import javax.swing.filechooser.FileFilter;
+
+import org.helioviewer.jhv.gui.MainFrame;
+import org.helioviewer.jhv.gui.MainPanel;
+import org.helioviewer.jhv.gui.PredefinedFileFilter;
+
+import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 public class Globals
 {

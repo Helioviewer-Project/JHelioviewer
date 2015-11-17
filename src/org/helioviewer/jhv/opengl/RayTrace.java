@@ -1,5 +1,9 @@
 package org.helioviewer.jhv.opengl;
 
+import java.awt.geom.Rectangle2D;
+
+import javax.annotation.Nullable;
+
 import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector3d;
@@ -9,9 +13,6 @@ import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.opengl.camera.CameraMode;
 import org.helioviewer.jhv.opengl.camera.CameraMode.MODE;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-
-import javax.annotation.Nullable;
-import java.awt.geom.Rectangle2D;
 
 public class RayTrace
 {

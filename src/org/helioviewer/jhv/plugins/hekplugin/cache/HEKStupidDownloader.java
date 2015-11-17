@@ -1,8 +1,5 @@
 package org.helioviewer.jhv.plugins.hekplugin.cache;
 
-import org.helioviewer.jhv.plugins.hekplugin.Interval;
-import org.helioviewer.jhv.plugins.hekplugin.settings.HEKSettings;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -11,6 +8,9 @@ import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+
+import org.helioviewer.jhv.plugins.hekplugin.Interval;
+import org.helioviewer.jhv.plugins.hekplugin.settings.HEKSettings;
 
 /**
  * This is the basic class to access the API. It does not deal with the

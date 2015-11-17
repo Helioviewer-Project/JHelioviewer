@@ -1,6 +1,19 @@
 package org.helioviewer.jhv.viewmodel.jp2view.newjpx;
 
-import com.google.common.io.Files;
+import java.awt.Rectangle;
+import java.io.File;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
 import org.helioviewer.jhv.base.JHVUncaughtExceptionHandler;
 import org.helioviewer.jhv.base.Settings;
 import org.helioviewer.jhv.base.Telemetry;
@@ -11,15 +24,7 @@ import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.metadata.UnsuitableMetaDataException;
 import org.w3c.dom.Document;
 
-import javax.annotation.Nullable;
-import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.*;
-import java.util.List;
+import com.google.common.io.Files;
 
 public class MovieCache
 {

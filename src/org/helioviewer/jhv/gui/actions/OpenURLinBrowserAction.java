@@ -1,11 +1,12 @@
 package org.helioviewer.jhv.gui.actions;
 
-import org.helioviewer.jhv.base.Globals;
-import org.helioviewer.jhv.base.Telemetry;
+import java.awt.event.ActionEvent;
 
 import javax.annotation.Nullable;
-import javax.swing.*;
-import java.awt.event.ActionEvent;
+import javax.swing.AbstractAction;
+
+import org.helioviewer.jhv.base.Globals;
+import org.helioviewer.jhv.base.Telemetry;
 
 /**
  * Action to open a browser showing any given URL.

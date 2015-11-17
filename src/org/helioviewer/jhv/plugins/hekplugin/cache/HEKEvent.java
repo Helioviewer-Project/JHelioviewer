@@ -1,5 +1,12 @@
 package org.helioviewer.jhv.plugins.hekplugin.cache;
 
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.coordinates.CoordinateHelper;
 import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
@@ -17,9 +24,6 @@ import org.helioviewer.jhv.plugins.hekplugin.IntervalComparison;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.awt.image.BufferedImage;
-import java.util.*;
 
 /**
  * The class represents a solar event and manages all the associated

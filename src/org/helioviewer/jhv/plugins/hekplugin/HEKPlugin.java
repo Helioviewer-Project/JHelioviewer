@@ -1,7 +1,15 @@
 package org.helioviewer.jhv.plugins.hekplugin;
 
-import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL2;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.List;
+
 import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
 import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.SphericalCoord;
@@ -16,13 +24,8 @@ import org.helioviewer.jhv.plugins.hekplugin.cache.gui.HEKEventInformationDialog
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
 import org.json.JSONObject;
 
-import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.net.URL;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
-import java.util.List;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
 
 public class HEKPlugin extends Plugin
 {

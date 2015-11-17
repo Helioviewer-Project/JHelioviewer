@@ -1,12 +1,13 @@
 package org.helioviewer.jhv.plugins.hekplugin.cache;
 
+import java.awt.EventQueue;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class HEKCacheTreeModel implements TreeModel, HEKCacheListener {
 

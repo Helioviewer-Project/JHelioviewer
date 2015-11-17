@@ -1,14 +1,28 @@
 package org.helioviewer.jhv;
 
-import com.install4j.api.launcher.ApplicationLauncher;
-import com.install4j.api.update.UpdateSchedule;
-import com.install4j.api.update.UpdateScheduleRegistry;
-import com.jogamp.opengl.*;
-import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
-import kdu_jni.Kdu_global;
-import kdu_jni.Kdu_message_formatter;
-import org.helioviewer.jhv.base.*;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.Arrays;
+import java.util.Locale;
+import java.util.TimeZone;
+
+import javax.annotation.Nullable;
+import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
+import javax.swing.ToolTipManager;
+import javax.swing.UIManager;
+
+import org.helioviewer.jhv.base.Globals;
+import org.helioviewer.jhv.base.JHVUncaughtExceptionHandler;
+import org.helioviewer.jhv.base.Log;
+import org.helioviewer.jhv.base.Observatories;
+import org.helioviewer.jhv.base.Settings;
+import org.helioviewer.jhv.base.SplashScreen;
+import org.helioviewer.jhv.base.Telemetry;
+import org.helioviewer.jhv.base.UILatencyWatchdog;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 import org.helioviewer.jhv.gui.dialogs.AboutDialog;
@@ -18,15 +32,19 @@ import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.viewmodel.jp2view.kakadu.KduErrorHandler;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.MovieCache;
 
-import javax.annotation.Nullable;
-import javax.swing.*;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.util.Arrays;
-import java.util.Locale;
-import java.util.TimeZone;
+import com.install4j.api.launcher.ApplicationLauncher;
+import com.install4j.api.update.UpdateSchedule;
+import com.install4j.api.update.UpdateScheduleRegistry;
+import com.jogamp.opengl.DebugGL2;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLDrawableFactory;
+import com.jogamp.opengl.GLProfile;
+
+import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
+import kdu_jni.Kdu_global;
+import kdu_jni.Kdu_message_formatter;
 
 public class JHelioviewer
 {

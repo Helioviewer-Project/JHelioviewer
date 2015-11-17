@@ -1,8 +1,8 @@
 package org.helioviewer.jhv.gui.statusLabels;
 
-import org.helioviewer.jhv.opengl.RayTrace.Ray;
-
 import java.awt.event.MouseEvent;
+
+import org.helioviewer.jhv.opengl.RayTrace.Ray;
 
 public interface PanelMouseListener
 {

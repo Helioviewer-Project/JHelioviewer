@@ -1,9 +1,10 @@
 package org.helioviewer.jhv.viewmodel.jp2view.io;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * 

@@ -1,24 +1,8 @@
 package org.helioviewer.jhv.gui.actions;
 
-import com.xuggle.mediatool.IMediaWriter;
-import com.xuggle.mediatool.ToolFactory;
-import org.helioviewer.jhv.base.Globals;
-import org.helioviewer.jhv.base.Globals.DialogType;
-import org.helioviewer.jhv.base.Settings.BooleanKey;
-import org.helioviewer.jhv.base.Settings.IntKey;
-import org.helioviewer.jhv.base.Settings.StringKey;
-import org.helioviewer.jhv.base.Settings;
-import org.helioviewer.jhv.base.Telemetry;
-import org.helioviewer.jhv.gui.MainFrame;
-import org.helioviewer.jhv.gui.PredefinedFileFilter;
-import org.helioviewer.jhv.layers.Layers;
-import org.helioviewer.jhv.viewmodel.TimeLine;
-
-import javax.annotation.Nullable;
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -31,6 +15,34 @@ import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import javax.annotation.Nullable;
+import javax.imageio.ImageIO;
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
+
+import org.helioviewer.jhv.base.Globals;
+import org.helioviewer.jhv.base.Globals.DialogType;
+import org.helioviewer.jhv.base.Settings;
+import org.helioviewer.jhv.base.Settings.BooleanKey;
+import org.helioviewer.jhv.base.Settings.IntKey;
+import org.helioviewer.jhv.base.Settings.StringKey;
+import org.helioviewer.jhv.base.Telemetry;
+import org.helioviewer.jhv.gui.MainFrame;
+import org.helioviewer.jhv.gui.PredefinedFileFilter;
+import org.helioviewer.jhv.layers.Layers;
+import org.helioviewer.jhv.viewmodel.TimeLine;
+
+import com.xuggle.mediatool.IMediaWriter;
+import com.xuggle.mediatool.ToolFactory;
 
 public class ExportMovieAction extends AbstractAction
 {

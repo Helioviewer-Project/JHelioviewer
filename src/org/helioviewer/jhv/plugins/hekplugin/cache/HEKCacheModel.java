@@ -1,12 +1,17 @@
 package org.helioviewer.jhv.plugins.hekplugin.cache;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map.Entry;
+
 import org.helioviewer.jhv.plugins.hekplugin.Interval;
 import org.helioviewer.jhv.plugins.hekplugin.IntervalContainer;
 import org.helioviewer.jhv.plugins.hekplugin.IntervalStore;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKSettings;
-
-import java.util.*;
-import java.util.Map.Entry;
 
 /**
  * This is a Model for the HEKCache

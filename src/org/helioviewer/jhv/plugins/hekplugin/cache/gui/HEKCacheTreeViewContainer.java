@@ -1,14 +1,21 @@
 package org.helioviewer.jhv.plugins.hekplugin.cache.gui;
 
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
+
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
 import org.helioviewer.jhv.gui.components.TristateCheckBox;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheListener;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCacheLoadingModel;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKPath;
-
-import javax.swing.*;
-import java.awt.*;
 
 /**
  * GUI Component showing either the HEKCacheTreeView, or a notice that currently

@@ -1,9 +1,37 @@
 package org.helioviewer.jhv.gui.dialogs;
 
-import com.jgoodies.forms.factories.FormFactory;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.RowSpec;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.time.LocalDateTime;
+
+import javax.annotation.Nullable;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSeparator;
+import javax.swing.JSpinner;
+import javax.swing.JSpinner.DefaultEditor;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
+
+import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.Observatories;
 import org.helioviewer.jhv.base.Observatories.Filter;
 import org.helioviewer.jhv.base.Observatories.Observatory;
@@ -13,14 +41,6 @@ import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.dialogs.calender.DatePicker;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
-
-import javax.annotation.Nullable;
-import javax.swing.*;
-import javax.swing.JSpinner.DefaultEditor;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
-import java.awt.event.*;
-import java.time.LocalDateTime;
 
 public class AddLayerDialog extends JDialog
 {
@@ -37,6 +57,8 @@ public class AddLayerDialog extends JDialog
 	//FIXME: remove minusYears for release, check data availability
 	private static LocalDateTime lastStart = LocalDateTime.now().minusYears(3).minusDays(1);
 	private static LocalDateTime lastEnd = LocalDateTime.now().minusYears(3); 
+	private JPanel layerPanel;
+	private JPanel panel;
 	
 	private enum TimeSteps
 	{
@@ -66,6 +88,7 @@ public class AddLayerDialog extends JDialog
 	public AddLayerDialog()
 	{
 		super(MainFrame.SINGLETON, "Add Layer", true);
+		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		
     	Telemetry.trackEvent("Dialog", "Type", getClass().getSimpleName());
 
@@ -255,58 +278,52 @@ public class AddLayerDialog extends JDialog
 	private void initGui()
 	{
 		getContentPane().setLayout(new BorderLayout());
-		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		//tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		contentPanel.setLayout(new BorderLayout());
 		//contentPanel.add(tabbedPane, BorderLayout.CENTER);
-		JPanel layerPanel = new JPanel();
+		layerPanel = new JPanel();
 		initLayerGui(layerPanel);
 		contentPanel.add(layerPanel, BorderLayout.CENTER);
 	}
 
 	private void initLayerGui(JPanel contentPanel)
 	{
-		contentPanel.setLayout(
-				new FormLayout(
-						new ColumnSpec[]
-						{
-							FormFactory.RELATED_GAP_COLSPEC,
-							ColumnSpec.decode("default:grow"),
-							FormFactory.RELATED_GAP_COLSPEC,
-							FormFactory.DEFAULT_COLSPEC,
-							FormFactory.RELATED_GAP_COLSPEC,
-							ColumnSpec.decode("default:grow")
-						},
-						new RowSpec[]
-						{
-							FormFactory.RELATED_GAP_ROWSPEC,
-							FormFactory.DEFAULT_ROWSPEC,
-							FormFactory.RELATED_GAP_ROWSPEC,
-							FormFactory.DEFAULT_ROWSPEC,
-							FormFactory.RELATED_GAP_ROWSPEC,
-							FormFactory.DEFAULT_ROWSPEC,
-							FormFactory.RELATED_GAP_ROWSPEC,
-							FormFactory.DEFAULT_ROWSPEC,
-							FormFactory.RELATED_GAP_ROWSPEC,
-							FormFactory.DEFAULT_ROWSPEC,
-							FormFactory.RELATED_GAP_ROWSPEC,
-							FormFactory.DEFAULT_ROWSPEC,
-							FormFactory.RELATED_GAP_ROWSPEC,
-							FormFactory.DEFAULT_ROWSPEC,
-							FormFactory.RELATED_GAP_ROWSPEC,
-							FormFactory.DEFAULT_ROWSPEC
-						}));
+		GridBagLayout gbl_layerPanel = new GridBagLayout();
+		gbl_layerPanel.columnWidths = new int[]{135, 0, 100, 0, 0};
+		gbl_layerPanel.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0};
+		gbl_layerPanel.columnWeights = new double[]{0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_layerPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		layerPanel.setLayout(gbl_layerPanel);
 		
 		datePickerStartDate = new DatePicker(lastStart, this);
-		contentPanel.add(datePickerStartDate, "2, 2, 5, 1, fill, top");
+		GridBagConstraints gbc_datePickerStartDate = new GridBagConstraints();
+		gbc_datePickerStartDate.anchor = GridBagConstraints.NORTH;
+		gbc_datePickerStartDate.fill = GridBagConstraints.HORIZONTAL;
+		gbc_datePickerStartDate.insets = new Insets(0, 0, 5, 0);
+		gbc_datePickerStartDate.gridwidth = 4;
+		gbc_datePickerStartDate.gridx = 0;
+		gbc_datePickerStartDate.gridy = 0;
+		contentPanel.add(datePickerStartDate, gbc_datePickerStartDate);
 		datePickerEndDate = new DatePicker(lastEnd, this);
-		contentPanel.add(datePickerEndDate, "2, 4, 5, 1, fill, top");
-		JLabel lblCadence = new JLabel("Time Step");
-		contentPanel.add(lblCadence, "2, 6");
+		GridBagConstraints gbc_datePickerEndDate = new GridBagConstraints();
+		gbc_datePickerEndDate.anchor = GridBagConstraints.NORTH;
+		gbc_datePickerEndDate.fill = GridBagConstraints.HORIZONTAL;
+		gbc_datePickerEndDate.insets = new Insets(0, 0, 5, 0);
+		gbc_datePickerEndDate.gridwidth = 4;
+		gbc_datePickerEndDate.gridx = 0;
+		gbc_datePickerEndDate.gridy = 1;
+		contentPanel.add(datePickerEndDate, gbc_datePickerEndDate);
+		JLabel lblCadence = new JLabel("Cadence");
+		GridBagConstraints gbc_lblCadence = new GridBagConstraints();
+		gbc_lblCadence.fill = GridBagConstraints.HORIZONTAL;
+		gbc_lblCadence.insets = new Insets(0, 0, 5, 5);
+		gbc_lblCadence.gridx = 0;
+		gbc_lblCadence.gridy = 2;
+		contentPanel.add(lblCadence, gbc_lblCadence);
 		cadence = new JSpinner();
 		cadence.setValue(120);
-		cadence.setPreferredSize(new Dimension(80, 20));
 		
 		
 		((DefaultEditor)cadence.getEditor()).getTextField().addFocusListener(new FocusAdapter()
@@ -328,88 +345,169 @@ public class AddLayerDialog extends JDialog
 		});
 		
 		
-		contentPanel.add(cadence, "4, 6");
-		cmbbxTimeSteps = new JComboBox<>(TimeSteps.values());
+		GridBagConstraints gbc_cadence = new GridBagConstraints();
+		gbc_cadence.fill = GridBagConstraints.HORIZONTAL;
+		gbc_cadence.insets = new Insets(0, 0, 5, 5);
+		gbc_cadence.gridx = 2;
+		gbc_cadence.gridy = 2;
+		contentPanel.add(cadence, gbc_cadence);
+		cmbbxTimeSteps = new JComboBox<>();
+		cmbbxTimeSteps.setModel(new DefaultComboBoxModel<>(TimeSteps.values()));
+		
 		cmbbxTimeSteps.setSelectedItem(TimeSteps.MIN);
 		
-		contentPanel.add(cmbbxTimeSteps, "6, 6, fill, default");
+		GridBagConstraints gbc_cmbbxTimeSteps = new GridBagConstraints();
+		gbc_cmbbxTimeSteps.fill = GridBagConstraints.HORIZONTAL;
+		gbc_cmbbxTimeSteps.anchor = GridBagConstraints.NORTH;
+		gbc_cmbbxTimeSteps.insets = new Insets(0, 0, 5, 0);
+		gbc_cmbbxTimeSteps.gridx = 3;
+		gbc_cmbbxTimeSteps.gridy = 2;
+		contentPanel.add(cmbbxTimeSteps, gbc_cmbbxTimeSteps);
 		JSeparator separator = new JSeparator();
-		contentPanel.add(separator, "2, 8, 5, 1");
+		GridBagConstraints gbc_separator = new GridBagConstraints();
+		gbc_separator.anchor = GridBagConstraints.NORTH;
+		gbc_separator.fill = GridBagConstraints.HORIZONTAL;
+		gbc_separator.insets = new Insets(0, 0, 5, 0);
+		gbc_separator.gridwidth = 4;
+		gbc_separator.gridx = 0;
+		gbc_separator.gridy = 3;
+		contentPanel.add(separator, gbc_separator);
 		JLabel lblObservatory = new JLabel("Observatory");
-		contentPanel.add(lblObservatory, "2, 10");
+		GridBagConstraints gbc_lblObservatory = new GridBagConstraints();
+		gbc_lblObservatory.fill = GridBagConstraints.HORIZONTAL;
+		gbc_lblObservatory.insets = new Insets(0, 0, 5, 5);
+		gbc_lblObservatory.gridx = 0;
+		gbc_lblObservatory.gridy = 4;
+		contentPanel.add(lblObservatory, gbc_lblObservatory);
 		cmbbxObservatory = new JComboBox<>();
-		contentPanel.add(cmbbxObservatory, "6, 10, fill, default");
+		GridBagConstraints gbc_cmbbxObservatory = new GridBagConstraints();
+		gbc_cmbbxObservatory.gridwidth = 3;
+		gbc_cmbbxObservatory.anchor = GridBagConstraints.NORTH;
+		gbc_cmbbxObservatory.fill = GridBagConstraints.HORIZONTAL;
+		gbc_cmbbxObservatory.insets = new Insets(0, 0, 5, 0);
+		gbc_cmbbxObservatory.gridx = 1;
+		gbc_cmbbxObservatory.gridy = 4;
+		contentPanel.add(cmbbxObservatory, gbc_cmbbxObservatory);
 		lblFilter = new JLabel("Instrument");
-		contentPanel.add(lblFilter, "2, 12");
+		GridBagConstraints gbc_lblFilter = new GridBagConstraints();
+		gbc_lblFilter.fill = GridBagConstraints.HORIZONTAL;
+		gbc_lblFilter.insets = new Insets(0, 0, 5, 5);
+		gbc_lblFilter.gridx = 0;
+		gbc_lblFilter.gridy = 5;
+		contentPanel.add(lblFilter, gbc_lblFilter);
 		cmbbxFilter = new JComboBox<>();
-		contentPanel.add(cmbbxFilter, "6, 12, fill, default");
+		GridBagConstraints gbc_cmbbxFilter = new GridBagConstraints();
+		gbc_cmbbxFilter.gridwidth = 3;
+		gbc_cmbbxFilter.anchor = GridBagConstraints.NORTH;
+		gbc_cmbbxFilter.fill = GridBagConstraints.HORIZONTAL;
+		gbc_cmbbxFilter.insets = new Insets(0, 0, 5, 0);
+		gbc_cmbbxFilter.gridx = 1;
+		gbc_cmbbxFilter.gridy = 5;
+		contentPanel.add(cmbbxFilter, gbc_cmbbxFilter);
 		lblFilter1 = new JLabel("");
-		contentPanel.add(lblFilter1, "2, 14");
+		GridBagConstraints gbc_lblFilter1 = new GridBagConstraints();
+		gbc_lblFilter1.fill = GridBagConstraints.HORIZONTAL;
+		gbc_lblFilter1.insets = new Insets(0, 0, 5, 5);
+		gbc_lblFilter1.gridx = 0;
+		gbc_lblFilter1.gridy = 6;
+		contentPanel.add(lblFilter1, gbc_lblFilter1);
 		cmbbxFilter1 = new JComboBox<>();
-		contentPanel.add(cmbbxFilter1, "6, 14, fill, default");
+		GridBagConstraints gbc_cmbbxFilter1 = new GridBagConstraints();
+		gbc_cmbbxFilter1.gridwidth = 3;
+		gbc_cmbbxFilter1.anchor = GridBagConstraints.NORTH;
+		gbc_cmbbxFilter1.fill = GridBagConstraints.HORIZONTAL;
+		gbc_cmbbxFilter1.insets = new Insets(0, 0, 5, 0);
+		gbc_cmbbxFilter1.gridx = 1;
+		gbc_cmbbxFilter1.gridy = 6;
+		contentPanel.add(cmbbxFilter1, gbc_cmbbxFilter1);
 		lblFilter2 = new JLabel("");
-		contentPanel.add(lblFilter2, "2, 16");
+		GridBagConstraints gbc_lblFilter2 = new GridBagConstraints();
+		gbc_lblFilter2.fill = GridBagConstraints.HORIZONTAL;
+		gbc_lblFilter2.insets = new Insets(0, 0, 0, 5);
+		gbc_lblFilter2.gridx = 0;
+		gbc_lblFilter2.gridy = 7;
+		contentPanel.add(lblFilter2, gbc_lblFilter2);
 		cmbbxFilter2 = new JComboBox<>();
-		contentPanel.add(cmbbxFilter2, "6, 16, fill, default");
+		GridBagConstraints gbc_cmbbxFilter2 = new GridBagConstraints();
+		gbc_cmbbxFilter2.gridwidth = 3;
+		gbc_cmbbxFilter2.anchor = GridBagConstraints.NORTH;
+		gbc_cmbbxFilter2.fill = GridBagConstraints.HORIZONTAL;
+		gbc_cmbbxFilter2.gridx = 1;
+		gbc_cmbbxFilter2.gridy = 7;
+		contentPanel.add(cmbbxFilter2, gbc_cmbbxFilter2);
 
 		JPanel buttonPane = new JPanel();
+		buttonPane.setBorder(new EmptyBorder(0, 10, 10, 10));
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
-
-		JButton okButton = new JButton("OK");
-		okButton.setActionCommand("OK");
-		buttonPane.add(okButton);
-		getRootPane().setDefaultButton(okButton);
-		okButton.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(@Nullable ActionEvent e)
-			{
-				Observatories.Filter filter = (Observatories.Filter) cmbbxFilter2.getSelectedItem();
-				if (filter == null)
-					filter = (Observatories.Filter) cmbbxFilter1.getSelectedItem();
-				
-				if (filter == null)
-					filter = (Observatories.Filter) cmbbxFilter.getSelectedItem();
-
-				if (filter != null)
+		
+		panel = new JPanel();
+		buttonPane.add(panel);
+				panel.setLayout(new GridLayout(0, 2, 15, 0));
+		
+				JButton okButton = new JButton("OK");
+				panel.add(okButton);
+				okButton.setActionCommand("OK");
+				getRootPane().setDefaultButton(okButton);
+				okButton.addActionListener(new ActionListener()
 				{
-					int cadence = (int) AddLayerDialog.this.cadence.getValue()
-							* ((TimeSteps) cmbbxTimeSteps.getSelectedItem()).factor;
-					cadence = Math.max(cadence, 1);
-					
-					KakaduLayer newLayer=new KakaduLayer(
-							filter.sourceId,
-							datePickerStartDate.getDateTime(),
-							datePickerEndDate.getDateTime(),
-							cadence, filter.getNickname());
-					Layers.addLayer(newLayer);
+					@Override
+					public void actionPerformed(@Nullable ActionEvent e)
+					{
+						Observatories.Filter filter = (Observatories.Filter) cmbbxFilter2.getSelectedItem();
+						if (filter == null)
+							filter = (Observatories.Filter) cmbbxFilter1.getSelectedItem();
+						
+						if (filter == null)
+							filter = (Observatories.Filter) cmbbxFilter.getSelectedItem();
 
-					//FIXME: camera rotation not correct for COR1 layer
-					newLayer.animateCameraToFacePlane = true;
-					
-					Settings.setInt(Settings.IntKey.ADDLAYER_LAST_SOURCEID, filter.sourceId);
-					lastStart = datePickerStartDate.getDateTime();
-					lastEnd = datePickerEndDate.getDateTime();
-					
-					setVisible(false);
-					dispose();
-				}
-			}
-		});
+						if (filter != null)
+						{
+							int cadence = (int) AddLayerDialog.this.cadence.getValue()
+									* ((TimeSteps) cmbbxTimeSteps.getSelectedItem()).factor;
+							cadence = Math.max(cadence, 1);
+							
+							KakaduLayer newLayer=new KakaduLayer(
+									filter.sourceId,
+									datePickerStartDate.getDateTime(),
+									datePickerEndDate.getDateTime(),
+									cadence, filter.getNickname());
+							Layers.addLayer(newLayer);
+
+							//FIXME: camera rotation not correct for COR1 layer
+							newLayer.animateCameraToFacePlane = true;
+							
+							Settings.setInt(Settings.IntKey.ADDLAYER_LAST_SOURCEID, filter.sourceId);
+							lastStart = datePickerStartDate.getDateTime();
+							lastEnd = datePickerEndDate.getDateTime();
+							
+							setVisible(false);
+							dispose();
+						}
+					}
+				});
+				
+				JButton cancelButton = new JButton("Cancel");
+				panel.add(cancelButton);
+				cancelButton.setActionCommand("Cancel");
+				cancelButton.addActionListener(new ActionListener()
+				{
+					@Override
+					public void actionPerformed(@Nullable ActionEvent e)
+					{
+						setVisible(false);
+					}
+				});
+				
+				DialogTools.setDefaultButtons(okButton,cancelButton);
 		
-		JButton cancelButton = new JButton("Cancel");
-		cancelButton.setActionCommand("Cancel");
-		buttonPane.add(cancelButton);
-		cancelButton.addActionListener(new ActionListener()
+		if(Globals.isOSX())
 		{
-			@Override
-			public void actionPerformed(@Nullable ActionEvent e)
-			{
-				setVisible(false);
-			}
-		});
-		
-		DialogTools.setDefaultButtons(okButton,cancelButton);
+			buttonPane.remove(okButton);
+			buttonPane.remove(cancelButton);
+			
+			buttonPane.add(cancelButton);
+			buttonPane.add(okButton);
+		}
 	}
 }

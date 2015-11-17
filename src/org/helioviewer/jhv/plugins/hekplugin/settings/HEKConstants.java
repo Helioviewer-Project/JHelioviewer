@@ -1,17 +1,18 @@
 package org.helioviewer.jhv.plugins.hekplugin.settings;
 
-import org.helioviewer.jhv.base.Telemetry;
-import org.helioviewer.jhv.gui.IconBank;
-import org.helioviewer.jhv.plugins.hekplugin.HEKPlugin;
-
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.AbstractMap;
 import java.util.HashMap;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+
+import org.helioviewer.jhv.base.Telemetry;
+import org.helioviewer.jhv.gui.IconBank;
+import org.helioviewer.jhv.plugins.hekplugin.HEKPlugin;
 
 public class HEKConstants {
 

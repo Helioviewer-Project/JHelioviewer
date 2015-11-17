@@ -1,17 +1,24 @@
 package org.helioviewer.jhv.base.downloadmanager;
 
-import kdu_jni.KduException;
-import kdu_jni.Kdu_cache;
-import org.helioviewer.jhv.base.Telemetry;
-import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPRequest.Method;
-import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.*;
-import org.helioviewer.jhv.viewmodel.metadata.UnsuitableMetaDataException;
-
-import javax.annotation.Nullable;
-import java.awt.*;
+import java.awt.Rectangle;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+
+import javax.annotation.Nullable;
+
+import org.helioviewer.jhv.base.Telemetry;
+import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPRequest.Method;
+import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPConstants;
+import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPDataSegment;
+import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPQuery;
+import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPRequestField;
+import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPResponse;
+import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPSocket;
+import org.helioviewer.jhv.viewmodel.metadata.UnsuitableMetaDataException;
+
+import kdu_jni.KduException;
+import kdu_jni.Kdu_cache;
 
 public class JPIPRequest extends AbstractDownloadRequest
 {

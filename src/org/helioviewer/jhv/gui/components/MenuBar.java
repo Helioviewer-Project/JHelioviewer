@@ -8,6 +8,7 @@ import javax.swing.JMenuBar;
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
+import org.helioviewer.jhv.gui.MoviePanel;
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 import org.helioviewer.jhv.gui.actions.ExportMovieAction;
 import org.helioviewer.jhv.gui.actions.LoadStateAction;
@@ -24,7 +25,6 @@ import org.helioviewer.jhv.gui.actions.ZoomOutAction;
 import org.helioviewer.jhv.gui.dialogs.AboutDialog;
 import org.helioviewer.jhv.gui.dialogs.PreferencesDialog;
 import org.helioviewer.jhv.gui.dialogs.ShortcutsDialog;
-import org.helioviewer.jhv.gui.leftPanel.MoviePanel;
 
 /**
  * Menu bar of the main window.

@@ -1,5 +1,7 @@
 package org.helioviewer.jhv.base;
 
+import java.util.Comparator;
+
 /*
  * The Alphanum Algorithm is an improved sorting algorithm for strings
  * containing numbers.  Instead of sorting numbers in ASCII order like
@@ -25,7 +27,6 @@ package org.helioviewer.jhv.base;
  */
 
 import javax.annotation.Nullable;
-import java.util.Comparator;
 
 /**
  * This is an updated version with enhancements made by Daniel Migowski, Andre

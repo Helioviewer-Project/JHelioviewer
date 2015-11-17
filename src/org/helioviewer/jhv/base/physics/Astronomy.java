@@ -1,8 +1,8 @@
 package org.helioviewer.jhv.base.physics;
 
-import org.helioviewer.jhv.base.math.MathUtils;
-
 import java.util.Calendar;
+
+import org.helioviewer.jhv.base.math.MathUtils;
 
 public class Astronomy {
     

@@ -1,14 +1,15 @@
 package org.helioviewer.jhv.opengl;
 
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+
+import org.helioviewer.jhv.gui.IconBank;
+import org.helioviewer.jhv.gui.IconBank.JHVIcon;
+
 import com.jogamp.common.nio.Buffers;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLContext;
-import org.helioviewer.jhv.gui.IconBank;
-import org.helioviewer.jhv.gui.IconBank.JHVIcon;
-
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 
 public class LoadingScreen
 {

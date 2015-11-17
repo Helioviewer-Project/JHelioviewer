@@ -1,5 +1,14 @@
 package org.helioviewer.jhv.gui.sdocutout;
 
+import java.awt.event.ActionEvent;
+import java.awt.geom.Rectangle2D;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+
+import javax.annotation.Nullable;
+import javax.swing.AbstractAction;
+
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.math.Vector2d;
@@ -12,14 +21,6 @@ import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.metadata.MetaDataAIA;
-
-import javax.annotation.Nullable;
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.geom.Rectangle2D;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 
 class SDOCutOutAction extends AbstractAction
 {

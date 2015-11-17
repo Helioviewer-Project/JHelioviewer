@@ -1,6 +1,18 @@
 package org.helioviewer.jhv.gui.actions;
 
-import com.google.common.io.Files;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import javax.annotation.Nullable;
+import javax.imageio.ImageIO;
+import javax.swing.AbstractAction;
+import javax.swing.KeyStroke;
+
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.Globals.DialogType;
 import org.helioviewer.jhv.base.Settings;
@@ -11,16 +23,7 @@ import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.PredefinedFileFilter;
 
-import javax.annotation.Nullable;
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import com.google.common.io.Files;
 
 public class SaveScreenshotAsAction extends AbstractAction
 {

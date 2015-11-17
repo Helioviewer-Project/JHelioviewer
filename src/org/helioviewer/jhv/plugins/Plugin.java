@@ -1,11 +1,12 @@
 package org.helioviewer.jhv.plugins;
 
-import com.jogamp.opengl.GL2;
+import java.awt.event.MouseEvent;
+import java.time.LocalDateTime;
+
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.json.JSONObject;
 
-import java.awt.event.MouseEvent;
-import java.time.LocalDateTime;
+import com.jogamp.opengl.GL2;
 
 public abstract class Plugin
 {

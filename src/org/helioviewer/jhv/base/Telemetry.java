@@ -1,8 +1,13 @@
 package org.helioviewer.jhv.base;
 
-import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GLContext;
-import com.microsoft.applicationinsights.TelemetryClient;
+import java.awt.Toolkit;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.base.Settings.StringKey;
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
@@ -13,10 +18,9 @@ import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.PluginLayer;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 
-import javax.swing.*;
-import java.awt.*;
-import java.util.*;
-import java.util.List;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GLContext;
+import com.microsoft.applicationinsights.TelemetryClient;
 
 public class Telemetry
 {

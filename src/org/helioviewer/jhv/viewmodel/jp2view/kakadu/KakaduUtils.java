@@ -1,10 +1,16 @@
 package org.helioviewer.jhv.viewmodel.jp2view.kakadu;
 
-import kdu_jni.*;
-import org.helioviewer.jhv.base.Telemetry;
+import java.io.UnsupportedEncodingException;
 
 import javax.annotation.Nullable;
-import java.io.UnsupportedEncodingException;
+
+import org.helioviewer.jhv.base.Telemetry;
+
+import kdu_jni.Jp2_input_box;
+import kdu_jni.Jp2_locator;
+import kdu_jni.Jp2_threadsafe_family_src;
+import kdu_jni.KduException;
+import kdu_jni.Kdu_global;
 
 public class KakaduUtils
 {

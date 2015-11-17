@@ -1,17 +1,25 @@
 package org.helioviewer.jhv.gui.dialogs;
 
-import org.helioviewer.jhv.base.Telemetry;
-import org.helioviewer.jhv.gui.MainFrame;
-
-import javax.annotation.Nullable;
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+
+import javax.annotation.Nullable;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+
+import org.helioviewer.jhv.base.Telemetry;
+import org.helioviewer.jhv.gui.MainFrame;
 
 class TextDialog extends JDialog implements ActionListener
 {

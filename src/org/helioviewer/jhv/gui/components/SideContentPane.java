@@ -1,9 +1,12 @@
 package org.helioviewer.jhv.gui.components;
 
-import javax.annotation.Nullable;
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
 import java.util.HashMap;
+
+import javax.annotation.Nullable;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JComponent;
 
 /**
  * Panel managing multiple {@link CollapsiblePane}s.

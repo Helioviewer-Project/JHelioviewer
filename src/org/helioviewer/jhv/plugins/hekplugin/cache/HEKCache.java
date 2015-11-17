@@ -1,15 +1,15 @@
 package org.helioviewer.jhv.plugins.hekplugin.cache;
 
-import org.helioviewer.jhv.plugins.hekplugin.Interval;
-import org.helioviewer.jhv.plugins.hekplugin.IntervalContainer;
-import org.helioviewer.jhv.plugins.hekplugin.IntervalStore;
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import org.helioviewer.jhv.plugins.hekplugin.Interval;
+import org.helioviewer.jhv.plugins.hekplugin.IntervalContainer;
+import org.helioviewer.jhv.plugins.hekplugin.IntervalStore;
 
 /**
  * Datastructure to store a different items.

@@ -1,11 +1,11 @@
 package org.helioviewer.jhv.plugins.hekplugin.cache;
 
-import org.helioviewer.jhv.plugins.hekplugin.Interval;
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+
+import org.helioviewer.jhv.plugins.hekplugin.Interval;
 
 public class HEKCacheLoadingModel {
 

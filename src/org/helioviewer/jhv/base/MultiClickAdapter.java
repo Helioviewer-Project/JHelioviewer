@@ -1,20 +1,24 @@
 package org.helioviewer.jhv.base;
 
-import javax.annotation.Nullable;
-import javax.swing.*;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
+import javax.annotation.Nullable;
+import javax.swing.Timer;
 
 public class MultiClickAdapter extends MouseAdapter implements ActionListener
 {
     @Nullable MouseEvent lastEvent;
     Timer timer;
 
-    public MultiClickAdapter(int delay)
+    public MultiClickAdapter()
     {
-        timer = new Timer( delay, this);
+		Object clickInterval = Toolkit.getDefaultToolkit().getDesktopProperty("awt.multiClickInterval");
+		int delay = clickInterval != null ? (int) clickInterval : 200;
+        timer = new Timer(delay, this);
     }
 
     public void mouseClicked (@Nullable MouseEvent e)

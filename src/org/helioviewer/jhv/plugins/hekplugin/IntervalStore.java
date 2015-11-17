@@ -1,7 +1,11 @@
 package org.helioviewer.jhv.plugins.hekplugin;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * Relationship: Interval <--> Items during that Interval

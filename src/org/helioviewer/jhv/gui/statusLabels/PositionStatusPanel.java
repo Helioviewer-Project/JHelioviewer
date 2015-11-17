@@ -1,5 +1,16 @@
 package org.helioviewer.jhv.gui.statusLabels;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.text.DecimalFormat;
+import java.time.LocalDateTime;
+
+import javax.annotation.Nullable;
+import javax.swing.BorderFactory;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+
 import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
 import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
 import org.helioviewer.jhv.base.coordinates.HelioprojectiveCartesianCoordinate;
@@ -7,14 +18,6 @@ import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.opengl.RayTrace.HitpointType;
 import org.helioviewer.jhv.opengl.RayTrace.Ray;
 import org.helioviewer.jhv.viewmodel.TimeLine;
-
-import javax.annotation.Nullable;
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.text.DecimalFormat;
-import java.time.LocalDateTime;
 
 /**
  * Status panel for displaying the current mouse position.

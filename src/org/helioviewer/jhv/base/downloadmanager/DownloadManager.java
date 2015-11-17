@@ -1,12 +1,13 @@
 package org.helioviewer.jhv.base.downloadmanager;
 
-import org.helioviewer.jhv.base.Telemetry;
-
-import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.Comparator;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.annotation.Nullable;
+
+import org.helioviewer.jhv.base.Telemetry;
 
 public class DownloadManager
 {

@@ -1,9 +1,9 @@
 package org.helioviewer.jhv.plugins.pfssplugin.data.caching;
 
-import org.helioviewer.jhv.plugins.pfssplugin.data.FileDescriptor;
-
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import org.helioviewer.jhv.plugins.pfssplugin.data.FileDescriptor;
 
 /**
  * Implementation of a simple First-in-First-out Cache. In this usecase this cache uses the LRU algorithm.

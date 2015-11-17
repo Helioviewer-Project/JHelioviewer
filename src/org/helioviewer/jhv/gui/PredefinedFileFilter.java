@@ -1,11 +1,13 @@
 package org.helioviewer.jhv.gui;
 
-import com.xuggle.xuggler.ICodec;
-import javafx.stage.FileChooser.ExtensionFilter;
+import java.io.File;
 
 import javax.annotation.Nullable;
 import javax.swing.filechooser.FileFilter;
-import java.io.File;
+
+import com.xuggle.xuggler.ICodec;
+
+import javafx.stage.FileChooser.ExtensionFilter;
 
 public class PredefinedFileFilter extends FileFilter
 {

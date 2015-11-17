@@ -1,9 +1,10 @@
 package org.helioviewer.jhv.viewmodel.jp2view.io.http;
 
-import javax.annotation.Nullable;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
+
+import javax.annotation.Nullable;
 
 /**
  * The class <code>HTTPMessage</code> defines the basic body of a HTTP message.

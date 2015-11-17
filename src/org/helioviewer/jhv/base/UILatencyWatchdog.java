@@ -1,13 +1,17 @@
 package org.helioviewer.jhv.base;
 
-import com.mindscapehq.raygun4java.core.RaygunClient;
-import com.mindscapehq.raygun4java.core.messages.RaygunIdentifier;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import javax.swing.*;
+import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.base.Settings.StringKey;
 
-import java.util.*;
+import com.mindscapehq.raygun4java.core.RaygunClient;
+import com.mindscapehq.raygun4java.core.messages.RaygunIdentifier;
 
 public class UILatencyWatchdog
 {
