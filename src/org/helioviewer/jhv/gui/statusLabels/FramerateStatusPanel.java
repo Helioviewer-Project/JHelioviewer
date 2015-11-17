@@ -17,6 +17,7 @@ import javax.swing.BorderFactory;
 public class FramerateStatusPanel extends StatusLabel
 {
 	private static int lastCounter;
+	private static boolean newFrameRendered;
 	
 	private int counter = 0;
 	private long startMeasurement = 0;
@@ -54,14 +55,20 @@ public class FramerateStatusPanel extends StatusLabel
 		startMeasurement = System.currentTimeMillis();
 	}
 	
+	public static void notifyRenderingNewFrame()
+	{
+		newFrameRendered=true;
+	}
+	
 	@Override
 	public void timeStampChanged(LocalDateTime current, LocalDateTime last)
 	{
-		//TODO: should only count frames that stem from advanceFrame in TimeLine, not when the user
-		//is seeking through the file. those frames are not fully decoded, leading to wrongly reported
-		//high fps
 		if ((System.currentTimeMillis() - startMeasurement) >= 1000)
 			updateFramerate();
-		counter++;
+		
+		if(newFrameRendered)
+			counter++;
+		
+		newFrameRendered=false;
 	}
 }

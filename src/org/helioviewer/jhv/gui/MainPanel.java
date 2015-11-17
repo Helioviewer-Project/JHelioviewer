@@ -41,6 +41,7 @@ import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.base.physics.DifferentialRotation;
 import org.helioviewer.jhv.gui.statusLabels.CameraListener;
+import org.helioviewer.jhv.gui.statusLabels.FramerateStatusPanel;
 import org.helioviewer.jhv.gui.statusLabels.PanelMouseListener;
 import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.ImageLayer.PreparedImage;
@@ -343,6 +344,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 	
 	protected void render(GL2 gl, boolean _showLoadingAnimation)
 	{
+		FramerateStatusPanel.notifyRenderingNewFrame();
 		advanceFrame();
 
 		LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
@@ -360,7 +362,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			for (CameraAnimation ca : cameraAnimations)
 				ca.animate(this);
 
-			// render another new frame after this one
+			// render another new frame right after this one
 			repaint();
 		}
 
