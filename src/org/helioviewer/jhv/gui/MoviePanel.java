@@ -15,6 +15,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 import javax.annotation.Nullable;
 import javax.swing.AbstractAction;
@@ -126,64 +127,64 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		gbl_contentPanel.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
 		contentPanel.setLayout(gbl_contentPanel);
 		
-				btnPlayPause = new JButton(ICON_PLAY);
-				btnPlayPause.setEnabled(false);
-				btnPlayPause.addActionListener(new ActionListener()
-				{
-					@Override
-					public void actionPerformed(@Nullable ActionEvent e)
-					{
-						TimeLine.SINGLETON.setPlaying(!timeLine.isPlaying());
-					}
-				});
-				
-						btnPrevious = new JButton(ICON_BACKWARD);
-						btnPrevious.setEnabled(false);
-						btnPrevious.addActionListener(new ActionListener()
-						{
-							@Override
-							public void actionPerformed(@Nullable ActionEvent e)
-							{
-								timeLine.previousFrame();
-							}
-						});
-						
-						slider = new TimeSlider();
-						slider.setValue(0);
-						slider.setMinimum(0);
-						slider.setMaximum(49);
-						slider.setSnapToTicks(true);
-						slider.setEnabled(false);
-						slider.addChangeListener(new ChangeListener()
-						{
-							@Override
-							public void stateChanged(@Nullable ChangeEvent e)
-							{
-								lblFrames.setText(slider.getValue() + "/" + slider.getMaximum());
-								timeLine.setCurrentFrame(slider.getValue());
-							}
-						});
+		btnPlayPause = new JButton(ICON_PLAY);
+		btnPlayPause.setEnabled(false);
+		btnPlayPause.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(@Nullable ActionEvent e)
+			{
+				TimeLine.SINGLETON.setPlaying(!timeLine.isPlaying());
+			}
+		});
+		
+		btnPrevious = new JButton(ICON_BACKWARD);
+		btnPrevious.setEnabled(false);
+		btnPrevious.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(@Nullable ActionEvent e)
+			{
+				timeLine.previousFrame();
+			}
+		});
+		
+		slider = new TimeSlider();
+		slider.setValue(0);
+		slider.setMinimum(0);
+		slider.setMaximum(49);
+		slider.setSnapToTicks(true);
+		slider.setEnabled(false);
+		slider.addChangeListener(new ChangeListener()
+		{
+			@Override
+			public void stateChanged(@Nullable ChangeEvent e)
+			{
+				lblFrames.setText(slider.getValue() + "/" + slider.getMaximum());
+				timeLine.setCurrentFrame(slider.getValue());
+			}
+		});
 
-						GridBagConstraints gbc_slider_2 = new GridBagConstraints();
-						gbc_slider_2.fill = GridBagConstraints.HORIZONTAL;
-						gbc_slider_2.gridwidth = 5;
-						gbc_slider_2.insets = new Insets(0, 0, 5, 5);
-						gbc_slider_2.gridx = 0;
-						gbc_slider_2.gridy = 0;
-						contentPanel.add(slider, gbc_slider_2);
-						
-						GridBagConstraints gbc_btnPrevious = new GridBagConstraints();
-						gbc_btnPrevious.anchor = GridBagConstraints.WEST;
-						gbc_btnPrevious.insets = new Insets(0, 0, 0, 5);
-						gbc_btnPrevious.gridx = 0;
-						gbc_btnPrevious.gridy = 1;
-						contentPanel.add(btnPrevious, gbc_btnPrevious);
-				GridBagConstraints gbc_btnPlayPause = new GridBagConstraints();
-				gbc_btnPlayPause.anchor = GridBagConstraints.WEST;
-				gbc_btnPlayPause.insets = new Insets(0, 0, 0, 5);
-				gbc_btnPlayPause.gridx = 1;
-				gbc_btnPlayPause.gridy = 1;
-				contentPanel.add(btnPlayPause, gbc_btnPlayPause);
+		GridBagConstraints gbc_slider_2 = new GridBagConstraints();
+		gbc_slider_2.fill = GridBagConstraints.HORIZONTAL;
+		gbc_slider_2.gridwidth = 5;
+		gbc_slider_2.insets = new Insets(0, 0, 5, 5);
+		gbc_slider_2.gridx = 0;
+		gbc_slider_2.gridy = 0;
+		contentPanel.add(slider, gbc_slider_2);
+		
+		GridBagConstraints gbc_btnPrevious = new GridBagConstraints();
+		gbc_btnPrevious.anchor = GridBagConstraints.WEST;
+		gbc_btnPrevious.insets = new Insets(0, 0, 0, 5);
+		gbc_btnPrevious.gridx = 0;
+		gbc_btnPrevious.gridy = 1;
+		contentPanel.add(btnPrevious, gbc_btnPrevious);
+		GridBagConstraints gbc_btnPlayPause = new GridBagConstraints();
+		gbc_btnPlayPause.anchor = GridBagConstraints.WEST;
+		gbc_btnPlayPause.insets = new Insets(0, 0, 0, 5);
+		gbc_btnPlayPause.gridx = 1;
+		gbc_btnPlayPause.gridy = 1;
+		contentPanel.add(btnPlayPause, gbc_btnPlayPause);
 		final JButton btnMoreOptions = new JButton("More Options", ICON_OPEN);
 		btnMoreOptions.addActionListener(new ActionListener()
 		{
@@ -194,30 +195,30 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 					btnMoreOptions.setIcon(ICON_OPEN);
 				else
 					btnMoreOptions.setIcon(ICON_CLOSE);
-
+		
 				showMore = !showMore;
 				optionPane.setVisible(showMore);
 			}
 		});
+
+		btnForward = new JButton(ICON_FORWARD);
+		btnForward.setEnabled(false);
+		btnForward.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(@Nullable ActionEvent e)
+			{
+				timeLine.nextFrame();
+			}
+		});
+		//btnForward.setPreferredSize(new Dimension(btnForward.getPreferredSize().width, buttonSize));
 		
-				btnForward = new JButton(ICON_FORWARD);
-				btnForward.setEnabled(false);
-				btnForward.addActionListener(new ActionListener()
-				{
-					@Override
-					public void actionPerformed(@Nullable ActionEvent e)
-					{
-						timeLine.nextFrame();
-					}
-				});
-				//btnForward.setPreferredSize(new Dimension(btnForward.getPreferredSize().width, buttonSize));
-				
-				GridBagConstraints gbc_btnForward = new GridBagConstraints();
-				gbc_btnForward.anchor = GridBagConstraints.WEST;
-				gbc_btnForward.insets = new Insets(0, 0, 0, 5);
-				gbc_btnForward.gridx = 2;
-				gbc_btnForward.gridy = 1;
-				contentPanel.add(btnForward, gbc_btnForward);
+		GridBagConstraints gbc_btnForward = new GridBagConstraints();
+		gbc_btnForward.anchor = GridBagConstraints.WEST;
+		gbc_btnForward.insets = new Insets(0, 0, 0, 5);
+		gbc_btnForward.gridx = 2;
+		gbc_btnForward.gridy = 1;
+		contentPanel.add(btnForward, gbc_btnForward);
 		
 		GridBagConstraints gbc_btnMoreOptions = new GridBagConstraints();
 		gbc_btnMoreOptions.anchor = GridBagConstraints.NORTHWEST;
@@ -388,8 +389,6 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		@Override
 		public void paintTrack(@Nullable Graphics g)
 		{
-			lblFrames.setText(slider.getValue() + "/" + slider.getMaximum());
-			
 			if(g==null)
 				return;
 			
@@ -408,16 +407,16 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 			if (layer != null)
 			{
 				//TODO: speed up!!!!!
-				LocalDateTime[] times=layer.getLocalDateTimes().toArray(new LocalDateTime[0]);
-				int max=Math.min(times.length, (int)trackRect.getWidth());
+				long duration=TimeLine.SINGLETON.getFirstDateTime().until(TimeLine.SINGLETON.getLastDateTime(), ChronoUnit.SECONDS);
+				int frames=(int)(duration/layer.getCadence());
+				int max=Math.min(frames, (int)trackRect.getWidth());
 				
-				Match previousMatch = null;
 				for(int i=0;i<max;i++)
 				{
-					LocalDateTime localDateTime=times[(int)Math.round(i/(double)max*times.length)];
-					
+					LocalDateTime localDateTime=TimeLine.SINGLETON.getFirstDateTime().plusSeconds((int)(duration/(double)max*i));
+
 					Match currentMatch = layer.getMovie(localDateTime);
-					if(currentMatch==null || currentMatch.equals(previousMatch))
+					if(currentMatch==null || currentMatch.timeDifferenceSeconds>layer.getCadence())
 						g.setColor(COLOR_NOT_CACHED);
 					else
 						switch (currentMatch.movie.quality)
@@ -435,12 +434,9 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 								throw new RuntimeException();
 						}
 					
-					
 					int xa=(int)Math.round(i/(double)max*WIDTH);
 					int xb=(int)Math.round((i+1)/(double)max*WIDTH);
 					g2.fillRect(xa, Y_OFFSET, xb-xa, HEIGHT);
-					
-					previousMatch=currentMatch;
 				}
 			}
 			else
@@ -476,11 +472,6 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 	@Override
 	public void activeLayerChanged(@Nullable Layer layer)
 	{
-		if (layer != null && layer instanceof ImageLayer)
-		{
-			slider.setMaximum(((ImageLayer) layer).getLocalDateTimes().size() > 0 ? ((ImageLayer) layer)
-					.getLocalDateTimes().size() - 1 : 0);
-		}
 	}
 
 	public void setButtonsEnabled(boolean _enable)
@@ -491,11 +482,14 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		btnForward.setEnabled(_enable);
 	}
 	
-	@Override
-	public void dateTimesChanged(int framecount)
+	@Override	
+	public void timeRangeChanged(LocalDateTime _start, LocalDateTime _end)
 	{
-		setButtonsEnabled(framecount > 0);
-		slider.setMaximum(framecount > 0 ? framecount - 1 : 0);
+		setButtonsEnabled(TimeLine.SINGLETON.isThereAnythingToPlay());
+		
+		int framecount = TimeLine.SINGLETON.getFrameCount();
+		
+		slider.setMaximum( framecount > 0 ? framecount - 1 : 0);
 		repaint();
 	}
 

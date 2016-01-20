@@ -2,15 +2,14 @@ package org.helioviewer.jhv.viewmodel.jp2view.newjpx;
 
 import java.awt.Dimension;
 import java.awt.Rectangle;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.NavigableSet;
-import java.util.TreeSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -45,20 +44,12 @@ import org.w3c.dom.Document;
 
 public class KakaduLayer extends ImageLayer
 {
-	public static final int MAX_FRAME_DOWNLOAD_BATCH = 15;
+	public static final int MAX_FRAME_DOWNLOAD_BATCH = 24;
 	
-	public TreeSet<LocalDateTime> localDateTimes = new TreeSet<>();
-
 	@Nullable private volatile Thread loaderThread;
 	private boolean localFile = false;
 	private final int sourceId;
-	protected int cadence = -1;
 	protected @Nullable String localPath;
-	
-	public int getCadence()
-	{
-		return cadence;
-	}
 	
 	private static final ExecutorService exDecoder = Executors.newWorkStealingPool();
 	
@@ -91,16 +82,11 @@ public class KakaduLayer extends ImageLayer
 		if(movie.getAnyMetaData()==null)
 			throw new UnsuitableMetaDataException();
 		
-		LocalDateTime[] times=new LocalDateTime[movie.getFrameCount()];
-		for(int i=0;i<times.length;i++)
-			times[i]=movie.getMetaData(i).localDateTime;
-		addFrameDateTimes(times);
-		
-		start = localDateTimes.first();
-		end = localDateTimes.last();
+		start = movie.getMetaData(0).localDateTime;
+		end = movie.getMetaData(movie.getFrameCount()-1).localDateTime;
 		name = movie.getAnyMetaData().displayName;
 		
-		cadence = (int) (ChronoUnit.SECONDS.between(start, end) / times.length);
+		cadence = (int) (ChronoUnit.SECONDS.between(start, end) / movie.getFrameCount());
 		
 		MovieCache.add(movie);
 	}
@@ -234,35 +220,65 @@ public class KakaduLayer extends ImageLayer
 		
 		loaderThread = new Thread(new Runnable()
 		{
-			private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 			private LinkedList<MovieDownload> downloads = new LinkedList<>();
 			private boolean incomplete=false; //FIXME: should be respected by layer manager + retry logic
 			
 			@Override
 			public void run()
 			{
+				ArrayList<Long> startTimes = new ArrayList<Long>();
+				ArrayList<Long> endTimes = new ArrayList<Long>();
+				
 				LocalDateTime currentStart = start;
 				while (currentStart.isBefore(end))
 				{
-					LocalDateTime currentEnd = currentStart.plusSeconds(cadence * (MAX_FRAME_DOWNLOAD_BATCH - 1));
+					LocalDateTime currentEnd = currentStart.plusSeconds(cadence);
 					if(currentEnd.isAfter(end))
 						currentEnd = end;
 					
+					//don't re-download already cached images
+					long maxDistance = currentStart.until(currentEnd, ChronoUnit.SECONDS)/2;
+					Match bestMatch=MovieCache.findBestFrame(sourceId, currentStart.plusSeconds(maxDistance));
+					if(bestMatch == null || bestMatch.timeDifferenceSeconds>maxDistance)
+					{
+						startTimes.add(currentStart.atOffset(ZoneOffset.UTC).getLong(ChronoField.INSTANT_SECONDS));
+						endTimes.add(currentEnd.atOffset(ZoneOffset.UTC).getLong(ChronoField.INSTANT_SECONDS));
+					}
+					
+					currentStart = currentEnd;
+				}
+				
+				while (!startTimes.isEmpty())
+				{
+					StringBuilder currentStarts = new StringBuilder();
+					StringBuilder currentEnds = new StringBuilder();
+					
+					for(int i=0;i<MAX_FRAME_DOWNLOAD_BATCH && !startTimes.isEmpty(); i++) 
+					{
+						if(i>0)
+						{
+							currentStarts.append(',');
+							currentEnds.append(',');
+						}
+						currentStarts.append(startTimes.remove(0).toString());
+						currentEnds.append(endTimes.remove(0).toString());
+					}
+					
+					
 					MovieDownload md=new MovieDownload();
-					md.metadata = new HTTPRequest(Globals.JPX_DATASOURCE
-							+ "?startTime=" + currentStart.format(formatter)
-							+ "&endTime=" + currentEnd.format(formatter)
-							+ "&sourceId=" + sourceId
-							+ "&cadence=" + cadence
-							+ "&jpip=true&verbose=true",
+					md.metadata = new HTTPRequest(Globals.JPX_DATASOURCE_MIDPOINT
+							+ "?sourceId=" + sourceId
+							+ "&jpip=true"
+							+ "&verbose=true"
+							+ "&startTimes=" + currentStarts.toString()
+							+ "&endTimes=" + currentEnds.toString(),
 							DownloadPriority.HIGH);
 					
-					md.hq = new JPIPDownloadRequest(Globals.JPX_DATASOURCE
-							+ "?startTime=" + currentStart.format(formatter)
-							+ "&endTime=" + currentEnd.format(formatter)
-							+ "&sourceId=" + sourceId
-							+ "&cadence=" + cadence,
-							MovieCache.generateFilename(sourceId,currentStart,currentEnd,cadence),
+					md.hq = new JPIPDownloadRequest(Globals.JPX_DATASOURCE_MIDPOINT
+							+ "?sourceId=" + sourceId
+							+ "&startTimes=" + currentStarts.toString()
+							+ "&endTimes=" + currentEnds.toString(),
+							MovieCache.generateFilename(sourceId),
 							DownloadPriority.LOW);
 					
 					DownloadManager.addRequest(md.metadata);
@@ -305,19 +321,6 @@ public class KakaduLayer extends ImageLayer
 								downloads.addLast(download);
 								
 								JSONArray frames = ((JSONArray) jsonObject.get("frames"));
-								final LocalDateTime[] localDateTimes = new LocalDateTime[frames.length()];
-								for (int i = 0; i < frames.length(); i++)
-									localDateTimes[i] = new Timestamp(frames.getLong(i) * 1000L).toLocalDateTime();
-								
-								SwingUtilities.invokeAndWait(new Runnable()
-								{
-									@Override
-									public void run()
-									{
-										addFrameDateTimes(localDateTimes);
-									}
-								});
-								
 								download.lq = new JPIPRequest(jsonObject.getString("uri"), DownloadPriority.MEDIUM, 0, frames.length(), new Rectangle(256, 256));
 								
 								DownloadManager.addRequest(download.lq);
@@ -359,6 +362,7 @@ public class KakaduLayer extends ImageLayer
 							}
 							catch(UnsuitableMetaDataException _umde)
 							{
+								incomplete=true;
 								Telemetry.trackException(_umde);
 							}
 							
@@ -450,34 +454,15 @@ public class KakaduLayer extends ImageLayer
 		return findClosestLocalDateTime(TimeLine.SINGLETON.getCurrentDateTime());
 	}
 
-	private void addFrameDateTimes(LocalDateTime[] _localDateTimes)
-	{
-		if(_localDateTimes.length==0)
-			return;
-
-		Collections.addAll(localDateTimes, _localDateTimes);
-		
-		//TODO: should probably only be set if current layer is active
-		TimeLine.SINGLETON.setLocalDateTimes(localDateTimes);
-		MainFrame.SINGLETON.MOVIE_PANEL.repaintSlider();
-	}
-
-
 	public @Nullable LocalDateTime findClosestLocalDateTime(LocalDateTime _currentDateTime)
 	{
-		LocalDateTime after = localDateTimes.ceiling(_currentDateTime);
-		LocalDateTime before = localDateTimes.floor(_currentDateTime);
-		long beforeValue = before != null ? ChronoUnit.NANOS.between(before, _currentDateTime) : Long.MAX_VALUE;
-		long afterValue = after != null ? ChronoUnit.NANOS.between(_currentDateTime, after) : Long.MAX_VALUE;
-		return beforeValue > afterValue ? after : before;
+		Match match = MovieCache.findBestFrame(sourceId, _currentDateTime);
+		if(match==null)
+			return null;
+		
+		return match.movie.getMetaData(match.index).localDateTime;
 	}
 
-
-	@Deprecated
-	public NavigableSet<LocalDateTime> getLocalDateTimes()
-	{
-		return localDateTimes;
-	}
 
 	@Override
 	public void dispose()
@@ -495,7 +480,7 @@ public class KakaduLayer extends ImageLayer
 			return null;
 		
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-		return Globals.JPX_DATASOURCE + "?startTime=" + start.format(formatter) + "&endTime=" + end.format(formatter) + "&sourceId=" + sourceId + "&cadence=" + cadence;
+		return Globals.JPX_DATASOURCE_TRADITIONAL + "?startTime=" + start.format(formatter) + "&endTime=" + end.format(formatter) + "&sourceId=" + sourceId + "&cadence=" + cadence;
 	}
 
 	public boolean isLocalFile()
@@ -506,17 +491,11 @@ public class KakaduLayer extends ImageLayer
 	@Nullable
 	public MetaData getMetaData(LocalDateTime currentDateTime)
 	{
-		if (localDateTimes.isEmpty())
-			return null;
-		
 		return MovieCache.getMetaData(sourceId, currentDateTime);
 	}
 	
 	public @Nullable Document getMetaDataDocument(LocalDateTime currentDateTime)
 	{
-		if (localDateTimes.isEmpty())
-			return null;
-		
 		return MovieCache.getMetaDataDocument(sourceId, currentDateTime);
 	}
 	

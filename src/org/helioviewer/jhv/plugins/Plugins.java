@@ -111,10 +111,10 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 	}
 
 	@Override
-	public void dateTimesChanged(int framecount)
+	public void timeRangeChanged(LocalDateTime _start, LocalDateTime _end)
 	{
 		for (Plugin plugin : plugins)
-			plugin.dateTimesChanged(framecount);
+			plugin.timeRangeChanged(_start,_end);
 	}
 
 	public LocalDateTime getCurrentDateTime()

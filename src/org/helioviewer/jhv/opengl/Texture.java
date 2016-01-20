@@ -111,13 +111,14 @@ public class Texture
 		GL2 gl = GLContext.getCurrentGL().getGL2();
 		gl.glBindTexture(GL2.GL_TEXTURE_2D, openGLTextureId);
 		
+		
 		ByteBuffer buffer = readPixels(bufferedImage, alpha, switchChannel);
 		
 		gl.glPixelStorei(GL2.GL_UNPACK_SKIP_PIXELS, 0);
 		gl.glPixelStorei(GL2.GL_UNPACK_SKIP_ROWS, 0);
 		gl.glPixelStorei(GL2.GL_UNPACK_ROW_LENGTH, 0);
 		gl.glPixelStorei(GL2.GL_UNPACK_ALIGNMENT, 8 >> 3);
-
+		
 		gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, _destX, _destY, bufferedImage.getWidth(), bufferedImage.getHeight(), inputFormat, inputType, buffer);
 		
 		//updateDebugImage();
@@ -276,5 +277,10 @@ public class Texture
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_LINEAR);
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP);
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP);
-	}
+		
+		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_BASE_LEVEL, 0);
+        gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAX_LEVEL, 0);
+        
+        gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_GENERATE_MIPMAP, GL2.GL_FALSE);
+    }
 }

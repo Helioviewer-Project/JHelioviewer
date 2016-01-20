@@ -40,7 +40,8 @@ import javafx.stage.StageStyle;
 public class Globals
 {
 	public static final String OBSERVATORIES_DATASOURCE = "http://api.helioviewer.org/v2/getDataSources/";
-	public static final String JPX_DATASOURCE = "http://api.helioviewer.org/v2/getJPX/";
+	public static final String JPX_DATASOURCE_TRADITIONAL = "http://api.helioviewer.org/v2/getJPX/";
+	public static final String JPX_DATASOURCE_MIDPOINT = "http://api.helioviewer.org/v2/getJPXClosestToMidPoint/";
 
     public static final String VERSION = System.getProperty("jhvVersion") == null ? "developer" : System.getProperty("jhvVersion");
     public static final String RAYGUN_TAG = System.getProperty("raygunTag");

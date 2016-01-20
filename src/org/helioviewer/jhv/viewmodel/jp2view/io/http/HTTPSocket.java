@@ -57,9 +57,9 @@ public class HTTPSocket extends Socket
 	{
 		port = _uri.getPort() <= 0 ? PORT : _uri.getPort();
 		host = _uri.getHost();
-		super.setSoTimeout(10000);
+		super.setSoTimeout(30000);
 		super.setKeepAlive(true);
-		super.connect(new InetSocketAddress(host, port), 10000);
+		super.connect(new InetSocketAddress(host, port), 30000);
 		return null;
 	}
 
@@ -70,7 +70,7 @@ public class HTTPSocket extends Socket
 	 */
 	public void reconnect() throws IOException
 	{
-		super.connect(new InetSocketAddress(host, port), 10000);
+		super.connect(new InetSocketAddress(host, port), 30000);
 	}
 
 	/**

@@ -2,6 +2,8 @@ package org.helioviewer.jhv.layers;
 
 import java.awt.Rectangle;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -19,6 +21,8 @@ import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.metadata.MetaDataFactory;
 import org.helioviewer.jhv.viewmodel.metadata.UnsuitableMetaDataException;
 import org.w3c.dom.Document;
+
+import com.google.common.io.Files;
 
 import kdu_jni.Jp2_threadsafe_family_src;
 import kdu_jni.Jpx_source;
@@ -46,6 +50,26 @@ public class Movie
 	private final @Nullable Kdu_cache kduCache;
 	private final Jp2_threadsafe_family_src family_src;
 	private boolean disposed;
+	
+	private long lastTouched;
+	
+	public void touch()
+	{
+		if(System.currentTimeMillis()<=lastTouched+5000)
+			return;
+		
+		lastTouched = System.currentTimeMillis();
+		
+		try
+		{
+			Files.touch(new File(filename));
+		}
+		catch (IOException e)
+		{
+			Telemetry.trackException(e);
+		}
+	}
+	
 	
 	@SuppressWarnings("null")
 	public void dispose()

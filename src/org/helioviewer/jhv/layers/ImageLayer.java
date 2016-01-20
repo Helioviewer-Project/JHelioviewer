@@ -6,7 +6,6 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.NavigableSet;
 import java.util.concurrent.Future;
 
 import javax.annotation.Nonnull;
@@ -55,6 +54,8 @@ public abstract class ImageLayer extends Layer
 	@SuppressWarnings("null")
 	protected LocalDateTime end;
 	
+	protected int cadence;
+	
 	@Nullable public Lut getLUT()
 	{
 		return lut;
@@ -80,8 +81,6 @@ public abstract class ImageLayer extends Layer
 	
 	protected static ArrayList<Texture> textures= new ArrayList<>();
 	
-	public abstract NavigableSet<LocalDateTime> getLocalDateTimes();
-
 	public abstract @Nullable MetaData getMetaData(@Nonnull LocalDateTime currentDateTime);
 
 	public abstract @Nullable Document getMetaDataDocument(@Nonnull LocalDateTime _currentDateTime);
@@ -197,8 +196,8 @@ public abstract class ImageLayer extends Layer
 		gl.glUniform4f(gl.glGetUniformLocation(shaderprogram, "imageOffset"),
 				(float)_preparedImageData.texture.getImageRegion().areaOfSourceImage.getX(),
 				(float)_preparedImageData.texture.getImageRegion().areaOfSourceImage.getY(),
-				(float)_preparedImageData.texture.getImageRegion().areaOfSourceImage.getWidth()/_preparedImageData.texture.textureWidth,
-				(float)_preparedImageData.texture.getImageRegion().areaOfSourceImage.getHeight()/_preparedImageData.texture.textureHeight
+				(float)_preparedImageData.texture.getImageRegion().areaOfSourceImage.getWidth()/(_preparedImageData.texture.textureWidth-1f/_preparedImageData.texture.width),
+				(float)_preparedImageData.texture.getImageRegion().areaOfSourceImage.getHeight()/(_preparedImageData.texture.textureHeight-1f/_preparedImageData.texture.height)
 			);
 		
 		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "opacity"), (float) opacity);
@@ -439,5 +438,10 @@ public abstract class ImageLayer extends Layer
 		
 		// frame.repaint();
 		// frame.setVisible(true);
+	}
+
+	public int getCadence()
+	{
+		return cadence;
 	}
 }

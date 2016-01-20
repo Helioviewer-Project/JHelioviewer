@@ -160,7 +160,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			}
 			
 			@Override
-			public void dateTimesChanged(int framecount)
+			public void timeRangeChanged(LocalDateTime _start, LocalDateTime _end)
 			{
 			}
 
@@ -369,12 +369,12 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		if (cameraTrackingEnabled)
 			updateTrackRotation();
 
-		double clipNear = Math.max(this.translationNow.z - 4 * Constants.SUN_RADIUS, CLIP_NEAR);
+		double clipNear = Math.max(translationNow.z - 4 * Constants.SUN_RADIUS, CLIP_NEAR);
 		
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glPushMatrix();
 		{
-			gl.glOrtho(-1, 1, -1, 1, clipNear, this.translationNow.z + 4 * Constants.SUN_RADIUS);
+			gl.glOrtho(-1, 1, -1, 1, clipNear, translationNow.z + 4 * Constants.SUN_RADIUS);
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
 			gl.glLoadIdentity();
 
@@ -521,7 +521,10 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 
 	protected float getDesiredRelativeResolution()
 	{
-		return 1;
+		 if(TimeLine.SINGLETON.isPlaying())
+			 return 0.5f; //or "resolutionDivisor"
+		 else
+			 return 1;
 	}
 
 	@Override
@@ -532,11 +535,6 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		
 		sizeForDecoder = getCanavasSize();
 
-		// TODO: find a better solution to maintain fps
-		// if(TimeLine.SINGLETON.isPlaying())
-		// sizeForDecoder = new
-		// Dimension((int)(sizeForDecoder.width/resolutionDivisor),
-		// (int)(sizeForDecoder.height/resolutionDivisor));
 		sizeForDecoder = new Dimension((int) (sizeForDecoder.width * getDesiredRelativeResolution()),
 				(int) (sizeForDecoder.height * getDesiredRelativeResolution()));
 
@@ -580,27 +578,31 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		if (lastDate == null)
 			lastDate = TimeLine.SINGLETON.getCurrentDateTime();
 
-		if (lastDate != null && !lastDate.isEqual(TimeLine.SINGLETON.getCurrentDateTime()))
+		if (!lastDate.isEqual(TimeLine.SINGLETON.getCurrentDateTime()))
 		{
-			Duration difference = Duration.between(lastDate, TimeLine.SINGLETON.getCurrentDateTime());
-
-			long seconds = difference.getSeconds();
+			long difference = Duration.between(lastDate, TimeLine.SINGLETON.getCurrentDateTime()).getSeconds();
 			lastDate = TimeLine.SINGLETON.getCurrentDateTime();
+			
 			RayTrace rayTrace = new RayTrace();
 			Vector3d hitPoint = rayTrace.cast(getWidth() / 2, getHeight() / 2, this).getHitpoint();
-			HeliographicCoordinate newCoord = new HeliocentricCartesianCoordinate(hitPoint.x, hitPoint.y, hitPoint.z)
-					.toHeliographicCoordinate();
-			double angle = DifferentialRotation.calculateRotationInRadians(newCoord.latitude, seconds);
-
+			HeliographicCoordinate newCoord = new HeliocentricCartesianCoordinate(hitPoint.x, hitPoint.y, hitPoint.z).toHeliographicCoordinate();
+			double angle = DifferentialRotation.calculateRotationInRadians(newCoord.latitude, difference);
+			
 			Quaternion newRotation = Quaternion.createRotation(angle, new Vector3d(0, 1, 0)).rotate(rotationNow);
-
 			if (CameraMode.mode == MODE.MODE_3D)
+			{
+				rotationEnd = Quaternion.createRotation(angle, new Vector3d(0, 1, 0)).rotate(rotationEnd);
 				rotationNow = newRotation;
+			}
 			else
 			{
 				Vector3d newTranslation = newRotation.toMatrix().multiply(hitPoint);
+				translationEnd = translationEnd.add(new Vector3d(newTranslation.x-translationNow.x,newTranslation.y-translationNow.y,0));
 				translationNow = new Vector3d(newTranslation.x, newTranslation.y, translationNow.z);
 			}
+			
+			for (CameraListener listener : cameraListeners)
+				listener.cameraChanged();
 		}
 	}
 
@@ -874,8 +876,8 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 
 	public void toggleCameraTracking()
 	{
-		this.cameraTrackingEnabled = !cameraTrackingEnabled;
-		this.lastDate = TimeLine.SINGLETON.getCurrentDateTime();
+		cameraTrackingEnabled = !cameraTrackingEnabled;
+		lastDate = TimeLine.SINGLETON.getCurrentDateTime();
 	}
 
 	public void addPanelMouseListener(PanelMouseListener _listener)

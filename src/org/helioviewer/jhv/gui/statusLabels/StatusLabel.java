@@ -42,7 +42,7 @@ abstract class StatusLabel extends JLabel implements TimeLineListener, PanelMous
 	}
 
 	@Override
-	public void dateTimesChanged(int framecount)
+	public void timeRangeChanged(LocalDateTime _start, LocalDateTime _end)
 	{
 	}
 	

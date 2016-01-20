@@ -544,12 +544,12 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 	}
 
 	@Override
-	public void dateTimesChanged(int framecount)
+	public void isPlayingChanged(boolean _isPlaying)
 	{
 	}
 
 	@Override
-	public void isPlayingChanged(boolean _isPlaying)
+	public void timeRangeChanged(LocalDateTime _start, LocalDateTime _end)
 	{
 	}
 }

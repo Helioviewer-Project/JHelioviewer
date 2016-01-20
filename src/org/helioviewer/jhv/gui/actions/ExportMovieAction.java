@@ -144,7 +144,7 @@ public class ExportMovieAction extends AbstractAction
 		else
 			throw new RuntimeException();
 
-		Telemetry.trackEvent("Export movie","Format",selectedOutputFormat.description);
+		Telemetry.trackEvent("Export movie","Format",selectedOutputFormat.description,"Width",imageWidth+"","Height",imageHeight+"","Text",textEnabled?"1":"0");
 		Telemetry.trackMetric("MovieWidth",imageWidth);
 		Telemetry.trackMetric("MovieHeight",imageHeight);
 		Telemetry.trackMetric("MovieTextEnabled", textEnabled?1:0);
@@ -208,11 +208,11 @@ public class ExportMovieAction extends AbstractAction
 					TimeLine.SINGLETON.nextFrame();
 				}
 				TimeLine.SINGLETON.setCurrentFrame(0);
-				// export movie
-				if (writer != null)
-					writer.close();
 
 				try {
+					// export movie
+					if (writer != null)
+						writer.close();
 					if (zipOutputStream != null)
 						zipOutputStream.close();
 					if (fileOutputStream != null)

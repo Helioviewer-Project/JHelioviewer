@@ -45,34 +45,26 @@ struct Plane
 };
 
 Sphere sphere = Sphere(vec3(0,0,0),695700000);
-Plane plane = Plane((vec4(0,0,1,0) * layerTransformation).xyz,-0.);
-//Plane plane = Plane(cross(vec3(1,0,0),vec3(0,1.,0)),-0.);
+Plane plane = Plane((vec4(0,0,1,0) * layerTransformation).xyz, -0.);
 
 float intersectSphere(in Ray ray, in Sphere sphere)
 {
     vec3 oc = ray.origin - sphere.center;
-    float b = 2.0 *dot(oc, ray.direction);
+    float b = 2.0 * dot(oc, ray.direction);
     float c = dot(oc,oc) - sphere.radius*sphere.radius;
-    float determinant = b*b - 4.0 *c;
-    /*no intersection*/
-    if(determinant <0.0) return -1.0;
+    float determinant = b * b - 4.0 * c;
     
-    float t = (-b - sqrt(determinant))/ 2.0;
-    return t;
+    /*no intersection*/
+    if(determinant < 0.0)
+    	return -1.0;
+    
+    return (-b - sqrt(determinant)) * 0.5;
 }
 
 float intersectPlane(in Ray ray, in Plane plane)
 {
     /*equation of a plane, y=0 = ro.y+t*rd.y*/
     return -(plane.d + dot(ray.origin,plane.normal)) / dot(ray.direction,plane.normal);
-}
-
-void intersect(in Ray ray, out float tSphere, out float tPlane)
-{
-    /* intersect with a sphere */
-    tSphere = intersectSphere(ray, sphere);
-    /* intersect with a plane */
-    tPlane = intersectPlane(ray, plane);
 }
 
 const mat3 kernel = mat3(-0.1,-0.2,-0.1,-0.2,1.2,-0.2,-0.1,-0.2,-0.1);
@@ -145,11 +137,12 @@ vec3 lutLookup(float intensity)
 
 void main(void)
 {
-    gl_FragColor = vec4(0,0,0,1);
     vec2 uv = gl_TexCoord[0].xy;
+    
     /* calculate viewport */
     float width;
     float height;
+    
     /* MV --> z */
     vec3 rayOrigin;
     vec3 rayDirection;
@@ -178,48 +171,47 @@ void main(void)
     vec3 rayDRot = (vec4(rayDirection,0) * transformation).xyz;
     Ray rayRot = Ray(rayORot, rayDRot);
     
-    float tSphere, tPlane;
-    intersect (rayRot, tSphere, tPlane);
     
-    float sphereIntensity = 0.;
-    float coronaIntensity = 0.;
-    gl_FragDepth = 1;
+    vec3 lutColor;
     
+    float tSphere = intersectSphere(rayRot, sphere);
    	if (tSphere > 0.)
    	{
         vec3 posOri = rayRot.origin + tSphere*rayRot.direction;
-        vec3 posRot = (vec4(posOri, 0) * (layerInv)).xyz;
+        vec3 posRot = (vec4(posOri, 0) * layerInv).xyz;
         
-        vec3 ray = ray1.origin + tSphere * ray1.direction;
         if (posRot.z >= 0.0)
         {
             vec2 texPos = (posRot.xy/physicalImageSize + 0.5) + sunOffset;
-            if (texPos.x >= 1.0 || texPos.x < 0.0 || texPos.y >= 1.0 || texPos.y < 0.0)
-               discard;
-               
-            texPos = (texPos - imageOffset.xy) / imageOffset.zw;
-            sphereIntensity = contrastValue(sharpenValue(texPos));
+            if (texPos.x < 1.0 && texPos.x >= 0.0 && texPos.y < 1.0 && texPos.y >= 0.0)
+            {
+	            texPos = (texPos - imageOffset.xy) / imageOffset.zw;
+    	        lutColor += lutLookup(contrastValue(sharpenValue(texPos)));
+    	    }
         }
         
+        vec3 ray = ray1.origin + tSphere * ray1.direction;
 		gl_FragDepth = (1./(zTranslation - ray.z) - 1./near) / (1./far - 1./near);            
     }
+    else
+	    gl_FragDepth = 1.;
     
-   	if (tPlane > 0. && (tPlane < tSphere|| tSphere < 0.))
-   	{
-        vec3 posOri = rayRot.origin + tPlane*rayRot.direction;
-        vec3 posRot = (vec4(posOri, 0) * (layerInv)).xyz;
-        
-        vec2 texPos = (posRot.xy/physicalImageSize + 0.5) + sunOffset;
-        if ((texPos.x >= 1.0 || texPos.x < 0.0 || texPos.y >= 1.0 || texPos.y < 0.0) && tSphere < 0.)
-            discard;
-        
-        if (opacityCorona > 0.)
-        {
-	        texPos = (texPos - imageOffset.xy) / imageOffset.zw;
-            coronaIntensity = contrastValue(sharpenValue(texPos)) * opacityCorona;
-        }
-    }
     
-    vec3 lutColor = lutLookup(coronaIntensity) + lutLookup(sphereIntensity);
+    if (opacityCorona > 0.)
+    {
+	    float tPlane = intersectPlane(rayRot, plane);
+	   	if (tPlane > 0. && (tPlane < tSphere || tSphere < 0.))
+	   	{
+	        vec3 posOri = rayRot.origin + tPlane*rayRot.direction;
+	        vec2 posRot = (vec4(posOri, 0) * layerInv).xy;
+	        vec2 texPos = (posRot/physicalImageSize + 0.5) + sunOffset;
+	        if (texPos.x < 1.0 && texPos.x >= 0.0 && texPos.y < 1.0 && texPos.y >= 0.0)
+	        {
+		        texPos = (texPos - imageOffset.xy) / imageOffset.zw;
+    	        lutColor += lutLookup(contrastValue(sharpenValue(texPos))) * opacityCorona;
+    	    }
+	    }
+	}
+    
     gl_FragColor = vec4(lutColor,1) * vec4(redChannel,greenChannel,blueChannel,opacity);
 }

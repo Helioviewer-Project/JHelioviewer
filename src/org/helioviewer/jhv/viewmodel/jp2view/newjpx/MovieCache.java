@@ -5,12 +5,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import javax.annotation.Nullable;
 
@@ -30,7 +30,7 @@ public class MovieCache
 {
 	private static HashMap<Integer,List<Movie>> cache= new HashMap<>();
 
-	private static final long MAX_CACHE_SIZE = 1024*1024*50;
+	private static final long MAX_CACHE_SIZE = 1024*1024*1024;
 	
 	private static final File CACHE_DIR = new File(System.getProperty("java.io.tmpdir"), "jhv-movie-cache");
 	
@@ -76,7 +76,7 @@ public class MovieCache
 			for(File f:CACHE_DIR.listFiles())
 			{
 				String[] parts=f.getName().split(",");
-				if(parts.length==4)
+				if(parts.length>=2)
 					try
 					{
 						add(new Movie(Integer.parseInt(parts[0]),f.getAbsolutePath()));
@@ -129,6 +129,9 @@ public class MovieCache
 				return Long.compare(_a.lastModified(), _b.lastModified());
 			}
 		});
+		
+		if(cacheSize>MAX_CACHE_SIZE)
+			System.out.println("Cache: Too big, purging");
 		
 		int toRemove = 0;
 		while(cacheSize>MAX_CACHE_SIZE)
@@ -202,18 +205,7 @@ public class MovieCache
 		}
 		
 		if(bestMatch!=null && bestMatch.movie.getBackingFile()!=null)
-		{
-			try
-			{
-				//TODO: don't touch every frame
-				//TODO: test performance with HDD and OS X/Linux FSs
-				Files.touch(new File(bestMatch.movie.getBackingFile()));
-			}
-			catch (IOException e)
-			{
-				Telemetry.trackException(e);
-			}
-		}
+			bestMatch.movie.touch();
 		
 		return bestMatch;
 	}
@@ -248,9 +240,9 @@ public class MovieCache
 		return match.movie.readMetadataDocument(match.index);
 	}
 
-	public static String generateFilename(int _sourceId, LocalDateTime _currentStart, LocalDateTime _currentEnd, int _cadence)
+	public static String generateFilename(int _sourceId)
 	{
-		return new File(CACHE_DIR, _sourceId+","+_currentStart.atOffset(ZoneOffset.UTC).toEpochSecond()+","+_currentEnd.atOffset(ZoneOffset.UTC).toEpochSecond()+","+_cadence).getAbsolutePath();
+		return new File(CACHE_DIR, _sourceId+","+UUID.randomUUID().toString()).getAbsolutePath();
 	}
 
 	public static void init()

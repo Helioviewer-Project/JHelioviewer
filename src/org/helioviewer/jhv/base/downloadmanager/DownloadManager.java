@@ -40,7 +40,7 @@ public class DownloadManager
 		}
 	});
 
-	private static final int CONCURRENT_DOWNLOADS = 4;
+	private static final int CONCURRENT_DOWNLOADS = 2;
 	private static AtomicInteger activeDownloads = new AtomicInteger();
 
 	static

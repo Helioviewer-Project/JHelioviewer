@@ -165,7 +165,7 @@ public class MetaDataDialog extends JDialog
 			}
 
 			@Override
-			public void dateTimesChanged(int framecount)
+			public void timeRangeChanged(LocalDateTime _start, LocalDateTime _end)
 			{
 			}
 		});

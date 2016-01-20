@@ -3,11 +3,10 @@ package org.helioviewer.jhv.viewmodel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.NavigableSet;
-import java.util.TreeSet;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.Timer;
 
@@ -26,7 +25,9 @@ public class TimeLine implements LayerListener
 
 	private ArrayList<TimeLineListener> timeLineListeners;
 
-	private NavigableSet<LocalDateTime> localDateTimes;
+	private LocalDateTime startTime = LocalDateTime.now();
+	private LocalDateTime endTime = LocalDateTime.now();
+	private int cadence=1;
 
 	private double millisecondsPerFrame = 50;
 	private AnimationMode animationMode = AnimationMode.LOOP;
@@ -46,7 +47,6 @@ public class TimeLine implements LayerListener
 	
 	private TimeLine()
 	{
-		localDateTimes = new TreeSet<>();
 		Layers.addLayerListener(this);
 		timeLineListeners = new ArrayList<>();
 	}
@@ -55,10 +55,15 @@ public class TimeLine implements LayerListener
 	{
 		return isPlaying;
 	}
+	
+	public boolean isThereAnythingToPlay()
+	{
+		return !startTime.isEqual(endTime);
+	}
 
 	public void setPlaying(boolean _playing)
 	{
-		if(localDateTimes.isEmpty() && _playing)
+		if(startTime.isEqual(endTime) && _playing)
 		{
 			System.out.println("TimeLine: There's nothing to play");
 			_playing=false;
@@ -74,42 +79,42 @@ public class TimeLine implements LayerListener
 			l.isPlayingChanged(isPlaying);
 	}
 
-	public @Nullable LocalDateTime nextFrame()
+	public LocalDateTime nextFrame()
 	{
-		if (localDateTimes.isEmpty())
-			return null;
-		
-		LocalDateTime next = localDateTimes.higher(current);
 		LocalDateTime last = current;
-		if (next == null)
-			next = localDateTimes.first();
+		
+		LocalDateTime next = current.plusSeconds(cadence);
+		if (next.isAfter(endTime))
+			next = startTime;
 		
 		current = next;
 		dateTimeChanged(last);
 		return current;
 	}
 
-	public @Nullable LocalDateTime previousFrame()
+	public LocalDateTime previousFrame()
 	{
-		if (localDateTimes.isEmpty())
-			return null;
-		LocalDateTime next = localDateTimes.lower(current);
-		if (next == null)
-			next = localDateTimes.last();
+		LocalDateTime last = current;
+		
+		LocalDateTime next = current.minusSeconds(cadence);
+		if (next.isBefore(startTime))
+			next = endTime;
 		
 		current = next;
-		dateTimeChanged(current);
+		dateTimeChanged(last);
 		return current;
 	}
 
+	@Deprecated
 	public int getFrameCount()
 	{
-		return localDateTimes.size();
+		return (int)(startTime.until(endTime, ChronoUnit.SECONDS)/cadence);
 	}
-
+	
+	@Deprecated
 	public int getCurrentFrameIndex()
 	{
-		return localDateTimes.headSet(current).size();
+		return (int)(startTime.until(current, ChronoUnit.SECONDS)/cadence);
 	}
 
 	public LocalDateTime getCurrentDateTime()
@@ -148,32 +153,53 @@ public class TimeLine implements LayerListener
 	public void layerAdded()
 	{
 	}
+	
+	public void setTimeRange(@Nonnull LocalDateTime _start,@Nonnull LocalDateTime _end,int _cadence)
+	{
+		if(_cadence<=1)
+			throw new IllegalArgumentException("_cadence");
+		
+		startTime=_start;
+		endTime=_end;
+		cadence=_cadence;
+		
+		for (TimeLine.TimeLineListener timeLineListener : timeLineListeners)
+			timeLineListener.timeRangeChanged(_start, _end);
+		
+		setCurrentDate(startTime);
+	}
+	
+	public void setNoTimeRange()
+	{
+		startTime=LocalDateTime.now();
+		endTime=LocalDateTime.now();
+		cadence=1;
+	}
 
 	@Override
 	public void layersRemoved()
 	{
 		if (Layers.getActiveImageLayer() == null)
-			setLocalDateTimes(new TreeSet<LocalDateTime>());
+			setNoTimeRange();
 	}
 
 	@Override
 	public void activeLayerChanged(@Nullable Layer layer)
 	{
 		if (layer != null && layer instanceof ImageLayer)
-			setLocalDateTimes(((ImageLayer)layer).getLocalDateTimes());
+			setTimeRange(((ImageLayer)layer).getFirstLocalDateTime(), ((ImageLayer)layer).getLastLocalDateTime(), ((ImageLayer)layer).getCadence());
 	}
 
 	public void setCurrentFrame(int _frameNr)
 	{
-		Iterator<LocalDateTime> it = localDateTimes.iterator();
-		int i = 0;
-		LocalDateTime newCurrent = null;
-		while (it.hasNext() && i <= _frameNr)
-		{
-			newCurrent = it.next();
-			i++;
-		}
-		if (newCurrent != null && !newCurrent.isEqual(current))
+		if(_frameNr<0)
+			throw new IllegalArgumentException("_frameNr must be >=0");
+		
+		LocalDateTime newCurrent = startTime.plusSeconds(cadence * _frameNr);
+		if(newCurrent.isAfter(endTime))
+			throw new IllegalArgumentException("_frameNr too big");
+		
+		if (!newCurrent.isEqual(current))
 		{
 			LocalDateTime last = current;
 			current = newCurrent;
@@ -186,38 +212,17 @@ public class TimeLine implements LayerListener
 	{
 		void isPlayingChanged(boolean _isPlaying);
 		void timeStampChanged(LocalDateTime current, LocalDateTime last);
-
-		@Deprecated
-		void dateTimesChanged(int framecount);
+		void timeRangeChanged(LocalDateTime _start, LocalDateTime _end);
 	}
 
-	public void setLocalDateTimes(NavigableSet<LocalDateTime> _localDateTimes)
+	public LocalDateTime getFirstDateTime()
 	{
-		localDateTimes = _localDateTimes;
-		for (TimeLine.TimeLineListener timeLineListener : timeLineListeners)
-			timeLineListener.dateTimesChanged(localDateTimes.size());
-
-		/*if(_localDateTimes.isEmpty())
-			setCurrentDate(LocalDateTime.now());
-		else
-			setCurrentDate(current);*/
-		
-		if(localDateTimes.isEmpty())
-			setPlaying(false);
+		return startTime;
 	}
 
-	public @Nullable LocalDateTime getFirstDateTime()
+	public LocalDateTime getLastDateTime()
 	{
-		if (localDateTimes.isEmpty())
-			return null;
-		return localDateTimes.first();
-	}
-
-	public @Nullable LocalDateTime getLastDateTime()
-	{
-		if (localDateTimes == null || localDateTimes.isEmpty())
-			return null;
-		return localDateTimes.last();
+		return endTime;
 	}
 
 	public void setCurrentDate(LocalDateTime _newDateTime)
@@ -281,20 +286,19 @@ public class TimeLine implements LayerListener
 	
 	private void loop()
 	{
-		LocalDateTime next=localDateTimes.higher(current);
-		
-		if(next==null)
-			current = localDateTimes.first();
+		LocalDateTime next=current.plusSeconds(cadence);
+		if(next.isAfter(endTime))
+			current = startTime;
 		else
 			current = next;
 	}
 	
 	private void stop()
 	{
-		LocalDateTime next=localDateTimes.lower(current);
-		if (next == null)
+		LocalDateTime next=current.plusSeconds(cadence);
+		if (next.isAfter(endTime))
 		{
-			current = localDateTimes.first();		
+			current = startTime;		
 			setPlaying(false);
 		}
 		else
@@ -306,20 +310,20 @@ public class TimeLine implements LayerListener
 		LocalDateTime next;
 		if (forward)
 		{
-			next = localDateTimes.higher(current);
-			if (next == null)
+			next = current.plusSeconds(cadence);
+			if (next.isAfter(endTime))
 			{
 				forward = false;
-				next = localDateTimes.lower(current);
+				next = current;
 			}
 		}
 		else
 		{
-			next = localDateTimes.lower(current);
-			if (next == null)
+			next = current.minusSeconds(cadence);
+			if (next.isBefore(startTime))
 			{
 				forward = true;
-				next = localDateTimes.higher(current);
+				next = current;
 			}
 		}
 		current = next;

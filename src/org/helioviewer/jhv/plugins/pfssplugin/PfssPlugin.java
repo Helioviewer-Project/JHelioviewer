@@ -83,12 +83,9 @@ public class PfssPlugin extends Plugin
 	}
 	
 	@Override
-	public void dateTimesChanged(int framecount)
+	public void timeRangeChanged(LocalDateTime _start, LocalDateTime _end)
 	{
-		LocalDateTime startLocalDateTime = Plugins.getStartDateTime();
-		LocalDateTime endLocalDateTime = Plugins.getEndDateTime();
-		if (startLocalDateTime != null && endLocalDateTime != null)
-			manager.setDateRange(startLocalDateTime, endLocalDateTime);
+		manager.setDateRange(_start, _end);
 	}
 	
 	@Override
