@@ -400,7 +400,6 @@ public class Movie
 			
 			compositor.Add_ilayer(_index, new Kdu_dims(), new Kdu_dims());
 			
-			
 			Kdu_dims actualBufferedRegion = new Kdu_dims();
 			Kdu_compositor_buf compositorBuf = compositor.Get_composition_buffer(actualBufferedRegion);
 			Kdu_coords actualOffset = new Kdu_coords();
@@ -408,22 +407,26 @@ public class Movie
 			
 			//TODO: don't reallocate buffers all the time
 			ByteBuffer byteBuffer = ByteBuffer.allocateDirect(_requiredRegion.width * _requiredRegion.height).order(ByteOrder.nativeOrder());
+			int[] region_buf = new int[262144];
 			
+			Runtime.getRuntime().gc();
 			Kdu_dims newRegion = new Kdu_dims();
-			int[] region_buf = new int[Math.min(128000,_requiredRegion.width*(_requiredRegion.height+1))];
-			while (compositor.Process(region_buf.length-_requiredRegion.width, newRegion))
+			while (compositor.Process(262144-_requiredRegion.width, newRegion))
 			{
 				Kdu_coords newOffset = newRegion.Access_pos();
 				Kdu_coords newSize = newRegion.Access_size();
 				newOffset.Subtract(actualOffset);
 				
 				int newPixels = newSize.Get_x() * newSize.Get_y();
-				if (newPixels == 0)
-					continue;
 				if (newPixels > 0)
 				{
-					compositorBuf.Get_region(newRegion, region_buf);
+					if(newPixels > region_buf.length)
+					{
+						System.err.println("Kakadu acting up: Spec of Compositor.Process() guarantees less pixels.");
+						region_buf = new int[newPixels];
+					}
 					
+					compositorBuf.Get_region(newRegion, region_buf);
 					for(int i=0;i<newPixels;i++)
 						byteBuffer.put((byte)region_buf[i]);
 				}
@@ -431,6 +434,8 @@ public class Movie
 			
 			compositorBuf.Native_destroy();
 			compositor.Native_destroy();
+			jpxSrc.Close();
+			jpxSrc.Native_destroy();
 			
 			byteBuffer.position(0);
 			return byteBuffer;

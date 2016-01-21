@@ -390,6 +390,8 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 				}
 			}
 			
+			//FIXME: extremely narrow viewports show letterbox. why?!
+			
 			ImageLayer.ensureAppropriateTextureCacheSize();
 			
 			LinkedHashMap<ImageLayer, Future<PreparedImage>> layers = new LinkedHashMap<>();
@@ -467,6 +469,8 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		double yScale = aspect < 1 ? aspect : 1;
 		gl.glScaled(xScale, yScale, 1);
 		gl.glMatrixMode(GL2.GL_MODELVIEW);			
+		
+		//TODO: move loading animation to status bar
 		
 		if (DownloadManager.areDownloadsActive() && _showLoadingAnimation)
 		{

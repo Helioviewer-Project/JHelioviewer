@@ -4,7 +4,9 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -189,8 +191,8 @@ public class JHelioviewer
 			// The following code-block attempts to start the native message handling, otherwise
 			// KDU just terminates our process when something goes wrong... (!?!)
 			splash.progressTo("Setting up Kakadu message handlers");
-            Kdu_global.Kdu_customize_warnings(new Kdu_message_formatter(new KduErrorHandler(false), 80));
-            Kdu_global.Kdu_customize_errors(new Kdu_message_formatter(new KduErrorHandler(true), 80));
+            Kdu_global.Kdu_customize_warnings(keepReference(new Kdu_message_formatter(new KduErrorHandler(false), 80)));
+            Kdu_global.Kdu_customize_errors(keepReference(new Kdu_message_formatter(new KduErrorHandler(true), 80)));
 
 			// Create main view chain and display main window
             splash.progressTo("Starting Swing");
@@ -252,6 +254,13 @@ public class JHelioviewer
 		{
 			JHVUncaughtExceptionHandler.SINGLETON.uncaughtException(Thread.currentThread(), _t);
 		}
+	}
+
+	private static List<Object> keepAlive=new ArrayList<Object>();
+	private static <T> T keepReference(T _x)
+	{
+		keepAlive.add(_x);
+		return _x;
 	}
 
 	private static void loadLibraries()

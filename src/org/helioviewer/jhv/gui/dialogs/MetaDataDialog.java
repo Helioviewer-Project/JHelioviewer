@@ -66,7 +66,7 @@ public class MetaDataDialog extends JDialog
 
 	public MetaDataDialog()
 	{
-		super(MainFrame.SINGLETON, "Image metainfo");
+		super(MainFrame.SINGLETON, "Image metadata");
 
 		Telemetry.trackEvent("Dialog", "Type", getClass().getSimpleName());
 

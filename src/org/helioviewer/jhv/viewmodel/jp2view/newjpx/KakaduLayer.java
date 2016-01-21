@@ -69,7 +69,6 @@ public class KakaduLayer extends ImageLayer
 		return MovieCache.findBestFrame(sourceId, _currentDateTime);
 	}
 	
-	
 	@SuppressWarnings("null")
 	public KakaduLayer(String _filePath)
 	{
@@ -212,16 +211,17 @@ public class KakaduLayer extends ImageLayer
 		}
 	}
 	
+	private volatile boolean incomplete;
+	
 	@SuppressWarnings("null")
-	public void setTimeRange(final LocalDateTime start, final LocalDateTime end, final int cadence)
+	private void setTimeRange(final LocalDateTime _start, final LocalDateTime _end, final int _cadence)
 	{
 		if(loaderThread!=null)
-			throw new RuntimeException("Changing time range after creation currently not implemented.");
+			throw new IllegalStateException("Shouldn't restart while existing thread is still running.");
 		
 		loaderThread = new Thread(new Runnable()
 		{
 			private LinkedList<MovieDownload> downloads = new LinkedList<>();
-			private boolean incomplete=false; //FIXME: should be respected by layer manager + retry logic
 			
 			@Override
 			public void run()
@@ -229,12 +229,12 @@ public class KakaduLayer extends ImageLayer
 				ArrayList<Long> startTimes = new ArrayList<Long>();
 				ArrayList<Long> endTimes = new ArrayList<Long>();
 				
-				LocalDateTime currentStart = start;
-				while (currentStart.isBefore(end))
+				LocalDateTime currentStart = _start;
+				while (currentStart.isBefore(_end))
 				{
-					LocalDateTime currentEnd = currentStart.plusSeconds(cadence);
-					if(currentEnd.isAfter(end))
-						currentEnd = end;
+					LocalDateTime currentEnd = currentStart.plusSeconds(_cadence);
+					if(currentEnd.isAfter(_end))
+						currentEnd = _end;
 					
 					//don't re-download already cached images
 					long maxDistance = currentStart.until(currentEnd, ChronoUnit.SECONDS)/2;
@@ -281,13 +281,13 @@ public class KakaduLayer extends ImageLayer
 							MovieCache.generateFilename(sourceId),
 							DownloadPriority.LOW);
 					
-					DownloadManager.addRequest(md.metadata);
-					DownloadManager.addRequest(md.hq);
-					
 					downloads.add(md);
 					
-					currentStart = currentStart.plusSeconds(cadence * MAX_FRAME_DOWNLOAD_BATCH);
+					currentStart = currentStart.plusSeconds(_cadence * MAX_FRAME_DOWNLOAD_BATCH);
 				}
+				
+				for(MovieDownload md:downloads)
+					DownloadManager.addRequest(md.metadata);
 				
 				while(!downloads.isEmpty())
 				{
@@ -314,17 +314,36 @@ public class KakaduLayer extends ImageLayer
 									DownloadManager.remove(download.hq);
 									
 									incomplete=true;
-									download.metadata=null;
 									continue;
 								}
 								
-								downloads.addLast(download);
-								
+								boolean containsValidFrames = false;
 								JSONArray frames = ((JSONArray) jsonObject.get("frames"));
-								download.lq = new JPIPRequest(jsonObject.getString("uri"), DownloadPriority.MEDIUM, 0, frames.length(), new Rectangle(256, 256));
+								for(int i=0;i<frames.length();i++)
+									if(!"null".equalsIgnoreCase(frames.getString(i)))
+									{
+										containsValidFrames = true;
+										break;
+									}
 								
-								DownloadManager.addRequest(download.lq);
-								download.metadata=null;
+								if(containsValidFrames)
+								{
+									//FIXME: lq previews are not rendered correctly
+									
+									download.lq = new JPIPRequest(jsonObject.getString("uri"), DownloadPriority.MEDIUM, 0, frames.length(), new Rectangle(256, 256));
+									DownloadManager.addRequest(download.lq);
+									DownloadManager.addRequest(download.hq);
+									
+									download.metadata=null;
+									downloads.addLast(download);
+								}
+								else
+								{
+									DownloadManager.remove(download.metadata);
+									DownloadManager.remove(download.lq);
+									DownloadManager.remove(download.hq);
+									continue;
+								}
 							}
 							catch(JSONException _e)
 							{
@@ -335,18 +354,17 @@ public class KakaduLayer extends ImageLayer
 								Telemetry.trackException(_e);
 								
 								incomplete=true;
-								download.lq=null;
-								download.hq=null;
-								download.metadata=null;
+								continue;
 							}
 						}
-						else if(download.metadata==null && download.hq!=null && download.hq.isFinished())
+						else if(download.hq!=null && download.hq.isFinished())
 						{
 							DownloadManager.remove(download.metadata);
 							DownloadManager.remove(download.lq);
 							
 							try
 							{
+								download.hq.checkException();
 								final Movie m=new Movie(sourceId,download.hq.filename);
 								SwingUtilities.invokeAndWait(new Runnable()
 								{
@@ -360,17 +378,14 @@ public class KakaduLayer extends ImageLayer
 									}
 								});
 							}
-							catch(UnsuitableMetaDataException _umde)
+							catch(Throwable _t)
 							{
 								incomplete=true;
-								Telemetry.trackException(_umde);
+								Telemetry.trackException(_t);
+								continue;
 							}
-							
-							download.metadata = null;
-							download.hq = null;
-							download.lq = null;
 						}
-						else if(download.metadata==null && download.lq!=null && download.lq.isFinished())
+						else if(download.lq!=null && download.lq.isFinished())
 						{
 							try
 							{
@@ -392,7 +407,7 @@ public class KakaduLayer extends ImageLayer
 							download.lq=null;
 							downloads.addLast(download);
 						}
-						else
+						else if(download.hq!=null || download.lq!=null || download.metadata!=null)
 						{
 							SwingUtilities.invokeLater(new Runnable()
 							{
@@ -408,6 +423,8 @@ public class KakaduLayer extends ImageLayer
 							Thread.sleep(500);
 							downloads.addLast(download);
 						}
+						else
+							throw new RuntimeException("Downloads shouldn't ever be in this state.");
 					}
 					catch (InterruptedException _e)
 					{
@@ -434,16 +451,26 @@ public class KakaduLayer extends ImageLayer
 				
 				for(MovieDownload md:downloads)
 				{
-					if(md.hq!=null)
-						DownloadManager.remove(md.hq);
-					if(md.lq!=null)
-						DownloadManager.remove(md.lq);
-					if(md.metadata!=null)
-						DownloadManager.remove(md.metadata);
+					DownloadManager.remove(md.hq);
+					DownloadManager.remove(md.lq);
+					DownloadManager.remove(md.metadata);
 				}
+				
+				loaderThread=null;
+				
+				SwingUtilities.invokeLater(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						//update panel to reflect incomplete status
+						MainFrame.SINGLETON.LAYER_PANEL.updateData();
+					}
+				});
 			}
 		}, "Layer loader "+sourceId);
 
+		incomplete = false;
 		loaderThread.setDaemon(true);
 		loaderThread.start();
 	}
@@ -468,7 +495,10 @@ public class KakaduLayer extends ImageLayer
 	public void dispose()
 	{
 		if (loaderThread != null)
+		{
 			loaderThread.interrupt();
+			incomplete=true;
+		}
 	}
 
 	public @Nullable String getDownloadURL()
@@ -559,5 +589,20 @@ public class KakaduLayer extends ImageLayer
 					);
 			}
 		});
+	}
+	
+	@Override
+	public boolean retryNeeded()
+	{
+		return incomplete && loaderThread==null;
+	}
+	
+	@Override
+	public void retry()
+	{
+		if(!retryNeeded())
+			return;
+		
+		setTimeRange(start, end, cadence);
 	}
 }

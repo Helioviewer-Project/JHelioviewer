@@ -87,7 +87,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 	private void initPopup()
 	{
 		popupMenu = new JPopupMenu();
-		showMetaView = new JMenuItem("Show metainfo...", IconBank.getIcon(JHVIcon.INFO_NEW, SIZE, SIZE));
+		showMetaView = new JMenuItem("Show metadata...", IconBank.getIcon(JHVIcon.INFO_NEW, SIZE, SIZE));
 		showMetaView.addActionListener(new ActionListener()
 		{
 			@Override
@@ -270,7 +270,10 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 				{
 					boolean value = (boolean) table.getValueAt(row, column);
 					if (value)
+					{
 						Layers.getLayer(row).retry();
+						updateData();
+					}
 				}
 			}
 
@@ -470,8 +473,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			switch (column)
 			{
 				case 0:
-					super.getTableCellRendererComponent(table, null, isSelected, hasFocus, row, column);
-					break;
+					return super.getTableCellRendererComponent(table, null, isSelected, hasFocus, row, column);
 				case 1:
 					JLabel label = (JLabel) super.getTableCellRendererComponent(table, null, isSelected, hasFocus, row, column);
 					if (value!=null && (Boolean) value)
@@ -481,15 +483,13 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 					}
 					else
 						label.setIcon(null);
-					break;
+					return label;
 				case 2:
-					super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-					break;
+					return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 				case 3:
 					LocalDateTime localDateTime = (LocalDateTime) value;
 					String date = localDateTime != null ? localDateTime.format(Globals.DATE_TIME_FORMATTER) : "";
-					super.getTableCellRendererComponent(table, date, isSelected, hasFocus, row, column);
-					break;
+					return super.getTableCellRendererComponent(table, date, isSelected, hasFocus, row, column);
 				case 4:
 					JLabel label4 = (JLabel) super.getTableCellRendererComponent(table, null, isSelected, hasFocus, row, column);
 					if (Layers.getLayer(row) != null && Layers.getLayer(row) instanceof ImageLayer)
@@ -501,11 +501,9 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 						label4.setIcon(null);
 					return label4;
 				default:
-					break;
+					return this;
 			}
-			return this;
 		}
-
 	}
 
 	@Override

@@ -117,6 +117,8 @@ public class DownloadManager
 
 	public static void remove(@Nullable AbstractDownloadRequest request)
 	{
+		//TODO: remove & interrupt currently active downloads
+		
 		for (Tuple t : taskDeque)
 			if(t.request.get()==request)
 			{

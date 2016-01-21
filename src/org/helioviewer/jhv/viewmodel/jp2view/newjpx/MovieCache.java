@@ -114,6 +114,13 @@ public class MovieCache
 		if(cacheSize<=MAX_CACHE_SIZE)
 			return;
 		
+		System.out.println("Cache: Too big, purging");
+
+		//try to close all open movies, can't delete files otherwise
+		for(List<Movie> movies:cache.values())
+			for(Movie m:movies)
+				m.dispose();
+		
 		Arrays.sort(files,0,files.length,new Comparator<File>()
 		{
 			@Override
@@ -129,9 +136,6 @@ public class MovieCache
 				return Long.compare(_a.lastModified(), _b.lastModified());
 			}
 		});
-		
-		if(cacheSize>MAX_CACHE_SIZE)
-			System.out.println("Cache: Too big, purging");
 		
 		int toRemove = 0;
 		while(cacheSize>MAX_CACHE_SIZE)
