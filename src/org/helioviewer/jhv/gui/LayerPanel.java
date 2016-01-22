@@ -24,6 +24,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
+import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -61,7 +62,16 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 
 	private JButton btnDownloadLayer;
 	private static final Cursor HAND_CURSOR = new Cursor(Cursor.HAND_CURSOR);
-	private static final ImageIcon WARNING_BAD_REQUEST = IconBank.getIcon(JHVIcon.WARNING, SIZE, SIZE);
+	private static final ImageIcon WARNING_BAD_REQUEST = IconBank.getIcon(JHVIcon.WARNING, SIZE-2, SIZE-2);
+	private static final ImageIcon[] LAYER_LOADING=new ImageIcon[8];
+	
+	
+	static
+	{
+		for(int i=0;i<LAYER_LOADING.length;i++)
+			LAYER_LOADING[i]=IconBank.getIcon(JHVIcon.LAYER_LOADING, SIZE-4, SIZE-4, Math.PI*2/2/LAYER_LOADING.length*i);
+	}
+	
 	private @Nullable Layer activePopupLayer;
 
 	private JPopupMenu popupMenu;
@@ -74,7 +84,6 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 	
 	private JButton btnShowInfo;
 
-	@SuppressWarnings("null")
 	public LayerPanel()
 	{
 		initPopup();
@@ -412,9 +421,28 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		gbcBtnAddLayer.gridy = 0;
 		panel.add(btnAddLayer, gbcBtnAddLayer);
 	}
-
+	
+	private static int loadingFrameCounter = 0;
+	private Timer loadingAnimation = new Timer(100,new ActionListener()
+	{
+		@Override
+		public void actionPerformed(@Nullable ActionEvent e)
+		{
+			updateData();
+		}
+	});
+	
 	public void updateData()
 	{
+		loadingAnimation.stop();
+		for (Layer layer : Layers.getLayers())
+			if(layer.isLoading())
+			{
+				loadingAnimation.start();
+				break;
+			}
+		
+		loadingFrameCounter = (int)(System.currentTimeMillis()/100) % LAYER_LOADING.length;		
 		tableModel.setRowCount(Layers.getLayers().size());
 		
 		int row = 0;
@@ -470,17 +498,19 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		@Override
 		public Component getTableCellRendererComponent(@Nullable JTable table, @Nullable Object value, boolean isSelected, boolean hasFocus, final int row, int column)
 		{
+			Layer layer=Layers.getLayer(row);
+			
 			switch (column)
 			{
 				case 0:
 					return super.getTableCellRendererComponent(table, null, isSelected, hasFocus, row, column);
 				case 1:
 					JLabel label = (JLabel) super.getTableCellRendererComponent(table, null, isSelected, hasFocus, row, column);
-					if (value!=null && (Boolean) value)
-					{
+					label.setPreferredSize(new Dimension(20, 20));
+					if(layer!=null && layer.retryNeeded())
 						label.setIcon(WARNING_BAD_REQUEST);
-						label.setPreferredSize(new Dimension(20, 20));
-					}
+					else if(layer!=null && layer.isLoading())
+						label.setIcon(LAYER_LOADING[loadingFrameCounter]);
 					else
 						label.setIcon(null);
 					return label;
@@ -492,7 +522,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 					return super.getTableCellRendererComponent(table, date, isSelected, hasFocus, row, column);
 				case 4:
 					JLabel label4 = (JLabel) super.getTableCellRendererComponent(table, null, isSelected, hasFocus, row, column);
-					if (Layers.getLayer(row) != null && Layers.getLayer(row) instanceof ImageLayer)
+					if (layer instanceof ImageLayer)
 					{
 						label4.setIcon(ICON_REMOVE);
 						label4.setPreferredSize(new Dimension(20, 20));

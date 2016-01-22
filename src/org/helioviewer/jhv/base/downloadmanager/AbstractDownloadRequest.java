@@ -7,10 +7,11 @@ import javax.annotation.Nullable;
 public abstract class AbstractDownloadRequest
 {
 	public static final int INFINITE_TIMEOUT = -1;
+	public static final int TIMEOUT = 10000;
+	protected volatile boolean cancelled = false;
 	protected volatile boolean finished = false;
 	protected final AtomicInteger retries = new AtomicInteger(3);
 	protected volatile @Nullable Throwable exception = null;
-	protected volatile int timeOut = 20000;
 	protected final String url;
 	protected volatile int totalLength = -1;
 	protected volatile int receivedLength = 0;
@@ -75,4 +76,7 @@ public abstract class AbstractDownloadRequest
 		retries.set(i);
 		finished = false;
 	}
+	
+	//implementations should set cancelled=true
+	public abstract void interrupt();
 }

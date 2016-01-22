@@ -1,7 +1,11 @@
 package org.helioviewer.jhv.base.downloadmanager;
 
+import java.io.InterruptedIOException;
 import java.lang.ref.WeakReference;
+import java.net.SocketTimeoutException;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -41,7 +45,8 @@ public class DownloadManager
 	});
 
 	private static final int CONCURRENT_DOWNLOADS = 2;
-	private static AtomicInteger activeDownloads = new AtomicInteger();
+	private static AtomicInteger activeDownloadCount = new AtomicInteger();
+	private static HashMap<AbstractDownloadRequest, Thread> activeDownloads=new HashMap<>();
 
 	static
 	{
@@ -52,44 +57,53 @@ public class DownloadManager
 				@Override
 				public void run()
 				{
-					try
+					//noinspection InfiniteLoopStatement
+					for(;;)
 					{
-						//noinspection InfiniteLoopStatement
-						for(;;)
+						try
 						{
 							Tuple t = taskDeque.take();
 							AbstractDownloadRequest request = t.request.get();
 							if (request != null)
 								try
 								{
+									synchronized(activeDownloads)
+									{
+										activeDownloads.put(request, Thread.currentThread());
+									}
+									
 									//if(request.priority.ordinal()>DownloadPriority.LOW.ordinal())
-										activeDownloads.incrementAndGet();
+										activeDownloadCount.incrementAndGet();
 									request.execute();
-								}
-								catch(InterruptedException e)
-								{
-									throw e;
 								}
 								catch (Throwable e)
 								{
-									System.err.println(request.url);
-									Telemetry.trackException(e);
-									if (request.justTriedShouldTryAgain())
-										addRequest(request);
-									else
-										request.setError(e);
+									if(!request.cancelled)
+									{
+										System.err.println(request.url);
+										Telemetry.trackException(e);
+										if (request.justTriedShouldTryAgain())
+											addRequest(request);
+										else
+											request.setError(e);
+									}
 								}
 								finally
 								{
 									//if(request.priority.ordinal()>DownloadPriority.LOW.ordinal())
-										activeDownloads.decrementAndGet();
+										activeDownloadCount.decrementAndGet();
+										
+									synchronized(activeDownloads)
+									{
+										activeDownloads.remove(request);
+									}
 								}
 							else if(t.preparedNotCancelledException!=null)
 								Telemetry.trackException(t.preparedNotCancelledException);
 						}
-					}
-					catch (InterruptedException e)
-					{
+						catch (InterruptedException e)
+						{
+						}
 					}
 				}
 			});
@@ -115,20 +129,42 @@ public class DownloadManager
 		taskDeque.put(t);
 	}
 
+	public static void debug()
+	{
+		System.out.println("--------------------------------------------");
+		synchronized (activeDownloads)
+		{
+			for(Entry<AbstractDownloadRequest, Thread> r:activeDownloads.entrySet())
+				System.out.println("* "+r.getKey().url+"      (interrupted: "+r.getValue().isInterrupted()+")");
+			
+			for (Tuple td : taskDeque)
+				System.out.println(td.request.get().url);
+		}
+		System.out.println("--------------------------------------------");
+	}
+	
 	public static void remove(@Nullable AbstractDownloadRequest request)
 	{
-		//TODO: remove & interrupt currently active downloads
+		if(request==null)
+			return;
 		
-		for (Tuple t : taskDeque)
-			if(t.request.get()==request)
-			{
-				taskDeque.remove(t);
-				return;
-			}
+		synchronized (activeDownloads)
+		{
+			request.interrupt();
+			
+			Thread t=activeDownloads.get(request);
+			if(t!=null)
+				t.interrupt();
+			
+			for (Tuple td : taskDeque)
+				if(td.request.get()==request)
+					if(taskDeque.remove(td))
+						return;
+		}
 	}
 
 	public synchronized static boolean areDownloadsActive()
 	{
-		return activeDownloads.get()>0 || !taskDeque.isEmpty();
+		return activeDownloadCount.get()>0 || !taskDeque.isEmpty();
 	}
 }

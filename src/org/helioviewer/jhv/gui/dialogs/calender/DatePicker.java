@@ -45,7 +45,6 @@ public class DatePicker extends JPanel
 	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	private static final long MAX_TIME_STEPS = 3600 * 24 * 30;
 
-	@SuppressWarnings("null")
 	public DatePicker(LocalDateTime _dateTime, JDialog _dialog)
 	{
 		dateTime = _dateTime;

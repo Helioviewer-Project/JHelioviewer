@@ -16,7 +16,7 @@ import javax.swing.BorderFactory;
  */
 public class FramerateStatusPanel extends StatusLabel
 {
-	private static int lastCounter;
+	private static float lastFPS;
 	private static boolean newFrameRendered;
 	
 	private int counter = 0;
@@ -27,23 +27,23 @@ public class FramerateStatusPanel extends StatusLabel
 		super();
 		setBorder(BorderFactory.createEtchedBorder());
 
-		setPreferredSize(new Dimension(70, 20));
+		setPreferredSize(new Dimension(90, 20));
 		setText("FPS: ");
 		
 		startMeasurement = System.currentTimeMillis();
 	}
 	
-	public static int getFPS()
+	public static float getFPS()
 	{
-		return lastCounter;
+		return lastFPS;
 	}
 
 	private void updateFramerate()
 	{
-		lastCounter = counter;
+		lastFPS = counter/((System.currentTimeMillis()-startMeasurement)/1000f);
 		
 		setVisible(true);
-		setText("FPS: " + counter);
+		setText(String.format("FPS: %.1f", lastFPS));
 		counter = 0;
 		startMeasurement = System.currentTimeMillis();
 	}

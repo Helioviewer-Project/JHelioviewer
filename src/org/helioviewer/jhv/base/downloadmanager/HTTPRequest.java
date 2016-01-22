@@ -17,13 +17,6 @@ public class HTTPRequest extends AbstractDownloadRequest
 	
 	protected @Nullable ByteSource rawData;
 	
-	public HTTPRequest(String _uri, DownloadPriority _priority, int _timeOut, int _retries)
-	{
-		this(_uri, _priority);
-		retries.set(_retries);
-		timeOut = _timeOut;
-	}
-
 	public HTTPRequest(String _uri, DownloadPriority _priority, int _retries)
 	{
 		this(_uri, _priority);
@@ -35,12 +28,15 @@ public class HTTPRequest extends AbstractDownloadRequest
 		super(_url, _priority);
 	}
 
+	
+	private volatile HttpURLConnection httpURLConnection;
+	
 	public void execute() throws Throwable
 	{
-		HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(this.url).openConnection();
+		httpURLConnection = (HttpURLConnection) new URL(url).openConnection();
 		try
 		{
-			httpURLConnection.setReadTimeout(timeOut);
+			httpURLConnection.setReadTimeout(TIMEOUT);
 			httpURLConnection.setRequestMethod("GET");
 			//TODO: accept-encoding: GZIP && GZIPInputStream
 			httpURLConnection.connect();
@@ -94,5 +90,18 @@ public class HTTPRequest extends AbstractDownloadRequest
 			throw exception;
 		
 		return rawData;
+	}
+
+	@Override
+	public void interrupt()
+	{
+		try
+		{
+			cancelled=true;
+			httpURLConnection.disconnect();
+		}
+		catch(Throwable t)
+		{
+		}
 	}
 }

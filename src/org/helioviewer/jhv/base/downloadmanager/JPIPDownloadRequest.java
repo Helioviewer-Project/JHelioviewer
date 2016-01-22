@@ -11,7 +11,7 @@ public class JPIPDownloadRequest extends HTTPRequest
 	
 	public JPIPDownloadRequest(String _url, String _filename, DownloadPriority _priority)
 	{
-		super(_url, _priority, 60000, 3);
+		super(_url, _priority, 3);
 		filename=_filename;
 	}
 

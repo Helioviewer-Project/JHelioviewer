@@ -22,6 +22,8 @@ import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GLContext;
 import com.microsoft.applicationinsights.TelemetryClient;
 
+import kdu_jni.KduException;
+
 public class Telemetry
 {
 	private static final TelemetryClient client;
@@ -163,6 +165,9 @@ public class Telemetry
 
 	public static void trackException(Throwable _e)
 	{
+		if(_e instanceof KduException)
+			System.err.println("Kakadu: Exception code "+((KduException)_e).Get_kdu_exception_code());
+		
 		_e.printStackTrace();
 
 		if(!Globals.isReleaseVersion())

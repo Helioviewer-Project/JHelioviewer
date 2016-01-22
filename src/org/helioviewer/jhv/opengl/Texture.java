@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.math.MathUtils;
+import org.helioviewer.jhv.layers.ImageLayer;
 
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
@@ -35,6 +36,10 @@ public class Texture
 	//            --> the flags will be cleared again
 	public boolean usedByCurrentRenderPass = false;
 
+	//this may be used to hold temporary data, that will be uploaded
+	//to this texture
+	public @Nullable ByteBuffer uploadBuffer;
+	
 	/*
 	private JFrame debug=new JFrame();
 	private JLabel debugImage=new JLabel();
@@ -146,14 +151,14 @@ public class Texture
 	    return buffer;
 	}
 
-	public void upload(Object _source, LocalDateTime _dateTime, ImageRegion _imageRegion, final ByteBuffer _image, int _imageWidth, int _imageHeight)
+	public void uploadByteBuffer(ImageLayer _source, LocalDateTime _dateTime, ImageRegion _imageRegion)
 	{
 		source = _source;
 		dateTime = _dateTime;
 		imageRegion = _imageRegion;
 		
-		int width2 = MathUtils.nextPowerOfTwo(_imageWidth);
-		int height2 = MathUtils.nextPowerOfTwo(_imageHeight);
+		int width2 = MathUtils.nextPowerOfTwo(_imageRegion.texels.width);
+		int height2 = MathUtils.nextPowerOfTwo(_imageRegion.texels.height);
 		
 		if (width < width2 || height < height2 || internalFormat!=GL.GL_LUMINANCE8)
 			allocateTexture(width2, height2, GL.GL_LUMINANCE8);
@@ -178,10 +183,10 @@ public class Texture
 		b.flip();
 		gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, width, height, GL2.GL_ABGR_EXT, GL2.GL_UNSIGNED_BYTE, b);*/
 		
-		gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, _imageWidth, _imageHeight, /*GL2.GL_ABGR_EXT*/ GL2.GL_RED, GL2.GL_UNSIGNED_BYTE, _image);
+		gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, _imageRegion.texels.width, _imageRegion.texels.height, /*GL2.GL_ABGR_EXT*/ GL2.GL_RED, GL2.GL_UNSIGNED_BYTE, uploadBuffer);
 		
-		textureWidth=_imageWidth / (float)width;
-		textureHeight=_imageHeight / (float)height;
+		textureWidth=_imageRegion.texels.width / (float)width;
+		textureHeight=_imageRegion.texels.height / (float)height;
 		
 		//updateDebugImage();
 	}
@@ -283,4 +288,10 @@ public class Texture
         
         gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_GENERATE_MIPMAP, GL2.GL_FALSE);
     }
+
+	public void prepareUploadBuffer(int _width, int _height)
+	{
+		if(uploadBuffer==null || uploadBuffer.limit()<_width*_height)
+			uploadBuffer=ByteBuffer.allocate(_width*_height); //.order(ByteOrder.nativeOrder());
+	}
 }

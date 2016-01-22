@@ -276,8 +276,8 @@ public class JHelioviewer
 				//ignore inability to load msvcr120. if there's really
 				//a problem, it will be caught by the outer try/catch
 			}
-			System.loadLibrary("kdu_v75R");
-			System.loadLibrary("kdu_a75R");
+			System.loadLibrary("kdu_v77R");
+			System.loadLibrary("kdu_a77R");
 		}
 		
 		System.loadLibrary("kdu_jni");

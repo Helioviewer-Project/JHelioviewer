@@ -10,7 +10,6 @@ import org.json.JSONObject;
 public abstract class Layer
 {
 	private boolean visible = true;
-	@SuppressWarnings("null")
 	protected String name;
 	
 	public final String getName()
@@ -24,6 +23,11 @@ public abstract class Layer
 	}
 
 	public boolean retryNeeded()
+	{
+		return false;
+	}
+	
+	public boolean isLoading()
 	{
 		return false;
 	}

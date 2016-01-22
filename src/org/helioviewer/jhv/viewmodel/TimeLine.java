@@ -170,9 +170,12 @@ public class TimeLine implements LayerListener
 	
 	public void setNoTimeRange()
 	{
-		startTime=LocalDateTime.now();
-		endTime=LocalDateTime.now();
+		startTime=endTime=LocalDateTime.now();
+		setCurrentDate(startTime);
 		cadence=1;
+		setPlaying(false);
+		for (TimeLine.TimeLineListener timeLineListener : timeLineListeners)
+			timeLineListener.timeRangeChanged(startTime, endTime);
 	}
 
 	@Override

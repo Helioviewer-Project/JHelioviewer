@@ -9,10 +9,10 @@ public class HTTPDownloadRequest extends HTTPRequest
 {
 	private final String fileName;
 	
-	public HTTPDownloadRequest(String url, DownloadPriority priority, String fileName)
+	public HTTPDownloadRequest(String url, DownloadPriority priority, String _fileName)
 	{
-		super(url, priority, 60000, -1);
-		this.fileName = fileName;
+		super(url, priority, -1);
+		fileName = _fileName;
 	}
 
 	@Override

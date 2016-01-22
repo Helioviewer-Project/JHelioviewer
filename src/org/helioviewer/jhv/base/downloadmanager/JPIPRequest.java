@@ -41,14 +41,15 @@ public class JPIPRequest extends AbstractDownloadRequest
 		query.setField(JPIPRequestField.RSIZ.toString(), String.valueOf(size.width) + "," + String.valueOf(size.height));
 	}
 
+	private volatile JPIPSocket jpipSocket;
+	
 	@Override
 	void execute() throws IOException
 	{
-		JPIPSocket jpipSocket = new JPIPSocket();
+		jpipSocket = new JPIPSocket();
 
 		try
 		{
-			
 			openSocket(jpipSocket, kduCache);
 			org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPRequest request = new org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPRequest(Method.GET);
 			for(;;)
@@ -156,5 +157,18 @@ public class JPIPRequest extends AbstractDownloadRequest
 			JpipRequestLen = JPIPConstants.MIN_REQUEST_LEN;
 
 		lastResponseTime = replyDataTime;
+	}
+
+	@Override
+	public void interrupt()
+	{
+		try
+		{
+			cancelled=true;
+			jpipSocket.close();
+		}
+		catch(Throwable t)
+		{
+		}
 	}
 }

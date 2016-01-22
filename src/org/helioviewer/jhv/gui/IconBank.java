@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
@@ -107,6 +108,7 @@ public class IconBank
 		SHOW_MORE("1downarrow1.png"),
 		INVERT("invert_128x128.png"),
 		LOADING_BIG("NEW_Loading_256x256.png"), LOADING_SMALL("Loading_219x50.png"),
+		LAYER_LOADING("layer_loading.png"),
 
 		// 3D Icons
 		MODE_3D("3D_24x24.png"), MODE_3D_SELECTED("3D_selected_24x24.png"),
@@ -173,7 +175,29 @@ public class IconBank
         image = image.getScaledInstance(width, height, Image.SCALE_AREA_AVERAGING);
         imageIcon.setImage(image);
         return imageIcon;
-    	
+    }
+    
+    public static ImageIcon getIcon(JHVIcon icon, int width, int height, double _rotation)
+    {
+        URL imgURL = IconBank.class.getResource(RESOURCE_PATH + icon.filename);
+        ImageIcon imageIcon = new ImageIcon(imgURL);
+        Image image = imageIcon.getImage();
+        
+        int w = imageIcon.getIconWidth();
+		int h = imageIcon.getIconHeight();
+		BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g = (Graphics2D)bi.createGraphics();
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+	    g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+	    g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+	    g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+		
+		g.scale(width/(double)w, height/(double)h);
+		g.rotate(_rotation, w/2, h/2);
+		g.drawImage(image,0,0,w,h,0,0,w,h,null);
+		g.dispose();
+		imageIcon.setImage(bi);
+        return imageIcon;
     }
     
     /**

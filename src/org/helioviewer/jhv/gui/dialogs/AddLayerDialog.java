@@ -84,7 +84,6 @@ public class AddLayerDialog extends JDialog
 		}
 	}
 
-	@SuppressWarnings("null")
 	public AddLayerDialog()
 	{
 		super(MainFrame.SINGLETON, "Add Layer", true);

@@ -120,7 +120,6 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 	private static final int DEFAULT_TILE_WIDTH = 2048;
 	private static final int DEFAULT_TILE_HEIGHT = 2048;
 
-	@SuppressWarnings("null")
 	public MainPanel(GLContext _context)
 	{
 		cameraAnimations = new ArrayList<>();
@@ -394,11 +393,31 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			
 			ImageLayer.ensureAppropriateTextureCacheSize();
 			
+			//TODO: jumpstart decoding for next frame
+			
+			int releaseCounter=0;
+			for(;gl.getContext().isCurrent();releaseCounter++)
+				gl.getContext().release();
+			
 			LinkedHashMap<ImageLayer, Future<PreparedImage>> layers = new LinkedHashMap<>();
 			for (Layer layer : Layers.getLayers())
 				if (layer.isVisible() && layer instanceof ImageLayer)
 					layers.put((ImageLayer) layer,
-							((ImageLayer) layer).prepareImageData(this, sizeForDecoder));
+							((ImageLayer) layer).prepareImageData(this, sizeForDecoder, gl.getContext()));
+			
+			//wait for all layers
+			for (Future<PreparedImage> f : layers.values())
+				try
+				{
+					f.get();
+				}
+				catch (ExecutionException | InterruptedException _e)
+				{
+					Telemetry.trackException(_e);
+				}
+			
+			for(int i=0;i<releaseCounter;i++)
+				gl.getContext().makeCurrent();
 			
 			for (Entry<ImageLayer, Future<PreparedImage>> l : layers.entrySet())
 				try
@@ -428,17 +447,19 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glLoadIdentity();
+		
+		//TODO: verify that aspect ratios are handled correctly
 		gl.glScaled(aspect, aspect, 1);
-
+		
 		if (CameraMode.mode == CameraMode.MODE.MODE_3D)
 		{
-			new GLU().gluPerspective(MainPanel.FOV, this.aspect, clipNear, translationNow.z + 4 * Constants.SUN_RADIUS);
+			new GLU().gluPerspective(MainPanel.FOV, aspect, clipNear, translationNow.z + 4 * Constants.SUN_RADIUS);
 		}
 		else
 		{
 			double width = Math.tan(Math.toRadians(FOV) / 2) * translationNow.z;
 			gl.glOrtho(-width, width, -width, width, clipNear, translationNow.z + 4 * Constants.SUN_RADIUS);
-			gl.glScalef((float) (1 / aspect), 1, 1);
+			gl.glScaled(1 / aspect, 1, 1);
 		}
 
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
@@ -465,14 +486,10 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glLoadIdentity();
-		double xScale = aspect > 1 ? 1 / aspect : 1;
-		double yScale = aspect < 1 ? aspect : 1;
-		gl.glScaled(xScale, yScale, 1);
+		gl.glScaled(aspect > 1 ? 1 / aspect : 1, aspect < 1 ? aspect : 1, 1);
 		gl.glMatrixMode(GL2.GL_MODELVIEW);			
 		
-		//TODO: move loading animation to status bar
-		
-		if (DownloadManager.areDownloadsActive() && _showLoadingAnimation)
+		/*if (DownloadManager.areDownloadsActive() && _showLoadingAnimation)
 		{
 			int xOffset = (int) (getSurfaceWidth() * 0.85);
 			int width = (int) (getSurfaceWidth() * 0.15);
@@ -483,7 +500,11 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			LoadingScreen.render(gl);
 			gl.glViewport(0, 0, getSurfaceWidth(), getSurfaceHeight());
 			repaint(1000);
-		}
+			
+			DownloadManager.debug();
+		}*/
+		
+		DownloadManager.debug();
 
 		boolean noImageScreen = _showLoadingAnimation;
 		for (Layer layer : Layers.getLayers())
@@ -532,9 +553,9 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 	}
 
 	@Override
-	public void display(@Nullable GLAutoDrawable drawable)
+	public void display(@Nullable GLAutoDrawable _drawable)
 	{
-		if(drawable==null)
+		if(_drawable==null)
 			return;
 		
 		sizeForDecoder = getCanavasSize();
@@ -542,19 +563,20 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		sizeForDecoder = new Dimension((int) (sizeForDecoder.width * getDesiredRelativeResolution()),
 				(int) (sizeForDecoder.height * getDesiredRelativeResolution()));
 
-		GL2 gl = drawable.getGL().getGL2();
+		GL2 gl = _drawable.getGL().getGL2();
 
-		gl.glViewport(0, 0, this.getSurfaceWidth(), this.getSurfaceHeight());
+		gl.glViewport(0, 0, getSurfaceWidth(), getSurfaceHeight());
 
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glLoadIdentity();
-		gl.glScaled(1, aspect, 1);
-		gl.glPushMatrix();
+		if(aspect>=1)
+			gl.glScaled(1, aspect, 1);
+		else
+			gl.glScaled(1/aspect, 1, 1);
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		gl.glLoadIdentity();
 		render(gl, true);
 		gl.glMatrixMode(GL2.GL_PROJECTION);
-		gl.glPopMatrix();
 		gl.glLoadIdentity();
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 
@@ -636,12 +658,8 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		if(drawable==null)
 			return;
 		
-		// if (System.getProperty("jhvVersion") == null)
-		// drawable.setGL(new DebugGL2(drawable.getGL().getGL2()));
-		// GuiState3DWCS.overViewPanel.activate(drawable.getContext());
-		aspect = this.getSize().getWidth() / this.getSize().getHeight();
+		aspect = getSize().getWidth() / getSize().getHeight();
 		GL2 gl = drawable.getGL().getGL2();
-		// splashScreen = new NoImageScreen(gl);
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 
 		gl.glDisable(GL2.GL_TEXTURE_2D);
@@ -681,7 +699,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 	@Override
 	public void reshape(@Nullable GLAutoDrawable drawable, int x, int y, int width, int height)
 	{
-		aspect = this.getSize().getWidth() / this.getSize().getHeight();
+		aspect = getSize().getWidth() / getSize().getHeight();
 		repaint();
 	}
 
@@ -750,7 +768,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		textRenderer.setColor(1f, 1f, 1f, 1f);
 
 		offscreenGL.glViewport(0, 0, tileWidth, tileHeight);
-		this.sizeForDecoder = new Dimension(tileWidth, tileHeight);
+		sizeForDecoder = new Dimension(tileWidth, tileHeight);
 
 		offscreenGL.glMatrixMode(GL2.GL_PROJECTION);
 		offscreenGL.glLoadIdentity();
@@ -806,7 +824,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 
 	public double getAspect()
 	{
-		return this.aspect;
+		return aspect;
 	}
 
 	public void addSynchronizedView(MainPanel compenentView)

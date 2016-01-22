@@ -482,27 +482,26 @@ public class PreferencesDialog extends JDialog
 						cancelBtn = new JButton("Cancel");
 						panel_2.add(cancelBtn);
 						
-								cancelBtn.addActionListener(new ActionListener()
+						cancelBtn.addActionListener(new ActionListener()
+						{
+							public void actionPerformed(@Nullable ActionEvent e)
+							{
+								dispose();
+							}
+						});
+				
+						resetBtn.addActionListener(new ActionListener()
+						{
+							public void actionPerformed(@Nullable ActionEvent e)
+							{
+								if (JOptionPane.showConfirmDialog(null, "Do you really want to reset the Preferences?", "Attention",
+										JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
 								{
-									public void actionPerformed(@Nullable ActionEvent e)
-									{
-										dispose();
-									}
-								});
-								DialogTools.setDefaultButtons(acceptBtn, cancelBtn);
-						
-								resetBtn.addActionListener(new ActionListener()
-								{
-									public void actionPerformed(@Nullable ActionEvent e)
-									{
-										if (JOptionPane.showConfirmDialog(null, "Do you really want to reset the Preferences?", "Attention",
-												JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
-										{
-											loadDefaultMovieOnStartUp.setSelected(true);
-											dateFormatField.setText(defaultDateFormat);
-										}
-									}
-								});
+									loadDefaultMovieOnStartUp.setSelected(true);
+									dateFormatField.setText(defaultDateFormat);
+								}
+							}
+						});
 		
 		if (Globals.isOSX())
 		{
@@ -520,6 +519,8 @@ public class PreferencesDialog extends JDialog
 		getContentPane().add(mainPanel);
 
 		loadSettings();
+		
+		DialogTools.setDefaultButtons(acceptBtn, cancelBtn);
 
 		setSize(new Dimension(597, 579));
 		setLocationRelativeTo(MainFrame.SINGLETON);

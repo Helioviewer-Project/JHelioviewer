@@ -102,18 +102,27 @@ public class OverviewPanel extends MainPanel
 	{
 		rotationNow = MainFrame.SINGLETON.MAIN_PANEL.getRotationCurrent();
 		super.render(gl, false);
-		gl.glPushMatrix();
-		gl.glMatrixMode(GL2.GL_PROJECTION);
-		gl.glLoadIdentity();
-		gl.glScaled(1, getAspect(), 1);
-		double width = Math.tan(Math.toRadians(FOV / 2.0)) * this.translationNow.z;
-		gl.glOrtho(-width, width, width, -width, -Constants.SUN_RADIUS, Constants.SUN_RADIUS);
-		gl.glMatrixMode(GL2.GL_MODELVIEW);
-		gl.glLoadIdentity();
-		gl.glEnable(GL2.GL_DEPTH_TEST);
+		
 		if (Layers.getActiveImageLayer() != null)
+		{
+			gl.glPushMatrix();
+			gl.glMatrixMode(GL2.GL_PROJECTION);
+			gl.glLoadIdentity();
+			
+			//TODO: check, if correct. else-part wasn't there originally
+			if(getAspect()>=1)
+				gl.glScaled(1, getAspect(), 1);
+			else
+				gl.glScaled(1, 1/getAspect(), 1);
+				
+			double width = Math.tan(Math.toRadians(FOV / 2.0)) * this.translationNow.z;
+			gl.glOrtho(-width, width, width, -width, -Constants.SUN_RADIUS, Constants.SUN_RADIUS);
+			gl.glMatrixMode(GL2.GL_MODELVIEW);
+			gl.glLoadIdentity();
+			gl.glEnable(GL2.GL_DEPTH_TEST);
 			displayRect(gl, width / 100.0);
-		gl.glPopMatrix();
+			gl.glPopMatrix();
+		}
 	}
 
 	private void displayRect(GL2 gl, double radius)

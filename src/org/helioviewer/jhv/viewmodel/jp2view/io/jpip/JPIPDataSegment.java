@@ -40,7 +40,6 @@ public class JPIPDataSegment
 	/** Indicates if this segment is a End Of Response message. */
 	public boolean isEOR;
 
-	@SuppressWarnings("null")
 	public JPIPDataSegment()
 	{
 	}

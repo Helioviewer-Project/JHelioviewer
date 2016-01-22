@@ -49,9 +49,7 @@ public abstract class ImageLayer extends Layer
 	protected boolean coronaVisible = true;
 	public boolean animateCameraToFacePlane;
 
-	@SuppressWarnings("null")
 	protected LocalDateTime start;
-	@SuppressWarnings("null")
 	protected LocalDateTime end;
 	
 	protected int cadence;
@@ -144,16 +142,6 @@ public abstract class ImageLayer extends Layer
 				));
 		}
 		
-		//upload new texture, if something was decoded
-		if (_preparedImageData.rawImageData != null)
-		{
-			_preparedImageData.texture.upload(this,md.localDateTime,
-					_preparedImageData.imageRegion,
-					_preparedImageData.rawImageData,
-					_preparedImageData.imageRegion.texels.width,
-					_preparedImageData.imageRegion.texels.height);
-		}
-		
 		_preparedImageData.texture.usedByCurrentRenderPass=false;
 		
 		float xSunOffset =  (float) ((md.sunPixelPosition.x - md.resolution.x / 2.0) / (float)md.resolution.x);
@@ -229,7 +217,6 @@ public abstract class ImageLayer extends Layer
 				_preparedImageData.texture.width,
 				_preparedImageData.texture.height);
 
-		//TODO: right/bottom edges shimmer
 		gl.glBegin(GL2.GL_QUADS);
 
 		gl.glTexCoord2f(0.0f, 1.0f);
@@ -354,24 +341,21 @@ public abstract class ImageLayer extends Layer
 		public final Texture texture;
 		
 		public final @Nullable ImageRegion imageRegion;
-		public final @Nullable ByteBuffer rawImageData;
 		
 		public PreparedImage(Texture _texture)
 		{
 			texture=_texture;
 			imageRegion=null;
-			rawImageData=null;
 		}
 		
-		public PreparedImage(Texture _texture, ImageRegion _imageRegion, ByteBuffer _rawImageData)
+		public PreparedImage(Texture _texture, ImageRegion _imageRegion)
 		{
 			texture=_texture;
 			imageRegion=_imageRegion;
-			rawImageData=_rawImageData;
 		}
 	}
 
-	public abstract Future<PreparedImage> prepareImageData(final MainPanel mainPanel, final Dimension size);
+	public abstract Future<PreparedImage> prepareImageData(final MainPanel mainPanel, final Dimension size, final GLContext _gl);
 
 	private static final int MAX_X_POINTS = 11;
 	private static final int MAX_Y_POINTS = 11;
