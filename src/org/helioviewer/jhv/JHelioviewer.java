@@ -25,11 +25,13 @@ import org.helioviewer.jhv.base.Settings;
 import org.helioviewer.jhv.base.SplashScreen;
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.UILatencyWatchdog;
+import org.helioviewer.jhv.base.Settings.BooleanKey;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 import org.helioviewer.jhv.gui.dialogs.AboutDialog;
 import org.helioviewer.jhv.io.CommandLineProcessor;
 import org.helioviewer.jhv.layers.ImageLayer;
+import org.helioviewer.jhv.opengl.camera.CameraMode;
 import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.viewmodel.jp2view.kakadu.KduErrorHandler;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.MovieCache;
@@ -73,7 +75,7 @@ public class JHelioviewer
 		}
 		
 		// display the splash screen
-		final SplashScreen splash = new SplashScreen(19);
+		final SplashScreen splash = new SplashScreen(20);
 		
 		splash.progressTo("Installing crash monitoring");
 		
@@ -215,6 +217,12 @@ public class JHelioviewer
 					// force initialization of UltimatePluginInterface
 					splash.progressTo("Initializing plugins");
 					Plugins.SINGLETON.getClass();
+					
+					splash.progressTo("Restoring settings");
+					if(Settings.getBoolean(BooleanKey.STARTUP_3DCAMERA))
+						CameraMode.set3DMode();
+					else
+						CameraMode.set2DMode();
 					
 					splash.progressTo("Opening main window");
 					MainFrame.SINGLETON.setVisible(true);

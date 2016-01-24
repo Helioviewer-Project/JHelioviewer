@@ -406,7 +406,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 			ImageLayer layer = Layers.getActiveImageLayer();
 			if (layer != null)
 			{
-				//TODO: speed up!!!!!
+				//TODO: speed this code up
 				long duration=TimeLine.SINGLETON.getFirstDateTime().until(TimeLine.SINGLETON.getLastDateTime(), ChronoUnit.SECONDS);
 				int frames=(int)(duration/layer.getCadence());
 				int max=Math.min(frames, (int)trackRect.getWidth());

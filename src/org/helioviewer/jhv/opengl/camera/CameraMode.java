@@ -15,7 +15,6 @@ public class CameraMode
 
 	public static void set3DMode()
 	{
-		//TODO: restore this setting on startup
 		Settings.setBoolean(BooleanKey.STARTUP_3DCAMERA, true);
 		mode = MODE.MODE_3D;
 		MainFrame.SINGLETON.TOP_TOOL_BAR.set3DMode();

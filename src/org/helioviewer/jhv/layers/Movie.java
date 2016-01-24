@@ -157,7 +157,7 @@ public class Movie
 				Kdu_region_compositor compositor = new Kdu_region_compositor(tlsJpx_source.get());
 				compositor.Set_surface_initialization_mode(false);
 				
-				//TODO: enable multi-threaded decoding?
+				//T-ODO: enable multi-threaded decoding?
 				//Kdu_thread_env env = new Kdu_thread_env();
 				//env.Create();
 				//for(int i=0;i<Runtime.getRuntime().availableProcessors();i++)
@@ -601,14 +601,14 @@ public class Movie
 			/*
 			Kdu_region_compositor compositor = tlsCompositors.get();
 			
-			//FIXME: downgrade quality first, before resolution when having speed problems
+			//F-IXME: downgrade quality first, before resolution when having speed problems
 			compositor.Set_max_quality_layers(_quality);
 			compositor.Set_scale(false, false, false, _zoomPercent);
 			compositor.Set_buffer_surface(requestedBufferedRegion);
 			
 			compositor.Remove_ilayer(new Kdu_ilayer_ref(), false);
 			
-			//TODO: save more memory
+			//T-ODO: save more memory
 			compositor.Cull_inactive_ilayers(800);
 			compositor.Add_ilayer(_index, new Kdu_dims(), new Kdu_dims());
 			

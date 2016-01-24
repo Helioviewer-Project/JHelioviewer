@@ -55,7 +55,14 @@ public class Telemetry
 			{
 				Telemetry.trackMetric("Session duration", (System.currentTimeMillis()-START_TIME)/1000);
 				client.flush();
-				//TODO: should wait a bit for the flush to complete. msft recommends 1s. sad but true.
+				try
+				{
+					//wait a bit for the flush to complete. msft recommends 1s. sad but true.
+					Thread.sleep(1000);
+				}
+				catch(InterruptedException _ie)
+				{
+				}
 			}
 		});
 		

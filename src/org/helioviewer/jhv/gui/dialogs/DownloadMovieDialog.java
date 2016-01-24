@@ -21,8 +21,10 @@ import org.helioviewer.jhv.gui.PredefinedFileFilter;
 import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.viewmodel.TimeLine;
+import java.awt.Dimension;
+import javax.swing.border.EmptyBorder;
+import javax.swing.JPanel;
 
-//TODO: layout on windows broken
 public class DownloadMovieDialog extends JDialog
 {
 	public DownloadMovieDialog(String _url, Layer _layer)
@@ -32,11 +34,18 @@ public class DownloadMovieDialog extends JDialog
     	Telemetry.trackEvent("Dialog", "Type", getClass().getSimpleName());
 
 		setLocationRelativeTo(MainFrame.SINGLETON);
-		setLayout(new BorderLayout());
+		BorderLayout borderLayout = new BorderLayout();
+		getContentPane().setLayout(borderLayout);
 		setResizable(false);
 		
+		final JPanel panel = new JPanel();
+		panel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		getContentPane().add(panel, BorderLayout.NORTH);
+		
 		final JProgressBar progressBar = new JProgressBar(0,1);
-		add(progressBar);
+		progressBar.setPreferredSize(new Dimension(300, 20));
+		panel.add(progressBar);
+		progressBar.setValue(50);
 		pack();
 		
 		
