@@ -22,6 +22,8 @@ public class HTTPSocket extends Socket
 {
 	/** The last used port */
 	private int port = 0;
+	
+	protected int timeout = 10000;
 
 	/** The last used host */
 	private @Nullable String host = null;
@@ -30,10 +32,10 @@ public class HTTPSocket extends Socket
 	static private final int PORT = 80;
 
 	/** The maximum HTTP version supported */
-	static private final double version = 1.1;
+	static private final double VERSION = 1.1;
 
 	/** The version in standard formated text */
-	static public final String versionText = "HTTP/" + Double.toString(version);
+	static public final String versionText = "HTTP/" + Double.toString(VERSION);
 
 	/** The array of bytes that contains the CRLF codes */
 	static private final byte CRLFBytes[] = { 13, 10 };
@@ -42,9 +44,10 @@ public class HTTPSocket extends Socket
 	static public final String CRLF = new String(CRLFBytes, StandardCharsets.UTF_8);
 
 	/** Default constructor */
-	public HTTPSocket()
+	public HTTPSocket(int _timeout)
 	{
 		super();
+		timeout=_timeout;
 	}
 
 	/**
@@ -57,9 +60,9 @@ public class HTTPSocket extends Socket
 	{
 		port = _uri.getPort() <= 0 ? PORT : _uri.getPort();
 		host = _uri.getHost();
-		super.setSoTimeout(30000);
+		super.setSoTimeout(timeout);
 		super.setKeepAlive(true);
-		super.connect(new InetSocketAddress(host, port), 30000);
+		super.connect(new InetSocketAddress(host, port), timeout);
 		return null;
 	}
 
@@ -70,7 +73,7 @@ public class HTTPSocket extends Socket
 	 */
 	public void reconnect() throws IOException
 	{
-		super.connect(new InetSocketAddress(host, port), 30000);
+		super.connect(new InetSocketAddress(host, port), timeout);
 	}
 
 	/**
@@ -109,7 +112,7 @@ public class HTTPSocket extends Socket
 				throw new ProtocolException("Invalid HTTP version format");
 			}
 
-			if ((ver < 1) || (ver > version))
+			if ((ver < 1) || (ver > VERSION))
 				throw new ProtocolException("HTTP version not supported");
 
 			// Parses status code

@@ -61,8 +61,8 @@ public class Observatories
 									try
 									{
 										Filter instrument = observatories.get("SDO").filters.get("AIA").filters.get("171");
-										LocalDateTime start = instrument.end.minusWeeks(2);
-										Layers.addLayer(new KakaduLayer(instrument.sourceId, start, instrument.end, 60*60, instrument.getNickname()));
+										LocalDateTime start = instrument.end.minusWeeks(1);
+										Layers.addLayer(new KakaduLayer(instrument.sourceId, start, instrument.end, 1*60*60, instrument.getNickname()));
 									}
 									catch(NullPointerException _npe)
 									{

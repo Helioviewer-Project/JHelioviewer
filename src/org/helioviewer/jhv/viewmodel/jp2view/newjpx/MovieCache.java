@@ -20,6 +20,7 @@ import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 import org.helioviewer.jhv.layers.Movie;
 import org.helioviewer.jhv.layers.Movie.Match;
 import org.helioviewer.jhv.opengl.Texture;
+import org.helioviewer.jhv.viewmodel.TimeLine.DecodeQualityLevel;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.metadata.UnsuitableMetaDataException;
 import org.w3c.dom.Document;
@@ -214,7 +215,7 @@ public class MovieCache
 		return bestMatch;
 	}
 
-	public static boolean decodeImage(int _sourceId, LocalDateTime _localDateTime, int _quality, float _zoomFactor, Rectangle _requiredPixels, Texture _target)
+	public static boolean decodeImage(int _sourceId, LocalDateTime _localDateTime, DecodeQualityLevel _quality, float _zoomFactor, Rectangle _requiredPixels, Texture _target)
 	{
 		Match bestMatch=findBestFrame(_sourceId, _localDateTime);
 		if(bestMatch==null)

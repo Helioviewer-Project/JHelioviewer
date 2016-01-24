@@ -280,7 +280,7 @@ public class JHelioviewer
 			System.loadLibrary("kdu_a77R");
 		}
 		
-		System.loadLibrary("kdu_jni");
+		System.loadLibrary("kdu_jniR");
 	}
 
 	@SuppressWarnings("unused")

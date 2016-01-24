@@ -45,9 +45,6 @@ import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MainFrame;
 
-/**
- * Dialog that allows the user to change default preferences and settings.
- */
 public class PreferencesDialog extends JDialog
 {
 	private final String defaultDateFormat = "yyyy/MM/dd";
@@ -81,7 +78,7 @@ public class PreferencesDialog extends JDialog
 		JPanel mainPanel = new JPanel(new BorderLayout());
 
 		JPanel panel = new JPanel();
-		panel.setBorder(new EmptyBorder(15, 15, 15, 15));
+		panel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		Icon infoIcon = IconBank.getIcon(JHVIcon.INFO);
 		
 		NumberFormat screenshotFormat = NumberFormat.getInstance();
@@ -452,7 +449,7 @@ public class PreferencesDialog extends JDialog
 
 		FlowLayout fl_btnPanel = new FlowLayout(FlowLayout.RIGHT);
 		JPanel btnPanel = new JPanel(fl_btnPanel);
-		btnPanel.setBorder(new EmptyBorder(0, 15, 15, 15));
+		btnPanel.setBorder(new EmptyBorder(0, 10, 10, 10));
 		
 		JPanel panel_2 = new JPanel();
 		btnPanel.add(panel_2);

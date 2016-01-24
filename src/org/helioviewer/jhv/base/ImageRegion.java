@@ -7,6 +7,7 @@ import java.awt.geom.Rectangle2D;
 import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.gui.MainPanel;
+import org.helioviewer.jhv.viewmodel.TimeLine.DecodeQualityLevel;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 
 public class ImageRegion
@@ -19,14 +20,18 @@ public class ImageRegion
 	
 	// where this region can be found in the texture, in texel coordinates of the downscaled image
 	public final Rectangle texels;
+
+	public final DecodeQualityLevel quality;
 	
-	public ImageRegion(Rectangle2D _requiredOfSourceImage, double _zTranslation, MetaData _metaData, Dimension _screenSize)
+	public ImageRegion(Rectangle2D _requiredOfSourceImage, DecodeQualityLevel _quality, double _zTranslation, MetaData _metaData, Dimension _screenSize)
 	{
-		this(_requiredOfSourceImage, _zTranslation, _metaData, _screenSize, 1.0);
+		this(_requiredOfSourceImage, _quality, _zTranslation, _metaData, _screenSize, 1.0);
 	}
 	
-	public ImageRegion(Rectangle2D _requiredOfSourceImage, double _zTranslation, MetaData _metaData, Dimension _screenSize,double _safetyBorder)
+	public ImageRegion(Rectangle2D _requiredOfSourceImage, DecodeQualityLevel _quality, double _zTranslation, MetaData _metaData, Dimension _screenSize,double _safetyBorder)
 	{
+		quality = _quality;
+		
 		double newX1=MathUtils.clip(_requiredOfSourceImage.getCenterX()-_requiredOfSourceImage.getWidth()*0.5*_safetyBorder, 0, 1);
 		double newX2=MathUtils.clip(_requiredOfSourceImage.getCenterX()+_requiredOfSourceImage.getWidth()*0.5*_safetyBorder, 0, 1);
 		double newY1=MathUtils.clip(_requiredOfSourceImage.getCenterY()-_requiredOfSourceImage.getHeight()*0.5*_safetyBorder, 0, 1);

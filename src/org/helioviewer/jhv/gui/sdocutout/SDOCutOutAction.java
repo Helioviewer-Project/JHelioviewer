@@ -18,6 +18,7 @@ import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.viewmodel.TimeLine;
+import org.helioviewer.jhv.viewmodel.TimeLine.DecodeQualityLevel;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.metadata.MetaDataAIA;
@@ -59,7 +60,7 @@ class SDOCutOutAction extends AbstractAction
 		if(metaData==null || start==null || end==null)
 			return;
 		
-		ImageRegion ir=mainSDOLayer.calculateRegion(MainFrame.SINGLETON.MAIN_PANEL, metaData, MainFrame.SINGLETON.MAIN_PANEL.getCanavasSize());
+		ImageRegion ir=mainSDOLayer.calculateRegion(MainFrame.SINGLETON.MAIN_PANEL, DecodeQualityLevel.QUALITY, metaData, MainFrame.SINGLETON.MAIN_PANEL.getCanavasSize());
 		if(ir==null)
 			return;
 		

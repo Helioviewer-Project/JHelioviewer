@@ -36,6 +36,7 @@ import org.helioviewer.jhv.layers.Movie.Match;
 import org.helioviewer.jhv.layers.Movie.Quality;
 import org.helioviewer.jhv.opengl.Texture;
 import org.helioviewer.jhv.viewmodel.TimeLine;
+import org.helioviewer.jhv.viewmodel.TimeLine.DecodeQualityLevel;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.metadata.UnsuitableMetaDataException;
 import org.json.JSONArray;
@@ -245,6 +246,23 @@ public class KakaduLayer extends ImageLayer
 						Match bestMatch=MovieCache.findBestFrame(sourceId, currentStart.plusSeconds(maxDistance));
 						if(bestMatch == null || bestMatch.timeDifferenceSeconds>maxDistance || bestMatch.movie.quality!=Quality.FULL)
 						{
+							if(bestMatch != null && bestMatch.movie.quality!=Quality.FULL)
+								try
+								{
+									SwingUtilities.invokeAndWait(new Runnable()
+									{
+										@Override
+										public void run()
+										{
+											MovieCache.remove(bestMatch.movie);
+										}
+									});
+								}
+								catch(Throwable t)
+								{
+									Telemetry.trackException(t);
+								}
+							
 							startTimes.add(currentStart.atOffset(ZoneOffset.UTC).getLong(ChronoField.INSTANT_SECONDS));
 							endTimes.add(currentEnd.atOffset(ZoneOffset.UTC).getLong(ChronoField.INSTANT_SECONDS));
 						}
@@ -295,6 +313,7 @@ public class KakaduLayer extends ImageLayer
 					
 					while(!downloads.isEmpty())
 					{
+						//System.out.println("Pending download:");
 						try
 						{
 							if (Thread.interrupted())
@@ -304,6 +323,7 @@ public class KakaduLayer extends ImageLayer
 							}
 							
 							final MovieDownload download = downloads.removeFirst();
+							//System.out.println(download.metadata+" "+download.lq+" "+download.hq+" "+download.lqMovie);
 							if(download.metadata!=null && download.metadata.isFinished())
 							{
 								try
@@ -335,9 +355,9 @@ public class KakaduLayer extends ImageLayer
 										//FIXME: lq previews are not rendered correctly
 										
 										//download.lq = new JPIPRequest(jsonObject.getString("uri"), DownloadPriority.MEDIUM, 0, frames.length(), new Rectangle(256, 256));
-										//download.lq = new JPIPRequest(jsonObject.getString("uri"), DownloadPriority.MEDIUM, 0, frames.length(), new Rectangle(64, 64));
-										//DownloadManager.addRequest(download.lq);
-										DownloadManager.addRequest(download.hq);
+										download.lq = new JPIPRequest(jsonObject.getString("uri"), DownloadPriority.MEDIUM, 0, frames.length(), new Rectangle(64, 64));
+										DownloadManager.addRequest(download.lq);
+										//DownloadManager.addRequest(download.hq);
 										
 										download.metadata=null;
 										downloads.addLast(download);
@@ -445,6 +465,7 @@ public class KakaduLayer extends ImageLayer
 				}
 				finally
 				{
+					System.out.println("Loader thread terminated.");
 					loaderThread=null;
 					
 					SwingUtilities.invokeLater(new Runnable()
@@ -528,7 +549,7 @@ public class KakaduLayer extends ImageLayer
 		return MovieCache.getMetaDataDocument(sourceId, currentDateTime);
 	}
 	
-	public Future<PreparedImage> prepareImageData(final MainPanel _panel, final Dimension _size, final GLContext _gl)
+	public Future<PreparedImage> prepareImageData(final MainPanel _panel, final DecodeQualityLevel _quality, final Dimension _size, final GLContext _gl)
 	{
 		final MetaData metaData = getMetaData(TimeLine.SINGLETON.getCurrentDateTime());
 		if (metaData == null)
@@ -537,12 +558,12 @@ public class KakaduLayer extends ImageLayer
 		if(lut==null)
 			setLUT(metaData.getDefaultLUT());
 		
-		final ImageRegion requiredMinimumRegion = calculateRegion(_panel, metaData, _size);
+		final ImageRegion requiredMinimumRegion = calculateRegion(_panel, _quality, metaData, _size);
 		if (requiredMinimumRegion == null)
 			return new FutureValue<>(null);
 		
 		for(Texture t:textures)
-			if(t.contains(this, requiredMinimumRegion, metaData.localDateTime))
+			if(t.contains(this, _quality, requiredMinimumRegion, metaData.localDateTime))
 			{
 				t.usedByCurrentRenderPass=true;
 				return new FutureValue<>(new PreparedImage(t));
@@ -569,25 +590,30 @@ public class KakaduLayer extends ImageLayer
 		return exDecoder.submit(new Callable<PreparedImage>()
 		{
 			@Override
-			public PreparedImage call() throws Exception
+			public @Nullable PreparedImage call() throws Exception
 			{
 				Thread.currentThread().setName("Decoder-"+Thread.currentThread().getId());
 				
 				ImageRegion requiredSafeRegion = new ImageRegion(
 						requiredMinimumRegion.areaOfSourceImage,
+						_quality,
 						_panel.getTranslationCurrent().z,
 						metaData,
 						_size,
 						TimeLine.SINGLETON.isPlaying() ? 1.05 : 1.2);
 				
-				if(MovieCache.decodeImage(sourceId, metaData.localDateTime, 16384 /* 0-8 */, requiredSafeRegion.decodeZoomFactor, requiredSafeRegion.texels, tex))
+				if(MovieCache.decodeImage(sourceId, metaData.localDateTime, _quality, requiredSafeRegion.decodeZoomFactor, requiredSafeRegion.texels, tex))
 				{
 					_gl.makeCurrent();
 					tex.uploadByteBuffer(KakaduLayer.this, metaData.localDateTime, requiredSafeRegion);
 					_gl.release();
+					return new PreparedImage(tex,requiredSafeRegion);
 				}
-
-				return new PreparedImage(tex,requiredSafeRegion);
+				else
+				{
+					tex.usedByCurrentRenderPass=false;
+					return null;
+				}
 			}
 		});
 	}

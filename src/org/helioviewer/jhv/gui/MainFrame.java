@@ -88,7 +88,6 @@ public class MainFrame extends JFrame
 		gbc_overViewPane.gridy = 0;
 		
 		left.add(OVERVIEW_PANEL, gbc_overViewPane);
-		OVERVIEW_PANEL.setMinimumSize(new Dimension(450, 200));
 		OVERVIEW_PANEL.addMainView(MAIN_PANEL);
 		MAIN_PANEL.addSynchronizedView(OVERVIEW_PANEL);
 		
@@ -99,9 +98,10 @@ public class MainFrame extends JFrame
 		gbc_scrollPane.gridx = 0;
 		gbc_scrollPane.gridy = 1;
 		left.add(scrollPane, gbc_scrollPane);
+		left.setMinimumSize(new Dimension(500,200));
 		
 		LEFT_PANE = new SideContentPane();
-		LEFT_PANE.setMinimumSize(new Dimension(300, 200));
+		LEFT_PANE.setMinimumSize(new Dimension(320, 200));
 		// Movie control
 		MOVIE_PANEL = new MoviePanel();
 		LEFT_PANE.add("Movie Controls", MOVIE_PANEL, true);
@@ -134,7 +134,6 @@ public class MainFrame extends JFrame
 				});
 			}
 		});*/
-		
 		
 		splitPane.setRightComponent(MAIN_PANEL);		
 		splitPane.setLeftComponent(left);

@@ -60,6 +60,9 @@ public class AddLayerDialog extends JDialog
 	private JPanel layerPanel;
 	private JPanel panel;
 	
+	private static int lastCadence=120;
+	private static int lastCadenceType=1;
+	
 	private enum TimeSteps
 	{
 		SEC("sec", 1),
@@ -322,7 +325,6 @@ public class AddLayerDialog extends JDialog
 		gbc_lblCadence.gridy = 2;
 		contentPanel.add(lblCadence, gbc_lblCadence);
 		cadence = new JSpinner();
-		cadence.setValue(120);
 		
 		
 		((DefaultEditor)cadence.getEditor()).getTextField().addFocusListener(new FocusAdapter()
@@ -479,6 +481,8 @@ public class AddLayerDialog extends JDialog
 							Settings.setInt(Settings.IntKey.ADDLAYER_LAST_SOURCEID, filter.sourceId);
 							lastStart = datePickerStartDate.getDateTime();
 							lastEnd = datePickerEndDate.getDateTime();
+							lastCadence = (int)AddLayerDialog.this.cadence.getValue();
+							lastCadenceType = cmbbxTimeSteps.getSelectedIndex();
 							
 							setVisible(false);
 							dispose();
@@ -508,5 +512,8 @@ public class AddLayerDialog extends JDialog
 			buttonPane.add(cancelButton);
 			buttonPane.add(okButton);
 		}
+		
+		cadence.setValue(lastCadence);
+		cmbbxTimeSteps.setSelectedIndex(lastCadenceType);
 	}
 }

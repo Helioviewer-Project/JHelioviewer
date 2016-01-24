@@ -10,6 +10,7 @@ import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.layers.ImageLayer;
+import org.helioviewer.jhv.viewmodel.TimeLine.DecodeQualityLevel;
 
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
@@ -238,7 +239,7 @@ public class Texture
 	}*/
 
 	@SuppressWarnings("null")
-	public boolean contains(Object _source, ImageRegion _imageRegion, LocalDateTime _localDateTime)
+	public boolean contains(Object _source, DecodeQualityLevel _quality, ImageRegion _imageRegion, LocalDateTime _localDateTime)
 	{
 		if(!Globals.isReleaseVersion())
 			if(_source!=null && source!=null && _source.getClass()!=source.getClass())
@@ -246,6 +247,7 @@ public class Texture
 		
 		return imageRegion != null
 				&& source == _source
+				&& imageRegion.quality.ordinal() >= _quality.ordinal()
 				&& imageRegion.areaOfSourceImage.contains(_imageRegion.areaOfSourceImage)
 				&& imageRegion.decodeZoomFactor >= _imageRegion.decodeZoomFactor
 				&& dateTime.isEqual(_localDateTime);

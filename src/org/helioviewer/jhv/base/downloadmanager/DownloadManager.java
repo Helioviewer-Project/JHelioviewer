@@ -1,11 +1,8 @@
 package org.helioviewer.jhv.base.downloadmanager;
 
-import java.io.InterruptedIOException;
 import java.lang.ref.WeakReference;
-import java.net.SocketTimeoutException;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Map.Entry;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -129,7 +126,7 @@ public class DownloadManager
 		taskDeque.put(t);
 	}
 
-	public static void debug()
+	/*public static void debug()
 	{
 		System.out.println("--------------------------------------------");
 		synchronized (activeDownloads)
@@ -141,7 +138,7 @@ public class DownloadManager
 				System.out.println(td.request.get().url);
 		}
 		System.out.println("--------------------------------------------");
-	}
+	}*/
 	
 	public static void remove(@Nullable AbstractDownloadRequest request)
 	{

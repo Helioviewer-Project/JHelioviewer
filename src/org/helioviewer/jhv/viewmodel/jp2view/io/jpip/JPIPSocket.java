@@ -44,10 +44,9 @@ public class JPIPSocket extends HTTPSocket
 	/** Time when received the last reply data */
 	private long replyDataTm = 0;
 
-	/** Default constructor. */
-	public JPIPSocket()
+	public JPIPSocket(int _timeout)
 	{
-		super();
+		super(_timeout);
 	}
 
 	/**

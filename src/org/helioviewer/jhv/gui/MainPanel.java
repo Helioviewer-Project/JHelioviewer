@@ -27,21 +27,18 @@ import java.util.concurrent.Future;
 
 import javax.annotation.Nullable;
 import javax.swing.JFrame;
-import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
 import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
-import org.helioviewer.jhv.base.downloadmanager.DownloadManager;
 import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.Quaternion;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.base.physics.DifferentialRotation;
 import org.helioviewer.jhv.gui.statusLabels.CameraListener;
-import org.helioviewer.jhv.gui.statusLabels.FramerateStatusPanel;
 import org.helioviewer.jhv.gui.statusLabels.PanelMouseListener;
 import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.ImageLayer.PreparedImage;
@@ -49,7 +46,6 @@ import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.PluginLayer;
-import org.helioviewer.jhv.opengl.LoadingScreen;
 import org.helioviewer.jhv.opengl.NoImageScreen;
 import org.helioviewer.jhv.opengl.RayTrace;
 import org.helioviewer.jhv.opengl.RayTrace.Ray;
@@ -106,7 +102,6 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 
 	private boolean cameraTrackingEnabled = false;
 
-	private long lastFrameChangeTime = -1;
 	@Nullable
 	private LocalDateTime lastDate;
 
@@ -115,7 +110,6 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 	private int[] renderBufferColor;
 
 	protected Dimension sizeForDecoder;
-	private float resolutionDivisor = 1;
 
 	private static final int DEFAULT_TILE_WIDTH = 2048;
 	private static final int DEFAULT_TILE_HEIGHT = 2048;
@@ -152,10 +146,10 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		});
 		TimeLine.SINGLETON.addListener(new TimeLineListener()
 		{
-			
 			@Override
 			public void timeStampChanged(LocalDateTime current, LocalDateTime last)
 			{
+				MainPanel.this.timeStampChanged();
 			}
 			
 			@Override
@@ -166,8 +160,6 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			@Override
 			public void isPlayingChanged(boolean _isPlaying)
 			{
-				lastFrameChangeTime = System.currentTimeMillis();
-				repaint();
 			}
 		});
 		addMouseListener(new MouseAdapter()
@@ -249,6 +241,11 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 
 		visibleAreaOutline = new Vector3d[40];
 	}
+	
+	protected void timeStampChanged()
+	{
+		display();
+	}
 
 	public Quaternion getRotationCurrent()
 	{
@@ -318,34 +315,9 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 	{
 		cameraInteractions[1] = new CameraZoomBoxInteraction(this, this);
 	}
-
-	protected void advanceFrame()
-	{
-		long now = System.currentTimeMillis();
-		long frameDuration = now - lastFrameChangeTime;
-
-		if (TimeLine.SINGLETON.isPlaying())
-		{
-			if (TimeLine.SINGLETON.processElapsedAnimationTime(frameDuration))
-				lastFrameChangeTime = now;
-
-			if (frameDuration > TimeLine.SINGLETON.getMillisecondsPerFrame())
-				resolutionDivisor += 1;
-			if (frameDuration < TimeLine.SINGLETON.getMillisecondsPerFrame())
-				resolutionDivisor -= 0.05;
-
-			resolutionDivisor = Math.min(Math.max(resolutionDivisor, 1), 4);
-		}
-		else
-			lastFrameChangeTime = now;
-	}
-	
 	
 	protected void render(GL2 gl, boolean _showLoadingAnimation)
 	{
-		FramerateStatusPanel.notifyRenderingNewFrame();
-		advanceFrame();
-
 		LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
 		gl.glClearDepth(1);
 		gl.glDepthMask(true);
@@ -393,7 +365,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			
 			ImageLayer.ensureAppropriateTextureCacheSize();
 			
-			//TODO: jumpstart decoding for next frame
+			//TODO: jumpstart decoding of next frame
 			
 			int releaseCounter=0;
 			for(;gl.getContext().isCurrent();releaseCounter++)
@@ -403,7 +375,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			for (Layer layer : Layers.getLayers())
 				if (layer.isVisible() && layer instanceof ImageLayer)
 					layers.put((ImageLayer) layer,
-							((ImageLayer) layer).prepareImageData(this, sizeForDecoder, gl.getContext()));
+							((ImageLayer) layer).prepareImageData(this, TimeLine.SINGLETON.shouldHurry(), sizeForDecoder, gl.getContext()));
 			
 			//wait for all layers
 			for (Future<PreparedImage> f : layers.values())
@@ -504,7 +476,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			DownloadManager.debug();
 		}*/
 		
-		DownloadManager.debug();
+		//DownloadManager.debug();
 
 		boolean noImageScreen = _showLoadingAnimation;
 		for (Layer layer : Layers.getLayers())
@@ -534,22 +506,14 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			gl.glPopMatrix();
 		}
 
-		for (MainPanel componentView : synchronizedViews)
-			componentView.repaint();
-
 		// force immediate repaints of dependent regions
-		RepaintManager.currentManager(MainFrame.SINGLETON).paintDirtyRegions();
-
-		if (TimeLine.SINGLETON.isPlaying())
-			repaint();
+		for (MainPanel componentView : synchronizedViews)
+			componentView.display();
 	}
 
 	protected float getDesiredRelativeResolution()
 	{
-		 if(TimeLine.SINGLETON.isPlaying())
-			 return 0.5f; //or "resolutionDivisor"
-		 else
-			 return 1;
+		 return 1;
 	}
 
 	@Override
@@ -560,6 +524,16 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		
 		sizeForDecoder = getCanavasSize();
 
+		switch(TimeLine.SINGLETON.shouldHurry())
+		{
+			case QUALITY:
+				break;
+			case PLAYBACK:
+			case SPEED:
+				sizeForDecoder = new Dimension(sizeForDecoder.width /2, sizeForDecoder.height /2);
+				break;
+		}
+		
 		sizeForDecoder = new Dimension((int) (sizeForDecoder.width * getDesiredRelativeResolution()),
 				(int) (sizeForDecoder.height * getDesiredRelativeResolution()));
 

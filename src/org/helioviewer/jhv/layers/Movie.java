@@ -17,6 +17,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.opengl.Texture;
+import org.helioviewer.jhv.viewmodel.TimeLine.DecodeQualityLevel;
 import org.helioviewer.jhv.viewmodel.jp2view.kakadu.KakaduUtils;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.metadata.MetaDataFactory;
@@ -52,6 +53,8 @@ public class Movie
 		}
 	});*/
 
+	//TODO: LEAKING private final ArrayList<Jpx_input_box> openJpx_input_box = new ArrayList<Jpx_input_box>(1);
+	private ThreadLocal<Jpx_input_box> tlsJpx_input_box=new ThreadLocal<>();
 	
 	private final ArrayList<Kdu_region_decompressor> openKdu_region_decompressors = new ArrayList<Kdu_region_decompressor>(1);
 	private ThreadLocal<Kdu_region_decompressor> tlsKdu_region_decompressor=ThreadLocal.withInitial(new Supplier<Kdu_region_decompressor>()
@@ -80,8 +83,6 @@ public class Movie
 		}
 	});
 
-	
-	
 	private final ArrayList<Kdu_codestream> openKdu_codestreams = new ArrayList<Kdu_codestream>(1);
 	private ThreadLocal<Kdu_codestream> tlsKdu_codestream=ThreadLocal.withInitial(new Supplier<Kdu_codestream>()
 	{
@@ -259,6 +260,20 @@ public class Movie
 			for(Kdu_region_decompressor c:openKdu_region_decompressors)
 				c.Native_destroy();
 			openKdu_region_decompressors.clear();
+		}
+		
+		Jpx_input_box box = tlsJpx_input_box.get();
+		if(box!=null)
+		{
+			try
+			{
+				tlsJpx_input_box.get().Close();
+			}
+			catch (KduException e)
+			{
+				Telemetry.trackException(e);
+			}
+			tlsJpx_input_box.get().Native_destroy();
 		}
 		
 		try
@@ -478,7 +493,7 @@ public class Movie
 		return null;
 	}
 	
-	public boolean decodeImage(int _index, int _quality, float _zoomPercent, Rectangle _requiredRegion, Texture _target)
+	public boolean decodeImage(int _index, DecodeQualityLevel _quality, float _zoomPercent, Rectangle _requiredRegion, Texture _target)
 	{
 		if(disposed)
 			throw new IllegalStateException();
@@ -487,6 +502,14 @@ public class Movie
 		
 		try
 		{
+	        Jpx_input_box previousBox = tlsJpx_input_box.get();
+	        if(previousBox!=null)
+	        {
+	        	previousBox.Close();
+	        	previousBox.Native_destroy();
+	        	tlsJpx_input_box.set(null);
+	        }
+	        
 			Jpx_source jpxSrc=tlsJpx_source.get();
 			
 			Kdu_dims requestedBufferedRegion = new Kdu_dims();
@@ -495,14 +518,16 @@ public class Movie
 			requestedBufferedRegion.Access_size().Set_x(_requiredRegion.width);
 			requestedBufferedRegion.Access_size().Set_y(_requiredRegion.height);
 			
-			Kdu_region_decompressor decompressor =tlsKdu_region_decompressor.get();
-			
+			Kdu_region_decompressor decompressor = tlsKdu_region_decompressor.get();
 			Kdu_codestream codestream = tlsKdu_codestream.get();
 			
-			
 	        Jpx_layer_source xlayer = jpxSrc.Access_layer(_index);
+	        if(!xlayer.Exists())
+	        	return false;
+	        
 	        Jpx_codestream_source xstream = jpxSrc.Access_codestream(xlayer.Get_codestream_id(0));
 	        Jpx_input_box inputBox = xstream.Open_stream();
+        	tlsJpx_input_box.set(inputBox);
 			codestream.Restart(inputBox);
 			
 			int discardLevels=(int)Math.round(-Math.log(_zoomPercent)/Math.log(2));
@@ -515,11 +540,29 @@ public class Movie
 			Kdu_channel_mapping mapping = new Kdu_channel_mapping();
 			mapping.Configure(1 /* CHANNELS */, 8 /* BIT DEPTH */, false /* IS_SIGNED */);
 			
+			switch(_quality)
+			{
+				case QUALITY:
+					decompressor.Set_quality_limiting(null, 0, 0);
+					break;
+				case PLAYBACK:
+					decompressor.Set_quality_limiting(new Kdu_quality_limiter(4f/256), 300f*_zoomPercent, 300f*_zoomPercent);
+					break;
+				case SPEED:
+					decompressor.Set_quality_limiting(new Kdu_quality_limiter(7f/256), 300f*_zoomPercent, 300f*_zoomPercent);
+					break;
+				case HURRY:
+					decompressor.Set_quality_limiting(new Kdu_quality_limiter(10f/256), 300f*_zoomPercent, 300f*_zoomPercent);
+					break;
+				default:
+					throw new RuntimeException("Unsupported quality");
+			}
+			
 			decompressor.Start(codestream,
 					mapping, /* MAPPING */
 					0,
 					discardLevels,
-					_quality,
+					16384 /* MAX LAYERS */,
 					requestedBufferedRegion,
 					expand_numerator,
 					expand_denominator,
@@ -553,9 +596,6 @@ public class Movie
 			}
 			
 			decompressor.Finish();
-			
-			inputBox.Close();
-			inputBox.Native_destroy();
 			return true;
 			
 			/*

@@ -35,13 +35,85 @@ public class TimeLine implements LayerListener
 	public static TimeLine SINGLETON = new TimeLine();
 	private boolean forward = true;
 	
-	private static final Timer timer = new Timer(0, new ActionListener()
+	private long hurryUntil = 0;
+	private long speedUntil = 0;
+	
+	public enum DecodeQualityLevel
+	{
+		HURRY,
+		SPEED,
+		PLAYBACK,
+		QUALITY
+	}
+	
+	public DecodeQualityLevel shouldHurry()
+	{
+		if(isPlaying && System.currentTimeMillis()<hurryUntil)
+			return DecodeQualityLevel.HURRY;
+		
+		if(isPlaying && System.currentTimeMillis()<speedUntil)
+			return DecodeQualityLevel.SPEED;
+		
+		if(isPlaying)
+			return DecodeQualityLevel.PLAYBACK;
+		
+		return DecodeQualityLevel.QUALITY;
+	}
+	
+	private long pendingChangeTime = 0;
+	private long lastFrameChange = System.currentTimeMillis();
+	private final Timer timer = new Timer(0, new ActionListener()
 	{
 		@Override
 		public void actionPerformed(@Nullable ActionEvent e)
 		{
-			MainFrame.SINGLETON.MAIN_PANEL.display();
-			timer.stop();
+			//skippingFrames=false;
+			
+			long now = System.currentTimeMillis();
+			long elapsed = now-lastFrameChange;
+			lastFrameChange = now;
+			
+			if(elapsed<=0)
+				return;
+			
+			pendingChangeTime += elapsed;
+
+			int elapsedFrames = (int)(pendingChangeTime / millisecondsPerFrame);
+			if (elapsedFrames <= 0)
+				return;
+			
+			pendingChangeTime -= elapsedFrames * millisecondsPerFrame;
+			
+			if(elapsedFrames>1)
+			{
+				if(speedUntil >= now)
+				{
+					hurryUntil=now+1000;
+					speedUntil=now+2000;
+				}
+				else
+					speedUntil=now+1000;
+			}
+			
+			while (elapsedFrames > 0)
+			{
+				elapsedFrames--;
+				switch (animationMode)
+				{
+					case LOOP:
+						loop();
+						break;
+					case STOP:
+						stop();
+						break;
+					case SWING:
+						swing();
+						break;
+					default:
+						break;
+				}
+			}
+			dateTimeChanged(current);
 		}
 	});
 	
@@ -71,6 +143,15 @@ public class TimeLine implements LayerListener
 		
 		if(isPlaying==_playing)
 			return;
+		
+		if(_playing)
+		{
+			lastFrameChange = System.currentTimeMillis();
+			speedUntil = 0;
+			timer.start();
+		}
+		else
+			timer.stop();
 		
 		isPlaying = _playing;
 		forward = true;
@@ -142,6 +223,7 @@ public class TimeLine implements LayerListener
 	public void setFPS(int _fps)
 	{
 		millisecondsPerFrame = 1000d / _fps;
+		timer.setDelay((int)Math.round(millisecondsPerFrame));
 	}
 
 	public double getMillisecondsPerFrame()
@@ -237,53 +319,6 @@ public class TimeLine implements LayerListener
 	public void setAnimationMode(AnimationMode _animationMode)
 	{
 		animationMode = _animationMode;
-	}
-	
-	/**
-	 * 
-	 * 
-	 * @param _elapsedMilliseconds
-	 * @return Returns true iff the current frame changed
-	 */
-	public boolean processElapsedAnimationTime(long _elapsedMilliseconds)
-	{
-		if (_elapsedMilliseconds <= 0)
-			return true;
-		
-		int elapsedFrames = (int)(_elapsedMilliseconds / millisecondsPerFrame);
-		if (elapsedFrames <= 0)
-		{
-			timer.stop();
-			timer.setDelay((int) (millisecondsPerFrame - _elapsedMilliseconds));
-			timer.start();
-			return false;
-		}
-		
-		while (elapsedFrames > 0)
-		{
-			elapsedFrames--;
-			switch (animationMode)
-			{
-				case LOOP:
-					loop();
-					break;
-				case STOP:
-					stop();
-					break;
-				case SWING:
-					swing();
-					break;
-				default:
-					break;
-			}
-			if (!isPlaying)
-			{
-				dateTimeChanged(current);
-				return true;
-			}
-		}
-		dateTimeChanged(current);
-		return true;
 	}
 	
 	private void loop()

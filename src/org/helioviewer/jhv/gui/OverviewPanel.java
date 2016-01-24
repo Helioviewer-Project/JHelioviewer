@@ -86,17 +86,19 @@ public class OverviewPanel extends MainPanel
 		super.display(drawable);
 	}
 	
-	@Override
+	//TODO: remove method?
+	/*@Override
 	protected float getDesiredRelativeResolution()
 	{
 		return 0.5f;
-	}
+	}*/
 	
 	@Override
-	protected void advanceFrame()
+	protected void timeStampChanged()
 	{
+		//rendering will be called by the mainpanel
 	}
-
+	
 	@Override
 	protected void render(GL2 gl, boolean _showLoadingAnimation)
 	{

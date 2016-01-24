@@ -19,6 +19,7 @@ import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.MainPanel;
+import org.helioviewer.jhv.gui.statusLabels.FramerateStatusPanel;
 import org.helioviewer.jhv.layers.LUT.Lut;
 import org.helioviewer.jhv.layers.Movie.Match;
 import org.helioviewer.jhv.opengl.RayTrace;
@@ -27,6 +28,7 @@ import org.helioviewer.jhv.opengl.camera.CameraMode;
 import org.helioviewer.jhv.opengl.camera.CameraMode.MODE;
 import org.helioviewer.jhv.opengl.camera.animation.CameraRotationAnimation;
 import org.helioviewer.jhv.viewmodel.TimeLine;
+import org.helioviewer.jhv.viewmodel.TimeLine.DecodeQualityLevel;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
@@ -93,6 +95,8 @@ public abstract class ImageLayer extends Layer
 	 */
 	public static void newRenderPassStarted()
 	{
+		FramerateStatusPanel.notifyRenderingNewFrame();
+		
 		for(Texture t:textures)
 			if(t.usedByCurrentRenderPass)
 			{
@@ -355,7 +359,7 @@ public abstract class ImageLayer extends Layer
 		}
 	}
 
-	public abstract Future<PreparedImage> prepareImageData(final MainPanel mainPanel, final Dimension size, final GLContext _gl);
+	public abstract Future<PreparedImage> prepareImageData(final MainPanel mainPanel, DecodeQualityLevel _quality, final Dimension size, final GLContext _gl);
 
 	private static final int MAX_X_POINTS = 11;
 	private static final int MAX_Y_POINTS = 11;
@@ -365,7 +369,7 @@ public abstract class ImageLayer extends Layer
 	 * 
 	 * @return The ImageRegion or NULL if nothing is visible
 	 */
-	public @Nullable ImageRegion calculateRegion(MainPanel _mainPanel, MetaData _metaData, Dimension _size)
+	public @Nullable ImageRegion calculateRegion(MainPanel _mainPanel, DecodeQualityLevel _quality, MetaData _metaData, Dimension _size)
 	{
 		RayTrace rayTrace = new RayTrace(_metaData.rotation.toMatrix());
 
@@ -413,6 +417,7 @@ public abstract class ImageLayer extends Layer
 		
 		ImageRegion ir = new ImageRegion(
 				new Rectangle2D.Double(minX, minY, maxX - minX, maxY - minY),
+				_quality,
 				_mainPanel.getTranslationCurrent().z, _metaData, _size);
 		
 		if(ir.texels.width==0 || ir.texels.height==0)

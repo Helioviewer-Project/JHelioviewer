@@ -46,7 +46,7 @@ public class JPIPRequest extends AbstractDownloadRequest
 	@Override
 	void execute() throws IOException
 	{
-		jpipSocket = new JPIPSocket();
+		jpipSocket = new JPIPSocket(TIMEOUT);
 
 		try
 		{
