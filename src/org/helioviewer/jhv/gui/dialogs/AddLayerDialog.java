@@ -55,7 +55,6 @@ public class AddLayerDialog extends JDialog
 	private DatePicker datePickerEndDate;
 	private JSpinner cadence;
 
-	//FIXME: remove minusYears for release, check data availability, make it the same as the startup movie
 	private static LocalDateTime lastStart = LocalDateTime.now().minusWeeks(1).minusDays(2);
 	private static LocalDateTime lastEnd = LocalDateTime.now().minusWeeks(1).minusDays(0);
 	private JPanel layerPanel;

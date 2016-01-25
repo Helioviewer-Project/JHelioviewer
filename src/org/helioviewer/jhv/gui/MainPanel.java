@@ -511,11 +511,6 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			componentView.display();
 	}
 
-	protected float getDesiredRelativeResolution()
-	{
-		 return 1;
-	}
-
 	@Override
 	public void display(@Nullable GLAutoDrawable _drawable)
 	{
@@ -530,13 +525,13 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 				break;
 			case PLAYBACK:
 			case SPEED:
-				sizeForDecoder = new Dimension(sizeForDecoder.width /2, sizeForDecoder.height /2);
+			case HURRY:
+				sizeForDecoder = new Dimension(sizeForDecoder.width / 2, sizeForDecoder.height / 2);
 				break;
+			default:
+				throw new RuntimeException();
 		}
 		
-		sizeForDecoder = new Dimension((int) (sizeForDecoder.width * getDesiredRelativeResolution()),
-				(int) (sizeForDecoder.height * getDesiredRelativeResolution()));
-
 		GL2 gl = _drawable.getGL().getGL2();
 
 		gl.glViewport(0, 0, getSurfaceWidth(), getSurfaceHeight());

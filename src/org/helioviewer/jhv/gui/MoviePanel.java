@@ -51,7 +51,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 	{
 		FRAMES_PER_SECOND("Frames/sec", 1),
 		
-		//TODO: add back in
+		//TODO: add support for other playback speed units again
 		/*
 		MINUTES_PER_SECOND("Solar minutes/sec", 60),
 		HOURS_PER_SECOND("Solar hours/sec", 3600),
