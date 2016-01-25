@@ -21,7 +21,10 @@ import javax.swing.SwingUtilities;
 import org.helioviewer.jhv.base.FutureValue;
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.ImageRegion;
+import org.helioviewer.jhv.base.Settings;
 import org.helioviewer.jhv.base.Telemetry;
+import org.helioviewer.jhv.base.Settings.BooleanKey;
+import org.helioviewer.jhv.base.Settings.IntKey;
 import org.helioviewer.jhv.base.downloadmanager.DownloadManager;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
@@ -48,8 +51,6 @@ import com.jogamp.opengl.GLContext;
 
 public class KakaduLayer extends ImageLayer
 {
-	public static final int MAX_FRAME_DOWNLOAD_BATCH = 8;
-	
 	@Nullable private volatile Thread loaderThread;
 	private boolean localFile = false;
 	private final int sourceId;
@@ -279,7 +280,8 @@ public class KakaduLayer extends ImageLayer
 						StringBuilder currentStarts = new StringBuilder();
 						StringBuilder currentEnds = new StringBuilder();
 						
-						for(int i=0;i<MAX_FRAME_DOWNLOAD_BATCH && !startTimes.isEmpty(); i++) 
+						int batchSize=Settings.getInt(IntKey.JPIP_BATCH_SIZE);
+						for(int i=0;i<batchSize && !startTimes.isEmpty(); i++) 
 						{
 							if(i>0)
 							{
@@ -289,7 +291,6 @@ public class KakaduLayer extends ImageLayer
 							currentStarts.append(startTimes.remove(0).toString());
 							currentEnds.append(endTimes.remove(0).toString());
 						}
-						
 						
 						MovieDownload md=new MovieDownload();
 						md.metadata = new HTTPRequest(Globals.JPX_DATASOURCE_MIDPOINT
@@ -309,7 +310,7 @@ public class KakaduLayer extends ImageLayer
 						
 						downloads.add(md);
 						
-						currentStart = currentStart.plusSeconds(_cadence * MAX_FRAME_DOWNLOAD_BATCH);
+						currentStart = currentStart.plusSeconds(_cadence * batchSize);
 					}
 					
 					for(MovieDownload md:downloads)
@@ -358,9 +359,13 @@ public class KakaduLayer extends ImageLayer
 									{
 										//FIXME: lq previews are not rendered correctly
 										
-										download.lq = new JPIPRequest(jsonObject.getString("uri"), DownloadPriority.MEDIUM, 0, frames.length(), new Rectangle(256, 256));
-										//download.lq = new JPIPRequest(jsonObject.getString("uri"), DownloadPriority.MEDIUM, 0, frames.length(), new Rectangle(64, 64));
-										DownloadManager.addRequest(download.lq);
+										if(Settings.getBoolean(BooleanKey.PREVIEW_ENABLED))
+										{
+											int size=Settings.getInt(IntKey.PREVIEW_RESOLUTION);
+											download.lq = new JPIPRequest(jsonObject.getString("uri"), DownloadPriority.MEDIUM, 0, frames.length(), new Rectangle(size, size));
+											DownloadManager.addRequest(download.lq);
+										}
+
 										DownloadManager.addRequest(download.hq);
 										
 										download.metadata=null;

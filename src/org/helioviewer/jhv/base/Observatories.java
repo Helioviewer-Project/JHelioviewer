@@ -48,7 +48,6 @@ public class Observatories
 
 						SwingUtilities.invokeLater(new Runnable()
 						{
-							@SuppressWarnings("null")
 							@Override
 							public void run()
 							{

@@ -165,7 +165,8 @@ public class Settings
 		PLUGIN_VISIBLE("plugin.visible"),
 		MOVIE_TEXT("export.movie.text"),
 		SCREENSHOT_TEXT("export.screenshot.text"),
-		STARTUP_3DCAMERA("startup.camera3d");
+		STARTUP_3DCAMERA("startup.camera3d"),
+		PREVIEW_ENABLED("preview.enabled");
 
         String key;
         private BooleanKey(String _key)
@@ -180,7 +181,9 @@ public class Settings
 		MOVIE_IMG_WIDTH("export.movie.width"),
 		MOVIE_IMG_HEIGHT("export.movie.height"),
 		SCREENSHOT_IMG_WIDTH("export.screenshot.width"),
-		SCREENSHOT_IMG_HEIGHT("export.screenshot.height");
+		SCREENSHOT_IMG_HEIGHT("export.screenshot.height"),
+		PREVIEW_RESOLUTION("preview.resolution"),
+		JPIP_BATCH_SIZE("jpip.batchsize");
 
         String key;
         private IntKey(String _key)
