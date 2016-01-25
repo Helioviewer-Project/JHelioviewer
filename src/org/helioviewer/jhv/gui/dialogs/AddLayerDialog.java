@@ -56,12 +56,12 @@ public class AddLayerDialog extends JDialog
 	private JSpinner cadence;
 
 	//FIXME: remove minusYears for release, check data availability, make it the same as the startup movie
-	private static LocalDateTime lastStart = LocalDateTime.now().minusYears(3).minusDays(3);
-	private static LocalDateTime lastEnd = LocalDateTime.now().minusYears(3);
+	private static LocalDateTime lastStart = LocalDateTime.now().minusWeeks(1).minusDays(2);
+	private static LocalDateTime lastEnd = LocalDateTime.now().minusWeeks(1).minusDays(0);
 	private JPanel layerPanel;
 	private JPanel panel;
 	
-	private static int lastCadence=20;
+	private static int lastCadence=30;
 	private static int lastCadenceType=1;
 	
 	private enum TimeSteps
@@ -99,9 +99,9 @@ public class AddLayerDialog extends JDialog
 							for(Filter f:i.getFilters())
 								if("171".equals(f.toString()))
 								{
-									lastStart = f.getEnd().minusDays(3);
+									lastStart = f.getEnd().minusDays(2);
 									lastEnd = f.getEnd();
-									Layers.addLayer(new KakaduLayer(f.sourceId, lastStart, lastEnd, 1*60*60, f.getNickname()));
+									Layers.addLayer(new KakaduLayer(f.sourceId, lastStart, lastEnd, lastCadence*60, f.getNickname()));
 									return;
 								}
 		}

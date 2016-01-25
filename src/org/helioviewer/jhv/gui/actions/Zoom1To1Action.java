@@ -15,21 +15,23 @@ import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.layers.ImageLayer;
+import org.helioviewer.jhv.layers.Layer;
+import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.opengl.camera.animation.CameraZoomAnimation;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 
-public class Zoom1To1Action extends AbstractAction
+public class Zoom1To1Action extends AbstractAction implements LayerListener
 {
-	//TODO: disable button when no imageLayer is selected
-	
 	public Zoom1To1Action(boolean small)
 	{
 		super("Zoom 1:1", small ? IconBank.getIcon(JHVIcon.NEW_ZOOM_1TO1, 16,16) : IconBank.getIcon(JHVIcon.NEW_ZOOM_1TO1, 24, 24));
 		putValue(SHORT_DESCRIPTION, "Zoom to 100%");
 		putValue(MNEMONIC_KEY, KeyEvent.VK_Z);
 		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.ALT_MASK));
+		
+		Layers.addLayerListener(this);
 	}
 
 	public void actionPerformed(@Nullable ActionEvent e)
@@ -56,5 +58,21 @@ public class Zoom1To1Action extends AbstractAction
 		
 		distance = distance - componentView.getTranslationEnd().z;
 		componentView.addCameraAnimation(new CameraZoomAnimation(componentView, distance));
+	}
+	
+	@Override
+	public void layerAdded()
+	{
+	}
+
+	@Override
+	public void layersRemoved()
+	{
+	}
+
+	@Override
+	public void activeLayerChanged(@Nullable Layer layer)
+	{
+		setEnabled(Layers.getActiveImageLayer()!=null);
 	}
 }

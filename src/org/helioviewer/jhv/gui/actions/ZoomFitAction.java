@@ -15,12 +15,14 @@ import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.layers.ImageLayer;
+import org.helioviewer.jhv.layers.Layer;
+import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.opengl.camera.animation.CameraZoomAnimation;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 
-public class ZoomFitAction extends AbstractAction
+public class ZoomFitAction extends AbstractAction implements LayerListener
 {
 	public ZoomFitAction(boolean small)
 	{
@@ -28,6 +30,8 @@ public class ZoomFitAction extends AbstractAction
 		putValue(SHORT_DESCRIPTION, "Zoom to Fit");
 		putValue(MNEMONIC_KEY, KeyEvent.VK_F);
 		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_K, KeyEvent.ALT_MASK));
+		
+		Layers.addLayerListener(this);
 	}
 
 	public void actionPerformed(@Nullable ActionEvent e)
@@ -54,5 +58,21 @@ public class ZoomFitAction extends AbstractAction
 		
 		distance = distance - MainFrame.SINGLETON.MAIN_PANEL.getTranslationEnd().z;
 		MainFrame.SINGLETON.MAIN_PANEL.addCameraAnimation(new CameraZoomAnimation(MainFrame.SINGLETON.MAIN_PANEL, distance));
+	}
+	
+	@Override
+	public void layerAdded()
+	{
+	}
+
+	@Override
+	public void layersRemoved()
+	{
+	}
+
+	@Override
+	public void activeLayerChanged(@Nullable Layer layer)
+	{
+		setEnabled(Layers.getActiveImageLayer()!=null);
 	}
 }

@@ -47,8 +47,6 @@ import org.helioviewer.jhv.gui.MainFrame;
 
 public class PreferencesDialog extends JDialog
 {
-	private final String defaultDateFormat = "yyyy/MM/dd";
-
 	private JCheckBox loadDefaultMovieOnStartUp;
 	private JTextField dateFormatField;
 
@@ -64,9 +62,6 @@ public class PreferencesDialog extends JDialog
 	private static final AspectRatio[] IMAGE_ASPECT_RATIO_PRESETS = { new AspectRatio(1, 1), new AspectRatio(4, 3),
 			new AspectRatio(16, 9), new AspectRatio(16, 10), new AspectRatio(0, 0) };
 
-	/**
-	 * The private constructor that sets the fields and the dialog.
-	 */
 	public PreferencesDialog()
 	{
 		super(MainFrame.SINGLETON, "Preferences", true);
@@ -465,7 +460,7 @@ public class PreferencesDialog extends JDialog
 								if (!isDateFormatValid(dateFormatField.getText()))
 								{
 									JOptionPane.showMessageDialog(PreferencesDialog.this, "Syntax error",
-											"The entered date pattern contains illegal signs!\nAll suppported signs are listed in the associated information dialog.",
+											"The entered date format contains illegal signs!\nAll suppported signs are listed in the associated information dialog.",
 											JOptionPane.ERROR_MESSAGE);
 									return;
 								}
@@ -491,11 +486,11 @@ public class PreferencesDialog extends JDialog
 						{
 							public void actionPerformed(@Nullable ActionEvent e)
 							{
-								if (JOptionPane.showConfirmDialog(null, "Do you really want to reset the Preferences?", "Attention",
+								if (JOptionPane.showConfirmDialog(null, "Do you really want to reset all settings?", "Attention",
 										JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
 								{
-									loadDefaultMovieOnStartUp.setSelected(true);
-									dateFormatField.setText(defaultDateFormat);
+									Settings.resetAllSettings();
+									dispose();
 								}
 							}
 						});
@@ -536,17 +531,11 @@ public class PreferencesDialog extends JDialog
 	 */
 	private boolean isDateFormatValid(String format)
 	{
-		// go through all signs of pattern
-		for (int i = 0; i < format.length(); i++)
-		{
-			char sign = format.charAt(i);
-			int ascii = (int) sign;
-
+		for(char ch:format.toCharArray())
 			// if it is a number or letter, check it if it is supported
-			if ((ascii >= 48 && ascii <= 57) || (ascii >= 65 && ascii <= 90) || (ascii >= 97 && ascii <= 122))
-				if (sign != 'y' && sign != 'M' && sign != 'd' && sign != 'w' && sign != 'D' && sign != 'E')
+			if ((ch >= 48 && ch <= 57) || (ch >= 65 && ch <= 90) || (ch >= 97 && ch <= 122))
+				if (ch != 'y' && ch != 'M' && ch != 'd' && ch != 'w' && ch != 'D' && ch != 'E')
 					return false;
-		}
 
 		return true;
 	}
@@ -563,12 +552,7 @@ public class PreferencesDialog extends JDialog
 		loadDefaultMovieOnStartUp.setSelected(Settings.getBoolean(Settings.BooleanKey.STARTUP_LOADMOVIE));
 
 		// Default date format
-		String fmt = Settings.getString(StringKey.DEFAULT_DATE_FORMAT);
-
-		if (fmt == null)
-			dateFormatField.setText(defaultDateFormat);
-		else
-			dateFormatField.setText(fmt);
+		dateFormatField.setText(Settings.getString(StringKey.DATE_FORMAT));
 
 		loadMovieSettings();
 		loadScreenshotSettings();
@@ -580,7 +564,7 @@ public class PreferencesDialog extends JDialog
 		Settings.setBoolean(BooleanKey.STARTUP_LOADMOVIE, loadDefaultMovieOnStartUp.isSelected());
 
 		// Default date format
-		Settings.setString(StringKey.DEFAULT_DATE_FORMAT, dateFormatField.getText());
+		Settings.setString(StringKey.DATE_FORMAT, dateFormatField.getText());
 
 		saveMovieSettings();
 		saveScreenshotSettings();

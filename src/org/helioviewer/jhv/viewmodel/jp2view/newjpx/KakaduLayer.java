@@ -217,6 +217,8 @@ public class KakaduLayer extends ImageLayer
 	
 	private volatile boolean incomplete;
 	
+	//TODO: test what happens when the same sourceId is added twice, concurrently
+	
 	@SuppressWarnings("null")
 	private void setTimeRange(final LocalDateTime _start, final LocalDateTime _end, final int _cadence)
 	{
@@ -269,6 +271,8 @@ public class KakaduLayer extends ImageLayer
 						
 						currentStart = currentEnd;
 					}
+					
+					System.out.println("Downloading "+startTimes.size()+" frames");
 					
 					while (!startTimes.isEmpty())
 					{

@@ -87,6 +87,19 @@ public class Settings
     {
     }
 
+    public static void resetAllSettings()
+    {
+    	try
+    	{
+	        PREF_NODE.clear();
+	        delayedFlush();
+    	}
+    	catch(BackingStoreException _bse)
+    	{
+    		Telemetry.trackException(_bse);
+    	}
+    }
+    
     public static void init()
     {
     	//forces execution of static initializer
@@ -107,6 +120,25 @@ public class Settings
 		return getBoolean(_key,null);
 	}
 
+	public static boolean getDefaultBoolean(BooleanKey _key)
+	{
+		return getDefaultBoolean(_key,null);
+	}
+
+    public static boolean getDefaultBoolean(BooleanKey _key,@Nullable String _param)
+    {
+        final String v=getDefaultString(_key.key + (_param==null ? "":"."+_param));
+        try
+        {
+            return Integer.parseInt(v)!=0;
+        }
+        catch(NumberFormatException _nfe)
+        {
+            Telemetry.trackException(new NumberFormatException("Settings: Cannot parse \""+v+"\" for key \""+_key.key+"."+_param+"\"."));
+            return false;
+        }
+    }
+    
     public static boolean getBoolean(BooleanKey _key,@Nullable String _param)
     {
         final String v=getString(_key.key + (_param==null ? "":"."+_param));
@@ -166,7 +198,7 @@ public class Settings
     	MOVIE_OPEN_PATH("open.movie.directory"),
     	METADATA_EXPORT_DIRECTORY("export.metadata.directory"),
     	UUID("uuid"),
-        DEFAULT_DATE_FORMAT("default.date.format"),
+        DATE_FORMAT("date.format"),
         TOOLBAR_DISPLAY("display.toolbar");
 
         String key;
@@ -201,7 +233,11 @@ public class Settings
             return;
         
         PREF_NODE.put(_key,_val);
-        
+        delayedFlush();
+    }
+	
+	private static void delayedFlush()
+	{
         synchronized(syncObj)
         {
             if(saveThread!=null)
@@ -241,7 +277,7 @@ public class Settings
                 saveThread.start();
             }
         }
-    }
+	}
     
     //used to coordinate delayed flushing
     private final static Object syncObj=new Object();
@@ -252,8 +288,18 @@ public class Settings
         return PREF_NODE.get(_key,DEFAULT_PROPERTIES.getProperty(_key));
     }
     
+    private static @Nullable String getDefaultString(@Nonnull String _key)
+    {
+        return DEFAULT_PROPERTIES.getProperty(_key);
+    }
+    
     public static @Nullable String getString(StringKey _key)
     {
         return getString(_key.key);
+    }
+    
+    public static @Nullable String getDefaultString(StringKey _key)
+    {
+        return getDefaultString(_key.key);
     }
 }

@@ -442,7 +442,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 			{
 				//TODO: speed this code up
 				long duration=TimeLine.SINGLETON.getFirstDateTime().until(TimeLine.SINGLETON.getLastDateTime(), ChronoUnit.SECONDS);
-				int frames=(int)(duration/layer.getCadence());
+				int frames=TimeLine.SINGLETON.getFrameCount();
 				int max=Math.min(frames, (int)trackRect.getWidth());
 				
 				for(int i=0;i<max;i++)
@@ -450,7 +450,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 					LocalDateTime localDateTime=TimeLine.SINGLETON.getFirstDateTime().plusSeconds((int)(duration/(double)max*i));
 
 					Match currentMatch = layer.getMovie(localDateTime);
-					if(currentMatch==null || currentMatch.timeDifferenceSeconds>layer.getCadence())
+					if(currentMatch==null || currentMatch.timeDifferenceSeconds>=layer.getCadence())
 						g.setColor(COLOR_NOT_CACHED);
 					else
 						switch (currentMatch.movie.quality)

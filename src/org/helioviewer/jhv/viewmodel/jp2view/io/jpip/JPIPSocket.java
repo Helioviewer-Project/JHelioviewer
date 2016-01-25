@@ -227,7 +227,7 @@ public class JPIPSocket extends HTTPSocket
 		InputStream input = new BufferedInputStream(getInputStream(),65536);
 		
 		String contentEncoding = res.getHeader("Content-Encoding");
-		System.out.println("Content encoding JPIP: "+contentEncoding);
+		//System.out.println("Content encoding JPIP: "+contentEncoding);
 		if(contentEncoding!=null)
 			switch(contentEncoding.toLowerCase())
 			{
