@@ -9,20 +9,10 @@ import javax.annotation.Nullable;
 /**
  * The class <code>HTTPMessage</code> defines the basic body of a HTTP message.
  */
-abstract class HTTPMessage
+public abstract class HTTPMessage
 {
-
 	/** A hash table with the headers of the message */
 	private Hashtable<String, String> headers = new Hashtable<>();
-
-	/** Returns <code>true</code> if the message is a request. */
-	public abstract boolean isRequest();
-
-	/** Returns <code>true</code> if the message is a response. */
-	public final boolean isResponse()
-	{
-		return !isRequest();
-	}
 
 	/**
 	 * Returns the value of a message header.

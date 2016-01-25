@@ -245,7 +245,9 @@ public class TimeLine implements LayerListener
 		endTime=_end;
 		cadence=_cadence;
 		
-		setCurrentDate(startTime);
+		if(current.isBefore(startTime) || current.isAfter(endTime))
+			setCurrentDate(startTime);
+		
 		for (TimeLine.TimeLineListener timeLineListener : timeLineListeners)
 			timeLineListener.timeRangeChanged(_start, _end);
 	}

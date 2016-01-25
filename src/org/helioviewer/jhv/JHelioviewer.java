@@ -29,6 +29,7 @@ import org.helioviewer.jhv.base.Settings.BooleanKey;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 import org.helioviewer.jhv.gui.dialogs.AboutDialog;
+import org.helioviewer.jhv.gui.dialogs.AddLayerDialog;
 import org.helioviewer.jhv.io.CommandLineProcessor;
 import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.opengl.camera.CameraMode;
@@ -54,14 +55,6 @@ public class JHelioviewer
 {
 	public static void main(final String[] args)
 	{
-		/*for(int i=1;i<30;i++)
-			System.out.println(i+"\t"+Integer.numberOfTrailingZeros(i));
-			//System.out.println(i+"\t"+(int)Math.round(Math.log(i & -i)/Math.log(2)));
-		
-		if(1==1)
-			return;*/
-		
-		
 		CommandLineProcessor.setArguments(args);
 		
 		// Setup Swing
@@ -228,6 +221,15 @@ public class JHelioviewer
 					MainFrame.SINGLETON.setVisible(true);
 					
 		            splash.progressTo("Loading observatories");
+					if (Settings.getBoolean(Settings.BooleanKey.STARTUP_LOADMOVIE))
+			            Observatories.addUpdateListener(new Runnable()
+			            {
+							@Override
+							public void run()
+							{
+								AddLayerDialog.addDefaultStartupLayer();
+							}
+						});
 		            Observatories.getObservatories();
 		            
 		            splash.progressTo("");

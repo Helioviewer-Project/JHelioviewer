@@ -50,12 +50,15 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 	private enum PlaybackSpeedUnit
 	{
 		FRAMES_PER_SECOND("Frames/sec", 1),
+		
+		//TODO: add back in
+		/*
 		MINUTES_PER_SECOND("Solar minutes/sec", 60),
 		HOURS_PER_SECOND("Solar hours/sec", 3600),
-		DAYS_PER_SECOND("Solar days/sec", 864000);
+		DAYS_PER_SECOND("Solar days/sec", 864000)*/;
 		
-		private String text;
-		private int factor;
+		public final String text;
+		public final int factor;
 
 		PlaybackSpeedUnit(String _text, int _factor)
 		{
@@ -96,6 +99,8 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 	private static final Icon ICON_FORWARD = IconBank.getIcon(JHVIcon.FORWARD_NEW, 16, 16);
 
 	private boolean showMore = false;
+	
+	private int ignoreSliderChanges = 0;
 
 	private TimeLine timeLine = TimeLine.SINGLETON;
 	private JLabel lblFrames;
@@ -161,7 +166,9 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 			public void stateChanged(@Nullable ChangeEvent e)
 			{
 				lblFrames.setText(slider.getValue() + "/" + slider.getMaximum());
-				timeLine.setCurrentFrame(slider.getValue());
+				
+				if(ignoreSliderChanges==0)
+					timeLine.setCurrentFrame(slider.getValue());
 			}
 		});
 
@@ -322,8 +329,35 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 	@Override
 	public void timeStampChanged(LocalDateTime current, LocalDateTime last)
 	{
-		slider.setValue(timeLine.getCurrentFrameIndex() < 0 ? 0 : timeLine.getCurrentFrameIndex());
+		try
+		{
+			ignoreSliderChanges++;
+			slider.setValue(timeLine.getCurrentFrameIndex());
+		}
+		finally
+		{
+			ignoreSliderChanges--;
+		}
 	}
+	
+	@Override	
+	public void timeRangeChanged(LocalDateTime _start, LocalDateTime _end)
+	{
+		try
+		{
+			ignoreSliderChanges++;
+			
+			setButtonsEnabled(TimeLine.SINGLETON.isThereAnythingToPlay());
+			
+			int framecount = TimeLine.SINGLETON.getFrameCount();
+			slider.setMaximum(framecount > 0 ? framecount - 1 : 0);
+		}
+		finally
+		{
+			ignoreSliderChanges--;
+		}
+	}
+
 	
 	public void repaintSlider()
 	{
@@ -482,17 +516,6 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		btnForward.setEnabled(_enable);
 	}
 	
-	@Override	
-	public void timeRangeChanged(LocalDateTime _start, LocalDateTime _end)
-	{
-		setButtonsEnabled(TimeLine.SINGLETON.isThereAnythingToPlay());
-		
-		int framecount = TimeLine.SINGLETON.getFrameCount();
-		
-		slider.setMaximum( framecount > 0 ? framecount - 1 : 0);
-		repaint();
-	}
-
 	/**
 	 * Action to play or pause the active layer, if it is an image series.
 	 * 

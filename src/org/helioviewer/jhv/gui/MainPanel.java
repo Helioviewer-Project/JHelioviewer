@@ -361,7 +361,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 				}
 			}
 			
-			//FIXME: extremely narrow viewports show letterbox. why?!
+			//TODO: extremely narrow viewports show letterbox. why?!
 			
 			ImageLayer.ensureAppropriateTextureCacheSize();
 			

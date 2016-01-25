@@ -18,24 +18,6 @@ public class Layers
 	private static ArrayList<Layer> layers = new ArrayList<>();
 	private static int activeLayerIndex = -1;
 
-	private static final Comparator<Layer> COMPARATOR = new Comparator<Layer>()
-	{
-		@Override
-		public int compare(@Nullable Layer o1, @Nullable Layer o2)
-		{
-			if (o1==null)
-				return 1;
-			else if (o2==null)
-				return -1;
-			else if (!(o1 instanceof ImageLayer) && o2 instanceof ImageLayer)
-				return 1;
-			else if (o1 instanceof ImageLayer && !(o2 instanceof ImageLayer))
-				return -1;
-			else
-				return 0;
-		}
-	};
-	
 	private static void updateOpacity(ImageLayer imageLayer, boolean remove)
 	{
 		int counter = 0;
@@ -62,7 +44,23 @@ public class Layers
 	public static void addLayer(Layer _newLayer)
 	{
 		layers.add(_newLayer);
-		layers.sort(COMPARATOR);
+		layers.sort(new Comparator<Layer>()
+		{
+			@Override
+			public int compare(@Nullable Layer o1, @Nullable Layer o2)
+			{
+				if (o1==null)
+					return 1;
+				else if (o2==null)
+					return -1;
+				else if (!(o1 instanceof ImageLayer) && o2 instanceof ImageLayer)
+					return 1;
+				else if (o1 instanceof ImageLayer && !(o2 instanceof ImageLayer))
+					return -1;
+				else
+					return 0;
+			}
+		});
 		
 		Telemetry.trackEvent("Layer added", "Name", _newLayer.getName(), "Full name", _newLayer.getFullName());
 		

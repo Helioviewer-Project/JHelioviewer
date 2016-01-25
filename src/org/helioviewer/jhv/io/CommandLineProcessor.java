@@ -12,7 +12,7 @@ import java.util.List;
 import org.helioviewer.jhv.base.Telemetry;
 
 //TODO: merge all getDownloadOptionValues-style methods
-//FIXME: does this still work?
+//TODO: does this still work?
 
 public class CommandLineProcessor
 {

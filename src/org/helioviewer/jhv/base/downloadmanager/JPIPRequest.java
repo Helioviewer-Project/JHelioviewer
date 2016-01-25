@@ -8,7 +8,6 @@ import java.net.URISyntaxException;
 import javax.annotation.Nullable;
 
 import org.helioviewer.jhv.base.Telemetry;
-import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPRequest.Method;
 import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPConstants;
 import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPDataSegment;
 import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPQuery;
@@ -51,7 +50,6 @@ public class JPIPRequest extends AbstractDownloadRequest
 		try
 		{
 			openSocket(jpipSocket, kduCache);
-			org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPRequest request = new org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPRequest(Method.GET);
 			for(;;)
 			{
 				if (jpipSocket.isClosed())
@@ -59,7 +57,7 @@ public class JPIPRequest extends AbstractDownloadRequest
 				
 				query.setField(JPIPRequestField.LEN.toString(), String.valueOf(JpipRequestLen));
 
-				request.setQuery(query);
+				org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPRequest request = new org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPRequest(query.toString());
 				jpipSocket.send(request);
 				@Nullable JPIPResponse response = jpipSocket.receive();
 				

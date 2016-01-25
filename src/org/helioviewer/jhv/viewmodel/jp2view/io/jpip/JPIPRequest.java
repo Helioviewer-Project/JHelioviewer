@@ -1,43 +1,13 @@
 package org.helioviewer.jhv.viewmodel.jp2view.io.jpip;
 
-import javax.annotation.Nullable;
+import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPMessage;
 
-import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPRequest;
-
-/**
- * A glorified HTTP request object.
- */
-public class JPIPRequest extends HTTPRequest
+public class JPIPRequest extends HTTPMessage
 {
-	private @Nullable String query = null;
+	public final String query;
 
-	/**
-	 * Default constructor.
-	 * 
-	 * @param _method
-	 */
-	public JPIPRequest(Method _method)
+	public JPIPRequest(String _query)
 	{
-		super(_method);
-	}
-
-	/**
-	 * Gets the query string.
-	 * 
-	 * @return Query String
-	 */
-	public @Nullable String getQuery()
-	{
-		return query;
-	}
-
-	/**
-	 * Sets the query string.
-	 * 
-	 * @param _query
-	 */
-	public void setQuery(Object _query)
-	{
-		query = _query.toString();
+		query = _query;
 	}
 }

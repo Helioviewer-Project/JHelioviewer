@@ -18,20 +18,16 @@ public class SDOCutOutButton extends JButton implements	LayerListener
 	public SDOCutOutButton()
 	{
 		super(new SDOCutOutAction());
-		initButton();
-		Layers.addLayerListener(this);
-		this.setEnabled(false);
-	}
-
-	private void initButton()
-	{
+		
 		setSelected(false);
 		setIcon(IconBank.getIcon(JHVIcon.SDO_CUT_OUT, 24, 24));
 		setToolTipText("Open SDO Cut-Out Service");
-		setEnabled(true);
 		setVerticalTextPosition(SwingConstants.BOTTOM);
 		setHorizontalAlignment(SwingConstants.CENTER);
 		setHorizontalTextPosition(SwingConstants.CENTER);
+		setEnabled(false);
+		
+		Layers.addLayerListener(this);
 	}
 
 	private void enableIffSDOLayersActive()
@@ -50,6 +46,7 @@ public class SDOCutOutButton extends JButton implements	LayerListener
 	@Override
 	public void layerAdded()
 	{
+		//TODO: should also recheck when new metadata becomes available
 		enableIffSDOLayersActive();
 	}
 

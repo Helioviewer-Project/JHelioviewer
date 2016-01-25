@@ -17,6 +17,7 @@ import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
 
 import javax.annotation.Nullable;
+import javax.sound.midi.Instrument;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -54,13 +55,13 @@ public class AddLayerDialog extends JDialog
 	private DatePicker datePickerEndDate;
 	private JSpinner cadence;
 
-	//FIXME: remove minusYears for release, check data availability
-	private static LocalDateTime lastStart = LocalDateTime.now().minusYears(3).minusDays(1);
-	private static LocalDateTime lastEnd = LocalDateTime.now().minusYears(3); 
+	//FIXME: remove minusYears for release, check data availability, make it the same as the startup movie
+	private static LocalDateTime lastStart = LocalDateTime.now().minusYears(3).minusDays(3);
+	private static LocalDateTime lastEnd = LocalDateTime.now().minusYears(3);
 	private JPanel layerPanel;
 	private JPanel panel;
 	
-	private static int lastCadence=120;
+	private static int lastCadence=20;
 	private static int lastCadenceType=1;
 	
 	private enum TimeSteps
@@ -84,6 +85,29 @@ public class AddLayerDialog extends JDialog
 		public String toString()
 		{
 			return name;
+		}
+	}
+	
+	public static void addDefaultStartupLayer()
+	{
+		try
+		{
+			for(Observatory o:Observatories.getObservatories())
+				if("SDO".equals(o.toString()))
+					for(Filter i:o.getInstruments())
+						if("AIA".equals(i.toString()))
+							for(Filter f:i.getFilters())
+								if("171".equals(f.toString()))
+								{
+									lastStart = f.getEnd().minusDays(3);
+									lastEnd = f.getEnd();
+									Layers.addLayer(new KakaduLayer(f.sourceId, lastStart, lastEnd, 1*60*60, f.getNickname()));
+									return;
+								}
+		}
+		catch(NullPointerException _npe)
+		{
+			Telemetry.trackException(_npe);
 		}
 	}
 

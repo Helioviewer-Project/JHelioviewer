@@ -1,12 +1,16 @@
 package org.helioviewer.jhv.base.downloadmanager;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.zip.GZIPInputStream;
 
 import javax.annotation.Nullable;
+
+import org.apache.http.client.entity.DeflateInputStream;
 
 import com.google.common.io.ByteSource;
 import com.google.common.io.FileBackedOutputStream;
@@ -38,14 +42,28 @@ public class HTTPRequest extends AbstractDownloadRequest
 		{
 			httpURLConnection.setReadTimeout(TIMEOUT);
 			httpURLConnection.setRequestMethod("GET");
-			//TODO: accept-encoding: GZIP && GZIPInputStream
+			httpURLConnection.setRequestProperty("Accept-Encoding", "gzip, deflate");
 			httpURLConnection.connect();
 			int response = httpURLConnection.getResponseCode();
 			totalLength = httpURLConnection.getContentLength();
 			if (response != HttpURLConnection.HTTP_OK)
 				throw new IOException("Response code "+response);
 			
-			try(InputStream inputStream = httpURLConnection.getInputStream())
+			InputStream is=new BufferedInputStream(httpURLConnection.getInputStream(),65536);
+			if(httpURLConnection.getContentEncoding()!=null)
+				switch(httpURLConnection.getContentEncoding().toLowerCase())
+				{
+					case "gzip":
+						is=new GZIPInputStream(is,8192);
+						break;
+					case "deflate":
+						is=new DeflateInputStream(is);
+						break;
+					default:
+						throw new IOException("Unknown encoding: "+httpURLConnection.getContentEncoding());
+				}
+			
+			try(InputStream inputStream = is)
 			{
 				try(FileBackedOutputStream byteArrayOutputStream = new FileBackedOutputStream(1024*1024*4,true))
 				{

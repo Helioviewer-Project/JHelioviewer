@@ -1,10 +1,8 @@
 package org.helioviewer.jhv.viewmodel.jp2view.io.jpip;
 
 import java.io.IOException;
-import java.util.LinkedList;
-
+import java.util.ArrayList;
 import javax.annotation.Nullable;
-
 import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPResponse;
 
 /**
@@ -13,12 +11,11 @@ import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPResponse;
  */
 public class JPIPResponse extends HTTPResponse
 {
-
-	/** The status... could be EOR_WINDOW_DONE or EOR_IMAGE_DONE */
-	private long status;
+	/** The status... can be EOR_WINDOW_DONE or EOR_IMAGE_DONE */
+	private long statusI;
 
 	/** A list of the data segments. */
-	private LinkedList<JPIPDataSegment> jpipDataList;
+	private ArrayList<JPIPDataSegment> jpipDataList;
 
 	/**
 	 * Used to form responses.
@@ -29,59 +26,38 @@ public class JPIPResponse extends HTTPResponse
 	@SuppressWarnings("null")
 	public JPIPResponse(HTTPResponse res) throws IOException
 	{
-		super(res.getCode(), res.getReason());
+		super(res.status, res.reason);
 
 		for (String key : res.getHeaders())
 			setHeader(key, res.getHeader(key));
 		
-		status = -1;
-		jpipDataList = new LinkedList<>();
+		statusI = -1;
+		jpipDataList = new ArrayList<>();
 	}
 
-	/**
-	 * Adds the data segment to this object.
-	 * 
-	 * @param data
-	 */
 	public void addJpipDataSegment(JPIPDataSegment data)
 	{
 		if (data.isEOR)
-		{
-			status = data.binID;
-		}
+			statusI = data.binID;
+		
 		jpipDataList.add(data);
 	}
 
-	/**
-	 * Removes a data segment from this object.
-	 * 
-	 * @return The removed data segment, null if the list was empty
-	 */
 	public @Nullable JPIPDataSegment removeJpipDataSegment()
 	{
-		return (jpipDataList.isEmpty() ? null : jpipDataList.remove());
+		return (jpipDataList.isEmpty() ? null : jpipDataList.remove(0));
 	}
 
-	/**
-	 * Determines the response size.
-	 * 
-	 * @return Response size
-	 */
 	public long getResponseSize()
 	{
 		long size = 0;
-		for (JPIPDataSegment aJpipDataList : jpipDataList) size += aJpipDataList.length;
+		for (JPIPDataSegment aJpipDataList : jpipDataList)
+			size += aJpipDataList.length;
 		return size;
 	}
 
-	/**
-	 * Tells if the response completes the last request.
-	 * 
-	 * @return True, if the response is complete
-	 */
 	public boolean isResponseComplete()
 	{
-		return (status == JPIPConstants.EOR_WINDOW_DONE || status == JPIPConstants.EOR_IMAGE_DONE);
+		return statusI == JPIPConstants.EOR_WINDOW_DONE || statusI == JPIPConstants.EOR_IMAGE_DONE;
 	}
-
 }

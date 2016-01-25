@@ -14,8 +14,6 @@ import org.helioviewer.jhv.base.downloadmanager.AbstractDownloadRequest;
 import org.helioviewer.jhv.base.downloadmanager.DownloadManager;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
-import org.helioviewer.jhv.layers.Layers;
-import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -55,21 +53,6 @@ public class Observatories
 							public void run()
 							{
 								addObservatories(json);
-								
-								if (Settings.getBoolean(Settings.BooleanKey.STARTUP_LOADMOVIE))
-								{
-									try
-									{
-										Filter instrument = observatories.get("SDO").filters.get("AIA").filters.get("171");
-										LocalDateTime start = instrument.end.minusWeeks(1);
-										Layers.addLayer(new KakaduLayer(instrument.sourceId, start, instrument.end, 1*60*60, instrument.getNickname()));
-									}
-									catch(NullPointerException _npe)
-									{
-										Telemetry.trackException(_npe);
-									}
-								}
-								
 								for(Runnable ul:updateListeners)
 									ul.run();
 							}

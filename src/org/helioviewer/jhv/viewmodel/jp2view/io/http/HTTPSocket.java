@@ -101,7 +101,6 @@ public class HTTPSocket extends Socket
 
 		if (parts[0].startsWith("HTTP/"))
 		{
-
 			// Parses HTTP version
 			try
 			{

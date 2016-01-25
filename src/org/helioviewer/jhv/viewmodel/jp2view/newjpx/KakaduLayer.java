@@ -48,7 +48,7 @@ import com.jogamp.opengl.GLContext;
 
 public class KakaduLayer extends ImageLayer
 {
-	public static final int MAX_FRAME_DOWNLOAD_BATCH = 24;
+	public static final int MAX_FRAME_DOWNLOAD_BATCH = 8;
 	
 	@Nullable private volatile Thread loaderThread;
 	private boolean localFile = false;
@@ -354,10 +354,10 @@ public class KakaduLayer extends ImageLayer
 									{
 										//FIXME: lq previews are not rendered correctly
 										
-										//download.lq = new JPIPRequest(jsonObject.getString("uri"), DownloadPriority.MEDIUM, 0, frames.length(), new Rectangle(256, 256));
-										download.lq = new JPIPRequest(jsonObject.getString("uri"), DownloadPriority.MEDIUM, 0, frames.length(), new Rectangle(64, 64));
+										download.lq = new JPIPRequest(jsonObject.getString("uri"), DownloadPriority.MEDIUM, 0, frames.length(), new Rectangle(256, 256));
+										//download.lq = new JPIPRequest(jsonObject.getString("uri"), DownloadPriority.MEDIUM, 0, frames.length(), new Rectangle(64, 64));
 										DownloadManager.addRequest(download.lq);
-										//DownloadManager.addRequest(download.hq);
+										DownloadManager.addRequest(download.hq);
 										
 										download.metadata=null;
 										downloads.addLast(download);

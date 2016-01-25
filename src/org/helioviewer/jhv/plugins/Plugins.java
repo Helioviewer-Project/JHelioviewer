@@ -253,7 +253,7 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 
 	public void storeConfiguration(JSONObject jsonPlugins)
 	{
-		//FIXME: save layer visibility state, expanded/collapsed panel state, ...
+		//TODO: save layer visibility state, expanded/collapsed panel state, ...
 		
 		for (Plugin plugin : plugins)
 			plugin.storeConfiguration(jsonPlugins);

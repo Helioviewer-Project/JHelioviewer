@@ -6,15 +6,14 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.zip.GZIPInputStream;
 
 import javax.annotation.Nullable;
 
+import org.apache.http.client.entity.DeflateInputStream;
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.viewmodel.jp2view.io.ChunkedInputStream;
 import org.helioviewer.jhv.viewmodel.jp2view.io.FixedSizedInputStream;
-import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPHeaderKey;
-import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPRequest;
-import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPRequest.Method;
 import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPResponse;
 import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPSocket;
 
@@ -64,13 +63,13 @@ public class JPIPSocket extends HTTPSocket
 
 		jpipPath = _uri.getPath();
 
-		JPIPRequest req = new JPIPRequest(HTTPRequest.Method.GET);
 
 		JPIPQuery query = new JPIPQuery();
 		query.setField(JPIPRequestField.CNEW.toString(), "http");
 		query.setField(JPIPRequestField.TYPE.toString(), "jpp-stream");
 		query.setField(JPIPRequestField.TID.toString(), "0");
-		req.setQuery(query.toString());
+		
+		JPIPRequest req = new JPIPRequest(query.toString());
 
 		JPIPResponse res = null;
 
@@ -123,13 +122,11 @@ public class JPIPSocket extends HTTPSocket
 		{
 			if (jpipChannelID != null)
 			{
-				JPIPRequest req = new JPIPRequest(HTTPRequest.Method.GET);
-
 				JPIPQuery query = new JPIPQuery();
 				query.setField(JPIPRequestField.CCLOSE.toString(), jpipChannelID);
 				query.setField(JPIPRequestField.LEN.toString(), "0");
-				req.setQuery(query.toString());
-
+				
+				JPIPRequest req = new JPIPRequest(query.toString());
 				send(req);
 			}
 
@@ -152,41 +149,39 @@ public class JPIPSocket extends HTTPSocket
 	 */
 	public void send(JPIPRequest _req) throws IOException
 	{
-		String queryStr = _req.getQuery();
+		String queryStr = _req.query;
 
-		if(queryStr==null)
-			throw new NullPointerException();
-		
 		// Adds some default headers if they were not already added.
-		if (!_req.headerExists(HTTPHeaderKey.CACHE_CONTROL.toString()))
-			_req.setHeader(HTTPHeaderKey.CACHE_CONTROL.toString(), "no-cache");
-		if (!_req.headerExists(HTTPHeaderKey.HOST.toString()))
-			_req.setHeader(HTTPHeaderKey.HOST.toString(), (getHost() + ":" + getPort()));
+		if (!_req.headerExists("Cache-Control"))
+			_req.setHeader("Cache-Control", "no-cache");
+		if (!_req.headerExists("Accept-Encoding"))
+			_req.setHeader("Accept-Encoding", "gzip, deflate");
+		if (!_req.headerExists("Host"))
+			_req.setHeader("Host", getHost() + ":" + getPort());
 		// Adds a necessary JPIP request field
 		if ((!queryStr.contains("cid=")) && (!queryStr.contains("cclose")) && jpipChannelID != null)
 			queryStr += "&cid=" + jpipChannelID;
 
-		if (_req.getMethod() == Method.GET)
+		//if (_req.method == Method.GET)
 		{
-			if (!_req.headerExists(HTTPHeaderKey.CONNECTION.toString()))
-				_req.setHeader(HTTPHeaderKey.CONNECTION.toString(), "Keep-Alive");
+			if (!_req.headerExists("Connection"))
+				_req.setHeader("Connection", "Keep-Alive");
 		}
-		else if (_req.getMethod() == Method.POST)
+		
+		//WAS NEVER SUPPORTED AND NEVER USED (therefore never tested)
+		/*else if (_req.method == Method.POST)
 		{
-			if (!_req.headerExists(HTTPHeaderKey.CONTENT_TYPE.toString()))
-				_req.setHeader(HTTPHeaderKey.CONTENT_TYPE.toString(), "application/x-www-form-urlencoded");
-			if (!_req.headerExists(HTTPHeaderKey.CONTENT_LENGTH.toString()))
-				_req.setHeader(HTTPHeaderKey.CONTENT_LENGTH.toString(),
-						String.valueOf(queryStr.getBytes(StandardCharsets.UTF_8).length));
-		}
+			if (!_req.headerExists("Content-Type"))
+				_req.setHeader("Content-Type", "application/x-www-form-urlencoded");
+			if (!_req.headerExists("Content-Length"))
+				_req.setHeader("Content-Length", String.valueOf(queryStr.getBytes(StandardCharsets.UTF_8).length));
+		}*/
 
 		StringBuilder str = new StringBuilder();
 
 		// Adds the URI line.
-		str.append(_req.getMethod()).append(" ");
-		str.append(jpipPath);
-		if (_req.getMethod() == Method.GET)
-			str.append("?").append(queryStr);
+		str.append("GET ");
+		str.append(jpipPath+"?"+queryStr);
 		str.append(" ");
 		str.append(versionText).append(CRLF);
 
@@ -195,10 +190,14 @@ public class JPIPSocket extends HTTPSocket
 			str.append(key).append(": ").append(_req.getHeader(key)).append(CRLF);
 		str.append(CRLF);
 
+		
+		//WAS NEVER USED, NEVER TESTED
+		/*
 		// Adds the message body if necessary.
-		if (_req.getMethod() == HTTPRequest.Method.POST)
+		if (_req.method == HTTPRequest.Method.POST)
 			str.append(queryStr);
-
+		*/
+		
 		if (!isConnected())
 			reconnect();
 
@@ -225,12 +224,27 @@ public class JPIPSocket extends HTTPSocket
 			return null;
 
 		JPIPResponse res = new JPIPResponse(httpRes);
-		InputStream input;
+		InputStream input = new BufferedInputStream(getInputStream(),65536);
+		
+		String contentEncoding = res.getHeader("Content-Encoding");
+		System.out.println("Content encoding JPIP: "+contentEncoding);
+		if(contentEncoding!=null)
+			switch(contentEncoding.toLowerCase())
+			{
+				case "gzip":
+					input=new GZIPInputStream(input,8192);
+					break;
+				case "deflate":
+					input=new DeflateInputStream(input);
+					break;
+				default:
+					throw new IOException("Unknown encoding: "+contentEncoding);
+			}
 
-		if (res.getCode() != 200)
+		if (res.status != 200)
 		{
 			byte[] buf = new byte[8192];
-			try (InputStream is = getInputStream())
+			try (InputStream is = input)
 			{
 				int off = 0;
 				for (;;)
@@ -246,9 +260,10 @@ public class JPIPSocket extends HTTPSocket
 				Telemetry.trackException(_e);
 			}
 
-			throw new IOException("Invalid status code returned (" + res.getCode() + ") " + res.getReason() + "\n"
+			throw new IOException("Invalid status code returned (" + res.status + ") " + res.reason + "\n"
 					+ new String(buf, StandardCharsets.UTF_8).trim());
 		}
+		
 		if (res.getHeader("Content-Type") != null && !"image/jpp-stream".equals(res.getHeader("Content-Type")))
 			throw new IOException("Expected image/jpp-stream content!\n" + getResponseHeadersAsString(res));
 
@@ -261,7 +276,7 @@ public class JPIPSocket extends HTTPSocket
 				try
 				{
 					int contentLength = Integer.parseInt(contentLengthString);
-					input = new FixedSizedInputStream(new BufferedInputStream(getInputStream(), 65536), contentLength);
+					input = new FixedSizedInputStream(input, contentLength);
 				}
 				catch (NumberFormatException _nfe)
 				{
@@ -270,7 +285,7 @@ public class JPIPSocket extends HTTPSocket
 				}
 				break;
 			case "chunked":
-				input = new ChunkedInputStream(new BufferedInputStream(getInputStream(), 65536));
+				input = new ChunkedInputStream(input);
 				break;
 			default:
 				throw new IOException(
@@ -282,7 +297,6 @@ public class JPIPSocket extends HTTPSocket
 		JPIPDataInputStream jpip = new JPIPDataInputStream(input);
 
 		JPIPDataSegment seg;
-
 		while ((seg = jpip.readSegment()) != null)
 			res.addJpipDataSegment(seg);
 
