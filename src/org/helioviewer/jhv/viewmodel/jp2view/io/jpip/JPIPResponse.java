@@ -2,7 +2,9 @@ package org.helioviewer.jhv.viewmodel.jp2view.io.jpip;
 
 import java.io.IOException;
 import java.util.ArrayList;
+
 import javax.annotation.Nullable;
+
 import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPResponse;
 
 /**

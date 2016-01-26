@@ -59,14 +59,18 @@ public class Globals
 		try
 		{
 			Class.forName("com.sun.javafx.runtime.VersionInfo");
-			SwingUtilities.invokeAndWait(new Runnable()
-			{
-				@Override
-				public void run()
+			
+			if(SwingUtilities.isEventDispatchThread())
+				new JFXPanel();
+			else
+				SwingUtilities.invokeAndWait(new Runnable()
 				{
-					new JFXPanel();
-				}
-			});
+					@Override
+					public void run()
+					{
+						new JFXPanel();
+					}
+				});
 		}
 		catch (ClassNotFoundException | InvocationTargetException | InterruptedException e)
 		{

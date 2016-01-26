@@ -43,16 +43,6 @@ import kdu_jni.Kdu_region_decompressor;
 
 public class Movie
 {
-	/*private final int INITIAL_BUFFER_LENGTH = 262144;
-	private ThreadLocal<int[]> tlsBuffer=ThreadLocal.withInitial(new Supplier<int[]>()
-	{
-		@Override
-		public int[] get()
-		{
-			return new int[INITIAL_BUFFER_LENGTH];
-		}
-	});*/
-
 	//TODO: LEAKING private final ArrayList<Jpx_input_box> openJpx_input_box = new ArrayList<Jpx_input_box>(1);
 	private ThreadLocal<Jpx_input_box> tlsJpx_input_box=new ThreadLocal<>();
 	
@@ -97,6 +87,7 @@ public class Movie
 		        
 				Kdu_codestream codestream = new Kdu_codestream();
 				codestream.Create(inputBox);
+				codestream.Set_persistent();
 				codestream.Enable_restart();
 				
 				inputBox.Close();
@@ -324,6 +315,12 @@ public class Movie
 	
 	public Movie(int _sourceId, Kdu_cache _kduCache)
 	{
+		//FIXME: Note carefully that the object must not be passed into kdu_codestream::create at least until
+		//the main header data-bin has been completed. This may be verified by calling get_databin_length, with
+		//a data-bin class of KDU_MAIN_HEADER_DATABIN. Before passing the object to kdu_codestream::create you must
+		//all set_read_scope, passing in these same data-bin class and in-class identifiers ( KDU_MAIN_HEADER_DATABIN
+		//and 0, respectively). 
+		
 		sourceId = _sourceId;
 		quality = Quality.PREVIEW;
 		family_src = new Jp2_threadsafe_family_src();

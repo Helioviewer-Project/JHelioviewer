@@ -35,6 +35,7 @@ public class HTTPRequest extends AbstractDownloadRequest
 	
 	private volatile HttpURLConnection httpURLConnection;
 	
+	@SuppressWarnings("resource")
 	public void execute() throws Throwable
 	{
 		httpURLConnection = (HttpURLConnection) new URL(url).openConnection();

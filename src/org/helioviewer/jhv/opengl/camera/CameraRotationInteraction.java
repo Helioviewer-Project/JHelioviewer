@@ -45,7 +45,7 @@ public class CameraRotationInteraction extends CameraInteraction
 		}
 		Quaternion newRotation = mainPanel.getRotationCurrent().rotate(rotation);
 		
-		camera.stopAllAnimations();
+		camera.abortAllAnimations();
 		camera.setRotationCurrent(newRotation);
 		camera.setRotationEnd(newRotation);
 		startPoint = endPoint;

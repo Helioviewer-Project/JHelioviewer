@@ -19,5 +19,5 @@ public interface Camera
 	void addCameraAnimation(CameraAnimation cameraAnimation);
 	double getAspect();
 	void repaint();
-	void stopAllAnimations();
+	void abortAllAnimations();
 }

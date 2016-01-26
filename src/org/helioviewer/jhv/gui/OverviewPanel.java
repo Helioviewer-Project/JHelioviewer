@@ -87,16 +87,16 @@ public class OverviewPanel extends MainPanel
 	}
 	
 	@Override
-	protected void timeStampChanged()
+	protected void repaintInternal()
 	{
 		//rendering will be called by the mainpanel
 	}
 	
 	@Override
-	protected void render(GL2 gl, boolean _showLoadingAnimation)
+	protected void render(GL2 gl, boolean _showLoadingAnimation, Dimension _sizeForDecoder)
 	{
 		rotationNow = MainFrame.SINGLETON.MAIN_PANEL.getRotationCurrent();
-		super.render(gl, false);
+		super.render(gl, false, _sizeForDecoder);
 		
 		if (Layers.getActiveImageLayer() != null)
 		{

@@ -216,7 +216,7 @@ public class JPIPSocket extends HTTPSocket
 	}
 
 	/** Receives a JPIPResponse returning null if EOS reached */
-	@SuppressWarnings("null")
+	@SuppressWarnings({ "null", "resource" })
 	public @Nullable JPIPResponse receive() throws IOException
 	{
 		HTTPResponse httpRes = (HTTPResponse) super.receive();

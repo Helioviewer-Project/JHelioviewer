@@ -76,15 +76,18 @@ public class Matrix4d
 	public Vector3d multiply(Vector3d _v)
 	{
 		double W = m[3] * _v.x + m[7] * _v.y + m[11] * _v.z + m[15];
-		return new Vector3d((m[0] * _v.x + m[4] * _v.y + m[8] * _v.z + m[12]) / W,
+		return new Vector3d(
+				(m[0] * _v.x + m[4] * _v.y + m[8] * _v.z + m[12]) / W,
 				(m[1] * _v.x + m[5] * _v.y + m[9] * _v.z + m[13]) / W,
 				(m[2] * _v.x + m[6] * _v.y + m[10] * _v.z + m[14]) / W);
 	}
 
 	public Vector4d multiply(Vector4d v)
 	{
-		return new Vector4d(m[0] * v.x + m[4] * v.y + m[8] * v.z + m[12] * v.w,
-				m[1] * v.x + m[5] * v.y + m[9] * v.z + m[13] * v.w, m[2] * v.x + m[6] * v.y + m[10] * v.z + m[14] * v.w,
+		return new Vector4d(
+				m[0] * v.x + m[4] * v.y + m[8] * v.z + m[12] * v.w,
+				m[1] * v.x + m[5] * v.y + m[9] * v.z + m[13] * v.w,
+				m[2] * v.x + m[6] * v.y + m[10] * v.z + m[14] * v.w,
 				m[3] * v.x + m[7] * v.y + m[11] * v.z + m[15] * v.w);
 	}
 
@@ -324,9 +327,8 @@ public class Matrix4d
 	public float[] toFloatArray()
 	{
 		float[] v = new float[16];
-		for (int i = 0; i < m.length; i++)
-			v[i] = (float) m[i];
-
+		for(int i=0;i<m.length;i++)
+			v[i]=(float)m[i];
 		return v;
 	}
 }

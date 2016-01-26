@@ -79,7 +79,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 {
 	public static final double MAX_DISTANCE = Constants.SUN_MEAN_DISTANCE_TO_EARTH * 1.8;
 	public static final double MIN_DISTANCE = Constants.SUN_RADIUS * 1.2;
-	public static final double DEFAULT_CAMERA_DISTANCE = 22 * Constants.SUN_RADIUS;
+	public static final double DEFAULT_DISTANCE = 22 * Constants.SUN_RADIUS;
 
 	public static final double CLIP_NEAR = Constants.SUN_RADIUS / 10;
 	public static final double CLIP_FAR = Constants.SUN_RADIUS * 1000;
@@ -109,10 +109,8 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 	private int[] renderBufferDepth;
 	private int[] renderBufferColor;
 
-	protected Dimension sizeForDecoder;
-
-	private static final int DEFAULT_TILE_WIDTH = 2048;
-	private static final int DEFAULT_TILE_HEIGHT = 2048;
+	private static final int TILE_WIDTH = 2048;
+	private static final int TILE_HEIGHT = 2048;
 
 	public MainPanel(GLContext _context)
 	{
@@ -149,7 +147,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			@Override
 			public void timeStampChanged(LocalDateTime current, LocalDateTime last)
 			{
-				MainPanel.this.timeStampChanged();
+				MainPanel.this.repaintInternal();
 			}
 			
 			@Override
@@ -160,6 +158,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			@Override
 			public void isPlayingChanged(boolean _isPlaying)
 			{
+				MainPanel.this.repaintInternal();
 			}
 		});
 		addMouseListener(new MouseAdapter()
@@ -233,7 +232,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		});
 
 		rotationNow = rotationEnd = Quaternion.createRotation(0.0, new Vector3d(0, 1, 0));
-		translationNow = translationEnd = new Vector3d(0, 0, DEFAULT_CAMERA_DISTANCE);
+		translationNow = translationEnd = new Vector3d(0, 0, DEFAULT_DISTANCE);
 
 		cameraInteractions = new CameraInteraction[2];
 		cameraInteractions[0] = new CameraZoomInteraction(this, this);
@@ -242,7 +241,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		visibleAreaOutline = new Vector3d[40];
 	}
 	
-	protected void timeStampChanged()
+	protected void repaintInternal()
 	{
 		display();
 	}
@@ -316,7 +315,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		cameraInteractions[1] = new CameraZoomBoxInteraction(this, this);
 	}
 	
-	protected void render(GL2 gl, boolean _showLoadingAnimation)
+	protected void render(GL2 gl, boolean _showLoadingAnimation, Dimension sizeForDecoder)
 	{
 		LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
 		gl.glClearDepth(1);
@@ -333,6 +332,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			for (CameraAnimation ca : cameraAnimations)
 				ca.animate(this);
 
+			//TODO: downgrade quality to HURRY temporarily
 			// render another new frame right after this one
 			repaint();
 		}
@@ -461,21 +461,6 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		gl.glScaled(aspect > 1 ? 1 / aspect : 1, aspect < 1 ? aspect : 1, 1);
 		gl.glMatrixMode(GL2.GL_MODELVIEW);			
 		
-		/*if (DownloadManager.areDownloadsActive() && _showLoadingAnimation)
-		{
-			int xOffset = (int) (getSurfaceWidth() * 0.85);
-			int width = (int) (getSurfaceWidth() * 0.15);
-			int yOffset = (int) (getSurfaceHeight() * 0.85);
-			int height = (int) (getSurfaceHeight() * 0.15);
-			
-			gl.glViewport(xOffset, yOffset, width, height);
-			LoadingScreen.render(gl);
-			gl.glViewport(0, 0, getSurfaceWidth(), getSurfaceHeight());
-			repaint(1000);
-			
-			DownloadManager.debug();
-		}*/
-		
 		//DownloadManager.debug();
 
 		boolean noImageScreen = _showLoadingAnimation;
@@ -505,11 +490,75 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			gl.glMatrixMode(GL2.GL_PROJECTION);
 			gl.glPopMatrix();
 		}
+		
+		
+		
+		
+		
+		
+		if (!Globals.isReleaseVersion())
+		{
+			gl.glEnable(GL2.GL_TEXTURE_2D);
+			gl.glActiveTexture(GL2.GL_TEXTURE0);
+			gl.glDisable(GL2.GL_BLEND);
+			gl.glDisable(GL2.GL_TEXTURE_2D);
+			gl.glEnable(GL2.GL_FRAGMENT_PROGRAM_ARB);
+			gl.glEnable(GL2.GL_VERTEX_PROGRAM_ARB);
+			gl.glUseProgram(0);
+			gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
+			gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
+
+			gl.glEnable(GL2.GL_BLEND);
+			gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
+			gl.glEnable(GL2.GL_TEXTURE_2D);
+			gl.glColor4d(1, 1, 1, 1);
+			gl.glEnable(GL2.GL_DEPTH_TEST);
+
+			if(tmp[0]==0)
+			gl.glGenTextures(1, tmp, 0);
+			gl.glBindTexture(GL2.GL_TEXTURE_2D, tmp[0]);
+			gl.glCopyTexImage2D(GL2.GL_TEXTURE_2D, 0, GL2.GL_DEPTH_COMPONENT24, 0, 0, this.getSurfaceWidth(),
+					this.getSurfaceHeight(), 0);
+
+			gl.glDisable(GL2.GL_DEPTH_TEST);
+			gl.glDisable(GL2.GL_BLEND);
+			gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_LINEAR);
+			gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_LINEAR);
+
+			gl.glDepthMask(true);
+
+			gl.glDisable(GL2.GL_BLEND);
+
+			gl.glMatrixMode(GL2.GL_PROJECTION);
+			gl.glLoadIdentity();
+			gl.glPushMatrix();
+			gl.glOrtho(0, 1, 0, 1, 10, -10);
+			gl.glViewport(0, 0, (int) (this.getSurfaceWidth() * 0.3), (int) (this.getSurfaceHeight() * 0.3));
+			gl.glMatrixMode(GL2.GL_MODELVIEW);
+			gl.glLoadIdentity();
+			gl.glBegin(GL2.GL_QUADS);
+			gl.glTexCoord2f(0, 0);
+			gl.glVertex2d(0, 1);
+			gl.glTexCoord2f(1, 0);
+			gl.glVertex2d(1, 1);
+			gl.glTexCoord2f(1, 1);
+			gl.glVertex2d(1, 0);
+			gl.glTexCoord2f(0, 1);
+			gl.glVertex2d(0, 0);
+			gl.glEnd();
+			gl.glBindTexture(GL2.GL_TEXTURE_2D, 0);
+			gl.glDisable(GL2.GL_TEXTURE_2D);
+			gl.glMatrixMode(GL2.GL_PROJECTION);
+			gl.glPopMatrix();
+			gl.glMatrixMode(GL2.GL_MODELVIEW);
+		}
 
 		// force immediate repaints of dependent regions
 		for (MainPanel componentView : synchronizedViews)
 			componentView.display();
 	}
+	
+	int tmp[] = new int[1];
 
 	@Override
 	public void display(@Nullable GLAutoDrawable _drawable)
@@ -517,7 +566,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		if(_drawable==null)
 			return;
 		
-		sizeForDecoder = getCanavasSize();
+		Dimension sizeForDecoder = getCanavasSize();
 
 		switch(TimeLine.SINGLETON.shouldHurry())
 		{
@@ -544,30 +593,13 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			gl.glScaled(1/aspect, 1, 1);
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		gl.glLoadIdentity();
-		render(gl, true);
+		render(gl, true, sizeForDecoder);
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glLoadIdentity();
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
-
-		/*
-		 * gl.glDisable(GL2.GL_BLEND); gl.glDisable(GL2.GL_TEXTURE_2D);
-		 * gl.glUseProgram(0); gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
-		 * gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
-		 * gl.glDisable(GL2.GL_DEPTH_TEST);
-		 * 
-		 * 
-		 * gl.glEnable(GL2.GL_TEXTURE_2D); gl.glActiveTexture(GL.GL_TEXTURE0);
-		 * gl.glDisable(GL2.GL_BLEND); gl.glDisable(GL2.GL_TEXTURE_2D);
-		 * gl.glEnable(GL2.GL_FRAGMENT_PROGRAM_ARB);
-		 * gl.glEnable(GL2.GL_VERTEX_PROGRAM_ARB); gl.glUseProgram(0);
-		 * gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
-		 * gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
-		 * 
-		 * gl.glEnable(GL2.GL_BLEND); gl.glBlendFunc(GL2.GL_SRC_ALPHA,
-		 * GL2.GL_ONE);
-		 */
 	}
 
+	@SuppressWarnings("null")
 	protected void updateTrackRotation()
 	{
 		if (lastDate == null)
@@ -692,8 +724,8 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 				}
 		}
 
-		int tileWidth = imageWidth < DEFAULT_TILE_WIDTH ? imageWidth : DEFAULT_TILE_WIDTH;
-		int tileHeight = imageHeight < DEFAULT_TILE_HEIGHT ? imageHeight : DEFAULT_TILE_HEIGHT;
+		int tileWidth = imageWidth < TILE_WIDTH ? imageWidth : TILE_WIDTH;
+		int tileHeight = imageHeight < TILE_HEIGHT ? imageHeight : TILE_HEIGHT;
 		repaint();
 		double xTiles = imageWidth / (double) tileWidth;
 		double yTiles = imageHeight / (double) tileHeight;
@@ -737,7 +769,6 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		textRenderer.setColor(1f, 1f, 1f, 1f);
 
 		offscreenGL.glViewport(0, 0, tileWidth, tileHeight);
-		sizeForDecoder = new Dimension(tileWidth, tileHeight);
 
 		offscreenGL.glMatrixMode(GL2.GL_PROJECTION);
 		offscreenGL.glLoadIdentity();
@@ -760,7 +791,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 				// double factor =
 				int destX = tileWidth * x;
 				int destY = tileHeight * y;
-				render(offscreenGL, false);
+				render(offscreenGL, false, new Dimension(tileWidth, tileHeight));
 
 				if (descriptions != null && x == 0 && y == 0)
 				{
@@ -881,7 +912,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		cameraListeners.add(_listener);
 	}
 
-	public void stopAllAnimations()
+	public void abortAllAnimations()
 	{
 		cameraAnimations.clear();
 		setTranslationEnd(getTranslationCurrent());

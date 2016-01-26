@@ -17,7 +17,6 @@ import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
 
 import javax.annotation.Nullable;
-import javax.sound.midi.Instrument;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -87,6 +86,7 @@ public class AddLayerDialog extends JDialog
 		}
 	}
 	
+	@SuppressWarnings("null")
 	public static void addDefaultStartupLayer()
 	{
 		try

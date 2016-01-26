@@ -18,8 +18,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 
-import org.helioviewer.jhv.base.Settings;
-import org.helioviewer.jhv.base.Settings.BooleanKey;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 import org.helioviewer.jhv.gui.components.MenuBar;
@@ -29,7 +27,6 @@ import org.helioviewer.jhv.gui.statusLabels.CurrentTimeLabel;
 import org.helioviewer.jhv.gui.statusLabels.FramerateStatusPanel;
 import org.helioviewer.jhv.gui.statusLabels.PositionStatusPanel;
 import org.helioviewer.jhv.gui.statusLabels.ZoomStatusPanel;
-import org.helioviewer.jhv.opengl.camera.CameraMode;
 
 import com.jogamp.opengl.GLContext;
 

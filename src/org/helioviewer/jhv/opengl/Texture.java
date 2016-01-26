@@ -158,8 +158,8 @@ public class Texture
 		dateTime = _dateTime;
 		imageRegion = _imageRegion;
 		
-		int width2 = MathUtils.nextPowerOfTwo(_imageRegion.texels.width);
-		int height2 = MathUtils.nextPowerOfTwo(_imageRegion.texels.height);
+		int width2 = Math.max(8, MathUtils.nextPowerOfTwo(_imageRegion.texels.width));
+		int height2 = Math.max(8, MathUtils.nextPowerOfTwo(_imageRegion.texels.height));
 		
 		if (width < width2 || height < height2 || internalFormat!=GL.GL_LUMINANCE8)
 			allocateTexture(width2, height2, GL.GL_LUMINANCE8);
@@ -291,6 +291,7 @@ public class Texture
         gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_GENERATE_MIPMAP, GL2.GL_FALSE);
     }
 
+	@SuppressWarnings("null")
 	public void prepareUploadBuffer(int _width, int _height)
 	{
 		if(uploadBuffer==null || uploadBuffer.limit()<_width*_height)

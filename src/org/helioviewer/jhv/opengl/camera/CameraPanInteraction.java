@@ -52,7 +52,7 @@ public class CameraPanInteraction extends CameraInteraction
 			double yTranslation = (lastPosition.getY() - e.getY()) * meterPerPixelHeight;
 			Vector3d translation = camera.getTranslationCurrent();
 			lastPosition = e.getPoint();
-			camera.stopAllAnimations();
+			camera.abortAllAnimations();
 			camera.setTranslationCurrent(new Vector3d(translation.x + xTranslation*scale, translation.y + yTranslation*scale, translation.z));
 			camera.setTranslationEnd(new Vector3d(translation.x + xTranslation*scale, translation.y + yTranslation*scale, translation.z));
 		}
@@ -68,7 +68,7 @@ public class CameraPanInteraction extends CameraInteraction
 			double xTranslation = (lastPosition.getX() - mainPanel.getWidth() / 2) * meterPerPixelWidth;
 			double yTranslation = (lastPosition.getY() - mainPanel.getHeight() / 2) * meterPerPixelHeight;
 			Vector3d translation = mainPanel.getTranslationCurrent();
-			camera.stopAllAnimations();
+			camera.abortAllAnimations();
 			camera.setTranslationCurrent(new Vector3d(translation.x - xTranslation*scale, translation.y - yTranslation*scale, camera.getTranslationCurrent().z));
 			camera.setTranslationEnd(new Vector3d(translation.x - xTranslation*scale, translation.y - yTranslation*scale, camera.getTranslationCurrent().z));
 		}

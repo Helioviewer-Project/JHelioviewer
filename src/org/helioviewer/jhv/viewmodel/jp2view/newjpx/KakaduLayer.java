@@ -22,9 +22,9 @@ import org.helioviewer.jhv.base.FutureValue;
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.Settings;
-import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.Settings.BooleanKey;
 import org.helioviewer.jhv.base.Settings.IntKey;
+import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.downloadmanager.DownloadManager;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
@@ -63,8 +63,9 @@ public class KakaduLayer extends ImageLayer
 		sourceId = _sourceId;
 		start = _start;
 		end = _end;
-		cadence = _cadence;
 		name = _name;
+		
+		cadence = _cadence;
 		
 		setTimeRange(start, end, cadence);
 	}
@@ -91,6 +92,8 @@ public class KakaduLayer extends ImageLayer
 		name = movie.getAnyMetaData().displayName;
 		
 		cadence = (int) (ChronoUnit.SECONDS.between(start, end) / movie.getFrameCount());
+		if(cadence==0)
+			cadence=1;
 		
 		MovieCache.add(movie);
 	}
@@ -510,6 +513,7 @@ public class KakaduLayer extends ImageLayer
 		return findClosestLocalDateTime(TimeLine.SINGLETON.getCurrentDateTime());
 	}
 
+	@SuppressWarnings("null")
 	public @Nullable LocalDateTime findClosestLocalDateTime(LocalDateTime _currentDateTime)
 	{
 		Match match = MovieCache.findBestFrame(sourceId, _currentDateTime);

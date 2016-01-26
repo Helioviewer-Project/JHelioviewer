@@ -107,7 +107,6 @@ public class IconBank
 		SHOW_LESS("1uparrow1.png"),
 		SHOW_MORE("1downarrow1.png"),
 		INVERT("invert_128x128.png"),
-		LOADING_BIG("NEW_Loading_256x256.png"), LOADING_SMALL("Loading_219x50.png"),
 		LAYER_LOADING("layer_loading.png"),
 
 		// 3D Icons

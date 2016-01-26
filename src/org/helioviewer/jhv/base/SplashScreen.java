@@ -12,6 +12,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.RepaintManager;
 
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
@@ -91,6 +92,9 @@ public class SplashScreen extends JFrame
 			throw new RuntimeException("Too few steps declared (need >" + progressBar.getMaximum() + ")");
 
 		progressBar.setValue(progressBar.getValue() + 1);
+		
+		repaint();
+		RepaintManager.currentManager(this).paintDirtyRegions();
 	}
 
 	/**

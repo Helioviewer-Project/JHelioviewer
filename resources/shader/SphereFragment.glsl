@@ -1,12 +1,9 @@
 #version 120
 
-
 uniform sampler2D texture;
 uniform sampler2D lut;
 uniform mat4 modelView;
 uniform mat4 transformation;
-uniform mat4 layerTransformation;
-uniform mat4 layerInv;
 uniform vec2 physicalImageSize;
 uniform float opacity;
 uniform float sharpen;
@@ -20,7 +17,7 @@ uniform int blueChannel;
 uniform vec2 sunOffset;
 uniform vec4 imageOffset;
 uniform float opacityCorona;
-uniform float fov;
+uniform float tanFOV;
 uniform vec2 imageResolution;
 uniform int cameraMode;
 uniform float near;
@@ -38,14 +35,7 @@ struct Ray
     vec3 direction;
 };
 
-struct Plane
-{
-    vec3 normal;
-    float d;
-};
-
 Sphere sphere = Sphere(vec3(0,0,0),695700000);
-Plane plane = Plane((vec4(0,0,1,0) * layerTransformation).xyz, -0.);
 
 float intersectSphere(in Ray ray, in Sphere sphere)
 {
@@ -61,12 +51,6 @@ float intersectSphere(in Ray ray, in Sphere sphere)
     return (-b - sqrt(determinant)) * 0.5;
 }
 
-float intersectPlane(in Ray ray, in Plane plane)
-{
-    /*equation of a plane, y=0 = ro.y+t*rd.y*/
-    return -(plane.d + dot(ray.origin,plane.normal)) / dot(ray.direction,plane.normal);
-}
-
 const mat3 kernel = mat3(-0.1,-0.2,-0.1,-0.2,1.2,-0.2,-0.1,-0.2,-0.1);
 
 
@@ -79,6 +63,9 @@ const mat3 kernel = mat3(-0.1,-0.2,-0.1,-0.2,1.2,-0.2,-0.1,-0.2,-0.1);
   */
 float sharpenValue(vec2 texPos)
 {
+	if(sharpen == 0.)
+		return texture2D(texture,texPos).r;
+
     // grayscale value of filter
     float tmp = 0.0;
     float x = 1.0/imageResolution.x;
@@ -119,6 +106,8 @@ float sharpenValue(vec2 texPos)
 
 float contrastValue(float color)
 {
+	if(contrast == 0.)
+		return color;
     return min(clamp(0.5 + (color - 0.5) * (1 + contrast/10.0), 0.0, 1.0), sqrt(color) + color);
 }
 
@@ -139,79 +128,42 @@ void main(void)
 {
     vec2 uv = gl_TexCoord[0].xy;
     
-    /* calculate viewport */
-    float width;
-    float height;
-    
     /* MV --> z */
-    vec3 rayOrigin;
-    vec3 rayDirection;
-    
-    float zTranslation = (vec4(0,0,0,1) * transformation).z;
+    Ray ray;
+    float zTranslation = (transformation * vec4(0,0,0,1)).z;
     if (cameraMode == 0)
     {
 	    //2D
-        width = zTranslation * tan(fov);
-        vec2 tmpWidth = (-1.0 +2.0*uv) * width;
-        rayOrigin = (vec4(0,0,1,1) * transformation).xyz + vec3(tmpWidth, 0);
-        rayDirection = vec3( 0, 0, -1.0);
+        vec2 center = uv * zTranslation * tanFOV;
+        ray.origin = (transformation * vec4(0,0,1,1)).xyz + vec3(center, 0);
+        ray.direction = vec3(0, 0, -1.0);
     }
     else
     {
 	    //3D
-        width = tan(fov);
-        height = tan(fov);
-        rayOrigin = (vec4(0,0,1,1) * transformation).xyz;
-        rayDirection = normalize(vec3( (-1.0 +2.0*uv) *vec2(width, height), -1.0));
+        ray.origin = (transformation * vec4((transformation * vec4(0,0,0,1)).xyz,0)).xyz;
+        ray.direction = (transformation * normalize(vec4(uv * tanFOV, -1.0, 0))).xyz;
     }
     
-    Ray ray1 = Ray(rayOrigin, rayDirection);
-    /* MV --> rotation */
-    vec3 rayORot = (vec4(rayOrigin,0) * transformation).xyz;
-    vec3 rayDRot = (vec4(rayDirection,0) * transformation).xyz;
-    Ray rayRot = Ray(rayORot, rayDRot);
+    float tSphere = intersectSphere(ray, sphere);
+    if (tSphere <= 0.)
+    	discard;
     
-    
-    vec3 lutColor;
-    
-    float tSphere = intersectSphere(rayRot, sphere);
-   	if (tSphere > 0.)
-   	{
-        vec3 posOri = rayRot.origin + tSphere*rayRot.direction;
-        vec3 posRot = (vec4(posOri, 0) * layerInv).xyz;
-        
-        if (posRot.z >= 0.0)
-        {
-            vec2 texPos = (posRot.xy/physicalImageSize + 0.5) + sunOffset;
-            if (texPos.x < 1.0 && texPos.x >= 0.0 && texPos.y < 1.0 && texPos.y >= 0.0)
-            {
-	            texPos = (texPos - imageOffset.xy) / imageOffset.zw;
-    	        lutColor += lutLookup(contrastValue(sharpenValue(texPos)));
-    	    }
-        }
-        
-        vec3 ray = ray1.origin + tSphere * ray1.direction;
-		gl_FragDepth = (1./(zTranslation - ray.z) - 1./near) / (1./far - 1./near);            
+    vec3 pos = ray.origin + tSphere*ray.direction;
+    if (pos.z >= 0.0)
+    {
+        vec2 texPos = (pos.xy/physicalImageSize + 0.5) + sunOffset;
+        if (texPos.x >= 1.0 || texPos.x < 0.0 || texPos.y >= 1.0 || texPos.y < 0.0)
+       		discard;
+       		
+        texPos = (texPos - imageOffset.xy) / imageOffset.zw;
+	    gl_FragColor = vec4(lutLookup(contrastValue(sharpenValue(texPos))),1) * vec4(redChannel,greenChannel,blueChannel,opacity);
     }
     else
-	    gl_FragDepth = 1.;
+	    gl_FragColor = vec4(0);
     
-    
-    if (opacityCorona > 0.)
-    {
-	    float tPlane = intersectPlane(rayRot, plane);
-	   	if (tPlane > 0. && (tPlane < tSphere || tSphere < 0.))
-	   	{
-	        vec3 posOri = rayRot.origin + tPlane*rayRot.direction;
-	        vec2 posRot = (vec4(posOri, 0) * layerInv).xy;
-	        vec2 texPos = (posRot/physicalImageSize + 0.5) + sunOffset;
-	        if (texPos.x < 1.0 && texPos.x >= 0.0 && texPos.y < 1.0 && texPos.y >= 0.0)
-	        {
-		        texPos = (texPos - imageOffset.xy) / imageOffset.zw;
-    	        lutColor += lutLookup(contrastValue(sharpenValue(texPos))) * opacityCorona;
-    	    }
-	    }
-	}
-    
-    gl_FragColor = vec4(lutColor,1) * vec4(redChannel,greenChannel,blueChannel,opacity);
+    vec3 origin = vec4(transformation * vec4(0,0,0,1)).xyz;
+    vec3 direction = normalize(vec3(uv * tanFOV, -1.0)).xyz;
+    float z = origin.z + tSphere * direction.z;
+	gl_FragDepth = (1./(zTranslation - z) - 1./near) / (1./far - 1./near);            
 }
