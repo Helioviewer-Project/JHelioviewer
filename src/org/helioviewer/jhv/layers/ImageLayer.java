@@ -204,9 +204,6 @@ public abstract class ImageLayer extends Layer
 		gl.glActiveTexture(GL.GL_TEXTURE1);
 		gl.glBindTexture(GL2.GL_TEXTURE_2D, org.helioviewer.jhv.layers.LUT.getTextureId());
 
-		System.out.println("wooyyyy "+md.getPhysicalImageWidth());
-		
-		
 		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "texture"), 0);
 		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "lut"), 1);
 		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "tanFOV"), (float) Math.tan(Math.toRadians(MainPanel.FOV / 2.0)));

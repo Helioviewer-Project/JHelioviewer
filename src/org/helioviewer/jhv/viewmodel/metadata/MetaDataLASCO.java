@@ -23,17 +23,13 @@ class MetaDataLASCO extends MetaData
 				innerDefault = 2.3 * Constants.SUN_RADIUS;
 				outerDefault = 8.0 * Constants.SUN_RADIUS;
 				flatDistance = 6.2 * Constants.SUN_RADIUS;
-				
-				if(solarPixelRadius==null)
-					solarPixelRadius = new Vector2d(80.814221, 80.814221);
+				solarPixelRadius = new Vector2d(80.814221, 80.814221);
 				break;
 			case "C3":
 				innerDefault = 4.4 * Constants.SUN_RADIUS;
 				outerDefault = 31.5 * Constants.SUN_RADIUS;
 				flatDistance = 38 * Constants.SUN_RADIUS;
-				
-				if(solarPixelRadius==null)
-					solarPixelRadius = new Vector2d(17.173021, 17.173021);
+				solarPixelRadius = new Vector2d(17.173021, 17.173021);
 				break;
 			default:
 				throw new UnsuitableMetaDataException("invalid instrument: " + instrument + "/" + detector);
