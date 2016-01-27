@@ -48,8 +48,9 @@ public class Globals
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     public static final DateTimeFormatter FILE_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH.mm.ss'Z'");
     
-	//AIA 193
-    public static final int STARTUP_LAYER_ID = 10;
+    public static final int LICENSE_VERSION = 1; //increase whenever license changes
+	
+    public static final int STARTUP_LAYER_ID = 10; //AIA 193
 
 	public static final boolean JAVA_FX_AVAILABLE;
 	

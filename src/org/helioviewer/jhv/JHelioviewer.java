@@ -23,6 +23,7 @@ import org.helioviewer.jhv.base.Log;
 import org.helioviewer.jhv.base.Observatories;
 import org.helioviewer.jhv.base.Settings;
 import org.helioviewer.jhv.base.Settings.BooleanKey;
+import org.helioviewer.jhv.base.Settings.IntKey;
 import org.helioviewer.jhv.base.SplashScreen;
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.UILatencyWatchdog;
@@ -30,6 +31,7 @@ import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 import org.helioviewer.jhv.gui.dialogs.AboutDialog;
 import org.helioviewer.jhv.gui.dialogs.AddLayerDialog;
+import org.helioviewer.jhv.gui.dialogs.LicenseDialog;
 import org.helioviewer.jhv.io.CommandLineProcessor;
 import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.opengl.camera.CameraMode;
@@ -75,6 +77,17 @@ public class JHelioviewer
 			{
 				try
 				{
+					//display EULA, if needed
+					if(!Globals.isWindows() && Settings.getInt(IntKey.STARTUP_LICENSE_SHOWN)!=Globals.LICENSE_VERSION)
+					{
+						LicenseDialog ld=new LicenseDialog();
+						
+						if(!ld.didAgree())
+							System.exit(0);
+					}
+					Settings.setInt(IntKey.STARTUP_LICENSE_SHOWN, Globals.LICENSE_VERSION);
+					
+					
 					// display the splash screen
 					final SplashScreen splash = new SplashScreen(18);
 					

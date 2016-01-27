@@ -492,11 +492,8 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		}
 		
 		
-		
-		
-		
-		
-		if (!Globals.isReleaseVersion())
+		//visualize depth buffer for debugging purposes
+		/*if (!Globals.isReleaseVersion())
 		{
 			gl.glEnable(GL2.GL_TEXTURE_2D);
 			gl.glActiveTexture(GL2.GL_TEXTURE0);
@@ -551,14 +548,14 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			gl.glMatrixMode(GL2.GL_PROJECTION);
 			gl.glPopMatrix();
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
-		}
+		}*/
 
 		// force immediate repaints of dependent regions
 		for (MainPanel componentView : synchronizedViews)
 			componentView.display();
 	}
 	
-	int tmp[] = new int[1];
+	//int tmp[] = new int[1];
 
 	@Override
 	public void display(@Nullable GLAutoDrawable _drawable)

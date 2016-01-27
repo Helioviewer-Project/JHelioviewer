@@ -89,15 +89,19 @@ public class Settings
 
     public static void resetAllSettings()
     {
+    	int prevLicense = Settings.getInt(IntKey.STARTUP_LICENSE_SHOWN);
+    	
     	try
     	{
 	        PREF_NODE.clear();
-	        delayedFlush();
     	}
     	catch(BackingStoreException _bse)
     	{
     		Telemetry.trackException(_bse);
     	}
+    	
+    	Settings.setInt(IntKey.STARTUP_LICENSE_SHOWN, prevLicense);
+        delayedFlush();
     }
     
     public static void init()
@@ -183,7 +187,7 @@ public class Settings
 		SCREENSHOT_IMG_WIDTH("export.screenshot.width"),
 		SCREENSHOT_IMG_HEIGHT("export.screenshot.height"),
 		PREVIEW_RESOLUTION("preview.resolution"),
-		JPIP_BATCH_SIZE("jpip.batchsize");
+		JPIP_BATCH_SIZE("jpip.batchsize"), STARTUP_LICENSE_SHOWN("startup.license");
 
         String key;
         private IntKey(String _key)
