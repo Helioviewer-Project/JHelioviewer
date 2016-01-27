@@ -8,6 +8,10 @@ import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
@@ -172,7 +176,7 @@ public class Movie
 	@Nullable private MetaData[] metaDatas;
 	
 	public final int sourceId;
-	@Nullable private String filename;
+	@Nullable private final String filename;
 	
 	public enum Quality
 	{
@@ -187,21 +191,46 @@ public class Movie
 	
 	private long lastTouched;
 	
+	private static final ExecutorService lruFileToucher = Executors.newSingleThreadExecutor(new ThreadFactory()
+	{
+		@Override
+		public Thread newThread(@Nullable Runnable r)
+		{
+			Thread t = new Thread(r);
+			t.setName("LRU file toucher");
+			t.setDaemon(true);
+			t.setPriority(Thread.MIN_PRIORITY);
+			return t;
+		}
+	});
+	
 	public void touch()
 	{
+		if(filename==null)
+			throw new IllegalArgumentException("filename == null");
+		
 		if(System.currentTimeMillis()<=lastTouched+5000)
 			return;
 		
 		lastTouched = System.currentTimeMillis();
 		
-		try
+		lruFileToucher.submit(new Callable<Object>()
 		{
-			Files.touch(new File(filename));
-		}
-		catch (IOException e)
-		{
-			Telemetry.trackException(e);
-		}
+			@Override
+			public @Nullable Object call() throws Exception
+			{
+				try
+				{
+					Files.touch(new File(filename));
+				}
+				catch (IOException e)
+				{
+					Telemetry.trackException(e);
+				}
+				
+				return null;
+			}
+		});
 	}
 	
 	
@@ -325,6 +354,7 @@ public class Movie
 		quality = Quality.PREVIEW;
 		family_src = new Jp2_threadsafe_family_src();
 		kduCache = _kduCache;
+		filename = null;
 		
 		try
 		{

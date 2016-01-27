@@ -161,6 +161,9 @@ public abstract class MetaData
     		solarPixelRadius = new Vector2d(180,180);
     	}
         
+        System.out.println(arcsecPerPixel.x+"            wowoow  "+getUnitsPerPixel().x+"  "+solarPixelRadius.x);
+        
+        
         
         if (stonyhurstAvailable)
         {

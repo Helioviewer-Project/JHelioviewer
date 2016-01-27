@@ -165,7 +165,7 @@ public class JHelioviewer
 					// been initialized
 					splash.progressTo("Loading settings");
 					Settings.init();
-		
+					
 					splash.progressTo("Initializing Kakadu");
 					try
 					{
@@ -191,7 +191,7 @@ public class JHelioviewer
 					splash.progressTo("Setting up Kakadu message handlers");
 		            Kdu_global.Kdu_customize_warnings(keepReference(new Kdu_message_formatter(new KduErrorHandler(false), 80)));
 		            Kdu_global.Kdu_customize_errors(keepReference(new Kdu_message_formatter(new KduErrorHandler(true), 80)));
-		
+		            
 					// Create main view chain and display main window
 		            splash.progressTo("Starting Swing");
 					sharedDrawable.getContext().makeCurrent();
