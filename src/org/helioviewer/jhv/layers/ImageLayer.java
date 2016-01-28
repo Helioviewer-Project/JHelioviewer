@@ -1,10 +1,7 @@
 package org.helioviewer.jhv.layers;
 
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.time.LocalDateTime;
@@ -14,9 +11,6 @@ import java.util.concurrent.Future;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.ImageRegion;
@@ -424,9 +418,9 @@ public abstract class ImageLayer extends Layer
 		
 		Matrix4d transformation=calcTransformation(_mainPanel, _metaData);
 		
-		BufferedImage bi=new BufferedImage(frame.getContentPane().getWidth(),frame.getContentPane().getHeight(),BufferedImage.TYPE_INT_BGR);
+		/*BufferedImage bi=new BufferedImage(frame.getContentPane().getWidth(),frame.getContentPane().getHeight(),BufferedImage.TYPE_INT_BGR);
 		Graphics2D g=bi.createGraphics();
-		g.setColor(Color.WHITE);
+		g.setColor(Color.WHITE);*/
 		
 		int hitPoints=0;
 		for (int i = 0; i < MAX_X_POINTS; i++)
@@ -441,15 +435,14 @@ public abstract class ImageLayer extends Layer
 					minY = Math.min(minY, imagePoint.y);
 					maxY = Math.max(maxY, imagePoint.y);
 
-					g.fillRect(
+					/*g.fillRect(
 							(int) (imagePoint.x * bi.getWidth()) - 3,
 							(int) (imagePoint.y * bi.getHeight()) - 3,
-							5, 5);
+							5, 5);*/
 				}
 		}
 		
-		g.dispose();
-		
+		/*g.dispose();
 		if (_mainPanel.getClass()==MainPanel.class)
 		{
 			frame.getContentPane().removeAll();
@@ -457,7 +450,7 @@ public abstract class ImageLayer extends Layer
 			frame.getContentPane().add(new JLabel(new ImageIcon(bi)));
 			frame.validate();
 			frame.repaint();
-		}
+		}*/
 		
 		if(hitPoints<3)
 			return null;
@@ -473,14 +466,13 @@ public abstract class ImageLayer extends Layer
 		return ir;
 	}
 	
-	JFrame frame = new JFrame();
-	
+	/*JFrame frame = new JFrame();
 	public ImageLayer()
 	{
 		frame.setSize(400, 400);
 		frame.setVisible(true);
 		frame.validate();
-	}
+	}*/
 
 	public int getCadence()
 	{

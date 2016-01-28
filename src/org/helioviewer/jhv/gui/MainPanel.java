@@ -98,7 +98,9 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 	private ArrayList<CameraListener> cameraListeners;
 	private ArrayList<CameraAnimation> cameraAnimations;
 
-	protected CameraInteraction[] cameraInteractions;
+	protected CameraInteraction[] cameraInteractionsLeft;
+	protected CameraInteraction[] cameraInteractionsRight;
+	protected CameraInteraction[] cameraInteractionsMiddle;
 
 	private boolean cameraTrackingEnabled = false;
 
@@ -170,8 +172,15 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 							return;
 		
 						Ray ray = new RayTrace().cast(e.getX(), e.getY(), MainPanel.this);
-						for (CameraInteraction cameraInteraction : cameraInteractions)
-							cameraInteraction.mousePressed(e, ray);
+						if(SwingUtilities.isLeftMouseButton(e))
+							for (CameraInteraction cameraInteraction : cameraInteractionsLeft)
+								cameraInteraction.mousePressed(e, ray);
+						else if(SwingUtilities.isRightMouseButton(e))
+							for (CameraInteraction cameraInteraction : cameraInteractionsRight)
+								cameraInteraction.mousePressed(e, ray);
+						else if(SwingUtilities.isMiddleMouseButton(e))
+							for (CameraInteraction cameraInteraction : cameraInteractionsMiddle)
+								cameraInteraction.mousePressed(e, ray);
 					}
 		
 					@Override
@@ -181,8 +190,15 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 							return;
 		
 						Ray ray = new RayTrace().cast(e.getX(), e.getY(), MainPanel.this);
-						for (CameraInteraction cameraInteraction : cameraInteractions)
-							cameraInteraction.mouseReleased(e, ray);
+						if(SwingUtilities.isLeftMouseButton(e))
+							for (CameraInteraction cameraInteraction : cameraInteractionsLeft)
+								cameraInteraction.mouseReleased(e, ray);
+						else if(SwingUtilities.isRightMouseButton(e))
+							for (CameraInteraction cameraInteraction : cameraInteractionsRight)
+								cameraInteraction.mouseReleased(e, ray);
+						else if(SwingUtilities.isMiddleMouseButton(e))
+							for (CameraInteraction cameraInteraction : cameraInteractionsMiddle)
+								cameraInteraction.mouseReleased(e, ray);
 					}
 		
 					@Override
@@ -201,8 +217,15 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 					return;
 
 				Ray ray = new RayTrace().cast(e.getX(), e.getY(), MainPanel.this);
-				for (CameraInteraction cameraInteraction : cameraInteractions)
-					cameraInteraction.mouseDragged(e, ray);
+				if(SwingUtilities.isLeftMouseButton(e))
+					for (CameraInteraction cameraInteraction : cameraInteractionsLeft)
+						cameraInteraction.mouseDragged(e, ray);
+				else if(SwingUtilities.isRightMouseButton(e))
+					for (CameraInteraction cameraInteraction : cameraInteractionsRight)
+						cameraInteraction.mouseDragged(e, ray);
+				else if(SwingUtilities.isMiddleMouseButton(e))
+					for (CameraInteraction cameraInteraction : cameraInteractionsMiddle)
+						cameraInteraction.mouseDragged(e, ray);
 			}
 
 			@Override
@@ -226,7 +249,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 					return;
 				
 				Ray ray = new RayTrace().cast(e.getX(), e.getY(), MainPanel.this);
-				for (CameraInteraction cameraInteraction : cameraInteractions)
+				for (CameraInteraction cameraInteraction : cameraInteractionsLeft)
 					cameraInteraction.mouseWheelMoved(e, ray);
 			}
 		});
@@ -234,10 +257,22 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		rotationNow = rotationEnd = Quaternion.createRotation(0.0, new Vector3d(0, 1, 0));
 		translationNow = translationEnd = new Vector3d(0, 0, DEFAULT_DISTANCE);
 
-		cameraInteractions = new CameraInteraction[2];
-		cameraInteractions[0] = new CameraZoomInteraction(this, this);
-		cameraInteractions[1] = new CameraRotationInteraction(this, this);
+		cameraInteractionsLeft = new CameraInteraction[]
+				{
+						new CameraZoomInteraction(this, this),
+						new CameraRotationInteraction(this, this)
+				};
 
+		cameraInteractionsMiddle = new CameraInteraction[]
+				{
+						new CameraPanInteraction(this, this, 1)
+				};
+		
+		cameraInteractionsRight = new CameraInteraction[]
+				{
+						new CameraPanInteraction(this, this, 1)
+				};
+		
 		visibleAreaOutline = new Vector3d[40];
 	}
 	
@@ -302,17 +337,59 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 
 	public void activateRotationInteraction()
 	{
-		cameraInteractions[1] = new CameraRotationInteraction(this, this);
+		cameraInteractionsLeft = new CameraInteraction[]
+				{
+						new CameraZoomInteraction(this, this),
+						new CameraRotationInteraction(this, this)
+				};
+
+		cameraInteractionsMiddle = new CameraInteraction[]
+				{
+						new CameraPanInteraction(this, this, 1)
+				};
+		
+		cameraInteractionsRight = new CameraInteraction[]
+				{
+						new CameraPanInteraction(this, this, 1)
+				};
 	}
 
 	public void activatePanInteraction()
 	{
-		cameraInteractions[1] = new CameraPanInteraction(this, this, 1);
+		cameraInteractionsLeft = new CameraInteraction[]
+				{
+						new CameraZoomInteraction(this, this),
+						new CameraPanInteraction(this, this, 1)
+				};
+
+		cameraInteractionsMiddle = new CameraInteraction[]
+				{
+						new CameraRotationInteraction(this, this)
+				};
+		
+		cameraInteractionsRight = new CameraInteraction[]
+				{
+					new CameraRotationInteraction(this, this)
+				};
 	}
 
 	public void activateZoomBoxInteraction()
 	{
-		cameraInteractions[1] = new CameraZoomBoxInteraction(this, this);
+		cameraInteractionsLeft = new CameraInteraction[]
+				{
+						new CameraZoomInteraction(this, this),
+						new CameraZoomBoxInteraction(this, this)
+				};
+
+		cameraInteractionsMiddle = new CameraInteraction[]
+				{
+					new CameraPanInteraction(this, this, 1)
+				};
+		
+		cameraInteractionsRight = new CameraInteraction[]
+				{
+						new CameraRotationInteraction(this, this)
+				};
 	}
 	
 	protected void render(GL2 gl, boolean _showLoadingAnimation, Dimension sizeForDecoder)
@@ -436,7 +513,11 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		calculateBounds();
-		for (CameraInteraction cameraInteraction : cameraInteractions)
+		for (CameraInteraction cameraInteraction : cameraInteractionsLeft)
+			cameraInteraction.renderInteraction(gl);
+		for (CameraInteraction cameraInteraction : cameraInteractionsRight)
+			cameraInteraction.renderInteraction(gl);
+		for (CameraInteraction cameraInteraction : cameraInteractionsMiddle)
 			cameraInteraction.renderInteraction(gl);
 		
 		gl.glEnable(GL2.GL_DEPTH_TEST);

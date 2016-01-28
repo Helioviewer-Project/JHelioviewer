@@ -32,25 +32,62 @@ public class OverviewPanel extends MainPanel
 		super(_context);
 		mainViews = new ArrayList<>();
 
-		cameraInteractions = new CameraInteraction[2];
+		cameraInteractionsLeft = new CameraInteraction[0];
+		cameraInteractionsRight = new CameraInteraction[0];
+		cameraInteractionsMiddle = new CameraInteraction[0];
 	}
 
 	@Override
 	public void activateRotationInteraction()
 	{
-		cameraInteractions[1] = new CameraRotationInteraction(this, mainViews.get(0));
+		cameraInteractionsLeft = new CameraInteraction[]
+				{
+						new CameraZoomInteraction(this, mainViews.get(0)),
+						new CameraRotationInteraction(this, mainViews.get(0))
+				};
+		cameraInteractionsMiddle = new CameraInteraction[]
+				{
+						new CameraPanInteraction(this, mainViews.get(0), -1)
+				};
+		cameraInteractionsRight = new CameraInteraction[]
+				{
+					new CameraPanInteraction(this, mainViews.get(0), -1)
+				};
 	}
 
 	@Override
 	public void activatePanInteraction()
 	{
-		cameraInteractions[1] = new CameraPanInteraction(this, mainViews.get(0), -1);
-		//cameraInteractions[1] = new CameraViewportPanInteraction(this, mainViews.get(0));
+		cameraInteractionsLeft = new CameraInteraction[]
+				{
+						new CameraZoomInteraction(this, mainViews.get(0)),
+						new CameraPanInteraction(this, mainViews.get(0), -1)
+				};
+		cameraInteractionsMiddle = new CameraInteraction[]
+				{
+						new CameraRotationInteraction(this, mainViews.get(0))
+				};
+		cameraInteractionsRight = new CameraInteraction[]
+				{
+					new CameraRotationInteraction(this, mainViews.get(0))
+				};
 	}
-
+	
 	public void activateZoomBoxInteraction()
 	{
-		cameraInteractions[1] = new CameraZoomBoxInteraction(this, mainViews.get(0));
+		cameraInteractionsLeft = new CameraInteraction[]
+				{
+						new CameraZoomInteraction(this, mainViews.get(0)),
+						new CameraZoomBoxInteraction(this, mainViews.get(0))
+				};
+		cameraInteractionsMiddle = new CameraInteraction[]
+				{
+						new CameraPanInteraction(this, mainViews.get(0), -1)
+				};
+		cameraInteractionsRight = new CameraInteraction[]
+				{
+					new CameraRotationInteraction(this, mainViews.get(0))
+				};
 	}
 
 	private void zoomToFit()
@@ -148,11 +185,19 @@ public class OverviewPanel extends MainPanel
 
 	}
 
-	public void addMainView(MainPanel compenentView)
+	public void addMainView(MainPanel componentView)
 	{
-		mainViews.add(compenentView);
-		this.cameraInteractions[0] = new CameraZoomInteraction(this, compenentView);
-		this.cameraInteractions[1] = new CameraRotationInteraction(this, compenentView);
+		mainViews.add(componentView);
+		cameraInteractionsLeft = new CameraInteraction[]
+				{
+						new CameraZoomInteraction(this, componentView),
+						new CameraRotationInteraction(this, componentView)
+				};
+		cameraInteractionsRight = new CameraInteraction[]
+				{
+					new CameraPanInteraction(this, componentView, -1)
+				};
+		cameraInteractionsMiddle = new CameraInteraction[0];
 	}
 
 	@Override

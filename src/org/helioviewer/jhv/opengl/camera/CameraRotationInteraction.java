@@ -15,7 +15,7 @@ public class CameraRotationInteraction extends CameraInteraction
 	private @Nullable Vector3d yAxis;
 	
 	public static boolean yAxisBlocked = false;
-
+	
 	public CameraRotationInteraction(MainPanel _mainPanel, Camera _camera)
 	{
 		super(_mainPanel, _camera);

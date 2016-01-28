@@ -103,6 +103,7 @@ public class FilterPanel extends JPanel
 									@Override
 									public void doubleClick(@Nullable MouseEvent e)
 									{
+										//TODO: reset to proper value, not 100%
 										opacitySlider.setValue(100);
 									}
 								});
@@ -343,7 +344,10 @@ public class FilterPanel extends JPanel
 								add(lblChannelsTitle, gbc_lblChannelsTitle);
 				
 						red = new JToggleButton("Red");
+						red.setContentAreaFilled(false);
+						red.setOpaque(true);
 						red.setForeground(Color.RED);
+						
 						GridBagConstraints gbc_red = new GridBagConstraints();
 						gbc_red.fill = GridBagConstraints.BOTH;
 						gbc_red.insets = new Insets(0, 0, 0, 5);
@@ -356,6 +360,21 @@ public class FilterPanel extends JPanel
 							@Override
 							public void itemStateChanged(@Nullable ItemEvent e)
 							{
+								red.setContentAreaFilled(!red.isSelected());
+								red.setOpaque(red.isSelected());
+								
+								if(red.isSelected())
+								{
+									red.setBackground(Color.RED);
+									red.setForeground(Color.BLACK);
+								}
+								else
+								{
+									red.setBackground(null);
+									red.setForeground(Color.RED);
+								}
+								
+								
 								if (activeLayer != null && activeLayer.redChannel != red.isSelected())
 								{
 									activeLayer.redChannel = red.isSelected();
@@ -365,6 +384,8 @@ public class FilterPanel extends JPanel
 						});
 		
 				green = new JToggleButton("Green");
+				green.setContentAreaFilled(false);
+				green.setOpaque(true);
 				green.setForeground(Color.GREEN.darker());
 				GridBagConstraints gbc_green = new GridBagConstraints();
 				gbc_green.fill = GridBagConstraints.BOTH;
@@ -378,6 +399,20 @@ public class FilterPanel extends JPanel
 					@Override
 					public void itemStateChanged(@Nullable ItemEvent e)
 					{
+						green.setContentAreaFilled(!green.isSelected());
+						green.setOpaque(green.isSelected());
+						
+						if(green.isSelected())
+						{
+							green.setBackground(Color.GREEN.darker());
+							green.setForeground(Color.BLACK);
+						}
+						else
+						{
+							green.setBackground(null);
+							green.setForeground(Color.GREEN.darker());
+						}
+						
 						if (activeLayer != null && activeLayer.greenChannel != green.isSelected())
 						{
 							activeLayer.greenChannel = green.isSelected();
@@ -406,6 +441,8 @@ public class FilterPanel extends JPanel
 		});
 		
 				blue = new JToggleButton("Blue");
+				blue.setContentAreaFilled(false);
+				blue.setOpaque(true);
 				blue.setForeground(Color.BLUE);
 				GridBagConstraints gbc_blue = new GridBagConstraints();
 				gbc_blue.fill = GridBagConstraints.BOTH;
@@ -419,6 +456,20 @@ public class FilterPanel extends JPanel
 					@Override
 					public void itemStateChanged(@Nullable ItemEvent e)
 					{
+						blue.setContentAreaFilled(!blue.isSelected());
+						blue.setOpaque(blue.isSelected());
+						
+						if(blue.isSelected())
+						{
+							blue.setBackground(Color.BLUE);
+							blue.setForeground(Color.BLACK);
+						}
+						else
+						{
+							blue.setBackground(null);
+							blue.setForeground(Color.BLUE);
+						}
+						
 						if (activeLayer != null && activeLayer.blueChannel != blue.isSelected())
 						{
 							activeLayer.blueChannel = blue.isSelected();
@@ -426,6 +477,7 @@ public class FilterPanel extends JPanel
 						}
 					}
 				});
+		
 		GridBagConstraints gbc_coronaVisibilityButton = new GridBagConstraints();
 		gbc_coronaVisibilityButton.fill = GridBagConstraints.HORIZONTAL;
 		gbc_coronaVisibilityButton.anchor = GridBagConstraints.NORTH;
@@ -466,12 +518,17 @@ public class FilterPanel extends JPanel
 		{
 			for (Component c : getComponents())
 				c.setEnabled(false);
+			
+			red.setSelected(false);
+			green.setSelected(false);
+			blue.setSelected(false);
+			coronaVisibilityButton.setSelected(false);
 			return;
 		}
 
 		for (Component c : getComponents())
 			c.setEnabled(true);
-
+		
 		contrastSlider.setValue((int) (activeLayer.contrast * 10));
 		gammaSlider.setValue((int) (Math.log(activeLayer.gamma) / GAMMA_FACTOR));
 		opacitySlider.setValue((int) (activeLayer.opacity * 100));
