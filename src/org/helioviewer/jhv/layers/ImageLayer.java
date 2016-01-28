@@ -19,6 +19,7 @@ import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.Quaternion;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector3d;
+import org.helioviewer.jhv.base.math.Vector4d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.base.physics.DifferentialRotation;
 import org.helioviewer.jhv.gui.MainFrame;
@@ -152,16 +153,16 @@ public abstract class ImageLayer extends Layer
 		
 		_preparedImageData.texture.usedByCurrentRenderPass=false;
 		
+		
+		Matrix4d transformation = calcTransformation(mainPanel, md);
+		
 		float xSunOffset =  (float) ((md.sunPixelPosition.x - md.resolution.x / 2.0) / (float)md.resolution.x);
 		float ySunOffset = -(float) ((md.sunPixelPosition.y - md.resolution.y / 2.0) / (float)md.resolution.y);
 
 		float opacityCorona = 0;
 		if (coronaVisible)
 		{
-			Vector3d currentPos = mainPanel.getRotationCurrent().toMatrix().multiply(new Vector3d(0, 0, 1));
-			Vector3d startPos = md.rotation.toMatrix().multiply(new Vector3d(0, 0, 1));
-
-			double angle = Math.toDegrees(Math.acos(currentPos.dot(startPos)));
+			double angle = Math.toDegrees(Math.acos(transformation.multiply(new Vector4d(0,0,1,0)).dot(new Vector4d(0, 0, 1, 0))));
 			double maxAngle = 60;
 			double minAngle = 30;
 			opacityCorona = (float) ((Math.abs(90 - angle) - minAngle) / (maxAngle - minAngle));
@@ -180,12 +181,12 @@ public abstract class ImageLayer extends Layer
 		gl.glEnable(GL2.GL_DEPTH_TEST);
 		gl.glDepthFunc(GL2.GL_ALWAYS);
 		gl.glDepthMask(true);
-		renderWithShader(gl, mainPanel, shaderSphere, _preparedImageData, md, opacityCorona, xSunOffset, ySunOffset);
+		renderWithShader(gl, mainPanel, shaderSphere, _preparedImageData, md, opacityCorona, xSunOffset, ySunOffset, transformation);
 		
 		gl.glDepthFunc(GL2.GL_LEQUAL);
 		gl.glDepthMask(false);
 		if(opacityCorona>0)
-			renderWithShader(gl, mainPanel, shaderCorona, _preparedImageData, md, opacityCorona, xSunOffset, ySunOffset);
+			renderWithShader(gl, mainPanel, shaderCorona, _preparedImageData, md, opacityCorona, xSunOffset, ySunOffset, transformation);
 		
 		gl.glUseProgram(0);
 		gl.glActiveTexture(GL.GL_TEXTURE0);
@@ -197,7 +198,7 @@ public abstract class ImageLayer extends Layer
 	}
 	
 	private void renderWithShader(GL2 gl, MainPanel mainPanel, int shaderprogram, PreparedImage _preparedImageData, MetaData md, float opacityCorona,
-			float xSunOffset, float ySunOffset)
+			float xSunOffset, float ySunOffset, Matrix4d _transformation)
 	{
 		gl.glUseProgram(shaderprogram);
 
@@ -235,9 +236,7 @@ public abstract class ImageLayer extends Layer
 		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "near"), clipNear);
 		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "far"), (float) (mainPanel.getTranslationCurrent().z + 4 * Constants.SUN_RADIUS));
 
-        //see http://jgiesen.de/sunrot/index.html and http://www.petermeadows.com/stonyhurst/sdisk6in7.gif
-		Matrix4d transformation = calcTransformation(mainPanel, md);
-		gl.glUniformMatrix4fv(gl.glGetUniformLocation(shaderprogram, "transformation"), 1, true, transformation.transposed().toFloatArray(), 0);
+		gl.glUniformMatrix4fv(gl.glGetUniformLocation(shaderprogram, "transformation"), 1, true, _transformation.transposed().toFloatArray(), 0);
 
 		gl.glUniform2f(
 				gl.glGetUniformLocation(shaderprogram, "imageResolution"),
@@ -258,6 +257,7 @@ public abstract class ImageLayer extends Layer
 
 	private Matrix4d calcTransformation(MainPanel mainPanel, MetaData md)
 	{
+		//see http://jgiesen.de/sunrot/index.html and http://www.petermeadows.com/stonyhurst/sdisk6in7.gif
 		double diffRotattion = DifferentialRotation.calculateRotationInRadians(0,md.localDateTime.until(TimeLine.SINGLETON.getCurrentDateTime(), ChronoUnit.MILLIS)/1000f);
 		Quaternion diffRotationQuat = Quaternion.createRotation(-diffRotattion, mainPanel.getRotationCurrent().inversed().toMatrix().multiply(new Vector3d(0, 1, 0)));
 		return mainPanel.getTransformation()

@@ -56,4 +56,9 @@ public class Vector4d
 	{
 		return Math.sqrt(x * x + y * y + z * z + w * w);
 	}
+
+	public double dot(Vector4d _v)
+	{
+		return _v.x * x + _v.y * y + _v.z * z + _v.w * w;
+	}
 }

@@ -265,8 +265,6 @@ public class TimeLine implements LayerListener
 	@Override
 	public void layersRemoved()
 	{
-		if (Layers.getActiveImageLayer() == null)
-			setNoTimeRange();
 	}
 
 	@Override

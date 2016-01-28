@@ -14,11 +14,6 @@ public class Quaternion
         return new Quaternion(Math.cos(_angle / 2), _axis.normalized().scaled(Math.sin(_angle / 2)));
     }
 
-    public Quaternion(double _a, double _x, double _y, double _z)
-    {
-        this(_a, new Vector3d(_x, _y, _z));
-    }
-
     public Quaternion(double _a, Vector3d _u)
     {
         a = _a;
@@ -32,7 +27,7 @@ public class Quaternion
         double ry = (a * _q.u.y + u.x * _q.u.z + u.y * _q.a - u.z * _q.u.x);
         double rz = (a * _q.u.z - u.x * _q.u.y + u.y * _q.u.x + u.z * _q.a);
         
-        return new Quaternion(ra, rx, ry, rz);
+        return new Quaternion(ra, new Vector3d(rx, ry, rz));
     }
 
     public Matrix4d toMatrix()
