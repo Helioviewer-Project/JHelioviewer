@@ -46,9 +46,7 @@ public class ZoomFitAction extends AbstractAction implements LayerListener
 			return;
 		
 		Rectangle2D region = md.getPhysicalImageSize();
-		if (region == null)
-			return;
-
+		
 		double halfWidth = region.getHeight() / 2;
 		Dimension canvasSize = MainFrame.SINGLETON.MAIN_PANEL.getSize();
 		double aspect = canvasSize.getWidth() / canvasSize.getHeight();

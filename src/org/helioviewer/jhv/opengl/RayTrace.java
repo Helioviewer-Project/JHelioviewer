@@ -1,6 +1,7 @@
 package org.helioviewer.jhv.opengl;
 
-import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -30,12 +31,6 @@ public class RayTrace
 		plane = new Plane(new Vector3d(1, 0, 0).cross(new Vector3d(0, 1, 0)), 0);
 	}
 
-	public RayTrace(Matrix4d rotation)
-	{
-		sphere = new Sphere(new Vector3d(0, 0, 0), Constants.SUN_RADIUS);
-		plane = new Plane(rotation.multiply(new Vector3d(0, 0, 1)), 0);
-	}
-
 	public Ray cast(int x, int y, MainPanel mainPanel)
 	{
 		double newX = (x - mainPanel.getWidth() / 2.) / mainPanel.getWidth();
@@ -62,52 +57,60 @@ public class RayTrace
 		return intersect(ray);
 	}
 
-	public @Nullable Vector2d castTexturepos(int _pixelX, int _pixelY, MetaData _metaData, MainPanel _mainPanel, Matrix4d _transformation)
+	//this method is the exact equivalent of CoronaFragment.glsl and SphereFragment.glsl
+	public List<Vector2d> castTexturepos(int _pixelX, int _pixelY, MainPanel _mainPanel, MetaData _metaData, Matrix4d _transformation)
 	{
-		plane = new Plane(_metaData.rotation.toMatrix().multiply(new Vector3d(0, 0, 1)), 0);
-		double newX = (_pixelX - _mainPanel.getWidth() / 2.) / _mainPanel.getWidth();
-		double newY = (_pixelY - _mainPanel.getHeight() / 2.) / _mainPanel.getWidth();
-		double tanFOV = Math.tan(Math.toRadians(MainPanel.FOV / 2.0)) * 2;
-
-		Vector3d origin;
-		Vector3d direction;
+		ArrayList<Vector2d> res = new ArrayList<Vector2d>(2);
 		
-		//TODO: combine ray creation from both methods
-		if (CameraMode.mode == MODE.MODE_3D)
-		{
-			origin = _transformation.multiply(new Vector3d(0, 0, 0));
-			direction = new Vector3d(newX * tanFOV, newY * tanFOV, -1).normalized();
-		}
-		else
-		{
-			tanFOV *= _transformation.multiply(new Vector4d(0,0,0,1)).z;
-			origin = _transformation.multiply(new Vector3d(0, 0, 1))
-					.add(new Vector3d(newX * tanFOV, newY * tanFOV, 0));
-			direction = new Vector3d(0, 0, -1).normalized();
-		}
-		Vector4d tmpOrigin = new Vector4d(origin.x, origin.y, origin.z, 0);
-		Vector4d tmpDirection = new Vector4d(direction.x, direction.y, direction.z, 0);
+		double tanFOV = Math.tan(Math.toRadians(MainPanel.FOV / 2.0));
+		Vector2d uv = new Vector2d(_pixelX / (double)_mainPanel.getWidth() * 2 - 1, _pixelY / (double)_mainPanel.getHeight() * 2 - 1);
+		double xSunOffset =  (double) ((_metaData.sunPixelPosition.x - _metaData.resolution.x / 2.0) / (double)_metaData.resolution.x);
+		double ySunOffset = -(double) ((_metaData.sunPixelPosition.y - _metaData.resolution.y / 2.0) / (double)_metaData.resolution.y);
+		
+		
+	    /* MV --> z */
+	    Ray ray;
+	    double zTranslation = _transformation.multiply(new Vector4d(0,0,0,1)).z;
+	    if (CameraMode.mode == MODE.MODE_2D)
+	    {
+		    //2D
+	        Vector2d center = uv.scaled(zTranslation * tanFOV);
+	        ray = new Ray(
+	    	        (_transformation.multiply(new Vector4d(0,0,1,1))).xyz().add(new Vector3d(center, 0)),
+	    	        new Vector3d(0, 0, -1.0)
+        		);
+	    }
+	    else
+	    {
+		    //3D
+	        ray = new Ray(
+		        _transformation.multiply(new Vector4d((_transformation.multiply(new Vector4d(0,0,0,1))).xyz(),0)).xyz(),
+		        _transformation.multiply(new Vector4d(uv.scaled(tanFOV), -1.0, 0)).normalized().xyz()
+	        );
+	    }
+	    
+	    double tSphere = sphere.intersect(ray);
+	    double tPlane = plane.intersect(ray);
+	    
+	    
+	   	if (tPlane > 0 && (tSphere<=0 || tPlane<tSphere))
+	   	{
+		    Vector2d pos = ray.origin.xy().add(ray.direction.xy().scaled(tPlane));
+		    Vector2d texPos = pos.scaled(1/_metaData.getPhysicalImageWidth(), 1/_metaData.getPhysicalImageHeight()).add(0.5+xSunOffset, 0.5+ySunOffset);
+	   		res.add(texPos);
+	   	}
+	   	
+	   	if(tSphere > 0)
+	   	{
+		    Vector3d spherePos = ray.origin.add(ray.direction.scaled(tSphere));
+		    if(spherePos.z >= 0)
+		    {
+			    Vector2d texPosSphere = spherePos.xy().scaled(1/_metaData.getPhysicalImageWidth(), 1/_metaData.getPhysicalImageHeight()).add(0.5+xSunOffset, 0.5+ySunOffset);
+			    res.add(texPosSphere);
+		    }
+	   	}
 
-		Vector4d rayORot1 = _transformation.multiply(tmpOrigin);
-		Vector4d rayDRot1 = _transformation.multiply(tmpDirection);
-
-		Vector3d rayORot = new Vector3d(rayORot1.x, rayORot1.y, rayORot1.z);
-		Vector3d rayDRot = new Vector3d(rayDRot1.x, rayDRot1.y, rayDRot1.z);
-		Ray ray = intersect(new Ray(rayORot, rayDRot));
-		if (ray.hitpointType == HitpointType.SPHERE
-				&& _metaData.rotation.inversed().toMatrix().multiply(ray.getHitpoint()).z < 0)
-			return null;
-
-		Vector3d original = _metaData.rotation.inversed().toMatrix().multiply(ray.getHitpoint());
-		Rectangle2D physicalImageSize = _metaData.getPhysicalImageSize();
-		if (physicalImageSize == null)
-			return null;
-
-		double imageX = (Math.max(Math.min(original.x, physicalImageSize.getX() + physicalImageSize.getWidth()),
-				physicalImageSize.getX()) - physicalImageSize.getX()) / physicalImageSize.getWidth();
-		double imageY = (Math.max(Math.min(original.y, physicalImageSize.getY() + physicalImageSize.getHeight()),
-				physicalImageSize.getY()) - physicalImageSize.getY()) / physicalImageSize.getHeight();
-		return new Vector2d(imageX, imageY);
+	    return res;
 	}
 
 	private Ray intersect(Ray ray)
@@ -135,8 +138,8 @@ public class RayTrace
 
 	public static class Ray
 	{
-		private Vector3d origin;
-		private Vector3d direction;
+		private final Vector3d origin;
+		private final Vector3d direction;
 		private double tSphere = -1;
 		private double tPlane = -1;
 		private @Nullable HitpointType hitpointType;
@@ -179,8 +182,8 @@ public class RayTrace
 
 	static private class Sphere
 	{
-		public Vector3d center;
-		public double radius;
+		public final Vector3d center;
+		public final double radius;
 
 		public Sphere(Vector3d _center, double _radius)
 		{
@@ -203,8 +206,8 @@ public class RayTrace
 
 	static private class Plane
 	{
-		public Vector3d normal;
-		public double distance;
+		public final Vector3d normal;
+		public final double distance;
 
 		public Plane(Vector3d _normal, double _distance)
 		{

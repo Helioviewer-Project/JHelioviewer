@@ -2,7 +2,6 @@ package org.helioviewer.jhv.gui.actions;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.awt.geom.Rectangle2D;
 import java.time.LocalDateTime;
 
 import javax.annotation.Nullable;
@@ -48,10 +47,6 @@ public class Zoom1To1Action extends AbstractAction implements LayerListener
 			return;
 		
 		Vector2d unitsPerPixel = metaData.getUnitsPerPixel();
-		Rectangle2D region = metaData.getPhysicalImageSize();
-
-		if (region == null)
-			return;
 
 		double halfFOVRad = Math.toRadians(MainPanel.FOV / 2.0);
 		double distance = (MainFrame.SINGLETON.MAIN_PANEL.getCanavasSize().getHeight() / 2.0 * unitsPerPixel.y) / Math.tan(halfFOVRad);

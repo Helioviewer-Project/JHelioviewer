@@ -1,7 +1,10 @@
 package org.helioviewer.jhv.layers;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.time.LocalDateTime;
@@ -11,6 +14,9 @@ import java.util.concurrent.Future;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.ImageRegion;
@@ -408,7 +414,7 @@ public abstract class ImageLayer extends Layer
 	 */
 	public @Nullable ImageRegion calculateRegion(MainPanel _mainPanel, DecodeQualityLevel _quality, MetaData _metaData, Dimension _size)
 	{
-		RayTrace rayTrace = new RayTrace(_metaData.rotation.toMatrix());
+		RayTrace rayTrace = new RayTrace();
 
 		double partOfWidth = _mainPanel.getWidth() / (double) (MAX_X_POINTS - 1);
 		double partOfHeight = _mainPanel.getHeight() / (double) (MAX_Y_POINTS - 1);
@@ -418,38 +424,40 @@ public abstract class ImageLayer extends Layer
 		
 		Matrix4d transformation=calcTransformation(_mainPanel, _metaData);
 		
+		BufferedImage bi=new BufferedImage(frame.getContentPane().getWidth(),frame.getContentPane().getHeight(),BufferedImage.TYPE_INT_BGR);
+		Graphics2D g=bi.createGraphics();
+		g.setColor(Color.WHITE);
+		
 		int hitPoints=0;
 		for (int i = 0; i < MAX_X_POINTS; i++)
 			for (int j = 0; j < MAX_Y_POINTS; j++)
 			{
-				Vector2d imagePoint = rayTrace.castTexturepos((int) (i * partOfWidth), (int) (j * partOfHeight), _metaData, _mainPanel, transformation);
-
-				if (imagePoint != null)
+				for(Vector2d imagePoint : rayTrace.castTexturepos((int) (i * partOfWidth), (int) (j * partOfHeight), _mainPanel, _metaData, transformation))
 				{
 					hitPoints++;
 					
-					/*
-					 * JPanel panel = null; if (!(mainPanel instanceof
-					 * OverViewPanel)){
-					 * 
-					 * panel = new JPanel(); panel.setBackground(Color.YELLOW);
-					 * }
-					 */
 					minX = Math.min(minX, imagePoint.x);
 					maxX = Math.max(maxX, imagePoint.x);
 					minY = Math.min(minY, imagePoint.y);
 					maxY = Math.max(maxY, imagePoint.y);
 
-					/*
-					 * if (!(mainPanel instanceof OverViewPanel)){
-					 * panel.setBounds((int) (imagePoint.x *
-					 * contentPanel.getWidth()) - 3,(int) (imagePoint.y *
-					 * contentPanel.getHeight()) - 3, 5, 5);
-					 * contentPanel.add(panel); }
-					 */
+					g.fillRect(
+							(int) (imagePoint.x * bi.getWidth()) - 3,
+							(int) (imagePoint.y * bi.getHeight()) - 3,
+							5, 5);
 				}
 		}
-		// frame.repaint();
+		
+		g.dispose();
+		
+		if (_mainPanel.getClass()==MainPanel.class)
+		{
+			frame.getContentPane().removeAll();
+			
+			frame.getContentPane().add(new JLabel(new ImageIcon(bi)));
+			frame.validate();
+			frame.repaint();
+		}
 		
 		if(hitPoints<3)
 			return null;
@@ -463,9 +471,15 @@ public abstract class ImageLayer extends Layer
 			return null;
 		
 		return ir;
-		
-		// frame.repaint();
-		// frame.setVisible(true);
+	}
+	
+	JFrame frame = new JFrame();
+	
+	public ImageLayer()
+	{
+		frame.setSize(400, 400);
+		frame.setVisible(true);
+		frame.validate();
 	}
 
 	public int getCadence()

@@ -144,7 +144,7 @@ void main(void)
    		discard;
    		
     vec2 pos = ray.origin.xy + tPlane*ray.direction.xy;
-    vec2 texPos = (pos/physicalImageSize + 0.5) + sunOffset;
+    vec2 texPos = pos/physicalImageSize + 0.5 + sunOffset;
     if (texPos.x >= 1.0 || texPos.x < 0.0 || texPos.y >= 1.0 || texPos.y < 0.0)
     	discard;
     

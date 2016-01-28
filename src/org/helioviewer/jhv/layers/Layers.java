@@ -18,7 +18,7 @@ public class Layers
 	private static ArrayList<Layer> layers = new ArrayList<>();
 	private static int activeLayerIndex = -1;
 
-	private static void updateOpacity(ImageLayer imageLayer, boolean remove)
+	private static void updateOpacities(ImageLayer _layer, boolean remove)
 	{
 		int counter = 0;
 		for (Layer tmpLayer : layers)
@@ -29,7 +29,7 @@ public class Layers
 			if (tmpLayer instanceof ImageLayer)
 			{
 				ImageLayer tmpImageLayer = (ImageLayer) tmpLayer;
-				if (tmpImageLayer == imageLayer)
+				if (tmpImageLayer == _layer)
 					tmpImageLayer.opacity = 1d/counter;
 				else
 				{
@@ -65,7 +65,7 @@ public class Layers
 		Telemetry.trackEvent("Layer added", "Name", _newLayer.getName(), "Full name", _newLayer.getFullName());
 		
 		if (_newLayer instanceof ImageLayer)
-			updateOpacity((ImageLayer)_newLayer, false);
+			updateOpacities((ImageLayer)_newLayer, false);
 		
 		for (LayerListener listener : layerListeners)
 			listener.layerAdded();
@@ -102,7 +102,7 @@ public class Layers
 		
 		ImageLayer.newRenderPassStarted();
 		
-		updateOpacity((ImageLayer)layers.get(_idx), true);
+		updateOpacities((ImageLayer)layers.get(_idx), true);
 		
 		layers.get(_idx).dispose();
 		layers.remove(_idx);

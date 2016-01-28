@@ -169,11 +169,10 @@ public abstract class MetaData
         else
         	rotation = Quaternion.IDENTITY;
         
-        
 		maskRotation = Math.toRadians(tryGetDouble(_doc, "CROTA"));
     }
 
-    public @Nullable Rectangle2D getPhysicalImageSize()
+    public Rectangle2D getPhysicalImageSize()
     {
         return new Rectangle2D.Double(sunPixelPosition.x * -getUnitsPerPixel().x, sunPixelPosition.y * -getUnitsPerPixel().y, resolution.x * getUnitsPerPixel().x, resolution.y * getUnitsPerPixel().y);
     }

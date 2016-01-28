@@ -23,11 +23,18 @@ public class Vector3d
 		z = 0.0;
 	}
 
-	public Vector3d(final double newX, final double newY, final double newZ)
+	public Vector3d(final Vector2d _xy, final double _z)
 	{
-		x = newX;
-		y = newY;
-		z = newZ;
+		x = _xy.x;
+		y = _xy.y;
+		z = _z;
+	}
+
+	public Vector3d(final double _x, final double _y, final double _z)
+	{
+		x = _x;
+		y = _y;
+		z = _z;
 	}
 
 	public Vector3d(final Vector3d v)
@@ -107,11 +114,16 @@ public class Vector3d
 	{
 		return x * x + y * y + z * z;
 	}
+	
+	public Vector2d xy()
+	{
+		return new Vector2d(x,y);
+	}
 
 	public Vector3d normalized()
 	{
-		double length = length();
-		return new Vector3dNormalized(x / length, y / length, z / length);
+		double scale = 1/length();
+		return new Vector3dNormalized(x * scale, y * scale, z * scale);
 	}
 
 	public double dot(final Vector3d _v)

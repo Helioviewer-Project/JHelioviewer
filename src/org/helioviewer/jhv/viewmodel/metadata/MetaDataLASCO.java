@@ -7,7 +7,6 @@ import org.w3c.dom.Document;
 
 class MetaDataLASCO extends MetaData
 {
-	@SuppressWarnings("null")
 	public MetaDataLASCO(Document _doc)
 	{
 		super(_doc, new Vector2i(1024, 1024), get(_doc, "TELESCOP"), get(_doc, "FILTER") + " " + get(_doc, "POLAR"), "LASCO "+get(_doc, "DETECTOR"));

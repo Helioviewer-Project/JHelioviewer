@@ -119,7 +119,7 @@ public class Matrix4d
 		return copy;
 	}
 
-	public Matrix4d inverse()
+	public Matrix4d inversed()
 	{
 		Matrix4d inverse = new Matrix4d();
 		// Cache the matrix values (makes for huge speed increases!)

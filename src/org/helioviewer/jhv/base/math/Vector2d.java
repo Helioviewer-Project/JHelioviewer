@@ -49,6 +49,11 @@ public final class Vector2d
 		return new Vector2d(x + v.x, y + v.y);
 	}
 
+	public Vector2d add(final double _x, final double _y)
+	{
+		return new Vector2d(x + _x, y + _y);
+	}
+
 	public Vector2d subtract(final Vector2d v)
 	{
 		return new Vector2d(x - v.x, y - v.y);

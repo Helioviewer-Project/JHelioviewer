@@ -237,10 +237,21 @@ public class Globals
 											if(_defaultName!=null)
 												fileChooser.setInitialFileName(_defaultName);
 											
-											if(_type==DialogType.OPEN_FILE)
-												selectedFile.put(Optional.ofNullable(fileChooser.showOpenDialog(s)));
-											else
-												selectedFile.put(Optional.ofNullable(fileChooser.showSaveDialog(s)));
+											try
+											{
+												if(_type==DialogType.OPEN_FILE)
+													selectedFile.put(Optional.ofNullable(fileChooser.showOpenDialog(s)));
+												else
+													selectedFile.put(Optional.ofNullable(fileChooser.showSaveDialog(s)));
+											}
+											catch(IllegalArgumentException _iae)
+											{
+												fileChooser.setInitialDirectory(null);
+												if(_type==DialogType.OPEN_FILE)
+													selectedFile.put(Optional.ofNullable(fileChooser.showOpenDialog(s)));
+												else
+													selectedFile.put(Optional.ofNullable(fileChooser.showSaveDialog(s)));
+											}
 											
 											break;
 										case SELECT_DIRECTORY:
@@ -249,7 +260,15 @@ public class Globals
 											if(_directory!=null)
 												dirChooser.setInitialDirectory(new File(_directory));
 											
-											selectedFile.add(Optional.ofNullable(dirChooser.showDialog(s)));
+											try
+											{
+												selectedFile.add(Optional.ofNullable(dirChooser.showDialog(s)));
+											}
+											catch(IllegalArgumentException _iae)
+											{
+												dirChooser.setInitialDirectory(null);
+												selectedFile.add(Optional.ofNullable(dirChooser.showDialog(s)));
+											}
 											break;
 									}
 									
