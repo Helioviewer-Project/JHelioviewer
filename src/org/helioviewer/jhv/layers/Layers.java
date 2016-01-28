@@ -2,10 +2,13 @@ package org.helioviewer.jhv.layers;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
 import javax.annotation.Nullable;
 
 import org.helioviewer.jhv.base.Telemetry;
+import org.helioviewer.jhv.gui.FilterPanel;
+import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
 import org.helioviewer.jhv.viewmodel.metadata.UnsuitableMetaDataException;
 import org.json.JSONArray;
@@ -18,27 +21,31 @@ public class Layers
 	private static ArrayList<Layer> layers = new ArrayList<>();
 	private static int activeLayerIndex = -1;
 
-	private static void updateOpacities(ImageLayer _layer, boolean remove)
+	static void updateOpacities(ImageLayer _layer, boolean remove)
 	{
-		int counter = 0;
+		List<ImageLayer> affected = new ArrayList<ImageLayer>(layers.size());
 		for (Layer tmpLayer : layers)
-			if (tmpLayer instanceof ImageLayer)
-				counter++;
+			if(tmpLayer != _layer)
+				if (tmpLayer instanceof ImageLayer)
+					if(((ImageLayer)tmpLayer).isMetadataInitialized())
+						if((((ImageLayer)tmpLayer).getGroupForOpacity() & _layer.getGroupForOpacity()) != 0)
+							affected.add((ImageLayer) tmpLayer);
 		
-		for (Layer tmpLayer : layers)
-			if (tmpLayer instanceof ImageLayer)
-			{
-				ImageLayer tmpImageLayer = (ImageLayer) tmpLayer;
-				if (tmpImageLayer == _layer)
-					tmpImageLayer.opacity = 1d/counter;
-				else
-				{
-					if (remove)
-						tmpImageLayer.opacity /= ((counter-1d) / counter);
-					else
-						tmpImageLayer.opacity *= ((counter-1d) / counter);
-				}
-			}
+		affected.add(_layer);
+		
+		if(!remove)
+		{
+			for(ImageLayer l : affected)
+				l.opacity *= (affected.size()-1d)/affected.size();
+			_layer.opacity = 1d/affected.size();
+		}
+		else
+		{
+			for(ImageLayer l : affected)
+				l.opacity /= (affected.size()-1d)/affected.size();
+		}
+		
+		MainFrame.SINGLETON.FILTER_PANEL.update();
 	}
 
 	public static void addLayer(Layer _newLayer)
@@ -64,8 +71,8 @@ public class Layers
 		
 		Telemetry.trackEvent("Layer added", "Name", _newLayer.getName(), "Full name", _newLayer.getFullName());
 		
-		if (_newLayer instanceof ImageLayer)
-			updateOpacities((ImageLayer)_newLayer, false);
+		/*if (_newLayer instanceof ImageLayer)
+			updateOpacities((ImageLayer)_newLayer, false);*/
 		
 		for (LayerListener listener : layerListeners)
 			listener.layerAdded();

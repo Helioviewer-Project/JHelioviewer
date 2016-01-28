@@ -9,7 +9,7 @@ class MetaDataLASCO extends MetaData
 {
 	public MetaDataLASCO(Document _doc)
 	{
-		super(_doc, new Vector2i(1024, 1024), get(_doc, "TELESCOP"), get(_doc, "FILTER") + " " + get(_doc, "POLAR"), "LASCO "+get(_doc, "DETECTOR"));
+		super(_doc, new Vector2i(1024, 1024), get(_doc, "TELESCOP"), get(_doc, "FILTER") + " " + get(_doc, "POLAR"), "LASCO "+get(_doc, "DETECTOR"), GROUP_FOR_OPACITY_CORONA_OUTSIDE);
 		if (!"LASCO".equalsIgnoreCase(instrument) || detector==null)
 			throw new UnsuitableMetaDataException("invalid instrument: " + instrument + "/" + detector);
 		

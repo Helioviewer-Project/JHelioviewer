@@ -12,7 +12,8 @@ class MetaDataStereo extends MetaData
 		super(_doc, "COR1".equalsIgnoreCase(get(_doc, "OBSRVTRY")) ? new Vector2i(512, 512) : new Vector2i(2048, 2048),
 				get(_doc, "OBSRVTRY"),
 				get(_doc, "WAVELNTH"),
-				get(_doc, "INSTRUME") + " " + get(_doc, "DETECTOR"));
+				get(_doc, "INSTRUME") + " " + get(_doc, "DETECTOR"),
+				GROUP_FOR_OPACITY_SUN | GROUP_FOR_OPACITY_CORONA_SMALL);
 
 		Vector2d center = Vector2d.NULL;
 

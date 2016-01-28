@@ -9,7 +9,7 @@ public class MetaDataAIA extends MetaData
 {
 	public MetaDataAIA(Document _doc)
 	{
-        super(_doc, new Vector2i(4096, 4096), get(_doc, "TELESCOP"), get(_doc, "WAVELNTH"), "AIA "+get(_doc, "WAVELNTH"));
+        super(_doc, new Vector2i(4096, 4096), get(_doc, "TELESCOP"), get(_doc, "WAVELNTH"), "AIA "+get(_doc, "WAVELNTH"), GROUP_FOR_OPACITY_SUN | GROUP_FOR_OPACITY_CORONA_SMALL);
         
         if (!(instrument.equalsIgnoreCase("AIA_1") || instrument.equalsIgnoreCase("AIA_2") || instrument.equalsIgnoreCase("AIA_3") || instrument.equalsIgnoreCase("AIA_4")))
         	throw new UnsuitableMetaDataException("invalid instrument: "+instrument);

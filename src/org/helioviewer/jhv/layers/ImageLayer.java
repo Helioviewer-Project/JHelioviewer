@@ -59,13 +59,39 @@ public abstract class ImageLayer extends Layer
 	protected LocalDateTime start;
 	protected LocalDateTime end;
 	
+	private int groupForOpacity;
+	
 	protected int cadence;
+	private boolean metadataInitialized=false;
 	
 	@Nullable public Lut getLUT()
 	{
 		return lut;
 	}
-
+	
+	public void initializeMetadata(MetaData _md)
+	{
+		if(metadataInitialized)
+			return;
+		
+		metadataInitialized=true;
+		
+		setLUT(_md.getDefaultLUT());
+		groupForOpacity = _md.groupForOpacity;
+		
+		Layers.updateOpacities(this, false);
+	}
+	
+	public boolean isMetadataInitialized()
+	{
+		return metadataInitialized;
+	}
+	
+	public int getGroupForOpacity()
+	{
+		return groupForOpacity;
+	}
+	
 	public void setLUT(@Nullable Lut _lut)
 	{
 		lut = _lut;
@@ -197,6 +223,7 @@ public abstract class ImageLayer extends Layer
 		return RenderResult.OK;
 	}
 	
+	@SuppressWarnings("null")
 	private void renderWithShader(GL2 gl, MainPanel mainPanel, int shaderprogram, PreparedImage _preparedImageData, MetaData md, float opacityCorona,
 			float xSunOffset, float ySunOffset, Matrix4d _transformation)
 	{
@@ -211,7 +238,6 @@ public abstract class ImageLayer extends Layer
 		gl.glUniform2f(gl.glGetUniformLocation(shaderprogram, "physicalImageSize"), (float)md.getPhysicalImageWidth(), (float)md.getPhysicalImageHeight());
 		gl.glUniform2f(gl.glGetUniformLocation(shaderprogram, "sunOffset"), xSunOffset, ySunOffset);
 		
-		@SuppressWarnings("null")
 		Rectangle2D sourceArea = _preparedImageData.texture.getImageRegion().areaOfSourceImage;
 		gl.glUniform4f(gl.glGetUniformLocation(shaderprogram, "imageOffset"),
 				(float)sourceArea.getX(),
@@ -473,7 +499,7 @@ public abstract class ImageLayer extends Layer
 		frame.setVisible(true);
 		frame.validate();
 	}*/
-
+	
 	public int getCadence()
 	{
 		return cadence;

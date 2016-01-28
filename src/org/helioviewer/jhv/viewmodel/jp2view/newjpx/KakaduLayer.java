@@ -568,8 +568,7 @@ public class KakaduLayer extends ImageLayer
 		if (metaData == null)
 			return new FutureValue<>(null);
 		
-		if(lut==null)
-			setLUT(metaData.getDefaultLUT());
+		initializeMetadata(metaData);
 		
 		final ImageRegion requiredMinimumRegion = calculateRegion(_panel, _quality, metaData, _size);
 		if (requiredMinimumRegion == null)

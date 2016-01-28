@@ -23,6 +23,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+//TODO: split into FrameMetadata & LayerMetadata, layerMetadata should be available without loading anything
 public abstract class MetaData
 {
     private static final DateTimeFormatter SOHO_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd'T'HH:mm:ss.SSS");
@@ -65,14 +66,22 @@ public abstract class MetaData
     public final double stonyhurstLongitude;
     public final double stonyhurstLatitude;
     public final boolean stonyhurstAvailable;
+
     
-	public MetaData(Document _doc, Vector2i _defaultResolution, @Nullable String _observatory, @Nullable String _measurement, @Nullable String _displayName)
+    public static final int GROUP_FOR_OPACITY_SUN = 1;
+    public static final int GROUP_FOR_OPACITY_CORONA_SMALL = 2;
+    public static final int GROUP_FOR_OPACITY_CORONA_OUTSIDE = 4;
+	public final int groupForOpacity;
+    
+	public MetaData(Document _doc, Vector2i _defaultResolution, @Nullable String _observatory, @Nullable String _measurement, @Nullable String _displayName, int _groupForOpacity)
     {
 		if(_measurement==null)
 			throw new UnsuitableMetaDataException();
 		
 		if(_observatory==null)
 			throw new UnsuitableMetaDataException();
+		
+		groupForOpacity = _groupForOpacity;
 		
 		measurement = _measurement;
 		observatory = _observatory;
