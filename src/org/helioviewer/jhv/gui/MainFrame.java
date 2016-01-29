@@ -8,6 +8,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -17,7 +19,9 @@ import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.SwingUtilities;
 
+import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 import org.helioviewer.jhv.gui.components.MenuBar;
@@ -116,24 +120,24 @@ public class MainFrame extends JFrame
 		
 		scrollContentPane.add(LEFT_PANE);
 		
-		//F-IXME: still needed? maybe on os x?
-		/*this.addComponentListener(new ComponentAdapter()
-		{
-			@Override
-			public void componentResized(ComponentEvent e)
+		if(Globals.isOSX())
+			//this is a hack to support GLCanvas as AWT in a splitpane
+			addComponentListener(new ComponentAdapter()
 			{
-				// this is a hack to support GLCanvas as AWT in a splitpane
-				splitPane.setDividerLocation(splitPane.getDividerLocation()+1);
-				SwingUtilities.invokeLater(new Runnable()
+				@Override
+				public void componentResized(@Nullable ComponentEvent e)
 				{
-					@Override
-					public void run()
+					splitPane.setDividerLocation(splitPane.getDividerLocation()+1);
+					SwingUtilities.invokeLater(new Runnable()
 					{
-						splitPane.setDividerLocation(splitPane.getDividerLocation()-1);
-					}
-				});
-			}
-		});*/
+						@Override
+						public void run()
+						{
+							splitPane.setDividerLocation(splitPane.getDividerLocation()-1);
+						}
+					});
+				}
+			});
 		
 		splitPane.setRightComponent(MAIN_PANEL);		
 		splitPane.setLeftComponent(left);
