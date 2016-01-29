@@ -437,11 +437,11 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			ImageLayer.ensureAppropriateTextureCacheSize();
 			
 			//TODO: jumpstart decoding of next frame
-			
+			/*
 			int releaseCounter=0;
 			for(;gl.getContext().isCurrent();releaseCounter++)
 				gl.getContext().release();
-			
+			*/
 			LinkedHashMap<ImageLayer, Future<PreparedImage>> layers = new LinkedHashMap<>();
 			for (Layer layer : Layers.getLayers())
 				if (layer.isVisible() && layer instanceof ImageLayer)
@@ -458,10 +458,10 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 				{
 					Telemetry.trackException(_e);
 				}
-			
+			/*
 			for(int i=0;i<releaseCounter;i++)
 				gl.getContext().makeCurrent();
-			
+			*/
 			for (Entry<ImageLayer, Future<PreparedImage>> l : layers.entrySet())
 				try
 				{
