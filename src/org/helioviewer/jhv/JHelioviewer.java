@@ -100,7 +100,7 @@ public class JHelioviewer
 					
 					
 					// display the splash screen
-					splash = new SplashScreen(18);
+					splash = new SplashScreen(17);
 				}
 				catch(Throwable t)
 				{
