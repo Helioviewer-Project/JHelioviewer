@@ -602,7 +602,7 @@ public class Movie
 					new Kdu_coords() /* BUFFER ORIGIN */,
 					0 /* ROW GAP */,
 					0 /* SUGGESTED INCREMENT */,
-					_target.uploadBuffer.remaining()-position,
+					_target.uploadBuffer.capacity()-position,
 					incompleteRegion,
 					new_region,
 					8 /* PRECISION BITS */,

@@ -157,8 +157,8 @@ public class JHelioviewer
 		//must happen from main thread to work under os x
 		splash.progressTo("Initializing OpenGL");
 		GLProfile.initSingleton();
-		GLDrawableFactory factory = GLDrawableFactory.getFactory(GLProfile.getDefault());
 		GLProfile profile = GLProfile.get(GLProfile.GL2);
+		GLDrawableFactory factory = GLDrawableFactory.getFactory(profile);
 		
 		//must happen from main thread to work under os x
 		splash.progressTo("Creating drawable");

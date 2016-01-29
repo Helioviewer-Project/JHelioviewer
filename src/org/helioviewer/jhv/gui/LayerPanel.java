@@ -533,6 +533,9 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 				case 0:
 					return super.getTableCellRendererComponent(table, null, isSelected, hasFocus, row, column);
 				case 1:
+					
+					//TODO: better solution
+					//TODO: white when selected for contrast
 					JLabel label = (JLabel) super.getTableCellRendererComponent(table, null, isSelected, hasFocus, row, column);
 					label.setPreferredSize(new Dimension(20, 20));
 					if(layer!=null && layer.retryNeeded())

@@ -24,6 +24,7 @@ public class Texture
 	public final int openGLTextureId;
 	public int width;
 	public int height;
+	public boolean needsUpload=false;
 	
 	public float textureWidth=1; //always <=1
 	public float textureHeight=1; //always <=1
@@ -189,6 +190,7 @@ public class Texture
 		textureWidth=_imageRegion.texels.width / (float)width;
 		textureHeight=_imageRegion.texels.height / (float)height;
 		
+		needsUpload=false;
 		//updateDebugImage();
 	}
 	
@@ -264,6 +266,7 @@ public class Texture
 			return;
 		
 		imageRegion=null;
+		needsUpload=false;
 	}
 	
 	public void allocateTexture(int _width, int _height, int _internalFormat)

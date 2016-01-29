@@ -392,8 +392,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
 		gl.glClearDepth(1);
 		gl.glDepthMask(true);
-		gl.glClear(GL2.GL_COLOR_BUFFER_BIT);
-		gl.glClear(GL2.GL_DEPTH_BUFFER_BIT);
+		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 		gl.glDepthMask(false);
 
 		while (!cameraAnimations.isEmpty() && cameraAnimations.get(0).isFinished())
@@ -818,82 +817,89 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		GLDrawable offscreenDrawable = factory.createOffscreenDrawable(null, capabilities, null, tileWidth, tileHeight);
 
 		offscreenDrawable.setRealized(true);
-		GLContext offscreenContext = this.getContext();
+		final GLContext offscreenContext = getContext();
 		offscreenDrawable.setRealized(true);
-		offscreenContext.makeCurrent();
-		GL2 offscreenGL = offscreenContext.getGL().getGL2();
-
-		offscreenGL.glBindFramebuffer(GL2.GL_FRAMEBUFFER, frameBufferObject[0]);
-		generateNewRenderBuffers(offscreenGL, tileWidth, tileHeight);
-
-		BufferedImage screenshot = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_3BYTE_BGR);
-		ByteBuffer.wrap(((DataBufferByte) screenshot.getRaster().getDataBuffer()).getData());
-
-		offscreenGL.glViewport(0, 0, tileWidth, tileHeight);
-		offscreenGL.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-
-		double aspect = imageWidth / (double) imageHeight;
-		// double top = Math.tan(MainPanel.FOV / 360.0 * Math.PI) *
-		// MainPanel.CLIP_NEAR;
-		// double right = top * aspect;
-		// double left = -right;
-		// double bottom = -top;
-
-		TextRenderer textRenderer = new TextRenderer(new Font("SansSerif", Font.BOLD, 24));
-		textRenderer.setColor(1f, 1f, 1f, 1f);
-
-		offscreenGL.glViewport(0, 0, tileWidth, tileHeight);
-
-		offscreenGL.glMatrixMode(GL2.GL_PROJECTION);
-		offscreenGL.glLoadIdentity();
-		offscreenGL.glScaled(1, aspect, 1);
-		offscreenGL.glMatrixMode(GL2.GL_MODELVIEW);
-
-		for (int x = 0; x < countXTiles; x++)
+		try
 		{
-			for (int y = 0; y < countYTiles; y++)
+			offscreenContext.makeCurrent();
+			GL2 offscreenGL = offscreenContext.getGL().getGL2();
+	
+			offscreenGL.glBindFramebuffer(GL2.GL_FRAMEBUFFER, frameBufferObject[0]);
+			generateNewRenderBuffers(offscreenGL, tileWidth, tileHeight);
+	
+			BufferedImage screenshot = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_3BYTE_BGR);
+			ByteBuffer.wrap(((DataBufferByte) screenshot.getRaster().getDataBuffer()).getData());
+	
+			offscreenGL.glViewport(0, 0, tileWidth, tileHeight);
+			offscreenGL.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	
+			double aspect = imageWidth / (double) imageHeight;
+			// double top = Math.tan(MainPanel.FOV / 360.0 * Math.PI) *
+			// MainPanel.CLIP_NEAR;
+			// double right = top * aspect;
+			// double left = -right;
+			// double bottom = -top;
+	
+			TextRenderer textRenderer = new TextRenderer(new Font("SansSerif", Font.BOLD, 24));
+			textRenderer.setColor(1f, 1f, 1f, 1f);
+	
+			offscreenGL.glViewport(0, 0, tileWidth, tileHeight);
+	
+			offscreenGL.glMatrixMode(GL2.GL_PROJECTION);
+			offscreenGL.glLoadIdentity();
+			offscreenGL.glScaled(1, aspect, 1);
+			offscreenGL.glMatrixMode(GL2.GL_MODELVIEW);
+	
+			for (int x = 0; x < countXTiles; x++)
 			{
-				offscreenGL.glMatrixMode(GL2.GL_PROJECTION);
-				offscreenGL.glPushMatrix();
-				offscreenGL.glMatrixMode(GL2.GL_MODELVIEW);
-
-				offscreenGL.glMatrixMode(GL2.GL_PROJECTION);
-				offscreenGL.glViewport(0, 0, imageWidth, imageHeight);
-				offscreenGL.glTranslated(-x, -y, 0);
-				offscreenGL.glMatrixMode(GL2.GL_MODELVIEW);
-
-				// double factor =
-				int destX = tileWidth * x;
-				int destY = tileHeight * y;
-				render(offscreenGL, false, new Dimension(tileWidth, tileHeight));
-
-				if (descriptions != null && x == 0 && y == 0)
+				for (int y = 0; y < countYTiles; y++)
 				{
-					int counter = 0;
-					textRenderer.beginRendering(this.getSurfaceWidth(), this.getSurfaceHeight());
-					for (String description : descriptions)
-						textRenderer.draw(description, 5, 5 + 40 * counter++);
-
-					textRenderer.endRendering();
+					offscreenGL.glMatrixMode(GL2.GL_PROJECTION);
+					offscreenGL.glPushMatrix();
+					offscreenGL.glMatrixMode(GL2.GL_MODELVIEW);
+	
+					offscreenGL.glMatrixMode(GL2.GL_PROJECTION);
+					offscreenGL.glViewport(0, 0, imageWidth, imageHeight);
+					offscreenGL.glTranslated(-x, -y, 0);
+					offscreenGL.glMatrixMode(GL2.GL_MODELVIEW);
+	
+					// double factor =
+					int destX = tileWidth * x;
+					int destY = tileHeight * y;
+					render(offscreenGL, false, new Dimension(tileWidth, tileHeight));
+	
+					if (descriptions != null && x == 0 && y == 0)
+					{
+						int counter = 0;
+						textRenderer.beginRendering(this.getSurfaceWidth(), this.getSurfaceHeight());
+						for (String description : descriptions)
+							textRenderer.draw(description, 5, 5 + 40 * counter++);
+	
+						textRenderer.endRendering();
+					}
+					offscreenGL.glPixelStorei(GL2.GL_PACK_ROW_LENGTH, imageWidth);
+					offscreenGL.glPixelStorei(GL2.GL_PACK_SKIP_ROWS, destY);
+					offscreenGL.glPixelStorei(GL2.GL_PACK_SKIP_PIXELS, destX);
+					offscreenGL.glPixelStorei(GL2.GL_PACK_ALIGNMENT, 1);
+	
+					int cutOffX = imageWidth >= (x + 1) * tileWidth ? tileWidth : tileWidth - x * tileWidth;
+					int cutOffY = imageHeight >= (y + 1) * tileHeight ? tileHeight : tileHeight - y * tileHeight;
+	
+					offscreenGL.glReadPixels(0, 0, cutOffX, cutOffY, GL2.GL_BGR, GL2.GL_UNSIGNED_BYTE,
+							ByteBuffer.wrap(((DataBufferByte) screenshot.getRaster().getDataBuffer()).getData()));
+					offscreenGL.glMatrixMode(GL2.GL_PROJECTION);
+					offscreenGL.glPopMatrix();
+					offscreenGL.glMatrixMode(GL2.GL_MODELVIEW);
 				}
-				offscreenGL.glPixelStorei(GL2.GL_PACK_ROW_LENGTH, imageWidth);
-				offscreenGL.glPixelStorei(GL2.GL_PACK_SKIP_ROWS, destY);
-				offscreenGL.glPixelStorei(GL2.GL_PACK_SKIP_PIXELS, destX);
-				offscreenGL.glPixelStorei(GL2.GL_PACK_ALIGNMENT, 1);
-
-				int cutOffX = imageWidth >= (x + 1) * tileWidth ? tileWidth : tileWidth - x * tileWidth;
-				int cutOffY = imageHeight >= (y + 1) * tileHeight ? tileHeight : tileHeight - y * tileHeight;
-
-				offscreenGL.glReadPixels(0, 0, cutOffX, cutOffY, GL2.GL_BGR, GL2.GL_UNSIGNED_BYTE,
-						ByteBuffer.wrap(((DataBufferByte) screenshot.getRaster().getDataBuffer()).getData()));
-				offscreenGL.glMatrixMode(GL2.GL_PROJECTION);
-				offscreenGL.glPopMatrix();
-				offscreenGL.glMatrixMode(GL2.GL_MODELVIEW);
 			}
+	
+			ImageUtil.flipImageVertically(screenshot);
+			return screenshot;
 		}
-
-		ImageUtil.flipImageVertically(screenshot);
-		return screenshot;
+		finally
+		{
+			offscreenContext.release();
+		}
 	}
 
 	public double getAspect()

@@ -35,6 +35,7 @@ import org.helioviewer.jhv.opengl.camera.CameraMode.MODE;
 import org.helioviewer.jhv.opengl.camera.animation.CameraRotationAnimation;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.TimeLine.DecodeQualityLevel;
+import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
@@ -180,7 +181,8 @@ public abstract class ImageLayer extends Layer
 		}
 		
 		_preparedImageData.texture.usedByCurrentRenderPass=false;
-		
+		if(_preparedImageData.texture.needsUpload)
+			_preparedImageData.texture.uploadByteBuffer(this, md.localDateTime, _preparedImageData.imageRegion);
 		
 		Matrix4d transformation = calcTransformation(mainPanel, md);
 		

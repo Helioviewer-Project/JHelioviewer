@@ -129,7 +129,7 @@ void main(void)
     vec2 uv = gl_TexCoord[0].xy;
     
     /* MV --> z */
-    Ray ray;
+    Ray ray = new Ray(vec3(0.), vec3(0.));
     float zTranslation = (transformation * vec4(0,0,0,1)).z;
     if (cameraMode == 0)
     {

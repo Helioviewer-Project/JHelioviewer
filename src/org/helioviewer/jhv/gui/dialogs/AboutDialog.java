@@ -44,7 +44,7 @@ public final class AboutDialog extends JDialog implements HyperlinkListener
 
         JEditorPane content = new JEditorPane("text/html", "<html><center><font style=\"font-family: '" + getFont().getFamily() + "'; font-size: " + getFont().getSize() + "px;\">"
 	        + "<b>JHelioviewer " + Globals.VERSION + "</b><br>"
-	        + "\u00A92015 ESA JHelioviewer Team<br>"
+	        + "\u00A92016 ESA JHelioviewer Team<br>"
 	        + "Part of the ESA/NASA Helioviewer project<br><br>"
 	        + "JHelioviewer is released under the <br>"
 	        + "<a href=JHelioviewer.txt>Mozilla Public License Version 2.0</a><br>"

@@ -618,9 +618,7 @@ public class KakaduLayer extends ImageLayer
 				
 				if(MovieCache.decodeImage(sourceId, metaData.localDateTime, _quality, requiredSafeRegion.decodeZoomFactor, requiredSafeRegion.texels, tex))
 				{
-					_gl.makeCurrent();
-					tex.uploadByteBuffer(KakaduLayer.this, metaData.localDateTime, requiredSafeRegion);
-					_gl.release();
+					tex.needsUpload=true;
 					return new PreparedImage(tex,requiredSafeRegion);
 				}
 				else
