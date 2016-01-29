@@ -207,7 +207,6 @@ public class JHelioviewer
 		splash.progressTo("Compiling shaders");
 		sharedDrawable.getContext().makeCurrent();
 		ImageLayer.init();
-		sharedDrawable.getContext().release();
 		
 		//warning: do this on the main thread for os x. despite the fact that it is incorrect
 		//regarding EDT. os x doesn't initialize properly if glcanvas are created off context.
@@ -215,6 +214,7 @@ public class JHelioviewer
 		ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
 		JPopupMenu.setDefaultLightWeightPopupEnabled(false);
 		MainFrame.SINGLETON.getClass();
+		sharedDrawable.getContext().release();
 		
 		SwingUtilities.invokeAndWait(new Runnable()
 		{
