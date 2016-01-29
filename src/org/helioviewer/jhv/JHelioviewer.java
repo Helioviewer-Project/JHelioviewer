@@ -209,6 +209,13 @@ public class JHelioviewer
 		ImageLayer.init();
 		sharedDrawable.getContext().release();
 		
+		//warning: do this on the main thread for os x. despite the fact that it is incorrect
+		//regarding EDT. os x doesn't initialize properly if glcanvas are created off context.
+        splash.progressTo("Starting Swing");
+		ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
+		JPopupMenu.setDefaultLightWeightPopupEnabled(false);
+		MainFrame.SINGLETON.getClass();
+		
 		SwingUtilities.invokeAndWait(new Runnable()
 		{
 			@Override
@@ -216,14 +223,6 @@ public class JHelioviewer
 			{
 				try
 				{
-			        splash.progressTo("Switching OpenGL context");
-					sharedDrawable.getContext().makeCurrent();
-					
-		            splash.progressTo("Starting Swing");
-					ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
-					JPopupMenu.setDefaultLightWeightPopupEnabled(false);
-					MainFrame.SINGLETON.getClass();
-					
 					// force initialization of UltimatePluginInterface
 					splash.progressTo("Initializing plugins");
 					Plugins.SINGLETON.getClass();
@@ -234,9 +233,8 @@ public class JHelioviewer
 					else
 						CameraMode.set2DMode();
 					
-					splash.progressTo("Opening main window");
+					splash.progressTo("Show main window");
 					MainFrame.SINGLETON.setVisible(true);
-					sharedDrawable.getContext().release();
 					
 		            splash.progressTo("Loading observatories");
 					if (Settings.getBoolean(Settings.BooleanKey.STARTUP_LOADMOVIE))
