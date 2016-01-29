@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="6.0.4" transformSequenceNumber="5">
   <directoryPresets config="../resources" />
-  <application name="JHelioviewer" distributionSourceDir="" applicationId="7791-5722-0682-7193" mediaDir="./builds" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="9" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="JHelioviewer" publisher="ESA JHelioviewer Team" publisherWeb="http://www.jhelioviewer.org" version="3.0.1" allPathsRelative="true" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="7ed177551bd348bc" javaMinVersion="1.8" javaMaxVersion="" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
+  <application name="JHelioviewer" distributionSourceDir="" applicationId="7791-5722-0682-7193" mediaDir="./builds" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="9" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="JHelioviewer" publisher="ESA JHelioviewer Team" publisherWeb="http://www.jhelioviewer.org" version="3.0.2" allPathsRelative="true" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="7ed177551bd348bc" javaMinVersion="1.8" javaMaxVersion="" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="en" customLocalizationFile="" />
       <additionalLanguages />
@@ -13,7 +13,7 @@
       <variable name="mode" value="beta" description="&quot;release&quot; or &quot;beta&quot;" category="" />
     </variables>
     <mergedProjects />
-    <codeSigning macEnabled="true" macPkcs12File="../../../cer/Apple Dev Certificate Stefan Meier.p12" windowsEnabled="true" windowsKeySource="pkcs12" windowsPvkFile="" windowsSpcFile="" windowsPkcs12File="../../../cer/Open Source Developer, Simon Felix.pfx" />
+    <codeSigning macEnabled="true" macPkcs12File="../../cer/Apple Dev Certificate Stefan Meier.p12" windowsEnabled="true" windowsKeySource="pkcs12" windowsPvkFile="" windowsSpcFile="" windowsPkcs12File="../../cer/Open Source Developer, Simon Felix.pfx" />
   </application>
   <files keepModificationTimes="false" missingFilesStrategy="error" globalExcludeSuffixes=".DS_Store" defaultOverwriteMode="4" defaultUninstallMode="0" launcherOverwriteMode="3" defaultFileMode="644" defaultDirMode="755">
     <filesets />
@@ -32,7 +32,14 @@
         </exclude>
       </dirEntry>
       <dirEntry mountPoint="559" file="../lib/native" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="direct" subDirectory="bin" excludeSuffixes="" dirMode="755" overrideDirMode="false">
-        <exclude />
+        <exclude>
+          <entry location="kdu_a77D.dll" fileType="regular" />
+          <entry location="kdu_jniD.dll" fileType="regular" />
+          <entry location="kdu_v77D.dll" fileType="regular" />
+          <entry location="msvcp120d.dll" fileType="regular" />
+          <entry location="msvcr120d.dll" fileType="regular" />
+          <entry location="vccorlib120d.dll" fileType="regular" />
+        </exclude>
       </dirEntry>
       <dirEntry mountPoint="80" file="../lib" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="subdir" subDirectory="lib" excludeSuffixes="" dirMode="755" overrideDirMode="false">
         <exclude>
@@ -1497,18 +1504,18 @@ return true;</string>
     </applications>
   </installerGui>
   <mediaSets>
-    <macosArchive name="Mac OS X Single Bundle Archive" id="68" customizedId="" mediaFileName="${compiler:sys.shortName}" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="macosx-amd64-1.8.0_60_unpacked" manualJREEntry="false" appleJre="false" archiveType="dmg" volumeName="${compiler:sys.shortName}" launcherId="24">
+    <macosArchive name="Mac OS X Single Bundle Archive" id="68" customizedId="" mediaFileName="" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="macosx-amd64-1.8.0_72_unpacked" manualJREEntry="false" appleJre="false" archiveType="dmg" volumeName="${compiler:sys.shortName}" launcherId="24">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
       <exclude>
-        <entry location="bin/kdu_a75R.dll" fileType="regular" />
-        <entry location="bin/kdu_jni.dll" fileType="regular" />
-        <entry location="bin/kdu_v75R.dll" fileType="regular" />
-        <entry location="bin/libkdu_a75R.so" fileType="regular" />
-        <entry location="bin/libkdu_jni.so" fileType="regular" />
-        <entry location="bin/libkdu_v75R.so" fileType="regular" />
+        <entry location="bin/kdu_a77R.dll" fileType="regular" />
+        <entry location="bin/kdu_jniR.dll" fileType="regular" />
+        <entry location="bin/kdu_v77R.dll" fileType="regular" />
+        <entry location="bin/libkdu_a77R.so" fileType="regular" />
+        <entry location="bin/libkdu_jniR.so" fileType="regular" />
+        <entry location="bin/libkdu_v77R.so" fileType="regular" />
         <entry location="bin/msvcr120.dll" fileType="regular" />
         <entry location="lib/gluegen-rt-natives-linux-amd64.jar" fileType="regular" />
         <entry location="lib/gluegen-rt-natives-linux-i586.jar" fileType="regular" />
@@ -1524,8 +1531,6 @@ return true;</string>
         <entry location="lib/xuggle-xuggler-5.4-linux.jar" fileType="regular" />
         <entry location="lib/xuggle-xuggler-5.4-win32.jar" fileType="regular" />
         <entry location="lib/xuggle-xuggler-5.4-win64.jar" fileType="regular" />
-        <entry location="resources/libs/linux" fileType="regular" />
-        <entry location="resources/libs/windows" fileType="regular" />
       </exclude>
       <variables>
         <variable name="dir" value="${sys.contentDir}" description="" category="" />
@@ -1538,11 +1543,10 @@ return true;</string>
         <file name=".DS_Store" file="./resources/test/.DS_Store" />
         <file name=".background/backgroundImage.jpg" file="./resources/test/backgroundImage.jpg" />
         <file name=".VolumeIcon.icns" file="./resources/test/.VolumeIcon.icns" />
-        <symlink name="JHelioviewer" target="JHelioviewer" />
         <symlink name="Applications" target="/Applications" />
       </topLevelFiles>
     </macosArchive>
-    <windows name="Windows 64 bit" id="150" customizedId="" mediaFileName="" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="64" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="windows-amd64-1.8.0_60" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" verifyIntegrity="true">
+    <windows name="Windows 64 bit" id="150" customizedId="" mediaFileName="" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="64" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="windows-amd64-1.8.0_72" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" verifyIntegrity="true">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedLaunchers>
@@ -1551,17 +1555,16 @@ return true;</string>
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
       <exclude>
-        <entry location="bin/libkdu_a75R.dylib" fileType="regular" />
-        <entry location="bin/libkdu_a75R.so" fileType="regular" />
-        <entry location="bin/libkdu_jni.jnilib" fileType="regular" />
-        <entry location="bin/libkdu_jni.so" fileType="regular" />
-        <entry location="bin/libkdu_v75R.dylib" fileType="regular" />
-        <entry location="bin/libkdu_v75R.so" fileType="regular" />
+        <entry location="bin/libkdu_a77R.dylib" fileType="regular" />
+        <entry location="bin/libkdu_a77R.so" fileType="regular" />
+        <entry location="bin/libkdu_jniR.jnilib" fileType="regular" />
+        <entry location="bin/libkdu_jniR.so" fileType="regular" />
+        <entry location="bin/libkdu_v77R.dylib" fileType="regular" />
+        <entry location="bin/libkdu_v77R.so" fileType="regular" />
         <entry location="lib/gluegen-rt-natives-linux-amd64.jar" fileType="regular" />
         <entry location="lib/gluegen-rt-natives-linux-i586.jar" fileType="regular" />
         <entry location="lib/gluegen-rt-natives-macosx-universal.jar" fileType="regular" />
         <entry location="lib/gluegen-rt-natives-windows-i586.jar" fileType="regular" />
-        <entry location="lib/i4jruntime.jar" fileType="regular" />
         <entry location="lib/jogl-all-natives-linux-amd64.jar" fileType="regular" />
         <entry location="lib/jogl-all-natives-linux-i586.jar" fileType="regular" />
         <entry location="lib/jogl-all-natives-macosx-universal.jar" fileType="regular" />
@@ -1571,8 +1574,6 @@ return true;</string>
         <entry location="lib/xuggle-xuggler-5.4-linux.jar" fileType="regular" />
         <entry location="lib/xuggle-xuggler-5.4-osx.jar" fileType="regular" />
         <entry location="lib/xuggle-xuggler-5.4-win32.jar" fileType="regular" />
-        <entry location="resources/libs/linux" fileType="regular" />
-        <entry location="resources/libs/mac" fileType="regular" />
       </exclude>
       <variables />
       <autoUpdate useMinUpdatableVersion="false" minUpdatableVersion="" useMaxUpdatableVersion="false" maxUpdatableVersion="">
@@ -1589,12 +1590,12 @@ return true;</string>
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
       <exclude>
-        <entry location="bin/kdu_a75R.dll" fileType="regular" />
-        <entry location="bin/kdu_jni.dll" fileType="regular" />
-        <entry location="bin/kdu_v75R.dll" fileType="regular" />
-        <entry location="bin/libkdu_a75R.dylib" fileType="regular" />
-        <entry location="bin/libkdu_jni.jnilib" fileType="regular" />
-        <entry location="bin/libkdu_v75R.dylib" fileType="regular" />
+        <entry location="bin/kdu_a77R.dll" fileType="regular" />
+        <entry location="bin/kdu_jniR.dll" fileType="regular" />
+        <entry location="bin/kdu_v77R.dll" fileType="regular" />
+        <entry location="bin/libkdu_a77R.dylib" fileType="regular" />
+        <entry location="bin/libkdu_jniR.jnilib" fileType="regular" />
+        <entry location="bin/libkdu_v77R.dylib" fileType="regular" />
         <entry location="bin/msvcr120.dll" fileType="regular" />
         <entry location="lib/gluegen-rt-natives-linux-i586.jar" fileType="regular" />
         <entry location="lib/gluegen-rt-natives-macosx-universal.jar" fileType="regular" />
@@ -1608,8 +1609,7 @@ return true;</string>
         <entry location="lib/xuggle-xuggler-5.4-all.jar" fileType="regular" />
         <entry location="lib/xuggle-xuggler-5.4-osx.jar" fileType="regular" />
         <entry location="lib/xuggle-xuggler-5.4-win32.jar" fileType="regular" />
-        <entry location="resources/libs/mac" fileType="regular" />
-        <entry location="resources/libs/windows" fileType="regular" />
+        <entry location="lib/xuggle-xuggler-5.4-win64.jar" fileType="regular" />
       </exclude>
       <variables />
       <autoUpdate useMinUpdatableVersion="false" minUpdatableVersion="" useMaxUpdatableVersion="false" maxUpdatableVersion="">
@@ -1638,12 +1638,12 @@ return true;</string>
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
       <exclude>
-        <entry location="bin/kdu_a75R.dll" fileType="regular" />
-        <entry location="bin/kdu_jni.dll" fileType="regular" />
-        <entry location="bin/kdu_v75R.dll" fileType="regular" />
-        <entry location="bin/libkdu_a75R.dylib" fileType="regular" />
-        <entry location="bin/libkdu_jni.jnilib" fileType="regular" />
-        <entry location="bin/libkdu_v75R.dylib" fileType="regular" />
+        <entry location="bin/kdu_a77R.dll" fileType="regular" />
+        <entry location="bin/kdu_jniR.dll" fileType="regular" />
+        <entry location="bin/kdu_v77R.dll" fileType="regular" />
+        <entry location="bin/libkdu_a77R.dylib" fileType="regular" />
+        <entry location="bin/libkdu_jniR.jnilib" fileType="regular" />
+        <entry location="bin/libkdu_v77R.dylib" fileType="regular" />
         <entry location="bin/msvcr120.dll" fileType="regular" />
         <entry location="lib/gluegen-rt-natives-linux-i586.jar" fileType="regular" />
         <entry location="lib/gluegen-rt-natives-macosx-universal.jar" fileType="regular" />
@@ -1657,8 +1657,7 @@ return true;</string>
         <entry location="lib/xuggle-xuggler-5.4-all.jar" fileType="regular" />
         <entry location="lib/xuggle-xuggler-5.4-osx.jar" fileType="regular" />
         <entry location="lib/xuggle-xuggler-5.4-win32.jar" fileType="regular" />
-        <entry location="resources/libs/mac" fileType="regular" />
-        <entry location="resources/libs/windows" fileType="regular" />
+        <entry location="lib/xuggle-xuggler-5.4-win64.jar" fileType="regular" />
       </exclude>
       <variables />
       <autoUpdate useMinUpdatableVersion="false" minUpdatableVersion="" useMaxUpdatableVersion="false" maxUpdatableVersion="">

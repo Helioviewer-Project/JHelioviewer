@@ -137,6 +137,7 @@ public class LicenseDialog extends JDialog
 		DialogTools.setDefaultButtons(acceptBtn, cancelBtn);
 
 		setSize(new Dimension(800, 600));
+		validate();
 		
 		setLocationRelativeTo(null);
 		setVisible(true);

@@ -6,6 +6,7 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.annotation.Nullable;
 import javax.swing.JFrame;
@@ -13,6 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.RepaintManager;
+import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
@@ -82,8 +84,28 @@ public class SplashScreen extends JFrame
 	 * @param text
 	 *            new text which shall be displayed.
 	 */
-	public void progressTo(String text)
+	public void progressTo(final String text)
 	{
+		if(!SwingUtilities.isEventDispatchThread())
+		{
+			try
+			{
+				SwingUtilities.invokeAndWait(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						progressTo(text);
+					}
+				});
+			}
+			catch (Throwable t)
+			{
+				Telemetry.trackException(t);
+			}
+			return;
+		}
+		
 		System.out.println(text);
 		if (text != null)
 			imagePanel.setText(text);

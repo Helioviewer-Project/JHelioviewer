@@ -137,8 +137,6 @@ void main(void)
         ray.direction = (transformation * normalize(vec4(uv * tanFOV, -1.0, 0))).xyz;
     }
     
-    vec3 lutColor;
-    
     float tPlane = intersectPlane(ray, plane);
    	if (tPlane <= 0.)
    		discard;
