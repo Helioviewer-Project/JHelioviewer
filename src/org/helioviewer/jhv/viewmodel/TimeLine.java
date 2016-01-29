@@ -254,7 +254,7 @@ public class TimeLine implements LayerListener
 	
 	public void setNoTimeRange()
 	{
-		startTime=endTime=LocalDateTime.now();
+		endTime=startTime;
 		setCurrentDate(startTime);
 		cadence=1;
 		setPlaying(false);
@@ -265,6 +265,8 @@ public class TimeLine implements LayerListener
 	@Override
 	public void layersRemoved()
 	{
+		if(Layers.getActiveImageLayer()==null)
+			setNoTimeRange();
 	}
 
 	@Override

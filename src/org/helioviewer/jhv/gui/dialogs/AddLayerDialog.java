@@ -1,6 +1,7 @@
 package org.helioviewer.jhv.gui.dialogs;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
@@ -113,13 +114,10 @@ public class AddLayerDialog extends JDialog
 	public AddLayerDialog()
 	{
 		super(MainFrame.SINGLETON, "Add Layer", true);
+		setResizable(false);
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		
     	Telemetry.trackEvent("Dialog", "Type", getClass().getSimpleName());
-
-		setResizable(false);
-		setMinimumSize(new Dimension(450, 370));
-		setPreferredSize(new Dimension(450, 370));
 		setLocationRelativeTo(MainFrame.SINGLETON);
 		initGui();
 		addData();
@@ -133,6 +131,8 @@ public class AddLayerDialog extends JDialog
 				dispose();
 			}
 		}, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
+		
+		pack();
 	}
 
 	private void addData()
@@ -303,7 +303,7 @@ public class AddLayerDialog extends JDialog
 	private void initGui()
 	{
 		getContentPane().setLayout(new BorderLayout());
-		contentPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
+		contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		//tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		contentPanel.setLayout(new BorderLayout());
@@ -316,10 +316,10 @@ public class AddLayerDialog extends JDialog
 	private void initLayerGui(JPanel contentPanel)
 	{
 		GridBagLayout gbl_layerPanel = new GridBagLayout();
-		gbl_layerPanel.columnWidths = new int[]{135, 0, 100, 0, 0};
-		gbl_layerPanel.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0};
-		gbl_layerPanel.columnWeights = new double[]{0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
-		gbl_layerPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_layerPanel.columnWidths = new int[] {150, 30, 75, 100};
+		gbl_layerPanel.rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0, 0};
+		gbl_layerPanel.columnWeights = new double[]{0.0, 1.0, 0.0, 0.0};
+		gbl_layerPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 		layerPanel.setLayout(gbl_layerPanel);
 		
 		datePickerStartDate = new DatePicker(lastStart, this);
@@ -461,8 +461,11 @@ public class AddLayerDialog extends JDialog
 		contentPanel.add(cmbbxFilter2, gbc_cmbbxFilter2);
 
 		JPanel buttonPane = new JPanel();
-		buttonPane.setBorder(new EmptyBorder(0, 10, 10, 10));
-		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		buttonPane.setBorder(new EmptyBorder(10, 10, 10, 10));
+		FlowLayout fl_buttonPane = new FlowLayout(FlowLayout.RIGHT);
+		fl_buttonPane.setVgap(0);
+		fl_buttonPane.setHgap(0);
+		buttonPane.setLayout(fl_buttonPane);
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 		
 		panel = new JPanel();
@@ -498,7 +501,6 @@ public class AddLayerDialog extends JDialog
 									cadence, filter.getNickname());
 							Layers.addLayer(newLayer);
 
-							//FIXME: camera rotation not correct for COR1 layer
 							newLayer.animateCameraToFacePlane = true;
 							
 							Settings.setInt(Settings.IntKey.ADDLAYER_LAST_SOURCEID, filter.sourceId);
@@ -527,6 +529,25 @@ public class AddLayerDialog extends JDialog
 				
 				DialogTools.setDefaultButtons(okButton,cancelButton);
 		
+				
+				datePickerStartDate.addChangeListener(new ActionListener()
+				{
+					@Override
+					public void actionPerformed(@Nullable ActionEvent e)
+					{
+						okButton.setEnabled(datePickerStartDate.containsValidDateTime() && datePickerEndDate.containsValidDateTime() && datePickerStartDate.getDateTime().isBefore(datePickerEndDate.getDateTime()));
+					}
+				});
+				datePickerEndDate.addChangeListener(new ActionListener()
+				{
+					@Override
+					public void actionPerformed(@Nullable ActionEvent e)
+					{
+						okButton.setEnabled(datePickerStartDate.containsValidDateTime() && datePickerEndDate.containsValidDateTime() && datePickerStartDate.getDateTime().isBefore(datePickerEndDate.getDateTime()));
+					}
+				});
+		
+				
 		if(Globals.isOSX())
 		{
 			buttonPane.remove(okButton);

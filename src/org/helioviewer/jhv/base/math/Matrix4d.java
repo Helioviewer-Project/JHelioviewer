@@ -1,5 +1,7 @@
 package org.helioviewer.jhv.base.math;
 
+import org.helioviewer.jhv.gui.MainPanel;
+
 public class Matrix4d
 {
 	public static final Matrix4d IDENTITY = new Matrix4d(1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f);
@@ -89,11 +91,6 @@ public class Matrix4d
 				m[1] * v.x + m[5] * v.y + m[9] * v.z + m[13] * v.w,
 				m[2] * v.x + m[6] * v.y + m[10] * v.z + m[14] * v.w,
 				m[3] * v.x + m[7] * v.y + m[11] * v.z + m[15] * v.w);
-	}
-
-	public Vector3d translationPart()
-	{
-		return new Vector3d(m[12], m[13], m[14]);
 	}
 
 	public Matrix4d translatedAbsolute(double x, double y, double z)
@@ -331,4 +328,19 @@ public class Matrix4d
 			v[i]=(float)m[i];
 		return v;
 	}
+
+	public static Matrix4d createTranslationMatrix(Vector3d _translation)
+	{
+		return createTranslationMatrix(_translation.x, _translation.y, _translation.z);
+	}
+
+	public static Matrix4d createTranslationMatrix(double _x, double _y, double _z)
+	{
+		return new Matrix4d(
+				1f, 0f, 0f, _x,
+				0f, 1f, 0f, _y,
+				0f, 0f, 1f, _z,
+				0f, 0f, 0f, 1f);
+	}
+
 }

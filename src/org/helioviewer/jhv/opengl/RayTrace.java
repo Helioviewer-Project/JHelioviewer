@@ -40,15 +40,19 @@ public class RayTrace
 
 		Vector3d origin;
 		Vector3d direction;
+		
+		Matrix4d transformation = Matrix4d.createTranslationMatrix(mainPanel.getTranslationCurrent())
+				.multiplied(mainPanel.getRotationCurrent().toMatrix());
+		
 		if (CameraMode.mode == MODE.MODE_3D)
 		{
-			origin = mainPanel.getTransformation().multiply(new Vector3d(0, 0, 0));
+			origin = transformation.multiply(new Vector3d(0, 0, 0));
 			direction = new Vector3d(newX * tanFOV, newY * tanFOV, -1).normalized();
 		}
 		else
 		{
 			tanFOV *= mainPanel.getTranslationCurrent().z;
-			origin = mainPanel.getTransformation().multiply(new Vector3d(0, 0, 1))
+			origin = transformation.multiply(new Vector3d(0, 0, 1))
 					.add(new Vector3d(newX * tanFOV, newY * tanFOV, 0));
 			direction = new Vector3d(0, 0, -1).normalized();
 		}

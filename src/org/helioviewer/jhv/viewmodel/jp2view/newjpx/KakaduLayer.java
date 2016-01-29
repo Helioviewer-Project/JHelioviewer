@@ -485,10 +485,12 @@ public class KakaduLayer extends ImageLayer
 						@Override
 						public void run()
 						{
+							for(Texture t:ImageLayer.textures)
+								t.invalidate();
 							MainFrame.SINGLETON.LAYER_PANEL.updateData();
-							MainFrame.SINGLETON.MAIN_PANEL.repaint(1000);
-							MainFrame.SINGLETON.OVERVIEW_PANEL.repaint(1000);
-							MainFrame.SINGLETON.MOVIE_PANEL.repaint(1000);
+							MainFrame.SINGLETON.MAIN_PANEL.repaint();
+							MainFrame.SINGLETON.OVERVIEW_PANEL.repaint();
+							MainFrame.SINGLETON.MOVIE_PANEL.repaint();
 						}
 					});
 					

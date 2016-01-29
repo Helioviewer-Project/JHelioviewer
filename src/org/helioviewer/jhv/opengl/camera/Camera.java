@@ -15,7 +15,6 @@ public interface Camera
     Vector3d getTranslationEnd();
 	void setTranslationCurrent(Vector3d translation);
 	void setTranslationEnd(Vector3d _translationEnd);
-	Matrix4d getTransformation();
 	void addCameraAnimation(CameraAnimation cameraAnimation);
 	double getAspect();
 	void repaint();

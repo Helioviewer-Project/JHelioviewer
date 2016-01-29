@@ -344,12 +344,6 @@ public class Movie
 	
 	public Movie(int _sourceId, Kdu_cache _kduCache)
 	{
-		//FIXME: Note carefully that the object must not be passed into kdu_codestream::create at least until
-		//the main header data-bin has been completed. This may be verified by calling get_databin_length, with
-		//a data-bin class of KDU_MAIN_HEADER_DATABIN. Before passing the object to kdu_codestream::create you must
-		//all set_read_scope, passing in these same data-bin class and in-class identifiers ( KDU_MAIN_HEADER_DATABIN
-		//and 0, respectively). 
-		
 		sourceId = _sourceId;
 		quality = Quality.PREVIEW;
 		family_src = new Jp2_threadsafe_family_src();

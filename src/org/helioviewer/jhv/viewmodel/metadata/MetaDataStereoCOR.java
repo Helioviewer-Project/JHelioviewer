@@ -5,15 +5,15 @@ import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.w3c.dom.Document;
 
-class MetaDataStereo extends MetaData
+class MetaDataStereoCOR extends MetaData
 {
-	public MetaDataStereo(Document _doc)
+	public MetaDataStereoCOR(Document _doc)
 	{
 		super(_doc, "COR1".equalsIgnoreCase(get(_doc, "OBSRVTRY")) ? new Vector2i(512, 512) : new Vector2i(2048, 2048),
 				get(_doc, "OBSRVTRY"),
 				get(_doc, "WAVELNTH"),
 				get(_doc, "INSTRUME") + " " + get(_doc, "DETECTOR"),
-				GROUP_FOR_OPACITY_SUN | GROUP_FOR_OPACITY_CORONA_SMALL);
+				GROUP_FOR_OPACITY_CORONA_OUTSIDE);
 
 		Vector2d center = Vector2d.NULL;
 

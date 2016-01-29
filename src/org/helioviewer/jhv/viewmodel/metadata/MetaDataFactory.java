@@ -19,7 +19,7 @@ public class MetaDataFactory
 			MetaDataLASCO.class,
 			MetaDataMDI.class,
 			MetaDataStereoEUVI.class,
-			MetaDataStereo.class,
+			MetaDataStereoCOR.class,
 			MetaDataHinode.class,
 			MetaDataSXT.class,
 			MetaDataSWAP.class

@@ -161,19 +161,21 @@ public abstract class MetaData
         }
         else if (resolution.x == 1024)
     	{
-    		Telemetry.trackEvent("Move this to instrument specific class", "Measurement", measurement, "Detector", detector, "Instrument", instrument, "Observatory", observatory, "LDT", localDateTime.toString());
+        	if(!(this instanceof MetaDataLASCO))
+        		Telemetry.trackEvent("Move this to instrument specific class", "Measurement", measurement, "Detector", detector, "Instrument", instrument, "Observatory", observatory, "LDT", localDateTime.toString());
     		solarPixelRadius = new Vector2d(360,360);
     	}
     	else if(resolution.x == 512)
     	{
-    		Telemetry.trackEvent("Move this to instrument specific class", "Measurement", measurement, "Detector", detector, "Instrument", instrument, "Observatory", observatory, "LDT", localDateTime.toString());
+    		if(!(this instanceof MetaDataLASCO))
+    			Telemetry.trackEvent("Move this to instrument specific class", "Measurement", measurement, "Detector", detector, "Instrument", instrument, "Observatory", observatory, "LDT", localDateTime.toString());
     		solarPixelRadius = new Vector2d(180,180);
     	}
         
         if (stonyhurstAvailable)
         {
         	HeliocentricCartesianCoordinate hcc = new HeliographicCoordinate(Math.toRadians(stonyhurstLongitude), Math.toRadians(stonyhurstLatitude)).toHeliocentricCartesianCoordinate();
-        	rotation = Quaternion.calcRotationBetween(new Vector3d(0, 0, Constants.SUN_RADIUS), new Vector3d(hcc.x, hcc.y, hcc.z));
+        	rotation = Quaternion.calcRotationBetween(new Vector3d(hcc.x, hcc.y, hcc.z), new Vector3d(0, 0, Constants.SUN_RADIUS));
         }
         else
         	rotation = Quaternion.IDENTITY;

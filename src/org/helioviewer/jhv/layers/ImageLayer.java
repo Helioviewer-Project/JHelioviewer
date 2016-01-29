@@ -15,6 +15,7 @@ import javax.annotation.Nullable;
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.Telemetry;
+import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.Quaternion;
 import org.helioviewer.jhv.base.math.Vector2d;
@@ -171,9 +172,10 @@ public abstract class ImageLayer extends Layer
 		{
 			animateCameraToFacePlane=false;
 			
+			//FIXME: camera rotation not correct for COR1 & STEREO EUVI, ...
 			MainFrame.SINGLETON.MAIN_PANEL.addCameraAnimation(new CameraRotationAnimation(
 					MainFrame.SINGLETON.MAIN_PANEL,
-					MainFrame.SINGLETON.MAIN_PANEL.getRotationEnd().inversed().rotate(md.rotation)
+					MainFrame.SINGLETON.MAIN_PANEL.getRotationEnd().inversed().multiply(md.rotation.inversed())
 				));
 		}
 		
@@ -188,7 +190,8 @@ public abstract class ImageLayer extends Layer
 		float opacityCorona = 0;
 		if (coronaVisible)
 		{
-			double angle = Math.toDegrees(Math.acos(transformation.multiply(new Vector4d(0,0,1,0)).dot(new Vector4d(0, 0, 1, 0))));
+			double dot = MathUtils.clip(transformation.multiply(new Vector4d(0,0,1,0)).dot(new Vector4d(0, 0, 1, 0)), -1, 1);
+			double angle = Math.toDegrees(Math.acos(dot));
 			double maxAngle = 60;
 			double minAngle = 30;
 			opacityCorona = (float) ((Math.abs(90 - angle) - minAngle) / (maxAngle - minAngle));
@@ -285,10 +288,13 @@ public abstract class ImageLayer extends Layer
 	{
 		//see http://jgiesen.de/sunrot/index.html and http://www.petermeadows.com/stonyhurst/sdisk6in7.gif
 		double diffRotattion = DifferentialRotation.calculateRotationInRadians(0,md.localDateTime.until(TimeLine.SINGLETON.getCurrentDateTime(), ChronoUnit.MILLIS)/1000f);
-		Quaternion diffRotationQuat = Quaternion.createRotation(-diffRotattion, mainPanel.getRotationCurrent().inversed().toMatrix().multiply(new Vector3d(0, 1, 0)));
-		return mainPanel.getTransformation()
+		Quaternion diffRotationQuat = Quaternion.createRotation(-diffRotattion, new Vector3d(0, 1, 0));
+		
+		return Matrix4d.createTranslationMatrix(mainPanel.getTranslationCurrent())
 				.multiplied(diffRotationQuat.toMatrix())
-				.multiplied(md.rotation.toMatrix());
+				.multiplied(md.rotation.toMatrix())
+				.multiplied(mainPanel.getRotationCurrent().toMatrix())
+				;
 	}
 	
 	private static int buildShader(GL2 gl, String _fnVertex, String _fnFragment)

@@ -330,11 +330,6 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			listener.cameraChanged();
 	}
 
-	public Matrix4d getTransformation()
-	{
-		return rotationNow.toMatrix().translated(translationNow);
-	}
-
 	public void activateRotationInteraction()
 	{
 		cameraInteractionsLeft = new CameraInteraction[]
@@ -693,6 +688,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			HeliographicCoordinate newCoord = new HeliocentricCartesianCoordinate(hitPoint.x, hitPoint.y, hitPoint.z).toHeliographicCoordinate();
 			double angle = DifferentialRotation.calculateRotationInRadians(newCoord.latitude, difference);
 			
+			//FIXME: wrong for stereo
 			Quaternion newRotation = Quaternion.createRotation(angle, new Vector3d(0, 1, 0)).rotate(rotationNow);
 			if (CameraMode.mode == MODE.MODE_3D)
 			{

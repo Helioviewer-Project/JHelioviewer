@@ -30,6 +30,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
@@ -215,11 +217,34 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		table.getColumnModel().getColumn(column).setResizable(false);
 	}
 	
+	private int ignoreTableEvents=0;
+	
 	private void initGUI()
 	{
 		setLayout(new BorderLayout(0, 0));
 
 		tableModel = new LayerTableModel(new Object[1][5], COLUMN_TITLES);
+		
+		tableModel.addTableModelListener(new TableModelListener()
+		{
+			@Override
+			public void tableChanged(@Nullable TableModelEvent e)
+			{
+				if(ignoreTableEvents>0)
+					return;
+				
+				if(e==null)
+					return;
+				
+				if(e.getColumn()==0)
+				{
+					Layer layer = Layers.getLayer(e.getFirstRow());
+					if (layer != null)
+						layer.setVisible(!layer.isVisible());
+				}
+			}
+		});
+		
 		table = new JTable(tableModel);
 		table.setTableHeader(null);
 		
@@ -269,12 +294,6 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 				int column = table.columnAtPoint(e.getPoint());
 				if (column == 4)
 					Layers.removeLayer(row);
-				else if (column == 0)
-				{
-					Layer layer = Layers.getLayer(row);
-					if (layer != null)
-						layer.setVisible(!layer.isVisible());
-				}
 				else if (column == 1)
 				{
 					boolean value = (boolean) table.getValueAt(row, column);
@@ -315,7 +334,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 				mousePressed(e);
 			}
 		});
-
+		
 		table.addMouseMotionListener(new MouseMotionAdapter()
 		{
 			@Override
@@ -341,7 +360,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 					table.setCursor(Cursor.getDefaultCursor());
 			}
 		});
-
+		
 		table.addKeyListener(new KeyAdapter()
 		{
 			@Override
@@ -442,17 +461,26 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 				break;
 			}
 		
-		loadingFrameCounter = (int)(System.currentTimeMillis()/100) % LAYER_LOADING.length;		
-		tableModel.setRowCount(Layers.getLayers().size());
-		
-		int row = 0;
-		for (Layer layer : Layers.getLayers())
+		try
 		{
-			tableModel.setValueAt(layer.isVisible(), row, 0);
-			tableModel.setValueAt(layer.retryNeeded(), row, 1);
-			tableModel.setValueAt(layer.getName(), row, 2);
-			tableModel.setValueAt(layer.getCurrentTime(), row, 3);
-			row++;
+			ignoreTableEvents++;
+			
+			loadingFrameCounter = (int)(System.currentTimeMillis()/100) % LAYER_LOADING.length;		
+			tableModel.setRowCount(Layers.getLayers().size());
+			
+			int row = 0;
+			for (Layer layer : Layers.getLayers())
+			{
+				tableModel.setValueAt(layer.isVisible(), row, 0);
+				tableModel.setValueAt(layer.retryNeeded(), row, 1);
+				tableModel.setValueAt(layer.getName(), row, 2);
+				tableModel.setValueAt(layer.getCurrentTime(), row, 3);
+				row++;
+			}
+		}
+		finally
+		{
+			ignoreTableEvents--;
 		}
 		
 		if (Layers.getActiveLayer()!=null)

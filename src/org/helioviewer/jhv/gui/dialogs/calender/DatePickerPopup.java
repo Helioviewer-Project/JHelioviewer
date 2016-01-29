@@ -242,7 +242,7 @@ class DatePickerPopup extends JDialog
 					currentDate = (LocalDate) table.getValueAt(row, column);
 					updateData();
 					calenderCellRenderer.setCurrentDate(currentDate);
-					newDatePicker.updateDate(currentDate);
+					newDatePicker.setDate(currentDate);
 				}
 			}
 		});

@@ -1,5 +1,6 @@
 package org.helioviewer.jhv.gui.dialogs.calender;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -14,6 +15,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.Nullable;
 import javax.swing.JButton;
@@ -21,19 +25,22 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 
-//TODO: remove code duplication in formatting/parsing code
 public class DatePicker extends JPanel
 {
 	private enum KEY_MODE
 	{
 		UP, DOWN, NONE
 	}
-
-	private boolean popupVisibility = false;
+	
+	private List<ActionListener> changeListeners = new ArrayList<>();
+	
+	private boolean popupVisibile = false;
 	private KEY_MODE keyMode = KEY_MODE.NONE;
 	private int factor = 0;
 	private int counter = 0;
@@ -41,6 +48,8 @@ public class DatePicker extends JPanel
 	private JTextField txtFieldDate, txtFieldTime;
 	private DatePickerPopup newDatePickerPopup;
 	private LocalDateTime dateTime;
+	private boolean containsValidDateTime = false;
+	
 	private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss");
 	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	private static final long MAX_TIME_STEPS = 3600 * 24 * 30;
@@ -50,13 +59,18 @@ public class DatePicker extends JPanel
 		dateTime = _dateTime;
 		newDatePickerPopup = new DatePickerPopup(this, _dialog);
 		initGUI();
-		initData();
+		txtFieldTime.setText(dateTime.format(TIME_FORMAT));
+		txtFieldDate.setText(dateTime.format(DATE_FORMAT));
+	}
+	
+	public void addChangeListener(ActionListener _al)
+	{
+		changeListeners.add(_al);
 	}
 
-	private void initData()
+	public void removeChangeListener(ActionListener _al)
 	{
-		txtFieldTime.setText(this.dateTime.format(TIME_FORMAT));
-		txtFieldDate.setText(this.dateTime.format(DATE_FORMAT));
+		changeListeners.remove(_al);
 	}
 
 	private void initGUI()
@@ -74,39 +88,6 @@ public class DatePicker extends JPanel
 			@Override
 			public void focusLost(@Nullable FocusEvent e)
 			{
-				LocalDate localdate = null;
-				try
-				{
-					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/D/yyyy");
-					localdate = LocalDate.parse(txtFieldDate.getText(), formatter);
-				}
-				catch (Exception e1)
-				{
-					try
-					{
-						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d");
-						localdate = LocalDate.parse(txtFieldDate.getText(), formatter);
-					}
-					catch (Exception e2)
-					{
-						try
-						{
-							DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d.M.yyyy");
-							localdate = LocalDate.parse(txtFieldDate.getText(), formatter);
-						}
-						catch (Exception e3)
-						{
-						}
-					}
-				}
-
-				if (localdate != null)
-				{
-					dateTime = localdate.atTime(dateTime.toLocalTime());
-					newDatePickerPopup.setCurrentDate(localdate);
-				}
-				txtFieldDate.setText(dateTime.format(DATE_FORMAT));
-				txtFieldTime.setText(dateTime.format(TIME_FORMAT));
 			}
 
 			@Override
@@ -124,7 +105,8 @@ public class DatePicker extends JPanel
 				});
 			}
 		});
-
+		
+		
 		GridBagConstraints gbcDate = new GridBagConstraints();
 		gbcDate.gridwidth = 2;
 		gbcDate.insets = new Insets(0, 0, 0, 22);
@@ -141,10 +123,10 @@ public class DatePicker extends JPanel
 			@Override
 			public void actionPerformed(@Nullable ActionEvent e)
 			{
-				if (popupVisibility)
+				if (popupVisibile)
 				{
 					newDatePickerPopup.setVisible(false);
-					popupVisibility = false;
+					popupVisibile = false;
 				}
 				else
 				{
@@ -153,7 +135,7 @@ public class DatePicker extends JPanel
 					newDatePickerPopup.setLocation(x, y);
 					newDatePickerPopup.setVisible(true);
 					newDatePickerPopup.requestFocus();
-					popupVisibility = true;
+					popupVisibile = true;
 				}
 			}
 		});
@@ -169,34 +151,6 @@ public class DatePicker extends JPanel
 			@Override
 			public void focusLost(@Nullable FocusEvent e)
 			{
-				LocalTime localTime = null;
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("H:m:s");
-				try
-				{
-					localTime = LocalTime.parse(txtFieldTime.getText(), formatter);
-				}
-				catch (Exception e1)
-				{
-					try
-					{
-						formatter = DateTimeFormatter.ofPattern("H:m");
-						localTime = LocalTime.parse(txtFieldTime.getText(), formatter);
-					}
-					catch (Exception e2)
-					{
-						try
-						{
-							formatter = DateTimeFormatter.ofPattern("H");
-							localTime = LocalTime.parse(txtFieldTime.getText(), formatter);
-						}
-						catch (Exception e3)
-						{
-						}
-					}
-				}
-				if (localTime != null)
-					dateTime = localTime.atDate(dateTime.toLocalDate());
-				txtFieldTime.setText(dateTime.toLocalTime().format(TIME_FORMAT));
 			}
 
 			@Override
@@ -273,36 +227,190 @@ public class DatePicker extends JPanel
 		gbcMonth.gridy = 0;
 		add(txtFieldTime, gbcMonth);
 		txtFieldTime.setColumns(10);
+		
+		
+		
+		txtFieldDate.getDocument().addDocumentListener(new DocumentListener()
+		{
+			@Override
+			public void removeUpdate(@Nullable DocumentEvent e)
+			{
+				updateDateTime();
+			}
+			
+			@Override
+			public void insertUpdate(@Nullable DocumentEvent e)
+			{
+				updateDateTime();
+			}
+			
+			@Override
+			public void changedUpdate(@Nullable DocumentEvent e)
+			{
+				updateDateTime();
+			}
+		});
+		
+		txtFieldTime.getDocument().addDocumentListener(new DocumentListener()
+		{
+			@Override
+			public void removeUpdate(@Nullable DocumentEvent e)
+			{
+				updateDateTime();
+			}
+			
+			@Override
+			public void insertUpdate(@Nullable DocumentEvent e)
+			{
+				updateDateTime();
+			}
+			
+			@Override
+			public void changedUpdate(@Nullable DocumentEvent e)
+			{
+				updateDateTime();
+			}
+		});
 	}
 
-	public void setDateTime(LocalDateTime dateTime)
+	void setDate(LocalDate _newDate)
 	{
-		this.dateTime = dateTime;
-	}
-
-	void updateDate(LocalDate newDate)
-	{
-		this.dateTime = newDate.atTime(this.dateTime.toLocalTime());
-		this.txtFieldDate.setText(dateTime.format(DATE_FORMAT));
+		dateTime = _newDate.atTime(this.dateTime.toLocalTime());
+		txtFieldDate.setText(dateTime.format(DATE_FORMAT));
 		newDatePickerPopup.setVisible(false);
-		popupVisibility = false;
+		popupVisibile = false;
+		updateDateTime();
 	}
 
 	void hidePopup()
 	{
 		newDatePickerPopup.setVisible(false);
-		popupVisibility = false;
+		popupVisibile = false;
 		btnDatePicker.setEnabled(true);
 	}
 
 	public LocalDateTime getDateTime()
 	{
+		updateDateTime();
 		return dateTime;
+	}
+
+	private void updateDateTime()
+	{
+		LocalDateTime previousDateTime = dateTime;
+		boolean prevIsValid = containsValidDateTime;
+		containsValidDateTime=true;
+
+		LocalDate localdate = null;
+		try
+		{
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/D/yyyy");
+			localdate = LocalDate.parse(txtFieldDate.getText(), formatter);
+		}
+		catch (DateTimeParseException e1)
+		{
+			try
+			{
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d");
+				localdate = LocalDate.parse(txtFieldDate.getText(), formatter);
+			}
+			catch (DateTimeParseException e2)
+			{
+				try
+				{
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d.M.yyyy");
+					localdate = LocalDate.parse(txtFieldDate.getText(), formatter);
+				}
+				catch (DateTimeParseException e3)
+				{
+				}
+			}
+		}
+		
+		LocalTime localtime = null;
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("H:m:s");
+		try
+		{
+			localtime = LocalTime.parse(txtFieldTime.getText(), formatter);
+		}
+		catch (DateTimeParseException e1)
+		{
+			try
+			{
+				formatter = DateTimeFormatter.ofPattern("H:m");
+				localtime = LocalTime.parse(txtFieldTime.getText(), formatter);
+			}
+			catch (DateTimeParseException e2)
+			{
+				try
+				{
+					formatter = DateTimeFormatter.ofPattern("H");
+					localtime = LocalTime.parse(txtFieldTime.getText(), formatter);
+				}
+				catch (DateTimeParseException e3)
+				{
+				}
+			}
+		}
+
+		if(localdate != null)
+		{
+			dateTime = localdate.atTime(dateTime.toLocalTime());
+			txtFieldDate.setForeground(null);
+			newDatePickerPopup.setCurrentDate(localdate);
+			
+			String newText = dateTime.format(DATE_FORMAT);
+			/*if(!newText.equals(txtFieldDate.getText()))
+				SwingUtilities.invokeLater(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						txtFieldDate.setText(newText);
+					}
+				});*/
+		}
+		else
+		{
+			txtFieldDate.setForeground(Color.RED);
+			containsValidDateTime=false;
+		}
+		
+		if(localtime != null)
+		{
+			dateTime = localtime.atDate(dateTime.toLocalDate());
+			txtFieldTime.setForeground(Color.BLACK);
+			
+			String newText = dateTime.format(TIME_FORMAT);
+			/*if(!newText.equals(txtFieldTime.getText()))
+				SwingUtilities.invokeLater(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						txtFieldTime.setText(newText);
+					}
+				});*/
+		}
+		else
+		{
+			txtFieldTime.setForeground(Color.RED);
+			containsValidDateTime=false;
+		}
+		
+		if(containsValidDateTime!=prevIsValid || (previousDateTime==null && dateTime!=null) || (previousDateTime!=null && dateTime==null) || (previousDateTime!=null && !previousDateTime.equals(dateTime)))
+			for(ActionListener al:changeListeners)
+				al.actionPerformed(new ActionEvent(this, 0, null));
 	}
 
 	public void setToolTip(@Nullable String s)
 	{
 		txtFieldDate.setToolTipText(s);
 		txtFieldTime.setToolTipText(s);
+	}
+	
+	public boolean containsValidDateTime()
+	{
+		return containsValidDateTime;
 	}
 }
