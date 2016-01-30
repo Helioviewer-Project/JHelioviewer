@@ -1,8 +1,6 @@
 package org.helioviewer.jhv.gui.dialogs;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -494,15 +492,6 @@ public class AddLayerDialog extends JDialog
 									* ((TimeSteps) cmbbxTimeSteps.getSelectedItem()).factor;
 							cadence = Math.max(cadence, 1);
 							
-							KakaduLayer newLayer=new KakaduLayer(
-									filter.sourceId,
-									datePickerStartDate.getDateTime(),
-									datePickerEndDate.getDateTime(),
-									cadence, filter.getNickname());
-							Layers.addLayer(newLayer);
-
-							newLayer.animateCameraToFacePlane = true;
-							
 							Settings.setInt(Settings.IntKey.ADDLAYER_LAST_SOURCEID, filter.sourceId);
 							lastStart = datePickerStartDate.getDateTime();
 							lastEnd = datePickerEndDate.getDateTime();
@@ -511,6 +500,14 @@ public class AddLayerDialog extends JDialog
 							
 							setVisible(false);
 							dispose();
+							
+							KakaduLayer newLayer=new KakaduLayer(
+									filter.sourceId,
+									lastStart,
+									lastEnd,
+									cadence, filter.getNickname());
+							newLayer.animateCameraToFacePlane = true;
+							Layers.addLayer(newLayer);
 						}
 					}
 				});

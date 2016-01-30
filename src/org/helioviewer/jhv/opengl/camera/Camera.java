@@ -1,6 +1,5 @@
 package org.helioviewer.jhv.opengl.camera;
 
-import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.Quaternion;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.opengl.camera.animation.CameraAnimation;

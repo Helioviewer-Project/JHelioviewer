@@ -16,7 +16,7 @@ import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
-import org.helioviewer.jhv.layers.LUT.Lut;
+import org.helioviewer.jhv.layers.LUT;
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -30,7 +30,7 @@ public abstract class MetaData
 
     //TODO: make immutable
     protected @Nullable Vector2d solarPixelRadius;
-	protected Lut defaultLUT = Lut.GRAY;
+	protected LUT defaultLUT = LUT.GRAY;
     protected double innerRadius;
     protected double outerRadius;
     protected double flatDistance;
@@ -227,7 +227,7 @@ public abstract class MetaData
 		return occulterCenter;
 	}
 
-	public Lut getDefaultLUT()
+	public LUT getDefaultLUT()
 	{
 		return defaultLUT;
 	}

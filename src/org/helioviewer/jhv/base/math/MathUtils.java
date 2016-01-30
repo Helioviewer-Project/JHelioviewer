@@ -55,6 +55,38 @@ public class MathUtils
     }
 
     /**
+     * Takes and returns the maximum value from the given args.
+     * 
+     * @param _is
+     *            the values to compare
+     * @return the maximum of the given values
+     */
+    public static double max(double... _is)
+    {
+        double max = Double.NEGATIVE_INFINITY;
+        for (double i : _is)
+            if (max < i)
+                max = i;
+        return max;
+    }
+    
+    /**
+     * Takes and returns the minimum value from the given args.
+     * 
+     * @param _is
+     *            the values to compare
+     * @return the minimum of the given values
+     */
+    public static double min(double... _is)
+    {
+        double min = Double.POSITIVE_INFINITY;
+        for (double i : _is)
+            if (min > i)
+                min = i;
+        return min;
+    }
+    
+    /**
      * Takes and returns the minimum value from the given args.
      * 
      * @param _is

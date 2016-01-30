@@ -2,7 +2,7 @@ package org.helioviewer.jhv.viewmodel.metadata;
 
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.math.Vector2i;
-import org.helioviewer.jhv.layers.LUT.Lut;
+import org.helioviewer.jhv.layers.LUT;
 import org.w3c.dom.Document;
 
 class MetaDataEIT extends MetaData
@@ -17,16 +17,16 @@ class MetaDataEIT extends MetaData
         switch (measurement)
         {
 			case "171":
-				defaultLUT = Lut.SOHO_EIT_171;
+				defaultLUT = LUT.SOHO_EIT_171;
 				break;
 			case "195":
-				defaultLUT = Lut.SOHO_EIT_195;
+				defaultLUT = LUT.SOHO_EIT_195;
 				break;
 			case "284":
-				defaultLUT = Lut.SOHO_EIT_284;
+				defaultLUT = LUT.SOHO_EIT_284;
 				break;
 			case "304":
-				defaultLUT = Lut.SOHO_EIT_304;
+				defaultLUT = LUT.SOHO_EIT_304;
 				break;
 			default:
 				UnsuitableMetaDataException e=new UnsuitableMetaDataException("Unexpected measurement: "+measurement);

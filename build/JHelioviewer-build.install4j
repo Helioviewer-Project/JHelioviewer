@@ -1504,7 +1504,7 @@ return true;</string>
     </applications>
   </installerGui>
   <mediaSets>
-    <macosArchive name="Mac OS X Single Bundle Archive" id="68" customizedId="" mediaFileName="" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="macosx-amd64-1.8.0_72_unpacked" manualJREEntry="false" appleJre="false" archiveType="dmg" volumeName="${compiler:sys.shortName}" launcherId="24">
+    <macosArchive name="Mac OS X Single Bundle Archive" id="68" customizedId="" mediaFileName="${compiler:sys.shortName}_${compiler:sys.version}" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="macosx-amd64-1.8.0_72_unpacked" manualJREEntry="false" appleJre="false" archiveType="dmg" volumeName="${compiler:sys.shortName}" launcherId="24">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedBeans />
@@ -1521,7 +1521,6 @@ return true;</string>
         <entry location="lib/gluegen-rt-natives-linux-i586.jar" fileType="regular" />
         <entry location="lib/gluegen-rt-natives-windows-amd64.jar" fileType="regular" />
         <entry location="lib/gluegen-rt-natives-windows-i586.jar" fileType="regular" />
-        <entry location="lib/i4jruntime.jar" fileType="regular" />
         <entry location="lib/jogl-all-natives-linux-amd64.jar" fileType="regular" />
         <entry location="lib/jogl-all-natives-linux-i586.jar" fileType="regular" />
         <entry location="lib/jogl-all-natives-windows-amd64.jar" fileType="regular" />
@@ -1546,7 +1545,7 @@ return true;</string>
         <symlink name="Applications" target="/Applications" />
       </topLevelFiles>
     </macosArchive>
-    <windows name="Windows 64 bit" id="150" customizedId="" mediaFileName="" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="64" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="windows-amd64-1.8.0_72" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" verifyIntegrity="true">
+    <windows name="Windows 64 bit" id="150" customizedId="" mediaFileName="${compiler:sys.shortName}_${compiler:sys.version}" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="64" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="windows-amd64-1.8.0_72" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" verifyIntegrity="true">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedLaunchers>
@@ -1581,7 +1580,7 @@ return true;</string>
         <customAttributes />
       </autoUpdate>
     </windows>
-    <linuxDeb name="Linux Deb Archive 64 bit" id="218" customizedId="" mediaFileName="${compiler:sys.shortName}_${compiler:sys.version}_64_bit" installDir="/opt/${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="" manualJREEntry="false" bzip="true" description="" dependencies="" maintainerEmail="daniel.mueller@esa.int" architectureSet="true" architecture="amd64">
+    <linuxDeb name="Linux Deb Archive 64 bit" id="218" customizedId="" mediaFileName="${compiler:sys.shortName}_${compiler:sys.version}_amd64" installDir="/opt/${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="" manualJREEntry="false" bzip="true" description="" dependencies="" maintainerEmail="daniel.mueller@esa.int" architectureSet="true" architecture="amd64">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedLaunchers>
@@ -1629,7 +1628,7 @@ return true;</string>
         <content />
       </postUninstallScript>
     </linuxDeb>
-    <linuxRPM name="Linux RPM 64 bit" id="270" customizedId="" mediaFileName="${compiler:sys.shortName}_${compiler:sys.version}_64_bit" installDir="/opt/${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="" manualJREEntry="false" os="linux" arch="i386">
+    <linuxRPM name="Linux RPM 64 bit" id="270" customizedId="" mediaFileName="${compiler:sys.shortName}_${compiler:sys.version}_amd64" installDir="/opt/${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="" manualJREEntry="false" os="linux" arch="i386">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedLaunchers>

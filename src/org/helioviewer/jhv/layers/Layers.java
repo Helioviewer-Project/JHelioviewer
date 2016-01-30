@@ -7,7 +7,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import org.helioviewer.jhv.base.Telemetry;
-import org.helioviewer.jhv.gui.FilterPanel;
+import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
 import org.helioviewer.jhv.viewmodel.metadata.UnsuitableMetaDataException;
@@ -24,25 +24,74 @@ public class Layers
 	static void updateOpacities(ImageLayer _layer, boolean remove)
 	{
 		List<ImageLayer> affected = new ArrayList<ImageLayer>(layers.size());
-		for (Layer tmpLayer : layers)
-			if(tmpLayer != _layer)
-				if (tmpLayer instanceof ImageLayer)
-					if(((ImageLayer)tmpLayer).isMetadataInitialized())
-						if((((ImageLayer)tmpLayer).getGroupForOpacity() & _layer.getGroupForOpacity()) != 0)
-							affected.add((ImageLayer) tmpLayer);
 		
-		affected.add(_layer);
+		double rSum=0;
+		double gSum=0;
+		double bSum=0;
+		for (Layer l : layers)
+			if(l != _layer)
+				if (l instanceof ImageLayer)
+				{
+					ImageLayer il=(ImageLayer)l;
+					if(il.isMetadataInitialized())
+						if((il.getGroupForOpacity() & _layer.getGroupForOpacity()) != 0)
+						{
+							if(il.redChannel)
+								rSum += il.lut.getAvgColor().getRed()*il.opacity;
+							if(il.greenChannel)
+								gSum += il.lut.getAvgColor().getGreen()*il.opacity;
+							if(il.blueChannel)
+								bSum += il.lut.getAvgColor().getBlue()*il.opacity;
+							
+							affected.add(il);
+						}
+				}
 		
 		if(!remove)
 		{
+			rSum *= affected.size();
+			gSum *= affected.size();
+			bSum *= affected.size();
 			for(ImageLayer l : affected)
-				l.opacity *= (affected.size()-1d)/affected.size();
-			_layer.opacity = 1d/affected.size();
+				l.opacity *= affected.size();
+			
+			System.out.println(_layer.lut);
+			System.out.println(_layer.lut.getAvgColor());
+			if(_layer.redChannel)
+				rSum += _layer.lut.getAvgColor().getRed()*_layer.opacity;
+			if(_layer.greenChannel)
+				gSum += _layer.lut.getAvgColor().getGreen()*_layer.opacity;
+			if(_layer.blueChannel)
+				bSum += _layer.lut.getAvgColor().getBlue()*_layer.opacity;
+			
+			if(rSum==0 && gSum==0 && bSum==0)
+				return;
+			
+			double scale=255d/MathUtils.max(rSum,gSum,bSum);
+			if(scale>1)
+				scale=1;
+			
+			for(ImageLayer l : affected)
+				l.opacity *= Math.min(1d/affected.size(), scale);
+			_layer.opacity *= scale;
 		}
 		else
 		{
+			rSum *= affected.size();
+			gSum *= affected.size();
+			bSum *= affected.size();
 			for(ImageLayer l : affected)
-				l.opacity /= (affected.size()-1d)/affected.size();
+				l.opacity *= affected.size();
+			
+			if(rSum==0 && gSum==0 && bSum==0)
+				return;
+			
+			double scale=1/MathUtils.max(rSum,gSum,bSum);
+			if(scale<1)
+				scale=1;
+			
+			for(ImageLayer l : affected)
+				l.opacity *= scale;
 		}
 		
 		MainFrame.SINGLETON.FILTER_PANEL.update();

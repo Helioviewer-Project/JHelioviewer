@@ -53,6 +53,7 @@ public class ExportMovieAction extends AbstractAction
 	private int imageHeight;
 	@Nullable
 	private volatile BufferedImage bufferedImage;
+
 	public ExportMovieAction()
 	{
 		super("Save movie as...");
@@ -105,13 +106,13 @@ public class ExportMovieAction extends AbstractAction
 		final @Nullable FileOutputStream fileOutputStream;
 		final @Nullable ZipOutputStream zipOutputStream;
 		final @Nullable IMediaWriter writer;
-		final int fps;
+		final int msPerFrame;
 		if (selectedOutputFormat.isMovieFile())
 		{
-			fileOutputStream=null;
-			zipOutputStream=null;
+			fileOutputStream = null;
+			zipOutputStream = null;
 
-			fps = (int)Math.round(1000d / TimeLine.SINGLETON.getMillisecondsPerFrame());
+			msPerFrame = (int) Math.round(1000d / TimeLine.SINGLETON.getMillisecondsPerFrame());
 
 			writer = ToolFactory.makeWriter(_directory + _filename + this.selectedOutputFormat.getDefaultExtension());
 			writer.addVideoStream(0, 0, selectedOutputFormat.codec, imageWidth, imageHeight);
@@ -119,7 +120,7 @@ public class ExportMovieAction extends AbstractAction
 		else if (selectedOutputFormat.isCompressedFile())
 		{
 			writer = null;
-			fps = 0;
+			msPerFrame = 0;
 			try
 			{
 				fileOutputStream = new FileOutputStream(
@@ -134,20 +135,21 @@ public class ExportMovieAction extends AbstractAction
 		}
 		else if (selectedOutputFormat.isImageFile())
 		{
-			fileOutputStream=null;
-			zipOutputStream=null;
+			fileOutputStream = null;
+			zipOutputStream = null;
 			writer = null;
-			fps = 0;
+			msPerFrame = 0;
 			new File(_directory + _filename).mkdir();
 			_directory += _filename + "/";
 		}
 		else
 			throw new RuntimeException();
 
-		Telemetry.trackEvent("Export movie","Format",selectedOutputFormat.description,"Width",imageWidth+"","Height",imageHeight+"","Text",textEnabled?"1":"0");
-		Telemetry.trackMetric("MovieWidth",imageWidth);
-		Telemetry.trackMetric("MovieHeight",imageHeight);
-		Telemetry.trackMetric("MovieTextEnabled", textEnabled?1:0);
+		Telemetry.trackEvent("Export movie", "Format", selectedOutputFormat.description, "Width", imageWidth + "",
+				"Height", imageHeight + "", "Text", textEnabled ? "1" : "0");
+		Telemetry.trackMetric("MovieWidth", imageWidth);
+		Telemetry.trackMetric("MovieHeight", imageHeight);
+		Telemetry.trackMetric("MovieTextEnabled", textEnabled ? 1 : 0);
 
 		final ProgressDialog progressDialog = new ProgressDialog();
 		progressDialog.setVisible(true);
@@ -155,26 +157,36 @@ public class ExportMovieAction extends AbstractAction
 		TimeLine.SINGLETON.setCurrentFrame(0);
 
 		final String directory = _directory;
-		Thread thread = new Thread(new Runnable() {
+		Thread thread = new Thread(new Runnable()
+		{
 			@Override
-			public void run() {
+			public void run()
+			{
 				TimeLine.SINGLETON.setCurrentFrame(0);
-				for (int i = 0; i < TimeLine.SINGLETON.getFrameCount(); i++) {
+				for (int i = 0; i < TimeLine.SINGLETON.getFrameCount(); i++)
+				{
 					bufferedImage = null;
-					SwingUtilities.invokeLater(new Runnable() {
+					SwingUtilities.invokeLater(new Runnable()
+					{
 						@Override
-						public void run() {
+						public void run()
+						{
 							progressDialog.setDescription("Rendering images");
-							bufferedImage = MainFrame.SINGLETON.MAIN_PANEL.getBufferedImage(imageWidth, imageHeight, textEnabled);
+							bufferedImage = MainFrame.SINGLETON.MAIN_PANEL.getBufferedImage(imageWidth, imageHeight,
+									textEnabled);
 						}
 					});
 
-					while (bufferedImage == null) {
-						try {
+					while (bufferedImage == null)
+					{
+						try
+						{
 							if (!started)
 								break;
 							Thread.sleep(20);
-						} catch (InterruptedException e) {
+						}
+						catch (InterruptedException e)
+						{
 							break;
 						}
 					}
@@ -183,25 +195,36 @@ public class ExportMovieAction extends AbstractAction
 
 					progressDialog.updateProgressBar(i);
 
-					if (selectedOutputFormat.isMovieFile() && started) {
-						writer.encodeVideo(0, bufferedImage, fps * i, TimeUnit.MILLISECONDS);
-					} else if (selectedOutputFormat.isCompressedFile() && started) {
+					if (selectedOutputFormat.isMovieFile() && started)
+					{
+						writer.encodeVideo(0, bufferedImage, msPerFrame * i, TimeUnit.MILLISECONDS);
+					}
+					else if (selectedOutputFormat.isCompressedFile() && started)
+					{
 						String number = String.format("%04d", i);
-						try {
+						try
+						{
 							zipOutputStream.putNextEntry(new ZipEntry(_filename + "/" + _filename + "-" + number
 									+ selectedOutputFormat.getInnerMovieFilter().getDefaultExtension()));
 							ImageIO.write(bufferedImage, selectedOutputFormat.getInnerMovieFilter().fileType,
 									zipOutputStream);
 							zipOutputStream.closeEntry();
-						} catch (IOException e) {
+						}
+						catch (IOException e)
+						{
 							Telemetry.trackException(e);
 						}
-					} else if (selectedOutputFormat.isImageFile() && started) {
+					}
+					else if (selectedOutputFormat.isImageFile() && started)
+					{
 						String number = String.format("%04d", i);
-						try {
+						try
+						{
 							ImageIO.write(bufferedImage, selectedOutputFormat.fileType, new File(
 									directory + _filename + "-" + number + selectedOutputFormat.getDefaultExtension()));
-						} catch (IOException e) {
+						}
+						catch (IOException e)
+						{
 							Telemetry.trackException(e);
 						}
 					}
@@ -209,7 +232,8 @@ public class ExportMovieAction extends AbstractAction
 				}
 				TimeLine.SINGLETON.setCurrentFrame(0);
 
-				try {
+				try
+				{
 					// export movie
 					if (writer != null)
 						writer.close();
@@ -217,7 +241,9 @@ public class ExportMovieAction extends AbstractAction
 						zipOutputStream.close();
 					if (fileOutputStream != null)
 						fileOutputStream.close();
-				} catch (IOException e) {
+				}
+				catch (IOException e)
+				{
 					Telemetry.trackException(e);
 				}
 

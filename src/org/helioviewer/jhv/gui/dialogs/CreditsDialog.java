@@ -13,16 +13,14 @@ import javax.annotation.Nullable;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextPane;
-
-import org.helioviewer.jhv.base.Telemetry;
-import org.helioviewer.jhv.gui.MainFrame;
 import javax.swing.JTextArea;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
+
+import org.helioviewer.jhv.base.Telemetry;
+import org.helioviewer.jhv.gui.MainFrame;
 
 /**
  * Dialog that is used to display information about the developers

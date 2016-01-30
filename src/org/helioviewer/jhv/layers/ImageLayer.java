@@ -26,7 +26,6 @@ import org.helioviewer.jhv.base.physics.DifferentialRotation;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.gui.statusLabels.FramerateStatusPanel;
-import org.helioviewer.jhv.layers.LUT.Lut;
 import org.helioviewer.jhv.layers.Movie.Match;
 import org.helioviewer.jhv.opengl.RayTrace;
 import org.helioviewer.jhv.opengl.Texture;
@@ -35,7 +34,6 @@ import org.helioviewer.jhv.opengl.camera.CameraMode.MODE;
 import org.helioviewer.jhv.opengl.camera.animation.CameraRotationAnimation;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.TimeLine.DecodeQualityLevel;
-import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
@@ -50,7 +48,7 @@ public abstract class ImageLayer extends Layer
 	public double sharpness = 0;
 	public double gamma = 1;
 	public double contrast = 0;
-	@Nullable protected Lut lut = null;
+	@Nullable protected LUT lut = null;
 	public boolean redChannel = true;
 	public boolean greenChannel = true;
 	public boolean blueChannel = true;
@@ -66,7 +64,7 @@ public abstract class ImageLayer extends Layer
 	protected int cadence;
 	private boolean metadataInitialized=false;
 	
-	@Nullable public Lut getLUT()
+	@Nullable public LUT getLUT()
 	{
 		return lut;
 	}
@@ -94,7 +92,7 @@ public abstract class ImageLayer extends Layer
 		return groupForOpacity;
 	}
 	
-	public void setLUT(@Nullable Lut _lut)
+	public void setLUT(@Nullable LUT _lut)
 	{
 		lut = _lut;
 		MainFrame.SINGLETON.FILTER_PANEL.update();

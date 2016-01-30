@@ -2,7 +2,7 @@ package org.helioviewer.jhv.viewmodel.metadata;
 
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.math.Vector2i;
-import org.helioviewer.jhv.layers.LUT.Lut;
+import org.helioviewer.jhv.layers.LUT;
 import org.w3c.dom.Document;
 
 class MetaDataStereoEUVI extends MetaData
@@ -17,16 +17,16 @@ class MetaDataStereoEUVI extends MetaData
         switch (measurement)
         {
 			case "171":
-				defaultLUT = Lut.STEREO_EUVI_171;
+				defaultLUT = LUT.STEREO_EUVI_171;
 				break;
 			case "195":
-				defaultLUT = Lut.STEREO_EUVI_195;
+				defaultLUT = LUT.STEREO_EUVI_195;
 				break;
 			case "284":
-				defaultLUT = Lut.STEREO_EUVI_284;
+				defaultLUT = LUT.STEREO_EUVI_284;
 				break;
 			case "304":
-				defaultLUT = Lut.STEREO_EUVI_304;
+				defaultLUT = LUT.STEREO_EUVI_304;
 				break;
 			default:
 	        	UnsuitableMetaDataException e = new UnsuitableMetaDataException("Unexpected WAVELNTH: "+measurement);

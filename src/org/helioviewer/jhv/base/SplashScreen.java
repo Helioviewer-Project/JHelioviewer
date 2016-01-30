@@ -6,7 +6,6 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.lang.reflect.InvocationTargetException;
 
 import javax.annotation.Nullable;
 import javax.swing.JFrame;

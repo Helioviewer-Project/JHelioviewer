@@ -34,6 +34,7 @@ import org.helioviewer.jhv.gui.dialogs.AddLayerDialog;
 import org.helioviewer.jhv.gui.dialogs.LicenseDialog;
 import org.helioviewer.jhv.io.CommandLineProcessor;
 import org.helioviewer.jhv.layers.ImageLayer;
+import org.helioviewer.jhv.layers.LUT;
 import org.helioviewer.jhv.opengl.camera.CameraMode;
 import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.viewmodel.jp2view.kakadu.KduErrorHandler;
@@ -63,6 +64,13 @@ public class JHelioviewer
 		// Uncaught runtime errors are displayed in a dialog box in addition
 		JHVUncaughtExceptionHandler.setupHandlerForThread();
 		
+		System.out.println("JHelioviewer started with command-line options:" + String.join(" ", args));
+		if (args.length == 1 && (args[0].equals("-h") || args[0].equals("--help")))
+		{
+			System.out.println(CommandLineProcessor.USAGE_MESSAGE);
+			return;
+		}
+		
 		// Setup Swing
 		try
 		{
@@ -71,13 +79,6 @@ public class JHelioviewer
 		catch (Exception e2)
 		{
 			Telemetry.trackException(e2);
-		}
-		
-		System.out.println("JHelioviewer started with command-line options:" + String.join(" ", args));
-		if (args.length == 1 && (args[0].equals("-h") || args[0].equals("--help")))
-		{
-			System.out.println(CommandLineProcessor.USAGE_MESSAGE);
-			return;
 		}
 		
 		
@@ -214,6 +215,7 @@ public class JHelioviewer
 		ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
 		JPopupMenu.setDefaultLightWeightPopupEnabled(false);
 		MainFrame.SINGLETON.getClass();
+		LUT.loadTexture();
 		sharedDrawable.getContext().release();
 		
 		SwingUtilities.invokeAndWait(new Runnable()

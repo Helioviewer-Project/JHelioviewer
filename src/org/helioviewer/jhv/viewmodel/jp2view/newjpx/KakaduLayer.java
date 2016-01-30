@@ -33,7 +33,7 @@ import org.helioviewer.jhv.base.downloadmanager.JPIPRequest;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.layers.ImageLayer;
-import org.helioviewer.jhv.layers.LUT.Lut;
+import org.helioviewer.jhv.layers.LUT;
 import org.helioviewer.jhv.layers.Movie;
 import org.helioviewer.jhv.layers.Movie.Match;
 import org.helioviewer.jhv.layers.Movie.Quality;
@@ -143,7 +143,7 @@ public class KakaduLayer extends ImageLayer
 			if(jsonLayer.getInt("lut")==-1)
 				setLUT(null);
 			else
-				setLUT(Lut.values()[jsonLayer.getInt("lut")]);
+				setLUT(LUT.values()[jsonLayer.getInt("lut")]);
 			redChannel=jsonLayer.getBoolean("redChannel");
 			greenChannel=jsonLayer.getBoolean("greenChannel");
 			blueChannel=jsonLayer.getBoolean("blueChannel");

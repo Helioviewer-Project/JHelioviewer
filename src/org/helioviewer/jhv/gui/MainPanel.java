@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -23,9 +24,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
 
 import javax.annotation.Nullable;
 import javax.swing.JFrame;
@@ -64,7 +63,6 @@ import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.TimeLine.TimeLineListener;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 
-import com.google.common.util.concurrent.Futures;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
@@ -632,7 +630,8 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			case PLAYBACK:
 			case SPEED:
 			case HURRY:
-				sizeForDecoder = new Dimension(sizeForDecoder.width / 2, sizeForDecoder.height / 2);
+				double scale=80d/Toolkit.getDefaultToolkit().getScreenResolution();
+				sizeForDecoder = new Dimension((int)(sizeForDecoder.width * scale), (int)(sizeForDecoder.height * scale));
 				break;
 			default:
 				throw new RuntimeException();

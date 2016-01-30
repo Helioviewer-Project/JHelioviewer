@@ -17,16 +17,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
-import javax.swing.JEditorPane;
-import javax.swing.UIManager;
 
 public class LicenseDialog extends JDialog
 {

@@ -1,7 +1,5 @@
 package org.helioviewer.jhv.base.math;
 
-import org.helioviewer.jhv.gui.MainPanel;
-
 public class Matrix4d
 {
 	public static final Matrix4d IDENTITY = new Matrix4d(1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f);

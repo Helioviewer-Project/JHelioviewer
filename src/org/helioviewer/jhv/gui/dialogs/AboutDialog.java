@@ -3,6 +3,7 @@ package org.helioviewer.jhv.gui.dialogs;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -17,6 +18,7 @@ import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
@@ -42,7 +44,9 @@ public final class AboutDialog extends JDialog implements HyperlinkListener
         logo.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         headerPanel.add(logo, BorderLayout.WEST);
 
-        JEditorPane content = new JEditorPane("text/html", "<html><center><font style=\"font-family: '" + getFont().getFamily() + "'; font-size: " + getFont().getSize() + "px;\">"
+        Font defaultFont = UIManager.getFont("Label.font");
+        
+        JEditorPane content = new JEditorPane("text/html", "<html><center><font style=\"font-family: '" + defaultFont.getFamily() + "'; font-size: " + defaultFont.getSize() + "pt;\">"
 	        + "<b>JHelioviewer " + Globals.VERSION + "</b><br>"
 	        + "\u00A92016 ESA JHelioviewer Team<br>"
 	        + "Part of the ESA/NASA Helioviewer project<br><br>"
@@ -86,7 +90,7 @@ public final class AboutDialog extends JDialog implements HyperlinkListener
         libraries.add(install4j);
         libraries.add(raygunIo);
         
-        String text = "<html><font style=\"font-family: '" + getFont().getFamily() + "'; font-size: " + getFont().getSize() + "px;\">" +
+        String text = "<html><font style=\"font-family: '" + defaultFont.getFamily() + "'; font-size: " + defaultFont.getSize() + "pt;\">" +
 	        "This software uses the following libraries:<br/>"+
 	        "<ul>"+
 	        "<li><a href=\"http://www.kakadusoftware.com\">Kakadu JPEG2000 Toolkit</a>, \u00A92009 NewSouth Innovations Ltd (NSI) <a href=Kakadu.txt>(License)</a></li>" +

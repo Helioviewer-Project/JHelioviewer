@@ -27,10 +27,10 @@ import org.helioviewer.jhv.base.MultiClickAdapter;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.components.WheelSupport;
 import org.helioviewer.jhv.layers.ImageLayer;
-import org.helioviewer.jhv.layers.LUT.Lut;
 import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
+import org.helioviewer.jhv.layers.LUT;
 
 public class FilterPanel extends JPanel
 {
@@ -38,7 +38,7 @@ public class FilterPanel extends JPanel
 	private JSlider sharpenSlider;
 	private JSlider gammaSlider;
 	private JSlider contrastSlider;
-	private JComboBox<Lut> comboBoxColorTable;
+	private JComboBox<LUT> comboBoxColorTable;
 	private JToggleButton red;
 	private JToggleButton green;
 	private JToggleButton blue;
@@ -288,9 +288,9 @@ public class FilterPanel extends JPanel
 								gbc_lblColorTitle.gridy = 4;
 								add(lblColorTitle, gbc_lblColorTitle);
 						
-								comboBoxColorTable = new JComboBox<Lut>();
-								comboBoxColorTable.setModel(new DefaultComboBoxModel<>(Lut.values()));
-								comboBoxColorTable.setSelectedItem(Lut.GRAY);
+								comboBoxColorTable = new JComboBox<LUT>();
+								comboBoxColorTable.setModel(new DefaultComboBoxModel<>(LUT.values()));
+								comboBoxColorTable.setSelectedItem(LUT.GRAY);
 								GridBagConstraints gbc_comboBoxColorTable = new GridBagConstraints();
 								gbc_comboBoxColorTable.anchor = GridBagConstraints.NORTH;
 								gbc_comboBoxColorTable.fill = GridBagConstraints.HORIZONTAL;
@@ -307,7 +307,7 @@ public class FilterPanel extends JPanel
 									{
 										if (activeLayer != null && activeLayer.getLUT() != comboBoxColorTable.getSelectedItem())
 										{
-											activeLayer.setLUT((Lut) comboBoxColorTable.getSelectedItem());
+											activeLayer.setLUT((LUT) comboBoxColorTable.getSelectedItem());
 											MainFrame.SINGLETON.MAIN_PANEL.repaint();
 										}
 									}
