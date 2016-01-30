@@ -107,7 +107,7 @@ public class MenuBar extends JMenuBar
 
 		JMenu helpMenu = new JMenu("Help");
 		helpMenu.setMnemonic(KeyEvent.VK_H);
-		helpMenu.add(new OpenURLinBrowserAction("Open manual", "http://www.helioviewer.org/wiki/index.php?title=JHelioviewer_Handbook"));
+		helpMenu.add(new OpenURLinBrowserAction("Open manual", "http://www.jhelioviewer.org/doc.html"));
 		helpMenu.add(new ShowDialogAction("List of shortcuts...", ShortcutsDialog.class));
 		helpMenu.addSeparator();
 		helpMenu.add(new OpenURLinBrowserAction("Report a bug", "https://github.com/Helioviewer-Project/JHelioViewer/issues"));
