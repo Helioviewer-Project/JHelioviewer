@@ -37,11 +37,12 @@ public class SplashScreen extends JFrame
 
 	public SplashScreen(int _steps)
 	{
+		getContentPane().setBackground(Color.BLACK);
 		// initialize the frame itself
 		setTitle("ESA JHelioviewer");
 		setSize(new Dimension(400, 220));
 		setLocationRelativeTo(null);
-		setLayout(new BorderLayout());
+		getContentPane().setLayout(new BorderLayout());
 		setFocusable(false);
 		setResizable(false);
 		setUndecorated(true);
@@ -49,14 +50,15 @@ public class SplashScreen extends JFrame
 
 		// if(isWindows())
 		setType(java.awt.Window.Type.UTILITY);
+		progressBar.setBackground(Color.BLACK);
 
 		// initialize the visual components
 		progressBar.setValue(0);
 		progressBar.setPreferredSize(new Dimension(progressBar.getWidth(), 20));
 		progressBar.setMaximum(_steps);
 		imagePanel.setText("");
-		add(imagePanel, BorderLayout.CENTER);
-		add(progressBar, BorderLayout.SOUTH);
+		getContentPane().add(imagePanel, BorderLayout.CENTER);
+		getContentPane().add(progressBar, BorderLayout.SOUTH);
 
 		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 

@@ -23,7 +23,9 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 
 import javax.annotation.Nullable;
 import javax.swing.JFrame;
@@ -62,6 +64,7 @@ import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.TimeLine.TimeLineListener;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 
+import com.google.common.util.concurrent.Futures;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
@@ -437,31 +440,13 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			ImageLayer.ensureAppropriateTextureCacheSize();
 			
 			//TODO: jumpstart decoding of next frame
-			/*
-			int releaseCounter=0;
-			for(;gl.getContext().isCurrent();releaseCounter++)
-				gl.getContext().release();
-			*/
 			LinkedHashMap<ImageLayer, Future<PreparedImage>> layers = new LinkedHashMap<>();
 			for (Layer layer : Layers.getLayers())
 				if (layer.isVisible() && layer instanceof ImageLayer)
 					layers.put((ImageLayer) layer,
 							((ImageLayer) layer).prepareImageData(this, TimeLine.SINGLETON.shouldHurry(), sizeForDecoder, gl.getContext()));
 			
-			//wait for all layers
-			for (Future<PreparedImage> f : layers.values())
-				try
-				{
-					f.get();
-				}
-				catch (ExecutionException | InterruptedException _e)
-				{
-					Telemetry.trackException(_e);
-				}
-			/*
-			for(int i=0;i<releaseCounter;i++)
-				gl.getContext().makeCurrent();
-			*/
+			
 			for (Entry<ImageLayer, Future<PreparedImage>> l : layers.entrySet())
 				try
 				{
