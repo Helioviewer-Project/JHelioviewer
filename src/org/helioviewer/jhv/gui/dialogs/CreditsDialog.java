@@ -16,9 +16,13 @@ import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextPane;
 
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.gui.MainFrame;
+import javax.swing.JTextArea;
+import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
 
 /**
  * Dialog that is used to display information about the developers
@@ -33,21 +37,21 @@ public final class CreditsDialog extends JDialog
     	
         setResizable(false);
 
-        setLayout(new BorderLayout());
+        getContentPane().setLayout(new BorderLayout());
 
-        JEditorPane content = new JEditorPane("text/html", "<html><font style=\"font-family: '" + getFont().getFamily() + "'; font-size: " + getFont().getSize() + "px;\">"
-    	        + "Many people participated in the development of JHelioviewer. The JHelioviewer<br/>"
-    	        + " team would like to acknowledge the following contributors:</font></html>");
-        content.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        JTextArea content = new JTextArea();
+        content.setFont(UIManager.getFont("Label.font"));
+        content.setLineWrap(true);
+        content.setWrapStyleWord(true);
+        content.setOpaque(false);
+        content.setText("Many people participated in the development of JHelioviewer. The JHelioviewer"
+    	        + " team would like to acknowledge the following contributors:");
+        content.setBorder(new EmptyBorder(10, 10, 10, 10));
         content.setEditable(false);
         content.setFocusable(false);
-        content.setOpaque(false);
         
         
-        add(new JLabel("Many people participated in the development of JHelioviewer. The JHelioviewer"
-    	        + " team would like to acknowledge the following contributors:"), BorderLayout.NORTH);
-        
-        add(content, BorderLayout.NORTH);
+        getContentPane().add(content, BorderLayout.NORTH);
         
         
 		String[] names = new String[] { "Alen Alexanderian", "Andre Dau", "Benjamin W. Caplins", "Benjamin Wamsler",
@@ -64,7 +68,7 @@ public final class CreditsDialog extends JDialog
 			l.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
 			nameGrid.add(l);
 		}
-        add(nameGrid);
+        getContentPane().add(nameGrid);
         
         JButton closeButton = new JButton("Close");
         closeButton.addActionListener(new ActionListener()
@@ -78,7 +82,7 @@ public final class CreditsDialog extends JDialog
         JPanel closeButtonContainer = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         closeButtonContainer.add(closeButton);
         closeButtonContainer.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
-        add(closeButtonContainer,BorderLayout.SOUTH);
+        getContentPane().add(closeButtonContainer,BorderLayout.SOUTH);
         
         pack();
         setLocationRelativeTo(_parent);

@@ -25,6 +25,8 @@ import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
+import javax.swing.JEditorPane;
+import javax.swing.UIManager;
 
 public class LicenseDialog extends JDialog
 {
@@ -52,7 +54,11 @@ public class LicenseDialog extends JDialog
 		JPanel mainPanel = new JPanel(bl_mainPanel);
 		mainPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		
-		final JTextPane txtpnPleaseTakeA = new JTextPane();
+		final JTextArea txtpnPleaseTakeA = new JTextArea();
+		txtpnPleaseTakeA.setFont(UIManager.getFont("Label.font"));
+		txtpnPleaseTakeA.setLineWrap(true);
+		txtpnPleaseTakeA.setWrapStyleWord(true);
+		txtpnPleaseTakeA.setFocusable(false);
 		mainPanel.add(txtpnPleaseTakeA, BorderLayout.NORTH);
 		txtpnPleaseTakeA.setBackground(SystemColor.control);
 		txtpnPleaseTakeA.setEditable(false);
