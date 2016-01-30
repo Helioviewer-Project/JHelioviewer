@@ -120,25 +120,6 @@ public class MainFrame extends JFrame
 		
 		scrollContentPane.add(LEFT_PANE);
 		
-		if(Globals.isOSX())
-			//this is a hack to support GLCanvas as AWT in a splitpane
-			addComponentListener(new ComponentAdapter()
-			{
-				@Override
-				public void componentResized(@Nullable ComponentEvent e)
-				{
-					splitPane.setDividerLocation(splitPane.getDividerLocation()+1);
-					SwingUtilities.invokeLater(new Runnable()
-					{
-						@Override
-						public void run()
-						{
-							splitPane.setDividerLocation(splitPane.getDividerLocation()-1);
-						}
-					});
-				}
-			});
-		
 		splitPane.setRightComponent(MAIN_PANEL);		
 		splitPane.setLeftComponent(left);
 		

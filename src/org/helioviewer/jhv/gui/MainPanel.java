@@ -278,7 +278,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 	
 	protected void repaintInternal()
 	{
-		display();
+		repaint();
 	}
 
 	public Quaternion getRotationCurrent()
@@ -627,7 +627,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 
 		// force immediate repaints of dependent regions
 		for (MainPanel componentView : synchronizedViews)
-			componentView.display();
+			componentView.repaint();
 	}
 	
 	//int tmp[] = new int[1];
