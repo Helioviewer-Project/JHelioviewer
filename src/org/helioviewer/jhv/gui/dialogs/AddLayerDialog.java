@@ -132,6 +132,14 @@ public class AddLayerDialog extends JDialog
 		
 		pack();
 	}
+	
+	@Override
+	public void dispose()
+	{
+		super.dispose();
+		datePickerStartDate.dispose();
+		datePickerEndDate.dispose();
+	}
 
 	private void addData()
 	{
@@ -488,9 +496,10 @@ public class AddLayerDialog extends JDialog
 
 						if (filter != null)
 						{
-							int cadence = (int) AddLayerDialog.this.cadence.getValue()
+							final int cadence = (int) AddLayerDialog.this.cadence.getValue()
 									* ((TimeSteps) cmbbxTimeSteps.getSelectedItem()).factor;
-							cadence = Math.max(cadence, 1);
+							
+							final Observatories.Filter finalFilter = filter;
 							
 							Settings.setInt(Settings.IntKey.ADDLAYER_LAST_SOURCEID, filter.sourceId);
 							lastStart = datePickerStartDate.getDateTime();
@@ -501,13 +510,29 @@ public class AddLayerDialog extends JDialog
 							setVisible(false);
 							dispose();
 							
-							KakaduLayer newLayer=new KakaduLayer(
-									filter.sourceId,
-									lastStart,
-									lastEnd,
-									cadence, filter.getNickname());
-							newLayer.animateCameraToFacePlane = true;
-							Layers.addLayer(newLayer);
+							MainFrame.SINGLETON.startWaitCursor();
+							SwingUtilities.invokeLater(new Runnable()
+							{
+								@Override
+								public void run()
+								{
+									try
+									{
+										KakaduLayer newLayer=new KakaduLayer(
+												finalFilter.sourceId,
+												lastStart,
+												lastEnd,
+												Math.max(1,cadence),
+												finalFilter.getNickname());
+										newLayer.animateCameraToFacePlane = true;
+										Layers.addLayer(newLayer);
+									}
+									finally
+									{
+										MainFrame.SINGLETON.stopWaitCursor();
+									}
+								}
+							});
 						}
 					}
 				});

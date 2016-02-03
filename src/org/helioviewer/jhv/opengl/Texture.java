@@ -14,7 +14,6 @@ import org.helioviewer.jhv.viewmodel.TimeLine.DecodeQualityLevel;
 
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
-import com.jogamp.opengl.GLContext;
 
 public class Texture
 {
@@ -47,9 +46,8 @@ public class Texture
 	private JLabel debugImage=new JLabel();
 	*/
 	
-	public Texture()
+	public Texture(GL2 gl)
 	{
-		GL2 gl = GLContext.getCurrentGL().getGL2();
 		int tmp[] = new int[1];
 		gl.glGenTextures(1, tmp, 0);
 		
@@ -65,23 +63,23 @@ public class Texture
 		*/
 	}
 	
-	public void upload(final BufferedImage bufferedImage)
+	public void upload(final GL2 gl, final BufferedImage bufferedImage)
 	{
-		upload(bufferedImage, bufferedImage.getWidth(), bufferedImage.getHeight());
+		upload(gl, bufferedImage, bufferedImage.getWidth(), bufferedImage.getHeight());
 	}
 	
-	public void upload(final BufferedImage bufferedImage, final int _width, final int _height)
+	public void upload(final GL2 gl, final BufferedImage bufferedImage, final int _width, final int _height)
 	{
-		upload(bufferedImage,0,0,_width,_height);
+		upload(gl, bufferedImage,0,0,_width,_height);
 	}
 	
-	public void upload(final BufferedImage bufferedImage, int _destX, int _destY, final int _width, final int _height)
+	public void upload(final GL2 gl, final BufferedImage bufferedImage, int _destX, int _destY, final int _width, final int _height)
 	{
 		int width2 = MathUtils.nextPowerOfTwo(_width);
 		int height2 = MathUtils.nextPowerOfTwo(_height);
 
 		if (height != height2 || width != width2 || internalFormat!=GL.GL_RGBA8)
-			allocateTexture(width2, height2, GL.GL_RGBA8);
+			allocateTexture(gl, width2, height2, GL.GL_RGBA8);
 		
 		textureWidth = bufferedImage.getWidth() / (float)width;
 		textureHeight = bufferedImage.getHeight() / (float)height;
@@ -115,7 +113,6 @@ public class Texture
 				throw new RuntimeException("Unsupported image format: "+bufferedImage.getType());
 		}
 		
-		GL2 gl = GLContext.getCurrentGL().getGL2();
 		gl.glBindTexture(GL2.GL_TEXTURE_2D, openGLTextureId);
 		
 		
@@ -153,7 +150,7 @@ public class Texture
 	    return buffer;
 	}
 
-	public void uploadByteBuffer(ImageLayer _source, LocalDateTime _dateTime, ImageRegion _imageRegion)
+	public void uploadByteBuffer(GL2 gl, ImageLayer _source, LocalDateTime _dateTime, ImageRegion _imageRegion)
 	{
 		source = _source;
 		dateTime = _dateTime;
@@ -163,9 +160,7 @@ public class Texture
 		int height2 = Math.max(8, MathUtils.nextPowerOfTwo(_imageRegion.texels.height));
 		
 		if (width < width2 || height < height2 || internalFormat!=GL.GL_LUMINANCE8)
-			allocateTexture(width2, height2, GL.GL_LUMINANCE8);
-		
-		GL2 gl = GLContext.getCurrentGL().getGL2();
+			allocateTexture(gl, width2, height2, GL.GL_LUMINANCE8);
 		
 		gl.glBindTexture(GL2.GL_TEXTURE_2D, openGLTextureId);
 		
@@ -269,13 +264,12 @@ public class Texture
 		needsUpload=false;
 	}
 	
-	public void allocateTexture(int _width, int _height, int _internalFormat)
+	public void allocateTexture(GL2 gl, int _width, int _height, int _internalFormat)
 	{
 		width = _width;
 		height = _height;
 		internalFormat = _internalFormat;
 		
-		GL2 gl = GLContext.getCurrentGL().getGL2();
 		gl.glEnable(GL2.GL_TEXTURE_2D);			
 		gl.glBindTexture(GL2.GL_TEXTURE_2D, openGLTextureId);
 		

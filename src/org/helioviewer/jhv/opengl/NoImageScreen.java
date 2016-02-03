@@ -10,10 +10,10 @@ public class NoImageScreen
 {
 	private static Texture openGLHelper;
 
-	static
+	public static void init(GL2 _gl)
 	{
-		openGLHelper = new Texture();
-		openGLHelper.upload(IconBank.getImage(JHVIcon.NOIMAGE));
+		openGLHelper = new Texture(_gl);
+		openGLHelper.upload(_gl, IconBank.getImage(JHVIcon.NOIMAGE));
 	}
 
 	public static void render(GL2 gl)

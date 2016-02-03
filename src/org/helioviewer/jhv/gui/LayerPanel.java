@@ -52,27 +52,24 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 	private static final int SIZE;
 	private static final ImageIcon ICON_REMOVE;
 	
+	private JTable table;
+	private LayerTableModel tableModel;
+	private static final String[] COLUMN_TITLES=new String[]{ "", "", "", "", "" };
+	private static final ImageIcon[] LAYER_LOADING=new ImageIcon[8];
+
 	static
 	{
 		SIZE = new JLabel("Wy").getPreferredSize().height;
 		ICON_REMOVE = IconBank.getIcon(JHVIcon.REMOVE_NEW, SIZE, SIZE);
-	}
-	
-	private JTable table;
-	private LayerTableModel tableModel;
-	private static final String[] COLUMN_TITLES=new String[]{ "", "", "", "", "" };
-
-	private JButton btnDownloadLayer;
-	private static final Cursor HAND_CURSOR = new Cursor(Cursor.HAND_CURSOR);
-	private static final ImageIcon WARNING_BAD_REQUEST = IconBank.getIcon(JHVIcon.WARNING, SIZE-2, SIZE-2);
-	private static final ImageIcon[] LAYER_LOADING=new ImageIcon[8];
-	
-	
-	static
-	{
+		
 		for(int i=0;i<LAYER_LOADING.length;i++)
 			LAYER_LOADING[i]=IconBank.getIcon(JHVIcon.LAYER_LOADING, SIZE-4, SIZE-4, Math.PI*2/2/LAYER_LOADING.length*i);
 	}
+	
+	private JButton btnDownloadLayer;
+	private static final Cursor HAND_CURSOR = new Cursor(Cursor.HAND_CURSOR);
+	private static final ImageIcon WARNING_BAD_REQUEST = IconBank.getIcon(JHVIcon.WARNING, SIZE-2, SIZE-2);
+	
 	
 	private @Nullable Layer activePopupLayer;
 

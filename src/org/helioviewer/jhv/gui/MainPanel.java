@@ -435,7 +435,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			
 			//TODO: extremely narrow viewports show letterbox. why?!
 			
-			ImageLayer.ensureAppropriateTextureCacheSize();
+			ImageLayer.ensureAppropriateTextureCacheSize(gl);
 			
 			//TODO: jumpstart decoding of next frame
 			LinkedHashMap<ImageLayer, Future<PreparedImage>> layers = new LinkedHashMap<>();

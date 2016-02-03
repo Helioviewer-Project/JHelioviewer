@@ -6,12 +6,11 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import org.helioviewer.jhv.base.Telemetry;
+import org.helioviewer.jhv.base.JHVUncaughtExceptionHandler;
 import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.opengl.Texture;
 
 import com.jogamp.opengl.GL2;
-import com.jogamp.opengl.GLContext;
 
 public enum LUT
 {
@@ -70,22 +69,22 @@ public enum LUT
 	
 	private static Texture tex;
 	
-	public static void loadTexture()
+	public static void loadTexture(GL2 _gl)
 	{
 		if(tex!=null)
 			throw new IllegalStateException();
 		
 		try
 		{
-			tex = new Texture();
+			tex = new Texture(_gl);
 			BufferedImage bufferedImage = ImageIO.read(MainPanel.class.getResourceAsStream("/UltimateLookupTable.png"));
-			tex.upload(bufferedImage, 256, 256);
-			GLContext.getCurrentGL().glEnable(GL2.GL_TEXTURE_2D);
-			GLContext.getCurrentGL().glBindTexture(GL2.GL_TEXTURE_2D, tex.openGLTextureId);
-			GLContext.getCurrentGL().getGL2().glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_NEAREST);
-			GLContext.getCurrentGL().getGL2().glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_NEAREST);
-			GLContext.getCurrentGL().glBindTexture(GL2.GL_TEXTURE_2D, 0);
-			GLContext.getCurrentGL().glDisable(GL2.GL_TEXTURE_2D);
+			tex.upload(_gl, bufferedImage, 256, 256);
+			_gl.glEnable(GL2.GL_TEXTURE_2D);
+			_gl.glBindTexture(GL2.GL_TEXTURE_2D, tex.openGLTextureId);
+			_gl.getGL2().glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_NEAREST);
+			_gl.getGL2().glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_NEAREST);
+			_gl.glBindTexture(GL2.GL_TEXTURE_2D, 0);
+			_gl.glDisable(GL2.GL_TEXTURE_2D);
 			
 			for(LUT l:LUT.values())
 			{
@@ -121,7 +120,7 @@ public enum LUT
 		}
 		catch (IOException e)
 		{
-			Telemetry.trackException(e);
+			JHVUncaughtExceptionHandler.SINGLETON.uncaughtException(e);
 		}
 	}
 

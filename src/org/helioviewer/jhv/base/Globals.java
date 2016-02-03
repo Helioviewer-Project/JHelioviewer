@@ -1,6 +1,5 @@
 package org.helioviewer.jhv.base;
 
-import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -162,7 +161,7 @@ public class Globals
 				final LinkedBlockingQueue<Stage> mainStage=new LinkedBlockingQueue<>();
 				final LinkedBlockingQueue<Optional<File>> selectedFile=new LinkedBlockingQueue<>();
 				
-				MainFrame.SINGLETON.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+				MainFrame.SINGLETON.startWaitCursor();
 				
 				//idea stolen from http://stackoverflow.com/questions/28920758/javafx-filechooser-in-swing
 				final JDialog modalBlocker = new JDialog();
@@ -337,7 +336,7 @@ public class Globals
 			}
 			finally
 			{
-				MainFrame.SINGLETON.setCursor(null);
+				MainFrame.SINGLETON.stopWaitCursor();
 			}
     	
         try

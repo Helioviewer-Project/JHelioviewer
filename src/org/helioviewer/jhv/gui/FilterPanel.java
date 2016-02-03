@@ -27,10 +27,10 @@ import org.helioviewer.jhv.base.MultiClickAdapter;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.components.WheelSupport;
 import org.helioviewer.jhv.layers.ImageLayer;
+import org.helioviewer.jhv.layers.LUT;
 import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
-import org.helioviewer.jhv.layers.LUT;
 
 public class FilterPanel extends JPanel
 {

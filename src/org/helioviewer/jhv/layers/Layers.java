@@ -33,15 +33,16 @@ public class Layers
 				if (l instanceof ImageLayer)
 				{
 					ImageLayer il=(ImageLayer)l;
-					if(il.isMetadataInitialized())
+					LUT lut=il.lut;
+					if(il.isMetadataInitialized() && lut!=null)
 						if((il.getGroupForOpacity() & _layer.getGroupForOpacity()) != 0)
 						{
 							if(il.redChannel)
-								rSum += il.lut.getAvgColor().getRed()*il.opacity;
+								rSum += lut.getAvgColor().getRed()*il.opacity;
 							if(il.greenChannel)
-								gSum += il.lut.getAvgColor().getGreen()*il.opacity;
+								gSum += lut.getAvgColor().getGreen()*il.opacity;
 							if(il.blueChannel)
-								bSum += il.lut.getAvgColor().getBlue()*il.opacity;
+								bSum += lut.getAvgColor().getBlue()*il.opacity;
 							
 							affected.add(il);
 						}
@@ -55,8 +56,6 @@ public class Layers
 			for(ImageLayer l : affected)
 				l.opacity *= affected.size();
 			
-			System.out.println(_layer.lut);
-			System.out.println(_layer.lut.getAvgColor());
 			if(_layer.redChannel)
 				rSum += _layer.lut.getAvgColor().getRed()*_layer.opacity;
 			if(_layer.greenChannel)
@@ -228,7 +227,7 @@ public class Layers
 		
 		layers.clear();
 		
-		activeLayerIndex = 0;
+		activeLayerIndex = -1;
 		for (LayerListener renderListener : layerListeners)
 			renderListener.layersRemoved();
 	}

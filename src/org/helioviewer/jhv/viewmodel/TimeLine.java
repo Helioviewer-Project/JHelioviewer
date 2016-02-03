@@ -239,7 +239,7 @@ public class TimeLine implements LayerListener
 	public void setTimeRange(@Nonnull LocalDateTime _start,@Nonnull LocalDateTime _end,int _cadence)
 	{
 		if(_cadence<=1)
-			throw new IllegalArgumentException("_cadence");
+			throw new IllegalArgumentException("_cadence=="+_cadence);
 		
 		startTime=_start;
 		endTime=_end;

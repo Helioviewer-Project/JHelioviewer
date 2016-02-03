@@ -137,7 +137,7 @@ public abstract class ImageLayer extends Layer
 			}
 	}
 	
-	public static void ensureAppropriateTextureCacheSize()
+	public static void ensureAppropriateTextureCacheSize(GL2 gl)
 	{
 		int cnt=0;
 		for (Layer l : Layers.getLayers())
@@ -154,7 +154,7 @@ public abstract class ImageLayer extends Layer
 			cnt=textures.size();
 		
 		while(textures.size()<cnt)
-			textures.add(new Texture());
+			textures.add(new Texture(gl));
 	}
 	
 	public RenderResult renderLayer(GL2 gl, MainPanel mainPanel, PreparedImage _preparedImageData)
@@ -180,7 +180,7 @@ public abstract class ImageLayer extends Layer
 		
 		_preparedImageData.texture.usedByCurrentRenderPass=false;
 		if(_preparedImageData.texture.needsUpload)
-			_preparedImageData.texture.uploadByteBuffer(this, md.localDateTime, _preparedImageData.imageRegion);
+			_preparedImageData.texture.uploadByteBuffer(gl, this, md.localDateTime, _preparedImageData.imageRegion);
 		
 		Matrix4d transformation = calcTransformation(mainPanel, md);
 		
@@ -373,9 +373,8 @@ public abstract class ImageLayer extends Layer
 		return program;
 	}
 
-	public static void init()
+	public static void init(GL2 gl)
 	{
-		GL2 gl = GLContext.getCurrentGL().getGL2();
 		shaderSphere = buildShader(gl, "/shader/MainVertex.glsl", "/shader/SphereFragment.glsl");
 		shaderCorona = buildShader(gl, "/shader/MainVertex.glsl", "/shader/CoronaFragment.glsl");
 	}

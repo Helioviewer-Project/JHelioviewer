@@ -8,7 +8,9 @@ import javax.swing.ImageIcon;
 
 import org.helioviewer.jhv.opengl.Texture;
 
-class HEKIcon
+import com.jogamp.opengl.GL2;
+
+public class HEKIcon
 {
 	private static final String PATH = "/images/EventIcons/";
 
@@ -32,13 +34,13 @@ class HEKIcon
 		}
 	}
 
-	static
+	public static void init(GL2 _gl)
 	{
-		openGLHelper = new Texture();
+		openGLHelper = new Texture(_gl);
 		for (HEKIcons hekIcon : HEKIcons.values())
 		{
 			BufferedImage bufferedImage = getImage(hekIcon);
-			openGLHelper.upload(bufferedImage, 0,
+			openGLHelper.upload(_gl, bufferedImage, 0,
 					hekIcon.ordinal() * bufferedImage.getHeight(),
 					bufferedImage.getWidth(),
 					bufferedImage.getHeight()	* HEKIcons.values().length);

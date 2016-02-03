@@ -85,18 +85,7 @@ public class Movie
 		{
 			try
 			{
-		        Jpx_layer_source xlayer = tlsJpx_source.get().Access_layer(0);
-		        Jpx_codestream_source xstream = tlsJpx_source.get().Access_codestream(xlayer.Get_codestream_id(0));
-		        Jpx_input_box inputBox = xstream.Open_stream();
-		        
 				Kdu_codestream codestream = new Kdu_codestream();
-				codestream.Create(inputBox);
-				codestream.Set_persistent();
-				codestream.Enable_restart();
-				
-				inputBox.Close();
-				inputBox.Native_destroy();
-				
 				synchronized(openKdu_codestreams)
 				{
 					openKdu_codestreams.add(codestream);
@@ -540,7 +529,6 @@ public class Movie
 			requestedBufferedRegion.Access_size().Set_y(_requiredRegion.height);
 			
 			Kdu_region_decompressor decompressor = tlsKdu_region_decompressor.get();
-			Kdu_codestream codestream = tlsKdu_codestream.get();
 			
 	        Jpx_layer_source xlayer = jpxSrc.Access_layer(_index);
 	        if(!xlayer.Exists())
@@ -549,7 +537,16 @@ public class Movie
 	        Jpx_codestream_source xstream = jpxSrc.Access_codestream(xlayer.Get_codestream_id(0));
 	        Jpx_input_box inputBox = xstream.Open_stream();
         	tlsJpx_input_box.set(inputBox);
-			codestream.Restart(inputBox);
+        	
+			Kdu_codestream codestream = tlsKdu_codestream.get();
+        	if(!codestream.Exists())
+        	{
+				codestream.Create(inputBox);
+				codestream.Set_persistent();
+				codestream.Enable_restart();
+        	}
+        	else
+        		codestream.Restart(inputBox);
 			
 			int discardLevels=(int)Math.round(-Math.log(_zoomPercent)/Math.log(2));
 			

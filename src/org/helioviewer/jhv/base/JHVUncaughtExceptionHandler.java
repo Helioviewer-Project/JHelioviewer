@@ -139,6 +139,11 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
 	{
 	}
 
+	public synchronized void uncaughtException(final @Nullable Throwable e)
+	{
+		uncaughtException(Thread.currentThread(), e);
+	}
+	
 	// we do not use the logger here, since it should work even before logging
 	// initialization
 	@SuppressWarnings("deprecation")

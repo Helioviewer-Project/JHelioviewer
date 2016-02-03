@@ -141,7 +141,8 @@ public class Telemetry
 		
 		Map<String,String> ps= new LinkedHashMap<>();
 		for(int i=0;i<params.length;i+=2)
-			ps.put(params[i], params[i+1]);
+			if(params[i]!=null)
+				ps.put(params[i], params[i+1]==null ? "null" : params[i+1]);
 		
 		client.trackEvent(_event,ps, new HashMap<String,Double>());
 	}

@@ -36,7 +36,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
-class DatePickerPopup extends JDialog
+class DatePickerPopup extends JDialog implements AWTEventListener
 {
 	private LocalDate currentDate;
 	private CalenderCellRenderer calenderCellRenderer;
@@ -51,7 +51,7 @@ class DatePickerPopup extends JDialog
 	DatePickerPopup(final DatePicker newDatePicker, JDialog dialog)
 	{
 		super(dialog);
-		this.addWindowListener(new WindowAdapter()
+		addWindowListener(new WindowAdapter()
 		{
 			@Override
 			public void windowDeactivated(@Nullable WindowEvent e)
@@ -60,7 +60,7 @@ class DatePickerPopup extends JDialog
 			}
 		});
 
-		this.addFocusListener(new FocusAdapter()
+		addFocusListener(new FocusAdapter()
 		{
 			@Override
 			public void focusLost(@Nullable FocusEvent e)
@@ -69,25 +69,12 @@ class DatePickerPopup extends JDialog
 			}
 		});
 
-		this.setUndecorated(true);
-		this.setPreferredSize(new Dimension(250, 180));
-		this.setMinimumSize(new Dimension(250, 180));
+		setUndecorated(true);
+		setPreferredSize(new Dimension(250, 180));
+		setMinimumSize(new Dimension(250, 180));
 		this.newDatePicker = newDatePicker;
 
-		Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener()
-		{
-			@Override
-			public void eventDispatched(@Nullable AWTEvent event)
-			{
-				if (event instanceof KeyEvent)
-				{
-					KeyEvent k = (KeyEvent) event;
-					if (k.getID() == KeyEvent.KEY_PRESSED)
-						if (k.getKeyCode() == KeyEvent.VK_ESCAPE)
-							newDatePicker.hidePopup();
-				}
-			}
-		}, AWTEvent.KEY_EVENT_MASK);
+		Toolkit.getDefaultToolkit().addAWTEventListener(this, AWTEvent.KEY_EVENT_MASK);
 
 		currentDate = LocalDate.now();
 		calenderCellRenderer = new CalenderCellRenderer();
@@ -95,7 +82,7 @@ class DatePickerPopup extends JDialog
 		calenderCellRenderer.setCurrentDate(currentDate);
 
 		initColumnNames();
-		this.setBackground(Color.WHITE);
+		setBackground(Color.WHITE);
 		setLayout(new BorderLayout());
 
 		initControlPanel();
@@ -103,15 +90,39 @@ class DatePickerPopup extends JDialog
 		
 		updateData();
 	}
+	
+	@Override
+	public void dispose()
+	{
+		super.dispose();
+		
+		Toolkit.getDefaultToolkit().removeAWTEventListener(this);
+	}
+	
+	@Override
+	public void eventDispatched(@Nullable AWTEvent event)
+	{
+		if(!isVisible())
+			return;
+		
+		if (event instanceof KeyEvent)
+		{
+			KeyEvent k = (KeyEvent) event;
+			if (k.getID() == KeyEvent.KEY_PRESSED)
+				if (k.getKeyCode() == KeyEvent.VK_ESCAPE)
+				{
+					newDatePicker.hidePopup();
+					k.consume();
+				}
+		}
+	}
 
 	private void initColumnNames()
 	{
 		columnNames = new String[7];
 		int count = 0;
 		for (DayOfWeek day : DayOfWeek.values())
-		{
 			columnNames[count++] = day.getDisplayName(TextStyle.SHORT, new Locale("en"));
-		}
 	}
 
 	private void initControlPanel()

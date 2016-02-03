@@ -1,6 +1,7 @@
 package org.helioviewer.jhv.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -19,6 +20,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.RootPaneContainer;
 import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.base.Globals;
@@ -39,7 +41,7 @@ public class MainFrame extends JFrame
 	public final MainPanel MAIN_PANEL;
 	public final OverviewPanel OVERVIEW_PANEL;
 	public final TopToolBar TOP_TOOL_BAR = new TopToolBar();
-	public static final MainFrame SINGLETON = new MainFrame();
+	public static MainFrame SINGLETON;
 	public final int SIDE_PANEL_WIDTH = 320;
 	public final SideContentPane LEFT_PANE;
 	public final MoviePanel MOVIE_PANEL;
@@ -48,14 +50,15 @@ public class MainFrame extends JFrame
 
 	public final FilterPanel FILTER_PANEL;
 	
-	private MainFrame()
+	public static void init(GLContext _context)
+	{
+		SINGLETON = new MainFrame(_context);
+	}
+	
+	private MainFrame(GLContext context)
 	{
 		super("ESA JHelioviewer");
 
-		GLContext context = GLContext.getCurrent();
-		if(context==null)
-			throw new RuntimeException();
-		
 		MAIN_PANEL = new MainPanel(context);
 		OVERVIEW_PANEL = new OverviewPanel(context);
 		initMainFrame();
@@ -144,6 +147,21 @@ public class MainFrame extends JFrame
 		
 		contentPane.add(this.getStatusPane(), BorderLayout.SOUTH);
 	}
+	
+	public void startWaitCursor()
+	{
+	    RootPaneContainer root = (RootPaneContainer)getRootPane().getTopLevelAncestor();
+	    root.getGlassPane().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+	    root.getGlassPane().setVisible(true);
+	}
+	 
+	public void stopWaitCursor()
+	{
+	    RootPaneContainer root = (RootPaneContainer)getRootPane().getTopLevelAncestor();
+	    root.getGlassPane().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+	    root.getGlassPane().setVisible(false);
+	}
+
 	
 	private void initMainFrame()
 	{

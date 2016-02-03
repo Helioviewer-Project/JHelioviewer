@@ -35,8 +35,10 @@ import org.helioviewer.jhv.gui.dialogs.LicenseDialog;
 import org.helioviewer.jhv.io.CommandLineProcessor;
 import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.LUT;
+import org.helioviewer.jhv.opengl.NoImageScreen;
 import org.helioviewer.jhv.opengl.camera.CameraMode;
 import org.helioviewer.jhv.plugins.Plugins;
+import org.helioviewer.jhv.plugins.hekplugin.HEKIcon;
 import org.helioviewer.jhv.viewmodel.jp2view.kakadu.KduErrorHandler;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.MovieCache;
 
@@ -71,215 +73,200 @@ public class JHelioviewer
 			return;
 		}
 		
-		// Setup Swing
-		try
-		{
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		}
-		catch (Exception e2)
-		{
-			Telemetry.trackException(e2);
-		}
-		
-		
-		SwingUtilities.invokeAndWait(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				try
-				{
-					//display EULA, if needed
-					if(!Globals.isWindows() && Settings.getInt(IntKey.STARTUP_LICENSE_SHOWN)!=Globals.LICENSE_VERSION)
-					{
-						LicenseDialog ld=new LicenseDialog();
-						
-						if(!ld.didAgree())
-							System.exit(0);
-					}
-					Settings.setInt(IntKey.STARTUP_LICENSE_SHOWN, Globals.LICENSE_VERSION);
-					
-					
-					// display the splash screen
-					splash = new SplashScreen(17);
-				}
-				catch(Throwable t)
-				{
-					Telemetry.trackException(t);
-				}
-			}
-		});
-
-		splash.progressTo("Redirecting standard streams");
 		Log.redirectStdOutErr();
 		
-		splash.progressTo("Checking for updates");
-		if (Globals.isReleaseVersion())
-		{
-			UpdateScheduleRegistry.setUpdateSchedule(UpdateSchedule.DAILY);
-			if (UpdateScheduleRegistry.checkAndReset())
-			{
-				// This will return immediately if you call it from the EDT,
-				// otherwise it will block until the installer application
-				// exits
-				ApplicationLauncher.launchApplicationInProcess("366", null,
-						new ApplicationLauncher.Callback()
-						{
-							public void exited(int exitValue)
-							{
-							}
-
-							public void prepareShutdown()
-							{
-							}
-						}, ApplicationLauncher.WindowMode.FRAME, null);
-			}
-		}
-		
-		//start app insights on a separate thread, because it usually
-		//takes a while to load
-		splash.progressTo("Starting Application Insights");
-		new Thread(new Runnable()
+		SwingUtilities.invokeLater(new Runnable()
 		{
 			@Override
 			public void run()
 			{
-				Telemetry.trackEvent("Startup","args",Arrays.toString(args));
-			}
-		}).start();
-					
-		splash.progressTo("Installing universal locale");
-		System.setProperty("user.timezone", TimeZone.getDefault().getID());
-		TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
-		System.setProperty("user.locale", Locale.getDefault().toString());
-		Locale.setDefault(Locale.US);
-		
-		
-		//must happen from main thread to work under os x
-		splash.progressTo("Initializing OpenGL");
-		GLProfile.initSingleton();
-		GLProfile profile = GLProfile.get(GLProfile.GL2);
-		GLDrawableFactory factory = GLDrawableFactory.getFactory(profile);
-		
-		//must happen from main thread to work under os x
-		splash.progressTo("Creating drawable");
-		GLCapabilities capabilities = new GLCapabilities(profile);
-		final GLAutoDrawable sharedDrawable = factory.createDummyAutoDrawable(null, true, capabilities, null);
-		sharedDrawable.display();
-					
-		if (System.getProperty("jhvVersion") == null)
-			sharedDrawable.setGL(new DebugGL2(sharedDrawable.getGL().getGL2()));
-		
-		// Load settings from file but do not apply them yet
-		// The settings must not be applied before the kakadu engine has
-		// been initialized
-		splash.progressTo("Loading settings");
-		Settings.init();
-		
-		splash.progressTo("Initializing Kakadu");
-		try
-		{
-			loadLibraries();
-		}
-		catch (UnsatisfiedLinkError _ule)
-		{
-			if (Globals.isLinux() && _ule.getMessage().contains("GLIBC"))
-			{
-				splash.setVisible(false);
-				JOptionPane.showMessageDialog(null,
-								"JHelioviewer requires a more recent version of GLIBC. Please update your distribution.\n\n"
-								+ _ule.getMessage(),
-								"JHelioviewer", JOptionPane.ERROR_MESSAGE);
-				return;
-			}
-
-			throw _ule;
-		}
-
-		// The following code-block attempts to start the native message handling, otherwise
-		// KDU just terminates our process when something goes wrong... (!?!)
-		splash.progressTo("Setting up Kakadu message handlers");
-        Kdu_global.Kdu_customize_warnings(keepReference(new Kdu_message_formatter(new KduErrorHandler(false), 80)));
-        Kdu_global.Kdu_customize_errors(keepReference(new Kdu_message_formatter(new KduErrorHandler(true), 80)));
-        
-		splash.progressTo("Setting up caches");
-		MovieCache.init();
-		
-		splash.progressTo("Compiling shaders");
-		sharedDrawable.getContext().makeCurrent();
-		ImageLayer.init();
-		
-		//warning: do this on the main thread for os x. despite the fact that it is incorrect
-		//regarding EDT. os x doesn't initialize properly if glcanvas are created off context.
-        splash.progressTo("Starting Swing");
-		ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
-		JPopupMenu.setDefaultLightWeightPopupEnabled(false);
-		MainFrame.SINGLETON.getClass();
-		LUT.loadTexture();
-		sharedDrawable.getContext().release();
-		
-		SwingUtilities.invokeAndWait(new Runnable()
-		{
-			@Override
-			public void run()
-			{
+				// Setup Swing
 				try
 				{
-					// force initialization of UltimatePluginInterface
-					splash.progressTo("Initializing plugins");
-					Plugins.SINGLETON.getClass();
+					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+				}
+				catch (Exception e2)
+				{
+					Telemetry.trackException(e2);
+				}
+		
+				//display EULA, if needed
+				if(!Globals.isWindows() && Settings.getInt(IntKey.STARTUP_LICENSE_SHOWN)!=Globals.LICENSE_VERSION)
+				{
+					LicenseDialog ld=new LicenseDialog();
 					
-					splash.progressTo("Restoring settings");
-					if(Settings.getBoolean(BooleanKey.STARTUP_3DCAMERA))
-						CameraMode.set3DMode();
-					else
-						CameraMode.set2DMode();
+					if(!ld.didAgree())
+						System.exit(0);
 					
-					splash.progressTo("Show main window");
-					MainFrame.SINGLETON.setVisible(true);
-					
-		            splash.progressTo("Loading observatories");
-					if (Settings.getBoolean(Settings.BooleanKey.STARTUP_LOADMOVIE))
-			            Observatories.addUpdateListener(new Runnable()
-			            {
-							@Override
-							public void run()
-							{
-								AddLayerDialog.addDefaultStartupLayer();
-							}
-						});
-		            Observatories.getObservatories();
-		            
-		            splash.progressTo("");
-					new Thread(new Runnable()
+					Settings.setInt(IntKey.STARTUP_LICENSE_SHOWN, Globals.LICENSE_VERSION);
+				}
+				
+				// display the splash screen
+				SplashScreen splash = new SplashScreen(17);
+
+				splash.progressTo("Checking for updates");
+				if (Globals.isReleaseVersion())
+				{
+					UpdateScheduleRegistry.setUpdateSchedule(UpdateSchedule.DAILY);
+					if (UpdateScheduleRegistry.checkAndReset())
 					{
+						// This will return immediately if you call it from the EDT,
+						// otherwise it will block until the installer application
+						// exits
+						ApplicationLauncher.launchApplicationInProcess("366", null,
+								new ApplicationLauncher.Callback()
+								{
+									public void exited(int exitValue)
+									{
+									}
+		
+									public void prepareShutdown()
+									{
+									}
+								}, ApplicationLauncher.WindowMode.FRAME, null);
+					}
+				}
+		
+				//start app insights on a separate thread, because it usually
+				//takes a while to load
+				splash.progressTo("Starting Application Insights");
+				new Thread(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						Telemetry.trackEvent("Startup","args",Arrays.toString(args));
+					}
+				}).start();
+					
+				splash.progressTo("Installing universal locale");
+				System.setProperty("user.timezone", TimeZone.getDefault().getID());
+				TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
+				System.setProperty("user.locale", Locale.getDefault().toString());
+				Locale.setDefault(Locale.US);
+				
+		
+				splash.progressTo("Initializing OpenGL");
+				GLProfile.initSingleton();
+				GLProfile profile = GLProfile.get(GLProfile.GL2);
+				GLDrawableFactory factory = GLDrawableFactory.getFactory(profile);
+		
+				
+				splash.progressTo("Creating drawable");
+				GLCapabilities capabilities = new GLCapabilities(profile);
+				final GLAutoDrawable sharedDrawable = factory.createDummyAutoDrawable(null, true, capabilities, null);
+				sharedDrawable.display();
+							
+				if (System.getProperty("jhvVersion") == null)
+					sharedDrawable.setGL(new DebugGL2(sharedDrawable.getGL().getGL2()));
+		
+				// Load settings from file but do not apply them yet
+				// The settings must not be applied before the kakadu engine has
+				// been initialized
+				splash.progressTo("Loading settings");
+				Settings.init();
+		
+				splash.progressTo("Initializing Kakadu");
+				try
+				{
+					loadLibraries();
+				}
+				catch (UnsatisfiedLinkError _ule)
+				{
+					if (Globals.isLinux() && _ule.getMessage().contains("GLIBC"))
+					{
+						splash.setVisible(false);
+						JOptionPane.showMessageDialog(null,
+										"JHelioviewer requires a more recent version of GLIBC. Please update your distribution.\n\n"
+										+ _ule.getMessage(),
+										"JHelioviewer", JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+		
+					throw _ule;
+				}
+				
+				// The following code-block attempts to start the native message handling, otherwise
+				// KDU just terminates our process when something goes wrong... (!?!)
+				splash.progressTo("Setting up Kakadu message handlers");
+		        try
+				{
+					Kdu_global.Kdu_customize_warnings(keepReference(new Kdu_message_formatter(new KduErrorHandler(false), 80)));
+			        Kdu_global.Kdu_customize_errors(keepReference(new Kdu_message_formatter(new KduErrorHandler(true), 80)));
+				}
+				catch (KduException e)
+				{
+					Telemetry.trackException(e);
+				}
+		        
+				splash.progressTo("Setting up caches");
+				MovieCache.init();
+				
+				splash.progressTo("Compiling shaders");
+				sharedDrawable.getContext().makeCurrent();
+				ImageLayer.init(sharedDrawable.getGL().getGL2());
+				
+		        splash.progressTo("Starting Swing");
+				ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
+				JPopupMenu.setDefaultLightWeightPopupEnabled(false);
+				MainFrame.init(sharedDrawable.getContext());
+				
+				splash.progressTo("Loading textures");
+				NoImageScreen.init(sharedDrawable.getGL().getGL2());
+				LUT.loadTexture(sharedDrawable.getGL().getGL2());
+				HEKIcon.init(sharedDrawable.getGL().getGL2());
+				
+				// force initialization of UltimatePluginInterface
+				splash.progressTo("Initializing plugins");
+				Plugins.SINGLETON.getClass();
+				sharedDrawable.getContext().release();
+				
+				splash.progressTo("Restoring settings");
+				if(Settings.getBoolean(BooleanKey.STARTUP_3DCAMERA))
+					CameraMode.set3DMode();
+				else
+					CameraMode.set2DMode();
+				
+				splash.progressTo("Show main window");
+				MainFrame.SINGLETON.setVisible(true);
+				
+	            splash.progressTo("Loading observatories");
+				if (Settings.getBoolean(Settings.BooleanKey.STARTUP_LOADMOVIE))
+		            Observatories.addUpdateListener(new Runnable()
+		            {
 						@Override
 						public void run()
 						{
-							try
-							{
-								Thread.sleep(1000);
-							}
-							catch (InterruptedException _e)
-							{
-								Telemetry.trackException(_e);
-							}
-							SwingUtilities.invokeLater(new Runnable()
-							{
-								@Override
-								public void run()
-								{
-									splash.dispose();
-									UILatencyWatchdog.startWatchdog();
-								}
-							});
+							AddLayerDialog.addDefaultStartupLayer();
 						}
-					}).start();
-				}
-				catch (Throwable _t)
+					});
+	            Observatories.getObservatories();
+		            
+	            splash.progressTo("");
+				new Thread(new Runnable()
 				{
-					JHVUncaughtExceptionHandler.SINGLETON.uncaughtException(Thread.currentThread(), _t);
-				}
+					@Override
+					public void run()
+					{
+						try
+						{
+							Thread.sleep(1000);
+						}
+						catch (InterruptedException _e)
+						{
+							Telemetry.trackException(_e);
+						}
+						SwingUtilities.invokeLater(new Runnable()
+						{
+							@Override
+							public void run()
+							{
+								splash.dispose();
+								UILatencyWatchdog.startWatchdog();
+							}
+						});
+					}
+				}).start();
 			}
 		});
 	}
@@ -293,6 +280,9 @@ public class JHelioviewer
 
 	private static void loadLibraries()
 	{
+		String suffix = Globals.isReleaseVersion() ? "R":"D";
+		
+		
 		if (Globals.isWindows())
 		{
 			try
@@ -304,11 +294,11 @@ public class JHelioviewer
 				//ignore inability to load msvcr120. if there's really
 				//a problem, it will be caught by the outer try/catch
 			}
-			System.loadLibrary("kdu_v77R");
-			System.loadLibrary("kdu_a77R");
+			System.loadLibrary("kdu_v77"+suffix);
+			System.loadLibrary("kdu_a77"+suffix);
 		}
 		
-		System.loadLibrary("kdu_jniR");
+		System.loadLibrary("kdu_jni"+suffix);
 	}
 
 	@SuppressWarnings("unused")

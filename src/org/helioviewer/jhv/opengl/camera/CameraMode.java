@@ -19,6 +19,7 @@ public class CameraMode
 		mode = MODE.MODE_3D;
 		MainFrame.SINGLETON.TOP_TOOL_BAR.set3DMode();
 		MainFrame.SINGLETON.MAIN_PANEL.activateRotationInteraction();
+		MainFrame.SINGLETON.OVERVIEW_PANEL.activateRotationInteraction();
 		MainFrame.SINGLETON.MAIN_PANEL.repaint();
 	}
 
@@ -28,6 +29,7 @@ public class CameraMode
 		Settings.setBoolean(BooleanKey.STARTUP_3DCAMERA, false);
 		MainFrame.SINGLETON.TOP_TOOL_BAR.set2DMode();
 		MainFrame.SINGLETON.MAIN_PANEL.activatePanInteraction();
+		MainFrame.SINGLETON.OVERVIEW_PANEL.activatePanInteraction();
 		MainFrame.SINGLETON.MAIN_PANEL.repaint();
 	}
 }

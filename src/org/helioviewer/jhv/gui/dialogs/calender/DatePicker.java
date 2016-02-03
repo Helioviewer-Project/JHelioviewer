@@ -63,6 +63,11 @@ public class DatePicker extends JPanel
 		txtFieldDate.setText(dateTime.format(DATE_FORMAT));
 	}
 	
+	public void dispose()
+	{
+		newDatePickerPopup.dispose();
+	}
+	
 	public void addChangeListener(ActionListener _al)
 	{
 		changeListeners.add(_al);
@@ -359,8 +364,8 @@ public class DatePicker extends JPanel
 			txtFieldDate.setForeground(null);
 			newDatePickerPopup.setCurrentDate(localdate);
 			
-			String newText = dateTime.format(DATE_FORMAT);
-			/*if(!newText.equals(txtFieldDate.getText()))
+			/*String newText = dateTime.format(DATE_FORMAT);
+			if(!newText.equals(txtFieldDate.getText()))
 				SwingUtilities.invokeLater(new Runnable()
 				{
 					@Override
@@ -381,8 +386,8 @@ public class DatePicker extends JPanel
 			dateTime = localtime.atDate(dateTime.toLocalDate());
 			txtFieldTime.setForeground(Color.BLACK);
 			
-			String newText = dateTime.format(TIME_FORMAT);
-			/*if(!newText.equals(txtFieldTime.getText()))
+			/*String newText = dateTime.format(TIME_FORMAT);
+			if(!newText.equals(txtFieldTime.getText()))
 				SwingUtilities.invokeLater(new Runnable()
 				{
 					@Override
