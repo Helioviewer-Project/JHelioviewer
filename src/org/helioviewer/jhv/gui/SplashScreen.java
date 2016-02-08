@@ -47,7 +47,6 @@ public class SplashScreen extends JFrame
 
 		setType(java.awt.Window.Type.UTILITY);
 		progressBar.setBorder(new LineBorder(new Color(0, 0, 0), 5));
-		progressBar.setBackground(Color.BLACK);
 		progressBar.setPreferredSize(new Dimension(0, 20));
 		JLabel label = new JLabel(new ImageIcon(image));
 		label.setBackground(Color.BLACK);
@@ -65,6 +64,7 @@ public class SplashScreen extends JFrame
 		
 		setAlwaysOnTop(true);
 		
+		repaint();
 		RepaintManager.currentManager(this).validateInvalidComponents();
 		RepaintManager.currentManager(this).paintDirtyRegions();
 	}
