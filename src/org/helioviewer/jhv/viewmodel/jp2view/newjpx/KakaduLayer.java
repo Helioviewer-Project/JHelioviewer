@@ -562,7 +562,11 @@ public class KakaduLayer extends ImageLayer
 	
 	public Future<PreparedImage> prepareImageData(final MainPanel _panel, final DecodeQualityLevel _quality, final Dimension _size, final GLContext _gl)
 	{
-		final MetaData metaData = getMetaData(TimeLine.SINGLETON.getCurrentDateTime());
+		final LocalDateTime mainTime = TimeLine.SINGLETON.getCurrentDateTime();
+		if(mainTime.isBefore(start.minusSeconds(cadence)) || mainTime.isAfter(end.plusSeconds(cadence)))
+			return new FutureValue<>(null);
+			
+		final MetaData metaData = getMetaData(mainTime);
 		if (metaData == null)
 			return new FutureValue<>(null);
 		
