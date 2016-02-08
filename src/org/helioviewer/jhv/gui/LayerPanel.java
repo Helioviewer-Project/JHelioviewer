@@ -251,7 +251,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		//date/time
 		table.getColumnModel().getColumn(3).setCellRenderer(new ImageIconCellRenderer());
 		table.getColumnModel().getColumn(3).setResizable(false);
-		setFixedWidth(150, 3);
+		setFixedWidth(160, 3);
 		
 		//delete
 		table.getColumnModel().getColumn(4).setCellRenderer(new ImageIconCellRenderer());

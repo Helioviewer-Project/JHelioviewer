@@ -269,6 +269,8 @@ public class Globals
 												selectedFile.add(Optional.ofNullable(dirChooser.showDialog(s)));
 											}
 											break;
+										default:
+											throw new IllegalArgumentException("Illegal type: "+_type);
 									}
 									
 									s.close();

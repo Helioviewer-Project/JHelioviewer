@@ -71,7 +71,7 @@
           <versionLine x="20" y="40" text="version ${compiler:sys.version}" fontSize="8" fontColor="0,0,0" bold="false" />
         </text>
       </splashScreen>
-      <java mainClass="org.helioviewer.jhv.JHelioviewer" vmParameters="-Dapple.laf.useScreenMenuBar=true -Xmx1024m -DraygunTag=release -DjhvVersion=${compiler:sys.version}" arguments="" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
+      <java mainClass="org.helioviewer.jhv.JHelioviewer" vmParameters="-Xmx1024m -DraygunTag=release -DjhvVersion=${compiler:sys.version}" arguments="" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
           <directory location="classes" failOnError="true" />
           <scanDirectory location="lib" failOnError="true" />

@@ -1,6 +1,8 @@
 package org.helioviewer.jhv.plugins.hekplugin;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
@@ -411,4 +413,9 @@ public class IntervalStore<TimeFormat extends Comparable<TimeFormat>, ItemFormat
 		this.data.remove(interval);
 	}
 
+	@Override
+	public int hashCode()
+	{
+		return data.size();
+	}
 }

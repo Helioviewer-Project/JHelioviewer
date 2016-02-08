@@ -76,6 +76,8 @@ public class ChunkedInputStream extends InputStream
 					return -1;
 				case 1:
 					return tmpRead[0] & 0xff;
+				default:
+					throw new IllegalArgumentException();
 			}
 	}
 

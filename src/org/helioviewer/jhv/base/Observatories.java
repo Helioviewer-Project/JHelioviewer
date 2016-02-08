@@ -89,7 +89,6 @@ public class Observatories
 
 	private static void addObservatories(JSONObject _observatories)
 	{
-		@SuppressWarnings("unchecked")
 		Iterator<String> iterator = _observatories.sortedKeys();
 		while (iterator.hasNext())
 		{
@@ -110,7 +109,6 @@ public class Observatories
 	
 	private static void addFilter(JSONObject jsonFilter, Observatory observatory)
 	{
-		@SuppressWarnings("unchecked")
 		Iterator<String> iterator = jsonFilter.sortedKeys();
 		while (iterator.hasNext())
 		{
@@ -132,7 +130,6 @@ public class Observatories
 	
 	private static void addFilter(JSONObject jsonFilter, Filter filter, Observatory observatory)
 	{
-		@SuppressWarnings("unchecked")
 		Iterator<String> iterator = jsonFilter.sortedKeys();
 		while (iterator.hasNext())
 		{

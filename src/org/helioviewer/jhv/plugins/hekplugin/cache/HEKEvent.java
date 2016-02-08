@@ -841,6 +841,12 @@ public class HEKEvent implements IntervalComparison<Date> {
         cacheTriangulation();
     }
 
+	@Override
+	public int hashCode()
+	{
+		return id.hashCode();
+	}
+
     /* **************************************************************************
      * 
      * Some legacy code to add additional points in between the loaded polygon
