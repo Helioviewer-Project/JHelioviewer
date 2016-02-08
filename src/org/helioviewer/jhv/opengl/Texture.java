@@ -1,10 +1,15 @@
 package org.helioviewer.jhv.opengl;
 
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
 
 import javax.annotation.Nullable;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.ImageRegion;
@@ -14,6 +19,7 @@ import org.helioviewer.jhv.viewmodel.TimeLine.DecodeQualityLevel;
 
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLContext;
 
 public class Texture
 {
@@ -41,10 +47,6 @@ public class Texture
 	//to this texture
 	public @Nullable ByteBuffer uploadBuffer;
 	
-	/*
-	private JFrame debug=new JFrame();
-	private JLabel debugImage=new JLabel();
-	*/
 	
 	public Texture(GL2 gl)
 	{
@@ -121,7 +123,7 @@ public class Texture
 		gl.glPixelStorei(GL2.GL_UNPACK_SKIP_PIXELS, 0);
 		gl.glPixelStorei(GL2.GL_UNPACK_SKIP_ROWS, 0);
 		gl.glPixelStorei(GL2.GL_UNPACK_ROW_LENGTH, 0);
-		gl.glPixelStorei(GL2.GL_UNPACK_ALIGNMENT, 8 >> 3);
+		gl.glPixelStorei(GL2.GL_UNPACK_ALIGNMENT, 1);
 		
 		gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, _destX, _destY, bufferedImage.getWidth(), bufferedImage.getHeight(), inputFormat, inputType, buffer);
 		
@@ -167,7 +169,7 @@ public class Texture
 		gl.glPixelStorei(GL2.GL_UNPACK_SKIP_PIXELS, 0);
 		gl.glPixelStorei(GL2.GL_UNPACK_SKIP_ROWS, 0);
 		gl.glPixelStorei(GL2.GL_UNPACK_ROW_LENGTH, 0);
-		gl.glPixelStorei(GL2.GL_UNPACK_ALIGNMENT, 8 >> 3);
+		gl.glPixelStorei(GL2.GL_UNPACK_ALIGNMENT, 1);
 
 		/*ByteBuffer b=ByteBuffer.allocateDirect(width*height*4);
 		for(int i=0;i<width*height;i++)
@@ -189,7 +191,10 @@ public class Texture
 		//updateDebugImage();
 	}
 	
-	/*
+	/* 
+	//private JFrame debug=new JFrame();
+	//private JLabel debugImage=new JLabel();
+
 	private void updateDebugImage()
 	{
 		GL2 gl = GLContext.getCurrentGL().getGL2();
@@ -235,7 +240,6 @@ public class Texture
 		debug.setSize(Math.max(width/4+20,500), height/4+50);
 	}*/
 
-	@SuppressWarnings("null")
 	public boolean contains(Object _source, DecodeQualityLevel _quality, ImageRegion _imageRegion, LocalDateTime _localDateTime)
 	{
 		if(!Globals.isReleaseVersion())
@@ -273,22 +277,28 @@ public class Texture
 		gl.glEnable(GL2.GL_TEXTURE_2D);			
 		gl.glBindTexture(GL2.GL_TEXTURE_2D, openGLTextureId);
 		
-		ByteBuffer b = ByteBuffer.allocate(width * height);
+		ByteBuffer b = ByteBuffer.allocateDirect(width * height);
 		b.limit(width * height);
-		gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, internalFormat, width, height, 0, GL2.GL_LUMINANCE, GL2.GL_UNSIGNED_BYTE, b);
-
+		
+		gl.glPixelStorei(GL2.GL_UNPACK_SKIP_PIXELS, 0);
+		gl.glPixelStorei(GL2.GL_UNPACK_SKIP_ROWS, 0);
+		gl.glPixelStorei(GL2.GL_UNPACK_ROW_LENGTH, 0);
+		gl.glPixelStorei(GL2.GL_UNPACK_ALIGNMENT, 1);
+		
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_LINEAR);
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_LINEAR);
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP);
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP);
-		
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_BASE_LEVEL, 0);
         gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAX_LEVEL, 0);
-        
         gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_GENERATE_MIPMAP, GL2.GL_FALSE);
+        
+		gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, internalFormat, width, height, 0, GL2.GL_LUMINANCE, GL2.GL_UNSIGNED_BYTE, b);
+		
+		//hack: work around os x texture handling. lut upload doesn't work without it.
+		gl.glFlush();
     }
 
-	@SuppressWarnings("null")
 	public void prepareUploadBuffer(int _width, int _height)
 	{
 		if(uploadBuffer==null || uploadBuffer.limit()<_width*_height)

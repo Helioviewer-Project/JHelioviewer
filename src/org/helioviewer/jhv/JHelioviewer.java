@@ -48,6 +48,7 @@ import com.install4j.api.update.UpdateScheduleRegistry;
 import com.jogamp.opengl.DebugGL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLContext;
 import com.jogamp.opengl.GLDrawableFactory;
 import com.jogamp.opengl.GLProfile;
 
@@ -79,35 +80,33 @@ public class JHelioviewer
 			System.setProperty("apple.laf.useScreenMenuBar", "true");
 		
 		
-		SwingUtilities.invokeLater(new Runnable()
+		SwingUtilities.invokeLater(() ->
 		{
-			@Override
-			public void run()
+			// Setup Swing
+			try
 			{
-				// Setup Swing
-				try
-				{
-					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-				}
-				catch (Exception e2)
-				{
-					Telemetry.trackException(e2);
-				}
-		
-				//display EULA, if needed
-				if(!Globals.isWindows() && Settings.getInt(IntKey.STARTUP_LICENSE_SHOWN)!=Globals.LICENSE_VERSION)
-				{
-					LicenseDialog ld=new LicenseDialog();
-					
-					if(!ld.didAgree())
-						System.exit(0);
-					
-					Settings.setInt(IntKey.STARTUP_LICENSE_SHOWN, Globals.LICENSE_VERSION);
-				}
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			}
+			catch (Exception e2)
+			{
+				Telemetry.trackException(e2);
+			}
+	
+			//display EULA, if needed
+			if(!Globals.isWindows() && Settings.getInt(IntKey.STARTUP_LICENSE_SHOWN)!=Globals.LICENSE_VERSION)
+			{
+				LicenseDialog ld=new LicenseDialog();
 				
-				// display the splash screen
-				SplashScreen splash = new SplashScreen(17);
-
+				if(!ld.didAgree())
+					System.exit(0);
+				
+				Settings.setInt(IntKey.STARTUP_LICENSE_SHOWN, Globals.LICENSE_VERSION);
+			}
+			
+			// display the splash screen
+			SplashScreen splash = new SplashScreen(17);
+			SwingUtilities.invokeLater(() ->
+			{
 				splash.progressTo("Checking for updates");
 				if (Globals.isReleaseVersion())
 				{
@@ -134,15 +133,8 @@ public class JHelioviewer
 				//start app insights on a separate thread, because it usually
 				//takes a while to load
 				splash.progressTo("Starting Application Insights");
-				new Thread(new Runnable()
-				{
-					@Override
-					public void run()
-					{
-						Telemetry.trackEvent("Startup","args",Arrays.toString(args));
-					}
-				}).start();
-					
+				new Thread(() -> Telemetry.trackEvent("Startup","args",Arrays.toString(args))).start();
+				
 				splash.progressTo("Installing universal locale");
 				System.setProperty("user.timezone", TimeZone.getDefault().getID());
 				TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
@@ -160,7 +152,7 @@ public class JHelioviewer
 				GLCapabilities capabilities = new GLCapabilities(profile);
 				final GLAutoDrawable sharedDrawable = factory.createDummyAutoDrawable(null, true, capabilities, null);
 				sharedDrawable.display();
-							
+					
 				if (System.getProperty("jhvVersion") == null)
 					sharedDrawable.setGL(new DebugGL2(sharedDrawable.getGL().getGL2()));
 		
@@ -239,21 +231,11 @@ public class JHelioviewer
 				
 	            splash.progressTo("Loading observatories");
 				if (Settings.getBoolean(Settings.BooleanKey.STARTUP_LOADMOVIE))
-		            Observatories.addUpdateListener(new Runnable()
-		            {
-						@Override
-						public void run()
-						{
-							AddLayerDialog.addDefaultStartupLayer();
-						}
-					});
+		            Observatories.addUpdateListener(() -> AddLayerDialog.addDefaultStartupLayer());
 	            Observatories.getObservatories();
 		            
 	            splash.progressTo("");
-				new Thread(new Runnable()
-				{
-					@Override
-					public void run()
+				new Thread(() ->
 					{
 						try
 						{
@@ -263,18 +245,13 @@ public class JHelioviewer
 						{
 							Telemetry.trackException(_e);
 						}
-						SwingUtilities.invokeLater(new Runnable()
-						{
-							@Override
-							public void run()
+						SwingUtilities.invokeLater(() ->
 							{
 								splash.dispose();
 								UILatencyWatchdog.startWatchdog();
-							}
-						});
-					}
-				}).start();
-			}
+							});
+					}).start();
+			});
 		});
 	}
 
@@ -308,7 +285,6 @@ public class JHelioviewer
 		System.loadLibrary("kdu_jni"+suffix);
 	}
 
-	@SuppressWarnings("unused")
 	private static void setupOSXApplicationListener()
 	{
 		try
