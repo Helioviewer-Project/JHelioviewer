@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.base.Settings.StringKey;
+import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 
 import com.mindscapehq.raygun4java.core.RaygunClient;
 import com.mindscapehq.raygun4java.core.messages.RaygunIdentifier;
@@ -24,10 +25,12 @@ public class UILatencyWatchdog
 	
 	private static volatile Thread awtDispatcher;
 	private static volatile boolean setFlag;
+	
+	private static Thread t;
 
 	public static void startWatchdog()
 	{
-		final Thread t = new Thread(new Runnable()
+		t = new Thread(new Runnable()
 		{
 			@Override
 			public void run()
@@ -154,10 +157,18 @@ public class UILatencyWatchdog
 			@Override
 			public void run()
 			{
-				setFlag = true;
-				t.interrupt();
+				stopWatchdog();
 			}
 		}));
+		
+		ExitProgramAction.addShutdownHook(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				stopWatchdog();
+			}
+		});
 		
 		System.out.println("UI latency watchdog active");
 	}
@@ -169,5 +180,11 @@ public class UILatencyWatchdog
 				return true;
 
 		return false;
+	}
+
+	public static void stopWatchdog()
+	{
+		setFlag = true;
+		t.interrupt();
 	}
 }

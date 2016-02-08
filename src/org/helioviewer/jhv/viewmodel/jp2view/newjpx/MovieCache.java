@@ -29,78 +29,11 @@ import com.google.common.io.Files;
 
 public class MovieCache
 {
-	private static HashMap<Integer,List<Movie>> cache= new HashMap<>();
+	private static HashMap<Integer,List<Movie>> cache = new HashMap<>();
 
 	private static final long MAX_CACHE_SIZE = 1024*1024*1024;
 	
 	private static final File CACHE_DIR = new File(System.getProperty("java.io.tmpdir"), "jhv-movie-cache");
-	
-	static
-	{
-		try
-		{
-			Files.createParentDirs(CACHE_DIR);
-			CACHE_DIR.mkdir();
-			if(!CACHE_DIR.exists() || !CACHE_DIR.isDirectory())
-				throw new IOException("Could not create cache in "+CACHE_DIR.getAbsolutePath());
-		}
-		catch (IOException e)
-		{
-			JHVUncaughtExceptionHandler.SINGLETON.uncaughtException(Thread.currentThread(), e);
-		}
-		
-		limitCacheSize();
-		ExitProgramAction.addShutdownHook(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				limitCacheSize();
-			}
-		});
-		
-		if(Settings.getBoolean(Settings.BooleanKey.CACHE_LOADING_CRASHED))
-		{
-			try
-			{
-				for(File f:CACHE_DIR.listFiles())
-					f.delete();
-			}
-			catch(Throwable _t)
-			{
-				Telemetry.trackException(_t);
-			}
-		}
-		else
-		{
-			Settings.setBoolean(Settings.BooleanKey.CACHE_LOADING_CRASHED, true);
-			for(File f:CACHE_DIR.listFiles())
-			{
-				String[] parts=f.getName().split(",");
-				if(parts.length>=2)
-					try
-					{
-						add(new Movie(Integer.parseInt(parts[0]),f.getAbsolutePath()));
-					}
-					catch(UnsuitableMetaDataException e)
-					{
-						Telemetry.trackException(new IOException("Cache: Could not load "+f.getName(),e));
-						f.delete();
-					}
-					catch(NumberFormatException e)
-					{
-						Telemetry.trackException(new IOException("Cache: Unexpected file found "+f.getName(),e));
-						f.delete();
-					}
-				else
-				{
-					Telemetry.trackException(new IOException("Cache: Unexpected file found "+f.getName()));
-					f.delete();
-				}
-			}
-		}
-		Settings.setBoolean(Settings.BooleanKey.CACHE_LOADING_CRASHED, false);
-	}
 	
 	private static void limitCacheSize()
 	{
@@ -251,5 +184,68 @@ public class MovieCache
 
 	public static void init()
 	{
+		try
+		{
+			Files.createParentDirs(CACHE_DIR);
+			CACHE_DIR.mkdir();
+			if(!CACHE_DIR.exists() || !CACHE_DIR.isDirectory())
+				throw new IOException("Could not create cache in "+CACHE_DIR.getAbsolutePath());
+		}
+		catch (IOException e)
+		{
+			JHVUncaughtExceptionHandler.SINGLETON.uncaughtException(Thread.currentThread(), e);
+		}
+		
+		limitCacheSize();
+		ExitProgramAction.addShutdownHook(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				limitCacheSize();
+			}
+		});
+		
+		if(Settings.getBoolean(Settings.BooleanKey.CACHE_LOADING_CRASHED))
+		{
+			try
+			{
+				for(File f:CACHE_DIR.listFiles())
+					f.delete();
+			}
+			catch(Throwable _t)
+			{
+				Telemetry.trackException(_t);
+			}
+		}
+		else
+		{
+			Settings.setBoolean(Settings.BooleanKey.CACHE_LOADING_CRASHED, true);
+			for(File f:CACHE_DIR.listFiles())
+			{
+				String[] parts=f.getName().split(",");
+				if(parts.length>=2)
+					try
+					{
+						add(new Movie(Integer.parseInt(parts[0]),f.getAbsolutePath()));
+					}
+					catch(UnsuitableMetaDataException e)
+					{
+						Telemetry.trackException(new IOException("Cache: Could not load "+f.getName(),e));
+						f.delete();
+					}
+					catch(NumberFormatException e)
+					{
+						Telemetry.trackException(new IOException("Cache: Unexpected file found "+f.getName(),e));
+						f.delete();
+					}
+				else
+				{
+					Telemetry.trackException(new IOException("Cache: Unexpected file found "+f.getName()));
+					f.delete();
+				}
+			}
+		}
+		Settings.setBoolean(Settings.BooleanKey.CACHE_LOADING_CRASHED, false);
 	}
 }

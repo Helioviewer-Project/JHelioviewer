@@ -9,7 +9,9 @@ import javax.annotation.Nullable;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 
+import org.helioviewer.jhv.base.UILatencyWatchdog;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.layers.Layers;
 
@@ -43,11 +45,23 @@ public class ExitProgramAction extends AbstractAction
 				return;
 		}
 		
-		System.out.println("Running shutdown hooks");
-		for(Runnable r:onShutdown)
-			r.run();
+		UILatencyWatchdog.stopWatchdog();
 		
-		System.out.println("Quitting application");
-		System.exit(0);
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				System.out.println("Running shutdown hooks");
+				for(Runnable r:onShutdown)
+					r.run();
+				
+				System.out.println("Quitting application");
+				System.exit(0);
+			}
+		});
+		
+		MainFrame.SINGLETON.startWaitCursor();
+		MainFrame.SINGLETON.setVisible(false);
 	}
 }

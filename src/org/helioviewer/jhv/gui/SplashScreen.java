@@ -1,4 +1,4 @@
-package org.helioviewer.jhv.base;
+package org.helioviewer.jhv.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -15,46 +15,37 @@ import javax.swing.JProgressBar;
 import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
 
-import org.helioviewer.jhv.gui.IconBank;
+import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 
-/**
- * Represents the splash screen which will be displayed when program is
- * starting.
- * 
- * The splash screen manages a progress bar and a label, representing the
- * current state of starting JHV. It is connected to
- * {@link org.helioviewer.jhv.gui.components.StatusPanel}, so every call to
- * {@link org.helioviewer.jhv.gui.components.StatusPanel#setStatusInfoText(String)}
- * results in updating the splash screen to. This behavior is useful for
- * plugins.
- */
 public class SplashScreen extends JFrame
 {
 	private SplashImagePanel imagePanel = new SplashImagePanel();
-	private JProgressBar progressBar = new JProgressBar(0, 100);
+	private JProgressBar progressBar;
 
 	public SplashScreen(int _steps)
 	{
 		getContentPane().setBackground(Color.BLACK);
 		// initialize the frame itself
 		setTitle("ESA JHelioviewer");
-		setSize(new Dimension(400, 220));
+		setSize(new Dimension(400, 224));
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
 		setFocusable(false);
 		setResizable(false);
 		setUndecorated(true);
 		setIconImage(IconBank.getIcon(JHVIcon.HVLOGO_SMALL).getImage());
+		
+		progressBar = new JProgressBar(0, _steps);
 
 		// if(isWindows())
 		setType(java.awt.Window.Type.UTILITY);
+		progressBar.setBorder(new LineBorder(new Color(0, 0, 0), 5));
 		progressBar.setBackground(Color.BLACK);
-
-		// initialize the visual components
-		progressBar.setValue(0);
-		progressBar.setPreferredSize(new Dimension(progressBar.getWidth(), 20));
-		progressBar.setMaximum(_steps);
+		progressBar.setPreferredSize(new Dimension(0, 20));
+		imagePanel.setBackground(Color.BLACK);
 		imagePanel.setText("");
 		getContentPane().add(imagePanel, BorderLayout.CENTER);
 		getContentPane().add(progressBar, BorderLayout.SOUTH);
@@ -149,7 +140,7 @@ public class SplashScreen extends JFrame
 
 			// set label for displaying status information
 			label.setOpaque(false);
-			label.setBounds(2, this.getHeight() - 20, 396, 20);
+			label.setBounds(7, this.getHeight() - 20, 396, 20);
 			label.setForeground(Color.WHITE);
 			add(label);
 		}
