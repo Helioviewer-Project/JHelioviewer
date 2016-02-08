@@ -5,7 +5,6 @@ import org.w3c.dom.Document;
 
 class MetaDataHMI extends MetaData
 {
-	@SuppressWarnings("null")
 	public MetaDataHMI(Document _doc)
 	{
         super(_doc, new Vector2i(4096, 4096), get(_doc, "TELESCOP"), get(_doc, "CONTENT"),

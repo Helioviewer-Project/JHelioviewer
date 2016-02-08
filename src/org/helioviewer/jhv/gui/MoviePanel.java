@@ -126,7 +126,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		
 		
 		GridBagLayout gbl_contentPanel = new GridBagLayout();
-		gbl_contentPanel.columnWidths = new int[]{49, 49, 49, 147, 100, 0};
+		gbl_contentPanel.columnWidths = new int[]{0, 0, 0, 0, 0, 0};
 		gbl_contentPanel.rowHeights = new int[]{0, 0, 0};
 		gbl_contentPanel.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
 		gbl_contentPanel.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
@@ -181,13 +181,11 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		contentPanel.add(slider, gbc_slider_2);
 		
 		GridBagConstraints gbc_btnPrevious = new GridBagConstraints();
-		gbc_btnPrevious.anchor = GridBagConstraints.WEST;
 		gbc_btnPrevious.insets = new Insets(0, 0, 0, 5);
 		gbc_btnPrevious.gridx = 0;
 		gbc_btnPrevious.gridy = 1;
 		contentPanel.add(btnPrevious, gbc_btnPrevious);
 		GridBagConstraints gbc_btnPlayPause = new GridBagConstraints();
-		gbc_btnPlayPause.anchor = GridBagConstraints.WEST;
 		gbc_btnPlayPause.insets = new Insets(0, 0, 0, 5);
 		gbc_btnPlayPause.gridx = 1;
 		gbc_btnPlayPause.gridy = 1;
@@ -221,7 +219,6 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		//btnForward.setPreferredSize(new Dimension(btnForward.getPreferredSize().width, buttonSize));
 		
 		GridBagConstraints gbc_btnForward = new GridBagConstraints();
-		gbc_btnForward.anchor = GridBagConstraints.WEST;
 		gbc_btnForward.insets = new Insets(0, 0, 0, 5);
 		gbc_btnForward.gridx = 2;
 		gbc_btnForward.gridy = 1;
@@ -246,7 +243,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		optionPane = new JPanel();
 		optionPane.setBorder(new EmptyBorder(15, 0, 0, 0));
 		GridBagLayout gbl_optionPane = new GridBagLayout();
-		gbl_optionPane.columnWidths = new int[]{49, 65, 0, 0};
+		gbl_optionPane.columnWidths = new int[]{0, 0, 0, 0};
 		gbl_optionPane.rowHeights = new int[]{26, 26, 0};
 		gbl_optionPane.columnWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
 		gbl_optionPane.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};

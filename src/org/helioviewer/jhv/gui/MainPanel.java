@@ -655,7 +655,6 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 	}
 
-	@SuppressWarnings("null")
 	protected void updateTrackRotation()
 	{
 		if (lastDate == null)
@@ -757,7 +756,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 	@Override
 	public void reshape(@Nullable GLAutoDrawable drawable, int x, int y, int width, int height)
 	{
-		aspect = getSize().getWidth() / getSize().getHeight();
+		aspect = Math.max(1, getSize().getWidth()) / Math.max(1, getSize().getHeight());
 		repaint();
 	}
 

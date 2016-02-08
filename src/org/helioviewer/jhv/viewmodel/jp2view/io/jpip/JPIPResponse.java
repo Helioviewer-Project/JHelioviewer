@@ -25,7 +25,6 @@ public class JPIPResponse extends HTTPResponse
 	 * @param res
 	 * @throws IOException
 	 */
-	@SuppressWarnings("null")
 	public JPIPResponse(HTTPResponse res) throws IOException
 	{
 		super(res.status, res.reason);

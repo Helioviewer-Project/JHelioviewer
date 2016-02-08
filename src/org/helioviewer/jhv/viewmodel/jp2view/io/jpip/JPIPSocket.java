@@ -87,7 +87,6 @@ public class JPIPSocket extends HTTPSocket
 		if (res.getHeader("JPIP-cnew") != null)
 		{
 			map = new HashMap<>();
-			@SuppressWarnings("null")
 			String[] parts = res.getHeader("JPIP-cnew").split(",");
 			for (String part : parts)
 				for (String cnewParam : cnewParams)
@@ -112,7 +111,6 @@ public class JPIPSocket extends HTTPSocket
 	}
 
 	/** Closes the JPIPSocket */
-	@SuppressWarnings("null")
 	public void close() throws IOException
 	{
 		if (this.isClosed())
@@ -216,7 +214,7 @@ public class JPIPSocket extends HTTPSocket
 	}
 
 	/** Receives a JPIPResponse returning null if EOS reached */
-	@SuppressWarnings({ "null", "resource" })
+	@SuppressWarnings({ "resource" })
 	public @Nullable JPIPResponse receive() throws IOException
 	{
 		HTTPResponse httpRes = (HTTPResponse) super.receive();

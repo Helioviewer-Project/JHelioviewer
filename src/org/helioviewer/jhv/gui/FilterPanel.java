@@ -56,9 +56,9 @@ public class FilterPanel extends JPanel
 	{
 		setBorder(new EmptyBorder(10, 10, 10, 10));
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[]{90, 0, 0, 0, 0, 50, 0};
+		gridBagLayout.columnWidths = new int[]{0, 0, 0, 0, 50, 50, 0};
 		gridBagLayout.rowHeights = new int[]{41, 41, 41, 41, 26, 33, 0};
-		gridBagLayout.columnWeights = new double[]{0.0, 1.0, 1.0, 1.0, 1.0, 0.0, Double.MIN_VALUE};
+		gridBagLayout.columnWeights = new double[]{0.0, 1.0, 1.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
 		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 						
@@ -86,7 +86,6 @@ public class FilterPanel extends JPanel
 						
 								opacitySlider.addChangeListener(new ChangeListener()
 								{
-									@SuppressWarnings("null")
 									@Override
 									public void stateChanged(@Nullable ChangeEvent e)
 									{
@@ -138,7 +137,6 @@ public class FilterPanel extends JPanel
 						WheelSupport.installMouseWheelSupport(sharpenSlider);
 						sharpenSlider.addChangeListener(new ChangeListener()
 						{
-							@SuppressWarnings("null")
 							@Override
 							public void stateChanged(@Nullable ChangeEvent e)
 							{
@@ -189,7 +187,6 @@ public class FilterPanel extends JPanel
 						WheelSupport.installMouseWheelSupport(gammaSlider);
 						gammaSlider.addChangeListener(new ChangeListener()
 						{
-							@SuppressWarnings("null")
 							@Override
 							public void stateChanged(@Nullable ChangeEvent e)
 							{
@@ -251,7 +248,6 @@ public class FilterPanel extends JPanel
 				
 						contrastSlider.addChangeListener(new ChangeListener()
 						{
-							@SuppressWarnings("null")
 							@Override
 							public void stateChanged(@Nullable ChangeEvent e)
 							{
@@ -292,16 +288,14 @@ public class FilterPanel extends JPanel
 								comboBoxColorTable.setModel(new DefaultComboBoxModel<>(LUT.values()));
 								comboBoxColorTable.setSelectedItem(LUT.GRAY);
 								GridBagConstraints gbc_comboBoxColorTable = new GridBagConstraints();
-								gbc_comboBoxColorTable.anchor = GridBagConstraints.NORTH;
 								gbc_comboBoxColorTable.fill = GridBagConstraints.HORIZONTAL;
 								gbc_comboBoxColorTable.insets = new Insets(0, 0, 5, 5);
-								gbc_comboBoxColorTable.gridwidth = 4;
+								gbc_comboBoxColorTable.gridwidth = 5;
 								gbc_comboBoxColorTable.gridx = 1;
 								gbc_comboBoxColorTable.gridy = 4;
 								add(comboBoxColorTable, gbc_comboBoxColorTable);
 								comboBoxColorTable.addItemListener(new ItemListener()
 								{
-									@SuppressWarnings("null")
 									@Override
 									public void itemStateChanged(@Nullable ItemEvent e)
 									{
@@ -312,28 +306,6 @@ public class FilterPanel extends JPanel
 										}
 									}
 								});
-								
-										btnInverseColorTable = new JToggleButton(ICON_INVERT);
-										GridBagConstraints gbc_btnInverseColorTable = new GridBagConstraints();
-										gbc_btnInverseColorTable.fill = GridBagConstraints.HORIZONTAL;
-										gbc_btnInverseColorTable.anchor = GridBagConstraints.NORTH;
-										gbc_btnInverseColorTable.insets = new Insets(0, 0, 5, 0);
-										gbc_btnInverseColorTable.gridx = 5;
-										gbc_btnInverseColorTable.gridy = 4;
-										add(btnInverseColorTable, gbc_btnInverseColorTable);
-										btnInverseColorTable.addChangeListener(new ChangeListener()
-										{
-											@SuppressWarnings("null")
-											@Override
-											public void stateChanged(@Nullable ChangeEvent e)
-											{
-												if (activeLayer != null && activeLayer.invertedLut != btnInverseColorTable.isSelected())
-												{
-													activeLayer.invertedLut = btnInverseColorTable.isSelected();
-													MainFrame.SINGLETON.MAIN_PANEL.repaint();
-												}
-											}
-										});
 						
 								JLabel lblChannelsTitle = new JLabel("Channels");
 								GridBagConstraints gbc_lblChannelsTitle = new GridBagConstraints();
@@ -356,7 +328,6 @@ public class FilterPanel extends JPanel
 						add(red, gbc_red);
 						red.addItemListener(new ItemListener()
 						{
-							@SuppressWarnings("null")
 							@Override
 							public void itemStateChanged(@Nullable ItemEvent e)
 							{
@@ -395,7 +366,6 @@ public class FilterPanel extends JPanel
 				add(green, gbc_green);
 				green.addItemListener(new ItemListener()
 				{
-					@SuppressWarnings("null")
 					@Override
 					public void itemStateChanged(@Nullable ItemEvent e)
 					{
@@ -423,7 +393,7 @@ public class FilterPanel extends JPanel
 		
 		
 		coronaVisibilityButton = new JToggleButton();
-		coronaVisibilityButton.setSelected(true);
+		coronaVisibilityButton.setBackground(Color.WHITE);
 		coronaVisibilityButton.setIcon(IconBank.getIcon(JHVIcon.SUN_WITHOUT_128x128, 24, 24));
 		coronaVisibilityButton.setSelectedIcon(IconBank.getIcon(JHVIcon.SUN_WITH_128x128, 24, 24));
 		coronaVisibilityButton.setToolTipText("Toggle Corona Visibility");
@@ -452,7 +422,6 @@ public class FilterPanel extends JPanel
 				add(blue, gbc_blue);
 				blue.addItemListener(new ItemListener()
 				{
-					@SuppressWarnings("null")
 					@Override
 					public void itemStateChanged(@Nullable ItemEvent e)
 					{
@@ -480,11 +449,29 @@ public class FilterPanel extends JPanel
 		
 		GridBagConstraints gbc_coronaVisibilityButton = new GridBagConstraints();
 		gbc_coronaVisibilityButton.fill = GridBagConstraints.HORIZONTAL;
-		gbc_coronaVisibilityButton.anchor = GridBagConstraints.NORTH;
 		gbc_coronaVisibilityButton.insets = new Insets(0, 0, 0, 5);
 		gbc_coronaVisibilityButton.gridx = 4;
 		gbc_coronaVisibilityButton.gridy = 5;
 		add(coronaVisibilityButton, gbc_coronaVisibilityButton);
+		
+				btnInverseColorTable = new JToggleButton(ICON_INVERT);
+				GridBagConstraints gbc_btnInverseColorTable = new GridBagConstraints();
+				gbc_btnInverseColorTable.fill = GridBagConstraints.BOTH;
+				gbc_btnInverseColorTable.gridx = 5;
+				gbc_btnInverseColorTable.gridy = 5;
+				add(btnInverseColorTable, gbc_btnInverseColorTable);
+				btnInverseColorTable.addChangeListener(new ChangeListener()
+				{
+					@Override
+					public void stateChanged(@Nullable ChangeEvent e)
+					{
+						if (activeLayer != null && activeLayer.invertedLut != btnInverseColorTable.isSelected())
+						{
+							activeLayer.invertedLut = btnInverseColorTable.isSelected();
+							MainFrame.SINGLETON.MAIN_PANEL.repaint();
+						}
+					}
+				});
 		
 		Layers.addLayerListener(new LayerListener()
 		{
@@ -511,7 +498,6 @@ public class FilterPanel extends JPanel
 		});
 	}
 
-	@SuppressWarnings("null")
 	public void update()
 	{
 		if (activeLayer == null)

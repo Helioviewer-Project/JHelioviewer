@@ -47,7 +47,6 @@ class DatePickerPopup extends JDialog implements AWTEventListener
 	private JLabel lblMonth, lblYear;
 	private JTable table;
 
-	@SuppressWarnings("null")
 	DatePickerPopup(final DatePicker newDatePicker, JDialog dialog)
 	{
 		super(dialog);
@@ -335,7 +334,6 @@ class DatePickerPopup extends JDialog implements AWTEventListener
 			setHorizontalAlignment(CENTER);
 		}
 
-		@SuppressWarnings("null")
 		@Override
 		public Component getTableCellRendererComponent(@Nullable JTable table, @Nullable Object value,
 				boolean isSelected, boolean hasFocus, int row, int column)

@@ -26,27 +26,20 @@ public class HEKCacheTreeModel implements TreeModel, HEKCacheListener {
     /**
      * @inheritDoc
      */
-    public Object getChild(Object obj, int index) {
-
-        Object result = null;
-
+    public Object getChild(Object obj, int index)
+    {
         cache.lockRead();
         try {
             if (obj instanceof HEKPath) {
                 HEKPath path = (HEKPath) obj;
                 List<HEKPath> children = cacheModel.getChildren(path, true);
-                if (index > children.size()) {
-                    result = null;
-                } else {
-                    result = children.get(index);
-                }
+                if (index < children.size())
+                    return children.get(index);
             }
         } finally {
             cache.unlockRead();
         }
-
-        return result;
-
+        return null;
     }
 
     /**

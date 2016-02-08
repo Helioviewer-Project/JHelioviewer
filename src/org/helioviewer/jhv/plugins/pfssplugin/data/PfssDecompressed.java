@@ -73,7 +73,6 @@ public class PfssDecompressed
 	 * Initializes data on the videocard
 	 * @param gl2
 	 */
-	@SuppressWarnings("null")
 	private void uploadVBOs(GL gl)
 	{
         if(!isDataAssigned)
@@ -147,7 +146,6 @@ public class PfssDecompressed
 	 * @param gl
 	 * @param localDateTime
 	 */
-	@SuppressWarnings("null")
 	public void display(GL gl, LocalDateTime localDateTime)
 	{
 	    if(!isDataAssigned)

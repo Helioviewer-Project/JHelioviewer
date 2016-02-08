@@ -75,7 +75,6 @@ public class KakaduLayer extends ImageLayer
 		return MovieCache.findBestFrame(sourceId, _currentDateTime);
 	}
 	
-	@SuppressWarnings("null")
 	public KakaduLayer(String _filePath)
 	{
 		localPath = _filePath;
@@ -98,7 +97,6 @@ public class KakaduLayer extends ImageLayer
 		MovieCache.add(movie);
 	}
 	
-	@SuppressWarnings("null")
 	public void storeConfiguration(JSONObject jsonLayer)
 	{
 		try
@@ -223,7 +221,6 @@ public class KakaduLayer extends ImageLayer
 	
 	//TODO: test what happens when the same sourceId is added twice, concurrently
 	
-	@SuppressWarnings("null")
 	private void setTimeRange(final LocalDateTime _start, final LocalDateTime _end, final int _cadence)
 	{
 		if(loaderThread!=null)
@@ -515,7 +512,6 @@ public class KakaduLayer extends ImageLayer
 		return findClosestLocalDateTime(TimeLine.SINGLETON.getCurrentDateTime());
 	}
 
-	@SuppressWarnings("null")
 	public @Nullable LocalDateTime findClosestLocalDateTime(LocalDateTime _currentDateTime)
 	{
 		Match match = MovieCache.findBestFrame(sourceId, _currentDateTime);

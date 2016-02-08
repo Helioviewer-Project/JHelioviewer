@@ -35,7 +35,6 @@ public class FileDescriptorManager
 	 * @param currentLocalDateTime
 	 * @return true if it is in range
 	 */
-	@SuppressWarnings("null")
 	public synchronized boolean isDateInRange(LocalDateTime currentLocalDateTime)
 	{
 		if (firstDate == null || endDate == null)

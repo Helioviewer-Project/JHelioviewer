@@ -93,7 +93,6 @@ public class PfssCompressed implements Cacheable
 		return isLoading;
 	}
 
-	@SuppressWarnings("null")
 	public VolumeManager getVolumeManage() throws RarException
 	{
 		if(rawData==null)

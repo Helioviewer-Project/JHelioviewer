@@ -222,7 +222,6 @@ public class KakaduUtils
 				catch (UnsupportedEncodingException ex)
 				{
 					Telemetry.trackException(ex);
-					xml = null;
 				}
 			}
 		}

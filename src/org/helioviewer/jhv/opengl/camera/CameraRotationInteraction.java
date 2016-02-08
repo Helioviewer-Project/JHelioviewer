@@ -21,7 +21,6 @@ public class CameraRotationInteraction extends CameraInteraction
 		super(_mainPanel, _camera);
 	}
 
-	@SuppressWarnings("null")
 	@Override
 	public void mouseDragged(MouseEvent _e, Ray _ray)
 	{

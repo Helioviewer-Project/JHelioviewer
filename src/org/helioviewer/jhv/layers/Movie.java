@@ -223,7 +223,6 @@ public class Movie
 	}
 	
 	
-	@SuppressWarnings("null")
 	public void dispose()
 	{
 		disposed=true;
@@ -423,7 +422,6 @@ public class Movie
 		}
 	}
 	
-	@SuppressWarnings("null")
 	@Nullable public Match findClosestIdx(@Nonnull LocalDateTime _currentDateTime)
 	{
 		int bestI=-1;
@@ -468,7 +466,6 @@ public class Movie
 		return null;
 	}
 	
-	@SuppressWarnings("null")
 	public int getFrameCount()
 	{
 		if(metaDatas!=null)

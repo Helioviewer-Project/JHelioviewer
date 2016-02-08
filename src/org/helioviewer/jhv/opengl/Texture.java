@@ -1,15 +1,10 @@
 package org.helioviewer.jhv.opengl;
 
-import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
 
 import javax.annotation.Nullable;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.ImageRegion;
@@ -19,7 +14,6 @@ import org.helioviewer.jhv.viewmodel.TimeLine.DecodeQualityLevel;
 
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
-import com.jogamp.opengl.GLContext;
 
 public class Texture
 {

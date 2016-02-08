@@ -77,7 +77,6 @@ public class MetaDataDialog extends JDialog
 
 		listBox.setCellRenderer(new ListCellRenderer<Object>()
 		{
-			@SuppressWarnings("null")
 			public Component getListCellRendererComponent(@Nullable JList<?> list, @Nullable Object value, int index,
 					boolean isSelected, boolean cellHasFocus)
 			{
@@ -124,7 +123,6 @@ public class MetaDataDialog extends JDialog
 				if (file == null)
 					return;
 
-				@SuppressWarnings("null")
 				DOMSource source = new DOMSource(xmlDoc.getDocumentElement().getElementsByTagName("fits").item(0));
 				if (!exportXML(source, file.getPath() + outFileName))
 					JOptionPane.showMessageDialog(MetaDataDialog.this, "Could not save document.");

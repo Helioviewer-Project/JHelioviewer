@@ -98,31 +98,27 @@ public class MainFrame extends JFrame
 		OVERVIEW_PANEL.addMainView(MAIN_PANEL);
 		MAIN_PANEL.addSynchronizedView(OVERVIEW_PANEL);
 		
-		JPanel scrollContentPane = new JPanel(new BorderLayout());
-		JScrollPane scrollPane = new JScrollPane(scrollContentPane);
+		LEFT_PANE = new SideContentPane();
+		
+		JScrollPane scrollPane = new JScrollPane(LEFT_PANE);
 		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
 		gbc_scrollPane.fill = GridBagConstraints.BOTH;
 		gbc_scrollPane.gridx = 0;
 		gbc_scrollPane.gridy = 1;
 		left.add(scrollPane, gbc_scrollPane);
-		left.setMinimumSize(new Dimension(500,200));
 		
-		LEFT_PANE = new SideContentPane();
-		LEFT_PANE.setMinimumSize(new Dimension(320, 200));
-		// Movie control
 		MOVIE_PANEL = new MoviePanel();
-		LEFT_PANE.add("Movie Controls", MOVIE_PANEL, true);
-		
-		// Layer control
 		LAYER_PANEL = new LayerPanel();
-		LEFT_PANE.add("Layers", LAYER_PANEL, true);
-
-		// Filter control
+		
+		//TODO: minimize width
 		FILTER_PANEL = new FilterPanel();
-		LEFT_PANE.add("Adjustments", FILTER_PANEL , true);
 		
-		scrollContentPane.add(LEFT_PANE);
+		//TODO: save & restore state
+		LEFT_PANE.add("Playback", MOVIE_PANEL, true);
+		LEFT_PANE.add("Layers", LAYER_PANEL, true);
+		LEFT_PANE.add("Adjustments", FILTER_PANEL, true);
 		
+		//FIXME: tango no longer seems to help...
 		if(Globals.isOSX())
 			//this is a hack to support GLCanvas as AWT in a splitpane
 			addComponentListener(new ComponentAdapter()

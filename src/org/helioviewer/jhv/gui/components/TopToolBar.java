@@ -58,7 +58,6 @@ public class TopToolBar extends JToolBar implements MouseListener
 	private JToggleButton view2DButton;
 	private JToggleButton view3DButton;
 
-	@SuppressWarnings("null")
 	public TopToolBar()
 	{
 		//setRollover(true);

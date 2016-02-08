@@ -42,7 +42,6 @@ public class CameraPanInteraction extends CameraInteraction
 	}
 
 
-	@SuppressWarnings("null")
 	public void mouseDragged(MouseEvent e, Ray _ray)
 	{
 		if (lastPosition!=null && !e.getPoint().equals(lastPosition))
@@ -58,7 +57,6 @@ public class CameraPanInteraction extends CameraInteraction
 		}
 	}
 
-	@SuppressWarnings("null")
 	@Override
 	public void mouseReleased(MouseEvent e, Ray _ray)
 	{

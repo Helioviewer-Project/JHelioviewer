@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.plugins.hekplugin.Interval;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKSettings;
@@ -52,7 +54,7 @@ class HEKEventFactory {
      * @see #UnsupportedFormat
      * @see #HEKEventFormat
      */
-    public HEKEvent parseHEK(JSONObject json, boolean sloppy) {
+    public @Nullable HEKEvent parseHEK(JSONObject json, boolean sloppy) {
         HEKEvent result = new HEKEvent();
 
         try {
@@ -153,7 +155,6 @@ class HEKEventFactory {
      *            - Response to parse
      * @return Map: HEKPath - HEKEvent
      */
-    @SuppressWarnings("unused")
     public HashMap<HEKPath, HEKEvent> parseEvents(JSONObject json) {
         HEKCache cache = HEKCache.getSingletonInstance();
 
@@ -173,19 +174,20 @@ class HEKEventFactory {
                     continue;
                 }
 
-                HEKEvent event = parseHEK(entry, false);
-
-                if (event.getDuration() == null) {
-                    System.err.println("Event has no Duration");
-                }
-
-                event.prepareCache();
+                @Nullable HEKEvent event = parseHEK(entry, false);
 
                 // Something went wrong when parsing the event
                 if (event == null) {
-                    System.err.println("Error parsing an event: Could parse the eventPath, but not the event: " + eventPath);
+                	System.err.println("Error parsing an event: Could parse the eventPath, but not the event: " + eventPath);
+                	continue;
+                }
+                
+                if (event.getDuration() == null) {
+                    System.err.println("Event has no Duration");
                     continue;
                 }
+
+                event.prepareCache();
 
                 // set the events path
                 event.setPath(eventPath);

@@ -4,9 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -108,7 +106,6 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		downloadLayer = new JMenuItem("Download movie", IconBank.getIcon(JHVIcon.DOWNLOAD_NEW, SIZE, SIZE));
 		downloadLayer.addActionListener(new ActionListener()
 		{
-			@SuppressWarnings("null")
 			@Override
 			public void actionPerformed(@Nullable ActionEvent e)
 			{
@@ -124,7 +121,6 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		hideLayer = new JMenuItem("Hide layer", IconBank.getIcon(JHVIcon.HIDDEN, SIZE, SIZE));
 		hideLayer.addActionListener(new ActionListener()
 		{
-			@SuppressWarnings("null")
 			@Override
 			public void actionPerformed(@Nullable ActionEvent e)
 			{
@@ -138,7 +134,6 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		showLayer = new JMenuItem("Show layer", IconBank.getIcon(JHVIcon.VISIBLE, SIZE, SIZE));
 		showLayer.addActionListener(new ActionListener()
 		{
-			@SuppressWarnings("null")
 			@Override
 			public void actionPerformed(@Nullable ActionEvent e)
 			{
@@ -153,7 +148,6 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		removeLayer = new JMenuItem("Close layer", IconBank.getIcon(JHVIcon.REMOVE_NEW, SIZE, SIZE));
 		removeLayer.addActionListener(new ActionListener()
 		{
-			@SuppressWarnings("null")
 			@Override
 			public void actionPerformed(@Nullable ActionEvent e)
 			{
@@ -172,7 +166,6 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 
 		popupMenu.addPopupMenuListener(new PopupMenuListener()
 		{
-			@SuppressWarnings("null")
 			@Override
 			public void popupMenuWillBecomeVisible(@Nullable PopupMenuEvent e)
 			{
@@ -258,6 +251,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		//date/time
 		table.getColumnModel().getColumn(3).setCellRenderer(new ImageIconCellRenderer());
 		table.getColumnModel().getColumn(3).setResizable(false);
+		setFixedWidth(150, 3);
 		
 		//delete
 		table.getColumnModel().getColumn(4).setCellRenderer(new ImageIconCellRenderer());
@@ -280,7 +274,6 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		
 		table.addMouseListener(new MouseAdapter()
 		{
-			@SuppressWarnings("null")
 			@Override
 			public void mouseClicked(@Nullable MouseEvent e)
 			{
@@ -302,7 +295,6 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 				}
 			}
 
-			@SuppressWarnings("null")
 			@Override
 			public void mousePressed(@Nullable MouseEvent e)
 			{
@@ -374,14 +366,8 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		add(table, BorderLayout.CENTER);
 		
 		JPanel panel = new JPanel();
-		panel.setBorder(new EmptyBorder(10,10,10,10));
+		panel.setBorder(new EmptyBorder(10, 5, 10, 5));
 		add(panel, BorderLayout.SOUTH);
-		GridBagLayout gbl_panel = new GridBagLayout();
-		gbl_panel.columnWidths = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-		gbl_panel.rowHeights = new int[] { 0, 0 };
-		gbl_panel.columnWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
-		gbl_panel.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
-		panel.setLayout(gbl_panel);
 		
 		btnShowInfo = new JButton(IconBank.getIcon(JHVIcon.INFO_NEW, SIZE, SIZE));
 		btnShowInfo.setToolTipText("Show the Metainformation of the currently selected Layer");
@@ -393,49 +379,38 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 				new MetaDataDialog();
 			}
 		});
-		GridBagConstraints gbcBtnShowInfo = new GridBagConstraints();
-		gbcBtnShowInfo.insets = new Insets(0, 0, 0, 5);
-		gbcBtnShowInfo.gridx = 9;
-		gbcBtnShowInfo.gridy = 0;
-		panel.add(btnShowInfo, gbcBtnShowInfo);
-
-		btnDownloadLayer = new JButton(IconBank.getIcon(JHVIcon.DOWNLOAD_NEW, SIZE, SIZE));
-		btnDownloadLayer.setToolTipText("Download the currently selected Layer");
-		btnDownloadLayer.setEnabled(false);
-		btnDownloadLayer.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(@Nullable ActionEvent e)
-			{
-				ImageLayer l = Layers.getActiveImageLayer();
-				if (l == null)
-					return;
-				
-				String downloadURL = l.getDownloadURL();
-				if(downloadURL!=null)
-					new DownloadMovieDialog(downloadURL, l);
-			}
-		});
-		GridBagConstraints gbcBtnDownloadLayer = new GridBagConstraints();
-		gbcBtnDownloadLayer.insets = new Insets(0, 0, 0, 5);
-		gbcBtnDownloadLayer.gridx = 10;
-		gbcBtnDownloadLayer.gridy = 0;
-		panel.add(btnDownloadLayer, gbcBtnDownloadLayer);
-
-		JButton btnAddLayer = new JButton("Add Layer", IconBank.getIcon(JHVIcon.ADD_NEW, SIZE, SIZE));
-		btnAddLayer.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(@Nullable ActionEvent e)
-			{
-				new AddLayerDialog().setVisible(true);
-			}
-		});
-		GridBagConstraints gbcBtnAddLayer = new GridBagConstraints();
-		gbcBtnAddLayer.anchor = GridBagConstraints.EAST;
-		gbcBtnAddLayer.gridx = 11;
-		gbcBtnAddLayer.gridy = 0;
-		panel.add(btnAddLayer, gbcBtnAddLayer);
+		panel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0));
+		panel.add(btnShowInfo);
+		
+				btnDownloadLayer = new JButton(IconBank.getIcon(JHVIcon.DOWNLOAD_NEW, SIZE, SIZE));
+				btnDownloadLayer.setToolTipText("Download the currently selected Layer");
+				btnDownloadLayer.setEnabled(false);
+				btnDownloadLayer.addActionListener(new ActionListener()
+				{
+					@Override
+					public void actionPerformed(@Nullable ActionEvent e)
+					{
+						ImageLayer l = Layers.getActiveImageLayer();
+						if (l == null)
+							return;
+						
+						String downloadURL = l.getDownloadURL();
+						if(downloadURL!=null)
+							new DownloadMovieDialog(downloadURL, l);
+					}
+				});
+				panel.add(btnDownloadLayer);
+		
+				JButton btnAddLayer = new JButton("Add Layer", IconBank.getIcon(JHVIcon.ADD_NEW, SIZE, SIZE));
+				btnAddLayer.addActionListener(new ActionListener()
+				{
+					@Override
+					public void actionPerformed(@Nullable ActionEvent e)
+					{
+						new AddLayerDialog().setVisible(true);
+					}
+				});
+				panel.add(btnAddLayer);
 	}
 	
 	private static int loadingFrameCounter = 0;

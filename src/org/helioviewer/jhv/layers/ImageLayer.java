@@ -226,7 +226,6 @@ public abstract class ImageLayer extends Layer
 		return RenderResult.OK;
 	}
 	
-	@SuppressWarnings("null")
 	private void renderWithShader(GL2 gl, MainPanel mainPanel, int shaderprogram, PreparedImage _preparedImageData, MetaData md, float opacityCorona,
 			float xSunOffset, float ySunOffset, Matrix4d _transformation)
 	{

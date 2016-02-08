@@ -48,7 +48,6 @@ import com.install4j.api.update.UpdateScheduleRegistry;
 import com.jogamp.opengl.DebugGL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
-import com.jogamp.opengl.GLContext;
 import com.jogamp.opengl.GLDrawableFactory;
 import com.jogamp.opengl.GLProfile;
 
@@ -295,7 +294,6 @@ public class JHelioviewer
 					new Class[] { applicationListener },
 					new InvocationHandler()
 					{
-						@SuppressWarnings("null")
 						@Override
 						public Object invoke(@Nullable Object proxy, @Nullable Method method, @Nullable Object[] args) throws Throwable
 						{

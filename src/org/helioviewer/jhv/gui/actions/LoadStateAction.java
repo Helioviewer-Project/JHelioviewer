@@ -61,7 +61,6 @@ public class LoadStateAction extends AbstractAction
         stateLocation = new File(location.getFile());
     }
 
-    @SuppressWarnings("null")
 	public void actionPerformed(@Nullable ActionEvent e)
     {
     	try

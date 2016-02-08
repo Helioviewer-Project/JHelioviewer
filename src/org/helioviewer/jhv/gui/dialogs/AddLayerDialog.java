@@ -85,7 +85,6 @@ public class AddLayerDialog extends JDialog
 		}
 	}
 	
-	@SuppressWarnings("null")
 	public static void addDefaultStartupLayer()
 	{
 		try

@@ -98,7 +98,6 @@ public class HTTPRequest extends AbstractDownloadRequest
 		return getData().asCharSource(StandardCharsets.UTF_8).read();
 	}
 	
-	@SuppressWarnings("null")
 	public ByteSource getData() throws Throwable
 	{
 		//TODO: proper synchronization

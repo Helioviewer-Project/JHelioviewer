@@ -198,7 +198,6 @@ public abstract class MetaData
         return resolution.x * getUnitsPerPixel().x;
     }
 
-    @SuppressWarnings("null")
 	public Vector2d getUnitsPerPixel()
     {
     	if(solarPixelRadius==null)

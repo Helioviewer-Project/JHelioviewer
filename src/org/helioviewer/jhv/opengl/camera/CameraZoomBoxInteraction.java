@@ -36,7 +36,6 @@ public class CameraZoomBoxInteraction extends CameraInteraction
 		camera.repaint();
 	}
 
-	@SuppressWarnings("null")
 	@Override
 	public void mouseReleased(MouseEvent e, Ray _ray)
 	{
@@ -61,7 +60,6 @@ public class CameraZoomBoxInteraction extends CameraInteraction
 		camera.addCameraAnimation(new CameraTranslationAnimation(MainFrame.SINGLETON.MAIN_PANEL, newPoint.subtract(camera.getTranslationEnd())));
 	}
 
-	@SuppressWarnings("null")
 	@Override
 	public void renderInteraction(GL2 gl)
 	{
