@@ -40,7 +40,6 @@ public class SplashScreen extends JFrame
 		
 		progressBar = new JProgressBar(0, _steps);
 
-		// if(isWindows())
 		setType(java.awt.Window.Type.UTILITY);
 		progressBar.setBorder(new LineBorder(new Color(0, 0, 0), 5));
 		progressBar.setBackground(Color.BLACK);
@@ -54,7 +53,10 @@ public class SplashScreen extends JFrame
 
 		// show the splash screen
 		setVisible(true);
-
+		
+		//TODO: make sure the window contents are painted immediately for OS X, otherwise
+		//a grey, empty rectangle shows up for 2 secs
+		
 		setAlwaysOnTop(true);
 	}
 

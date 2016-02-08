@@ -47,6 +47,9 @@ public class ExitProgramAction extends AbstractAction
 		
 		UILatencyWatchdog.stopWatchdog();
 		
+		MainFrame.SINGLETON.startWaitCursor();
+		MainFrame.SINGLETON.setVisible(false);
+		
 		SwingUtilities.invokeLater(new Runnable()
 		{
 			@Override
@@ -60,8 +63,5 @@ public class ExitProgramAction extends AbstractAction
 				System.exit(0);
 			}
 		});
-		
-		MainFrame.SINGLETON.startWaitCursor();
-		MainFrame.SINGLETON.setVisible(false);
 	}
 }

@@ -75,6 +75,10 @@ public class JHelioviewer
 		
 		Log.redirectStdOutErr();
 		
+		if(Globals.isOSX())
+			System.setProperty("apple.laf.useScreenMenuBar", "true");
+		
+		
 		SwingUtilities.invokeLater(new Runnable()
 		{
 			@Override
@@ -230,6 +234,9 @@ public class JHelioviewer
 				splash.progressTo("Show main window");
 				MainFrame.SINGLETON.setVisible(true);
 				
+				if(Globals.isOSX())
+					setupOSXApplicationListener();
+				
 	            splash.progressTo("Loading observatories");
 				if (Settings.getBoolean(Settings.BooleanKey.STARTUP_LOADMOVIE))
 		            Observatories.addUpdateListener(new Runnable()
@@ -280,7 +287,7 @@ public class JHelioviewer
 
 	private static void loadLibraries()
 	{
-		String suffix = Globals.isReleaseVersion() ? "R":"D";
+		String suffix = !Globals.isReleaseVersion() && Globals.isWindows() ? "D":"R";
 		
 		
 		if (Globals.isWindows())
