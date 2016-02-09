@@ -107,7 +107,6 @@ public class JPIPSocket extends HTTPSocket
 			throw new IOException("The client currently only supports http transport.");
 
 		return res;
-
 	}
 
 	/** Closes the JPIPSocket */

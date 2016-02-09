@@ -106,10 +106,16 @@ public class JPIPRequest extends AbstractDownloadRequest
 	private boolean addJPIPResponseData(JPIPResponse jRes, Kdu_cache _kduCache) throws KduException
 	{
 		JPIPDataSegment data;
+		//System.out.println("----------------------------------------");
 		while ((data = jRes.removeJpipDataSegment()) != null && !data.isEOR)
+		{
+			//System.out.println(data.classID+" wowo "+
+			//		data.codestreamID+" "+data.binID+" "+ data.data+" "+ data.offset+" "+data.length+" "+ data.isFinal);
 			_kduCache.Add_to_databin(data.classID.getKakaduClassID(),
 				data.codestreamID, data.binID, data.data, data.offset,
 				data.length, data.isFinal, true, false);
+		}
+		//System.out.println("----------------------------------------");
 
 		return jRes.isResponseComplete();
 	}
