@@ -112,6 +112,9 @@ public class DownloadManager
 
 	public static void addRequest(AbstractDownloadRequest _request)
 	{
+		if(_request==null)
+			throw new IllegalArgumentException("_request==null");
+		
 		Tuple t=new Tuple(_request);
 		
 		try

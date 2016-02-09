@@ -187,6 +187,8 @@ public class Settings
 		SCREENSHOT_IMG_WIDTH("export.screenshot.width"),
 		SCREENSHOT_IMG_HEIGHT("export.screenshot.height"),
 		PREVIEW_RESOLUTION("preview.resolution"),
+		PREVIEW_QUALITY("preview.quality"),
+		PREVIEW_TEMPORAL_SUBSAMPLE("preview.temporal.subsample"),
 		JPIP_BATCH_SIZE("jpip.batchsize"), STARTUP_LICENSE_SHOWN("startup.license");
 
         String key;

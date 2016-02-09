@@ -27,17 +27,17 @@ public class JPIPRequest extends AbstractDownloadRequest
 	private volatile long lastResponseTime = -1;
 	public final Kdu_cache kduCache = new Kdu_cache();
 	
-	public JPIPRequest(String url, DownloadPriority priority, int startFrame, int endFrame, Rectangle size)
+	public JPIPRequest(String url, DownloadPriority priority, int startFrame, int endFrame, int _quality, Rectangle size)
 	{
 		super(url, priority);
 		
 		query = new JPIPQuery();
 		query.setField(JPIPRequestField.CONTEXT.toString(), "jpxl<" + startFrame + "-" + endFrame + ">");
-		query.setField(JPIPRequestField.LAYERS.toString(), String.valueOf(8));
+		query.setField(JPIPRequestField.LAYERS.toString(), String.valueOf(_quality));
 
-		query.setField(JPIPRequestField.FSIZ.toString(), String.valueOf(size.width) + "," + String.valueOf(size.height) + "," + "closest");
-		query.setField(JPIPRequestField.ROFF.toString(), String.valueOf(0) + "," + String.valueOf(0));
-		query.setField(JPIPRequestField.RSIZ.toString(), String.valueOf(size.width) + "," + String.valueOf(size.height));
+		query.setField(JPIPRequestField.FSIZ.toString(), size.width + "," + size.height + ",closest");
+		query.setField(JPIPRequestField.ROFF.toString(), "0,0");
+		query.setField(JPIPRequestField.RSIZ.toString(), size.width + "," + size.height);
 	}
 
 	private volatile JPIPSocket jpipSocket;

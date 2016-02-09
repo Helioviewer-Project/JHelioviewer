@@ -17,16 +17,20 @@ import javax.swing.border.LineBorder;
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import javax.swing.border.EmptyBorder;
+import javax.swing.JPanel;
 
 public class SplashScreen extends JFrame
 {
 	private JProgressBar progressBar;
 	JLabel lblAsdasd;
+	private JPanel panel;
 
 	public SplashScreen(int _steps)
 	{
+		getContentPane().setFocusable(false);
 		BufferedImage image = IconBank.getImage(JHVIcon.SPLASH);
 		lblAsdasd = new JLabel(" ");
+		lblAsdasd.setFocusable(false);
 		lblAsdasd.setBackground(Color.BLACK);
 		lblAsdasd.setBorder(new EmptyBorder(5, 5, 5, 5));
 		lblAsdasd.setForeground(Color.WHITE);
@@ -41,18 +45,28 @@ public class SplashScreen extends JFrame
 		setResizable(false);
 		setUndecorated(true);
 		setIconImage(IconBank.getIcon(JHVIcon.HVLOGO_SMALL).getImage());
-		
-		progressBar = new JProgressBar(0, _steps);
-		progressBar.setValue(0);
 
 		setType(java.awt.Window.Type.UTILITY);
-		progressBar.setBorder(new LineBorder(new Color(0, 0, 0), 5));
-		progressBar.setPreferredSize(new Dimension(0, 20));
 		JLabel label = new JLabel(new ImageIcon(image));
+		label.setFocusable(false);
 		label.setBackground(Color.BLACK);
 		getContentPane().add(label, BorderLayout.NORTH);
 		getContentPane().add(lblAsdasd, BorderLayout.CENTER);
-		getContentPane().add(progressBar, BorderLayout.SOUTH);
+		
+		panel = new JPanel();
+		panel.setFocusable(false);
+		panel.setBorder(new EmptyBorder(0, 5, 5, 5));
+		panel.setBackground(Color.BLACK);
+		getContentPane().add(panel, BorderLayout.SOUTH);
+		panel.setLayout(new BorderLayout(0, 0));
+		
+		progressBar = new JProgressBar(0, _steps);
+		progressBar.setFocusable(false);
+		progressBar.setBorder(null);
+		progressBar.setBackground(Color.BLACK);
+		panel.add(progressBar);
+		progressBar.setValue(0);
+		progressBar.setPreferredSize(new Dimension(0, 20));
 
 		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 

@@ -231,6 +231,12 @@ public class KakaduLayer extends ImageLayer
 			@Override
 			public void run()
 			{
+				int settingsPreviewTimeSubsample=Settings.getInt(IntKey.PREVIEW_TEMPORAL_SUBSAMPLE);
+				int settingsPreviewSize=Settings.getInt(IntKey.PREVIEW_RESOLUTION);
+				int settingsPreviewQuality=Settings.getInt(IntKey.PREVIEW_QUALITY);
+				boolean settingsPreviewEnabled=Settings.getBoolean(BooleanKey.PREVIEW_ENABLED);
+
+				//TODO: instead, request images by subdividing resolution
 				LinkedList<MovieDownload> downloads = new LinkedList<>();
 				try
 				{
@@ -279,27 +285,45 @@ public class KakaduLayer extends ImageLayer
 					{
 						StringBuilder currentStarts = new StringBuilder();
 						StringBuilder currentEnds = new StringBuilder();
+						StringBuilder ssCurrentStarts = new StringBuilder();
+						StringBuilder ssCurrentEnds = new StringBuilder();
 						
 						int batchSize=Settings.getInt(IntKey.JPIP_BATCH_SIZE);
 						for(int i=0;i<batchSize && !startTimes.isEmpty(); i++) 
 						{
-							if(i>0)
+							String start=startTimes.remove(0).toString();
+							String end=endTimes.remove(0).toString();
+							
+							if(currentStarts.length()>0)
 							{
 								currentStarts.append(',');
 								currentEnds.append(',');
 							}
-							currentStarts.append(startTimes.remove(0).toString());
-							currentEnds.append(endTimes.remove(0).toString());
+							currentStarts.append(start);
+							currentEnds.append(end);
+							
+							if(i%settingsPreviewTimeSubsample==0)
+							{
+								if(ssCurrentStarts.length()>0)
+								{
+									ssCurrentStarts.append(',');
+									ssCurrentEnds.append(',');
+								}
+								ssCurrentStarts.append(start);
+								ssCurrentEnds.append(end);
+							}
 						}
 						
 						MovieDownload md=new MovieDownload();
-						md.metadata = new HTTPRequest(Globals.JPX_DATASOURCE_MIDPOINT
-								+ "?sourceId=" + sourceId
-								+ "&jpip=true"
-								+ "&verbose=true"
-								+ "&startTimes=" + currentStarts.toString()
-								+ "&endTimes=" + currentEnds.toString(),
-								DownloadPriority.HIGH);
+						
+						if(settingsPreviewEnabled && ssCurrentStarts.length()>0)
+							md.metadata = new HTTPRequest(Globals.JPX_DATASOURCE_MIDPOINT
+									+ "?sourceId=" + sourceId
+									+ "&jpip=true"
+									+ "&verbose=true"
+									+ "&startTimes=" + ssCurrentStarts.toString()
+									+ "&endTimes=" + ssCurrentEnds.toString(),
+									DownloadPriority.HIGH);
 						
 						md.hq = new JPIPDownloadRequest(Globals.JPX_DATASOURCE_MIDPOINT
 								+ "?sourceId=" + sourceId
@@ -314,7 +338,7 @@ public class KakaduLayer extends ImageLayer
 					}
 					
 					for(MovieDownload md:downloads)
-						DownloadManager.addRequest(md.metadata);
+						DownloadManager.addRequest(settingsPreviewEnabled ? md.metadata : md.hq);
 					
 					while(!downloads.isEmpty())
 					{
@@ -357,12 +381,10 @@ public class KakaduLayer extends ImageLayer
 									
 									if(containsValidFrames)
 									{
-										//FIXME: lq previews are not rendered correctly
-										
-										if(Settings.getBoolean(BooleanKey.PREVIEW_ENABLED))
+										if(settingsPreviewEnabled)
 										{
-											int size=Settings.getInt(IntKey.PREVIEW_RESOLUTION);
-											download.lq = new JPIPRequest(jsonObject.getString("uri"), DownloadPriority.MEDIUM, 0, frames.length(), new Rectangle(size, size));
+											//TODO: quality limiting doesn't work
+											download.lq = new JPIPRequest(jsonObject.getString("uri"), DownloadPriority.MEDIUM, 0, frames.length()-1, settingsPreviewQuality, new Rectangle(settingsPreviewSize, settingsPreviewSize));
 											DownloadManager.addRequest(download.lq);
 										}
 
@@ -371,7 +393,7 @@ public class KakaduLayer extends ImageLayer
 										download.metadata=null;
 										downloads.addLast(download);
 									}
-									else
+									else if(settingsPreviewTimeSubsample==1)
 									{
 										DownloadManager.remove(download.metadata);
 										DownloadManager.remove(download.lq);
@@ -568,6 +590,9 @@ public class KakaduLayer extends ImageLayer
 			
 		final MetaData metaData = getMetaData(mainTime);
 		if (metaData == null)
+			return new FutureValue<>(null);
+		
+		if(metaData.localDateTime.isBefore(start.minusSeconds(cadence)) || metaData.localDateTime.isAfter(end.plusSeconds(cadence)))
 			return new FutureValue<>(null);
 		
 		initializeMetadata(metaData);
