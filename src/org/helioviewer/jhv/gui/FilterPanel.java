@@ -26,7 +26,6 @@ import javax.swing.event.ChangeListener;
 import org.helioviewer.jhv.base.MultiClickAdapter;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.components.WheelSupport;
-import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.LUT;
 import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.LayerListener;
@@ -46,8 +45,7 @@ public class FilterPanel extends JPanel
 	private JLabel lblOpacity, lblSharpen, lblGamma, lblContrast;
 	private JToggleButton coronaVisibilityButton;
 
-	@Nullable
-	private ImageLayer activeLayer;
+	private @Nullable Layer activeLayer;
 	private static final double GAMMA_FACTOR = 0.01 * Math.log(10);
 
 	private static final Icon ICON_INVERT = IconBank.getIcon(JHVIcon.INVERT, 16, 16);
@@ -90,7 +88,7 @@ public class FilterPanel extends JPanel
 									public void stateChanged(@Nullable ChangeEvent e)
 									{
 										lblOpacity.setText(opacitySlider.getValue() + "%");
-										if (activeLayer != null && activeLayer.opacity != opacitySlider.getValue() / 100.0)
+										if (activeLayer != null && activeLayer.opacity != opacitySlider.getValue() / 100.0 && activeLayer.supportsFilterOpacity())
 										{
 											activeLayer.opacity = opacitySlider.getValue() / 100.0;
 											MainFrame.SINGLETON.MAIN_PANEL.repaint();
@@ -141,7 +139,7 @@ public class FilterPanel extends JPanel
 							public void stateChanged(@Nullable ChangeEvent e)
 							{
 								lblSharpen.setText(sharpenSlider.getValue() + "%");
-								if (activeLayer != null && activeLayer.sharpness != sharpenSlider.getValue() / 100.0)
+								if (activeLayer != null && activeLayer.sharpness != sharpenSlider.getValue() / 100.0 && activeLayer.supportsFilterSharpness())
 								{
 									activeLayer.sharpness = sharpenSlider.getValue() / 100.0;
 									MainFrame.SINGLETON.MAIN_PANEL.repaint();
@@ -198,7 +196,7 @@ public class FilterPanel extends JPanel
 									label = label.substring(0, 3);
 
 								lblGamma.setText(label);
-								if (activeLayer != null && activeLayer.gamma != gammaValue)
+								if (activeLayer != null && activeLayer.gamma != gammaValue && activeLayer.supportsFilterContrastGamma())
 								{
 									activeLayer.gamma = gammaValue;
 									MainFrame.SINGLETON.MAIN_PANEL.repaint();
@@ -252,7 +250,7 @@ public class FilterPanel extends JPanel
 							public void stateChanged(@Nullable ChangeEvent e)
 							{
 								lblContrast.setText(contrastSlider.getValue() + "");
-								if (activeLayer != null && activeLayer.contrast != contrastSlider.getValue() / 10.0)
+								if (activeLayer != null && activeLayer.contrast != contrastSlider.getValue() / 10.0 && activeLayer.supportsFilterContrastGamma())
 								{
 									activeLayer.contrast = contrastSlider.getValue() / 10.0;
 									MainFrame.SINGLETON.MAIN_PANEL.repaint();
@@ -299,7 +297,7 @@ public class FilterPanel extends JPanel
 									@Override
 									public void itemStateChanged(@Nullable ItemEvent e)
 									{
-										if (activeLayer != null && activeLayer.getLUT() != comboBoxColorTable.getSelectedItem())
+										if (activeLayer != null && activeLayer.getLUT() != comboBoxColorTable.getSelectedItem() && activeLayer.supportsFilterLUT())
 										{
 											activeLayer.setLUT((LUT) comboBoxColorTable.getSelectedItem());
 											MainFrame.SINGLETON.MAIN_PANEL.repaint();
@@ -346,7 +344,7 @@ public class FilterPanel extends JPanel
 								}
 								
 								
-								if (activeLayer != null && activeLayer.redChannel != red.isSelected())
+								if (activeLayer != null && activeLayer.redChannel != red.isSelected() && activeLayer.supportsFilterRGB())
 								{
 									activeLayer.redChannel = red.isSelected();
 									MainFrame.SINGLETON.MAIN_PANEL.repaint();
@@ -383,7 +381,7 @@ public class FilterPanel extends JPanel
 							green.setForeground(Color.GREEN.darker());
 						}
 						
-						if (activeLayer != null && activeLayer.greenChannel != green.isSelected())
+						if (activeLayer != null && activeLayer.greenChannel != green.isSelected() && activeLayer.supportsFilterRGB())
 						{
 							activeLayer.greenChannel = green.isSelected();
 							MainFrame.SINGLETON.MAIN_PANEL.repaint();
@@ -402,7 +400,7 @@ public class FilterPanel extends JPanel
 			@Override
 			public void actionPerformed(@Nullable ActionEvent e)
 			{
-				if(activeLayer!=null)
+				if(activeLayer!=null && activeLayer.supportsFilterCorona())
 				{
 					activeLayer.toggleCoronaVisibility();
 					MainFrame.SINGLETON.MAIN_PANEL.repaint();
@@ -439,7 +437,7 @@ public class FilterPanel extends JPanel
 							blue.setForeground(Color.BLUE);
 						}
 						
-						if (activeLayer != null && activeLayer.blueChannel != blue.isSelected())
+						if (activeLayer != null && activeLayer.blueChannel != blue.isSelected() && activeLayer.supportsFilterRGB())
 						{
 							activeLayer.blueChannel = blue.isSelected();
 							MainFrame.SINGLETON.MAIN_PANEL.repaint();
@@ -465,7 +463,7 @@ public class FilterPanel extends JPanel
 					@Override
 					public void stateChanged(@Nullable ChangeEvent e)
 					{
-						if (activeLayer != null && activeLayer.invertedLut != btnInverseColorTable.isSelected())
+						if (activeLayer != null && activeLayer.invertedLut != btnInverseColorTable.isSelected() && activeLayer.supportsFilterLUT())
 						{
 							activeLayer.invertedLut = btnInverseColorTable.isSelected();
 							MainFrame.SINGLETON.MAIN_PANEL.repaint();
@@ -488,11 +486,7 @@ public class FilterPanel extends JPanel
 			@Override
 			public void activeLayerChanged(@Nullable Layer layer)
 			{
-				if (layer instanceof ImageLayer)
-					activeLayer = (ImageLayer) layer;
-				else
-					activeLayer = null;
-				
+				activeLayer = layer;
 				update();
 			}
 		});
@@ -500,32 +494,64 @@ public class FilterPanel extends JPanel
 
 	public void update()
 	{
-		if (activeLayer == null)
+		for (Component c : getComponents())
+			c.setEnabled(false);
+		
+		if(activeLayer != null && activeLayer.supportsFilterContrastGamma())
 		{
-			for (Component c : getComponents())
-				c.setEnabled(false);
+			contrastSlider.setEnabled(true);
+			contrastSlider.setValue((int) (activeLayer.contrast * 10));
 			
+			gammaSlider.setEnabled(true);
+			gammaSlider.setValue((int) (Math.log(activeLayer.gamma) / GAMMA_FACTOR));
+		}
+		
+		if(activeLayer != null && activeLayer.supportsFilterCorona())
+		{
+			coronaVisibilityButton.setEnabled(true);
+			coronaVisibilityButton.setSelected(activeLayer.isCoronaVisible());
+		}
+		else
+			coronaVisibilityButton.setSelected(false);
+		
+		if(activeLayer != null && activeLayer.supportsFilterLUT())
+		{
+			comboBoxColorTable.setEnabled(true);
+			comboBoxColorTable.setSelectedItem(activeLayer.getLUT());
+			
+			btnInverseColorTable.setEnabled(true);
+			btnInverseColorTable.setSelected(activeLayer.invertedLut);
+		}
+		else
+			btnInverseColorTable.setSelected(false);
+		
+		if(activeLayer != null && activeLayer.supportsFilterOpacity())
+		{
+			opacitySlider.setEnabled(true);
+			opacitySlider.setValue((int) (activeLayer.opacity * 100));
+		}
+		
+		if(activeLayer != null && activeLayer.supportsFilterRGB())
+		{
+			red.setEnabled(true);
+			green.setEnabled(true);
+			blue.setEnabled(true);
+			
+			red.setSelected(activeLayer.redChannel);
+			green.setSelected(activeLayer.greenChannel);
+			blue.setSelected(activeLayer.blueChannel);
+		}
+		else
+		{
 			red.setSelected(false);
 			green.setSelected(false);
 			blue.setSelected(false);
-			coronaVisibilityButton.setSelected(false);
-			return;
 		}
-
-		for (Component c : getComponents())
-			c.setEnabled(true);
 		
-		contrastSlider.setValue((int) (activeLayer.contrast * 10));
-		gammaSlider.setValue((int) (Math.log(activeLayer.gamma) / GAMMA_FACTOR));
-		opacitySlider.setValue((int) (activeLayer.opacity * 100));
-		sharpenSlider.setValue((int) (activeLayer.sharpness * 100));
-
-		comboBoxColorTable.setSelectedItem(activeLayer.getLUT());
-		btnInverseColorTable.setSelected(activeLayer.invertedLut);
-		red.setSelected(activeLayer.redChannel);
-		green.setSelected(activeLayer.greenChannel);
-		blue.setSelected(activeLayer.blueChannel);
-		
-		coronaVisibilityButton.setSelected(activeLayer.isCoronaVisible());
+		if(activeLayer != null && activeLayer.supportsFilterSharpness())
+		{
+			sharpenSlider.setEnabled(true);
+			sharpenSlider.setValue((int) (activeLayer.sharpness * 100));
+		}
 	}
 }

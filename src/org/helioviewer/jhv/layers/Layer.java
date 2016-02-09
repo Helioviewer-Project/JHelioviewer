@@ -9,9 +9,78 @@ import org.json.JSONObject;
 
 public abstract class Layer
 {
+	public double opacity = 1;
+	public double sharpness = 0;
+	public double gamma = 1;
+	public double contrast = 0;
+	@Nullable protected LUT lut = null;
+	public boolean redChannel = true;
+	public boolean greenChannel = true;
+	public boolean blueChannel = true;
+	public boolean invertedLut = false;
+	protected boolean coronaVisible = true;
+	
 	private boolean visible = true;
 	protected String name;
 	
+	
+	@Nullable public LUT getLUT()
+	{
+		return lut;
+	}
+	
+	public boolean supportsFilterContrastGamma()
+	{
+		return false;
+	}
+	
+	public boolean supportsFilterSharpness()
+	{
+		return false;
+	}
+	
+	public boolean supportsFilterRGB()
+	{
+		return false;
+	}
+	
+	public boolean supportsFilterOpacity()
+	{
+		return false;
+	}
+	
+	public boolean supportsFilterLUT()
+	{
+		return false;
+	}
+	
+	public boolean supportsFilterCorona()
+	{
+		return false;
+	}
+	
+	public void setLUT(@Nullable LUT _lut)
+	{
+		if(!supportsFilterLUT())
+			throw new IllegalStateException("Layer does not support LUTs");
+		
+		lut = _lut;
+		MainFrame.SINGLETON.FILTER_PANEL.update();
+	}
+
+	public void toggleCoronaVisibility()
+	{
+		coronaVisible=!coronaVisible;
+	}
+	
+	public boolean isCoronaVisible()
+	{
+		if(!supportsFilterCorona())
+			throw new IllegalStateException("Layer does not support LUTs");
+		
+		return coronaVisible;
+	}
+
 	public final String getName()
 	{
 		return name;

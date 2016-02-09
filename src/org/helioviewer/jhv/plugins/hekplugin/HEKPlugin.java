@@ -15,6 +15,7 @@ import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.SphericalCoord;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.DifferentialRotation;
+import org.helioviewer.jhv.layers.PluginLayer;
 import org.helioviewer.jhv.plugins.Plugin;
 import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;
@@ -52,9 +53,9 @@ public class HEKPlugin extends Plugin
 		
 		Plugins.addPanelToLeftControllPanel("HEK", hekPluginPanel, false);
 	}
-
+	
 	@Override
-	public void render(GL2 gl)
+	public void render(GL2 gl, PluginLayer _imageParams)
 	{
 		if (isVisible())
 		{

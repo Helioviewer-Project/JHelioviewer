@@ -146,7 +146,7 @@ public class PfssDecompressed
 	 * @param gl
 	 * @param localDateTime
 	 */
-	public void display(GL gl, LocalDateTime localDateTime)
+	public void display(GL gl, LocalDateTime localDateTime, double _opacity)
 	{
 	    if(!isDataAssigned)
 	        return;
@@ -176,7 +176,7 @@ public class PfssDecompressed
 		if (indicesSunToSun != null && indicesSunToSun.limit() > 0)
 		{
 			color = PfssSettings.SUN_SUN_LINE_COLOR;
-			gl2.glColor4d(color.x, color.y, color.z, PfssSettings.LINE_ALPHA);
+			gl2.glColor4d(color.x, color.y, color.z, PfssSettings.LINE_ALPHA * _opacity);
 			gl2.glBindBuffer(GL2.GL_ELEMENT_ARRAY_BUFFER, VBOIndicesSunToSun);
 			gl2.glDrawElements(GL2.GL_LINES, indicesSunToSun.limit(), GL2.GL_UNSIGNED_INT, 0);
 		}
@@ -184,7 +184,7 @@ public class PfssDecompressed
 		if (indicesSunToOutside != null && indicesSunToOutside.limit() > 0)
 		{
 			color = PfssSettings.SUN_OUT_LINE_COLOR;
-			gl2.glColor4d(color.x, color.y, color.z, PfssSettings.LINE_ALPHA);
+			gl2.glColor4d(color.x, color.y, color.z, PfssSettings.LINE_ALPHA * _opacity);
 			gl2.glBindBuffer(GL2.GL_ELEMENT_ARRAY_BUFFER, VBOIndicesSunToOutside);
 			gl2.glDrawElements(GL2.GL_LINES, indicesSunToOutside.limit(), GL2.GL_UNSIGNED_INT, 0);
 		}
@@ -192,7 +192,7 @@ public class PfssDecompressed
 		if (indicesOutsideToSun != null && indicesOutsideToSun.limit() > 0)
 		{
 			color = PfssSettings.OUT_SUN_LINE_COLOR;
-			gl2.glColor4d(color.x, color.y, color.z, PfssSettings.LINE_ALPHA);
+			gl2.glColor4d(color.x, color.y, color.z, PfssSettings.LINE_ALPHA * _opacity);
 			gl2.glBindBuffer(GL2.GL_ELEMENT_ARRAY_BUFFER, VBOIndicesOutsideToSun);
 			gl2.glDrawElements(GL2.GL_LINES, indicesOutsideToSun.limit(), GL2.GL_UNSIGNED_INT, 0);
 		}

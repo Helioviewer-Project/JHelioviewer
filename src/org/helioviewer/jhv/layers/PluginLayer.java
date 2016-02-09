@@ -14,8 +14,38 @@ import org.json.JSONObject;
 import com.jogamp.opengl.GL2;
 
 public class PluginLayer extends Layer
-{	
+{
 	final Plugin plugin;
+	
+	public boolean supportsFilterContrastGamma()
+	{
+		return plugin.supportsFilterContrastGamma();
+	}
+	
+	public boolean supportsFilterSharpness()
+	{
+		return plugin.supportsFilterSharpness();
+	}
+	
+	public boolean supportsFilterRGB()
+	{
+		return plugin.supportsFilterRGB();
+	}
+	
+	public boolean supportsFilterOpacity()
+	{
+		return plugin.supportsFilterOpacity();
+	}
+	
+	public boolean supportsFilterLUT()
+	{
+		return plugin.supportsFilterLUT();
+	}
+	
+	public boolean supportsFilterCorona()
+	{
+		return plugin.supportsFilterCorona();
+	}
 	
 	public PluginLayer(Plugin _plugin)
 	{
@@ -38,7 +68,7 @@ public class PluginLayer extends Layer
 				return RenderResult.OK;
 		}
 		
-		plugin.render(gl);
+		plugin.render(gl,this);
 		return RenderResult.OK;
 	}
 	

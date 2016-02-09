@@ -438,8 +438,6 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 				}
 			}
 			
-			//TODO: extremely narrow viewports show letterbox. why?!
-			
 			ImageLayer.ensureAppropriateTextureCacheSize(gl);
 			
 			//TODO: jumpstart decoding of next frame
@@ -470,7 +468,6 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glPopMatrix();
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
-
 		
 		Quaternion rotation = new Quaternion(rotationNow.a, rotationNow.u.negatedY());
 		Matrix4d transformation = rotation.toMatrix().translated(-translationNow.x, translationNow.y,-translationNow.z);
@@ -479,8 +476,8 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glLoadIdentity();
 		
-		//TODO: verify that aspect ratios are handled correctly
-		gl.glScaled(aspect, aspect, 1);
+		if(aspect>1)
+			gl.glScaled(aspect, aspect, 1);
 		
 		if (CameraMode.mode == CameraMode.MODE.MODE_3D)
 		{

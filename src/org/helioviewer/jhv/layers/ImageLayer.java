@@ -44,16 +44,6 @@ import com.jogamp.opengl.GLContext;
 
 public abstract class ImageLayer extends Layer
 {
-	public double opacity = 1;
-	public double sharpness = 0;
-	public double gamma = 1;
-	public double contrast = 0;
-	@Nullable protected LUT lut = null;
-	public boolean redChannel = true;
-	public boolean greenChannel = true;
-	public boolean blueChannel = true;
-	public boolean invertedLut = false;
-	protected boolean coronaVisible = true;
 	public boolean animateCameraToFacePlane;
 
 	protected LocalDateTime start;
@@ -63,11 +53,6 @@ public abstract class ImageLayer extends Layer
 	
 	protected int cadence;
 	private boolean metadataInitialized=false;
-	
-	@Nullable public LUT getLUT()
-	{
-		return lut;
-	}
 	
 	public void initializeMetadata(MetaData _md)
 	{
@@ -92,22 +77,6 @@ public abstract class ImageLayer extends Layer
 		return groupForOpacity;
 	}
 	
-	public void setLUT(@Nullable LUT _lut)
-	{
-		lut = _lut;
-		MainFrame.SINGLETON.FILTER_PANEL.update();
-	}
-
-	public void toggleCoronaVisibility()
-	{
-		coronaVisible=!coronaVisible;
-	}
-	
-	public boolean isCoronaVisible()
-	{
-		return coronaVisible;
-	}
-	
 	private static int shaderCorona = -1;
 	private static int shaderSphere = -1;
 	
@@ -121,6 +90,39 @@ public abstract class ImageLayer extends Layer
 	
 	public abstract @Nullable Match getMovie(LocalDateTime _currentDateTime);
 
+	
+	
+	public boolean supportsFilterContrastGamma()
+	{
+		return true;
+	}
+	
+	public boolean supportsFilterSharpness()
+	{
+		return true;
+	}
+	
+	public boolean supportsFilterRGB()
+	{
+		return true;
+	}
+	
+	public boolean supportsFilterOpacity()
+	{
+		return true;
+	}
+	
+	public boolean supportsFilterLUT()
+	{
+		return true;
+	}
+	
+	public boolean supportsFilterCorona()
+	{
+		return true;
+	}
+	
+	
 	/**
 	 * This method should be called whenever we can throw all cached textures away, and the
 	 * likelihood that cached textures would be used again is low.

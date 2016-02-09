@@ -4,6 +4,7 @@ import java.awt.event.MouseEvent;
 import java.time.LocalDateTime;
 
 import org.helioviewer.jhv.base.math.Vector3d;
+import org.helioviewer.jhv.layers.PluginLayer;
 import org.json.JSONObject;
 
 import com.jogamp.opengl.GL2;
@@ -25,6 +26,36 @@ public abstract class Plugin
 		pluginName = name;
 		renderMode = _renderMode;
 	}
+	
+	public boolean supportsFilterContrastGamma()
+	{
+		return false;
+	}
+	
+	public boolean supportsFilterSharpness()
+	{
+		return false;
+	}
+	
+	public boolean supportsFilterRGB()
+	{
+		return false;
+	}
+	
+	public boolean supportsFilterOpacity()
+	{
+		return false;
+	}
+	
+	public boolean supportsFilterLUT()
+	{
+		return false;
+	}
+	
+	public boolean supportsFilterCorona()
+	{
+		return false;
+	}
 
 	public void timeStampChanged(LocalDateTime current, LocalDateTime last)
 	{
@@ -44,7 +75,7 @@ public abstract class Plugin
 		return isVisible;
 	}
 
-	public void render(GL2 gl)
+	public void render(GL2 gl, PluginLayer _renderParams)
 	{
 
 	}

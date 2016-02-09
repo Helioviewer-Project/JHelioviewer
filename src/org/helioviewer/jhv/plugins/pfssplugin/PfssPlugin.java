@@ -9,6 +9,7 @@ import java.util.concurrent.ThreadFactory;
 import javax.annotation.Nullable;
 
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
+import org.helioviewer.jhv.layers.PluginLayer;
 import org.helioviewer.jhv.plugins.Plugin;
 import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.plugins.pfssplugin.data.FrameManager;
@@ -43,13 +44,19 @@ public class PfssPlugin extends Plugin
 	}
 	
 	@Override
-	public void render(GL2 gl)
+	public boolean supportsFilterOpacity()
+	{
+		return true;
+	}
+	
+	@Override
+	public void render(GL2 gl, PluginLayer _imageParams)
 	{
 		LocalDateTime localDateTime = Plugins.SINGLETON.getCurrentDateTime();
 		PfssDecompressed frame = manager.getFrame(gl, localDateTime);
 		
 		if (frame != null)
-			frame.display(gl, localDateTime);
+			frame.display(gl, localDateTime, _imageParams.opacity);
 	}
 
 	@Override
