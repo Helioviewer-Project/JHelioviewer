@@ -73,6 +73,7 @@ public class Matrix4d
 				m[3] * _a.m[12] + m[7] * _a.m[13] + m[11] * _a.m[14] + m[15] * _a.m[15]);
 	}
 
+	//TODO: suspicious method. why not use 4d vectors instead?
 	public Vector3d multiply(Vector3d _v)
 	{
 		double W = m[3] * _v.x + m[7] * _v.y + m[11] * _v.z + m[15];

@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 import org.helioviewer.jhv.base.physics.Constants;
 
-
+//see http://fits.gsfc.nasa.gov/wcs/coordinates.pdf
 public class HeliographicCoordinate {
 	
 	public final double longitude;

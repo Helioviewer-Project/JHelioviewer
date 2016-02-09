@@ -440,6 +440,8 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			
 			ImageLayer.ensureAppropriateTextureCacheSize(gl);
 			
+			//TODO: jumpstart decoding of overview region
+			//TODO: async texture upload
 			//TODO: jumpstart decoding of next frame
 			LinkedHashMap<ImageLayer, Future<PreparedImage>> layers = new LinkedHashMap<>();
 			for (Layer layer : Layers.getLayers())
@@ -447,7 +449,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 					layers.put((ImageLayer) layer,
 							((ImageLayer) layer).prepareImageData(this, TimeLine.SINGLETON.shouldHurry(), sizeForDecoder, gl.getContext()));
 			
-			
+			//TODO: render in finishing order
 			for (Entry<ImageLayer, Future<PreparedImage>> l : layers.entrySet())
 				try
 				{
@@ -505,25 +507,24 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		gl.glPushMatrix();
-		
-		//render plugin layers
-		if(anyImageLayerVisible)
-			for (Layer layer : Layers.getLayers())
-				if (layer.isVisible() && layer instanceof PluginLayer)
-					((PluginLayer)layer).renderLayer(gl,this);
-		
+		{
+			//render plugin layers
+			if(anyImageLayerVisible)
+				for (Layer layer : Layers.getLayers())
+					if (layer.isVisible() && layer instanceof PluginLayer)
+						((PluginLayer)layer).renderLayer(gl,this);
+		}
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		gl.glPopMatrix();
 		
 		gl.glDepthMask(false);
 		
-		gl.glMatrixMode(GL2.GL_PROJECTION);
-		gl.glLoadIdentity();
-		gl.glScaled(aspect > 1 ? 1 / aspect : 1, aspect < 1 ? aspect : 1, 1);
-		gl.glMatrixMode(GL2.GL_MODELVIEW);			
-		
 		if (!anyImageLayerVisible && _showLoadingAnimation)
 		{
+			gl.glMatrixMode(GL2.GL_PROJECTION);
+			gl.glLoadIdentity();
+			gl.glScaled(aspect > 1 ? 1 / aspect : 1, aspect < 1 ? aspect : 1, 1);
+			
 			gl.glMatrixMode(GL2.GL_PROJECTION);
 			gl.glPushMatrix();
 			{
@@ -549,6 +550,11 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		//visualize depth buffer for debugging purposes
 		/*if (!Globals.isReleaseVersion())
 		{
+			gl.glMatrixMode(GL2.GL_PROJECTION);
+			gl.glLoadIdentity();
+			gl.glScaled(aspect > 1 ? 1 / aspect : 1, aspect < 1 ? aspect : 1, 1);
+			gl.glMatrixMode(GL2.GL_MODELVIEW);			
+
 			gl.glEnable(GL2.GL_TEXTURE_2D);
 			gl.glActiveTexture(GL2.GL_TEXTURE0);
 			gl.glDisable(GL2.GL_BLEND);

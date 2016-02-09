@@ -33,8 +33,10 @@ public class RayTrace
 
 	public Ray cast(int x, int y, MainPanel mainPanel)
 	{
-		double newX = (x - mainPanel.getWidth() / 2.) / mainPanel.getWidth();
-		double newY = (y - mainPanel.getHeight() / 2.) / mainPanel.getWidth();
+		double aspect = Math.min(1, mainPanel.getAspect());
+		
+		double newX = (x - mainPanel.getWidth() / 2.) / mainPanel.getWidth() * aspect;
+		double newY = (y - mainPanel.getHeight() / 2.) / mainPanel.getWidth() * aspect;
 
 		double tanFOV = Math.tan(Math.toRadians(MainPanel.FOV / 2.0)) * 2;
 

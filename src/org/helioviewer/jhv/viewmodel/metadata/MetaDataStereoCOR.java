@@ -15,6 +15,8 @@ class MetaDataStereoCOR extends MetaData
 				get(_doc, "INSTRUME") + " " + get(_doc, "DETECTOR"),
 				GROUP_FOR_OPACITY_CORONA_OUTSIDE);
 
+		//FIXME: pointing is wrong!!!
+		
 		Vector2d center = Vector2d.NULL;
 
 		// Convert arcsec to meters

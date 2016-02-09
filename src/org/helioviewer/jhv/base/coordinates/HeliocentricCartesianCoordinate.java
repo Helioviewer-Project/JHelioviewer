@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import org.helioviewer.jhv.base.math.Vector3d;
 
+//see http://fits.gsfc.nasa.gov/wcs/coordinates.pdf
 public class HeliocentricCartesianCoordinate {
 	public final double x;
 	public final double y;

@@ -2,6 +2,7 @@ package org.helioviewer.jhv.base.coordinates;
 
 import org.helioviewer.jhv.base.physics.Constants;
 
+//see also http://fits.gsfc.nasa.gov/wcs/coordinates.pdf
 public class HelioprojectiveCartesianCoordinate {
 	
 	public final double thetaX;

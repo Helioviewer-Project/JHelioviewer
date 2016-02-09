@@ -141,31 +141,33 @@ public class OverviewPanel extends MainPanel
 			gl.glMatrixMode(GL2.GL_PROJECTION);
 			gl.glLoadIdentity();
 			
-			//TODO: check, if correct. else-part wasn't there originally
+			//TODO: check, if correct. else-part wasn't there originally. although, this doesn't
+			//affect correctness ATM, because overviewpanel will always have aspect>1.1, due to layout
 			if(getAspect()>=1)
 				gl.glScaled(1, getAspect(), 1);
 			else
 				gl.glScaled(1, 1/getAspect(), 1);
-				
+			
 			double width = Math.tan(Math.toRadians(FOV / 2.0)) * this.translationNow.z;
 			gl.glOrtho(-width, width, width, -width, -Constants.SUN_RADIUS, Constants.SUN_RADIUS);
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
 			gl.glLoadIdentity();
 			gl.glEnable(GL2.GL_DEPTH_TEST);
-			displayRect(gl, width / 100.0);
+			renderViewportOutline(gl, width / 100.0);
 			gl.glPopMatrix();
 		}
 	}
 
-	private void displayRect(GL2 gl, double radius)
+	private void renderViewportOutline(GL2 gl, double radius)
 	{
 		gl.glDisable(GL2.GL_DEPTH_TEST);
+		gl.glColor4f(0, 1, 0, 1);
+		gl.glDisable(GL2.GL_TEXTURE_2D);
+		gl.glEnable(GL2.GL_BLEND);
+		gl.glEnable(GL2.GL_LINE_SMOOTH);
+		
 		for (MainPanel mainView : mainViews)
 		{
-			gl.glColor4f(0, 1, 0, 1);
-			gl.glDisable(GL2.GL_TEXTURE_2D);
-			gl.glEnable(GL2.GL_BLEND);
-			gl.glEnable(GL2.GL_LINE_SMOOTH);
 			gl.glBegin(GL2.GL_LINE_LOOP);
 			for (Vector3d bound : mainView.getVisibleAreaOutline())
 				gl.glVertex3d(bound.x, bound.y, bound.z);
@@ -180,6 +182,7 @@ public class OverviewPanel extends MainPanel
 			}
 			gl.glEnd();
 		}
+		
 		gl.glDisable(GL2.GL_LINE_SMOOTH);
 		gl.glDisable(GL2.GL_BLEND);
 
