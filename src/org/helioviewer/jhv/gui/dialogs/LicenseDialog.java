@@ -62,7 +62,6 @@ public class LicenseDialog extends JDialog
 		txtpnPleaseTakeA.setEditable(false);
 		txtpnPleaseTakeA.setOpaque(false);
 		
-		//FIXME: not visible under os x (?!?)
 		txtpnPleaseTakeA.setText("Please take a moment to read the license agreement now. If you accept the terms below, click \"Accept\" and then \"OK\".");
 		
 		final JTextArea textArea = new JTextArea();

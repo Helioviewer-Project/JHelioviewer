@@ -412,6 +412,11 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		if (cameraTrackingEnabled)
 			updateTrackRotation();
 
+		boolean anyImageLayerVisible = false;
+		for (Layer layer : Layers.getLayers())
+			if (layer instanceof ImageLayer)
+				anyImageLayerVisible |= layer.isVisible();
+		
 		double clipNear = Math.max(translationNow.z - 4 * Constants.SUN_RADIUS, CLIP_NEAR);
 		
 		gl.glMatrixMode(GL2.GL_PROJECTION);
@@ -505,9 +510,10 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		gl.glPushMatrix();
 		
 		//render plugin layers
-		for (Layer layer : Layers.getLayers())
-			if (layer.isVisible() && layer instanceof PluginLayer)
-				((PluginLayer)layer).renderLayer(gl,this);
+		if(anyImageLayerVisible)
+			for (Layer layer : Layers.getLayers())
+				if (layer.isVisible() && layer instanceof PluginLayer)
+					((PluginLayer)layer).renderLayer(gl,this);
 		
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		gl.glPopMatrix();
@@ -519,14 +525,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		gl.glScaled(aspect > 1 ? 1 / aspect : 1, aspect < 1 ? aspect : 1, 1);
 		gl.glMatrixMode(GL2.GL_MODELVIEW);			
 		
-		//DownloadManager.debug();
-
-		boolean noImageScreen = _showLoadingAnimation;
-		for (Layer layer : Layers.getLayers())
-			if (layer instanceof ImageLayer)
-				noImageScreen &= !layer.isVisible();
-
-		if (noImageScreen)
+		if (!anyImageLayerVisible && _showLoadingAnimation)
 		{
 			gl.glMatrixMode(GL2.GL_PROJECTION);
 			gl.glPushMatrix();

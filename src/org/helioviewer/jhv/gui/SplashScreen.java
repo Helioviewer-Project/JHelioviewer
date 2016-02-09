@@ -12,6 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
 
 import org.helioviewer.jhv.base.Telemetry;
