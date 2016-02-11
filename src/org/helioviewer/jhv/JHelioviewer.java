@@ -13,6 +13,7 @@ import java.util.TimeZone;
 import javax.annotation.Nullable;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
@@ -27,6 +28,7 @@ import org.helioviewer.jhv.base.Settings.IntKey;
 import org.helioviewer.jhv.base.math.Quaternion;
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.UILatencyWatchdog;
+import org.helioviewer.jhv.gui.DebugRepaintManager;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.SplashScreen;
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
@@ -51,6 +53,7 @@ import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLDrawableFactory;
 import com.jogamp.opengl.GLProfile;
+import com.sun.javafx.tk.Toolkit;
 
 import kdu_jni.KduException;
 import kdu_jni.Kdu_global;
@@ -115,7 +118,9 @@ public class JHelioviewer
 		if(Globals.isOSX())
 			System.setProperty("apple.laf.useScreenMenuBar", "true");
 		
-		
+		if (!Globals.isReleaseVersion())
+			RepaintManager.setCurrentManager(new DebugRepaintManager());
+
 		SwingUtilities.invokeLater(() ->
 		{
 			// Setup Swing
@@ -188,7 +193,7 @@ public class JHelioviewer
 			final GLAutoDrawable sharedDrawable = factory.createDummyAutoDrawable(null, true, capabilities, null);
 			sharedDrawable.display();
 				
-			if (System.getProperty("jhvVersion") == null)
+			if (!Globals.isReleaseVersion())
 				sharedDrawable.setGL(new DebugGL2(sharedDrawable.getGL().getGL2()));
 	
 			// Load settings from file but do not apply them yet
