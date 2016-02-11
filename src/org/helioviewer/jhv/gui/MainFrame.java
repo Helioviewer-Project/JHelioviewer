@@ -21,7 +21,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.RootPaneContainer;
-import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
@@ -47,6 +46,7 @@ public class MainFrame extends JFrame
 	public final MoviePanel MOVIE_PANEL;
 	public final LayerPanel LAYER_PANEL;
 	private final JSplitPane splitPane;
+	private final JPanel leftPanel;
 
 	public final FilterPanel FILTER_PANEL;
 	
@@ -80,13 +80,13 @@ public class MainFrame extends JFrame
 		OVERVIEW_PANEL.setMinimumSize(new Dimension(240, 200));
 		OVERVIEW_PANEL.setPreferredSize(new Dimension(240, 200));
 
-		JPanel left = new JPanel();
+		leftPanel = new JPanel();
 		GridBagLayout gbl_left = new GridBagLayout();
 		gbl_left.columnWidths = new int[]{0, 0};
 		gbl_left.rowHeights = new int[]{0, 0, 0};
 		gbl_left.columnWeights = new double[]{1.0, Double.MIN_VALUE};
 		gbl_left.rowWeights = new double[]{1.0, 100.0, Double.MIN_VALUE};
-		left.setLayout(gbl_left);
+		leftPanel.setLayout(gbl_left);
 		
 		GridBagConstraints gbc_overViewPane = new GridBagConstraints();
 		gbc_overViewPane.insets = new Insets(0, 0, 5, 0);
@@ -94,7 +94,7 @@ public class MainFrame extends JFrame
 		gbc_overViewPane.gridx = 0;
 		gbc_overViewPane.gridy = 0;
 		
-		left.add(OVERVIEW_PANEL, gbc_overViewPane);
+		leftPanel.add(OVERVIEW_PANEL, gbc_overViewPane);
 		OVERVIEW_PANEL.addMainView(MAIN_PANEL);
 		MAIN_PANEL.addSynchronizedView(OVERVIEW_PANEL);
 		
@@ -105,7 +105,7 @@ public class MainFrame extends JFrame
 		gbc_scrollPane.fill = GridBagConstraints.BOTH;
 		gbc_scrollPane.gridx = 0;
 		gbc_scrollPane.gridy = 1;
-		left.add(scrollPane, gbc_scrollPane);
+		leftPanel.add(scrollPane, gbc_scrollPane);
 		
 		MOVIE_PANEL = new MoviePanel();
 		LAYER_PANEL = new LayerPanel();
@@ -118,32 +118,40 @@ public class MainFrame extends JFrame
 		LEFT_PANE.add("Layers", LAYER_PANEL, true);
 		LEFT_PANE.add("Adjustments", FILTER_PANEL, true);
 		
-		//FIXME: tango no longer seems to help...
 		if(Globals.isOSX())
-			//this is a hack to support GLCanvas as AWT in a splitpane
 			addComponentListener(new ComponentAdapter()
 			{
 				@Override
 				public void componentResized(@Nullable ComponentEvent e)
 				{
-					splitPane.setDividerLocation(splitPane.getDividerLocation()+1);
-					SwingUtilities.invokeLater(new Runnable()
-					{
-						@Override
-						public void run()
-						{
-							splitPane.setDividerLocation(splitPane.getDividerLocation()-1);
-						}
-					});
+					workAroundOSXOpenGLBugs();
 				}
 			});
 		
 		splitPane.setRightComponent(MAIN_PANEL);		
-		splitPane.setLeftComponent(left);
+		splitPane.setLeftComponent(leftPanel);
 		
 		contentPane.add(this.getStatusPane(), BorderLayout.SOUTH);
 	}
 	
+	private void workAroundOSXOpenGLBugs()
+	{
+		splitPane.setRightComponent(null);
+		splitPane.setRightComponent(MAIN_PANEL);
+		
+		splitPane.setLeftComponent(null);
+		splitPane.setLeftComponent(leftPanel);
+	}
+	
+	@Override
+	public void resize(int width, int height)
+	{
+		super.resize(width, height);
+		
+		if(Globals.isOSX())
+			workAroundOSXOpenGLBugs();
+	}
+
 	public void startWaitCursor()
 	{
 	    RootPaneContainer root = (RootPaneContainer)getRootPane().getTopLevelAncestor();

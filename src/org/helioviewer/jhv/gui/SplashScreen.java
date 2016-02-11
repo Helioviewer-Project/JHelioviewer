@@ -9,16 +9,14 @@ import java.awt.image.BufferedImage;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.border.LineBorder;
+import javax.swing.border.EmptyBorder;
 
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
-import javax.swing.border.EmptyBorder;
-import javax.swing.JPanel;
 
 public class SplashScreen extends JFrame
 {

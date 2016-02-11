@@ -2,7 +2,6 @@ package org.helioviewer.jhv.viewmodel.jp2view.newjpx;
 
 import java.awt.Dimension;
 import java.awt.Rectangle;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;

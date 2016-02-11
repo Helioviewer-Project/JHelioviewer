@@ -2,13 +2,10 @@ package org.helioviewer.jhv.layers;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 
 import javax.annotation.Nullable;
 
 import org.helioviewer.jhv.base.Telemetry;
-import org.helioviewer.jhv.base.math.MathUtils;
-import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
 import org.helioviewer.jhv.viewmodel.metadata.UnsuitableMetaDataException;
 import org.json.JSONArray;
