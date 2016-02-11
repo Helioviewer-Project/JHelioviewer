@@ -67,30 +67,31 @@ class SDOCutOutAction extends AbstractAction
 		Rectangle2D sourceRegion = ir.areaOfSourceImage;
 		
 		StringBuilder url = new StringBuilder(URL);
-		url.append("startDate=").append(start.format(DATE_FORMATTER)).append("&startTime=").append(start.format(TIME_FORMATTER));
-		url.append("&stopDate=").append(end.format(DATE_FORMATTER)).append("&stopTime=").append(end.format(TIME_FORMATTER));
+		url.append("startDate="+start.format(DATE_FORMATTER));
+		url.append("&startTime="+start.format(TIME_FORMATTER));
+		url.append("&stopDate="+end.format(DATE_FORMATTER));
+		url.append("&stopTime="+end.format(TIME_FORMATTER));
 
 		url.append("&wavelengths=");
 		for (ImageLayer sdoLayer : sdoLayers)
 		{
 			MetaData md=sdoLayer.getMetaData(TimeLine.SINGLETON.getCurrentDateTime());
 			if(md!=null)
-				url.append(",").append(md.measurement);
+				url.append(","+md.measurement);
 		}
 		
 		Vector2i resolution = metaData.resolution;
 		Vector2d arcsecFactor = metaData.arcsecPerPixel;
 		Vector2d sunPosArcSec = metaData.sunPixelPosition.scaled(arcsecFactor);
 		Vector2d sizeArcSec = new Vector2d(sourceRegion.getWidth() * resolution.x, sourceRegion.getHeight() * resolution.y).scaled(arcsecFactor);
-		Vector2d offsetArcSec = new Vector2d(sourceRegion.getX() * resolution.x, sourceRegion.getY() * resolution.y).scaled(arcsecFactor);
-		Vector2d centerOffsetArcSec = sunPosArcSec.subtract(sizeArcSec.add(offsetArcSec).scaled(0.5));
-		//FIXME: coordinates are wrong
-		url.append("&width=").append(sizeArcSec.x);
-		url.append("&height=").append(sizeArcSec.y);
-		url.append("&xCen=").append(centerOffsetArcSec.x);
-		url.append("&yCen=").append(centerOffsetArcSec.y);
+		Vector2d offsetArcSec = new Vector2d(sourceRegion.getCenterX() * resolution.x, sourceRegion.getCenterY() * resolution.y).scaled(arcsecFactor);
+
+		url.append("&width="+sizeArcSec.x);
+		url.append("&height="+sizeArcSec.y);
+		url.append("&xCen="+(offsetArcSec.x-sunPosArcSec.x));
+		url.append("&yCen="+(-offsetArcSec.y+sunPosArcSec.y));
 		
-		url.append("&cadence=").append(mainSDOLayer.getCadence());
+		url.append("&cadence="+mainSDOLayer.getCadence());
 		url.append("&cadenceUnits=s");
 		Globals.openURL(url.toString());
     }

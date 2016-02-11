@@ -63,42 +63,6 @@ public class JHelioviewer
 	
 	public static void main(final String[] args) throws InvocationTargetException, InterruptedException, KduException
 	{
-		/*
-		//Quaternion mdRotation = new Quaternion(1, 0, 0, 0); //AIA
-		Quaternion mdRotation = new Quaternion(0.4604701990997339, -0.12046087464460616, -0.8794636851063878, 0.0); //COR1
-		
-		//Quaternion camStart = new Quaternion(0.9492024310206462, -0.042292917748858336, -0.23774959759868636, 0.20174534169206157);
-		//Quaternion camStart = new Quaternion(-0.37632129733281483, -0.904896633730284, -0.11223051039546184, -0.16416051892498934);
-		//Quaternion camStart = new Quaternion(0.13332106172661565, 0.3928117120310658, 0.18540818488082272, 0.8908132567325825);
-		//Quaternion camStart = new Quaternion(0.9551562323356007, 0.0285464724242633, -0.25526092510055143, 0.1473211826568115);
-		//Quaternion camStart = new Quaternion(0.13332106172661565, 0.3928117120310658, 0.18540818488082272, 0.8908132567325825);
-
-		Quaternion camStart = new Quaternion(0.460, -0.390, -0.569, 0.559);
-		//Quaternion camStart = new Quaternion(0.460, -0.095, 0.179, -0.864);
-		//Quaternion camStart = new Quaternion(0.460, 0.603, -0.550, -0.349);
-
-		
-		Quaternion delta = camStart.inversed().rotate(mdRotation.inversed());
-		Quaternion end = camStart.rotate(delta);
-		
-		Quaternion anim1 = camStart;
-		for(int i=0;i<1;i++)
-			anim1 = anim1.rotate(delta.powered(1));
-		
-		Quaternion anim10 = camStart;
-		for(int i=0;i<10;i++)
-		{
-			anim10 = anim10.rotate(delta.powered(0.1));
-		}
-		
-		System.out.println("Target: "+mdRotation.inversed());
-		System.out.println("End:    "+end);
-		System.out.println("Anim1:  "+anim1);
-		System.out.println("Anim10: "+anim10);
-		/*
-		if(1==1)
-		return;
-		*/
 		CommandLineProcessor.setArguments(args);
 		
 		// Uncaught runtime errors are displayed in a dialog box in addition
@@ -233,7 +197,8 @@ public class JHelioviewer
 				Telemetry.trackException(e);
 			}
 	        
-			splash.progressTo("Setting up caches");
+	        //TODO: show better progress, speed up, ...
+			splash.progressTo("Preparing cache");
 			MovieCache.init();
 			
 			splash.progressTo("Compiling shaders");
