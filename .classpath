@@ -35,7 +35,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/jogl-all-natives-macosx-universal.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jogl-all-natives-windows-amd64.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jogl-all-natives-windows-i586.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jogl.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/applicationinsights-core-1.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/guava-18.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/httpclient-4.3.5.jar"/>
@@ -45,5 +44,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/commons-lang3-3.3.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/annotations.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jsr305.jar"/>
+	<classpathentry kind="lib" path="lib/jogl-all.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
