@@ -84,10 +84,14 @@ class SDOCutOutAction extends AbstractAction
 		Vector2d sizeArcSec = new Vector2d(sourceRegion.getWidth() * resolution.x, sourceRegion.getHeight() * resolution.y).scaled(arcsecFactor);
 		Vector2d offsetArcSec = new Vector2d(sourceRegion.getX() * resolution.x, sourceRegion.getY() * resolution.y).scaled(arcsecFactor);
 		Vector2d centerOffsetArcSec = sunPosArcSec.subtract(sizeArcSec.add(offsetArcSec).scaled(0.5));
-		url.append("&width=").append(sizeArcSec.x).append("&height=").append(sizeArcSec.y);
-		url.append("&xCen=").append(centerOffsetArcSec.x).append("&yCen=").append(centerOffsetArcSec.y);
+		//FIXME: coordinates are wrong
+		url.append("&width=").append(sizeArcSec.x);
+		url.append("&height=").append(sizeArcSec.y);
+		url.append("&xCen=").append(centerOffsetArcSec.x);
+		url.append("&yCen=").append(centerOffsetArcSec.y);
 		
-		url.append("&cadence=").append(mainSDOLayer.getCadence()).append("&cadenceUnits=s");
+		url.append("&cadence=").append(mainSDOLayer.getCadence());
+		url.append("&cadenceUnits=s");
 		Globals.openURL(url.toString());
     }
 }

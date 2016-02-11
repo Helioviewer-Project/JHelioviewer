@@ -2,6 +2,7 @@ package org.helioviewer.jhv.viewmodel.jp2view.newjpx;
 
 import java.awt.Dimension;
 import java.awt.Rectangle;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -10,6 +11,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -90,8 +93,21 @@ public class KakaduLayer extends ImageLayer
 		end = movie.getMetaData(movie.getFrameCount()-1).localDateTime;
 		name = movie.getAnyMetaData().displayName;
 		
-		cadence = (int) (ChronoUnit.SECONDS.between(start, end) / movie.getFrameCount());
-		if(cadence==0)
+		cadence = (int)ChronoUnit.SECONDS.between(start, end);
+		
+		SortedSet<LocalDateTime> times=new TreeSet<LocalDateTime>();
+		for(int i=1;i<movie.getFrameCount();i++)
+		{
+			MetaData md=movie.getMetaData(i);
+			if(md!=null)
+				times.add(md.localDateTime);
+		}
+
+		LocalDateTime[] sortedTimes=times.toArray(new LocalDateTime[0]);
+		for(int i=2;i<sortedTimes.length;i++)
+			cadence=Math.min(cadence, (int)ChronoUnit.SECONDS.between(sortedTimes[i-2], sortedTimes[i])/2);
+		
+		if(cadence<1)
 			cadence=1;
 		
 		MovieCache.add(movie);
@@ -337,8 +353,11 @@ public class KakaduLayer extends ImageLayer
 						currentStart = currentStart.plusSeconds(_cadence * batchSize);
 					}
 					
+					if(settingsPreviewEnabled)
+						for(MovieDownload md:downloads)
+							DownloadManager.addRequest(md.metadata);
 					for(MovieDownload md:downloads)
-						DownloadManager.addRequest(settingsPreviewEnabled ? md.metadata : md.hq);
+						DownloadManager.addRequest(md.hq);
 					
 					while(!downloads.isEmpty())
 					{
@@ -388,18 +407,10 @@ public class KakaduLayer extends ImageLayer
 											DownloadManager.addRequest(download.lq);
 										}
 
-										DownloadManager.addRequest(download.hq);
-										
-										download.metadata=null;
-										downloads.addLast(download);
 									}
-									else if(settingsPreviewTimeSubsample==1)
-									{
-										DownloadManager.remove(download.metadata);
-										DownloadManager.remove(download.lq);
-										DownloadManager.remove(download.hq);
-										continue;
-									}
+									
+									download.metadata=null;
+									downloads.addLast(download);
 								}
 								catch(JSONException _e)
 								{
@@ -531,7 +542,18 @@ public class KakaduLayer extends ImageLayer
 	@Override
 	public @Nullable LocalDateTime getCurrentTime()
 	{
-		return findClosestLocalDateTime(TimeLine.SINGLETON.getCurrentDateTime());
+		LocalDateTime ldt=TimeLine.SINGLETON.getCurrentDateTime();
+		if(ldt.isBefore(start.minusSeconds(cadence)) || ldt.isAfter(end.plusSeconds(cadence)))
+			return null;
+		
+		LocalDateTime bestMatch=findClosestLocalDateTime(TimeLine.SINGLETON.getCurrentDateTime());
+		if(bestMatch==null)
+			return null;
+		
+		if(bestMatch.isBefore(start.minusSeconds(cadence)) || bestMatch.isAfter(end.plusSeconds(cadence)))
+			return null;
+		
+		return bestMatch;
 	}
 
 	public @Nullable LocalDateTime findClosestLocalDateTime(LocalDateTime _currentDateTime)
@@ -587,7 +609,7 @@ public class KakaduLayer extends ImageLayer
 		final LocalDateTime mainTime = TimeLine.SINGLETON.getCurrentDateTime();
 		if(mainTime.isBefore(start.minusSeconds(cadence)) || mainTime.isAfter(end.plusSeconds(cadence)))
 			return new FutureValue<>(null);
-			
+		
 		final MetaData metaData = getMetaData(mainTime);
 		if (metaData == null)
 			return new FutureValue<>(null);

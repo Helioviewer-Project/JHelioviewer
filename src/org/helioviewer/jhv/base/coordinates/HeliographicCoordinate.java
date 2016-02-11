@@ -5,55 +5,60 @@ import java.time.LocalDateTime;
 import org.helioviewer.jhv.base.physics.Constants;
 
 //see http://fits.gsfc.nasa.gov/wcs/coordinates.pdf
-public class HeliographicCoordinate {
-	
+public class HeliographicCoordinate
+{
 	public final double longitude;
 	public final double latitude;
 	public final double radius;
-	public HeliographicCoordinate(double hgLongitude, double hgLatitude, double radius) {
-		this.longitude = hgLongitude;
-		this.latitude = hgLatitude;
-		this.radius = radius;
+
+	public HeliographicCoordinate(double hgLongitude, double hgLatitude, double _radius)
+	{
+		longitude = hgLongitude;
+		latitude = hgLatitude;
+		radius = _radius;
 	}
-	
-	public HeliographicCoordinate(double hgLongitude, double hgLatitude) {
+
+	public HeliographicCoordinate(double hgLongitude, double hgLatitude)
+	{
 		this(hgLongitude, hgLatitude, Constants.SUN_RADIUS);
 	}
-	
-	public HeliocentricCartesianCoordinate toHeliocentricCartesianCoordinate(double b0, double l0){
-		
+
+	public HeliocentricCartesianCoordinate toHeliocentricCartesianCoordinate(double b0, double l0)
+	{
 		double cosb = Math.cos(b0);
 		double sinb = Math.sin(b0);
 
 		double longitude = this.longitude - l0;
-		
+
 		double cosx = Math.cos(longitude);
 		double sinx = Math.sin(longitude);
 		double cosy = Math.cos(latitude);
 		double siny = Math.sin(latitude);
-
+		
 		double x = radius * cosy * sinx;
 		double y = radius * (siny * cosb - cosy * cosx * sinb);
 		double z = radius * (siny * sinb + cosy * cosx * cosb);
 
 		return new HeliocentricCartesianCoordinate(x, y, z);
 	}
-	
-	public HeliocentricCartesianCoordinate toHeliocentricCartesianCoordinate(){
+
+	public HeliocentricCartesianCoordinate toHeliocentricCartesianCoordinate()
+	{
 		return toHeliocentricCartesianCoordinate(0, 0);
 	}
-	
-	
-	public HelioprojectiveCartesianCoordinate toHelioprojectiveCartesianCoordinate(LocalDateTime localDateTime){
+
+	public HelioprojectiveCartesianCoordinate toHelioprojectiveCartesianCoordinate(LocalDateTime localDateTime)
+	{
 		return toHeliocentricCartesianCoordinate().toHelioprojectiveCartesianCoordinate(localDateTime);
 	}
 
-	public double getHgLongitudeAsDeg(){
-		return Math.toDegrees(longitude);		
+	public double getHgLongitudeAsDeg()
+	{
+		return Math.toDegrees(longitude);
 	}
-	
-	public double getHgLatitudeAsDeg() {
+
+	public double getHgLatitudeAsDeg()
+	{
 		return Math.toDegrees(latitude);
 	}
-	
 }

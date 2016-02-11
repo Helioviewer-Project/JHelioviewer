@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
 import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
+import org.helioviewer.jhv.base.coordinates.SunPosition;
 import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.base.math.Quaternion;
 import org.helioviewer.jhv.base.math.Vector2d;
@@ -172,13 +173,15 @@ public abstract class MetaData
     		solarPixelRadius = new Vector2d(180,180);
     	}
         
+        SunPosition sunPosition = SunPosition.computeSunPos(localDateTime);
         if (stonyhurstAvailable)
         {
-        	HeliocentricCartesianCoordinate hcc = new HeliographicCoordinate(Math.toRadians(stonyhurstLongitude), Math.toRadians(stonyhurstLatitude)).toHeliocentricCartesianCoordinate();
-        	rotation = Quaternion.calcRotationBetween(new Vector3d(hcc.x, hcc.y, hcc.z), new Vector3d(0, 0, Constants.SUN_RADIUS));
+        	rotation = new Quaternion(
+        			Math.toRadians( sunPosition.getLongitude() - stonyhurstLongitude),
+        			Math.toRadians(-stonyhurstLatitude));
         }
         else
-        	rotation = Quaternion.IDENTITY;
+        	rotation = new Quaternion(0, sunPosition.getDec());
         
 		maskRotation = Math.toRadians(tryGetDouble(_doc, "CROTA"));
     }

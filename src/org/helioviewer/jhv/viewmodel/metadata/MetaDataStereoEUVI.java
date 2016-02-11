@@ -9,7 +9,12 @@ class MetaDataStereoEUVI extends MetaData
 {
 	public MetaDataStereoEUVI(Document _doc)
 	{
-        super(_doc, new Vector2i(2048, 2048), get(_doc, "OBSRVTRY"), get(_doc, "WAVELNTH"), get(_doc, "DETECTOR") + " " + get(_doc, "WAVELNTH"), GROUP_FOR_OPACITY_SUN | GROUP_FOR_OPACITY_CORONA_SMALL);
+        super(_doc,
+        		new Vector2i(2048, 2048),
+        		get(_doc, "OBSRVTRY"),
+        		get(_doc, "WAVELNTH"),
+        		get(_doc, "DETECTOR") + ("STEREO_A".equalsIgnoreCase(get(_doc, "OBSRVTRY")) ? "-A ":"-B ") + get(_doc, "WAVELNTH"),
+        		GROUP_FOR_OPACITY_SUN | GROUP_FOR_OPACITY_CORONA_SMALL);
         
         if ((!"STEREO_A".equalsIgnoreCase(observatory) && !"STEREO_B".equalsIgnoreCase(observatory)) || !"EUVI".equalsIgnoreCase(detector))
         	throw new UnsuitableMetaDataException("invalid instrument");

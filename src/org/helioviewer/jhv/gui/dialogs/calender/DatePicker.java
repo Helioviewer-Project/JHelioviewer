@@ -240,19 +240,19 @@ public class DatePicker extends JPanel
 			@Override
 			public void removeUpdate(@Nullable DocumentEvent e)
 			{
-				updateDateTime();
+				parseDateTime();
 			}
 			
 			@Override
 			public void insertUpdate(@Nullable DocumentEvent e)
 			{
-				updateDateTime();
+				parseDateTime();
 			}
 			
 			@Override
 			public void changedUpdate(@Nullable DocumentEvent e)
 			{
-				updateDateTime();
+				parseDateTime();
 			}
 		});
 		
@@ -261,30 +261,30 @@ public class DatePicker extends JPanel
 			@Override
 			public void removeUpdate(@Nullable DocumentEvent e)
 			{
-				updateDateTime();
+				parseDateTime();
 			}
 			
 			@Override
 			public void insertUpdate(@Nullable DocumentEvent e)
 			{
-				updateDateTime();
+				parseDateTime();
 			}
 			
 			@Override
 			public void changedUpdate(@Nullable DocumentEvent e)
 			{
-				updateDateTime();
+				parseDateTime();
 			}
 		});
 	}
 
 	void setDate(LocalDate _newDate)
 	{
-		dateTime = _newDate.atTime(this.dateTime.toLocalTime());
+		dateTime = _newDate.atTime(dateTime.toLocalTime());
 		txtFieldDate.setText(dateTime.format(DATE_FORMAT));
 		newDatePickerPopup.setVisible(false);
 		popupVisibile = false;
-		updateDateTime();
+		parseDateTime();
 	}
 
 	void hidePopup()
@@ -296,11 +296,11 @@ public class DatePicker extends JPanel
 
 	public LocalDateTime getDateTime()
 	{
-		updateDateTime();
+		parseDateTime();
 		return dateTime;
 	}
 
-	private void updateDateTime()
+	private void parseDateTime()
 	{
 		LocalDateTime previousDateTime = dateTime;
 		boolean prevIsValid = containsValidDateTime;

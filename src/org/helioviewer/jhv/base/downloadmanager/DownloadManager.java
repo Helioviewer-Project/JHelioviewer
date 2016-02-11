@@ -75,10 +75,11 @@ public class DownloadManager
 								}
 								catch (Throwable e)
 								{
+									System.err.println(request.url);
+									e.printStackTrace();
+									
 									if(!request.cancelled)
 									{
-										System.err.println(request.url);
-										Telemetry.trackException(e);
 										if (request.justTriedShouldTryAgain())
 											addRequest(request);
 										else

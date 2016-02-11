@@ -54,6 +54,8 @@ public abstract class ImageLayer extends Layer
 	protected int cadence;
 	private boolean metadataInitialized=false;
 	
+	//FIXME: should respect innerRadius & outerRadius
+	
 	public void initializeMetadata(MetaData _md)
 	{
 		if(metadataInitialized)
@@ -173,10 +175,9 @@ public abstract class ImageLayer extends Layer
 		{
 			animateCameraToFacePlane=false;
 			
-			//FIXME: camera rotation not correct for COR1 & STEREO EUVI, ...
 			MainFrame.SINGLETON.MAIN_PANEL.addCameraAnimation(new CameraRotationAnimation(
 					MainFrame.SINGLETON.MAIN_PANEL,
-					MainFrame.SINGLETON.MAIN_PANEL.getRotationEnd().inversed().multiply(md.rotation.inversed())
+					MainFrame.SINGLETON.MAIN_PANEL.getRotationEnd().inversed().rotated(md.rotation.inversed())
 				));
 		}
 		
@@ -246,6 +247,7 @@ public abstract class ImageLayer extends Layer
 		gl.glUniform4f(gl.glGetUniformLocation(shaderprogram, "imageOffset"),
 				(float)sourceArea.getX(),
 				(float)sourceArea.getY(),
+				//TODO: removing this extra texel makes texture jump on resolution changes
 				(float)sourceArea.getWidth()/(_preparedImageData.texture.textureWidth-1f/_preparedImageData.texture.width),
 				(float)sourceArea.getHeight()/(_preparedImageData.texture.textureHeight-1f/_preparedImageData.texture.height)
 			);

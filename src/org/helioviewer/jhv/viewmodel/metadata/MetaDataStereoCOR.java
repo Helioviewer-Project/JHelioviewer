@@ -3,6 +3,7 @@ package org.helioviewer.jhv.viewmodel.metadata;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.physics.Constants;
+import org.helioviewer.jhv.layers.LUT;
 import org.w3c.dom.Document;
 
 class MetaDataStereoCOR extends MetaData
@@ -12,11 +13,9 @@ class MetaDataStereoCOR extends MetaData
 		super(_doc, "COR1".equalsIgnoreCase(get(_doc, "OBSRVTRY")) ? new Vector2i(512, 512) : new Vector2i(2048, 2048),
 				get(_doc, "OBSRVTRY"),
 				get(_doc, "WAVELNTH"),
-				get(_doc, "INSTRUME") + " " + get(_doc, "DETECTOR"),
+				get(_doc, "INSTRUME") + ("STEREO_A".equalsIgnoreCase(get(_doc, "OBSRVTRY")) ? "-A ":"-B ") + get(_doc, "DETECTOR"),
 				GROUP_FOR_OPACITY_CORONA_OUTSIDE);
 
-		//FIXME: pointing is wrong!!!
-		
 		Vector2d center = Vector2d.NULL;
 
 		// Convert arcsec to meters
@@ -35,6 +34,7 @@ class MetaDataStereoCOR extends MetaData
 			innerDefault = 1.36 * Constants.SUN_RADIUS;
 			outerDefault = 4.5 * Constants.SUN_RADIUS;
 			flatDistance = 4.5 * Constants.SUN_RADIUS;
+			defaultLUT = LUT.GREEN_WHITE_LINEAR;
 			
 			// HACK - manual adjustment for occulter center
 			center=center.add(new Vector2d(1,1));
@@ -44,6 +44,7 @@ class MetaDataStereoCOR extends MetaData
 			innerDefault = 2.4 * Constants.SUN_RADIUS;
 			outerDefault = 15.6 * Constants.SUN_RADIUS;
 			flatDistance = 15.75 * Constants.SUN_RADIUS;
+			defaultLUT = LUT.RED_TEMPERATURE;
 			
 			// HACK - manual adjustment for occulter center
 			center=center.add(new Vector2d(3,6));
@@ -53,6 +54,7 @@ class MetaDataStereoCOR extends MetaData
 			innerDefault = 1.5 * Constants.SUN_RADIUS;
 			outerDefault = 4.9 * Constants.SUN_RADIUS;
 			flatDistance = 4.95 * Constants.SUN_RADIUS;
+			defaultLUT = LUT.GREEN_WHITE_LINEAR;
 			
 			// HACK - manual adjustment for occulter center
 			center=center.add(new Vector2d(1,3));
@@ -62,6 +64,7 @@ class MetaDataStereoCOR extends MetaData
 			innerDefault = 3.25 * Constants.SUN_RADIUS;
 			outerDefault = 17 * Constants.SUN_RADIUS;
 			flatDistance = 18 * Constants.SUN_RADIUS;
+			defaultLUT = LUT.RED_TEMPERATURE;
 			
 			// HACK - manual adjustment for occulter center
 			center=center.add(new Vector2d(22,-37));

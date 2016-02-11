@@ -14,23 +14,32 @@ public class Quaternion
         return new Quaternion(Math.cos(_angle / 2), _axis.normalized().scaled(Math.sin(_angle / 2)));
     }
 
+    @Deprecated
     public Quaternion(double _a, Vector3d _u)
     {
         a = _a;
         u = _u;
     }
-
-    public Quaternion multiply(Quaternion _q)
+    
+    @Deprecated
+    public Quaternion(double _a, double _x,double _y,double _z)
     {
-        double ra = (a * _q.a - u.x * _q.u.x - u.y * _q.u.y - u.z * _q.u.z);
-        double rx = (a * _q.u.x + u.x * _q.a - u.y * _q.u.z + u.z * _q.u.y);
-        double ry = (a * _q.u.y + u.x * _q.u.z + u.y * _q.a - u.z * _q.u.x);
-        double rz = (a * _q.u.z - u.x * _q.u.y + u.y * _q.u.x + u.z * _q.a);
-        
-        return new Quaternion(ra, new Vector3d(rx, ry, rz));
+    	a=_a;
+    	u = new Vector3d(_x,_y,_z);
     }
 
-    public Matrix4d toMatrix()
+    public Quaternion(double _longitude, double _latitude)
+	{
+        double sinLong = Math.sin(_longitude/2);
+        double cosLong = Math.cos(_longitude/2);
+        double sinLat = Math.sin(_latitude/2);
+        double cosLat = Math.cos(_latitude/2);
+        
+        a = cosLat * cosLong;
+        u = new Vector3d(sinLat * cosLong, cosLat * sinLong, sinLat * sinLong);
+    }
+    	
+	public Matrix4d toMatrix()
     {
         double w = a, w2 = w * w;
         double x = u.x, x2 = x * x;
@@ -69,16 +78,71 @@ public class Quaternion
         return new Quaternion(a * _s, u.scaled(_s));
     }
 
-    public Quaternion rotate(Quaternion _q2)
+    public Quaternion multiply(Quaternion _q)
     {
-        double angle = a * _q2.a - u.x * _q2.u.x - u.y * _q2.u.y - u.z * _q2.u.z;
+    	double ra = (a * _q.a - u.x * _q.u.x - u.y * _q.u.y - u.z * _q.u.z);
+    	double rx = (a * _q.u.x + u.x * _q.a - u.y * _q.u.z + u.z * _q.u.y);
+    	double ry = (a * _q.u.y + u.x * _q.u.z + u.y * _q.a - u.z * _q.u.x);
+    	double rz = (a * _q.u.z - u.x * _q.u.y + u.y * _q.u.x + u.z * _q.a);
+    	
+    	return new Quaternion(ra, new Vector3d(rx, ry, rz));
+    }
+    
+    public Quaternion rotated(Quaternion _q)
+    {
+        double angle =
+        		a * _q.a - u.x * _q.u.x - u.y * _q.u.y - u.z * _q.u.z;
+        
         Vector3d axis = new Vector3d(
-                a * _q2.u.x + u.x * _q2.a + u.y * _q2.u.z - u.z * _q2.u.y,
-                a * _q2.u.y + u.y * _q2.a + u.z * _q2.u.x - u.x * _q2.u.z,
-                a * _q2.u.z + u.z * _q2.a + u.x * _q2.u.y - u.y * _q2.u.x);
+                a * _q.u.x + u.x * _q.a + u.y * _q.u.z - u.z * _q.u.y,
+                a * _q.u.y + u.y * _q.a + u.z * _q.u.x - u.x * _q.u.z,
+                a * _q.u.z + u.z * _q.a + u.x * _q.u.y - u.y * _q.u.x);
        	
         return new Quaternion(angle, axis).normalized();
     }
+    
+    public Vector3d toEuler()
+    {
+     	return new Vector3d( 
+     		Math.atan2(2 * (a * u.x + u.y * u.z), 1 - 2 * (u.x * u.x + u.y * u.y)),
+     		Math.asin(2 * (a * u.y - u.z * u.x)),
+     		Math.atan2(2 * (a * u.z + u.x * u.y), 1 - 2 * (u.y * u.y + u.z * u.z))
+     	);
+    }
+    
+    
+    public Quaternion powered(double _x)
+    {
+    	return ln().scaled(_x).exp();
+    }
+    
+	public Quaternion ln()
+    {
+		double r = Math.sqrt(u.x*u.x+u.y*u.y+u.z*u.z);
+		double t = r>0.00001 ? Math.atan2(r,a)/r: 0.f;
+		
+		return new Quaternion(
+				0.5f*Math.log(a*a+u.x*u.x+u.y*u.y+u.z*u.z),
+				u.x*t,
+				u.y*t,
+				u.z*t
+			);
+	}
+	
+	public Quaternion exp()
+	{
+		double r = Math.sqrt(u.x*u.x+u.y*u.y+u.z*u.z);
+		double et = Math.exp(a);
+		double s = r>=0.00001 ? et*Math.sin(r)/r: 0f;
+		
+		return new Quaternion(
+				et*Math.cos(r),
+				u.x*s,
+				u.y*s,
+				u.z*s
+			);
+	}
+
 
     public Quaternion slerp(Quaternion _r, double _t)
     {
@@ -150,6 +214,6 @@ public class Quaternion
 
     public String toString()
     {
-        return "[" + a + ", " + u.x + ", " + u.y + ", " + u.z + "]";
+    	return String.format("[%.3f, %.3f, %.3f, %.3f]", a,u.x,u.y,u.z);
     }
 }

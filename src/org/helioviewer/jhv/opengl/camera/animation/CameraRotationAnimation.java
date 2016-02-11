@@ -16,7 +16,7 @@ public class CameraRotationAnimation extends CameraAnimation
     {
     	super(_duration);
     	rotationDelta = _rotationDelta.normalized();
-    	_cam.setRotationEnd(_cam.getRotationEnd().rotate(_rotationDelta));
+    	_cam.setRotationEnd(_cam.getRotationEnd().rotated(_rotationDelta));
     }
 	
 	@Override
@@ -25,6 +25,6 @@ public class CameraRotationAnimation extends CameraAnimation
 		if(isFinished())
 			return;
 		
-		_cam.setRotationCurrent(_cam.getRotationCurrent().slerp(_cam.getRotationCurrent().rotate(rotationDelta), getAndResetTimeDelta()));
+		_cam.setRotationCurrent(_cam.getRotationCurrent().rotated(rotationDelta.powered(getAndResetTimeDelta())));
 	}
 }

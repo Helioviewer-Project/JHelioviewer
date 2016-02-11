@@ -60,6 +60,7 @@ import org.helioviewer.jhv.opengl.camera.CameraZoomBoxInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraZoomInteraction;
 import org.helioviewer.jhv.opengl.camera.animation.CameraAnimation;
 import org.helioviewer.jhv.viewmodel.TimeLine;
+import org.helioviewer.jhv.viewmodel.TimeLine.DecodeQualityLevel;
 import org.helioviewer.jhv.viewmodel.TimeLine.TimeLineListener;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 
@@ -255,7 +256,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			}
 		});
 
-		rotationNow = rotationEnd = Quaternion.createRotation(0.0, new Vector3d(0, 1, 0));
+		rotationNow = rotationEnd = Quaternion.IDENTITY;
 		translationNow = translationEnd = new Vector3d(0, 0, DEFAULT_DISTANCE);
 
 		cameraInteractionsLeft = new CameraInteraction[]
@@ -396,22 +397,6 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 		gl.glDepthMask(false);
 
-		while (!cameraAnimations.isEmpty() && cameraAnimations.get(0).isFinished())
-			cameraAnimations.remove(0);
-
-		if (!cameraAnimations.isEmpty())
-		{
-			for (CameraAnimation ca : cameraAnimations)
-				ca.animate(this);
-
-			//TODO: downgrade quality to HURRY temporarily
-			// render another new frame right after this one
-			repaint();
-		}
-
-		if (cameraTrackingEnabled)
-			updateTrackRotation();
-
 		boolean anyImageLayerVisible = false;
 		for (Layer layer : Layers.getLayers())
 			if (layer instanceof ImageLayer)
@@ -447,7 +432,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			for (Layer layer : Layers.getLayers())
 				if (layer.isVisible() && layer instanceof ImageLayer)
 					layers.put((ImageLayer) layer,
-							((ImageLayer) layer).prepareImageData(this, TimeLine.SINGLETON.shouldHurry(), sizeForDecoder, gl.getContext()));
+							((ImageLayer) layer).prepareImageData(this, shouldHurry(), sizeForDecoder, gl.getContext()));
 			
 			//TODO: render in finishing order
 			for (Entry<ImageLayer, Future<PreparedImage>> l : layers.entrySet())
@@ -615,6 +600,14 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			componentView.repaint();
 	}
 	
+	protected DecodeQualityLevel shouldHurry()
+	{
+		if(!cameraAnimations.isEmpty())
+			return DecodeQualityLevel.HURRY;
+		
+		return TimeLine.SINGLETON.shouldHurry();
+	}
+	
 	//int tmp[] = new int[1];
 
 	@Override
@@ -623,9 +616,22 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		if(_drawable==null)
 			return;
 		
-		Dimension sizeForDecoder = getCanavasSize();
+		while (!cameraAnimations.isEmpty() && cameraAnimations.get(0).isFinished())
+			cameraAnimations.remove(0);
 
-		switch(TimeLine.SINGLETON.shouldHurry())
+		if (!cameraAnimations.isEmpty())
+		{
+			for (CameraAnimation ca : cameraAnimations)
+				ca.animate(this);
+
+			repaint();
+		}
+		
+		if (cameraTrackingEnabled)
+			updateTrackRotation();
+		
+		Dimension sizeForDecoder = getCanavasSize();
+		switch(shouldHurry())
 		{
 			case QUALITY:
 				break;
@@ -672,11 +678,10 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			HeliographicCoordinate newCoord = new HeliocentricCartesianCoordinate(hitPoint.x, hitPoint.y, hitPoint.z).toHeliographicCoordinate();
 			double angle = DifferentialRotation.calculateRotationInRadians(newCoord.latitude, difference);
 			
-			//FIXME: wrong for stereo
-			Quaternion newRotation = Quaternion.createRotation(angle, new Vector3d(0, 1, 0)).rotate(rotationNow);
+			Quaternion newRotation = Quaternion.createRotation(angle, new Vector3d(0, 1, 0)).rotated(rotationNow);
 			if (CameraMode.mode == MODE.MODE_3D)
 			{
-				rotationEnd = Quaternion.createRotation(angle, new Vector3d(0, 1, 0)).rotate(rotationEnd);
+				rotationEnd = Quaternion.createRotation(angle, new Vector3d(0, 1, 0)).rotated(rotationEnd);
 				rotationNow = newRotation;
 			}
 			else

@@ -3,6 +3,7 @@ package org.helioviewer.jhv.viewmodel.metadata;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.base.physics.Constants;
+import org.helioviewer.jhv.layers.LUT;
 import org.w3c.dom.Document;
 
 class MetaDataLASCO extends MetaData
@@ -23,12 +24,14 @@ class MetaDataLASCO extends MetaData
 				outerDefault = 8.0 * Constants.SUN_RADIUS;
 				flatDistance = 6.2 * Constants.SUN_RADIUS;
 				solarPixelRadius = new Vector2d(80.814221, 80.814221);
+				defaultLUT = LUT.RED_TEMPERATURE;
 				break;
 			case "C3":
 				innerDefault = 4.4 * Constants.SUN_RADIUS;
 				outerDefault = 31.5 * Constants.SUN_RADIUS;
 				flatDistance = 38 * Constants.SUN_RADIUS;
 				solarPixelRadius = new Vector2d(17.173021, 17.173021);
+				defaultLUT = LUT.BLUE_WHITE_LINEAR;
 				break;
 			default:
 				throw new UnsuitableMetaDataException("invalid instrument: " + instrument + "/" + detector);

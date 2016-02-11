@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -23,8 +24,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JViewport;
 import javax.swing.KeyStroke;
 import javax.swing.ListCellRenderer;
+import javax.swing.SwingUtilities;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -47,22 +50,22 @@ import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import javax.swing.border.EmptyBorder;
 
 /**
  * Dialog that is used to display meta data for an image.
  */
-public class MetaDataDialog extends JDialog
+public class MetaDataDialog extends JDialog implements TimeLineListener, LayerListener
 {
 	private final JButton closeButton = new JButton("Close");
 	private final JButton exportFitsButton = new JButton("Export FITS header as XML");
 
-	private List<String> infoList = new ArrayList<>();
-	private JList<String> listBox = new JList<>();
-	private boolean metaDataOK;
+	private JTextArea listBox = new JTextArea();
 	private @Nullable String outFileName;
 	JScrollPane listScroller;
 
 	private @Nullable Document xmlDoc;
+	private final JPanel panel = new JPanel();
 
 	public MetaDataDialog()
 	{
@@ -70,34 +73,28 @@ public class MetaDataDialog extends JDialog
 
 		Telemetry.trackEvent("Dialog", "Type", getClass().getSimpleName());
 
-		setLayout(new BorderLayout());
-		setResizable(false);
-
-		listBox.setFont(new Font("Courier", Font.PLAIN, 12));
-
-		listBox.setCellRenderer(new ListCellRenderer<Object>()
-		{
-			public Component getListCellRendererComponent(@Nullable JList<?> list, @Nullable Object value, int index,
-					boolean isSelected, boolean cellHasFocus)
-			{
-				JTextArea textArea = new JTextArea(value.toString().trim());
-				textArea.setLineWrap(true);
-				textArea.setEditable(false);
-				textArea.setWrapStyleWord(true);
-				textArea.setFont(list.getFont());
-				return textArea;
-			}
-		});
+		getContentPane().setLayout(new BorderLayout());
 
 		JPanel bottomPanel = new JPanel();
-		bottomPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		FlowLayout fl_bottomPanel = new FlowLayout(FlowLayout.RIGHT);
+		fl_bottomPanel.setVgap(10);
+		fl_bottomPanel.setHgap(10);
+		bottomPanel.setLayout(fl_bottomPanel);
 		bottomPanel.add(exportFitsButton);
 		// bottomPanel.add(exportButton);
 		bottomPanel.add(closeButton);
+		panel.setBorder(new EmptyBorder(10, 10, 0, 10));
+		
+		getContentPane().add(panel, BorderLayout.CENTER);
+				panel.setLayout(new BorderLayout(0, 0));
+		
+				listBox.setLineWrap(true);
+				listBox.setEditable(false);
+				listBox.setWrapStyleWord(true);
 
 		listScroller = new JScrollPane(listBox);
-		add(listScroller, BorderLayout.CENTER);
-		add(bottomPanel, BorderLayout.PAGE_END);
+		panel.add(listScroller);
+		getContentPane().add(bottomPanel, BorderLayout.PAGE_END);
 
 		// add action listeners to the buttons
 		closeButton.addActionListener(new ActionListener()
@@ -130,43 +127,8 @@ public class MetaDataDialog extends JDialog
 		});
 
 		// exportButton.addActionListener(this);
-		pack();
-		Layers.addLayerListener(new LayerListener()
-		{
-			@Override
-			public void layersRemoved()
-			{
-			}
-
-			@Override
-			public void layerAdded()
-			{
-			}
-
-			@Override
-			public void activeLayerChanged(@Nullable Layer _newLayer)
-			{
-				updateData();
-			}
-		});
-		TimeLine.SINGLETON.addListener(new TimeLineListener()
-		{
-			@Override
-			public void timeStampChanged(LocalDateTime current, LocalDateTime last)
-			{
-				updateData();
-			}
-
-			@Override
-			public void isPlayingChanged(boolean _isPlaying)
-			{
-			}
-
-			@Override
-			public void timeRangeChanged(LocalDateTime _start, LocalDateTime _end)
-			{
-			}
-		});
+		Layers.addLayerListener(this);
+		TimeLine.SINGLETON.addListener(this);
 		setLocationRelativeTo(MainFrame.SINGLETON);
 
 		updateData();
@@ -180,15 +142,59 @@ public class MetaDataDialog extends JDialog
 			}
 		}, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-		pack();
-		setSize(450, 600);
+		setSize(649, 719);
 
 		setLocationRelativeTo(MainFrame.SINGLETON);
 		setVisible(true);
 	}
+	
+	@Override
+	public void dispose()
+	{
+		super.dispose();
+		Layers.removeLayerListener(this);
+		TimeLine.SINGLETON.removeListener(this);
+	}
+	
+	@Override
+	public void layersRemoved()
+	{
+	}
+
+	@Override
+	public void layerAdded()
+	{
+	}
+
+	@Override
+	public void activeLayerChanged(@Nullable Layer _newLayer)
+	{
+		updateData();
+	}
+	
+	@Override
+	public void timeStampChanged(LocalDateTime current, LocalDateTime last)
+	{
+		updateData();
+	}
+
+	@Override
+	public void isPlayingChanged(boolean _isPlaying)
+	{
+	}
+
+	@Override
+	public void timeRangeChanged(LocalDateTime _start, LocalDateTime _end)
+	{
+	}
 
 	private void updateData()
 	{
+		final Point oldPoint = listScroller.getViewport().getViewPosition();
+		
+		data.setLength(0);
+		exportFitsButton.setEnabled(false);
+		
 		ImageLayer il = Layers.getActiveImageLayer();
 		if (il != null)
 		{
@@ -196,59 +202,40 @@ public class MetaDataDialog extends JDialog
 			Document doc = il.getMetaDataDocument(TimeLine.SINGLETON.getCurrentDateTime());
 
 			if (md != null && doc != null)
-				showData(md, doc);
-			else
 			{
-				clearData();
-				addDataItem("Metadata not available.");
+				readData(md, doc);
+				exportFitsButton.setEnabled(true);
 			}
+			else
+				addLine("Metadata not available.");
 		}
-		else
-			clearData();
+		
+		listBox.setText(data.toString());
+		
+		SwingUtilities.invokeLater(() -> listScroller.getViewport().setViewPosition(oldPoint));
+	}
+	
+	private StringBuilder data=new StringBuilder();
+
+	private void addLine(String _item)
+	{
+		if(data.length()>0)
+			data.append('\n');
+
+		data.append(_item);
 	}
 
-	private void clearData()
+	private void readData(@Nonnull MetaData metaData, @Nonnull Document doc)
 	{
-		infoList.clear();
-
-		// update the listBox
-		listBox.setListData(infoList.toArray(new String[0]));
-
-		// set the status of export button
-		if (!metaDataOK)
-			exportFitsButton.setEnabled(false);
-		else
-			exportFitsButton.setEnabled(true);
-	}
-
-	/**
-	 * Adds a data item to the list
-	 * 
-	 * @param _item
-	 *            New item to add
-	 * @see #setMetaData(MetaDataView)
-	 */
-	public void addDataItem(String _item)
-	{
-		infoList.add(_item);
-
-		// update the listBox
-		listBox.setListData(infoList.toArray(new String[0]));
-	}
-
-	private void showData(@Nonnull MetaData metaData, @Nonnull Document doc)
-	{
-		metaDataOK = true;
-		clearData();
-		addDataItem("-------------------------------");
-		addDataItem("       Basic Information       ");
-		addDataItem("-------------------------------");
-		addDataItem("Observatory : " + metaData.observatory);
-		addDataItem("Instrument  : " + metaData.instrument);
-		addDataItem("Detector    : " + metaData.detector);
-		addDataItem("Measurement : " + metaData.measurement);
-		addDataItem("Date        : " + metaData.localDateTime.toLocalDate());
-		addDataItem("Time        : " + metaData.localDateTime.toLocalTime());
+		addLine("-------------------------------");
+		addLine("       Basic Information       ");
+		addLine("-------------------------------");
+		addLine("Observatory : " + metaData.observatory);
+		addLine("Instrument  : " + metaData.instrument);
+		addLine("Detector    : " + metaData.detector);
+		addLine("Measurement : " + metaData.measurement);
+		addLine("Date        : " + metaData.localDateTime.toLocalDate());
+		addLine("Time        : " + metaData.localDateTime.toLocalTime());
 
 		// Send xml data to meta data dialog box
 		Node root = doc.getDocumentElement().getElementsByTagName("fits").item(0);
@@ -287,18 +274,18 @@ public class MetaDataDialog extends JDialog
 		switch (nodeName)
 		{
 			case "fits":
-				addDataItem("-------------------------------");
-				addDataItem("          FITS Header");
-				addDataItem("-------------------------------");
+				addLine("-------------------------------");
+				addLine("          FITS Header");
+				addLine("-------------------------------");
 				break;
 			case "helioviewer":
-				addDataItem("-------------------------------");
-				addDataItem("      Helioviewer Header");
-				addDataItem("-------------------------------");
+				addLine("-------------------------------");
+				addLine("      Helioviewer Header");
+				addLine("-------------------------------");
 				break;
 			default:
 				String tab = new String(new char[indent]).replace((char) 0, '\t');
-				addDataItem(tab + nodeName + ": " + nodeValue);
+				addLine(tab + nodeName + ": " + nodeValue);
 				break;
 		}
 

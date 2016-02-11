@@ -5,13 +5,19 @@ import java.awt.event.ActionEvent;
 import javax.annotation.Nullable;
 import javax.swing.AbstractAction;
 
+import org.helioviewer.jhv.base.math.Quaternion;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.gui.IconBank;
+import org.helioviewer.jhv.gui.LayerPanel;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
+import org.helioviewer.jhv.layers.ImageLayer;
+import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.opengl.camera.animation.CameraRotationAnimation;
 import org.helioviewer.jhv.opengl.camera.animation.CameraTranslationAnimation;
+import org.helioviewer.jhv.viewmodel.TimeLine;
+import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 
 public class ResetCameraAction extends AbstractAction
 {
@@ -26,7 +32,19 @@ public class ResetCameraAction extends AbstractAction
 
     public void actionPerformed(@Nullable ActionEvent e)
     {
-		MainFrame.SINGLETON.MAIN_PANEL.addCameraAnimation(new CameraRotationAnimation(MainFrame.SINGLETON.MAIN_PANEL,MainFrame.SINGLETON.MAIN_PANEL.getRotationEnd().inversed()));
+    	ImageLayer il=Layers.getActiveImageLayer();
+    	Quaternion destRotation=Quaternion.IDENTITY;
+    	if(il!=null)
+    	{
+    		MetaData md=il.getMetaData(TimeLine.SINGLETON.getCurrentDateTime());
+    		if(md!=null)
+    			destRotation=md.rotation;
+    	}
+    	
+		MainFrame.SINGLETON.MAIN_PANEL.addCameraAnimation(new CameraRotationAnimation(
+				MainFrame.SINGLETON.MAIN_PANEL,
+				MainFrame.SINGLETON.MAIN_PANEL.getRotationEnd().inversed().rotated(destRotation.inversed())
+		));
 		MainFrame.SINGLETON.MAIN_PANEL.addCameraAnimation(new CameraTranslationAnimation(
 				MainFrame.SINGLETON.MAIN_PANEL,
 				new Vector3d(0, 0, MainPanel.DEFAULT_DISTANCE)

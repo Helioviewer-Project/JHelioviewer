@@ -24,7 +24,7 @@ public class Layers
 	static void updateOpacities(ImageLayer _layer, boolean remove)
 	{
 		List<ImageLayer> affected = new ArrayList<ImageLayer>(layers.size());
-		
+		//FIXME: test & fix opacity calculation
 		double rSum=0;
 		double gSum=0;
 		double bSum=0;
@@ -171,9 +171,15 @@ public class Layers
 			renderListener.layersRemoved();
 	}
 
-	public static void addLayerListener(LayerListener renderListener)
+	public static void addLayerListener(LayerListener _layerListener)
 	{
-		layerListeners.add(renderListener);
+		//TODO: 99% of all listeners won't be removed --> check all callsites
+		layerListeners.add(_layerListener);
+	}
+	
+	public static void removeLayerListener(LayerListener _layerListener)
+	{
+		layerListeners.remove(_layerListener);
 	}
 
 	public static boolean anyImageLayers()

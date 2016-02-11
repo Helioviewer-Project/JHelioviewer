@@ -1,5 +1,6 @@
 package org.helioviewer.jhv.base;
 
+import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -63,13 +64,25 @@ public class Observatories
 					{
 						break;
 					}
+					catch(UnknownHostException _uhe)
+					{
+						System.err.println("Observatories: Unknown host exception "+_uhe.getMessage());
+						try
+						{
+							Thread.sleep(4000);
+						}
+						catch(InterruptedException _ie)
+						{
+							break;
+						}
+					}
 					catch (Throwable _e)
 					{
 						Telemetry.trackException(_e);
 						
 						try
 						{
-							Thread.sleep(1000);
+							Thread.sleep(4000);
 						}
 						catch(InterruptedException _ie)
 						{

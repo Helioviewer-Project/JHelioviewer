@@ -42,10 +42,15 @@ public class FilterPanel extends JPanel
 	private JToggleButton green;
 	private JToggleButton blue;
 	private JToggleButton btnInverseColorTable;
-	private JLabel lblOpacity, lblSharpen, lblGamma, lblContrast;
+	private JLabel lblOpacity, lblSharpen, lblGamma, lblContrast, lblOpacityTitle;
 	private JToggleButton coronaVisibilityButton;
 
 	private @Nullable Layer activeLayer;
+	private JLabel lblSharpenTitle;
+	private JLabel lblGammaTitle;
+	private JLabel lblContrastTitle;
+	private JLabel lblColorTitle;
+	private JLabel lblChannelsTitle;
 	private static final double GAMMA_FACTOR = 0.01 * Math.log(10);
 
 	private static final Icon ICON_INVERT = IconBank.getIcon(JHVIcon.INVERT, 16, 16);
@@ -60,7 +65,7 @@ public class FilterPanel extends JPanel
 		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 						
-								JLabel lblOpacityTitle = new JLabel("Opacity");
+								lblOpacityTitle = new JLabel("Opacity");
 								GridBagConstraints gbc_lblOpacityTitle = new GridBagConstraints();
 								gbc_lblOpacityTitle.fill = GridBagConstraints.HORIZONTAL;
 								gbc_lblOpacityTitle.insets = new Insets(0, 0, 5, 5);
@@ -69,11 +74,11 @@ public class FilterPanel extends JPanel
 								add(lblOpacityTitle, gbc_lblOpacityTitle);
 				
 						opacitySlider = new JSlider();
+						lblOpacityTitle.setLabelFor(opacitySlider);
 						opacitySlider.setValue(100);
 						opacitySlider.setMinorTickSpacing(20);
 						opacitySlider.setPaintTicks(true);
 						GridBagConstraints gbc_opacitySlider = new GridBagConstraints();
-						gbc_opacitySlider.anchor = GridBagConstraints.NORTH;
 						gbc_opacitySlider.fill = GridBagConstraints.HORIZONTAL;
 						gbc_opacitySlider.insets = new Insets(0, 0, 5, 5);
 						gbc_opacitySlider.gridwidth = 4;
@@ -112,7 +117,7 @@ public class FilterPanel extends JPanel
 								gbc_lblOpacity.gridy = 0;
 								add(lblOpacity, gbc_lblOpacity);
 						
-								JLabel lblSharpenTitle = new JLabel("Sharpen");
+								lblSharpenTitle = new JLabel("Sharpen");
 								GridBagConstraints gbc_lblSharpenTitle = new GridBagConstraints();
 								gbc_lblSharpenTitle.fill = GridBagConstraints.HORIZONTAL;
 								gbc_lblSharpenTitle.insets = new Insets(0, 0, 5, 5);
@@ -121,11 +126,11 @@ public class FilterPanel extends JPanel
 								add(lblSharpenTitle, gbc_lblSharpenTitle);
 				
 						sharpenSlider = new JSlider();
+						lblSharpenTitle.setLabelFor(sharpenSlider);
 						sharpenSlider.setValue(0);
 						sharpenSlider.setMinorTickSpacing(20);
 						sharpenSlider.setPaintTicks(true);
 						GridBagConstraints gbc_sharpenSlider = new GridBagConstraints();
-						gbc_sharpenSlider.anchor = GridBagConstraints.NORTH;
 						gbc_sharpenSlider.fill = GridBagConstraints.HORIZONTAL;
 						gbc_sharpenSlider.insets = new Insets(0, 0, 5, 5);
 						gbc_sharpenSlider.gridwidth = 4;
@@ -162,7 +167,7 @@ public class FilterPanel extends JPanel
 						gbc_lblSharpen.gridy = 1;
 						add(lblSharpen, gbc_lblSharpen);
 						
-								JLabel lblGammaTitle = new JLabel("Gamma");
+								lblGammaTitle = new JLabel("Gamma");
 								GridBagConstraints gbc_lblGammaTitle = new GridBagConstraints();
 								gbc_lblGammaTitle.fill = GridBagConstraints.HORIZONTAL;
 								gbc_lblGammaTitle.insets = new Insets(0, 0, 5, 5);
@@ -171,11 +176,11 @@ public class FilterPanel extends JPanel
 								add(lblGammaTitle, gbc_lblGammaTitle);
 				
 						gammaSlider = new JSlider(JSlider.HORIZONTAL, -100, 100, 0);
+						lblGammaTitle.setLabelFor(gammaSlider);
 						gammaSlider.setMinorTickSpacing(20);
 						gammaSlider.setPaintTicks(true);
 						gammaSlider.setValue(0);
 						GridBagConstraints gbc_gammaSlider = new GridBagConstraints();
-						gbc_gammaSlider.anchor = GridBagConstraints.NORTH;
 						gbc_gammaSlider.fill = GridBagConstraints.HORIZONTAL;
 						gbc_gammaSlider.insets = new Insets(0, 0, 5, 5);
 						gbc_gammaSlider.gridwidth = 4;
@@ -220,7 +225,7 @@ public class FilterPanel extends JPanel
 						gbc_lblGamma.gridy = 2;
 						add(lblGamma, gbc_lblGamma);
 				
-						JLabel lblContrastTitle = new JLabel("Contrast");
+						lblContrastTitle = new JLabel("Contrast");
 						GridBagConstraints gbc_lblContrastTitle = new GridBagConstraints();
 						gbc_lblContrastTitle.fill = GridBagConstraints.HORIZONTAL;
 						gbc_lblContrastTitle.insets = new Insets(0, 0, 5, 5);
@@ -229,13 +234,13 @@ public class FilterPanel extends JPanel
 						add(lblContrastTitle, gbc_lblContrastTitle);
 		
 				contrastSlider = new JSlider();
+				lblContrastTitle.setLabelFor(contrastSlider);
 				contrastSlider.setMinorTickSpacing(20);
 				contrastSlider.setPaintTicks(true);
 				contrastSlider.setMaximum(100);
 				contrastSlider.setMinimum(-100);
 				contrastSlider.setValue(0);
 				GridBagConstraints gbc_contrastSlider = new GridBagConstraints();
-				gbc_contrastSlider.anchor = GridBagConstraints.NORTH;
 				gbc_contrastSlider.fill = GridBagConstraints.HORIZONTAL;
 				gbc_contrastSlider.insets = new Insets(0, 0, 5, 5);
 				gbc_contrastSlider.gridwidth = 4;
@@ -274,7 +279,7 @@ public class FilterPanel extends JPanel
 										gbc_lblContrast.gridy = 3;
 										add(lblContrast, gbc_lblContrast);
 						
-								JLabel lblColorTitle = new JLabel("Color");
+								lblColorTitle = new JLabel("Color");
 								GridBagConstraints gbc_lblColorTitle = new GridBagConstraints();
 								gbc_lblColorTitle.fill = GridBagConstraints.HORIZONTAL;
 								gbc_lblColorTitle.insets = new Insets(0, 0, 5, 5);
@@ -283,6 +288,7 @@ public class FilterPanel extends JPanel
 								add(lblColorTitle, gbc_lblColorTitle);
 						
 								comboBoxColorTable = new JComboBox<LUT>();
+								lblColorTitle.setLabelFor(comboBoxColorTable);
 								comboBoxColorTable.setModel(new DefaultComboBoxModel<>(LUT.values()));
 								comboBoxColorTable.setSelectedItem(LUT.GRAY);
 								GridBagConstraints gbc_comboBoxColorTable = new GridBagConstraints();
@@ -305,7 +311,7 @@ public class FilterPanel extends JPanel
 									}
 								});
 						
-								JLabel lblChannelsTitle = new JLabel("Channels");
+								lblChannelsTitle = new JLabel("Channels");
 								GridBagConstraints gbc_lblChannelsTitle = new GridBagConstraints();
 								gbc_lblChannelsTitle.fill = GridBagConstraints.HORIZONTAL;
 								gbc_lblChannelsTitle.insets = new Insets(0, 0, 0, 5);
@@ -499,15 +505,20 @@ public class FilterPanel extends JPanel
 		
 		if(activeLayer != null && activeLayer.supportsFilterContrastGamma())
 		{
+			lblColorTitle.setEnabled(true);
+			lblContrast.setEnabled(true);
 			contrastSlider.setEnabled(true);
 			contrastSlider.setValue((int) (activeLayer.contrast * 10));
 			
+			lblGammaTitle.setEnabled(true);
+			lblGamma.setEnabled(true);
 			gammaSlider.setEnabled(true);
 			gammaSlider.setValue((int) (Math.log(activeLayer.gamma) / GAMMA_FACTOR));
 		}
 		
 		if(activeLayer != null && activeLayer.supportsFilterCorona())
 		{
+			lblChannelsTitle.setEnabled(true);
 			coronaVisibilityButton.setEnabled(true);
 			coronaVisibilityButton.setSelected(activeLayer.isCoronaVisible());
 		}
@@ -516,6 +527,7 @@ public class FilterPanel extends JPanel
 		
 		if(activeLayer != null && activeLayer.supportsFilterLUT())
 		{
+			lblChannelsTitle.setEnabled(true);
 			comboBoxColorTable.setEnabled(true);
 			comboBoxColorTable.setSelectedItem(activeLayer.getLUT());
 			
@@ -527,12 +539,16 @@ public class FilterPanel extends JPanel
 		
 		if(activeLayer != null && activeLayer.supportsFilterOpacity())
 		{
+			lblOpacityTitle.setEnabled(true);
+			lblOpacity.setEnabled(true);
 			opacitySlider.setEnabled(true);
 			opacitySlider.setValue((int) (activeLayer.opacity * 100));
 		}
 		
 		if(activeLayer != null && activeLayer.supportsFilterRGB())
 		{
+			lblChannelsTitle.setEnabled(true);
+			
 			red.setEnabled(true);
 			green.setEnabled(true);
 			blue.setEnabled(true);
@@ -550,6 +566,8 @@ public class FilterPanel extends JPanel
 		
 		if(activeLayer != null && activeLayer.supportsFilterSharpness())
 		{
+			lblSharpenTitle.setEnabled(true);
+			lblSharpen.setEnabled(true);
 			sharpenSlider.setEnabled(true);
 			sharpenSlider.setValue((int) (activeLayer.sharpness * 100));
 		}
