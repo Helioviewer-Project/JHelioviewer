@@ -68,10 +68,12 @@ public abstract class MetaData
     public final double stonyhurstLatitude;
     public final boolean stonyhurstAvailable;
 
-    
     public static final int GROUP_FOR_OPACITY_SUN = 1;
     public static final int GROUP_FOR_OPACITY_CORONA_SMALL = 2;
     public static final int GROUP_FOR_OPACITY_CORONA_OUTSIDE = 4;
+    
+    public static final int[] OPACITY_GROUPS = new int[]{GROUP_FOR_OPACITY_SUN, GROUP_FOR_OPACITY_CORONA_SMALL, GROUP_FOR_OPACITY_CORONA_OUTSIDE};
+    	    
 	public final int groupForOpacity;
     
 	public MetaData(Document _doc, Vector2i _defaultResolution, @Nullable String _observatory, @Nullable String _measurement, @Nullable String _displayName, int _groupForOpacity)
@@ -178,10 +180,10 @@ public abstract class MetaData
         {
         	rotation = new Quaternion(
         			Math.toRadians( sunPosition.getLongitude() - stonyhurstLongitude),
-        			Math.toRadians(-stonyhurstLatitude));
+        			Math.toRadians(-stonyhurstLatitude)-sunPosition.getDec());
         }
         else
-        	rotation = new Quaternion(0, sunPosition.getDec());
+        	rotation = new Quaternion(0, 0);
         
 		maskRotation = Math.toRadians(tryGetDouble(_doc, "CROTA"));
     }

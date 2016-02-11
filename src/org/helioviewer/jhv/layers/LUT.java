@@ -115,7 +115,7 @@ public enum LUT
 					sumB+=b;
 				}
 				
-				l.avgColor=new Color(Math.min((int)(1*sumR/w),maxR),Math.min((int)(1*sumG/w),maxG),Math.min((int)(1*sumB/w),maxB));
+				l.avgColor=new Color(Math.min((int)(1.5*sumR/w),maxR),Math.min((int)(1.5*sumG/w),maxG),Math.min((int)(1.5*sumB/w),maxB));
 			}
 		}
 		catch (IOException e)

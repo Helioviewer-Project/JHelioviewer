@@ -21,81 +21,6 @@ public class Layers
 	private static ArrayList<Layer> layers = new ArrayList<>();
 	private static int activeLayerIndex = -1;
 
-	static void updateOpacities(ImageLayer _layer, boolean remove)
-	{
-		List<ImageLayer> affected = new ArrayList<ImageLayer>(layers.size());
-		//FIXME: test & fix opacity calculation
-		double rSum=0;
-		double gSum=0;
-		double bSum=0;
-		for (Layer l : layers)
-			if(l != _layer)
-				if (l instanceof ImageLayer)
-				{
-					ImageLayer il=(ImageLayer)l;
-					LUT lut=il.lut;
-					if(il.isMetadataInitialized() && lut!=null)
-						if((il.getGroupForOpacity() & _layer.getGroupForOpacity()) != 0)
-						{
-							if(il.redChannel)
-								rSum += lut.getAvgColor().getRed()*il.opacity;
-							if(il.greenChannel)
-								gSum += lut.getAvgColor().getGreen()*il.opacity;
-							if(il.blueChannel)
-								bSum += lut.getAvgColor().getBlue()*il.opacity;
-							
-							affected.add(il);
-						}
-				}
-		
-		if(!remove)
-		{
-			rSum *= affected.size();
-			gSum *= affected.size();
-			bSum *= affected.size();
-			for(ImageLayer l : affected)
-				l.opacity *= affected.size();
-			
-			if(_layer.redChannel)
-				rSum += _layer.lut.getAvgColor().getRed()*_layer.opacity;
-			if(_layer.greenChannel)
-				gSum += _layer.lut.getAvgColor().getGreen()*_layer.opacity;
-			if(_layer.blueChannel)
-				bSum += _layer.lut.getAvgColor().getBlue()*_layer.opacity;
-			
-			if(rSum==0 && gSum==0 && bSum==0)
-				return;
-			
-			double scale=255d/MathUtils.max(rSum,gSum,bSum);
-			if(scale>1)
-				scale=1;
-			
-			for(ImageLayer l : affected)
-				l.opacity *= Math.min(1d/affected.size(), scale);
-			_layer.opacity *= scale;
-		}
-		else
-		{
-			rSum *= affected.size();
-			gSum *= affected.size();
-			bSum *= affected.size();
-			for(ImageLayer l : affected)
-				l.opacity *= affected.size();
-			
-			if(rSum==0 && gSum==0 && bSum==0)
-				return;
-			
-			double scale=1/MathUtils.max(rSum,gSum,bSum);
-			if(scale<1)
-				scale=1;
-			
-			for(ImageLayer l : affected)
-				l.opacity *= scale;
-		}
-		
-		MainFrame.SINGLETON.FILTER_PANEL.update();
-	}
-
 	public static void addLayer(Layer _newLayer)
 	{
 		layers.add(_newLayer);
@@ -156,8 +81,6 @@ public class Layers
 			return;
 		
 		ImageLayer.newRenderPassStarted();
-		
-		updateOpacities((ImageLayer)layers.get(_idx), true);
 		
 		layers.get(_idx).dispose();
 		layers.remove(_idx);

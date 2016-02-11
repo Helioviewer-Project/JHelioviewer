@@ -65,8 +65,6 @@ public abstract class ImageLayer extends Layer
 		
 		setLUT(_md.getDefaultLUT());
 		groupForOpacity = _md.groupForOpacity;
-		
-		Layers.updateOpacities(this, false);
 	}
 	
 	public boolean isMetadataInitialized()
@@ -161,7 +159,7 @@ public abstract class ImageLayer extends Layer
 			textures.add(new Texture(gl));
 	}
 	
-	public RenderResult renderLayer(GL2 gl, MainPanel mainPanel, PreparedImage _preparedImageData)
+	public RenderResult renderLayer(GL2 gl, MainPanel mainPanel, PreparedImage _preparedImageData, float _opacityScaling)
 	{
 		LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
 		MetaData md=getMetaData(currentDateTime);
@@ -213,12 +211,12 @@ public abstract class ImageLayer extends Layer
 		gl.glEnable(GL2.GL_DEPTH_TEST);
 		gl.glDepthFunc(GL2.GL_ALWAYS);
 		gl.glDepthMask(true);
-		renderWithShader(gl, mainPanel, shaderSphere, _preparedImageData, md, opacityCorona, xSunOffset, ySunOffset, transformation);
+		renderWithShader(gl, mainPanel, shaderSphere, _preparedImageData, md, _opacityScaling, opacityCorona, xSunOffset, ySunOffset, transformation);
 		
 		gl.glDepthFunc(GL2.GL_LEQUAL);
 		gl.glDepthMask(false);
 		if(opacityCorona>0)
-			renderWithShader(gl, mainPanel, shaderCorona, _preparedImageData, md, opacityCorona, xSunOffset, ySunOffset, transformation);
+			renderWithShader(gl, mainPanel, shaderCorona, _preparedImageData, md, _opacityScaling, opacityCorona, xSunOffset, ySunOffset, transformation);
 		
 		gl.glUseProgram(0);
 		gl.glActiveTexture(GL.GL_TEXTURE0);
@@ -229,7 +227,9 @@ public abstract class ImageLayer extends Layer
 		return RenderResult.OK;
 	}
 	
-	private void renderWithShader(GL2 gl, MainPanel mainPanel, int shaderprogram, PreparedImage _preparedImageData, MetaData md, float opacityCorona,
+	private void renderWithShader(GL2 gl, MainPanel mainPanel, int shaderprogram, PreparedImage _preparedImageData, MetaData md,
+			float _opacityScaling,
+			float opacityCorona,
 			float xSunOffset, float ySunOffset, Matrix4d _transformation)
 	{
 		gl.glUseProgram(shaderprogram);
@@ -252,7 +252,7 @@ public abstract class ImageLayer extends Layer
 				(float)sourceArea.getHeight()/(_preparedImageData.texture.textureHeight-1f/_preparedImageData.texture.height)
 			);
 		
-		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "opacity"), (float) opacity);
+		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "opacity"), (float) opacity * (float)_opacityScaling);
 		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "gamma"), (float) gamma);
 		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "sharpen"), (float) sharpness);
 		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "lutPosition"), getLUT().ordinal());

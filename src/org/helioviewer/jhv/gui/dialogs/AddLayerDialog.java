@@ -110,9 +110,7 @@ public class AddLayerDialog extends JDialog
 
 	public AddLayerDialog()
 	{
-		//FIXME: layout is broken for 4 filters (stereo, euvi)
 		//TODO: switching from stereo-a to stereo-b should keep filters
-		
 		
 		super(MainFrame.SINGLETON, "Add Layer", true);
 		setResizable(false);
@@ -196,6 +194,8 @@ public class AddLayerDialog extends JDialog
 					default:
 						break;
 				}
+				pack();
+
 				try
 				{
 					lblFilter.setText(observatory.getUiLabels().get(0));

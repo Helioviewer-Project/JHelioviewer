@@ -22,6 +22,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -42,6 +43,7 @@ import org.helioviewer.jhv.base.physics.DifferentialRotation;
 import org.helioviewer.jhv.gui.statusLabels.CameraListener;
 import org.helioviewer.jhv.gui.statusLabels.PanelMouseListener;
 import org.helioviewer.jhv.layers.ImageLayer;
+import org.helioviewer.jhv.layers.LUT;
 import org.helioviewer.jhv.layers.ImageLayer.PreparedImage;
 import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.LayerListener;
@@ -425,6 +427,36 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			
 			ImageLayer.ensureAppropriateTextureCacheSize(gl);
 			
+			
+			double maxScaling = 1;
+			for(int opacityGroup:MetaData.OPACITY_GROUPS)
+			{
+				double rSum=0;
+				double gSum=0;
+				double bSum=0;
+				for (Layer l : Layers.getLayers())
+					if (l instanceof ImageLayer)
+					{
+						ImageLayer il=(ImageLayer)l;
+						LUT lut=il.getLUT();
+						if(il.isVisible() && lut!=null)
+							if((il.getGroupForOpacity() & opacityGroup) != 0)
+								if(il.getCurrentTime()!=null)
+								{
+									if(il.redChannel)
+										rSum += lut.getAvgColor().getRed(); //*il.opacity; //<-- possible alternative
+									if(il.greenChannel)
+										gSum += lut.getAvgColor().getGreen(); //*il.opacity; //<-- possible alternative
+									if(il.blueChannel)
+										bSum += lut.getAvgColor().getBlue(); //*il.opacity; //<-- possible alternative
+								}
+					}
+				
+				maxScaling = Math.min(maxScaling, 255d/rSum);
+				maxScaling = Math.min(maxScaling, 255d/gSum);
+				maxScaling = Math.min(maxScaling, 255d/bSum);
+			}
+
 			//TODO: jumpstart decoding of overview region
 			//TODO: async texture upload
 			//TODO: jumpstart decoding of next frame
@@ -441,7 +473,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 					if (l.getValue().get() != null)
 					{
 						// RenderResult r =
-						l.getKey().renderLayer(gl, this, l.getValue().get());
+						l.getKey().renderLayer(gl, this, l.getValue().get(), (float)maxScaling);
 					}
 				}
 				catch (ExecutionException | InterruptedException _e)
