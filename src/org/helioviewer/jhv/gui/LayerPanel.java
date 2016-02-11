@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -15,6 +16,7 @@ import java.awt.event.MouseMotionAdapter;
 import java.time.LocalDateTime;
 
 import javax.annotation.Nullable;
+import javax.swing.DebugGraphics;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -22,6 +24,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
@@ -48,25 +51,33 @@ import org.helioviewer.jhv.viewmodel.TimeLine.TimeLineListener;
 public class LayerPanel extends JPanel implements LayerListener, TimeLineListener
 {
 	private static final int SIZE;
-	private static final ImageIcon ICON_REMOVE;
 	
 	private JTable table;
 	private LayerTableModel tableModel;
 	private static final String[] COLUMN_TITLES=new String[]{ "", "", "", "", "" };
+	
+	private static final ImageIcon ICON_REMOVE;
+	private static final ImageIcon ICON_REMOVE_INVERTED;
 	private static final ImageIcon[] LAYER_LOADING=new ImageIcon[8];
+	private static final ImageIcon[] LAYER_LOADING_INVERTED=new ImageIcon[8];
 
 	static
 	{
 		SIZE = new JLabel("Wy").getPreferredSize().height;
 		ICON_REMOVE = IconBank.getIcon(JHVIcon.REMOVE_NEW, SIZE, SIZE);
+		ICON_REMOVE_INVERTED = IconBank.getIcon(JHVIcon.REMOVE_NEW, SIZE, SIZE, 0, true);
 		
 		for(int i=0;i<LAYER_LOADING.length;i++)
+		{
 			LAYER_LOADING[i]=IconBank.getIcon(JHVIcon.LAYER_LOADING, SIZE-4, SIZE-4, Math.PI*2/2/LAYER_LOADING.length*i);
+			LAYER_LOADING_INVERTED[i]=IconBank.getIcon(JHVIcon.LAYER_LOADING, SIZE-4, SIZE-4, Math.PI*2/2/LAYER_LOADING.length*i,true);
+		}
 	}
 	
 	private JButton btnDownloadLayer;
 	private static final Cursor HAND_CURSOR = new Cursor(Cursor.HAND_CURSOR);
 	private static final ImageIcon WARNING_BAD_REQUEST = IconBank.getIcon(JHVIcon.WARNING, SIZE-2, SIZE-2);
+	private static final ImageIcon WARNING_BAD_REQUEST_INVERTED = IconBank.getIcon(JHVIcon.WARNING, SIZE-2, SIZE-2,0,true);
 	
 	
 	private @Nullable Layer activePopupLayer;
@@ -246,7 +257,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		setFixedWidth(SIZE, 1);
 		
 		//name
-		//table.getColumnModel().getColumn(2).setCellRenderer(new ImageIconCellRenderer());
+		table.getColumnModel().getColumn(2).setCellRenderer(new ImageIconCellRenderer());
 		
 		//date/time
 		table.getColumnModel().getColumn(3).setCellRenderer(new ImageIconCellRenderer());
@@ -358,8 +369,22 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 				if(e==null)
 					return;
 				
-				if (e.getKeyCode() == KeyEvent.VK_DELETE /*|| e.getKeyCode() == KeyEvent.VK_BACK_SPACE*/)
-					Layers.removeLayer(table.getSelectedRow());
+				switch(e.getKeyCode())
+				{
+					case KeyEvent.VK_DELETE:
+						Layers.removeLayer(table.getSelectedRow());
+						e.consume();
+						break;
+					case KeyEvent.VK_SPACE:
+						Layer l=Layers.getLayer(table.getSelectedRow());
+						if(l!=null)
+						{
+							l.setVisible(!l.isVisible());
+							e.consume();
+							updateData();
+						}
+					default:
+				}
 			}
 		});
 		
@@ -419,7 +444,40 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		@Override
 		public void actionPerformed(@Nullable ActionEvent e)
 		{
-			updateData();
+			loadingAnimation.stop();
+			for (Layer layer : Layers.getLayers())
+				if(layer.isLoading())
+				{
+					loadingAnimation.start();
+					break;
+				}
+			
+			loadingFrameCounter++;
+			if(loadingFrameCounter>=LAYER_LOADING.length)
+				loadingFrameCounter=0;
+			
+			try
+			{
+				ignoreTableEvents++;
+				
+				Rectangle total=null;
+				int row = 0;
+				for (Layer layer : Layers.getLayers())
+				{
+					Rectangle cur=table.getCellRect(row, 1, false);
+					if(total==null)
+						total=cur;
+					else
+						total=total.union(cur);
+					row++;
+				}
+				if(total!=null)
+					table.repaint(total);
+			}
+			finally
+			{
+				ignoreTableEvents--;
+			}
 		}
 	});
 	
@@ -488,13 +546,6 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 
 	private static class ImageIconCellRenderer extends DefaultTableCellRenderer
 	{
-		public ImageIconCellRenderer()
-		{
-			// setOpaque(true);
-			setHorizontalAlignment(CENTER);
-			// setBackground(Color.WHITE);
-		}
-
 		@Override
 		public Component getTableCellRendererComponent(@Nullable JTable table, @Nullable Object value, boolean isSelected, boolean hasFocus, final int row, int column)
 		{
@@ -503,38 +554,35 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			switch (column)
 			{
 				case 0:
-					return super.getTableCellRendererComponent(table, null, isSelected, hasFocus, row, column);
+					return super.getTableCellRendererComponent(table, null, isSelected, true, row, column);
 				case 1:
-					
-					//TODO: need better solution to render "loading" animation
-					//TODO: "loading" should be white when selected for contrast
-					JLabel label = (JLabel) super.getTableCellRendererComponent(table, null, isSelected, hasFocus, row, column);
+					JLabel label = (JLabel) super.getTableCellRendererComponent(table, null, isSelected, false, row, column);
 					label.setPreferredSize(new Dimension(20, 20));
 					if(layer!=null && layer.retryNeeded())
-						label.setIcon(WARNING_BAD_REQUEST);
+						label.setIcon(isSelected ? WARNING_BAD_REQUEST_INVERTED : WARNING_BAD_REQUEST);
 					else if(layer!=null && layer.isLoading())
-						label.setIcon(LAYER_LOADING[loadingFrameCounter]);
+						label.setIcon((isSelected ? LAYER_LOADING_INVERTED : LAYER_LOADING)[loadingFrameCounter]);
 					else
 						label.setIcon(null);
 					return label;
 				case 2:
-					return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+					JLabel label2 = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, false, row, column);
+					label2.setHorizontalAlignment(SwingConstants.LEFT);
+					return label2;
 				case 3:
 					LocalDateTime localDateTime = (LocalDateTime) value;
 					String date = localDateTime != null ? localDateTime.format(Globals.DATE_TIME_FORMATTER) : "";
-					return super.getTableCellRendererComponent(table, date, isSelected, hasFocus, row, column);
+					return super.getTableCellRendererComponent(table, date, isSelected, false, row, column);
 				case 4:
-					JLabel label4 = (JLabel) super.getTableCellRendererComponent(table, null, isSelected, hasFocus, row, column);
+					JLabel label4 = (JLabel) super.getTableCellRendererComponent(table, null, isSelected, false, row, column);
+					label4.setPreferredSize(new Dimension(20, 20));
 					if (layer instanceof ImageLayer)
-					{
-						label4.setIcon(ICON_REMOVE);
-						label4.setPreferredSize(new Dimension(20, 20));
-					}
+						label4.setIcon(isSelected ? ICON_REMOVE_INVERTED : ICON_REMOVE);
 					else
 						label4.setIcon(null);
 					return label4;
 				default:
-					return this;
+					return super.getTableCellRendererComponent(table, value, isSelected, false, row, column);
 			}
 		}
 	}

@@ -6,12 +6,17 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.awt.image.ByteLookupTable;
 import java.awt.image.ColorModel;
+import java.awt.image.LookupOp;
+import java.awt.image.LookupTable;
 import java.awt.image.WritableRaster;
 import java.net.URL;
 
 import javax.annotation.Nullable;
 import javax.swing.ImageIcon;
+
+import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 
 /**
  * This class provides access to all images, icons and cursors which are used by
@@ -177,6 +182,11 @@ public class IconBank
     }
     
     public static ImageIcon getIcon(JHVIcon icon, int width, int height, double _rotation)
+	{
+		return getIcon(icon, width, height, _rotation, false);
+	}
+    
+    public static ImageIcon getIcon(JHVIcon icon, int width, int height, double _rotation, boolean _inverted)
     {
         URL imgURL = IconBank.class.getResource(RESOURCE_PATH + icon.filename);
         ImageIcon imageIcon = new ImageIcon(imgURL);
@@ -195,6 +205,21 @@ public class IconBank
 		g.rotate(_rotation, w/2, h/2);
 		g.drawImage(image,0,0,w,h,0,0,w,h,null);
 		g.dispose();
+		
+		if(_inverted)
+		{
+		    byte rev[] = new byte[256];
+		    byte ident[] = new byte[256];
+		    for (int i = 0; i < 256; i++)
+		    {
+		    	ident[i] = (byte) i;
+			    rev[i] = (byte) (255 - i);
+		    }
+			
+	        LookupOp lop=new LookupOp(new ByteLookupTable(0, new byte[][] { rev, rev, rev, ident }), null);
+	        lop.filter(bi, bi);
+		}
+		
 		imageIcon.setImage(bi);
         return imageIcon;
     }
