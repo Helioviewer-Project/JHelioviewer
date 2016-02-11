@@ -170,7 +170,8 @@ public class OverviewPanel extends MainPanel
 		{
 			gl.glBegin(GL2.GL_LINE_LOOP);
 			for (Vector3d bound : mainView.getVisibleAreaOutline())
-				gl.glVertex3d(bound.x, bound.y, bound.z);
+				if(bound!=null)
+					gl.glVertex3d(bound.x, bound.y, bound.z);
 			gl.glEnd();
 			
 			gl.glBegin(GL2.GL_LINE_LOOP);
