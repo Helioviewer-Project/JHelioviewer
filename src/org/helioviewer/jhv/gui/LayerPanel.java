@@ -1,6 +1,7 @@
 package org.helioviewer.jhv.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -549,6 +550,12 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 
 	private static class ImageIconCellRenderer extends DefaultTableCellRenderer
 	{
+		private boolean needsInverted(Color _foreground)
+		{
+			double y=0.2989*_foreground.getRed()+0.5870*_foreground.getGreen()+0.114*_foreground.getBlue();
+			return y>160;
+		}
+		
 		@Override
 		public Component getTableCellRendererComponent(@Nullable JTable table, @Nullable Object value, boolean isSelected, boolean hasFocus, final int row, int column)
 		{
@@ -562,9 +569,9 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 					JLabel label = (JLabel) super.getTableCellRendererComponent(table, null, isSelected, false, row, column);
 					label.setPreferredSize(new Dimension(20, 20));
 					if(layer!=null && layer.retryNeeded())
-						label.setIcon(isSelected ? WARNING_BAD_REQUEST_INVERTED : WARNING_BAD_REQUEST);
+						label.setIcon(needsInverted(getForeground()) ? WARNING_BAD_REQUEST_INVERTED : WARNING_BAD_REQUEST);
 					else if(layer!=null && layer.isLoading())
-						label.setIcon((isSelected ? LAYER_LOADING_INVERTED : LAYER_LOADING)[loadingFrameCounter]);
+						label.setIcon((needsInverted(getForeground()) ? LAYER_LOADING_INVERTED : LAYER_LOADING)[loadingFrameCounter]);
 					else
 						label.setIcon(null);
 					return label;
@@ -580,7 +587,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 					JLabel label4 = (JLabel) super.getTableCellRendererComponent(table, null, isSelected, false, row, column);
 					label4.setPreferredSize(new Dimension(20, 20));
 					if (layer instanceof ImageLayer)
-						label4.setIcon(isSelected ? ICON_REMOVE_INVERTED : ICON_REMOVE);
+						label4.setIcon(needsInverted(getForeground()) ? ICON_REMOVE_INVERTED : ICON_REMOVE);
 					else
 						label4.setIcon(null);
 					label4.setHorizontalAlignment(SwingConstants.LEFT);
