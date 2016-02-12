@@ -21,6 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.RootPaneContainer;
+import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
@@ -47,6 +48,7 @@ public class MainFrame extends JFrame
 	public final LayerPanel LAYER_PANEL;
 	private final JSplitPane splitPane;
 	private final JPanel leftPanel;
+	private final GridBagConstraints gbc_overViewPane;
 
 	public final FilterPanel FILTER_PANEL;
 	
@@ -71,11 +73,6 @@ public class MainFrame extends JFrame
 		// Add toolbar
 		contentPane.add(TOP_TOOL_BAR, BorderLayout.NORTH);
 		
-		splitPane = new JSplitPane();
-		splitPane.setResizeWeight(0.0);
-		splitPane.setContinuousLayout(true);
-		contentPane.add(splitPane, BorderLayout.CENTER);
-		
 		MAIN_PANEL.setMinimumSize(new Dimension());
 		OVERVIEW_PANEL.setMinimumSize(new Dimension(240, 200));
 		OVERVIEW_PANEL.setPreferredSize(new Dimension(240, 200));
@@ -88,7 +85,7 @@ public class MainFrame extends JFrame
 		gbl_left.rowWeights = new double[]{1.0, 100.0, Double.MIN_VALUE};
 		leftPanel.setLayout(gbl_left);
 		
-		GridBagConstraints gbc_overViewPane = new GridBagConstraints();
+		gbc_overViewPane = new GridBagConstraints();
 		gbc_overViewPane.insets = new Insets(0, 0, 5, 0);
 		gbc_overViewPane.fill = GridBagConstraints.BOTH;
 		gbc_overViewPane.gridx = 0;
@@ -118,40 +115,54 @@ public class MainFrame extends JFrame
 		LEFT_PANE.add("Layers", LAYER_PANEL, true);
 		LEFT_PANE.add("Adjustments", FILTER_PANEL, true);
 		
+		splitPane = new JSplitPane();
+		splitPane.setResizeWeight(0.0);
+		splitPane.setContinuousLayout(true);
+		splitPane.setRightComponent(MAIN_PANEL);		
+		splitPane.setLeftComponent(leftPanel);
+		contentPane.add(splitPane, BorderLayout.CENTER);
+		
 		if(Globals.isOSX())
+		{
+			splitPane.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY,(e) ->
+			{
+				SwingUtilities.invokeLater(() -> workAroundOSXOpenGLBugs(true));
+			});
+			
 			addComponentListener(new ComponentAdapter()
 			{
 				@Override
-				public void componentResized(@Nullable ComponentEvent e)
+				public void componentResized(ComponentEvent e)
 				{
-					workAroundOSXOpenGLBugs();
+					workAroundOSXOpenGLBugs(false);
 				}
 			});
-		
-		splitPane.setRightComponent(MAIN_PANEL);		
-		splitPane.setLeftComponent(leftPanel);
+		}
 		
 		contentPane.add(this.getStatusPane(), BorderLayout.SOUTH);
 	}
 	
-	private void workAroundOSXOpenGLBugs()
+	private void workAroundOSXOpenGLBugs(boolean _isHorizontalMove)
 	{
-		splitPane.setRightComponent(null);
-		splitPane.setRightComponent(MAIN_PANEL);
+		if(splitPane==null)
+			return;
 		
-		splitPane.setLeftComponent(null);
-		splitPane.setLeftComponent(leftPanel);
+		int div = splitPane.getDividerLocation();
+		
+		if(_isHorizontalMove)
+		{
+			splitPane.setRightComponent(null);
+			splitPane.setRightComponent(MAIN_PANEL);
+		}
+		else
+		{
+			leftPanel.remove(OVERVIEW_PANEL);
+			leftPanel.add(OVERVIEW_PANEL,gbc_overViewPane,0);
+		}	
+		
+		splitPane.setDividerLocation(div);
 	}
 	
-	@Override
-	public void resize(int width, int height)
-	{
-		super.resize(width, height);
-		
-		if(Globals.isOSX())
-			workAroundOSXOpenGLBugs();
-	}
-
 	public void startWaitCursor()
 	{
 	    RootPaneContainer root = (RootPaneContainer)getRootPane().getTopLevelAncestor();
