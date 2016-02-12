@@ -23,7 +23,7 @@ public class SideContentPane extends JComponent
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		add(Box.createGlue());
 	}
-
+	
 	/**
 	 * Add new component into a new {@link CollapsiblePane}.
 	 * 

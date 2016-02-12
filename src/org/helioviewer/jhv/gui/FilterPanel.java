@@ -2,6 +2,8 @@ package org.helioviewer.jhv.gui;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -10,6 +12,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 
 import javax.annotation.Nullable;
 import javax.swing.DefaultComboBoxModel;
@@ -22,7 +25,10 @@ import javax.swing.JToggleButton;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.plaf.ButtonUI;
+import javax.swing.plaf.metal.MetalButtonUI;
 
+import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.MultiClickAdapter;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.components.WheelSupport;
@@ -31,6 +37,14 @@ import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
 
+import com.sun.java.swing.plaf.windows.WindowsButtonUI;
+
+import java.awt.Checkbox;
+import javax.swing.JCheckBox;
+import javax.swing.SwingConstants;
+import javax.swing.ImageIcon;
+import javax.swing.border.LineBorder;
+
 public class FilterPanel extends JPanel
 {
 	private JSlider opacitySlider;
@@ -38,9 +52,9 @@ public class FilterPanel extends JPanel
 	private JSlider gammaSlider;
 	private JSlider contrastSlider;
 	private JComboBox<LUT> comboBoxColorTable;
-	private JToggleButton red;
-	private JToggleButton green;
-	private JToggleButton blue;
+	private JCheckBox red;
+	private JCheckBox green;
+	private JCheckBox blue;
 	private JToggleButton btnInverseColorTable;
 	private JLabel lblOpacity, lblSharpen, lblGamma, lblContrast, lblOpacityTitle;
 	private JToggleButton coronaVisibilityButton;
@@ -54,12 +68,13 @@ public class FilterPanel extends JPanel
 	private static final double GAMMA_FACTOR = 0.01 * Math.log(10);
 
 	private static final Icon ICON_INVERT = IconBank.getIcon(JHVIcon.INVERT, 16, 16);
+	private JLabel lblBGRed;
 
 	public FilterPanel()
 	{
 		setBorder(new EmptyBorder(10, 10, 10, 10));
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[]{0, 0, 0, 0, 50, 50, 0};
+		gridBagLayout.columnWidths = new int[]{0, 0, 0, 0, 40, 40, 0};
 		gridBagLayout.rowHeights = new int[]{41, 41, 41, 41, 26, 33, 0};
 		gridBagLayout.columnWeights = new double[]{0.0, 1.0, 1.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
 		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
@@ -105,7 +120,6 @@ public class FilterPanel extends JPanel
 									@Override
 									public void doubleClick(@Nullable MouseEvent e)
 									{
-										//TODO: reset to proper value, not 100%
 										opacitySlider.setValue(100);
 									}
 								});
@@ -293,7 +307,7 @@ public class FilterPanel extends JPanel
 								comboBoxColorTable.setSelectedItem(LUT.GRAY);
 								GridBagConstraints gbc_comboBoxColorTable = new GridBagConstraints();
 								gbc_comboBoxColorTable.fill = GridBagConstraints.HORIZONTAL;
-								gbc_comboBoxColorTable.insets = new Insets(0, 0, 5, 5);
+								gbc_comboBoxColorTable.insets = new Insets(0, 0, 5, 0);
 								gbc_comboBoxColorTable.gridwidth = 5;
 								gbc_comboBoxColorTable.gridx = 1;
 								gbc_comboBoxColorTable.gridy = 4;
@@ -319,10 +333,18 @@ public class FilterPanel extends JPanel
 								gbc_lblChannelsTitle.gridy = 5;
 								add(lblChannelsTitle, gbc_lblChannelsTitle);
 				
-						red = new JToggleButton("Red");
-						red.setContentAreaFilled(false);
-						red.setOpaque(true);
+						red = new JCheckBox("");
+						red.setHorizontalAlignment(SwingConstants.CENTER);
 						red.setForeground(Color.RED);
+						red.addItemListener(e ->
+						{
+							if(activeLayer!=null && activeLayer.redChannel!=red.isSelected() && activeLayer.supportsFilterRGB())
+							{
+								activeLayer.redChannel=red.isSelected();
+								MainFrame.SINGLETON.MAIN_PANEL.repaint();
+							}
+						});
+
 						
 						GridBagConstraints gbc_red = new GridBagConstraints();
 						gbc_red.fill = GridBagConstraints.BOTH;
@@ -330,37 +352,10 @@ public class FilterPanel extends JPanel
 						gbc_red.gridx = 1;
 						gbc_red.gridy = 5;
 						add(red, gbc_red);
-						red.addItemListener(new ItemListener()
-						{
-							@Override
-							public void itemStateChanged(@Nullable ItemEvent e)
-							{
-								red.setContentAreaFilled(!red.isSelected());
-								red.setOpaque(red.isSelected());
-								
-								if(red.isSelected())
-								{
-									red.setBackground(Color.RED);
-									red.setForeground(Color.BLACK);
-								}
-								else
-								{
-									red.setBackground(null);
-									red.setForeground(Color.RED);
-								}
-								
-								
-								if (activeLayer != null && activeLayer.redChannel != red.isSelected() && activeLayer.supportsFilterRGB())
-								{
-									activeLayer.redChannel = red.isSelected();
-									MainFrame.SINGLETON.MAIN_PANEL.repaint();
-								}
-							}
-						});
 		
-				green = new JToggleButton("Green");
+				green = new JCheckBox("");
+				green.setHorizontalAlignment(SwingConstants.CENTER);
 				green.setContentAreaFilled(false);
-				green.setOpaque(true);
 				green.setForeground(Color.GREEN.darker());
 				GridBagConstraints gbc_green = new GridBagConstraints();
 				gbc_green.fill = GridBagConstraints.BOTH;
@@ -368,30 +363,13 @@ public class FilterPanel extends JPanel
 				gbc_green.gridx = 2;
 				gbc_green.gridy = 5;
 				add(green, gbc_green);
-				green.addItemListener(new ItemListener()
+				
+				green.addItemListener(e ->
 				{
-					@Override
-					public void itemStateChanged(@Nullable ItemEvent e)
+					if(activeLayer!=null && activeLayer.greenChannel!=green.isSelected() && activeLayer.supportsFilterRGB())
 					{
-						green.setContentAreaFilled(!green.isSelected());
-						green.setOpaque(green.isSelected());
-						
-						if(green.isSelected())
-						{
-							green.setBackground(Color.GREEN.darker());
-							green.setForeground(Color.BLACK);
-						}
-						else
-						{
-							green.setBackground(null);
-							green.setForeground(Color.GREEN.darker());
-						}
-						
-						if (activeLayer != null && activeLayer.greenChannel != green.isSelected() && activeLayer.supportsFilterRGB())
-						{
-							activeLayer.greenChannel = green.isSelected();
-							MainFrame.SINGLETON.MAIN_PANEL.repaint();
-						}
+						activeLayer.greenChannel=green.isSelected();
+						MainFrame.SINGLETON.MAIN_PANEL.repaint();
 					}
 				});
 		
@@ -414,9 +392,9 @@ public class FilterPanel extends JPanel
 			}
 		});
 		
-				blue = new JToggleButton("Blue");
+				blue = new JCheckBox("");
+				blue.setHorizontalAlignment(SwingConstants.CENTER);
 				blue.setContentAreaFilled(false);
-				blue.setOpaque(true);
 				blue.setForeground(Color.BLUE);
 				GridBagConstraints gbc_blue = new GridBagConstraints();
 				gbc_blue.fill = GridBagConstraints.BOTH;
@@ -424,32 +402,15 @@ public class FilterPanel extends JPanel
 				gbc_blue.gridx = 3;
 				gbc_blue.gridy = 5;
 				add(blue, gbc_blue);
-				blue.addItemListener(new ItemListener()
+				blue.addItemListener(e ->
 				{
-					@Override
-					public void itemStateChanged(@Nullable ItemEvent e)
+					if(activeLayer!=null && activeLayer.blueChannel!=blue.isSelected() && activeLayer.supportsFilterRGB())
 					{
-						blue.setContentAreaFilled(!blue.isSelected());
-						blue.setOpaque(blue.isSelected());
-						
-						if(blue.isSelected())
-						{
-							blue.setBackground(Color.BLUE);
-							blue.setForeground(Color.BLACK);
-						}
-						else
-						{
-							blue.setBackground(null);
-							blue.setForeground(Color.BLUE);
-						}
-						
-						if (activeLayer != null && activeLayer.blueChannel != blue.isSelected() && activeLayer.supportsFilterRGB())
-						{
-							activeLayer.blueChannel = blue.isSelected();
-							MainFrame.SINGLETON.MAIN_PANEL.repaint();
-						}
+						activeLayer.blueChannel=blue.isSelected();
+						MainFrame.SINGLETON.MAIN_PANEL.repaint();
 					}
 				});
+
 		
 		GridBagConstraints gbc_coronaVisibilityButton = new GridBagConstraints();
 		gbc_coronaVisibilityButton.fill = GridBagConstraints.HORIZONTAL;
@@ -496,6 +457,60 @@ public class FilterPanel extends JPanel
 				update();
 			}
 		});
+		
+		setMinimumSize(new Dimension(320,264));
+		setPreferredSize(new Dimension(320, 288));
+		
+		BufferedImage bgRed=IconBank.getImage(JHVIcon.BG_RED);
+		lblBGRed = new JLabel("")
+		{
+			@Override
+			protected void paintComponent(Graphics _g)
+			{
+				_g.drawImage(bgRed, 0, 0, getWidth()-2, getHeight(), null);
+			}
+		};
+		GridBagConstraints gbc_lblBGRed = new GridBagConstraints();
+		gbc_lblBGRed.fill = GridBagConstraints.BOTH;
+		gbc_lblBGRed.insets = new Insets(0, 0, 0, 5);
+		gbc_lblBGRed.gridx = 1;
+		gbc_lblBGRed.gridy = 5;
+		add(lblBGRed, gbc_lblBGRed);
+
+	
+		BufferedImage bgGreen=IconBank.getImage(JHVIcon.BG_GREEN);
+		JLabel lblBGGreen = new JLabel("")
+		{
+			@Override
+			protected void paintComponent(Graphics _g)
+			{
+				_g.drawImage(bgGreen, 0, 0, getWidth()-2, getHeight(), null);
+			}
+		};
+		GridBagConstraints gbc_lblBGGreen = new GridBagConstraints();
+		gbc_lblBGGreen.fill = GridBagConstraints.BOTH;
+		gbc_lblBGGreen.insets = new Insets(0, 0, 0, 5);
+		gbc_lblBGGreen.gridx = 2;
+		gbc_lblBGGreen.gridy = 5;
+		add(lblBGGreen, gbc_lblBGGreen);
+	
+	
+		BufferedImage bgBlue=IconBank.getImage(JHVIcon.BG_BLUE);
+		JLabel lblBGBlue = new JLabel("")
+		{
+			@Override
+			protected void paintComponent(Graphics _g)
+			{
+				_g.drawImage(bgBlue, 0, 0, getWidth()-2, getHeight(), null);
+			}
+		};
+		GridBagConstraints gbc_lblBGBlue = new GridBagConstraints();
+		gbc_lblBGBlue.fill = GridBagConstraints.BOTH;
+		gbc_lblBGBlue.insets = new Insets(0, 0, 0, 5);
+		gbc_lblBGBlue.gridx = 3;
+		gbc_lblBGBlue.gridy = 5;
+		add(lblBGBlue, gbc_lblBGBlue);
+	
 	}
 
 	public void update()
@@ -505,7 +520,7 @@ public class FilterPanel extends JPanel
 		
 		if(activeLayer != null && activeLayer.supportsFilterContrastGamma())
 		{
-			lblColorTitle.setEnabled(true);
+			lblContrastTitle.setEnabled(true);
 			lblContrast.setEnabled(true);
 			contrastSlider.setEnabled(true);
 			contrastSlider.setValue((int) (activeLayer.contrast * 10));

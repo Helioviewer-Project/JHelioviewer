@@ -13,6 +13,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import javax.annotation.Nullable;
@@ -262,16 +263,18 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		//date/time
 		table.getColumnModel().getColumn(3).setCellRenderer(new ImageIconCellRenderer());
 		table.getColumnModel().getColumn(3).setResizable(false);
-		setFixedWidth(160, 3);
+		
+		String maxWideDate=LocalDateTime.of(2000, 12, 22, 23, 59, 59).format(Globals.DATE_TIME_FORMATTER);
+		int maxDateWidth=table.getFontMetrics(table.getFont()).stringWidth(maxWideDate);
+		setFixedWidth(maxDateWidth+2, 3);
 		
 		//delete
 		table.getColumnModel().getColumn(4).setCellRenderer(new ImageIconCellRenderer());
-		setFixedWidth(SIZE, 4);
+		setFixedWidth(SIZE+2, 4);
 		
-		
-		//table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		table.setShowGrid(false);
-		table.setIntercellSpacing(new Dimension(0, 0));
+		table.setIntercellSpacing(new Dimension(0, 1));
 		table.setRowHeight(SIZE + 4);
 		
 		table.getSelectionModel().addListSelectionListener(new ListSelectionListener()
@@ -580,6 +583,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 						label4.setIcon(isSelected ? ICON_REMOVE_INVERTED : ICON_REMOVE);
 					else
 						label4.setIcon(null);
+					label4.setHorizontalAlignment(SwingConstants.LEFT);
 					return label4;
 				default:
 					return super.getTableCellRendererComponent(table, value, isSelected, false, row, column);

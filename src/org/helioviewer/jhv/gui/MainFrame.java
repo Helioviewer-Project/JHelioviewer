@@ -1,6 +1,8 @@
 package org.helioviewer.jhv.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -21,6 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.RootPaneContainer;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.base.Globals;
@@ -48,7 +51,6 @@ public class MainFrame extends JFrame
 	public final LayerPanel LAYER_PANEL;
 	private final JSplitPane splitPane;
 	private final JPanel leftPanel;
-	private final GridBagConstraints gbc_overViewPane;
 
 	public final FilterPanel FILTER_PANEL;
 	
@@ -64,63 +66,42 @@ public class MainFrame extends JFrame
 		MAIN_PANEL = new MainPanel(context);
 		OVERVIEW_PANEL = new OverviewPanel(context);
 		initMainFrame();
-		initMenuBar();
 		
-		JPanel contentPane = new JPanel();
-		contentPane.setLayout(new BorderLayout(0, 0));
-		setContentPane(contentPane);
+		setJMenuBar(new MenuBar());
 		
-		// Add toolbar
-		contentPane.add(TOP_TOOL_BAR, BorderLayout.NORTH);
+		getContentPane().add(TOP_TOOL_BAR, BorderLayout.NORTH);
 		
 		MAIN_PANEL.setMinimumSize(new Dimension());
-		OVERVIEW_PANEL.setMinimumSize(new Dimension(240, 200));
-		OVERVIEW_PANEL.setPreferredSize(new Dimension(240, 200));
-
-		leftPanel = new JPanel();
-		GridBagLayout gbl_left = new GridBagLayout();
-		gbl_left.columnWidths = new int[]{0, 0};
-		gbl_left.rowHeights = new int[]{0, 0, 0};
-		gbl_left.columnWeights = new double[]{1.0, Double.MIN_VALUE};
-		gbl_left.rowWeights = new double[]{1.0, 100.0, Double.MIN_VALUE};
-		leftPanel.setLayout(gbl_left);
+		OVERVIEW_PANEL.setMinimumSize(new Dimension(0, 200));
+		OVERVIEW_PANEL.setPreferredSize(new Dimension(0, 200));
 		
-		gbc_overViewPane = new GridBagConstraints();
-		gbc_overViewPane.insets = new Insets(0, 0, 5, 0);
-		gbc_overViewPane.fill = GridBagConstraints.BOTH;
-		gbc_overViewPane.gridx = 0;
-		gbc_overViewPane.gridy = 0;
-		
-		leftPanel.add(OVERVIEW_PANEL, gbc_overViewPane);
 		OVERVIEW_PANEL.addMainView(MAIN_PANEL);
 		MAIN_PANEL.addSynchronizedView(OVERVIEW_PANEL);
 		
-		LEFT_PANE = new SideContentPane();
-		
-		JScrollPane scrollPane = new JScrollPane(LEFT_PANE);
-		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
-		gbc_scrollPane.fill = GridBagConstraints.BOTH;
-		gbc_scrollPane.gridx = 0;
-		gbc_scrollPane.gridy = 1;
-		leftPanel.add(scrollPane, gbc_scrollPane);
-		
 		MOVIE_PANEL = new MoviePanel();
 		LAYER_PANEL = new LayerPanel();
-		
-		//TODO: minimize width
 		FILTER_PANEL = new FilterPanel();
 		
 		//TODO: save & restore state
+		LEFT_PANE = new SideContentPane();
 		LEFT_PANE.add("Playback", MOVIE_PANEL, true);
 		LEFT_PANE.add("Layers", LAYER_PANEL, true);
 		LEFT_PANE.add("Adjustments", FILTER_PANEL, true);
+		
+		JScrollPane scrollPane = new JScrollPane(LEFT_PANE);
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		
+		leftPanel = new JPanel();
+		leftPanel.setLayout(new BorderLayout(0,2));
+		leftPanel.add(OVERVIEW_PANEL, BorderLayout.NORTH);
+		leftPanel.add(scrollPane, BorderLayout.CENTER);
 		
 		splitPane = new JSplitPane();
 		splitPane.setResizeWeight(0.0);
 		splitPane.setContinuousLayout(true);
 		splitPane.setRightComponent(MAIN_PANEL);		
 		splitPane.setLeftComponent(leftPanel);
-		contentPane.add(splitPane, BorderLayout.CENTER);
+		getContentPane().add(splitPane, BorderLayout.CENTER);
 		
 		if(Globals.isOSX())
 		{
@@ -139,12 +120,12 @@ public class MainFrame extends JFrame
 			});
 		}
 		
-		contentPane.add(this.getStatusPane(), BorderLayout.SOUTH);
+		getContentPane().add(this.getStatusPane(), BorderLayout.SOUTH);
 	}
 	
 	private void workAroundOSXOpenGLBugs(boolean _isHorizontalMove)
 	{
-		if(splitPane==null)
+		if(splitPane==null || leftPanel==null)
 			return;
 		
 		int div = splitPane.getDividerLocation();
@@ -157,8 +138,8 @@ public class MainFrame extends JFrame
 		else
 		{
 			leftPanel.remove(OVERVIEW_PANEL);
-			leftPanel.add(OVERVIEW_PANEL,gbc_overViewPane,0);
-		}	
+			leftPanel.add(OVERVIEW_PANEL,BorderLayout.NORTH);
+		}
 		
 		splitPane.setDividerLocation(div);
 	}
@@ -258,12 +239,5 @@ public class MainFrame extends JFrame
 		statusPane.add(positionStatusPanel, gbc_positionStatusPanel);
 
 		return statusPane;
-	}
-	
-	private void initMenuBar()
-	{
-		JMenuBar menuBar = new MenuBar();
-		menuBar.setMinimumSize(new Dimension());
-		this.setJMenuBar(menuBar);		
 	}
 }
