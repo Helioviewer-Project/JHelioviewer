@@ -89,7 +89,6 @@ public class MainFrame extends JFrame
 		LEFT_PANE.add("Adjustments", FILTER_PANEL, true);
 		
 		JScrollPane scrollPane = new JScrollPane(LEFT_PANE);
-		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		
 		leftPanel = new JPanel();
 		leftPanel.setLayout(new BorderLayout(0,2));
@@ -105,6 +104,8 @@ public class MainFrame extends JFrame
 		
 		if(Globals.isOSX())
 		{
+			scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+
 			splitPane.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY,(e) ->
 			{
 				SwingUtilities.invokeLater(() -> workAroundOSXOpenGLBugs(true));

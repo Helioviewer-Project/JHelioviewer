@@ -259,11 +259,11 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		
 		//name
 		table.getColumnModel().getColumn(2).setCellRenderer(new ImageIconCellRenderer());
+		table.getColumnModel().getColumn(2).setMinWidth(0);
+		table.getColumnModel().getColumn(2).setResizable(false);
 		
 		//date/time
 		table.getColumnModel().getColumn(3).setCellRenderer(new ImageIconCellRenderer());
-		table.getColumnModel().getColumn(3).setResizable(false);
-		
 		String maxWideDate=LocalDateTime.of(2000, 12, 22, 23, 59, 59).format(Globals.DATE_TIME_FORMATTER);
 		int maxDateWidth=table.getFontMetrics(table.getFont()).stringWidth(maxWideDate);
 		setFixedWidth(maxDateWidth+2, 3);

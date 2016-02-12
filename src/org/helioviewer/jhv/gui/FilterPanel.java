@@ -74,10 +74,10 @@ public class FilterPanel extends JPanel
 	{
 		setBorder(new EmptyBorder(10, 10, 10, 10));
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[]{0, 0, 0, 0, 40, 40, 0};
-		gridBagLayout.rowHeights = new int[]{41, 41, 41, 41, 26, 33, 0};
-		gridBagLayout.columnWeights = new double[]{0.0, 1.0, 1.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
-		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gridBagLayout.columnWidths = new int[]{0, 0, 0, 0, 40, 40};
+		gridBagLayout.rowHeights = new int[] {0, 0, 0, 0, 0, 0};
+		gridBagLayout.columnWeights = new double[]{0.0, 1.0, 1.0, 1.0, 0.0, 0.0};
+		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 		setLayout(gridBagLayout);
 						
 								lblOpacityTitle = new JLabel("Opacity");
@@ -335,6 +335,7 @@ public class FilterPanel extends JPanel
 				
 						red = new JCheckBox("");
 						red.setHorizontalAlignment(SwingConstants.CENTER);
+						red.setContentAreaFilled(false);
 						red.setForeground(Color.RED);
 						red.addItemListener(e ->
 						{
@@ -458,9 +459,6 @@ public class FilterPanel extends JPanel
 			}
 		});
 		
-		setMinimumSize(new Dimension(320,264));
-		setPreferredSize(new Dimension(320, 288));
-		
 		BufferedImage bgRed=IconBank.getImage(JHVIcon.BG_RED);
 		lblBGRed = new JLabel("")
 		{
@@ -470,6 +468,7 @@ public class FilterPanel extends JPanel
 				_g.drawImage(bgRed, 0, 0, getWidth()-2, getHeight(), null);
 			}
 		};
+		lblBGRed.setHorizontalAlignment(SwingConstants.CENTER);
 		GridBagConstraints gbc_lblBGRed = new GridBagConstraints();
 		gbc_lblBGRed.fill = GridBagConstraints.BOTH;
 		gbc_lblBGRed.insets = new Insets(0, 0, 0, 5);
@@ -487,6 +486,7 @@ public class FilterPanel extends JPanel
 				_g.drawImage(bgGreen, 0, 0, getWidth()-2, getHeight(), null);
 			}
 		};
+		lblBGGreen.setHorizontalAlignment(SwingConstants.CENTER);
 		GridBagConstraints gbc_lblBGGreen = new GridBagConstraints();
 		gbc_lblBGGreen.fill = GridBagConstraints.BOTH;
 		gbc_lblBGGreen.insets = new Insets(0, 0, 0, 5);
@@ -504,13 +504,13 @@ public class FilterPanel extends JPanel
 				_g.drawImage(bgBlue, 0, 0, getWidth()-2, getHeight(), null);
 			}
 		};
+		lblBGBlue.setHorizontalAlignment(SwingConstants.CENTER);
 		GridBagConstraints gbc_lblBGBlue = new GridBagConstraints();
 		gbc_lblBGBlue.fill = GridBagConstraints.BOTH;
 		gbc_lblBGBlue.insets = new Insets(0, 0, 0, 5);
 		gbc_lblBGBlue.gridx = 3;
 		gbc_lblBGBlue.gridy = 5;
 		add(lblBGBlue, gbc_lblBGBlue);
-	
 	}
 
 	public void update()

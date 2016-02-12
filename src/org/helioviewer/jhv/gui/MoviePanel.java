@@ -2,6 +2,7 @@ package org.helioviewer.jhv.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
@@ -128,7 +129,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		GridBagLayout gbl_contentPanel = new GridBagLayout();
 		gbl_contentPanel.columnWidths = new int[]{0, 0, 0, 0, 0, 0};
 		gbl_contentPanel.rowHeights = new int[]{0, 0, 0};
-		gbl_contentPanel.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
+		gbl_contentPanel.columnWeights = new double[]{0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
 		gbl_contentPanel.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
 		contentPanel.setLayout(gbl_contentPanel);
 		
@@ -174,11 +175,18 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 
 		GridBagConstraints gbc_slider_2 = new GridBagConstraints();
 		gbc_slider_2.fill = GridBagConstraints.HORIZONTAL;
-		gbc_slider_2.gridwidth = 5;
+		gbc_slider_2.gridwidth = 4;
 		gbc_slider_2.insets = new Insets(0, 0, 5, 5);
 		gbc_slider_2.gridx = 0;
 		gbc_slider_2.gridy = 0;
 		contentPanel.add(slider, gbc_slider_2);
+		lblFrames = new JLabel("0/0");
+		GridBagConstraints gbc_lblFrames = new GridBagConstraints();
+		gbc_lblFrames.insets = new Insets(0, 0, 5, 0);
+		gbc_lblFrames.anchor = GridBagConstraints.EAST;
+		gbc_lblFrames.gridx = 4;
+		gbc_lblFrames.gridy = 0;
+		contentPanel.add(lblFrames, gbc_lblFrames);
 		
 		GridBagConstraints gbc_btnPrevious = new GridBagConstraints();
 		gbc_btnPrevious.insets = new Insets(0, 0, 0, 5);
@@ -190,7 +198,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		gbc_btnPlayPause.gridx = 1;
 		gbc_btnPlayPause.gridy = 1;
 		contentPanel.add(btnPlayPause, gbc_btnPlayPause);
-		final JButton btnMoreOptions = new JButton("More Options", ICON_OPEN);
+		final JButton btnMoreOptions = new JButton("More", ICON_OPEN);
 		btnMoreOptions.addActionListener(new ActionListener()
 		{
 			@Override
@@ -225,17 +233,11 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		contentPanel.add(btnForward, gbc_btnForward);
 		
 		GridBagConstraints gbc_btnMoreOptions = new GridBagConstraints();
-		gbc_btnMoreOptions.anchor = GridBagConstraints.NORTHWEST;
-		gbc_btnMoreOptions.insets = new Insets(0, 0, 0, 5);
+		gbc_btnMoreOptions.gridwidth = 2;
+		gbc_btnMoreOptions.anchor = GridBagConstraints.NORTHEAST;
 		gbc_btnMoreOptions.gridx = 3;
 		gbc_btnMoreOptions.gridy = 1;
 		contentPanel.add(btnMoreOptions, gbc_btnMoreOptions);
-		lblFrames = new JLabel("0/0");
-		GridBagConstraints gbc_lblFrames = new GridBagConstraints();
-		gbc_lblFrames.anchor = GridBagConstraints.EAST;
-		gbc_lblFrames.gridx = 4;
-		gbc_lblFrames.gridy = 1;
-		contentPanel.add(lblFrames, gbc_lblFrames);
 
 		setButtonsEnabled(false);
 		add(contentPanel, BorderLayout.CENTER);
