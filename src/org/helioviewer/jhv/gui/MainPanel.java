@@ -152,6 +152,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			@Override
 			public void timeStampChanged(LocalDateTime current, LocalDateTime last)
 			{
+				//FIXME: is apparently not synchronous! repro: set fps=800 under os x
 				MainPanel.this.repaintInternal();
 			}
 			

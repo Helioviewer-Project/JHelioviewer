@@ -121,6 +121,9 @@ public class Texture
 		
 		gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, _destX, _destY, bufferedImage.getWidth(), bufferedImage.getHeight(), inputFormat, inputType, buffer);
 		
+		//hack: work around os x texture handling. lut upload doesn't work without it.
+		gl.glFlush();
+
 		//updateDebugImage();
 	}
 	

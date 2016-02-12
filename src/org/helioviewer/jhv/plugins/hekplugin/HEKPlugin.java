@@ -57,6 +57,7 @@ public class HEKPlugin extends Plugin
 	@Override
 	public void render(GL2 gl, PluginLayer _imageParams)
 	{
+		//FIXME: hek icons broken in os x
 		if (isVisible())
 		{
 			LocalDateTime in = Plugins.SINGLETON.getCurrentDateTime();

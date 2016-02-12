@@ -41,7 +41,7 @@ public class DownloadManager
 		}
 	});
 
-	private static final int CONCURRENT_DOWNLOADS = 2;
+	private static final int CONCURRENT_DOWNLOADS = 4;
 	private static AtomicInteger activeDownloadCount = new AtomicInteger();
 	private static HashMap<AbstractDownloadRequest, Thread> activeDownloads=new HashMap<>();
 
