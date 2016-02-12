@@ -137,8 +137,12 @@ public class IconBank
 		LAYER_IMAGE_TIME_MASTER("layer-image-time-master.png"),
 		LAYER_MOVIE("layer-movie.png"), LAYER_MOVIE_OFF("layer-movie-off.png"),
 		LAYER_MOVIE_TIME("layer-movie-time.png"), LAYER_MOVIE_TIME_OFF("layer-movie-time-off.png"),
-		LAYER_MOVIE_TIME_MASTER("layer-movie-time-master.png");
+		LAYER_MOVIE_TIME_MASTER("layer-movie-time-master.png"),
 
+		BG_RED("bg-red.png"),
+		BG_GREEN("bg-green.png"),
+		BG_BLUE("bg-blue.png");
+    	
         public final String filename;
 
         JHVIcon(String _filename)
