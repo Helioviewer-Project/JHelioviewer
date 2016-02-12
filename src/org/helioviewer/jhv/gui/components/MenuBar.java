@@ -100,10 +100,13 @@ public class MenuBar extends JMenuBar
 
 		add(movieMenu);
 
-		JMenu optionsMenu = new JMenu("Options");
-		optionsMenu.setMnemonic(KeyEvent.VK_O);
-		optionsMenu.add(new ShowDialogAction("Preferences...", IconBank.getIcon(JHVIcon.SETTINGS, 16, 16), PreferencesDialog.class));
-		add(optionsMenu);
+		if(!Globals.isOSX())
+		{
+			JMenu optionsMenu = new JMenu("Options");
+			optionsMenu.setMnemonic(KeyEvent.VK_O);
+			optionsMenu.add(new ShowDialogAction("Preferences...", IconBank.getIcon(JHVIcon.SETTINGS, 16, 16), PreferencesDialog.class));
+			add(optionsMenu);
+		}
 
 		JMenu helpMenu = new JMenu("Help");
 		helpMenu.setMnemonic(KeyEvent.VK_H);

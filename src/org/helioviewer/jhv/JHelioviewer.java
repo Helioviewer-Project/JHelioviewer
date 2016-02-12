@@ -28,12 +28,16 @@ import org.helioviewer.jhv.base.Settings.IntKey;
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.UILatencyWatchdog;
 import org.helioviewer.jhv.gui.DebugRepaintManager;
+import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.SplashScreen;
+import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
+import org.helioviewer.jhv.gui.actions.ShowDialogAction;
 import org.helioviewer.jhv.gui.dialogs.AboutDialog;
 import org.helioviewer.jhv.gui.dialogs.AddLayerDialog;
 import org.helioviewer.jhv.gui.dialogs.LicenseDialog;
+import org.helioviewer.jhv.gui.dialogs.PreferencesDialog;
 import org.helioviewer.jhv.io.CommandLineProcessor;
 import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.LUT;
@@ -52,6 +56,7 @@ import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLDrawableFactory;
 import com.jogamp.opengl.GLProfile;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import kdu_jni.KduException;
 import kdu_jni.Kdu_global;
@@ -304,20 +309,15 @@ public class JHelioviewer
 						{
 							if ("handleAbout".equals(method.getName()))
 							{
-								SwingUtilities.invokeLater(new Runnable()
-								{
-									@Override
-									public void run()
-									{
-										new AboutDialog();
-									}
-								});
+								SwingUtilities.invokeLater(() -> new AboutDialog());
 								
 								if(args!=null && args[0]!=null)
 									setHandled(args[0], Boolean.TRUE);
 							}
+							else if ("handlePreferences".equals(method.getName()))
+								SwingUtilities.invokeLater(() -> new ShowDialogAction("Preferences...", IconBank.getIcon(JHVIcon.SETTINGS, 16, 16), PreferencesDialog.class).actionPerformed(null));
 							else if ("handleQuit".equals(method.getName()))
-								new ExitProgramAction().actionPerformed(null);
+								SwingUtilities.invokeLater(() -> new ExitProgramAction().actionPerformed(null));
 							
 							return null;
 						}
@@ -331,6 +331,8 @@ public class JHelioviewer
 			
 			Method registerListenerMethod = applicationClass.getMethod("addApplicationListener", applicationListener);
 			registerListenerMethod.invoke(application, listenerProxy);
+			
+			applicationClass.getMethod("setEnabledPreferencesMenu", boolean.class).invoke(application, true);
 		}
 		catch (Throwable t)
 		{
