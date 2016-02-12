@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<updateDescriptor baseUrl="https://github.com/Helioviewer-Project/JHelioviewer/releases/download/3.0.2/">
-  <entry targetMediaFileId="68" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_3_0_2.dmg" newVersion="3.0.2" newMediaFileId="68" fileSize="88449775" bundledJre="macosx-amd64-1.8.0_72_unpacked" archive="true">
+<updateDescriptor baseUrl="https://github.com/Helioviewer-Project/JHelioviewer/releases/download/3.0.3/">
+  <entry targetMediaFileId="68" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_3_0_3.dmg" newVersion="3.0.3" newMediaFileId="68" fileSize="88556068" bundledJre="macosx-amd64-1.8.0_72_unpacked" archive="true">
     <comment language="en" />
   </entry>
-  <entry targetMediaFileId="150" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_3_0_2.exe" newVersion="3.0.2" newMediaFileId="150" fileSize="51496736" bundledJre="windows-amd64-1.8.0_72" archive="false">
+  <entry targetMediaFileId="150" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_3_0_3.exe" newVersion="3.0.3" newMediaFileId="150" fileSize="51561008" bundledJre="windows-amd64-1.8.0_72" archive="false">
     <comment language="en" />
   </entry>
-  <entry targetMediaFileId="218" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_3_0_2_amd64.deb" newVersion="3.0.2" newMediaFileId="218" fileSize="30950346" bundledJre="" archive="true">
+  <entry targetMediaFileId="218" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_3_0_3_amd64.deb" newVersion="3.0.3" newMediaFileId="218" fileSize="31089462" bundledJre="" archive="true">
     <comment language="en" />
   </entry>
-  <entry targetMediaFileId="270" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_3_0_2_amd64.rpm" newVersion="3.0.2" newMediaFileId="270" fileSize="31297000" bundledJre="" archive="true">
+  <entry targetMediaFileId="270" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_3_0_3_amd64.rpm" newVersion="3.0.3" newMediaFileId="270" fileSize="31425587" bundledJre="" archive="true">
     <comment language="en" />
   </entry>
 </updateDescriptor>
