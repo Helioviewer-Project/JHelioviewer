@@ -30,6 +30,7 @@ import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.KeyStroke;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -181,6 +182,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		gbc_slider_2.gridy = 0;
 		contentPanel.add(slider, gbc_slider_2);
 		lblFrames = new JLabel("0/0");
+		lblFrames.setHorizontalAlignment(SwingConstants.RIGHT);
 		GridBagConstraints gbc_lblFrames = new GridBagConstraints();
 		gbc_lblFrames.insets = new Insets(0, 0, 5, 0);
 		gbc_lblFrames.anchor = GridBagConstraints.EAST;
@@ -350,6 +352,8 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 			
 			int framecount = TimeLine.SINGLETON.getFrameCount();
 			slider.setMaximum(framecount > 0 ? framecount - 1 : 0);
+			lblFrames.setMinimumSize(new Dimension(lblFrames.getFontMetrics(lblFrames.getFont()).stringWidth(slider.getMaximum() + "/" + slider.getMaximum()),lblFrames.getMinimumSize().height));
+			lblFrames.setPreferredSize(new Dimension(lblFrames.getFontMetrics(lblFrames.getFont()).stringWidth(slider.getMaximum() + "/" + slider.getMaximum()),lblFrames.getPreferredSize().height));
 		}
 		finally
 		{

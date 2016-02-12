@@ -102,10 +102,10 @@ public class MainFrame extends JFrame
 		splitPane.setLeftComponent(leftPanel);
 		getContentPane().add(splitPane, BorderLayout.CENTER);
 		
+		scrollPane.setMinimumSize(new Dimension(scrollPane.getPreferredSize().width+scrollPane.getVerticalScrollBar().getVisibleAmount()*2,0));
+		
 		if(Globals.isOSX())
 		{
-			scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-
 			splitPane.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY,(e) ->
 			{
 				SwingUtilities.invokeLater(() -> workAroundOSXOpenGLBugs(true));
