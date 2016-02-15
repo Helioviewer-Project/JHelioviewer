@@ -124,9 +124,9 @@ public class OverviewPanel extends MainPanel
 	}
 	
 	@Override
-	protected void repaintInternal()
+	protected void repaintInternal(boolean _synchronously)
 	{
-		//rendering will be called by the mainpanel
+		//repainting will be invoked by the mainpanel
 	}
 	
 	@Override

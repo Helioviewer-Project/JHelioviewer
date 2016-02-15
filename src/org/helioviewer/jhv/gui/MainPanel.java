@@ -28,6 +28,7 @@ import java.util.concurrent.Future;
 
 import javax.annotation.Nullable;
 import javax.swing.JFrame;
+import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.base.Globals;
@@ -152,8 +153,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			@Override
 			public void timeStampChanged(LocalDateTime current, LocalDateTime last)
 			{
-				//FIXME: is apparently not synchronous! repro: set fps=800 under os x
-				MainPanel.this.repaintInternal();
+				MainPanel.this.repaintInternal(true);
 			}
 			
 			@Override
@@ -164,7 +164,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			@Override
 			public void isPlayingChanged(boolean _isPlaying)
 			{
-				MainPanel.this.repaintInternal();
+				MainPanel.this.repaintInternal(false);
 			}
 		});
 		addMouseListener(new MouseAdapter()
@@ -280,9 +280,12 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		visibleAreaOutline = new Vector3d[40];
 	}
 	
-	protected void repaintInternal()
+	protected void repaintInternal(boolean _synchronously)
 	{
-		repaint();
+		if(_synchronously)
+			display();
+		else
+			repaint();
 	}
 
 	public Quaternion getRotationCurrent()
@@ -626,7 +629,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			gl.glPopMatrix();
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
 		}*/
-
+		
 		// force immediate repaints of dependent regions
 		for (MainPanel componentView : synchronizedViews)
 			componentView.repaint();

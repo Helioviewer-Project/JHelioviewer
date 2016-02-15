@@ -234,6 +234,8 @@ public class KakaduLayer extends ImageLayer
 	
 	private volatile boolean incomplete;
 	
+	
+	
 	//TODO: test what happens when the same sourceId is added twice, concurrently
 	
 	private void setTimeRange(final LocalDateTime _start, final LocalDateTime _end, final int _cadence)
@@ -251,6 +253,8 @@ public class KakaduLayer extends ImageLayer
 				int settingsPreviewQuality=Settings.getInt(IntKey.PREVIEW_QUALITY);
 				boolean settingsPreviewEnabled=Settings.getBoolean(BooleanKey.PREVIEW_ENABLED);
 
+				//FIXME: do not access movieCache from another (=this) thread
+				
 				//TODO: instead, request images by subdividing resolution
 				LinkedList<MovieDownload> downloads = new LinkedList<>();
 				try
@@ -273,14 +277,7 @@ public class KakaduLayer extends ImageLayer
 							if(bestMatch != null && bestMatch.movie.quality!=Quality.FULL)
 								try
 								{
-									SwingUtilities.invokeAndWait(new Runnable()
-									{
-										@Override
-										public void run()
-										{
-											MovieCache.remove(bestMatch.movie);
-										}
-									});
+									SwingUtilities.invokeAndWait(() -> MovieCache.remove(bestMatch.movie));
 								}
 								catch(Throwable t)
 								{

@@ -24,7 +24,6 @@
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="lib/junrar-0.7.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-logging-1.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/core-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/gluegen-rt-natives-linux-amd64.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/gluegen-rt-natives-linux-i586.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/gluegen-rt-natives-macosx-universal.jar"/>
@@ -45,5 +44,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/annotations.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jsr305.jar"/>
 	<classpathentry kind="lib" path="lib/jogl-all.jar"/>
+	<classpathentry kind="lib" path="lib/core-2.1.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

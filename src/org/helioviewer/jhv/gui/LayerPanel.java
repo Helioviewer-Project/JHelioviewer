@@ -465,8 +465,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 				ignoreTableEvents++;
 				
 				Rectangle total=null;
-				int row = 0;
-				for (Layer layer : Layers.getLayers())
+				for(int row=0;row<table.getRowCount();row++)
 				{
 					Rectangle cur=table.getCellRect(row, 1, false);
 					if(total==null)

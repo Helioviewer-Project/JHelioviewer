@@ -35,7 +35,7 @@ struct Ray
     vec3 direction;
 };
 
-Sphere sphere = Sphere(vec3(0,0,0),695700000);
+Sphere sphere = Sphere(vec3(0.,0.,0.),695700000.);
 
 float intersectSphere(in Ray ray, in Sphere sphere)
 {
