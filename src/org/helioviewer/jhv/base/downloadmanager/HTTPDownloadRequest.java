@@ -28,5 +28,7 @@ public class HTTPDownloadRequest extends HTTPRequest
 		
 		//don't waste memory by keeping the downloaded data in memory
 		rawData=null;
+		System.gc();
+		System.runFinalization();
 	}
 }

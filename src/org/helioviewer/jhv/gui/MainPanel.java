@@ -630,9 +630,10 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
 		}*/
 		
-		// force immediate repaints of dependent regions
+		//TODO: make repaint synchronous? (always up to date) or not synchronous? (arbitrarily delayed, but better perf) 
+		// force repaints of dependent regions
 		for (MainPanel componentView : synchronizedViews)
-			componentView.repaint();
+			componentView.display();
 	}
 	
 	protected DecodeQualityLevel shouldHurry()

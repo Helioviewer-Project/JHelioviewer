@@ -2,6 +2,8 @@ package org.helioviewer.jhv.viewmodel.jp2view.newjpx;
 
 import java.awt.Dimension;
 import java.awt.Rectangle;
+import java.lang.reflect.InvocationTargetException;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -10,9 +12,11 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -23,6 +27,7 @@ import javax.swing.SwingUtilities;
 import org.helioviewer.jhv.base.FutureValue;
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.ImageRegion;
+import org.helioviewer.jhv.base.IntervalStore;
 import org.helioviewer.jhv.base.Settings;
 import org.helioviewer.jhv.base.Settings.BooleanKey;
 import org.helioviewer.jhv.base.Settings.IntKey;
@@ -50,6 +55,8 @@ import org.json.JSONObject;
 import org.w3c.dom.Document;
 
 import com.jogamp.opengl.GLContext;
+
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class KakaduLayer extends ImageLayer
 {
@@ -226,6 +233,8 @@ public class KakaduLayer extends ImageLayer
 		@Nullable JPIPRequest lq;
 		@Nullable JPIPDownloadRequest hq;
 		@Nullable Movie lqMovie;
+		List<Long> from = new ArrayList<Long>();
+		List<Long> to = new ArrayList<Long>();
 		
 		MovieDownload()
 		{
@@ -234,301 +243,307 @@ public class KakaduLayer extends ImageLayer
 	
 	private volatile boolean incomplete;
 	
+	private final LinkedList<MovieDownload> pendingDownloads = new LinkedList<>();
+	private final ArrayList<Long> startTimes = new ArrayList<Long>();
+	private final ArrayList<Long> endTimes = new ArrayList<Long>();
 	
+	private void startPendingDownloads()
+	{
+		while(!startTimes.isEmpty())
+		{
+			MovieDownload md=new MovieDownload();
+			
+			StringBuilder currentStarts = new StringBuilder();
+			StringBuilder currentEnds = new StringBuilder();
+			
+			int batchSize=Settings.getInt(IntKey.JPIP_BATCH_SIZE);
+			for(int i=0;i<batchSize && !startTimes.isEmpty(); i++) 
+			{
+				Long a = startTimes.remove(0);
+				Long b = endTimes.remove(0);
+				
+				md.from.add(a);
+				md.to.add(b);
+				
+				if(currentStarts.length()>0)
+				{
+					currentStarts.append(',');
+					currentEnds.append(',');
+				}
+				currentStarts.append(a.toString());
+				currentEnds.append(b.toString());
+			}
+			
+			/*if(SETTINGS_PREVIEW_ENABLED && ssCurrentStarts.length()>0)
+				md.metadata = new HTTPRequest(Globals.JPX_DATASOURCE_MIDPOINT
+						+ "?sourceId=" + sourceId
+						+ "&jpip=true"
+						+ "&verbose=true"
+						+ "&startTimes=" + ssCurrentStarts.toString()
+						+ "&endTimes=" + ssCurrentEnds.toString(),
+						DownloadPriority.HIGH);*/
+			
+			md.hq = new JPIPDownloadRequest(Globals.JPX_DATASOURCE_MIDPOINT
+					+ "?sourceId=" + sourceId
+					+ "&startTimes=" + currentStarts.toString()
+					+ "&endTimes=" + currentEnds.toString(),
+					MovieCache.generateFilename(sourceId),
+					DownloadPriority.LOW);
+			
+			pendingDownloads.add(md);
+			DownloadManager.addRequest(md.hq);
+		}
+	}
 	
-	//TODO: test what happens when the same sourceId is added twice, concurrently
+	private void addRangeRequest(long _start, long _end, final long _cadence)
+	{
+		if(_cadence<1)
+			throw new IllegalArgumentException("Invalid cadence: "+_cadence);
+		
+		while(_start<_end)
+		{
+			long a = _start;
+			long b = _start + _cadence;
+			LocalDateTime middle = LocalDateTime.ofInstant(Instant.ofEpochSecond(_start + _cadence/2).plusMillis((_cadence&1)==1?500:0), ZoneOffset.UTC);
+			
+			if(!noFrames.fullyContains(a,b))
+			{
+				Match bestMatch = MovieCache.findBestFrame(sourceId, middle);
+				if(bestMatch==null || bestMatch.timeDifferenceSeconds>_cadence/2 || bestMatch.movie.quality!=Quality.FULL)
+				{
+					if(bestMatch!=null && bestMatch.movie.quality!=Quality.FULL)
+						MovieCache.remove(bestMatch.movie);
+					
+					startTimes.add(a);
+					endTimes.add(b);
+				}
+			}
+			
+			_start += _cadence;
+		}
+	}
+	
+	static final int SETTINGS_JPIP_BATCH_SIZE=Settings.getInt(IntKey.JPIP_BATCH_SIZE);
+	static final int SETTINGS_PREVIEW_TIME_SUBSAMPLE=Settings.getInt(IntKey.PREVIEW_TEMPORAL_SUBSAMPLE);
+	static final int SETTINGS_PREVIEW_SIZE=Settings.getInt(IntKey.PREVIEW_RESOLUTION);
+	static final int SETTINGS_PREVIEW_QUALITY=Settings.getInt(IntKey.PREVIEW_QUALITY);
+	static final boolean SETTINGS_PREVIEW_ENABLED=Settings.getBoolean(BooleanKey.PREVIEW_ENABLED);
+	
+	static final IntervalStore<Long> noFrames=new IntervalStore<>();
 	
 	private void setTimeRange(final LocalDateTime _start, final LocalDateTime _end, final int _cadence)
 	{
 		if(loaderThread!=null)
 			throw new IllegalStateException("Shouldn't restart while existing thread is still running.");
 		
-		loaderThread = new Thread(new Runnable()
+		//TODO: download should probably use lq previews
+		
+		loaderThread = new Thread(() ->
 		{
-			@Override
-			public void run()
+			try
 			{
-				int settingsPreviewTimeSubsample=Settings.getInt(IntKey.PREVIEW_TEMPORAL_SUBSAMPLE);
-				int settingsPreviewSize=Settings.getInt(IntKey.PREVIEW_RESOLUTION);
-				int settingsPreviewQuality=Settings.getInt(IntKey.PREVIEW_QUALITY);
-				boolean settingsPreviewEnabled=Settings.getBoolean(BooleanKey.PREVIEW_ENABLED);
-
-				//FIXME: do not access movieCache from another (=this) thread
+				//round down/up to the nearest _cadence block (helps avoid jitter in general and reduces required frames)
+				long lStart = (_start.atOffset(ZoneOffset.UTC).getLong(ChronoField.INSTANT_SECONDS)/_cadence)*_cadence;
+				long lEnd = ((_end.atOffset(ZoneOffset.UTC).getLong(ChronoField.INSTANT_SECONDS)+_cadence-1)/_cadence)*_cadence;
+				long frames = (lEnd-lStart)/_cadence;
+				System.out.println("Downloading "+frames+" frames total");
 				
-				//TODO: instead, request images by subdividing resolution
-				LinkedList<MovieDownload> downloads = new LinkedList<>();
-				try
+				int divisor = (int)Math.round(Math.pow(SETTINGS_PREVIEW_TIME_SUBSAMPLE, Math.ceil(Math.log(frames)/Math.log(SETTINGS_PREVIEW_TIME_SUBSAMPLE))-1));
+				for(;divisor>0;divisor/=SETTINGS_PREVIEW_TIME_SUBSAMPLE)
 				{
-					ArrayList<Long> startTimes = new ArrayList<Long>();
-					ArrayList<Long> endTimes = new ArrayList<Long>();
+					long cadence=_cadence*divisor;
+					long start = (_start.atOffset(ZoneOffset.UTC).getLong(ChronoField.INSTANT_SECONDS)/cadence)*cadence;
+					long end = ((_end.atOffset(ZoneOffset.UTC).getLong(ChronoField.INSTANT_SECONDS)+cadence-1)/cadence)*cadence;
 					
-					LocalDateTime currentStart = _start;
-					while (currentStart.isBefore(_end))
+					SwingUtilities.invokeAndWait(() -> addRangeRequest(start, end, cadence));
+					startPendingDownloads();
+					while(!pendingDownloads.isEmpty())
 					{
-						LocalDateTime currentEnd = currentStart.plusSeconds(_cadence);
-						if(currentEnd.isAfter(_end))
-							currentEnd = _end;
+						Thread.sleep(250);
+						final MovieDownload download = pendingDownloads.removeFirst();
 						
-						//don't re-download already cached images
-						long maxDistance = currentStart.until(currentEnd, ChronoUnit.SECONDS)/2;
-						Match bestMatch=MovieCache.findBestFrame(sourceId, currentStart.plusSeconds(maxDistance));
-						if(bestMatch == null || bestMatch.timeDifferenceSeconds>maxDistance || bestMatch.movie.quality!=Quality.FULL)
+						if(!download.hq.isFinished())
 						{
-							if(bestMatch != null && bestMatch.movie.quality!=Quality.FULL)
-								try
-								{
-									SwingUtilities.invokeAndWait(() -> MovieCache.remove(bestMatch.movie));
-								}
-								catch(Throwable t)
-								{
-									Telemetry.trackException(t);
-								}
-							
-							startTimes.add(currentStart.atOffset(ZoneOffset.UTC).getLong(ChronoField.INSTANT_SECONDS));
-							endTimes.add(currentEnd.atOffset(ZoneOffset.UTC).getLong(ChronoField.INSTANT_SECONDS));
+							pendingDownloads.addLast(download);
+							continue;
 						}
 						
-						currentStart = currentEnd;
-					}
-					
-					System.out.println("Downloading "+startTimes.size()+" frames");
-					
-					while (!startTimes.isEmpty())
-					{
-						StringBuilder currentStarts = new StringBuilder();
-						StringBuilder currentEnds = new StringBuilder();
-						StringBuilder ssCurrentStarts = new StringBuilder();
-						StringBuilder ssCurrentEnds = new StringBuilder();
-						
-						int batchSize=Settings.getInt(IntKey.JPIP_BATCH_SIZE);
-						for(int i=0;i<batchSize && !startTimes.isEmpty(); i++) 
-						{
-							String start=startTimes.remove(0).toString();
-							String end=endTimes.remove(0).toString();
-							
-							if(currentStarts.length()>0)
-							{
-								currentStarts.append(',');
-								currentEnds.append(',');
-							}
-							currentStarts.append(start);
-							currentEnds.append(end);
-							
-							if(i%settingsPreviewTimeSubsample==0)
-							{
-								if(ssCurrentStarts.length()>0)
-								{
-									ssCurrentStarts.append(',');
-									ssCurrentEnds.append(',');
-								}
-								ssCurrentStarts.append(start);
-								ssCurrentEnds.append(end);
-							}
-						}
-						
-						MovieDownload md=new MovieDownload();
-						
-						if(settingsPreviewEnabled && ssCurrentStarts.length()>0)
-							md.metadata = new HTTPRequest(Globals.JPX_DATASOURCE_MIDPOINT
-									+ "?sourceId=" + sourceId
-									+ "&jpip=true"
-									+ "&verbose=true"
-									+ "&startTimes=" + ssCurrentStarts.toString()
-									+ "&endTimes=" + ssCurrentEnds.toString(),
-									DownloadPriority.HIGH);
-						
-						md.hq = new JPIPDownloadRequest(Globals.JPX_DATASOURCE_MIDPOINT
-								+ "?sourceId=" + sourceId
-								+ "&startTimes=" + currentStarts.toString()
-								+ "&endTimes=" + currentEnds.toString(),
-								MovieCache.generateFilename(sourceId),
-								DownloadPriority.LOW);
-						
-						downloads.add(md);
-						
-						currentStart = currentStart.plusSeconds(_cadence * batchSize);
-					}
-					
-					if(settingsPreviewEnabled)
-						for(MovieDownload md:downloads)
-							DownloadManager.addRequest(md.metadata);
-					for(MovieDownload md:downloads)
-						DownloadManager.addRequest(md.hq);
-					
-					while(!downloads.isEmpty())
-					{
-						//System.out.println("Pending download:");
 						try
 						{
-							if (Thread.interrupted())
+							download.hq.checkException();
+							if(download.hq.isEmpty())
 							{
-								incomplete=true;
-								break;
+								for(int i=0; i < download.from.size();i++)
+								{
+									long from = download.from.get(i);
+									long to = download.to.get(i);
+									noFrames.addInterval(from, to);
+								}
+								continue;
 							}
 							
-							final MovieDownload download = downloads.removeFirst();
-							//System.out.println(download.metadata+" "+download.lq+" "+download.hq+" "+download.lqMovie);
-							if(download.metadata!=null && download.metadata.isFinished())
+							//api may return fewer frames than requested. this means that there were no frames for some time ranges
+							final Movie m=new Movie(sourceId,download.hq.getFilename());
+							for(int i=0; i < download.from.size();i++)
 							{
-								try
+								long from = download.from.get(i);
+								long to = download.to.get(i);
+								boolean found=false;
+								
+								for(int f=0; f < m.getFrameCount();f++)
 								{
-									JSONObject jsonObject = new JSONObject(download.metadata.getDataAsString());
-									if (jsonObject.has("error"))
+									MetaData md = m.getMetaData(f);
+									if(md!=null)
 									{
-										System.err.println("JSON error: "+download.metadata.getDataAsString());
-										
-										DownloadManager.remove(download.metadata);
-										DownloadManager.remove(download.lq);
-										DownloadManager.remove(download.hq);
-										
-										incomplete=true;
-										continue;
-									}
-									
-									boolean containsValidFrames = false;
-									JSONArray frames = ((JSONArray) jsonObject.get("frames"));
-									for(int i=0;i<frames.length();i++)
-										if(!"null".equalsIgnoreCase(frames.getString(i)))
+										long ts = md.localDateTime.atOffset(ZoneOffset.UTC).getLong(ChronoField.INSTANT_SECONDS);
+										if(ts>=from && ts<to)
 										{
-											containsValidFrames = true;
+											found=true;
 											break;
 										}
-									
-									if(containsValidFrames)
-									{
-										if(settingsPreviewEnabled)
-										{
-											//TODO: quality limiting doesn't work
-											download.lq = new JPIPRequest(jsonObject.getString("uri"), DownloadPriority.MEDIUM, 0, frames.length()-1, settingsPreviewQuality, new Rectangle(settingsPreviewSize, settingsPreviewSize));
-											DownloadManager.addRequest(download.lq);
-										}
-
 									}
-									
-									download.metadata=null;
-									downloads.addLast(download);
-								}
-								catch(JSONException _e)
-								{
-									DownloadManager.remove(download.metadata);
-									DownloadManager.remove(download.lq);
-									DownloadManager.remove(download.hq);
-	
-									Telemetry.trackException(_e);
-									
-									incomplete=true;
-									continue;
-								}
-							}
-							else if(download.hq!=null && download.hq.isFinished())
-							{
-								DownloadManager.remove(download.metadata);
-								DownloadManager.remove(download.lq);
-								
-								try
-								{
-									download.hq.checkException();
-									final Movie m=new Movie(sourceId,download.hq.filename);
-									SwingUtilities.invokeAndWait(new Runnable()
-									{
-										@Override
-										public void run()
-										{
-											if(download.lqMovie!=null)
-												MovieCache.remove(download.lqMovie);
-											
-											MovieCache.add(m);
-										}
-									});
-								}
-								catch(Throwable _t)
-								{
-									incomplete=true;
-									Telemetry.trackException(_t);
-									continue;
-								}
-							}
-							else if(download.lq!=null && download.lq.isFinished())
-							{
-								try
-								{
-									download.lqMovie=new Movie(sourceId,download.lq.kduCache);
-									SwingUtilities.invokeAndWait(new Runnable()
-									{
-										@Override
-										public void run()
-										{
-											MovieCache.add(download.lqMovie);
-										}
-									});
-								}
-								catch(UnsuitableMetaDataException _umde)
-								{
-									Telemetry.trackException(_umde);
 								}
 								
-								download.lq=null;
-								downloads.addLast(download);
+								if(!found)
+									noFrames.addInterval(from, to);
 							}
-							else if(download.hq!=null || download.lq!=null || download.metadata!=null)
+							
+							//double check api response, to detect misunderstandings & bugs
+							for(int f=0; f < m.getFrameCount();f++)
 							{
-								downloads.addLast(download);
-								SwingUtilities.invokeLater(new Runnable()
+								MetaData md = m.getMetaData(f);
+								if(md!=null)
 								{
-									@Override
-									public void run()
+									long ts = md.localDateTime.atOffset(ZoneOffset.UTC).getLong(ChronoField.INSTANT_SECONDS);
+									if(noFrames.contains(ts))
+										throw new Exception("API returned frame for "+ts+" when it previously found no such frame.");
+									
+									boolean found=false;
+									
+									for(int i=0; i < download.from.size();i++)
 									{
-										//TODO: should only happen if needed (layer visible, time range, ...)
-										MainFrame.SINGLETON.MAIN_PANEL.repaint(1000);
-										MainFrame.SINGLETON.OVERVIEW_PANEL.repaint(1000);
-										MainFrame.SINGLETON.MOVIE_PANEL.repaint(1000);
+										long from = download.from.get(i);
+										long to = download.to.get(i);
+										
+										if(ts>=from && ts<to)
+										{
+											found=true;
+											break;
+										}
 									}
-								});
-								Thread.sleep(500);
+									
+									if(!found)
+										throw new Exception("API returned data from not requested time range: "+ts);
+								}
 							}
-							else
-								throw new RuntimeException("Downloads shouldn't ever be in this state.");
-						}
-						catch (InterruptedException _e)
-						{
-							incomplete=true;
-							break;
+							
+							SwingUtilities.invokeAndWait(() ->
+							{
+								if(download.lqMovie!=null)
+									MovieCache.remove(download.lqMovie);
+								
+								MovieCache.add(m);
+								MainFrame.SINGLETON.MAIN_PANEL.repaint(1000);
+								MainFrame.SINGLETON.OVERVIEW_PANEL.repaint(1000);
+								MainFrame.SINGLETON.MOVIE_PANEL.repaint(1000);
+							});
 						}
 						catch(Throwable _e)
 						{
-							incomplete=true;
+							if(divisor==1)
+								incomplete=true;
 							Telemetry.trackException(_e);
 						}
 					}
 				}
-				finally
+			}
+			catch (InterruptedException _e)
+			{
+				incomplete=true;
+			}
+			catch(InvocationTargetException _ite)
+			{
+				Telemetry.trackException(_ite);
+			}
+			finally
+			{
+				System.out.println("Loader thread terminated.");
+				loaderThread=null;
+				
+				SwingUtilities.invokeLater(new Runnable()
 				{
-					System.out.println("Loader thread terminated.");
-					loaderThread=null;
-					
-					SwingUtilities.invokeLater(new Runnable()
+					@Override
+					public void run()
 					{
-						@Override
-						public void run()
-						{
-							for(Texture t:ImageLayer.textures)
-								t.invalidate();
-							MainFrame.SINGLETON.LAYER_PANEL.updateData();
-							MainFrame.SINGLETON.MAIN_PANEL.repaint();
-							MainFrame.SINGLETON.OVERVIEW_PANEL.repaint();
-							MainFrame.SINGLETON.MOVIE_PANEL.repaint();
-						}
-					});
-					
-					for(MovieDownload md:downloads)
-					{
-						DownloadManager.remove(md.hq);
-						DownloadManager.remove(md.lq);
-						DownloadManager.remove(md.metadata);
+						for(Texture t:ImageLayer.textures)
+							t.invalidate();
+						MainFrame.SINGLETON.LAYER_PANEL.updateData();
+						MainFrame.SINGLETON.MAIN_PANEL.repaint();
+						MainFrame.SINGLETON.OVERVIEW_PANEL.repaint();
+						MainFrame.SINGLETON.MOVIE_PANEL.repaint();
 					}
+				});
+				
+				for(MovieDownload md:pendingDownloads)
+				{
+					DownloadManager.remove(md.hq);
+					DownloadManager.remove(md.lq);
+					DownloadManager.remove(md.metadata);
 				}
 			}
 		}, "Layer loader "+sourceId);
+		
+		/* 
+			JSONObject jsonObject = new JSONObject(download.metadata.getDataAsString());
+			if (jsonObject.has("error"))
+			{
+				System.err.println("JSON error: "+download.metadata.getDataAsString());
+				
+				DownloadManager.remove(download.metadata);
+				DownloadManager.remove(download.lq);
+				DownloadManager.remove(download.hq);
+				
+				incomplete=true;
+				continue;
+			}
+			
+			boolean containsValidFrames = false;
+			JSONArray frames = ((JSONArray) jsonObject.get("frames"));
+			for(int i=0;i<frames.length();i++)
+				if(!"null".equalsIgnoreCase(frames.getString(i)))
+				{
+					containsValidFrames = true;
+					break;
+				}
+			
+			if(containsValidFrames)
+			{
+				if(SETTINGS_PREVIEW_ENABLED)
+				{
+					//TODO: quality limiting doesn't work
+					download.lq = new JPIPRequest(jsonObject.getString("uri"), DownloadPriority.MEDIUM, 0, frames.length()-1, SETTINGS_PREVIEW_QUALITY, new Rectangle(SETTINGS_PREVIEW_SIZE, SETTINGS_PREVIEW_SIZE));
+					DownloadManager.addRequest(download.lq);
+				}
+
+			}
+			
+			download.metadata=null;
+			downloads.addLast(download);
+		}
+		catch(JSONException _e)
+
+
+			
+			download.lqMovie=new Movie(sourceId,download.lq.kduCache);
+			SwingUtilities.invokeAndWait(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					MovieCache.add(download.lqMovie);
+				}
+			});
+		*/
 
 		incomplete = false;
 		loaderThread.setDaemon(true);

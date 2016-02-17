@@ -77,8 +77,6 @@ public class JPIPRequest extends AbstractDownloadRequest
 					Telemetry.trackException(e);
 				}
 			}
-			
-			finished = true;
 		}
 		catch (URISyntaxException | UnsuitableMetaDataException | KduException e)
 		{

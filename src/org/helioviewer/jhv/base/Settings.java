@@ -189,7 +189,8 @@ public class Settings
 		PREVIEW_RESOLUTION("preview.resolution"),
 		PREVIEW_QUALITY("preview.quality"),
 		PREVIEW_TEMPORAL_SUBSAMPLE("preview.temporal.subsample"),
-		JPIP_BATCH_SIZE("jpip.batchsize"), STARTUP_LICENSE_SHOWN("startup.license");
+		JPIP_BATCH_SIZE("jpip.batchsize"), STARTUP_LICENSE_SHOWN("startup.license"),
+		CACHE_SIZE("cache.size");
 
         String key;
         private IntKey(String _key)

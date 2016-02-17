@@ -34,6 +34,7 @@ public class HTTPRequest extends AbstractDownloadRequest
 
 	
 	private volatile HttpURLConnection httpURLConnection;
+	private volatile boolean downloadComplete;
 	
 	@SuppressWarnings("resource")
 	public void execute() throws Throwable
@@ -82,6 +83,7 @@ public class HTTPRequest extends AbstractDownloadRequest
 		}
 		finally
 		{
+			downloadComplete=true;
 			try
 			{
 				httpURLConnection.disconnect();
@@ -89,7 +91,6 @@ public class HTTPRequest extends AbstractDownloadRequest
 			catch(Exception _e)
 			{
 			}
-			finished = true;
 		}
 	}
 
@@ -101,7 +102,7 @@ public class HTTPRequest extends AbstractDownloadRequest
 	public ByteSource getData() throws Throwable
 	{
 		//TODO: proper synchronization
-		while(!isFinished())
+		while(!downloadComplete)
 			Thread.sleep(20);
 		
 		if (exception != null)

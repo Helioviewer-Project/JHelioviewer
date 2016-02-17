@@ -374,7 +374,6 @@ public class Movie
 			{
 				metaDatas[i]=MetaDataFactory.getMetaData(readMetadataDocument(i+1));
 				
-				//TODO: this happens very often. it shouldn't.
 				if(metaDatas[i]==null)
 					Telemetry.trackException(new UnsuitableMetaDataException("Cannot find metadata class for:\n"+KakaduUtils.getXml(family_src, i+1)));
 				

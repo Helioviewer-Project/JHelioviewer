@@ -7,12 +7,29 @@ import com.google.common.io.ByteSource;
 
 public class JPIPDownloadRequest extends HTTPRequest
 {
-	public final String filename;
+	private final String filename;
+	private boolean isEmpty;
 	
 	public JPIPDownloadRequest(String _url, String _filename, DownloadPriority _priority)
 	{
 		super(_url, _priority, 3);
 		filename=_filename;
+	}
+	
+	public boolean isEmpty()
+	{
+		return isEmpty;
+	}
+	
+	public String getFilename()
+	{
+		if(!isFinished())
+			throw new IllegalStateException("Download not yet finished.");
+		
+		if(isEmpty)
+			throw new IllegalStateException("Download was empty. Check isEmpty() beforehand.");
+		
+		return filename;
 	}
 
 	@Override
@@ -21,12 +38,16 @@ public class JPIPDownloadRequest extends HTTPRequest
 		super.execute();
 		
 		ByteSource data = getData();
-		try(FileOutputStream fos = new FileOutputStream(new File(filename)))
-		{
-			data.copyTo(fos);
-		}
-		
+		isEmpty = data.size()==0;
+		if(!isEmpty)
+			try(FileOutputStream fos = new FileOutputStream(new File(filename)))
+			{
+				data.copyTo(fos);
+			}
+
 		//don't waste memory by keeping the downloaded data in memory
 		rawData = null;
+		System.gc();
+		System.runFinalization();
 	}
 }

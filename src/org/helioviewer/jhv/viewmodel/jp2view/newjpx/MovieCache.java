@@ -16,6 +16,7 @@ import javax.annotation.Nullable;
 import org.helioviewer.jhv.base.JHVUncaughtExceptionHandler;
 import org.helioviewer.jhv.base.Settings;
 import org.helioviewer.jhv.base.Telemetry;
+import org.helioviewer.jhv.base.Settings.IntKey;
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 import org.helioviewer.jhv.layers.Movie;
 import org.helioviewer.jhv.layers.Movie.Match;
@@ -31,7 +32,7 @@ public class MovieCache
 {
 	private static HashMap<Integer,List<Movie>> cache = new HashMap<>();
 
-	private static final long MAX_CACHE_SIZE = 1024*1024*1024;
+	private static final long MAX_CACHE_SIZE = 1024*1024*Settings.getInt(IntKey.CACHE_SIZE);
 	
 	private static final File CACHE_DIR = new File(System.getProperty("java.io.tmpdir"), "jhv-movie-cache");
 	

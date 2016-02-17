@@ -101,7 +101,7 @@ float sharpenValue(vec2 texPos)
     tmp -= texture2D(texture,texPos + vec2(   x,  y+y)).r * 4;
     //tmp -= texture2D(texture,texPos + vec2( x+x,  y+y)).r;
     
-    return clamp(texture2D(texture,texPos).r + tmp / 3.0 * sharpen, 0.0, 1.0);
+    return clamp(texture2D(texture,texPos).r + tmp / 20.0 * sharpen, 0.0, 1.0);
 }
 
 float contrastValue(float color)

@@ -19,7 +19,7 @@ public class DownloadManager
 		
 		Tuple(AbstractDownloadRequest _adr)
 		{
-			request= new WeakReference<>(_adr);
+			request = new WeakReference<>(_adr);
 		}
 	}
 	
@@ -69,17 +69,17 @@ public class DownloadManager
 										activeDownloads.put(request, Thread.currentThread());
 									}
 									
-									//if(request.priority.ordinal()>DownloadPriority.LOW.ordinal())
-										activeDownloadCount.incrementAndGet();
+									activeDownloadCount.incrementAndGet();
 									request.execute();
+									request.finished=true;
 								}
 								catch (Throwable e)
 								{
-									System.err.println(request.url);
-									e.printStackTrace();
-									
 									if(!request.cancelled)
 									{
+										System.err.println(request.url);
+										e.printStackTrace();
+									
 										if (request.justTriedShouldTryAgain())
 											addRequest(request);
 										else
@@ -88,9 +88,8 @@ public class DownloadManager
 								}
 								finally
 								{
-									//if(request.priority.ordinal()>DownloadPriority.LOW.ordinal())
-										activeDownloadCount.decrementAndGet();
-										
+									activeDownloadCount.decrementAndGet();
+									
 									synchronized(activeDownloads)
 									{
 										activeDownloads.remove(request);
