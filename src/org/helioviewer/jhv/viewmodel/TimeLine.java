@@ -67,8 +67,6 @@ public class TimeLine implements LayerListener
 		@Override
 		public void actionPerformed(@Nullable ActionEvent e)
 		{
-			//skippingFrames=false;
-			
 			long now = System.currentTimeMillis();
 			long elapsed = now-lastFrameChange;
 			lastFrameChange = now;

@@ -283,7 +283,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 	protected void repaintInternal(boolean _synchronously)
 	{
 		if(_synchronously)
-			display();
+			repaint(); // display(); breaks OS X
 		else
 			repaint();
 	}
@@ -633,7 +633,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		//TODO: make repaint synchronous? (always up to date) or not synchronous? (arbitrarily delayed, but better perf) 
 		// force repaints of dependent regions
 		for (MainPanel componentView : synchronizedViews)
-			componentView.display();
+			componentView.repaint(); //display breaks OS X
 	}
 	
 	protected DecodeQualityLevel shouldHurry()
