@@ -5,6 +5,8 @@ uniform sampler2D lut;
 uniform mat4 modelView;
 uniform mat4 transformation;
 uniform vec2 physicalImageSize;
+uniform float innerRadius;
+uniform float outerRadius;
 uniform float opacity;
 uniform float sharpen;
 uniform float gamma;
@@ -19,6 +21,7 @@ uniform vec4 imageOffset;
 uniform float opacityCorona;
 uniform float tanFOV;
 uniform vec2 imageResolution;
+uniform vec2 subtexSize;
 uniform int cameraMode;
 uniform float near;
 uniform float far;
@@ -43,8 +46,8 @@ float intersectPlane(in Ray ray, in Plane plane)
     return -(plane.d + dot(ray.origin,plane.normal)) / dot(ray.direction,plane.normal);
 }
 
-const mat3 kernel = mat3(-0.1,-0.2,-0.1,-0.2,1.2,-0.2,-0.1,-0.2,-0.1);
-
+float x = 1./imageResolution.x;
+float y = 1./imageResolution.y;
 
 /* shapen 5x5 filter
   0  -4  -6  -4  0  14
@@ -60,8 +63,6 @@ float sharpenValue(vec2 texPos)
 
     // grayscale value of filter
     float tmp = 0.0;
-    float x = 1.0/imageResolution.x;
-    float y = 1.0/imageResolution.y;
     
     //tmp -= texture2D(texture,texPos + vec2(-x-x, -y-y)).r;
     tmp -= texture2D(texture,texPos + vec2(-  x, -y-y)).r * 4;
@@ -142,11 +143,18 @@ void main(void)
    		discard;
    		
     vec2 pos = ray.origin.xy + tPlane*ray.direction.xy;
-    vec2 texPos = pos/physicalImageSize + 0.5 + sunOffset;
-    if (texPos.x >= 1.0 || texPos.x < 0.0 || texPos.y >= 1.0 || texPos.y < 0.0)
+    float dist = length(pos.xy);
+    if (dist < innerRadius || dist > outerRadius)
     	discard;
     
+    vec2 texPos = pos/physicalImageSize + 0.5 + sunOffset;
+    //if (texPos.x >= 1.0 || texPos.x < 0.0 || texPos.y >= 1.0 || texPos.y < 0.0)
+    //	discard;
+    
     texPos = (texPos - imageOffset.xy) / imageOffset.zw;
+    if (texPos.x <= 2.*x || texPos.y <= 2.*y || texPos.x >= (subtexSize.x-2.*x) || texPos.y >= (subtexSize.y-2.*y))
+    	discard;
+    
     gl_FragColor = vec4(lutLookup(contrastValue(sharpenValue(texPos))) * opacityCorona,1) * vec4(redChannel,greenChannel,blueChannel,opacity);
     
     vec3 origin = vec4(transformation * vec4(0,0,0,1)).xyz;

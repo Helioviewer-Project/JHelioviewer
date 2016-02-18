@@ -21,6 +21,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.RootPaneContainer;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
@@ -118,6 +119,16 @@ public class MainFrame extends JFrame
 		}
 		
 		getContentPane().add(this.getStatusPane(), BorderLayout.SOUTH);
+		
+		
+		repaintTimer=new Timer(250, a ->
+		{
+			System.out.println("Lazy repaint "+System.currentTimeMillis());
+			LAYER_PANEL.updateData();
+			MAIN_PANEL.repaint();
+			MOVIE_PANEL.repaint();
+		});
+		repaintTimer.setRepeats(false);
 	}
 	
 	private void workAroundOSXOpenGLBugs(boolean _isHorizontalMove)
@@ -139,6 +150,13 @@ public class MainFrame extends JFrame
 		}
 		
 		splitPane.setDividerLocation(div);
+	}
+	
+	private Timer repaintTimer;
+	
+	public void repaintLazy()
+	{
+		repaintTimer.start();
 	}
 	
 	public void startWaitCursor()

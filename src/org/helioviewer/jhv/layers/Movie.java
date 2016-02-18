@@ -568,7 +568,7 @@ public class Movie
 			switch(_quality)
 			{
 				case QUALITY:
-					decompressor.Set_quality_limiting(null, 0, 0);
+					decompressor.Set_quality_limiting(new Kdu_quality_limiter(1f/256), 300f*_zoomPercent, 300f*_zoomPercent);
 					break;
 				case PLAYBACK:
 					decompressor.Set_quality_limiting(new Kdu_quality_limiter(4f/256), 300f*_zoomPercent, 300f*_zoomPercent);

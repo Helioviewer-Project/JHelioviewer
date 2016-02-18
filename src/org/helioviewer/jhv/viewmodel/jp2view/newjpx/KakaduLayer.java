@@ -311,6 +311,7 @@ public class KakaduLayer extends ImageLayer
 			long b = _start + _cadence;
 			LocalDateTime middle = LocalDateTime.ofInstant(Instant.ofEpochSecond(_start + _cadence/2).plusMillis((_cadence&1)==1?500:0), ZoneOffset.UTC);
 			
+			//TODO: re-add this check (iff API is reliably)
 			//if(!noFrames.fullyContains(a,b))
 			{
 				Match bestMatch = findBestFrame(middle);
@@ -462,7 +463,7 @@ public class KakaduLayer extends ImageLayer
 										for(int i=0; i < download.from.size();i++)
 											sb.append("\n"+download.from.get(i)+"-"+download.to.get(i));
 										
-										throw new Exception("API returned data from not requested time range: "+ts+". Requested:"+sb.toString());
+										System.err.println("API returned data from not requested time range: "+ts+". Requested:"+sb.toString()+"\n\nURL: "+download.hq.toString());
 									}
 								}
 							}
@@ -473,9 +474,7 @@ public class KakaduLayer extends ImageLayer
 									MovieCache.remove(download.lqMovie);
 								
 								MovieCache.add(m);
-								MainFrame.SINGLETON.MAIN_PANEL.repaint(1000);
-								MainFrame.SINGLETON.OVERVIEW_PANEL.repaint(1000);
-								MainFrame.SINGLETON.MOVIE_PANEL.repaint(1000);
+								MainFrame.SINGLETON.repaintLazy();
 							});
 						}
 						catch(Throwable _e)
@@ -507,18 +506,12 @@ public class KakaduLayer extends ImageLayer
 				System.out.println("Loader thread terminated.");
 				loaderThread=null;
 				
-				SwingUtilities.invokeLater(new Runnable()
+				SwingUtilities.invokeLater(() ->
 				{
-					@Override
-					public void run()
-					{
-						for(Texture t:ImageLayer.textures)
-							t.invalidate();
-						MainFrame.SINGLETON.LAYER_PANEL.updateData();
-						MainFrame.SINGLETON.MAIN_PANEL.repaint();
-						MainFrame.SINGLETON.OVERVIEW_PANEL.repaint();
-						MainFrame.SINGLETON.MOVIE_PANEL.repaint();
-					}
+					for(Texture t:ImageLayer.textures)
+						t.invalidate();
+					
+					MainFrame.SINGLETON.repaintLazy();
 				});
 				
 				for(MovieDownload md:pendingDownloads)

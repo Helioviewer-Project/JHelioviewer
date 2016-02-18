@@ -5,6 +5,8 @@ uniform sampler2D lut;
 uniform mat4 modelView;
 uniform mat4 transformation;
 uniform vec2 physicalImageSize;
+uniform float innerRadius;
+uniform float outerRadius;
 uniform float opacity;
 uniform float sharpen;
 uniform float gamma;
@@ -19,6 +21,7 @@ uniform vec4 imageOffset;
 uniform float opacityCorona;
 uniform float tanFOV;
 uniform vec2 imageResolution;
+uniform vec2 subtexSize;
 uniform int cameraMode;
 uniform float near;
 uniform float far;
@@ -51,8 +54,8 @@ float intersectSphere(in Ray ray, in Sphere sphere)
     return (-b - sqrt(determinant)) * 0.5;
 }
 
-const mat3 kernel = mat3(-0.1,-0.2,-0.1,-0.2,1.2,-0.2,-0.1,-0.2,-0.1);
-
+float x = 1./imageResolution.x;
+float y = 1./imageResolution.y;
 
 /* shapen 5x5 filter
   0  -4  -6  -4  0  14
@@ -68,15 +71,13 @@ float sharpenValue(vec2 texPos)
 
     // grayscale value of filter
     float tmp = 0.0;
-    float x = 1.0/imageResolution.x;
-    float y = 1.0/imageResolution.y;
     
     //tmp -= texture2D(texture,texPos + vec2(-x-x, -y-y)).r;
     tmp -= texture2D(texture,texPos + vec2(-  x, -y-y)).r * 4;
     tmp -= texture2D(texture,texPos + vec2(   0, -y-y)).r * 6;
     tmp -= texture2D(texture,texPos + vec2(   x, -y-y)).r * 4;
     //tmp -= texture2D(texture,texPos + vec2( x+x, -y-y)).r;
-    
+	    
     tmp -= texture2D(texture,texPos + vec2(-x-x,   -y)).r * 4;
     tmp -= texture2D(texture,texPos + vec2(-  x,   -y)).r * 16;
     tmp -= texture2D(texture,texPos + vec2(   0,   -y)).r * 24;
@@ -88,6 +89,7 @@ float sharpenValue(vec2 texPos)
     tmp += texture2D(texture,texPos + vec2(   0,    0)).r * 216;
     tmp -= texture2D(texture,texPos + vec2(   x,    0)).r * 24;
     tmp -= texture2D(texture,texPos + vec2( x+x,    0)).r * 6;
+    
     
     tmp -= texture2D(texture,texPos + vec2(-x-x,    y)).r * 4;
     tmp -= texture2D(texture,texPos + vec2(-  x,    y)).r * 16;
@@ -150,13 +152,17 @@ void main(void)
     	discard;
     
     vec3 pos = ray.origin + tSphere*ray.direction;
-    if (pos.z >= 0.0)
+	float dist = length(pos.xy);
+    if (pos.z >= 0.0 && dist >= innerRadius && dist <= outerRadius)
     {
         vec2 texPos = (pos.xy/physicalImageSize + 0.5) + sunOffset;
-        if (texPos.x >= 1.0 || texPos.x < 0.0 || texPos.y >= 1.0 || texPos.y < 0.0)
-       		discard;
-       		
+        //if (texPos.x >= 1.0 || texPos.x < 0.0 || texPos.y >= 1.0 || texPos.y < 0.0)
+       	//	discard;
+       	
         texPos = (texPos - imageOffset.xy) / imageOffset.zw;
+        if (texPos.x <= 2.*x || texPos.y <= 2.*y || texPos.x >= (subtexSize.x-2.*x) || texPos.y >= (subtexSize.y-2.*y))
+        	discard;
+        	
 	    gl_FragColor = vec4(lutLookup(contrastValue(sharpenValue(texPos))),1) * vec4(redChannel,greenChannel,blueChannel,opacity);
     }
     else

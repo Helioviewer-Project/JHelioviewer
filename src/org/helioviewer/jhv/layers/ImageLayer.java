@@ -54,8 +54,6 @@ public abstract class ImageLayer extends Layer
 	protected int cadence;
 	private boolean metadataInitialized=false;
 	
-	//FIXME: should respect innerRadius & outerRadius
-	
 	public void initializeMetadata(MetaData _md)
 	{
 		if(metadataInitialized)
@@ -236,19 +234,22 @@ public abstract class ImageLayer extends Layer
 		gl.glActiveTexture(GL.GL_TEXTURE1);
 		gl.glBindTexture(GL2.GL_TEXTURE_2D, org.helioviewer.jhv.layers.LUT.getTextureId());
 
+		//TODO: sharpness fade von 100% auf 200% skalierung
+		
 		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "texture"), 0);
 		gl.glUniform1i(gl.glGetUniformLocation(shaderprogram, "lut"), 1);
 		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "tanFOV"), (float) Math.tan(Math.toRadians(MainPanel.FOV / 2.0)));
 		gl.glUniform2f(gl.glGetUniformLocation(shaderprogram, "physicalImageSize"), (float)md.getPhysicalImageWidth(), (float)md.getPhysicalImageHeight());
+		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "innerRadius"), (float)md.getInnerPhysicalRadius());
+		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "outerRadius"), (float)md.getOuterPhysicalRadius());
 		gl.glUniform2f(gl.glGetUniformLocation(shaderprogram, "sunOffset"), xSunOffset, ySunOffset);
 		
 		Rectangle2D sourceArea = _preparedImageData.texture.getImageRegion().areaOfSourceImage;
 		gl.glUniform4f(gl.glGetUniformLocation(shaderprogram, "imageOffset"),
 				(float)sourceArea.getX(),
 				(float)sourceArea.getY(),
-				//TODO: removing this extra texel makes texture jump on resolution changes
-				(float)sourceArea.getWidth()/(_preparedImageData.texture.textureWidth-1f/_preparedImageData.texture.width),
-				(float)sourceArea.getHeight()/(_preparedImageData.texture.textureHeight-1f/_preparedImageData.texture.height)
+				(float)sourceArea.getWidth()/(_preparedImageData.texture.textureWidth),
+				(float)sourceArea.getHeight()/(_preparedImageData.texture.textureHeight)
 			);
 		
 		gl.glUniform1f(gl.glGetUniformLocation(shaderprogram, "opacity"), (float) opacity * (float)_opacityScaling);
@@ -269,6 +270,11 @@ public abstract class ImageLayer extends Layer
 
 		gl.glUniformMatrix4fv(gl.glGetUniformLocation(shaderprogram, "transformation"), 1, true, _transformation.transposed().toFloatArray(), 0);
 
+		gl.glUniform2f(
+				gl.glGetUniformLocation(shaderprogram, "subtexSize"),
+				_preparedImageData.texture.textureWidth,
+				_preparedImageData.texture.textureHeight);
+		
 		gl.glUniform2f(
 				gl.glGetUniformLocation(shaderprogram, "imageResolution"),
 				_preparedImageData.texture.width,

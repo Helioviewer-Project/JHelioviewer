@@ -183,6 +183,9 @@ public abstract class MetaData
         	rotation = new Quaternion(0, 0);
         
 		maskRotation = Math.toRadians(tryGetDouble(_doc, "CROTA"));
+		
+		innerRadius = 0;
+		outerRadius = Double.MAX_VALUE; //not POSITIVE_INFINITY for better glsl compat (NaN & inf undefined in glsl pre-4.1)
     }
 
     public Rectangle2D getPhysicalImageSize()
@@ -208,12 +211,12 @@ public abstract class MetaData
         return new Vector2d(Constants.SUN_RADIUS / solarPixelRadius.x,Constants.SUN_RADIUS / solarPixelRadius.y);
     }
 
-    public double getInnerPhysicalOcculterRadius()
+    public double getInnerPhysicalRadius()
 	{
 		return innerRadius;
 	}
 
-	public double getOuterPhysicalOcculterRadius()
+	public double getOuterPhysicalRadius()
 	{
 		return outerRadius;
 	}

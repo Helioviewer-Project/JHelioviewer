@@ -362,12 +362,6 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		}
 	}
 
-	
-	public void repaintSlider()
-	{
-		slider.repaint();
-	}
-
 	private class TimeSliderUI extends BasicSliderUI
 	{
 		private final Color COLOR_NA = Color.RED;
@@ -421,7 +415,6 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		{
 			if(g==null)
 				return;
-			
 			
 			final int WIDTH = (int)trackRect.getWidth();
 			final int HEIGHT = 7; //(int)trackRect.getHeight();

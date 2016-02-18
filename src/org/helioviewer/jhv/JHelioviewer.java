@@ -193,8 +193,8 @@ public class JHelioviewer
 			splash.progressTo("Setting up Kakadu message handlers");
 	        try
 			{
-				Kdu_global.Kdu_customize_warnings(keepReference(new Kdu_message_formatter(new KduErrorHandler(false), 80)));
-		        Kdu_global.Kdu_customize_errors(keepReference(new Kdu_message_formatter(new KduErrorHandler(true), 80)));
+				Kdu_global.Kdu_customize_warnings(keepReference(new Kdu_message_formatter(keepReference(new KduErrorHandler(false)), 80)));
+		        Kdu_global.Kdu_customize_errors(keepReference(new Kdu_message_formatter(keepReference(new KduErrorHandler(true)), 80)));
 			}
 			catch (KduException e)
 			{
