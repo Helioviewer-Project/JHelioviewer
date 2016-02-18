@@ -88,9 +88,8 @@ public abstract class ImageLayer extends Layer
 
 	public abstract void storeConfiguration(JSONObject jsonLayer);
 	
-	public abstract @Nullable Match getMovie(LocalDateTime _currentDateTime);
+	public abstract @Nullable Match findBestFrame(LocalDateTime _currentDateTime);
 
-	
 	
 	public boolean supportsFilterContrastGamma()
 	{
@@ -511,5 +510,10 @@ public abstract class ImageLayer extends Layer
 	public int getCadence()
 	{
 		return cadence;
+	}
+
+	public boolean isDataAvailableOnServer(LocalDateTime _ldt)
+	{
+		return true;
 	}
 }

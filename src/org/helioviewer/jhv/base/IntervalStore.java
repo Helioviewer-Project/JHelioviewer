@@ -1,6 +1,5 @@
 package org.helioviewer.jhv.base;
 
-import java.time.LocalDateTime;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
@@ -12,11 +11,15 @@ public class IntervalStore<T>
 	{
 	}
 	
-	public void addInterval(T _from, T _to)
+	public void addInterval(T _fromInclusive, T _toExclusive)
 	{
-		times.subMap(_from, _to).clear();
-		times.put(_from, true);
-		times.put(_to, false);
+		boolean endContained=contains(_toExclusive);
+		
+		times.subMap(_fromInclusive, _toExclusive).clear();
+		times.put(_fromInclusive, true);
+		
+		if(!endContained)
+			times.put(_toExclusive, false);
 	}
 	
 	public boolean fullyContains(T _from, T _to)

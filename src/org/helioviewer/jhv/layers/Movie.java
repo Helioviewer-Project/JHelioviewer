@@ -420,6 +420,16 @@ public class Movie
 		{
 			return index ^ Long.hashCode(timeDifferenceSeconds);
 		}
+		
+		public boolean decodeImage(DecodeQualityLevel _quality, float _zoomFactor, Rectangle _requiredPixels, Texture _target)
+		{
+			return movie.decodeImage(index, _quality, _zoomFactor, _requiredPixels, _target);
+		}
+		
+		public MetaData getMetaData()
+		{
+			return movie.getMetaData(index);
+		}
 	}
 	
 	@Nullable public Match findClosestIdx(@Nonnull LocalDateTime _currentDateTime)

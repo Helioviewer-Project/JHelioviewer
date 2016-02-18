@@ -187,7 +187,7 @@ public class TimeLine implements LayerListener
 	@Deprecated
 	public int getFrameCount()
 	{
-		return (int)(startTime.until(endTime, ChronoUnit.SECONDS)/cadence);
+		return (int)(ChronoUnit.SECONDS.between(startTime, endTime)/cadence)+1;
 	}
 	
 	@Deprecated

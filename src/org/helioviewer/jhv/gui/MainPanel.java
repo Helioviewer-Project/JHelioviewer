@@ -28,7 +28,6 @@ import java.util.concurrent.Future;
 
 import javax.annotation.Nullable;
 import javax.swing.JFrame;
-import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.base.Globals;

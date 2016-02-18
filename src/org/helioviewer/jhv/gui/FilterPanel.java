@@ -2,7 +2,6 @@ package org.helioviewer.jhv.gui;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -17,18 +16,17 @@ import java.awt.image.BufferedImage;
 import javax.annotation.Nullable;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JToggleButton;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.plaf.ButtonUI;
-import javax.swing.plaf.metal.MetalButtonUI;
 
-import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.MultiClickAdapter;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.components.WheelSupport;
@@ -36,14 +34,6 @@ import org.helioviewer.jhv.layers.LUT;
 import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
-
-import com.sun.java.swing.plaf.windows.WindowsButtonUI;
-
-import java.awt.Checkbox;
-import javax.swing.JCheckBox;
-import javax.swing.SwingConstants;
-import javax.swing.ImageIcon;
-import javax.swing.border.LineBorder;
 
 public class FilterPanel extends JPanel
 {

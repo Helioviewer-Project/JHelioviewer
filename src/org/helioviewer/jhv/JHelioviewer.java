@@ -29,9 +29,9 @@ import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.UILatencyWatchdog;
 import org.helioviewer.jhv.gui.DebugRepaintManager;
 import org.helioviewer.jhv.gui.IconBank;
+import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.SplashScreen;
-import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 import org.helioviewer.jhv.gui.actions.ShowDialogAction;
 import org.helioviewer.jhv.gui.dialogs.AboutDialog;
@@ -56,7 +56,6 @@ import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLDrawableFactory;
 import com.jogamp.opengl.GLProfile;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import kdu_jni.KduException;
 import kdu_jni.Kdu_global;

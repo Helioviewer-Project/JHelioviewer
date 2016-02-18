@@ -1,6 +1,5 @@
 package org.helioviewer.jhv.viewmodel.jp2view.newjpx;
 
-import java.awt.Rectangle;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -15,16 +14,12 @@ import javax.annotation.Nullable;
 
 import org.helioviewer.jhv.base.JHVUncaughtExceptionHandler;
 import org.helioviewer.jhv.base.Settings;
-import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.Settings.IntKey;
+import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 import org.helioviewer.jhv.layers.Movie;
 import org.helioviewer.jhv.layers.Movie.Match;
-import org.helioviewer.jhv.opengl.Texture;
-import org.helioviewer.jhv.viewmodel.TimeLine.DecodeQualityLevel;
-import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.metadata.UnsuitableMetaDataException;
-import org.w3c.dom.Document;
 
 import com.google.common.io.Files;
 
@@ -147,35 +142,6 @@ public class MovieCache
 			bestMatch.movie.touch();
 		
 		return bestMatch;
-	}
-
-	public static boolean decodeImage(int _sourceId, LocalDateTime _localDateTime, DecodeQualityLevel _quality, float _zoomFactor, Rectangle _requiredPixels, Texture _target)
-	{
-		Match bestMatch=findBestFrame(_sourceId, _localDateTime);
-		if(bestMatch==null)
-			return false;
-		
-		return bestMatch.movie.decodeImage(bestMatch.index, _quality, _zoomFactor, _requiredPixels, _target);
-	}
-
-	@Nullable
-	public static MetaData getMetaData(int _sourceId, LocalDateTime _currentDateTime)
-	{
-		Match match = findBestFrame(_sourceId, _currentDateTime);
-		if (match == null)
-			return null;
-		
-		return match.movie.getMetaData(match.index);
-	}
-	
-	@Nullable
-	public static Document getMetaDataDocument(int _sourceId, LocalDateTime _currentDateTime)
-	{
-		Match match = findBestFrame(_sourceId, _currentDateTime);
-		if (match == null)
-			return null;
-		
-		return match.movie.readMetadataDocument(match.index);
 	}
 
 	public static String generateFilename(int _sourceId)

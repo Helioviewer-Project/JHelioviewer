@@ -9,14 +9,11 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ByteLookupTable;
 import java.awt.image.ColorModel;
 import java.awt.image.LookupOp;
-import java.awt.image.LookupTable;
 import java.awt.image.WritableRaster;
 import java.net.URL;
 
 import javax.annotation.Nullable;
 import javax.swing.ImageIcon;
-
-import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 
 /**
  * This class provides access to all images, icons and cursors which are used by

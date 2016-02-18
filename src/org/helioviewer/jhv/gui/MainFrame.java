@@ -1,8 +1,6 @@
 package org.helioviewer.jhv.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -18,12 +16,10 @@ import java.awt.event.WindowEvent;
 
 import javax.annotation.Nullable;
 import javax.swing.JFrame;
-import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.RootPaneContainer;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.base.Globals;

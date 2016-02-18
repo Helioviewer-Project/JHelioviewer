@@ -156,7 +156,8 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 			}
 		});
 		
-		slider = new TimeSlider();
+		slider = new JSlider();
+		slider.setUI(new TimeSliderUI(slider));
 		slider.setValue(0);
 		slider.setMinimum(0);
 		slider.setMaximum(49);
@@ -367,16 +368,9 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		slider.repaint();
 	}
 
-	private class TimeSlider extends JSlider
-	{
-		public TimeSlider()
-		{
-			setUI(new TimeSliderUI(this));
-		}
-	}
-
 	private class TimeSliderUI extends BasicSliderUI
 	{
+		private final Color COLOR_NA = Color.RED;
 		private final Color COLOR_NOT_CACHED = Color.LIGHT_GRAY;
 		private final Color COLOR_PARTIALLY_CACHED = new Color(0x8080FF);
 		private final Color COLOR_COMPLETELY_CACHED = new Color(0x4040FF);
@@ -412,7 +406,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 			g.drawLine(0, 1, 0, h - 1 - cw);
 			g.drawLine(0, h - cw, cw - 1, h - 1);
 
-			g.setColor(Color.black);
+			g.setColor(Color.BLACK);
 			g.drawLine(w - 1, 0, w - 1, h - 2 - cw);
 			g.drawLine(w - 1, h - 1 - cw, w - 1 - cw, h - 1);
 
@@ -420,68 +414,148 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 			g.drawLine(w - 2, 1, w - 2, h - 2 - cw);
 			g.drawLine(w - 2, h - 1 - cw, w - 1 - cw, h - 2);
 			g.translate(-knobBounds.x, -knobBounds.y);
-
 		}
-
+		
 		@Override
 		public void paintTrack(@Nullable Graphics g)
 		{
 			if(g==null)
 				return;
 			
-			g.translate(trackRect.x, 0);
+			
+			final int WIDTH = (int)trackRect.getWidth();
+			final int HEIGHT = 7; //(int)trackRect.getHeight();
+
+			g.translate(trackRect.x, trackRect.height - HEIGHT - 1);
 			
 			Graphics2D g2 = (Graphics2D) g;
 			
-			final int Y_OFFSET = trackRect.height - 4;
-			final int WIDTH = (int)trackRect.getWidth();
-			final int HEIGHT = 3;
-
-			//TODO: this stuff is regenerated every frame --> should
-			//only be recreated when something has changed
+			//TODO: redrawn every frame --> should only be recalculated when needed
 			
 			ImageLayer layer = Layers.getActiveImageLayer();
 			if (layer != null)
 			{
 				//TODO: speed this code up
 				long duration=TimeLine.SINGLETON.getFirstDateTime().until(TimeLine.SINGLETON.getLastDateTime(), ChronoUnit.SECONDS);
-				int max=Math.min(TimeLine.SINGLETON.getFrameCount(), (int)trackRect.getWidth());
-				
-				for(int i=0;i<max;i++)
+				int max=Math.min(TimeLine.SINGLETON.getFrameCount()-1, (int)trackRect.getWidth());
+				for(int i=0;i<=max;i++)
 				{
 					LocalDateTime localDateTime=TimeLine.SINGLETON.getFirstDateTime().plusSeconds((int)(duration/(double)max*i));
-
-					Match currentMatch = layer.getMovie(localDateTime);
-					if(currentMatch==null || currentMatch.timeDifferenceSeconds>=layer.getCadence())
-						g.setColor(COLOR_NOT_CACHED);
-					else
-						switch (currentMatch.movie.quality)
-						{
-							case FULL:
-								g.setColor(COLOR_COMPLETELY_CACHED);
-								break;
-							case PREVIEW:
-								g.setColor(COLOR_PARTIALLY_CACHED);
-								break;
-							/*case NONE:
-								g.setColor(COLOR_NOT_CACHED);
-								break;*/
-							default:
-								throw new RuntimeException();
-						}
+					/*if(!layer.isDataAvailableOnServer(localDateTime))
+						g.setColor(COLOR_NA);
+					else*/
+					{
+						Match currentMatch = layer.findBestFrame(localDateTime);
+						if(currentMatch==null || currentMatch.timeDifferenceSeconds>layer.getCadence()/2)
+							g.setColor(COLOR_NOT_CACHED);
+						else
+							switch (currentMatch.movie.quality)
+							{
+								case FULL:
+									g.setColor(COLOR_COMPLETELY_CACHED);
+									break;
+								case PREVIEW:
+									g.setColor(COLOR_PARTIALLY_CACHED);
+									break;
+								default:
+									throw new RuntimeException();
+							}
+					}
 					
-					int xa=(int)Math.round(i/(double)max*WIDTH);
-					int xb=(int)Math.round((i+1)/(double)max*WIDTH);
-					g2.fillRect(xa, Y_OFFSET, xb-xa, HEIGHT);
+					int xa=(int)Math.round((i-0.5)/(double)max*WIDTH);
+					int xb=(int)Math.round((i+0.5)/(double)max*WIDTH);
+					if(xa<0)
+						xa=0;
+					if(xb>WIDTH)
+						xb=WIDTH;
+					g2.fillRect(xa, 0, xb-xa, HEIGHT);
 				}
+				
+				
+				
+				/*
+				max=(int)trackRect.getWidth();
+				for(int i=0;i<=max;i++)
+				{
+					LocalDateTime localDateTime=TimeLine.SINGLETON.getFirstDateTime().plusSeconds((int)(duration/(double)max*i));
+					if(!layer.isDataAvailableOnServer(localDateTime))
+						g.setColor(COLOR_NA);
+					else
+					{
+						Match currentMatch = layer.findBestFrame(localDateTime);
+						if(currentMatch==null || currentMatch.timeDifferenceSeconds>layer.getCadence()/2)
+							g.setColor(COLOR_NOT_CACHED);
+						else
+							switch (currentMatch.movie.quality)
+							{
+								case FULL:
+									g.setColor(COLOR_COMPLETELY_CACHED);
+									break;
+								case PREVIEW:
+									g.setColor(COLOR_PARTIALLY_CACHED);
+									break;
+								default:
+									throw new RuntimeException();
+							}
+					}
+					
+					//g.setColor((i&1)==1 ? Color.RED : Color.GREEN);
+					
+					int xa=(int)Math.round((i-0.5)/(double)max*WIDTH);
+					int xb=(int)Math.round((i+0.5)/(double)max*WIDTH);
+					if(xa<0)
+						xa=0;
+					if(xb>WIDTH)
+						xb=WIDTH;
+					g2.fillRect(xa, 0, xb-xa, HEIGHT/4);
+
+
+					LocalDateTime localDateTime=TimeLine.SINGLETON.getFirstDateTime().plusSeconds((int)(duration/(double)max*i));
+					if(!layer.isDataAvailableOnServer(localDateTime))
+						g.setColor(COLOR_NA);
+					else
+					{
+						Match currentMatch = layer.findBestFrame(localDateTime);
+						if(currentMatch==null || currentMatch.timeDifferenceSeconds>duration/max)
+							g.setColor(COLOR_NOT_CACHED);
+						else
+							switch (currentMatch.movie.quality)
+							{
+								case FULL:
+									g.setColor(COLOR_COMPLETELY_CACHED);
+									break;
+								case PREVIEW:
+									g.setColor(COLOR_PARTIALLY_CACHED);
+									break;
+								default:
+									throw new RuntimeException();
+							}
+					}
+					
+					g2.fillRect(xa, HEIGHT/4, xb-xa, HEIGHT/4);
+				}
+
+				max=TimeLine.SINGLETON.getFrameCount()-1;
+				for(int i=0;i<=max;i++)
+				{
+					int xa=(int)Math.round((i-0.5)/(double)max*WIDTH);
+					int xb=(int)Math.round((i+0.5)/(double)max*WIDTH);
+					if(xa<0)
+						xa=0;
+					if(xb>WIDTH)
+						xb=WIDTH;
+					
+					g.setColor((i&1)==1 ? Color.RED : Color.GREEN);
+					g2.fillRect(xa, (int)(HEIGHT*0.5), xb-xa, HEIGHT/4);
+				}*/
 			}
 			else
 			{
 				g.setColor(COLOR_NOT_CACHED);
-				g2.fillRect(0, Y_OFFSET, WIDTH, HEIGHT);
+				g2.fillRect(0, 0, WIDTH, HEIGHT);
 			}
 
-			g.translate(-trackRect.x, 0);
+			g.translate(-trackRect.x, -trackRect.height + HEIGHT + 1);
 		}
 	}
 
