@@ -58,7 +58,6 @@ public class FilterPanel extends JPanel
 	private static final double GAMMA_FACTOR = 0.01 * Math.log(10);
 
 	private static final Icon ICON_INVERT = IconBank.getIcon(JHVIcon.INVERT, 16, 16);
-	private JLabel lblBGRed;
 
 	public FilterPanel()
 	{
@@ -449,15 +448,7 @@ public class FilterPanel extends JPanel
 			}
 		});
 		
-		BufferedImage bgRed=IconBank.getImage(JHVIcon.BG_RED);
-		lblBGRed = new JLabel("")
-		{
-			@Override
-			protected void paintComponent(Graphics _g)
-			{
-				_g.drawImage(bgRed, 0, 0, getWidth()-2, getHeight(), null);
-			}
-		};
+		BGLabel lblBGRed = new BGLabel(JHVIcon.BG_RED);
 		lblBGRed.setHorizontalAlignment(SwingConstants.CENTER);
 		GridBagConstraints gbc_lblBGRed = new GridBagConstraints();
 		gbc_lblBGRed.fill = GridBagConstraints.BOTH;
@@ -466,16 +457,7 @@ public class FilterPanel extends JPanel
 		gbc_lblBGRed.gridy = 5;
 		add(lblBGRed, gbc_lblBGRed);
 
-	
-		BufferedImage bgGreen=IconBank.getImage(JHVIcon.BG_GREEN);
-		JLabel lblBGGreen = new JLabel("")
-		{
-			@Override
-			protected void paintComponent(Graphics _g)
-			{
-				_g.drawImage(bgGreen, 0, 0, getWidth()-2, getHeight(), null);
-			}
-		};
+		BGLabel lblBGGreen = new BGLabel(JHVIcon.BG_GREEN);
 		lblBGGreen.setHorizontalAlignment(SwingConstants.CENTER);
 		GridBagConstraints gbc_lblBGGreen = new GridBagConstraints();
 		gbc_lblBGGreen.fill = GridBagConstraints.BOTH;
@@ -484,16 +466,7 @@ public class FilterPanel extends JPanel
 		gbc_lblBGGreen.gridy = 5;
 		add(lblBGGreen, gbc_lblBGGreen);
 	
-	
-		BufferedImage bgBlue=IconBank.getImage(JHVIcon.BG_BLUE);
-		JLabel lblBGBlue = new JLabel("")
-		{
-			@Override
-			protected void paintComponent(Graphics _g)
-			{
-				_g.drawImage(bgBlue, 0, 0, getWidth()-2, getHeight(), null);
-			}
-		};
+		BGLabel lblBGBlue = new BGLabel(JHVIcon.BG_BLUE);
 		lblBGBlue.setHorizontalAlignment(SwingConstants.CENTER);
 		GridBagConstraints gbc_lblBGBlue = new GridBagConstraints();
 		gbc_lblBGBlue.fill = GridBagConstraints.BOTH;
@@ -501,6 +474,31 @@ public class FilterPanel extends JPanel
 		gbc_lblBGBlue.gridx = 3;
 		gbc_lblBGBlue.gridy = 5;
 		add(lblBGBlue, gbc_lblBGBlue);
+	}
+	
+	
+	class BGLabel extends JLabel
+	{
+		BufferedImage bg;
+		
+		BGLabel(JHVIcon _icon)
+		{
+			bg=IconBank.getImage(_icon);
+		}
+		
+		@Override
+		protected void paintComponent(Graphics _g)
+		{
+			int w=getWidth()-2;
+			int h=getHeight();
+			if(w<=2*h)
+				_g.drawImage(bg, 0, 0, w, h, null);
+			else
+			{
+				super.paintComponent(_g);
+				_g.drawImage(bg, w/2-h, 0, 2*h, h, null);
+			}
+		}
 	}
 
 	public void update()
