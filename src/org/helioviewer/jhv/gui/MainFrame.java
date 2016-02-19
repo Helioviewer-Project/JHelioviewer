@@ -101,7 +101,7 @@ public class MainFrame extends JFrame
 		
 		scrollPane.setMinimumSize(new Dimension(scrollPane.getPreferredSize().width+scrollPane.getVerticalScrollBar().getVisibleAmount()*2,0));
 		
-		if(Globals.isOSX())
+		if(Globals.IS_OS_X)
 		{
 			splitPane.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY,(e) ->
 			{

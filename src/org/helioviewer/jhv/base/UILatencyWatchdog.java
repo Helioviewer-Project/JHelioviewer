@@ -62,7 +62,7 @@ public class UILatencyWatchdog
 							}
 						});
 						
-						if(Globals.isReleaseVersion())
+						if(Globals.IS_RELEASE_VERSION)
 							Thread.sleep(MAX_LATENCY_RELEASE);
 						else
 							Thread.sleep(MAX_LATENCY_DEBUG);
@@ -106,7 +106,7 @@ public class UILatencyWatchdog
 							}
 
 							// only report hangs to raygun in release builds
-							if (Globals.isReleaseVersion())
+							if (Globals.IS_RELEASE_VERSION)
 							{
 								RaygunClient client = new RaygunClient("QXtNXLEKWBfClhyteqov4w==");
 								client.SetVersion(Globals.VERSION);

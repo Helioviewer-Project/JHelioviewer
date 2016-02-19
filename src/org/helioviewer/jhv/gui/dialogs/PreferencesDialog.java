@@ -495,7 +495,7 @@ public class PreferencesDialog extends JDialog
 							}
 						});
 		
-		if (Globals.isOSX())
+		if (Globals.IS_OS_X)
 		{
 			panel_2.remove(resetBtn);
 			panel_2.remove(cancelBtn);

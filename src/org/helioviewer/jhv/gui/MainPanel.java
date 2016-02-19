@@ -626,7 +626,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		}*/
 		
 		
-		if(!Globals.isReleaseVersion())
+		if(!Globals.IS_RELEASE_VERSION)
 		{
 			for(;;)
 			{

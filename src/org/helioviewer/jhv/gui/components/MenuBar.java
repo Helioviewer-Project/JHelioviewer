@@ -72,7 +72,7 @@ public class MenuBar extends JMenuBar
 
 		fileMenu.add(new ExportMovieAction());
 
-		if (!Globals.isOSX())
+		if (!Globals.IS_OS_X)
 		{
 			fileMenu.addSeparator();
 			fileMenu.add(new ExitProgramAction());
@@ -100,7 +100,7 @@ public class MenuBar extends JMenuBar
 
 		add(movieMenu);
 
-		if(!Globals.isOSX())
+		if(!Globals.IS_OS_X)
 		{
 			JMenu optionsMenu = new JMenu("Options");
 			optionsMenu.setMnemonic(KeyEvent.VK_O);

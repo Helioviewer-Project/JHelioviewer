@@ -127,38 +127,11 @@ public class Globals
     {
     }
     
+    public static final boolean IS_RELEASE_VERSION = (RAYGUN_TAG!=null);
+    public static final boolean IS_WINDOWS=System.getProperty("os.name").toUpperCase().contains("WIN");
+    public static final boolean IS_LINUX=System.getProperty("os.name").toUpperCase().contains("LINUX");
+    public static final boolean IS_OS_X=System.getProperty("os.name").toUpperCase().contains("MAC OS X");
     
-    //FIXME: inline these methods
-    
-    private static final boolean IS_RELEASE_VERSION = (RAYGUN_TAG!=null);
-    public static boolean isReleaseVersion()
-    {
-        return IS_RELEASE_VERSION;
-    }
-    
-    public static boolean is64Bit()
-    {
-        return System.getProperty("os.arch").contains("64");
-    }
-    
-    private static final boolean IS_WINDOWS=System.getProperty("os.name").toUpperCase().contains("WIN");
-    public static boolean isWindows()
-    {
-        return IS_WINDOWS;
-    }
-    
-    private static final boolean IS_LINUX=System.getProperty("os.name").toUpperCase().contains("LINUX");
-    public static boolean isLinux()
-    {
-        return IS_LINUX;
-    }
-
-    private static final boolean IS_OS_X=System.getProperty("os.name").toUpperCase().contains("MAC OS X");
-    public static boolean isOSX()
-    {
-        return IS_OS_X;
-    }
-
     /**
      * Opens the specified web page in the default web browser
      * 

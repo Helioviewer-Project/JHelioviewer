@@ -573,7 +573,7 @@ public class AddLayerDialog extends JDialog
 				});
 		
 				
-		if(Globals.isOSX())
+		if(Globals.IS_OS_X)
 		{
 			buttonPane.remove(okButton);
 			buttonPane.remove(cancelButton);

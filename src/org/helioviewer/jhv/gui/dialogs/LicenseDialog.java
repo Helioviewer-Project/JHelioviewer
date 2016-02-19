@@ -116,7 +116,7 @@ public class LicenseDialog extends JDialog
 							}
 						});
 		
-		if (Globals.isOSX())
+		if (Globals.IS_OS_X)
 		{
 			panel_2.remove(cancelBtn);
 			panel_2.remove(acceptBtn);

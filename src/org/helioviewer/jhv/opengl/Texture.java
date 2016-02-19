@@ -122,7 +122,7 @@ public class Texture
 		gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, _destX, _destY, bufferedImage.getWidth(), bufferedImage.getHeight(), inputFormat, inputType, buffer);
 		
 		//hack: work around buggy os x texture handling with shared contexts
-		if(Globals.isOSX())
+		if(Globals.IS_OS_X)
 			gl.glFlush();
 
 		//updateDebugImage();
@@ -243,7 +243,7 @@ public class Texture
 
 	public boolean contains(Object _source, DecodeQualityLevel _quality, ImageRegion _imageRegion, LocalDateTime _localDateTime)
 	{
-		if(!Globals.isReleaseVersion())
+		if(!Globals.IS_RELEASE_VERSION)
 			if(_source!=null && source!=null && _source.getClass()!=source.getClass())
 				throw new RuntimeException("Comparing two different SOURCE classes.");
 		
@@ -297,7 +297,7 @@ public class Texture
 		gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, internalFormat, width, height, 0, GL2.GL_LUMINANCE, GL2.GL_UNSIGNED_BYTE, b);
 		
 		//hack: work around buggy os x texture handling with shared contexts
-		if(Globals.isOSX())
+		if(Globals.IS_OS_X)
 			gl.glFlush();
     }
 

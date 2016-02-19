@@ -81,10 +81,10 @@ public class JHelioviewer
 		
 		Log.redirectStdOutErr();
 		
-		if(Globals.isOSX())
+		if(Globals.IS_OS_X)
 			System.setProperty("apple.laf.useScreenMenuBar", "true");
 		
-		if (!Globals.isReleaseVersion())
+		if (!Globals.IS_RELEASE_VERSION)
 			RepaintManager.setCurrentManager(new DebugRepaintManager());
 
 		SwingUtilities.invokeLater(() ->
@@ -100,7 +100,7 @@ public class JHelioviewer
 			}
 	
 			//display EULA, if needed
-			if(!Globals.isWindows() && Settings.getInt(IntKey.STARTUP_LICENSE_SHOWN)!=Globals.LICENSE_VERSION)
+			if(!Globals.IS_WINDOWS && Settings.getInt(IntKey.STARTUP_LICENSE_SHOWN)!=Globals.LICENSE_VERSION)
 			{
 				LicenseDialog ld=new LicenseDialog();
 				
@@ -119,7 +119,7 @@ public class JHelioviewer
 			new Thread(() -> Telemetry.trackEvent("Startup","args",Arrays.toString(args))).start();
 			
 			splash.progressTo("Checking for updates");
-			if (Globals.isReleaseVersion())
+			if (Globals.IS_RELEASE_VERSION)
 			{
 				UpdateScheduleRegistry.setUpdateSchedule(UpdateSchedule.DAILY);
 				if (UpdateScheduleRegistry.checkAndReset())
@@ -161,7 +161,7 @@ public class JHelioviewer
 			//force creation of native backend
 			masterDrawable.display();
 			
-			if (!Globals.isReleaseVersion())
+			if (!Globals.IS_RELEASE_VERSION)
 			{
 				masterDrawable.setGL(new DebugGL2(masterDrawable.getGL().getGL2()));
 				masterDrawable.getContext().enableGLDebugMessage(true);
@@ -184,7 +184,7 @@ public class JHelioviewer
 			}
 			catch (UnsatisfiedLinkError _ule)
 			{
-				if (Globals.isLinux() && _ule.getMessage().contains("GLIBC"))
+				if (Globals.IS_LINUX && _ule.getMessage().contains("GLIBC"))
 				{
 					splash.setVisible(false);
 					JOptionPane.showMessageDialog(null,
@@ -242,7 +242,7 @@ public class JHelioviewer
 			splash.progressTo("Show main window");
 			MainFrame.SINGLETON.setVisible(true);
 			
-			if(Globals.isOSX())
+			if(Globals.IS_OS_X)
 				setupOSXApplicationListener();
 			
             splash.progressTo("Loading observatories");
@@ -279,10 +279,10 @@ public class JHelioviewer
 
 	private static void loadLibraries()
 	{
-		String suffix = !Globals.isReleaseVersion() && Globals.isWindows() ? "D":"R";
+		String suffix = !Globals.IS_RELEASE_VERSION && Globals.IS_WINDOWS ? "D":"R";
 		
 		
-		if (Globals.isWindows())
+		if (Globals.IS_WINDOWS)
 		{
 			try
 			{

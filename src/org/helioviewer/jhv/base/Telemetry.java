@@ -134,7 +134,7 @@ public class Telemetry
 	
 	public static void trackEvent(String _event,String ... params)
 	{
-		if(!Globals.isReleaseVersion())
+		if(!Globals.IS_RELEASE_VERSION)
 			return;
 		
 		initializeOpenGL();
@@ -178,7 +178,7 @@ public class Telemetry
 		
 		_e.printStackTrace();
 
-		if(!Globals.isReleaseVersion())
+		if(!Globals.IS_RELEASE_VERSION)
 			return;
 		
 		initializeOpenGL();
