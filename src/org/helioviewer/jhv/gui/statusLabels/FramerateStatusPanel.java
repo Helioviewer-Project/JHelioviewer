@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 
 import javax.swing.BorderFactory;
 
+import org.helioviewer.jhv.viewmodel.TimeLine;
+
 /**
  * Status panel for displaying the framerate for image series.
  * 
@@ -28,9 +30,8 @@ public class FramerateStatusPanel extends StatusLabel
 		setBorder(BorderFactory.createEtchedBorder());
 
 		setPreferredSize(new Dimension(90, 20));
-		setText("FPS: ");
 		
-		startMeasurement = System.currentTimeMillis();
+		updateFramerate();
 	}
 	
 	public static float getFPS()
@@ -63,6 +64,9 @@ public class FramerateStatusPanel extends StatusLabel
 	@Override
 	public void timeStampChanged(LocalDateTime current, LocalDateTime last)
 	{
+		if(!TimeLine.SINGLETON.isPlaying())
+			return;
+		
 		if ((System.currentTimeMillis() - startMeasurement) >= 1000)
 			updateFramerate();
 		
