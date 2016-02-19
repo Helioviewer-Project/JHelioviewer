@@ -415,6 +415,8 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			gl.glLoadIdentity();
 
 			gl.glTranslated(0, 0, -translationNow.z);
+			
+			//keep camera always pointed correctly in 2d mode
 			if (CameraMode.mode == MODE.MODE_2D)
 			{
 				ImageLayer il = Layers.getActiveImageLayer();
@@ -428,6 +430,24 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			
 			ImageLayer.ensureAppropriateTextureCacheSize(gl);
 			
+			//TODO: jumpstart decoding of overview region
+			//TODO: async texture upload
+			//TODO: jumpstart decoding of next frame
+			
+			ArrayList<ImageLayer> imageLayers = new ArrayList<ImageLayer>();
+			ArrayList<ListenableFuture<PreparedImage>> prepared = new ArrayList<>();
+			for (Layer layer : Layers.getLayers())
+				if (layer.isVisible() && layer instanceof ImageLayer)
+				{
+					ImageLayer il=(ImageLayer)layer;
+					
+					if(il.getLUT()!=null && il.getCurrentTime()!=null) //make sure that there's a real frame for the current frame
+					{
+						prepared.add(il.prepareImageData(this, shouldHurry(), sizeForDecoder, gl.getContext()));
+						imageLayers.add(il);
+					}
+				}
+
 			
 			double maxScaling = 1;
 			for(int opacityGroup:MetaData.OPACITY_GROUPS)
@@ -435,37 +455,22 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 				double rSum=0;
 				double gSum=0;
 				double bSum=0;
-				for (Layer l : Layers.getLayers())
-					if (l instanceof ImageLayer)
+				for (ImageLayer il : imageLayers)
+					if((il.getGroupForOpacity() & opacityGroup) != 0)
 					{
-						ImageLayer il=(ImageLayer)l;
 						LUT lut=il.getLUT();
-						if(il.isVisible() && lut!=null)
-							if((il.getGroupForOpacity() & opacityGroup) != 0)
-								if(il.getCurrentTime()!=null)
-								{
-									if(il.redChannel)
-										rSum += lut.getAvgColor().getRed(); //*il.opacity; //<-- possible alternative
-									if(il.greenChannel)
-										gSum += lut.getAvgColor().getGreen(); //*il.opacity; //<-- possible alternative
-									if(il.blueChannel)
-										bSum += lut.getAvgColor().getBlue(); //*il.opacity; //<-- possible alternative
-								}
+						if(il.redChannel)
+							rSum += lut.getAvgColor().getRed(); //*il.opacity; //<-- possible alternative
+						if(il.greenChannel)
+							gSum += lut.getAvgColor().getGreen(); //*il.opacity; //<-- possible alternative
+						if(il.blueChannel)
+							bSum += lut.getAvgColor().getBlue(); //*il.opacity; //<-- possible alternative
 					}
 				
 				maxScaling = Math.min(maxScaling, 255d/rSum);
 				maxScaling = Math.min(maxScaling, 255d/gSum);
 				maxScaling = Math.min(maxScaling, 255d/bSum);
 			}
-
-			//TODO: jumpstart decoding of overview region
-			//TODO: async texture upload
-			//TODO: jumpstart decoding of next frame
-			
-			ArrayList<ListenableFuture<PreparedImage>> prepared = new ArrayList<>();
-			for (Layer layer : Layers.getLayers())
-				if (layer.isVisible() && layer instanceof ImageLayer)
-					prepared.add(((ImageLayer) layer).prepareImageData(this, shouldHurry(), sizeForDecoder, gl.getContext()));
 
 			for (ListenableFuture<PreparedImage> l : Futures.inCompletionOrder(prepared))
 				try

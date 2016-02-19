@@ -72,10 +72,6 @@ public class KakaduLayer extends ImageLayer
 		if(m==null)
 			return null;
 		
-		LocalDateTime dt=m.getMetaData().localDateTime;
-		if(dt.isBefore(start.minusSeconds(cadence)) || dt.isAfter(end.plusSeconds(cadence)))
-			return null;
-		
 		return m;
 	}
 	
@@ -307,8 +303,8 @@ public class KakaduLayer extends ImageLayer
 			long b = _start + _cadence;
 			LocalDateTime middle = LocalDateTime.ofInstant(Instant.ofEpochSecond(_start + _cadence/2).plusMillis((_cadence&1)==1?500:0), ZoneOffset.UTC);
 			
-			//TODO: re-add this check (iff API is reliably)
-			//if(!noFrames.fullyContains(a,b))
+			//TODO: re-add this check (iff API is reliable)
+			if(!noFrames.fullyContains(a,b))
 			{
 				Match bestMatch = findBestFrame(middle);
 				if(bestMatch==null || bestMatch.timeDifferenceSeconds>=_cadence/2 || bestMatch.movie.quality!=Quality.FULL)
@@ -316,6 +312,7 @@ public class KakaduLayer extends ImageLayer
 					if(bestMatch!=null && bestMatch.movie.quality!=Quality.FULL)
 						MovieCache.remove(bestMatch.movie);
 					
+					//System.out.println("Downloading "+a+"-"+b+", because "+(bestMatch==null ? "null":bestMatch.timeDifferenceSeconds+" >= "+_cadence));
 					startTimes.add(a);
 					endTimes.add(b);
 				}
@@ -427,6 +424,8 @@ public class KakaduLayer extends ImageLayer
 								
 								if(!found)
 									noFrames.addInterval(from, to);
+								
+								//System.out.println(i+"th request: "+from+"-"+to+" "+(found?"found":"404"));
 							}
 							
 							//double check api response, to detect misunderstandings & bugs
@@ -575,7 +574,11 @@ public class KakaduLayer extends ImageLayer
 		if(match==null)
 			return null;
 		
-		return match.getMetaData().localDateTime;
+		LocalDateTime dt=match.getMetaData().localDateTime;
+		if(dt.isBefore(start.minusSeconds(cadence)) || dt.isAfter(end.plusSeconds(cadence)))
+			return null;
+		
+		return dt;
 	}
 
 	@Override
@@ -612,7 +615,14 @@ public class KakaduLayer extends ImageLayer
 		if (match == null)
 			return null;
 		
-		return match.getMetaData();
+		MetaData md=match.getMetaData();
+		initializeMetadata(md);
+		
+		LocalDateTime dt=md.localDateTime;
+		if(dt.isBefore(start.minusSeconds(cadence)) || dt.isAfter(end.plusSeconds(cadence)))
+			return null;
+		
+		return md;
 	}
 	
 	public @Nullable Document getMetaDataDocument(LocalDateTime currentDateTime)
@@ -636,8 +646,6 @@ public class KakaduLayer extends ImageLayer
 		
 		if(metaData.localDateTime.isBefore(start.minusSeconds(cadence)) || metaData.localDateTime.isAfter(end.plusSeconds(cadence)))
 			return Futures.immediateFuture(null);
-		
-		initializeMetadata(metaData);
 		
 		final ImageRegion requiredMinimumRegion = calculateRegion(_panel, _quality, metaData, _size);
 		if (requiredMinimumRegion == null)
@@ -681,7 +689,16 @@ public class KakaduLayer extends ImageLayer
 					TimeLine.SINGLETON.isPlaying() ? 1.05 : 1.2);
 			
 			Match bestMatch=findBestFrame(metaData.localDateTime);
+			
 			if(bestMatch!=null)
+			{
+				LocalDateTime dt=bestMatch.getMetaData().localDateTime;
+				if(dt.isBefore(start.minusSeconds(cadence)) || dt.isAfter(end.plusSeconds(cadence)))
+				{
+					future.set(null);
+					return;
+				}
+				
 				if(bestMatch.decodeImage(_quality, requiredSafeRegion.decodeZoomFactor, requiredSafeRegion.texels, tex))
 				{
 					tex.needsUpload=true;
@@ -693,6 +710,7 @@ public class KakaduLayer extends ImageLayer
 					future.set(new PreparedImage(KakaduLayer.this,tex,requiredSafeRegion));
 					return;
 				}
+			}
 
 			tex.usedByCurrentRenderPass=false;
 			future.set(null);
