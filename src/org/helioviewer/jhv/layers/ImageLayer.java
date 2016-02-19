@@ -7,7 +7,6 @@ import java.nio.IntBuffer;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.concurrent.Future;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -38,6 +37,7 @@ import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLContext;
@@ -418,24 +418,28 @@ public abstract class ImageLayer extends Layer
 	
 	public static class PreparedImage
 	{
+		public final ImageLayer layer;
+		
 		public final Texture texture;
 		
 		public final @Nullable ImageRegion imageRegion;
 		
-		public PreparedImage(Texture _texture)
+		public PreparedImage(ImageLayer _layer, Texture _texture)
 		{
+			layer=_layer;
 			texture=_texture;
 			imageRegion=null;
 		}
 		
-		public PreparedImage(Texture _texture, ImageRegion _imageRegion)
+		public PreparedImage(ImageLayer _layer, Texture _texture, ImageRegion _imageRegion)
 		{
+			layer=_layer;
 			texture=_texture;
 			imageRegion=_imageRegion;
 		}
 	}
 
-	public abstract Future<PreparedImage> prepareImageData(final MainPanel mainPanel, DecodeQualityLevel _quality, final Dimension size, final GLContext _gl);
+	public abstract ListenableFuture<PreparedImage> prepareImageData(final MainPanel mainPanel, DecodeQualityLevel _quality, final Dimension size, final GLContext _gl);
 
 	private static final int MAX_X_POINTS = 11;
 	private static final int MAX_Y_POINTS = 11;

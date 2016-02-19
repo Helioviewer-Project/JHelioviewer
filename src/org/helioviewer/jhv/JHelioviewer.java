@@ -152,16 +152,25 @@ public class JHelioviewer
 			GLProfile.initSingleton();
 			GLProfile profile = GLProfile.get(GLProfile.GL2);
 			GLDrawableFactory factory = GLDrawableFactory.getFactory(profile);
-	
 			
-			splash.progressTo("Creating drawable");
+			splash.progressTo("Creating OpenGL contexts");
 			GLCapabilities capabilities = new GLCapabilities(profile);
-			final GLAutoDrawable sharedDrawable = factory.createDummyAutoDrawable(null, true, capabilities, null);
-			sharedDrawable.display();
-				
+			//TODO: configure capabilities (vsync, pbuffers, ...)
+			final GLAutoDrawable masterDrawable = factory.createDummyAutoDrawable(null, true, capabilities, null);
+			
+			//force creation of native backend
+			masterDrawable.display();
+			
 			if (!Globals.isReleaseVersion())
-				sharedDrawable.setGL(new DebugGL2(sharedDrawable.getGL().getGL2()));
-	
+			{
+				masterDrawable.setGL(new DebugGL2(masterDrawable.getGL().getGL2()));
+				masterDrawable.getContext().enableGLDebugMessage(true);
+				masterDrawable.getContext().setGLDebugSynchronous(false);
+			}
+			
+			Globals.createSharedGLContexts(masterDrawable, factory, capabilities, Runtime.getRuntime().availableProcessors());
+			masterDrawable.display();
+			
 			// Load settings from file but do not apply them yet
 			// The settings must not be applied before the kakadu engine has
 			// been initialized
@@ -206,23 +215,23 @@ public class JHelioviewer
 			MovieCache.init();
 			
 			splash.progressTo("Compiling shaders");
-			sharedDrawable.getContext().makeCurrent();
-			ImageLayer.init(sharedDrawable.getGL().getGL2());
+			masterDrawable.getContext().makeCurrent();
+			ImageLayer.init(masterDrawable.getGL().getGL2());
 			
 	        splash.progressTo("Starting Swing");
 			ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
 			JPopupMenu.setDefaultLightWeightPopupEnabled(false);
-			MainFrame.init(sharedDrawable.getContext());
+			MainFrame.init(masterDrawable.getContext());
 			
 			splash.progressTo("Loading textures");
-			NoImageScreen.init(sharedDrawable.getGL().getGL2());
-			LUT.loadTexture(sharedDrawable.getGL().getGL2());
-			HEKIcon.init(sharedDrawable.getGL().getGL2());
+			NoImageScreen.init(masterDrawable.getGL().getGL2());
+			LUT.loadTexture(masterDrawable.getGL().getGL2());
+			HEKIcon.init(masterDrawable.getGL().getGL2());
 			
 			// force initialization of UltimatePluginInterface
 			splash.progressTo("Initializing plugins");
 			Plugins.SINGLETON.getClass();
-			sharedDrawable.getContext().release();
+			masterDrawable.getContext().release();
 			
 			splash.progressTo("Restoring settings");
 			if(Settings.getBoolean(BooleanKey.STARTUP_3DCAMERA))

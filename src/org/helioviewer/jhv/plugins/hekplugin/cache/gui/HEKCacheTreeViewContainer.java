@@ -88,26 +88,31 @@ public class HEKCacheTreeViewContainer extends JPanel implements HEKCacheListene
 		}
 		wasLoaded = layersAvailable;
 
-		if (rootLoading)
+		//TODO: this shouldn't happen on a non-edt thread
+		//if(SwingUtilities.isEventDispatchThread())
 		{
-			setLoadingMessage(MSG_REQUESTING_EVENTS);
+			if (rootLoading)
+				setLoadingMessage(MSG_REQUESTING_EVENTS);
+			else if (!layersAvailable)
+				setLoadingMessage(MSG_NO_DATA_AVAILABLE);
+			cl.show(this, show ? "main" : "empty");
 		}
-		else if (!layersAvailable)
-		{
-			setLoadingMessage(MSG_NO_DATA_AVAILABLE);
-		}
-
-		// setLoadingMessage("LayersAvailable: " + layersAvailable +
-		// " - RootLoading: " + rootLoading + " - anyLoading: " + anyLoading);
-
-		if (show)
-		{
-			cl.show(this, "main");
-		}
-		else
-		{
-			cl.show(this, "empty");
-		}
+		/*else
+			try
+			{
+				SwingUtilities.invokeAndWait(() ->
+				{
+					if (rootLoading)
+						setLoadingMessage(MSG_REQUESTING_EVENTS);
+					else if (!layersAvailable)
+						setLoadingMessage(MSG_NO_DATA_AVAILABLE);
+					cl.show(this, show ? "main" : "empty");
+				});
+			}
+			catch (Throwable _t)
+			{
+				Telemetry.trackException(_t);
+			}*/
 	}
 
 	/**

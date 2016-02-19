@@ -123,7 +123,6 @@ public class MainFrame extends JFrame
 		
 		repaintTimer=new Timer(250, a ->
 		{
-			System.out.println("Lazy repaint "+System.currentTimeMillis());
 			LAYER_PANEL.updateData();
 			MAIN_PANEL.repaint();
 			MOVIE_PANEL.repaint();

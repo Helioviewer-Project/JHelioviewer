@@ -277,10 +277,29 @@ class HEKPluginPanel extends JPanel implements ActionListener,
 		this.setLoading(loading);
 	}
 
-	private void setLoading(boolean loading) {
-		progressBar.setVisible(loading);
-		cancelButton.setVisible(loading);
-		reloadButton.setVisible(!loading);
+	private void setLoading(boolean loading)
+	{
+		//TODO: don't do this on non EDT threads
+		/*try
+		{
+			if(SwingUtilities.isEventDispatchThread())
+			{*/
+				progressBar.setVisible(loading);
+				cancelButton.setVisible(loading);
+				reloadButton.setVisible(!loading);
+			/*}
+			else
+				SwingUtilities.invokeAndWait(() ->
+				{
+					progressBar.setVisible(loading);
+					cancelButton.setVisible(loading);
+					reloadButton.setVisible(!loading);
+				});
+		}
+		catch (Throwable _t)
+		{
+			Telemetry.trackException(_t);
+		}*/
 	}
 
 	public void eventsChanged(HEKPath path) {

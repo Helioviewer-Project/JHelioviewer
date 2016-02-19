@@ -21,10 +21,7 @@ import java.nio.ByteBuffer;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 import javax.annotation.Nullable;
 import javax.swing.JFrame;
@@ -65,6 +62,8 @@ import org.helioviewer.jhv.viewmodel.TimeLine.DecodeQualityLevel;
 import org.helioviewer.jhv.viewmodel.TimeLine.TimeLineListener;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
@@ -462,21 +461,18 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			//TODO: jumpstart decoding of overview region
 			//TODO: async texture upload
 			//TODO: jumpstart decoding of next frame
-			LinkedHashMap<ImageLayer, Future<PreparedImage>> layers = new LinkedHashMap<>();
+			
+			ArrayList<ListenableFuture<PreparedImage>> prepared = new ArrayList<>();
 			for (Layer layer : Layers.getLayers())
 				if (layer.isVisible() && layer instanceof ImageLayer)
-					layers.put((ImageLayer) layer,
-							((ImageLayer) layer).prepareImageData(this, shouldHurry(), sizeForDecoder, gl.getContext()));
-			
-			//TODO: render in finishing order
-			for (Entry<ImageLayer, Future<PreparedImage>> l : layers.entrySet())
+					prepared.add(((ImageLayer) layer).prepareImageData(this, shouldHurry(), sizeForDecoder, gl.getContext()));
+
+			for (ListenableFuture<PreparedImage> l : Futures.inCompletionOrder(prepared))
 				try
 				{
-					if (l.getValue().get() != null)
-					{
-						// RenderResult r =
-						l.getKey().renderLayer(gl, this, l.getValue().get(), (float)maxScaling);
-					}
+					PreparedImage pr = l.get();
+					if (pr != null)
+						pr.layer.renderLayer(gl, this, pr, (float)maxScaling);
 				}
 				catch (ExecutionException | InterruptedException _e)
 				{
@@ -628,6 +624,20 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			gl.glPopMatrix();
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
 		}*/
+		
+		
+		if(!Globals.isReleaseVersion())
+		{
+			for(;;)
+			{
+				int glError = gl.glGetError();
+				if(glError==GL2.GL_NO_ERROR)
+					break;
+				
+				System.err.println("OpenGL error "+Integer.toHexString(glError));
+			}
+		}
+		
 		
 		//TODO: make repaint synchronous? (always up to date) or not synchronous? (arbitrarily delayed, but better perf) 
 		// force repaints of dependent regions

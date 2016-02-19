@@ -14,15 +14,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import javax.annotation.Nullable;
 import javax.swing.SwingUtilities;
 
-import org.helioviewer.jhv.base.FutureValue;
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.IntervalStore;
@@ -51,6 +46,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
 
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.SettableFuture;
 import com.jogamp.opengl.GLContext;
 
 public class KakaduLayer extends ImageLayer
@@ -59,8 +57,6 @@ public class KakaduLayer extends ImageLayer
 	private boolean localFile = false;
 	private final int sourceId;
 	protected @Nullable String localPath;
-	
-	private static final ExecutorService exDecoder = Executors.newWorkStealingPool();
 	
 	public KakaduLayer(int _sourceId, LocalDateTime _start, LocalDateTime _end, int _cadence, String _name)
 	{
@@ -628,30 +624,30 @@ public class KakaduLayer extends ImageLayer
 		return match.movie.readMetadataDocument(match.index);
 	}
 	
-	public Future<PreparedImage> prepareImageData(final MainPanel _panel, final DecodeQualityLevel _quality, final Dimension _size, final GLContext _gl)
+	public ListenableFuture<PreparedImage> prepareImageData(final MainPanel _panel, final DecodeQualityLevel _quality, final Dimension _size, final GLContext _gl)
 	{
 		final LocalDateTime mainTime = TimeLine.SINGLETON.getCurrentDateTime();
 		if(mainTime.isBefore(start.minusSeconds(cadence)) || mainTime.isAfter(end.plusSeconds(cadence)))
-			return new FutureValue<>(null);
+			return Futures.immediateFuture(null);
 		
 		final MetaData metaData = getMetaData(mainTime);
 		if (metaData == null)
-			return new FutureValue<>(null);
+			return Futures.immediateFuture(null);
 		
 		if(metaData.localDateTime.isBefore(start.minusSeconds(cadence)) || metaData.localDateTime.isAfter(end.plusSeconds(cadence)))
-			return new FutureValue<>(null);
+			return Futures.immediateFuture(null);
 		
 		initializeMetadata(metaData);
 		
 		final ImageRegion requiredMinimumRegion = calculateRegion(_panel, _quality, metaData, _size);
 		if (requiredMinimumRegion == null)
-			return new FutureValue<>(null);
+			return Futures.immediateFuture(null);
 		
 		for(Texture t:textures)
 			if(t.contains(this, _quality, requiredMinimumRegion, metaData.localDateTime))
 			{
 				t.usedByCurrentRenderPass=true;
-				return new FutureValue<>(new PreparedImage(t));
+				return Futures.immediateFuture(new PreparedImage(this,t));
 			}
 		
 		//search an empty spot, starting at the end (=oldest)
@@ -672,33 +668,37 @@ public class KakaduLayer extends ImageLayer
 		tex.invalidate();
 		tex.usedByCurrentRenderPass=true;
 		
-		return exDecoder.submit(new Callable<PreparedImage>()
+		final SettableFuture<PreparedImage> future=SettableFuture.create();
+		
+		Globals.runWithGLContext(() ->
 		{
-			@Override
-			public @Nullable PreparedImage call() throws Exception
-			{
-				Thread.currentThread().setName("Decoder-"+Thread.currentThread().getId());
-				
-				ImageRegion requiredSafeRegion = new ImageRegion(
-						requiredMinimumRegion.areaOfSourceImage,
-						_quality,
-						_panel.getTranslationCurrent().z,
-						metaData,
-						_size,
-						TimeLine.SINGLETON.isPlaying() ? 1.05 : 1.2);
-				
-				Match bestMatch=findBestFrame(metaData.localDateTime);
-				if(bestMatch!=null)
-					if(bestMatch.decodeImage(_quality, requiredSafeRegion.decodeZoomFactor, requiredSafeRegion.texels, tex))
-					{
-						tex.needsUpload=true;
-						return new PreparedImage(tex,requiredSafeRegion);
-					}
+			ImageRegion requiredSafeRegion = new ImageRegion(
+					requiredMinimumRegion.areaOfSourceImage,
+					_quality,
+					_panel.getTranslationCurrent().z,
+					metaData,
+					_size,
+					TimeLine.SINGLETON.isPlaying() ? 1.05 : 1.2);
+			
+			Match bestMatch=findBestFrame(metaData.localDateTime);
+			if(bestMatch!=null)
+				if(bestMatch.decodeImage(_quality, requiredSafeRegion.decodeZoomFactor, requiredSafeRegion.texels, tex))
+				{
+					tex.needsUpload=true;
+					/*
+					tex.uploadByteBuffer(GLContext.getCurrentGL().getGL2(), KakaduLayer.this, bestMatch.getMetaData().localDateTime, requiredSafeRegion);
+					if(Globals.isOSX())
+						GLContext.getCurrentGL().glFlush();*/
+					
+					future.set(new PreparedImage(KakaduLayer.this,tex,requiredSafeRegion));
+					return;
+				}
 
-				tex.usedByCurrentRenderPass=false;
-				return null;
-			}
+			tex.usedByCurrentRenderPass=false;
+			future.set(null);
 		});
+		
+		return future;
 	}
 	
 	@Override

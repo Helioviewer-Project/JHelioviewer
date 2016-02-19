@@ -144,6 +144,9 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
 		uncaughtException(Thread.currentThread(), e);
 	}
 	
+	
+	static volatile boolean alreadyCaughtException=false;
+	
 	// we do not use the logger here, since it should work even before logging
 	// initialization
 	@SuppressWarnings("deprecation")
@@ -168,19 +171,15 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
 		{
 			try
 			{
-				EventQueue.invokeLater(new Runnable()
+				EventQueue.invokeLater(() ->
 				{
-					@Override
-					public void run()
+					try
 					{
-						try
-						{
-							uncaughtException(t, e);
-						}
-						catch (ThreadDeath _td)
-						{
-							// ignore concurrent, unhandled exceptions
-						}
+						uncaughtException(t, e);
+					}
+					catch (ThreadDeath _td)
+					{
+						// ignore concurrent, unhandled exceptions
 					}
 				});
 				return;
@@ -262,23 +261,16 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
 		 * while(eq.peekEvent()!=null) eq.getNextEvent(); }
 		 * catch(InterruptedException e2) { Telemetry.trackException(e2); }
 		 */
+		
+		if(alreadyCaughtException)
+			return;
+
+		alreadyCaughtException=true;
 
 		// this wizardry forces the creation of a new awt event queue, if needed
-		new Thread(new Runnable()
-		{
-			public void run()
-			{
-				EventQueue.invokeLater(new Runnable()
-				{
-					public void run()
-					{
-						JHVUncaughtExceptionHandler.showErrorDialog(
-								"JHelioviewer: Fatal error", finalMsg, e,
-								finalLog);
-					}
-				});
-			}
-		}).start();
+		new Thread(() -> EventQueue.invokeLater(() -> JHVUncaughtExceptionHandler.showErrorDialog(
+							"JHelioviewer: Fatal error", finalMsg, e,
+							finalLog))).start();
 	}
 
 	private static Image iconToImage(Icon icon)

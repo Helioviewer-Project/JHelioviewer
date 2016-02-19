@@ -121,8 +121,9 @@ public class Texture
 		
 		gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, _destX, _destY, bufferedImage.getWidth(), bufferedImage.getHeight(), inputFormat, inputType, buffer);
 		
-		//hack: work around os x texture handling. lut upload doesn't work without it.
-		gl.glFlush();
+		//hack: work around buggy os x texture handling with shared contexts
+		if(Globals.isOSX())
+			gl.glFlush();
 
 		//updateDebugImage();
 	}
@@ -186,6 +187,9 @@ public class Texture
 		
 		needsUpload=false;
 		//updateDebugImage();
+		/*
+		if(Globals.isOSX())
+			gl.glFlush();*/
 	}
 	
 	/* 
@@ -292,8 +296,9 @@ public class Texture
         
 		gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, internalFormat, width, height, 0, GL2.GL_LUMINANCE, GL2.GL_UNSIGNED_BYTE, b);
 		
-		//hack: work around os x texture handling. lut upload doesn't work without it.
-		gl.glFlush();
+		//hack: work around buggy os x texture handling with shared contexts
+		if(Globals.isOSX())
+			gl.glFlush();
     }
 
 	public void prepareUploadBuffer(int _width, int _height)

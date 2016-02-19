@@ -26,6 +26,11 @@ import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.gui.PredefinedFileFilter;
 
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLContext;
+import com.jogamp.opengl.GLDrawableFactory;
+
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Group;
@@ -52,6 +57,43 @@ public class Globals
     public static final int STARTUP_LAYER_ID = 10; //AIA 193
 
 	public static final boolean JAVA_FX_AVAILABLE;
+	
+	private static LinkedBlockingQueue<Runnable> runnableWithGLContext;
+	
+	public static void createSharedGLContexts(GLAutoDrawable _master, GLDrawableFactory _factory, GLCapabilities _capabilities, int _numContexts)
+	{
+		if(runnableWithGLContext!=null)
+			throw new IllegalStateException("Cannot create shared contexts twice");
+		
+		runnableWithGLContext = new LinkedBlockingQueue<>();
+		for(int i=0;i<_numContexts;i++)
+		{
+			GLAutoDrawable slaveDrawable = _factory.createDummyAutoDrawable(null, true, _capabilities, null);
+			slaveDrawable.setExclusiveContextThread(Thread.currentThread());
+			
+			final GLContext c=slaveDrawable.createContext(_master.getContext());
+			Thread t=new Thread(() ->
+			{
+				c.makeCurrent();
+				try
+				{
+					for(;;)
+						runnableWithGLContext.take().run();
+				}
+				catch(InterruptedException e)
+				{
+				}
+			});
+			t.setName("GL Worker "+i);
+			t.setDaemon(true);
+			t.start();
+		}
+	}
+	
+	public static void runWithGLContext(Runnable _r)
+	{
+		runnableWithGLContext.add(_r);
+	}
 	
 	static
 	{
@@ -86,9 +128,12 @@ public class Globals
     }
     
     
+    //FIXME: inline these methods
+    
+    private static final boolean IS_RELEASE_VERSION = (RAYGUN_TAG!=null);
     public static boolean isReleaseVersion()
     {
-        return RAYGUN_TAG!=null;
+        return IS_RELEASE_VERSION;
     }
     
     public static boolean is64Bit()
@@ -96,19 +141,22 @@ public class Globals
         return System.getProperty("os.arch").contains("64");
     }
     
+    private static final boolean IS_WINDOWS=System.getProperty("os.name").toUpperCase().contains("WIN");
     public static boolean isWindows()
     {
-        return System.getProperty("os.name").toUpperCase().contains("WIN");
+        return IS_WINDOWS;
     }
     
+    private static final boolean IS_LINUX=System.getProperty("os.name").toUpperCase().contains("LINUX");
     public static boolean isLinux()
     {
-        return System.getProperty("os.name").toUpperCase().contains("LINUX");
+        return IS_LINUX;
     }
 
+    private static final boolean IS_OS_X=System.getProperty("os.name").toUpperCase().contains("MAC OS X");
     public static boolean isOSX()
     {
-        return System.getProperty("os.name").toUpperCase().contains("MAC OS X");
+        return IS_OS_X;
     }
 
     /**
