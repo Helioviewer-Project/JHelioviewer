@@ -499,8 +499,8 @@ public class AddLayerDialog extends JDialog
 
 						if (filter != null)
 						{
-							final int cadence = (int) AddLayerDialog.this.cadence.getValue()
-									* ((TimeSteps) cmbbxTimeSteps.getSelectedItem()).factor;
+							final int cadence = Math.max(1, (int) AddLayerDialog.this.cadence.getValue()
+									* ((TimeSteps) cmbbxTimeSteps.getSelectedItem()).factor);
 							
 							final Observatories.Filter finalFilter = filter;
 							
