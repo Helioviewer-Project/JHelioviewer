@@ -436,6 +436,7 @@ public class KakaduLayer extends ImageLayer
 								{
 									long ts = md.localDateTime.atOffset(ZoneOffset.UTC).getLong(ChronoField.INSTANT_SECONDS);
 									if(noFrames.contains(ts))
+										//FIXME: still happening...
 										throw new Exception("API returned frame for "+ts+" when it previously found no such frame.");
 									
 									boolean found=false;

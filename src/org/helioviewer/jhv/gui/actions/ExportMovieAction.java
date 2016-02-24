@@ -152,105 +152,102 @@ public class ExportMovieAction extends AbstractAction
 		Telemetry.trackMetric("MovieTextEnabled", textEnabled ? 1 : 0);
 
 		final ProgressDialog progressDialog = new ProgressDialog();
+		progressDialog.setDescription("Rendering images");
 		progressDialog.setVisible(true);
 		progressDialog.setMaximumOfProgressBar(TimeLine.SINGLETON.getFrameCount());
 		TimeLine.SINGLETON.setCurrentFrame(0);
 
 		final String directory = _directory;
-		Thread thread = new Thread(new Runnable()
+		Thread thread = new Thread(() ->
 		{
-			@Override
-			public void run()
+			TimeLine.SINGLETON.setCurrentFrame(0);
+			for (int i = 0; i < TimeLine.SINGLETON.getFrameCount(); i++)
 			{
-				TimeLine.SINGLETON.setCurrentFrame(0);
-				for (int i = 0; i < TimeLine.SINGLETON.getFrameCount(); i++)
-				{
-					bufferedImage = null;
-					SwingUtilities.invokeLater(new Runnable()
-					{
-						@Override
-						public void run()
-						{
-							progressDialog.setDescription("Rendering images");
-							bufferedImage = MainFrame.SINGLETON.MAIN_PANEL.getBufferedImage(imageWidth, imageHeight,
-									textEnabled);
-						}
-					});
-
-					while (bufferedImage == null)
-					{
-						try
-						{
-							if (!started)
-								break;
-							Thread.sleep(20);
-						}
-						catch (InterruptedException e)
-						{
-							break;
-						}
-					}
-					if (!started)
-						break;
-
-					progressDialog.updateProgressBar(i);
-
-					if (selectedOutputFormat.isMovieFile() && started)
-					{
-						writer.encodeVideo(0, bufferedImage, msPerFrame * i, TimeUnit.MILLISECONDS);
-					}
-					else if (selectedOutputFormat.isCompressedFile() && started)
-					{
-						String number = String.format("%04d", i);
-						try
-						{
-							zipOutputStream.putNextEntry(new ZipEntry(_filename + "/" + _filename + "-" + number
-									+ selectedOutputFormat.getInnerMovieFilter().getDefaultExtension()));
-							ImageIO.write(bufferedImage, selectedOutputFormat.getInnerMovieFilter().fileType,
-									zipOutputStream);
-							zipOutputStream.closeEntry();
-						}
-						catch (IOException e)
-						{
-							Telemetry.trackException(e);
-						}
-					}
-					else if (selectedOutputFormat.isImageFile() && started)
-					{
-						String number = String.format("%04d", i);
-						try
-						{
-							ImageIO.write(bufferedImage, selectedOutputFormat.fileType, new File(
-									directory + _filename + "-" + number + selectedOutputFormat.getDefaultExtension()));
-						}
-						catch (IOException e)
-						{
-							Telemetry.trackException(e);
-						}
-					}
-					TimeLine.SINGLETON.nextFrame();
-				}
-				TimeLine.SINGLETON.setCurrentFrame(0);
-
+				final int finalI=i;
+				bufferedImage = null;
 				try
 				{
-					// export movie
-					if (writer != null)
-						writer.close();
-					if (zipOutputStream != null)
-						zipOutputStream.close();
-					if (fileOutputStream != null)
-						fileOutputStream.close();
+					SwingUtilities.invokeAndWait(() ->
+					{
+						bufferedImage = MainFrame.SINGLETON.MAIN_PANEL.getBufferedImage(imageWidth, imageHeight, textEnabled);
+						progressDialog.updateProgressBar(finalI);
+						if(finalI!=0)
+							TimeLine.SINGLETON.nextFrame();
+					});
 				}
-				catch (IOException e)
+				catch (Exception _e1)
 				{
-					Telemetry.trackException(e);
+					Telemetry.trackException(_e1);
 				}
 
-				progressDialog.dispose();
+				while (bufferedImage == null)
+				{
+					try
+					{
+						if (!started)
+							break;
+						Thread.sleep(20);
+					}
+					catch (InterruptedException e)
+					{
+						break;
+					}
+				}
+				if (!started)
+					break;
+
+				if (selectedOutputFormat.isMovieFile() && started)
+				{
+					writer.encodeVideo(0, bufferedImage, msPerFrame * i, TimeUnit.MILLISECONDS);
+				}
+				else if (selectedOutputFormat.isCompressedFile() && started)
+				{
+					String number = String.format("%04d", i);
+					try
+					{
+						zipOutputStream.putNextEntry(new ZipEntry(_filename + "/" + _filename + "-" + number
+								+ selectedOutputFormat.getInnerMovieFilter().getDefaultExtension()));
+						ImageIO.write(bufferedImage, selectedOutputFormat.getInnerMovieFilter().fileType,
+								zipOutputStream);
+						zipOutputStream.closeEntry();
+					}
+					catch (IOException e)
+					{
+						Telemetry.trackException(e);
+					}
+				}
+				else if (selectedOutputFormat.isImageFile() && started)
+				{
+					String number = String.format("%04d", i);
+					try
+					{
+						ImageIO.write(bufferedImage, selectedOutputFormat.fileType, new File(
+								directory + _filename + "-" + number + selectedOutputFormat.getDefaultExtension()));
+					}
+					catch (IOException e)
+					{
+						Telemetry.trackException(e);
+					}
+				}
 			}
 
-		}, "Movie Export");
+			try
+			{
+				// export movie
+				if (writer != null)
+					writer.close();
+				if (zipOutputStream != null)
+					zipOutputStream.close();
+				if (fileOutputStream != null)
+					fileOutputStream.close();
+			}
+			catch (IOException e)
+			{
+				Telemetry.trackException(e);
+			}
+
+			progressDialog.dispose();
+		}, "Movie export");
 		thread.start();
 	}
 
@@ -313,35 +310,30 @@ public class ExportMovieAction extends AbstractAction
 
 				btnCancel = new JButton("Cancel");
 				buttonPane.add(btnCancel);
-				btnCancel.addActionListener(new ActionListener()
+				btnCancel.addActionListener(a ->
 				{
-					@Override
-					public void actionPerformed(@Nullable ActionEvent ae)
-					{
-						ExportMovieAction.this.cancelMovie();
-						dispose();
-					}
+					ExportMovieAction.this.cancelMovie();
+					dispose();
 				});
 			}
 
-			this.pack();
-			this.setLocationRelativeTo(MainFrame.SINGLETON);
-
+			pack();
+			setLocationRelativeTo(MainFrame.SINGLETON);
 		}
 
 		public void setMaximumOfProgressBar(int maximum)
 		{
-			this.progressBar.setMaximum(maximum);
+			progressBar.setMaximum(maximum);
 		}
 
 		private void updateProgressBar(int value)
 		{
-			this.progressBar.setValue(value);
+			progressBar.setValue(value);
 		}
 
 		public void setDescription(String description)
 		{
-			this.lblDescription.setText(description);
+			lblDescription.setText(description);
 		}
 
 		@Override
