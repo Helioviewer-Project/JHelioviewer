@@ -353,6 +353,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 			
 			int framecount = TimeLine.SINGLETON.getFrameCount();
 			slider.setMaximum(framecount > 0 ? framecount - 1 : 0);
+			slider.setValue(timeLine.getCurrentFrameIndex());
 			lblFrames.setMinimumSize(new Dimension(lblFrames.getFontMetrics(lblFrames.getFont()).stringWidth(slider.getMaximum() + "/" + slider.getMaximum()),lblFrames.getMinimumSize().height));
 			lblFrames.setPreferredSize(new Dimension(lblFrames.getFontMetrics(lblFrames.getFont()).stringWidth(slider.getMaximum() + "/" + slider.getMaximum()),lblFrames.getPreferredSize().height));
 		}
@@ -575,6 +576,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 	@Override
 	public void activeLayerChanged(@Nullable Layer layer)
 	{
+		repaint();
 	}
 
 	public void setButtonsEnabled(boolean _enable)

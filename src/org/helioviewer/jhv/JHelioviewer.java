@@ -120,26 +120,27 @@ public class JHelioviewer
 			
 			splash.progressTo("Checking for updates");
 			if (Globals.IS_RELEASE_VERSION)
-			{
-				UpdateScheduleRegistry.setUpdateSchedule(UpdateSchedule.DAILY);
-				if (UpdateScheduleRegistry.checkAndReset())
+				new Thread(() ->
 				{
-					// This will return immediately if you call it from the EDT,
-					// otherwise it will block until the installer application
-					// exits
-					ApplicationLauncher.launchApplicationInProcess("366", null,
-							new ApplicationLauncher.Callback()
-							{
-								public void exited(int exitValue)
+					UpdateScheduleRegistry.setUpdateSchedule(UpdateSchedule.DAILY);
+					if (UpdateScheduleRegistry.checkAndReset())
+					{
+						// This will return immediately if you call it from the EDT,
+						// otherwise it will block until the installer application
+						// exits
+						ApplicationLauncher.launchApplicationInProcess("366", null,
+								new ApplicationLauncher.Callback()
 								{
-								}
-	
-								public void prepareShutdown()
-								{
-								}
-							}, ApplicationLauncher.WindowMode.FRAME, null);
-				}
-			}
+									public void exited(int exitValue)
+									{
+									}
+		
+									public void prepareShutdown()
+									{
+									}
+								}, ApplicationLauncher.WindowMode.FRAME, null);
+					}
+				}).start();
 	
 			splash.progressTo("Installing universal locale");
 			System.setProperty("user.timezone", TimeZone.getDefault().getID());
