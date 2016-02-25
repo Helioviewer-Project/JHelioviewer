@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<install4j version="6.0.4" transformSequenceNumber="5">
+<install4j version="6.1" transformSequenceNumber="5">
   <directoryPresets config="../../Cer/Open Source Developer, Simon Felix.pfx" />
   <application name="JHelioviewer" distributionSourceDir="" applicationId="7791-5722-0682-7193" mediaDir="./builds" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="9" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="JHelioviewer" publisher="ESA JHelioviewer Team" publisherWeb="http://www.jhelioviewer.org" version="3.0.4" allPathsRelative="true" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="7ed177551bd348bc" javaMinVersion="1.8" javaMaxVersion="" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
@@ -80,6 +80,7 @@
         <nativeLibraryDirectories>
           <directory name="bin" />
         </nativeLibraryDirectories>
+        <vmOptions />
       </java>
       <includedFiles />
       <unextractableFiles />
@@ -115,6 +116,7 @@
         <nativeLibraryDirectories>
           <directory name="bin" />
         </nativeLibraryDirectories>
+        <vmOptions />
       </java>
       <includedFiles />
       <unextractableFiles />
@@ -1580,7 +1582,7 @@ return true;</string>
         <customAttributes />
       </autoUpdate>
     </windows>
-    <linuxDeb name="Linux Deb Archive 64 bit" id="218" customizedId="" mediaFileName="${compiler:sys.shortName}_${compiler:sys.version}_amd64" installDir="/opt/${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="" manualJREEntry="false" bzip="true" description="" dependencies="" maintainerEmail="daniel.mueller@esa.int" architectureSet="true" architecture="amd64">
+    <linuxDeb name="Linux Deb Archive 64 bit" id="218" customizedId="" mediaFileName="${compiler:sys.shortName}_${compiler:sys.version}_amd64" installDir="/opt/${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="" manualJREEntry="false" overwriteNeverAsConfigFiles="false" bzip="true" description="" dependencies="" maintainerEmail="daniel.mueller@esa.int" architectureSet="true" architecture="amd64">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedLaunchers>
@@ -1628,7 +1630,7 @@ return true;</string>
         <content />
       </postUninstallScript>
     </linuxDeb>
-    <linuxRPM name="Linux RPM 64 bit" id="270" customizedId="" mediaFileName="${compiler:sys.shortName}_${compiler:sys.version}_amd64" installDir="/opt/${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="" manualJREEntry="false" os="linux" arch="i386">
+    <linuxRPM name="Linux RPM 64 bit" id="270" customizedId="" mediaFileName="${compiler:sys.shortName}_${compiler:sys.version}_amd64" installDir="/opt/${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="" manualJREEntry="false" overwriteNeverAsConfigFiles="false" os="linux" arch="i386">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedLaunchers>
@@ -1678,7 +1680,7 @@ return true;</string>
     </linuxRPM>
   </mediaSets>
   <buildIds buildAll="true">
-    <mediaSet refId="218" />
+    <mediaSet refId="150" />
   </buildIds>
   <buildOptions verbose="false" faster="false" disableSigning="false" disableJreBundling="false" debug="false" />
 </install4j>

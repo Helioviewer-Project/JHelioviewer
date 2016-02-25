@@ -459,6 +459,7 @@ public class KakaduLayer extends ImageLayer
 										for(int i=0; i < download.from.size();i++)
 											sb.append("\n"+download.from.get(i)+"-"+download.to.get(i));
 										
+										System.err.println(download.hq);
 										System.err.println("API returned data from not requested time range: "+ts+". Requested:"+sb.toString()+"\n\nURL: "+download.hq.toString());
 									}
 								}

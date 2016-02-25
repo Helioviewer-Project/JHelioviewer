@@ -45,23 +45,34 @@ public class ExitProgramAction extends AbstractAction
 				return;
 		}
 		
+		shutdownWithoutConfirmation(false);
+	}
+	
+	public static void shutdownWithoutConfirmation(boolean _synchronous)
+	{
 		UILatencyWatchdog.stopWatchdog();
 		
 		MainFrame.SINGLETON.startWaitCursor();
 		MainFrame.SINGLETON.setVisible(false);
 		
-		SwingUtilities.invokeLater(new Runnable()
+		if(_synchronous)
 		{
-			@Override
-			public void run()
-			{
-				System.out.println("Running shutdown hooks");
-				for(Runnable r:onShutdown)
-					r.run();
-				
-				System.out.println("Quitting application");
-				System.exit(0);
-			}
-		});
+			System.out.println("Running shutdown hooks");
+			for(Runnable r:onShutdown)
+				r.run();
+			
+			System.out.println("Quitting application");
+			System.exit(0);
+		}
+		else
+			SwingUtilities.invokeLater(() ->
+				{
+					System.out.println("Running shutdown hooks");
+					for(Runnable r:onShutdown)
+						r.run();
+					
+					System.out.println("Quitting application");
+					System.exit(0);
+				});
 	}
 }

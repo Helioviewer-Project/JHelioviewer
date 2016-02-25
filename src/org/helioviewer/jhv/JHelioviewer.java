@@ -137,11 +137,12 @@ public class JHelioviewer
 		
 									public void prepareShutdown()
 									{
+										ExitProgramAction.shutdownWithoutConfirmation(true);
 									}
 								}, ApplicationLauncher.WindowMode.FRAME, null);
 					}
 				}).start();
-	
+			
 			splash.progressTo("Installing universal locale");
 			System.setProperty("user.timezone", TimeZone.getDefault().getID());
 			TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
