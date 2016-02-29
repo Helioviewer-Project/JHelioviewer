@@ -245,7 +245,7 @@ public class Observatories
 		@Nullable private LocalDateTime start;
 		@Nullable private LocalDateTime end;
 		private String nickname;
-		public int sourceId;
+		public int sourceId=-1;
 
 		private Filter(String _name)
 		{

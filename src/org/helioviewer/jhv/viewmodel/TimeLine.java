@@ -126,6 +126,11 @@ public class TimeLine implements LayerListener
 		return isPlaying;
 	}
 	
+	public int getCadence()
+	{
+		return cadence;
+	}
+	
 	public boolean isThereAnythingToPlay()
 	{
 		return !startTime.isEqual(endTime);

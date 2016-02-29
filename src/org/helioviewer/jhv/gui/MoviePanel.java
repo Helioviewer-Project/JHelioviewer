@@ -434,7 +434,10 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 				int max=Math.min(TimeLine.SINGLETON.getFrameCount()-1, (int)trackRect.getWidth());
 				for(int i=0;i<=max;i++)
 				{
-					LocalDateTime localDateTime=TimeLine.SINGLETON.getFirstDateTime().plusSeconds((int)(duration/(double)max*i));
+					//snap position to nearest frame
+					int frame = (int)(TimeLine.SINGLETON.getFrameCount()*i/(double)(max+1));
+					LocalDateTime localDateTime=TimeLine.SINGLETON.getFirstDateTime().plusSeconds(frame*TimeLine.SINGLETON.getCadence());
+					
 					/*if(!layer.isDataAvailableOnServer(localDateTime))
 						g.setColor(COLOR_NA);
 					else*/

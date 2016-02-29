@@ -121,14 +121,10 @@ public class AddLayerDialog extends JDialog
 		initGui();
 		addData();
 
-		getRootPane().registerKeyboardAction(new ActionListener()
+		getRootPane().registerKeyboardAction(e ->
 		{
-			@Override
-			public void actionPerformed(@Nullable ActionEvent e)
-			{
-				setVisible(false);
-				dispose();
-			}
+			setVisible(false);
+			dispose();
 		}, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
 		
 		pack();
@@ -145,14 +141,10 @@ public class AddLayerDialog extends JDialog
 	private void addData()
 	{
 		if(Observatories.getObservatories().isEmpty())
-			Observatories.addUpdateListener(new Runnable()
+			Observatories.addUpdateListener(() ->
 			{
-				@Override
-				public void run()
-				{
-					if(isVisible())
-						addData();
-				}
+				if(isVisible())
+					addData();
 			});
 		
 		cmbbxObservatory.setEnabled(true);
@@ -276,11 +268,13 @@ public class AddLayerDialog extends JDialog
 		
 		
 		int sourceId=Settings.getInt(Settings.IntKey.ADDLAYER_LAST_SOURCEID);
+		System.out.println("Restoring "+sourceId);
 		for(Observatory o:Observatories.getObservatories())
 			for(Filter f:o.getInstruments())
 			{
 				if(f.sourceId==sourceId)
 				{
+					System.out.println("Found in f.sourceId");
 					cmbbxObservatory.setSelectedItem(o);
 					cmbbxFilter.setSelectedItem(f);
 					return;
@@ -290,6 +284,7 @@ public class AddLayerDialog extends JDialog
 				{
 					if(f1.sourceId==sourceId)
 					{
+						System.out.println("Found in f1.sourceId");
 						cmbbxObservatory.setSelectedItem(o);
 						cmbbxFilter.setSelectedItem(f);
 						cmbbxFilter1.setSelectedItem(f1);
@@ -299,6 +294,7 @@ public class AddLayerDialog extends JDialog
 					for(Filter f2:f1.getFilters())
 						if(f2.sourceId==sourceId)
 						{
+							System.out.println("Found in f2.sourceId");
 							cmbbxObservatory.setSelectedItem(o);
 							cmbbxFilter.setSelectedItem(f);
 							cmbbxFilter1.setSelectedItem(f1);
@@ -366,14 +362,7 @@ public class AddLayerDialog extends JDialog
 			{
 				//required to call as a callback because
 				//of timing-issues in swing
-				SwingUtilities.invokeLater(new Runnable()
-				{
-					@Override
-					public void run()
-					{
-						((DefaultEditor)cadence.getEditor()).getTextField().selectAll();
-					}
-				});
+				SwingUtilities.invokeLater(() -> ((DefaultEditor)cadence.getEditor()).getTextField().selectAll());
 			}
 		});
 		
@@ -504,6 +493,7 @@ public class AddLayerDialog extends JDialog
 							
 							final Observatories.Filter finalFilter = filter;
 							
+							System.out.println("Last added "+filter.sourceId);
 							Settings.setInt(Settings.IntKey.ADDLAYER_LAST_SOURCEID, filter.sourceId);
 							lastStart = datePickerStartDate.getDateTime();
 							lastEnd = datePickerEndDate.getDateTime();
@@ -514,26 +504,22 @@ public class AddLayerDialog extends JDialog
 							dispose();
 							
 							MainFrame.SINGLETON.startWaitCursor();
-							SwingUtilities.invokeLater(new Runnable()
+							SwingUtilities.invokeLater(() ->
 							{
-								@Override
-								public void run()
+								try
 								{
-									try
-									{
-										KakaduLayer newLayer=new KakaduLayer(
-												finalFilter.sourceId,
-												lastStart,
-												lastEnd,
-												Math.max(1,cadence),
-												finalFilter.getNickname());
-										newLayer.animateCameraToFacePlane = true;
-										Layers.addLayer(newLayer);
-									}
-									finally
-									{
-										MainFrame.SINGLETON.stopWaitCursor();
-									}
+									KakaduLayer newLayer=new KakaduLayer(
+											finalFilter.sourceId,
+											lastStart,
+											lastEnd,
+											Math.max(1,cadence),
+											finalFilter.getNickname());
+									newLayer.animateCameraToFacePlane = true;
+									Layers.addLayer(newLayer);
+								}
+								finally
+								{
+									MainFrame.SINGLETON.stopWaitCursor();
 								}
 							});
 						}
@@ -543,33 +529,19 @@ public class AddLayerDialog extends JDialog
 				JButton cancelButton = new JButton("Cancel");
 				panel.add(cancelButton);
 				cancelButton.setActionCommand("Cancel");
-				cancelButton.addActionListener(new ActionListener()
-				{
-					@Override
-					public void actionPerformed(@Nullable ActionEvent e)
-					{
-						setVisible(false);
-					}
-				});
+				cancelButton.addActionListener(e -> setVisible(false));
 				
 				DialogTools.setDefaultButtons(okButton,cancelButton);
 		
 				
-				datePickerStartDate.addChangeListener(new ActionListener()
+				datePickerStartDate.addChangeListener(e ->
 				{
-					@Override
-					public void actionPerformed(@Nullable ActionEvent e)
-					{
-						okButton.setEnabled(datePickerStartDate.containsValidDateTime() && datePickerEndDate.containsValidDateTime() && datePickerStartDate.getDateTime().isBefore(datePickerEndDate.getDateTime()));
-					}
+					okButton.setEnabled(datePickerStartDate.containsValidDateTime() && datePickerEndDate.containsValidDateTime() && datePickerStartDate.getDateTime().isBefore(datePickerEndDate.getDateTime()));
 				});
-				datePickerEndDate.addChangeListener(new ActionListener()
+				
+				datePickerEndDate.addChangeListener(e ->
 				{
-					@Override
-					public void actionPerformed(@Nullable ActionEvent e)
-					{
-						okButton.setEnabled(datePickerStartDate.containsValidDateTime() && datePickerEndDate.containsValidDateTime() && datePickerStartDate.getDateTime().isBefore(datePickerEndDate.getDateTime()));
-					}
+					okButton.setEnabled(datePickerStartDate.containsValidDateTime() && datePickerEndDate.containsValidDateTime() && datePickerStartDate.getDateTime().isBefore(datePickerEndDate.getDateTime()));
 				});
 		
 				
