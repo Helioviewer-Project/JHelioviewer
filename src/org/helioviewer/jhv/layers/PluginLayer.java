@@ -9,6 +9,7 @@ import org.helioviewer.jhv.gui.OverviewPanel;
 import org.helioviewer.jhv.plugins.Plugin;
 import org.helioviewer.jhv.plugins.Plugin.RenderMode;
 import org.helioviewer.jhv.plugins.Plugins;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.jogamp.opengl.GL2;
@@ -49,7 +50,7 @@ public class PluginLayer extends Layer
 	
 	public PluginLayer(Plugin _plugin)
 	{
-		name = _plugin.pluginName;
+		name = _plugin.name;
 		plugin = _plugin;
 		
 		plugin.visibilityChanged(isVisible());
@@ -105,14 +106,26 @@ public class PluginLayer extends Layer
 	}
 
 	@Override
-	public void storeConfiguration(JSONObject _jsonLayer)
+	public void storeConfiguration(JSONObject _jsonLayer) throws JSONException
 	{
+		_jsonLayer.put("type", "plugin");
+		_jsonLayer.put("pluginId", plugin.id);
 		plugin.storeConfiguration(_jsonLayer);
+	}
+	
+	public void restoreConfiguration(JSONObject _jsonLayer) throws JSONException
+	{
+		if(!plugin.id.equals(_jsonLayer.getString("pluginId")))
+			throw new IllegalArgumentException();
+		
+		plugin.restoreConfiguration(_jsonLayer);
+		
+		applyJSONState(_jsonLayer);
 	}
 
 	@Override
 	public @Nullable String getFullName()
 	{
-		return plugin.pluginName;
+		return plugin.name;
 	}
 }

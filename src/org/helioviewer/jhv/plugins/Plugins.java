@@ -32,7 +32,6 @@ import org.helioviewer.jhv.plugins.hekplugin.HEKPlugin;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.TimeLine.TimeLineListener;
-import org.json.JSONObject;
 
 public class Plugins implements TimeLineListener, MouseListener, MouseMotionListener
 {
@@ -251,20 +250,6 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 		return httpRequest;
 	}
 
-	public void storeConfiguration(JSONObject jsonPlugins)
-	{
-		//TODO: save layer visibility state, expanded/collapsed panel state, ...
-		
-		for (Plugin plugin : plugins)
-			plugin.storeConfiguration(jsonPlugins);
-	}
-
-	public void restoreConfiguration(JSONObject jsonPlugins)
-	{
-		for (Plugin plugin : plugins)
-			plugin.restoreConfiguration(jsonPlugins);
-	}
-	
 	/*public static void setPanelOpenCloseState(Component component, boolean open)
 	{
 		if (open)

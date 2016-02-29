@@ -5,13 +5,15 @@ import java.time.LocalDateTime;
 
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.layers.PluginLayer;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.jogamp.opengl.GL2;
 
 public abstract class Plugin
 {
-	public final String pluginName;
+	public final String id;
+	public final String name;
 	private boolean isVisible;
 	
 	public enum RenderMode
@@ -21,9 +23,10 @@ public abstract class Plugin
 
 	public final RenderMode renderMode;
 
-	public Plugin(String name, RenderMode _renderMode)
+	public Plugin(String _id, String _name, RenderMode _renderMode)
 	{
-		pluginName = name;
+		id = _id;
+		name = _name;
 		renderMode = _renderMode;
 	}
 	
@@ -108,14 +111,14 @@ public abstract class Plugin
 	{
 	}
 
-	abstract public void restoreConfiguration(JSONObject jsonObject);
+	abstract public void restoreConfiguration(JSONObject jsonObject) throws JSONException;
 
-	abstract public void storeConfiguration(JSONObject jsonObject);
+	abstract public void storeConfiguration(JSONObject jsonObject) throws JSONException;
 
 	@Override
 	public String toString()
 	{
-		return pluginName;
+		return name;
 	}
 
 	abstract public boolean retryNeeded();

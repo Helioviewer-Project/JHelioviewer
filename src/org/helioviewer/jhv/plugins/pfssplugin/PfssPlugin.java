@@ -14,6 +14,7 @@ import org.helioviewer.jhv.plugins.Plugin;
 import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.plugins.pfssplugin.data.FrameManager;
 import org.helioviewer.jhv.plugins.pfssplugin.data.PfssDecompressed;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.jogamp.opengl.GL2;
@@ -39,7 +40,7 @@ public class PfssPlugin extends Plugin
 	
 	public PfssPlugin()
 	{
-		super("PFSS", RenderMode.MAIN_PANEL);
+		super("PFSS", "PFSS", RenderMode.MAIN_PANEL);
 		manager = new FrameManager(this);
 	}
 	
@@ -76,8 +77,10 @@ public class PfssPlugin extends Plugin
 	}
 
 	@Override
-	public void storeConfiguration(JSONObject jsonObject)
+	public void storeConfiguration(JSONObject jsonObject) throws JSONException
 	{
+		//TODO
+		
 		/*try
 		{
 			JSONObject jsonPfss = new JSONObject();

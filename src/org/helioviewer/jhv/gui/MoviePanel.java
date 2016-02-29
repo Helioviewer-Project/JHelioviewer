@@ -16,7 +16,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 
 import javax.annotation.Nullable;
 import javax.swing.AbstractAction;
@@ -430,7 +429,6 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 			if (layer != null)
 			{
 				//TODO: speed this code up
-				long duration=TimeLine.SINGLETON.getFirstDateTime().until(TimeLine.SINGLETON.getLastDateTime(), ChronoUnit.SECONDS);
 				int max=Math.min(TimeLine.SINGLETON.getFrameCount()-1, (int)trackRect.getWidth());
 				for(int i=0;i<=max;i++)
 				{

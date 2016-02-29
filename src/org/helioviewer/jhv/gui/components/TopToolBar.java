@@ -327,4 +327,9 @@ public class TopToolBar extends JToolBar implements MouseListener
 	{
 		trackingEnabledButton.setSelected(_track);
 	}
+
+	public boolean getTracking()
+	{
+		return trackingEnabledButton.isSelected();
+	}
 }

@@ -60,6 +60,19 @@ public class Layers
 		return layers.get(idx);
 	}
 	
+	public static @Nullable PluginLayer getPluginLayer(String _id)
+	{
+		for(Layer l:layers)
+			if(l instanceof PluginLayer)
+			{
+				PluginLayer pl=(PluginLayer)l;
+				if(_id.equals(pl.plugin.id))
+					return pl;
+			}
+		
+		return null;
+	}
+	
 	public static void removeLayer(Layer _l)
 	{
 		int index=layers.indexOf(_l);
@@ -151,40 +164,44 @@ public class Layers
 	
 		ImageLayer.newRenderPassStarted();
 		
-		layers.clear();
+		layers.removeIf(l -> l instanceof ImageLayer);
 		
 		activeLayerIndex = -1;
 		for (LayerListener renderListener : layerListeners)
 			renderListener.layersRemoved();
 	}
 
-	public static void writeStatefile(JSONArray jsonLayers)
+	public static void writeStatefile(JSONArray _json) throws JSONException
 	{
 		for (Layer layer : layers)
 		{
 			JSONObject jsonLayer = new JSONObject();
 			layer.storeConfiguration(jsonLayer);
-			jsonLayers.put(jsonLayer);
+			_json.put(jsonLayer);
 		}
 	}
 
-	public static void readStatefile(JSONArray jsonLayers)
+	public static void loadStatefile(JSONArray _json) throws JSONException, UnsuitableMetaDataException
 	{
-		for (int i = 0; i < jsonLayers.length(); i++)
-			try
+		for (int i = 0; i < _json.length(); i++)
+		{
+			JSONObject layer = _json.getJSONObject(i);
+			switch(layer.getString("type"))
 			{
-				JSONObject jsonLayer = jsonLayers.getJSONObject(i);
-				KakaduLayer layer = KakaduLayer.createFromStateFile(jsonLayer);
-				if (layer != null)
-				{
-					Layers.addLayer(layer);
-					layer.readStateFile(jsonLayer);
-				}
+				case "kakadu":
+					Layers.addLayer(KakaduLayer.createFromStateFile(layer));
+					break;
+				case "plugin":
+					@Nullable PluginLayer pl = Layers.getPluginLayer(layer.getString("pluginId"));
+					if(pl!=null)
+						pl.restoreConfiguration(layer);
+					else
+						Telemetry.trackException(new RuntimeException("Unknown plugin "+layer.getString("pluginId")));
+					break;
+				default:
+					throw new RuntimeException("Unsupported layer type "+layer.getString("type"));
 			}
-			catch (JSONException | UnsuitableMetaDataException e)
-			{
-				Telemetry.trackException(e);
-			}
+		}
 	}
 
 	@Nullable

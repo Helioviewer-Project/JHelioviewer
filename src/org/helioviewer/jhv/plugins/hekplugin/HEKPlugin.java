@@ -23,6 +23,7 @@ import org.helioviewer.jhv.plugins.hekplugin.cache.HEKEvent;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKEvent.GenericTriangle;
 import org.helioviewer.jhv.plugins.hekplugin.cache.gui.HEKEventInformationDialog;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.jogamp.opengl.GL;
@@ -48,7 +49,7 @@ public class HEKPlugin extends Plugin
 
 	public HEKPlugin()
 	{
-		super("HEK", RenderMode.MAIN_PANEL);
+		super("HEK", "HEK", RenderMode.MAIN_PANEL);
 		hekPluginPanel = new HEKPluginPanel(HEKCache.getSingletonInstance());
 		
 		Plugins.addPanelToLeftControllPanel("HEK", hekPluginPanel, false);
@@ -381,8 +382,10 @@ public class HEKPlugin extends Plugin
 	}
 
 	@Override
-	public void restoreConfiguration(JSONObject jsonObject)
+	public void restoreConfiguration(JSONObject jsonObject) throws JSONException
 	{
+		//TODO
+		
 		/*if (jsonObject.has(JSON_NAME))
 		{
 			try
@@ -397,8 +400,10 @@ public class HEKPlugin extends Plugin
 	}
 
 	@Override
-	public void storeConfiguration(JSONObject jsonObject)
+	public void storeConfiguration(JSONObject jsonObject) throws JSONException
 	{
+		//TODO
+		
 		/*JSONObject jsonHek = new JSONObject();
 		JSONArray jsonHekEvents = new JSONArray();
 		try

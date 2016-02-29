@@ -9,79 +9,77 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
 
-import org.helioviewer.jhv.base.Globals.DialogType;
 import org.helioviewer.jhv.base.Settings.StringKey;
 import org.helioviewer.jhv.base.math.Quaternion;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.PredefinedFileFilter;
 import org.helioviewer.jhv.layers.Layers;
-import org.helioviewer.jhv.plugins.Plugins;
+import org.helioviewer.jhv.opengl.camera.CameraMode;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.xml.sax.helpers.DefaultHandler;
 
-public class StateParser extends DefaultHandler
+public class StateParser
 {
-	public static void loadStateFile() throws IOException, JSONException
-	{
-		File selectedFile = Globals.showFileDialog(
-				DialogType.OPEN_FILE,
-				"Open State File",
-				Settings.getString(StringKey.STATE_DIRECTORY),
-				true,
-				null,
-				PredefinedFileFilter.JHV
-			);
-		
-		if (selectedFile!=null)
-		{
-			Settings.setString(StringKey.STATE_DIRECTORY, selectedFile.getParentFile().getAbsolutePath());
-			loadStateFile(selectedFile);
-		}
-	}
-
 	public static void loadStateFile(File selectedFile) throws IOException, JSONException
 	{
+		JSONObject json = new JSONObject(new String(Files.readAllBytes(selectedFile.toPath()), StandardCharsets.UTF_8));
+		
 		Layers.removeAllImageLayers();
-		byte[] data = Files.readAllBytes(selectedFile.toPath());
-		String content = new String(data, StandardCharsets.UTF_8);
-		JSONObject jsonObject = new JSONObject(content);
-		JSONArray layers = jsonObject.getJSONArray("layers");
-		Layers.readStatefile(layers);
-
-		JSONObject jsonCamera = jsonObject.getJSONObject("camera");
+		
+		JSONArray layers = json.getJSONArray("layers");
+		Layers.loadStatefile(layers);
+		
+		JSONObject jsonCamera = json.getJSONObject("camera");
 		JSONArray jsonTranslation = jsonCamera.getJSONArray("translation");
 		Vector3d translation = new Vector3d(jsonTranslation.getDouble(0), jsonTranslation.getDouble(1), jsonTranslation.getDouble(2));
 		JSONArray jsonRotation = jsonCamera.getJSONArray("rotation");
 		Quaternion rotation = Quaternion.createRotation(jsonRotation.getDouble(0), new Vector3d(jsonRotation.getDouble(1), jsonRotation.getDouble(2), jsonRotation.getDouble(3)));
 		MainFrame.SINGLETON.MAIN_PANEL.abortAllAnimations();
+		
 		MainFrame.SINGLETON.MAIN_PANEL.setRotationEnd(rotation);
 		MainFrame.SINGLETON.MAIN_PANEL.setRotationCurrent(rotation);
 		MainFrame.SINGLETON.MAIN_PANEL.setTranslationEnd(translation);
 		MainFrame.SINGLETON.MAIN_PANEL.setTranslationCurrent(translation);
 		
-		Layers.setActiveLayer(jsonObject.getInt("activeLayer"));
-		LocalDateTime currentDateTime = LocalDateTime.parse(jsonObject.getString("time"));
+		switch(jsonCamera.getString("mode"))
+		{
+			case "2D":
+				CameraMode.set2DMode();
+				break;
+			case "3D":
+				CameraMode.set3DMode();
+				break;
+			default:
+				throw new RuntimeException("Mode: "+CameraMode.mode);
+		}
+		
+		MainFrame.SINGLETON.MAIN_PANEL.setCameraTrackingEnabled(jsonCamera.getBoolean("tracking"));
+		
+		//TODO: save and restore playback speed
+		//TODO: save UI state (expanded, collapsed, ...)
+		
+		Layers.setActiveLayer(json.getInt("activeLayer"));
+		LocalDateTime currentDateTime = LocalDateTime.parse(json.getString("time"));
 		TimeLine.SINGLETON.setCurrentDate(currentDateTime);
 
-		JSONObject jsonPlugin = jsonObject.getJSONObject("plugins");
-		Plugins.SINGLETON.restoreConfiguration(jsonPlugin);
+		MainFrame.SINGLETON.FILTER_PANEL.update();
+		MainFrame.SINGLETON.repaint();
 	}
 
-	private static void startSavingStateFile(File selectedFile) throws JSONException, IOException
+	public static void saveStateFile(File selectedFile) throws JSONException, IOException
 	{
 		Settings.setString(StringKey.STATE_DIRECTORY, selectedFile.getParent());
 		String fileName = selectedFile.toString();
 		fileName = fileName.endsWith(PredefinedFileFilter.JHV.getDefaultExtension()) ? fileName
 				: fileName + PredefinedFileFilter.JHV.getDefaultExtension();
-		JSONObject jsonObject = new JSONObject();
+		JSONObject json = new JSONObject();
 
 		JSONArray jsonLayers = new JSONArray();
 		Layers.writeStatefile(jsonLayers);
-		jsonObject.put("layers", jsonLayers);
+		json.put("layers", jsonLayers);
 
 		JSONObject jsonCamera = new JSONObject();
 
@@ -100,31 +98,27 @@ public class StateParser extends DefaultHandler
 		jsonRotation.put(axis.y);
 		jsonRotation.put(axis.z);
 		jsonCamera.put("rotation", jsonRotation);
-
-		jsonObject.put("camera", jsonCamera);
-		jsonObject.put("activeLayer", Layers.getActiveLayerIndex());
-		jsonObject.put("time", TimeLine.SINGLETON.getCurrentDateTime());
-
-		JSONObject jsonPlugins = new JSONObject();
-		Plugins.SINGLETON.storeConfiguration(jsonPlugins);
-		jsonObject.put("plugins", jsonPlugins);
+		switch(CameraMode.mode)
+		{
+			case MODE_2D:
+				jsonCamera.put("mode", "2D");
+				break;
+			case MODE_3D:
+				jsonCamera.put("mode", "3D");
+				break;
+			default:
+				throw new RuntimeException("Mode: "+CameraMode.mode);
+		}
 		
+		jsonCamera.put("tracking", MainFrame.SINGLETON.MAIN_PANEL.isCameraTrackingEnabled());
+
+		json.put("camera", jsonCamera);
+		json.put("activeLayer", Layers.getActiveLayerIndex());
+		json.put("time", TimeLine.SINGLETON.getCurrentDateTime());
+
 		try(Writer w = new OutputStreamWriter(new FileOutputStream(fileName),StandardCharsets.UTF_8))
 		{
-			w.write(jsonObject.toString());
+			w.write(json.toString());
 		}
-	}
-
-	public static void writeStateFile() throws JSONException, IOException
-	{
-		File selectedFile = Globals.showFileDialog(DialogType.SAVE_FILE,
-				"Save state file",
-				Settings.getString(StringKey.STATE_DIRECTORY),
-				true,
-				null,
-				PredefinedFileFilter.JHV);
-		
-		if(selectedFile!=null)
-			startSavingStateFile(selectedFile);
 	}
 }

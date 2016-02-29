@@ -23,7 +23,7 @@ public class PredefinedFileFilter extends FileFilter
 	public static final PredefinedFileFilter FITS = new PredefinedFileFilter("FITS files (*.fts, *.fits)", new String[] { ".fits", ".fts" });
 	public static final PredefinedFileFilter XML = new PredefinedFileFilter("XML files (*.xml)", new String[] {".xml"});
 	public static final PredefinedFileFilter JPX = new PredefinedFileFilter("JPG2000 files (.jpx)", new String[]{ ".jpx" });
-	public static final PredefinedFileFilter JHV = new PredefinedFileFilter("JHelioviewer state files (*.jvh)", new String[]{ ".jhv" });
+	public static final PredefinedFileFilter JHV = new PredefinedFileFilter("JHelioviewer state files (*.jhv)", new String[]{ ".jhv" });
 	
     public static final PredefinedFileFilter ALL_SUPPORTED_IMAGE_TYPES = new PredefinedFileFilter(
     				"All supported files (*.jpg, *.jpeg, *.png, *.fts, *.fits, *.jp2, *.jpx)",

@@ -107,7 +107,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 	private boolean cameraTrackingEnabled = false;
 
 	@Nullable
-	private LocalDateTime lastDate;
+	private LocalDateTime lastCameraTrackingDate;
 
 	private int[] frameBufferObject;
 	private int[] renderBufferDepth;
@@ -142,7 +142,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			public void activeLayerChanged(@Nullable Layer layer)
 			{
 				if (Layers.getActiveImageLayer() != null)
-					lastDate = null;
+					lastCameraTrackingDate = null;
 				repaint();
 			}
 		});
@@ -715,13 +715,13 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 
 	protected void updateTrackRotation()
 	{
-		if (lastDate == null)
-			lastDate = TimeLine.SINGLETON.getCurrentDateTime();
+		if (lastCameraTrackingDate == null)
+			lastCameraTrackingDate = TimeLine.SINGLETON.getCurrentDateTime();
 
-		if (!lastDate.isEqual(TimeLine.SINGLETON.getCurrentDateTime()))
+		if (!lastCameraTrackingDate.isEqual(TimeLine.SINGLETON.getCurrentDateTime()))
 		{
-			long difference = Duration.between(lastDate, TimeLine.SINGLETON.getCurrentDateTime()).getSeconds();
-			lastDate = TimeLine.SINGLETON.getCurrentDateTime();
+			long difference = Duration.between(lastCameraTrackingDate, TimeLine.SINGLETON.getCurrentDateTime()).getSeconds();
+			lastCameraTrackingDate = TimeLine.SINGLETON.getCurrentDateTime();
 			
 			RayTrace rayTrace = new RayTrace();
 			Vector3d hitPoint = rayTrace.cast(getWidth() / 2, getHeight() / 2, this).getHitpoint();
@@ -1015,11 +1015,21 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			}
 		});
 	}
-
-	public void toggleCameraTracking()
+	
+	public boolean isCameraTrackingEnabled()
 	{
-		cameraTrackingEnabled = !cameraTrackingEnabled;
-		lastDate = TimeLine.SINGLETON.getCurrentDateTime();
+		return cameraTrackingEnabled;
+	}
+	
+	public void setCameraTrackingEnabled(boolean _isEnabled)
+	{
+		if(cameraTrackingEnabled == _isEnabled)
+			return;
+		
+		cameraTrackingEnabled = _isEnabled;
+		lastCameraTrackingDate = TimeLine.SINGLETON.getCurrentDateTime();
+		
+		MainFrame.SINGLETON.TOP_TOOL_BAR.setTracking(_isEnabled);
 	}
 
 	public void addPanelMouseListener(PanelMouseListener _listener)

@@ -34,7 +34,6 @@ import org.helioviewer.jhv.opengl.camera.animation.CameraRotationAnimation;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.TimeLine.DecodeQualityLevel;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.json.JSONObject;
 import org.w3c.dom.Document;
 
 import com.google.common.util.concurrent.ListenableFuture;
@@ -84,8 +83,6 @@ public abstract class ImageLayer extends Layer
 
 	public abstract @Nullable Document getMetaDataDocument(@Nonnull LocalDateTime _currentDateTime);
 
-	public abstract void storeConfiguration(JSONObject jsonLayer);
-	
 	public abstract @Nullable Match findBestFrame(LocalDateTime _currentDateTime);
 
 	

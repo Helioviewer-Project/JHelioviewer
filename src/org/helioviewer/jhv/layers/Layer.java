@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import javax.annotation.Nullable;
 
 import org.helioviewer.jhv.gui.MainFrame;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public abstract class Layer
@@ -120,8 +121,44 @@ public abstract class Layer
 		ERROR,
 		OK
 	}
+	
+	protected void applyJSONState(JSONObject jsonLayer) throws JSONException
+	{
+		if(supportsFilterContrastGamma())
+		{
+			gamma = jsonLayer.getDouble("gamma");
+			contrast = jsonLayer.getDouble("contrast");
+		}
+		
+		if(supportsFilterOpacity())
+			opacity = jsonLayer.getDouble("opacity");
+		
+		if(supportsFilterSharpness())
+			sharpness = jsonLayer.getDouble("sharpen");
+		
+		if(supportsFilterLUT())
+		{
+			if(jsonLayer.has("lut"))
+				setLUT(LUT.values()[jsonLayer.getInt("lut")]);
+			else
+				setLUT(null);
+			invertedLut = jsonLayer.getBoolean("invertedLut");
+		}
+		
+		if(supportsFilterRGB())
+		{
+			redChannel=jsonLayer.getBoolean("redChannel");
+			greenChannel=jsonLayer.getBoolean("greenChannel");
+			blueChannel=jsonLayer.getBoolean("blueChannel");
+		}
+		
+		if(supportsFilterCorona())
+			coronaVisible=jsonLayer.getBoolean("coronaVisibility");
+		
+		setVisible(jsonLayer.getBoolean("visibility"));
+	}
 
-	public abstract void storeConfiguration(JSONObject jsonLayer);
+	public abstract void storeConfiguration(JSONObject jsonLayer) throws JSONException;
 	
 	public @Nullable String getDownloadURL()
 	{

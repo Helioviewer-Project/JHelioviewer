@@ -33,7 +33,6 @@ import org.helioviewer.jhv.base.downloadmanager.JPIPRequest;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.layers.ImageLayer;
-import org.helioviewer.jhv.layers.LUT;
 import org.helioviewer.jhv.layers.Movie;
 import org.helioviewer.jhv.layers.Movie.Match;
 import org.helioviewer.jhv.layers.Movie.Quality;
@@ -116,31 +115,34 @@ public class KakaduLayer extends ImageLayer
 		MovieCache.add(movie);
 	}
 	
-	public void storeConfiguration(JSONObject jsonLayer)
+	public void storeConfiguration(JSONObject _json)
 	{
 		try
 		{
-			jsonLayer.put("localPath", localPath==null ? "":localPath);
-			jsonLayer.put("id", sourceId);
-			jsonLayer.put("cadence", cadence);
-			jsonLayer.put("startDateTime", start);
-			jsonLayer.put("endDateTime", end);
-			jsonLayer.put("name", name);
-			jsonLayer.put("opa.city", opacity);
-			jsonLayer.put("sharpen", sharpness);
-			jsonLayer.put("gamma", gamma);
-			jsonLayer.put("contrast", contrast);
+			_json.put("type", "kakadu");
+			
+			if(localPath!=null)
+				_json.put("localPath", localPath);
+			
+			_json.put("id", sourceId);
+			_json.put("cadence", cadence);
+			_json.put("startDateTime", start);
+			_json.put("endDateTime", end);
+			_json.put("name", name);
+			_json.put("opacity", opacity);
+			_json.put("sharpen", sharpness);
+			_json.put("gamma", gamma);
+			_json.put("contrast", contrast);
 			if(getLUT()!=null)
-				jsonLayer.put("lut", getLUT().ordinal());
-			else
-				jsonLayer.put("lut", -1);
-			jsonLayer.put("redChannel", redChannel);
-			jsonLayer.put("greenChannel", greenChannel);
-			jsonLayer.put("blueChannel", blueChannel);
+				_json.put("lut", getLUT().ordinal());
 
-			jsonLayer.put("visibility", isVisible());
-			jsonLayer.put("invertedLut", invertedLut);
-			jsonLayer.put("coronaVisibility", coronaVisible);
+			_json.put("redChannel", redChannel);
+			_json.put("greenChannel", greenChannel);
+			_json.put("blueChannel", blueChannel);
+
+			_json.put("visibility", isVisible());
+			_json.put("invertedLut", invertedLut);
+			_json.put("coronaVisibility", coronaVisible);
 		}
 		catch (JSONException e)
 		{
@@ -148,59 +150,25 @@ public class KakaduLayer extends ImageLayer
 		}
 	}
 	
-	public void readStateFile(JSONObject jsonLayer)
+	public static @Nullable KakaduLayer createFromStateFile(JSONObject jsonLayer) throws JSONException
 	{
-		try
+		KakaduLayer l;
+		
+		if (jsonLayer.has("localPath"))
 		{
-			opacity = jsonLayer.getDouble("opa.city");
-			sharpness = jsonLayer.getDouble("sharpen");
-			gamma = jsonLayer.getDouble("gamma");
-			contrast = jsonLayer.getDouble("contrast");
-			
-			if(jsonLayer.getInt("lut")==-1)
-				setLUT(null);
-			else
-				setLUT(LUT.values()[jsonLayer.getInt("lut")]);
-			redChannel=jsonLayer.getBoolean("redChannel");
-			greenChannel=jsonLayer.getBoolean("greenChannel");
-			blueChannel=jsonLayer.getBoolean("blueChannel");
-			
-			setVisible(jsonLayer.getBoolean("visibility"));
-			invertedLut = jsonLayer.getBoolean("invertedLut");
-			coronaVisible=jsonLayer.getBoolean("coronaVisibility");
-			MainFrame.SINGLETON.FILTER_PANEL.update();
+			l = new KakaduLayer(jsonLayer.getString("localPath"));
 		}
-		catch (JSONException e)
+		else
 		{
-			Telemetry.trackException(e);
+			LocalDateTime start = LocalDateTime.parse(jsonLayer.getString("startDateTime"));
+			LocalDateTime end = LocalDateTime.parse(jsonLayer.getString("endDateTime"));
+			l = new KakaduLayer(jsonLayer.getInt("id"), start, end, jsonLayer.getInt("cadence"), jsonLayer.getString("name"));
 		}
-	}
-
-	//TODO: convert into constructor & combine with readStateFile
-	public static @Nullable KakaduLayer createFromStateFile(JSONObject jsonLayer)
-	{
-		try
-		{
-			if (!jsonLayer.getString("localPath").equals(""))
-			{
-				return new KakaduLayer(jsonLayer.getString("localPath"));
-			}
-			else if (jsonLayer.getInt("cadence") >= 0)
-			{
-				LocalDateTime start = LocalDateTime.parse(jsonLayer.getString("startDateTime"));
-				LocalDateTime end = LocalDateTime.parse(jsonLayer.getString("endDateTime"));
-				return new KakaduLayer(jsonLayer.getInt("id"), start, end, jsonLayer.getInt("cadence"), jsonLayer.getString("name"));
-			}
-		}
-		catch (JSONException e)
-		{
-			Telemetry.trackException(e);
-		}
-		return null;
+		
+		l.applyJSONState(jsonLayer);
+		return l;
 	}
 	
-	//private static HashMap<Integer,IntervalStore> unavailableData = new HashMap<>();
-
 	private static HashMap<String,Integer> usedIDs=new HashMap<>();
 	private static int unusedID=-1;
 	

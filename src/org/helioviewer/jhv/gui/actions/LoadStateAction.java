@@ -9,9 +9,14 @@ import javax.annotation.Nullable;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 
+import org.helioviewer.jhv.base.Globals;
+import org.helioviewer.jhv.base.Globals.DialogType;
+import org.helioviewer.jhv.base.Settings;
+import org.helioviewer.jhv.base.Settings.StringKey;
 import org.helioviewer.jhv.base.StateParser;
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.gui.MainFrame;
+import org.helioviewer.jhv.gui.PredefinedFileFilter;
 import org.json.JSONException;
 
 public class LoadStateAction extends AbstractAction
@@ -66,13 +71,28 @@ public class LoadStateAction extends AbstractAction
     	try
     	{
     		if(stateLocation==null)
-    			StateParser.loadStateFile();
+    		{
+    			File selectedFile = Globals.showFileDialog(
+    					DialogType.OPEN_FILE,
+    					"Open saved state",
+    					Settings.getString(StringKey.STATE_DIRECTORY),
+    					true,
+    					null,
+    					PredefinedFileFilter.JHV
+    				);
+    			
+    			if (selectedFile!=null)
+    			{
+    				Settings.setString(StringKey.STATE_DIRECTORY, selectedFile.getParentFile().getAbsolutePath());
+    				StateParser.loadStateFile(selectedFile);
+    			}
+    		}
     		else
     			StateParser.loadStateFile(stateLocation);
 		}
     	catch (IOException | JSONException _e)
     	{
-			JOptionPane.showMessageDialog(MainFrame.SINGLETON.MAIN_PANEL, "Could not load file: " + _e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(MainFrame.SINGLETON.MAIN_PANEL, "Could not load file " + _e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 			Telemetry.trackException(_e);
 		}
     }

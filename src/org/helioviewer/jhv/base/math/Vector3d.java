@@ -122,7 +122,11 @@ public class Vector3d
 
 	public Vector3d normalized()
 	{
-		double scale = 1/length();
+		double length = length();
+		if(length==0)
+			return this;
+		
+		double scale = 1/length;
 		return new Vector3dNormalized(x * scale, y * scale, z * scale);
 	}
 
