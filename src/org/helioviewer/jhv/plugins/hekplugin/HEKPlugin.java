@@ -21,8 +21,10 @@ import org.helioviewer.jhv.plugins.Plugins;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKCache;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKEvent;
 import org.helioviewer.jhv.plugins.hekplugin.cache.HEKEvent.GenericTriangle;
+import org.helioviewer.jhv.plugins.hekplugin.cache.HEKPath;
 import org.helioviewer.jhv.plugins.hekplugin.cache.gui.HEKEventInformationDialog;
 import org.helioviewer.jhv.plugins.hekplugin.settings.HEKConstants;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -31,9 +33,6 @@ import com.jogamp.opengl.GL2;
 
 public class HEKPlugin extends Plugin
 {
-	/*private static final String JSON_NAME = "hek";
-	private static final String JSON_EVENTS = "events";*/
-
 	private static final Cursor CURSOR_HELP = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
 
 	private Cursor lastCursor;
@@ -384,42 +383,26 @@ public class HEKPlugin extends Plugin
 	@Override
 	public void restoreConfiguration(JSONObject jsonObject) throws JSONException
 	{
-		//TODO
-		
-		/*if (jsonObject.has(JSON_NAME))
+		//TODO: unreliable - serialization only works if cache is populated EXACTLY the same way
+		JSONArray jsonHekEvents = jsonObject.getJSONArray("events");
+		int i=0;
+		for (HEKPath hekPath : HEKCache.getSingletonInstance().getTrackPaths())
 		{
-			try
-			{
-				JSONObject jsonHek = jsonObject.getJSONObject(JSON_NAME);
-			}
-			catch (JSONException e)
-			{
-				Telemetry.trackException(e);
-			}
-		}*/
+			HEKCache.getSingletonInstance().getSelectionModel().setState(hekPath, jsonHekEvents.getInt(i));
+			i++;
+		}
 	}
 
 	@Override
 	public void storeConfiguration(JSONObject jsonObject) throws JSONException
 	{
-		//TODO
-		
-		/*JSONObject jsonHek = new JSONObject();
 		JSONArray jsonHekEvents = new JSONArray();
-		try
+		for (HEKPath hekPath : HEKCache.getSingletonInstance().getTrackPaths())
 		{
-			for (HEKPath hekPath : HEKCache.getSingletonInstance().getTrackPaths())
-			{
-				int state = HEKCache.getSingletonInstance().getSelectionModel().getState(hekPath);
-				jsonHekEvents.put(state);
-			}
-			jsonHek.put(JSON_EVENTS, jsonHekEvents);
-			jsonObject.put(JSON_NAME, jsonHek);
+			int state = HEKCache.getSingletonInstance().getSelectionModel().getState(hekPath);
+			jsonHekEvents.put(state);
 		}
-		catch (JSONException e)
-		{
-			Telemetry.trackException(e);
-		}*/
+		jsonObject.put("events", jsonHekEvents);
 	}
 
 	@Override

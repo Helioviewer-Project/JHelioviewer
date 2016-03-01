@@ -115,42 +115,24 @@ public class KakaduLayer extends ImageLayer
 		MovieCache.add(movie);
 	}
 	
-	public void storeConfiguration(JSONObject _json)
+	public void storeConfiguration(JSONObject _json) throws JSONException
 	{
-		try
-		{
-			_json.put("type", "kakadu");
-			
-			if(localPath!=null)
-				_json.put("localPath", localPath);
-			
-			_json.put("id", sourceId);
-			_json.put("cadence", cadence);
-			_json.put("startDateTime", start);
-			_json.put("endDateTime", end);
+		_json.put("type", "kakadu");
+		
+		if(localPath!=null)
+			_json.put("localPath", localPath);
+		else
 			_json.put("name", name);
-			_json.put("opacity", opacity);
-			_json.put("sharpen", sharpness);
-			_json.put("gamma", gamma);
-			_json.put("contrast", contrast);
-			if(getLUT()!=null)
-				_json.put("lut", getLUT().ordinal());
 
-			_json.put("redChannel", redChannel);
-			_json.put("greenChannel", greenChannel);
-			_json.put("blueChannel", blueChannel);
-
-			_json.put("visibility", isVisible());
-			_json.put("invertedLut", invertedLut);
-			_json.put("coronaVisibility", coronaVisible);
-		}
-		catch (JSONException e)
-		{
-			Telemetry.trackException(e);
-		}
+		_json.put("id", sourceId);
+		_json.put("cadence", cadence);
+		_json.put("startDateTime", start);
+		_json.put("endDateTime", end);
+		
+		storeJSONState(_json);
 	}
 	
-	public static @Nullable KakaduLayer createFromStateFile(JSONObject jsonLayer) throws JSONException
+	public static @Nullable KakaduLayer createFromJSON(JSONObject jsonLayer) throws JSONException
 	{
 		KakaduLayer l;
 		

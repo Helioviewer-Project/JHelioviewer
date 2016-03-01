@@ -68,11 +68,12 @@ public class LoadStateAction extends AbstractAction
 
 	public void actionPerformed(@Nullable ActionEvent e)
     {
+		File loc=stateLocation;
     	try
     	{
-    		if(stateLocation==null)
+    		if(loc==null)
     		{
-    			File selectedFile = Globals.showFileDialog(
+    			loc = Globals.showFileDialog(
     					DialogType.OPEN_FILE,
     					"Open saved state",
     					Settings.getString(StringKey.STATE_DIRECTORY),
@@ -81,18 +82,17 @@ public class LoadStateAction extends AbstractAction
     					PredefinedFileFilter.JHV
     				);
     			
-    			if (selectedFile!=null)
-    			{
-    				Settings.setString(StringKey.STATE_DIRECTORY, selectedFile.getParentFile().getAbsolutePath());
-    				StateParser.loadStateFile(selectedFile);
-    			}
+				if (loc==null)
+					return;
+				
+				Settings.setString(StringKey.STATE_DIRECTORY, loc.getParentFile().getAbsolutePath());
     		}
-    		else
-    			StateParser.loadStateFile(stateLocation);
+    		
+			StateParser.loadStateFile(loc);
 		}
     	catch (IOException | JSONException _e)
     	{
-			JOptionPane.showMessageDialog(MainFrame.SINGLETON.MAIN_PANEL, "Could not load file " + _e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(MainFrame.SINGLETON.MAIN_PANEL, "Could not load file "+loc.getAbsolutePath()+":\n" + _e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 			Telemetry.trackException(_e);
 		}
     }

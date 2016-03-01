@@ -122,6 +122,40 @@ public abstract class Layer
 		OK
 	}
 	
+	protected void storeJSONState(JSONObject _json) throws JSONException
+	{
+		if(supportsFilterOpacity())
+			_json.put("opacity", opacity);
+		
+		if(supportsFilterSharpness())
+			_json.put("sharpen", sharpness);
+		
+		if(supportsFilterContrastGamma())
+		{
+			_json.put("gamma", gamma);
+			_json.put("contrast", contrast);
+		}
+		
+		if(supportsFilterLUT())
+		{
+			if(getLUT()!=null)
+				_json.put("lut", getLUT().ordinal());
+			_json.put("invertedLut", invertedLut);
+		}
+		
+		if(supportsFilterRGB())
+		{
+			_json.put("redChannel", redChannel);
+			_json.put("greenChannel", greenChannel);
+			_json.put("blueChannel", blueChannel);
+		}
+
+		if(supportsFilterCorona())
+			_json.put("coronaVisibility", coronaVisible);
+		
+		_json.put("visibility", isVisible());
+	}
+	
 	protected void applyJSONState(JSONObject jsonLayer) throws JSONException
 	{
 		if(supportsFilterContrastGamma())

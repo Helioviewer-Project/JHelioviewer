@@ -30,6 +30,19 @@ public class StateParser
 		Layers.removeAllImageLayers();
 		
 		JSONArray layers = json.getJSONArray("layers");
+		
+		
+		switch(json.getInt("version"))
+		{
+			//case 0:
+				//updateFrom0To1();
+			//...
+			case 1:
+				break;
+			default:
+				throw new JSONException("Unsupported version ("+json.getInt("version")+")");
+		}
+		
 		Layers.loadStatefile(layers);
 		
 		JSONObject jsonCamera = json.getJSONObject("camera");
@@ -59,7 +72,6 @@ public class StateParser
 		MainFrame.SINGLETON.MAIN_PANEL.setCameraTrackingEnabled(jsonCamera.getBoolean("tracking"));
 		
 		//TODO: save and restore playback speed
-		//TODO: save UI state (expanded, collapsed, ...)
 		
 		Layers.setActiveLayer(json.getInt("activeLayer"));
 		LocalDateTime currentDateTime = LocalDateTime.parse(json.getString("time"));
@@ -76,6 +88,7 @@ public class StateParser
 		fileName = fileName.endsWith(PredefinedFileFilter.JHV.getDefaultExtension()) ? fileName
 				: fileName + PredefinedFileFilter.JHV.getDefaultExtension();
 		JSONObject json = new JSONObject();
+		json.put("version", 1);
 
 		JSONArray jsonLayers = new JSONArray();
 		Layers.writeStatefile(jsonLayers);

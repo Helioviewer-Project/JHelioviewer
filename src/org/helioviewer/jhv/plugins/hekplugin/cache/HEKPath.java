@@ -49,24 +49,6 @@ public class HEKPath {
     /**
      * Constructor.
      * 
-     * @param root
-     * @param obj
-     * @param catalogue
-     * @param type
-     * @param frm
-     */
-    public HEKPath(HEKCache root, Object obj, String catalogue, String type, String frm) {
-        this.virtual = false;
-        this.cache = root;
-        this.object = obj;
-        path.add(catalogue);
-        path.add(type);
-        path.add(frm);
-    }
-
-    /**
-     * Constructor.
-     * 
      * @param hekCache
      */
     public HEKPath(HEKCache hekCache) {

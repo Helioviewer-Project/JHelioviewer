@@ -132,15 +132,6 @@ public class HEKCache {
     }
 
     /**
-     * Set all tracks
-     * 
-     * @param tracks
-     */
-    public void setTracks(HashMap<HEKPath, IntervalStore<Date, HEKEvent>> tracks) {
-        this.tracks = tracks;
-    }
-
-    /**
      * Get all tracks
      * 
      * @return - tracks

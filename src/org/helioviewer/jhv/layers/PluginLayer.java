@@ -110,6 +110,7 @@ public class PluginLayer extends Layer
 	{
 		_jsonLayer.put("type", "plugin");
 		_jsonLayer.put("pluginId", plugin.id);
+		storeJSONState(_jsonLayer);
 		plugin.storeConfiguration(_jsonLayer);
 	}
 	

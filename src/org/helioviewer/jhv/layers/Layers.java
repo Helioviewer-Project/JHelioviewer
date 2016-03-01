@@ -189,7 +189,7 @@ public class Layers
 			switch(layer.getString("type"))
 			{
 				case "kakadu":
-					Layers.addLayer(KakaduLayer.createFromStateFile(layer));
+					Layers.addLayer(KakaduLayer.createFromJSON(layer));
 					break;
 				case "plugin":
 					@Nullable PluginLayer pl = Layers.getPluginLayer(layer.getString("pluginId"));

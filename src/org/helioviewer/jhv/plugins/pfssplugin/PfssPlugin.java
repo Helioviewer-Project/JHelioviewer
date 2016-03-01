@@ -63,33 +63,11 @@ public class PfssPlugin extends Plugin
 	@Override
 	public void restoreConfiguration(JSONObject jsonObject)
 	{
-		/*if (jsonObject.has(JSON_NAME))
-		{
-			try
-			{
-				JSONObject jsonPfss = jsonObject.getJSONObject(JSON_NAME);
-			}
-			catch (JSONException e)
-			{
-				Telemetry.trackException(e);
-			}
-		}*/
 	}
 
 	@Override
 	public void storeConfiguration(JSONObject jsonObject) throws JSONException
 	{
-		//TODO
-		
-		/*try
-		{
-			JSONObject jsonPfss = new JSONObject();
-			jsonObject.put(JSON_NAME, jsonPfss);
-		}
-		catch (JSONException e)
-		{
-			Telemetry.trackException(e);
-		}*/
 	}
 	
 	@Override
