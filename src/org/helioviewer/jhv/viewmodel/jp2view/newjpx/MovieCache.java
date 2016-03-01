@@ -1,6 +1,7 @@
 package org.helioviewer.jhv.viewmodel.jp2view.newjpx;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -196,7 +197,7 @@ public class MovieCache
 					{
 						add(new Movie(Integer.parseInt(parts[0]),f.getAbsolutePath()));
 					}
-					catch(UnsuitableMetaDataException e)
+					catch(UnsuitableMetaDataException|IOException e)
 					{
 						Telemetry.trackException(new IOException("Cache: Could not load "+f.getName(),e));
 						f.delete();

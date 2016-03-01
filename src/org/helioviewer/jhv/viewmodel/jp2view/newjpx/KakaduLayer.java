@@ -1,6 +1,8 @@
 package org.helioviewer.jhv.viewmodel.jp2view.newjpx;
 
 import java.awt.Dimension;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -80,7 +82,7 @@ public class KakaduLayer extends ImageLayer
 		return !noFrames.contains(_ldt.atOffset(ZoneOffset.UTC).getLong(ChronoField.INSTANT_SECONDS));
 	}
 	
-	public KakaduLayer(String _filePath)
+	public KakaduLayer(String _filePath) throws IOException
 	{
 		localPath = _filePath;
 		
@@ -132,7 +134,7 @@ public class KakaduLayer extends ImageLayer
 		storeJSONState(_json);
 	}
 	
-	public static @Nullable KakaduLayer createFromJSON(JSONObject jsonLayer) throws JSONException
+	public static @Nullable KakaduLayer createFromJSON(JSONObject jsonLayer) throws JSONException, FileNotFoundException, IOException
 	{
 		KakaduLayer l;
 		
@@ -379,41 +381,42 @@ public class KakaduLayer extends ImageLayer
 							}
 							
 							//double check api response, to detect misunderstandings & bugs
-							for(int f=0; f < m.getFrameCount();f++)
-							{
-								MetaData md = m.getMetaData(f);
-								if(md!=null)
+							if(!Globals.IS_RELEASE_VERSION)
+								for(int f=0; f < m.getFrameCount();f++)
 								{
-									long ts = md.localDateTime.atOffset(ZoneOffset.UTC).getLong(ChronoField.INSTANT_SECONDS);
-									if(noFrames.contains(ts))
-										//FIXME: still happening...
-										throw new Exception("API returned frame for "+ts+" when it previously found no such frame.");
-									
-									boolean found=false;
-									
-									for(int i=0; i < download.from.size();i++)
+									MetaData md = m.getMetaData(f);
+									if(md!=null)
 									{
-										long from = download.from.get(i);
-										long to = download.to.get(i);
+										long ts = md.localDateTime.atOffset(ZoneOffset.UTC).getLong(ChronoField.INSTANT_SECONDS);
+										if(noFrames.contains(ts))
+											//FIXME: still happening...
+											throw new Exception("API returned frame for "+ts+" when it previously found no such frame.");
 										
-										if(ts>=from && ts<to)
+										boolean found=false;
+										
+										for(int i=0; i < download.from.size();i++)
 										{
-											found=true;
-											break;
+											long from = download.from.get(i);
+											long to = download.to.get(i);
+											
+											if(ts>=from && ts<to)
+											{
+												found=true;
+												break;
+											}
+										}
+										
+										if(!found)
+										{
+											StringBuilder sb=new StringBuilder();
+											for(int i=0; i < download.from.size();i++)
+												sb.append("\n"+download.from.get(i)+"-"+download.to.get(i));
+											
+											System.err.println(download.hq);
+											System.err.println("API returned data from not requested time range: "+ts+". Requested:"+sb.toString()+"\n\nURL: "+download.hq.toString());
 										}
 									}
-									
-									if(!found)
-									{
-										StringBuilder sb=new StringBuilder();
-										for(int i=0; i < download.from.size();i++)
-											sb.append("\n"+download.from.get(i)+"-"+download.to.get(i));
-										
-										System.err.println(download.hq);
-										System.err.println("API returned data from not requested time range: "+ts+". Requested:"+sb.toString()+"\n\nURL: "+download.hq.toString());
-									}
 								}
-							}
 							
 							SwingUtilities.invokeAndWait(() ->
 							{

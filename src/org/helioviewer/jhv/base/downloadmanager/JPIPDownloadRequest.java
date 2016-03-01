@@ -44,7 +44,7 @@ public class JPIPDownloadRequest extends HTTPRequest
 			{
 				data.copyTo(fos);
 			}
-
+		
 		//don't waste memory by keeping the downloaded data in memory
 		rawData = null;
 		System.gc();

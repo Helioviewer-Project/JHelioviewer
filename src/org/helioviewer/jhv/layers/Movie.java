@@ -3,6 +3,9 @@ package org.helioviewer.jhv.layers;
 import java.awt.Rectangle;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
@@ -117,39 +120,6 @@ public class Movie
 			}
 		}
 	});
-	
-	/*
-	private final ArrayList<Kdu_region_compositor> openCompositors = new ArrayList<Kdu_region_compositor>(1);
-	private ThreadLocal<Kdu_region_compositor> tlsCompositors=ThreadLocal.withInitial(new Supplier<Kdu_region_compositor>()
-	{
-		@Override
-		public Kdu_region_compositor get()
-		{
-			try
-			{
-				Kdu_region_compositor compositor = new Kdu_region_compositor(tlsJpx_source.get());
-				compositor.Set_surface_initialization_mode(false);
-				
-				//T-ODO: enable multi-threaded decoding?
-				//Kdu_thread_env env = new Kdu_thread_env();
-				//env.Create();
-				//for(int i=0;i<Runtime.getRuntime().availableProcessors();i++)
-				//	env.Add_thread();
-				//
-				//compositor.Set_thread_env(env, null);
-				
-				synchronized(openCompositors)
-				{
-					openCompositors.add(compositor);
-				}
-				return compositor; 
-			}
-			catch (KduException e)
-			{
-				throw new RuntimeException(e);
-			}
-		}
-	});*/
 	
 	@Nullable private MetaData[] metaDatas;
 	
@@ -300,7 +270,7 @@ public class Movie
 		}
 	}
 	
-	public Movie(int _sourceId, String _filename)
+	public Movie(int _sourceId, String _filename) throws IOException
 	{
 		sourceId = _sourceId;
 		quality = Quality.FULL;
@@ -308,14 +278,17 @@ public class Movie
 		filename = _filename;
 		kduCache = null;
 		
-		try
+		try(FileInputStream fis = new FileInputStream(filename))
 		{
-			family_src.Open(filename);
-			processFamilySrc();
-		}
-		catch (KduException e)
-		{
-			Telemetry.trackException(e);
+			try
+			{
+				family_src.Open(filename);
+				processFamilySrc();
+			}
+			catch (KduException e)
+			{
+				Telemetry.trackException(e);
+			}
 		}
 		
 		if(getAnyMetaData()==null)

@@ -4,6 +4,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.io.IOException;
 
 import javax.annotation.Nullable;
 import javax.swing.AbstractAction;
@@ -69,6 +70,10 @@ public class OpenLocalFileAction extends AbstractAction
 		catch(UnsuitableMetaDataException _umde)
 		{
 			JOptionPane.showMessageDialog(MainFrame.SINGLETON.MAIN_PANEL, "The source's metadata could not be read.");
+		}
+		catch (IOException _e)
+		{
+			JOptionPane.showMessageDialog(MainFrame.SINGLETON.MAIN_PANEL, "The file could not be read:\n"+_e.getMessage());
 		}
 	}
 }

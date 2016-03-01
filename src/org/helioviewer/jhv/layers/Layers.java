@@ -1,5 +1,7 @@
 package org.helioviewer.jhv.layers;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 
@@ -181,7 +183,7 @@ public class Layers
 		}
 	}
 
-	public static void loadStatefile(JSONArray _json) throws JSONException, UnsuitableMetaDataException
+	public static void loadStatefile(JSONArray _json) throws JSONException, UnsuitableMetaDataException, FileNotFoundException, IOException
 	{
 		for (int i = 0; i < _json.length(); i++)
 		{

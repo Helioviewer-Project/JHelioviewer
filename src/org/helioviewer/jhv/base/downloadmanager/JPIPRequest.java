@@ -114,7 +114,7 @@ public class JPIPRequest extends AbstractDownloadRequest
 				data.length, data.isFinal, true, false);
 		}
 		//System.out.println("----------------------------------------");
-
+		
 		return jRes.isResponseComplete();
 	}
 
