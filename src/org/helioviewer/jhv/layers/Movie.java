@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -19,6 +20,7 @@ import javax.annotation.Nullable;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.commons.lang3.concurrent.ConcurrentUtils;
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.opengl.Texture;
 import org.helioviewer.jhv.viewmodel.TimeLine.DecodeQualityLevel;
@@ -47,41 +49,34 @@ import kdu_jni.Kdu_region_decompressor;
 
 public class Movie
 {
-	//TODO: LEAKING private final ArrayList<Jpx_input_box> openJpx_input_box = new ArrayList<Jpx_input_box>(1);
+	private final ConcurrentLinkedQueue<Jpx_input_box> openInputBoxes=new ConcurrentLinkedQueue<>();
 	private ThreadLocal<Jpx_input_box> tlsJpx_input_box=new ThreadLocal<>();
 	
 	private final ArrayList<Kdu_region_decompressor> openKdu_region_decompressors = new ArrayList<Kdu_region_decompressor>(1);
-	private ThreadLocal<Kdu_region_decompressor> tlsKdu_region_decompressor=ThreadLocal.withInitial(new Supplier<Kdu_region_decompressor>()
+	private ThreadLocal<Kdu_region_decompressor> tlsKdu_region_decompressor=ThreadLocal.withInitial(() ->
 	{
-		@Override
-		public Kdu_region_decompressor get()
+		try
 		{
-			try
+			Kdu_region_decompressor decompressor = new Kdu_region_decompressor();
+			decompressor.Set_interpolation_behaviour(0, 0);
+			Kdu_quality_limiter q=new Kdu_quality_limiter(4f/256);
+			decompressor.Set_quality_limiting(q, 0, 0);
+			
+			synchronized(openKdu_region_decompressors)
 			{
-				Kdu_region_decompressor decompressor = new Kdu_region_decompressor();
-				decompressor.Set_interpolation_behaviour(0, 0);
-				Kdu_quality_limiter q=new Kdu_quality_limiter(4f/256);
-				decompressor.Set_quality_limiting(q, 0, 0);
-				
-				synchronized(openKdu_region_decompressors)
-				{
-					openKdu_region_decompressors.add(decompressor);
-				}
+				openKdu_region_decompressors.add(decompressor);
+			}
 
-				return decompressor;
-			}
-			catch (KduException e)
-			{
-				throw new RuntimeException(e);
-			}
+			return decompressor;
+		}
+		catch (KduException e)
+		{
+			throw new RuntimeException(e);
 		}
 	});
 
 	private final ArrayList<Kdu_codestream> openKdu_codestreams = new ArrayList<Kdu_codestream>(1);
-	private ThreadLocal<Kdu_codestream> tlsKdu_codestream=ThreadLocal.withInitial(new Supplier<Kdu_codestream>()
-	{
-		@Override
-		public Kdu_codestream get()
+	private ThreadLocal<Kdu_codestream> tlsKdu_codestream=ThreadLocal.withInitial(() ->
 		{
 			try
 			{
@@ -97,13 +92,7 @@ public class Movie
 			{
 				throw new RuntimeException(e);
 			}
-		}
-	});
-	
-
-	
-	
-	
+		});
 	
 	private final ArrayList<Jpx_source> openJpx_sources = new ArrayList<Jpx_source>(1);
 	private ThreadLocal<Jpx_source> tlsJpx_source=ThreadLocal.withInitial(new Supplier<Jpx_source>()
@@ -270,18 +259,21 @@ public class Movie
 			openKdu_region_decompressors.clear();
 		}
 		
-		Jpx_input_box box = tlsJpx_input_box.get();
-		if(box!=null)
+		for(;;)
 		{
+			Jpx_input_box box = openInputBoxes.poll();
+			if(box==null)
+				break;
+			
 			try
 			{
-				tlsJpx_input_box.get().Close();
+				box.Close();
 			}
 			catch (KduException e)
 			{
 				Telemetry.trackException(e);
 			}
-			tlsJpx_input_box.get().Native_destroy();
+			box.Native_destroy();
 		}
 		
 		try
@@ -525,6 +517,7 @@ public class Movie
 	        	previousBox.Close();
 	        	previousBox.Native_destroy();
 	        	tlsJpx_input_box.set(null);
+	        	openInputBoxes.remove(previousBox);
 	        }
 	        
 			Jpx_source jpxSrc=tlsJpx_source.get();
@@ -544,6 +537,7 @@ public class Movie
 	        Jpx_codestream_source xstream = jpxSrc.Access_codestream(xlayer.Get_codestream_id(0));
 	        Jpx_input_box inputBox = xstream.Open_stream();
         	tlsJpx_input_box.set(inputBox);
+        	openInputBoxes.add(inputBox);
         	
 			Kdu_codestream codestream = tlsKdu_codestream.get();
         	if(!codestream.Exists())
@@ -556,8 +550,6 @@ public class Movie
         		codestream.Restart(inputBox);
 			
 			int discardLevels=(int)Math.round(-Math.log(_zoomPercent)/Math.log(2));
-			
-			//TODO: limit discard levels to actually available DWT levels (codestream.Get_min_dwt_levels() ?)
 			
 			Kdu_coords expand_numerator = new Kdu_coords(1,1);
 			Kdu_coords expand_denominator = new Kdu_coords((int)Math.round(1/_zoomPercent/(1<<discardLevels)),(int)Math.round(1/_zoomPercent/(1<<discardLevels)));
@@ -622,52 +614,6 @@ public class Movie
 			
 			decompressor.Finish();
 			return true;
-			
-			/*
-			Kdu_region_compositor compositor = tlsCompositors.get();
-			
-			//F-IXME: downgrade quality first, before resolution when having speed problems
-			compositor.Set_max_quality_layers(_quality);
-			compositor.Set_scale(false, false, false, _zoomPercent);
-			compositor.Set_buffer_surface(requestedBufferedRegion);
-			
-			compositor.Remove_ilayer(new Kdu_ilayer_ref(), false);
-			
-			//T-ODO: save more memory
-			compositor.Cull_inactive_ilayers(800);
-			compositor.Add_ilayer(_index, new Kdu_dims(), new Kdu_dims());
-			
-			Kdu_dims actualBufferedRegion = new Kdu_dims();
-			Kdu_compositor_buf compositorBuf = compositor.Get_composition_buffer(actualBufferedRegion);
-			Kdu_coords actualOffset = new Kdu_coords();
-			actualOffset.Assign(actualBufferedRegion.Access_pos());
-			
-			int[] region_buf = tlsBuffer.get();
-			Kdu_dims newRegion = new Kdu_dims();
-			while (compositor.Process(INITIAL_BUFFER_LENGTH-_requiredRegion.width, newRegion))
-			{
-				Kdu_coords newOffset = newRegion.Access_pos();
-				Kdu_coords newSize = newRegion.Access_size();
-				newOffset.Subtract(actualOffset);
-				
-				int newPixels = newSize.Get_x() * newSize.Get_y();
-				if (newPixels > 0)
-				{
-					if(newPixels > region_buf.length)
-					{
-						System.err.println("Kakadu acting up: Spec of Compositor.Process() guarantees less pixels.");
-						tlsBuffer.set(region_buf=new int[newPixels]);
-					}
-					
-					compositorBuf.Get_region(newRegion, region_buf);
-					for(int i=0;i<newPixels;i++)
-						_result.put((byte)region_buf[i]);
-				}
-			}
-			
-			//compositorBuf.Native_destroy();
-			_result.position(0);
-			return true;*/
 		}
 		catch (KduException e)
 		{
