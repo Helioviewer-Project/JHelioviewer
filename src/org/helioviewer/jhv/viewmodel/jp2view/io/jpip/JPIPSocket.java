@@ -50,9 +50,6 @@ public class JPIPSocket extends HTTPSocket
 	@SuppressWarnings({ "resource" })
 	public @Nullable JPIPResponse send(String _query) throws IOException
 	{
-		
-		System.out.println("JPIP query: "+_query);
-		
 		StringBuilder str = new StringBuilder();
 
 		// Adds the URI line.
