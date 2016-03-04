@@ -7,7 +7,6 @@ import java.net.InetSocketAddress;
 import java.net.ProtocolException;
 import java.net.Socket;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
 
 import javax.annotation.Nullable;
 
@@ -20,50 +19,32 @@ import org.helioviewer.jhv.viewmodel.jp2view.io.LineReader;
  */
 public class HTTPSocket extends Socket
 {
-	/** The last used port */
-	private int port = 0;
-	
-	protected int timeout = 10000;
-
-	/** The last used host */
-	private @Nullable String host = null;
+	public final int port;
+	public URI uri;
+	public final int timeout;
+	public final String host;
 
 	/** The default port for the HTTP socket */
-	static private final int PORT = 80;
+	static private final int DEFAULT_PORT = 80;
 
 	/** The maximum HTTP version supported */
 	static private final double VERSION = 1.1;
-
-	/** The version in standard formated text */
-	static public final String versionText = "HTTP/" + Double.toString(VERSION);
+	static public final String VERSION_TEXT = "HTTP/" + Double.toString(VERSION);
 
 	/** The array of bytes that contains the CRLF codes */
-	static private final byte CRLFBytes[] = { 13, 10 };
+	static public final String CRLF = "\r\n";
 
-	/** The string representation of the CRLF codes */
-	static public final String CRLF = new String(CRLFBytes, StandardCharsets.UTF_8);
-
-	/** Default constructor */
-	public HTTPSocket(int _timeout)
+	public HTTPSocket(URI _uri, int _timeout) throws IOException
 	{
 		super();
 		timeout=_timeout;
-	}
-
-	/**
-	 * Connects to the specified host via the supplied URI.
-	 * 
-	 * @param _uri
-	 * @throws IOException
-	 */
-	public @Nullable Object connect(URI _uri) throws IOException
-	{
-		port = _uri.getPort() <= 0 ? PORT : _uri.getPort();
+		
+		uri = _uri;
+		port = _uri.getPort() <= 0 ? DEFAULT_PORT : _uri.getPort();
 		host = _uri.getHost();
-		super.setSoTimeout(timeout);
-		super.setKeepAlive(true);
+		setSoTimeout(timeout);
+		setKeepAlive(false);
 		super.connect(new InetSocketAddress(host, port), timeout);
-		return null;
 	}
 
 	/**
@@ -71,7 +52,7 @@ public class HTTPSocket extends Socket
 	 * 
 	 * @throws java.io.IOException
 	 */
-	public void reconnect() throws IOException
+	protected void reconnect() throws IOException
 	{
 		super.connect(new InetSocketAddress(host, port), timeout);
 	}
@@ -99,70 +80,53 @@ public class HTTPSocket extends Socket
 		if (parts.length != 3)
 			throw new ProtocolException("Invalid HTTP message: "+line);
 
-		if (parts[0].startsWith("HTTP/"))
-		{
-			// Parses HTTP version
-			try
-			{
-				ver = Double.parseDouble(parts[0].substring(5));
-			}
-			catch (NumberFormatException ex)
-			{
-				throw new ProtocolException("Invalid HTTP version format");
-			}
-
-			if ((ver < 1) || (ver > VERSION))
-				throw new ProtocolException("HTTP version not supported");
-
-			// Parses status code
-			try
-			{
-				code = Integer.parseInt(parts[1]);
-			}
-			catch (NumberFormatException ex)
-			{
-				throw new ProtocolException("Invalid HTTP status code format");
-			}
-
-			// Instantiates new HTTPResponse
-			HTTPResponse res = new HTTPResponse(code, parts[2]);
-
-			// Parses HTTP headers
-			for (;;)
-			{
-				line = LineReader.readLine(input);
-
-				if (line == null)
-					throw new EOFException("End of stream reached before end of HTTP message");
-				else if (line.length() <= 0)
-					break;
-
-				parts = line.split(": ", 2);
-
-				if (parts.length != 2)
-					throw new ProtocolException("Invalid HTTP header format");
-
-				res.setHeader(parts[0], parts[1]);
-			}
-
-			return res;
-
-		}
-		else
-		{
+		if (!parts[0].startsWith("HTTP/"))
 			throw new ProtocolException("Requests receiving not yet supported!");
+		
+		// Parses HTTP version
+		try
+		{
+			ver = Double.parseDouble(parts[0].substring(5));
 		}
-	}
+		catch (NumberFormatException ex)
+		{
+			throw new ProtocolException("Invalid HTTP version format");
+		}
 
-	/** Returns the lastUsedPort */
-	public int getPort()
-	{
-		return port;
-	}
+		if ((ver < 1) || (ver > VERSION))
+			throw new ProtocolException("HTTP version not supported");
 
-	/** Returns the lastUsedHost */
-	public @Nullable String getHost()
-	{
-		return host;
+		// Parses status code
+		try
+		{
+			code = Integer.parseInt(parts[1]);
+		}
+		catch (NumberFormatException ex)
+		{
+			throw new ProtocolException("Invalid HTTP status code format");
+		}
+
+		// Instantiates new HTTPResponse
+		HTTPResponse res = new HTTPResponse(code, parts[2]);
+
+		// Parses HTTP headers
+		for (;;)
+		{
+			line = LineReader.readLine(input);
+
+			if (line == null)
+				throw new EOFException("End of stream reached before end of HTTP message");
+			else if (line.length() <= 0)
+				break;
+
+			parts = line.split(": ", 2);
+
+			if (parts.length != 2)
+				throw new ProtocolException("Invalid HTTP header format");
+
+			res.setHeader(parts[0], parts[1]);
+		}
+
+		return res;
 	}
 }

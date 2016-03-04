@@ -429,32 +429,23 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 			if (layer != null)
 			{
 				//TODO: speed this code up
-				int max=Math.min(TimeLine.SINGLETON.getFrameCount()-1, (int)trackRect.getWidth());
+				//int max=Math.min(TimeLine.SINGLETON.getFrameCount()-1, (int)trackRect.getWidth());
+				int max=(int)trackRect.getWidth();
 				for(int i=0;i<=max;i++)
 				{
 					//snap position to nearest frame
 					int frame = (int)(TimeLine.SINGLETON.getFrameCount()*i/(double)(max+1));
 					LocalDateTime localDateTime=TimeLine.SINGLETON.getFirstDateTime().plusSeconds(frame*TimeLine.SINGLETON.getCadence());
 					
-					/*if(!layer.isDataAvailableOnServer(localDateTime))
+					if(!layer.isDataAvailableOnServer(localDateTime))
 						g.setColor(COLOR_NA);
-					else*/
+					else
 					{
 						Match currentMatch = layer.findBestFrame(localDateTime);
 						if(currentMatch==null || currentMatch.timeDifferenceSeconds>layer.getCadence()/2)
 							g.setColor(COLOR_NOT_CACHED);
 						else
-							switch (currentMatch.movie.quality)
-							{
-								case FULL:
-									g.setColor(COLOR_COMPLETELY_CACHED);
-									break;
-								case PREVIEW:
-									g.setColor(COLOR_PARTIALLY_CACHED);
-									break;
-								default:
-									throw new RuntimeException();
-							}
+							g.setColor(currentMatch.movie.isFullQuality() ? COLOR_COMPLETELY_CACHED : COLOR_PARTIALLY_CACHED);
 					}
 					
 					int xa=(int)Math.round((i-0.5)/(double)max*WIDTH);

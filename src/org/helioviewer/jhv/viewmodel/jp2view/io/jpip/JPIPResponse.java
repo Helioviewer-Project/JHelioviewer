@@ -56,7 +56,12 @@ public class JPIPResponse extends HTTPResponse
 			size += aJpipDataList.length;
 		return size;
 	}
-
+	
+	public boolean isImageComplete()
+	{
+		return statusI == JPIPConstants.EOR_IMAGE_DONE;
+	}
+	
 	public boolean isResponseComplete()
 	{
 		return statusI == JPIPConstants.EOR_WINDOW_DONE || statusI == JPIPConstants.EOR_IMAGE_DONE;

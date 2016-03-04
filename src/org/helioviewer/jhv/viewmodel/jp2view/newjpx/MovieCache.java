@@ -1,7 +1,6 @@
 package org.helioviewer.jhv.viewmodel.jp2view.newjpx;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -23,6 +22,8 @@ import org.helioviewer.jhv.layers.Movie.Match;
 import org.helioviewer.jhv.viewmodel.metadata.UnsuitableMetaDataException;
 
 import com.google.common.io.Files;
+
+import kdu_jni.KduException;
 
 public class MovieCache
 {
@@ -135,7 +136,7 @@ public class MovieCache
 				bestMatch=curMatch;
 			else if(curMatch.timeDifferenceSeconds<bestMatch.timeDifferenceSeconds)
 				bestMatch=curMatch;
-			else if(curMatch.timeDifferenceSeconds==bestMatch.timeDifferenceSeconds && curMatch.movie.quality.ordinal()>bestMatch.movie.quality.ordinal())
+			else if(curMatch.timeDifferenceSeconds==bestMatch.timeDifferenceSeconds && curMatch.movie.isBetterQualityThan(bestMatch.movie))
 				bestMatch=curMatch;
 		}
 		
@@ -197,7 +198,7 @@ public class MovieCache
 					{
 						add(new Movie(Integer.parseInt(parts[0]),f.getAbsolutePath()));
 					}
-					catch(UnsuitableMetaDataException|IOException e)
+					catch(UnsuitableMetaDataException|IOException|KduException e)
 					{
 						Telemetry.trackException(new IOException("Cache: Could not load "+f.getName(),e));
 						f.delete();

@@ -4,10 +4,9 @@ import java.awt.Rectangle;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -16,6 +15,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
@@ -23,7 +23,6 @@ import javax.annotation.Nullable;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.commons.lang3.concurrent.ConcurrentUtils;
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.opengl.Texture;
 import org.helioviewer.jhv.viewmodel.TimeLine.DecodeQualityLevel;
@@ -49,6 +48,8 @@ import kdu_jni.Kdu_dims;
 import kdu_jni.Kdu_global;
 import kdu_jni.Kdu_quality_limiter;
 import kdu_jni.Kdu_region_decompressor;
+
+//TODO: manage, cache, ... individual frames (i.e. code streams) instead of whole movies
 
 public class Movie
 {
@@ -77,6 +78,11 @@ public class Movie
 			throw new RuntimeException(e);
 		}
 	});
+	
+	//FIXME: cache movies KduCache to disk
+	//FIXME: clear KduCache on memory pressure, reload from disk
+	//FIXME: index movies from disk on startup, reloading should happen on-demand
+	//TODO: switch from localDateTime in metadata to long (unix epoch)
 
 	private final ArrayList<Kdu_codestream> openKdu_codestreams = new ArrayList<Kdu_codestream>(1);
 	private ThreadLocal<Kdu_codestream> tlsKdu_codestream=ThreadLocal.withInitial(() ->
@@ -121,19 +127,50 @@ public class Movie
 		}
 	});
 	
-	@Nullable private MetaData[] metaDatas;
+	private MetaData[] metaDatas;
 	
 	public final int sourceId;
 	@Nullable private final String filename;
 	
-	public enum Quality
+	public boolean isFullQuality()
 	{
-		PREVIEW, FULL
+		if(areaLimit.get()==Integer.MAX_VALUE && qualityLayersLimit.get()==Integer.MAX_VALUE)
+			return true;
+		
+		MetaData md = getAnyMetaData();
+		if(areaLimit.get() >= md.resolution.x*md.resolution.y)
+			areaLimit.set(Integer.MAX_VALUE);
+		
+		return areaLimit.get()==Integer.MAX_VALUE && qualityLayersLimit.get()==Integer.MAX_VALUE;
 	}
 	
-	public final Quality quality;
+	public void notifyOfUpgradedQuality(int _area, int _qualityLayers)
+	{
+		for(;;)
+		{
+			int curArea = areaLimit.get();
+			if(curArea>=_area)
+				break;
+			
+			if(areaLimit.compareAndSet(curArea, _area))
+				break;
+		}
+		
+		for(;;)
+		{
+			int curQL = qualityLayersLimit.get();
+			if(curQL>=_qualityLayers)
+				break;
+			
+			if(qualityLayersLimit.compareAndSet(curQL, _qualityLayers))
+				break;
+		}
+	}
 	
-	private final @Nullable Kdu_cache kduCache;
+	public final @Nullable URI jpipURI;
+	public final @Nullable Kdu_cache kduCache;
+	public final AtomicInteger areaLimit;
+	public final AtomicInteger qualityLayersLimit;
 	private final Jp2_threadsafe_family_src family_src;
 	private boolean disposed;
 	
@@ -270,20 +307,46 @@ public class Movie
 		}
 	}
 	
-	public Movie(int _sourceId, String _filename) throws IOException
+	public boolean isBetterQualityThan(Movie _other)
+	{
+		if(areaLimit.get()==_other.areaLimit.get())
+			return qualityLayersLimit.get()>_other.qualityLayersLimit.get();
+		
+		return areaLimit.get()>_other.areaLimit.get();
+	}
+	
+	public Movie(int _sourceId, String _filename) throws IOException, KduException
 	{
 		sourceId = _sourceId;
-		quality = Quality.FULL;
 		family_src = new Jp2_threadsafe_family_src();
 		filename = _filename;
 		kduCache = null;
+		qualityLayersLimit = new AtomicInteger(Integer.MAX_VALUE);
+		jpipURI = null;
+		
+		Jpx_source jpxSrc = new Jpx_source();
+		jpxSrc.Open(family_src, true);
+		
+		Jpx_layer_source l = jpxSrc.Access_layer(0);
+		if(!l.Exists())
+			throw new KduException("File contains no layers");
+			
+		areaLimit = new AtomicInteger(Integer.MAX_VALUE);
+		
+		//count frames
+		int[] frameCount = new int[1];
+		jpxSrc.Count_compositing_layers(frameCount);
+		
+		jpxSrc.Close();
+		jpxSrc.Native_destroy();
+		
+		metaDatas = new MetaData[frameCount[0]];
 		
 		try(FileInputStream fis = new FileInputStream(filename))
 		{
 			try
 			{
 				family_src.Open(filename);
-				processFamilySrc();
 			}
 			catch (KduException e)
 			{
@@ -295,56 +358,45 @@ public class Movie
 			throw new UnsuitableMetaDataException();
 	}
 	
-	public Movie(int _sourceId, Kdu_cache _kduCache)
+	//FIXME: split Movie into FileBackedMovie and JPIPMovie
+	//FIXME: add additional constructor to initialize a movie from cache, with correct downscaled & qualityLayers
+	
+	public Movie(int _sourceId, int _frameCount, URI _jpipURI)
 	{
 		sourceId = _sourceId;
-		quality = Quality.PREVIEW;
 		family_src = new Jp2_threadsafe_family_src();
-		kduCache = _kduCache;
-		filename = null;
+		kduCache = new Kdu_cache();
 		
 		try
 		{
 			family_src.Open(kduCache);
-			processFamilySrc();
 		}
-		catch (KduException e)
+		catch (KduException _e)
 		{
-			Telemetry.trackException(e);
+			Telemetry.trackException(_e);
 		}
-		
-		if(getAnyMetaData()==null)
-			throw new UnsuitableMetaDataException();
-	}
 
+		filename = null;
+		
+		areaLimit = new AtomicInteger(0);
+		qualityLayersLimit = new AtomicInteger(0);
+		jpipURI = _jpipURI;
+		metaDatas = new MetaData[_frameCount];
+	}
 	
-	private void processFamilySrc()
+	private synchronized void loadMetaData(int i)
 	{
+		if(metaDatas[i]!=null)
+			return;
+		
 		try
 		{
-			Jpx_source jpxSrc = new Jpx_source();
-			jpxSrc.Open(family_src, true);
+			if(!family_src.Is_codestream_main_header_complete(i))
+				return;
 			
-			//count frames
-			int[] tempVar = new int[1];
-			jpxSrc.Count_compositing_layers(tempVar);
-			int framecount = tempVar[0];
-			
-			jpxSrc.Close();
-			jpxSrc.Native_destroy();
-			
-			//load all metadata
-			metaDatas = new MetaData[framecount];
-			for (int i = 0; i < framecount; i++)
-			{
-				metaDatas[i]=MetaDataFactory.getMetaData(readMetadataDocument(i+1));
-				
-				if(metaDatas[i]==null)
-					Telemetry.trackException(new UnsuitableMetaDataException("Cannot find metadata class for:\n"+KakaduUtils.getXml(family_src, i+1)));
-				
-				//TODO: should invalidate textureCache
-				//TextureCache.invalidate(sourceId, metaDatas[i].getLocalDateTime());
-			}
+			metaDatas[i]=MetaDataFactory.getMetaData(readMetadataDocument(i+1));
+			if(metaDatas[i]==null)
+				Telemetry.trackException(new UnsuitableMetaDataException("Cannot find metadata class for:\n"+KakaduUtils.getXml(family_src, i+1)));
 		}
 		catch (KduException e)
 		{
@@ -404,6 +456,7 @@ public class Movie
 		
 		for (int i = 0; i < metaDatas.length; i++)
 		{
+			loadMetaData(i);
 			MetaData md=metaDatas[i];
 			if(md==null)
 				continue;
@@ -426,27 +479,21 @@ public class Movie
 	
 	@Nullable public MetaData getAnyMetaData()
 	{
-		if(metaDatas!=null)
-			for(MetaData md:metaDatas)
-				if(md!=null)
-					return md;
+		for(int i=0;i<metaDatas.length;i++)
+		{
+			loadMetaData(i);
+			if(metaDatas[i]!=null)
+				return metaDatas[i];
+		}
+		
 		return null;
 	}
 	
 	@Nullable
 	public MetaData getMetaData(int idx)
 	{
-		if (metaDatas != null)
-			return metaDatas[idx];
-		return null;
-	}
-	
-	public int getFrameCount()
-	{
-		if(metaDatas!=null)
-			return metaDatas.length;
-		
-		return 0;
+		loadMetaData(idx);
+		return metaDatas[idx];
 	}
 	
 	@Nullable
@@ -593,5 +640,11 @@ public class Movie
 			Telemetry.trackException(e);
 		}
 		return false;
+	}
+
+
+	public int getFrameCount()
+	{
+		return metaDatas.length;
 	}
 }

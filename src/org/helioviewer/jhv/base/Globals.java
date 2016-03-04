@@ -174,8 +174,6 @@ public class Globals
     		@Nullable final String _defaultName,    		
     		final PredefinedFileFilter... _filters)
     {
-    	//TODO: add default file extension if none was specified by the user
-    	
 		if (Globals.JAVA_FX_AVAILABLE)
 			try
 			{

@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -24,25 +25,23 @@ import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.IntervalStore;
 import org.helioviewer.jhv.base.Settings;
-import org.helioviewer.jhv.base.Settings.BooleanKey;
 import org.helioviewer.jhv.base.Settings.IntKey;
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.downloadmanager.DownloadManager;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
-import org.helioviewer.jhv.base.downloadmanager.JPIPDownloadRequest;
 import org.helioviewer.jhv.base.downloadmanager.JPIPRequest;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.Movie;
 import org.helioviewer.jhv.layers.Movie.Match;
-import org.helioviewer.jhv.layers.Movie.Quality;
 import org.helioviewer.jhv.opengl.Texture;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.TimeLine.DecodeQualityLevel;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.metadata.UnsuitableMetaDataException;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
@@ -51,6 +50,8 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import com.jogamp.opengl.GLContext;
+
+import kdu_jni.KduException;
 
 public class KakaduLayer extends ImageLayer
 {
@@ -69,6 +70,10 @@ public class KakaduLayer extends ImageLayer
 	
 	public @Nullable Match findBestFrame(LocalDateTime _currentDateTime)
 	{
+		//FIXME: why is this broken?
+		//if(noFrames.contains(_currentDateTime.atOffset(ZoneOffset.UTC).getLong(ChronoField.INSTANT_SECONDS)))
+		//	return null;
+		
 		Match m = MovieCache.findBestFrame(sourceId, _currentDateTime);
 		if(m==null)
 			return null;
@@ -89,32 +94,39 @@ public class KakaduLayer extends ImageLayer
 		sourceId = genSourceId(_filePath);
 		localFile = true;
 		
-		Movie movie = new Movie(sourceId,_filePath);
-		if(movie.getAnyMetaData()==null)
-			throw new UnsuitableMetaDataException();
-		
-		name = movie.getAnyMetaData().displayName;
-		
-		SortedSet<LocalDateTime> times=new TreeSet<LocalDateTime>();
-		for(int i=1;i<movie.getFrameCount();i++)
+		try
 		{
-			MetaData md=movie.getMetaData(i);
-			if(md!=null)
-				times.add(md.localDateTime);
+			Movie movie = new Movie(sourceId,_filePath);
+			if(movie.getAnyMetaData()==null)
+				throw new UnsuitableMetaDataException();
+		
+			name = movie.getAnyMetaData().displayName;
+			
+			SortedSet<LocalDateTime> times=new TreeSet<LocalDateTime>();
+			for(int i=1;i<movie.getFrameCount();i++)
+			{
+				MetaData md=movie.getMetaData(i);
+				if(md!=null)
+					times.add(md.localDateTime);
+			}
+	
+			LocalDateTime[] sortedTimes=times.toArray(new LocalDateTime[0]);
+			start = sortedTimes[0];
+			end = sortedTimes[sortedTimes.length-1];
+			
+			cadence = (int)ChronoUnit.SECONDS.between(start, end);
+			for(int i=2;i<sortedTimes.length;i++)
+				cadence=Math.min(cadence, (int)ChronoUnit.SECONDS.between(sortedTimes[i-2], sortedTimes[i])/2);
+			
+			if(cadence<1)
+				cadence=1;
+			
+			MovieCache.add(movie);
 		}
-
-		LocalDateTime[] sortedTimes=times.toArray(new LocalDateTime[0]);
-		start = sortedTimes[0];
-		end = sortedTimes[sortedTimes.length-1];
-		
-		cadence = (int)ChronoUnit.SECONDS.between(start, end);
-		for(int i=2;i<sortedTimes.length;i++)
-			cadence=Math.min(cadence, (int)ChronoUnit.SECONDS.between(sortedTimes[i-2], sortedTimes[i])/2);
-		
-		if(cadence<1)
-			cadence=1;
-		
-		MovieCache.add(movie);
+		catch(KduException _k)
+		{
+			throw new IOException("Kakadu Exception ",_k);
+		}
 	}
 	
 	public void storeConfiguration(JSONObject _json) throws JSONException
@@ -176,23 +188,21 @@ public class KakaduLayer extends ImageLayer
 		return localPath;
 	}
 	
-	static class MovieDownload
+	static class MetadataDownload
 	{
 		@Nullable HTTPRequest metadata;
-		@Nullable JPIPRequest lq;
-		@Nullable JPIPDownloadRequest hq;
-		@Nullable Movie lqMovie;
+		
 		List<Long> from = new ArrayList<Long>();
 		List<Long> to = new ArrayList<Long>();
 		
-		MovieDownload()
+		MetadataDownload()
 		{
 		}
 	}
 	
 	private volatile boolean incomplete;
 	
-	private final LinkedList<MovieDownload> pendingDownloads = new LinkedList<>();
+	private final LinkedList<MetadataDownload> pendingMetadata = new LinkedList<>();
 	private final ArrayList<Long> startTimes = new ArrayList<Long>();
 	private final ArrayList<Long> endTimes = new ArrayList<Long>();
 	
@@ -200,7 +210,7 @@ public class KakaduLayer extends ImageLayer
 	{
 		while(!startTimes.isEmpty())
 		{
-			MovieDownload md=new MovieDownload();
+			MetadataDownload md=new MetadataDownload();
 			
 			StringBuilder currentStarts = new StringBuilder();
 			StringBuilder currentEnds = new StringBuilder();
@@ -223,24 +233,23 @@ public class KakaduLayer extends ImageLayer
 				currentEnds.append(b.toString());
 			}
 			
-			/*if(SETTINGS_PREVIEW_ENABLED && ssCurrentStarts.length()>0)
-				md.metadata = new HTTPRequest(Globals.JPX_DATASOURCE_MIDPOINT
-						+ "?sourceId=" + sourceId
-						+ "&jpip=true"
-						+ "&verbose=true"
-						+ "&startTimes=" + ssCurrentStarts.toString()
-						+ "&endTimes=" + ssCurrentEnds.toString(),
-						DownloadPriority.HIGH);*/
+			md.metadata = new HTTPRequest(Globals.JPX_DATASOURCE_MIDPOINT
+					+ "?sourceId=" + sourceId
+					+ "&jpip=true"
+					+ "&verbose=true"
+					+ "&startTimes=" + currentStarts.toString()
+					+ "&endTimes=" + currentEnds.toString(),
+					DownloadPriority.MEDIUM);
 			
-			md.hq = new JPIPDownloadRequest(Globals.JPX_DATASOURCE_MIDPOINT
+			/*md.hq = new JPIPDownloadRequest(Globals.JPX_DATASOURCE_MIDPOINT
 					+ "?sourceId=" + sourceId
 					+ "&startTimes=" + currentStarts.toString()
 					+ "&endTimes=" + currentEnds.toString(),
 					MovieCache.generateFilename(sourceId),
-					DownloadPriority.LOW);
+					DownloadPriority.LOW);*/
 			
-			pendingDownloads.add(md);
-			DownloadManager.addRequest(md.hq);
+			pendingMetadata.add(md);
+			DownloadManager.addRequest(md.metadata);
 		}
 	}
 	
@@ -255,18 +264,23 @@ public class KakaduLayer extends ImageLayer
 			long b = _start + _cadence;
 			LocalDateTime middle = LocalDateTime.ofInstant(Instant.ofEpochSecond(_start + _cadence/2).plusMillis((_cadence&1)==1?500:0), ZoneOffset.UTC);
 			
-			//TODO: re-add this check (iff API is reliable)
 			if(!noFrames.fullyContains(a,b))
 			{
 				Match bestMatch = findBestFrame(middle);
-				if(bestMatch==null || bestMatch.timeDifferenceSeconds>=_cadence/2 || bestMatch.movie.quality!=Quality.FULL)
+				if(bestMatch==null || bestMatch.timeDifferenceSeconds>=_cadence/2 || !bestMatch.movie.isFullQuality())
 				{
-					if(bestMatch!=null && bestMatch.movie.quality!=Quality.FULL)
-						MovieCache.remove(bestMatch.movie);
-					
-					//System.out.println("Downloading "+a+"-"+b+", because "+(bestMatch==null ? "null":bestMatch.timeDifferenceSeconds+" >= "+_cadence));
-					startTimes.add(a);
-					endTimes.add(b);
+					if(bestMatch!=null && !bestMatch.movie.isFullQuality() && bestMatch.timeDifferenceSeconds<_cadence/2)
+					{
+						//we already have a match: re-fetch the exact same frame (but this time in better quality)
+						long ts = bestMatch.movie.getMetaData(bestMatch.index).localDateTime.atOffset(ZoneOffset.UTC).getLong(ChronoField.INSTANT_SECONDS);
+						startTimes.add(ts);
+						endTimes.add(ts+1);
+					}
+					else
+					{
+						startTimes.add(a);
+						endTimes.add(b);
+					}
 				}
 			}
 			
@@ -276,9 +290,7 @@ public class KakaduLayer extends ImageLayer
 	
 	static final int SETTINGS_JPIP_BATCH_SIZE=Settings.getInt(IntKey.JPIP_BATCH_SIZE);
 	static final int SETTINGS_PREVIEW_TIME_SUBSAMPLE=Settings.getInt(IntKey.PREVIEW_TEMPORAL_SUBSAMPLE);
-	static final int SETTINGS_PREVIEW_SIZE=Settings.getInt(IntKey.PREVIEW_RESOLUTION);
-	static final int SETTINGS_PREVIEW_QUALITY=Settings.getInt(IntKey.PREVIEW_QUALITY);
-	static final boolean SETTINGS_PREVIEW_ENABLED=Settings.getBoolean(BooleanKey.PREVIEW_ENABLED);
+	static final int SETTINGS_PREVIEW_SPATIAL_START=Settings.getInt(IntKey.PREVIEW_SPATIAL_START);
 	
 	static final IntervalStore<Long> noFrames=new IntervalStore<>();
 	
@@ -291,12 +303,15 @@ public class KakaduLayer extends ImageLayer
 		start = _start;
 		end = start.plusSeconds(((ChronoUnit.SECONDS.between(_start, _end)+cadence-1)/cadence)*cadence);
 		
-		//TODO: download should probably use lq previews
-		
 		loaderThread = new Thread(() ->
 		{
+			LinkedList<JPIPRequest> pendingJPIP = new LinkedList<>();
+			
 			try
 			{
+				//download metadata
+				ArrayList<Movie> pendingMovies = new ArrayList<Movie>();
+				
 				//round down/up to the nearest _cadence block (helps avoid jitter in general and reduces required frames)
 				long seconds = ChronoUnit.SECONDS.between(_start, _end);
 				long cadence = (long)Math.round(Math.pow(SETTINGS_PREVIEW_TIME_SUBSAMPLE, Math.ceil(Math.log(seconds)/Math.log(SETTINGS_PREVIEW_TIME_SUBSAMPLE))-1));
@@ -325,81 +340,48 @@ public class KakaduLayer extends ImageLayer
 					System.out.println("Using "+((end-start)/cadence)+" frames total, downloading "+startTimes.size()+" at cadence "+cadence);
 					
 					startPendingDownloads();
-					while(!pendingDownloads.isEmpty())
+					while(!pendingMetadata.isEmpty())
 					{
-						Thread.sleep(250);
-						final MovieDownload download = pendingDownloads.removeFirst();
-						
-						if(!download.hq.isFinished())
+						MetadataDownload download = pendingMetadata.removeFirst();
+						if(!download.metadata.isFinished())
 						{
-							pendingDownloads.addLast(download);
+							Thread.sleep(250);
+							pendingMetadata.addLast(download);
 							continue;
 						}
 						
 						try
 						{
-							download.hq.checkException();
-							if(download.hq.isEmpty())
-							{
-								for(int i=0; i < download.from.size();i++)
-								{
-									long from = download.from.get(i);
-									long to = download.to.get(i);
-									noFrames.addInterval(from, to);
-								}
-								
-								//SwingUtilities.invokeLater(() -> MainFrame.SINGLETON.MOVIE_PANEL.repaint(1000));
-								continue;
-							}
+							download.metadata.checkException();
 							
-							//api may return fewer frames than requested. this means that there were no frames for some time ranges
-							final Movie m=new Movie(sourceId,download.hq.getFilename());
-							for(int i=0; i < download.from.size();i++)
-							{
-								long from = download.from.get(i);
-								long to = download.to.get(i);
-								boolean found=false;
-								
-								for(int f=0; f < m.getFrameCount();f++)
-								{
-									MetaData md = m.getMetaData(f);
-									if(md!=null)
-									{
-										long ts = md.localDateTime.atOffset(ZoneOffset.UTC).getLong(ChronoField.INSTANT_SECONDS);
-										if(ts>=from && ts<to)
-										{
-											found=true;
-											break;
-										}
-									}
-								}
-								
-								if(!found)
-									noFrames.addInterval(from, to);
-								
-								//System.out.println(i+"th request: "+from+"-"+to+" "+(found?"found":"404"));
-							}
+							JSONObject jsonObject = new JSONObject(download.metadata.getDataAsString());
+							if (jsonObject.has("error"))
+								throw new JSONException("JSON error: "+download.metadata.getDataAsString());
 							
+							int validFrames = 0;
+							JSONArray frames = jsonObject.getJSONArray("frames");
+							for(int i=0;i<frames.length();i++)
+								if("null".equalsIgnoreCase(frames.getString(i)))
+									noFrames.addInterval(download.from.get(i), download.to.get(i));
+								else
+									validFrames++;
+
 							//double check api response, to detect misunderstandings & bugs
 							if(!Globals.IS_RELEASE_VERSION)
-								for(int f=0; f < m.getFrameCount();f++)
-								{
-									MetaData md = m.getMetaData(f);
-									if(md!=null)
+								for(int f=0; f < frames.length();f++)
+									if(!"null".equalsIgnoreCase(frames.getString(f)))
 									{
-										long ts = md.localDateTime.atOffset(ZoneOffset.UTC).getLong(ChronoField.INSTANT_SECONDS);
+										long ts = frames.getLong(f);
 										if(noFrames.contains(ts))
 											//FIXME: still happening...
-											throw new Exception("API returned frame for "+ts+" when it previously found no such frame.");
+											System.err.println("API returned frame for "+ts+" when it previously found no such frame.");
 										
 										boolean found=false;
-										
-										for(int i=0; i < download.from.size();i++)
+										for(int i=0;i<download.from.size();i++)
 										{
 											long from = download.from.get(i);
 											long to = download.to.get(i);
-											
-											if(ts>=from && ts<to)
+											if(ts >= from && ts<to)
 											{
 												found=true;
 												break;
@@ -412,20 +394,16 @@ public class KakaduLayer extends ImageLayer
 											for(int i=0; i < download.from.size();i++)
 												sb.append("\n"+download.from.get(i)+"-"+download.to.get(i));
 											
-											System.err.println(download.hq);
-											System.err.println("API returned data from not requested time range: "+ts+". Requested:"+sb.toString()+"\n\nURL: "+download.hq.toString());
+											System.err.println("API returned data from not requested time range: "+ts+". Requested:"+sb+"\nURL: "+download.metadata.toString());
 										}
 									}
-								}
 							
-							SwingUtilities.invokeAndWait(() ->
+							if(validFrames>0)
 							{
-								if(download.lqMovie!=null)
-									MovieCache.remove(download.lqMovie);
-								
-								MovieCache.add(m);
-								MainFrame.SINGLETON.repaintLazy();
-							});
+								final Movie m = new Movie(sourceId, validFrames, new URI(jsonObject.getString("uri")));
+								pendingMovies.add(m);
+								SwingUtilities.invokeLater(() -> MovieCache.add(m));
+							}
 						}
 						catch(Throwable _e)
 						{
@@ -435,12 +413,25 @@ public class KakaduLayer extends ImageLayer
 						}
 					}
 					
+					downloadMoreMovieData(pendingJPIP, pendingMovies, Integer.MAX_VALUE, SETTINGS_PREVIEW_SPATIAL_START, SETTINGS_PREVIEW_SPATIAL_START);
+					
 					if(cadence==_cadence)
 						break;
 					
 					cadence/=SETTINGS_PREVIEW_TIME_SUBSAMPLE;
 					if(cadence<_cadence)
 						cadence=_cadence;
+				}
+				
+				//download actual movies, increasing resolution
+				for(int res = SETTINGS_PREVIEW_SPATIAL_START; ; res<<=1)
+				{
+					downloadMoreMovieData(pendingJPIP, pendingMovies, Integer.MAX_VALUE, res, res);
+					if(pendingMovies.isEmpty())
+					{
+						//TODO: slowly increase number of quality layers at the end
+						break;
+					}
 				}
 			}
 			catch (InterruptedException _e)
@@ -464,58 +455,75 @@ public class KakaduLayer extends ImageLayer
 					MainFrame.SINGLETON.repaintLazy();
 				});
 				
-				for(MovieDownload md:pendingDownloads)
-				{
-					DownloadManager.remove(md.hq);
-					DownloadManager.remove(md.lq);
+				for(MetadataDownload md:pendingMetadata)
 					DownloadManager.remove(md.metadata);
-				}
+				
+				for(JPIPRequest j:pendingJPIP)
+					DownloadManager.remove(j);
 			}
 		}, "Layer loader "+sourceId);
 		
-		/* 
-			JSONObject jsonObject = new JSONObject(download.metadata.getDataAsString());
-			if (jsonObject.has("error"))
-			{
-				System.err.println("JSON error: "+download.metadata.getDataAsString());
-				
-				DownloadManager.remove(download.metadata);
-				DownloadManager.remove(download.lq);
-				DownloadManager.remove(download.hq);
-				
-				incomplete=true;
-				continue;
-			}
-			
-			boolean containsValidFrames = false;
-			JSONArray frames = ((JSONArray) jsonObject.get("frames"));
-			for(int i=0;i<frames.length();i++)
-				if(!"null".equalsIgnoreCase(frames.getString(i)))
-				{
-					containsValidFrames = true;
-					break;
-				}
-			
-			if(containsValidFrames && SETTINGS_PREVIEW_ENABLED)
-			{
-				//TODO: quality limiting doesn't work
-				download.lq = new JPIPRequest(jsonObject.getString("uri"), DownloadPriority.MEDIUM, 0, frames.length()-1, SETTINGS_PREVIEW_QUALITY, new Rectangle(SETTINGS_PREVIEW_SIZE, SETTINGS_PREVIEW_SIZE));
-				DownloadManager.addRequest(download.lq);
-			}
-			
-			download.metadata=null;
-			downloads.addLast(download);
-		}
-		catch(JSONException _e)
-
-			
-			download.lqMovie=new Movie(sourceId,download.lq.kduCache);
-			SwingUtilities.invokeAndWait(() -> MovieCache.add(download.lqMovie));
-		*/
-
 		incomplete = false;
 		loaderThread.setDaemon(true);
 		loaderThread.start();
+	}
+	
+	private void downloadMoreMovieData(LinkedList<JPIPRequest> pendingJPIP, ArrayList<Movie> pendingMovies, int _qualityLayers, int _width, int _height) throws InterruptedException
+	{
+		for(Movie m:pendingMovies)
+		{
+			JPIPRequest jpip = new JPIPRequest(DownloadPriority.MEDIUM, _qualityLayers, _width, _height, m);
+			DownloadManager.addRequest(jpip);
+			pendingJPIP.add(jpip);
+		}
+		
+		boolean pendingRefresh = false;
+		while(!pendingJPIP.isEmpty())
+		{
+			JPIPRequest cur = pendingJPIP.removeFirst();
+			
+			if(!cur.isFinished())
+			{
+				if(pendingRefresh)
+				{
+					SwingUtilities.invokeLater(() ->
+					{
+						for(Texture t:ImageLayer.textures)
+							t.invalidate();
+						MainFrame.SINGLETON.repaintLazy();
+					});
+					pendingRefresh=false;
+				}
+				
+				Thread.sleep(250);
+				pendingJPIP.addLast(cur);
+				continue;
+			}
+			
+			try
+			{
+				cur.checkException();
+				
+				if(cur.imageComplete)
+					cur.m.notifyOfUpgradedQuality(Integer.MAX_VALUE, Integer.MAX_VALUE);
+				
+				pendingRefresh=true;
+			}
+			catch(Throwable _t)
+			{
+				incomplete=true;
+				Telemetry.trackException(_t);
+			}
+		}
+
+		SwingUtilities.invokeLater(() ->
+		{
+			for(Texture t:ImageLayer.textures)
+				t.invalidate();
+			MainFrame.SINGLETON.repaintLazy();
+		});
+		
+		pendingMovies.removeIf(m -> m.isFullQuality());
 	}
 	
 	@Override

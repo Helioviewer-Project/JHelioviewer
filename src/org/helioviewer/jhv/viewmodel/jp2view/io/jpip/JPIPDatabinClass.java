@@ -35,15 +35,17 @@ public enum JPIPDatabinClass
 	 * cache model updates.
 	 */
 	private String jpipString;
+	
+	public static JPIPDatabinClass fromKduClassID(int _kakaduClassID)
+	{
+		for(JPIPDatabinClass c:values())
+			if(c.kakaduClassID==_kakaduClassID)
+				return c;
+		
+		throw new RuntimeException("Unknown kakadu class ID "+_kakaduClassID);
+	}
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param _kakaduClassID
-	 * @param _standardClassID
-	 * @param _jpipString
-	 */
-	JPIPDatabinClass(int _kakaduClassID, int _standardClassID, String _jpipString)
+	private JPIPDatabinClass(int _kakaduClassID, int _standardClassID, String _jpipString)
 	{
 		kakaduClassID = _kakaduClassID;
 		standardClassID = _standardClassID;
@@ -72,5 +74,4 @@ public enum JPIPDatabinClass
 	{
 		return jpipString;
 	}
-
 }

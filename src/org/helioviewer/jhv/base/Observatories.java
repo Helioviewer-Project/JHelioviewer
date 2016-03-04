@@ -26,6 +26,9 @@ public class Observatories
 	
 	public static void addUpdateListener(Runnable _listener)
 	{
+		if(!observatories.isEmpty())
+			return;
+		
 		updateListeners.add(_listener);
 	}
 	
@@ -43,20 +46,18 @@ public class Observatories
 						DownloadManager.addRequest(httpRequest);
 						final JSONObject json = new JSONObject(httpRequest.getDataAsString());
 						
-						//TODO: show some error indication to the user, perhaps during startup?!
 						if(json.has("error"))
 							throw new Exception("Error when loading observatories: "+httpRequest.getDataAsString());
 
-						SwingUtilities.invokeLater(new Runnable()
-						{
-							@Override
-							public void run()
+						SwingUtilities.invokeLater(() ->
 							{
 								addObservatories(json);
+								
 								for(Runnable ul:updateListeners)
 									ul.run();
-							}
-						});
+								
+								updateListeners.clear();
+							});
 						
 						break;
 					}

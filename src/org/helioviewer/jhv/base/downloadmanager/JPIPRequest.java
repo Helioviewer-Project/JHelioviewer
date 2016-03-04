@@ -1,43 +1,134 @@
 package org.helioviewer.jhv.base.downloadmanager;
 
-import java.awt.Rectangle;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 import javax.annotation.Nullable;
 
 import org.helioviewer.jhv.base.Telemetry;
-import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPConstants;
+import org.helioviewer.jhv.layers.Movie;
 import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPDataSegment;
+import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPDatabinClass;
 import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPQuery;
-import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPRequestField;
 import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPResponse;
 import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPSocket;
 import org.helioviewer.jhv.viewmodel.metadata.UnsuitableMetaDataException;
 
 import kdu_jni.KduException;
-import kdu_jni.Kdu_cache;
+import kdu_jni.Kdu_global;
 
 public class JPIPRequest extends AbstractDownloadRequest
 {
 	private final JPIPQuery query;
-
-	private int JpipRequestLen = JPIPConstants.MIN_REQUEST_LEN;
-	private volatile long lastResponseTime = -1;
-	public final Kdu_cache kduCache = new Kdu_cache();
+	public final Movie m;
+	public final int qualityLayers;
+	public final int width;
+	public final int height;
 	
-	public JPIPRequest(String url, DownloadPriority priority, int startFrame, int endFrame, int _quality, Rectangle size)
+	public boolean imageComplete=false;
+	
+	public JPIPRequest(DownloadPriority priority, int _qualityLayers, int _width, int _height, Movie _m)
 	{
-		super(url, priority);
+		super(_m.jpipURI.toString(), priority);
+		
+		if(_m.getBackingFile()!=null)
+			throw new IllegalArgumentException("Only KduCache-type Movies are supported");
+		
+		m=_m;
+		qualityLayers=_qualityLayers;
+		width=_width;
+		height=_height;
 		
 		query = new JPIPQuery();
-		query.setField(JPIPRequestField.CONTEXT.toString(), "jpxl<" + startFrame + "-" + endFrame + ">");
-		query.setField(JPIPRequestField.LAYERS.toString(), String.valueOf(_quality));
-
-		query.setField(JPIPRequestField.FSIZ.toString(), size.width + "," + size.height + ",closest");
-		query.setField(JPIPRequestField.ROFF.toString(), "0,0");
-		query.setField(JPIPRequestField.RSIZ.toString(), size.width + "," + size.height);
+		query.setField("type", "jpp-stream");
+		query.setField("context", "jpxl<0-" + (_m.getFrameCount()-1) + ">");
+		query.setField("layers", String.valueOf(_qualityLayers));
+		query.setField("fsiz", _width + "," + _height + ",closest");
+		query.setField("rsiz", _width + "," + _height);
+		query.setField("roff", "0,0");
+		
+		
+		//hack: esa-jpip currently only supports stateful requests ?!?
+		query.setField("cnew", "http");
+		
+		//hack: esa-jpip currently only supports requests WITH len
+		query.setField("len", String.valueOf(Integer.MAX_VALUE));
+		
+		try
+		{
+			LinkedHashMap<Long,ArrayList<String>> cacheContents = new LinkedHashMap<>();
+			
+			int flags = Kdu_global.KDU_CACHE_SCAN_START;
+			int[] databinClass=new int[1];
+			long[] codestreamId=new long[1];
+			long[] databinId=new long[1];
+			int[] binLength=new int[1];
+			boolean[] binComplete=new boolean[1];
+			while(m.kduCache.Scan_databins(flags, databinClass, codestreamId, databinId, binLength, binComplete))
+			{
+				if(!cacheContents.containsKey(codestreamId[0]))
+					cacheContents.put(codestreamId[0], new ArrayList<>());
+				
+				JPIPDatabinClass c=JPIPDatabinClass.fromKduClassID(databinClass[0]);
+				String element = c.getJpipString();
+				if(c!=JPIPDatabinClass.MAIN_HEADER_DATABIN)
+					element += String.valueOf(databinId[0]);
+				
+				if(!binComplete[0])
+					element += ":"+binLength[0];
+				
+				cacheContents.get(codestreamId[0]).add(element);
+				
+				flags = 0;
+			}
+			
+			if(!cacheContents.isEmpty())
+			{
+				StringBuilder sbModel = new StringBuilder();
+				long prevStartId = -1;
+				long prevMaxId = -1;
+				
+				while(!cacheContents.isEmpty())
+				{
+					long maxId=cacheContents.keySet().stream().mapToLong(l -> l.longValue()).max().getAsLong();
+					String element = cacheContents.get(maxId).get(0);
+					
+					long startId=maxId;
+					while(cacheContents.get(startId-1)!=null && cacheContents.get(startId-1).contains(element) && startId>0)
+						startId--;
+					
+					if(startId!=prevStartId || maxId!=prevMaxId)
+					{
+						sbModel.append(",[");
+						sbModel.append(startId);
+						if(startId!=maxId)
+							sbModel.append("-"+maxId);
+						sbModel.append("]");
+						
+						prevStartId=startId;
+						prevMaxId=maxId;
+					}
+					
+					sbModel.append(","+element);
+					
+					for(long id=startId;id<=maxId;id++)
+					{
+						cacheContents.get(id).remove(element);
+						if(cacheContents.get(id).isEmpty())
+							cacheContents.remove(id);
+					}
+				}
+				
+				query.setField("model", sbModel.substring(1));
+			}
+		}
+		catch (KduException _e)
+		{
+			Telemetry.trackException(_e);
+		}
 	}
 
 	private volatile JPIPSocket jpipSocket;
@@ -45,40 +136,69 @@ public class JPIPRequest extends AbstractDownloadRequest
 	@Override
 	void execute() throws IOException
 	{
-		jpipSocket = new JPIPSocket(TIMEOUT);
-
+		if(!isRequired())
+			return;
+		
 		try
 		{
-			openSocket(jpipSocket, kduCache);
-			for(;;)
+			jpipSocket = new JPIPSocket(new URI(url), TIMEOUT);
+			@Nullable JPIPResponse response = jpipSocket.send(query.toString());
+			
+			if(response==null)
+				throw new IOException();
+			
+			JPIPDataSegment data;
+			while ((data = response.removeJpipDataSegment()) != null && !data.isEOR)
 			{
-				if (jpipSocket.isClosed())
-					openSocket(jpipSocket, kduCache);
+				m.kduCache.Add_to_databin(data.classID.getKakaduClassID(),
+					data.codestreamID, data.binID, data.data, data.offset,
+					data.length, data.isFinal, true, false);
+			}
+			
+			/*if(!response.isResponseComplete() && response.getHeader("JPIP-cnew")!=null)
+			{
+				query.removeField("cnew");
 				
-				query.setField(JPIPRequestField.LEN.toString(), String.valueOf(JpipRequestLen));
-
-				org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPRequest request = new org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPRequest(query.toString());
-				jpipSocket.send(request);
-				@Nullable JPIPResponse response = jpipSocket.receive();
+				String[] tokens = response.getHeader("JPIP-cnew").split(",");
+				String cnew=Arrays.stream(tokens).filter(s -> s.startsWith("cid=")).findAny().get().split("=",2)[1];
+				query.setField("cid", Integer.parseInt(cnew)+"");
 				
+				String path="/" + Arrays.stream(tokens).filter(s -> s.startsWith("path=")).findAny().get().split("=",2)[1];
+				jpipSocket.uri = new URI(jpipSocket.uri.getScheme(), jpipSocket.uri.getHost(), path, jpipSocket.uri.getFragment());
+				
+				response = jpipSocket.send(query.toString());
 				if(response==null)
 					throw new IOException();
 				
-				// Update optimal package size
-				flowControl(jpipSocket);
-				try
+				while ((data = response.removeJpipDataSegment()) != null && !data.isEOR)
 				{
-					boolean complete = addJPIPResponseData(response,kduCache);
-					if(complete)
-						break;
+					m.kduCache.Add_to_databin(data.classID.getKakaduClassID(),
+						data.codestreamID, data.binID, data.data, data.offset,
+						data.length, data.isFinal, true, false);
+					newDataBins=true;
 				}
-				catch (KduException e)
+			}*/
+			
+			//TODO: verify tid
+			
+			while(!response.isResponseComplete())
+			{
+				response = jpipSocket.send(query.toString());
+				if(response==null)
+					throw new IOException();
+				
+				while ((data = response.removeJpipDataSegment()) != null && !data.isEOR)
 				{
-					Telemetry.trackException(e);
+					m.kduCache.Add_to_databin(data.classID.getKakaduClassID(),
+						data.codestreamID, data.binID, data.data, data.offset,
+						data.length, data.isFinal, true, false);
 				}
 			}
+			
+			imageComplete = response.isImageComplete();
+			m.notifyOfUpgradedQuality(imageComplete ? Integer.MAX_VALUE : width*height, imageComplete ? Integer.MAX_VALUE : qualityLayers);
 		}
-		catch (URISyntaxException | UnsuitableMetaDataException | KduException e)
+		catch (URISyntaxException | UnsuitableMetaDataException | KduException | IOException e)
 		{
 			Telemetry.trackException(e);
 		}
@@ -95,72 +215,6 @@ public class JPIPRequest extends AbstractDownloadRequest
 		}
 	}
 
-	private void openSocket(JPIPSocket _socket, Kdu_cache _kduCache) throws IOException, URISyntaxException, KduException
-	{
-		JPIPResponse jpipResponse = (JPIPResponse) _socket.connect(new URI(url));
-		addJPIPResponseData(jpipResponse,_kduCache);
-	}
-
-	private boolean addJPIPResponseData(JPIPResponse jRes, Kdu_cache _kduCache) throws KduException
-	{
-		JPIPDataSegment data;
-		//System.out.println("----------------------------------------");
-		while ((data = jRes.removeJpipDataSegment()) != null && !data.isEOR)
-		{
-			//System.out.println(data.classID+" wowo "+
-			//		data.codestreamID+" "+data.binID+" "+ data.data+" "+ data.offset+" "+data.length+" "+ data.isFinal);
-			_kduCache.Add_to_databin(data.classID.getKakaduClassID(),
-				data.codestreamID, data.binID, data.data, data.offset,
-				data.length, data.isFinal, true, false);
-		}
-		//System.out.println("----------------------------------------");
-		
-		return jRes.isResponseComplete();
-	}
-
-	private void flowControl(JPIPSocket jpipSocket)
-	{
-		int adjust = 0;
-		int receivedBytes = jpipSocket.getReceivedData();
-		long replyTextTime = jpipSocket.getReplyTextTime();
-		long replyDataTime = jpipSocket.getReplyDataTime();
-
-		long tdat = replyDataTime - replyTextTime;
-
-		if (((receivedBytes - JpipRequestLen) < (JpipRequestLen >> 1)) && (receivedBytes > (JpipRequestLen >> 1)))
-		{
-			if (tdat > 10000)
-				adjust = -1;
-			else if (lastResponseTime > 0)
-			{
-				long tgap = replyTextTime - lastResponseTime;
-
-				if ((tgap + tdat) < 1000)
-					adjust = +1;
-				else
-				{
-					double gapRatio = ((double) tgap) / ((double) (tgap + tdat));
-					double targetRatio = ((double) (tdat + tgap)) / 10000.0;
-
-					if (gapRatio > targetRatio)
-						adjust = +1;
-					else
-						adjust = -1;
-				}
-			}
-		}
-
-		JpipRequestLen += (JpipRequestLen >> 2) * adjust;
-
-		if (JpipRequestLen > JPIPConstants.MAX_REQUEST_LEN)
-			JpipRequestLen = JPIPConstants.MAX_REQUEST_LEN;
-
-		if (JpipRequestLen < JPIPConstants.MIN_REQUEST_LEN)
-			JpipRequestLen = JPIPConstants.MIN_REQUEST_LEN;
-
-		lastResponseTime = replyDataTime;
-	}
-
 	@Override
 	public void interrupt()
 	{
@@ -172,5 +226,16 @@ public class JPIPRequest extends AbstractDownloadRequest
 		catch(Throwable t)
 		{
 		}
+	}
+
+	private boolean isRequired()
+	{
+		if(width*height<m.areaLimit.get())
+			return false;
+		
+		if(width*height==m.areaLimit.get() && qualityLayers<=m.qualityLayersLimit.get())
+			return false;
+		
+		return true;
 	}
 }

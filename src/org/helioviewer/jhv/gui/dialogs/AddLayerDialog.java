@@ -141,11 +141,16 @@ public class AddLayerDialog extends JDialog
 	private void addData()
 	{
 		if(Observatories.getObservatories().isEmpty())
+		{
 			Observatories.addUpdateListener(() ->
 			{
 				if(isVisible())
 					addData();
 			});
+			
+			//TODO: show error message and explain that observatories are not (yet?) loaded
+			return;
+		}
 		
 		cmbbxObservatory.setEnabled(true);
 		

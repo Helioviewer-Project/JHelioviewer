@@ -79,19 +79,4 @@ public class JPIPConstants {
      * EOR code sent when there is not any specific EOR reason.
      */
     public static final int EOR_NON_SPECIFIED = 0xFF;
-
-    /**
-     * The maximum length in bytes of a JPIP request.
-     */
-    public static final int MAX_REQUEST_LEN = 18000000;
-
-    /**
-     * The minimum length in bytes of a JPIP request.
-     */
-    public static final int MIN_REQUEST_LEN = 200000; //4000;
-
-    /**
-     * Maximum number of layers that can be requested at the same time.
-     */
-    public static final int MAX_REQ_LAYERS = 15;
 }

@@ -169,8 +169,7 @@ public class Settings
 		PLUGIN_VISIBLE("plugin.visible"),
 		MOVIE_TEXT("export.movie.text"),
 		SCREENSHOT_TEXT("export.screenshot.text"),
-		STARTUP_3DCAMERA("startup.camera3d"),
-		PREVIEW_ENABLED("preview.enabled");
+		STARTUP_3DCAMERA("startup.camera3d");
 
         String key;
         private BooleanKey(String _key)
@@ -186,9 +185,8 @@ public class Settings
 		MOVIE_IMG_HEIGHT("export.movie.height"),
 		SCREENSHOT_IMG_WIDTH("export.screenshot.width"),
 		SCREENSHOT_IMG_HEIGHT("export.screenshot.height"),
-		PREVIEW_RESOLUTION("preview.resolution"),
-		PREVIEW_QUALITY("preview.quality"),
 		PREVIEW_TEMPORAL_SUBSAMPLE("preview.temporal.subsample"),
+		PREVIEW_SPATIAL_START("preview.spatial.start"),
 		JPIP_BATCH_SIZE("jpip.batchsize"), STARTUP_LICENSE_SHOWN("startup.license"),
 		CACHE_SIZE("cache.size");
 

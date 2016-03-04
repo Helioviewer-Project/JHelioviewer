@@ -79,7 +79,7 @@ public class MainFrame extends JFrame
 		LAYER_PANEL = new LayerPanel();
 		FILTER_PANEL = new FilterPanel();
 		
-		//TODO: save & restore state
+		//TODO: save & restore state upon startup
 		LEFT_PANE = new SideContentPane();
 		LEFT_PANE.add("Playback", MOVIE_PANEL, true);
 		LEFT_PANE.add("Layers", LAYER_PANEL, true);
