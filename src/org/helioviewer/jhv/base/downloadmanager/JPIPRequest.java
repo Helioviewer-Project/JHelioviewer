@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.layers.Movie;
+import org.helioviewer.jhv.layers.MovieKduCacheBacked;
 import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPDataSegment;
 import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPDatabinClass;
 import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPQuery;
@@ -23,19 +24,16 @@ import kdu_jni.Kdu_global;
 public class JPIPRequest extends AbstractDownloadRequest
 {
 	private final JPIPQuery query;
-	public final Movie m;
+	public final MovieKduCacheBacked m;
 	public final int qualityLayers;
 	public final int width;
 	public final int height;
 	
 	public boolean imageComplete=false;
 	
-	public JPIPRequest(DownloadPriority priority, int _qualityLayers, int _width, int _height, Movie _m)
+	public JPIPRequest(DownloadPriority priority, int _qualityLayers, int _width, int _height, MovieKduCacheBacked _m)
 	{
 		super(_m.jpipURI.toString(), priority);
-		
-		if(_m.getBackingFile()!=null)
-			throw new IllegalArgumentException("Only KduCache-type Movies are supported");
 		
 		m=_m;
 		qualityLayers=_qualityLayers;

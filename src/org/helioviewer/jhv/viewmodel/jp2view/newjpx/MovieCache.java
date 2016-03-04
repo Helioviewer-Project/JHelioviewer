@@ -19,6 +19,7 @@ import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 import org.helioviewer.jhv.layers.Movie;
 import org.helioviewer.jhv.layers.Movie.Match;
+import org.helioviewer.jhv.layers.MovieFileBacked;
 import org.helioviewer.jhv.viewmodel.metadata.UnsuitableMetaDataException;
 
 import com.google.common.io.Files;
@@ -69,6 +70,9 @@ public class MovieCache
 			}
 		});
 		
+		//FIXME: add cache clearing back in
+		
+		/*
 		int toRemove = 0;
 		while(cacheSize>MAX_CACHE_SIZE)
 		{
@@ -88,7 +92,7 @@ public class MovieCache
 				System.out.println("Cache: Removed "+files[toRemove].getAbsolutePath());
 			
 			toRemove++;
-		}
+		}*/
 	}
 	
 	public static void remove(Movie _movie)
@@ -140,8 +144,9 @@ public class MovieCache
 				bestMatch=curMatch;
 		}
 		
-		if(bestMatch!=null && bestMatch.movie.getBackingFile()!=null)
-			bestMatch.movie.touch();
+		//FIXME: readd cache LRU
+		/*if(bestMatch!=null && bestMatch.movie.getBackingFile()!=null)
+			bestMatch.movie.touch();*/
 		
 		return bestMatch;
 	}
@@ -196,7 +201,7 @@ public class MovieCache
 				if(parts.length>=2)
 					try
 					{
-						add(new Movie(Integer.parseInt(parts[0]),f.getAbsolutePath()));
+						add(new MovieFileBacked(Integer.parseInt(parts[0]),f.getAbsolutePath()));
 					}
 					catch(UnsuitableMetaDataException|IOException|KduException e)
 					{

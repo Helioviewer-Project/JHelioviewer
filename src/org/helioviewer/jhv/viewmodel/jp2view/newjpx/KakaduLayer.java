@@ -36,6 +36,8 @@ import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.Movie;
 import org.helioviewer.jhv.layers.Movie.Match;
+import org.helioviewer.jhv.layers.MovieFileBacked;
+import org.helioviewer.jhv.layers.MovieKduCacheBacked;
 import org.helioviewer.jhv.opengl.Texture;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.TimeLine.DecodeQualityLevel;
@@ -96,7 +98,7 @@ public class KakaduLayer extends ImageLayer
 		
 		try
 		{
-			Movie movie = new Movie(sourceId,_filePath);
+			Movie movie = new MovieFileBacked(sourceId,_filePath);
 			if(movie.getAnyMetaData()==null)
 				throw new UnsuitableMetaDataException();
 		
@@ -310,7 +312,7 @@ public class KakaduLayer extends ImageLayer
 			try
 			{
 				//download metadata
-				ArrayList<Movie> pendingMovies = new ArrayList<Movie>();
+				ArrayList<MovieKduCacheBacked> pendingMovies = new ArrayList<MovieKduCacheBacked>();
 				
 				//round down/up to the nearest _cadence block (helps avoid jitter in general and reduces required frames)
 				long seconds = ChronoUnit.SECONDS.between(_start, _end);
@@ -400,7 +402,7 @@ public class KakaduLayer extends ImageLayer
 							
 							if(validFrames>0)
 							{
-								final Movie m = new Movie(sourceId, validFrames, new URI(jsonObject.getString("uri")));
+								final MovieKduCacheBacked m = new MovieKduCacheBacked(sourceId, validFrames, new URI(jsonObject.getString("uri")));
 								pendingMovies.add(m);
 								SwingUtilities.invokeLater(() -> MovieCache.add(m));
 							}
@@ -468,9 +470,9 @@ public class KakaduLayer extends ImageLayer
 		loaderThread.start();
 	}
 	
-	private void downloadMoreMovieData(LinkedList<JPIPRequest> pendingJPIP, ArrayList<Movie> pendingMovies, int _qualityLayers, int _width, int _height) throws InterruptedException
+	private void downloadMoreMovieData(LinkedList<JPIPRequest> pendingJPIP, ArrayList<MovieKduCacheBacked> pendingMovies, int _qualityLayers, int _width, int _height) throws InterruptedException
 	{
-		for(Movie m:pendingMovies)
+		for(MovieKduCacheBacked m:pendingMovies)
 		{
 			JPIPRequest jpip = new JPIPRequest(DownloadPriority.MEDIUM, _qualityLayers, _width, _height, m);
 			DownloadManager.addRequest(jpip);
