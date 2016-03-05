@@ -507,7 +507,7 @@ public class KakaduLayer extends ImageLayer
 				cur.checkException();
 				
 				if(cur.imageComplete)
-					cur.m.notifyOfUpgradedQuality(Integer.MAX_VALUE, Integer.MAX_VALUE);
+					cur.m.notifyAboutUpgradedQuality(Integer.MAX_VALUE, Integer.MAX_VALUE);
 				
 				pendingRefresh=true;
 			}

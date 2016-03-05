@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.function.Consumer;
 import java.util.zip.GZIPInputStream;
 
 import javax.annotation.Nullable;
@@ -48,7 +50,7 @@ public class JPIPSocket extends HTTPSocket
 
 	/** Receives a JPIPResponse returning null if EOS reached */
 	@SuppressWarnings({ "resource" })
-	public @Nullable JPIPResponse send(String _query) throws IOException
+	public @Nullable JPIPResponse send(String _query, Consumer<JPIPDataSegment> _callback) throws IOException
 	{
 		StringBuilder str = new StringBuilder();
 
@@ -142,8 +144,11 @@ public class JPIPSocket extends HTTPSocket
 
 		JPIPDataSegment seg;
 		while ((seg = jpip.readSegment()) != null)
-			res.addJpipDataSegment(seg);
-
+			if(seg.isEOR)
+				res.statusI = seg.binID;
+			else
+				_callback.accept(seg);
+		
 		if (res.getHeader("Connection") != null && "close".equals(res.getHeader("Connection")))
 			super.close();
 		

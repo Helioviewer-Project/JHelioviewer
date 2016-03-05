@@ -643,6 +643,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			}
 		}
 		
+		//FIXME: paint lags arbitrarily. repro with 300 fps.
 		
 		//TODO: make repaint synchronous? (always up to date) or not synchronous? (arbitrarily delayed, but better perf) 
 		// force repaints of dependent regions

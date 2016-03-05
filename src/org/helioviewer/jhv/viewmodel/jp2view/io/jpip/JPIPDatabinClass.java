@@ -1,7 +1,5 @@
 package org.helioviewer.jhv.viewmodel.jp2view.io.jpip;
 
-import org.helioviewer.jhv.viewmodel.jp2view.kakadu.KakaduConstants;
-
 /**
  * Enum describing the databin class ID's. Methods exist for getting the
  * KakaduClassID and the StandardClassID. I have also included the string
@@ -9,27 +7,18 @@ import org.helioviewer.jhv.viewmodel.jp2view.kakadu.KakaduConstants;
  */
 public enum JPIPDatabinClass
 {
-	/** Precinct data bin class. */
-	PRECINCT_DATABIN(KakaduConstants.KDU_PRECINCT_DATABIN, JPIPConstants.PRECINCT_DATA_BIN_CLASS, "P"),
-
-	/** Tile Header data bin class. */
-	TILE_HEADER_DATABIN(KakaduConstants.KDU_TILE_HEADER_DATABIN, JPIPConstants.TILE_HEADER_DATA_BIN_CLASS, "H"),
-
-	/** Tile data bin class. */
-	TILE_DATABIN(KakaduConstants.KDU_TILE_DATABIN, JPIPConstants.TILE_DATA_BIN_CLASS, "T"),
-
-	/** Main Header data bin class. */
-	MAIN_HEADER_DATABIN(KakaduConstants.KDU_MAIN_HEADER_DATABIN, JPIPConstants.MAIN_HEADER_DATA_BIN_CLASS, "Hm"),
-
-	/** Meta data bin class. */
-	META_DATABIN(KakaduConstants.KDU_META_DATABIN, JPIPConstants.META_DATA_BIN_CLASS, "M");
+	PRECINCT_DATABIN(0, JPIPConstants.PRECINCT_DATA_BIN_CLASS, "P"),
+	TILE_HEADER_DATABIN(1, JPIPConstants.TILE_HEADER_DATA_BIN_CLASS, "H"),
+	TILE_DATABIN(2, JPIPConstants.TILE_DATA_BIN_CLASS, "T"),
+	MAIN_HEADER_DATABIN(3, JPIPConstants.MAIN_HEADER_DATA_BIN_CLASS, "Hm"),
+	META_DATABIN(4, JPIPConstants.META_DATA_BIN_CLASS, "M");
 
 	/** The classID as an integer as per the Kakadu library. */
 	private int kakaduClassID;
 
 	/** The classID as an integer as per the JPEG2000 Part-9 standard. */
 	private int standardClassID;
-
+	
 	/**
 	 * The classID as a string as per the JPEG2000 Part-9 standard. Used for
 	 * cache model updates.

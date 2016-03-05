@@ -14,49 +14,22 @@ import org.helioviewer.jhv.viewmodel.jp2view.io.http.HTTPResponse;
 public class JPIPResponse extends HTTPResponse
 {
 	/** The status... can be EOR_WINDOW_DONE or EOR_IMAGE_DONE */
-	private long statusI;
+	long statusI = -1;
 
-	/** A list of the data segments. */
-	private ArrayList<JPIPDataSegment> jpipDataList;
-
-	/**
-	 * Used to form responses.
-	 * 
-	 * @param res
-	 * @throws IOException
-	 */
 	public JPIPResponse(HTTPResponse res) throws IOException
 	{
 		super(res.status, res.reason);
 
 		for (String key : res.getHeaders())
 			setHeader(key, res.getHeader(key));
-		
-		statusI = -1;
-		jpipDataList = new ArrayList<>();
 	}
 
 	public void addJpipDataSegment(JPIPDataSegment data)
 	{
 		if (data.isEOR)
 			statusI = data.binID;
-		
-		jpipDataList.add(data);
 	}
 
-	public @Nullable JPIPDataSegment removeJpipDataSegment()
-	{
-		return (jpipDataList.isEmpty() ? null : jpipDataList.remove(0));
-	}
-
-	public long getResponseSize()
-	{
-		long size = 0;
-		for (JPIPDataSegment aJpipDataList : jpipDataList)
-			size += aJpipDataList.length;
-		return size;
-	}
-	
 	public boolean isImageComplete()
 	{
 		return statusI == JPIPConstants.EOR_IMAGE_DONE;

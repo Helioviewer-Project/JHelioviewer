@@ -4,8 +4,8 @@ package org.helioviewer.jhv.viewmodel.jp2view.io.jpip;
  * The class <code>JpipConstants</code> is used to define several JPIP global
  * constants.
  */
-public class JPIPConstants {
-
+public class JPIPConstants
+{
     /** Class identifier for precinct data-bins. */
     public static final int PRECINCT_DATA_BIN_CLASS = 0;
 

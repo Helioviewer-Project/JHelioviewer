@@ -90,7 +90,20 @@ public class MovieKduCacheBacked extends Movie
 		return areaLimit.get()==Integer.MAX_VALUE && qualityLayersLimit.get()==Integer.MAX_VALUE;
 	}
 	
-	public void notifyOfUpgradedQuality(int _area, int _qualityLayers)
+	
+	public void addToDatabin(int _kduClassId, long _codestreamId, long _binId, byte[] _data, int _offset, int _length, boolean _isFinal)
+	{
+		try
+		{
+			kduCache.Add_to_databin(_kduClassId, _codestreamId, _binId, _data, _offset, _length, _isFinal, true, false);
+		}
+		catch(KduException _e)
+		{
+			Telemetry.trackException(_e);
+		}
+	}
+	
+	public void notifyAboutUpgradedQuality(int _area, int _qualityLayers)
 	{
 		for(;;)
 		{

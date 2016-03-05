@@ -140,18 +140,13 @@ public class JPIPRequest extends AbstractDownloadRequest
 		try
 		{
 			jpipSocket = new JPIPSocket(new URI(url), TIMEOUT);
-			@Nullable JPIPResponse response = jpipSocket.send(query.toString());
+			@Nullable JPIPResponse response = jpipSocket.send(query.toString(), data ->
+					m.addToDatabin(data.classID.getKakaduClassID(),
+						data.codestreamID, data.binID, data.data, data.offset,
+						data.length, data.isFinal));
 			
 			if(response==null)
 				throw new IOException();
-			
-			JPIPDataSegment data;
-			while ((data = response.removeJpipDataSegment()) != null && !data.isEOR)
-			{
-				m.kduCache.Add_to_databin(data.classID.getKakaduClassID(),
-					data.codestreamID, data.binID, data.data, data.offset,
-					data.length, data.isFinal, true, false);
-			}
 			
 			/*if(!response.isResponseComplete() && response.getHeader("JPIP-cnew")!=null)
 			{
@@ -167,36 +162,14 @@ public class JPIPRequest extends AbstractDownloadRequest
 				response = jpipSocket.send(query.toString());
 				if(response==null)
 					throw new IOException();
-				
-				while ((data = response.removeJpipDataSegment()) != null && !data.isEOR)
-				{
-					m.kduCache.Add_to_databin(data.classID.getKakaduClassID(),
-						data.codestreamID, data.binID, data.data, data.offset,
-						data.length, data.isFinal, true, false);
-					newDataBins=true;
-				}
 			}*/
 			
 			//TODO: verify tid
 			
-			while(!response.isResponseComplete())
-			{
-				response = jpipSocket.send(query.toString());
-				if(response==null)
-					throw new IOException();
-				
-				while ((data = response.removeJpipDataSegment()) != null && !data.isEOR)
-				{
-					m.kduCache.Add_to_databin(data.classID.getKakaduClassID(),
-						data.codestreamID, data.binID, data.data, data.offset,
-						data.length, data.isFinal, true, false);
-				}
-			}
-			
 			imageComplete = response.isImageComplete();
-			m.notifyOfUpgradedQuality(imageComplete ? Integer.MAX_VALUE : width*height, imageComplete ? Integer.MAX_VALUE : qualityLayers);
+			m.notifyAboutUpgradedQuality(imageComplete ? Integer.MAX_VALUE : width*height, imageComplete ? Integer.MAX_VALUE : qualityLayers);
 		}
-		catch (URISyntaxException | UnsuitableMetaDataException | KduException | IOException e)
+		catch (URISyntaxException | UnsuitableMetaDataException | IOException e)
 		{
 			Telemetry.trackException(e);
 		}
