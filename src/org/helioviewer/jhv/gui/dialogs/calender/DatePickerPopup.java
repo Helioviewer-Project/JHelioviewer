@@ -59,14 +59,18 @@ class DatePickerPopup extends JDialog implements AWTEventListener
 			}
 		});
 
-		addFocusListener(new FocusAdapter()
+		//this doesn't work in osx because the event is fired before JTable.clicked
+		/*addFocusListener(new FocusAdapter()
 		{
 			@Override
 			public void focusLost(@Nullable FocusEvent e)
 			{
+				//if(e.getOppositeComponent()==table)
+				//	return;
+				
 				newDatePicker.hidePopup();
 			}
-		});
+		});*/
 
 		setUndecorated(true);
 		setPreferredSize(new Dimension(250, 180));
