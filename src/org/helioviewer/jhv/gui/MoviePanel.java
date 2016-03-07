@@ -162,17 +162,13 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 		slider.setMaximum(49);
 		slider.setSnapToTicks(true);
 		slider.setEnabled(false);
-		slider.addChangeListener(new ChangeListener()
-		{
-			@Override
-			public void stateChanged(@Nullable ChangeEvent e)
+		slider.addChangeListener(e ->
 			{
 				lblFrames.setText(slider.getValue() + "/" + slider.getMaximum());
 				
 				if(ignoreSliderChanges==0)
 					timeLine.setCurrentFrame(slider.getValue());
-			}
-		});
+			});
 
 		GridBagConstraints gbc_slider_2 = new GridBagConstraints();
 		gbc_slider_2.fill = GridBagConstraints.HORIZONTAL;

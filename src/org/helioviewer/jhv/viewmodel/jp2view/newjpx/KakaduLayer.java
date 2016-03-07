@@ -31,6 +31,7 @@ import org.helioviewer.jhv.base.downloadmanager.DownloadManager;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.base.downloadmanager.JPIPRequest;
+import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.layers.ImageLayer;
@@ -72,12 +73,11 @@ public class KakaduLayer extends ImageLayer
 	
 	public @Nullable Match findBestFrame(long _currentTimeMS)
 	{
-		//FIXME: why is this broken?
-		//if(noFrames.contains(_currentDateTime.atOffset(ZoneOffset.UTC).getLong(ChronoField.INSTANT_SECONDS)))
-		//	return null;
-		
 		Match m = MovieCache.findBestFrame(sourceId, _currentTimeMS);
 		if(m==null)
+			return null;
+		
+		if(m.timeDifferenceMS>cadenceMS && noFrames.contains(_currentTimeMS))
 			return null;
 		
 		return m;
@@ -273,15 +273,17 @@ public class KakaduLayer extends ImageLayer
 				{
 					if(bestMatch!=null && !bestMatch.movie.isFullQuality() && bestMatch.timeDifferenceMS<_cadenceMS/2)
 					{
+						//FIXME: this doesn't work. lq images from cache are still used
+						
 						//we already have a match: re-fetch the exact same frame (but this time in better quality)
-						MetaData r = bestMatch.movie.getMetaData(bestMatch.index);
-						startTimes.add(r.timeMS/1000);
-						endTimes.add(r.timeMS/1000+1);
+						long timeMS = bestMatch.movie.getTimeMS(bestMatch.index);
+						startTimes.add(timeMS/1000);
+						endTimes.add(timeMS/1000+1);
 					}
 					else
 					{
 						startTimes.add(a/1000);
-						endTimes.add(b/1000);
+						endTimes.add((b+999)/1000);
 					}
 				}
 			}
@@ -301,9 +303,10 @@ public class KakaduLayer extends ImageLayer
 		if(loaderThread!=null)
 			throw new IllegalStateException("Shouldn't restart while existing thread is still running.");
 		
+		//round down/up to the nearest _cadence block (helps avoid jitter in general and reduces required frames)
 		cadenceMS = _cadenceMS;
-		startMS = _startMS;
-		endMS = startMS + ((((_endMS-_startMS)+cadenceMS-1)/cadenceMS)*cadenceMS);
+		startMS = (_startMS/cadenceMS)*cadenceMS;
+		endMS = startMS + ((((_endMS-startMS)+cadenceMS-1)/cadenceMS)*cadenceMS);
 		
 		loaderThread = new Thread(() ->
 		{
@@ -314,29 +317,27 @@ public class KakaduLayer extends ImageLayer
 				//download metadata
 				ArrayList<MovieKduCacheBacked> pendingMovies = new ArrayList<MovieKduCacheBacked>();
 				
-				//round down/up to the nearest _cadence block (helps avoid jitter in general and reduces required frames)
-				long ms = endMS-startMS;
-				long cadenceMS = (long)Math.round(Math.pow(SETTINGS_PREVIEW_TIME_SUBSAMPLE, Math.ceil(Math.log(ms)/Math.log(SETTINGS_PREVIEW_TIME_SUBSAMPLE))-1));
-				
+				long curCadenceMS = (long)Math.round(Math.pow(SETTINGS_PREVIEW_TIME_SUBSAMPLE, Math.ceil(Math.log(endMS-startMS)/Math.log(SETTINGS_PREVIEW_TIME_SUBSAMPLE))-1));
 				for(;;)
 				{
-					if(cadenceMS>_cadenceMS)
+					//round down/up to the nearest _cadence block (helps avoid jitter in general and reduces required frames)
+					final long fStartMS;
+					final long fEndMS;
+					if(curCadenceMS>_cadenceMS)
 					{
-						startMS = (startMS/cadenceMS)*cadenceMS;
-						endMS = ((endMS+cadenceMS-1)/cadenceMS)*cadenceMS;
+						fStartMS = (_startMS/curCadenceMS)*curCadenceMS;
+						fEndMS = ((_endMS+curCadenceMS-1)/curCadenceMS)*curCadenceMS;
 					}
 					else
 					{
-						startMS = startMS-cadenceMS/2;
-						endMS = endMS-(cadenceMS+1)/2;
+						fStartMS = _startMS-curCadenceMS/2;
+						fEndMS = _endMS-(curCadenceMS+1)/2;
 					}
 					
-					final long fStart = startMS;
-					final long fEnd = endMS;
-					final long fCadence = cadenceMS;
-					SwingUtilities.invokeAndWait(() -> addRangeRequest(fStart, fEnd, fCadence));
+					final long fCadence = curCadenceMS;
+					SwingUtilities.invokeAndWait(() -> addRangeRequest(fStartMS, fEndMS, fCadence));
 					
-					System.out.println("Using "+((endMS-startMS)/cadenceMS)+" frames total, downloading "+startTimes.size()+" at cadence "+cadenceMS);
+					System.out.println("Using "+((fEndMS-fStartMS)/fCadence)+" frames total, downloading "+startTimes.size()+" at cadence "+fCadence);
 					
 					startPendingDownloads();
 					while(!pendingMetadata.isEmpty())
@@ -361,7 +362,9 @@ public class KakaduLayer extends ImageLayer
 							JSONArray frames = jsonObject.getJSONArray("frames");
 							for(int i=0;i<frames.length();i++)
 								if("null".equalsIgnoreCase(frames.getString(i)))
+								{
 									noFrames.addInterval(download.from.get(i)*1000, download.to.get(i)*1000);
+								}
 								else
 									validFrames++;
 
@@ -406,7 +409,7 @@ public class KakaduLayer extends ImageLayer
 						}
 						catch(Throwable _e)
 						{
-							if(cadenceMS<=_cadenceMS)
+							if(curCadenceMS<=_cadenceMS)
 								incomplete=true;
 							Telemetry.trackException(_e);
 						}
@@ -414,12 +417,12 @@ public class KakaduLayer extends ImageLayer
 					
 					downloadMoreMovieData(pendingJPIP, pendingMovies, Integer.MAX_VALUE, SETTINGS_PREVIEW_SPATIAL_START, SETTINGS_PREVIEW_SPATIAL_START);
 					
-					if(cadenceMS==_cadenceMS)
+					if(curCadenceMS==_cadenceMS)
 						break;
 					
-					cadenceMS/=SETTINGS_PREVIEW_TIME_SUBSAMPLE;
-					if(cadenceMS<_cadenceMS)
-						cadenceMS=_cadenceMS;
+					curCadenceMS/=SETTINGS_PREVIEW_TIME_SUBSAMPLE;
+					if(curCadenceMS<_cadenceMS)
+						curCadenceMS=_cadenceMS;
 				}
 				
 				//download actual movies, increasing resolution
@@ -535,12 +538,12 @@ public class KakaduLayer extends ImageLayer
 		Match match = findBestFrame(TimeLine.SINGLETON.getCurrentTimeMS());
 		if(match==null)
 			return 0;
-		MetaData r = match.getMetaData();
 		
-		if(r.timeMS<startMS-cadenceMS || r.timeMS>endMS+cadenceMS)
+		long timeMS = match.getTimeMS();
+		if(timeMS<startMS-cadenceMS || timeMS>endMS+cadenceMS)
 			return 0;
 		
-		return r.timeMS;
+		return timeMS;
 	}
 
 	@Override
@@ -563,16 +566,29 @@ public class KakaduLayer extends ImageLayer
 		
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 		
-		
-		LocalDateTime ldtStart = LocalDateTime.ofEpochSecond(startMS, (int)(startMS%1000)*1000*1000, ZoneOffset.UTC);
-		LocalDateTime ldtEnd = LocalDateTime.ofEpochSecond(endMS, (int)(endMS%1000)*1000*1000, ZoneOffset.UTC);
-		
-		return Globals.JPX_DATASOURCE_TRADITIONAL + "?startTime=" + ldtStart.format(formatter) + "&endTime=" + ldtEnd.format(formatter) + "&sourceId=" + sourceId + "&cadence=" + cadenceMS/1000;
+		return Globals.JPX_DATASOURCE_TRADITIONAL
+				+ "?startTime=" + MathUtils.toLDT(startMS).format(formatter)
+				+ "&endTime=" + MathUtils.toLDT(endMS).format(formatter)
+				+ "&sourceId=" + sourceId
+				+ "&cadence=" + cadenceMS/1000;
 	}
 
 	public boolean isLocalFile()
 	{
 		return localFile;
+	}
+	
+	public long getTimeMS(long _timeMS)
+	{
+		Match match = findBestFrame(_timeMS);
+		if (match == null)
+			return 0;
+		
+		long timeMS=match.getTimeMS();
+		if(timeMS<startMS-cadenceMS || timeMS>endMS+cadenceMS)
+			return 0;
+		
+		return timeMS;
 	}
 
 	@Nullable
@@ -583,6 +599,9 @@ public class KakaduLayer extends ImageLayer
 			return null;
 		
 		MetaData md=match.getMetaData();
+		if(md == null)
+			return null;
+		
 		initializeMetadata(md);
 		
 		if(md.timeMS<startMS-cadenceMS || md.timeMS>endMS+cadenceMS)
@@ -657,8 +676,8 @@ public class KakaduLayer extends ImageLayer
 			Match bestMatch=findBestFrame(metaData.timeMS);
 			if(bestMatch!=null)
 			{
-				MetaData r = bestMatch.getMetaData();
-				if(r.timeMS<startMS-cadenceMS || r.timeMS>endMS+cadenceMS)
+				long timeMS = bestMatch.getTimeMS();
+				if(timeMS<startMS-cadenceMS || timeMS>endMS+cadenceMS)
 				{
 					future.set(null);
 					return;

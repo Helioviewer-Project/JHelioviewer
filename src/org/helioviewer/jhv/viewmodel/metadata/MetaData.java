@@ -129,7 +129,7 @@ public abstract class MetaData
         {
         	ldt = LocalDateTime.parse(observedDate, SOHO_DATE_TIME_FORMATTER);
         }
-        timeMS = ldt.atOffset(ZoneOffset.UTC).getLong(ChronoField.INSTANT_SECONDS)*1000;
+        timeMS = MathUtils.fromLDT(ldt);
         
         heeqX = tryGetDouble(_doc, "HEQX_OBS");
         heeqY = tryGetDouble(_doc, "HEQY_OBS");

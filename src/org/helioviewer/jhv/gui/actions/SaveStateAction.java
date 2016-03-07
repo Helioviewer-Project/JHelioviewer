@@ -45,6 +45,5 @@ public class SaveStateAction extends AbstractAction
 			Telemetry.trackException(e1);
 			JOptionPane.showMessageDialog(MainFrame.SINGLETON.MAIN_PANEL, "Could not write file:\n" + e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 		}
-        
     }
 }

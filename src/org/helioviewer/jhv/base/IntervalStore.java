@@ -16,7 +16,9 @@ public class IntervalStore<T>
 		boolean endContained=contains(_toExclusive);
 		
 		times.subMap(_fromInclusive, _toExclusive).clear();
-		times.put(_fromInclusive, true);
+		
+		if(!contains(_fromInclusive))
+			times.put(_fromInclusive, true);
 		
 		if(!endContained)
 			times.put(_toExclusive, false);

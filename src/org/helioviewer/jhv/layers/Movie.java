@@ -81,11 +81,8 @@ public abstract class Movie
 		}
 	});
 	
-	//FIXME: cache movies KduCache to disk
 	//FIXME: clear KduCache on memory pressure, reload from disk
 	//FIXME: index movies from disk on startup, reloading should happen on-demand
-	//TODO: switch from localDateTime in metadata to long (unix epoch)
-
 	private final ArrayList<Kdu_codestream> openKdu_codestreams = new ArrayList<Kdu_codestream>(1);
 	private ThreadLocal<Kdu_codestream> tlsKdu_codestream=ThreadLocal.withInitial(() ->
 		{
@@ -130,6 +127,7 @@ public abstract class Movie
 	});
 	
 	protected MetaData[] metaDatas;
+	protected long[] timeMS;
 	
 	public final int sourceId;
 	
@@ -222,7 +220,7 @@ public abstract class Movie
 	public abstract boolean isFullQuality();
 
 	
-	private synchronized void loadMetaData(int i)
+	protected synchronized void loadMetaData(int i)
 	{
 		if(metaDatas[i]!=null)
 			return;
@@ -235,6 +233,10 @@ public abstract class Movie
 			metaDatas[i]=MetaDataFactory.getMetaData(readMetadataDocument(i+1));
 			if(metaDatas[i]==null)
 				Telemetry.trackException(new UnsuitableMetaDataException("Cannot find metadata class for:\n"+KakaduUtils.getXml(family_src, i+1)));
+			else if(timeMS[i]==0)
+				timeMS[i]=metaDatas[i].timeMS;
+			else if(timeMS[i]!=metaDatas[i].timeMS)
+				throw new RuntimeException("Timestamps diverged: "+timeMS[i]+" vs "+metaDatas[i].timeMS);
 		}
 		catch (KduException e)
 		{
@@ -276,9 +278,14 @@ public abstract class Movie
 			return movie.decodeImage(index, _quality, _zoomFactor, _requiredPixels, _target);
 		}
 		
-		public MetaData getMetaData()
+		public @Nullable MetaData getMetaData()
 		{
 			return movie.getMetaData(index);
+		}
+		
+		public long getTimeMS()
+		{
+			return movie.getTimeMS(index);
 		}
 	}
 	
@@ -287,14 +294,9 @@ public abstract class Movie
 		int bestI=-1;
 		long minDiff = Long.MAX_VALUE;
 		
-		for (int i = 0; i < metaDatas.length; i++)
+		for (int i = 0; i < timeMS.length; i++)
 		{
-			loadMetaData(i);
-			MetaData md=metaDatas[i];
-			if(md==null)
-				continue;
-			
-			long curDiff = Math.abs(md.timeMS-_currentDateTimeMS);
+			long curDiff = Math.abs(timeMS[i]-_currentDateTimeMS);
 			if(curDiff<minDiff)
 			{
 				minDiff=curDiff;
@@ -325,6 +327,11 @@ public abstract class Movie
 	{
 		loadMetaData(idx);
 		return metaDatas[idx];
+	}
+	
+	public long getTimeMS(int idx)
+	{
+		return timeMS[idx];
 	}
 	
 	@Nullable

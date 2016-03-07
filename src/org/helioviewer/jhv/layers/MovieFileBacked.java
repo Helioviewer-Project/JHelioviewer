@@ -86,6 +86,14 @@ public class MovieFileBacked extends Movie
 			}
 		}
 		
+		//load timestamps
+		for(int i=0;i<metaDatas.length;i++)
+		{
+			MetaData md = getMetaData(i);
+			if(md!=null)
+				timeMS[i]=md.timeMS;
+		}
+		
 		if(getAnyMetaData()==null)
 			throw new UnsuitableMetaDataException();
 	}

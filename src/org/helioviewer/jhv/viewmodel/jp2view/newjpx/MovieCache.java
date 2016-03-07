@@ -20,6 +20,7 @@ import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 import org.helioviewer.jhv.layers.Movie;
 import org.helioviewer.jhv.layers.Movie.Match;
 import org.helioviewer.jhv.layers.MovieFileBacked;
+import org.helioviewer.jhv.layers.MovieKduCacheBacked;
 import org.helioviewer.jhv.viewmodel.metadata.UnsuitableMetaDataException;
 
 import com.google.common.io.Files;
@@ -70,15 +71,12 @@ public class MovieCache
 			}
 		});
 		
-		//FIXME: add cache clearing back in
-		
-		/*
 		int toRemove = 0;
 		while(cacheSize>MAX_CACHE_SIZE)
 		{
 			for(List<Movie> lm:cache.values())
 				for(Movie m:lm)
-					if(m.getBackingFile()!=null && new File(m.getBackingFile()).equals(files[toRemove]))
+					if((m instanceof MovieKduCacheBacked) && ((MovieKduCacheBacked)m).backingFile.equals(files[toRemove]))
 					{
 						m.dispose();
 						lm.remove(m);
@@ -92,7 +90,7 @@ public class MovieCache
 				System.out.println("Cache: Removed "+files[toRemove].getAbsolutePath());
 			
 			toRemove++;
-		}*/
+		}
 	}
 	
 	public static void remove(Movie _movie)
@@ -144,9 +142,8 @@ public class MovieCache
 				bestMatch=curMatch;
 		}
 		
-		//FIXME: readd cache LRU
-		/*if(bestMatch!=null && bestMatch.movie.getBackingFile()!=null)
-			bestMatch.movie.touch();*/
+		if(bestMatch!=null && bestMatch.movie instanceof MovieKduCacheBacked)
+			((MovieKduCacheBacked)bestMatch.movie).touch();
 		
 		return bestMatch;
 	}
@@ -166,14 +163,7 @@ public class MovieCache
 		}
 		
 		limitCacheSize();
-		ExitProgramAction.addShutdownHook(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				limitCacheSize();
-			}
-		});
+		ExitProgramAction.addShutdownHook(() -> limitCacheSize());
 		
 		if(Settings.getBoolean(Settings.BooleanKey.CACHE_LOADING_CRASHED))
 		{
@@ -190,30 +180,17 @@ public class MovieCache
 		else
 		{
 			Settings.setBoolean(Settings.BooleanKey.CACHE_LOADING_CRASHED, true);
+			Settings.syncFlush();
 			for(File f:CACHE_DIR.listFiles())
-			{
-				String[] parts=f.getName().split(",");
-				if(parts.length>=2)
-					try
-					{
-						add(new MovieFileBacked(Integer.parseInt(parts[0]),f.getAbsolutePath()));
-					}
-					catch(UnsuitableMetaDataException|IOException|KduException e)
-					{
-						Telemetry.trackException(new IOException("Cache: Could not load "+f.getName(),e));
-						f.delete();
-					}
-					catch(NumberFormatException e)
-					{
-						Telemetry.trackException(new IOException("Cache: Unexpected file found "+f.getName(),e));
-						f.delete();
-					}
-				else
+				try
 				{
-					Telemetry.trackException(new IOException("Cache: Unexpected file found "+f.getName()));
+					add(new MovieKduCacheBacked(f));
+				}
+				catch(UnsuitableMetaDataException|IOException e)
+				{
+					Telemetry.trackException(new IOException("Cache: Could not load "+f.getName(),e));
 					f.delete();
 				}
-			}
 		}
 		Settings.setBoolean(Settings.BooleanKey.CACHE_LOADING_CRASHED, false);
 	}

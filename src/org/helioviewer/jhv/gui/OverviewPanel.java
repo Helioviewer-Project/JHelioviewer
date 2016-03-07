@@ -97,22 +97,22 @@ public class OverviewPanel extends MainPanel
 			return;
 		
 		MetaData md=activeLayer.getMetaData(TimeLine.SINGLETON.getCurrentTimeMS());
-		if (md != null)
-		{
-			Rectangle2D region = md.getPhysicalImageSize();
-			if (region != null)
-			{
-				double halfWidth = region.getHeight() / 2;
-				Dimension canvasSize = this.getSize();
-				double aspect = canvasSize.getWidth() / canvasSize.getHeight();
-				halfWidth = aspect > 1 ? halfWidth * aspect : halfWidth;
-				double halfFOVRad = Math.toRadians(OverviewPanel.FOV / 2.0);
-				double distance = halfWidth
-						* Math.sin(Math.PI / 2 - halfFOVRad)
-						/ Math.sin(halfFOVRad);
-				this.translationNow = new Vector3d(0, 0, distance);
-			}
-		}
+		if (md == null)
+			return;
+		
+		Rectangle2D region = md.getPhysicalImageSize();
+		if (region == null)
+			return;
+
+		double halfWidth = region.getHeight() / 2;
+		Dimension canvasSize = this.getSize();
+		double aspect = canvasSize.getWidth() / canvasSize.getHeight();
+		halfWidth = aspect > 1 ? halfWidth * aspect : halfWidth;
+		double halfFOVRad = Math.toRadians(OverviewPanel.FOV / 2.0);
+		double distance = halfWidth
+				* Math.sin(Math.PI / 2 - halfFOVRad)
+				/ Math.sin(halfFOVRad);
+		this.translationNow = new Vector3d(0, 0, distance);
 	}
 
 	@Override

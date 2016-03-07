@@ -258,7 +258,7 @@ public class TimeLine implements LayerListener
 	
 	public void setNoTimeRange()
 	{
-		endTimeMS=startTimeMS;
+		endTimeMS=startTimeMS=0;
 		setCurrentTimeMS(startTimeMS);
 		cadenceMS=1;
 		setPlaying(false);

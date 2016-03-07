@@ -37,6 +37,7 @@ import org.helioviewer.jhv.base.Observatories.Filter;
 import org.helioviewer.jhv.base.Observatories.Observatory;
 import org.helioviewer.jhv.base.Settings;
 import org.helioviewer.jhv.base.Telemetry;
+import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.dialogs.calender.DatePicker;
 import org.helioviewer.jhv.layers.Layers;
@@ -100,8 +101,8 @@ public class AddLayerDialog extends JDialog
 									lastStart = f.getEnd().minusDays(2);
 									lastEnd = f.getEnd();
 									Layers.addLayer(new KakaduLayer(f.sourceId,
-											lastStart.toEpochSecond(ZoneOffset.UTC)*1000,
-											lastEnd.toEpochSecond(ZoneOffset.UTC)*1000,
+											MathUtils.fromLDT(lastStart),
+											MathUtils.fromLDT(lastEnd),
 											30*60*1000, f.getNickname()));
 									return;
 								}
@@ -520,8 +521,8 @@ public class AddLayerDialog extends JDialog
 								{
 									KakaduLayer newLayer=new KakaduLayer(
 											finalFilter.sourceId,
-											lastStart.toEpochSecond(ZoneOffset.UTC)*1000,
-											lastEnd.toEpochSecond(ZoneOffset.UTC)*1000,
+											MathUtils.fromLDT(lastStart),
+											MathUtils.fromLDT(lastEnd),
 											Math.max(1,cadence),
 											finalFilter.getNickname());
 									newLayer.animateCameraToFacePlane = true;

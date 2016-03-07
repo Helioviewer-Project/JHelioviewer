@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.time.LocalDateTime;
 
 import org.helioviewer.jhv.base.Settings.StringKey;
+import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.base.math.Quaternion;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.gui.MainFrame;
@@ -27,22 +28,31 @@ public class StateParser
 	{
 		JSONObject json = new JSONObject(new String(Files.readAllBytes(selectedFile.toPath()), StandardCharsets.UTF_8));
 		
-		Layers.removeAllImageLayers();
-		
 		JSONArray layers = json.getJSONArray("layers");
-		
-		
 		switch(json.getInt("version"))
 		{
-			//case 0:
-				//updateFrom0To1();
-			//...
 			case 1:
+				//upgrade from v1 save states to v2
+				json.put("timeMS", MathUtils.fromLDT(LocalDateTime.parse(json.getString("time"))));
+				
+				for(int i=0;i<layers.length();i++)
+				{
+					JSONObject layer = layers.getJSONObject(i);
+					if(layer.has("startDateTime"))
+						layer.put("startTimeMS", MathUtils.fromLDT(LocalDateTime.parse(layer.getString("startDateTime"))));
+					if(layer.has("endDateTime"))
+						layer.put("endTimeMS", MathUtils.fromLDT(LocalDateTime.parse(layer.getString("endDateTime"))));
+					if(layer.has("cadence"))
+						layer.put("cadenceMS", layer.getLong("cadence")*1000);
+				}
+				
+			case 2:
 				break;
 			default:
 				throw new JSONException("Unsupported version ("+json.getInt("version")+")");
 		}
 		
+		Layers.removeAllImageLayers();
 		Layers.loadStatefile(layers);
 		
 		JSONObject jsonCamera = json.getJSONObject("camera");
@@ -87,7 +97,7 @@ public class StateParser
 		fileName = fileName.endsWith(PredefinedFileFilter.JHV.getDefaultExtension()) ? fileName
 				: fileName + PredefinedFileFilter.JHV.getDefaultExtension();
 		JSONObject json = new JSONObject();
-		json.put("version", 1);
+		json.put("version", 2);
 
 		JSONArray jsonLayers = new JSONArray();
 		Layers.writeStatefile(jsonLayers);

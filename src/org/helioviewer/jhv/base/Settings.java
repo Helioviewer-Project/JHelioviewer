@@ -244,6 +244,18 @@ public class Settings
         delayedFlush();
     }
 	
+	public static void syncFlush()
+	{
+        try
+        {
+            PREF_NODE.flush();
+        }
+        catch (Exception ex)
+        {
+        	Telemetry.trackException(ex);
+        }
+	}
+	
 	private static void delayedFlush()
 	{
         synchronized(syncObj)
@@ -252,10 +264,7 @@ public class Settings
                 saveThread.interrupt();
             else
             {
-                saveThread=new Thread(new Runnable()
-                {
-                    @Override
-                    public void run()
+                saveThread=new Thread(() ->
                     {
                         for(;;)
                             try
@@ -280,8 +289,7 @@ public class Settings
                         {
                         	Telemetry.trackException(ex);
                         }
-                    }
-                });
+                    });
                 saveThread.start();
             }
         }
