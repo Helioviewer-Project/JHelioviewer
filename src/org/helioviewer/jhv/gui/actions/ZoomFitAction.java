@@ -40,7 +40,7 @@ public class ZoomFitAction extends AbstractAction implements LayerListener
 		if (activeLayer == null)
 			return;
 
-		LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
+		long currentDateTime = TimeLine.SINGLETON.getCurrentTimeMS();
 		MetaData md=activeLayer.getMetaData(currentDateTime);
 		if(md==null)
 			return;

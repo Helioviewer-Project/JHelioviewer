@@ -4,7 +4,9 @@ import java.awt.Dimension;
 import java.awt.geom.Rectangle2D;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
@@ -45,12 +47,12 @@ public abstract class ImageLayer extends Layer
 {
 	public boolean animateCameraToFacePlane;
 
-	protected LocalDateTime start;
-	protected LocalDateTime end;
+	protected long startMS;
+	protected long endMS;
 	
 	private int groupForOpacity;
 	
-	protected int cadence;
+	protected long cadenceMS;
 	private boolean metadataInitialized=false;
 	
 	public void initializeMetadata(MetaData _md)
@@ -79,11 +81,11 @@ public abstract class ImageLayer extends Layer
 	
 	protected static ArrayList<Texture> textures= new ArrayList<>();
 	
-	public abstract @Nullable MetaData getMetaData(@Nonnull LocalDateTime currentDateTime);
+	public abstract @Nullable MetaData getMetaData(long _timeMS);
 
-	public abstract @Nullable Document getMetaDataDocument(@Nonnull LocalDateTime _currentDateTime);
+	public abstract @Nullable Document getMetaDataDocument(long _timeMS);
 
-	public abstract @Nullable Match findBestFrame(LocalDateTime _currentDateTime);
+	public abstract @Nullable Match findBestFrame(long _timeMS);
 
 	
 	public boolean supportsFilterContrastGamma()
@@ -155,9 +157,8 @@ public abstract class ImageLayer extends Layer
 	
 	public RenderResult renderLayer(GL2 gl, MainPanel mainPanel, PreparedImage _preparedImageData, float _opacityScaling)
 	{
-		LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
-		MetaData md=getMetaData(currentDateTime);
-		if(md==null || md.localDateTime==null)
+		MetaData md=getMetaData(TimeLine.SINGLETON.getCurrentTimeMS());
+		if(md==null || md.timeMS==0)
 			return RenderResult.RETRY_LATER;
 		
 		//create camera animation to rotate the camera to face the image plane of
@@ -175,7 +176,7 @@ public abstract class ImageLayer extends Layer
 		
 		_preparedImageData.texture.usedByCurrentRenderPass=false;
 		if(_preparedImageData.texture.needsUpload)
-			_preparedImageData.texture.uploadByteBuffer(gl, this, md.localDateTime, _preparedImageData.imageRegion);
+			_preparedImageData.texture.uploadByteBuffer(gl, this, md.timeMS, _preparedImageData.imageRegion);
 		
 		Matrix4d transformation = calcTransformation(mainPanel, md);
 		
@@ -292,7 +293,7 @@ public abstract class ImageLayer extends Layer
 	private Matrix4d calcTransformation(MainPanel mainPanel, MetaData md)
 	{
 		//see http://jgiesen.de/sunrot/index.html and http://www.petermeadows.com/stonyhurst/sdisk6in7.gif
-		double diffRotattion = DifferentialRotation.calculateRotationInRadians(0,md.localDateTime.until(TimeLine.SINGLETON.getCurrentDateTime(), ChronoUnit.MILLIS)/1000f);
+		double diffRotattion = DifferentialRotation.calculateRotationInRadians(0,(TimeLine.SINGLETON.getCurrentTimeMS() - md.timeMS)/1000f);
 		Quaternion diffRotationQuat = Quaternion.createRotation(-diffRotattion, new Vector3d(0, 1, 0));
 		
 		return Matrix4d.createTranslationMatrix(mainPanel.getTranslationCurrent())
@@ -387,7 +388,7 @@ public abstract class ImageLayer extends Layer
 	@Override
 	public @Nullable String getFullName()
 	{
-		MetaData md=getMetaData(TimeLine.SINGLETON.getCurrentDateTime());
+		MetaData md=getMetaData(TimeLine.SINGLETON.getCurrentTimeMS());
 		if(md!=null)
 			return md.displayName;
 		else
@@ -403,14 +404,14 @@ public abstract class ImageLayer extends Layer
 	{
 	}
 
-	public LocalDateTime getFirstLocalDateTime()
+	public long getFirstTimeMS()
 	{
-		return start;
+		return startMS;
 	}
 
-	public LocalDateTime getLastLocalDateTime()
+	public long getLastTimeMS()
 	{
-		return end;
+		return endMS;
 	}
 	
 	public static class PreparedImage
@@ -514,12 +515,12 @@ public abstract class ImageLayer extends Layer
 		frame.validate();
 	}*/
 	
-	public int getCadence()
+	public long getCadenceMS()
 	{
-		return cadence;
+		return cadenceMS;
 	}
 
-	public boolean isDataAvailableOnServer(LocalDateTime _ldt)
+	public boolean isDataAvailableOnServer(long _ldt)
 	{
 		return true;
 	}

@@ -37,6 +37,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import org.helioviewer.jhv.base.Globals;
+import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.dialogs.AddLayerDialog;
 import org.helioviewer.jhv.gui.dialogs.DownloadMovieDialog;
@@ -429,14 +430,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 				panel.add(btnDownloadLayer);
 		
 				JButton btnAddLayer = new JButton("Add Layer", IconBank.getIcon(JHVIcon.ADD_NEW, SIZE, SIZE));
-				btnAddLayer.addActionListener(new ActionListener()
-				{
-					@Override
-					public void actionPerformed(@Nullable ActionEvent e)
-					{
-						new AddLayerDialog().setVisible(true);
-					}
-				});
+				btnAddLayer.addActionListener((e) -> new AddLayerDialog().setVisible(true));
 				panel.add(btnAddLayer);
 	}
 	
@@ -505,7 +499,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 				tableModel.setValueAt(layer.isVisible(), row, 0);
 				tableModel.setValueAt(layer.retryNeeded(), row, 1);
 				tableModel.setValueAt(layer.getName(), row, 2);
-				tableModel.setValueAt(layer.getCurrentTime(), row, 3);
+				tableModel.setValueAt(MathUtils.toLDT(layer.getCurrentTimeMS()), row, 3);
 				row++;
 			}
 		}
@@ -625,7 +619,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 	}
 
 	@Override
-	public void timeStampChanged(LocalDateTime current, LocalDateTime last)
+	public void timeStampChanged(long current, long last)
 	{
 		updateData();		
 	}
@@ -636,7 +630,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 	}
 
 	@Override
-	public void timeRangeChanged(LocalDateTime _start, LocalDateTime _end)
+	public void timeRangeChanged(long _start, long _end)
 	{
 	}
 }

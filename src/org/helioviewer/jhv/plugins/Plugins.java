@@ -20,6 +20,7 @@ import org.helioviewer.jhv.base.Settings.BooleanKey;
 import org.helioviewer.jhv.base.downloadmanager.DownloadManager;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
+import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.MainFrame;
@@ -103,22 +104,22 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 	}
 
 	@Override
-	public void timeStampChanged(LocalDateTime current, LocalDateTime last)
+	public void timeStampChanged(long current, long last)
 	{
 		for (Plugin plugin : plugins)
-			plugin.timeStampChanged(current, last);
+			plugin.timeStampChanged(MathUtils.toLDT(current), MathUtils.toLDT(last));
 	}
 
 	@Override
-	public void timeRangeChanged(LocalDateTime _start, LocalDateTime _end)
+	public void timeRangeChanged(long _start, long _end)
 	{
 		for (Plugin plugin : plugins)
-			plugin.timeRangeChanged(_start,_end);
+			plugin.timeRangeChanged(MathUtils.toLDT(_start),MathUtils.toLDT(_end));
 	}
 
 	public LocalDateTime getCurrentDateTime()
 	{
-		return TimeLine.SINGLETON.getCurrentDateTime();
+		return MathUtils.toLDT(TimeLine.SINGLETON.getCurrentTimeMS());
 	}
 
 	@Override
@@ -220,12 +221,12 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 
 	public static @Nullable LocalDateTime getStartDateTime()
 	{
-		return TimeLine.SINGLETON.getFirstDateTime();
+		return MathUtils.toLDT(TimeLine.SINGLETON.getFirstTimeMS());
 	}
 
 	public static @Nullable LocalDateTime getEndDateTime()
 	{
-		return TimeLine.SINGLETON.getLastDateTime();
+		return MathUtils.toLDT(TimeLine.SINGLETON.getLastTimeMS());
 	}
 
 	public static Dimension getMainPanelSize() 

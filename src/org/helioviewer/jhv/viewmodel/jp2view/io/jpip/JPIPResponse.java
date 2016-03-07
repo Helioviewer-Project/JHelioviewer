@@ -24,12 +24,6 @@ public class JPIPResponse extends HTTPResponse
 			setHeader(key, res.getHeader(key));
 	}
 
-	public void addJpipDataSegment(JPIPDataSegment data)
-	{
-		if (data.isEOR)
-			statusI = data.binID;
-	}
-
 	public boolean isImageComplete()
 	{
 		return statusI == JPIPConstants.EOR_IMAGE_DONE;

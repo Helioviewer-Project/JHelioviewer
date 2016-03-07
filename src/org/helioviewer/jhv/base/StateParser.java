@@ -74,8 +74,7 @@ public class StateParser
 		//TODO: save and restore playback speed
 		
 		Layers.setActiveLayer(json.getInt("activeLayer"));
-		LocalDateTime currentDateTime = LocalDateTime.parse(json.getString("time"));
-		TimeLine.SINGLETON.setCurrentDate(currentDateTime);
+		TimeLine.SINGLETON.setCurrentTimeMS(json.getLong("timeMS"));
 
 		MainFrame.SINGLETON.FILTER_PANEL.update();
 		MainFrame.SINGLETON.repaint();
@@ -127,7 +126,7 @@ public class StateParser
 
 		json.put("camera", jsonCamera);
 		json.put("activeLayer", Layers.getActiveLayerIndex());
-		json.put("time", TimeLine.SINGLETON.getCurrentDateTime());
+		json.put("timeMS", TimeLine.SINGLETON.getCurrentTimeMS());
 
 		try(Writer w = new OutputStreamWriter(new FileOutputStream(fileName),StandardCharsets.UTF_8))
 		{

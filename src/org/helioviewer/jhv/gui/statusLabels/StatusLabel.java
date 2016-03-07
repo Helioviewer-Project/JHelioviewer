@@ -32,7 +32,7 @@ abstract class StatusLabel extends JLabel implements TimeLineListener, PanelMous
 	}
 
 	@Override
-	public void timeStampChanged(LocalDateTime current, LocalDateTime last)
+	public void timeStampChanged(long current, long last)
 	{
 	}
 	
@@ -42,7 +42,7 @@ abstract class StatusLabel extends JLabel implements TimeLineListener, PanelMous
 	}
 
 	@Override
-	public void timeRangeChanged(LocalDateTime _start, LocalDateTime _end)
+	public void timeRangeChanged(long _start, long _end)
 	{
 	}
 	

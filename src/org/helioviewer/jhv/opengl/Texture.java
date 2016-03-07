@@ -18,7 +18,7 @@ import com.jogamp.opengl.GL2;
 public class Texture
 {
 	private @Nullable Object source;
-	private @Nullable LocalDateTime dateTime;
+	private long timeMS;
 	protected @Nullable ImageRegion imageRegion;
 	public final int openGLTextureId;
 	public int width;
@@ -150,10 +150,10 @@ public class Texture
 	    return buffer;
 	}
 
-	public void uploadByteBuffer(GL2 gl, ImageLayer _source, LocalDateTime _dateTime, ImageRegion _imageRegion)
+	public void uploadByteBuffer(GL2 gl, ImageLayer _source, long _timeMS, ImageRegion _imageRegion)
 	{
 		source = _source;
-		dateTime = _dateTime;
+		timeMS = _timeMS;
 		imageRegion = _imageRegion;
 		
 		int width2 = Math.max(8, MathUtils.nextPowerOfTwo(_imageRegion.texels.width));
@@ -241,7 +241,7 @@ public class Texture
 		debug.setSize(Math.max(width/4+20,500), height/4+50);
 	}*/
 
-	public boolean contains(Object _source, DecodeQualityLevel _quality, ImageRegion _imageRegion, LocalDateTime _localDateTime)
+	public boolean contains(Object _source, DecodeQualityLevel _quality, ImageRegion _imageRegion, long _timeMS)
 	{
 		if(!Globals.IS_RELEASE_VERSION)
 			if(_source!=null && source!=null && _source.getClass()!=source.getClass())
@@ -252,7 +252,7 @@ public class Texture
 				&& imageRegion.quality.ordinal() >= _quality.ordinal()
 				&& imageRegion.areaOfSourceImage.contains(_imageRegion.areaOfSourceImage)
 				&& imageRegion.decodeZoomFactor >= _imageRegion.decodeZoomFactor
-				&& dateTime.isEqual(_localDateTime);
+				&& timeMS==_timeMS;
 	}
 
 	public @Nullable ImageRegion getImageRegion()

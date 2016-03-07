@@ -31,6 +31,7 @@ import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
 import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
+import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.base.math.Matrix4d;
 import org.helioviewer.jhv.base.math.Quaternion;
 import org.helioviewer.jhv.base.math.Vector3d;
@@ -106,8 +107,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 
 	private boolean cameraTrackingEnabled = false;
 
-	@Nullable
-	private LocalDateTime lastCameraTrackingDate;
+	private long lastCameraTrackingDate;
 
 	private int[] frameBufferObject;
 	private int[] renderBufferDepth;
@@ -142,20 +142,20 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			public void activeLayerChanged(@Nullable Layer layer)
 			{
 				if (Layers.getActiveImageLayer() != null)
-					lastCameraTrackingDate = null;
+					lastCameraTrackingDate = 0;
 				repaint();
 			}
 		});
 		TimeLine.SINGLETON.addListener(new TimeLineListener()
 		{
 			@Override
-			public void timeStampChanged(LocalDateTime current, LocalDateTime last)
+			public void timeStampChanged(long current, long last)
 			{
 				MainPanel.this.repaintInternal(true);
 			}
 			
 			@Override
-			public void timeRangeChanged(LocalDateTime _start, LocalDateTime _end)
+			public void timeRangeChanged(long _start, long _end)
 			{
 			}
 
@@ -394,7 +394,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 	
 	protected void render(GL2 gl, boolean _showLoadingAnimation, Dimension sizeForDecoder)
 	{
-		LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
+		long currentTimeMS = TimeLine.SINGLETON.getCurrentTimeMS();
 		gl.glClearDepth(1);
 		gl.glDepthMask(true);
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
@@ -422,7 +422,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 				ImageLayer il = Layers.getActiveImageLayer();
 				if (il != null)
 				{
-					MetaData md = il.getMetaData(currentDateTime);
+					MetaData md = il.getMetaData(currentTimeMS);
 					if (md != null)
 						rotationNow = md.rotation;
 				}
@@ -441,7 +441,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 				{
 					ImageLayer il=(ImageLayer)layer;
 					
-					if(il.getLUT()!=null && il.getCurrentTime()!=null) //make sure that there's a real frame for the current frame
+					if(il.getLUT()!=null && il.getCurrentTimeMS()!=0) //make sure that there's a real frame for the current frame
 					{
 						prepared.add(il.prepareImageData(this, shouldHurry(), sizeForDecoder, gl.getContext()));
 						imageLayers.add(il);
@@ -716,18 +716,18 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 
 	protected void updateTrackRotation()
 	{
-		if (lastCameraTrackingDate == null)
-			lastCameraTrackingDate = TimeLine.SINGLETON.getCurrentDateTime();
+		if (lastCameraTrackingDate == 0)
+			lastCameraTrackingDate = TimeLine.SINGLETON.getCurrentTimeMS();
 
-		if (!lastCameraTrackingDate.isEqual(TimeLine.SINGLETON.getCurrentDateTime()))
+		if (lastCameraTrackingDate!=TimeLine.SINGLETON.getCurrentTimeMS())
 		{
-			long difference = Duration.between(lastCameraTrackingDate, TimeLine.SINGLETON.getCurrentDateTime()).getSeconds();
-			lastCameraTrackingDate = TimeLine.SINGLETON.getCurrentDateTime();
+			long differenceMS = TimeLine.SINGLETON.getCurrentTimeMS()-lastCameraTrackingDate;
+			lastCameraTrackingDate = TimeLine.SINGLETON.getCurrentTimeMS();
 			
 			RayTrace rayTrace = new RayTrace();
 			Vector3d hitPoint = rayTrace.cast(getWidth() / 2, getHeight() / 2, this).getHitpoint();
 			HeliographicCoordinate newCoord = new HeliocentricCartesianCoordinate(hitPoint.x, hitPoint.y, hitPoint.z).toHeliographicCoordinate();
-			double angle = DifferentialRotation.calculateRotationInRadians(newCoord.latitude, difference);
+			double angle = DifferentialRotation.calculateRotationInRadians(newCoord.latitude, differenceMS/1000d);
 			
 			Quaternion newRotation = Quaternion.createRotation(angle, new Vector3d(0, 1, 0)).rotated(rotationNow);
 			if (CameraMode.mode == MODE.MODE_3D)
@@ -832,7 +832,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			for (Layer layer : Layers.getLayers())
 				if (layer.isVisible())
 				{
-					LocalDateTime ldt = layer.getCurrentTime();
+					LocalDateTime ldt = MathUtils.toLDT(layer.getCurrentTimeMS());
 					if (ldt != null)
 						descriptions.add(layer.getFullName() + " - " + ldt.format(Globals.DATE_TIME_FORMATTER));
 				}
@@ -1028,7 +1028,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			return;
 		
 		cameraTrackingEnabled = _isEnabled;
-		lastCameraTrackingDate = TimeLine.SINGLETON.getCurrentDateTime();
+		lastCameraTrackingDate = TimeLine.SINGLETON.getCurrentTimeMS();
 		
 		MainFrame.SINGLETON.TOP_TOOL_BAR.setTracking(_isEnabled);
 	}

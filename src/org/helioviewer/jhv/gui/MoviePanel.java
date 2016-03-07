@@ -328,7 +328,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 	}
 
 	@Override
-	public void timeStampChanged(LocalDateTime current, LocalDateTime last)
+	public void timeStampChanged(long current, long last)
 	{
 		try
 		{
@@ -342,7 +342,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 	}
 	
 	@Override	
-	public void timeRangeChanged(LocalDateTime _start, LocalDateTime _end)
+	public void timeRangeChanged(long _startMS, long _endMS)
 	{
 		try
 		{
@@ -429,20 +429,20 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 			if (layer != null)
 			{
 				//TODO: speed this code up
-				//int max=Math.min(TimeLine.SINGLETON.getFrameCount()-1, (int)trackRect.getWidth());
-				int max=(int)trackRect.getWidth();
+				int max=Math.min(TimeLine.SINGLETON.getFrameCount()-1, (int)trackRect.getWidth());
+				//int max=(int)trackRect.getWidth();
 				for(int i=0;i<=max;i++)
 				{
 					//snap position to nearest frame
 					int frame = (int)(TimeLine.SINGLETON.getFrameCount()*i/(double)(max+1));
-					LocalDateTime localDateTime=TimeLine.SINGLETON.getFirstDateTime().plusSeconds(frame*TimeLine.SINGLETON.getCadence());
+					long timeMS=TimeLine.SINGLETON.getFirstTimeMS()+frame*TimeLine.SINGLETON.getCadenceMS();
 					
-					if(!layer.isDataAvailableOnServer(localDateTime))
+					if(!layer.isDataAvailableOnServer(timeMS))
 						g.setColor(COLOR_NA);
 					else
 					{
-						Match currentMatch = layer.findBestFrame(localDateTime);
-						if(currentMatch==null || currentMatch.timeDifferenceSeconds>layer.getCadence()/2)
+						Match currentMatch = layer.findBestFrame(timeMS);
+						if(currentMatch==null || currentMatch.timeDifferenceMS>layer.getCadenceMS()/2)
 							g.setColor(COLOR_NOT_CACHED);
 						else
 							g.setColor(currentMatch.movie.isFullQuality() ? COLOR_COMPLETELY_CACHED : COLOR_PARTIALLY_CACHED);

@@ -35,7 +35,7 @@ public class ResetCameraAction extends AbstractAction
     	Quaternion destRotation=Quaternion.IDENTITY;
     	if(il!=null)
     	{
-    		MetaData md=il.getMetaData(TimeLine.SINGLETON.getCurrentDateTime());
+    		MetaData md=il.getMetaData(TimeLine.SINGLETON.getCurrentTimeMS());
     		if(md!=null)
     			destRotation=md.rotation;
     	}

@@ -34,7 +34,7 @@ public class SDOCutOutButton extends JButton implements	LayerListener
 	{
 		for (Layer layer : Layers.getLayers())
 			if(layer instanceof KakaduLayer)
-				if(((KakaduLayer)layer).getMetaData(TimeLine.SINGLETON.getCurrentDateTime()) instanceof MetaDataAIA)
+				if(((KakaduLayer)layer).getMetaData(TimeLine.SINGLETON.getCurrentTimeMS()) instanceof MetaDataAIA)
 				{
 					setEnabled(true);
 					return;

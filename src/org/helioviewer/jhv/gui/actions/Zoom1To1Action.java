@@ -40,8 +40,7 @@ public class Zoom1To1Action extends AbstractAction implements LayerListener
 		if (activeLayer == null)
 			return;
 		
-		LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
-		MetaData metaData = activeLayer.getMetaData(currentDateTime);
+		MetaData metaData = activeLayer.getMetaData(TimeLine.SINGLETON.getCurrentTimeMS());
 		
 		if(metaData==null)
 			return;

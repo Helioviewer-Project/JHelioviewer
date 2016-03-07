@@ -8,7 +8,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,6 +34,7 @@ import org.helioviewer.jhv.base.Globals.DialogType;
 import org.helioviewer.jhv.base.Settings;
 import org.helioviewer.jhv.base.Settings.StringKey;
 import org.helioviewer.jhv.base.Telemetry;
+import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.PredefinedFileFilter;
 import org.helioviewer.jhv.layers.ImageLayer;
@@ -166,7 +169,7 @@ public class MetaDataDialog extends JDialog implements TimeLineListener, LayerLi
 	}
 	
 	@Override
-	public void timeStampChanged(LocalDateTime current, LocalDateTime last)
+	public void timeStampChanged(long current, long last)
 	{
 		updateData();
 	}
@@ -177,7 +180,7 @@ public class MetaDataDialog extends JDialog implements TimeLineListener, LayerLi
 	}
 
 	@Override
-	public void timeRangeChanged(LocalDateTime _start, LocalDateTime _end)
+	public void timeRangeChanged(long _start, long _end)
 	{
 	}
 
@@ -191,8 +194,8 @@ public class MetaDataDialog extends JDialog implements TimeLineListener, LayerLi
 		ImageLayer il = Layers.getActiveImageLayer();
 		if (il != null)
 		{
-			MetaData md = il.getMetaData(TimeLine.SINGLETON.getCurrentDateTime());
-			Document doc = il.getMetaDataDocument(TimeLine.SINGLETON.getCurrentDateTime());
+			MetaData md = il.getMetaData(TimeLine.SINGLETON.getCurrentTimeMS());
+			Document doc = il.getMetaDataDocument(TimeLine.SINGLETON.getCurrentTimeMS());
 
 			if (md != null && doc != null)
 			{
@@ -227,8 +230,8 @@ public class MetaDataDialog extends JDialog implements TimeLineListener, LayerLi
 		addLine("Instrument  : " + metaData.instrument);
 		addLine("Detector    : " + metaData.detector);
 		addLine("Measurement : " + metaData.measurement);
-		addLine("Date        : " + metaData.localDateTime.toLocalDate());
-		addLine("Time        : " + metaData.localDateTime.toLocalTime());
+		addLine("Date        : " + MathUtils.toLDT(metaData.timeMS).toLocalDate());
+		addLine("Time        : " + MathUtils.toLDT(metaData.timeMS).toLocalTime());
 
 		// Send xml data to meta data dialog box
 		Node root = doc.getDocumentElement().getElementsByTagName("fits").item(0);
@@ -246,7 +249,7 @@ public class MetaDataDialog extends JDialog implements TimeLineListener, LayerLi
 		if (metaData.displayName != null)
 			outFileName += metaData.displayName.replace(" ", "_") + " ";
 
-		outFileName += metaData.localDateTime.format(Globals.FILE_DATE_TIME_FORMATTER) + ".fits.xml";
+		outFileName += MathUtils.toLDT(metaData.timeMS).format(Globals.FILE_DATE_TIME_FORMATTER) + ".fits.xml";
 	}
 
 	/**

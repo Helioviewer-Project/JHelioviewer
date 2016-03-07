@@ -7,7 +7,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
@@ -137,7 +139,7 @@ public abstract class Movie
 	}
 
 	protected final Jp2_threadsafe_family_src family_src = new Jp2_threadsafe_family_src();
-	private boolean disposed;
+	protected boolean disposed;
 	
 	public void dispose()
 	{
@@ -243,13 +245,13 @@ public abstract class Movie
 	public class Match
 	{
 		public final int index;
-		public final long timeDifferenceSeconds;
+		public final long timeDifferenceMS;
 		public final Movie movie;
 		
-		Match(int _index, long _timeDifferenceNanos)
+		Match(int _index, long _timeDifferenceMS)
 		{
 			index=_index;
-			timeDifferenceSeconds=_timeDifferenceNanos;
+			timeDifferenceMS=_timeDifferenceMS;
 			movie=Movie.this;
 		}
 		
@@ -266,7 +268,7 @@ public abstract class Movie
 		@Override
 		public int hashCode()
 		{
-			return index ^ Long.hashCode(timeDifferenceSeconds);
+			return index ^ Long.hashCode(timeDifferenceMS);
 		}
 		
 		public boolean decodeImage(DecodeQualityLevel _quality, float _zoomFactor, Rectangle _requiredPixels, Texture _target)
@@ -280,7 +282,7 @@ public abstract class Movie
 		}
 	}
 	
-	@Nullable public Match findClosestIdx(@Nonnull LocalDateTime _currentDateTime)
+	@Nullable public Match findClosestIdx(long _currentDateTimeMS)
 	{
 		int bestI=-1;
 		long minDiff = Long.MAX_VALUE;
@@ -292,9 +294,7 @@ public abstract class Movie
 			if(md==null)
 				continue;
 			
-			LocalDateTime ldt=md.localDateTime;
-			
-			long curDiff = Math.abs(ChronoUnit.SECONDS.between(ldt, _currentDateTime));
+			long curDiff = Math.abs(md.timeMS-_currentDateTimeMS);
 			if(curDiff<minDiff)
 			{
 				minDiff=curDiff;

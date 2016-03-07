@@ -3,6 +3,7 @@ package org.helioviewer.jhv.viewmodel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
@@ -19,15 +20,15 @@ import org.helioviewer.jhv.layers.Layers;
 
 public class TimeLine implements LayerListener
 {
-	private LocalDateTime current = LocalDateTime.now();
+	private long currentTimeMS = 0;
 
 	private boolean isPlaying = false;
 
 	private ArrayList<TimeLineListener> timeLineListeners;
 
-	private LocalDateTime startTime = LocalDateTime.now();
-	private LocalDateTime endTime = LocalDateTime.now();
-	private int cadence=1;
+	private long startTimeMS = 0;
+	private long endTimeMS = 0;
+	private long cadenceMS=1;
 
 	private double millisecondsPerFrame = 50;
 	private AnimationMode animationMode = AnimationMode.LOOP;
@@ -111,7 +112,7 @@ public class TimeLine implements LayerListener
 						break;
 				}
 			}
-			dateTimeChanged(current);
+			dateTimeChanged(currentTimeMS);
 		}
 	});
 	
@@ -126,19 +127,19 @@ public class TimeLine implements LayerListener
 		return isPlaying;
 	}
 	
-	public int getCadence()
+	public long getCadenceMS()
 	{
-		return cadence;
+		return cadenceMS;
 	}
 	
 	public boolean isThereAnythingToPlay()
 	{
-		return !startTime.isEqual(endTime);
+		return startTimeMS!=endTimeMS;
 	}
 
 	public void setPlaying(boolean _playing)
 	{
-		if(startTime.isEqual(endTime) && _playing)
+		if(startTimeMS==endTimeMS && _playing)
 		{
 			System.out.println("TimeLine: There's nothing to play");
 			_playing=false;
@@ -163,47 +164,47 @@ public class TimeLine implements LayerListener
 			l.isPlayingChanged(isPlaying);
 	}
 
-	public LocalDateTime nextFrame()
+	public long nextFrame()
 	{
-		LocalDateTime last = current;
+		long last = currentTimeMS;
 		
-		LocalDateTime next = current.plusSeconds(cadence);
-		if (next.isAfter(endTime))
-			next = startTime;
+		long next = currentTimeMS+cadenceMS;
+		if (next>endTimeMS)
+			next = startTimeMS;
 		
-		current = next;
+		currentTimeMS = next;
 		dateTimeChanged(last);
-		return current;
+		return currentTimeMS;
 	}
 
-	public LocalDateTime previousFrame()
+	public long previousFrame()
 	{
-		LocalDateTime last = current;
+		long last = currentTimeMS;
 		
-		LocalDateTime next = current.minusSeconds(cadence);
-		if (next.isBefore(startTime))
-			next = endTime;
+		long next = currentTimeMS-cadenceMS;
+		if (next<startTimeMS)
+			next = endTimeMS;
 		
-		current = next;
+		currentTimeMS = next;
 		dateTimeChanged(last);
-		return current;
+		return currentTimeMS;
 	}
 
 	@Deprecated
 	public int getFrameCount()
 	{
-		return (int)(ChronoUnit.SECONDS.between(startTime, endTime)/cadence)+1;
+		return (int)((endTimeMS-startTimeMS)/cadenceMS)+1;
 	}
 	
 	@Deprecated
 	public int getCurrentFrameIndex()
 	{
-		return (int)(startTime.until(current, ChronoUnit.SECONDS)/cadence);
+		return (int)((currentTimeMS-startTimeMS)/cadenceMS);
 	}
 
-	public LocalDateTime getCurrentDateTime()
+	public long getCurrentTimeMS()
 	{
-		return current;
+		return currentTimeMS;
 	}
 
 	public void addListener(TimeLineListener timeLineListener)
@@ -216,11 +217,11 @@ public class TimeLine implements LayerListener
 		timeLineListeners.remove(timeLineListener);
 	}
 
-	private void dateTimeChanged(LocalDateTime _previous)
+	private void dateTimeChanged(long _previous)
 	{
 		ImageLayer.newRenderPassStarted();
 		for (TimeLine.TimeLineListener timeLineListener : timeLineListeners)
-			timeLineListener.timeStampChanged(current, _previous);
+			timeLineListener.timeStampChanged(currentTimeMS, _previous);
 	}
 
 	public void setFPS(int _fps)
@@ -239,30 +240,30 @@ public class TimeLine implements LayerListener
 	{
 	}
 	
-	public void setTimeRange(@Nonnull LocalDateTime _start,@Nonnull LocalDateTime _end,int _cadence)
+	public void setTimeRange(long _startMS,long _endMS,long _cadenceMS)
 	{
-		if(_cadence<1)
-			throw new IllegalArgumentException("_cadence=="+_cadence);
+		if(_cadenceMS<1)
+			throw new IllegalArgumentException("_cadence=="+_cadenceMS);
 		
-		startTime=_start;
-		endTime=_end;
-		cadence=_cadence;
+		startTimeMS=_startMS;
+		endTimeMS=_endMS;
+		cadenceMS=_cadenceMS;
 		
-		if(current.isBefore(startTime) || current.isAfter(endTime))
-			setCurrentDate(startTime);
+		if(currentTimeMS<startTimeMS || currentTimeMS>endTimeMS)
+			setCurrentTimeMS(startTimeMS);
 		
 		for (TimeLine.TimeLineListener timeLineListener : timeLineListeners)
-			timeLineListener.timeRangeChanged(_start, _end);
+			timeLineListener.timeRangeChanged(_startMS, _endMS);
 	}
 	
 	public void setNoTimeRange()
 	{
-		endTime=startTime;
-		setCurrentDate(startTime);
-		cadence=1;
+		endTimeMS=startTimeMS;
+		setCurrentTimeMS(startTimeMS);
+		cadenceMS=1;
 		setPlaying(false);
 		for (TimeLine.TimeLineListener timeLineListener : timeLineListeners)
-			timeLineListener.timeRangeChanged(startTime, endTime);
+			timeLineListener.timeRangeChanged(startTimeMS, endTimeMS);
 	}
 
 	@Override
@@ -276,7 +277,7 @@ public class TimeLine implements LayerListener
 	public void activeLayerChanged(@Nullable Layer layer)
 	{
 		if (layer != null && layer instanceof ImageLayer)
-			setTimeRange(((ImageLayer)layer).getFirstLocalDateTime(), ((ImageLayer)layer).getLastLocalDateTime(), ((ImageLayer)layer).getCadence());
+			setTimeRange(((ImageLayer)layer).getFirstTimeMS(), ((ImageLayer)layer).getLastTimeMS(), ((ImageLayer)layer).getCadenceMS());
 	}
 
 	public void setCurrentFrame(int _frameNr)
@@ -284,14 +285,14 @@ public class TimeLine implements LayerListener
 		if(_frameNr<0)
 			throw new IllegalArgumentException("_frameNr must be >=0");
 		
-		LocalDateTime newCurrent = startTime.plusSeconds(cadence * _frameNr);
-		if(newCurrent.isAfter(endTime))
+		long newCurrent = startTimeMS + cadenceMS * _frameNr;
+		if(newCurrent>endTimeMS)
 			throw new IllegalArgumentException("_frameNr too big");
 		
-		if (!newCurrent.isEqual(current))
+		if (newCurrent!=currentTimeMS)
 		{
-			LocalDateTime last = current;
-			current = newCurrent;
+			long last = currentTimeMS;
+			currentTimeMS = newCurrent;
 			dateTimeChanged(last);
 		}
 		MainFrame.SINGLETON.MAIN_PANEL.repaint();
@@ -300,24 +301,24 @@ public class TimeLine implements LayerListener
 	public interface TimeLineListener
 	{
 		void isPlayingChanged(boolean _isPlaying);
-		void timeStampChanged(LocalDateTime current, LocalDateTime last);
-		void timeRangeChanged(LocalDateTime _start, LocalDateTime _end);
+		void timeStampChanged(long current, long _last);
+		void timeRangeChanged(long _start, long _end);
 	}
 
-	public LocalDateTime getFirstDateTime()
+	public long getFirstTimeMS()
 	{
-		return startTime;
+		return startTimeMS;
 	}
 
-	public LocalDateTime getLastDateTime()
+	public long getLastTimeMS()
 	{
-		return endTime;
+		return endTimeMS;
 	}
 
-	public void setCurrentDate(LocalDateTime _newDateTime)
+	public void setCurrentTimeMS(long _newTimeMS)
 	{
-		LocalDateTime previous = current;
-		current = _newDateTime;
+		long previous = currentTimeMS;
+		currentTimeMS = _newTimeMS;
 		dateTimeChanged(previous);
 	}
 
@@ -328,46 +329,46 @@ public class TimeLine implements LayerListener
 	
 	private void loop()
 	{
-		LocalDateTime next=current.plusSeconds(cadence);
-		if(next.isAfter(endTime))
-			current = startTime;
+		long next=currentTimeMS+cadenceMS;
+		if(next>endTimeMS)
+			currentTimeMS = startTimeMS;
 		else
-			current = next;
+			currentTimeMS = next;
 	}
 	
 	private void stop()
 	{
-		LocalDateTime next=current.plusSeconds(cadence);
-		if (next.isAfter(endTime))
+		long next=currentTimeMS+cadenceMS;
+		if (next>endTimeMS)
 		{
-			current = startTime;		
+			currentTimeMS = startTimeMS;
 			setPlaying(false);
 		}
 		else
-			current = next;
+			currentTimeMS = next;
 	}
 	
 	private void swing()
 	{
-		LocalDateTime next;
+		long next;
 		if (forward)
 		{
-			next = current.plusSeconds(cadence);
-			if (next.isAfter(endTime))
+			next = currentTimeMS+cadenceMS;
+			if (next>endTimeMS)
 			{
 				forward = false;
-				next = current;
+				next = currentTimeMS;
 			}
 		}
 		else
 		{
-			next = current.minusSeconds(cadence);
-			if (next.isBefore(startTime))
+			next = currentTimeMS-cadenceMS;
+			if (next<startTimeMS)
 			{
 				forward = true;
-				next = current;
+				next = currentTimeMS;
 			}
 		}
-		current = next;
+		currentTimeMS = next;
 	}
 }

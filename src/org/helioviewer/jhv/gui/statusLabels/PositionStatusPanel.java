@@ -14,6 +14,7 @@ import javax.swing.JPopupMenu;
 import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
 import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
 import org.helioviewer.jhv.base.coordinates.HelioprojectiveCartesianCoordinate;
+import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.opengl.RayTrace.HitpointType;
 import org.helioviewer.jhv.opengl.RayTrace.Ray;
@@ -90,7 +91,7 @@ public class PositionStatusPanel extends StatusLabel
 	{
 		if (ray == null)
 		{
-			this.setText(title);
+			setText(title);
 			return;
 		}
 
@@ -98,30 +99,33 @@ public class PositionStatusPanel extends StatusLabel
 				ray.getHitpoint().y, ray.getHitpoint().z);
 
 		DecimalFormat df;
-		String point = null;
+		String point = "";
 		switch (this.popupState.getSelectedState())
 		{
 			case ARCSECS:
-				LocalDateTime current = TimeLine.SINGLETON.getCurrentDateTime();
-
-				HelioprojectiveCartesianCoordinate hpc = cart.toHelioprojectiveCartesianCoordinate(current);
+				LocalDateTime ldt = MathUtils.toLDT(TimeLine.SINGLETON.getCurrentTimeMS());
+				if(ldt==null)
+				{
+					setText(title);
+					return;
+				}
+				HelioprojectiveCartesianCoordinate hpc = cart.toHelioprojectiveCartesianCoordinate(ldt);
 				df = new DecimalFormat("#");
 				point = "(" + df.format(hpc.getThetaXAsArcSec()) + "\" ," + df.format(hpc.getThetaYAsArcSec()) + "\")";
 				break;
+				
 			case DEGREE:
 				HeliographicCoordinate newCoord = cart.toHeliographicCoordinate();
 				df = new DecimalFormat("#.##");
 				if (!(ray.getHitpointType() == HitpointType.PLANE))
-					point = "(" + df.format(newCoord.getHgLongitudeAsDeg()) + DEGREE + " ,"
-							+ df.format(newCoord.getHgLatitudeAsDeg()) + DEGREE + ") ";
-				else
-					point = "";
+					point = "(" + df.format(newCoord.getHgLongitudeAsDeg()) + DEGREE + " ," + df.format(newCoord.getHgLatitudeAsDeg()) + DEGREE + ") ";
 				break;
 
 			default:
 				break;
 		}
-		this.setText(title + point);
+		
+		setText(title + point);
 	}
 
 	private class PopupState extends JPopupMenu

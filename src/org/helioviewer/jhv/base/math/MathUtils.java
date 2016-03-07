@@ -1,5 +1,12 @@
 package org.helioviewer.jhv.base.math;
 
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoField;
+
+import javax.annotation.Nullable;
+
 /**
  * A collection of useful static methods.
  */
@@ -101,11 +108,15 @@ public class MathUtils
         return min;
     }
 
-    public static double mapTo0To360(double x) {
+    public static double mapTo0To360(double x)
+    {
         double tmp = x % 360.0;
-        if (tmp < 0) {
+        if (tmp < 0)
+        {
             return tmp + 360.0;
-        } else {
+        }
+        else
+        {
             return tmp;
         }
     }
@@ -120,5 +131,22 @@ public class MathUtils
     	value |= value >> 16;
     	value++;
     	return value;
+    }
+    
+    public static @Nullable LocalDateTime toLDT(long _timeMS)
+    {
+    	if(_timeMS==0)
+    		return null;
+    	
+    	return LocalDateTime.ofEpochSecond(_timeMS/1000, (int)(_timeMS%1000)*1000*1000, ZoneOffset.UTC);
+    }
+    
+    public static long fromLDT(@Nullable LocalDateTime _ldt)
+    {
+    	if(_ldt==null)
+    		return 0;
+    	
+    	OffsetDateTime odt =_ldt.atOffset(ZoneOffset.UTC); 
+    	return odt.toEpochSecond()*1000+odt.get(ChronoField.MILLI_OF_SECOND);
     }
 }

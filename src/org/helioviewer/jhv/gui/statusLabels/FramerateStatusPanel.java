@@ -7,15 +7,6 @@ import javax.swing.BorderFactory;
 
 import org.helioviewer.jhv.viewmodel.TimeLine;
 
-/**
- * Status panel for displaying the framerate for image series.
- * 
- * <p>
- * The information of this panel is always shown for the active layer.
- * 
- * <p>
- * This panel is not visible, if the active layer is not an image series.
- */
 public class FramerateStatusPanel extends StatusLabel
 {
 	private static float lastFPS;
@@ -62,7 +53,7 @@ public class FramerateStatusPanel extends StatusLabel
 	}
 	
 	@Override
-	public void timeStampChanged(LocalDateTime current, LocalDateTime last)
+	public void timeStampChanged(long current, long last)
 	{
 		if(!TimeLine.SINGLETON.isPlaying())
 			return;

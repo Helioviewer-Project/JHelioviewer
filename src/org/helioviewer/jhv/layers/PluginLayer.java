@@ -98,11 +98,12 @@ public class PluginLayer extends Layer
 		plugin.retry();
 		Plugins.repaintLayerPanel();
 	}
-
+	
 	@Override
-	public @Nullable LocalDateTime getCurrentTime()
+	public @Nullable long getCurrentTimeMS()
 	{
-		return null;
+		//TODO: request actual time of visible plugin data
+		return 0;
 	}
 
 	@Override

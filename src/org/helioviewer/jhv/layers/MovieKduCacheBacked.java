@@ -27,6 +27,7 @@ import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.opengl.Texture;
 import org.helioviewer.jhv.viewmodel.TimeLine.DecodeQualityLevel;
 import org.helioviewer.jhv.viewmodel.jp2view.kakadu.KakaduUtils;
+import org.helioviewer.jhv.viewmodel.jp2view.newjpx.MovieCache;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 import org.helioviewer.jhv.viewmodel.metadata.MetaDataFactory;
 import org.helioviewer.jhv.viewmodel.metadata.UnsuitableMetaDataException;
@@ -55,10 +56,11 @@ public class MovieKduCacheBacked extends Movie
 	public final @Nullable Kdu_cache kduCache;
 	public final AtomicInteger areaLimit;
 	public final AtomicInteger qualityLayersLimit;
+	public final File backingFile;
 
 	//FIXME: add additional constructor to initialize a movie from cache, with correct downscaled & qualityLayers
 	
-	public MovieKduCacheBacked(int _sourceId, int _frameCount, URI _jpipURI)
+	public MovieKduCacheBacked(int _sourceId, int _frameCount, URI _jpipURI) throws IOException
 	{
 		super(_sourceId);
 		kduCache = new Kdu_cache();
@@ -76,6 +78,8 @@ public class MovieKduCacheBacked extends Movie
 		qualityLayersLimit = new AtomicInteger(0);
 		jpipURI = _jpipURI;
 		metaDatas = new MetaData[_frameCount];
+		
+		backingFile = File.createTempFile("jhv", null, MovieCache.CACHE_DIR);
 	}
 	
 	public boolean isFullQuality()
@@ -130,6 +134,9 @@ public class MovieKduCacheBacked extends Movie
 	@Override
 	public void dispose()
 	{
+		if(disposed)
+			return;
+		
 		super.dispose();
 		
 		try

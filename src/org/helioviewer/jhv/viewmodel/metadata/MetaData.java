@@ -1,9 +1,12 @@
 package org.helioviewer.jhv.viewmodel.metadata;
 
 import java.awt.geom.Rectangle2D;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoField;
 
 import javax.annotation.Nullable;
 
@@ -40,7 +43,7 @@ public abstract class MetaData
     public final String observatory;
     public final @Nullable String displayName;
     public final Vector2d sunPixelPosition;
-    public final LocalDateTime localDateTime;
+    public final long timeMS;
 	public final Vector2i resolution;
 	public final Vector2d arcsecPerPixel;
     public final double maskRotation;
@@ -126,7 +129,7 @@ public abstract class MetaData
         {
         	ldt = LocalDateTime.parse(observedDate, SOHO_DATE_TIME_FORMATTER);
         }
-        localDateTime = ldt;
+        timeMS = ldt.atOffset(ZoneOffset.UTC).getLong(ChronoField.INSTANT_SECONDS)*1000;
         
         heeqX = tryGetDouble(_doc, "HEQX_OBS");
         heeqY = tryGetDouble(_doc, "HEQY_OBS");
@@ -162,17 +165,17 @@ public abstract class MetaData
         else if (resolution.x == 1024)
     	{
         	if(!(this instanceof MetaDataLASCO))
-        		Telemetry.trackEvent("Move this to instrument specific class", "Measurement", measurement, "Detector", detector, "Instrument", instrument, "Observatory", observatory, "LDT", localDateTime.toString());
+        		Telemetry.trackEvent("Move this to instrument specific class", "Measurement", measurement, "Detector", detector, "Instrument", instrument, "Observatory", observatory, "timeMS", Long.toString(timeMS));
     		solarPixelRadius = new Vector2d(360,360);
     	}
     	else if(resolution.x == 512)
     	{
     		if(!(this instanceof MetaDataLASCO))
-    			Telemetry.trackEvent("Move this to instrument specific class", "Measurement", measurement, "Detector", detector, "Instrument", instrument, "Observatory", observatory, "LDT", localDateTime.toString());
+    			Telemetry.trackEvent("Move this to instrument specific class", "Measurement", measurement, "Detector", detector, "Instrument", instrument, "Observatory", observatory, "timeMS", Long.toString(timeMS));
     		solarPixelRadius = new Vector2d(180,180);
     	}
         
-        SunPosition sunPosition = SunPosition.computeSunPos(localDateTime);
+        SunPosition sunPosition = SunPosition.computeSunPos(MathUtils.toLDT(timeMS));
         if (stonyhurstAvailable)
         {
         	rotation = new Quaternion(

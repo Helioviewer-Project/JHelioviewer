@@ -19,6 +19,7 @@ import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.downloadmanager.DownloadManager;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPDownloadRequest;
+import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.PredefinedFileFilter;
 import org.helioviewer.jhv.layers.ImageLayer;
@@ -49,15 +50,13 @@ public class DownloadMovieDialog extends JDialog
 		pack();
 		
 		
-		
-
 		if (TimeLine.SINGLETON.getFrameCount() >= 1000)
 		{
 			JOptionPane.showMessageDialog(MainFrame.SINGLETON, "You cannot download more than 1000 frames at once.", "Error", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		
-		String defaultName = _layer.getFullName() + " " + Globals.FILE_DATE_TIME_FORMATTER.format(((ImageLayer)_layer).getFirstLocalDateTime()) + " " + Globals.FILE_DATE_TIME_FORMATTER.format(((ImageLayer)_layer).getLastLocalDateTime());
+		String defaultName = _layer.getFullName() + " " + Globals.FILE_DATE_TIME_FORMATTER.format(MathUtils.toLDT(((ImageLayer)_layer).getFirstTimeMS())) + " " + Globals.FILE_DATE_TIME_FORMATTER.format(MathUtils.toLDT(((ImageLayer)_layer).getLastTimeMS()));
 		File selectedFile = Globals.showFileDialog(DialogType.SAVE_FILE,
 				"Download movie",
 				Settings.getString(StringKey.MOVIE_DOWNLOAD_PATH),
@@ -72,42 +71,27 @@ public class DownloadMovieDialog extends JDialog
 		final HTTPDownloadRequest httpDownloadRequest = new HTTPDownloadRequest(_url, DownloadPriority.URGENT, selectedFile.getPath());
 		
 		DownloadManager.addRequest(httpDownloadRequest);
-		Thread downloadMovieThread = new Thread(new Runnable()
-		{
-			@Override
-			public void run()
+		Thread downloadMovieThread = new Thread(() ->
 			{
 				try
 				{
 					while (!httpDownloadRequest.isFinished())
 					{
-						SwingUtilities.invokeAndWait(new Runnable()
-						{
-							@Override
-							public void run()
+						SwingUtilities.invokeAndWait(() ->
 							{
 								progressBar.setValue(httpDownloadRequest.getReceivedLength());
 								progressBar.setMaximum(httpDownloadRequest.getTotalLength());
-							}
-						});
+							});
 						Thread.sleep(200);
 					}
 					
-					SwingUtilities.invokeAndWait(new Runnable()
-					{
-						@Override
-						public void run()
-						{
-							setVisible(false);
-						}
-					});
+					SwingUtilities.invokeAndWait(() -> setVisible(false));
 				}
 				catch (Exception e)
 				{
 					Telemetry.trackException(e);
 				}
-			}
-		}, "DOWNLOAD-MOVIE");
+			}, "DOWNLOAD-MOVIE");
 		downloadMovieThread.start();
 		
 		setVisible(true);

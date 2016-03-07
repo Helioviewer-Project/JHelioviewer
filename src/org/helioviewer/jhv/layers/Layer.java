@@ -202,7 +202,7 @@ public abstract class Layer
 	//TODO: get rid of this and merge with getName() - or properly document the difference
 	public abstract @Nullable String getFullName();
 
-	public abstract @Nullable LocalDateTime getCurrentTime();
+	public abstract long getCurrentTimeMS();
 
 	public abstract void dispose();
 

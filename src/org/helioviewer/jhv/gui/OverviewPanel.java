@@ -96,8 +96,7 @@ public class OverviewPanel extends MainPanel
 		if (activeLayer == null)
 			return;
 		
-		LocalDateTime currentDateTime = TimeLine.SINGLETON.getCurrentDateTime();
-		MetaData md=activeLayer.getMetaData(currentDateTime);
+		MetaData md=activeLayer.getMetaData(TimeLine.SINGLETON.getCurrentTimeMS());
 		if (md != null)
 		{
 			Rectangle2D region = md.getPhysicalImageSize();

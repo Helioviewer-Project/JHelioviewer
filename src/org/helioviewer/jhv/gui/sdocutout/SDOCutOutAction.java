@@ -11,6 +11,7 @@ import javax.swing.AbstractAction;
 
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.ImageRegion;
+import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
 import org.helioviewer.jhv.gui.MainFrame;
@@ -41,24 +42,26 @@ class SDOCutOutAction extends AbstractAction
 		
 		for (Layer layer : Layers.getLayers())
 			if(layer instanceof KakaduLayer)
-				if(((KakaduLayer)layer).getMetaData(TimeLine.SINGLETON.getCurrentDateTime()) instanceof MetaDataAIA)
+				if(((KakaduLayer)layer).getMetaData(TimeLine.SINGLETON.getCurrentTimeMS()) instanceof MetaDataAIA)
 					sdoLayers.add((KakaduLayer)layer);
 		
 		if(sdoLayers.isEmpty())
 			return;
 		
 		KakaduLayer mainSDOLayer;
-		if(activeLayer instanceof KakaduLayer && activeLayer.getMetaData(TimeLine.SINGLETON.getCurrentDateTime()) instanceof MetaDataAIA)
+		if(activeLayer instanceof KakaduLayer && activeLayer.getMetaData(TimeLine.SINGLETON.getCurrentTimeMS()) instanceof MetaDataAIA)
 			mainSDOLayer=(KakaduLayer)activeLayer;
 		else
 			mainSDOLayer=sdoLayers.get(0);
 		
-		MetaData metaData = mainSDOLayer.getMetaData(TimeLine.SINGLETON.getCurrentDateTime());
-		LocalDateTime start = TimeLine.SINGLETON.getFirstDateTime();
-		LocalDateTime end = TimeLine.SINGLETON.getLastDateTime();
+		MetaData metaData = mainSDOLayer.getMetaData(TimeLine.SINGLETON.getCurrentTimeMS());
+
+		LocalDateTime start = MathUtils.toLDT(TimeLine.SINGLETON.getFirstTimeMS());
+		LocalDateTime end = MathUtils.toLDT(TimeLine.SINGLETON.getLastTimeMS());
 		
 		if(metaData==null || start==null || end==null)
 			return;
+
 		
 		ImageRegion ir=mainSDOLayer.calculateRegion(MainFrame.SINGLETON.MAIN_PANEL, DecodeQualityLevel.QUALITY, metaData, MainFrame.SINGLETON.MAIN_PANEL.getCanavasSize());
 		if(ir==null)
@@ -75,7 +78,7 @@ class SDOCutOutAction extends AbstractAction
 		url.append("&wavelengths=");
 		for (ImageLayer sdoLayer : sdoLayers)
 		{
-			MetaData md=sdoLayer.getMetaData(TimeLine.SINGLETON.getCurrentDateTime());
+			MetaData md=sdoLayer.getMetaData(TimeLine.SINGLETON.getCurrentTimeMS());
 			if(md!=null)
 				url.append(","+md.measurement);
 		}
@@ -91,7 +94,7 @@ class SDOCutOutAction extends AbstractAction
 		url.append("&xCen="+(offsetArcSec.x-sunPosArcSec.x));
 		url.append("&yCen="+(-offsetArcSec.y+sunPosArcSec.y));
 		
-		url.append("&cadence="+mainSDOLayer.getCadence());
+		url.append("&cadence="+(mainSDOLayer.getCadenceMS()/1000));
 		url.append("&cadenceUnits=s");
 		Globals.openURL(url.toString());
     }

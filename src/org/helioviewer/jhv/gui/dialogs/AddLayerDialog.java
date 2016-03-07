@@ -14,6 +14,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 import javax.annotation.Nullable;
 import javax.swing.DefaultComboBoxModel;
@@ -98,7 +99,10 @@ public class AddLayerDialog extends JDialog
 								{
 									lastStart = f.getEnd().minusDays(2);
 									lastEnd = f.getEnd();
-									Layers.addLayer(new KakaduLayer(f.sourceId, lastStart, lastEnd, lastCadence*60, f.getNickname()));
+									Layers.addLayer(new KakaduLayer(f.sourceId,
+											lastStart.toEpochSecond(ZoneOffset.UTC)*1000,
+											lastEnd.toEpochSecond(ZoneOffset.UTC)*1000,
+											30*60*1000, f.getNickname()));
 									return;
 								}
 		}
@@ -494,7 +498,8 @@ public class AddLayerDialog extends JDialog
 						if (filter != null)
 						{
 							final int cadence = Math.max(1, (int) AddLayerDialog.this.cadence.getValue()
-									* ((TimeSteps) cmbbxTimeSteps.getSelectedItem()).factor);
+									* ((TimeSteps) cmbbxTimeSteps.getSelectedItem()).factor)
+									* 1000;
 							
 							final Observatories.Filter finalFilter = filter;
 							
@@ -515,8 +520,8 @@ public class AddLayerDialog extends JDialog
 								{
 									KakaduLayer newLayer=new KakaduLayer(
 											finalFilter.sourceId,
-											lastStart,
-											lastEnd,
+											lastStart.toEpochSecond(ZoneOffset.UTC)*1000,
+											lastEnd.toEpochSecond(ZoneOffset.UTC)*1000,
 											Math.max(1,cadence),
 											finalFilter.getNickname());
 									newLayer.animateCameraToFacePlane = true;

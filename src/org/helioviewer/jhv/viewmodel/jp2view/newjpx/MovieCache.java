@@ -32,7 +32,7 @@ public class MovieCache
 
 	private static final long MAX_CACHE_SIZE = 1024*1024*Settings.getInt(IntKey.CACHE_SIZE);
 	
-	private static final File CACHE_DIR = new File(System.getProperty("java.io.tmpdir"), "jhv-movie-cache");
+	public static final File CACHE_DIR = new File(System.getProperty("java.io.tmpdir"), "jhv-movie-cache");
 	
 	private static void limitCacheSize()
 	{
@@ -122,7 +122,7 @@ public class MovieCache
 			al.add(_movie);
 	}
 
-	public static @Nullable Match findBestFrame(int _sourceId, LocalDateTime _currentDate)
+	public static @Nullable Match findBestFrame(int _sourceId, long _currentTimeMS)
 	{
 		List<Movie> al=cache.get(_sourceId);
 		if(al==null)
@@ -132,15 +132,15 @@ public class MovieCache
 		Match bestMatch=null;
 		for (Movie m : al)
 		{
-			Match curMatch=m.findClosestIdx(_currentDate);
+			Match curMatch=m.findClosestIdx(_currentTimeMS);
 			if(curMatch==null)
 				continue;
 			
 			if(bestMatch==null)
 				bestMatch=curMatch;
-			else if(curMatch.timeDifferenceSeconds<bestMatch.timeDifferenceSeconds)
+			else if(curMatch.timeDifferenceMS<bestMatch.timeDifferenceMS)
 				bestMatch=curMatch;
-			else if(curMatch.timeDifferenceSeconds==bestMatch.timeDifferenceSeconds && curMatch.movie.isBetterQualityThan(bestMatch.movie))
+			else if(curMatch.timeDifferenceMS==bestMatch.timeDifferenceMS && curMatch.movie.isBetterQualityThan(bestMatch.movie))
 				bestMatch=curMatch;
 		}
 		
@@ -149,11 +149,6 @@ public class MovieCache
 			bestMatch.movie.touch();*/
 		
 		return bestMatch;
-	}
-
-	public static String generateFilename(int _sourceId)
-	{
-		return new File(CACHE_DIR, _sourceId+","+UUID.randomUUID().toString()).getAbsolutePath();
 	}
 
 	public static void init()
