@@ -46,7 +46,8 @@ import com.mindscapehq.raygun4java.core.messages.RaygunIdentifier;
 public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
 {
 	public static final JHVUncaughtExceptionHandler SINGLETON = new JHVUncaughtExceptionHandler();
-
+	public static @Nullable String openGLRenderer = null;
+	
 	/**
 	 * This method sets the default uncaught exception handler. Thus, this
 	 * method should be called once when the application starts.
@@ -113,12 +114,12 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
 
 		if (allowCrashReport.isSelected())
 		{
-			Telemetry.trackException(e);
-			
 			RaygunClient client = new RaygunClient("iZK0JDVPkd3OgEwgDibzQw==");
 			client.SetVersion(Globals.VERSION);
 			Map<String, String> customData = new HashMap<>();
 			customData.put("Log", log);
+			if(openGLRenderer!=null)
+				customData.put("OpenGL", openGLRenderer);
 			customData.put("JVM",
 					System.getProperty("java.vm.name") + " "
 							+ System.getProperty("java.vm.version") + " (JRE "
@@ -130,6 +131,9 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
 			ArrayList<String> tags = new ArrayList<>();
 			tags.add(Globals.RAYGUN_TAG);
 			client.Send(e, tags, customData);
+			
+			Telemetry.trackException(e);
+			Telemetry.flushSync();
 		}
 
 		Runtime.getRuntime().halt(0);

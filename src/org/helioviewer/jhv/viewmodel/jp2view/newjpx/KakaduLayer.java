@@ -53,8 +53,10 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import com.jogamp.opengl.GLContext;
+import com.sun.java.swing.SwingUtilities3;
 
 import kdu_jni.KduException;
+import sun.swing.SwingUtilities2;
 
 public class KakaduLayer extends ImageLayer
 {
@@ -275,12 +277,21 @@ public class KakaduLayer extends ImageLayer
 					{
 						//FIXME: this doesn't work. lq images from cache are still used
 						
+						try
+						{
+							SwingUtilities.invokeAndWait(() -> MovieCache.remove(bestMatch.movie));
+						}
+						catch (Exception _e)
+						{
+							_e.printStackTrace();
+						}
+						
 						//we already have a match: re-fetch the exact same frame (but this time in better quality)
-						long timeMS = bestMatch.movie.getTimeMS(bestMatch.index);
-						startTimes.add(timeMS/1000);
-						endTimes.add(timeMS/1000+1);
+						//long timeMS = bestMatch.movie.getTimeMS(bestMatch.index);
+						//startTimes.add(timeMS/1000);
+						//endTimes.add(timeMS/1000+1);
 					}
-					else
+					//else
 					{
 						startTimes.add(a/1000);
 						endTimes.add((b+999)/1000);

@@ -30,6 +30,19 @@ public class Telemetry
 	private static boolean openGLInitialized=false;
 	private static final long START_TIME=System.currentTimeMillis();
 	
+	public static void flushSync()
+	{
+		client.flush();
+		try
+		{
+			//wait a bit for the flush to complete. msft recommends 1s. sad but true.
+			Thread.sleep(1000);
+		}
+		catch(InterruptedException _ie)
+		{
+		}
+	}
+	
 	static
 	{
 		client = new TelemetryClient();
@@ -54,15 +67,7 @@ public class Telemetry
 			public void run()
 			{
 				Telemetry.trackMetric("Session duration", (System.currentTimeMillis()-START_TIME)/1000);
-				client.flush();
-				try
-				{
-					//wait a bit for the flush to complete. msft recommends 1s. sad but true.
-					Thread.sleep(1000);
-				}
-				catch(InterruptedException _ie)
-				{
-				}
+				flushSync();
 			}
 		});
 		
@@ -159,7 +164,9 @@ public class Telemetry
 			if(openGLInitialized || GLContext.getCurrent()==null)
 				return;
 			
-			client.getContext().getProperties().put("OpenGL renderer", GLContext.getCurrentGL().glGetString(GL.GL_RENDERER));
+			String renderer = GLContext.getCurrentGL().glGetString(GL.GL_RENDERER);
+			client.getContext().getProperties().put("OpenGL renderer", renderer);
+			JHVUncaughtExceptionHandler.openGLRenderer = renderer;
 			openGLInitialized=true;
 			
 			/*client.getContext().getProperties().put("OpenGL version", GLContext.getCurrent().getGLVersion());
