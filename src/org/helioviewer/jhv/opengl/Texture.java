@@ -2,7 +2,6 @@ package org.helioviewer.jhv.opengl;
 
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
-import java.time.LocalDateTime;
 
 import javax.annotation.Nullable;
 

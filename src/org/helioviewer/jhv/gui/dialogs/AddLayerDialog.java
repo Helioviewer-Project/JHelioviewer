@@ -14,7 +14,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 
 import javax.annotation.Nullable;
 import javax.swing.DefaultComboBoxModel;

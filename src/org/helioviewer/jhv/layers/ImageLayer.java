@@ -4,13 +4,8 @@ import java.awt.Dimension;
 import java.awt.geom.Rectangle2D;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.helioviewer.jhv.base.Globals;

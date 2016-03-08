@@ -9,9 +9,7 @@ import java.util.LinkedHashMap;
 import javax.annotation.Nullable;
 
 import org.helioviewer.jhv.base.Telemetry;
-import org.helioviewer.jhv.layers.Movie;
 import org.helioviewer.jhv.layers.MovieKduCacheBacked;
-import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPDataSegment;
 import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPDatabinClass;
 import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPQuery;
 import org.helioviewer.jhv.viewmodel.jp2view.io.jpip.JPIPResponse;

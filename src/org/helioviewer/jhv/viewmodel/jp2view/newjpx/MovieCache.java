@@ -2,13 +2,11 @@ package org.helioviewer.jhv.viewmodel.jp2view.newjpx;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
 import javax.annotation.Nullable;
 
@@ -19,13 +17,10 @@ import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 import org.helioviewer.jhv.layers.Movie;
 import org.helioviewer.jhv.layers.Movie.Match;
-import org.helioviewer.jhv.layers.MovieFileBacked;
 import org.helioviewer.jhv.layers.MovieKduCacheBacked;
 import org.helioviewer.jhv.viewmodel.metadata.UnsuitableMetaDataException;
 
 import com.google.common.io.Files;
-
-import kdu_jni.KduException;
 
 public class MovieCache
 {

@@ -1,12 +1,9 @@
 package org.helioviewer.jhv.viewmodel.metadata;
 
 import java.awt.geom.Rectangle2D;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.time.temporal.ChronoField;
 
 import javax.annotation.Nullable;
 

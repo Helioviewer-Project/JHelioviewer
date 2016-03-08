@@ -1,7 +1,5 @@
 package org.helioviewer.jhv.layers;
 
-import java.time.LocalDateTime;
-
 import javax.annotation.Nullable;
 
 import org.helioviewer.jhv.gui.MainPanel;

@@ -5,12 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoField;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -53,10 +48,8 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import com.jogamp.opengl.GLContext;
-import com.sun.java.swing.SwingUtilities3;
 
 import kdu_jni.KduException;
-import sun.swing.SwingUtilities2;
 
 public class KakaduLayer extends ImageLayer
 {
@@ -73,6 +66,7 @@ public class KakaduLayer extends ImageLayer
 		setTimeRange(_startMS, _endMS, _cadenceMS);
 	}
 	
+	//FIXME: find the best quality frame within _cadence
 	public @Nullable Match findBestFrame(long _currentTimeMS)
 	{
 		Match m = MovieCache.findBestFrame(sourceId, _currentTimeMS);
@@ -273,25 +267,15 @@ public class KakaduLayer extends ImageLayer
 				Match bestMatch = findBestFrame(middle);
 				if(bestMatch==null || bestMatch.timeDifferenceMS>=_cadenceMS/2 || !bestMatch.movie.isFullQuality())
 				{
-					if(bestMatch!=null && !bestMatch.movie.isFullQuality() && bestMatch.timeDifferenceMS<_cadenceMS/2)
+					//this doesn't work for some unknown reason
+					/*if(bestMatch!=null && !bestMatch.movie.isFullQuality() && bestMatch.timeDifferenceMS<_cadenceMS/2)
 					{
-						//FIXME: this doesn't work. lq images from cache are still used
-						
-						try
-						{
-							SwingUtilities.invokeAndWait(() -> MovieCache.remove(bestMatch.movie));
-						}
-						catch (Exception _e)
-						{
-							_e.printStackTrace();
-						}
-						
 						//we already have a match: re-fetch the exact same frame (but this time in better quality)
-						//long timeMS = bestMatch.movie.getTimeMS(bestMatch.index);
-						//startTimes.add(timeMS/1000);
-						//endTimes.add(timeMS/1000+1);
+						long timeMS = bestMatch.movie.getTimeMS(bestMatch.index);
+						startTimes.add(timeMS/1000);
+						endTimes.add(timeMS/1000+1);
 					}
-					//else
+					else*/
 					{
 						startTimes.add(a/1000);
 						endTimes.add((b+999)/1000);
@@ -386,7 +370,6 @@ public class KakaduLayer extends ImageLayer
 									{
 										long ts = frames.getLong(f);
 										if(noFrames.contains(ts*1000))
-											//FIXME: still happening...
 											System.err.println("API returned frame for "+ts+" when it previously found no such frame.");
 										
 										boolean found=false;

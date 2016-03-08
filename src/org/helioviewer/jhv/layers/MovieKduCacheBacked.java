@@ -1,28 +1,21 @@
 package org.helioviewer.jhv.layers;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BinaryOperator;
 
 import javax.annotation.Nullable;
 
@@ -30,7 +23,6 @@ import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.MovieCache;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 
-import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 
 import kdu_jni.KduException;

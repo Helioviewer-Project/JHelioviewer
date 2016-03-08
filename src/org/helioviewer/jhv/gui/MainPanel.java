@@ -18,7 +18,6 @@ import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.nio.ByteBuffer;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
@@ -281,7 +280,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 	protected void repaintInternal(boolean _synchronously)
 	{
 		if(_synchronously)
-			repaint(); // display(); breaks OS X
+			display();
 		else
 			repaint();
 	}
@@ -643,10 +642,6 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			}
 		}
 		
-		//FIXME: paint lags arbitrarily. repro with 300 fps.
-		
-		//TODO: make repaint synchronous? (always up to date) or not synchronous? (arbitrarily delayed, but better perf) 
-		// force repaints of dependent regions
 		for (MainPanel componentView : synchronizedViews)
 			componentView.repaint(); //display breaks OS X
 	}

@@ -2,12 +2,8 @@ package org.helioviewer.jhv.viewmodel;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.Timer;
 

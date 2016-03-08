@@ -2,7 +2,6 @@ package org.helioviewer.jhv.gui;
 
 import java.awt.Dimension;
 import java.awt.geom.Rectangle2D;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import javax.annotation.Nullable;

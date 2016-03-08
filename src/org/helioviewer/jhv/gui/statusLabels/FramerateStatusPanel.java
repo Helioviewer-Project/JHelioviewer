@@ -1,7 +1,6 @@
 package org.helioviewer.jhv.gui.statusLabels;
 
 import java.awt.Dimension;
-import java.time.LocalDateTime;
 
 import javax.swing.BorderFactory;
 

@@ -1,7 +1,6 @@
 package org.helioviewer.jhv.gui.statusLabels;
 
 import java.awt.event.MouseEvent;
-import java.time.LocalDateTime;
 
 import javax.annotation.Nullable;
 import javax.swing.JLabel;
