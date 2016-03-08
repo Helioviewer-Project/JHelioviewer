@@ -166,6 +166,9 @@ public class MovieKduCacheBacked extends Movie
 			return true;
 		
 		MetaData md = getAnyMetaData();
+		if(md==null)
+			return false;
+		
 		if(areaLimit.get() >= md.resolution.x*md.resolution.y)
 		{
 			areaLimit.set(Integer.MAX_VALUE);

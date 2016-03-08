@@ -219,7 +219,10 @@ public abstract class Movie
 			else if(timeMS[i]==0)
 				timeMS[i]=metaDatas[i].timeMS;
 			else if(timeMS[i]!=metaDatas[i].timeMS)
-				throw new RuntimeException("Timestamps diverged: "+timeMS[i]+" vs "+metaDatas[i].timeMS);
+			{
+				System.err.println("Timestamps diverged: "+timeMS[i]+" vs "+metaDatas[i].timeMS);
+				timeMS[i]=metaDatas[i].timeMS;
+			}
 		}
 		catch (KduException e)
 		{
