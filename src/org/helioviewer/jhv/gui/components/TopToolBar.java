@@ -18,6 +18,7 @@ import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
 import org.helioviewer.jhv.base.Settings;
+import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.Settings.StringKey;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
@@ -63,7 +64,15 @@ public class TopToolBar extends JToolBar implements MouseListener
 		//setRollover(true);
 		setFloatable(false);
 
-		displayMode = DisplayMode.valueOf(Settings.getString(StringKey.TOOLBAR_DISPLAY));
+		try
+		{
+			displayMode = DisplayMode.valueOf(Settings.getString(StringKey.TOOLBAR_DISPLAY));
+		}
+		catch(IllegalArgumentException _iae)
+		{
+			Telemetry.trackException(_iae);
+			displayMode = DisplayMode.ICONANDTEXT;
+		}
 
 		createNewToolBar();
 		addMouseListener(this);
