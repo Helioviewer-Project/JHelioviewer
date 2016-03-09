@@ -81,6 +81,7 @@ public abstract class ImageLayer extends Layer
 	public abstract @Nullable Document getMetaDataDocument(long _timeMS);
 
 	public abstract @Nullable Match findBestFrame(long _timeMS);
+	public abstract @Nullable Match findBestFrame(long _minTimeMSInclusive, long _maxTimeMSExclusive);
 
 	
 	public boolean supportsFilterContrastGamma()
@@ -515,7 +516,7 @@ public abstract class ImageLayer extends Layer
 		return cadenceMS;
 	}
 
-	public boolean isDataAvailableOnServer(long _ldt)
+	public boolean isDataAvailableOnServer(long _minTimeMSInclusive, long _maxTimeMSExclusive)
 	{
 		return true;
 	}

@@ -244,11 +244,16 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 		MainFrame.SINGLETON.MAIN_PANEL.repaint();
 	}
 
-	public static HTTPRequest generateAndStartHTPPRequest(String uri, DownloadPriority priority)
+	public static HTTPRequest startHTPPRequest(String uri, DownloadPriority priority)
 	{
 		HTTPRequest httpRequest = new HTTPRequest(uri, priority);
 		DownloadManager.addRequest(httpRequest);
 		return httpRequest;
+	}
+	
+	public static void cancelHTTPRequest(HTTPRequest _h)
+	{
+		DownloadManager.remove(_h);
 	}
 
 	/*public static void setPanelOpenCloseState(Component component, boolean open)

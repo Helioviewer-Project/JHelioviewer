@@ -71,7 +71,7 @@ public class PfssPlugin extends Plugin
 	}
 	
 	@Override
-	public void timeRangeChanged(LocalDateTime _start, LocalDateTime _end)
+	public void timeRangeChanged(@Nullable LocalDateTime _start, @Nullable LocalDateTime _end)
 	{
 		manager.setDateRange(_start, _end);
 	}

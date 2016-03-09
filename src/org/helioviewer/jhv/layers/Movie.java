@@ -275,6 +275,16 @@ public abstract class Movie
 		}
 	}
 	
+	//TODO: should return frame closest to (_min+_max)/2
+	@Nullable public Match findBestIdx(long _minTimeMSInclusive, long _maxTimeMSExclusive)
+	{
+		for (int i = 0; i < timeMS.length; i++)
+			if(timeMS[i]>=_minTimeMSInclusive && timeMS[i]<_maxTimeMSExclusive)
+				return new Match(i,-1);
+		
+		return null;
+	}
+	
 	@Nullable public Match findClosestIdx(long _currentDateTimeMS)
 	{
 		int bestI=-1;

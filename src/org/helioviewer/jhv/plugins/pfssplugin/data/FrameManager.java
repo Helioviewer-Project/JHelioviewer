@@ -88,7 +88,7 @@ public class FrameManager
      * @param end end date inclusive
      * @throws IOException if the requested dates could not be found
      */
-    public void setDateRange(LocalDateTime start, LocalDateTime end)
+    public void setDateRange(@Nullable LocalDateTime start, @Nullable LocalDateTime end)
     {
         descriptorManager.readFileDescriptors(start,end);
     }

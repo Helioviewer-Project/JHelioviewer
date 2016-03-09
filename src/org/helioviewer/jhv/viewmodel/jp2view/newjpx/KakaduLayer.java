@@ -66,7 +66,14 @@ public class KakaduLayer extends ImageLayer
 		setTimeRange(_startMS, _endMS, _cadenceMS);
 	}
 	
-	//FIXME: find the best quality frame within _cadence
+	public @Nullable Match findBestFrame(long _minTimeMSInclusive, long _maxTimeMSExclusive)
+	{
+		if(noFrames.fullyContains(_minTimeMSInclusive, _maxTimeMSExclusive))
+			return null;
+		
+		return MovieCache.findBestFrame(sourceId, _minTimeMSInclusive, _maxTimeMSExclusive);
+	}
+	
 	public @Nullable Match findBestFrame(long _currentTimeMS)
 	{
 		Match m = MovieCache.findBestFrame(sourceId, _currentTimeMS);
@@ -80,9 +87,9 @@ public class KakaduLayer extends ImageLayer
 	}
 	
 	@Override
-	public boolean isDataAvailableOnServer(long _timeMS)
+	public boolean isDataAvailableOnServer(long _minTimeMSInclusive, long _maxTimeMSExclusive)
 	{
-		return !noFrames.contains(_timeMS);
+		return !noFrames.fullyContains(_minTimeMSInclusive, _maxTimeMSExclusive);
 	}
 	
 	public KakaduLayer(String _filePath) throws IOException
@@ -260,12 +267,11 @@ public class KakaduLayer extends ImageLayer
 		{
 			long a = _startMS;
 			long b = _startMS + _cadenceMS;
-			long middle = _startMS+_cadenceMS/2;
 			
 			if(!noFrames.fullyContains(a,b))
 			{
-				Match bestMatch = findBestFrame(middle);
-				if(bestMatch==null || bestMatch.timeDifferenceMS>=_cadenceMS/2 || !bestMatch.movie.isFullQuality())
+				Match bestMatch = findBestFrame(a,b);
+				if(bestMatch==null || !bestMatch.movie.isFullQuality())
 				{
 					//this doesn't work for some unknown reason
 					/*if(bestMatch!=null && !bestMatch.movie.isFullQuality() && bestMatch.timeDifferenceMS<_cadenceMS/2)

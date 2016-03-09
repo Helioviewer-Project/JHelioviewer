@@ -3,6 +3,8 @@ package org.helioviewer.jhv.plugins;
 import java.awt.event.MouseEvent;
 import java.time.LocalDateTime;
 
+import javax.annotation.Nullable;
+
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.layers.PluginLayer;
 import org.json.JSONException;
@@ -64,7 +66,7 @@ public abstract class Plugin
 	{
 	}
 
-	public void timeRangeChanged(LocalDateTime _start, LocalDateTime _end)
+	public void timeRangeChanged(@Nullable LocalDateTime _start, @Nullable LocalDateTime _end)
 	{
 	}
 	

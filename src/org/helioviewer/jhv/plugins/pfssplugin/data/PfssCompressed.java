@@ -44,7 +44,7 @@ public class PfssCompressed implements Cacheable
 	public PfssCompressed(FileDescriptor _descriptor, String url, PfssPlugin _parent)
 	{
 		descriptor = _descriptor;
-		httpRequest = Plugins.generateAndStartHTPPRequest(url, DownloadPriority.MEDIUM);
+		httpRequest = Plugins.startHTPPRequest(url, DownloadPriority.MEDIUM);
 		parent = _parent;
 	}
 

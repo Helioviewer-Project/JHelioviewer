@@ -115,6 +115,32 @@ public class MovieCache
 			al.add(_movie);
 	}
 
+	public static @Nullable Match findBestFrame(int _sourceId, long _minTimeMSInclusive, long _maxTimeMSExclusive)
+	{
+		List<Movie> al=cache.get(_sourceId);
+		if(al==null)
+			return null;
+		
+		//TODO: use more efficient data structures
+		Match bestMatch=null;
+		for (Movie m : al)
+		{
+			Match curMatch=m.findBestIdx(_minTimeMSInclusive, _maxTimeMSExclusive);
+			if(curMatch==null)
+				continue;
+			
+			if(bestMatch==null)
+				bestMatch=curMatch;
+			else if(curMatch.movie.isBetterQualityThan(bestMatch.movie))
+				bestMatch=curMatch;
+		}
+		
+		if(bestMatch!=null && bestMatch.movie instanceof MovieKduCacheBacked)
+			((MovieKduCacheBacked)bestMatch.movie).touch();
+		
+		return bestMatch;
+	}
+	
 	public static @Nullable Match findBestFrame(int _sourceId, long _currentTimeMS)
 	{
 		List<Movie> al=cache.get(_sourceId);
@@ -181,7 +207,7 @@ public class MovieCache
 				{
 					add(new MovieKduCacheBacked(f));
 				}
-				catch(UnsuitableMetaDataException|IOException e)
+				catch(Exception e)
 				{
 					Telemetry.trackException(new IOException("Cache: Could not load "+f.getName(),e));
 					f.delete();

@@ -117,7 +117,7 @@ class HEKRequestThread extends HEKRequest implements Runnable
 				System.out.println("Requesting Page " + page + " of HEK Events: " + uri);
 
 				// this might take a while
-				HTTPRequest httpRequest = Plugins.generateAndStartHTPPRequest(uri, DownloadPriority.MEDIUM);
+				HTTPRequest httpRequest = Plugins.startHTPPRequest(uri, DownloadPriority.MEDIUM);
 				// return if the current operation was canceled
 
 				while (!httpRequest.isFinished())

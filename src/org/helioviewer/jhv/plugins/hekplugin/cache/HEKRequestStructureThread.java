@@ -85,7 +85,7 @@ class HEKRequestStructureThread extends HEKRequest implements Runnable
 						+ "&temporalmode=overlap&result_limit=" + HEKSettings.REQUEST_STRUCTURE_PAGESIZE + "&page="
 						+ page;
 
-				HTTPRequest httpRequest = Plugins.generateAndStartHTPPRequest(uri, DownloadPriority.MEDIUM);
+				HTTPRequest httpRequest = Plugins.startHTPPRequest(uri, DownloadPriority.MEDIUM);
 
 				while (!httpRequest.isFinished())
 				{

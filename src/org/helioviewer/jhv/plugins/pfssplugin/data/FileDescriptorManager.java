@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import javax.annotation.Nullable;
 
+import org.helioviewer.jhv.base.downloadmanager.DownloadManager;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.plugins.Plugins;
@@ -53,7 +54,7 @@ public class FileDescriptorManager
 	 * @param _to
 	 *            date of last file description to read
 	 */
-	public synchronized void readFileDescriptors(final LocalDateTime _from, final LocalDateTime _to)
+	public synchronized void readFileDescriptors(final @Nullable LocalDateTime _from, final @Nullable LocalDateTime _to)
 	{
 		epoch++;
 		final int curEpoch = epoch;
@@ -65,11 +66,11 @@ public class FileDescriptorManager
 		{
 			descriptors.clear();
 		}
+		
+		if(firstDate==null || endDate==null)
+			return;
 
-		Thread thread = new Thread(new Runnable()
-		{
-			@Override
-			public void run()
+		Thread thread = new Thread(() ->
 			{
 				LocalDateTime currentDate = _from;
 				DateTimeFormatter monthFormatter = DateTimeFormatter.ofPattern("MM");
@@ -80,7 +81,7 @@ public class FileDescriptorManager
 				while (currentDate.isBefore(_to))
 				{
 					final String url = PfssSettings.SERVER_URL + currentDate.format(yearFormatter) + "/" + currentDate.format(monthFormatter) + "/list.txt";
-					httpRequests.add(Plugins.generateAndStartHTPPRequest(url, DownloadPriority.MEDIUM));
+					httpRequests.add(Plugins.startHTPPRequest(url, DownloadPriority.MEDIUM));
 					currentDate = currentDate.plusMonths(1);
 				}
 
@@ -118,10 +119,14 @@ public class FileDescriptorManager
 					{
 						parent.failedDownloads.add(httpRequest);
 					}
+					finally
+					{
+						for (HTTPRequest r : httpRequests)
+							Plugins.cancelHTTPRequest(r);
+					}
 					Plugins.repaintMainPanel();
 				}
-			}
-		}, "PFSS-DESCRIPTION-LOADER");
+			}, "PFSS-DESCRIPTION-LOADER");
 		thread.setDaemon(true);
 		thread.start();
 	}
