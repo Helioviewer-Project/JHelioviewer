@@ -428,8 +428,6 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 				//int max=(int)trackRect.getWidth();
 				for(int i=0;i<=max;i++)
 				{
-					//FIXME: looks weird (bastille day frame), playback is also wrong
-					
 					//snap position to nearest frame
 					int frame = (int)(TimeLine.SINGLETON.getFrameCount()*i/(double)(max+1));
 					long timeMS=TimeLine.SINGLETON.getFirstTimeMS()+frame*TimeLine.SINGLETON.getCadenceMS();
@@ -437,12 +435,12 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 					int frame2 = (int)(TimeLine.SINGLETON.getFrameCount()*(i+1)/(double)(max+1));
 					long timeMS2=TimeLine.SINGLETON.getFirstTimeMS()+frame2*TimeLine.SINGLETON.getCadenceMS();
 					
-					if(!layer.isDataAvailableOnServer(timeMS,timeMS2))
-						g.setColor(COLOR_NA);
-					else
+					//if(!layer.isDataAvailableOnServer(timeMS,timeMS2))
+					//	g.setColor(COLOR_NA);
+					//else
 					{
 						Match currentMatch = layer.findBestFrame(timeMS,timeMS2);
-						if(currentMatch==null || currentMatch.timeDifferenceMS>layer.getCadenceMS()/2)
+						if(currentMatch==null)
 							g.setColor(COLOR_NOT_CACHED);
 						else
 							g.setColor(currentMatch.movie.isFullQuality() ? COLOR_COMPLETELY_CACHED : COLOR_PARTIALLY_CACHED);

@@ -732,6 +732,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			}
 			else
 			{
+				//TODO: tracking is jerky in 2d mode
 				Vector3d newTranslation = newRotation.toMatrix().multiply(hitPoint);
 				translationEnd = translationEnd.add(new Vector3d(newTranslation.x-translationNow.x,newTranslation.y-translationNow.y,0));
 				translationNow = new Vector3d(newTranslation.x, newTranslation.y, translationNow.z);

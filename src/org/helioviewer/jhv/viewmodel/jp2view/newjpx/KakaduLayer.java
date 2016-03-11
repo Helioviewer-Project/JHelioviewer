@@ -74,14 +74,17 @@ public class KakaduLayer extends ImageLayer
 		return MovieCache.findBestFrame(sourceId, _minTimeMSInclusive, _maxTimeMSExclusive);
 	}
 	
-	public @Nullable Match findBestFrame(long _currentTimeMS)
+	public @Nullable Match findBestFrame(long _timeMS)
 	{
-		Match m = MovieCache.findBestFrame(sourceId, _currentTimeMS);
+		if(_timeMS<startMS-cadenceMS || _timeMS>endMS+cadenceMS)
+			return null;
+		
+		Match m = MovieCache.findBestFrame(sourceId, _timeMS);
 		if(m==null)
 			return null;
 		
-		if(m.timeDifferenceMS>cadenceMS && noFrames.contains(_currentTimeMS))
-			return null;
+		//if(m.timeDifferenceMS>cadenceMS && noFrames.contains(_time _timeMS))
+		//	return null;
 		
 		return m;
 	}
@@ -364,7 +367,9 @@ public class KakaduLayer extends ImageLayer
 							for(int i=0;i<frames.length();i++)
 								if("null".equalsIgnoreCase(frames.getString(i)))
 								{
-									noFrames.addInterval(download.from.get(i)*1000, download.to.get(i)*1000);
+									final long fFrom = download.from.get(i)*1000;
+									final long fTo = download.to.get(i)*1000;
+									SwingUtilities.invokeLater(() -> noFrames.addInterval(fFrom, fTo));
 								}
 								else
 									validFrames++;
