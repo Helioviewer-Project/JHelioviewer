@@ -68,8 +68,9 @@ public class KakaduLayer extends ImageLayer
 	
 	public @Nullable Match findBestFrame(long _minTimeMSInclusive, long _maxTimeMSExclusive)
 	{
-		if(noFrames.fullyContains(_minTimeMSInclusive, _maxTimeMSExclusive))
-			return null;
+		//TODO: re-add whenever noFrames is reliable
+		//if(noFrames.fullyContains(_minTimeMSInclusive, _maxTimeMSExclusive))
+		//	return null;
 		
 		return MovieCache.findBestFrame(sourceId, _minTimeMSInclusive, _maxTimeMSExclusive);
 	}
@@ -271,7 +272,7 @@ public class KakaduLayer extends ImageLayer
 			long a = _startMS;
 			long b = _startMS + _cadenceMS;
 			
-			if(!noFrames.fullyContains(a,b))
+			//if(!noFrames.fullyContains(a,b))
 			{
 				Match bestMatch = findBestFrame(a,b);
 				if(bestMatch==null || !bestMatch.movie.isFullQuality())
@@ -369,7 +370,7 @@ public class KakaduLayer extends ImageLayer
 								{
 									final long fFrom = download.from.get(i)*1000;
 									final long fTo = download.to.get(i)*1000;
-									SwingUtilities.invokeLater(() -> noFrames.addInterval(fFrom, fTo));
+									SwingUtilities.invokeAndWait(() -> noFrames.addInterval(fFrom, fTo));
 								}
 								else
 									validFrames++;
@@ -381,7 +382,10 @@ public class KakaduLayer extends ImageLayer
 									{
 										long ts = frames.getLong(f);
 										if(noFrames.contains(ts*1000))
+										{
 											System.err.println("API returned frame for "+ts+" when it previously found no such frame.");
+											Telemetry.trackEvent("API returned frame when it previously found no such frame", "TimeMS", Long.toString(ts*1000));
+										}
 										
 										boolean found=false;
 										for(int i=0;i<download.from.size();i++)

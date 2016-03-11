@@ -423,17 +423,17 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 			ImageLayer layer = Layers.getActiveImageLayer();
 			if (layer != null)
 			{
-				//TODO: speed this code up
-				int max=Math.min(TimeLine.SINGLETON.getFrameCount()-1, (int)trackRect.getWidth());
-				//int max=(int)trackRect.getWidth();
+				//TODO: speed this code up, for example by respecing the clipRect
+				int max=Math.min(TimeLine.SINGLETON.getFrameCount()-1, (int)trackRect.getWidth()-1);
+				//int max=(int)trackRect.getWidth()-1;
 				for(int i=0;i<=max;i++)
 				{
 					//snap position to nearest frame
-					int frame = (int)(TimeLine.SINGLETON.getFrameCount()*i/(double)(max+1));
-					long timeMS=TimeLine.SINGLETON.getFirstTimeMS()+frame*TimeLine.SINGLETON.getCadenceMS();
+					double frame = (int)((TimeLine.SINGLETON.getFrameCount()-2)*i/(double)(max))-0.5;
+					long timeMS=TimeLine.SINGLETON.getFirstTimeMS()+(long)(frame*TimeLine.SINGLETON.getCadenceMS());
 					
-					int frame2 = (int)(TimeLine.SINGLETON.getFrameCount()*(i+1)/(double)(max+1));
-					long timeMS2=TimeLine.SINGLETON.getFirstTimeMS()+frame2*TimeLine.SINGLETON.getCadenceMS();
+					double frame2 = (int)((TimeLine.SINGLETON.getFrameCount()-2)*(i+1)/(double)(max))+0.5;
+					long timeMS2=TimeLine.SINGLETON.getFirstTimeMS()+(long)(frame2*TimeLine.SINGLETON.getCadenceMS());
 					
 					//if(!layer.isDataAvailableOnServer(timeMS,timeMS2))
 					//	g.setColor(COLOR_NA);
@@ -446,8 +446,8 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 							g.setColor(currentMatch.movie.isFullQuality() ? COLOR_COMPLETELY_CACHED : COLOR_PARTIALLY_CACHED);
 					}
 					
-					int xa=(int)Math.round((i-0.5)/(double)max*WIDTH);
-					int xb=(int)Math.round((i+0.5)/(double)max*WIDTH);
+					int xa=(int)Math.round((i-0.5)/(double)(max)*WIDTH);
+					int xb=(int)Math.round((i+0.5)/(double)(max)*WIDTH);
 					if(xa<0)
 						xa=0;
 					if(xb>WIDTH)
