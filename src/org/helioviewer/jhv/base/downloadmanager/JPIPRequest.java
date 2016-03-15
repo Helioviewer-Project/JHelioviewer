@@ -46,7 +46,6 @@ public class JPIPRequest extends AbstractDownloadRequest
 		query.setField("rsiz", _width + "," + _height);
 		query.setField("roff", "0,0");
 		
-		
 		//hack: esa-jpip currently only supports stateful requests ?!?
 		query.setField("cnew", "http");
 		

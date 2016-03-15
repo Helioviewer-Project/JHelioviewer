@@ -44,17 +44,6 @@ public class HTTPSocket extends Socket
 		host = _uri.getHost();
 		setSoTimeout(timeout);
 		setKeepAlive(false);
-		super.connect(new InetSocketAddress(host, port), timeout);
-	}
-
-	/**
-	 * Reconnects to the last used host, and using the last used port.
-	 * 
-	 * @throws java.io.IOException
-	 */
-	protected void reconnect() throws IOException
-	{
-		super.connect(new InetSocketAddress(host, port), timeout);
 	}
 
 	/**
