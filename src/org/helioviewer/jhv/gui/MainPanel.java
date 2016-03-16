@@ -960,12 +960,10 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		repaint();
 	}
 
+	//FIXME: don't do anything if JHV is already in fullscreen
 	public void switchToFullscreen()
 	{
-		SwingUtilities.invokeLater(new Runnable()
-		{
-			@Override
-			public void run()
+		SwingUtilities.invokeLater(() ->
 			{
 				GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
 				GraphicsDevice graphicsDevice = MainFrame.SINGLETON.getGraphicsConfiguration().getDevice();
@@ -1009,8 +1007,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 
 				fullscreenFrame.addKeyListener(keyAdapter);
 				MainPanel.this.addKeyListener(keyAdapter);
-			}
-		});
+			});
 	}
 	
 	public boolean isCameraTrackingEnabled()

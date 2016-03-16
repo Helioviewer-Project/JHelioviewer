@@ -14,6 +14,7 @@ import org.helioviewer.jhv.gui.dialogs.ShortcutsDialog;
 
 public class ShowDialogAction extends AbstractAction
 {
+	private @Nullable JDialog previousInstance;
     private Class<JDialog> dialogToShow;
 
     /**
@@ -60,7 +61,10 @@ public class ShowDialogAction extends AbstractAction
     {
         try
         {
-            dialogToShow.newInstance();
+        	if(previousInstance!=null && previousInstance.isVisible())
+        		previousInstance.requestFocus();
+        	else
+        		previousInstance = dialogToShow.newInstance();
         }
         catch (Exception e1)
         {

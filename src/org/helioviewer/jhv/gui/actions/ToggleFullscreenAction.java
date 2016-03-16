@@ -25,6 +25,8 @@ public class ToggleFullscreenAction extends AbstractAction
     public void actionPerformed(@Nullable ActionEvent e)
     {
         Telemetry.trackEvent("Fullscreen activated");
+        
+        //FIXME: switch back to windowed when we're already in fullscreen
     	MainFrame.SINGLETON.MAIN_PANEL.switchToFullscreen();
     }
 }
