@@ -23,6 +23,7 @@ import org.helioviewer.jhv.base.JHVUncaughtExceptionHandler;
 import org.helioviewer.jhv.base.Log;
 import org.helioviewer.jhv.base.Observatories;
 import org.helioviewer.jhv.base.Settings;
+import org.helioviewer.jhv.base.ShutdownManager;
 import org.helioviewer.jhv.base.Settings.BooleanKey;
 import org.helioviewer.jhv.base.Settings.IntKey;
 import org.helioviewer.jhv.base.Telemetry;
@@ -137,7 +138,7 @@ public class JHelioviewer
 		
 									public void prepareShutdown()
 									{
-										ExitProgramAction.shutdownWithoutConfirmation(true);
+										ShutdownManager.shutdownWithoutConfirmation(true);
 									}
 								}, ApplicationLauncher.WindowMode.FRAME, null);
 					}

@@ -9,7 +9,7 @@ import java.util.Map;
 import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.base.Settings.StringKey;
-import org.helioviewer.jhv.gui.actions.ExitProgramAction;
+import org.helioviewer.jhv.base.ShutdownManager.ShutdownPhase;
 
 import com.mindscapehq.raygun4java.core.RaygunClient;
 import com.mindscapehq.raygun4java.core.messages.RaygunIdentifier;
@@ -161,14 +161,7 @@ public class UILatencyWatchdog
 			}
 		}));
 		
-		ExitProgramAction.addShutdownHook(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				stopWatchdog();
-			}
-		});
+		ShutdownManager.addShutdownHook(ShutdownManager.ShutdownPhase.STOP_WORK_1, () -> stopWatchdog());
 		
 		System.out.println("UI latency watchdog active");
 	}

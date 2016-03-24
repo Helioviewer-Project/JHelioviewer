@@ -16,7 +16,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 import org.helioviewer.jhv.base.Settings;
+import org.helioviewer.jhv.base.ShutdownManager;
 import org.helioviewer.jhv.base.Settings.BooleanKey;
+import org.helioviewer.jhv.base.ShutdownManager.ShutdownPhase;
 import org.helioviewer.jhv.base.downloadmanager.DownloadManager;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
@@ -25,7 +27,6 @@ import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.MainPanel;
-import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.layers.PluginLayer;
 import org.helioviewer.jhv.opengl.RayTrace;
@@ -79,14 +80,7 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 			pl.setVisible(Settings.getBoolean(Settings.BooleanKey.PLUGIN_VISIBLE,pl.getName()));
 			Layers.addLayer(pl);
 			
-			ExitProgramAction.addShutdownHook(new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					Settings.setBoolean(BooleanKey.PLUGIN_VISIBLE, pl.getName(), pl.isVisible());
-				}
-			});
+			ShutdownManager.addShutdownHook(ShutdownManager.ShutdownPhase.SAVE_SETTINGS_2, () -> Settings.setBoolean(BooleanKey.PLUGIN_VISIBLE, pl.getName(), pl.isVisible()));
 		}
 		
 		MainFrame.SINGLETON.MAIN_PANEL.addMouseListener(this);

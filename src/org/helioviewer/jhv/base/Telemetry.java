@@ -10,7 +10,7 @@ import java.util.UUID;
 import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.base.Settings.StringKey;
-import org.helioviewer.jhv.gui.actions.ExitProgramAction;
+import org.helioviewer.jhv.base.ShutdownManager.ShutdownPhase;
 import org.helioviewer.jhv.gui.statusLabels.FramerateStatusPanel;
 import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.Layer;
@@ -61,16 +61,11 @@ public class Telemetry
 		client.getContext().getProperties().put("DPI", Toolkit.getDefaultToolkit().getScreenResolution()+"");
 		
 		
-		ExitProgramAction.addShutdownHook(new Runnable()
-		{
-			@Override
-			public void run()
+		ShutdownManager.addShutdownHook(ShutdownManager.ShutdownPhase.SAVE_SETTINGS_2, () -> 
 			{
 				Telemetry.trackMetric("Session duration", (System.currentTimeMillis()-START_TIME)/1000);
 				flushSync();
-			}
-		});
-		
+			});
 		
 		
 		Thread telemetryCollection = new Thread(new Runnable()

@@ -20,7 +20,9 @@ import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.IntervalStore;
 import org.helioviewer.jhv.base.Settings;
+import org.helioviewer.jhv.base.ShutdownManager;
 import org.helioviewer.jhv.base.Settings.IntKey;
+import org.helioviewer.jhv.base.ShutdownManager.ShutdownPhase;
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.downloadmanager.DownloadManager;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
@@ -54,6 +56,8 @@ import kdu_jni.KduException;
 public class KakaduLayer extends ImageLayer
 {
 	@Nullable private volatile Thread loaderThread;
+	private Runnable stopLoaderThread = () -> loaderThread.interrupt();
+	
 	private boolean localFile = false;
 	private final int sourceId;
 	protected @Nullable String localPath;
@@ -471,11 +475,15 @@ public class KakaduLayer extends ImageLayer
 				
 				for(JPIPRequest j:pendingJPIP)
 					DownloadManager.remove(j);
+				
+				ShutdownManager.removeShutdownHook(stopLoaderThread);
 			}
 		}, "Layer loader "+sourceId);
 		
 		incomplete = false;
 		loaderThread.setDaemon(true);
+		
+		ShutdownManager.addShutdownHook(ShutdownManager.ShutdownPhase.STOP_WORK_1,stopLoaderThread);
 		loaderThread.start();
 	}
 	

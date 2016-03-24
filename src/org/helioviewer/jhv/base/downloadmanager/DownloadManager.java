@@ -8,7 +8,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.Nullable;
 
+import org.helioviewer.jhv.base.ShutdownManager;
 import org.helioviewer.jhv.base.Telemetry;
+import org.helioviewer.jhv.base.ShutdownManager.ShutdownPhase;
 
 public class DownloadManager
 {
@@ -49,10 +51,7 @@ public class DownloadManager
 	{
 		for (int i = 0; i < CONCURRENT_DOWNLOADS; i++)
 		{
-			Thread thread = new Thread(new Runnable()
-			{
-				@Override
-				public void run()
+			Thread thread = new Thread(() ->
 				{
 					//noinspection InfiniteLoopStatement
 					for(;;)
@@ -102,11 +101,13 @@ public class DownloadManager
 						{
 						}
 					}
-				}
-			});
+				});
+			
 			thread.setName("Download thread #" + i);
 			thread.setDaemon(true);
 			thread.start();
+			
+			ShutdownManager.addShutdownHook(ShutdownManager.ShutdownPhase.STOP_WORK_1, () -> thread.interrupt());
 		}
 	}
 

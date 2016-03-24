@@ -12,9 +12,10 @@ import javax.annotation.Nullable;
 
 import org.helioviewer.jhv.base.JHVUncaughtExceptionHandler;
 import org.helioviewer.jhv.base.Settings;
+import org.helioviewer.jhv.base.ShutdownManager;
 import org.helioviewer.jhv.base.Settings.IntKey;
+import org.helioviewer.jhv.base.ShutdownManager.ShutdownPhase;
 import org.helioviewer.jhv.base.Telemetry;
-import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 import org.helioviewer.jhv.layers.Movie;
 import org.helioviewer.jhv.layers.Movie.Match;
 import org.helioviewer.jhv.layers.MovieKduCacheBacked;
@@ -183,7 +184,7 @@ public class MovieCache
 		}
 		
 		limitCacheSize();
-		ExitProgramAction.addShutdownHook(() -> limitCacheSize());
+		ShutdownManager.addShutdownHook(ShutdownManager.ShutdownPhase.CLEANUP_3,() -> limitCacheSize());
 		
 		if(Settings.getBoolean(Settings.BooleanKey.CACHE_LOADING_CRASHED))
 		{

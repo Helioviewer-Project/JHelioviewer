@@ -3,22 +3,18 @@ package org.helioviewer.jhv.gui.actions;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 
 import javax.annotation.Nullable;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
 
-import org.helioviewer.jhv.base.UILatencyWatchdog;
+import org.helioviewer.jhv.base.ShutdownManager;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.layers.Layers;
 
 public class ExitProgramAction extends AbstractAction
 {
-	private static final ArrayList<Runnable> onShutdown=new ArrayList<>();
-	
 	public ExitProgramAction()
 	{
 		super("Quit");
@@ -27,11 +23,6 @@ public class ExitProgramAction extends AbstractAction
 				.getDefaultToolkit().getMenuShortcutKeyMask()));
 	}
 	
-	public static synchronized void addShutdownHook(Runnable _r)
-	{
-		onShutdown.add(_r);
-	}
-
 	public void actionPerformed(@Nullable ActionEvent e)
 	{
 		if (Layers.anyImageLayers())
@@ -45,34 +36,6 @@ public class ExitProgramAction extends AbstractAction
 				return;
 		}
 		
-		shutdownWithoutConfirmation(false);
-	}
-	
-	public static void shutdownWithoutConfirmation(boolean _synchronous)
-	{
-		UILatencyWatchdog.stopWatchdog();
-		
-		MainFrame.SINGLETON.startWaitCursor();
-		MainFrame.SINGLETON.setVisible(false);
-		
-		if(_synchronous)
-		{
-			System.out.println("Running shutdown hooks");
-			for(Runnable r:onShutdown)
-				r.run();
-			
-			System.out.println("Quitting application");
-			System.exit(0);
-		}
-		else
-			SwingUtilities.invokeLater(() ->
-				{
-					System.out.println("Running shutdown hooks");
-					for(Runnable r:onShutdown)
-						r.run();
-					
-					System.out.println("Quitting application");
-					System.exit(0);
-				});
+		ShutdownManager.shutdownWithoutConfirmation(false);
 	}
 }
