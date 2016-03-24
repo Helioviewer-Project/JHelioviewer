@@ -15,6 +15,7 @@ import org.helioviewer.jhv.opengl.camera.CameraPanInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraRotationInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraZoomBoxInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraZoomInteraction;
+import org.helioviewer.jhv.opengl.camera.animation.CameraZoomAnimation;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 
@@ -102,7 +103,7 @@ public class OverviewPanel extends MainPanel
 		Rectangle2D region = md.getPhysicalImageSize();
 		if (region == null)
 			return;
-
+		
 		double halfWidth = region.getHeight() / 2;
 		Dimension canvasSize = this.getSize();
 		double aspect = canvasSize.getWidth() / canvasSize.getHeight();
@@ -111,7 +112,10 @@ public class OverviewPanel extends MainPanel
 		double distance = halfWidth
 				* Math.sin(Math.PI / 2 - halfFOVRad)
 				/ Math.sin(halfFOVRad);
-		this.translationNow = new Vector3d(0, 0, distance);
+		
+		distance = distance - getTranslationEnd().z;
+		if(distance!=0)
+			addCameraAnimation(new CameraZoomAnimation(this, distance));
 	}
 
 	@Override

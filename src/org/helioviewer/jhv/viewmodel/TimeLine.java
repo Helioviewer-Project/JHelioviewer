@@ -273,7 +273,7 @@ public class TimeLine implements LayerListener
 	public void activeLayerChanged(@Nullable Layer layer)
 	{
 		if (layer != null && layer instanceof ImageLayer)
-			setTimeRange(((ImageLayer)layer).getFirstTimeMS(), ((ImageLayer)layer).getLastTimeMS(), ((ImageLayer)layer).getCadenceMS());
+			setTimeRange(((ImageLayer)layer).getStartTimeMS(), ((ImageLayer)layer).getEndTimeMS(), ((ImageLayer)layer).getCadenceMS());
 	}
 
 	public void setCurrentFrame(int _frameNr)

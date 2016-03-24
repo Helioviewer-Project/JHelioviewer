@@ -56,7 +56,7 @@ public class DownloadMovieDialog extends JDialog
 			return;
 		}
 		
-		String defaultName = _layer.getFullName() + " " + Globals.FILE_DATE_TIME_FORMATTER.format(MathUtils.toLDT(((ImageLayer)_layer).getFirstTimeMS())) + " " + Globals.FILE_DATE_TIME_FORMATTER.format(MathUtils.toLDT(((ImageLayer)_layer).getLastTimeMS()));
+		String defaultName = _layer.getFullName() + " " + Globals.FILE_DATE_TIME_FORMATTER.format(MathUtils.toLDT(((ImageLayer)_layer).getStartTimeMS())) + " " + Globals.FILE_DATE_TIME_FORMATTER.format(MathUtils.toLDT(((ImageLayer)_layer).getEndTimeMS()));
 		File selectedFile = Globals.showFileDialog(DialogType.SAVE_FILE,
 				"Download movie",
 				Settings.getString(StringKey.MOVIE_DOWNLOAD_PATH),

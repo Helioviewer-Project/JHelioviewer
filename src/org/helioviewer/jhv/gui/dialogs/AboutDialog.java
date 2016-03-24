@@ -118,22 +118,10 @@ public final class AboutDialog extends JDialog implements HyperlinkListener
 
         
         JButton closeButton = new JButton("Close");
-        closeButton.addActionListener(new ActionListener()
-        {
-			@Override
-			public void actionPerformed(@Nullable ActionEvent _arg0)
-			{
-				dispose();
-			}});
+        closeButton.addActionListener(e -> dispose());
         
         JButton creditsButton = new JButton("Credits...");
-        creditsButton.addActionListener(new ActionListener()
-        {
-			@Override
-			public void actionPerformed(@Nullable ActionEvent _arg0)
-			{
-				new CreditsDialog(AboutDialog.this);
-			}});
+        creditsButton.addActionListener(e -> new CreditsDialog(AboutDialog.this));
         
         JPanel closeButtonContainer = new JPanel(new BorderLayout());
         closeButtonContainer.add(creditsButton,BorderLayout.WEST);

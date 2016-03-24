@@ -55,7 +55,8 @@ public final class CreditsDialog extends JDialog
 		String[] names = new String[] { "Alen Alexanderian", "Andre Dau", "Benjamin W. Caplins", "Benjamin Wamsler",
 				"Bram Bourgoignie", "Daniel Müller", "Desmond Amadigwe", "Freek Verstringe", "Jonas Schwammberger",
 				"Juan Pablo Garcia Ortiz", "Ludwig Schmidt", "Malte Nuhn", "Markus Langenberg", "Simon Felix",
-				"Simon Spörri", "Stefan Meier", "Stephan Pagel", "Helge Dietert", "Andreas Hoelzl" };
+				"Simon Spörri", "Stefan Meier", "Stephan Pagel", "Helge Dietert", "Andreas Hoelzl", "David Berghmans",
+				"George Dimitoglou", "Bernhard Fleck", "Piers Jiggens", "Bogdan Nicula" };
         
         Collections.shuffle(Arrays.asList(names));
         

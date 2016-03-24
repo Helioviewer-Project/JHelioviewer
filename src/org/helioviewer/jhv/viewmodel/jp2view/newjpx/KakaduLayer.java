@@ -603,6 +603,9 @@ public class KakaduLayer extends ImageLayer
 	@Nullable
 	public MetaData getMetaData(long _timeMS)
 	{
+		//TODO: first, try to find the best frame (quality-wise) within the time for the current frame.
+		//if none is found, use findBestFrame(long) instead
+		
 		Match match = findBestFrame(_timeMS);
 		if (match == null)
 			return null;

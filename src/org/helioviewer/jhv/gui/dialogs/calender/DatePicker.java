@@ -56,11 +56,10 @@ public class DatePicker extends JPanel
 
 	public DatePicker(LocalDateTime _dateTime, JDialog _dialog)
 	{
-		dateTime = _dateTime;
 		newDatePickerPopup = new DatePickerPopup(this, _dialog);
 		initGUI();
-		txtFieldTime.setText(dateTime.format(TIME_FORMAT));
-		txtFieldDate.setText(dateTime.format(DATE_FORMAT));
+		
+		setDateTime(_dateTime);
 	}
 	
 	public void dispose()
@@ -91,23 +90,11 @@ public class DatePicker extends JPanel
 		txtFieldDate.addFocusListener(new FocusAdapter()
 		{
 			@Override
-			public void focusLost(@Nullable FocusEvent e)
-			{
-			}
-
-			@Override
 			public void focusGained(@Nullable FocusEvent _e)
 			{
-				//this has to run as a callback because of timing-issues
-				//in swing
-				SwingUtilities.invokeLater(new Runnable()
-				{
-					@Override
-					public void run()
-					{
-						txtFieldDate.selectAll();
-					}
-				});
+				//required to call as a callback because
+				//of timing-issues in swing
+				SwingUtilities.invokeLater(() -> txtFieldDate.selectAll());
 			}
 		});
 		
@@ -154,23 +141,11 @@ public class DatePicker extends JPanel
 		txtFieldTime.addFocusListener(new FocusAdapter()
 		{
 			@Override
-			public void focusLost(@Nullable FocusEvent e)
-			{
-			}
-
-			@Override
 			public void focusGained(@Nullable FocusEvent _e)
 			{
 				//required to call as a callback because
 				//of timing-issues in swing
-				SwingUtilities.invokeLater(new Runnable()
-				{
-					@Override
-					public void run()
-					{
-						txtFieldTime.selectAll();
-					}
-				});
+				SwingUtilities.invokeLater(() -> txtFieldTime.selectAll());
 			}
 		});
 		txtFieldTime.addKeyListener(new KeyAdapter()
@@ -278,10 +253,23 @@ public class DatePicker extends JPanel
 		});
 	}
 
-	void setDate(LocalDate _newDate)
+	public void setDate(LocalDate _newDate)
 	{
 		dateTime = _newDate.atTime(dateTime.toLocalTime());
 		txtFieldDate.setText(dateTime.format(DATE_FORMAT));
+		newDatePickerPopup.setVisible(false);
+		popupVisibile = false;
+		parseDateTime();
+	}
+
+	public void setDateTime(LocalDateTime _newDateTime)
+	{
+		dateTime = _newDateTime;
+		txtFieldTime.setText(dateTime.format(TIME_FORMAT));
+		
+		dateTime = _newDateTime;
+		txtFieldDate.setText(dateTime.format(DATE_FORMAT));
+
 		newDatePickerPopup.setVisible(false);
 		popupVisibile = false;
 		parseDateTime();
@@ -363,17 +351,6 @@ public class DatePicker extends JPanel
 			dateTime = localdate.atTime(dateTime.toLocalTime());
 			txtFieldDate.setForeground(null);
 			newDatePickerPopup.setCurrentDate(localdate);
-			
-			/*String newText = dateTime.format(DATE_FORMAT);
-			if(!newText.equals(txtFieldDate.getText()))
-				SwingUtilities.invokeLater(new Runnable()
-				{
-					@Override
-					public void run()
-					{
-						txtFieldDate.setText(newText);
-					}
-				});*/
 		}
 		else
 		{
@@ -385,17 +362,6 @@ public class DatePicker extends JPanel
 		{
 			dateTime = localtime.atDate(dateTime.toLocalDate());
 			txtFieldTime.setForeground(Color.BLACK);
-			
-			/*String newText = dateTime.format(TIME_FORMAT);
-			if(!newText.equals(txtFieldTime.getText()))
-				SwingUtilities.invokeLater(new Runnable()
-				{
-					@Override
-					public void run()
-					{
-						txtFieldTime.setText(newText);
-					}
-				});*/
 		}
 		else
 		{

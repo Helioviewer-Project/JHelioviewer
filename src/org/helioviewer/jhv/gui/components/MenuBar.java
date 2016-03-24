@@ -48,22 +48,14 @@ public class MenuBar extends JMenuBar
 		fileMenu.addSeparator();
 
 		JMenu exampleMenu = new JMenu("Load examples");
-		exampleMenu.add(new LoadStateAction("SDO/AIA Prominence Eruption (2010/12/06)",
-						MenuBar.class.getResource("/examples/SDO_AIA_Prominence_Eruption_2010_12_06.jhv")));
-		exampleMenu.add(new LoadStateAction("SDO/AIA Flare (2010/11/11)",
-						MenuBar.class.getResource("/examples/SDO_AIA_Flare_Nov2010.jhv")));
-		exampleMenu.add(new LoadStateAction("SOHO Halloween Storms (2003)",
-						MenuBar.class.getResource("/examples/SOHO_Halloween_Storms_2003.jhv")));
-		exampleMenu.add(new LoadStateAction("SOHO Comet Neat (February 2003)",
-						MenuBar.class.getResource("/examples/SOHO_Comet_Neat_Feb2003.jhv")));
-		exampleMenu.add(new LoadStateAction("SOHO Bastille Day flare (July 2000)",
-						MenuBar.class.getResource("/examples/SOHO_Bastille_Day_Flare_July2000.jhv")));
-		exampleMenu.add(new LoadStateAction("SOHO Lightbulb CME (February 2000)",
-						MenuBar.class.getResource("/examples/SOHO_Lightbulb_CME_Feb2000.jhv")));
-
-		// exampleMenu.add(new LoadStateAction("SOHO CMEs (May 1998)",
-		// FileUtils.getResourceUrl("/examples/SOHO_CMEs_May1998.jhv")));
-
+		exampleMenu.add(new LoadStateAction("SDO/AIA Prominence Eruption (December 2010)", MenuBar.class.getResource("/examples/SDO_AIA_Prominence_Eruption_2010_12_06.jhv")));
+		exampleMenu.add(new LoadStateAction("SDO/AIA Flare (November 2010)", MenuBar.class.getResource("/examples/SDO_AIA_Flare_Nov2010.jhv")));
+		exampleMenu.add(new LoadStateAction("SOHO Halloween Storms (October 2003)", MenuBar.class.getResource("/examples/SOHO_Halloween_Storms_2003.jhv")));
+		exampleMenu.add(new LoadStateAction("SOHO Comet Neat (February 2003)", MenuBar.class.getResource("/examples/SOHO_Comet_Neat_Feb2003.jhv")));
+		exampleMenu.add(new LoadStateAction("SOHO Bastille Day flare (July 2000)", MenuBar.class.getResource("/examples/SOHO_Bastille_Day_Flare_July2000.jhv")));
+		exampleMenu.add(new LoadStateAction("SOHO Lightbulb CME (February 2000)", MenuBar.class.getResource("/examples/SOHO_Lightbulb_CME_Feb2000.jhv")));
+		exampleMenu.add(new LoadStateAction("SDO/AIA Solar Tornado (September 2015)", MenuBar.class.getResource("/examples/SDO_AIA_Tornado_Sept2015.jhv")));
+		
 		fileMenu.add(exampleMenu);
 		fileMenu.add(new LoadStateAction());
 		fileMenu.add(new SaveStateAction());

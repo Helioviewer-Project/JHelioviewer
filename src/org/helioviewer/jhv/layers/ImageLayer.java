@@ -400,12 +400,12 @@ public abstract class ImageLayer extends Layer
 	{
 	}
 
-	public long getFirstTimeMS()
+	public long getStartTimeMS()
 	{
 		return startMS;
 	}
 
-	public long getLastTimeMS()
+	public long getEndTimeMS()
 	{
 		return endMS;
 	}

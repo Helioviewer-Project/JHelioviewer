@@ -277,9 +277,9 @@ class DatePickerPopup extends JDialog implements AWTEventListener
 		calenderPanel.add(table, BorderLayout.CENTER);
 	}
 
-	public void setCurrentDate(LocalDate date)
+	public void setCurrentDate(LocalDate _date)
 	{
-		this.currentDate = date;
+		currentDate = _date;
 		calenderCellRenderer.setCurrentDate(currentDate);
 	}
 

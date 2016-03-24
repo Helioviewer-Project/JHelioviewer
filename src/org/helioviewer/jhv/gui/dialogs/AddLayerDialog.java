@@ -39,6 +39,7 @@ import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.gui.dialogs.calender.DatePicker;
+import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
 
@@ -88,6 +89,9 @@ public class AddLayerDialog extends JDialog
 	
 	public static void addDefaultStartupLayer()
 	{
+		if(Layers.anyImageLayers())
+			return;
+		
 		try
 		{
 			for(Observatory o:Observatories.getObservatories())
@@ -277,7 +281,6 @@ public class AddLayerDialog extends JDialog
 		
 		
 		int sourceId=Settings.getInt(Settings.IntKey.ADDLAYER_LAST_SOURCEID);
-		System.out.println("Restoring "+sourceId);
 		for(Observatory o:Observatories.getObservatories())
 			for(Filter f:o.getInstruments())
 			{
@@ -354,6 +357,16 @@ public class AddLayerDialog extends JDialog
 		gbc_datePickerEndDate.gridx = 0;
 		gbc_datePickerEndDate.gridy = 1;
 		contentPanel.add(datePickerEndDate, gbc_datePickerEndDate);
+		
+		
+		
+		@Nullable ImageLayer il = Layers.getActiveImageLayer();
+		if(il!=null)
+		{
+			datePickerStartDate.setDateTime(MathUtils.toLDT(il.getStartTimeMS()));
+			datePickerEndDate.setDateTime(MathUtils.toLDT(il.getEndTimeMS()));
+		}
+		
 		JLabel lblCadence = new JLabel("Cadence");
 		GridBagConstraints gbc_lblCadence = new GridBagConstraints();
 		gbc_lblCadence.fill = GridBagConstraints.HORIZONTAL;
@@ -362,8 +375,6 @@ public class AddLayerDialog extends JDialog
 		gbc_lblCadence.gridy = 2;
 		contentPanel.add(lblCadence, gbc_lblCadence);
 		cadence = new JSpinner();
-		
-		
 		((DefaultEditor)cadence.getEditor()).getTextField().addFocusListener(new FocusAdapter()
 		{
 			@Override
