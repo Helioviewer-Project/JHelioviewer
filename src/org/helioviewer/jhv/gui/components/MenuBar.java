@@ -10,10 +10,10 @@ import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MoviePanel;
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
-import org.helioviewer.jhv.gui.actions.ExportMovieAction;
 import org.helioviewer.jhv.gui.actions.LoadStateAction;
 import org.helioviewer.jhv.gui.actions.OpenLocalFileAction;
 import org.helioviewer.jhv.gui.actions.OpenURLinBrowserAction;
+import org.helioviewer.jhv.gui.actions.SaveMovieAsAction;
 import org.helioviewer.jhv.gui.actions.SaveScreenshotAsAction;
 import org.helioviewer.jhv.gui.actions.SaveStateAction;
 import org.helioviewer.jhv.gui.actions.ShowDialogAction;
@@ -62,7 +62,7 @@ public class MenuBar extends JMenuBar
 		fileMenu.addSeparator();
 		fileMenu.add(new SaveScreenshotAsAction());
 
-		fileMenu.add(new ExportMovieAction());
+		fileMenu.add(new SaveMovieAsAction());
 
 		if (!Globals.IS_OS_X)
 		{

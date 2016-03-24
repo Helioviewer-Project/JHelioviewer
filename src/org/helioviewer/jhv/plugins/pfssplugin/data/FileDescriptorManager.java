@@ -6,7 +6,6 @@ import java.util.ArrayList;
 
 import javax.annotation.Nullable;
 
-import org.helioviewer.jhv.base.downloadmanager.DownloadManager;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
 import org.helioviewer.jhv.plugins.Plugins;

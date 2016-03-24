@@ -1,27 +1,22 @@
 package org.helioviewer.jhv.gui.dialogs;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 
-import javax.annotation.Nullable;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.gui.MainFrame;
-import java.awt.FlowLayout;
-import javax.swing.JLabel;
-import javax.swing.border.EmptyBorder;
-import javax.swing.SwingConstants;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
 
 public class ShortcutsDialog extends JDialog
 {

@@ -3,7 +3,6 @@ package org.helioviewer.jhv.viewmodel.jp2view.io.http;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.InetSocketAddress;
 import java.net.ProtocolException;
 import java.net.Socket;
 import java.net.URI;

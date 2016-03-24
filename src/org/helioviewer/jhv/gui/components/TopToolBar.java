@@ -18,8 +18,8 @@ import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
 import org.helioviewer.jhv.base.Settings;
-import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.Settings.StringKey;
+import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.actions.ResetCameraAction;

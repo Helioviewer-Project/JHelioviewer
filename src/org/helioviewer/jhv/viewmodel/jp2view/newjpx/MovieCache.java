@@ -18,7 +18,6 @@ import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 import org.helioviewer.jhv.layers.Movie;
 import org.helioviewer.jhv.layers.Movie.Match;
 import org.helioviewer.jhv.layers.MovieKduCacheBacked;
-import org.helioviewer.jhv.viewmodel.metadata.UnsuitableMetaDataException;
 
 import com.google.common.io.Files;
 

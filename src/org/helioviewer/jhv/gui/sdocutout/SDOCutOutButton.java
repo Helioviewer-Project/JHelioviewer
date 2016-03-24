@@ -46,7 +46,7 @@ public class SDOCutOutButton extends JButton implements	LayerListener
 	@Override
 	public void layerAdded()
 	{
-		//TODO: should also recheck when new metadata becomes available
+		//TODO: should recheck when new metadata becomes available
 		enableIffSDOLayersActive();
 	}
 
@@ -59,5 +59,7 @@ public class SDOCutOutButton extends JButton implements	LayerListener
 	@Override
 	public void activeLayerChanged(@Nullable Layer layer)
 	{
+		//TODO: remove this workaround, when metadata check above is implemented
+		enableIffSDOLayersActive();
 	}
 }
