@@ -67,7 +67,7 @@ public class ShortcutsDialog extends JDialog
 		gbc_lblNewLabel_1.gridy = 0;
 		panel.add(lblNewLabel_1, gbc_lblNewLabel_1);
 		
-		final JLabel lblAltt = new JLabel("ALT+T");
+		final JLabel lblAltt = new JLabel("ALT+ENTER");
 		lblAltt.setFont(new Font("Tahoma", Font.BOLD, 16));
 		lblAltt.setHorizontalAlignment(SwingConstants.TRAILING);
 		GridBagConstraints gbc_lblAltt = new GridBagConstraints();

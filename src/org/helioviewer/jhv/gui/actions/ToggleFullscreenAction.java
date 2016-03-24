@@ -19,14 +19,16 @@ public class ToggleFullscreenAction extends AbstractAction
         super("Toggle Fullscreen", IconBank.getIcon(JHVIcon.FULLSCREEN, 16, 16));
         putValue(SHORT_DESCRIPTION, "Toggle fullscreen");
         putValue(MNEMONIC_KEY, KeyEvent.VK_T);
-        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.ALT_MASK));
+        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.ALT_MASK));
     }
 
     public void actionPerformed(@Nullable ActionEvent e)
     {
         Telemetry.trackEvent("Fullscreen activated");
         
-        //FIXME: switch back to windowed when we're already in fullscreen
-    	MainFrame.SINGLETON.MAIN_PANEL.switchToFullscreen();
+        if(MainFrame.SINGLETON.MAIN_PANEL.isFullscreen())
+        	MainFrame.SINGLETON.MAIN_PANEL.switchToWindowed();
+        else
+        	MainFrame.SINGLETON.MAIN_PANEL.switchToFullscreen();
     }
 }

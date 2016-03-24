@@ -959,21 +959,58 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		cameraAnimations.add(cameraAnimation);
 		repaint();
 	}
+	
+	private JFrame fullscreenFrame;
+	private Container lastPanelParent;
+	private KeyAdapter exitFullscreenListener = new KeyAdapter()
+	{
+		@Override
+		public void keyPressed(@Nullable KeyEvent e)
+		{
+			if(e==null)
+				return;
+			
+			if (e.getKeyCode() == KeyEvent.VK_ESCAPE || (e.isAltDown() && e.getKeyCode() == KeyEvent.VK_T))
+				switchToWindowed();
+		}
+	};
+	public void switchToWindowed()
+	{
+		SwingUtilities.invokeLater(() ->
+		{
+			if(!isFullscreen())
+				return;
+			
+			MainPanel.this.removeKeyListener(exitFullscreenListener);
+			fullscreenFrame.getContentPane().remove(MainPanel.this);
+			lastPanelParent.add(MainPanel.this);
+			fullscreenFrame.setVisible(false);
 
-	//FIXME: don't do anything if JHV is already in fullscreen
+			fullscreenFrame.dispose();
+			fullscreenFrame = null;
+		});
+	}
+	
+	public boolean isFullscreen()
+	{
+		return fullscreenFrame != null;
+	}
+
 	public void switchToFullscreen()
 	{
 		SwingUtilities.invokeLater(() ->
 			{
-				GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
+				if(isFullscreen())
+					return;
+				
 				GraphicsDevice graphicsDevice = MainFrame.SINGLETON.getGraphicsConfiguration().getDevice();
 				if (graphicsDevice == null)
-					graphicsDevice = graphicsEnvironment.getDefaultScreenDevice();
+					graphicsDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 
-				final JFrame fullscreenFrame = new JFrame(graphicsDevice.getDefaultConfiguration());
+				fullscreenFrame = new JFrame(graphicsDevice.getDefaultConfiguration());
 
 				fullscreenFrame.getContentPane().setLayout(new BorderLayout());
-				final Container lastParent = MainPanel.this.getParent();
+				lastPanelParent = MainPanel.this.getParent();
 				fullscreenFrame.getContentPane().add(MainPanel.this);
 
 				fullscreenFrame.setExtendedState(Frame.MAXIMIZED_BOTH);
@@ -982,31 +1019,10 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 
 				if (graphicsDevice.isFullScreenSupported())
 					graphicsDevice.setFullScreenWindow(fullscreenFrame);
-
+				
 				fullscreenFrame.setVisible(true);
-
-				final KeyAdapter keyAdapter = new KeyAdapter()
-				{
-					@Override
-					public void keyPressed(@Nullable KeyEvent e)
-					{
-						if(e==null)
-							return;
-						
-						if (e.getKeyCode() == KeyEvent.VK_ESCAPE || (e.isAltDown() && e.getKeyCode() == KeyEvent.VK_T))
-						{
-							MainPanel.this.removeKeyListener(this);
-							fullscreenFrame.getContentPane().remove(MainPanel.this);
-							lastParent.add(MainPanel.this);
-							fullscreenFrame.setVisible(false);
-
-							fullscreenFrame.dispose();
-						}
-					}
-				};
-
-				fullscreenFrame.addKeyListener(keyAdapter);
-				MainPanel.this.addKeyListener(keyAdapter);
+				fullscreenFrame.addKeyListener(exitFullscreenListener);
+				MainPanel.this.addKeyListener(exitFullscreenListener);
 			});
 	}
 	
