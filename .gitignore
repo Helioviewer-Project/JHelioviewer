@@ -1,3 +1,14 @@
+<<<<<<< HEAD
 _site
 .sass-cache
 /bin/
+=======
+bin/
+*.class
+.metadata/
+.app
+*.cg
+*.asm
+/bin
+/build/builds
+>>>>>>> master
