@@ -6,7 +6,7 @@ active: home
 <div id="site_content">    
 <div id="content">
 
-<div class="disignBoxSecond" style="width:500; float:left">
+<div class="disignBoxSecond" style="width:520; float:left">
 <div class="boxContent"> 
 <h1>JHelioviewer - Explore the Sun</h1>
 <p>
@@ -26,40 +26,28 @@ This new version has been improved  under the contract “High Performance Distr
 	</div>
 	</div>
 
-<!-- does this part do anything at all?>
+
 <div class="disignBoxSecond">
 <div class="boxContent">
   <div style="float:left">
-</div>
+<!--  <h1>JHelioviewer - Explore the Sun</h1>
 -->
-
-<div style="float:right; width:200px" class="disignBoxSecond">
-<div class="boxContent">
-<h1>Get New JHelioviewer 2.9.10</h1>
-<a href='http://swhv.oma.be/swhv_releasev2.9/'><img src='imgs/downloads/all_platforms.png' height='140'  /></a>
-<br />
-</div></div>
-
-
-<div style="float:right; width:200px" class="disignBoxSecond">
-<div class="boxContent">
-<h1>Get JHelioviewer 2.3.3 &nbsp; </h1>
-<div id="download">
 </div>
+
+<div style="float:right; width:290px" class="disignBoxSecond">
+<div class="boxContent">
+<h1>Get standard JHelioviewer (stable release)</h1>
 <div id="download">
 </div>
 <br />
-<ul>
-<li><a href="download.html">Other platforms</a><br></li>
-<!--<li><a href="{{ site.TutorialPage }}"2-minute video tutorial</a></li>
--->
-<li><a href="download_archive.html">Download beta and old versions</a></li>
-<!--<p></p>
+<a href="download.html">Other platforms</a><br>
+<a href="{{ site.TutorialPage }}"2-minute video tutorial</a>
+<p></p>
 <ul>
 <li>Explore 20+ years of <a href="{{ site.SOHOPage }}" target="_blank">SOHO</a> data</li>
 <li>Browse high-res <a href="{{ site.SDOPage }}" target="_blank">SDO</a> data</li>
+<!--<li>Create your own movies of the Sun</li>-->
 <li><a href="download_archive.html">Download beta and old versions</a></li>
--->
 </ul>
 
 
@@ -72,8 +60,8 @@ This new version has been improved  under the contract “High Performance Distr
 <!--  <a href="download.html"><img src="imgs/screenshots/JHV_2.1_screenshot_w350.png"
   width="520" alt="Click to download JHelioviewer" /></a>
 -->
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  <a href="http://sidc.be/jhelioviewer"><img src="imgs/screenshots/JHV_2.9.10_screenshot_w700.png"
-  width="440" alt="Click to download the new JHelioviewer" /></a>
+  <a href="http://sidc.be/jhelioviewer"><img src="imgs/screenshots/JHV_2.9.10_screenshot_w700.png"
+  width="520" alt="Click to download the new JHelioviewer" /></a>
 </p>
 
 <!--
