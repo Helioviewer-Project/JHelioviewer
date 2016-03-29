@@ -6,37 +6,15 @@ active: home
 <div id="site_content">    
 <div id="content">
 
-<div class="disignBoxSecond" style="width:520; float:left">
-<div class="boxContent"> 
-<h1>JHelioviewer - Explore the Sun</h1>
-<p>
-<strong></strong>A new generation of JHelioviewer is <a href="http://swhv.oma.be/swhv_releasev2.9/" target="_blank">available for download</a>.</strong> It offers increased performance as well as a large number of novel features, including:
-<ul>
-<li>Access to new datasets from three different servers (GSFC, ROB, IAS)
-<!--<li>Combined view from different vantage points (e.g., STEREO and SDO) for full sphere mapping-->
-<li>Additional viewing options, such as running and base differences, and a side-by-side (multiview) mode
-<li>Image projections such as orthographic, latitudinal and polar
-<li>Timeline displays of 1D and 2D datasets, synchronized with image time series
-<li>Integration of features and events from the <a href="https://www.lmsal.com/hek/" target="_blank">Heliophysics Events Knowledgebase</a>, and alerts from the COMESEP system
-<!--<li>Magnetic field line extrapolation and rendering-->
-</ul>
-This new version has been improved  under the contract “High Performance Distributed Solar Imaging and Processing System” of the European Space Agency (ESA), awarded to the SIDC @ Royal Observatory of Belgium (ROB). <a href="http://swhv.oma.be/user_manual/" target="_blank">Read more...</a>
-</p>
-<p>The JHelioviewer stable release version 2.3.3 as well as our beta versions 3.0.x, developed at FHNW Windisch, Switzerland, remain available, while we continue to work on improving user experience.</p>
-	</div>
-	</div>
-
-
 <div class="disignBoxSecond">
 <div class="boxContent">
   <div style="float:left">
-<!--  <h1>JHelioviewer - Explore the Sun</h1>
--->
+  <h1>JHelioviewer - Explore the Sun</h1>
 </div>
 
 <div style="float:right; width:290px" class="disignBoxSecond">
 <div class="boxContent">
-<h1>Get standard JHelioviewer (stable release)</h1>
+<h1>Get JHelioviewer</h1>
 <div id="download">
 </div>
 <br />
@@ -44,9 +22,9 @@ This new version has been improved  under the contract “High Performance Distr
 <a href="{{ site.TutorialPage }}"2-minute video tutorial</a>
 <p></p>
 <ul>
-<li>Explore 20+ years of <a href="{{ site.SOHOPage }}" target="_blank">SOHO</a> data</li>
+<li>Explore 18+ years of <a href="{{ site.SOHOPage }}" target="_blank">SOHO</a> data</li>
 <li>Browse high-res <a href="{{ site.SDOPage }}" target="_blank">SDO</a> data</li>
-<!--<li>Create your own movies of the Sun</li>-->
+<li>Create your own movies of the Sun</li>
 <li><a href="download_archive.html">Download beta and old versions</a></li>
 </ul>
 
@@ -57,11 +35,8 @@ This new version has been improved  under the contract “High Performance Distr
 
 
 <p style="float:left">
-<!--  <a href="download.html"><img src="imgs/screenshots/JHV_2.1_screenshot_w350.png"
+  <a href="download.html"><img src="imgs/screenshots/JHV_2.1_screenshot_w350.png"
   width="520" alt="Click to download JHelioviewer" /></a>
--->
-  <a href="http://sidc.be/jhelioviewer"><img src="imgs/screenshots/JHV_2.9.10_screenshot_w700.png"
-  width="520" alt="Click to download the new JHelioviewer" /></a>
 </p>
 
 <!--
@@ -110,6 +85,7 @@ JPEG 2000 offers many useful new features and has the potential to
 <script type="text/javascript">
 function platformDetect(){
   var pathName = String(window.location);
+
   $.getJSON( "https://api.github.com/repos/Helioviewer-Project/JHelioviewer/releases", function( data ) {
     var items = [];
     $.each( data, function( key, value ) {
@@ -150,6 +126,7 @@ function platformDetect(){
         } else{
 			text += "<a href='download.html'><img src='imgs/downloads/all_platforms.png' height='140'  /></a>";
 		}
+
         text += "</div>"
         $("#download").append(text);
         
