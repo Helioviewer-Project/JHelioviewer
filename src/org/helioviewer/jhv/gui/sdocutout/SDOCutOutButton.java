@@ -9,7 +9,6 @@ import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
-import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
 import org.helioviewer.jhv.viewmodel.metadata.MetaDataAIA;
 
@@ -34,7 +33,7 @@ public class SDOCutOutButton extends JButton implements	LayerListener
 	{
 		for (Layer layer : Layers.getLayers())
 			if(layer instanceof KakaduLayer)
-				if(((KakaduLayer)layer).getMetaData(TimeLine.SINGLETON.getCurrentTimeMS()) instanceof MetaDataAIA)
+				if(((KakaduLayer)layer).getCurrentMetaData() instanceof MetaDataAIA)
 				{
 					setEnabled(true);
 					return;

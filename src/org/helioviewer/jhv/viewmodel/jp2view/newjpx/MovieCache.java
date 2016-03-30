@@ -12,9 +12,8 @@ import javax.annotation.Nullable;
 
 import org.helioviewer.jhv.base.JHVUncaughtExceptionHandler;
 import org.helioviewer.jhv.base.Settings;
-import org.helioviewer.jhv.base.ShutdownManager;
 import org.helioviewer.jhv.base.Settings.IntKey;
-import org.helioviewer.jhv.base.ShutdownManager.ShutdownPhase;
+import org.helioviewer.jhv.base.ShutdownManager;
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.layers.Movie;
 import org.helioviewer.jhv.layers.Movie.Match;

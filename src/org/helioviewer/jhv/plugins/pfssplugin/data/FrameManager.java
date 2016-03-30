@@ -34,7 +34,7 @@ public class FrameManager
 	 * @param date
 	 * @return Frame or null if there is no frame for the requested date
 	 */
-	public @Nullable PfssDecompressed getFrame(GL2 _gl, LocalDateTime date)
+	public @Nullable PfssDecompressed getFrame(@Nullable GL2 _gl, LocalDateTime date)
 	{
 		//outside of loaded frames
 		if(!descriptorManager.isDateInRange(date))
@@ -65,7 +65,7 @@ public class FrameManager
 			return curFrame;
 		}
 
-		if(curFrame!=null)
+		if(curFrame!=null && _gl!=null)
 		    curFrame.dispose(_gl);
 		
         FileDescriptor fd=descriptorManager.getFileDescriptor(date);

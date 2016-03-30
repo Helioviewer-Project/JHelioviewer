@@ -16,7 +16,6 @@ import org.helioviewer.jhv.opengl.camera.CameraRotationInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraZoomBoxInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraZoomInteraction;
 import org.helioviewer.jhv.opengl.camera.animation.CameraZoomAnimation;
-import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 
 import com.jogamp.opengl.GL2;
@@ -96,7 +95,7 @@ public class OverviewPanel extends MainPanel
 		if (activeLayer == null)
 			return;
 		
-		MetaData md=activeLayer.getMetaData(TimeLine.SINGLETON.getCurrentTimeMS());
+		MetaData md=activeLayer.getCurrentMetaData();
 		if (md == null)
 			return;
 		

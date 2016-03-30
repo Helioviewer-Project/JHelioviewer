@@ -69,6 +69,7 @@ public class JPIPSocket extends HTTPSocket
 	
 			getOutputStream().write(str.toString().getBytes(StandardCharsets.UTF_8));
 			
+			//System.err.println("JPIP request for http://" + host + ":" + port + uri.getPath() + "?"+_query);
 			HTTPResponse httpRes = (HTTPResponse) super.receive();
 			if (httpRes == null)
 				return null;

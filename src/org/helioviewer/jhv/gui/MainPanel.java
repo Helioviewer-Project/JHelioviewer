@@ -154,7 +154,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			}
 			
 			@Override
-			public void timeRangeChanged(long _start, long _end)
+			public void timeRangeChanged()
 			{
 			}
 
@@ -393,7 +393,6 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 	
 	protected void render(GL2 gl, boolean _showLoadingAnimation, Dimension sizeForDecoder)
 	{
-		long currentTimeMS = TimeLine.SINGLETON.getCurrentTimeMS();
 		gl.glClearDepth(1);
 		gl.glDepthMask(true);
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
@@ -421,7 +420,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 				ImageLayer il = Layers.getActiveImageLayer();
 				if (il != null)
 				{
-					MetaData md = il.getMetaData(currentTimeMS);
+					MetaData md = il.getCurrentMetaData();
 					if (md != null)
 						rotationNow = md.rotation;
 				}
@@ -712,12 +711,12 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 	protected void updateTrackRotation()
 	{
 		if (lastCameraTrackingDate == 0)
-			lastCameraTrackingDate = TimeLine.SINGLETON.getCurrentTimeMS();
+			lastCameraTrackingDate = TimeLine.SINGLETON.getCurrentFrameMiddleTimeMS();
 
-		if (lastCameraTrackingDate!=TimeLine.SINGLETON.getCurrentTimeMS())
+		if (lastCameraTrackingDate!=TimeLine.SINGLETON.getCurrentFrameMiddleTimeMS())
 		{
-			long differenceMS = TimeLine.SINGLETON.getCurrentTimeMS()-lastCameraTrackingDate;
-			lastCameraTrackingDate = TimeLine.SINGLETON.getCurrentTimeMS();
+			long differenceMS = TimeLine.SINGLETON.getCurrentFrameMiddleTimeMS()-lastCameraTrackingDate;
+			lastCameraTrackingDate = TimeLine.SINGLETON.getCurrentFrameMiddleTimeMS();
 			
 			RayTrace rayTrace = new RayTrace();
 			Vector3d hitPoint = rayTrace.cast(getWidth() / 2, getHeight() / 2, this).getHitpoint();
@@ -1037,7 +1036,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			return;
 		
 		cameraTrackingEnabled = _isEnabled;
-		lastCameraTrackingDate = TimeLine.SINGLETON.getCurrentTimeMS();
+		lastCameraTrackingDate = TimeLine.SINGLETON.getCurrentFrameMiddleTimeMS();
 		
 		MainFrame.SINGLETON.TOP_TOOL_BAR.setTracking(_isEnabled);
 	}

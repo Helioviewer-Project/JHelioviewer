@@ -15,7 +15,6 @@ import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.opengl.camera.animation.CameraRotationAnimation;
 import org.helioviewer.jhv.opengl.camera.animation.CameraTranslationAnimation;
-import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 
 public class ResetCameraAction extends AbstractAction
@@ -35,7 +34,7 @@ public class ResetCameraAction extends AbstractAction
     	Quaternion destRotation=Quaternion.IDENTITY;
     	if(il!=null)
     	{
-    		MetaData md=il.getMetaData(TimeLine.SINGLETON.getCurrentTimeMS());
+    		MetaData md=il.getCurrentMetaData();
     		if(md!=null)
     			destRotation=md.rotation;
     	}

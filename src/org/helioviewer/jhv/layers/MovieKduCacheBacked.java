@@ -56,7 +56,6 @@ public class MovieKduCacheBacked extends Movie
 		jpipURI = _jpipURI;
 		metaDatas = new MetaData[_frameCount];
 		
-		//TODO: check whether this actually works, is kept up to date, serialized to file, etc.
 		timeMS = new long[_frameCount];
 		
 		backingFile = File.createTempFile(sourceId+"-jhv", null, MovieCache.CACHE_DIR);

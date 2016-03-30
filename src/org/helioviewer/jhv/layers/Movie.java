@@ -273,16 +273,34 @@ public abstract class Movie
 		{
 			return movie.getTimeMS(index);
 		}
+		
+		public @Nullable Document getMetaDataDocument()
+		{
+			return movie.readMetadataDocument(index);
+		}
 	}
 	
-	//TODO: should return frame closest to (_min+_max)/2
 	@Nullable public Match findBestIdx(long _minTimeMSInclusive, long _maxTimeMSExclusive)
 	{
+		long middle = (_minTimeMSInclusive + _maxTimeMSExclusive)/2;
+		int bestMatch = -1;
+		long bestDiff = Long.MAX_VALUE;
+		
 		for (int i = 0; i < timeMS.length; i++)
 			if(timeMS[i]>=_minTimeMSInclusive && timeMS[i]<_maxTimeMSExclusive)
-				return new Match(i,-1);
+			{
+				long curDiff = Math.abs(timeMS[i]-middle);
+				if(curDiff<bestDiff)
+				{
+					bestDiff=curDiff;
+					bestMatch = i;
+				}
+			}
 		
-		return null;
+		if(bestMatch==-1)
+			return null;
+		
+		return new Match(bestMatch,-1);
 	}
 	
 	@Nullable public Match findClosestIdx(long _currentDateTimeMS)

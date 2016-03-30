@@ -18,7 +18,6 @@ import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.opengl.camera.animation.CameraZoomAnimation;
-import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 
 public class ZoomFitAction extends AbstractAction implements LayerListener
@@ -39,8 +38,7 @@ public class ZoomFitAction extends AbstractAction implements LayerListener
 		if (activeLayer == null)
 			return;
 
-		long currentDateTime = TimeLine.SINGLETON.getCurrentTimeMS();
-		MetaData md=activeLayer.getMetaData(currentDateTime);
+		MetaData md=activeLayer.getCurrentMetaData();
 		if(md==null)
 			return;
 		

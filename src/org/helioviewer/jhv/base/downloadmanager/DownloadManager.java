@@ -10,7 +10,6 @@ import javax.annotation.Nullable;
 
 import org.helioviewer.jhv.base.ShutdownManager;
 import org.helioviewer.jhv.base.Telemetry;
-import org.helioviewer.jhv.base.ShutdownManager.ShutdownPhase;
 
 public class DownloadManager
 {

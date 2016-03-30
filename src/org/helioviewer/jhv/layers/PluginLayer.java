@@ -2,11 +2,13 @@ package org.helioviewer.jhv.layers;
 
 import javax.annotation.Nullable;
 
+import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.gui.OverviewPanel;
 import org.helioviewer.jhv.plugins.Plugin;
 import org.helioviewer.jhv.plugins.Plugin.RenderMode;
 import org.helioviewer.jhv.plugins.Plugins;
+import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -74,6 +76,15 @@ public class PluginLayer extends Layer
 	@Override
 	public void setVisible(boolean _visible)
 	{
+		if(_visible==isVisible())
+			return;
+		
+		if(_visible)
+		{
+			plugin.timeStampChanged(Plugins.SINGLETON.currentTimeStamp, Plugins.SINGLETON.previousTimeStamp);
+			plugin.timeRangeChanged(MathUtils.toLDT(TimeLine.SINGLETON.getFirstTimeMS()),MathUtils.toLDT(TimeLine.SINGLETON.getLastTimeMS()));
+		}
+		
 		super.setVisible(_visible);
 		plugin.visibilityChanged(_visible);
 	}
@@ -100,8 +111,15 @@ public class PluginLayer extends Layer
 	@Override
 	public @Nullable long getCurrentTimeMS()
 	{
-		//TODO: request actual time of visible plugin data
-		return 0;
+		if(!isVisible())
+			return 0;
+		
+		//this method might be invoked during initialization, when the singleton is
+		//not yet available. we shouldn't expect plugins to handle this edge case.
+		if(Plugins.SINGLETON==null)
+			return 0;
+		
+		return MathUtils.fromLDT(plugin.getCurrentlyVisibleTime());
 	}
 
 	@Override

@@ -9,7 +9,6 @@ import java.util.Map;
 import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.base.Settings.StringKey;
-import org.helioviewer.jhv.base.ShutdownManager.ShutdownPhase;
 
 import com.mindscapehq.raygun4java.core.RaygunClient;
 import com.mindscapehq.raygun4java.core.messages.RaygunIdentifier;

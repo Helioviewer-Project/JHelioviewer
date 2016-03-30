@@ -10,7 +10,6 @@ import java.util.UUID;
 import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.base.Settings.StringKey;
-import org.helioviewer.jhv.base.ShutdownManager.ShutdownPhase;
 import org.helioviewer.jhv.gui.statusLabels.FramerateStatusPanel;
 import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.Layer;
@@ -152,7 +151,7 @@ public class Telemetry
 		client.trackMetric(_name, _value);
 	}
 	
-	private synchronized static void initializeOpenGL()
+	public synchronized static void initializeOpenGL()
 	{
 		try
 		{
@@ -188,6 +187,16 @@ public class Telemetry
 		if(_e instanceof Exception)
 			client.trackException((Exception)_e);
 		else
-			client.trackException(new Exception(_e));
+		{
+			//force generation of a stack trace
+			try
+			{
+				throw new Exception(_e);
+			}
+			catch(Exception e)
+			{
+				client.trackException(e);
+			}
+		}
 	}
 }

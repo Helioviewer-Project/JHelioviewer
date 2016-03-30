@@ -79,7 +79,7 @@ public class DataCache
 	{
 		DateTimeFormatter monthFormatter = DateTimeFormatter.ofPattern("MM");
 		DateTimeFormatter yearFormatter = DateTimeFormatter.ofPattern("YYYY");
-		LocalDateTime current = desc.getDateTime();
+		LocalDateTime current = desc.getEndDate();
 		String url = PfssSettings.SERVER_URL + current.format(yearFormatter) + "/" + current.format(monthFormatter)
 				+ "/" + desc.getFileName();
 

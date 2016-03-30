@@ -20,7 +20,7 @@ public class CurrentTimeLabel extends StatusLabel
 	@Override
 	public void timeStampChanged(long current, long last)
 	{
-		LocalDateTime ldt=MathUtils.toLDT(TimeLine.SINGLETON.getCurrentTimeMS());
+		LocalDateTime ldt=MathUtils.toLDT(TimeLine.SINGLETON.getCurrentFrameStartTimeMS());
 		if(ldt==null)
 			setText(" - ");
 		else

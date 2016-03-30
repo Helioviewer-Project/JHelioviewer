@@ -49,7 +49,6 @@ public class DownloadMovieDialog extends JDialog
 		progressBar.setValue(50);
 		pack();
 		
-		
 		if (TimeLine.SINGLETON.getFrameCount() >= 1000)
 		{
 			JOptionPane.showMessageDialog(MainFrame.SINGLETON, "You cannot download more than 1000 frames at once.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -57,6 +56,9 @@ public class DownloadMovieDialog extends JDialog
 		}
 		
 		String defaultName = _layer.getFullName() + " " + Globals.FILE_DATE_TIME_FORMATTER.format(MathUtils.toLDT(((ImageLayer)_layer).getStartTimeMS())) + " " + Globals.FILE_DATE_TIME_FORMATTER.format(MathUtils.toLDT(((ImageLayer)_layer).getEndTimeMS()));
+		
+		JOptionPane.showMessageDialog(MainFrame.SINGLETON, "f");
+		
 		File selectedFile = Globals.showFileDialog(DialogType.SAVE_FILE,
 				"Download movie",
 				Settings.getString(StringKey.MOVIE_DOWNLOAD_PATH),
@@ -64,13 +66,17 @@ public class DownloadMovieDialog extends JDialog
 				defaultName,
 				PredefinedFileFilter.JPX);
 		
+		JOptionPane.showMessageDialog(MainFrame.SINGLETON, "g");
+		
 		if (selectedFile == null)
 			return;
 		
 		Settings.setString(StringKey.MOVIE_DOWNLOAD_PATH, selectedFile.getParent());
+		
 		final HTTPDownloadRequest httpDownloadRequest = new HTTPDownloadRequest(_url, DownloadPriority.URGENT, selectedFile.getPath());
 		
 		DownloadManager.addRequest(httpDownloadRequest);
+		
 		Thread downloadMovieThread = new Thread(() ->
 			{
 				try
@@ -79,6 +85,7 @@ public class DownloadMovieDialog extends JDialog
 					{
 						SwingUtilities.invokeAndWait(() ->
 							{
+								//FIXME: progress not visible in os x
 								progressBar.setValue(httpDownloadRequest.getReceivedLength());
 								progressBar.setMaximum(httpDownloadRequest.getTotalLength());
 							});

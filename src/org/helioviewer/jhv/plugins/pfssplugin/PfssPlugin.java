@@ -1,6 +1,7 @@
 package org.helioviewer.jhv.plugins.pfssplugin;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -58,6 +59,23 @@ public class PfssPlugin extends Plugin
 		
 		if (frame != null)
 			frame.display(gl, localDateTime, _imageParams.opacity);
+	}
+	
+	@Override
+	public @Nullable LocalDateTime getCurrentlyVisibleTime()
+	{
+		@Nullable LocalDateTime localDateTime = Plugins.SINGLETON.getCurrentDateTime();
+		if(localDateTime==null)
+			return null;
+		
+		@Nullable PfssDecompressed frame = manager.getFrame(null, localDateTime);
+		if(frame==null)
+			return null;
+		
+		LocalDateTime start = frame.getDescriptor().getStartDate();
+		LocalDateTime end = frame.getDescriptor().getEndDate();
+		
+		return start.plusSeconds(start.until(end, ChronoUnit.SECONDS)/2);
 	}
 
 	@Override

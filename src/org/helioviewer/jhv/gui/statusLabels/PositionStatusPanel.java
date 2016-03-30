@@ -103,7 +103,7 @@ public class PositionStatusPanel extends StatusLabel
 		switch (this.popupState.getSelectedState())
 		{
 			case ARCSECS:
-				LocalDateTime ldt = MathUtils.toLDT(TimeLine.SINGLETON.getCurrentTimeMS());
+				LocalDateTime ldt = MathUtils.toLDT(TimeLine.SINGLETON.getCurrentFrameMiddleTimeMS());
 				if(ldt==null)
 				{
 					setText(title);

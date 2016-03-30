@@ -42,19 +42,19 @@ class SDOCutOutAction extends AbstractAction
 		
 		for (Layer layer : Layers.getLayers())
 			if(layer instanceof KakaduLayer)
-				if(((KakaduLayer)layer).getMetaData(TimeLine.SINGLETON.getCurrentTimeMS()) instanceof MetaDataAIA)
+				if(((KakaduLayer)layer).getCurrentMetaData() instanceof MetaDataAIA)
 					sdoLayers.add((KakaduLayer)layer);
 		
 		if(sdoLayers.isEmpty())
 			return;
 		
 		KakaduLayer mainSDOLayer;
-		if(activeLayer instanceof KakaduLayer && activeLayer.getMetaData(TimeLine.SINGLETON.getCurrentTimeMS()) instanceof MetaDataAIA)
+		if(activeLayer instanceof KakaduLayer && activeLayer.getCurrentMetaData() instanceof MetaDataAIA)
 			mainSDOLayer=(KakaduLayer)activeLayer;
 		else
 			mainSDOLayer=sdoLayers.get(0);
 		
-		MetaData metaData = mainSDOLayer.getMetaData(TimeLine.SINGLETON.getCurrentTimeMS());
+		MetaData metaData = mainSDOLayer.getCurrentMetaData();
 
 		LocalDateTime start = MathUtils.toLDT(TimeLine.SINGLETON.getFirstTimeMS());
 		LocalDateTime end = MathUtils.toLDT(TimeLine.SINGLETON.getLastTimeMS());
@@ -78,7 +78,7 @@ class SDOCutOutAction extends AbstractAction
 		url.append("&wavelengths=");
 		for (ImageLayer sdoLayer : sdoLayers)
 		{
-			MetaData md=sdoLayer.getMetaData(TimeLine.SINGLETON.getCurrentTimeMS());
+			MetaData md=sdoLayer.getCurrentMetaData();
 			if(md!=null)
 				url.append(","+md.measurement);
 		}

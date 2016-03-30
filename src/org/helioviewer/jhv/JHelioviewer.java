@@ -23,9 +23,9 @@ import org.helioviewer.jhv.base.JHVUncaughtExceptionHandler;
 import org.helioviewer.jhv.base.Log;
 import org.helioviewer.jhv.base.Observatories;
 import org.helioviewer.jhv.base.Settings;
-import org.helioviewer.jhv.base.ShutdownManager;
 import org.helioviewer.jhv.base.Settings.BooleanKey;
 import org.helioviewer.jhv.base.Settings.IntKey;
+import org.helioviewer.jhv.base.ShutdownManager;
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.UILatencyWatchdog;
 import org.helioviewer.jhv.gui.DebugRepaintManager;
@@ -173,6 +173,7 @@ public class JHelioviewer
 			
 			Globals.createSharedGLContexts(masterDrawable, factory, capabilities, Runtime.getRuntime().availableProcessors());
 			masterDrawable.display();
+			Telemetry.initializeOpenGL();
 			
 			// Load settings from file but do not apply them yet
 			// The settings must not be applied before the kakadu engine has
@@ -285,17 +286,49 @@ public class JHelioviewer
 	{
 		String suffix = !Globals.IS_RELEASE_VERSION && Globals.IS_WINDOWS ? "D":"R";
 		
-		
 		if (Globals.IS_WINDOWS)
 		{
-			try
+			if(Globals.IS_RELEASE_VERSION)
 			{
-				System.loadLibrary("msvcr120");
+				try
+				{
+					System.loadLibrary("msvcr120");
+				}
+				catch(UnsatisfiedLinkError _ule)
+				{
+					//ignore inability to load msvcr120. if there's really
+					//a problem, it will be caught by the outer try/catch
+				}
+				try
+				{
+					System.loadLibrary("ucrtbase");
+				}
+				catch(UnsatisfiedLinkError _ule)
+				{
+					//ignore inability to load msvcr120. if there's really
+					//a problem, it will be caught by the outer try/catch
+				}
 			}
-			catch(UnsatisfiedLinkError _ule)
+			else
 			{
-				//ignore inability to load msvcr120. if there's really
-				//a problem, it will be caught by the outer try/catch
+				try
+				{
+					System.loadLibrary("msvcr120d");
+				}
+				catch(UnsatisfiedLinkError _ule)
+				{
+					//ignore inability to load msvcr120. if there's really
+					//a problem, it will be caught by the outer try/catch
+				}
+				try
+				{
+					System.loadLibrary("ucrtbased");
+				}
+				catch(UnsatisfiedLinkError _ule)
+				{
+					//ignore inability to load msvcr120. if there's really
+					//a problem, it will be caught by the outer try/catch
+				}
 			}
 			System.loadLibrary("kdu_v77"+suffix);
 			System.loadLibrary("kdu_a77"+suffix);

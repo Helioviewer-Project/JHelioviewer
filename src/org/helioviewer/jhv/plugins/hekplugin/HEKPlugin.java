@@ -66,7 +66,6 @@ public class HEKPlugin extends Plugin
 				List<HEKEvent> toDraw = HEKCache.getSingletonInstance().getModel().getActiveEvents(currentDate);
 				if (toDraw != null && toDraw.size() > 0)
 				{
-
 					gl.glDisable(GL2.GL_TEXTURE_2D);
 					gl.glEnable(GL2.GL_CULL_FACE);
 					gl.glEnable(GL2.GL_LINE_SMOOTH);

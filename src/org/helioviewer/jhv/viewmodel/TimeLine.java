@@ -198,9 +198,19 @@ public class TimeLine implements LayerListener
 		return (int)((currentTimeMS-startTimeMS)/cadenceMS);
 	}
 
-	public long getCurrentTimeMS()
+	public long getCurrentFrameStartTimeMS()
 	{
 		return currentTimeMS;
+	}
+
+	public long getCurrentFrameMiddleTimeMS()
+	{
+		return currentTimeMS+cadenceMS/2;
+	}
+
+	public long getCurrentFrameEndTimeMS()
+	{
+		return currentTimeMS+cadenceMS-1;
 	}
 
 	public void addListener(TimeLineListener timeLineListener)
@@ -249,7 +259,7 @@ public class TimeLine implements LayerListener
 			setCurrentTimeMS(startTimeMS);
 		
 		for (TimeLine.TimeLineListener timeLineListener : timeLineListeners)
-			timeLineListener.timeRangeChanged(_startMS, _endMS);
+			timeLineListener.timeRangeChanged();
 	}
 	
 	public void setNoTimeRange()
@@ -259,7 +269,7 @@ public class TimeLine implements LayerListener
 		cadenceMS=1;
 		setPlaying(false);
 		for (TimeLine.TimeLineListener timeLineListener : timeLineListeners)
-			timeLineListener.timeRangeChanged(startTimeMS, endTimeMS);
+			timeLineListener.timeRangeChanged();
 	}
 
 	@Override
@@ -297,8 +307,8 @@ public class TimeLine implements LayerListener
 	public interface TimeLineListener
 	{
 		void isPlayingChanged(boolean _isPlaying);
-		void timeStampChanged(long current, long _last);
-		void timeRangeChanged(long _start, long _end);
+		void timeStampChanged(long _current, long _previous);
+		void timeRangeChanged();
 	}
 
 	public long getFirstTimeMS()
