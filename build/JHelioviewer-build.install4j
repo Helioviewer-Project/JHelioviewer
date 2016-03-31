@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<install4j version="6.1.1" transformSequenceNumber="5">
-  <directoryPresets config="../../Cer/Open Source Developer, Simon Felix.pfx" />
-  <application name="JHelioviewer" distributionSourceDir="" applicationId="7791-5722-0682-7193" mediaDir="./builds" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="9" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="JHelioviewer" publisher="ESA JHelioviewer Team" publisherWeb="http://www.jhelioviewer.org" version="3.0.5" allPathsRelative="true" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="7ed177551bd348bc" javaMinVersion="1.8" javaMaxVersion="" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
+<install4j version="6.0.4" transformSequenceNumber="5">
+  <directoryPresets config="./resources" />
+  <application name="JHelioviewer" distributionSourceDir="" applicationId="7791-5722-0682-7193" mediaDir="./builds" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="9" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="JHelioviewer" publisher="ESA JHelioviewer Team" publisherWeb="http://www.jhelioviewer.org" version="3.0.6" allPathsRelative="true" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="7ed177551bd348bc" javaMinVersion="1.8" javaMaxVersion="" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="en" customLocalizationFile="" />
       <additionalLanguages />
@@ -61,8 +61,8 @@
     </components>
   </files>
   <launchers>
-    <launcher name="JHelioviewer" id="24" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="../build-resources/mac/JHV_icon.icns" customMacBundleIdentifier="true" macBundleIdentifier="org.helioviewer.jhv.JHelioviewer" swtApp="false" fileset="" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="./mac-build/JHelioViewer.plist" useCustomMacosExecutableName="false" customMacosExecutableName="">
-      <executable name="JHelioviewer" type="1" iconSet="true" iconFile="../build-resources/windows/JHelioviewer.ico" executableDir="bin" redirectStderr="false" stderrFile="error.log" stderrMode="overwrite" redirectStdout="false" stdoutFile="output.log" stdoutMode="overwrite" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false" globalSingleInstance="false" singleInstanceActivate="true" dpiAware="true">
+    <launcher name="JHelioviewer" id="24" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="./resources/JHV_icon.icns" customMacBundleIdentifier="true" macBundleIdentifier="org.helioviewer.jhv.JHelioviewer" swtApp="false" fileset="" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="./mac-build/JHelioViewer.plist" useCustomMacosExecutableName="false" customMacosExecutableName="">
+      <executable name="JHelioviewer" type="1" iconSet="true" iconFile="./resources/JHelioviewer.ico" executableDir="bin" redirectStderr="false" stderrFile="error.log" stderrMode="overwrite" redirectStdout="false" stdoutFile="output.log" stdoutMode="overwrite" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false" globalSingleInstance="false" singleInstanceActivate="true" dpiAware="true">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" productName="" />
       </executable>
       <splashScreen show="false" width="0" height="0" bitmapFile="" windowsNative="false" textOverlay="false">
@@ -80,7 +80,6 @@
         <nativeLibraryDirectories>
           <directory name="bin" />
         </nativeLibraryDirectories>
-        <vmOptions />
       </java>
       <includedFiles />
       <unextractableFiles />
@@ -94,7 +93,7 @@
         <content />
       </infoPlist>
       <iconImageFiles>
-        <file path="../build-resources/mac/JHV_icon.png" />
+        <file path="./resources/JHV_icon.png" />
       </iconImageFiles>
     </launcher>
     <launcher name="Linux_dis" id="296" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="" useCustomMacosExecutableName="false" customMacosExecutableName="">
@@ -116,7 +115,6 @@
         <nativeLibraryDirectories>
           <directory name="bin" />
         </nativeLibraryDirectories>
-        <vmOptions />
       </java>
       <includedFiles />
       <unextractableFiles />
@@ -130,7 +128,7 @@
         <content />
       </infoPlist>
       <iconImageFiles>
-        <file path="../build-resources/mac/JHV_icon.png" />
+        <file path="./resources/JHV_icon.png" />
       </iconImageFiles>
     </launcher>
   </launchers>
@@ -1582,7 +1580,7 @@ return true;</string>
         <customAttributes />
       </autoUpdate>
     </windows>
-    <linuxDeb name="Linux Deb Archive 64 bit" id="218" customizedId="" mediaFileName="${compiler:sys.shortName}_${compiler:sys.version}_amd64" installDir="/opt/${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="" manualJREEntry="false" overwriteNeverAsConfigFiles="false" bzip="true" description="" dependencies="" maintainerEmail="daniel.mueller@esa.int" architectureSet="true" architecture="amd64">
+    <linuxDeb name="Linux Deb Archive 64 bit" id="218" customizedId="" mediaFileName="${compiler:sys.shortName}_${compiler:sys.version}_amd64" installDir="/opt/${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="" manualJREEntry="false" bzip="true" description="" dependencies="" maintainerEmail="daniel.mueller@esa.int" architectureSet="true" architecture="amd64">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedLaunchers>
@@ -1630,7 +1628,7 @@ return true;</string>
         <content />
       </postUninstallScript>
     </linuxDeb>
-    <linuxRPM name="Linux RPM 64 bit" id="270" customizedId="" mediaFileName="${compiler:sys.shortName}_${compiler:sys.version}_amd64" installDir="/opt/${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="" manualJREEntry="false" overwriteNeverAsConfigFiles="false" os="linux" arch="i386">
+    <linuxRPM name="Linux RPM 64 bit" id="270" customizedId="" mediaFileName="${compiler:sys.shortName}_${compiler:sys.version}_amd64" installDir="/opt/${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="" manualJREEntry="false" os="linux" arch="i386">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedLaunchers>
@@ -1681,6 +1679,9 @@ return true;</string>
   </mediaSets>
   <buildIds buildAll="false">
     <mediaSet refId="68" />
+    <mediaSet refId="150" />
+    <mediaSet refId="218" />
+    <mediaSet refId="270" />
   </buildIds>
   <buildOptions verbose="false" faster="false" disableSigning="false" disableJreBundling="false" debug="false" />
 </install4j>
