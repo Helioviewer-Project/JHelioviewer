@@ -57,16 +57,12 @@ public class DownloadMovieDialog extends JDialog
 		
 		String defaultName = _layer.getFullName() + " " + Globals.FILE_DATE_TIME_FORMATTER.format(MathUtils.toLDT(((ImageLayer)_layer).getStartTimeMS())) + " " + Globals.FILE_DATE_TIME_FORMATTER.format(MathUtils.toLDT(((ImageLayer)_layer).getEndTimeMS()));
 		
-		JOptionPane.showMessageDialog(MainFrame.SINGLETON, "f");
-		
 		File selectedFile = Globals.showFileDialog(DialogType.SAVE_FILE,
 				"Download movie",
 				Settings.getString(StringKey.MOVIE_DOWNLOAD_PATH),
 				true,
 				defaultName,
 				PredefinedFileFilter.JPX);
-		
-		JOptionPane.showMessageDialog(MainFrame.SINGLETON, "g");
 		
 		if (selectedFile == null)
 			return;
