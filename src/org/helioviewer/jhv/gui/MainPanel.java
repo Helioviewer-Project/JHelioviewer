@@ -79,7 +79,7 @@ import com.jogamp.opengl.util.awt.TextRenderer;
 
 public class MainPanel extends GLCanvas implements GLEventListener, Camera
 {
-	public static final double MAX_DISTANCE = Constants.SUN_MEAN_DISTANCE_TO_EARTH * 2;
+	public static final double MAX_DISTANCE = Constants.SUN_MEAN_DISTANCE_TO_EARTH * 2.5;
 	public static final double MIN_DISTANCE = Constants.SUN_RADIUS * 1.2;
 	public static final double DEFAULT_DISTANCE = 22 * Constants.SUN_RADIUS;
 
@@ -422,7 +422,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 				{
 					MetaData md = il.getCurrentMetaData();
 					if (md != null)
-						rotationNow = md.rotation;
+						rotationNow = md.rotation.inversed();
 				}
 			}
 			

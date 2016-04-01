@@ -39,6 +39,8 @@ public class ResetCameraAction extends AbstractAction
     			destRotation=md.rotation;
     	}
     	
+    	System.out.println("Rotation: "+MainFrame.SINGLETON.MAIN_PANEL.getRotationEnd() + " --> " + destRotation);
+    	
 		MainFrame.SINGLETON.MAIN_PANEL.addCameraAnimation(new CameraRotationAnimation(
 				MainFrame.SINGLETON.MAIN_PANEL,
 				MainFrame.SINGLETON.MAIN_PANEL.getRotationEnd().inversed().rotated(destRotation.inversed())

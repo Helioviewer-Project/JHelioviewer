@@ -182,13 +182,12 @@ public abstract class ImageLayer extends Layer
 			double dot = MathUtils.clip(transformation.multiply(new Vector4d(0,0,1,0)).dot(new Vector4d(0, 0, 1, 0)), -1, 1);
 			double angle = Math.toDegrees(Math.acos(dot));
 			
-			System.out.println("w0w00w: "+angle+"  "+dot);
-			
 			double maxAngle = 60;
 			double minAngle = 30;
 			opacityCorona = (float) ((Math.abs(90 - angle) - minAngle) / (maxAngle - minAngle));
 			opacityCorona = opacityCorona > 1 ? 1f : opacityCorona;
 		}
+		
 		gl.glColor4f(1, 1, 1, 1);
 		gl.glEnable(GL2.GL_BLEND);
 		gl.glEnable(GL2.GL_TEXTURE_2D);

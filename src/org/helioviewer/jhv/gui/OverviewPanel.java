@@ -112,9 +112,11 @@ public class OverviewPanel extends MainPanel
 				* Math.sin(Math.PI / 2 - halfFOVRad)
 				/ Math.sin(halfFOVRad);
 		
-		distance = distance - getTranslationEnd().z;
-		if(distance!=0)
-			addCameraAnimation(new CameraZoomAnimation(this, distance));
+		double delta = distance - getTranslationEnd().z;
+		
+		//only move the camera, if it has to move >0.1%
+		if(Math.abs(delta) > Math.abs(distance)*0.001)
+			addCameraAnimation(new CameraZoomAnimation(this, delta));
 	}
 
 	@Override
