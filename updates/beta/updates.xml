@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <updateDescriptor baseUrl="https://github.com/Helioviewer-Project/JHelioviewer/releases/download/3.0.8/">
-  <entry targetMediaFileId="68" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_3_0_8.dmg" newVersion="3.0.8" newMediaFileId="68" fileSize="89948839" bundledJre="macosx-amd64-1.8.0_77_unpacked" archive="true">
+  <entry targetMediaFileId="68" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_3_0_8.dmg" newVersion="3.0.8" newMediaFileId="68" fileSize="89948760" bundledJre="macosx-amd64-1.8.0_77_unpacked" archive="true">
     <comment language="en" />
   </entry>
-  <entry targetMediaFileId="150" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_3_0_8.exe" newVersion="3.0.8" newMediaFileId="150" fileSize="52272176" bundledJre="windows-amd64-1.8.0_72" archive="false">
+  <entry targetMediaFileId="150" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_3_0_8.exe" newVersion="3.0.8" newMediaFileId="150" fileSize="52272688" bundledJre="windows-amd64-1.8.0_72" archive="false">
     <comment language="en" />
   </entry>
-  <entry targetMediaFileId="218" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_3_0_8_amd64.deb" newVersion="3.0.8" newMediaFileId="218" fileSize="32472564" bundledJre="" archive="true">
+  <entry targetMediaFileId="218" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_3_0_8_amd64.deb" newVersion="3.0.8" newMediaFileId="218" fileSize="32472976" bundledJre="" archive="true">
     <comment language="en" />
   </entry>
-  <entry targetMediaFileId="270" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_3_0_8_amd64.rpm" newVersion="3.0.8" newMediaFileId="270" fileSize="32794160" bundledJre="" archive="true">
+  <entry targetMediaFileId="270" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_3_0_8_amd64.rpm" newVersion="3.0.8" newMediaFileId="270" fileSize="32794246" bundledJre="" archive="true">
     <comment language="en" />
   </entry>
 </updateDescriptor>
