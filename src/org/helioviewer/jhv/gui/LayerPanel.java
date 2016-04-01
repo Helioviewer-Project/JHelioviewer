@@ -159,14 +159,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		});
 				
 		removeLayer = new JMenuItem("Close layer", IconBank.getIcon(JHVIcon.REMOVE_NEW, SIZE, SIZE));
-		removeLayer.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(@Nullable ActionEvent e)
-			{
-				Layers.removeLayer(activePopupLayer);
-			}
-		});
+		removeLayer.addActionListener(e -> Layers.removeLayer(activePopupLayer));
 		showLayer.setVisible(false);
 		hideLayer.setVisible(false);
 
@@ -565,7 +558,17 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		@Override
 		public Component getTableCellRendererComponent(@Nullable JTable table, @Nullable Object value, boolean isSelected, boolean hasFocus, final int row, int column)
 		{
-			Layer layer=Layers.getLayer(row);
+			Layer layer=null;
+			try
+			{
+				layer=Layers.getLayer(row);
+			}
+			catch(IndexOutOfBoundsException _iobe)
+			{
+				//this can happen, because the data table is updated asynchronously. a repaint can occur before the
+				//table is updated --> row can be >= #layers
+				return super.getTableCellRendererComponent(table, null, isSelected, true, row, column); 
+			}
 			
 			switch (column)
 			{
