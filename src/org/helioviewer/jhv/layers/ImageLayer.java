@@ -181,6 +181,9 @@ public abstract class ImageLayer extends Layer
 		{
 			double dot = MathUtils.clip(transformation.multiply(new Vector4d(0,0,1,0)).dot(new Vector4d(0, 0, 1, 0)), -1, 1);
 			double angle = Math.toDegrees(Math.acos(dot));
+			
+			System.out.println("w0w00w: "+angle+"  "+dot);
+			
 			double maxAngle = 60;
 			double minAngle = 30;
 			opacityCorona = (float) ((Math.abs(90 - angle) - minAngle) / (maxAngle - minAngle));
@@ -283,16 +286,16 @@ public abstract class ImageLayer extends Layer
 		gl.glEnd();
 	}
 
-	private Matrix4d calcTransformation(MainPanel mainPanel, MetaData md)
+	private Matrix4d calcTransformation(MainPanel _mainPanel, MetaData _md)
 	{
 		//see http://jgiesen.de/sunrot/index.html and http://www.petermeadows.com/stonyhurst/sdisk6in7.gif
-		double diffRotattion = DifferentialRotation.calculateRotationInRadians(0,(TimeLine.SINGLETON.getCurrentFrameStartTimeMS() - md.timeMS)/1000f);
+		double diffRotattion = DifferentialRotation.calculateRotationInRadians(0,(TimeLine.SINGLETON.getCurrentFrameStartTimeMS() - _md.timeMS)/1000f);
 		Quaternion diffRotationQuat = Quaternion.createRotation(-diffRotattion, new Vector3d(0, 1, 0));
 		
-		return Matrix4d.createTranslationMatrix(mainPanel.getTranslationCurrent())
+		return Matrix4d.createTranslationMatrix(_mainPanel.getTranslationCurrent())
 				.multiplied(diffRotationQuat.toMatrix())
-				.multiplied(md.rotation.toMatrix())
-				.multiplied(mainPanel.getRotationCurrent().toMatrix())
+				.multiplied(_md.rotation.toMatrix())
+				.multiplied(_mainPanel.getRotationCurrent().toMatrix())
 				;
 	}
 	

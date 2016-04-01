@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.opengl.Texture;
 import org.helioviewer.jhv.viewmodel.TimeLine.DecodeQualityLevel;
@@ -38,8 +39,8 @@ import kdu_jni.Kdu_region_decompressor;
 
 public abstract class Movie
 {
-	private final ConcurrentLinkedQueue<Jpx_input_box> openInputBoxes=new ConcurrentLinkedQueue<>();
-	private ThreadLocal<Jpx_input_box> tlsJpx_input_box=new ThreadLocal<>();
+	//private final ConcurrentLinkedQueue<Jpx_input_box> openInputBoxes=new ConcurrentLinkedQueue<>();
+	//private ThreadLocal<Jpx_input_box> tlsJpx_input_box=new ThreadLocal<>();
 	
 	private final ArrayList<Kdu_region_decompressor> openKdu_region_decompressors = new ArrayList<Kdu_region_decompressor>(1);
 	private ThreadLocal<Kdu_region_decompressor> tlsKdu_region_decompressor=ThreadLocal.withInitial(() ->
@@ -66,7 +67,7 @@ public abstract class Movie
 	
 	//FIXME: clear KduCache on memory pressure, reload from disk
 	//FIXME: index movies from disk on startup, reloading should happen on-demand
-	private final ArrayList<Kdu_codestream> openKdu_codestreams = new ArrayList<Kdu_codestream>(1);
+	/*private final ArrayList<Kdu_codestream> openKdu_codestreams = new ArrayList<Kdu_codestream>(1);
 	private ThreadLocal<Kdu_codestream> tlsKdu_codestream=ThreadLocal.withInitial(() ->
 		{
 			try
@@ -83,7 +84,7 @@ public abstract class Movie
 			{
 				throw new RuntimeException(e);
 			}
-		});
+		});*/
 	
 	private final ArrayList<Jpx_source> openJpx_sources = new ArrayList<Jpx_source>(1);
 	private ThreadLocal<Jpx_source> tlsJpx_source=ThreadLocal.withInitial(new Supplier<Jpx_source>()
@@ -147,7 +148,7 @@ public abstract class Movie
 			openJpx_sources.clear();
 		}
 		
-		synchronized(openKdu_codestreams)
+		/*synchronized(openKdu_codestreams)
 		{
 			for(Kdu_codestream c:openKdu_codestreams)
 				try
@@ -160,7 +161,7 @@ public abstract class Movie
 				}
 			openKdu_codestreams.clear();
 			
-		}
+		}*/
 		
 		synchronized(openKdu_region_decompressors)
 		{
@@ -169,7 +170,7 @@ public abstract class Movie
 			openKdu_region_decompressors.clear();
 		}
 		
-		for(;;)
+		/*for(;;)
 		{
 			Jpx_input_box box = openInputBoxes.poll();
 			if(box==null)
@@ -184,7 +185,7 @@ public abstract class Movie
 				Telemetry.trackException(e);
 			}
 			box.Native_destroy();
-		}
+		}*/
 		
 		try
 		{
@@ -383,15 +384,6 @@ public abstract class Movie
 		
 		try
 		{
-	        Jpx_input_box previousBox = tlsJpx_input_box.get();
-	        if(previousBox!=null)
-	        {
-	        	previousBox.Close();
-	        	previousBox.Native_destroy();
-	        	tlsJpx_input_box.set(null);
-	        	openInputBoxes.remove(previousBox);
-	        }
-	        
 			Jpx_source jpxSrc=tlsJpx_source.get();
 			
 			Kdu_dims requestedBufferedRegion = new Kdu_dims();
@@ -408,18 +400,30 @@ public abstract class Movie
 	        
 	        Jpx_codestream_source xstream = jpxSrc.Access_codestream(xlayer.Get_codestream_id(0));
 	        Jpx_input_box inputBox = xstream.Open_stream();
-        	tlsJpx_input_box.set(inputBox);
-        	openInputBoxes.add(inputBox);
+        	//tlsJpx_input_box.set(inputBox);
+        	//openInputBoxes.add(inputBox);
         	
-			Kdu_codestream codestream = tlsKdu_codestream.get();
-        	if(!codestream.Exists())
+	        Kdu_codestream codestream = new Kdu_codestream();
+			//Kdu_codestream codestream = tlsKdu_codestream.get();
+        	//if(!codestream.Exists())
         	{
 				codestream.Create(inputBox);
-				codestream.Set_persistent();
-				codestream.Enable_restart();
+				//codestream.Set_persistent();
+				codestream.Set_fast();
+				
+				//codestream.Enable_restart();
         	}
-        	else
-        		codestream.Restart(inputBox);
+        	/*else
+        	{
+        		codestream.Destroy();
+        		
+        		codestream = new Kdu_codestream();
+        		tlsKdu_codestream.set(codestream);
+        		codestream.Create(inputBox);
+        		
+        		//WARNING: here lurks another KDU bug. codestream restarts are very unreliable in MT environments
+        		//codestream.Restart(inputBox);
+        	}*/
 			
 			int discardLevels=(int)Math.round(-Math.log(_zoomPercent)/Math.log(2));
 			
@@ -485,6 +489,11 @@ public abstract class Movie
 			}
 			
 			decompressor.Finish();
+			
+			codestream.Destroy();
+			
+        	inputBox.Close();
+        	inputBox.Native_destroy();
 			return true;
 		}
 		catch (KduException e)

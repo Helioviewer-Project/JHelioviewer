@@ -68,8 +68,8 @@ public class AddLayerDialog extends JDialog
 		SEC("sec", 1),
 		MIN("min", 60),
 		HOUR("hour", 3600),
-		DAY("day", 3600 * 24),
-		GET_ALL("get all", 0);
+		DAY("day", 3600 * 24);
+		//GET_ALL("get all", 0);
 
 		final String name;
 		final int factor;
