@@ -114,11 +114,11 @@ public class PositionStatusPanel extends StatusLabel
 				point = "(" + df.format(hpc.getThetaXAsArcSec()) + "\" ," + df.format(hpc.getThetaYAsArcSec()) + "\")";
 				break;
 				
-			case DEGREE:
+			case DEGREES:
 				HeliographicCoordinate newCoord = cart.toHeliographicCoordinate();
 				df = new DecimalFormat("#.##");
 				if (!(ray.getHitpointType() == HitpointType.PLANE))
-					point = "(" + df.format(newCoord.getHgLongitudeAsDeg()) + DEGREE + " ," + df.format(newCoord.getHgLatitudeAsDeg()) + DEGREE + ") ";
+					point = "(" + df.format(newCoord.getHgLongitudeAsDeg()) + DEGREE + " ," + df.format(-newCoord.getHgLatitudeAsDeg()) + DEGREE + ") ";
 				break;
 
 			default:
@@ -183,7 +183,7 @@ public class PositionStatusPanel extends StatusLabel
 	{
 		public enum PopupItemStates
 		{
-			DEGREE("degrees (Heliographic)"), ARCSECS("arcsecs (Helioprojective cartesian)");
+			DEGREES("degrees (Heliographic)"), ARCSECS("arcsecs (Helioprojective cartesian)");
 
 			private PopupItemState popupItem;
 
