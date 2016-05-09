@@ -369,6 +369,51 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 				switch(e.getKeyCode())
 				{
 					case KeyEvent.VK_DELETE:
+						
+						/* FIXME: ArrayIndexOutOfBoundsException: -1
+							java.util.ArrayList.elementData:-1
+							java.util.ArrayList.get:-1
+							org.helioviewer.jhv.layers.Layers.removeLayer in Layers.java:92
+							org.helioviewer.jhv.gui.LayerPanel$11.keyPressed in LayerPanel.java:372
+							java.awt.AWTEventMulticaster.keyPressed:-1
+							java.awt.Component.processKeyEvent:-1
+							javax.swing.JComponent.processKeyEvent:-1
+							java.awt.Component.processEvent:-1
+							java.awt.Container.processEvent:-1
+							java.awt.Component.dispatchEventImpl:-1
+							java.awt.Container.dispatchEventImpl:-1
+							java.awt.Component.dispatchEvent:-1
+							java.awt.KeyboardFocusManager.redispatchEvent:-1
+							java.awt.DefaultKeyboardFocusManager.dispatchKeyEvent:-1
+							java.awt.DefaultKeyboardFocusManager.preDispatchKeyEvent:-1
+							java.awt.DefaultKeyboardFocusManager.typeAheadAssertions:-1
+							java.awt.DefaultKeyboardFocusManager.dispatchEvent:-1
+							java.awt.Component.dispatchEventImpl:-1
+							java.awt.Container.dispatchEventImpl:-1
+							java.awt.Window.dispatchEventImpl:-1
+							java.awt.Component.dispatchEvent:-1
+							java.awt.EventQueue.dispatchEventImpl:-1
+							java.awt.EventQueue.access$500:-1
+							java.awt.EventQueue$3.run:-1
+							java.awt.EventQueue$3.run:-1
+							java.security.AccessController.doPrivileged:-2
+							java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege:-1
+							java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege:-1
+							java.awt.EventQueue$4.run:-1
+							java.awt.EventQueue$4.run:-1
+							java.security.AccessController.doPrivileged:-2
+							java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege:-1
+							java.awt.EventQueue.dispatchEvent:-1
+							java.awt.EventDispatchThread.pumpOneEventForFilters:-1
+							java.awt.EventDispatchThread.pumpEventsForFilter:-1
+							java.awt.EventDispatchThread.pumpEventsForHierarchy:-1
+							java.awt.EventDispatchThread.pumpEvents:-1
+							java.awt.EventDispatchThread.pumpEvents:-1
+							java.awt.EventDispatchThread.run:-1
+						 */
+						
+						
+						
 						Layers.removeLayer(table.getSelectedRow());
 						e.consume();
 						break;

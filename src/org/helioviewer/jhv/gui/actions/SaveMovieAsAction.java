@@ -63,12 +63,27 @@ public class SaveMovieAsAction extends AbstractAction
 
 	public void actionPerformed(@Nullable ActionEvent e)
 	{
-		if (Layers.anyImageLayers())
-			openExportMovieDialog();
-		else
+		if (!Layers.anyImageLayers())
+		{
 			JOptionPane.showMessageDialog(MainFrame.SINGLETON.MAIN_PANEL,
-					"At least one active layer must be visible.\n\nPlease add a layer before exporting movies.",
+					"At least one active layer must be visible.\n"
+					+"\n"
+					+"Please add a layer before exporting movies.",
 					"Error", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		
+		if (TimeLine.SINGLETON.getFrameCount() < 2)
+		{
+			JOptionPane.showMessageDialog(MainFrame.SINGLETON.MAIN_PANEL,
+					"Please select another time range that will result in more frames.\n"
+					+"\n"
+					+"A movie should consist of at least two frames.",
+					"Error", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		
+		openExportMovieDialog();
 	}
 
 	private void openExportMovieDialog()
@@ -250,9 +265,15 @@ public class SaveMovieAsAction extends AbstractAction
 				if (fileOutputStream != null)
 					fileOutputStream.close();
 			}
-			catch (IOException e)
+			catch (Exception e)
 			{
 				Telemetry.trackException(e);
+				
+				JOptionPane.showMessageDialog(MainFrame.SINGLETON.MAIN_PANEL,
+						"Oops. Something went wrong during movie export:\n"
+						+"\n"
+						+e.getMessage(),
+						"Error", JOptionPane.ERROR_MESSAGE);
 			}
 
 			progressDialog.dispose();
