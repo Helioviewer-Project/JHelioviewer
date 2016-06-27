@@ -182,7 +182,6 @@ public class SaveMovieAsAction extends AbstractAction
 		final String directory = _directory;
 		Thread thread = new Thread(() ->
 		{
-			TimeLine.SINGLETON.setCurrentFrame(0);
 			for (int i = 0; i < TimeLine.SINGLETON.getFrameCount(); i++)
 			{
 				final int finalI=i;
@@ -191,13 +190,9 @@ public class SaveMovieAsAction extends AbstractAction
 				{
 					SwingUtilities.invokeAndWait(() ->
 					{
-						//TODO: this leads to terrible flickering sometimes in the mainpanel
-						//(repro: lightbulb example, time slider in the middle)
-						
+						TimeLine.SINGLETON.setCurrentFrame(finalI);
 						bufferedImage = MainFrame.SINGLETON.MAIN_PANEL.getBufferedImage(imageWidth, imageHeight, textEnabled);
 						progressDialog.updateProgressBar(finalI);
-						if(finalI!=0)
-							TimeLine.SINGLETON.nextFrame();
 					});
 				}
 				catch (Exception _e1)
@@ -211,7 +206,7 @@ public class SaveMovieAsAction extends AbstractAction
 					{
 						if (!started)
 							break;
-						Thread.sleep(20);
+						Thread.sleep(10);
 					}
 					catch (InterruptedException e)
 					{
@@ -232,6 +227,8 @@ public class SaveMovieAsAction extends AbstractAction
 					{
 						zipOutputStream.putNextEntry(new ZipEntry(_filename + "/" + Files.getNameWithoutExtension(_filename) + "-" + number
 								+ _selectedOutputFormat.getInnerMovieFilter().getDefaultExtension()));
+						
+						//TODO: NPE occurred here?
 						ImageIO.write(bufferedImage, _selectedOutputFormat.getInnerMovieFilter().fileType, zipOutputStream);
 						zipOutputStream.closeEntry();
 					}
@@ -245,6 +242,7 @@ public class SaveMovieAsAction extends AbstractAction
 					String number = String.format("%04d", i);
 					try
 					{
+						//TODO: NPE occurred here?
 						ImageIO.write(bufferedImage, _selectedOutputFormat.fileType, new File(
 								directory + Files.getNameWithoutExtension(_filename) + "-" + number + "." + Files.getFileExtension(_filename)));
 					}
