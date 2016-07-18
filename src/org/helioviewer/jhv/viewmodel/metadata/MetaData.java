@@ -161,13 +161,13 @@ public abstract class MetaData
         }
         else if (resolution.x == 1024)
     	{
-        	if(!(this instanceof MetaDataLASCO))
+        	if(!(this instanceof MetaDataLASCO) && !(this instanceof MetaDataEIT))
         		Telemetry.trackEvent("Move this to instrument specific class", "Measurement", measurement, "Detector", detector, "Instrument", instrument, "Observatory", observatory, "timeMS", Long.toString(timeMS));
     		solarPixelRadius = new Vector2d(360,360);
     	}
     	else if(resolution.x == 512)
     	{
-    		if(!(this instanceof MetaDataLASCO))
+    		if(!(this instanceof MetaDataLASCO) && !(this instanceof MetaDataEIT))
     			Telemetry.trackEvent("Move this to instrument specific class", "Measurement", measurement, "Detector", detector, "Instrument", instrument, "Observatory", observatory, "timeMS", Long.toString(timeMS));
     		solarPixelRadius = new Vector2d(180,180);
     	}

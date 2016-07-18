@@ -403,7 +403,8 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			if (layer instanceof ImageLayer)
 				anyImageLayerVisible |= layer.isVisible();
 		
-		double clipNear = Math.max(translationNow.z - 4 * Constants.SUN_RADIUS, CLIP_NEAR);
+		double clipNear = MathUtils.clip(translationNow.z - 4 * Constants.SUN_RADIUS, CLIP_NEAR, CLIP_FAR);
+		double clipFar = MathUtils.clip(translationNow.z + 4 * Constants.SUN_RADIUS, Math.nextUp(clipNear), CLIP_FAR);
 		
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glPushMatrix();
@@ -499,14 +500,15 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		if(aspect>1)
 			gl.glScaled(aspect, aspect, 1);
 		
+		
 		if (CameraMode.mode == CameraMode.MODE.MODE_3D)
 		{
-			new GLU().gluPerspective(MainPanel.FOV, aspect, clipNear, translationNow.z + 4 * Constants.SUN_RADIUS);
+			new GLU().gluPerspective(MainPanel.FOV, aspect, clipNear, clipFar);
 		}
 		else
 		{
 			double width = Math.tan(Math.toRadians(FOV) / 2) * translationNow.z;
-			gl.glOrtho(-width, width, -width, width, clipNear, translationNow.z + 4 * Constants.SUN_RADIUS);
+			gl.glOrtho(-width, width, -width, width, clipNear, clipFar);
 			gl.glScaled(1 / aspect, 1, 1);
 		}
 

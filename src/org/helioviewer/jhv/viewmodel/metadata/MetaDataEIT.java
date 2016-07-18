@@ -1,7 +1,10 @@
 package org.helioviewer.jhv.viewmodel.metadata;
 
 import org.helioviewer.jhv.base.Telemetry;
+import org.helioviewer.jhv.base.math.MathUtils;
+import org.helioviewer.jhv.base.math.Vector2d;
 import org.helioviewer.jhv.base.math.Vector2i;
+import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.layers.LUT;
 import org.w3c.dom.Document;
 
@@ -13,7 +16,13 @@ class MetaDataEIT extends MetaData
         
         if (!(instrument.equalsIgnoreCase("EIT")))
         	throw new UnsuitableMetaDataException("invalid instrument: "+instrument);
-                
+        
+        if ((Double.isNaN(dobs) || dobs <= 0) && resolution.x == 1024)
+    		solarPixelRadius = new Vector2d(360,360);
+        
+        if ((Double.isNaN(dobs) || dobs <= 0) && resolution.x == 512)
+    		solarPixelRadius = new Vector2d(180,180);
+        
         switch (measurement)
         {
 			case "171":
