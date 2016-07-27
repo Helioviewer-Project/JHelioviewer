@@ -64,8 +64,6 @@ import kdu_jni.Kdu_message_formatter;
 
 public class JHelioviewer
 {
-	static SplashScreen splash;
-	
 	public static void main(final String[] args) throws InvocationTargetException, InterruptedException, KduException
 	{
 		CommandLineProcessor.setArguments(args);

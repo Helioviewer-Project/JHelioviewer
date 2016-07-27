@@ -25,7 +25,7 @@ public class MovieCache
 {
 	private static HashMap<Integer,List<Movie>> cache = new HashMap<>();
 
-	private static final long MAX_CACHE_SIZE = 1024*1024*Settings.getInt(IntKey.CACHE_SIZE);
+	private static final long MAX_CACHE_SIZE = 1024l*1024l*Settings.getInt(IntKey.CACHE_SIZE);
 	
 	public static final File CACHE_DIR = new File(System.getProperty("java.io.tmpdir"), "jhv-movie-cache");
 	

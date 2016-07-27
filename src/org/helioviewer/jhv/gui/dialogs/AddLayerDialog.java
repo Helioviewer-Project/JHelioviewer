@@ -14,6 +14,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import javax.annotation.Nullable;
 import javax.swing.DefaultComboBoxModel;
@@ -201,16 +202,13 @@ public class AddLayerDialog extends JDialog
 				}
 				pack();
 
-				try
-				{
+				List<String> labels=observatory.getUiLabels();
+				if(labels.size()>0)
 					lblFilter.setText(observatory.getUiLabels().get(0));
+				if(labels.size()>1)
 					lblFilter1.setText(observatory.getUiLabels().get(1));
+				if(labels.size()>2)
 					lblFilter2.setText(observatory.getUiLabels().get(2));
-				}
-				catch (Exception e2)
-				{
-					//fill UI on a best-effort basis
-				}
 				
 				cmbbxFilter.removeAllItems();
 				cmbbxFilter1.removeAllItems();

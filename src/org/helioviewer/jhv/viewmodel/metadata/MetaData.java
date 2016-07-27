@@ -143,7 +143,7 @@ public abstract class MetaData
         dobs = tryGetDouble(_doc, "DSUN_OBS"); //distanceToSun
         carringtonAvailable = !Double.isNaN(crlt) && !Double.isNaN(crln) && !Double.isNaN(dobs) && (crlt != 0.0 || crln != 0.0);
 
-        
+        //FIXME: sometimes "nan", example: hmi continuum for 2014-02-25 00:40:00-00:50:00
         stonyhurstLatitude = tryGetDouble(_doc, "HGLT_OBS");
         stonyhurstLongitude = tryGetDouble(_doc, "HGLN_OBS");
         stonyhurstAvailable = !Double.isNaN(stonyhurstLatitude) && !Double.isNaN(stonyhurstLongitude) && (stonyhurstLatitude != 0.0 || stonyhurstLongitude != 0.0);
@@ -277,6 +277,9 @@ public abstract class MetaData
 	{
         String string = get(_doc, _key);
         if (string == null)
+        	return Double.NaN;
+        
+        if(string.equalsIgnoreCase("nan"))
         	return Double.NaN;
         
         try

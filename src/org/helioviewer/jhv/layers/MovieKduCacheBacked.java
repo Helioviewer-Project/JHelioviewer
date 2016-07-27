@@ -168,7 +168,7 @@ public class MovieKduCacheBacked extends Movie
 		if(md==null)
 			return false;
 		
-		if(areaLimit.get() >= md.resolution.x*md.resolution.y)
+		if(areaLimit.get() >= md.resolution.x*md.resolution.y && areaLimit.get()!=Integer.MAX_VALUE)
 		{
 			areaLimit.set(Integer.MAX_VALUE);
 			updateHeader();
