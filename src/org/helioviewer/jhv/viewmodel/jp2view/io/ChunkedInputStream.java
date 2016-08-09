@@ -70,18 +70,41 @@ public class ChunkedInputStream extends InputStream
 	public int read() throws IOException
 	{
 		for (;;)
-			switch (read(tmpRead, 0, 1))
-			{
-				case -1:
-					return -1;
-				case 1:
-					return tmpRead[0] & 0xff;
-				default:
-					throw new IllegalArgumentException();
-			}
-	}
+		{
+			if (eof)
+				return -1;
 
-	private byte[] tmpRead = new byte[1];
+			if (chunkLength > 0)
+			{
+				int read = in.read();
+				if (read != -1)
+				{
+					chunkLength --;
+
+					if (chunkLength == 0)
+						if (readLine().length() > 0)
+							throw new ProtocolException("An empty new line was expected after chunk");
+				}
+
+				return read;
+			}
+
+			if (chunkLength == 0)
+			{
+				String line = readLine();
+				try
+				{
+					chunkLength = Integer.parseInt(line, 16);
+					if (chunkLength <= 0)
+						eof = true;
+				}
+				catch (NumberFormatException ex)
+				{
+					throw new ProtocolException("Invalid chunk length format.");
+				}
+			}
+		}
+	}
 
 	@Override
 	public int read(@Nullable byte[] b, int off, int len) throws IOException

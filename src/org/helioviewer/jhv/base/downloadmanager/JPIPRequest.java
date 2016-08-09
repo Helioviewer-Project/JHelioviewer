@@ -54,31 +54,7 @@ public class JPIPRequest extends AbstractDownloadRequest
 		
 		try
 		{
-			LinkedHashMap<Long,ArrayList<String>> cacheContents = new LinkedHashMap<>();
-			
-			int flags = Kdu_global.KDU_CACHE_SCAN_START;
-			int[] databinClass=new int[1];
-			long[] codestreamId=new long[1];
-			long[] databinId=new long[1];
-			int[] binLength=new int[1];
-			boolean[] binComplete=new boolean[1];
-			while(m.kduCache.Scan_databins(flags, databinClass, codestreamId, databinId, binLength, binComplete))
-			{
-				if(!cacheContents.containsKey(codestreamId[0]))
-					cacheContents.put(codestreamId[0], new ArrayList<>());
-				
-				JPIPDatabinClass c=JPIPDatabinClass.fromKduClassID(databinClass[0]);
-				String element = c.getJpipString();
-				if(c!=JPIPDatabinClass.MAIN_HEADER_DATABIN)
-					element += String.valueOf(databinId[0]);
-				
-				if(!binComplete[0])
-					element += ":"+binLength[0];
-				
-				cacheContents.get(codestreamId[0]).add(element);
-				
-				flags = 0;
-			}
+			LinkedHashMap<Long, ArrayList<String>> cacheContents = m.getCachedDatabins();
 			
 			if(!cacheContents.isEmpty())
 			{

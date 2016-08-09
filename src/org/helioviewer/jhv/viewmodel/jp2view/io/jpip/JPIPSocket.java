@@ -142,7 +142,7 @@ public class JPIPSocket extends HTTPSocket
 							"Unsupported transfer encoding: " + transferEncoding + "\n" + getResponseHeadersAsString(res));
 			}
 	
-			JPIPDataInputStream jpip = new JPIPDataInputStream(input);
+			JPIPDataInputStream jpip = new JPIPDataInputStream(new BufferedInputStream(input,8192));
 	
 			JPIPDataSegment seg;
 			while ((seg = jpip.readSegment()) != null)

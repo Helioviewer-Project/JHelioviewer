@@ -209,7 +209,8 @@ public class MovieCache
 				catch(Exception e)
 				{
 					Telemetry.trackException(new IOException("Cache: Could not load "+f.getName(),e));
-					f.delete();
+					if(!f.delete())
+						Telemetry.trackException(new Exception("Cannot remove invalid cache file "+f.toString()));
 				}
 		}
 		Settings.setBoolean(Settings.BooleanKey.CACHE_LOADING_CRASHED, false);

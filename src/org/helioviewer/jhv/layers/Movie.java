@@ -2,8 +2,10 @@ package org.helioviewer.jhv.layers;
 
 import java.awt.Rectangle;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Supplier;
 
@@ -375,6 +377,14 @@ public abstract class Movie
 		return null;
 	}
 	
+	protected void loadCodestreamIntoCache(long _codestreamId) throws Exception
+	{
+	}
+	
+	protected void unloadCodestreamFromCache(long _codestreamId) throws Exception
+	{
+	}
+	
 	public boolean decodeImage(int _index, DecodeQualityLevel _quality, float _zoomPercent, Rectangle _requiredRegion, Texture _target)
 	{
 		if(disposed)
@@ -382,6 +392,7 @@ public abstract class Movie
 		
 		_target.prepareUploadBuffer(_requiredRegion.width, _requiredRegion.height);
 		
+		int codestreamId=-1;
 		try
 		{
 			Jpx_source jpxSrc=tlsJpx_source.get();
@@ -398,32 +409,14 @@ public abstract class Movie
 	        if(!xlayer.Exists())
 	        	return false;
 	        
-	        Jpx_codestream_source xstream = jpxSrc.Access_codestream(xlayer.Get_codestream_id(0));
+	        
+	        codestreamId=xlayer.Get_codestream_id(0);
+	        loadCodestreamIntoCache(codestreamId);
+	        Jpx_codestream_source xstream = jpxSrc.Access_codestream(codestreamId);
 	        Jpx_input_box inputBox = xstream.Open_stream();
-        	//tlsJpx_input_box.set(inputBox);
-        	//openInputBoxes.add(inputBox);
-        	
 	        Kdu_codestream codestream = new Kdu_codestream();
-			//Kdu_codestream codestream = tlsKdu_codestream.get();
-        	//if(!codestream.Exists())
-        	{
-				codestream.Create(inputBox);
-				//codestream.Set_persistent();
-				codestream.Set_fast();
-				
-				//codestream.Enable_restart();
-        	}
-        	/*else
-        	{
-        		codestream.Destroy();
-        		
-        		codestream = new Kdu_codestream();
-        		tlsKdu_codestream.set(codestream);
-        		codestream.Create(inputBox);
-        		
-        		//WARNING: here lurks another KDU bug. codestream restarts are very unreliable in MT environments
-        		//codestream.Restart(inputBox);
-        	}*/
+			codestream.Create(inputBox);
+			codestream.Set_resilient(false);
 			
 			int discardLevels=(int)Math.round(-Math.log(_zoomPercent)/Math.log(2));
 			
@@ -496,9 +489,21 @@ public abstract class Movie
         	inputBox.Native_destroy();
 			return true;
 		}
-		catch (KduException e)
+		catch (Exception e)
 		{
 			Telemetry.trackException(e);
+		}
+		finally
+		{
+			if(codestreamId!=-1)
+				try
+				{
+					unloadCodestreamFromCache(codestreamId);
+				}
+				catch (Exception _e)
+				{
+					Telemetry.trackException(_e);
+				}
 		}
 		return false;
 	}

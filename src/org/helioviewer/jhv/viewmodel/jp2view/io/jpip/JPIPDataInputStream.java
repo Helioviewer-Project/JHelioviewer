@@ -24,9 +24,6 @@ class JPIPDataInputStream
 	/** The first byte of the last VBAS read. */
 	private int vbasFstByte = 0;
 
-	/** Number of bytes read up until now. */
-	private int bytesRead = 0;
-
 	/** The <code>InputStream</code> base. */
 	private InputStream in;
 
@@ -34,57 +31,6 @@ class JPIPDataInputStream
 	public JPIPDataInputStream(InputStream in)
 	{
 		this.in = in;
-	}
-
-	/**
-	 * @return The number of bytes read from the underlying input stream up
-	 *         until now.
-	 */
-	public int getNumberOfBytesRead()
-	{
-		return bytesRead;
-	}
-
-	/**
-	 * Reads a byte and increments the byte counter.
-	 * 
-	 * @return The next byte of data, or -1 if the end of the stream is reached.
-	 * @throws IOException
-	 */
-	private int read() throws IOException
-	{
-		int b = in.read();
-		if (b != -1)
-		{
-			++bytesRead;
-		}
-		return b;
-	}
-
-	/**
-	 * Reads up to len bytes of data from the input stream into an array of
-	 * bytes. An attempt is made to read as many as len bytes, but a smaller
-	 * number may be read. The number of bytes actually read is returned as an
-	 * integer.
-	 * 
-	 * @param b
-	 *            The buffer into which the data is read.
-	 * @param off
-	 *            The start offset in array b at which the data is written.
-	 * @param len
-	 *            The maximum number of bytes to read.
-	 * @return The total number of bytes read into the buffer, or -1 if there is
-	 *         no more data because the end of the stream has been reached.
-	 * @throws IOException
-	 */
-	private int read(byte b[], int off, int len) throws IOException
-	{
-		int bytesJustRead = in.read(b, off, len);
-		if (bytesJustRead != -1)
-		{
-			bytesRead += bytesJustRead;
-		}
-		return bytesJustRead;
 	}
 
 	/**
@@ -106,7 +52,7 @@ class JPIPDataInputStream
 			if (vbasLength >= 9)
 				throw new ProtocolException("VBAS length not supported");
 
-			if ((c = read()) < 0)
+			if ((c = in.read()) < 0)
 			{
 				if (vbasLength > 0)
 					throw new EOFException("EOF reached before completing VBAS");
@@ -151,11 +97,10 @@ class JPIPDataInputStream
 		{
 			seg.isEOR = true;
 
-			if ((seg.binID = read()) < 0)
+			if ((seg.binID = in.read()) < 0)
 				throw new EOFException("EOF reached before completing EOR message");
 
 			seg.length = (int) readVBAS();
-
 		}
 		else
 		{
@@ -182,8 +127,8 @@ class JPIPDataInputStream
 			if (seg.classID == null)
 				throw new ProtocolException("Invalid databin classID");
 
-			seg.offset = (int) readVBAS();
-			seg.length = (int) readVBAS();
+			seg.offset = (int)readVBAS();
+			seg.length = (int)readVBAS();
 
 			if ((classId == JPIPConstants.EXTENDED_PRECINCT_DATA_BIN_CLASS)
 					|| (classId == JPIPConstants.EXTENDED_TILE_DATA_BIN_CLASS))
@@ -204,7 +149,7 @@ class JPIPDataInputStream
 
 			while (len != 0)
 			{
-				int read = read(seg.data, offset, len);
+				int read = in.read(seg.data, offset, len);
 				if (read == -1)
 					throw new EOFException("Unexpected EOF");
 
