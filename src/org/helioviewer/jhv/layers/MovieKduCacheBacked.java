@@ -541,6 +541,8 @@ public class MovieKduCacheBacked extends Movie
 			
 			byte[] data=baos.toByteArray();
 			
+			
+			//TODO: defragment/compact periodically
 			synchronized(backingFile)
 			{
 				if(_kduClassId==JPIPDatabinClass.PRECINCT_DATABIN.getKakaduClassID())

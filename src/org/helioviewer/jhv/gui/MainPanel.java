@@ -403,7 +403,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			if (layer instanceof ImageLayer)
 				anyImageLayerVisible |= layer.isVisible();
 		
-		double clipNear = MathUtils.clip(translationNow.z - 4 * Constants.SUN_RADIUS, CLIP_NEAR, CLIP_FAR);
+		double clipNear = MathUtils.clip(translationNow.z - 4 * Constants.SUN_RADIUS, CLIP_NEAR, Math.nextDown(CLIP_FAR));
 		double clipFar = MathUtils.clip(translationNow.z + 4 * Constants.SUN_RADIUS, Math.nextUp(clipNear), CLIP_FAR);
 		
 		gl.glMatrixMode(GL2.GL_PROJECTION);

@@ -67,27 +67,6 @@ public abstract class Movie
 		}
 	});
 	
-	//FIXME: clear KduCache on memory pressure, reload from disk
-	//FIXME: index movies from disk on startup, reloading should happen on-demand
-	/*private final ArrayList<Kdu_codestream> openKdu_codestreams = new ArrayList<Kdu_codestream>(1);
-	private ThreadLocal<Kdu_codestream> tlsKdu_codestream=ThreadLocal.withInitial(() ->
-		{
-			try
-			{
-				Kdu_codestream codestream = new Kdu_codestream();
-				synchronized(openKdu_codestreams)
-				{
-					openKdu_codestreams.add(codestream);
-				}
-				
-				return codestream;
-			}
-			catch (Throwable e)
-			{
-				throw new RuntimeException(e);
-			}
-		});*/
-	
 	private final ArrayList<Jpx_source> openJpx_sources = new ArrayList<Jpx_source>(1);
 	private ThreadLocal<Jpx_source> tlsJpx_source=ThreadLocal.withInitial(new Supplier<Jpx_source>()
 	{
@@ -461,6 +440,7 @@ public abstract class Movie
 			Kdu_dims new_region = new Kdu_dims();
 			
 			int position=0;
+			
 			while(decompressor.Process(_target.uploadBuffer.array(),
 					new int[]{position} /* CHANNEL OFFSETS */,
 					1 /* PIXEL GAP */,
