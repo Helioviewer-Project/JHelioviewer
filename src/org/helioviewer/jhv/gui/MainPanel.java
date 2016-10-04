@@ -28,6 +28,7 @@ import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.Telemetry;
+import org.helioviewer.jhv.base.UILatencyWatchdog;
 import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
 import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
 import org.helioviewer.jhv.base.math.MathUtils;
@@ -76,6 +77,8 @@ import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.util.awt.ImageUtil;
 import com.jogamp.opengl.util.awt.TextRenderer;
+
+import sun.misc.GC.LatencyRequest;
 
 public class MainPanel extends GLCanvas implements GLEventListener, Camera
 {
@@ -474,7 +477,9 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			for (ListenableFuture<PreparedImage> l : Futures.inCompletionOrder(prepared))
 				try
 				{
+					UILatencyWatchdog.setFocus(Globals.GL_WORKER_THREADS.toArray(new Thread[0]));
 					PreparedImage pr = l.get();
+					UILatencyWatchdog.setFocus();
 					if (pr != null)
 						pr.layer.renderLayer(gl, this, pr, (float)maxScaling);
 				}
@@ -497,10 +502,6 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glLoadIdentity();
 		
-		if(aspect>1)
-			gl.glScaled(aspect, aspect, 1);
-		
-		
 		if (CameraMode.mode == CameraMode.MODE.MODE_3D)
 		{
 			new GLU().gluPerspective(MainPanel.FOV, aspect, clipNear, clipFar);
@@ -512,6 +513,10 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			gl.glScaled(1 / aspect, 1, 1);
 		}
 
+		if(aspect>1)
+			gl.glScaled(aspect, aspect, 1);
+		
+		
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		calculateBounds();
 		for (CameraInteraction cameraInteraction : cameraInteractionsLeft)
@@ -857,6 +862,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		offscreenDrawable.setRealized(true);
 		final GLContext offscreenContext = getContext();
 		offscreenDrawable.setRealized(true);
+		double oldAspect = aspect;
 		try
 		{
 			offscreenContext.makeCurrent();
@@ -871,7 +877,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			offscreenGL.glViewport(0, 0, tileWidth, tileHeight);
 			offscreenGL.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	
-			double aspect = imageWidth / (double) imageHeight;
+			aspect = imageWidth / (double) imageHeight;
 			// double top = Math.tan(MainPanel.FOV / 360.0 * Math.PI) *
 			// MainPanel.CLIP_NEAR;
 			// double right = top * aspect;
@@ -887,24 +893,21 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			offscreenGL.glLoadIdentity();
 			offscreenGL.glScaled(1, aspect, 1);
 			offscreenGL.glMatrixMode(GL2.GL_MODELVIEW);
-	
+			
+			//FIXME: tiling is broken
 			for (int x = 0; x < countXTiles; x++)
 			{
 				for (int y = 0; y < countYTiles; y++)
 				{
 					offscreenGL.glMatrixMode(GL2.GL_PROJECTION);
 					offscreenGL.glPushMatrix();
-					offscreenGL.glMatrixMode(GL2.GL_MODELVIEW);
-	
-					offscreenGL.glMatrixMode(GL2.GL_PROJECTION);
 					offscreenGL.glViewport(0, 0, imageWidth, imageHeight);
 					offscreenGL.glTranslated(-x, -y, 0);
 					offscreenGL.glMatrixMode(GL2.GL_MODELVIEW);
 	
-					// double factor =
 					int destX = tileWidth * x;
 					int destY = tileHeight * y;
-					render(offscreenGL, false, new Dimension(tileWidth, tileHeight));
+					render(offscreenGL, false, new Dimension(imageWidth, imageHeight));
 	
 					if (descriptions != null && x == 0 && y == 0)
 					{
@@ -937,6 +940,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		finally
 		{
 			offscreenContext.release();
+			aspect=oldAspect;
 		}
 	}
 

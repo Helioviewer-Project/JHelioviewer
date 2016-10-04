@@ -11,6 +11,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -43,9 +44,9 @@ import javafx.stage.StageStyle;
 
 public class Globals
 {
-	public static final String OBSERVATORIES_DATASOURCE = "http://api.helioviewer.org/v2/getDataSources/";
-	public static final String JPX_DATASOURCE_TRADITIONAL = "http://api.helioviewer.org/v2/getJPX/";
-	public static final String JPX_DATASOURCE_MIDPOINT = "http://api.helioviewer.org/v2/getJPXClosestToMidPoint/";
+	public static final String OBSERVATORIES_DATASOURCE = "https://api.helioviewer.org/v2/getDataSources/";
+	public static final String JPX_DATASOURCE_TRADITIONAL = "https://api.helioviewer.org/v2/getJPX/";
+	public static final String JPX_DATASOURCE_MIDPOINT = "https://api.helioviewer.org/v2/getJPXClosestToMidPoint/";
 
     public static final String VERSION = System.getProperty("jhvVersion") == null ? "developer" : System.getProperty("jhvVersion");
     public static final String RAYGUN_TAG = System.getProperty("raygunTag");
@@ -55,10 +56,13 @@ public class Globals
     public static final int LICENSE_VERSION = 1; //increase whenever license changes
 	
     public static final int STARTUP_LAYER_ID = 10; //AIA 193
+    
+    public static final int CORES = Runtime.getRuntime().availableProcessors(); 
 
 	public static final boolean JAVA_FX_AVAILABLE;
 	
 	private static LinkedBlockingQueue<Runnable> runnableWithGLContext;
+	public static final ArrayList<Thread> GL_WORKER_THREADS=new ArrayList<>();
 	
 	public static void createSharedGLContexts(GLAutoDrawable _master, GLDrawableFactory _factory, GLCapabilities _capabilities, int _numContexts)
 	{
@@ -87,6 +91,7 @@ public class Globals
 			t.setName("GL Worker "+i);
 			t.setDaemon(true);
 			t.start();
+			GL_WORKER_THREADS.add(t);
 		}
 	}
 	

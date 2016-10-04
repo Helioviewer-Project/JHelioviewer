@@ -169,7 +169,7 @@ public class JHelioviewer
 				masterDrawable.getContext().setGLDebugSynchronous(false);
 			}
 			
-			Globals.createSharedGLContexts(masterDrawable, factory, capabilities, Runtime.getRuntime().availableProcessors());
+			Globals.createSharedGLContexts(masterDrawable, factory, capabilities, Globals.CORES);
 			masterDrawable.display();
 			Telemetry.initializeOpenGL();
 			
@@ -303,7 +303,7 @@ public class JHelioviewer
 				}
 				catch(UnsatisfiedLinkError _ule)
 				{
-					//ignore inability to load msvcr120. if there's really
+					//ignore inability to load ucrtbase. if there's really
 					//a problem, it will be caught by the outer try/catch
 				}
 			}
@@ -324,7 +324,7 @@ public class JHelioviewer
 				}
 				catch(UnsatisfiedLinkError _ule)
 				{
-					//ignore inability to load msvcr120. if there's really
+					//ignore inability to load ucrtbased. if there's really
 					//a problem, it will be caught by the outer try/catch
 				}
 			}

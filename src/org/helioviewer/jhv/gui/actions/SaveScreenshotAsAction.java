@@ -60,6 +60,8 @@ public class SaveScreenshotAsAction extends AbstractAction
 		Telemetry.trackMetric("ScreenshotHeight",imageHeight);
 		Telemetry.trackMetric("ScreenshotTextEnabled", textEnabled?1:0);
 
+		Settings.setString(StringKey.SCREENSHOT_EXPORT_DIRECTORY, selectedFile.getParent());
+		
 		loadSettings();
 		try
 		{

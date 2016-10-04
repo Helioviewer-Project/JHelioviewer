@@ -39,17 +39,42 @@ public class HTTPRequest extends AbstractDownloadRequest
 	@SuppressWarnings("resource")
 	public void execute() throws Throwable
 	{
-		httpURLConnection = (HttpURLConnection) new URL(url).openConnection();
+		//FIXME: add proxy support (settings, ...)
+		//Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 8888));
+		httpURLConnection = (HttpURLConnection) new URL(url).openConnection(); //proxy);
 		try
 		{
 			httpURLConnection.setReadTimeout(TIMEOUT);
 			httpURLConnection.setRequestMethod("GET");
 			httpURLConnection.setRequestProperty("Accept-Encoding", "gzip, deflate");
+			
+			//FIXME: follow https redirects
+			/*if(httpURLConnection instanceof HttpsURLConnection)
+			{
+				HttpsURLConnection httpsURLConnection=(HttpsURLConnection)httpURLConnection;
+				httpsURLConnection.setHostnameVerifier(new HostnameVerifier()
+				{
+		            @Override
+		            public boolean verify(String arg0, SSLSession arg1)
+		            {
+		                return true;
+		            }
+		        });
+			}*/
+			
 			httpURLConnection.connect();
 			int response = httpURLConnection.getResponseCode();
 			totalLength = httpURLConnection.getContentLength();
-			if (response != HttpURLConnection.HTTP_OK)
-				throw new IOException("Response code "+response);
+			switch(response)
+			{
+				case HttpURLConnection.HTTP_OK:
+					break;
+				case HttpURLConnection.HTTP_MOVED_TEMP:
+				case HttpURLConnection.HTTP_MOVED_PERM:
+					throw new IOException("New Location "+httpURLConnection.getHeaderField("Location"));
+				default:
+					throw new IOException("Response code "+response);
+			}
 			
 			InputStream is=new BufferedInputStream(httpURLConnection.getInputStream(),65536);
 			if(httpURLConnection.getContentEncoding()!=null)

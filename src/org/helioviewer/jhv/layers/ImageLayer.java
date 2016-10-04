@@ -288,8 +288,8 @@ public abstract class ImageLayer extends Layer
 	private Matrix4d calcTransformation(MainPanel _mainPanel, MetaData _md)
 	{
 		//see http://jgiesen.de/sunrot/index.html and http://www.petermeadows.com/stonyhurst/sdisk6in7.gif
-		double diffRotattion = DifferentialRotation.calculateRotationInRadians(0,(TimeLine.SINGLETON.getCurrentFrameStartTimeMS() - _md.timeMS)/1000f);
-		Quaternion diffRotationQuat = Quaternion.createRotation(-diffRotattion, new Vector3d(0, 1, 0));
+		double diffRotation = DifferentialRotation.calculateRotationInRadians(0,(TimeLine.SINGLETON.getCurrentFrameStartTimeMS() - _md.timeMS)/1000f);
+		Quaternion diffRotationQuat = Quaternion.createRotation(-diffRotation, new Vector3d(0, 1, 0));
 		
 		return Matrix4d.createTranslationMatrix(_mainPanel.getTranslationCurrent())
 				.multiplied(diffRotationQuat.toMatrix())
