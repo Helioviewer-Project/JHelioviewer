@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<updateDescriptor baseUrl="https://github.com/Helioviewer-Project/JHelioviewer/releases/download/3.0.11/">
-  <entry targetMediaFileId="270" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_3_0_11_amd64.rpm" newVersion="3.0.11" newMediaFileId="270" fileSize="32841735" bundledJre="" archive="true">
+<updateDescriptor baseUrl="https://github.com/Helioviewer-Project/JHelioviewer/releases/download/3.0.12/">
+  <entry targetMediaFileId="270" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_3_0_12_amd64.rpm" newVersion="3.0.12" newMediaFileId="270" fileSize="32842615" bundledJre="" archive="true">
     <comment language="en" />
   </entry>
-  <entry targetMediaFileId="218" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_3_0_11_amd64.deb" newVersion="3.0.11" newMediaFileId="218" fileSize="32530842" bundledJre="" archive="true">
+  <entry targetMediaFileId="218" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_3_0_12_amd64.deb" newVersion="3.0.12" newMediaFileId="218" fileSize="32531404" bundledJre="" archive="true">
     <comment language="en" />
   </entry>
-  <entry targetMediaFileId="68" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_3_0_11.dmg" newVersion="3.0.11" newMediaFileId="68" fileSize="90081276" bundledJre="macosx-amd64-1.8.0_102_unpacked" archive="true">
+  <entry targetMediaFileId="68" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_3_0_12.dmg" newVersion="3.0.12" newMediaFileId="68" fileSize="90081507" bundledJre="macosx-amd64-1.8.0_102_unpacked" archive="true">
     <comment language="en" />
   </entry>
-  <entry targetMediaFileId="150" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_3_0_11.exe" newVersion="3.0.11" newMediaFileId="150" fileSize="53728592" bundledJre="windows-amd64-1.8.0_102" archive="false">
+  <entry targetMediaFileId="150" updatableVersionMin="" updatableVersionMax="" fileName="JHelioviewer_3_0_12.exe" newVersion="3.0.12" newMediaFileId="150" fileSize="53729104" bundledJre="windows-amd64-1.8.0_102" archive="false">
     <comment language="en" />
   </entry>
 </updateDescriptor>
