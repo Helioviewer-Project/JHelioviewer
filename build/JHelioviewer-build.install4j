@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="6.1.3" transformSequenceNumber="5">
   <directoryPresets config="./resources" />
-  <application name="JHelioviewer" distributionSourceDir="" applicationId="7791-5722-0682-7193" mediaDir="./builds" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="9" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="JHelioviewer" publisher="ESA JHelioviewer Team" publisherWeb="http://www.jhelioviewer.org" version="3.0.11" allPathsRelative="true" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="7ed177551bd348bc" javaMinVersion="1.8.0_101" javaMaxVersion="" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
+  <application name="JHelioviewer" distributionSourceDir="" applicationId="7791-5722-0682-7193" mediaDir="./builds" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="9" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="JHelioviewer" publisher="ESA JHelioviewer Team" publisherWeb="http://www.jhelioviewer.org" version="3.0.12" allPathsRelative="true" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="7ed177551bd348bc" javaMinVersion="1.8.0_101" javaMaxVersion="" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="en" customLocalizationFile="" />
       <additionalLanguages />
@@ -458,7 +458,7 @@
                     </object>
                   </java>
                 </serializedBean>
-                <condition>context.getBooleanVariable("executeLauncherAction") &amp;&amp; (!context.isUnattended())</condition>
+                <condition>context.getBooleanVariable("executeLauncherAction") //&amp;&amp; (!context.isUnattended())</condition>
               </action>
             </actions>
             <formComponents>
@@ -669,6 +669,9 @@
               </void>
               <void property="executableName">
                 <string>Updater</string>
+              </void>
+              <void property="splashMessage">
+                <string>Updating JHelioviewer</string>
               </void>
               <void property="useCustomIcon">
                 <boolean>true</boolean>
@@ -1178,6 +1181,85 @@ wizardContext.setCancelButtonVisible(false);</preActivation>
                     </serializedBean>
                     <condition />
                   </action>
+                  <group name="Execute installer" id="927" customizedId="" beanClass="com.install4j.runtime.beans.groups.ActionGroup" enabled="true" commentSet="false" comment="" actionElevationType="inherit">
+                    <serializedBean>
+                      <java class="java.beans.XMLDecoder">
+                        <object class="com.install4j.runtime.beans.groups.ActionGroup">
+                          <void property="conditionExpression">
+                            <object class="com.install4j.api.beans.ScriptProperty">
+                              <void property="value">
+                                <string>!(context.getBooleanVariable("isArchive") &amp;&amp; context.getBooleanVariable("isDmg"))
+
+//!context.getBooleanVariable("isArchive") &amp;&amp; ((Integer)context.getVariable("updaterLaunchSelection")).intValue() == 0</string>
+                              </void>
+                            </object>
+                          </void>
+                        </object>
+                      </java>
+                    </serializedBean>
+                    <beans>
+                      <action name="Set installer arguments" id="928" customizedId="" beanClass="com.install4j.runtime.beans.actions.control.SetVariableAction" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+                        <serializedBean>
+                          <java class="java.beans.XMLDecoder">
+                            <object class="com.install4j.runtime.beans.actions.control.SetVariableAction">
+                              <void property="script">
+                                <object class="com.install4j.api.beans.ScriptProperty">
+                                  <void property="value">
+                                    <string>String installationDirectory = context.getInstallationDirectory().getPath();
+//if (context.isUnattended()) {
+    return new String[] {"-q", "-splash", "Updating JHelioviewer", "-wait", "20", "-dir", installationDirectory};
+//} else if (context.isConsole()) {
+//    return new String[] {"-c", "-dir", installationDirectory};
+//} else {
+//    return new String[] {"-dir", installationDirectory};
+//}</string>
+                                  </void>
+                                </object>
+                              </void>
+                              <void property="variableName">
+                                <string>installerArguments</string>
+                              </void>
+                            </object>
+                          </java>
+                        </serializedBean>
+                        <condition />
+                      </action>
+                      <action name="" id="929" customizedId="" beanClass="com.install4j.runtime.beans.actions.update.ShutdownCallingLauncherAction" enabled="true" commentSet="false" comment="" actionElevationType="none" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+                        <serializedBean>
+                          <java class="java.beans.XMLDecoder">
+                            <object class="com.install4j.runtime.beans.actions.update.ShutdownCallingLauncherAction" />
+                          </java>
+                        </serializedBean>
+                        <condition />
+                      </action>
+                      <action name="" id="930" customizedId="" beanClass="com.install4j.runtime.beans.actions.misc.RunExecutableAction" enabled="true" commentSet="false" comment="" actionElevationType="elevated" rollbackBarrier="false" multiExec="false" failureStrategy="2" errorMessage="${i18n:updater.LaunchError}">
+                        <serializedBean>
+                          <java class="java.beans.XMLDecoder">
+                            <object class="com.install4j.runtime.beans.actions.misc.RunExecutableAction">
+                              <void property="arguments">
+                                <array class="java.lang.String" length="1">
+                                  <void index="0">
+                                    <string>${installer:installerArguments}</string>
+                                  </void>
+                                </array>
+                              </void>
+                              <void property="executable">
+                                <object class="java.io.File">
+                                  <string>${installer:updaterDownloadFile}</string>
+                                </object>
+                              </void>
+                              <void property="workingDirectory">
+                                <object class="java.io.File">
+                                  <string>${installer:updaterDownloadLocation}</string>
+                                </object>
+                              </void>
+                            </object>
+                          </java>
+                        </serializedBean>
+                        <condition />
+                      </action>
+                    </beans>
+                  </group>
                 </actions>
                 <formComponents />
               </screen>
@@ -1188,190 +1270,6 @@ wizardContext.setCancelButtonVisible(false);</preActivation>
                   </java>
                 </serializedBean>
                 <beans>
-                  <screen name="Finish" id="384" customizedId="" beanClass="com.install4j.runtime.beans.screens.BannerFormScreen" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" backButton="2" finishScreen="true" wizardIndexChangeType="unchanged" wizardIndexKey="">
-                    <serializedBean>
-                      <java class="java.beans.XMLDecoder">
-                        <object class="com.install4j.runtime.beans.screens.BannerFormScreen">
-                          <void property="infoText">
-                            <string>${i18n:updater.FinishInfoText("${compiler:sys.fullName}")}</string>
-                          </void>
-                          <void property="title">
-                            <string>${i18n:updater.FinishTitle}</string>
-                          </void>
-                        </object>
-                      </java>
-                    </serializedBean>
-                    <condition>!(context.getBooleanVariable("isArchive") &amp;&amp; context.getBooleanVariable("isDmg"))</condition>
-                    <validation />
-                    <preActivation />
-                    <postActivation />
-                    <actions>
-                      <group name="Execute installer" id="385" customizedId="" beanClass="com.install4j.runtime.beans.groups.ActionGroup" enabled="true" commentSet="false" comment="" actionElevationType="inherit">
-                        <serializedBean>
-                          <java class="java.beans.XMLDecoder">
-                            <object class="com.install4j.runtime.beans.groups.ActionGroup">
-                              <void property="conditionExpression">
-                                <object class="com.install4j.api.beans.ScriptProperty">
-                                  <void property="value">
-                                    <string>!context.getBooleanVariable("isArchive") &amp;&amp; ((Integer)context.getVariable("updaterLaunchSelection")).intValue() == 0</string>
-                                  </void>
-                                </object>
-                              </void>
-                            </object>
-                          </java>
-                        </serializedBean>
-                        <beans>
-                          <action name="Set installer arguments" id="386" customizedId="" beanClass="com.install4j.runtime.beans.actions.control.SetVariableAction" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
-                            <serializedBean>
-                              <java class="java.beans.XMLDecoder">
-                                <object class="com.install4j.runtime.beans.actions.control.SetVariableAction">
-                                  <void property="script">
-                                    <object class="com.install4j.api.beans.ScriptProperty">
-                                      <void property="value">
-                                        <string>String installationDirectory = context.getInstallationDirectory().getPath();
-if (context.isUnattended()) {
-    return new String[] {"-q", "-wait", "20", "-dir", installationDirectory};
-} else if (context.isConsole()) {
-    return new String[] {"-c", "-dir", installationDirectory};
-} else {
-    return new String[] {"-dir", installationDirectory};
-}</string>
-                                      </void>
-                                    </object>
-                                  </void>
-                                  <void property="variableName">
-                                    <string>installerArguments</string>
-                                  </void>
-                                </object>
-                              </java>
-                            </serializedBean>
-                            <condition />
-                          </action>
-                          <action name="" id="387" customizedId="" beanClass="com.install4j.runtime.beans.actions.update.ShutdownCallingLauncherAction" enabled="true" commentSet="false" comment="" actionElevationType="none" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
-                            <serializedBean>
-                              <java class="java.beans.XMLDecoder">
-                                <object class="com.install4j.runtime.beans.actions.update.ShutdownCallingLauncherAction" />
-                              </java>
-                            </serializedBean>
-                            <condition />
-                          </action>
-                          <action name="" id="388" customizedId="" beanClass="com.install4j.runtime.beans.actions.misc.RunExecutableAction" enabled="true" commentSet="false" comment="" actionElevationType="elevated" rollbackBarrier="false" multiExec="false" failureStrategy="2" errorMessage="${i18n:updater.LaunchError}">
-                            <serializedBean>
-                              <java class="java.beans.XMLDecoder">
-                                <object class="com.install4j.runtime.beans.actions.misc.RunExecutableAction">
-                                  <void property="arguments">
-                                    <array class="java.lang.String" length="1">
-                                      <void index="0">
-                                        <string>${installer:installerArguments}</string>
-                                      </void>
-                                    </array>
-                                  </void>
-                                  <void property="executable">
-                                    <object class="java.io.File">
-                                      <string>${installer:updaterDownloadFile}</string>
-                                    </object>
-                                  </void>
-                                  <void property="workingDirectory">
-                                    <object class="java.io.File">
-                                      <string>${installer:updaterDownloadLocation}</string>
-                                    </object>
-                                  </void>
-                                </object>
-                              </java>
-                            </serializedBean>
-                            <condition />
-                          </action>
-                        </beans>
-                      </group>
-                    </actions>
-                    <formComponents>
-                      <formComponent name="" id="389" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.LabelComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
-                        <serializedBean>
-                          <java class="java.beans.XMLDecoder">
-                            <object class="com.install4j.runtime.beans.formcomponents.LabelComponent">
-                              <void property="labelText">
-                                <string>${i18n:updater.LaunchUpdaterQuestion}</string>
-                              </void>
-                            </object>
-                          </java>
-                        </serializedBean>
-                        <initScript />
-                        <visibilityScript />
-                      </formComponent>
-                      <formComponent name="" id="390" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.SpacerComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
-                        <serializedBean>
-                          <java class="java.beans.XMLDecoder">
-                            <object class="com.install4j.runtime.beans.formcomponents.SpacerComponent">
-                              <void property="height">
-                                <int>5</int>
-                              </void>
-                            </object>
-                          </java>
-                        </serializedBean>
-                        <initScript />
-                        <visibilityScript />
-                      </formComponent>
-                      <formComponent name="" id="391" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.RadiobuttonsComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
-                        <serializedBean>
-                          <java class="java.beans.XMLDecoder">
-                            <object class="com.install4j.runtime.beans.formcomponents.RadiobuttonsComponent">
-                              <void property="radioButtonLabels">
-                                <array class="java.lang.String" length="2">
-                                  <void index="0">
-                                    <string>${i18n:updater.LaunchUpdaterLabel}</string>
-                                  </void>
-                                  <void index="1">
-                                    <string>${i18n:updater.DoNotLaunchUpdaterLabel}</string>
-                                  </void>
-                                </array>
-                              </void>
-                              <void property="variableName">
-                                <string>updaterLaunchSelection</string>
-                              </void>
-                            </object>
-                          </java>
-                        </serializedBean>
-                        <initScript />
-                        <visibilityScript>!context.getBooleanVariable("isArchive")</visibilityScript>
-                      </formComponent>
-                      <formComponent name="" id="392" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.HyperlinkActionLabelComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
-                        <serializedBean>
-                          <java class="java.beans.XMLDecoder">
-                            <object class="com.install4j.runtime.beans.formcomponents.HyperlinkActionLabelComponent">
-                              <void property="actionScript">
-                                <object class="com.install4j.api.beans.ScriptProperty">
-                                  <void property="value">
-                                    <string>Util.showPath((String)context.getVariable("updaterDownloadFile"));</string>
-                                  </void>
-                                </object>
-                              </void>
-                              <void property="hyperlinkText">
-                                <string>${i18n:updater.OpenContainingFolderLabel}</string>
-                              </void>
-                            </object>
-                          </java>
-                        </serializedBean>
-                        <initScript />
-                        <visibilityScript>!context.isConsole()</visibilityScript>
-                      </formComponent>
-                      <formComponent name="" id="393" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.ProgressComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
-                        <serializedBean>
-                          <java class="java.beans.XMLDecoder">
-                            <object class="com.install4j.runtime.beans.formcomponents.ProgressComponent">
-                              <void property="detailVisible">
-                                <boolean>false</boolean>
-                              </void>
-                              <void property="hideInitially">
-                                <boolean>true</boolean>
-                              </void>
-                            </object>
-                          </java>
-                        </serializedBean>
-                        <initScript />
-                        <visibilityScript />
-                      </formComponent>
-                    </formComponents>
-                  </screen>
                   <screen name="Finish DMG Archive" id="394" customizedId="" beanClass="com.install4j.runtime.beans.screens.BannerFormScreen" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" backButton="2" finishScreen="true" wizardIndexChangeType="unchanged" wizardIndexKey="">
                     <serializedBean>
                       <java class="java.beans.XMLDecoder">

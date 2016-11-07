@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import org.helioviewer.jhv.base.physics.Constants;
 
+//see http://adsabs.harvard.edu/abs/2006A%26A...449..791T
 //see http://fits.gsfc.nasa.gov/wcs/coordinates.pdf
 public class HeliographicCoordinate
 {

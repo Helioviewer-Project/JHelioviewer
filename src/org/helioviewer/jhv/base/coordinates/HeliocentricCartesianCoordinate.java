@@ -4,19 +4,23 @@ import java.time.LocalDateTime;
 
 import org.helioviewer.jhv.base.math.Vector3d;
 
+//see http://adsabs.harvard.edu/abs/2006A%26A...449..791T
 //see http://fits.gsfc.nasa.gov/wcs/coordinates.pdf
-public class HeliocentricCartesianCoordinate {
+public class HeliocentricCartesianCoordinate
+{
 	public final double x;
 	public final double y;
 	public final double z;
 
-	public HeliocentricCartesianCoordinate(double x, double y, double z) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
+	public HeliocentricCartesianCoordinate(double _x, double _y, double _z)
+	{
+		x = _x;
+		y = _y;
+		z = _z;
 	}
 
-	public HeliographicCoordinate toHeliographicCoordinate() {
+	public HeliographicCoordinate toHeliographicCoordinate()
+	{
 		double b0 = 0;
 		double l0 = 0;
 
