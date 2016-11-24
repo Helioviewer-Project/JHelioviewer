@@ -66,11 +66,11 @@ public class MovieCache
 		});
 		
 		int toRemove = 0;
-		while(cacheSize>MAX_CACHE_SIZE)
+		while(cacheSize>MAX_CACHE_SIZE && toRemove<files.length)
 		{
 			for(List<Movie> lm:cache.values())
 				for(Movie m:lm)
-					if((m instanceof MovieKduCacheBacked) && ((MovieKduCacheBacked)m).backingFile.equals(files[toRemove]))
+					if((m instanceof MovieKduCacheBacked) && ((MovieKduCacheBacked)m).getBackingFile().equals(files[toRemove]))
 					{
 						m.dispose();
 						lm.remove(m);

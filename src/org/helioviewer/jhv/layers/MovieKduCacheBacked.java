@@ -58,94 +58,312 @@ import sun.nio.ch.DirectBuffer;
 
 public class MovieKduCacheBacked extends Movie
 {
-	private static final int HEADER_MARKER = 0x01100a0f;
-	private static final int VALID_MARKER = 0x00011a0f;
-	
-	private final Kdu_cache kduCache = new Kdu_cache();
-	
-	public final @Nullable URI jpipURI;
-	public final AtomicInteger areaLimit;
-	public final AtomicInteger qualityLayersLimit;
-	public final File backingFile;
-	private final HashMap<Long,List<Integer>> codestreamPositions=new HashMap<>();
-	private MappedByteBuffer map;
-	private int usedSize;
-	private final LinkedHashMap<Long,LinkedHashMap<Long,List<Bin>>> bins=new LinkedHashMap<>();
-
-	private boolean updateBinInfo(int _kduClassId, long _codestreamId, long _binId, int _offset, int _length, boolean _isFinal)
+	public class CacheFile
 	{
-		if(_length==0 && !_isFinal)
-			return false;
+		private static final int HEADER_MARKER = 0x01100a0f;
+		private static final int VALID_MARKER = 0x00011a0f;
+		public final File backingFile;
+		private final HashMap<Long,List<Integer>> codestreamPositions=new HashMap<>();
+		private MappedByteBuffer map;
+		private int usedSize;
+		private final LinkedHashMap<Long,LinkedHashMap<Long,List<Bin>>> bins=new LinkedHashMap<>();
 		
-		LinkedHashMap<Long,List<Bin>> codestreamBins;
-		if(bins.containsKey(_codestreamId))
-			codestreamBins=bins.get(_codestreamId);
-		else
-			bins.put(_codestreamId,codestreamBins=new LinkedHashMap<>());
-		
-		List<Bin> idBins;
-		if(codestreamBins.containsKey(_binId))
-			idBins=codestreamBins.get(_binId);
-		else
-			codestreamBins.put(_binId, idBins=new ArrayList<>(1));
-		
-		Bin b=null;
-		for(Bin c:idBins)
-			if(c.Class==_kduClassId)
+		boolean updateBinInfo(int _kduClassId, long _codestreamId, long _binId, int _offset, int _length, boolean _isFinal)
+		{
+			if(_length==0 && !_isFinal)
+				return false;
+			
+			LinkedHashMap<Long,List<Bin>> codestreamBins;
+			if(bins.containsKey(_codestreamId))
+				codestreamBins=bins.get(_codestreamId);
+			else
+				bins.put(_codestreamId,codestreamBins=new LinkedHashMap<>());
+			
+			List<Bin> idBins;
+			if(codestreamBins.containsKey(_binId))
+				idBins=codestreamBins.get(_binId);
+			else
+				codestreamBins.put(_binId, idBins=new ArrayList<>(1));
+			
+			Bin b=null;
+			for(Bin c:idBins)
+				if(c.Class==_kduClassId)
+				{
+					b=c;
+					break;
+				}
+			
+			boolean somethingChanged=false;
+			
+			if(b==null)
 			{
-				b=c;
-				break;
+				idBins.add(b=new Bin(_kduClassId,_codestreamId,_binId));
+				somethingChanged=true;
 			}
-		
-		boolean somethingChanged=false;
-		
-		if(b==null)
-		{
-			idBins.add(b=new Bin(_kduClassId,_codestreamId,_binId));
-			somethingChanged=true;
+			
+			if(_length==0 && b.complete)
+				return false;
+			
+			if(b.bufLength<_offset+_length)
+			{
+				b.bufLength=_offset+_length;
+				somethingChanged=true;
+			}
+			
+			
+			if(!b.available.fullyContains(_offset, _offset+_length))
+			{
+				//System.out.println("Adding interval "+_offset+" - "+(_offset+_length)+"   to "+_codestreamId+"/"+_kduClassId+"/"+_binId);
+				b.available.addInterval(_offset, _offset+_length);
+				somethingChanged=true;
+			}
+			
+			if(_isFinal && !b.complete)
+			{
+				somethingChanged=true;
+				b.complete=true;
+			}
+			
+			return somethingChanged;
 		}
 		
-		if(_length==0 && b.complete)
-			return false;
-		
-		if(b.bufLength<_offset+_length)
+		CacheFile() throws IOException
 		{
-			b.bufLength=_offset+_length;
-			somethingChanged=true;
+			backingFile = File.createTempFile(sourceId+"-jhv", null, MovieCache.CACHE_DIR);
+			map=Files.map(backingFile, MapMode.READ_WRITE);
+			usedSize=0;
+			
+			updateHeader();
 		}
 		
-		
-		if(!b.available.fullyContains(_offset, _offset+_length))
+		private URI readURI() throws IOException
 		{
-			//System.out.println("Adding interval "+_offset+" - "+(_offset+_length)+"   to "+_codestreamId+"/"+_kduClassId+"/"+_binId);
-			b.available.addInterval(_offset, _offset+_length);
-			somethingChanged=true;
+			try
+			{
+				map.position(4+4+4);
+				byte[] strBytes = new byte[map.getShort()];
+				map.get(strBytes);
+				
+				System.out.println("Read URIIIIIIIIIIIIIIIIIIIIII "+new String(strBytes, Charsets.UTF_8));
+				
+				return new URI(new String(strBytes, Charsets.UTF_8));
+			}
+			catch (URISyntaxException _e)
+			{
+				throw new IOException("Invalid URI",_e);
+			}
 		}
 		
-		if(_isFinal && !b.complete)
+		public CacheFile(File _backingFile) throws IOException
 		{
-			somethingChanged=true;
-			b.complete=true;
+			backingFile = _backingFile;
+			map=Files.map(backingFile, MapMode.READ_WRITE);
+			
+			int header=map.getInt();
+			if(header!=HEADER_MARKER)
+				throw new IOException("Invalid header");
+			
+			if(sourceId!=map.getInt())
+				throw new IOException("Invalid source id");
+			
+			usedSize=map.getInt();
+			if(usedSize>map.limit())
+				throw new IOException("Invalid size in header");
+			
+			byte[] strBytes = new byte[map.getShort()];
+			map.get(strBytes);
+			//jpipURI = new URI(new String(strBytes, Charsets.UTF_8));
+			
+			metaDatas = new MetaData[map.getInt()];
+			areaLimit.set(map.getInt());
+			qualityLayersLimit.set(map.getInt());
+			
+			timeMS = new long[metaDatas.length];
+			for(int i=0;i<timeMS.length;i++)
+				timeMS[i]=map.getLong();
+			
+			for(;;)
+			{
+				if(map.position()==usedSize)
+					break;
+				
+				int startPos = map.position();
+				
+				
+				int kduClassId = map.getInt();
+				long codestreamId = map.getLong();
+				long binId = map.getLong();
+				int dataLength = map.getInt();
+				byte[] data = null;
+				if(dataLength>0)
+				{
+					if(kduClassId!=JPIPDatabinClass.PRECINCT_DATABIN.getKakaduClassID())
+					{
+						data = new byte[dataLength];
+						map.get(data);
+					}
+					else
+					{
+						map.position(map.position()+dataLength);
+					}
+				}
+				int offset = map.getInt();
+				boolean isFinal = map.get()!=0;
+				
+				if(map.getInt()!=VALID_MARKER)
+				{
+					Telemetry.trackException(new Exception("Invalid marker - shortening file from "+usedSize+" by "+(usedSize-startPos)));
+					usedSize=startPos;
+					updateHeader();
+					break;
+				}
+				
+				if(kduClassId!=JPIPDatabinClass.PRECINCT_DATABIN.getKakaduClassID())
+					try
+					{
+						kduCache.Add_to_databin(kduClassId, codestreamId, binId, data, offset, dataLength, isFinal, true, false);
+					}
+					catch(KduException _e)
+					{
+						Telemetry.trackException(new Exception("KduException "+_e+" - shortening file from "+usedSize+" by "+(usedSize-startPos)));
+						usedSize=startPos;
+						updateHeader();
+						break;
+					}
+				else
+				{
+					List<Integer> positions=codestreamPositions.get(codestreamId);
+					if(positions==null)
+						codestreamPositions.put(codestreamId, positions=new ArrayList<Integer>());
+					
+					positions.add(startPos);
+				}
+			}
+		}
+
+		private void updateHeader() throws IOException
+		{
+			byte[] strBytes=jpipURI.toString().getBytes(Charsets.UTF_8);
+			synchronized(backingFile)
+			{
+				int reqSpace = 4+4+4+2+strBytes.length+4+4+4+timeMS.length*8;
+				ensureSize(reqSpace);
+				
+				map.position(0);
+				map.putInt(HEADER_MARKER); //10af header
+				map.putInt(sourceId);
+				
+				map.putInt(usedSize);
+				
+				map.putShort((short)strBytes.length);
+				map.put(strBytes);
+				
+				map.putInt(metaDatas.length); //frames
+				map.putInt(areaLimit.get());
+				map.putInt(qualityLayersLimit.get());
+				
+				for(int i=0;i<timeMS.length;i++)
+					map.putLong(timeMS[i]);
+			}
 		}
 		
-		return somethingChanged;
+		private void unmap()
+		{
+			synchronized(backingFile)
+			{
+				//see also https://sourceforge.net/p/tuer/code/HEAD/tree/pre_beta/src/main/java/engine/misc/DeallocationHelper.java
+				@Nullable Cleaner c=((DirectBuffer)map).cleaner();
+				if(c!=null)
+					c.clean();
+			}
+		}
+		
+		void ensureSize(int _newSize) throws IOException
+		{
+			if(_newSize<=usedSize)
+				return;
+			
+			usedSize=_newSize;
+			if(usedSize<=map.limit())
+				return;
+			
+			try(RandomAccessFile raf=new RandomAccessFile(backingFile, "rw"))
+			{
+				raf.setLength(usedSize+(usedSize>>1)+128*1024);
+			}
+			
+			map=Files.map(backingFile,MapMode.READ_WRITE);
+		}
+
+		void addToDatabin(int _kduClassId, long _codestreamId, long _binId, byte[] _data, int _offset, int _length, boolean _isFinal)
+		{
+			if(!updateBinInfo(_kduClassId, _codestreamId, _binId, _offset, _length, _isFinal))
+				return;
+			
+			try(ByteArrayOutputStream baos = new ByteArrayOutputStream(_length+4+8+8+4+4+1+1))
+			{
+				try(DataOutputStream dos = new DataOutputStream(baos))
+				{
+					dos.writeInt(_kduClassId);
+					dos.writeLong(_codestreamId);
+					dos.writeLong(_binId);
+					dos.writeInt(_length);
+					if(_length>0)
+						dos.write(_data, 0, _length);
+					dos.writeInt(_offset);
+					dos.writeByte(_isFinal?(byte)1:(byte)0);
+					dos.writeInt(CacheFile.VALID_MARKER);
+				}
+				
+				byte[] data=baos.toByteArray();
+				
+				synchronized(backingFile)
+				{
+					if(_kduClassId==JPIPDatabinClass.PRECINCT_DATABIN.getKakaduClassID())
+					{
+						List<Integer> positions=codestreamPositions.get(_codestreamId);
+						if(positions==null)
+							codestreamPositions.put(_codestreamId, positions=new ArrayList<Integer>());
+						
+						positions.add(usedSize);
+					}
+					
+					int oldLimit=usedSize;
+					ensureSize(oldLimit+data.length);
+					map.position(oldLimit);
+					map.put(data);
+				}
+				
+				//TODO: defragment/compact periodically
+				defragment();
+			}
+			catch (IOException _e)
+			{
+				Telemetry.trackException(_e);
+			}
+		}
+		
 	}
 	
+	private final Kdu_cache kduCache = new Kdu_cache();
+	private CacheFile cache;
+	public final AtomicInteger areaLimit;
+	public final AtomicInteger qualityLayersLimit;
+
+	public final URI jpipURI;
 
 	public MovieKduCacheBacked(int _sourceId, int _frameCount, URI _jpipURI) throws IOException
 	{
 		super(_sourceId);
-		
+
 		areaLimit = new AtomicInteger(0);
 		qualityLayersLimit = new AtomicInteger(0);
+
 		jpipURI = _jpipURI;
 		metaDatas = new MetaData[_frameCount];
-		
 		timeMS = new long[_frameCount];
 		
-		backingFile = File.createTempFile(sourceId+"-jhv", null, MovieCache.CACHE_DIR);
-		map=Files.map(backingFile, MapMode.READ_WRITE);
-		usedSize=0;
+		cache=new CacheFile();
 		
 		try
 		{
@@ -155,8 +373,6 @@ public class MovieKduCacheBacked extends Movie
 		{
 			Telemetry.trackException(_e);
 		}
-
-		updateHeader();
 	}
 	
 	
@@ -236,30 +452,30 @@ public class MovieKduCacheBacked extends Movie
 				return;
 		}
 		
-		if(codestreamPositions.containsKey(_codestreamId))
-			synchronized(backingFile)
+		if(cache.codestreamPositions.containsKey(_codestreamId))
+			synchronized(cache.backingFile)
 			{
 				try
 				{
 					//System.out.println("Loading "+_codestreamId+"  with "+codestreamPositions.get(_codestreamId).size()+" positions");
-					for(int pos:codestreamPositions.get(_codestreamId))
+					for(int pos:cache.codestreamPositions.get(_codestreamId))
 					{
-						map.position(pos);
+						cache.map.position(pos);
 						
-						int kduClassId = map.getInt();
-						long codestreamId = map.getLong();
+						int kduClassId = cache.map.getInt();
+						long codestreamId = cache.map.getLong();
 						if(codestreamId!=_codestreamId || kduClassId!=JPIPDatabinClass.PRECINCT_DATABIN.getKakaduClassID())
 							continue;
 						
-						long binId = map.getLong();
-						byte[] data = new byte[map.getInt()];
+						long binId = cache.map.getLong();
+						byte[] data = new byte[cache.map.getInt()];
 						if(data.length>0)
-							map.get(data);
-						int offset = map.getInt();
-						boolean isFinal = map.get()!=0;
+							cache.map.get(data);
+						int offset = cache.map.getInt();
+						boolean isFinal = cache.map.get()!=0;
 						//System.out.println("           Len "+data.length+"     offset "+offset+"    id "+binId+"      Way 1: "+Arrays.toString(data));
 						
-						if(map.getInt()!=VALID_MARKER)
+						if(cache.map.getInt()!=CacheFile.VALID_MARKER)
 							throw new Exception("Invalid marker");
 						
 						kduCache.Add_to_databin(kduClassId, codestreamId, binId, data, offset, data.length, isFinal, true, false);
@@ -277,22 +493,132 @@ public class MovieKduCacheBacked extends Movie
 	{
 		super(Integer.parseInt(_backingFile.getName().split("-")[0]));
 		
-		backingFile = _backingFile;
-		map=Files.map(backingFile, MapMode.READ_WRITE);
+		areaLimit = new AtomicInteger(0);
+		qualityLayersLimit = new AtomicInteger(0);
+
+		cache = new CacheFile(_backingFile);
+		jpipURI = cache.readURI();
+		try
+		{
+			family_src.Open(kduCache);
+		}
+		catch (KduException _e)
+		{
+			cache.unmap();
+			throw new IOException("Could not open with Kakadu",_e);
+		}
+	}
+	
+	
+	
+	
+	static class Bin
+	{
+		int Class;
+		long Codestream;
+		long Id;
+		int bufLength;
+		boolean complete;
+		IntervalStore<Integer> available=new IntervalStore<>();
+		
+		Bin(int _class,long _codestream,long _id)
+		{
+			Class=_class;
+			Codestream=_codestream;
+			Id=_id;
+		}
+	}
+	
+	public LinkedHashMap<Long, ArrayList<String>> getCachedDatabins() throws KduException
+	{
+		LinkedHashMap<Long,ArrayList<String>> cacheContents = new LinkedHashMap<>();
+		for(long codestreamId:cache.bins.keySet())
+		{
+			cacheContents.put(codestreamId, new ArrayList<>());
+			
+			for(List<Bin> codestreamBins:cache.bins.get(codestreamId).values())
+				for(Bin b:codestreamBins)
+				{
+					JPIPDatabinClass c=JPIPDatabinClass.fromKduClassID(b.Class);
+					String element = c.getJpipString();
+					if(c!=JPIPDatabinClass.MAIN_HEADER_DATABIN)
+						element += String.valueOf(b.Id);
+					
+					if(!b.complete)
+						element += ":"+b.bufLength;
+					
+					cacheContents.get(codestreamId).add(element);
+				}
+		}
+		return cacheContents;
+	}
+	
+	public boolean isFullQuality()
+	{
+		if(areaLimit.get()==Integer.MAX_VALUE && qualityLayersLimit.get()==Integer.MAX_VALUE)
+			return true;
+		
+		MetaData md = getAnyMetaData();
+		if(md==null)
+			return false;
+		
+		if(areaLimit.get() >= md.resolution.x*md.resolution.y && areaLimit.get()!=Integer.MAX_VALUE)
+		{
+			areaLimit.set(Integer.MAX_VALUE);
+			try
+			{
+				cache.updateHeader();
+			}
+			catch(IOException _ioe)
+			{
+				Telemetry.trackException(_ioe);
+			}
+		}
+		
+		return areaLimit.get()==Integer.MAX_VALUE && qualityLayersLimit.get()==Integer.MAX_VALUE;
+	}
+	
+	public synchronized void addToDatabin(int _kduClassId, long _codestreamId, long _binId, byte[] _data, int _offset, int _length, boolean _isFinal)
+	{
+		if(disposed)
+			throw new IllegalStateException("Disposed");
 		
 		try
 		{
-			int header=map.getInt();
-			if(header!=HEADER_MARKER)
-				throw new IOException("Invalid header");
+			if(_kduClassId!=JPIPDatabinClass.PRECINCT_DATABIN.getKakaduClassID() || cachedCodestreams.containsKey(_codestreamId))
+				kduCache.Add_to_databin(_kduClassId, _codestreamId, _binId, _data, _offset, _length, _isFinal, true, false);
 			
-			if(sourceId!=map.getInt())
-				throw new IOException("Invalid source id");
+			if(timeMS[(int)_codestreamId]==0)
+			{
+				loadMetaData((int)_codestreamId);
+				if(timeMS[(int)_codestreamId]!=0)
+					cache.updateHeader();
+			}
+		}
+		catch(Exception _e)
+		{
+			Telemetry.trackException(_e);
+			return;
+		}
+		
+		cache.addToDatabin(_kduClassId, _codestreamId, _binId, _data, _offset, _length, _isFinal);
+	}
+
+	private void defragment() throws IOException
+	{
+		/*File backingFile2 = File.createTempFile(sourceId+"-jhv", null, MovieCache.CACHE_DIR);
+		MappedByteBuffer map2=Files.map(backingFile2, MapMode.READ_WRITE);
+		int usedSize2=0;
+		
+		synchronized(backingFile)
+		{
+			map2=updateHeader(backingFile2, map2);
 			
-			usedSize=map.getInt();
-			if(usedSize>map.limit())
-				throw new IOException("Invalid size in header");
-			
+		}
+		
+		
+		
+		
 			try
 			{
 				byte[] strBytes = new byte[map.getShort()];
@@ -344,7 +670,7 @@ public class MovieKduCacheBacked extends Movie
 				{
 					Telemetry.trackException(new Exception("Invalid marker - shortening file from "+usedSize+" by "+(usedSize-startPos)));
 					usedSize=startPos;
-					updateHeader();
+					map=updateHeader(backingFile,map);
 					break;
 				}
 				
@@ -357,7 +683,7 @@ public class MovieKduCacheBacked extends Movie
 					{
 						Telemetry.trackException(new Exception("KduException "+_e+" - shortening file from "+usedSize+" by "+(usedSize-startPos)));
 						usedSize=startPos;
-						updateHeader();
+						map=updateHeader(backingFile,map);
 						break;
 					}
 				else
@@ -378,192 +704,43 @@ public class MovieKduCacheBacked extends Movie
 			{
 				throw new IOException("Could not open with Kakadu",_e);
 			}
-		}
-		catch(Exception _e)
-		{
-			unmap();
-			throw _e;
-		}
-	}
-	
-	
-	
-	
-	static class Bin
-	{
-		int Class;
-		long Codestream;
-		long Id;
-		int bufLength;
-		boolean complete;
-		IntervalStore<Integer> available=new IntervalStore<>();
+
 		
-		Bin(int _class,long _codestream,long _id)
-		{
-			Class=_class;
-			Codestream=_codestream;
-			Id=_id;
-		}
-	}
-	
-	public LinkedHashMap<Long, ArrayList<String>> getCachedDatabins() throws KduException
-	{
-		LinkedHashMap<Long,ArrayList<String>> cacheContents = new LinkedHashMap<>();
-		for(long codestreamId:bins.keySet())
-		{
-			cacheContents.put(codestreamId, new ArrayList<>());
-			
-			for(List<Bin> codestreamBins:bins.get(codestreamId).values())
-				for(Bin b:codestreamBins)
-				{
-					JPIPDatabinClass c=JPIPDatabinClass.fromKduClassID(b.Class);
-					String element = c.getJpipString();
-					if(c!=JPIPDatabinClass.MAIN_HEADER_DATABIN)
-						element += String.valueOf(b.Id);
-					
-					if(!b.complete)
-						element += ":"+b.bufLength;
-					
-					cacheContents.get(codestreamId).add(element);
-				}
-		}
-		return cacheContents;
-	}
-	
-	private void ensureSize(int newSize) throws IOException
-	{
-		if(newSize<=usedSize)
-			return;
 		
-		usedSize=newSize;
-		if(usedSize<=map.limit())
-			return;
 		
-		try(RandomAccessFile raf=new RandomAccessFile(backingFile, "rw"))
-		{
-			raf.setLength(usedSize+(usedSize>>1)+128*1024);
-		}
 		
-		map=Files.map(backingFile,MapMode.READ_WRITE);
-	}
-	
-	private void updateHeader() throws IOException
-	{
-		byte[] strBytes=jpipURI.toString().getBytes(Charsets.UTF_8);
-		synchronized(backingFile)
-		{
-			int reqSpace = 4+4+4+2+strBytes.length+4+4+4+timeMS.length*8;
-			ensureSize(reqSpace);
-			
-			map.position(0);
-			map.putInt(HEADER_MARKER); //10af header
-			map.putInt(sourceId);
-			
-			map.putInt(usedSize);
-			
-			map.putShort((short)strBytes.length);
-			map.put(strBytes);
-			
-			map.putInt(metaDatas.length); //frames
-			map.putInt(areaLimit.get());
-			map.putInt(qualityLayersLimit.get());
-			
-			for(int i=0;i<timeMS.length;i++)
-				map.putLong(timeMS[i]);
-		}
-	}
-	
-	public boolean isFullQuality()
-	{
-		if(areaLimit.get()==Integer.MAX_VALUE && qualityLayersLimit.get()==Integer.MAX_VALUE)
-			return true;
 		
-		MetaData md = getAnyMetaData();
-		if(md==null)
-			return false;
 		
-		if(areaLimit.get() >= md.resolution.x*md.resolution.y && areaLimit.get()!=Integer.MAX_VALUE)
-		{
-			areaLimit.set(Integer.MAX_VALUE);
-			try
-			{
-				updateHeader();
-			}
-			catch(IOException _ioe)
-			{
-				Telemetry.trackException(_ioe);
-			}
-		}
 		
-		return areaLimit.get()==Integer.MAX_VALUE && qualityLayersLimit.get()==Integer.MAX_VALUE;
-	}
-	
-	public synchronized void addToDatabin(int _kduClassId, long _codestreamId, long _binId, byte[] _data, int _offset, int _length, boolean _isFinal)
-	{
-		if(disposed)
-			throw new IllegalStateException("Disposed");
 		
-		try
-		{
-			if(_kduClassId!=JPIPDatabinClass.PRECINCT_DATABIN.getKakaduClassID() || cachedCodestreams.containsKey(_codestreamId))
-				kduCache.Add_to_databin(_kduClassId, _codestreamId, _binId, _data, _offset, _length, _isFinal, true, false);
-			
-			if(timeMS[(int)_codestreamId]==0)
-			{
-				loadMetaData((int)_codestreamId);
-				if(timeMS[(int)_codestreamId]!=0)
-					updateHeader();
-			}
-		}
-		catch(Exception _e)
-		{
-			Telemetry.trackException(_e);
-			return;
-		}
 		
-		if(!updateBinInfo(_kduClassId, _codestreamId, _binId, _offset, _length, _isFinal))
-			return;
 		
-		try(ByteArrayOutputStream baos = new ByteArrayOutputStream(_length+4+8+8+4+4+1+1))
-		{
-			try(DataOutputStream dos = new DataOutputStream(baos))
-			{
-				dos.writeInt(_kduClassId);
-				dos.writeLong(_codestreamId);
-				dos.writeLong(_binId);
-				dos.writeInt(_length);
-				if(_length>0)
-					dos.write(_data, 0, _length);
-				dos.writeInt(_offset);
-				dos.writeByte(_isFinal?(byte)1:(byte)0);
-				dos.writeInt(VALID_MARKER);
-			}
-			
-			byte[] data=baos.toByteArray();
-			
-			
-			//TODO: defragment/compact periodically
-			synchronized(backingFile)
-			{
-				if(_kduClassId==JPIPDatabinClass.PRECINCT_DATABIN.getKakaduClassID())
-				{
-					List<Integer> positions=codestreamPositions.get(_codestreamId);
-					if(positions==null)
-						codestreamPositions.put(_codestreamId, positions=new ArrayList<Integer>());
-					
-					positions.add(usedSize);
-				}
-				
-				int oldLimit=usedSize;
-				ensureSize(oldLimit+data.length);
-				map.position(oldLimit);
-				map.put(data);
-			}
-		}
-		catch (IOException _e)
-		{
-			Telemetry.trackException(_e);
-		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		*/
+		
 	}
 	
 	public void notifyAboutUpgradedQuality(int _area, int _qualityLayers)
@@ -590,25 +767,13 @@ public class MovieKduCacheBacked extends Movie
 		
 		try
 		{
-			updateHeader();
+			cache.updateHeader();
 		}
 		catch(IOException _ioe)
 		{
 			Telemetry.trackException(_ioe);
 		}
 	}
-	
-	private void unmap()
-	{
-		synchronized(backingFile)
-		{
-			//see also https://sourceforge.net/p/tuer/code/HEAD/tree/pre_beta/src/main/java/engine/misc/DeallocationHelper.java
-			@Nullable Cleaner c=((DirectBuffer)map).cleaner();
-			if(c!=null)
-				c.clean();
-		}
-	}
-	
 	
 	@Override
 	public void dispose()
@@ -618,7 +783,7 @@ public class MovieKduCacheBacked extends Movie
 		
 		super.dispose();
 		
-		unmap();
+		cache.unmap();
 		synchronized(this)
 		{
 			for(long codestreamId:removeCachedCodestream.keySet())
@@ -675,11 +840,16 @@ public class MovieKduCacheBacked extends Movie
 		if(touching.compareAndSet(false, true))
 			lruFileToucher.submit(() ->
 				{
-					map.force();
-					backingFile.setLastModified(System.currentTimeMillis());
+					cache.map.force();
+					cache.backingFile.setLastModified(System.currentTimeMillis());
 					lastTouched = System.currentTimeMillis();
 					touching.lazySet(false);
 					return null;
 				});
+	}
+
+	public File getBackingFile()
+	{
+		return cache.backingFile;
 	}
 }

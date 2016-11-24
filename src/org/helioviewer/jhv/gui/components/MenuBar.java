@@ -55,6 +55,7 @@ public class MenuBar extends JMenuBar
 		exampleMenu.add(new LoadStateAction("SOHO Bastille Day flare (July 2000)", MenuBar.class.getResource("/examples/SOHO_Bastille_Day_Flare_July2000.jhv")));
 		exampleMenu.add(new LoadStateAction("SOHO Lightbulb CME (February 2000)", MenuBar.class.getResource("/examples/SOHO_Lightbulb_CME_Feb2000.jhv")));
 		exampleMenu.add(new LoadStateAction("SDO/AIA Solar Tornado (September 2015)", MenuBar.class.getResource("/examples/SDO_AIA_Tornado_Sept2015.jhv")));
+		exampleMenu.add(new LoadStateAction("SDO/AIA Fiery Looping Rain (July 2012)", MenuBar.class.getResource("/examples/SDO_AIA_Fiery_Looping_Rain.jhv")));
 		
 		fileMenu.add(exampleMenu);
 		fileMenu.add(new LoadStateAction());
