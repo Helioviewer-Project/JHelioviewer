@@ -31,6 +31,7 @@ import org.helioviewer.jhv.layers.PluginLayer;
 import org.helioviewer.jhv.opengl.RayTrace;
 import org.helioviewer.jhv.plugins.hekplugin.HEKPlugin;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
+import org.helioviewer.jhv.plugins.samp.SampPlugin;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.TimeLine.TimeLineListener;
 
@@ -70,7 +71,8 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 		plugins = new Plugin[]
 			{
 				new HEKPlugin(),
-				new PfssPlugin()
+				new PfssPlugin(),
+				new SampPlugin()
 			};
 		
 		for(Plugin p:plugins)
