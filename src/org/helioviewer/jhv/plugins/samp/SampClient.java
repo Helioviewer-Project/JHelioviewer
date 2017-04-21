@@ -4,13 +4,17 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import org.astrogrid.samp.DataException;
+import org.astrogrid.samp.JSamp;
 import org.astrogrid.samp.Message;
 import org.astrogrid.samp.Metadata;
+import org.astrogrid.samp.SampUtils;
 import org.astrogrid.samp.client.ClientProfile;
 import org.astrogrid.samp.client.HubConnector;
 import org.astrogrid.samp.client.SampException;
 import org.astrogrid.samp.hub.Hub;
 import org.astrogrid.samp.hub.HubServiceMode;
+import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.math.MathUtils;
 import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.Layers;
@@ -61,28 +65,60 @@ public class SampClient extends HubConnector
 			ImageLayer layer = Layers.getActiveImageLayer();
 			MetaData metadata = layer.getCurrentMetaData();
 			
-			notifyRequestData(	
+			notifyRequestData(
 					MathUtils.toLDT(metadata.timeMS),
-					metadata.instrument, 
+					metadata.observatory,
+					getInstrumentNameOnly(metadata.instrument),
+					metadata.detector,
 					metadata.measurement);
 		}
 	}
 
-	public void notifyRequestData(LocalDateTime timestamp, String instrument, String wave) {
-		Message msg = new Message(MTYPE_VIEW_DATA);
-		msg.addParam("timestamp", SOHO_DATE_TIME_FORMATTER.format(timestamp));
-		msg.addParam("instrument", instrument);
-		msg.addParam("wave", wave);
+	private String getInstrumentNameOnly(String instrument)
+	{
+		if(instrument == null) {
+			return null;
+		}
+		
+		return instrument.split("_")[0];
+	}
+	
+	private String encodeString(String value) {
+		if(value != null) {
+			SampUtils.checkString(value);
+			return value;
+		}
+		else {
+			return "";
+		}
+	}
+
+	public void notifyRequestData(
+			LocalDateTime timestamp, 
+			String observatory, 
+			String instrument, 
+			String detector, 
+			String measurement) {
 		
 		try
 		{
+			Message msg = new Message(MTYPE_VIEW_DATA);
+			msg.addParam("timestamp", SOHO_DATE_TIME_FORMATTER.format(timestamp));
+			msg.addParam("observatory", encodeString(observatory));
+			msg.addParam("instrument", encodeString(instrument));
+			msg.addParam("detector", encodeString(detector));
+			msg.addParam("measurement", encodeString(measurement));
+		
 			// TODO: handle no HUBs available error!
 			this.getConnection().notifyAll(msg);
 		}
 		catch (SampException _e)
 		{
-			// TODO Auto-generated catch block
-			_e.printStackTrace();
+			Telemetry.trackException(_e);
+		}
+		catch (DataException _e)
+		{
+			Telemetry.trackException(_e);
 		}
 	}
 
