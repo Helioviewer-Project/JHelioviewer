@@ -130,11 +130,13 @@ public class SampClient extends HubConnector
 			MetaData data = layer.getCurrentMetaData();
 			if (data != null)
 			{
+				LocalDateTime layerTimeStamp = MathUtils.toLDT(layer.getCurrentTimeMS());
 				Map<String, String> layerMsg = new HashMap<String, String>();
 				layerMsg.put("observatory", encodeString(data.observatory));
 				layerMsg.put("instrument", encodeString(getInstrumentNameOnly(data.instrument)));
 				layerMsg.put("detector", encodeString(data.detector));
 				layerMsg.put("measurement", encodeString(data.measurement));
+				layerMsg.put("timestamp", SOHO_DATE_TIME_FORMATTER.format(layerTimeStamp));
 				layersData.add(layerMsg);
 			}
 			else
