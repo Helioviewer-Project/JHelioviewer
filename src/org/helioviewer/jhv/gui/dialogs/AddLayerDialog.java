@@ -14,6 +14,8 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -69,7 +71,8 @@ public class AddLayerDialog extends JDialog
 		SEC("sec", 1),
 		MIN("min", 60),
 		HOUR("hour", 3600),
-		DAY("day", 3600 * 24);
+		DAY("day", 3600 * 24),
+		FRAMES("frames", 60);
 		//GET_ALL("get all", 0);
 
 		final String name;
@@ -506,16 +509,33 @@ public class AddLayerDialog extends JDialog
 
 						if (filter != null)
 						{
-							final int cadence = Math.max(1, (int) AddLayerDialog.this.cadence.getValue()
-									* ((TimeSteps) cmbbxTimeSteps.getSelectedItem()).factor)
-									* 1000;
+							final int selectedCadence = (int) AddLayerDialog.this.cadence.getValue();
+							final TimeSteps selectedTimeStebs = ((TimeSteps) cmbbxTimeSteps.getSelectedItem());
+							lastStart = datePickerStartDate.getDateTime();
+							lastEnd = datePickerEndDate.getDateTime();
+							
+							final int cadence;
+							if(selectedTimeStebs == TimeSteps.FRAMES) 
+							{
+								final long seconds = lastStart.until(lastEnd, ChronoUnit.SECONDS);								
+								cadence = (int) Math.min((seconds / selectedCadence) * 1000, Integer.MAX_VALUE);
+							}
+							else
+							{
+								cadence = Math.max(1, selectedCadence
+										* selectedTimeStebs.factor)
+										* 1000;
+							}
+							
+							
+//							final int cadence = Math.max(1, (int) AddLayerDialog.this.cadence.getValue()
+//									* ((TimeSteps) cmbbxTimeSteps.getSelectedItem()).factor)
+//									* 1000;
 							
 							final Observatories.Filter finalFilter = filter;
 							
 							System.out.println("Last added "+filter.sourceId);
 							Settings.setInt(Settings.IntKey.ADDLAYER_LAST_SOURCEID, filter.sourceId);
-							lastStart = datePickerStartDate.getDateTime();
-							lastEnd = datePickerEndDate.getDateTime();
 							lastCadence = (int)AddLayerDialog.this.cadence.getValue();
 							lastCadenceType = cmbbxTimeSteps.getSelectedIndex();
 							
