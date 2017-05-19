@@ -863,10 +863,12 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		final GLContext offscreenContext = getContext();
 		offscreenDrawable.setRealized(true);
 		double oldAspect = aspect;
+		GL2 offscreenGL = null;
+		
 		try
 		{
 			offscreenContext.makeCurrent();
-			GL2 offscreenGL = offscreenContext.getGL().getGL2();
+			offscreenGL = offscreenContext.getGL().getGL2();
 	
 			offscreenGL.glBindFramebuffer(GL2.GL_FRAMEBUFFER, frameBufferObject[0]);
 			generateNewRenderBuffers(offscreenGL, tileWidth, tileHeight);
@@ -939,6 +941,12 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		}
 		finally
 		{
+			// We need to ensure the FramBuffer is unbound
+			if(offscreenGL != null)
+			{
+				offscreenGL.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);
+			}
+			
 			offscreenContext.release();
 			aspect=oldAspect;
 		}
