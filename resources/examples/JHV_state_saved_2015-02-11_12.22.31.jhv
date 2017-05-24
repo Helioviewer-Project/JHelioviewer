@@ -1,0 +1,20 @@
+<jhvstate>
+	<layers>
+		<region x="-1276672556.6148" y="-876318899.9087" width="2553345113.2296" height="1752637799.8174"/>
+		<layer id="0">
+			<uri>jpip://helioviewer.org:8090/movies/SDO_AIA_AIA_171_F2014-01-01T00.00.00Z_T2014-01-01T01.00.00ZB1800L.jpx</uri>
+			<downloaduri>http://helioviewer.org/api/index.php?action=getJPX&amp;observatory=SDO&amp;instrument=AIA&amp;detector=AIA&amp;measurement=171&amp;startTime=2014-01-01T00:00:00Z&amp;endTime=2014-01-01T01:00:00Z&amp;cadence=1800</downloaduri>
+			<apiresponse>
+				<frames>1388534411</frames><frames>1388536175</frames><frames>1388537975</frames><message>null</message><uri>jpip://helioviewer.org:8090/movies/SDO_AIA_AIA_171_F2014-01-01T00.00.00Z_T2014-01-01T01.00.00ZB1800L.jpx</uri>
+			</apiresponse>
+			<filters>
+				<filter name="org.helioviewer.jhv.internal_plugins.filter.opacity.OpacityFilter">1.0</filter>
+				<filter name="org.helioviewer.jhv.internal_plugins.filter.SOHOLUTFilterPlugin.SOHOLUTFilter">SDO-AIA 171 ANGSTROM false</filter>
+				<filter name="org.helioviewer.jhv.internal_plugins.filter.channelMixer.ChannelMixerFilter">true true true</filter>
+				<filter name="org.helioviewer.jhv.internal_plugins.filter.contrast.ContrastFilter">0.0</filter>
+				<filter name="org.helioviewer.jhv.internal_plugins.filter.gammacorrection.GammaCorrectionFilter">1.0</filter>
+				<filter name="org.helioviewer.jhv.internal_plugins.filter.sharpen.SharpenGLFilter">0.0</filter>
+			</filters>
+		</layer>
+	</layers>
+</jhvstate>
