@@ -77,8 +77,10 @@ public class JHelioviewer
 			System.out.println(CommandLineProcessor.USAGE_MESSAGE);
 			return;
 		}
-		
 		Log.redirectStdOutErr();
+		
+		if(Globals.IS_WINDOWS)
+			System.setProperty("sun.java2d.noddraw", "true");
 		
 		if(Globals.IS_OS_X)
 			System.setProperty("apple.laf.useScreenMenuBar", "true");
