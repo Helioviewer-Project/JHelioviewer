@@ -175,9 +175,19 @@ public abstract class MetaData
         SunPosition sunPosition = SunPosition.computeSunPos(MathUtils.toLDT(timeMS));
         if (stonyhurstAvailable)
         {
+//        	rotation = new Quaternion(
+//        			Math.toRadians( sunPosition.getLongitude() - stonyhurstLongitude),
+//        			Math.toRadians(-stonyhurstLatitude)-sunPosition.getDec());
+
         	rotation = new Quaternion(
-        			Math.toRadians( sunPosition.getLongitude() - stonyhurstLongitude),
-        			Math.toRadians(-stonyhurstLatitude)-sunPosition.getDec());
+        			Math.toRadians(-stonyhurstLongitude),
+        			Math.toRadians(-stonyhurstLatitude));
+        }
+        else if (carringtonAvailable)
+        {
+        	rotation = new Quaternion(
+        			0,
+        			Math.toRadians(-crlt));
         }
         else
         	rotation = new Quaternion(0, 0);
