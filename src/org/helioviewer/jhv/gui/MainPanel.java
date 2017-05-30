@@ -847,6 +847,8 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		double yTiles = imageHeight / (double) tileHeight;
 		int countXTiles = imageWidth % tileWidth == 0 ? (int) xTiles : (int) xTiles + 1;
 		int countYTiles = imageHeight % tileHeight == 0 ? (int) yTiles : (int) yTiles + 1;
+		double translateX = 2 / xTiles;
+		double translateY = 2 / yTiles;
 
 		GLDrawableFactory factory = GLDrawableFactory.getFactory(GLProfile.getDefault());
 
@@ -904,7 +906,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 					offscreenGL.glMatrixMode(GL2.GL_PROJECTION);
 					offscreenGL.glPushMatrix();
 					offscreenGL.glViewport(0, 0, imageWidth, imageHeight);
-					offscreenGL.glTranslated(-x, -y, 0);
+					offscreenGL.glTranslated(-x * translateX, -y * translateY, 0);
 					offscreenGL.glMatrixMode(GL2.GL_MODELVIEW);
 	
 					int destX = tileWidth * x;
@@ -925,8 +927,8 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 					offscreenGL.glPixelStorei(GL2.GL_PACK_SKIP_PIXELS, destX);
 					offscreenGL.glPixelStorei(GL2.GL_PACK_ALIGNMENT, 1);
 	
-					int cutOffX = imageWidth >= (x + 1) * tileWidth ? tileWidth : tileWidth - x * tileWidth;
-					int cutOffY = imageHeight >= (y + 1) * tileHeight ? tileHeight : tileHeight - y * tileHeight;
+					int cutOffX = imageWidth >= (x + 1) * tileWidth ? tileWidth : imageWidth - x * tileWidth;
+					int cutOffY = imageHeight >= (y + 1) * tileHeight ? tileHeight : imageHeight - y * tileHeight;
 	
 					offscreenGL.glReadPixels(0, 0, cutOffX, cutOffY, GL2.GL_BGR, GL2.GL_UNSIGNED_BYTE,
 							ByteBuffer.wrap(((DataBufferByte) screenshot.getRaster().getDataBuffer()).getData()));
