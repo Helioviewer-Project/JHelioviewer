@@ -847,8 +847,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		double yTiles = imageHeight / (double) tileHeight;
 		int countXTiles = imageWidth % tileWidth == 0 ? (int) xTiles : (int) xTiles + 1;
 		int countYTiles = imageHeight % tileHeight == 0 ? (int) yTiles : (int) yTiles + 1;
-		double translateX = 2 / xTiles;
-		double translateY = 2 / yTiles;
+		double translate = 2 / xTiles;
 
 		GLDrawableFactory factory = GLDrawableFactory.getFactory(GLProfile.getDefault());
 
@@ -898,7 +897,6 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			offscreenGL.glScaled(1, aspect, 1);
 			offscreenGL.glMatrixMode(GL2.GL_MODELVIEW);
 			
-			//FIXME: tiling is broken
 			for (int x = 0; x < countXTiles; x++)
 			{
 				for (int y = 0; y < countYTiles; y++)
@@ -906,13 +904,14 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 					offscreenGL.glMatrixMode(GL2.GL_PROJECTION);
 					offscreenGL.glPushMatrix();
 					offscreenGL.glViewport(0, 0, imageWidth, imageHeight);
-					offscreenGL.glTranslated(-x * translateX, -y * translateY, 0);
+					offscreenGL.glTranslated(-x * translate, -y * translate, 0);
 					offscreenGL.glMatrixMode(GL2.GL_MODELVIEW);
 	
 					int destX = tileWidth * x;
 					int destY = tileHeight * y;
 					render(offscreenGL, false, new Dimension(imageWidth, imageHeight));
 	
+					// FIXME: text doesn't work on high resolution images (tiling cuts off end of text)
 					if (descriptions != null && x == 0 && y == 0)
 					{
 						int counter = 0;
