@@ -28,6 +28,7 @@ import javax.swing.SwingUtilities;
 
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.Telemetry;
+import org.helioviewer.jhv.base.UILatencyWatchdog;
 import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
 import org.helioviewer.jhv.base.coordinates.HeliographicCoordinate;
 import org.helioviewer.jhv.base.math.MathUtils;
@@ -77,9 +78,11 @@ import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.util.awt.ImageUtil;
 import com.jogamp.opengl.util.awt.TextRenderer;
 
+import sun.misc.GC.LatencyRequest;
+
 public class MainPanel extends GLCanvas implements GLEventListener, Camera
 {
-	public static final double MAX_DISTANCE = Constants.SUN_MEAN_DISTANCE_TO_EARTH * 2;
+	public static final double MAX_DISTANCE = Constants.SUN_MEAN_DISTANCE_TO_EARTH * 2.5;
 	public static final double MIN_DISTANCE = Constants.SUN_RADIUS * 1.2;
 	public static final double DEFAULT_DISTANCE = 22 * Constants.SUN_RADIUS;
 
@@ -154,7 +157,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			}
 			
 			@Override
-			public void timeRangeChanged(long _start, long _end)
+			public void timeRangeChanged()
 			{
 			}
 
@@ -393,7 +396,6 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 	
 	protected void render(GL2 gl, boolean _showLoadingAnimation, Dimension sizeForDecoder)
 	{
-		long currentTimeMS = TimeLine.SINGLETON.getCurrentTimeMS();
 		gl.glClearDepth(1);
 		gl.glDepthMask(true);
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
@@ -404,7 +406,8 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			if (layer instanceof ImageLayer)
 				anyImageLayerVisible |= layer.isVisible();
 		
-		double clipNear = Math.max(translationNow.z - 4 * Constants.SUN_RADIUS, CLIP_NEAR);
+		double clipNear = MathUtils.clip(translationNow.z - 4 * Constants.SUN_RADIUS, CLIP_NEAR, Math.nextDown(CLIP_FAR));
+		double clipFar = MathUtils.clip(translationNow.z + 4 * Constants.SUN_RADIUS, Math.nextUp(clipNear), CLIP_FAR);
 		
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glPushMatrix();
@@ -421,9 +424,9 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 				ImageLayer il = Layers.getActiveImageLayer();
 				if (il != null)
 				{
-					MetaData md = il.getMetaData(currentTimeMS);
+					MetaData md = il.getCurrentMetaData();
 					if (md != null)
-						rotationNow = md.rotation;
+						rotationNow = md.rotation.inversed();
 				}
 			}
 			
@@ -474,7 +477,9 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			for (ListenableFuture<PreparedImage> l : Futures.inCompletionOrder(prepared))
 				try
 				{
+					UILatencyWatchdog.setFocus(Globals.GL_WORKER_THREADS.toArray(new Thread[0]));
 					PreparedImage pr = l.get();
+					UILatencyWatchdog.setFocus();
 					if (pr != null)
 						pr.layer.renderLayer(gl, this, pr, (float)maxScaling);
 				}
@@ -497,20 +502,21 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glLoadIdentity();
 		
-		if(aspect>1)
-			gl.glScaled(aspect, aspect, 1);
-		
 		if (CameraMode.mode == CameraMode.MODE.MODE_3D)
 		{
-			new GLU().gluPerspective(MainPanel.FOV, aspect, clipNear, translationNow.z + 4 * Constants.SUN_RADIUS);
+			new GLU().gluPerspective(MainPanel.FOV, aspect, clipNear, clipFar);
 		}
 		else
 		{
 			double width = Math.tan(Math.toRadians(FOV) / 2) * translationNow.z;
-			gl.glOrtho(-width, width, -width, width, clipNear, translationNow.z + 4 * Constants.SUN_RADIUS);
+			gl.glOrtho(-width, width, -width, width, clipNear, clipFar);
 			gl.glScaled(1 / aspect, 1, 1);
 		}
 
+		if(aspect>1)
+			gl.glScaled(aspect, aspect, 1);
+		
+		
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		calculateBounds();
 		for (CameraInteraction cameraInteraction : cameraInteractionsLeft)
@@ -712,12 +718,12 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 	protected void updateTrackRotation()
 	{
 		if (lastCameraTrackingDate == 0)
-			lastCameraTrackingDate = TimeLine.SINGLETON.getCurrentTimeMS();
+			lastCameraTrackingDate = TimeLine.SINGLETON.getCurrentFrameMiddleTimeMS();
 
-		if (lastCameraTrackingDate!=TimeLine.SINGLETON.getCurrentTimeMS())
+		if (lastCameraTrackingDate!=TimeLine.SINGLETON.getCurrentFrameMiddleTimeMS())
 		{
-			long differenceMS = TimeLine.SINGLETON.getCurrentTimeMS()-lastCameraTrackingDate;
-			lastCameraTrackingDate = TimeLine.SINGLETON.getCurrentTimeMS();
+			long differenceMS = TimeLine.SINGLETON.getCurrentFrameMiddleTimeMS()-lastCameraTrackingDate;
+			lastCameraTrackingDate = TimeLine.SINGLETON.getCurrentFrameMiddleTimeMS();
 			
 			RayTrace rayTrace = new RayTrace();
 			Vector3d hitPoint = rayTrace.cast(getWidth() / 2, getHeight() / 2, this).getHitpoint();
@@ -732,7 +738,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			}
 			else
 			{
-				//TODO: tracking is jerky in 2d mode
+				//TODO: tracking is jerky in 2d mode, should use ImageLayer.calcTransformation(mainPanel, md) instead, to respect metadata
 				Vector3d newTranslation = newRotation.toMatrix().multiply(hitPoint);
 				translationEnd = translationEnd.add(new Vector3d(newTranslation.x-translationNow.x,newTranslation.y-translationNow.y,0));
 				translationNow = new Vector3d(newTranslation.x, newTranslation.y, translationNow.z);
@@ -856,6 +862,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		offscreenDrawable.setRealized(true);
 		final GLContext offscreenContext = getContext();
 		offscreenDrawable.setRealized(true);
+		double oldAspect = aspect;
 		try
 		{
 			offscreenContext.makeCurrent();
@@ -870,7 +877,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			offscreenGL.glViewport(0, 0, tileWidth, tileHeight);
 			offscreenGL.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	
-			double aspect = imageWidth / (double) imageHeight;
+			aspect = imageWidth / (double) imageHeight;
 			// double top = Math.tan(MainPanel.FOV / 360.0 * Math.PI) *
 			// MainPanel.CLIP_NEAR;
 			// double right = top * aspect;
@@ -886,24 +893,21 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			offscreenGL.glLoadIdentity();
 			offscreenGL.glScaled(1, aspect, 1);
 			offscreenGL.glMatrixMode(GL2.GL_MODELVIEW);
-	
+			
+			//FIXME: tiling is broken
 			for (int x = 0; x < countXTiles; x++)
 			{
 				for (int y = 0; y < countYTiles; y++)
 				{
 					offscreenGL.glMatrixMode(GL2.GL_PROJECTION);
 					offscreenGL.glPushMatrix();
-					offscreenGL.glMatrixMode(GL2.GL_MODELVIEW);
-	
-					offscreenGL.glMatrixMode(GL2.GL_PROJECTION);
 					offscreenGL.glViewport(0, 0, imageWidth, imageHeight);
 					offscreenGL.glTranslated(-x, -y, 0);
 					offscreenGL.glMatrixMode(GL2.GL_MODELVIEW);
 	
-					// double factor =
 					int destX = tileWidth * x;
 					int destY = tileHeight * y;
-					render(offscreenGL, false, new Dimension(tileWidth, tileHeight));
+					render(offscreenGL, false, new Dimension(imageWidth, imageHeight));
 	
 					if (descriptions != null && x == 0 && y == 0)
 					{
@@ -936,6 +940,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		finally
 		{
 			offscreenContext.release();
+			aspect=oldAspect;
 		}
 	}
 
@@ -1037,7 +1042,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			return;
 		
 		cameraTrackingEnabled = _isEnabled;
-		lastCameraTrackingDate = TimeLine.SINGLETON.getCurrentTimeMS();
+		lastCameraTrackingDate = TimeLine.SINGLETON.getCurrentFrameMiddleTimeMS();
 		
 		MainFrame.SINGLETON.TOP_TOOL_BAR.setTracking(_isEnabled);
 	}

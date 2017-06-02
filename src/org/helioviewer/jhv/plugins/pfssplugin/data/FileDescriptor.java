@@ -34,7 +34,7 @@ public class FileDescriptor
 		return this.startLocalDateTime;
 	}
 	
-	public LocalDateTime getDateTime(){
+	public LocalDateTime getEndDate(){
 		return endLocalDateTime;
 	}
 	

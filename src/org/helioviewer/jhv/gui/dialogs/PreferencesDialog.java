@@ -54,8 +54,8 @@ public class PreferencesDialog extends JDialog
 	private JButton cancelBtn;
 	private JButton resetBtn;
 
-	private static final int MAX_SIZE_SCREENSHOT = 4096;
-	private static final int MAX_SIZE_MOVIE_EXPORT = 4096;
+	private static final int MAX_SIZE_SCREENSHOT = 2048; //opengl texture size
+	private static final int MAX_SIZE_MOVIE_EXPORT = 2048; //opengl texture size
 	
 	private static final AspectRatio[] MOVIE_ASPECT_RATIO_PRESETS = { new AspectRatio(1, 1), new AspectRatio(4, 3),
 			new AspectRatio(16, 9), new AspectRatio(16, 10), new AspectRatio(0, 0) };

@@ -16,9 +16,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 import org.helioviewer.jhv.base.Settings;
-import org.helioviewer.jhv.base.ShutdownManager;
 import org.helioviewer.jhv.base.Settings.BooleanKey;
-import org.helioviewer.jhv.base.ShutdownManager.ShutdownPhase;
+import org.helioviewer.jhv.base.ShutdownManager;
 import org.helioviewer.jhv.base.downloadmanager.DownloadManager;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
 import org.helioviewer.jhv.base.downloadmanager.HTTPRequest;
@@ -96,24 +95,32 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 	{
 		MainFrame.SINGLETON.LEFT_PANE.add(title, panel, startExpanded);
 	}
+	
+	public LocalDateTime currentTimeStamp;
+	public LocalDateTime previousTimeStamp;
 
 	@Override
-	public void timeStampChanged(long current, long last)
+	public void timeStampChanged(long current, long previous)
 	{
+		currentTimeStamp = MathUtils.toLDT(current);
+		previousTimeStamp = MathUtils.toLDT(previous);
+		
 		for (Plugin plugin : plugins)
-			plugin.timeStampChanged(MathUtils.toLDT(current), MathUtils.toLDT(last));
+			if(plugin.isVisible())
+				plugin.timeStampChanged(currentTimeStamp, previousTimeStamp);
 	}
 
 	@Override
-	public void timeRangeChanged(long _start, long _end)
+	public void timeRangeChanged()
 	{
 		for (Plugin plugin : plugins)
-			plugin.timeRangeChanged(MathUtils.toLDT(_start),MathUtils.toLDT(_end));
+			if(plugin.isVisible())
+				plugin.timeRangeChanged(MathUtils.toLDT(TimeLine.SINGLETON.getFirstTimeMS()),MathUtils.toLDT(TimeLine.SINGLETON.getLastTimeMS()));
 	}
 
-	public LocalDateTime getCurrentDateTime()
+	public @Nullable LocalDateTime getCurrentDateTime()
 	{
-		return MathUtils.toLDT(TimeLine.SINGLETON.getCurrentTimeMS());
+		return MathUtils.toLDT(TimeLine.SINGLETON.getCurrentFrameMiddleTimeMS());
 	}
 
 	@Override
@@ -278,7 +285,7 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 
 	public static void repaintLayerPanel()
 	{
-		MainFrame.SINGLETON.LAYER_PANEL.updateData();
+		MainFrame.SINGLETON.LAYER_PANEL.updateDataAsync();
 	}
 
 	@Override

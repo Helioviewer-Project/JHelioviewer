@@ -12,9 +12,8 @@ import javax.annotation.Nullable;
 
 import org.helioviewer.jhv.base.JHVUncaughtExceptionHandler;
 import org.helioviewer.jhv.base.Settings;
-import org.helioviewer.jhv.base.ShutdownManager;
 import org.helioviewer.jhv.base.Settings.IntKey;
-import org.helioviewer.jhv.base.ShutdownManager.ShutdownPhase;
+import org.helioviewer.jhv.base.ShutdownManager;
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.layers.Movie;
 import org.helioviewer.jhv.layers.Movie.Match;
@@ -26,7 +25,7 @@ public class MovieCache
 {
 	private static HashMap<Integer,List<Movie>> cache = new HashMap<>();
 
-	private static final long MAX_CACHE_SIZE = 1024*1024*Settings.getInt(IntKey.CACHE_SIZE);
+	private static final long MAX_CACHE_SIZE = 1024l*1024l*Settings.getInt(IntKey.CACHE_SIZE);
 	
 	public static final File CACHE_DIR = new File(System.getProperty("java.io.tmpdir"), "jhv-movie-cache");
 	
@@ -67,11 +66,11 @@ public class MovieCache
 		});
 		
 		int toRemove = 0;
-		while(cacheSize>MAX_CACHE_SIZE)
+		while(cacheSize>MAX_CACHE_SIZE && toRemove<files.length)
 		{
 			for(List<Movie> lm:cache.values())
 				for(Movie m:lm)
-					if((m instanceof MovieKduCacheBacked) && ((MovieKduCacheBacked)m).backingFile.equals(files[toRemove]))
+					if((m instanceof MovieKduCacheBacked) && ((MovieKduCacheBacked)m).getBackingFile().equals(files[toRemove]))
 					{
 						m.dispose();
 						lm.remove(m);
@@ -210,7 +209,8 @@ public class MovieCache
 				catch(Exception e)
 				{
 					Telemetry.trackException(new IOException("Cache: Could not load "+f.getName(),e));
-					f.delete();
+					if(!f.delete())
+						Telemetry.trackException(new Exception("Cannot remove invalid cache file "+f.toString()));
 				}
 		}
 		Settings.setBoolean(Settings.BooleanKey.CACHE_LOADING_CRASHED, false);

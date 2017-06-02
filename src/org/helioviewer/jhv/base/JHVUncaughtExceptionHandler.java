@@ -118,6 +118,7 @@ public class JHVUncaughtExceptionHandler implements Thread.UncaughtExceptionHand
 			client.SetVersion(Globals.VERSION);
 			Map<String, String> customData = new HashMap<>();
 			customData.put("Log", log);
+			Telemetry.initializeOpenGL();
 			if(openGLRenderer!=null)
 				customData.put("OpenGL", openGLRenderer);
 			customData.put("JVM",

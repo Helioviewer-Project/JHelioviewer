@@ -108,7 +108,6 @@ public class Layers
 
 	public static void addLayerListener(LayerListener _layerListener)
 	{
-		//TODO: 99% of all listeners won't be removed --> check all callsites
 		layerListeners.add(_layerListener);
 	}
 	

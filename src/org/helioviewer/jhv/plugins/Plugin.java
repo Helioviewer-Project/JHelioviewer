@@ -65,6 +65,11 @@ public abstract class Plugin
 	public void timeStampChanged(LocalDateTime current, LocalDateTime last)
 	{
 	}
+	
+	public @Nullable LocalDateTime getCurrentlyVisibleTime()
+	{
+		return null;
+	}
 
 	public void timeRangeChanged(@Nullable LocalDateTime _start, @Nullable LocalDateTime _end)
 	{

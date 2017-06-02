@@ -20,9 +20,8 @@ import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.ImageRegion;
 import org.helioviewer.jhv.base.IntervalStore;
 import org.helioviewer.jhv.base.Settings;
-import org.helioviewer.jhv.base.ShutdownManager;
 import org.helioviewer.jhv.base.Settings.IntKey;
-import org.helioviewer.jhv.base.ShutdownManager.ShutdownPhase;
+import org.helioviewer.jhv.base.ShutdownManager;
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.base.downloadmanager.DownloadManager;
 import org.helioviewer.jhv.base.downloadmanager.DownloadPriority;
@@ -44,7 +43,6 @@ import org.helioviewer.jhv.viewmodel.metadata.UnsuitableMetaDataException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Document;
 
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -79,19 +77,9 @@ public class KakaduLayer extends ImageLayer
 		return MovieCache.findBestFrame(sourceId, _minTimeMSInclusive, _maxTimeMSExclusive);
 	}
 	
-	public @Nullable Match findBestFrame(long _timeMS)
+	private @Nullable Match findBestFrame(long _timeMS)
 	{
-		if(_timeMS<startMS-cadenceMS || _timeMS>endMS+cadenceMS)
-			return null;
-		
-		Match m = MovieCache.findBestFrame(sourceId, _timeMS);
-		if(m==null)
-			return null;
-		
-		//if(m.timeDifferenceMS>cadenceMS && noFrames.contains(_time _timeMS))
-		//	return null;
-		
-		return m;
+		return MovieCache.findBestFrame(sourceId, _timeMS);
 	}
 	
 	@Override
@@ -546,24 +534,6 @@ public class KakaduLayer extends ImageLayer
 	}
 	
 	@Override
-	public long getCurrentTimeMS()
-	{
-		long now=TimeLine.SINGLETON.getCurrentTimeMS();
-		if(now<startMS-cadenceMS || now>endMS+cadenceMS)
-			return 0;
-		
-		Match match = findBestFrame(TimeLine.SINGLETON.getCurrentTimeMS());
-		if(match==null)
-			return 0;
-		
-		long timeMS = match.getTimeMS();
-		if(timeMS<startMS-cadenceMS || timeMS>endMS+cadenceMS)
-			return 0;
-		
-		return timeMS;
-	}
-
-	@Override
 	public void dispose()
 	{
 		if (loaderThread != null)
@@ -595,61 +565,55 @@ public class KakaduLayer extends ImageLayer
 		return localFile;
 	}
 	
-	public long getTimeMS(long _timeMS)
+	public @Nullable Match getCurrentMatch()
 	{
-		Match match = findBestFrame(_timeMS);
+		@Nullable Match match = findBestFrame(TimeLine.SINGLETON.getCurrentFrameStartTimeMS(), TimeLine.SINGLETON.getCurrentFrameEndTimeMS());
 		if (match == null)
-			return 0;
+		{
+			match = findBestFrame(TimeLine.SINGLETON.getCurrentFrameMiddleTimeMS());
+			if(match == null)
+				return null;
+		}
 		
-		long timeMS=match.getTimeMS();
-		if(timeMS<startMS-cadenceMS || timeMS>endMS+cadenceMS)
-			return 0;
-		
-		return timeMS;
-	}
-
-	@Nullable
-	public MetaData getMetaData(long _timeMS)
-	{
-		//TODO: first, try to find the best frame (quality-wise) within the time for the current frame.
-		//if none is found, use findBestFrame(long) instead
-		
-		Match match = findBestFrame(_timeMS);
-		if (match == null)
+		long t=match.getTimeMS();
+		if(t<startMS-cadenceMS || t>endMS+cadenceMS)
 			return null;
 		
-		MetaData md=match.getMetaData();
+		return match;
+	}
+	
+	@Override
+	public long getCurrentTimeMS()
+	{
+		@Nullable Match match = getCurrentMatch();
+		if(match==null)
+			return 0;
+		
+		return match.getTimeMS();
+	}
+
+	public @Nullable MetaData getCurrentMetaData()
+	{
+		@Nullable Match match = getCurrentMatch();
+		if(match==null)
+			return null;
+		
+		@Nullable MetaData md=match.getMetaData();
 		if(md == null)
 			return null;
 		
 		initializeMetadata(md);
-		
-		if(md.timeMS<startMS-cadenceMS || md.timeMS>endMS+cadenceMS)
-			return null;
-		
 		return md;
-	}
-	
-	public @Nullable Document getMetaDataDocument(long _timeMS)
-	{
-		Match match = findBestFrame(_timeMS);
-		if (match == null)
-			return null;
-		
-		return match.movie.readMetadataDocument(match.index);
 	}
 	
 	public ListenableFuture<PreparedImage> prepareImageData(final MainPanel _panel, final DecodeQualityLevel _quality, final Dimension _size, final GLContext _gl)
 	{
-		final long mainTime = TimeLine.SINGLETON.getCurrentTimeMS();
-		if(mainTime<startMS-cadenceMS || mainTime>endMS+cadenceMS)
+		final @Nullable Match match = getCurrentMatch();
+		if (match == null)
 			return Futures.immediateFuture(null);
 		
-		final MetaData metaData = getMetaData(mainTime);
-		if (metaData == null)
-			return Futures.immediateFuture(null);
-		
-		if(metaData.timeMS<startMS-cadenceMS || metaData.timeMS>endMS+cadenceMS)
+		final @Nullable MetaData metaData = match.getMetaData();
+		if(metaData==null)
 			return Futures.immediateFuture(null);
 		
 		final ImageRegion requiredMinimumRegion = calculateRegion(_panel, _quality, metaData, _size);
@@ -693,27 +657,16 @@ public class KakaduLayer extends ImageLayer
 					_size,
 					TimeLine.SINGLETON.isPlaying() ? 1.05 : 1.2);
 			
-			Match bestMatch=findBestFrame(metaData.timeMS);
-			if(bestMatch!=null)
+			if(match.decodeImage(_quality, requiredSafeRegion.decodeZoomFactor, requiredSafeRegion.texels, tex))
 			{
-				long timeMS = bestMatch.getTimeMS();
-				if(timeMS<startMS-cadenceMS || timeMS>endMS+cadenceMS)
-				{
-					future.set(null);
-					return;
-				}
+				tex.needsUpload=true;
+				/*
+				tex.uploadByteBuffer(GLContext.getCurrentGL().getGL2(), KakaduLayer.this, bestMatch.getMetaData().localDateTime, requiredSafeRegion);
+				if(Globals.isOSX())
+					GLContext.getCurrentGL().glFlush();*/
 				
-				if(bestMatch.decodeImage(_quality, requiredSafeRegion.decodeZoomFactor, requiredSafeRegion.texels, tex))
-				{
-					tex.needsUpload=true;
-					/*
-					tex.uploadByteBuffer(GLContext.getCurrentGL().getGL2(), KakaduLayer.this, bestMatch.getMetaData().localDateTime, requiredSafeRegion);
-					if(Globals.isOSX())
-						GLContext.getCurrentGL().glFlush();*/
-					
-					future.set(new PreparedImage(KakaduLayer.this,tex,requiredSafeRegion));
-					return;
-				}
+				future.set(new PreparedImage(KakaduLayer.this,tex,requiredSafeRegion));
+				return;
 			}
 
 			tex.usedByCurrentRenderPass=false;

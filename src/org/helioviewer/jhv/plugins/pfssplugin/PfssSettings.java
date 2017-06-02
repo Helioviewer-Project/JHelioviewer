@@ -33,8 +33,7 @@ public class PfssSettings {
 	/**
 	 * Deltas between the PFSS Files. Currently there is a file for every 6 hours
 	 */
-	public final static int FITS_FILE_D_HOUR = 6;
-	public final static int FITS_FILE_D_MINUTES = 0;
+	public final static int FITS_FILE_D_MINUTES = 6*60;
 	
 	/**
 	 * Color of the line (from sunradius to outside)

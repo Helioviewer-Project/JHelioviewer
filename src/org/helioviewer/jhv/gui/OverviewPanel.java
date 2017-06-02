@@ -16,7 +16,6 @@ import org.helioviewer.jhv.opengl.camera.CameraRotationInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraZoomBoxInteraction;
 import org.helioviewer.jhv.opengl.camera.CameraZoomInteraction;
 import org.helioviewer.jhv.opengl.camera.animation.CameraZoomAnimation;
-import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 
 import com.jogamp.opengl.GL2;
@@ -96,7 +95,7 @@ public class OverviewPanel extends MainPanel
 		if (activeLayer == null)
 			return;
 		
-		MetaData md=activeLayer.getMetaData(TimeLine.SINGLETON.getCurrentTimeMS());
+		MetaData md=activeLayer.getCurrentMetaData();
 		if (md == null)
 			return;
 		
@@ -113,9 +112,11 @@ public class OverviewPanel extends MainPanel
 				* Math.sin(Math.PI / 2 - halfFOVRad)
 				/ Math.sin(halfFOVRad);
 		
-		distance = distance - getTranslationEnd().z;
-		if(distance!=0)
-			addCameraAnimation(new CameraZoomAnimation(this, distance));
+		double delta = distance - getTranslationEnd().z;
+		
+		//only move the camera, if it has to move >0.1%
+		if(Math.abs(delta) > Math.abs(distance)*0.001)
+			addCameraAnimation(new CameraZoomAnimation(this, delta));
 	}
 
 	@Override

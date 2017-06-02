@@ -25,6 +25,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
@@ -97,7 +98,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 	{
 		initPopup();
 		initGUI();
-		updateData();
+		updateDataAsync();
 		Layers.addLayerListener(this);
 		TimeLine.SINGLETON.addListener(this);
 	}
@@ -140,7 +141,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 					return;
 				
 				activePopupLayer.setVisible(false);
-				updateData();
+				updateDataAsync();
 			}
 		});
 		showLayer = new JMenuItem("Show layer", IconBank.getIcon(JHVIcon.VISIBLE, SIZE, SIZE));
@@ -153,19 +154,12 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 					return;
 				
 				activePopupLayer.setVisible(true);
-				updateData();
+				updateDataAsync();
 			}
 		});
 				
 		removeLayer = new JMenuItem("Close layer", IconBank.getIcon(JHVIcon.REMOVE_NEW, SIZE, SIZE));
-		removeLayer.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(@Nullable ActionEvent e)
-			{
-				Layers.removeLayer(activePopupLayer);
-			}
-		});
+		removeLayer.addActionListener(e -> Layers.removeLayer(activePopupLayer));
 		showLayer.setVisible(false);
 		hideLayer.setVisible(false);
 
@@ -304,7 +298,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 					if (value)
 					{
 						Layers.getLayer(row).retry();
-						updateData();
+						updateDataAsync();
 					}
 				}
 			}
@@ -375,7 +369,9 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 				switch(e.getKeyCode())
 				{
 					case KeyEvent.VK_DELETE:
-						Layers.removeLayer(table.getSelectedRow());
+						int row=table.getSelectedRow();
+						if(row!=-1)
+							Layers.removeLayer(row);
 						e.consume();
 						break;
 					case KeyEvent.VK_SPACE:
@@ -384,7 +380,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 						{
 							l.setVisible(!l.isVisible());
 							e.consume();
-							updateData();
+							updateDataAsync();
 						}
 					default:
 				}
@@ -476,7 +472,19 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		}
 	});
 	
-	public void updateData()
+	public void updateDataAsync()
+	{
+		if(needsUpdate)
+			return;
+		
+		needsUpdate=true;
+		
+		SwingUtilities.invokeLater(() -> updateDataSync());
+	}
+	
+	private boolean needsUpdate;
+	
+	public void updateDataSync()
 	{
 		loadingAnimation.stop();
 		for (Layer layer : Layers.getLayers())
@@ -514,6 +522,8 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 					Layers.getActiveLayerIndex());
 		else
 			table.clearSelection();
+		
+		needsUpdate=false;
 	}
 
 	private static class LayerTableModel extends DefaultTableModel
@@ -550,7 +560,17 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		@Override
 		public Component getTableCellRendererComponent(@Nullable JTable table, @Nullable Object value, boolean isSelected, boolean hasFocus, final int row, int column)
 		{
-			Layer layer=Layers.getLayer(row);
+			Layer layer=null;
+			try
+			{
+				layer=Layers.getLayer(row);
+			}
+			catch(IndexOutOfBoundsException _iobe)
+			{
+				//this can happen, because the data table is updated asynchronously. a repaint can occur before the
+				//table is updated --> row can be >= #layers
+				return super.getTableCellRendererComponent(table, null, isSelected, true, row, column); 
+			}
 			
 			switch (column)
 			{
@@ -592,13 +612,13 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 	@Override
 	public void layerAdded()
 	{
-		updateData();
+		updateDataAsync();
 	}
 
 	@Override
 	public void layersRemoved()
 	{
-		updateData();
+		updateDataAsync();
 	}
 
 	@Override
@@ -609,6 +629,8 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 			btnDownloadLayer.setEnabled(layer.getDownloadURL()!=null);
 			btnShowInfo.setEnabled(layer instanceof ImageLayer);
 			
+			if(needsUpdate)
+				updateDataSync();
 			if (Layers.getActiveLayer()!=null)
 				table.setRowSelectionInterval(
 						Layers.getActiveLayerIndex(),
@@ -621,7 +643,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 	@Override
 	public void timeStampChanged(long current, long last)
 	{
-		updateData();		
+		updateDataAsync();		
 	}
 
 	@Override
@@ -630,7 +652,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 	}
 
 	@Override
-	public void timeRangeChanged(long _start, long _end)
+	public void timeRangeChanged()
 	{
 	}
 }

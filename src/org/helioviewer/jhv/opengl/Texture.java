@@ -302,7 +302,8 @@ public class Texture
 
 	public void prepareUploadBuffer(int _width, int _height)
 	{
+		//39s
 		if(uploadBuffer==null || uploadBuffer.limit()<_width*_height)
-			uploadBuffer=ByteBuffer.allocate(_width*_height); //.order(ByteOrder.nativeOrder());
+			uploadBuffer=ByteBuffer.allocateDirect(_width*_height); //.order(ByteOrder.nativeOrder());
 	}
 }

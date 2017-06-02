@@ -337,7 +337,7 @@ public class MoviePanel extends JPanel implements TimeLineListener, LayerListene
 	}
 	
 	@Override	
-	public void timeRangeChanged(long _startMS, long _endMS)
+	public void timeRangeChanged()
 	{
 		try
 		{

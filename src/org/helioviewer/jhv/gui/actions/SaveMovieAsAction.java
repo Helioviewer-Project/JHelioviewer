@@ -63,12 +63,27 @@ public class SaveMovieAsAction extends AbstractAction
 
 	public void actionPerformed(@Nullable ActionEvent e)
 	{
-		if (Layers.anyImageLayers())
-			openExportMovieDialog();
-		else
+		if (!Layers.anyImageLayers())
+		{
 			JOptionPane.showMessageDialog(MainFrame.SINGLETON.MAIN_PANEL,
-					"At least one active layer must be visible.\n\nPlease add a layer before exporting movies.",
+					"At least one active layer must be visible.\n"
+					+"\n"
+					+"Please add a layer before exporting movies.",
 					"Error", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		
+		if (TimeLine.SINGLETON.getFrameCount() < 2)
+		{
+			JOptionPane.showMessageDialog(MainFrame.SINGLETON.MAIN_PANEL,
+					"Please select another time range that will result in more frames.\n"
+					+"\n"
+					+"A movie should consist of at least two frames.",
+					"Error", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		
+		openExportMovieDialog();
 	}
 
 	private void openExportMovieDialog()
@@ -167,7 +182,6 @@ public class SaveMovieAsAction extends AbstractAction
 		final String directory = _directory;
 		Thread thread = new Thread(() ->
 		{
-			TimeLine.SINGLETON.setCurrentFrame(0);
 			for (int i = 0; i < TimeLine.SINGLETON.getFrameCount(); i++)
 			{
 				final int finalI=i;
@@ -176,13 +190,9 @@ public class SaveMovieAsAction extends AbstractAction
 				{
 					SwingUtilities.invokeAndWait(() ->
 					{
-						//TODO: this leads to terrible flickering sometimes in the mainpanel
-						//(repro: lightbulb example, time slider in the middle)
-						
+						TimeLine.SINGLETON.setCurrentFrame(finalI);
 						bufferedImage = MainFrame.SINGLETON.MAIN_PANEL.getBufferedImage(imageWidth, imageHeight, textEnabled);
 						progressDialog.updateProgressBar(finalI);
-						if(finalI!=0)
-							TimeLine.SINGLETON.nextFrame();
 					});
 				}
 				catch (Exception _e1)
@@ -196,7 +206,7 @@ public class SaveMovieAsAction extends AbstractAction
 					{
 						if (!started)
 							break;
-						Thread.sleep(20);
+						Thread.sleep(10);
 					}
 					catch (InterruptedException e)
 					{
@@ -217,6 +227,8 @@ public class SaveMovieAsAction extends AbstractAction
 					{
 						zipOutputStream.putNextEntry(new ZipEntry(_filename + "/" + Files.getNameWithoutExtension(_filename) + "-" + number
 								+ _selectedOutputFormat.getInnerMovieFilter().getDefaultExtension()));
+						
+						//TODO: NPE occurred here?
 						ImageIO.write(bufferedImage, _selectedOutputFormat.getInnerMovieFilter().fileType, zipOutputStream);
 						zipOutputStream.closeEntry();
 					}
@@ -230,6 +242,7 @@ public class SaveMovieAsAction extends AbstractAction
 					String number = String.format("%04d", i);
 					try
 					{
+						//TODO: NPE occurred here?
 						ImageIO.write(bufferedImage, _selectedOutputFormat.fileType, new File(
 								directory + Files.getNameWithoutExtension(_filename) + "-" + number + "." + Files.getFileExtension(_filename)));
 					}
@@ -250,9 +263,15 @@ public class SaveMovieAsAction extends AbstractAction
 				if (fileOutputStream != null)
 					fileOutputStream.close();
 			}
-			catch (IOException e)
+			catch (Exception e)
 			{
 				Telemetry.trackException(e);
+				
+				JOptionPane.showMessageDialog(MainFrame.SINGLETON.MAIN_PANEL,
+						"Oops. Something went wrong during movie export:\n"
+						+"\n"
+						+e.getMessage(),
+						"Error", JOptionPane.ERROR_MESSAGE);
 			}
 
 			progressDialog.dispose();

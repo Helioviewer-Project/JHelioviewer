@@ -3,7 +3,9 @@ package org.helioviewer.jhv.gui.actions;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLDecoder;
 
 import javax.annotation.Nullable;
 import javax.swing.AbstractAction;
@@ -11,6 +13,7 @@ import javax.swing.JOptionPane;
 
 import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.Globals.DialogType;
+import org.helioviewer.jhv.base.JHVUncaughtExceptionHandler;
 import org.helioviewer.jhv.base.Settings;
 import org.helioviewer.jhv.base.Settings.StringKey;
 import org.helioviewer.jhv.base.StateParser;
@@ -37,20 +40,6 @@ public class LoadStateAction extends AbstractAction
     }
 
     /**
-     * Constructor specifying the file to load.
-     * 
-     * The title of the menu item will be formed from the file name.
-     * 
-     * @param location
-     *            URL specifying the state to load
-     */
-    public LoadStateAction(URL location)
-    {
-        this("Load state " + location.getPath().substring(location.getPath().lastIndexOf('/') + 1), location);
-        putValue(SHORT_DESCRIPTION, "Loads the state saved in " + location.toString());
-    }
-
-    /**
      * Constructor specifying the title of the menu item and the file to load.
      * 
      * @param title
@@ -63,7 +52,14 @@ public class LoadStateAction extends AbstractAction
         super(title);
         putValue(SHORT_DESCRIPTION, "Loads the saved state");
 
-        stateLocation = new File(location.getFile());
+        try
+		{
+			stateLocation = new File(URLDecoder.decode(location.getFile(),"UTF-8"));
+		}
+		catch (UnsupportedEncodingException _e)
+		{
+			throw new RuntimeException(_e);
+		}
     }
 
 	public void actionPerformed(@Nullable ActionEvent e)

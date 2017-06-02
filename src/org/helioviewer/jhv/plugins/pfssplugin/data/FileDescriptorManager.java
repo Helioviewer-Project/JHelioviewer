@@ -77,7 +77,7 @@ public class FileDescriptorManager
 				DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
 				ArrayList<HTTPRequest> httpRequests = new ArrayList<>();
-				while (currentDate.isBefore(_to))
+				while (currentDate.isBefore(_to.plusMonths(1)))
 				{
 					final String url = PfssSettings.SERVER_URL + currentDate.format(yearFormatter) + "/" + currentDate.format(monthFormatter) + "/list.txt";
 					httpRequests.add(Plugins.startHTPPRequest(url, DownloadPriority.MEDIUM));
@@ -89,18 +89,18 @@ public class FileDescriptorManager
 					try
 					{
 						String[] lines = httpRequest.getDataAsString().split("\\r?\\n");
-						for (String line : lines)
+						synchronized (descriptors)
 						{
-							int split = line.indexOf(' ');
-							String dateString = line.substring(0, split);
-							String fileName = line.substring(split + 1, line.length());
-
-							LocalDateTime end = LocalDateTime.parse(dateString, dateTimeFormatter);
-							LocalDateTime start = end.minusHours(PfssSettings.FITS_FILE_D_HOUR).minusMinutes(PfssSettings.FITS_FILE_D_MINUTES).plusNanos(1);
-
-							if (!(end.isBefore(_from) || start.isAfter(_to)))
+							for (String line : lines)
 							{
-								synchronized (descriptors)
+								int split = line.indexOf(' ');
+								String dateString = line.substring(0, split);
+								String fileName = line.substring(split + 1, line.length());
+	
+								LocalDateTime end = LocalDateTime.parse(dateString, dateTimeFormatter);
+								LocalDateTime start = end.minusMinutes(PfssSettings.FITS_FILE_D_MINUTES).plusNanos(1);
+	
+								if (!(end.isBefore(_from) || start.isAfter(_to)))
 								{
 									if (curEpoch != epoch)
 										return;

@@ -51,7 +51,6 @@ public class ShortcutsDialog extends JDialog
 		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 16));
 		lblNewLabel.setHorizontalAlignment(SwingConstants.TRAILING);
 		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
-		gbc_lblNewLabel.anchor = GridBagConstraints.EAST;
 		gbc_lblNewLabel.fill = GridBagConstraints.VERTICAL;
 		gbc_lblNewLabel.insets = new Insets(0, 0, 5, 10);
 		gbc_lblNewLabel.gridx = 0;
@@ -90,7 +89,7 @@ public class ShortcutsDialog extends JDialog
 		final JLabel lblNewLabel_4 = new JLabel("ALT+I");
 		lblNewLabel_4.setFont(new Font("Tahoma", Font.BOLD, 16));
 		GridBagConstraints gbc_lblNewLabel_4 = new GridBagConstraints();
-		gbc_lblNewLabel_4.anchor = GridBagConstraints.ABOVE_BASELINE;
+		gbc_lblNewLabel_4.fill = GridBagConstraints.VERTICAL;
 		gbc_lblNewLabel_4.insets = new Insets(0, 0, 5, 10);
 		gbc_lblNewLabel_4.gridx = 0;
 		gbc_lblNewLabel_4.gridy = 2;
@@ -107,6 +106,7 @@ public class ShortcutsDialog extends JDialog
 		final JLabel lblAlto = new JLabel("ALT+O");
 		lblAlto.setFont(new Font("Tahoma", Font.BOLD, 16));
 		GridBagConstraints gbc_lblAlto = new GridBagConstraints();
+		gbc_lblAlto.fill = GridBagConstraints.VERTICAL;
 		gbc_lblAlto.insets = new Insets(0, 0, 5, 10);
 		gbc_lblAlto.gridx = 0;
 		gbc_lblAlto.gridy = 3;
@@ -123,6 +123,7 @@ public class ShortcutsDialog extends JDialog
 		final JLabel lblAltk = new JLabel("ALT+K");
 		lblAltk.setFont(new Font("Tahoma", Font.BOLD, 16));
 		GridBagConstraints gbc_lblAltk = new GridBagConstraints();
+		gbc_lblAltk.fill = GridBagConstraints.VERTICAL;
 		gbc_lblAltk.insets = new Insets(0, 0, 5, 10);
 		gbc_lblAltk.gridx = 0;
 		gbc_lblAltk.gridy = 4;
@@ -139,7 +140,7 @@ public class ShortcutsDialog extends JDialog
 		final JLabel lblNewLabel_6 = new JLabel("ALT+L");
 		lblNewLabel_6.setFont(new Font("Tahoma", Font.BOLD, 16));
 		GridBagConstraints gbc_lblNewLabel_6 = new GridBagConstraints();
-		gbc_lblNewLabel_6.anchor = GridBagConstraints.ABOVE_BASELINE;
+		gbc_lblNewLabel_6.fill = GridBagConstraints.VERTICAL;
 		gbc_lblNewLabel_6.insets = new Insets(0, 0, 5, 10);
 		gbc_lblNewLabel_6.gridx = 0;
 		gbc_lblNewLabel_6.gridy = 5;
@@ -156,8 +157,8 @@ public class ShortcutsDialog extends JDialog
 		final JLabel lblNewLabel_5 = new JLabel("ALT+P");
 		lblNewLabel_5.setFont(new Font("Tahoma", Font.BOLD, 16));
 		GridBagConstraints gbc_lblNewLabel_5 = new GridBagConstraints();
+		gbc_lblNewLabel_5.fill = GridBagConstraints.VERTICAL;
 		gbc_lblNewLabel_5.insets = new Insets(0, 0, 5, 10);
-		gbc_lblNewLabel_5.anchor = GridBagConstraints.BASELINE;
 		gbc_lblNewLabel_5.gridx = 0;
 		gbc_lblNewLabel_5.gridy = 6;
 		panel.add(lblNewLabel_5, gbc_lblNewLabel_5);
@@ -173,6 +174,7 @@ public class ShortcutsDialog extends JDialog
 		final JLabel lblAltb = new JLabel("ALT+B");
 		lblAltb.setFont(new Font("Tahoma", Font.BOLD, 16));
 		GridBagConstraints gbc_lblAltb = new GridBagConstraints();
+		gbc_lblAltb.fill = GridBagConstraints.VERTICAL;
 		gbc_lblAltb.insets = new Insets(0, 0, 5, 10);
 		gbc_lblAltb.gridx = 0;
 		gbc_lblAltb.gridy = 7;
@@ -189,6 +191,7 @@ public class ShortcutsDialog extends JDialog
 		final JLabel lblAltn = new JLabel("ALT+N");
 		lblAltn.setFont(new Font("Tahoma", Font.BOLD, 16));
 		GridBagConstraints gbc_lblAltn = new GridBagConstraints();
+		gbc_lblAltn.fill = GridBagConstraints.VERTICAL;
 		gbc_lblAltn.insets = new Insets(0, 0, 0, 10);
 		gbc_lblAltn.gridx = 0;
 		gbc_lblAltn.gridy = 8;

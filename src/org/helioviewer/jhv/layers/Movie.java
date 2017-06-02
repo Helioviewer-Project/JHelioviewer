@@ -2,15 +2,21 @@ package org.helioviewer.jhv.layers;
 
 import java.awt.Rectangle;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.helioviewer.jhv.base.Globals;
 import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.opengl.Texture;
 import org.helioviewer.jhv.viewmodel.TimeLine.DecodeQualityLevel;
@@ -33,29 +39,25 @@ import kdu_jni.Kdu_dims;
 import kdu_jni.Kdu_global;
 import kdu_jni.Kdu_quality_limiter;
 import kdu_jni.Kdu_region_decompressor;
+import kdu_jni.Kdu_thread_env;
 
 //TODO: manage, cache, ... individual frames (i.e. code streams) instead of whole movies
 
 public abstract class Movie
 {
-	private final ConcurrentLinkedQueue<Jpx_input_box> openInputBoxes=new ConcurrentLinkedQueue<>();
-	private ThreadLocal<Jpx_input_box> tlsJpx_input_box=new ThreadLocal<>();
+	//private final ConcurrentLinkedQueue<Jpx_input_box> openInputBoxes=new ConcurrentLinkedQueue<>();
+	//private ThreadLocal<Jpx_input_box> tlsJpx_input_box=new ThreadLocal<>();
 	
-	private final ArrayList<Kdu_region_decompressor> openKdu_region_decompressors = new ArrayList<Kdu_region_decompressor>(1);
-	private ThreadLocal<Kdu_region_decompressor> tlsKdu_region_decompressor=ThreadLocal.withInitial(() ->
+	private static ThreadLocal<Kdu_region_decompressor> tlsKdu_region_decompressor=ThreadLocal.withInitial(() ->
 	{
 		try
 		{
 			Kdu_region_decompressor decompressor = new Kdu_region_decompressor();
 			decompressor.Set_interpolation_behaviour(0, 0);
+			
 			Kdu_quality_limiter q=new Kdu_quality_limiter(4f/256);
 			decompressor.Set_quality_limiting(q, 0, 0);
 			
-			synchronized(openKdu_region_decompressors)
-			{
-				openKdu_region_decompressors.add(decompressor);
-			}
-
 			return decompressor;
 		}
 		catch (KduException e)
@@ -64,26 +66,7 @@ public abstract class Movie
 		}
 	});
 	
-	//FIXME: clear KduCache on memory pressure, reload from disk
-	//FIXME: index movies from disk on startup, reloading should happen on-demand
-	private final ArrayList<Kdu_codestream> openKdu_codestreams = new ArrayList<Kdu_codestream>(1);
-	private ThreadLocal<Kdu_codestream> tlsKdu_codestream=ThreadLocal.withInitial(() ->
-		{
-			try
-			{
-				Kdu_codestream codestream = new Kdu_codestream();
-				synchronized(openKdu_codestreams)
-				{
-					openKdu_codestreams.add(codestream);
-				}
-				
-				return codestream;
-			}
-			catch (Throwable e)
-			{
-				throw new RuntimeException(e);
-			}
-		});
+	private static ThreadLocal<byte[]> byteArrayBuffer = new ThreadLocal<>();
 	
 	private final ArrayList<Jpx_source> openJpx_sources = new ArrayList<Jpx_source>(1);
 	private ThreadLocal<Jpx_source> tlsJpx_source=ThreadLocal.withInitial(new Supplier<Jpx_source>()
@@ -147,7 +130,7 @@ public abstract class Movie
 			openJpx_sources.clear();
 		}
 		
-		synchronized(openKdu_codestreams)
+		/*synchronized(openKdu_codestreams)
 		{
 			for(Kdu_codestream c:openKdu_codestreams)
 				try
@@ -160,16 +143,9 @@ public abstract class Movie
 				}
 			openKdu_codestreams.clear();
 			
-		}
+		}*/
 		
-		synchronized(openKdu_region_decompressors)
-		{
-			for(Kdu_region_decompressor c:openKdu_region_decompressors)
-				c.Native_destroy();
-			openKdu_region_decompressors.clear();
-		}
-		
-		for(;;)
+		/*for(;;)
 		{
 			Jpx_input_box box = openInputBoxes.poll();
 			if(box==null)
@@ -184,7 +160,7 @@ public abstract class Movie
 				Telemetry.trackException(e);
 			}
 			box.Native_destroy();
-		}
+		}*/
 		
 		try
 		{
@@ -273,16 +249,34 @@ public abstract class Movie
 		{
 			return movie.getTimeMS(index);
 		}
+		
+		public @Nullable Document getMetaDataDocument()
+		{
+			return movie.readMetadataDocument(index);
+		}
 	}
 	
-	//TODO: should return frame closest to (_min+_max)/2
 	@Nullable public Match findBestIdx(long _minTimeMSInclusive, long _maxTimeMSExclusive)
 	{
+		long middle = (_minTimeMSInclusive + _maxTimeMSExclusive)/2;
+		int bestMatch = -1;
+		long bestDiff = Long.MAX_VALUE;
+		
 		for (int i = 0; i < timeMS.length; i++)
 			if(timeMS[i]>=_minTimeMSInclusive && timeMS[i]<_maxTimeMSExclusive)
-				return new Match(i,-1);
+			{
+				long curDiff = Math.abs(timeMS[i]-middle);
+				if(curDiff<bestDiff)
+				{
+					bestDiff=curDiff;
+					bestMatch = i;
+				}
+			}
 		
-		return null;
+		if(bestMatch==-1)
+			return null;
+		
+		return new Match(bestMatch,-1);
 	}
 	
 	@Nullable public Match findClosestIdx(long _currentDateTimeMS)
@@ -356,6 +350,16 @@ public abstract class Movie
 		return null;
 	}
 	
+	protected void loadCodestreamIntoCache(long _codestreamId) throws Exception
+	{
+	}
+	
+	protected void unloadCodestreamFromCache(long _codestreamId) throws Exception
+	{
+	}
+	
+	private static ExecutorService exec = Executors.newFixedThreadPool(Globals.CORES);
+	
 	public boolean decodeImage(int _index, DecodeQualityLevel _quality, float _zoomPercent, Rectangle _requiredRegion, Texture _target)
 	{
 		if(disposed)
@@ -363,47 +367,23 @@ public abstract class Movie
 		
 		_target.prepareUploadBuffer(_requiredRegion.width, _requiredRegion.height);
 		
+		int codestreamId=-1;
 		try
 		{
-	        Jpx_input_box previousBox = tlsJpx_input_box.get();
-	        if(previousBox!=null)
-	        {
-	        	previousBox.Close();
-	        	previousBox.Native_destroy();
-	        	tlsJpx_input_box.set(null);
-	        	openInputBoxes.remove(previousBox);
-	        }
-	        
-			Jpx_source jpxSrc=tlsJpx_source.get();
-			
-			Kdu_dims requestedBufferedRegion = new Kdu_dims();
-			requestedBufferedRegion.Access_pos().Set_x(_requiredRegion.x);
-			requestedBufferedRegion.Access_pos().Set_y(_requiredRegion.y);
-			requestedBufferedRegion.Access_size().Set_x(_requiredRegion.width);
-			requestedBufferedRegion.Access_size().Set_y(_requiredRegion.height);
-			
-			Kdu_region_decompressor decompressor = tlsKdu_region_decompressor.get();
-			
-	        Jpx_layer_source xlayer = jpxSrc.Access_layer(_index);
-	        if(!xlayer.Exists())
-	        	return false;
-	        
-	        Jpx_codestream_source xstream = jpxSrc.Access_codestream(xlayer.Get_codestream_id(0));
-	        Jpx_input_box inputBox = xstream.Open_stream();
-        	tlsJpx_input_box.set(inputBox);
-        	openInputBoxes.add(inputBox);
-        	
-			Kdu_codestream codestream = tlsKdu_codestream.get();
-        	if(!codestream.Exists())
-        	{
-				codestream.Create(inputBox);
-				codestream.Set_persistent();
-				codestream.Enable_restart();
-        	}
-        	else
-        		codestream.Restart(inputBox);
-			
 			int discardLevels=(int)Math.round(-Math.log(_zoomPercent)/Math.log(2));
+			
+			{
+				Jpx_source jpxSrc=tlsJpx_source.get();
+		        Jpx_layer_source xlayer = jpxSrc.Access_layer(_index);
+		        if(!xlayer.Exists())
+		        	return false;
+		        
+		        codestreamId=xlayer.Get_codestream_id(0);
+		        loadCodestreamIntoCache(codestreamId);
+			}
+	        
+			final int THREAD_REGIONS = Math.min(Globals.CORES, 1+(_requiredRegion.width*_requiredRegion.height)/(128*256));
+			final int THREAD_REGION_SIZE=(_requiredRegion.height+THREAD_REGIONS-1)/THREAD_REGIONS;
 			
 			Kdu_coords expand_numerator = new Kdu_coords(1,1);
 			Kdu_coords expand_denominator = new Kdu_coords((int)Math.round(1/_zoomPercent/(1<<discardLevels)),(int)Math.round(1/_zoomPercent/(1<<discardLevels)));
@@ -411,67 +391,137 @@ public abstract class Movie
 			Kdu_channel_mapping mapping = new Kdu_channel_mapping();
 			mapping.Configure(1 /* CHANNELS */, 8 /* BIT DEPTH */, false /* IS_SIGNED */);
 			
-			switch(_quality)
+			
+			CountDownLatch readyLatch = new CountDownLatch((_requiredRegion.height+THREAD_REGION_SIZE-1)/THREAD_REGION_SIZE);
+			for(int ystart=0;ystart<_requiredRegion.height;ystart+=THREAD_REGION_SIZE)
 			{
-				case QUALITY:
-					decompressor.Set_quality_limiting(new Kdu_quality_limiter(1f/256), 300f*_zoomPercent, 300f*_zoomPercent);
-					break;
-				case PLAYBACK:
-					decompressor.Set_quality_limiting(new Kdu_quality_limiter(4f/256), 300f*_zoomPercent, 300f*_zoomPercent);
-					break;
-				case SPEED:
-					decompressor.Set_quality_limiting(new Kdu_quality_limiter(7f/256), 300f*_zoomPercent, 300f*_zoomPercent);
-					break;
-				case HURRY:
-					decompressor.Set_quality_limiting(new Kdu_quality_limiter(10f/256), 300f*_zoomPercent, 300f*_zoomPercent);
-					break;
-				default:
-					throw new RuntimeException("Unsupported quality");
+				final int fystart=ystart;
+		        final int fcodestreamId=codestreamId;
+				exec.submit(() ->
+				{
+					try
+					{
+						int position=0;
+						int reqHeight = Math.min(_requiredRegion.height-fystart, THREAD_REGION_SIZE);
+						
+						Kdu_dims requestedBufferedRegion = new Kdu_dims();
+						requestedBufferedRegion.Access_pos().Set_x(_requiredRegion.x);
+						requestedBufferedRegion.Access_pos().Set_y(_requiredRegion.y+fystart);
+						requestedBufferedRegion.Access_size().Set_x(_requiredRegion.width);
+						requestedBufferedRegion.Access_size().Set_y(reqHeight);
+						
+						Kdu_region_decompressor decompressor = tlsKdu_region_decompressor.get();
+						switch(_quality)
+						{
+							case QUALITY:
+								decompressor.Set_quality_limiting(new Kdu_quality_limiter(1f/256), 300f*_zoomPercent, 300f*_zoomPercent);
+								break;
+							case PLAYBACK:
+								decompressor.Set_quality_limiting(new Kdu_quality_limiter(4f/256), 300f*_zoomPercent, 300f*_zoomPercent);
+								break;
+							case SPEED:
+								decompressor.Set_quality_limiting(new Kdu_quality_limiter(7f/256), 300f*_zoomPercent, 300f*_zoomPercent);
+								break;
+							case HURRY:
+								decompressor.Set_quality_limiting(new Kdu_quality_limiter(10f/256), 300f*_zoomPercent, 300f*_zoomPercent);
+								break;
+							default:
+								throw new RuntimeException("Unsupported quality");
+						}
+				        
+						Jpx_source jpxSrc2=tlsJpx_source.get();
+				        Jpx_codestream_source xstream = jpxSrc2.Access_codestream(fcodestreamId);
+				        Jpx_input_box inputBox = xstream.Open_stream();
+				        
+						Kdu_codestream codestream = new Kdu_codestream();
+						codestream.Create(inputBox);
+						codestream.Set_resilient(false);
+						
+						decompressor.Start(codestream,
+								mapping, //MAPPING
+								0,
+								discardLevels,
+								16384, //MAX LAYERS
+								requestedBufferedRegion,
+								expand_numerator,
+								expand_denominator,
+								false, //PRECISE
+								Kdu_global.KDU_WANT_OUTPUT_COMPONENTS,
+								true //FASTEST
+								);
+						
+						Kdu_dims incompleteRegion = new Kdu_dims();
+						incompleteRegion.Assign(requestedBufferedRegion);
+						Kdu_dims new_region = new Kdu_dims();
+						
+						byte[] buf=byteArrayBuffer.get();
+						if(buf==null || buf.length<(_requiredRegion.width+16)*(reqHeight+16))
+						{
+							buf = new byte[(_requiredRegion.width+16)*(reqHeight+16)];
+							byteArrayBuffer.set(buf);
+						}
+						
+						while(decompressor.Process(buf,
+								new int[]{position}, //CHANNEL OFFSETS
+								1, //PIXEL GAP
+								new Kdu_coords(), //BUFFER ORIGIN
+								0, //ROW GAP
+								0, //SUGGESTED INCREMENT
+								buf.length-position,
+								incompleteRegion,
+								new_region,
+								8, //PRECISION BITS
+								true, //MEASURE ROW GAP IN PIXELS
+								0, //EXPAND MONOCHROME
+								0, //FILL ALPHA
+								0 //MAX COLOUR CHANNELS (0=no limit)
+								))
+						{
+							position+=new_region.Access_size().Get_x() * new_region.Access_size().Get_y();
+							if(incompleteRegion.Access_size().Get_y() == 0)
+								break;
+						}
+						
+						decompressor.Finish();
+						codestream.Destroy();
+						
+			        	inputBox.Close();
+			        	inputBox.Native_destroy();
+			        	
+			        	synchronized(_target.uploadBuffer)
+			        	{
+			        		_target.uploadBuffer.position(fystart*_requiredRegion.width);
+			        		_target.uploadBuffer.put(buf, 0, _requiredRegion.width*reqHeight);
+			        	}
+					}
+					catch (Exception _e)
+					{
+						Telemetry.trackException(_e);
+					}
+					
+					readyLatch.countDown();
+				});
 			}
 			
-			decompressor.Start(codestream,
-					mapping, /* MAPPING */
-					0,
-					discardLevels,
-					16384 /* MAX LAYERS */,
-					requestedBufferedRegion,
-					expand_numerator,
-					expand_denominator,
-					false, /* PRECISE */
-					Kdu_global.KDU_WANT_OUTPUT_COMPONENTS,
-					true /* FASTEST */);
-			
-			Kdu_dims incompleteRegion = new Kdu_dims();
-			incompleteRegion.Assign(requestedBufferedRegion);
-			Kdu_dims new_region = new Kdu_dims();
-			
-			int position=0;
-			while(decompressor.Process(_target.uploadBuffer.array(),
-					new int[]{position} /* CHANNEL OFFSETS */,
-					1 /* PIXEL GAP */,
-					new Kdu_coords() /* BUFFER ORIGIN */,
-					0 /* ROW GAP */,
-					0 /* SUGGESTED INCREMENT */,
-					_target.uploadBuffer.capacity()-position,
-					incompleteRegion,
-					new_region,
-					8 /* PRECISION BITS */,
-					true /* MEASURE ROW GAP IN PIXELS */,
-					0 /* EXPAND MONOCHROME */,
-					0 /* FILL ALPHA */,
-					0 /* MAX COLOUR CHANNELS (0=no limit) */))
-			{
-				position+=new_region.Access_size().Get_x() * new_region.Access_size().Get_y();
-				if(incompleteRegion.Access_size().Get_y() == 0)
-					break;
-			}
-			
-			decompressor.Finish();
+			readyLatch.await();
+			_target.uploadBuffer.position(0);
 			return true;
 		}
-		catch (KduException e)
+		catch (Exception e)
 		{
 			Telemetry.trackException(e);
+		}
+		finally
+		{
+			if(codestreamId!=-1)
+				try
+				{
+					unloadCodestreamFromCache(codestreamId);
+				}
+				catch (Exception _e)
+				{
+					Telemetry.trackException(_e);
+				}
 		}
 		return false;
 	}

@@ -66,4 +66,9 @@ public abstract class CameraAnimation
     {
     	return timeLeft<=0;
     }
+    
+    protected void stop()
+    {
+    	timeLeft=0;
+    }
 }

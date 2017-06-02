@@ -38,6 +38,7 @@ import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
+import org.helioviewer.jhv.layers.Movie.Match;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.TimeLine.TimeLineListener;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
@@ -177,7 +178,7 @@ public class MetaDataDialog extends JDialog implements TimeLineListener, LayerLi
 	}
 
 	@Override
-	public void timeRangeChanged(long _start, long _end)
+	public void timeRangeChanged()
 	{
 	}
 
@@ -191,13 +192,18 @@ public class MetaDataDialog extends JDialog implements TimeLineListener, LayerLi
 		ImageLayer il = Layers.getActiveImageLayer();
 		if (il != null)
 		{
-			MetaData md = il.getMetaData(TimeLine.SINGLETON.getCurrentTimeMS());
-			Document doc = il.getMetaDataDocument(TimeLine.SINGLETON.getCurrentTimeMS());
-
-			if (md != null && doc != null)
+			@Nullable Match m = il.getCurrentMatch();
+			if(m!=null)
 			{
-				readData(md, doc);
-				exportFitsButton.setEnabled(true);
+				@Nullable MetaData md = m.getMetaData();
+				@Nullable Document doc = m.getMetaDataDocument();
+				if (doc != null && md!=null)
+				{
+					readData(md, doc);
+					exportFitsButton.setEnabled(true);
+				}
+				else
+					addLine("Metadata not available.");
 			}
 			else
 				addLine("Metadata not available.");

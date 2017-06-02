@@ -11,6 +11,7 @@ import java.util.zip.GZIPInputStream;
 import javax.annotation.Nullable;
 
 import org.apache.http.client.entity.DeflateInputStream;
+import org.helioviewer.jhv.base.math.MathUtils;
 
 import com.google.common.io.ByteSource;
 import com.google.common.io.FileBackedOutputStream;
@@ -39,19 +40,35 @@ public class HTTPRequest extends AbstractDownloadRequest
 	@SuppressWarnings("resource")
 	public void execute() throws Throwable
 	{
-		httpURLConnection = (HttpURLConnection) new URL(url).openConnection();
+		//FIXME: add proxy support (settings, ...)
+		//Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 8888));
 		try
 		{
-			httpURLConnection.setReadTimeout(TIMEOUT);
-			httpURLConnection.setRequestMethod("GET");
-			httpURLConnection.setRequestProperty("Accept-Encoding", "gzip, deflate");
-			httpURLConnection.connect();
-			int response = httpURLConnection.getResponseCode();
-			totalLength = httpURLConnection.getContentLength();
-			if (response != HttpURLConnection.HTTP_OK)
-				throw new IOException("Response code "+response);
+			httpURLConnection = (HttpURLConnection) new URL(url).openConnection(); //proxy);
+			RetryConnect:for(;;)
+			{
+				httpURLConnection.setReadTimeout(TIMEOUT);
+				httpURLConnection.setRequestMethod("GET");
+				httpURLConnection.setRequestProperty("Accept-Encoding", "gzip, deflate");
+				
+				httpURLConnection.connect();
+				int response = httpURLConnection.getResponseCode();
+				switch(response)
+				{
+					case HttpURLConnection.HTTP_OK:
+						break RetryConnect;
+					case HttpURLConnection.HTTP_MOVED_TEMP:
+					case HttpURLConnection.HTTP_MOVED_PERM:
+						System.out.println("Redirecting "+httpURLConnection.getURL().toString()+" to "+httpURLConnection.getHeaderField("Location"));
+						httpURLConnection = (HttpURLConnection)new URL(httpURLConnection.getHeaderField("Location")).openConnection(); //proxy);
+						continue;
+					default:
+						throw new IOException("HTTP response code "+response+" for "+httpURLConnection.getURL().toString());
+				}
+			}
 			
-			InputStream is=new BufferedInputStream(httpURLConnection.getInputStream(),65536);
+			totalLength = httpURLConnection.getContentLength();
+			InputStream is=new BufferedInputStream(httpURLConnection.getInputStream(),MathUtils.clip(totalLength,1024,65536));
 			if(httpURLConnection.getContentEncoding()!=null)
 				switch(httpURLConnection.getContentEncoding().toLowerCase())
 				{

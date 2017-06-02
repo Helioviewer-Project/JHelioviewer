@@ -31,7 +31,6 @@ import org.helioviewer.jhv.opengl.camera.animation.CameraRotationAnimation;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.TimeLine.DecodeQualityLevel;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
-import org.w3c.dom.Document;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.jogamp.opengl.GL;
@@ -74,13 +73,11 @@ public abstract class ImageLayer extends Layer
 	private static int shaderCorona = -1;
 	private static int shaderSphere = -1;
 	
-	protected static ArrayList<Texture> textures= new ArrayList<>();
+	protected static ArrayList<Texture> textures = new ArrayList<>();
 	
-	public abstract @Nullable MetaData getMetaData(long _timeMS);
+	public abstract @Nullable Match getCurrentMatch();
+	public abstract @Nullable MetaData getCurrentMetaData();
 
-	public abstract @Nullable Document getMetaDataDocument(long _timeMS);
-
-	public abstract @Nullable Match findBestFrame(long _timeMS);
 	public abstract @Nullable Match findBestFrame(long _minTimeMSInclusive, long _maxTimeMSExclusive);
 
 	
@@ -153,7 +150,7 @@ public abstract class ImageLayer extends Layer
 	
 	public RenderResult renderLayer(GL2 gl, MainPanel mainPanel, PreparedImage _preparedImageData, float _opacityScaling)
 	{
-		MetaData md=getMetaData(TimeLine.SINGLETON.getCurrentTimeMS());
+		MetaData md=getCurrentMetaData();
 		if(md==null || md.timeMS==0)
 			return RenderResult.RETRY_LATER;
 		
@@ -184,11 +181,13 @@ public abstract class ImageLayer extends Layer
 		{
 			double dot = MathUtils.clip(transformation.multiply(new Vector4d(0,0,1,0)).dot(new Vector4d(0, 0, 1, 0)), -1, 1);
 			double angle = Math.toDegrees(Math.acos(dot));
+			
 			double maxAngle = 60;
 			double minAngle = 30;
 			opacityCorona = (float) ((Math.abs(90 - angle) - minAngle) / (maxAngle - minAngle));
 			opacityCorona = opacityCorona > 1 ? 1f : opacityCorona;
 		}
+		
 		gl.glColor4f(1, 1, 1, 1);
 		gl.glEnable(GL2.GL_BLEND);
 		gl.glEnable(GL2.GL_TEXTURE_2D);
@@ -286,16 +285,16 @@ public abstract class ImageLayer extends Layer
 		gl.glEnd();
 	}
 
-	private Matrix4d calcTransformation(MainPanel mainPanel, MetaData md)
+	private Matrix4d calcTransformation(MainPanel _mainPanel, MetaData _md)
 	{
 		//see http://jgiesen.de/sunrot/index.html and http://www.petermeadows.com/stonyhurst/sdisk6in7.gif
-		double diffRotattion = DifferentialRotation.calculateRotationInRadians(0,(TimeLine.SINGLETON.getCurrentTimeMS() - md.timeMS)/1000f);
-		Quaternion diffRotationQuat = Quaternion.createRotation(-diffRotattion, new Vector3d(0, 1, 0));
+		double diffRotation = DifferentialRotation.calculateRotationInRadians(0,(TimeLine.SINGLETON.getCurrentFrameStartTimeMS() - _md.timeMS)/1000f);
+		Quaternion diffRotationQuat = Quaternion.createRotation(-diffRotation, new Vector3d(0, 1, 0));
 		
-		return Matrix4d.createTranslationMatrix(mainPanel.getTranslationCurrent())
+		return Matrix4d.createTranslationMatrix(_mainPanel.getTranslationCurrent())
 				.multiplied(diffRotationQuat.toMatrix())
-				.multiplied(md.rotation.toMatrix())
-				.multiplied(mainPanel.getRotationCurrent().toMatrix())
+				.multiplied(_md.rotation.toMatrix())
+				.multiplied(_mainPanel.getRotationCurrent().toMatrix())
 				;
 	}
 	
@@ -384,7 +383,7 @@ public abstract class ImageLayer extends Layer
 	@Override
 	public @Nullable String getFullName()
 	{
-		MetaData md=getMetaData(TimeLine.SINGLETON.getCurrentTimeMS());
+		MetaData md=getCurrentMetaData();
 		if(md!=null)
 			return md.displayName;
 		else

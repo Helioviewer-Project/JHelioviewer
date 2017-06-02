@@ -10,7 +10,6 @@ import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.Layers;
-import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 
 /**
@@ -50,7 +49,7 @@ public class ZoomStatusPanel extends StatusLabel
 			return;
 		}
 		
-		MetaData metaData = activeLayer.getMetaData(TimeLine.SINGLETON.getCurrentTimeMS());
+		MetaData metaData = activeLayer.getCurrentMetaData();
 		if(metaData==null)
 		{
 			setText("Zoom:");

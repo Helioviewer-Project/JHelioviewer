@@ -17,7 +17,6 @@ import org.helioviewer.jhv.layers.Layer;
 import org.helioviewer.jhv.layers.LayerListener;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.opengl.camera.animation.CameraZoomAnimation;
-import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 
 public class Zoom1To1Action extends AbstractAction implements LayerListener
@@ -39,7 +38,7 @@ public class Zoom1To1Action extends AbstractAction implements LayerListener
 		if (activeLayer == null)
 			return;
 		
-		MetaData metaData = activeLayer.getMetaData(TimeLine.SINGLETON.getCurrentTimeMS());
+		MetaData metaData = activeLayer.getCurrentMetaData();
 		
 		if(metaData==null)
 			return;

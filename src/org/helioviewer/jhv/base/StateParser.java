@@ -136,7 +136,7 @@ public class StateParser
 
 		json.put("camera", jsonCamera);
 		json.put("activeLayer", Layers.getActiveLayerIndex());
-		json.put("timeMS", TimeLine.SINGLETON.getCurrentTimeMS());
+		json.put("timeMS", TimeLine.SINGLETON.getCurrentFrameMiddleTimeMS());
 
 		try(Writer w = new OutputStreamWriter(new FileOutputStream(fileName),StandardCharsets.UTF_8))
 		{

@@ -20,22 +20,6 @@ public class MovieFileBacked extends Movie
 		super(_sourceId);
 		filename = _filename;
 		
-		Jpx_source jpxSrc = new Jpx_source();
-		jpxSrc.Open(family_src, true);
-		
-		Jpx_layer_source l = jpxSrc.Access_layer(0);
-		if(!l.Exists())
-			throw new KduException("File contains no layers");
-			
-		//count frames
-		int[] frameCount = new int[1];
-		jpxSrc.Count_compositing_layers(frameCount);
-		
-		jpxSrc.Close();
-		jpxSrc.Native_destroy();
-		
-		metaDatas = new MetaData[frameCount[0]];
-		
 		try(FileInputStream fis = new FileInputStream(filename))
 		{
 			try
@@ -48,6 +32,30 @@ public class MovieFileBacked extends Movie
 			}
 		}
 		
+		Jpx_source jpxSrc = new Jpx_source();
+		jpxSrc.Open(family_src, true);
+		
+		Jpx_layer_source l = jpxSrc.Access_layer(0);
+		if(!l.Exists())
+		{
+			jpxSrc.Close();
+			jpxSrc.Native_destroy();
+			family_src.Close();
+			family_src.Native_destroy();
+			
+			throw new KduException("File contains no layers");
+		}
+			
+		//count frames
+		int[] frameCount = new int[1];
+		jpxSrc.Count_compositing_layers(frameCount);
+		
+		jpxSrc.Close();
+		jpxSrc.Native_destroy();
+		
+		metaDatas = new MetaData[frameCount[0]];
+		timeMS = new long[metaDatas.length];
+		
 		//load timestamps
 		for(int i=0;i<metaDatas.length;i++)
 		{
@@ -57,7 +65,12 @@ public class MovieFileBacked extends Movie
 		}
 		
 		if(getAnyMetaData()==null)
+		{
+			family_src.Close();
+			family_src.Native_destroy();
+			
 			throw new UnsuitableMetaDataException();
+		}
 	}
 	
 	public boolean isFullQuality()
