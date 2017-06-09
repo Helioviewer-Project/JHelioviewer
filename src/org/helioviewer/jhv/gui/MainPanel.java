@@ -740,8 +740,8 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			{
 				//TODO: tracking is jerky in 2d mode, should use ImageLayer.calcTransformation(mainPanel, md) instead, to respect metadata
 				Vector3d newTranslation = newRotation.toMatrix().multiply(hitPoint);
-				translationEnd = translationEnd.add(new Vector3d(newTranslation.x-translationNow.x,newTranslation.y-translationNow.y,0));
-				translationNow = new Vector3d(newTranslation.x, newTranslation.y, translationNow.z);
+				translationEnd = translationEnd.add(new Vector3d(newTranslation.x-translationNow.x, 0, 0));
+				translationNow = new Vector3d(newTranslation.x, translationNow.y, translationNow.z);
 			}
 			
 			for (CameraListener listener : cameraListeners)
