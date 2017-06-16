@@ -222,7 +222,21 @@ public class Globals
 					@Override
 					public void run()
 					{
-						final Stage s=new Stage(StageStyle.UTILITY);
+						final Stage s;
+						
+						if(Globals.IS_OS_X)
+						{
+							// FIXME: OS_X: When a dialog is opened while the app is in Fullscreen-mode, the opacity doesn't work as intended
+							
+							// on macOS Sierra (V10.12.5), the released app crashes if the stage is set to UTILITY.
+							// Apple AWT Internal Exception: utility panels cannot be fullscreen primary
+							s=new Stage(StageStyle.UNDECORATED);
+						}
+						else
+						{
+							s=new Stage(StageStyle.UTILITY);
+						}
+						
 						s.setOpacity(0);
 						s.setWidth(MainFrame.SINGLETON.getWidth());
 						s.setHeight(MainFrame.SINGLETON.getHeight());
