@@ -14,6 +14,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.nio.IntBuffer;
 import java.text.NumberFormat;
 
 import javax.annotation.Nullable;
@@ -45,6 +46,8 @@ import org.helioviewer.jhv.gui.IconBank;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.MainFrame;
 
+import com.jogamp.opengl.GL2;
+
 public class PreferencesDialog extends JDialog
 {
 	private JCheckBox loadDefaultMovieOnStartUp;
@@ -54,13 +57,36 @@ public class PreferencesDialog extends JDialog
 	private JButton cancelBtn;
 	private JButton resetBtn;
 
-	private static final int MAX_SIZE_SCREENSHOT = 2048; //opengl texture size
-	private static final int MAX_SIZE_MOVIE_EXPORT = 2048; //opengl texture size
+	private static int MAX_SIZE_SCREENSHOT = 2048; //opengl texture size
+	private static int MAX_SIZE_MOVIE_EXPORT = 2048; //opengl texture size
 	
 	private static final AspectRatio[] MOVIE_ASPECT_RATIO_PRESETS = { new AspectRatio(1, 1), new AspectRatio(4, 3),
 			new AspectRatio(16, 9), new AspectRatio(16, 10), new AspectRatio(0, 0) };
 	private static final AspectRatio[] IMAGE_ASPECT_RATIO_PRESETS = { new AspectRatio(1, 1), new AspectRatio(4, 3),
 			new AspectRatio(16, 9), new AspectRatio(16, 10), new AspectRatio(0, 0) };
+
+	public static void setMaxSizeScreenshot(GL2 _gl)
+	{
+		try 
+		{
+			IntBuffer buffer = IntBuffer.allocate(1);
+			_gl.glGetIntegerv(GL2.GL_MAX_TEXTURE_SIZE, buffer);
+			
+			int maxSize = buffer.get();
+			
+			if (maxSize > 1024 * 16)
+			{
+				maxSize = 1024 * 16;
+			}
+			
+			MAX_SIZE_SCREENSHOT = maxSize;
+			MAX_SIZE_MOVIE_EXPORT = maxSize;
+		}
+		catch (Exception e)
+		{
+			Telemetry.trackException(e);
+		}
+	}
 
 	public PreferencesDialog()
 	{

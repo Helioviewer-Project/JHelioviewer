@@ -229,6 +229,7 @@ public class JHelioviewer
 			MainFrame.init(masterDrawable.getContext());
 			
 			splash.progressTo("Loading textures");
+			PreferencesDialog.setMaxSizeScreenshot(masterDrawable.getGL().getGL2());
 			NoImageScreen.init(masterDrawable.getGL().getGL2());
 			LUT.loadTexture(masterDrawable.getGL().getGL2());
 			HEKIcon.init(masterDrawable.getGL().getGL2());
