@@ -10,10 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.astrogrid.samp.DataException;
-import org.astrogrid.samp.JSamp;
 import org.astrogrid.samp.Message;
 import org.astrogrid.samp.Metadata;
-import org.astrogrid.samp.SampMap;
 import org.astrogrid.samp.SampUtils;
 import org.astrogrid.samp.client.ClientProfile;
 import org.astrogrid.samp.client.HubConnector;
@@ -33,14 +31,11 @@ import org.helioviewer.jhv.viewmodel.TimeLine.DecodeQualityLevel;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
 import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 
-import javafx.util.converter.LocalDateTimeStringConverter;
-
 public class SampClient extends HubConnector
 {
 	private final static String MTYPE_VIEW_DATA = "jhv.vso.load";
 	// TODO: Merge with other TimeFormatter (Metadata)
-	private static final DateTimeFormatter SOHO_DATE_TIME_FORMATTER = DateTimeFormatter
-			.ofPattern("yyyy/MM/dd'T'HH:mm:ss.SSS");
+	protected static final DateTimeFormatter SAMP_DATE_TIME_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
 	public SampClient(ClientProfile _profile)
 	{
@@ -53,27 +48,29 @@ public class SampClient extends HubConnector
 			try
 			{
 				Hub.checkExternalHubAvailability();
-				Hub.runExternalHub(HubServiceMode.CLIENT_GUI);
+				Hub.runExternalHub(HubServiceMode.MESSAGE_GUI);
 			}
 			catch (IOException _e1)
 			{
-				// TODO Auto-generated catch block
-				_e1.printStackTrace();
+				Telemetry.trackException(_e1);
 			}
 		}
 
 		// TODO: name / description
 		meta.setName("JHelioviewer");
 		meta.setDescriptionText("JHelioviewer");
+		
 		declareMetadata(meta);
+		//addMessageHandler(new FlareMessageHandler());
 		declareSubscriptions(computeSubscriptions());
 
 		setAutoconnect(10);
 	}
 
+
+
 	public void notifyRequestData()
 	{
-		// TODO: different layers may need different data to be sent
 		if (Layers.anyImageLayers())
 		{
 			ImageLayer activeLayer = Layers.getActiveImageLayer();
@@ -111,9 +108,9 @@ public class SampClient extends HubConnector
 		Rectangle2D cutout = getCutoutInfo(_activeLayer);
 
 		Message msg = new Message(MTYPE_VIEW_DATA);
-		msg.addParam("timestamp", SOHO_DATE_TIME_FORMATTER.format(timestamp));
-		msg.addParam("start", SOHO_DATE_TIME_FORMATTER.format(start));
-		msg.addParam("end", SOHO_DATE_TIME_FORMATTER.format(end));
+		msg.addParam("timestamp", SAMP_DATE_TIME_FORMATTER.format(timestamp));
+		msg.addParam("start", SAMP_DATE_TIME_FORMATTER.format(start));
+		msg.addParam("end", SAMP_DATE_TIME_FORMATTER.format(end));
 		msg.addParam("cadence", SampUtils.encodeLong(_activeLayer.getCadenceMS()));
 		msg.addParam("cutout.set", SampUtils.encodeBoolean(cutout != null));
 		if(cutout != null) {
@@ -136,7 +133,7 @@ public class SampClient extends HubConnector
 				layerMsg.put("instrument", encodeString(getInstrumentNameOnly(data.instrument)));
 				layerMsg.put("detector", encodeString(data.detector));
 				layerMsg.put("measurement", encodeString(data.measurement));
-				layerMsg.put("timestamp", SOHO_DATE_TIME_FORMATTER.format(layerTimeStamp));
+				layerMsg.put("timestamp", SAMP_DATE_TIME_FORMATTER.format(layerTimeStamp));
 				layersData.add(layerMsg);
 			}
 			else
