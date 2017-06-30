@@ -61,7 +61,7 @@ public class SampClient extends HubConnector
 		meta.setDescriptionText("JHelioviewer");
 		
 		declareMetadata(meta);
-		//addMessageHandler(new FlareMessageHandler());
+		addMessageHandler(new ShowLayerMessageHandler());
 		declareSubscriptions(computeSubscriptions());
 
 		setAutoconnect(10);
