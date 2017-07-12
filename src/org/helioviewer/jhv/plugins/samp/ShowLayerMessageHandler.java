@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,6 +11,13 @@ import org.astrogrid.samp.Message;
 import org.astrogrid.samp.SampUtils;
 import org.astrogrid.samp.client.AbstractMessageHandler;
 import org.astrogrid.samp.client.HubConnection;
+import org.helioviewer.jhv.base.Observatories;
+import org.helioviewer.jhv.base.Observatories.Filter;
+import org.helioviewer.jhv.base.Observatories.Observatory;
+import org.helioviewer.jhv.base.math.MathUtils;
+import org.helioviewer.jhv.layers.ImageLayer;
+import org.helioviewer.jhv.layers.Layers;
+import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
 
 public class ShowLayerMessageHandler extends AbstractMessageHandler
 {
@@ -20,6 +26,11 @@ public class ShowLayerMessageHandler extends AbstractMessageHandler
 			.ofPattern("yyyy-MM-dd'T'");
 	protected static final DateTimeFormatter LAYER_TIME_FORMATTER = DateTimeFormatter
 			.ofPattern("HH:mm:ss");
+	
+	
+	private final static String DEFAULT_OBSERVATORY = "SDO";
+	private final static String DEFAULT_INSTRUMENT  = "AIA";
+	private final static String DEFAULT_MEASUREMENT = "171";
 
 	protected ShowLayerMessageHandler()
 	{
@@ -29,25 +40,79 @@ public class ShowLayerMessageHandler extends AbstractMessageHandler
 
 	private static Map createSubscription()
 	{
-		Map<String, Map<String, String>> flareSubs = new HashMap<String, Map<String, String>>();
-		Map<String, String> flareSubsConfig = new HashMap<String, String>();
-		flareSubsConfig.put("x-samp.mostly-harmless", "1");
-		flareSubs.put(MTYPE_SHOW_LAYER, flareSubsConfig);
+		Map<String, Map<String, String>> layersSubs = new HashMap<String, Map<String, String>>();
+		Map<String, String> layersSubsConfig = new HashMap<String, String>();
+		// allow web samp to also send add layers messages
+		layersSubsConfig.put("x-samp.mostly-harmless", "1");
+		layersSubs.put(MTYPE_SHOW_LAYER, layersSubsConfig);
 		
-		return flareSubs;
+		return layersSubs;
 	}
 
 	@Override
 	public Map processCall(HubConnection c, String senderId, Message msg) throws Exception
 	{
-		DataContainer flareInfo = DataContainer.createFromMesssage(msg);
+		//Layers.removeAllImageLayers();
 		
-		System.out.println(c);
-		System.out.println(senderId);
-		System.out.println(flareInfo);
+		DataContainer requestInfo = DataContainer.createFromMesssage(msg);
+		
+		ImageLayer newLayer = AddLayer(requestInfo);
+		if (newLayer != null)
+		{
+			SetCameraPosition(requestInfo, newLayer);	
+		}
+		
 		return null;
 	}
 	
+	private void SetCameraPosition(DataContainer _requestInfo, ImageLayer _newLayer)
+	{
+//		double xTheta = _requestInfo.xPos / (double)Constants.ARCSEC_FACTOR;
+//		double yTheta = _requestInfo.yPos / (double)Constants.ARCSEC_FACTOR;
+//		
+//		double xThetaRad = Math.toRadians(xTheta);
+//		double thetaX = Math.atan(xThetaRad);
+//		double thetaY = Math.atan(Math.toRadians(yTheta/Math.sqrt(1 + xThetaRad*xThetaRad)));
+//		
+//		
+//		HelioprojectiveCartesianCoordinate hpcc = new HelioprojectiveCartesianCoordinate(thetaX, thetaY);
+//		
+//		System.out.println(hpcc.getThetaXAsArcSec());
+//		System.out.println(hpcc.getThetaYAsArcSec());
+//		
+//		HeliocentricCartesianCoordinate hccc = hpcc.toHeliocentricCartesianCoordinate();
+//		
+//		System.out.println(hccc.toVector3d());
+//		System.out.println(MainFrame.SINGLETON.MAIN_PANEL.getTranslationCurrent());
+//		System.out.println(MainFrame.SINGLETON.MAIN_PANEL.getRotationCurrent());
+//		
+//		MainFrame.SINGLETON.MAIN_PANEL.setTranslationCurrent(hccc.toVector3d());
+	}
+
+	private ImageLayer AddLayer(DataContainer _requestInfo)
+	{
+		final String observatory = _requestInfo.observatory != null ? _requestInfo.observatory : DEFAULT_OBSERVATORY;
+		final String instrument  = _requestInfo.instrument  != null ? _requestInfo.instrument  : DEFAULT_INSTRUMENT;
+		final String measurement = _requestInfo.measurement != null ? _requestInfo.measurement : DEFAULT_MEASUREMENT; 
+		
+		for(Observatory o:Observatories.getObservatories())
+			if(observatory.equals(o.toString()))
+				for(Filter i:o.getInstruments())
+					if(instrument.equals(i.toString()))
+						for(Filter f:i.getFilters())
+							if(measurement.equals(f.toString()))
+							{
+								ImageLayer layer = new KakaduLayer(f.sourceId,
+										MathUtils.fromLDT(_requestInfo.start),
+										MathUtils.fromLDT(_requestInfo.end),
+										12*1000, f.getNickname());
+								Layers.addLayer(layer);
+								return layer;
+							}
+		
+		return null;
+	}
+
 	private static class DataContainer
 	{
 		protected final LocalDateTime start;
@@ -56,8 +121,15 @@ public class ShowLayerMessageHandler extends AbstractMessageHandler
 		
 		protected final int xPos;
 		protected final int yPos;
-
-		private DataContainer(LocalDateTime _start, LocalDateTime _end, LocalDateTime _peak, int _xPos, int _yPos)
+		
+		protected final String observatory;
+		protected final String instrument;
+		protected final String detector;
+		protected final String measurement;
+		
+		
+		public DataContainer(LocalDateTime _start, LocalDateTime _end, LocalDateTime _peak, int _xPos, int _yPos,
+				String _observatory, String _instrument, String _detector, String _measurement)
 		{
 			super();
 			start = _start;
@@ -65,6 +137,10 @@ public class ShowLayerMessageHandler extends AbstractMessageHandler
 			peak = _peak;
 			xPos = _xPos;
 			yPos = _yPos;
+			observatory = _observatory;
+			instrument = _instrument;
+			detector = _detector;
+			measurement = _measurement;
 		}
 
 
@@ -83,8 +159,11 @@ public class ShowLayerMessageHandler extends AbstractMessageHandler
 					peak.isAfter(start) ? date.atTime(peak) : date.plusDays(1).atTime(peak),
 					end.isAfter(start)  ? date.atTime(end)  : date.plusDays(1).atTime(end),
 					xPos,
-					yPos
-					);
+					yPos,
+					(String)_msg.getParam("observatory"),
+					(String)_msg.getParam("instrument"),
+					(String)_msg.getParam("detector"),
+					(String)_msg.getParam("measurement"));
 		}
 
 
