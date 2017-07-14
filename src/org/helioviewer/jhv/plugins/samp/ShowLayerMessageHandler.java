@@ -14,7 +14,12 @@ import org.astrogrid.samp.client.HubConnection;
 import org.helioviewer.jhv.base.Observatories;
 import org.helioviewer.jhv.base.Observatories.Filter;
 import org.helioviewer.jhv.base.Observatories.Observatory;
+import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
+import org.helioviewer.jhv.base.coordinates.HelioprojectiveCartesianCoordinate;
 import org.helioviewer.jhv.base.math.MathUtils;
+import org.helioviewer.jhv.base.math.Vector3d;
+import org.helioviewer.jhv.base.physics.Constants;
+import org.helioviewer.jhv.gui.MainFrame;
 import org.helioviewer.jhv.layers.ImageLayer;
 import org.helioviewer.jhv.layers.Layers;
 import org.helioviewer.jhv.viewmodel.jp2view.newjpx.KakaduLayer;
@@ -23,7 +28,7 @@ public class ShowLayerMessageHandler extends AbstractMessageHandler
 {
 	public final static String MTYPE_SHOW_LAYER = "jhv.layers.show";
 	protected static final DateTimeFormatter LAYER_DATE_FORMATTER = DateTimeFormatter
-			.ofPattern("yyyy-MM-dd'T'");
+			.ofPattern("yyyy-MM-dd");
 	protected static final DateTimeFormatter LAYER_TIME_FORMATTER = DateTimeFormatter
 			.ofPattern("HH:mm:ss");
 	
@@ -52,7 +57,7 @@ public class ShowLayerMessageHandler extends AbstractMessageHandler
 	@Override
 	public Map processCall(HubConnection c, String senderId, Message msg) throws Exception
 	{
-		//Layers.removeAllImageLayers();
+		Layers.removeAllImageLayers();
 		
 		DataContainer requestInfo = DataContainer.createFromMesssage(msg);
 		
@@ -67,26 +72,18 @@ public class ShowLayerMessageHandler extends AbstractMessageHandler
 	
 	private void SetCameraPosition(DataContainer _requestInfo, ImageLayer _newLayer)
 	{
-//		double xTheta = _requestInfo.xPos / (double)Constants.ARCSEC_FACTOR;
-//		double yTheta = _requestInfo.yPos / (double)Constants.ARCSEC_FACTOR;
-//		
-//		double xThetaRad = Math.toRadians(xTheta);
-//		double thetaX = Math.atan(xThetaRad);
-//		double thetaY = Math.atan(Math.toRadians(yTheta/Math.sqrt(1 + xThetaRad*xThetaRad)));
-//		
-//		
-//		HelioprojectiveCartesianCoordinate hpcc = new HelioprojectiveCartesianCoordinate(thetaX, thetaY);
-//		
-//		System.out.println(hpcc.getThetaXAsArcSec());
-//		System.out.println(hpcc.getThetaYAsArcSec());
-//		
-//		HeliocentricCartesianCoordinate hccc = hpcc.toHeliocentricCartesianCoordinate();
-//		
-//		System.out.println(hccc.toVector3d());
-//		System.out.println(MainFrame.SINGLETON.MAIN_PANEL.getTranslationCurrent());
-//		System.out.println(MainFrame.SINGLETON.MAIN_PANEL.getRotationCurrent());
-//		
-//		MainFrame.SINGLETON.MAIN_PANEL.setTranslationCurrent(hccc.toVector3d());
+		double xTheta = _requestInfo.xPos / (double)Constants.ARCSEC_FACTOR;
+		double yTheta = _requestInfo.yPos / (double)Constants.ARCSEC_FACTOR;
+		
+		double xThetaRad = Math.toRadians(xTheta);
+		double thetaX = Math.atan(xThetaRad);
+		double thetaY = Math.atan(Math.toRadians(yTheta/Math.sqrt(1 + xThetaRad*xThetaRad)));
+		
+		HelioprojectiveCartesianCoordinate hpcc = new HelioprojectiveCartesianCoordinate(thetaX, thetaY);		
+		HeliocentricCartesianCoordinate cart = hpcc.toHeliocentricCartesianCoordinate();
+		
+		// ToDo: investigate factor 216
+		MainFrame.SINGLETON.MAIN_PANEL.setTranslationCurrent(new Vector3d(-216*cart.x, 216*cart.y, cart.z*2)  );
 	}
 
 	private ImageLayer AddLayer(DataContainer _requestInfo)

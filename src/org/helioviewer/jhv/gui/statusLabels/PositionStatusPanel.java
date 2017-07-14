@@ -96,7 +96,7 @@ public class PositionStatusPanel extends StatusLabel
 		}
 
 		HeliocentricCartesianCoordinate cart = new HeliocentricCartesianCoordinate(ray.getHitpoint().x,
-				ray.getHitpoint().y, ray.getHitpoint().z);
+				-ray.getHitpoint().y, ray.getHitpoint().z);
 
 		DecimalFormat df;
 		String point = "";
