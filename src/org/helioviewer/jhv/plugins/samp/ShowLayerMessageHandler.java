@@ -36,6 +36,13 @@ public class ShowLayerMessageHandler extends AbstractMessageHandler
 	private final static String DEFAULT_OBSERVATORY = "SDO";
 	private final static String DEFAULT_INSTRUMENT  = "AIA";
 	private final static String DEFAULT_MEASUREMENT = "171";
+	
+	private final static LocalDate SDO_FIRST_IMAGES = LocalDate.of(2010, 06, 02);
+	
+	private final static String DEFAULT_OBSERVATORY_PRE_SDO = "SOHO";
+	private final static String DEFAULT_INSTRUMENT_PRE_SDO  = "EIT";
+	private final static String DEFAULT_MEASUREMENT_PRE_SDO = "195";
+	
 
 	protected ShowLayerMessageHandler()
 	{
@@ -88,9 +95,22 @@ public class ShowLayerMessageHandler extends AbstractMessageHandler
 
 	private ImageLayer AddLayer(DataContainer _requestInfo)
 	{
-		final String observatory = _requestInfo.observatory != null ? _requestInfo.observatory : DEFAULT_OBSERVATORY;
-		final String instrument  = _requestInfo.instrument  != null ? _requestInfo.instrument  : DEFAULT_INSTRUMENT;
-		final String measurement = _requestInfo.measurement != null ? _requestInfo.measurement : DEFAULT_MEASUREMENT; 
+		final String observatory;
+		final String instrument;
+		final String measurement;
+		if (SDO_FIRST_IMAGES.atStartOfDay().isAfter(_requestInfo.start))
+		{
+			observatory = _requestInfo.observatory != null ? _requestInfo.observatory : DEFAULT_OBSERVATORY_PRE_SDO;
+			instrument  = _requestInfo.instrument  != null ? _requestInfo.instrument  : DEFAULT_INSTRUMENT_PRE_SDO;
+			measurement = _requestInfo.measurement != null ? _requestInfo.measurement : DEFAULT_MEASUREMENT_PRE_SDO; 
+		}
+		else
+		{
+			observatory = _requestInfo.observatory != null ? _requestInfo.observatory : DEFAULT_OBSERVATORY;
+			instrument  = _requestInfo.instrument  != null ? _requestInfo.instrument  : DEFAULT_INSTRUMENT;
+			measurement = _requestInfo.measurement != null ? _requestInfo.measurement : DEFAULT_MEASUREMENT; 
+		}
+		
 		
 		for(Observatory o:Observatories.getObservatories())
 			if(observatory.equals(o.toString()))
