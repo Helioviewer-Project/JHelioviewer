@@ -63,8 +63,8 @@ public class AddLayerDialog extends JDialog
 	private JPanel layerPanel;
 	private JPanel panel;
 	
-	private static int lastCadence=30;
-	private static int lastCadenceType=1;
+	private static int lastCadence=100;
+	private static int lastCadenceType=4;
 	
 	private enum TimeSteps
 	{
@@ -397,7 +397,7 @@ public class AddLayerDialog extends JDialog
 		cmbbxTimeSteps = new JComboBox<>();
 		cmbbxTimeSteps.setModel(new DefaultComboBoxModel<>(TimeSteps.values()));
 		
-		cmbbxTimeSteps.setSelectedItem(TimeSteps.MIN);
+		cmbbxTimeSteps.setSelectedItem(TimeSteps.FRAMES);
 		
 		GridBagConstraints gbc_cmbbxTimeSteps = new GridBagConstraints();
 		gbc_cmbbxTimeSteps.fill = GridBagConstraints.HORIZONTAL;
