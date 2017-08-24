@@ -80,6 +80,7 @@ public class FilterPanel extends JPanel
 						opacitySlider = new JSlider();
 						lblOpacityTitle.setLabelFor(opacitySlider);
 						opacitySlider.setValue(100);
+						opacitySlider.setMaximum(200);
 						opacitySlider.setMinorTickSpacing(20);
 						opacitySlider.setPaintTicks(true);
 						GridBagConstraints gbc_opacitySlider = new GridBagConstraints();
