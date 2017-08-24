@@ -122,8 +122,6 @@ public class AddLayerDialog extends JDialog
 
 	public AddLayerDialog()
 	{
-		//TODO: switching from stereo-a to stereo-b should keep filters
-		
 		super(MainFrame.SINGLETON, "Add Layer", true);
 		setResizable(false);
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -178,6 +176,10 @@ public class AddLayerDialog extends JDialog
 					return;
 				
 				Observatories.Observatory observatory = ((Observatories.Observatory) e.getItem());
+				Observatories.Observatory oldObservatory = ((Observatories.Observatory) cmbbxObservatory.getSelectedItem());
+				
+				boolean isStereoSwitch = (observatory.toString().startsWith("STEREO") && oldObservatory.toString().startsWith("STEREO"));
+				
 				lblFilter.setText("");
 				lblFilter1.setText("");
 				lblFilter2.setText("");
@@ -213,11 +215,38 @@ public class AddLayerDialog extends JDialog
 				if(labels.size()>2)
 					lblFilter2.setText(observatory.getUiLabels().get(2));
 				
+				int filterIndex = 0;
+				int filterIndex1 = 0;
+				int filterIndex2 = 0;
+				
+				if (isStereoSwitch)
+				{
+					filterIndex = cmbbxFilter.getSelectedIndex();
+					filterIndex1 = cmbbxFilter1.getSelectedIndex();
+					filterIndex2 = cmbbxFilter2.getSelectedIndex();
+				}
+				
 				cmbbxFilter.removeAllItems();
 				cmbbxFilter1.removeAllItems();
 				cmbbxFilter2.removeAllItems();
 				for (Observatories.Filter instrument : observatory.getInstruments())
 					cmbbxFilter.addItem(instrument);
+				
+				if (isStereoSwitch)
+				{
+					if (filterIndex >= 0)
+					{	
+						cmbbxFilter.setSelectedIndex(filterIndex);
+					}
+					if (filterIndex1 >= 0)
+					{
+						cmbbxFilter1.setSelectedIndex(filterIndex1);
+					}
+					if (filterIndex2 >= 0)
+					{
+						cmbbxFilter2.setSelectedIndex(filterIndex2);
+					}
+				}
 			}
 		});
 

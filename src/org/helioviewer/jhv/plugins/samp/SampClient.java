@@ -34,7 +34,6 @@ import org.helioviewer.jhv.viewmodel.metadata.MetaData;
 public class SampClient extends HubConnector
 {
 	private final static String MTYPE_VIEW_DATA = "jhv.vso.load";
-	// TODO: Merge with other TimeFormatter (Metadata)
 	protected static final DateTimeFormatter SAMP_DATE_TIME_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
 	public SampClient(ClientProfile _profile)
