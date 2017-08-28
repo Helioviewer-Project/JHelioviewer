@@ -69,7 +69,7 @@ public class ShowLayerMessageHandler extends AbstractMessageHandler
 		DataContainer requestInfo = DataContainer.createFromMesssage(msg);
 		
 		ImageLayer newLayer = AddLayer(requestInfo);
-		if (newLayer != null)
+		if (newLayer != null && requestInfo.hasPos)
 		{
 			SetCameraPosition(requestInfo, newLayer);	
 		}
@@ -89,7 +89,7 @@ public class ShowLayerMessageHandler extends AbstractMessageHandler
 		HelioprojectiveCartesianCoordinate hpcc = new HelioprojectiveCartesianCoordinate(thetaX, thetaY);		
 		HeliocentricCartesianCoordinate cart = hpcc.toHeliocentricCartesianCoordinate();
 		
-		// ToDo: investigate factor 216
+		// TODO: investigate factor 216
 		MainFrame.SINGLETON.MAIN_PANEL.setTranslationCurrent(new Vector3d(-216*cart.x, 216*cart.y, cart.z*2)  );
 	}
 
@@ -139,14 +139,25 @@ public class ShowLayerMessageHandler extends AbstractMessageHandler
 		protected final int xPos;
 		protected final int yPos;
 		
+		protected final boolean hasPos;
+		
 		protected final String observatory;
 		protected final String instrument;
 		protected final String detector;
 		protected final String measurement;
 		
 		
-		public DataContainer(LocalDateTime _start, LocalDateTime _end, LocalDateTime _peak, int _xPos, int _yPos,
-				String _observatory, String _instrument, String _detector, String _measurement)
+		public DataContainer(
+				LocalDateTime _start, 
+				LocalDateTime _end, 
+				LocalDateTime _peak, 
+				int _xPos, 
+				int _yPos,
+				
+				String _observatory, 
+				String _instrument, 
+				String _detector, 
+				String _measurement)
 		{
 			super();
 			start = _start;
@@ -158,6 +169,30 @@ public class ShowLayerMessageHandler extends AbstractMessageHandler
 			instrument = _instrument;
 			detector = _detector;
 			measurement = _measurement;
+			hasPos = true;
+		}
+		
+		public DataContainer(
+				LocalDateTime _start, 
+				LocalDateTime _end, 
+				LocalDateTime _peak, 				
+				String _observatory, 
+				String _instrument, 
+				String _detector, 
+				String _measurement)
+		{
+			super();
+			start = _start;
+			end = _end;
+			peak = _peak;
+			observatory = _observatory;
+			instrument = _instrument;
+			detector = _detector;
+			measurement = _measurement;
+			
+			xPos = 0;
+			yPos = 0;
+			hasPos = false;
 		}
 
 
@@ -166,21 +201,51 @@ public class ShowLayerMessageHandler extends AbstractMessageHandler
 		{
 			LocalDate date = LocalDate.from(LAYER_DATE_FORMATTER.parse((String)_msg.getRequiredParam("date")));
 			LocalTime start = LocalTime.from(LAYER_TIME_FORMATTER.parse((String)_msg.getRequiredParam("start")));
-			LocalTime peak = LocalTime.from(LAYER_TIME_FORMATTER.parse((String)_msg.getRequiredParam("end")));
-			LocalTime end = LocalTime.from(LAYER_TIME_FORMATTER.parse((String)_msg.getRequiredParam("peak")));
-			int xPos = SampUtils.decodeInt((String)_msg.getRequiredParam("xPos"));
-			int yPos = SampUtils.decodeInt((String)_msg.getRequiredParam("yPos"));
+			LocalTime end = LocalTime.from(LAYER_TIME_FORMATTER.parse((String)_msg.getRequiredParam("end")));
 			
-			return new DataContainer(
-					date.atTime(start),
-					peak.isAfter(start) ? date.atTime(peak) : date.plusDays(1).atTime(peak),
-					end.isAfter(start)  ? date.atTime(end)  : date.plusDays(1).atTime(end),
-					xPos,
-					yPos,
-					(String)_msg.getParam("observatory"),
-					(String)_msg.getParam("instrument"),
-					(String)_msg.getParam("detector"),
-					(String)_msg.getParam("measurement"));
+			
+			String peakString = (String)_msg.getParam("peak");
+			LocalDateTime peakDateTime;
+			if (peakString != null)
+			{
+				LocalTime peak = LocalTime.from(LAYER_TIME_FORMATTER.parse(peakString));
+				peakDateTime = peak.isAfter(start) ? date.atTime(peak) : date.plusDays(1).atTime(peak);
+			}
+			else
+			{
+				peakDateTime = null;
+			}
+			
+			String xPosString = (String)_msg.getParam("xPos");
+			String yPosString = (String)_msg.getParam("yPos");
+			
+			if (xPosString != null && yPosString != null)
+			{
+				int xPos = SampUtils.decodeInt(xPosString);
+				int yPos = SampUtils.decodeInt(yPosString);
+
+				return new DataContainer(
+						date.atTime(start),
+						end.isAfter(start)  ? date.atTime(end)  : date.plusDays(1).atTime(end),
+						peakDateTime,
+						xPos,
+						yPos,
+						(String)_msg.getParam("observatory"),
+						(String)_msg.getParam("instrument"),
+						(String)_msg.getParam("detector"),
+						(String)_msg.getParam("measurement"));
+			}
+			else
+			{
+				return new DataContainer(
+						date.atTime(start),
+						end.isAfter(start)  ? date.atTime(end)  : date.plusDays(1).atTime(end),
+						peakDateTime,
+						(String)_msg.getParam("observatory"),
+						(String)_msg.getParam("instrument"),
+						(String)_msg.getParam("detector"),
+						(String)_msg.getParam("measurement"));
+			}
 		}
 
 

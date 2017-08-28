@@ -13,9 +13,9 @@ import org.helioviewer.jhv.gui.MainPanel;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.opengl.camera.animation.CameraZoomAnimation;
 
-public abstract class RequestVSOData extends AbstractAction
+public abstract class NotifySamp extends AbstractAction
 {
-    public RequestVSOData(boolean small)
+    public NotifySamp(boolean small)
     {
         super("SAMP", small ? IconBank.getIcon(JHVIcon.SAMP, 16, 16) : IconBank.getIcon(JHVIcon.SAMP, 24, 24));
         putValue(SHORT_DESCRIPTION, "send SAMP message");

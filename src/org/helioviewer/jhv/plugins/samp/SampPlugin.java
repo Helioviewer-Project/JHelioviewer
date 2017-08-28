@@ -32,7 +32,7 @@ public class SampPlugin extends Plugin
 		ClientProfile profile = DefaultClientProfile.getProfile();	
 		sampHub = new SampClient(profile);
 		
-		JButton notifySamp = new JButton(new RequestVSOData(false)
+		JButton notifySamp = new JButton(new NotifySamp(false)
 		{
 			@Override
 			public void actionPerformed(ActionEvent _e)
