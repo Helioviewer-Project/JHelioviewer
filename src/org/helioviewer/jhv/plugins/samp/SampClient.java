@@ -57,7 +57,10 @@ public class SampClient extends HubConnector
 
 		// TODO: name / description
 		meta.setName("JHelioviewer");
-		meta.setDescriptionText("JHelioviewer");
+		meta.setDescriptionText("JHelioviewer is visualization software for solar image data based on the JPEG 2000 compression standard.");
+		meta.setIconUrl("http://www.jhelioviewer.org/imgs/icon/JHV_icon_128x128.png");
+		meta.setDocumentationUrl("http://www.jhelioviewer.org/");
+		
 		
 		declareMetadata(meta);
 		addMessageHandler(new ShowLayerMessageHandler());

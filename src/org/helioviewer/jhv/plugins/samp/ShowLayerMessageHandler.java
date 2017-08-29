@@ -4,10 +4,15 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.astrogrid.samp.DataException;
+import org.astrogrid.samp.ErrInfo;
 import org.astrogrid.samp.Message;
+import org.astrogrid.samp.Response;
+import org.astrogrid.samp.SampMap;
 import org.astrogrid.samp.SampUtils;
 import org.astrogrid.samp.client.AbstractMessageHandler;
 import org.astrogrid.samp.client.HubConnection;
@@ -42,12 +47,10 @@ public class ShowLayerMessageHandler extends AbstractMessageHandler
 	private final static String DEFAULT_OBSERVATORY_PRE_SDO = "SOHO";
 	private final static String DEFAULT_INSTRUMENT_PRE_SDO  = "EIT";
 	private final static String DEFAULT_MEASUREMENT_PRE_SDO = "195";
-	
 
 	protected ShowLayerMessageHandler()
 	{
 		super(createSubscription());
-		// TODO Auto-generated constructor stub
 	}
 
 	private static Map createSubscription()
@@ -64,19 +67,40 @@ public class ShowLayerMessageHandler extends AbstractMessageHandler
 	@Override
 	public Map processCall(HubConnection c, String senderId, Message msg) throws Exception
 	{
+		Response result;
+		ErrInfo errorInfo = new ErrInfo();
+		DataContainer requestInfo = DataContainer.createFromMesssage(msg, errorInfo);			
+		
+		if(!errorInfo.isEmpty())
+		{
+			return Response.createErrorResponse(errorInfo);
+		}
+		
 		Layers.removeAllImageLayers();
-		
-		DataContainer requestInfo = DataContainer.createFromMesssage(msg);
-		
 		ImageLayer newLayer = AddLayer(requestInfo);
 		if (newLayer != null && requestInfo.hasPos)
 		{
 			SetCameraPosition(requestInfo, newLayer);	
 		}
 		
-		return null;
+		return Response.createSuccessResponse(SampMap.EMPTY);
 	}
 	
+	
+	
+	@Override
+	protected Response createResponse(Map _processOutput)
+	{
+		if (_processOutput instanceof Response)
+		{
+			return (Response) _processOutput;
+		}
+		else
+		{
+			return super.createResponse(_processOutput);
+		}
+	}
+
 	private void SetCameraPosition(DataContainer _requestInfo, ImageLayer _newLayer)
 	{
 		double xTheta = _requestInfo.xPos / (double)Constants.ARCSEC_FACTOR;
@@ -195,31 +219,78 @@ public class ShowLayerMessageHandler extends AbstractMessageHandler
 			hasPos = false;
 		}
 
-
-
-		public static DataContainer createFromMesssage(Message _msg)
+		private static LocalTime tryParseTime(String time, String fieldName, ErrInfo _errorInfo)
 		{
-			LocalDate date = LocalDate.from(LAYER_DATE_FORMATTER.parse((String)_msg.getRequiredParam("date")));
-			LocalTime start = LocalTime.from(LAYER_TIME_FORMATTER.parse((String)_msg.getRequiredParam("start")));
-			LocalTime end = LocalTime.from(LAYER_TIME_FORMATTER.parse((String)_msg.getRequiredParam("end")));
-			
-			
-			String peakString = (String)_msg.getParam("peak");
-			LocalDateTime peakDateTime;
-			if (peakString != null)
+			try
 			{
-				LocalTime peak = LocalTime.from(LAYER_TIME_FORMATTER.parse(peakString));
-				peakDateTime = peak.isAfter(start) ? date.atTime(peak) : date.plusDays(1).atTime(peak);
+				return LocalTime.from(LAYER_TIME_FORMATTER.parse(time));
 			}
-			else
+			catch (DateTimeParseException err)
 			{
-				peakDateTime = null;
+				_errorInfo.setErrortxt("The field '"+fieldName+"' is in the wrong format.");
+				_errorInfo.setUsertxt(err.getMessage());
+				return null;
+			}
+		}
+
+		private static LocalDate tryParseDate(String date, String fieldName, ErrInfo _errorInfo)
+		{
+			try
+			{
+				return LocalDate.from(LAYER_DATE_FORMATTER.parse(date));
+			}
+			catch (DateTimeParseException err)
+			{
+				_errorInfo.setErrortxt("The field '"+fieldName+"' is in the wrong format.");
+				_errorInfo.setUsertxt(err.getMessage());
+				return null;
+			}
+		}
+
+		public static DataContainer createFromMesssage(Message _msg, ErrInfo _errorInfo)
+		{
+			String dateStr;
+			String startStr;
+			String endStr;
+			
+			try
+			{
+				dateStr = (String)_msg.getRequiredParam("date");
+				startStr = (String)_msg.getRequiredParam("start");
+				endStr = (String)_msg.getRequiredParam("end");
+			}
+			catch (DataException err)
+			{
+				_errorInfo.setErrortxt(err.getMessage());
+				return null;
+			}
+			
+			LocalDate date = tryParseDate(dateStr, "date", _errorInfo);
+			LocalTime start = tryParseTime(startStr, "start", _errorInfo);
+			LocalTime end = tryParseTime(endStr, "end", _errorInfo);
+			
+			String peakStr = (String)_msg.getParam("peak");
+			LocalDateTime peakDateTime = null;
+			if (peakStr != null)
+			{
+				LocalTime peak = tryParseTime(peakStr, "peak", _errorInfo);
+				if (_errorInfo.isEmpty())
+				{
+					peakDateTime = peak.isAfter(start) 
+							? date.atTime(peak) 
+									: date.plusDays(1).atTime(peak);
+				}
 			}
 			
 			String xPosString = (String)_msg.getParam("xPos");
 			String yPosString = (String)_msg.getParam("yPos");
 			
-			if (xPosString != null && yPosString != null)
+			// abort if there were any errors
+			if (!_errorInfo.isEmpty())
+			{
+				return null;
+			}
+			else if (xPosString != null && yPosString != null)
 			{
 				int xPos = SampUtils.decodeInt(xPosString);
 				int yPos = SampUtils.decodeInt(yPosString);

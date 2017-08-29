@@ -40,6 +40,7 @@ public class SampPlugin extends Plugin
 				sampHub.notifyRequestData();
 			}
 		});
+		
 		Plugins.addButtonToToolbar(notifySamp);
 	}
 
