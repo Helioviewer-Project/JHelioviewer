@@ -22,6 +22,7 @@ import org.helioviewer.jhv.base.Observatories.Observatory;
 import org.helioviewer.jhv.base.coordinates.HeliocentricCartesianCoordinate;
 import org.helioviewer.jhv.base.coordinates.HelioprojectiveCartesianCoordinate;
 import org.helioviewer.jhv.base.math.MathUtils;
+import org.helioviewer.jhv.base.math.Quaternion;
 import org.helioviewer.jhv.base.math.Vector3d;
 import org.helioviewer.jhv.base.physics.Constants;
 import org.helioviewer.jhv.gui.MainFrame;
@@ -67,7 +68,6 @@ public class ShowLayerMessageHandler extends AbstractMessageHandler
 	@Override
 	public Map processCall(HubConnection c, String senderId, Message msg) throws Exception
 	{
-		Response result;
 		ErrInfo errorInfo = new ErrInfo();
 		DataContainer requestInfo = DataContainer.createFromMesssage(msg, errorInfo);			
 		
@@ -114,7 +114,14 @@ public class ShowLayerMessageHandler extends AbstractMessageHandler
 		HeliocentricCartesianCoordinate cart = hpcc.toHeliocentricCartesianCoordinate();
 		
 		// TODO: investigate factor 216
-		MainFrame.SINGLETON.MAIN_PANEL.setTranslationCurrent(new Vector3d(-216*cart.x, 216*cart.y, cart.z*2)  );
+		Vector3d translation = new Vector3d(-216*cart.x, 216*cart.y, cart.z*2);
+		
+		MainFrame.SINGLETON.MAIN_PANEL.abortAllAnimations();
+		
+		MainFrame.SINGLETON.MAIN_PANEL.setRotationEnd(Quaternion.IDENTITY);
+		MainFrame.SINGLETON.MAIN_PANEL.setRotationCurrent(Quaternion.IDENTITY);
+		MainFrame.SINGLETON.MAIN_PANEL.setTranslationEnd(translation);
+		MainFrame.SINGLETON.MAIN_PANEL.setTranslationCurrent(translation);
 	}
 
 	private ImageLayer AddLayer(DataContainer _requestInfo)
