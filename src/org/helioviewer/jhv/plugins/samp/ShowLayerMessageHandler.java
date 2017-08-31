@@ -76,14 +76,22 @@ public class ShowLayerMessageHandler extends AbstractMessageHandler
 			return Response.createErrorResponse(errorInfo);
 		}
 		
-		Layers.removeAllImageLayers();
-		ImageLayer newLayer = AddLayer(requestInfo);
-		if (newLayer != null && requestInfo.hasPos)
-		{
-			SetCameraPosition(requestInfo, newLayer);	
-		}
+		ImageLayer newLayer = CreateLayer(requestInfo);
 		
-		return Response.createSuccessResponse(SampMap.EMPTY);
+		if (newLayer != null)
+		{
+			Layers.removeAllImageLayers();
+			Layers.addLayer(newLayer);
+			if (requestInfo.hasPos)
+			{
+				SetCameraPosition(requestInfo, newLayer);	
+			}
+			return Response.createSuccessResponse(SampMap.EMPTY);
+		}
+		else
+		{
+			return Response.createErrorResponse(new ErrInfo("No layer with the given parameters has been found."));
+		}
 	}
 	
 	
@@ -124,11 +132,13 @@ public class ShowLayerMessageHandler extends AbstractMessageHandler
 		MainFrame.SINGLETON.MAIN_PANEL.setTranslationCurrent(translation);
 	}
 
-	private ImageLayer AddLayer(DataContainer _requestInfo)
+	private ImageLayer CreateLayer(DataContainer _requestInfo)
 	{
 		final String observatory;
 		final String instrument;
 		final String measurement;
+		final String detector = _requestInfo.detector != null ? _requestInfo.detector : "";
+		
 		if (SDO_FIRST_IMAGES.atStartOfDay().isAfter(_requestInfo.start))
 		{
 			observatory = _requestInfo.observatory != null ? _requestInfo.observatory : DEFAULT_OBSERVATORY_PRE_SDO;
@@ -142,22 +152,57 @@ public class ShowLayerMessageHandler extends AbstractMessageHandler
 			measurement = _requestInfo.measurement != null ? _requestInfo.measurement : DEFAULT_MEASUREMENT; 
 		}
 		
+		boolean sourceFound = false;
+		int sourceId = 0;
+		String nickname = "";
 		
 		for(Observatory o:Observatories.getObservatories())
-			if(observatory.equals(o.toString()))
+			if(observatory.equalsIgnoreCase(o.toString()))
 				for(Filter i:o.getInstruments())
-					if(instrument.equals(i.toString()))
-						for(Filter f:i.getFilters())
-							if(measurement.equals(f.toString()))
-							{
-								ImageLayer layer = new KakaduLayer(f.sourceId,
-										MathUtils.fromLDT(_requestInfo.start),
-										MathUtils.fromLDT(_requestInfo.end),
-										12*1000, f.getNickname());
-								Layers.addLayer(layer);
-								return layer;
-							}
+					if(instrument.equalsIgnoreCase(i.toString()))
+					{
+						int nrFilters = o.getUiLabels().size();
+						switch (nrFilters)
+						{
+							case 1:
+								sourceId = i.sourceId;
+								sourceFound = true;
+								nickname = i.getNickname();
+								break;
+							case 2:
+								for(Filter f:i.getFilters())
+									if(measurement.equalsIgnoreCase(f.toString()))
+									{
+										sourceId = f.sourceId;
+										sourceFound = true;
+										nickname = f.getNickname();
+									}
+								break;
+							case 3:
+								for(Filter f1:i.getFilters())
+									if(detector.equalsIgnoreCase(f1.toString()))
+										for(Filter f2:f1.getFilters())
+											if(measurement.equalsIgnoreCase(f2.toString()))
+											{
+												sourceId = f2.sourceId;
+												sourceFound = true;
+												nickname = f2.getNickname();
+											}
+								break;
+							default:
+								break;
+						}
+						
+					}
 		
+		if (sourceFound)
+		{
+			ImageLayer layer = new KakaduLayer(sourceId,
+					MathUtils.fromLDT(_requestInfo.start),
+					MathUtils.fromLDT(_requestInfo.end),
+					_requestInfo.cadence, nickname);
+			return layer;
+		}
 		return null;
 	}
 
@@ -169,6 +214,7 @@ public class ShowLayerMessageHandler extends AbstractMessageHandler
 		
 		protected final int xPos;
 		protected final int yPos;
+		protected final int cadence;
 		
 		protected final boolean hasPos;
 		
@@ -182,9 +228,9 @@ public class ShowLayerMessageHandler extends AbstractMessageHandler
 				LocalDateTime _start, 
 				LocalDateTime _end, 
 				LocalDateTime _peak, 
+				int _cadence,
 				int _xPos, 
 				int _yPos,
-				
 				String _observatory, 
 				String _instrument, 
 				String _detector, 
@@ -194,19 +240,23 @@ public class ShowLayerMessageHandler extends AbstractMessageHandler
 			start = _start;
 			end = _end;
 			peak = _peak;
-			xPos = _xPos;
-			yPos = _yPos;
+			cadence = _cadence;
+			
 			observatory = _observatory;
 			instrument = _instrument;
 			detector = _detector;
 			measurement = _measurement;
+			
 			hasPos = true;
+			xPos = _xPos;
+			yPos = _yPos;
 		}
 		
 		public DataContainer(
-				LocalDateTime _start, 
-				LocalDateTime _end, 
-				LocalDateTime _peak, 				
+				LocalDateTime _start,
+				LocalDateTime _end,
+				LocalDateTime _peak,
+				int _cadence,
 				String _observatory, 
 				String _instrument, 
 				String _detector, 
@@ -216,6 +266,8 @@ public class ShowLayerMessageHandler extends AbstractMessageHandler
 			start = _start;
 			end = _end;
 			peak = _peak;
+			cadence = _cadence;
+			
 			observatory = _observatory;
 			instrument = _instrument;
 			detector = _detector;
@@ -289,8 +341,23 @@ public class ShowLayerMessageHandler extends AbstractMessageHandler
 				}
 			}
 			
-			String xPosString = (String)_msg.getParam("xPos");
-			String yPosString = (String)_msg.getParam("yPos");
+			final String xPosString = (String)_msg.getParam("xPos");
+			final String yPosString = (String)_msg.getParam("yPos");
+			final String cadenceString = (String)_msg.getParam("cadence");
+			final int cadence;
+			
+			if (cadenceString == null)
+			{
+				cadence = 12*1000;
+			}
+			else
+			{
+				cadence =  SampUtils.decodeInt(cadenceString)*1000;
+				if (cadence < 0 && _errorInfo.isEmpty())
+				{
+					_errorInfo.setErrortxt("Cadence has to be positive");
+				}
+			}
 			
 			// abort if there were any errors
 			if (!_errorInfo.isEmpty())
@@ -306,6 +373,7 @@ public class ShowLayerMessageHandler extends AbstractMessageHandler
 						date.atTime(start),
 						end.isAfter(start)  ? date.atTime(end)  : date.plusDays(1).atTime(end),
 						peakDateTime,
+						cadence,
 						xPos,
 						yPos,
 						(String)_msg.getParam("observatory"),
@@ -319,6 +387,7 @@ public class ShowLayerMessageHandler extends AbstractMessageHandler
 						date.atTime(start),
 						end.isAfter(start)  ? date.atTime(end)  : date.plusDays(1).atTime(end),
 						peakDateTime,
+						cadence,
 						(String)_msg.getParam("observatory"),
 						(String)_msg.getParam("instrument"),
 						(String)_msg.getParam("detector"),
