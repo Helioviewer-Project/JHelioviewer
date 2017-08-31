@@ -161,8 +161,9 @@ public class SaveMovieAsAction extends AbstractAction
 			zipOutputStream = null;
 			writer = null;
 			msPerFrame = 0;
-			new File(_directory + Files.getNameWithoutExtension(_filename)).mkdir();
-			_directory += _filename + "/";
+			String filenameOnly = Files.getNameWithoutExtension(_filename);
+			new File(_directory + filenameOnly).mkdir();
+			_directory += filenameOnly + "/";
 		}
 		else
 			throw new RuntimeException();
