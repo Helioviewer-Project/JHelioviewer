@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import javax.annotation.Nullable;
 import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
+import javax.swing.JMenu;
 import javax.swing.JPanel;
 
 import org.helioviewer.jhv.base.Settings;
@@ -86,6 +87,11 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 		
 		MainFrame.SINGLETON.MAIN_PANEL.addMouseListener(this);
 		MainFrame.SINGLETON.MAIN_PANEL.addMouseMotionListener(this);
+	}
+	
+	public static void addMenuEntry(JMenu menu)
+	{
+		MainFrame.SINGLETON.MENU_BAR.add(menu, MainFrame.SINGLETON.MENU_BAR.getComponentCount() - 1);
 	}
 	
 	public static void addButtonToToolbar(AbstractButton button)

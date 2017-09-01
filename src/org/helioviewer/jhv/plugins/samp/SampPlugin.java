@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JButton;
+import javax.swing.JMenu;
 
 import org.astrogrid.samp.Metadata;
 import org.astrogrid.samp.client.ClientProfile;
@@ -32,7 +33,7 @@ public class SampPlugin extends Plugin
 		ClientProfile profile = DefaultClientProfile.getProfile();	
 		sampHub = new SampClient(profile);
 		
-		JButton notifySamp = new JButton(new NotifySamp(false)
+		JButton notifySamp = new JButton(new NotifySamp(false, false)
 		{
 			@Override
 			public void actionPerformed(ActionEvent _e)
@@ -41,7 +42,20 @@ public class SampPlugin extends Plugin
 			}
 		});
 		
+		JMenu sampMenu = new JMenu("Samp");
+		sampMenu.setMnemonic('S');
+		sampMenu.add(new NotifySamp(true, true)
+		{
+			@Override
+			public void actionPerformed(ActionEvent _e)
+			{
+				sampHub.notifyRequestData();
+			}
+		});
+		sampMenu.add(new GetJupyterExample());
+		
 		Plugins.addButtonToToolbar(notifySamp);
+		Plugins.addMenuEntry(sampMenu);
 	}
 
 

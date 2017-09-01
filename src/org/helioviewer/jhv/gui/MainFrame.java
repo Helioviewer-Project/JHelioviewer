@@ -49,6 +49,7 @@ public class MainFrame extends JFrame
 	public final SideContentPane LEFT_PANE;
 	public final MoviePanel MOVIE_PANEL;
 	public final LayerPanel LAYER_PANEL;
+	public final MenuBar MENU_BAR;
 	private final JSplitPane splitPane;
 	private final JPanel leftPanel;
 
@@ -94,7 +95,8 @@ public class MainFrame extends JFrame
 		OVERVIEW_PANEL = new OverviewPanel(context);
 		initMainFrame();
 		
-		setJMenuBar(new MenuBar());
+		MENU_BAR = new MenuBar();
+		setJMenuBar(MENU_BAR);
 		
 		getContentPane().add(TOP_TOOL_BAR, BorderLayout.NORTH);
 		

@@ -15,9 +15,13 @@ import org.helioviewer.jhv.opengl.camera.animation.CameraZoomAnimation;
 
 public abstract class NotifySamp extends AbstractAction
 {
-    public NotifySamp(boolean small)
+	private static final String DESCRIPTION = "send metadata over SAMP";
+	
+    public NotifySamp(boolean small, boolean isMenuItem)
     {
-        super("SAMP", small ? IconBank.getIcon(JHVIcon.SAMP, 16, 16) : IconBank.getIcon(JHVIcon.SAMP, 24, 24));
-        putValue(SHORT_DESCRIPTION, "send SAMP message");
+        super(
+        		isMenuItem ? DESCRIPTION : "SAMP"
+        		,small ? IconBank.getIcon(JHVIcon.SAMP, 16, 16) : IconBank.getIcon(JHVIcon.SAMP, 24, 24));
+        putValue(SHORT_DESCRIPTION, DESCRIPTION);
     }
 }
