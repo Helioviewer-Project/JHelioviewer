@@ -406,13 +406,18 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			if (layer instanceof ImageLayer)
 				anyImageLayerVisible |= layer.isVisible();
 		
-		double clipNear = MathUtils.clip(translationNow.z - 4 * Constants.SUN_RADIUS, CLIP_NEAR, Math.nextDown(CLIP_FAR));
-		double clipFar = MathUtils.clip(translationNow.z + 4 * Constants.SUN_RADIUS, Math.nextUp(clipNear), CLIP_FAR);
+		double clipNear = MathUtils.clip(translationNow.z - 4 * Constants.SUN_RADIUS, CLIP_NEAR, Math.nextDown((float)CLIP_FAR));
+		double clipFar = MathUtils.clip(translationNow.z + 4 * Constants.SUN_RADIUS, Math.nextUp((float)clipNear), CLIP_FAR);
 		
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glPushMatrix();
 		{
-			gl.glOrtho(-1, 1, -1, 1, clipNear, translationNow.z + 4 * Constants.SUN_RADIUS);
+			if (clipNear >= clipFar)
+			{
+				Telemetry.trackEvent("clipNear is bigger or equal clipFar", "clipNear", Double.toString(clipNear), "clipFar", Double.toString(clipFar));
+			}
+			//gl.glOrtho(-1, 1, -1, 1, clipNear, translationNow.z + 4 * Constants.SUN_RADIUS);
+			gl.glOrtho(-1, 1, -1, 1, clipNear, clipFar);
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
 			gl.glLoadIdentity();
 
