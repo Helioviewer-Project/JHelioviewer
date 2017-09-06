@@ -21,9 +21,11 @@ import org.helioviewer.jhv.gui.PredefinedFileFilter;
 public class GetJupyterExample extends AbstractAction
 {
 	private static final PredefinedFileFilter JUPYTER_NOTEBOOK = new PredefinedFileFilter("Jupyter Notebook (*.jpynb)", new String[]{"*.ipynb"});
-	public GetJupyterExample()
+	private final String notebookName;
+	public GetJupyterExample(String _notebookName, String _name)
 	{
-		super("Get Jupyter Example");
+		super(_name);
+		notebookName = _notebookName;
 	}
 
 	@Override
@@ -31,17 +33,17 @@ public class GetJupyterExample extends AbstractAction
 	{
 		File selectedFile  = Globals.showFileDialog(
 				DialogType.SAVE_FILE, 
-				"Save Jupyter SAMP example", 
+				"Save SAMP example for Jupyter notebook", 
 				Settings.getString(StringKey.STATE_DIRECTORY), 
 				false, 
-				"SAMP example.ipynb", 
+				notebookName, 
 				JUPYTER_NOTEBOOK);
 		
 		if (selectedFile != null)
 		{
 			try
 			{
-				Files.copy(GetJupyterExample.class.getResourceAsStream("/SAMP/SAMP example.ipynb"), selectedFile.toPath());
+				Files.copy(GetJupyterExample.class.getResourceAsStream("/SAMP/" + notebookName), selectedFile.toPath());
 			}
 			catch (IOException _err)
 			{
