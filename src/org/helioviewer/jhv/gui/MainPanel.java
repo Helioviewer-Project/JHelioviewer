@@ -917,6 +917,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 					render(offscreenGL, false, new Dimension(imageWidth, imageHeight));
 	
 					// FIXME: text doesn't work on high resolution images (tiling cuts off end of text)
+					// FIXME: tiling doesn't work with PFSS and HEK
 					if (descriptions != null && x == 0 && y == 0)
 					{
 						int counter = 0;

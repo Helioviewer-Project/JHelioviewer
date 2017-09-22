@@ -122,6 +122,7 @@ public class SaveMovieAsAction extends AbstractAction
 	@SuppressWarnings("null")
 	private void startMovieExport(String _directory, final String _filename, final PredefinedFileFilter _selectedOutputFormat)
 	{
+		this.started = true;
 		this.loadSettings();
 		Settings.setString(StringKey.MOVIE_EXPORT_DIRECTORY, _directory);
 		MainFrame.SINGLETON.setEnabled(false);

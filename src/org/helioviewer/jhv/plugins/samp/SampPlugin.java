@@ -52,8 +52,8 @@ public class SampPlugin extends Plugin
 				sampHub.notifyRequestData();
 			}
 		});
-		sampMenu.add(new GetJupyterExample("SAMP example.ipynb", "Get Jupyter Notebook"));
-		sampMenu.add(new GetJupyterExample("SAMP example Fido.ipynb", "Get Jupyter Notebook (Fido)"));
+		//sampMenu.add(new GetJupyterExample("SAMP example.ipynb", "Get Jupyter Notebook"));
+		sampMenu.add(new GetJupyterExample("SAMP example Fido.ipynb", "Get Jupyter Notebook"));
 		
 		Plugins.addButtonToToolbar(notifySamp);
 		Plugins.addMenuEntry(sampMenu);
