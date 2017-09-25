@@ -14,6 +14,7 @@ import org.astrogrid.samp.Message;
 import org.astrogrid.samp.Metadata;
 import org.astrogrid.samp.SampUtils;
 import org.astrogrid.samp.client.ClientProfile;
+import org.astrogrid.samp.client.HubConnection;
 import org.astrogrid.samp.client.HubConnector;
 import org.astrogrid.samp.client.SampException;
 import org.astrogrid.samp.hub.Hub;
@@ -41,19 +42,7 @@ public class SampClient extends HubConnector
 		super(_profile);
 		Metadata meta = new Metadata();
 
-		Hub[] runningHubs = Hub.getRunningHubs();
-		if (runningHubs.length == 0)
-		{
-			try
-			{
-				Hub.checkExternalHubAvailability();
-				Hub.runExternalHub(HubServiceMode.MESSAGE_GUI);
-			}
-			catch (IOException _e1)
-			{
-				Telemetry.trackException(_e1);
-			}
-		}
+		startHubIfNeeded();
 
 		meta.setName("JHelioviewer");
 		meta.setDescriptionText("JHelioviewer is visualization software for solar image data based on the JPEG 2000 compression standard.");
@@ -67,8 +56,6 @@ public class SampClient extends HubConnector
 
 		setAutoconnect(10);
 	}
-
-
 
 	public void notifyRequestData()
 	{
@@ -200,8 +187,25 @@ public class SampClient extends HubConnector
 	{
 		try
 		{
+			HubConnection conn = this.getConnection();
+			
+			if (conn == null)
+			{
+				startHubIfNeeded();
+				try
+				{
+					// starting a hub can take some time
+					// usually it is done at startup
+					Thread.sleep(500);
+				}
+				catch (InterruptedException _e)
+				{
+				}
+				conn = this.getConnection();
+			}
+			
 			// TODO: handle no HUBs available error!
-			this.getConnection().notifyAll(msg);
+			conn.notifyAll(msg);
 		}
 		catch (SampException _e)
 		{
@@ -210,6 +214,25 @@ public class SampClient extends HubConnector
 		catch (DataException _e)
 		{
 			Telemetry.trackException(_e);
+		}
+	}
+
+
+
+	private void startHubIfNeeded()
+	{		
+		Hub[] runningHubs = Hub.getRunningHubs();
+		if (runningHubs.length == 0)
+		{
+			try
+			{
+				Hub.checkExternalHubAvailability();
+				Hub.runExternalHub(HubServiceMode.MESSAGE_GUI);
+			}
+			catch (IOException _e1)
+			{
+				Telemetry.trackException(_e1);
+			}
 		}
 	}
 
