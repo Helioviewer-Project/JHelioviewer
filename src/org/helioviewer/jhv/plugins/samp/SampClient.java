@@ -77,7 +77,7 @@ public class SampClient extends HubConnector
 				return;
 			}
 
-			if (!activeLayer.isVisible())
+			if (activeLayer == null || !activeLayer.isVisible())
 			{
 				activeLayer = layers.get(0);
 			}
