@@ -8,11 +8,13 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.lang.reflect.Method;
 
 import javax.annotation.Nullable;
 import javax.swing.JFrame;
@@ -24,6 +26,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import org.helioviewer.jhv.base.Globals;
+import org.helioviewer.jhv.base.Telemetry;
 import org.helioviewer.jhv.gui.IconBank.JHVIcon;
 import org.helioviewer.jhv.gui.actions.ExitProgramAction;
 import org.helioviewer.jhv.gui.components.MenuBar;
@@ -46,6 +49,7 @@ public class MainFrame extends JFrame
 	public final SideContentPane LEFT_PANE;
 	public final MoviePanel MOVIE_PANEL;
 	public final LayerPanel LAYER_PANEL;
+	public final MenuBar MENU_BAR;
 	private final JSplitPane splitPane;
 	private final JPanel leftPanel;
 
@@ -54,6 +58,33 @@ public class MainFrame extends JFrame
 	public static void init(GLContext _context)
 	{
 		SINGLETON = new MainFrame(_context);
+		
+		if(Globals.IS_OS_X)
+		{
+			enableOSXFullscreen(SINGLETON);
+		}
+	}
+	
+	
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	public static void enableOSXFullscreen(Window window) 
+	{
+		//code from https://stackoverflow.com/a/8693890
+	    try 
+	    {
+	        Class util = Class.forName("com.apple.eawt.FullScreenUtilities");
+	        Class params[] = new Class[]{Window.class, Boolean.TYPE};
+	        Method method = util.getMethod("setWindowCanFullScreen", params);
+	        method.invoke(util, window, true);
+	    } 
+	    catch (ClassNotFoundException e1) 
+	    {	   
+	    	
+	    } 
+	    catch (Exception e) 
+	    {
+	        Telemetry.trackException(e);
+	    }
 	}
 	
 	private MainFrame(GLContext context)
@@ -64,7 +95,8 @@ public class MainFrame extends JFrame
 		OVERVIEW_PANEL = new OverviewPanel(context);
 		initMainFrame();
 		
-		setJMenuBar(new MenuBar());
+		MENU_BAR = new MenuBar();
+		setJMenuBar(MENU_BAR);
 		
 		getContentPane().add(TOP_TOOL_BAR, BorderLayout.NORTH);
 		
@@ -139,8 +171,12 @@ public class MainFrame extends JFrame
 		
 		if(_isHorizontalMove)
 		{
-			splitPane.setRightComponent(null);
-			splitPane.setRightComponent(MAIN_PANEL);
+			// When we enter Full Screen mode, the right Component is temporarily removed
+			if(splitPane.getRightComponent() != null)
+			{
+				splitPane.setRightComponent(null);
+				splitPane.setRightComponent(MAIN_PANEL);
+			}
 		}
 		else
 		{

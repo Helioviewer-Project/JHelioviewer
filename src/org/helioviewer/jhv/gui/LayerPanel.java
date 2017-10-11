@@ -498,7 +498,7 @@ public class LayerPanel extends JPanel implements LayerListener, TimeLineListene
 		{
 			ignoreTableEvents++;
 			
-			loadingFrameCounter = (int)(System.currentTimeMillis()/100) % LAYER_LOADING.length;		
+			loadingFrameCounter = (int)((System.currentTimeMillis()/100) % LAYER_LOADING.length);		
 			tableModel.setRowCount(Layers.getLayers().size());
 			
 			int row = 0;

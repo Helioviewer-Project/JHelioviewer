@@ -14,6 +14,8 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -61,15 +63,16 @@ public class AddLayerDialog extends JDialog
 	private JPanel layerPanel;
 	private JPanel panel;
 	
-	private static int lastCadence=30;
-	private static int lastCadenceType=1;
+	private static int lastCadence=100;
+	private static int lastCadenceType=4;
 	
 	private enum TimeSteps
 	{
 		SEC("sec", 1),
 		MIN("min", 60),
 		HOUR("hour", 3600),
-		DAY("day", 3600 * 24);
+		DAY("day", 3600 * 24),
+		FRAMES("frames", 60);
 		//GET_ALL("get all", 0);
 
 		final String name;
@@ -119,8 +122,6 @@ public class AddLayerDialog extends JDialog
 
 	public AddLayerDialog()
 	{
-		//TODO: switching from stereo-a to stereo-b should keep filters
-		
 		super(MainFrame.SINGLETON, "Add Layer", true);
 		setResizable(false);
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -175,6 +176,10 @@ public class AddLayerDialog extends JDialog
 					return;
 				
 				Observatories.Observatory observatory = ((Observatories.Observatory) e.getItem());
+				Observatories.Observatory oldObservatory = ((Observatories.Observatory) cmbbxObservatory.getSelectedItem());
+				
+				boolean isStereoSwitch = (observatory.toString().startsWith("STEREO") && oldObservatory.toString().startsWith("STEREO"));
+				
 				lblFilter.setText("");
 				lblFilter1.setText("");
 				lblFilter2.setText("");
@@ -210,11 +215,38 @@ public class AddLayerDialog extends JDialog
 				if(labels.size()>2)
 					lblFilter2.setText(observatory.getUiLabels().get(2));
 				
+				int filterIndex = 0;
+				int filterIndex1 = 0;
+				int filterIndex2 = 0;
+				
+				if (isStereoSwitch)
+				{
+					filterIndex = cmbbxFilter.getSelectedIndex();
+					filterIndex1 = cmbbxFilter1.getSelectedIndex();
+					filterIndex2 = cmbbxFilter2.getSelectedIndex();
+				}
+				
 				cmbbxFilter.removeAllItems();
 				cmbbxFilter1.removeAllItems();
 				cmbbxFilter2.removeAllItems();
 				for (Observatories.Filter instrument : observatory.getInstruments())
 					cmbbxFilter.addItem(instrument);
+				
+				if (isStereoSwitch)
+				{
+					if (filterIndex >= 0)
+					{	
+						cmbbxFilter.setSelectedIndex(filterIndex);
+					}
+					if (filterIndex1 >= 0)
+					{
+						cmbbxFilter1.setSelectedIndex(filterIndex1);
+					}
+					if (filterIndex2 >= 0)
+					{
+						cmbbxFilter2.setSelectedIndex(filterIndex2);
+					}
+				}
 			}
 		});
 
@@ -394,7 +426,7 @@ public class AddLayerDialog extends JDialog
 		cmbbxTimeSteps = new JComboBox<>();
 		cmbbxTimeSteps.setModel(new DefaultComboBoxModel<>(TimeSteps.values()));
 		
-		cmbbxTimeSteps.setSelectedItem(TimeSteps.MIN);
+		cmbbxTimeSteps.setSelectedItem(TimeSteps.FRAMES);
 		
 		GridBagConstraints gbc_cmbbxTimeSteps = new GridBagConstraints();
 		gbc_cmbbxTimeSteps.fill = GridBagConstraints.HORIZONTAL;
@@ -506,16 +538,33 @@ public class AddLayerDialog extends JDialog
 
 						if (filter != null)
 						{
-							final int cadence = Math.max(1, (int) AddLayerDialog.this.cadence.getValue()
-									* ((TimeSteps) cmbbxTimeSteps.getSelectedItem()).factor)
-									* 1000;
+							final int selectedCadence = (int) AddLayerDialog.this.cadence.getValue();
+							final TimeSteps selectedTimeStebs = ((TimeSteps) cmbbxTimeSteps.getSelectedItem());
+							lastStart = datePickerStartDate.getDateTime();
+							lastEnd = datePickerEndDate.getDateTime();
+							
+							final int cadence;
+							if(selectedTimeStebs == TimeSteps.FRAMES) 
+							{
+								final long seconds = lastStart.until(lastEnd, ChronoUnit.SECONDS);								
+								cadence = (int) Math.min((seconds / selectedCadence) * 1000, Integer.MAX_VALUE);
+							}
+							else
+							{
+								cadence = Math.max(1, selectedCadence
+										* selectedTimeStebs.factor)
+										* 1000;
+							}
+							
+							
+//							final int cadence = Math.max(1, (int) AddLayerDialog.this.cadence.getValue()
+//									* ((TimeSteps) cmbbxTimeSteps.getSelectedItem()).factor)
+//									* 1000;
 							
 							final Observatories.Filter finalFilter = filter;
 							
 							System.out.println("Last added "+filter.sourceId);
 							Settings.setInt(Settings.IntKey.ADDLAYER_LAST_SOURCEID, filter.sourceId);
-							lastStart = datePickerStartDate.getDateTime();
-							lastEnd = datePickerEndDate.getDateTime();
 							lastCadence = (int)AddLayerDialog.this.cadence.getValue();
 							lastCadenceType = cmbbxTimeSteps.getSelectedIndex();
 							

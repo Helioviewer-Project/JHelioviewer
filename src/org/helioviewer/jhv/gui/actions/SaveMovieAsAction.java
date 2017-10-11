@@ -122,6 +122,7 @@ public class SaveMovieAsAction extends AbstractAction
 	@SuppressWarnings("null")
 	private void startMovieExport(String _directory, final String _filename, final PredefinedFileFilter _selectedOutputFormat)
 	{
+		this.started = true;
 		this.loadSettings();
 		Settings.setString(StringKey.MOVIE_EXPORT_DIRECTORY, _directory);
 		MainFrame.SINGLETON.setEnabled(false);
@@ -161,8 +162,9 @@ public class SaveMovieAsAction extends AbstractAction
 			zipOutputStream = null;
 			writer = null;
 			msPerFrame = 0;
-			new File(_directory + Files.getNameWithoutExtension(_filename)).mkdir();
-			_directory += _filename + "/";
+			String filenameOnly = Files.getNameWithoutExtension(_filename);
+			new File(_directory + filenameOnly).mkdir();
+			_directory += filenameOnly + "/";
 		}
 		else
 			throw new RuntimeException();

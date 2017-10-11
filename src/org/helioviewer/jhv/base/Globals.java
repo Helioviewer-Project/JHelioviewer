@@ -63,6 +63,8 @@ public class Globals
 	
 	private static LinkedBlockingQueue<Runnable> runnableWithGLContext;
 	public static final ArrayList<Thread> GL_WORKER_THREADS=new ArrayList<>();
+    
+    private static LinkedBlockingQueue<JFileChooser> fileChooser;
 	
 	public static void createSharedGLContexts(GLAutoDrawable _master, GLDrawableFactory _factory, GLCapabilities _capabilities, int _numContexts)
 	{
@@ -99,12 +101,17 @@ public class Globals
 	{
 		runnableWithGLContext.add(_r);
 	}
+    
+    public static final boolean IS_RELEASE_VERSION = (RAYGUN_TAG!=null);
+    public static final boolean IS_WINDOWS=System.getProperty("os.name").toUpperCase().contains("WIN");
+    public static final boolean IS_LINUX=System.getProperty("os.name").toUpperCase().contains("LINUX");
+    public static final boolean IS_OS_X=System.getProperty("os.name").toUpperCase().contains("MAC OS X");
 	
 	static
 	{
 		boolean javaFxAvailable = true;
 		try
-		{
+		{			
 			Class.forName("com.sun.javafx.runtime.VersionInfo");
 			
 			if(SwingUtilities.isEventDispatchThread())
@@ -126,16 +133,18 @@ public class Globals
 		}
 		
 		JAVA_FX_AVAILABLE = javaFxAvailable;
+
+    	// FIXME: Linux java FX doesn't work reliably
+		// see method showFileDialog!
+		if(Globals.IS_LINUX || !JAVA_FX_AVAILABLE)
+		{
+			initFileChooserAsync();
+		}
 	}
 
     private Globals()
     {
     }
-    
-    public static final boolean IS_RELEASE_VERSION = (RAYGUN_TAG!=null);
-    public static final boolean IS_WINDOWS=System.getProperty("os.name").toUpperCase().contains("WIN");
-    public static final boolean IS_LINUX=System.getProperty("os.name").toUpperCase().contains("LINUX");
-    public static final boolean IS_OS_X=System.getProperty("os.name").toUpperCase().contains("MAC OS X");
     
     /**
      * Opens the specified web page in the default web browser
@@ -171,15 +180,14 @@ public class Globals
     	SELECT_DIRECTORY
     }
     
-    private static LinkedBlockingQueue<JFileChooser> fileChooser=new LinkedBlockingQueue<>();
-    
     @Nullable
     public static File showFileDialog(final DialogType _type, final String _title,
     		@Nullable final String _directory, final boolean _allowAllExtensions,
     		@Nullable final String _defaultName,    		
     		final PredefinedFileFilter... _filters)
     {
-		if (Globals.JAVA_FX_AVAILABLE)
+    	// FIXME: Linux java FX doesn't work reliably
+		if (Globals.JAVA_FX_AVAILABLE && !Globals.IS_LINUX)
 			try
 			{
 				final LinkedBlockingQueue<Stage> mainStage=new LinkedBlockingQueue<>();
@@ -222,7 +230,21 @@ public class Globals
 					@Override
 					public void run()
 					{
-						final Stage s=new Stage(StageStyle.UTILITY);
+						final Stage s;
+						
+						if(Globals.IS_OS_X)
+						{
+							// FIXME: OS_X: When a dialog is opened while the app is in Fullscreen-mode, the opacity doesn't work as intended
+							
+							// on macOS Sierra (V10.12.5), the released app crashes if the stage is set to UTILITY.
+							// Apple AWT Internal Exception: utility panels cannot be fullscreen primary
+							s=new Stage(StageStyle.UNDECORATED);
+						}
+						else
+						{
+							s=new Stage(StageStyle.UTILITY);
+						}
+						
 						s.setOpacity(0);
 						s.setWidth(MainFrame.SINGLETON.getWidth());
 						s.setHeight(MainFrame.SINGLETON.getHeight());
@@ -424,8 +446,19 @@ public class Globals
         	            	 }
                     if(instance.showSaveDialog(MainFrame.SINGLETON.MAIN_PANEL)==JFileChooser.APPROVE_OPTION)
                     {
+                    	FileFilter selectedFilter = instance.getFileFilter();
                     	File f=instance.getSelectedFile();
-    					if(!f.isFile())
+                    	
+                    	if(!selectedFilter.accept(f))
+                    	{
+                    		if(selectedFilter instanceof PredefinedFileFilter)
+							{
+                    			PredefinedFileFilter filter = (PredefinedFileFilter)selectedFilter;
+								f = new File(f.getPath() + filter.getDefaultExtension());
+							}
+                    	}
+                    	
+    					if(f.isDirectory())
     						return null;
     					
     					if(!f.exists())
@@ -476,6 +509,7 @@ public class Globals
     
     public static void initFileChooserAsync()
     {
+    	fileChooser=new LinkedBlockingQueue<>();
         Thread t=new Thread(new Runnable()
         {
             @Override

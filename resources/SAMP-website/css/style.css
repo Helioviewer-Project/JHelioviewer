@@ -1,0 +1,6 @@
+button.jhv-button {
+	background-image: url('/../images/hvImage_64x64.png');
+	background-size: 16px;
+	cursor:pointer;
+	padding: 8px 8px;
+}

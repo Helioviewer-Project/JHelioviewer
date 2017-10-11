@@ -7,7 +7,7 @@ class MetaDataHinode extends MetaData
 {
 	public MetaDataHinode(Document _doc)
 	{
-        super(_doc, new Vector2i(4096, 4096), get(_doc, "TELESCOP"), get(_doc, "WAVELNTH"),"XRT", GROUP_FOR_OPACITY_SUN | GROUP_FOR_OPACITY_CORONA_SMALL);
+        super(_doc, new Vector2i(4096, 4096), get(_doc, "TELESCOP"), get(_doc, "EC_FW1_")+"/"+get(_doc, "EC_FW2_"),"XRT", GROUP_FOR_OPACITY_SUN | GROUP_FOR_OPACITY_CORONA_SMALL);
         
         if (!instrument.equalsIgnoreCase("XRT"))
         	throw new UnsuitableMetaDataException("invalid instrument: "+instrument);

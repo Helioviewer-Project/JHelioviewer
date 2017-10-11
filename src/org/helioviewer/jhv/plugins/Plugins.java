@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import javax.annotation.Nullable;
 import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
+import javax.swing.JMenu;
 import javax.swing.JPanel;
 
 import org.helioviewer.jhv.base.Settings;
@@ -31,6 +32,7 @@ import org.helioviewer.jhv.layers.PluginLayer;
 import org.helioviewer.jhv.opengl.RayTrace;
 import org.helioviewer.jhv.plugins.hekplugin.HEKPlugin;
 import org.helioviewer.jhv.plugins.pfssplugin.PfssPlugin;
+import org.helioviewer.jhv.plugins.samp.SampPlugin;
 import org.helioviewer.jhv.viewmodel.TimeLine;
 import org.helioviewer.jhv.viewmodel.TimeLine.TimeLineListener;
 
@@ -70,7 +72,8 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 		plugins = new Plugin[]
 			{
 				new HEKPlugin(),
-				new PfssPlugin()
+				new PfssPlugin(),
+				new SampPlugin()
 			};
 		
 		for(Plugin p:plugins)
@@ -84,6 +87,11 @@ public class Plugins implements TimeLineListener, MouseListener, MouseMotionList
 		
 		MainFrame.SINGLETON.MAIN_PANEL.addMouseListener(this);
 		MainFrame.SINGLETON.MAIN_PANEL.addMouseMotionListener(this);
+	}
+	
+	public static void addMenuEntry(JMenu menu)
+	{
+		MainFrame.SINGLETON.MENU_BAR.add(menu, MainFrame.SINGLETON.MENU_BAR.getComponentCount() - 1);
 	}
 	
 	public static void addButtonToToolbar(AbstractButton button)

@@ -406,13 +406,18 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			if (layer instanceof ImageLayer)
 				anyImageLayerVisible |= layer.isVisible();
 		
-		double clipNear = MathUtils.clip(translationNow.z - 4 * Constants.SUN_RADIUS, CLIP_NEAR, Math.nextDown(CLIP_FAR));
-		double clipFar = MathUtils.clip(translationNow.z + 4 * Constants.SUN_RADIUS, Math.nextUp(clipNear), CLIP_FAR);
+		double clipNear = MathUtils.clip(translationNow.z - 4 * Constants.SUN_RADIUS, CLIP_NEAR, Math.nextDown((float)CLIP_FAR));
+		double clipFar = MathUtils.clip(translationNow.z + 4 * Constants.SUN_RADIUS, Math.nextUp((float)clipNear), CLIP_FAR);
 		
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glPushMatrix();
 		{
-			gl.glOrtho(-1, 1, -1, 1, clipNear, translationNow.z + 4 * Constants.SUN_RADIUS);
+			if (clipNear >= clipFar)
+			{
+				Telemetry.trackEvent("clipNear is bigger or equal clipFar", "clipNear", Double.toString(clipNear), "clipFar", Double.toString(clipFar));
+			}
+			//gl.glOrtho(-1, 1, -1, 1, clipNear, translationNow.z + 4 * Constants.SUN_RADIUS);
+			gl.glOrtho(-1, 1, -1, 1, clipNear, clipFar);
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
 			gl.glLoadIdentity();
 
@@ -740,8 +745,8 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			{
 				//TODO: tracking is jerky in 2d mode, should use ImageLayer.calcTransformation(mainPanel, md) instead, to respect metadata
 				Vector3d newTranslation = newRotation.toMatrix().multiply(hitPoint);
-				translationEnd = translationEnd.add(new Vector3d(newTranslation.x-translationNow.x,newTranslation.y-translationNow.y,0));
-				translationNow = new Vector3d(newTranslation.x, newTranslation.y, translationNow.z);
+				translationEnd = translationEnd.add(new Vector3d(newTranslation.x-translationNow.x, 0, 0));
+				translationNow = new Vector3d(newTranslation.x, translationNow.y, translationNow.z);
 			}
 			
 			for (CameraListener listener : cameraListeners)
@@ -847,6 +852,7 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		double yTiles = imageHeight / (double) tileHeight;
 		int countXTiles = imageWidth % tileWidth == 0 ? (int) xTiles : (int) xTiles + 1;
 		int countYTiles = imageHeight % tileHeight == 0 ? (int) yTiles : (int) yTiles + 1;
+		double translate = 2 / xTiles;
 
 		GLDrawableFactory factory = GLDrawableFactory.getFactory(GLProfile.getDefault());
 
@@ -863,10 +869,12 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		final GLContext offscreenContext = getContext();
 		offscreenDrawable.setRealized(true);
 		double oldAspect = aspect;
+		GL2 offscreenGL = null;
+		
 		try
 		{
 			offscreenContext.makeCurrent();
-			GL2 offscreenGL = offscreenContext.getGL().getGL2();
+			offscreenGL = offscreenContext.getGL().getGL2();
 	
 			offscreenGL.glBindFramebuffer(GL2.GL_FRAMEBUFFER, frameBufferObject[0]);
 			generateNewRenderBuffers(offscreenGL, tileWidth, tileHeight);
@@ -894,7 +902,6 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 			offscreenGL.glScaled(1, aspect, 1);
 			offscreenGL.glMatrixMode(GL2.GL_MODELVIEW);
 			
-			//FIXME: tiling is broken
 			for (int x = 0; x < countXTiles; x++)
 			{
 				for (int y = 0; y < countYTiles; y++)
@@ -902,13 +909,15 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 					offscreenGL.glMatrixMode(GL2.GL_PROJECTION);
 					offscreenGL.glPushMatrix();
 					offscreenGL.glViewport(0, 0, imageWidth, imageHeight);
-					offscreenGL.glTranslated(-x, -y, 0);
+					offscreenGL.glTranslated(-x * translate, -y * translate, 0);
 					offscreenGL.glMatrixMode(GL2.GL_MODELVIEW);
 	
 					int destX = tileWidth * x;
 					int destY = tileHeight * y;
 					render(offscreenGL, false, new Dimension(imageWidth, imageHeight));
 	
+					// FIXME: text doesn't work on high resolution images (tiling cuts off end of text)
+					// FIXME: tiling doesn't work with PFSS and HEK
 					if (descriptions != null && x == 0 && y == 0)
 					{
 						int counter = 0;
@@ -923,8 +932,8 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 					offscreenGL.glPixelStorei(GL2.GL_PACK_SKIP_PIXELS, destX);
 					offscreenGL.glPixelStorei(GL2.GL_PACK_ALIGNMENT, 1);
 	
-					int cutOffX = imageWidth >= (x + 1) * tileWidth ? tileWidth : tileWidth - x * tileWidth;
-					int cutOffY = imageHeight >= (y + 1) * tileHeight ? tileHeight : tileHeight - y * tileHeight;
+					int cutOffX = imageWidth >= (x + 1) * tileWidth ? tileWidth : imageWidth - x * tileWidth;
+					int cutOffY = imageHeight >= (y + 1) * tileHeight ? tileHeight : imageHeight - y * tileHeight;
 	
 					offscreenGL.glReadPixels(0, 0, cutOffX, cutOffY, GL2.GL_BGR, GL2.GL_UNSIGNED_BYTE,
 							ByteBuffer.wrap(((DataBufferByte) screenshot.getRaster().getDataBuffer()).getData()));
@@ -939,6 +948,12 @@ public class MainPanel extends GLCanvas implements GLEventListener, Camera
 		}
 		finally
 		{
+			// We need to ensure the FramBuffer is unbound
+			if(offscreenGL != null)
+			{
+				offscreenGL.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);
+			}
+			
 			offscreenContext.release();
 			aspect=oldAspect;
 		}
