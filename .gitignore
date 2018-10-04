@@ -6,3 +6,6 @@ bin/
 *.asm
 /bin
 /build/builds
+
+.ipynb_checkpoints
+.idea
