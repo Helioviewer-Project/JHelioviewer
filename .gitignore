@@ -9,3 +9,7 @@ bin/
 
 .ipynb_checkpoints
 .idea
+.project
+/**/out/
+/**/META-INF/
+/**/*.iml

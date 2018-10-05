@@ -13,18 +13,19 @@
 ; see also: https://www.harrisgeospatial.com/Support/Self-Help-Tools/Help-Articles/Help-Articles-Detail/ArtMID/10220/ArticleID/16290/Changing-the-Java-version-used-with-the-IDL-8-Workbench
 
 ; IMPORTANT: this needs to be executed before the IDL-JAVA Bridge is loaded, hence before any java class is invoked!
-PRO initialize_IDL_Java_Bridge
+pro initialize_IDL_Java_Bridge
   path_to_jsamp = 'C:\Projects\JHV\JHelioviewer\resources\SAMP-IDL\jsamp-1.3.5_signed.jar
   path_to_jsamp = path_to_jsamp + ';C:\Projects\JHV\JHelioviewer\resources\SAMP-IDL\IDL_JSAMP_Bridge.jar'
   setenv, 'CLASSPATH=' + getenv('CLASSPATH') + path_to_jsamp
-END
+end
 
-FUNCTION idljava
+; create hub client and connect
+function start_idljava
   initialize_IDL_JAVA_Bridge
 
   jDCP = OBJ_NEW('IDLjavaObject$Static$DEFAULTCLIENTPROFILE', 'org.astrogrid.samp.client.DefaultClientProfile')
   jSampHub = OBJ_NEW('IDLjavaObject$JAVA_OASC_HUBCONNECTOR', 'org.astrogrid.samp.client.HubConnector', jDCP->getProfile())
-  OBJ_DESTROY, jDCP
+  obj_destroy, jDCP
   
   jSampHub->setActive, 1 ; connect to hub
   
@@ -33,9 +34,58 @@ FUNCTION idljava
   jSampHub->declareSubscriptions, jSampHub->computeSubscriptions()
   
   return, Hash('hub', jSampHub, 'msgHandler', jMsgHandler)
-END
+end
 
-PRO idljava_end, jSampHub, jMsgHandler
+; convert java wrapper object to IDL object
+function convert_java_idl, obj
+  case typename(obj) of  ; contrary to switch, case does not need break statements
+    'IDLJAVAOBJECT$JAVA_LANG_STRING': return, obj->toString()
+    'IDLJAVAOBJECT$JAVA_UTIL_ARRAYLIST': begin
+      a = []
+      foreach elem, obj->toArray() do begin
+        a = [a, convert_java_idl(elem)]
+      endforeach
+      return, a
+    end
+    'IDLJAVAOBJECT$JAVA_UTIL_HASHMAP': begin
+      h = hash()
+      foreach node, (obj->entrySet())->toArray() do begin
+        h[(node->getKey())->toString()] = convert_java_idl(node->getValue())
+      endforeach
+      return, h
+    end
+  endcase
+
+  print, "cannot convert object of type '", obj, "': ", obj->toString()
+  return, !null
+end
+
+; check for notifications
+function check_notifications, msgHandler
+  result = !null
+  
+  jCall = msgHandler->getLatestCall()
+  if jCall ne !null then begin
+    msg = jCall->getMessage()
+    if msg->getMType() eq 'jhv.vso.load' then result = convert_java_idl(msg->getParams())
+    obj_destroy, msg
+  endif
+  obj_destroy, jCall
+  
+  return, result
+end
+
+; blocking, waits until SAMP-HUB sends a notification and returns it
+function wait_for_notification, msgHandler
+  while 1 do begin
+    n = check_notifications(msgHandler)
+    if n ne !null then return, n
+    wait, 0.1
+  endwhile
+  return, !null
+end
+
+pro cleanup_idljava, jSampHub, jMsgHandler
   jSampHub->setActive, 0 ; disconnect from hub
-  OBJ_DESTROY, jSampHub, jMsgHandler
-END
+  obj_destroy, jSampHub, jMsgHandler
+end
