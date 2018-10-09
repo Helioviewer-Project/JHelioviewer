@@ -85,6 +85,15 @@ function wait_for_notification, msgHandler
   return, !null
 end
 
+function get_vso_img, layer
+  range = date_add(layer['timestamp'], m=-2) + ' - ' + date_add(layer['timestamp'], m=2)
+  meta = vso_search(date=range, inst=layer['instrument'], wave=layer['measurement']) ; provider=layer['observatory']
+  img = vso_get(meta)  ; downloads image into cwd
+  AIA_LCT, wavelnth=LONG(layer['measurement']), /LOAD
+  
+  return, img
+end
+
 pro cleanup_idljava, jSampHub, jMsgHandler
   jSampHub->setActive, 0 ; disconnect from hub
   obj_destroy, jSampHub, jMsgHandler
