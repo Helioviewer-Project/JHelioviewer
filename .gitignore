@@ -6,3 +6,10 @@ bin/
 *.asm
 /bin
 /build/builds
+
+.ipynb_checkpoints
+.idea
+.project
+/**/out/
+/**/META-INF/
+/**/*.iml
